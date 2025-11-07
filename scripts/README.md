@@ -297,7 +297,8 @@ Before running scripts on production data:
 
 ## Related Documentation
 
-- [GITHUB_ISSUES_PLAN.md](../GITHUB_ISSUES_PLAN.md) - Detailed plan for issue creation
+- [notes/README.md](../notes/README.md) - Detailed plan for issue creation
+- [SCRIPTS_ANALYSIS.md](SCRIPTS_ANALYSIS.md) - Comprehensive scripts analysis and documentation
 - [notes/plan/](../notes/plan/) - All plan files and issue templates
 - [README.md](../README.md) - Main repository README
 

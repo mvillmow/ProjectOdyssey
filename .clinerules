@@ -9,6 +9,7 @@ This repository implements a comprehensive Mojo-based AI research platform for r
 ```
 ml-odyssey/
 ├── notes/
+│   ├── README.md                # GitHub issues plan and documentation
 │   ├── plan/                    # 4-level hierarchical plans (331 components)
 │   │   ├── 01-foundation/
 │   │   ├── 02-shared-library/
@@ -21,11 +22,11 @@ ml-odyssey/
 ├── scripts/                     # Automation scripts
 │   ├── create_issues.py         # Main issue creation
 │   ├── create_single_component_issues.py
-│   ├── *.sh                     # Bash utilities
+│   ├── SCRIPTS_ANALYSIS.md      # Comprehensive scripts documentation
+│   ├── *.sh                     # Bash utilities (historical)
 │   └── README.md
 ├── logs/                        # Execution logs
-├── README.md                    # Main documentation
-└── GITHUB_ISSUES_PLAN.md       # Issue creation plan
+└── README.md                    # Main documentation
 ```
 
 ## Key Conventions
@@ -202,7 +203,8 @@ set -e  # Exit on error
 
 - Main docs: Update `README.md`
 - Script docs: Update `scripts/README.md`
-- Issue plan: Update `GITHUB_ISSUES_PLAN.md`
+- Issue plan: Update `notes/README.md`
+- Scripts analysis: Update `scripts/SCRIPTS_ANALYSIS.md`
 - Historical: Add to `notes/issues/<issue-number>/`
 
 ### Debugging
@@ -254,8 +256,9 @@ Standard labels used in issues:
 ## Important Files
 
 - `README.md` - Main documentation
-- `GITHUB_ISSUES_PLAN.md` - Issue creation plan
+- `notes/README.md` - Issue creation plan
 - `scripts/README.md` - Scripts documentation
+- `scripts/SCRIPTS_ANALYSIS.md` - Comprehensive scripts analysis
 - `notes/plan/*/plan.md` - Individual component plans
 - `scripts/create_issues.py` - Main automation script
 
@@ -309,5 +312,6 @@ Standard labels used in issues:
 
 - Main docs: [README.md](README.md)
 - Scripts: [scripts/README.md](scripts/README.md)
+- Scripts analysis: [scripts/SCRIPTS_ANALYSIS.md](scripts/SCRIPTS_ANALYSIS.md)
 - Plans: [notes/plan/](notes/plan/)
-- Issue plan: [GITHUB_ISSUES_PLAN.md](GITHUB_ISSUES_PLAN.md)
+- Issue plan: [notes/README.md](notes/README.md)
