@@ -22,13 +22,13 @@ ml-odyssey/
 
 ### Creating GitHub Issues
 
-All planning has been documented in `notes/plan/` with 331 components across 6 major sections. To create GitHub issues:
+All planning has been documented in `notes/plan/` across 6 major sections using a 4-level hierarchical structure. To create GitHub issues:
 
 ```bash
 # Test with dry-run first
 python3 scripts/create_issues.py --dry-run
 
-# Create all 1,655 issues
+# Create all issues
 python3 scripts/create_issues.py
 ```
 

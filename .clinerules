@@ -10,7 +10,7 @@ This repository implements a comprehensive Mojo-based AI research platform for r
 ml-odyssey/
 ├── notes/
 │   ├── README.md                # GitHub issues plan and documentation
-│   ├── plan/                    # 4-level hierarchical plans (331 components)
+│   ├── plan/                    # 4-level hierarchical plans
 │   │   ├── 01-foundation/
 │   │   ├── 02-shared-library/
 │   │   ├── 03-tooling/
@@ -22,8 +22,8 @@ ml-odyssey/
 ├── scripts/                     # Automation scripts
 │   ├── create_issues.py         # Main issue creation
 │   ├── create_single_component_issues.py
+│   ├── regenerate_github_issues.py  # Regenerate github_issue.md files
 │   ├── SCRIPTS_ANALYSIS.md      # Comprehensive scripts documentation
-│   ├── *.sh                     # Bash utilities (historical)
 │   └── README.md
 ├── logs/                        # Execution logs
 └── README.md                    # Main documentation
@@ -70,7 +70,17 @@ Additional context
 
 ### GitHub Issue Structure
 
-Each component has 5 issues (Plan, Test, Implementation, Packaging, Cleanup) documented in `github_issue.md`:
+Each component has 5 issues following a hierarchical workflow. The `github_issue.md` files are dynamically generated from plan.md files and define:
+
+**5-Phase Hierarchy**: Plan → [Test | Implementation | Packaging] → Cleanup
+
+- **Plan**: Creates the detailed plan for the component, including specifications for Test, Implementation, and Packaging phases
+- **Test**: Documents and implements test cases (can run in parallel with Implementation and Packaging after Plan completes)
+- **Implementation**: Main implementation work (can run in parallel with Test and Packaging after Plan completes)
+- **Packaging**: Integrates Test and Implementation artifacts into a self-contained installer (can run in parallel after Plan completes)
+- **Cleanup**: Final phase that collects issues discovered during Test/Implementation/Packaging and handles refactoring and finalization (runs after the other three complete)
+
+Note: github_issue.md files are regenerated dynamically from plan.md files using `scripts/regenerate_github_issues.py` and should not be edited manually.
 
 ```markdown
 # GitHub Issues for Component Name
@@ -124,15 +134,41 @@ python3 scripts/create_issues.py --dry-run
 
 ### 3. 5-Phase Development Process
 
-Each component follows this workflow:
+Each component follows a hierarchical workflow with clear dependencies:
 
-1. **Plan** - Design and document
-2. **Test** - Write tests (TDD approach)
-3. **Implementation** - Build functionality
-4. **Packaging** - Integrate and package
-5. **Cleanup** - Refactor and finalize
+**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
 
-Each phase has a separate GitHub issue with detailed instructions.
+1. **Plan** (Sequential, must complete first)
+   - Creates detailed specifications for the component
+   - Defines requirements for Test, Implementation, and Packaging phases
+   - Documents design decisions and success criteria
+   - Outputs: Specifications for all subsequent phases
+
+2. **Test** (Parallel after Plan)
+   - Documents and implements test cases following TDD principles
+   - Can run in parallel with Implementation and Packaging
+   - Defines test fixtures, edge cases, and coverage requirements
+
+3. **Implementation** (Parallel after Plan)
+   - Main implementation work to build the functionality
+   - Can run in parallel with Test and Packaging
+   - Should integrate with Test phase for TDD approach
+
+4. **Packaging** (Parallel after Plan)
+   - Integrates Test and Implementation artifacts
+   - Creates self-contained installer/package for reproducibility
+   - Can run in parallel with Test and Implementation
+
+5. **Cleanup** (Sequential, runs after Test/Implementation/Packaging)
+   - Collects issues discovered during the parallel phases
+   - Handles refactoring, documentation, and finalization
+   - Final validation before considering component complete
+
+**Key Points**:
+- Plan phase MUST complete before other phases begin
+- Test, Implementation, and Packaging can run in parallel
+- Cleanup issue should be updated throughout as issues are discovered
+- Each phase has a separate GitHub issue with detailed instructions
 
 ### 4. Scripts and Automation
 

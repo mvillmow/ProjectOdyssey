@@ -10,12 +10,12 @@ This repository uses a comprehensive 4-level hierarchical planning structure doc
 ml-odyssey/
 ├── notes/
 │   ├── plan/                    # 4-level hierarchical plans
-│   │   ├── 01-foundation/       # 42 components
-│   │   ├── 02-shared-library/   # 57 components
-│   │   ├── 03-tooling/          # 53 components
-│   │   ├── 04-first-paper/      # 83 components
-│   │   ├── 05-ci-cd/            # 44 components
-│   │   └── 06-agentic-workflows/# 52 components
+│   │   ├── 01-foundation/
+│   │   ├── 02-shared-library/
+│   │   ├── 03-tooling/
+│   │   ├── 04-first-paper/
+│   │   ├── 05-ci-cd/
+│   │   └── 06-agentic-workflows/
 │   └── issues/
 │       └── 1/                   # GitHub issue #1 related docs
 ├── scripts/                     # Automation scripts
@@ -25,34 +25,34 @@ ml-odyssey/
 └── logs/                        # Execution logs
 ```
 
-## Statistics
+## Structure
 
-- **Total Components**: 331
-- **Total Issues to Create**: 1,655 (5 per component)
 - **Sections**: 6 major areas
 - **Levels**: 4-level hierarchy per section
+- **GitHub Issues**: 5 issues per component (Plan, Test, Implementation, Packaging, Cleanup)
 
-### Breakdown by Section
+### Major Sections
 
-| Section | Components | Issues |
-|---------|-----------|--------|
-| 01-foundation | 42 | 210 |
-| 02-shared-library | 57 | 285 |
-| 03-tooling | 53 | 265 |
-| 04-first-paper | 83 | 415 |
-| 05-ci-cd | 44 | 220 |
-| 06-agentic-workflows | 52 | 260 |
-| **TOTAL** | **331** | **1,655** |
+| Section | Description |
+|---------|-------------|
+| 01-foundation | Repository structure and configuration |
+| 02-shared-library | Core reusable components |
+| 03-tooling | Development and testing tools |
+| 04-first-paper | LeNet-5 implementation (proof of concept) |
+| 05-ci-cd | Continuous integration and deployment |
+| 06-agentic-workflows | Claude-powered automation |
 
-### Breakdown by Issue Type
+### 5-Phase Workflow
 
-Each component generates 5 issues:
+Each component generates 5 issues following a hierarchical workflow:
 
-1. **Plan** (331 issues) - Design and documentation
-2. **Test** (331 issues) - Write tests (TDD)
-3. **Implementation** (331 issues) - Build the functionality
-4. **Packaging** (331 issues) - Integration and packaging
-5. **Cleanup** (331 issues) - Refactor and finalize
+**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
+
+1. **Plan** - Design and documentation (must complete first)
+2. **Test** - Write tests following TDD (parallel after Plan)
+3. **Implementation** - Build the functionality (parallel after Plan)
+4. **Packaging** - Integration and packaging (parallel after Plan)
+5. **Cleanup** - Refactor and finalize (runs after parallel phases complete)
 
 ## Quick Start
 
@@ -71,17 +71,17 @@ Results: https://github.com/mvillmow/ml-odyssey/issues/2-6
 **Option A: Section by Section (Recommended)**
 ```bash
 # Create issues for one section at a time
-python3 scripts/create_issues.py --section 01-foundation  # 210 issues
-python3 scripts/create_issues.py --section 02-shared-library  # 285 issues
-python3 scripts/create_issues.py --section 03-tooling  # 265 issues
-python3 scripts/create_issues.py --section 04-first-paper  # 415 issues
-python3 scripts/create_issues.py --section 05-ci-cd  # 220 issues
-python3 scripts/create_issues.py --section 06-agentic-workflows  # 260 issues
+python3 scripts/create_issues.py --section 01-foundation
+python3 scripts/create_issues.py --section 02-shared-library
+python3 scripts/create_issues.py --section 03-tooling
+python3 scripts/create_issues.py --section 04-first-paper
+python3 scripts/create_issues.py --section 05-ci-cd
+python3 scripts/create_issues.py --section 06-agentic-workflows
 ```
 
 **Option B: All at Once**
 ```bash
-# Create all 1,655 issues (takes ~30-45 minutes)
+# Create all issues
 python3 scripts/create_issues.py
 ```
 

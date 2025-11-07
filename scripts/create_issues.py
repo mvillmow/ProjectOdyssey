@@ -763,7 +763,10 @@ def main():
     repo_root = script_dir.parent  # Go up one level from scripts/ to repo root
     plan_dir = repo_root / 'notes' / 'plan'
     log_dir = repo_root / 'logs'
-    state_file = repo_root / '.issue_creation_state.json'
+
+    # Create timestamped state file in logs directory
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    state_file = log_dir / f'.issue_creation_state_{timestamp}.json'
 
     if not plan_dir.exists():
         print(f"{Colors.FAIL}Error: Plan directory not found: {plan_dir}{Colors.ENDC}")
@@ -781,18 +784,26 @@ def main():
     print(f"Mode: {Colors.WARNING if args.dry_run else Colors.OKGREEN}"
           f"{'DRY RUN' if args.dry_run else 'LIVE'}{Colors.ENDC}")
 
-    # Setup state manager
-    state_manager = StateManager(state_file)
-
     # Load resume state if requested
     resume_state = None
     if args.resume:
-        resume_state = state_manager.load_state()
-        if resume_state:
-            print(f"{Colors.OKGREEN}Resuming from saved state "
-                  f"({resume_state.get('timestamp')}){Colors.ENDC}")
+        # Find the latest state file in logs directory
+        state_files = sorted(log_dir.glob('.issue_creation_state_*.json'))
+        if state_files:
+            latest_state_file = state_files[-1]
+            state_manager = StateManager(latest_state_file)
+            resume_state = state_manager.load_state()
+            if resume_state:
+                print(f"{Colors.OKGREEN}Resuming from saved state: {latest_state_file.name}{Colors.ENDC}")
+            else:
+                print(f"{Colors.WARNING}Could not load state from {latest_state_file.name}, starting fresh{Colors.ENDC}")
+                state_manager = StateManager(state_file)
         else:
-            print(f"{Colors.WARNING}No saved state found, starting fresh{Colors.ENDC}")
+            print(f"{Colors.WARNING}No saved state files found in logs/, starting fresh{Colors.ENDC}")
+            state_manager = StateManager(state_file)
+    else:
+        # Create new state manager with timestamped file
+        state_manager = StateManager(state_file)
 
     # Find all issue files
     issue_files = find_all_issue_files(plan_dir, args.section)
