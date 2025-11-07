@@ -1,32 +1,73 @@
 # Scripts Directory
 
-This directory contains automation scripts for the Mojo AI Research Repository project.
+This directory contains Python automation scripts for the Mojo AI Research Repository project.
 
 ## Overview
 
-These scripts automate various aspects of the repository management, including:
+These scripts automate repository management tasks:
 - Creating GitHub issues from plan files
-- Updating issue templates
-- Managing repository structure
+- Regenerating github_issue.md files dynamically from plan.md files
+- Testing issue creation for individual components
 
 ## Scripts
 
-### 🎯 Main Scripts
+### Main Scripts
+
+#### `regenerate_github_issues.py`
+**Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files.
+
+**Features**:
+- Generates github_issue.md files from plan.md sources
+- Supports dry-run mode for testing
+- Section-by-section processing
+- Resume capability with timestamped state files
+- Progress tracking and error handling
+
+**Usage**:
+```bash
+# Dry-run to preview changes
+python3 scripts/regenerate_github_issues.py --dry-run
+
+# Regenerate one section
+python3 scripts/regenerate_github_issues.py --section 01-foundation
+
+# Regenerate all files
+python3 scripts/regenerate_github_issues.py
+
+# Resume from previous run
+python3 scripts/regenerate_github_issues.py --resume
+```
+
+**Command-line Options**:
+- `--dry-run`: Show what would be done without making changes
+- `--section SECTION`: Process only one section (e.g., 01-foundation)
+- `--resume`: Resume from last saved state
+- `--plan-dir PATH`: Specify plan directory (default: /home/mvillmow/ml-odyssey/notes/plan)
+
+**Output**:
+- Logs to stderr with progress updates
+- Saves state to `logs/.issue_creation_state_<timestamp>.json`
+- Updates github_issue.md files in place
+
+**Important**: github_issue.md files are dynamically generated and should not be edited manually. Always regenerate them using this script.
+
+---
 
 #### `create_issues.py`
 **Purpose**: Create GitHub issues from all github_issue.md files in the notes/plan directory.
 
 **Features**:
-- Parses 331 github_issue.md files
-- Creates 1,655 GitHub issues (5 per component)
+- Creates GitHub issues using the gh CLI
 - Supports dry-run mode for testing
+- Section-by-section processing
 - Progress tracking and state management
-- Automatic retry on failures
+- Automatic retry on failures with exponential backoff
 - Updates github_issue.md files with created issue URLs
+- Automatic label creation
 
 **Usage**:
 ```bash
-# Dry-run mode (shows what would be created without creating)
+# Dry-run mode (recommended first - shows what would be created)
 python3 scripts/create_issues.py --dry-run
 
 # Test with one section only
@@ -52,264 +93,242 @@ python3 scripts/create_issues.py --repo username/repo
 - `--no-color`: Disable ANSI color output
 - `--repo REPO`: Override repository (default: auto-detected from git)
 
-**Statistics**:
-- Total files: 331
-- Total issues: 1,655
-- Sections: 6 (foundation, shared-library, tooling, first-paper, ci-cd, agentic-workflows)
-
 **Output**:
-- Logs to `logs/create_issues_TIMESTAMP.log`
-- Saves state to `.issue_creation_state.json`
+- Logs to `logs/create_issues_<timestamp>.log`
+- Saves state to `logs/.issue_creation_state_<timestamp>.json`
 - Updates github_issue.md files with issue URLs
 
-### 📝 Update Scripts
+**Prerequisites**:
+- GitHub CLI (`gh`) must be installed and authenticated
+- Run `gh auth login` if not already authenticated
 
-These scripts were used during the initial setup to populate github_issue.md files with detailed issue bodies.
+---
 
-#### `simple_update.py`
-**Purpose**: Simple script for updating github_issue.md files with basic structure.
+#### `create_single_component_issues.py`
+**Purpose**: Test script to create GitHub issues for a single component.
 
-**Status**: Completed - used during initial setup phase
+**Features**:
+- Creates 5 issues for one component (Plan, Test, Implementation, Packaging, Cleanup)
+- Useful for testing before bulk creation
+- Updates github_issue.md with created issue URLs
 
-#### `update_agentic_workflows_issues.py`
-**Purpose**: Update github_issue.md files in the 06-agentic-workflows section.
-
-**Status**: Completed - all 52 files updated
-
-#### `update_ci_cd_issues.py`
-**Purpose**: Update github_issue.md files in the 05-ci-cd section.
-
-**Status**: Completed - all 44 files updated
-
-#### `update_tooling_issues.py`
-**Purpose**: Update github_issue.md files in the 03-tooling section.
-
-**Status**: Completed - all 53 files updated
-
-**Note**: These update scripts were used to populate the github_issue.md files and are kept for reference. All 331 files have been updated with detailed issue bodies.
-
-## Directory Structure
-
-```
-scripts/
-├── README.md                              # This file
-├── create_issues.py                       # Main issue creation script
-├── simple_update.py                       # Basic update utility
-├── update_agentic_workflows_issues.py     # Section-specific updater
-├── update_ci_cd_issues.py                 # Section-specific updater
-└── update_tooling_issues.py               # Section-specific updater
-```
-
-## Common Workflows
-
-### Creating All GitHub Issues
-
-**Step 1: Dry-run to verify**
+**Usage**:
 ```bash
-cd /home/mvillmow/ml-odyssey
+# Test with a specific component
+python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
+```
+
+**Example**:
+```bash
+# This creates 5 issues for the foundation component
+python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
+```
+
+---
+
+## Workflow
+
+### Typical Development Flow
+
+1. **Edit plan.md files** - Make changes to planning documents
+2. **Regenerate github_issue.md** - Run `regenerate_github_issues.py` to update issue files
+3. **Test with dry-run** - Run `create_issues.py --dry-run` to preview
+4. **Create issues** - Run `create_issues.py` to create GitHub issues
+
+### Creating All Issues
+
+```bash
+# Step 1: Ensure github_issue.md files are up to date
+python3 scripts/regenerate_github_issues.py
+
+# Step 2: Dry-run to verify
 python3 scripts/create_issues.py --dry-run
-```
 
-Review the output to ensure all issues are parsed correctly.
-
-**Step 2: Test with one section**
-```bash
+# Step 3: Create issues section-by-section (recommended)
 python3 scripts/create_issues.py --section 01-foundation
-```
+python3 scripts/create_issues.py --section 02-shared-library
+python3 scripts/create_issues.py --section 03-tooling
+python3 scripts/create_issues.py --section 04-first-paper
+python3 scripts/create_issues.py --section 05-ci-cd
+python3 scripts/create_issues.py --section 06-agentic-workflows
 
-This creates 210 issues for the foundation section. Review them in GitHub to ensure they look correct.
-
-**Step 3: Create all issues**
-```bash
+# OR: Create all at once
 python3 scripts/create_issues.py
 ```
 
-This creates all 1,655 issues. Takes approximately 30-45 minutes.
+---
 
-**Step 4: Verify completion**
-```bash
-# Check logs
-tail -100 logs/create_issues_*.log
+## File Locations
 
-# Verify all files were updated
-find notes/plan -name "github_issue.md" -exec grep -L "https://github.com" {} \;
-```
+### State Files
+State files are saved with timestamps in the `logs/` directory:
+- `logs/.issue_creation_state_<timestamp>.json`
+- Contains processed files list and completion status
+- Used for resume capability
 
-An empty output means all files were updated successfully.
+### Log Files
+Execution logs are saved in the `logs/` directory:
+- `logs/create_issues_<timestamp>.log`
+- Contains detailed progress and error information
 
-### Resuming After Interruption
+### GitHub Issue Files
+github_issue.md files are dynamically generated:
+- Located in `notes/plan/**/github_issue.md`
+- Generated from corresponding plan.md files
+- Not committed to repository (regenerated as needed)
+- Each contains 5 issue definitions (Plan, Test, Implementation, Packaging, Cleanup)
 
-If the script is interrupted:
+---
 
-```bash
-python3 scripts/create_issues.py --resume
-```
+## Issue Structure
 
-This resumes from the last saved state in `.issue_creation_state.json`.
+Each component generates 5 GitHub issues following the 5-phase development workflow:
 
-## Requirements
+### 5-Phase Hierarchy
+**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
 
-### Python Packages
-- Python 3.7+
-- Standard library (no additional packages required for basic operation)
-- Optional: `tqdm` for better progress bars
-  ```bash
-  pip install tqdm
-  ```
+1. **Plan Issue** - `[Plan] Component Name - Design and Documentation`
+   - Labels: `planning`, `documentation`
+   - Purpose: Create detailed specifications and design
+   - Must complete before other phases
 
-### System Requirements
-- GitHub CLI (`gh`) installed and authenticated
-  ```bash
-  # Install gh CLI
-  # Ubuntu/Debian
-  sudo apt install gh
+2. **Test Issue** - `[Test] Component Name - Write Tests`
+   - Labels: `testing`, `tdd`
+   - Purpose: Document and implement test cases
+   - Can run in parallel with Implementation and Packaging
 
-  # Authenticate
-  gh auth login
-  ```
+3. **Implementation Issue** - `[Impl] Component Name - Implementation`
+   - Labels: `implementation`
+   - Purpose: Build the main functionality
+   - Can run in parallel with Test and Packaging
 
-- Git repository with remote configured
-  ```bash
-  git remote -v
-  # Should show: origin https://github.com/mvillmow/ml-odyssey.git
-  ```
+4. **Packaging Issue** - `[Package] Component Name - Integration and Packaging`
+   - Labels: `packaging`, `integration`
+   - Purpose: Integrate artifacts and create installer
+   - Can run in parallel with Test and Implementation
 
-## Logging
+5. **Cleanup Issue** - `[Cleanup] Component Name - Refactor and Finalize`
+   - Labels: `cleanup`, `documentation`
+   - Purpose: Collect issues, refactor, and finalize
+   - Runs after parallel phases complete
 
-All scripts log to the `logs/` directory:
+See [notes/review/README.md](../notes/review/README.md) for detailed workflow documentation.
 
-```
-logs/
-├── create_issues_20251106_215918.log
-├── create_issues_20251106_213006.log
-└── ...
-```
-
-Log format:
-```
-2025-11-06 21:59:18,888 - INFO - Logging to /home/mvillmow/ml-odyssey/logs/create_issues_20251106_215918.log
-2025-11-06 21:59:18,890 - INFO - Using repository: mvillmow/ml-odyssey
-2025-11-06 21:59:19,100 - INFO - Found 331 github_issue.md files
-2025-11-06 21:59:20,500 - INFO - Parsed 1655 issues
-...
-```
-
-## State Management
-
-The `create_issues.py` script saves progress to `.issue_creation_state.json`:
-
-```json
-{
-  "last_processed_index": 100,
-  "created_issues": [
-    {
-      "title": "[Plan] Create Base Directory - Design and Documentation",
-      "issue_url": "https://github.com/mvillmow/ml-odyssey/issues/123",
-      "file_path": "notes/plan/01-foundation/.../github_issue.md",
-      "created": true
-    }
-  ],
-  "timestamp": "2025-11-06T21:59:18"
-}
-```
-
-This allows the script to resume if interrupted.
-
-## Error Handling
-
-All scripts include robust error handling:
-
-1. **Retry Logic**: Failed operations are retried up to 3 times
-2. **Exponential Backoff**: Waits 1s, 2s, 4s between retries
-3. **State Saving**: Progress saved every 10 issues
-4. **Error Logging**: All errors logged with full traceback
-5. **Graceful Degradation**: Continues processing even if individual issues fail
+---
 
 ## Troubleshooting
 
-### Issue: Script can't find git repository
-**Solution**: Run from repository root:
+### GitHub CLI Not Installed
 ```bash
-cd /home/mvillmow/ml-odyssey
-python3 scripts/create_issues.py --dry-run
+# Install GitHub CLI
+# See: https://github.com/cli/cli#installation
+
+# Authenticate
+gh auth login
 ```
 
-### Issue: GitHub API rate limit
-**Solution**: The script automatically handles rate limits with exponential backoff. Wait for it to retry.
-
-### Issue: Permission denied
-**Solution**: Ensure GitHub CLI is authenticated:
+### State File Issues
+If you need to start fresh:
 ```bash
-gh auth status
-gh auth login  # If not authenticated
+# State files are in logs/ with timestamps
+# Remove specific state file or let script create new one
+rm logs/.issue_creation_state_*.json
 ```
 
-### Issue: Script interrupted
-**Solution**: Resume from saved state:
+### Permission Errors
+Ensure you have:
+- Write access to `logs/` directory
+- Write access to `notes/plan/` directory (for updating github_issue.md)
+- GitHub repository write access
+
+### Rate Limiting
+GitHub API has rate limits. If you hit them:
+- Wait for rate limit to reset
+- Use `--resume` to continue from where you left off
+- Process sections one at a time with delays between them
+
+### Missing github_issue.md Files
+If github_issue.md files are missing:
 ```bash
-python3 scripts/create_issues.py --resume
+# Regenerate all files
+python3 scripts/regenerate_github_issues.py
 ```
 
-### Issue: Parse errors in github_issue.md files
-**Solution**: Check the log file for details:
-```bash
-tail -100 logs/create_issues_*.log | grep ERROR
+---
+
+## Script Dependencies
+
+### Python Requirements
+- Python 3.7+
+- No external Python packages required (uses standard library only)
+
+### External Tools
+- `gh` (GitHub CLI) - Required for creating issues
+- `git` - Required for repository detection
+
+### Repository Structure
+Scripts expect this structure:
+```
+ml-odyssey/
+├── notes/
+│   └── plan/
+│       ├── 01-foundation/
+│       │   ├── plan.md
+│       │   └── (github_issue.md - generated)
+│       └── ...
+├── scripts/
+│   ├── create_issues.py
+│   ├── create_single_component_issues.py
+│   └── regenerate_github_issues.py
+└── logs/
+    ├── .issue_creation_state_*.json
+    └── create_issues_*.log
 ```
 
-## Development
+---
 
-### Adding New Scripts
+## Best Practices
 
-When adding new scripts to this directory:
+1. **Always dry-run first**
+   - Use `--dry-run` to preview changes before executing
+   - Verify output looks correct
 
-1. **Add executable permission**:
-   ```bash
-   chmod +x scripts/your_script.py
-   ```
+2. **Test with one component**
+   - Use `create_single_component_issues.py` to test with one component
+   - Verify issues are created correctly
 
-2. **Add shebang line** at the top:
-   ```python
-   #!/usr/bin/env python3
-   ```
+3. **Process section-by-section**
+   - Use `--section` flag for better control
+   - Easier to handle errors and rate limits
 
-3. **Include docstring** with description and usage:
-   ```python
-   """
-   Script Name
+4. **Check logs**
+   - Review log files in `logs/` directory
+   - Contains detailed error messages and progress
 
-   Description of what the script does.
+5. **Use resume capability**
+   - If interrupted, use `--resume` to continue
+   - State is saved every 50 files
 
-   Usage:
-       python scripts/your_script.py [options]
-   """
-   ```
+6. **Keep github_issue.md files in sync**
+   - Regenerate after editing plan.md files
+   - Don't edit github_issue.md manually
 
-4. **Update this README** with script documentation
-
-### Testing Scripts
-
-Before running scripts on production data:
-
-1. **Test with dry-run** (if available)
-2. **Test on a small subset** (e.g., one section)
-3. **Review logs** for errors
-4. **Verify output** manually
+---
 
 ## Related Documentation
 
-- [notes/README.md](../notes/README.md) - Detailed plan for issue creation
-- [SCRIPTS_ANALYSIS.md](SCRIPTS_ANALYSIS.md) - Comprehensive scripts analysis and documentation
-- [notes/plan/](../notes/plan/) - All plan files and issue templates
-- [README.md](../README.md) - Main repository README
+- [Repository README](../README.md) - Main project documentation
+- [Planning Documentation](../notes/README.md) - GitHub issues plan overview
+- [Review Process](../notes/review/README.md) - PR review guidelines and 5-phase workflow
+- [Scripts Analysis](SCRIPTS_ANALYSIS.md) - Comprehensive analysis of all scripts
+- [Project Conventions](../.clinerules) - Claude Code conventions
 
-## Support
+---
 
-For issues or questions:
-1. Check the logs in `logs/`
-2. Review this README
-3. Check the main project documentation
-4. Create an issue in the repository
+## Notes
 
-## License
-
-Same as the main repository (Apache 2.0).
+- All scripts use Python 3 standard library only
+- github_issue.md files are dynamically generated, not committed
+- State files include timestamps for tracking multiple runs
+- Scripts handle errors gracefully with detailed logging
+- Resume capability prevents duplicate work if interrupted

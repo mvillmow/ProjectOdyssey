@@ -11,7 +11,7 @@ This document provides a comprehensive analysis of all scripts in the `scripts/`
 These scripts are actively used and maintained:
 
 #### `create_issues.py` ⭐ **PRIMARY SCRIPT**
-- **Purpose**: Main automation script for creating all 1,655 GitHub issues from github_issue.md files
+- **Purpose**: Main automation script for creating GitHub issues from github_issue.md files
 - **Type**: Python 3.7+ script
 - **Lines of Code**: 854
 - **Complexity**: High (comprehensive error handling, state management, retry logic)
@@ -332,10 +332,11 @@ Simple bash wrappers for Python scripts:
 ## Maintenance Notes
 
 ### Current Status (2025-11-07)
-- All 331 github_issue.md files have detailed bodies
-- Only 5 test issues created (#2-#6)
-- Remaining 1,650 issues ready to be created
+- github_issue.md files are dynamically generated from plan.md files (not committed to repository)
+- regenerate_github_issues.py consolidated all legacy update scripts
+- Test issues created (#2-#6) to verify functionality
 - All scripts properly organized in `scripts/` directory
+- State files now use timestamps in logs/ directory
 
 ### Future Maintenance
 1. **After issue creation**: Historical scripts can be archived
