@@ -1,3 +1,10 @@
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+# Python cache directories
+__pycache__
+
+# agentic build artifacts
+logs/
+build/

@@ -1,0 +1,313 @@
+# ML Odyssey - Claude Coding Rules
+
+## Project Overview
+
+This repository implements a comprehensive Mojo-based AI research platform for reproducing research papers. The project uses a 4-level hierarchical planning structure with detailed plans and GitHub issue tracking.
+
+## Repository Structure
+
+```
+ml-odyssey/
+├── notes/
+│   ├── plan/                    # 4-level hierarchical plans (331 components)
+│   │   ├── 01-foundation/
+│   │   ├── 02-shared-library/
+│   │   ├── 03-tooling/
+│   │   ├── 04-first-paper/
+│   │   ├── 05-ci-cd/
+│   │   └── 06-agentic-workflows/
+│   └── issues/                  # GitHub issue documentation
+│       └── 1/                   # Historical docs from issue #1
+├── scripts/                     # Automation scripts
+│   ├── create_issues.py         # Main issue creation
+│   ├── create_single_component_issues.py
+│   ├── *.sh                     # Bash utilities
+│   └── README.md
+├── logs/                        # Execution logs
+├── README.md                    # Main documentation
+└── GITHUB_ISSUES_PLAN.md       # Issue creation plan
+```
+
+## Key Conventions
+
+### Plan Structure
+
+All plans follow Template 1 format:
+
+```markdown
+# Component Name
+
+## Overview
+Brief description (2-3 sentences)
+
+## Parent Plan
+[../plan.md](../plan.md) or "None (top-level)"
+
+## Child Plans
+- [child1/plan.md](child1/plan.md)
+Or "None (leaf node)" for level 4
+
+## Inputs
+- Prerequisite 1
+- Prerequisite 2
+
+## Outputs
+- Deliverable 1
+- Deliverable 2
+
+## Steps
+1. Step 1
+2. Step 2
+
+## Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Notes
+Additional context
+```
+
+### GitHub Issue Structure
+
+Each component has 5 issues (Plan, Test, Implementation, Packaging, Cleanup) documented in `github_issue.md`:
+
+```markdown
+# GitHub Issues for Component Name
+
+## Plan Issue
+**Title**: `[Plan] Component Name - Design and Documentation`
+**Labels**: `planning`, `documentation`
+**Body**: [Detailed instructions]
+**GitHub Issue URL**: [URL after creation]
+
+## Test Issue
+[Similar structure...]
+```
+
+### File Locations
+
+- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md`
+- **Issues**: `notes/plan/<section>/<subsection>/.../github_issue.md`
+- **Scripts**: `scripts/*.py` and `scripts/*.sh`
+- **Logs**: `logs/*.log`
+- **Historical docs**: `notes/issues/1/*.md`
+
+## Development Workflow
+
+### 1. Working with Plans
+
+When modifying plans:
+- Maintain Template 1 format consistently
+- Update parent/child links when adding components
+- Keep all 9 required sections
+- Use relative paths for links
+- Never modify github_issue.md manually (regenerate with scripts)
+
+### 2. Creating GitHub Issues
+
+Use the automation scripts:
+
+```bash
+# Test single component
+python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md
+
+# Create section
+python3 scripts/create_issues.py --section 01-foundation
+
+# Create all
+python3 scripts/create_issues.py
+
+# Dry-run
+python3 scripts/create_issues.py --dry-run
+```
+
+### 3. 5-Phase Development Process
+
+Each component follows this workflow:
+
+1. **Plan** - Design and document
+2. **Test** - Write tests (TDD approach)
+3. **Implementation** - Build functionality
+4. **Packaging** - Integrate and package
+5. **Cleanup** - Refactor and finalize
+
+Each phase has a separate GitHub issue with detailed instructions.
+
+### 4. Scripts and Automation
+
+- All automation scripts live in `scripts/`
+- Use Python 3.7+ for scripts
+- Scripts automatically create labels if needed
+- Progress is saved to `.issue_creation_state.json`
+- Logs go to `logs/` directory
+
+## Coding Standards
+
+### Python Scripts
+
+```python
+#!/usr/bin/env python3
+"""
+Script description
+
+Usage:
+    python scripts/script_name.py [options]
+"""
+
+# Standard imports first
+import sys
+import re
+from pathlib import Path
+
+# Type hints required
+def function_name(param: str) -> bool:
+    """Clear docstring with purpose, params, returns."""
+    pass
+```
+
+### Mojo Code (Future)
+
+```mojo
+# Will be added when implementing papers
+# Follow Mojo best practices:
+# - Use fn for performance-critical code
+# - Use def for prototyping
+# - Leverage SIMD operations
+# - Clear type annotations
+```
+
+### Shell Scripts
+
+```bash
+#!/bin/bash
+# Script description
+# Usage: script_name.sh [options]
+
+set -e  # Exit on error
+```
+
+## Common Operations
+
+### Adding a New Component
+
+1. Create directory structure under `notes/plan/`
+2. Create `plan.md` following Template 1
+3. Run issue generator:
+   ```bash
+   python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md
+   ```
+4. Verify issues created correctly
+
+### Updating Documentation
+
+- Main docs: Update `README.md`
+- Script docs: Update `scripts/README.md`
+- Issue plan: Update `GITHUB_ISSUES_PLAN.md`
+- Historical: Add to `notes/issues/<issue-number>/`
+
+### Debugging
+
+- Check logs: `tail -100 logs/create_issues_*.log`
+- Verify state: `cat .issue_creation_state.json`
+- Test parsing: `python3 scripts/create_issues.py --dry-run`
+- Single component: Use `create_single_component_issues.py`
+
+## Git Workflow
+
+### Branch Naming
+
+- `main` - Production
+- `feature/<issue-number>-<description>`
+- `fix/<issue-number>-<description>`
+
+### Commit Messages
+
+Follow conventional commits:
+
+```
+feat(section): Add new component
+fix(scripts): Correct parsing issue
+docs(readme): Update instructions
+refactor(plans): Standardize to Template 1
+```
+
+### Pull Requests
+
+- Link to relevant GitHub issues
+- Include plan references
+- Update documentation
+- Run dry-run tests before submitting
+
+## Labels
+
+Standard labels used in issues:
+
+- `planning` - Design phase
+- `documentation` - Documentation work
+- `testing` - Testing phase
+- `tdd` - Test-driven development
+- `implementation` - Implementation phase
+- `packaging` - Integration/packaging
+- `integration` - Integration tasks
+- `cleanup` - Cleanup/finalization
+
+## Important Files
+
+- `README.md` - Main documentation
+- `GITHUB_ISSUES_PLAN.md` - Issue creation plan
+- `scripts/README.md` - Scripts documentation
+- `notes/plan/*/plan.md` - Individual component plans
+- `scripts/create_issues.py` - Main automation script
+
+## Best Practices
+
+### When Writing Code
+
+1. **Keep it simple** - Avoid premature optimization
+2. **Follow TDD** - Write tests first
+3. **Document clearly** - Every public function/class
+4. **Use type hints** - For Python and Mojo
+5. **Error handling** - Comprehensive error handling
+6. **Logging** - Log important operations
+
+### When Creating Plans
+
+1. **Be specific** - Clear, actionable steps
+2. **Link properly** - Correct parent/child links
+3. **Complete sections** - All 9 required sections
+4. **Consistent format** - Always use Template 1
+5. **Clear criteria** - Measurable success criteria
+
+### When Working with Issues
+
+1. **One phase at a time** - Complete Plan before Test, etc.
+2. **Update status** - Close issues when complete
+3. **Link PRs** - Always link PR to issue
+4. **Reference plans** - Link back to plan.md files
+5. **Track progress** - Update issue comments with progress
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue creation fails:**
+- Check GitHub CLI auth: `gh auth status`
+- Verify label exists: Created automatically by script
+- Check issue body: Must be valid markdown
+
+**Links broken:**
+- Use relative paths: `../plan.md` not absolute
+- Verify file exists: Check path is correct
+- Update after moving: Fix links if files moved
+
+**Script errors:**
+- Check Python version: Requires 3.7+
+- Install dependencies: `pip install tqdm` (optional)
+- Check permissions: Scripts need execute permission
+
+## References
+
+- Main docs: [README.md](README.md)
+- Scripts: [scripts/README.md](scripts/README.md)
+- Plans: [notes/plan/](notes/plan/)
+- Issue plan: [GITHUB_ISSUES_PLAN.md](GITHUB_ISSUES_PLAN.md)
