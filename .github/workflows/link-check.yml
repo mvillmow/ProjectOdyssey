@@ -23,7 +23,6 @@ on:
 
 permissions:
   contents: read
-  issues: write  # For creating issues on broken links
 
 jobs:
   link-check:
@@ -67,11 +66,3 @@ jobs:
 
           # Use GitHub token to avoid rate limiting
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create issue for broken links (on schedule or push to main)
-        if: failure() && (github.event_name == 'schedule' || github.event_name == 'push')
-        uses: peter-evans/create-issue-from-file@v5
-        with:
-          title: 'Broken links detected in documentation'
-          content-filepath: lychee-report.md
-          labels: documentation, bug
