@@ -1,0 +1,77 @@
+name: Check Markdown Links
+
+on:
+  # Run on pull requests that modify markdown files
+  pull_request:
+    paths:
+      - '**.md'
+
+  # Run on pushes to main that modify markdown files
+  push:
+    branches:
+      - main
+    paths:
+      - '**.md'
+
+  # Run weekly to catch link rot
+  schedule:
+    # Every Monday at 9 AM UTC (1 AM PST)
+    - cron: '0 9 * * 1'
+
+  # Allow manual runs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write  # For creating issues on broken links
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore lychee cache
+        uses: actions/cache@v4
+        with:
+          path: .lycheecache
+          key: cache-lychee-${{ github.sha }}
+          restore-keys: cache-lychee-
+
+      - name: Check links with lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Check all markdown files
+          args: |
+            --verbose
+            --no-progress
+            --cache
+            --max-cache-age 1d
+            --max-retries 3
+            --retry-wait-time 5
+            --timeout 15
+            --exclude 'notes/plan/'
+            --exclude 'file:///'
+            '**/*.md'
+
+          # Output results to a file
+          output: lychee-report.md
+
+          # Format as markdown
+          format: markdown
+
+          # Fail the workflow if broken links are found
+          fail: true
+
+          # Use GitHub token to avoid rate limiting
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create issue for broken links (on schedule or push to main)
+        if: failure() && (github.event_name == 'schedule' || github.event_name == 'push')
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: 'Broken links detected in documentation'
+          content-filepath: lychee-report.md
+          labels: documentation, bug

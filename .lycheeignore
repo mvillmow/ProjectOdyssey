@@ -1,0 +1,18 @@
+# Lychee link checker ignore patterns
+# https://github.com/lycheeverse/lychee
+
+# Ignore plan directory (in .gitignore, will cause 404s)
+notes/plan/
+
+# Ignore file:// URLs (local file system references)
+file:///
+
+# Ignore example/placeholder URLs
+example\.com
+example\.org
+
+# Add additional patterns below as needed
+# Examples:
+# localhost
+# 127\.0\.0\.1
+# Private or authenticated URLs that should be skipped
