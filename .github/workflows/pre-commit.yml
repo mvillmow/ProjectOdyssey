@@ -1,0 +1,60 @@
+name: Pre-commit Checks
+
+on:
+  # Run on all pull requests
+  pull_request:
+
+  # Run on pushes to main
+  push:
+    branches:
+      - main
+
+  # Allow manual runs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Install pre-commit
+        run: |
+          pixi run pip install pre-commit
+
+      - name: Cache pre-commit environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: |
+            pre-commit-
+
+      - name: Run pre-commit hooks
+        run: |
+          pixi run pre-commit run --all-files --show-diff-on-failure
+
+      - name: Display helpful message on failure
+        if: failure()
+        run: |
+          echo "❌ Pre-commit checks failed!"
+          echo ""
+          echo "To fix formatting issues locally:"
+          echo "  1. Install pre-commit: pip install pre-commit"
+          echo "  2. Install hooks: pre-commit install"
+          echo "  3. Run on all files: pre-commit run --all-files"
+          echo "  4. Commit the fixes"
+          echo ""
+          echo "Most formatting issues can be auto-fixed by running:"
+          echo "  pre-commit run --all-files"

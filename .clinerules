@@ -259,7 +259,10 @@ def function_name(param: str) -> bool:
 # - Use def for prototyping
 # - Leverage SIMD operations
 # - Clear type annotations
+# - All code must pass `mojo format` before committing
 ```
+
+**Code Quality**: Pre-commit hooks enforce `mojo format` on all `.mojo` and `.🔥` files.
 
 ### Shell Scripts
 
