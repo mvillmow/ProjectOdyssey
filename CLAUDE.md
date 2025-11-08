@@ -1,0 +1,332 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+ML Odyssey is a Mojo-based AI research platform for reproducing classic research papers. The project uses a comprehensive 4-level hierarchical planning structure with automated GitHub issue creation.
+
+**Current Status**: Planning phase - repository structure and GitHub issues are being established before implementation begins.
+
+## Environment Setup
+
+This project uses Pixi for environment management:
+
+```bash
+# Pixi is already configured - dependencies are in pixi.toml
+# Mojo is the primary language target for future implementations
+```
+
+## Common Commands
+
+### GitHub Issue Management
+
+```bash
+# Test issue creation for a single component
+python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
+
+# Create issues for one section (recommended approach)
+python3 scripts/create_issues.py --section 01-foundation
+
+# Preview what issues would be created without creating them
+python3 scripts/create_issues.py --dry-run
+
+# Resume interrupted issue creation
+python3 scripts/create_issues.py --resume
+
+# Create all issues (use with caution)
+python3 scripts/create_issues.py
+```
+
+### Plan File Management
+
+```bash
+# Regenerate github_issue.md files from plan.md sources
+python3 scripts/regenerate_github_issues.py
+
+# Preview changes without writing files
+python3 scripts/regenerate_github_issues.py --dry-run
+
+# Regenerate one section only
+python3 scripts/regenerate_github_issues.py --section 01-foundation
+```
+
+### GitHub CLI
+
+```bash
+# Check authentication status
+gh auth status
+
+# List issues
+gh issue list
+
+# View issue details
+gh issue view <number>
+```
+
+## Repository Architecture
+
+### Project Structure
+
+```
+ml-odyssey/
+├── notes/
+│   ├── plan/                    # 4-level hierarchical plans
+│   │   ├── 01-foundation/       # Repository structure and config
+│   │   ├── 02-shared-library/   # Core reusable components
+│   │   ├── 03-tooling/          # Development and testing tools
+│   │   ├── 04-first-paper/      # LeNet-5 (proof of concept)
+│   │   ├── 05-ci-cd/            # CI/CD pipelines
+│   │   └── 06-agentic-workflows/# Claude-powered automation
+│   ├── issues/                  # Historical issue documentation
+│   └── review/                  # PR review documentation
+├── scripts/                     # Python automation scripts
+├── logs/                        # Execution logs and state files
+└── .clinerules                 # Claude Code conventions
+```
+
+### Planning Hierarchy
+
+**4 Levels**:
+1. **Section** (e.g., 01-foundation) - Major area of work
+2. **Subsection** (e.g., 01-directory-structure) - Logical grouping
+3. **Component** (e.g., 01-create-papers-dir) - Specific deliverable
+4. **Subcomponent** (e.g., 01-create-base-dir) - Atomic task
+
+Each component at any level has:
+- `plan.md` - The planning document (Template 1 format)
+- `github_issue.md` - Dynamically generated GitHub issue definitions
+
+### 5-Phase Development Workflow
+
+Every component follows a hierarchical workflow with clear dependencies:
+
+**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
+
+1. **Plan** - Design and documentation (MUST complete first)
+2. **Test** - Write tests following TDD (parallel after Plan)
+3. **Implementation** - Build the functionality (parallel after Plan)
+4. **Packaging** - Integration and packaging (parallel after Plan)
+5. **Cleanup** - Refactor and finalize (runs after parallel phases complete)
+
+**Key Points**:
+- Plan phase produces specifications for all other phases
+- Test/Implementation/Packaging can run in parallel after Plan completes
+- Cleanup collects issues discovered during the parallel phases
+- Each phase has a separate GitHub issue with detailed instructions
+
+## Plan File Format (Template 1)
+
+All plan.md files follow this 9-section format:
+
+```markdown
+# Component Name
+
+## Overview
+Brief description (2-3 sentences)
+
+## Parent Plan
+[../plan.md](../plan.md) or "None (top-level)"
+
+## Child Plans
+- [child1/plan.md](child1/plan.md)
+Or "None (leaf node)" for level 4
+
+## Inputs
+- Prerequisite 1
+
+## Outputs
+- Deliverable 1
+
+## Steps
+1. Step 1
+
+## Success Criteria
+- [ ] Criterion 1
+
+## Notes
+Additional context
+```
+
+**Important**: When modifying plans:
+- Maintain all 9 sections consistently
+- Use relative paths for links (e.g., `../plan.md`, not absolute paths)
+- After editing plan.md, regenerate github_issue.md files using `scripts/regenerate_github_issues.py`
+- NEVER edit github_issue.md files manually - they are dynamically generated
+
+## Script Architecture
+
+### create_issues.py (854 LOC)
+Main script for creating GitHub issues. Key features:
+- Parses github_issue.md files and creates GitHub issues via `gh` CLI
+- Automatic label creation with predefined colors
+- Exponential backoff retry logic (up to 3 retries)
+- State management with resume capability (saves every 10 issues)
+- Updates markdown files with created issue URLs
+- Comprehensive error handling and logging
+
+### regenerate_github_issues.py (450+ LOC)
+Generates github_issue.md files from plan.md sources:
+- Extracts all sections from plan.md (overview, inputs, outputs, steps, criteria, notes)
+- Generates consistent 5-issue format for each component
+- Supports dry-run, section-by-section, and resume modes
+- Timestamped state files for tracking multiple runs
+
+### create_single_component_issues.py (198 LOC)
+Testing utility for single component issue creation:
+- Creates 5 issues for one component only
+- Useful for validation before bulk creation
+- Same label creation and markdown update logic as main script
+
+## Working with Plans
+
+### Creating a New Component
+
+1. Create directory structure under `notes/plan/`
+2. Create `plan.md` following Template 1 format (9 sections)
+3. Update parent plan's "Child Plans" section
+4. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py --section <section>`
+5. Test issue creation: `python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md`
+
+### Modifying Existing Plans
+
+1. Edit the `plan.md` file (maintain Template 1 format)
+2. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py`
+3. If issues were already created, update them manually in GitHub
+
+### File Locations
+
+- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md`
+- **Generated Issues**: `notes/plan/<section>/<subsection>/.../github_issue.md` (DO NOT EDIT)
+- **Scripts**: `scripts/*.py`
+- **Logs**: `logs/create_issues_*.log`
+- **State**: `logs/.issue_creation_state_*.json`
+- **Historical Docs**: `notes/issues/<issue-number>/`
+
+## Git Workflow
+
+### Branch Naming
+
+- `main` - Production branch
+- `<issue-number>-<description>` - Feature/fix branches (e.g., `2-plan-create-base-directory`)
+
+### Commit Message Format
+
+Follow conventional commits:
+
+```
+feat(section): Add new component
+fix(scripts): Correct parsing issue
+docs(readme): Update instructions
+refactor(plans): Standardize to Template 1
+```
+
+## Labels
+
+Standard labels automatically created by scripts:
+
+- `planning` - Design phase (light purple: #d4c5f9)
+- `documentation` - Documentation work (blue: #0075ca)
+- `testing` - Testing phase (yellow: #fbca04)
+- `tdd` - Test-driven development (yellow: #fbca04)
+- `implementation` - Implementation phase (dark blue: #1d76db)
+- `packaging` - Integration/packaging (light green: #c2e0c6)
+- `integration` - Integration tasks (light green: #c2e0c6)
+- `cleanup` - Cleanup/finalization (red: #d93f0b)
+
+## Python Coding Standards
+
+```python
+#!/usr/bin/env python3
+"""
+Script description
+
+Usage:
+    python scripts/script_name.py [options]
+"""
+
+# Standard imports first
+import sys
+import re
+from pathlib import Path
+from typing import List, Dict, Optional
+
+def function_name(param: str) -> bool:
+    """Clear docstring with purpose, params, returns."""
+    pass
+```
+
+**Requirements**:
+- Python 3.7+
+- Type hints required for all functions
+- Clear docstrings for public functions
+- Comprehensive error handling
+- Logging for important operations
+
+## Debugging
+
+### Check Logs
+
+```bash
+# View most recent log
+tail -100 logs/create_issues_*.log | tail -100
+
+# View specific log
+cat logs/create_issues_20251107_180746.log
+```
+
+### Check State Files
+
+```bash
+# View saved state (for resume capability)
+cat logs/.issue_creation_state_*.json
+```
+
+### Test Parsing
+
+```bash
+# Dry-run to test without creating issues
+python3 scripts/create_issues.py --dry-run
+
+# Test single component
+python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
+```
+
+## Troubleshooting
+
+### GitHub CLI Issues
+
+```bash
+# Check authentication
+gh auth status
+
+# If missing scopes, refresh authentication
+gh auth refresh -h github.com
+```
+
+### Issue Creation Failures
+
+- Check GitHub CLI auth: `gh auth status`
+- Verify repository access
+- Check logs: `tail -100 logs/create_issues_*.log`
+- Use `--resume` to continue from interruption
+
+### Broken Links in Plans
+
+- Use relative paths: `../plan.md` not absolute
+- Verify files exist at referenced paths
+- Update links if files are moved
+
+### Script Errors
+
+- Verify Python version: `python3 --version` (requires 3.7+)
+- Check file permissions
+- Review error logs in `logs/` directory
+
+## Important Files
+
+- `.clinerules` - Comprehensive Claude Code conventions (350+ lines)
+- `notes/README.md` - GitHub issues creation plan
+- `notes/review/README.md` - PR review guidelines and 5-phase workflow explanation
+- `scripts/README.md` - Complete scripts documentation
+- `README.md` - Main project documentation
