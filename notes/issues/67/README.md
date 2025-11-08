@@ -1,9 +1,12 @@
 # Issue #67: [Plan] Tools - Design and Documentation
 
 ## Objective
-Create the `tools/` directory at repository root for development utilities and helper tools that support the ML paper implementation workflow.
+
+Create the `tools/` directory at repository root for development utilities and helper tools that support
+the ML paper implementation workflow.
 
 ## Deliverables
+
 - Directory structure design for `tools/`
 - README documenting purpose and scope
 - Distinction from `scripts/` and Claude Code tools
@@ -11,6 +14,7 @@ Create the `tools/` directory at repository root for development utilities and h
 - Guidelines for tool development (Mojo vs Python)
 
 ## Success Criteria
+
 - ✅ `tools/` directory exists at repository root
 - ✅ README clearly explains directory purpose
 - ✅ Directory structure organized by tool category
@@ -19,17 +23,22 @@ Create the `tools/` directory at repository root for development utilities and h
 - ✅ Foundation ready for future tool development
 
 ## References
+
 - [03-Tooling Section](/notes/plan/03-tooling/) - Detailed tooling plans
 - [Scripts README](/scripts/README.md) - Distinction from scripts/
 
 ## Implementation Notes
+
 **Status**: ✅ Planning Complete
 
-The `tools/` directory is for repository-specific development utilities that support the ML paper implementation workflow, distinct from:
+The `tools/` directory is for repository-specific development utilities that support the ML paper
+implementation workflow, distinct from:
+
 - `scripts/` - Automation scripts for project management
 - Claude Code tools - Built-in tools (Read, Write, Bash, etc.)
 
 Tool categories planned:
+
 - Paper scaffolding tools
 - Testing utilities
 - Benchmarking tools

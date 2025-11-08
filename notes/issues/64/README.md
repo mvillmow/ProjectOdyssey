@@ -1,9 +1,12 @@
 # Issue #64: [Impl] Agents - Implementation
 
 ## Objective
-Create the actual `.claude/agents/` configurations and `agents/` documentation, implementing the complete 6-level agent hierarchy designed for Mojo-based AI research paper development.
+
+Create the actual `.claude/agents/` configurations and `agents/` documentation, implementing the
+complete 6-level agent hierarchy designed for Mojo-based AI research paper development.
 
 ## Deliverables
+
 - All ~23 agent configuration files in `.claude/agents/`
   - 1 Level 0 agent (Chief Architect)
   - 6 Level 1 agents (Section Orchestrators)
@@ -17,6 +20,7 @@ Create the actual `.claude/agents/` configurations and `agents/` documentation, 
 - Mojo-specific integration
 
 ## Success Criteria
+
 - ✅ All ~23 agent configuration files created in `.claude/agents/`
 - ✅ All configurations follow Claude Code format with valid frontmatter
 - ✅ Each agent has clear Mojo-specific context
@@ -28,6 +32,7 @@ Create the actual `.claude/agents/` configurations and `agents/` documentation, 
 - ✅ System ready for team use
 
 ## References
+
 - [Agent Hierarchy](/agents/hierarchy.md) - Complete agent specifications
 - [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Delegation rules
 - [Skills Design](/notes/review/skills-design.md) - Skills integration patterns
@@ -36,9 +41,11 @@ Create the actual `.claude/agents/` configurations and `agents/` documentation, 
 - [Issue #63](/notes/issues/63/README.md) - Test insights
 
 ## Implementation Notes
+
 (Add notes here during implementation)
 
 **Workflow**:
+
 - Requires: #62 (Plan) complete ✅, #63 (Test) insights
 - Can run in parallel with: #63 (Test), #65 (Package), #67 (Tools)
 - Blocks: #66 (Cleanup)

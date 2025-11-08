@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document defines how agents coordinate, delegate tasks, and escalate issues within the 6-level hierarchy. Effective orchestration is critical for the multi-level agent system to function smoothly.
+This document defines how agents coordinate, delegate tasks, and escalate issues within the 6-level hierarchy.
+Effective orchestration is critical for the multi-level agent system to function smoothly.
 
 ## Core Principles
 
@@ -17,10 +18,11 @@ This document defines how agents coordinate, delegate tasks, and escalate issues
 ## Delegation Patterns
 
 ### Pattern 1: Decomposition Delegation
+
 **When**: Large task needs to be broken into smaller pieces
 **How**: Higher level analyzes task → Creates subtasks → Delegates to lower levels
 
-```
+```text
 Chief Architect Agent
   ↓ Decompose repository into sections
 Section Orchestrators (6 sections)
@@ -33,31 +35,37 @@ Implementation Engineers
 ```
 
 **Example**:
-```
+
+```text
 Task: "Implement LeNet-5 paper"
 
 Chief Architect:
+
   - Analyzes paper requirements
   - Delegates to Paper Implementation Orchestrator
 
 Paper Implementation Orchestrator:
+
   - Breaks into: data prep, model impl, training, eval
   - Delegates each to Module Design Agents
 
 Architecture Design Agent:
+
   - Designs model architecture
   - Delegates component implementation to Senior Implementation Specialist
 
 Senior Implementation Specialist:
+
   - Breaks into classes: Conv2D, Pool, Dense layers
   - Delegates each class to Implementation Engineers
 ```
 
 ### Pattern 2: Specialization Delegation
+
 **When**: Task requires specific expertise
 **How**: Orchestrator identifies expertise needed → Delegates to specialist agent
 
-```
+```text
 Section Orchestrator
   ├─> Architecture Design Agent (for architecture tasks)
   ├─> Security Design Agent (for security tasks)
@@ -65,27 +73,32 @@ Section Orchestrator
 ```
 
 **Example**:
-```
+
+```text
 Task: "Implement secure API authentication"
 
 Section Orchestrator:
+
   - Identifies security expertise needed
   - Delegates to Security Design Agent
 
 Security Design Agent:
+
   - Designs authentication approach
   - Delegates to Security Implementation Specialist
 
 Security Implementation Specialist:
+
   - Implements auth logic
   - Delegates code generation to Implementation Engineer
 ```
 
 ### Pattern 3: Parallel Delegation
+
 **When**: Independent tasks can run simultaneously
 **How**: Orchestrator delegates multiple tasks in parallel to different agents
 
-```
+```text
 Section Orchestrator
   ├─> Module Design Agent A (parallel)
   ├─> Module Design Agent B (parallel)
@@ -93,7 +106,8 @@ Section Orchestrator
 ```
 
 **Example** (5-Phase Workflow):
-```
+
+```text
 After Plan phase completes:
 
 Component Specialist delegates in parallel to:
@@ -105,10 +119,11 @@ All three work simultaneously in separate worktrees
 ```
 
 ### Pattern 4: Sequential Delegation
+
 **When**: Tasks have dependencies
 **How**: Orchestrator delegates tasks in sequence, waiting for completion
 
-```
+```text
 Section Orchestrator
   Step 1 ↓ Delegate to Agent A
         ↓ Wait for completion
@@ -118,14 +133,18 @@ Section Orchestrator
 ```
 
 **Example**:
-```
+
+```text
 Plan Phase must complete before Test/Impl/Package:
 
 1. Section Orchestrator → Architecture Design Agent (Plan)
+
    ↓ Wait for plan.md completion (local file, not tracked)
 2. Section Orchestrator → Component Specialists (Test/Impl/Package)
+
    ↓ Specialists work in parallel
 3. Section Orchestrator → All agents (Cleanup)
+
 ```
 
 ---
@@ -135,13 +154,15 @@ Plan Phase must complete before Test/Impl/Package:
 ### Horizontal Coordination (Same Level)
 
 #### Pattern: Peer Review
+
 **Scenario**: Agents review each other's work
 
-```
+```text
 Implementation Engineer A <──review──> Implementation Engineer B
 ```
 
-**Process**:
+#### Process
+
 1. Engineer A completes implementation
 2. Engineer A requests review from Engineer B
 3. Engineer B reviews code, provides feedback
@@ -149,13 +170,15 @@ Implementation Engineer A <──review──> Implementation Engineer B
 5. Both sign off on completion
 
 #### Pattern: Interface Negotiation
+
 **Scenario**: Agents need to agree on shared interfaces
 
-```
+```text
 Module Design Agent A <──negotiate──> Module Design Agent B
 ```
 
-**Process**:
+#### Interface Negotiation Process
+
 1. Agent A designs module A interface
 2. Agent B designs module B interface
 3. Both identify integration points
@@ -164,15 +187,17 @@ Module Design Agent A <──negotiate──> Module Design Agent B
 6. Proceed with implementation
 
 #### Pattern: Resource Coordination
+
 **Scenario**: Multiple agents need same resource
 
-```
+```text
 Engineer A ─┐
            ├──> Shared Resource (file, database, etc.)
 Engineer B ─┘
 ```
 
-**Process**:
+#### Resource Coordination Process
+
 1. Engineers identify shared resource
 2. Coordinate timing to avoid conflicts
 3. Use git worktrees for file isolation
@@ -182,9 +207,10 @@ Engineer B ─┘
 ### Vertical Coordination (Across Levels)
 
 #### Pattern: Status Reporting
+
 **Scenario**: Lower level reports progress to higher level
 
-```
+```text
 Implementation Engineer
   ↓ Status Report
 Component Specialist
@@ -194,7 +220,8 @@ Module Design Agent
 Section Orchestrator
 ```
 
-**Report Format**:
+#### Report Format
+
 ```markdown
 ## Status Report
 
@@ -204,27 +231,33 @@ Section Orchestrator
 **Progress**: 75% complete
 
 ### Completed
+
 - User authentication functions
 - Database connection pooling
 - Error handling
 
 ### In Progress
+
 - Query optimization
 - Connection retry logic
 
 ### Blockers
+
 - None
 
 ### Next Steps
+
 - Complete retry logic
 - Write unit tests
 - Request code review
+
 ```
 
 #### Pattern: Specification Cascade
+
 **Scenario**: Higher level provides specifications to lower level
 
-```
+```text
 Module Design Agent
   ↓ Component Specification
 Component Specialist
@@ -233,38 +266,46 @@ Implementation Engineer
   ↓ Code Implementation
 ```
 
-**Specification Format**:
+#### Specification Format
+
 ```markdown
 ## Component Specification: UserAuth
 
-**Purpose**: Handle user authentication and session management
+Purpose: Handle user authentication and session management
 
-**Inputs**:
+Inputs:
+
 - username: string
 - password: string
 
-**Outputs**:
+Outputs:
+
 - auth_token: string
 - user_id: int
 
-**Functions Required**:
+Functions Required:
+
 1. authenticate_user(username, password) -> auth_token
 2. validate_token(auth_token) -> bool
 3. refresh_token(auth_token) -> new_auth_token
 
-**Error Handling**:
+Error Handling:
+
 - InvalidCredentials exception
 - TokenExpired exception
 - DatabaseConnectionError exception
 
-**Performance Requirements**:
+Performance Requirements:
+
 - Authentication: < 100ms
 - Token validation: < 10ms
 
-**Security Requirements**:
+Security Requirements:
+
 - Password hashing: bcrypt with cost 12
 - Token: JWT with HS256
 - Session timeout: 30 minutes
+
 ```
 
 ---
@@ -272,10 +313,11 @@ Implementation Engineer
 ## Escalation Patterns
 
 ### Pattern: Blocker Escalation
+
 **When**: Agent cannot proceed due to external blocker
 **How**: Escalate to next level up
 
-```
+```text
 Implementation Engineer (blocked)
   ↓ Escalate blocker
 Component Specialist
@@ -284,35 +326,41 @@ Component Specialist
 ```
 
 **Example**:
-```
+
+```text
 Blocker: "Database schema not defined"
 
 Implementation Engineer:
+
   - Cannot implement without schema
   - Escalates to Component Specialist
 
 Component Specialist:
+
   - Recognizes this is architectural issue
   - Escalates to Architecture Design Agent
 
 Architecture Design Agent:
+
   - Designs database schema
   - Provides specification
   - Issue resolved, work continues
 ```
 
 ### Pattern: Conflict Escalation
+
 **When**: Agents disagree on approach
 **How**: Escalate to common superior
 
-```
+```text
 Agent A (disagrees) ──┐
                       ├──> Common Superior (decides)
 Agent B (disagrees) ──┘
 ```
 
 **Example**:
-```
+
+```text
 Conflict: Choice of data structure (list vs dict)
 
 Implementation Engineer A: "Use list for performance"
@@ -328,10 +376,11 @@ Both escalate to:
 ```
 
 ### Pattern: Quality Escalation
+
 **When**: Quality issues detected that violate standards
 **How**: Escalate for review and correction
 
-```
+```text
 Test Engineer (detects failures)
   ↓ Report quality issue
 Component Specialist
@@ -348,7 +397,8 @@ Test Engineer (verifies fix)
 ### 5-Phase Workflow Orchestration
 
 #### Phase 1: Plan (Sequential)
-```
+
+```text
 Chief Architect
   ↓ Strategic planning
 Section Orchestrators
@@ -362,7 +412,8 @@ Component Specialists
 **Completion Criteria**: All plan.md files (local, task-relative) created and reviewed
 
 #### Phase 2-4: Test/Implementation/Packaging (Parallel)
-```
+
+```text
 Component Specialist
   ├─> Test Specialist → Test Engineers (parallel)
   ├─> Implementation Specialist → Implementation Engineers (parallel)
@@ -372,7 +423,8 @@ Component Specialist
 **Coordination**: TDD approach - tests and implementation coordinate
 
 #### Phase 5: Cleanup (Sequential)
-```
+
+```text
 All agents review their own work
   ↓ Identify issues
 Component Specialists
@@ -388,9 +440,10 @@ All agents
 ## Git Worktree Coordination
 
 ### Worktree Assignment
+
 Each issue = one worktree
 
-```
+```text
 issue-62-plan-agents/          → Architecture Design Agent
 issue-63-test-agents/          → Test Design Specialist
 issue-64-impl-agents/          → Implementation Specialists
@@ -402,78 +455,97 @@ issue-66-cleanup-agents/       → All agents
 
 #### Scenario: Implementation needs test fixtures from Test worktree
 
-**Option 1: Cherry-pick commits**
+#### Option 1: Cherry-pick commits
+
 ```bash
 cd worktrees/issue-64-impl-agents
 git cherry-pick abc123  # Pick test fixture commit
 ```
 
-**Option 2: Temporary merge**
+#### Option 2: Temporary merge
+
 ```bash
 cd worktrees/issue-64-impl-agents
 git merge --no-commit issue-63-test-agents
+
 # Use merged state
+
 git reset --hard  # Clean up if needed
 ```
 
-**Option 3: Coordinate through specifications**
-```
+#### Option 3: Coordinate through specifications
+
+```text
 Test Engineer: Commits test fixtures to issue-63 branch
 Implementation Engineer: Reads specifications (local plan.md or tracked docs) for fixture specs
 Implementation Engineer: Creates fixtures independently in issue-64
 After both complete: Package Engineer merges both
 ```
 
-**Note**: plan.md files are task-relative and local (not tracked in git). For team-wide coordination, use tracked documentation in notes/issues/.
+**Note**: plan.md files are task-relative and local (not tracked in git). For team-wide coordination, use
+tracked documentation in notes/issues/.
 
 ---
 
 ## Communication Protocols
 
 ### Status Updates
+
 **Frequency**: After completing each major task
 **Format**: Structured status report (see above)
 **Destination**: Direct superior in hierarchy
 
 ### Handoffs
+
 **When**: Completing work and passing to next agent
-**Format**:
+
+#### Format
+
 ```markdown
 ## Task Handoff
 
-**From**: [Agent Name]
-**To**: [Next Agent Name]
-**Date**: [Date]
+From: [Agent Name]
+To: [Next Agent Name]
+Date: [Date]
 
-**Work Completed**:
+Work Completed:
+
 - [List of completed items]
 
-**Artifacts Produced**:
+Artifacts Produced:
+
 - [File paths and descriptions]
 
-**Next Steps**:
+Next Steps:
+
 - [What the next agent should do]
 
-**Notes**:
+Notes:
+
 - [Any important context or caveats]
 
-**Questions for Next Agent**:
+Questions for Next Agent:
+
 - [Any clarifications needed]
+
 ```
 
 ### Blockers
+
 **When**: Immediately when discovered
-**Format**:
+
+#### Format
+
 ```markdown
 ## Blocker Report
 
-**Agent**: [Your Name]
-**Task**: [What you're working on]
-**Blocker**: [What's blocking you]
-**Impact**: [How this affects timeline]
-**Attempted Solutions**: [What you've tried]
-**Escalation To**: [Who should resolve this]
-**Priority**: [High/Medium/Low]
+Agent: [Your Name]
+Task: [What you're working on]
+Blocker: [What's blocking you]
+Impact: [How this affects timeline]
+Attempted Solutions: [What you've tried]
+Escalation To: [Who should resolve this]
+Priority: [High/Medium/Low]
 ```
 
 ---
@@ -492,7 +564,9 @@ After both complete: Package Engineer merges both
 | 5 | Code formatting, variable naming | Function-level decisions |
 
 ### Escalation Triggers
+
 Escalate when:
+
 1. **Scope Exceeds Authority**: Decision impacts levels above
 2. **Resource Conflicts**: Multiple agents need same resource
 3. **Timeline Issues**: Work blocked or significantly delayed
@@ -505,22 +579,27 @@ Escalate when:
 ## Anti-Patterns (Avoid These)
 
 ### ❌ Skipping Levels
+
 **Wrong**: Junior Engineer escalates directly to Chief Architect
 **Right**: Junior Engineer → Implementation Engineer → Component Specialist → ... → Chief Architect
 
 ### ❌ Micro-Management
+
 **Wrong**: Section Orchestrator specifies function implementations
 **Right**: Section Orchestrator specifies requirements, delegates implementation details
 
 ### ❌ Working in Silos
+
 **Wrong**: Agents work without communicating, merge conflicts arise
 **Right**: Agents coordinate on interfaces, share status, negotiate conflicts
 
 ### ❌ Hoarding Information
+
 **Wrong**: Agent completes work without documenting decisions
 **Right**: Agent documents rationale, shares learnings, updates specs
 
 ### ❌ Premature Optimization
+
 **Wrong**: Junior Engineer refactors entire codebase
 **Right**: Junior Engineer implements spec, suggests optimizations to superior
 
@@ -529,6 +608,7 @@ Escalate when:
 ## Monitoring and Metrics
 
 ### Health Metrics
+
 - **Delegation Depth**: Average levels traversed per task
 - **Escalation Rate**: Number of escalations per 100 tasks
 - **Cycle Time**: Time from delegation to completion
@@ -536,6 +616,7 @@ Escalate when:
 - **Coordination Overhead**: Time spent on coordination vs execution
 
 ### Success Indicators
+
 - Clear task handoffs
 - Minimal escalations for trivial issues
 - High first-time quality
@@ -550,7 +631,7 @@ Escalate when:
 
 **Task**: "Implement user authentication"
 
-```
+```text
 1. Chief Architect
    - Recognizes security importance
    - Delegates to Foundation Orchestrator
@@ -603,7 +684,7 @@ Escalate when:
 
 **Conflict**: Test Engineer and Implementation Engineer disagree on function signature
 
-```
+```text
 1. Test Engineer: "Function should return tuple (success, user_id)"
 2. Implementation Engineer: "Function should return user_id or raise exception"
 
@@ -620,6 +701,7 @@ Escalate when:
 6. Test Engineer updates tests
 7. Implementation Engineer updates code
 8. Conflict resolved
+
 ```
 
 ---

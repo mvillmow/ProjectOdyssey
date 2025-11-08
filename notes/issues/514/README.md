@@ -1,9 +1,12 @@
 # Issue #514: [Cleanup] Skills - Refactor and Finalize
 
 ## Objective
-Final review, refactoring, and polish of the skills system implementation. Ensure production quality, address discovered issues, and deliver a polished, team-ready skills system.
+
+Final review, refactoring, and polish of the skills system implementation. Ensure production quality,
+address discovered issues, and deliver a polished, team-ready skills system.
 
 ## Deliverables
+
 - Comprehensive skill review (all SKILL.md files, consistency, tier organization)
 - Documentation review and polish
 - Quality assurance (functional, integration, performance testing)
@@ -12,6 +15,7 @@ Final review, refactoring, and polish of the skills system implementation. Ensur
 - Lessons learned documentation
 
 ## Success Criteria
+
 - ✅ All skill configurations reviewed and approved
 - ✅ No validation errors or warnings
 - ✅ All tests passing (functional, integration, performance)
@@ -26,6 +30,7 @@ Final review, refactoring, and polish of the skills system implementation. Ensur
 - ✅ Lessons learned documented
 
 ## References
+
 - [Skills Design](/notes/review/skills-design.md) - Reference specification
 - [Agent Hierarchy](/agents/hierarchy.md) - How agents use skills
 - [Architecture Review](/notes/review/agent-architecture-review.md) - Design decisions
@@ -34,9 +39,11 @@ Final review, refactoring, and polish of the skills system implementation. Ensur
 - [Issue #513](/notes/issues/513/README.md) - Packaging work
 
 ## Implementation Notes
+
 (Add notes here during implementation)
 
 **Workflow**:
+
 - Requires: #511, #512, #513 substantially complete
 - Final phase in skills system implementation
 - Delivers production-ready skills

@@ -1,50 +1,64 @@
 # GitHub Issue #1 - Create the Plan for the Mojo AI Research Repository
 
-**Issue URL**: https://github.com/mvillmow/ml-odyssey/issues/1
+**Issue URL**: <https://github.com/mvillmow/ml-odyssey/issues/1>
 
 This directory contains historical documentation from the initial planning work completed for GitHub Issue #1.
 
 ## Overview
 
-GitHub Issue #1 established the complete planning foundation for the ML Odyssey repository, creating a comprehensive 4-level hierarchical structure across multiple major sections (foundation, shared library, tooling, first paper implementation, CI/CD, and agentic workflows).
+GitHub Issue #1 established the complete planning foundation for the ML Odyssey repository, creating a comprehensive
+4-level hierarchical structure across multiple major sections (foundation, shared library, tooling, first paper
+implementation, CI/CD, and agentic workflows).
 
 ## What Was Accomplished
 
 ### Planning Structure
+
 - Created complete 4-level hierarchical planning structure (local files in `notes/plan/`, NOT tracked in git)
 - All components have corresponding `plan.md` files following Template 1 format (task-relative, local only)
 - Proper parent-child linking throughout the hierarchy
 - All plans include: Overview, Inputs, Outputs, Steps, Success Criteria, and Notes sections
 
-**Important**: Plan files are task-relative and NOT tracked in version control. For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/`.
+**Important**: Plan files are task-relative and NOT tracked in version control. For tracked team documentation, see
+`notes/issues/`, `notes/review/`, and `agents/`.
 
 ### GitHub Issues Planning
+
 - Designed 5-phase development workflow (Plan → [Test | Implementation | Packaging] → Cleanup)
 - Created system for generating GitHub issues dynamically from plan.md files (local files)
 - Each component has 5 associated issues following the workflow
 
 ### Automation Scripts
+
 - **create_issues.py**: Main script to create GitHub issues from local plan files
 - **create_single_component_issues.py**: Testing utility for single components
-- **regenerate_github_issues.py**: Consolidated script to regenerate github_issue.md files from plan.md files (local files)
+- **regenerate_github_issues.py**: Consolidated script to regenerate github_issue.md files from plan.md files (local
+
+  files)
 
 ## Key Scripts
 
 ### Regenerating GitHub Issue Files
 
-Since github_issue.md files are dynamically generated from local plan.md files (NOT tracked in git), use the regeneration script when needed:
+Since github_issue.md files are dynamically generated from local plan.md files (NOT tracked in git), use the
+regeneration script when needed:
 
 ```bash
+
 # Regenerate all github_issue.md files (local files in notes/plan/)
+
 python3 scripts/regenerate_github_issues.py
 
 # Dry-run to preview changes
+
 python3 scripts/regenerate_github_issues.py --dry-run
 
 # Regenerate only one section
+
 python3 scripts/regenerate_github_issues.py --section 01-foundation
 
 # Resume from previous run
+
 python3 scripts/regenerate_github_issues.py --resume
 ```
 
@@ -55,22 +69,29 @@ python3 scripts/regenerate_github_issues.py --resume
 To create the actual GitHub issues:
 
 ```bash
+
 # Dry-run mode (recommended first - shows what would be created)
+
 python3 scripts/create_issues.py --dry-run
 
 # Process only one section
+
 python3 scripts/create_issues.py --section 01-foundation
 
 # Resume from interruption
+
 python3 scripts/create_issues.py --resume
 
 # Create all issues
+
 python3 scripts/create_issues.py
 
 # Disable colored output
+
 python3 scripts/create_issues.py --no-color
 
 # Specify repository explicitly
+
 python3 scripts/create_issues.py --repo username/repo
 ```
 
@@ -133,7 +154,8 @@ Each component's github_issue.md file contains 5 issues with the following struc
 ## File Organization
 
 ### Plan Structure (LOCAL ONLY - not in git)
-```
+
+```text
 notes/plan/              # Task-relative, NOT tracked in git
 ├── 01-foundation/
 ├── 02-shared-library/
@@ -144,13 +166,15 @@ notes/plan/              # Task-relative, NOT tracked in git
 ```
 
 Each directory contains (locally):
+
 - `plan.md` - Component plan following Template 1 format (local, not tracked)
 - (github_issue.md files are generated dynamically, not tracked in git)
 
 **For tracked documentation**, see notes/issues/, notes/review/, agents/
 
 ### Scripts
-```
+
+```text
 scripts/
 ├── create_issues.py                 # Main issue creation script
 ├── create_single_component_issues.py  # Test single component
@@ -160,7 +184,8 @@ scripts/
 ```
 
 ### Logs
-```
+
+```text
 logs/
 ├── create_issues_*.log                   # Issue creation logs
 └── .issue_creation_state_*.json          # State files with timestamps
@@ -169,22 +194,26 @@ logs/
 ## Important Notes
 
 ### Plan Files Are Local (Not Tracked)
+
 - plan.md files are task-relative and stored locally in `notes/plan/`
 - They are NOT tracked in version control (not in git)
 - For tracked team documentation, use `notes/issues/`, `notes/review/`, or `agents/`
 
 ### GitHub Issue Files
+
 - github_issue.md files are **dynamically generated** from plan.md files (both local, not tracked)
 - They are NOT committed to the repository
 - Use `scripts/regenerate_github_issues.py` to generate them when needed
 - Never edit github_issue.md files manually - changes will be overwritten
 
 ### State Management
+
 - Issue creation progress is saved to timestamped state files in `logs/`
 - State files: `logs/.issue_creation_state_<timestamp>.json`
 - Use `--resume` flag to continue from previous run
 
 ### Script Features
+
 - **Dry-run mode**: Preview changes without creating issues
 - **Section-by-section**: Process one section at a time
 - **Resume capability**: Continue from interruption
@@ -194,19 +223,24 @@ logs/
 ## Troubleshooting
 
 ### Missing github_issue.md Files
+
 If github_issue.md files are missing, regenerate them:
+
 ```bash
 python3 scripts/regenerate_github_issues.py
 ```
 
 ### Script Failures
+
 - Check `logs/create_issues_*.log` for detailed error messages
 - Use `--dry-run` to test before making changes
 - Ensure you have GitHub CLI (gh) installed and authenticated
 - Verify write access to logs/ directory
 
 ### Resume from Failure
+
 If script is interrupted:
+
 ```bash
 python3 scripts/create_issues.py --resume
 ```
@@ -222,9 +256,11 @@ python3 scripts/create_issues.py --resume
 ## Historical Files
 
 This directory contains the following historical documentation files from the initial planning work:
+
 - IMPLEMENTATION_STATUS.md - Status report from initial implementation
 - UPDATE_INSTRUCTIONS.md - Original update instructions
 - UPDATE_SUMMARY.md - Summary of updates performed
 - GITHUB_ISSUES_PLAN.md - Original issues creation plan
 
-These files are preserved for historical context but may contain outdated information. Refer to the scripts and current documentation for up-to-date instructions.
+These files are preserved for historical context but may contain outdated information. Refer to the scripts and current
+documentation for up-to-date instructions.

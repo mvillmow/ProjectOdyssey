@@ -2,7 +2,9 @@
 
 ## Summary
 
-Issues 62-67 represent the foundational work to establish a comprehensive 6-level agent hierarchy for the ml-odyssey project. This architecture enables sophisticated AI-powered development through hierarchical task decomposition, specialized agents, and reusable skills.
+Issues 62-67 represent the foundational work to establish a comprehensive 6-level agent hierarchy for the
+ml-odyssey project. This architecture enables sophisticated AI-powered development through hierarchical task
+decomposition, specialized agents, and reusable skills.
 
 ## Related GitHub Issues
 
@@ -21,12 +23,14 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 #### 1. Agents System
 
 **`.claude/agents/`** (Working Configurations)
+
 - Operational sub-agent configuration files
 - Each agent is an independent AI assistant with its own context
 - Follows Claude Code sub-agents conventions
 - Version controlled for team sharing
 
 **`agents/`** (Documentation & Reference)
+
 - Team documentation and reference materials
 - Configuration templates for creating new agents
 - Hierarchy diagrams and delegation rules
@@ -35,6 +39,7 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 #### 2. Skills System (NEW)
 
 **`.claude/skills/`** (Skills Configurations)
+
 - Reusable capabilities that agents can invoke
 - Model-invoked (Claude decides when to use them)
 - Organized by tier: Foundational (Tier 1), Domain (Tier 2), Specialized (Tier 3)
@@ -51,29 +56,35 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 ## Agent Hierarchy (6 Levels)
 
 ### Level 0: Meta-Orchestrator
+
 - **Chief Architect Agent**: System-wide decisions, paper selection, strategic planning
 
 ### Level 1: Section Orchestrators
+
 - Foundation, Shared Library, Tooling, Paper Implementation, CI/CD, Agentic Workflows orchestrators
 - Manage major repository sections
 - Coordinate cross-section dependencies
 
 ### Level 2: Module Design Agents
+
 - Architecture Design, Integration Design, Security Design agents
 - Design module structure and interfaces
 - Break modules into components
 
 ### Level 3: Component Specialists
+
 - Implementation, Test, Documentation, Performance, Security specialists
 - Handle specific component aspects
 - Oversee detailed implementation
 
 ### Level 4: Implementation Engineers
+
 - Senior, Standard, Test, Documentation, Performance engineers
 - Write code, tests, documentation
 - Implement functions and classes
 
 ### Level 5: Junior Engineers
+
 - Handle simple, repetitive tasks
 - Generate boilerplate code
 - Format and lint code
@@ -81,16 +92,19 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 ## Skills Taxonomy
 
 ### Tier 1: Foundational Skills (Used by All Agents)
+
 - Code analysis (structure, dependencies, complexity)
 - Code generation (boilerplate, templates)
 - Testing orchestration (run, analyze, report)
 
 ### Tier 2: Domain Skills (Specific Agent Types)
+
 - Paper analysis (extract algorithms, architectures)
 - ML operations (training, evaluation, datasets)
 - Documentation generation (API docs, READMEs)
 
 ### Tier 3: Specialized Skills (Few Agents)
+
 - Advanced optimization techniques
 - Specialized security analysis
 - Domain-specific transformations
@@ -98,16 +112,19 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 ## Implementation Strategy
 
 ### Phase 1: Plan (Issues 62, 67, 68)
+
 - Update plan.md files (local, not tracked) with new architecture ✅ COMPLETE
 - Document 6-level hierarchy and skills taxonomy (tracked in notes/issues/) ✅ COMPLETE
 - Create implementation guidance IN PROGRESS
 
 ### Phase 2: Parallel Development (Issues 63-65, 69-71)
+
 - Test: Validate agent configs and skill loading
 - Implementation: Create actual .claude/agents/ and .claude/skills/
 - Packaging: Integration documentation and setup scripts
 
 ### Phase 3: Cleanup (Issues 66, 72)
+
 - Final review and refactoring
 - Complete documentation
 - Quality assurance
@@ -115,6 +132,7 @@ Issues 62-67 represent the foundational work to establish a comprehensive 6-leve
 ## Git Worktree Strategy
 
 Each issue uses its own worktree for isolation:
+
 - `worktrees/issue-62-plan-agents/` - Plan phase
 - `worktrees/issue-63-test-agents/` - Test phase (parallel)
 - `worktrees/issue-64-impl-agents/` - Implementation (parallel)
@@ -126,6 +144,7 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 ## Documentation Structure
 
 ### In Review Directory (`notes/review/` - This Directory)
+
 - `agent-skills-overview.md` - This file (system overview)
 - `agent-skills-implementation-summary.md` - Implementation summary and lessons learned
 - `agent-architecture-review.md` - Architectural decisions and trade-offs
@@ -134,6 +153,7 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 - `worktree-strategy.md` - Git worktree workflow
 
 ### In Repository Root (`agents/`)
+
 - `README.md` - Team documentation and quick start
 - `hierarchy.md` - Visual hierarchy diagram
 - `agent-hierarchy.md` - Complete detailed hierarchy specification
@@ -141,6 +161,7 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 - `templates/` - Configuration templates
 
 ### In Issue Directories (`notes/issues/`)
+
 - `62/` through `67/` - Individual issue documentation for agents (Plan, Test, Impl, Package, Cleanup, Tools)
 - `510/` through `514/` - Individual issue documentation for skills (Plan, Test, Impl, Package, Cleanup)
 
@@ -149,12 +170,14 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 ### Sub-Agents vs Skills
 
 **Sub-Agents**:
+
 - Separate conversation contexts
 - Make complex decisions
 - Persistent state across invocations
 - Example: Architecture Design Agent
 
 **Skills**:
+
 - Run in current context
 - Algorithmic/template-based
 - Model-invoked automatically
@@ -163,12 +186,14 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 ### agents/ vs .claude/agents/
 
 **agents/** (Repository Root):
+
 - Documentation and reference
 - Templates and examples
 - Team guidelines
 - Not executed directly
 
 **.claude/agents/**:
+
 - Working configurations
 - Executed by Claude Code
 - Actual operational agents
@@ -177,16 +202,19 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 ## Integration with 5-Phase Workflow
 
 ### Plan Phase
+
 - Levels 0-2 active: Orchestrators and designers
 - Create specifications for Test/Impl/Package
 
 ### Test/Implementation/Packaging Phases (Parallel)
+
 - Levels 3-5 active: Specialists and engineers
 - Test: Write and run tests
 - Implementation: Build functionality
 - Packaging: Integrate artifacts
 
 ### Cleanup Phase
+
 - All levels active: Review and refactor
 - Fix issues discovered during parallel phases
 - Final polish and documentation
@@ -200,7 +228,8 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 5. Create new GitHub issues 68-73 for skills
 6. Begin implementation in respective worktrees
 
-**Note**: plan.md and github_issue.md files are task-relative and NOT tracked in git. Tracked team documentation is in notes/issues/, notes/review/, and agents/.
+**Note**: plan.md and github_issue.md files are task-relative and NOT tracked in git. Tracked team
+documentation is in notes/issues/, notes/review/, and agents/.
 
 ## References
 

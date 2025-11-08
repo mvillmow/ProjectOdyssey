@@ -1,9 +1,10 @@
 # ml-odyssey
+
 Implementation of older AI papers for the modern age.
 
 ## Repository Structure
 
-```
+```text
 ml-odyssey/
 ├── notes/
 │   ├── plan/            # 4-level planning (LOCAL ONLY - not in git)
@@ -20,7 +21,8 @@ ml-odyssey/
 
 ### Creating GitHub Issues
 
-**Note**: Plan files are stored locally in `notes/plan/` and are NOT tracked in version control. They are task-relative and used for local planning and GitHub issue generation.
+**Note**: Plan files are stored locally in `notes/plan/` and are NOT tracked in version control. They are
+task-relative and used for local planning and GitHub issue generation.
 
 To create GitHub issues from your local plan files:
 
@@ -42,4 +44,5 @@ See [scripts/README.md](scripts/README.md) for detailed documentation.
 - [notes/issues/](notes/issues/) - Historical issue documentation (tracked)
 - [notes/review/](notes/review/) - Review documentation (tracked)
 
-**Note**: `notes/plan/` contains local planning files (not tracked in git). Reference tracked documentation above for team collaboration.
+**Note**: `notes/plan/` contains local planning files (not tracked in git). Reference tracked documentation
+above for team collaboration.

@@ -2,17 +2,20 @@
 
 ## Overview
 
-This directory contains documentation, templates, and reference materials for the ml-odyssey multi-level agent hierarchy. The actual operational agent configurations are in `.claude/agents/` following Claude Code conventions.
+This directory contains documentation, templates, and reference materials for the ml-odyssey multi-level agent
+hierarchy. The actual operational agent configurations are in `.claude/agents/` following Claude Code conventions.
 
 ## Directory Purpose
 
 ### This Directory (`agents/`)
+
 - **Purpose**: Team documentation and reference materials
 - **Contents**: READMEs, diagrams, templates, examples
 - **Usage**: Read by humans to understand and create agents
 - **Version Control**: Committed to repository for team sharing
 
 ### Operational Directory (`.claude/agents/`)
+
 - **Purpose**: Working sub-agent configuration files
 - **Contents**: Agent .md files that Claude Code executes
 - **Usage**: Read by Claude Code to invoke agents
@@ -39,14 +42,16 @@ This directory contains documentation, templates, and reference materials for th
 Agents can be invoked in two ways:
 
 **Automatic Invocation** (Recommended):
-```
+
+```text
 User: "Design the architecture for the authentication module"
 → Claude recognizes task matches Architecture Design Agent
 → Agent invokes automatically
 ```
 
 **Explicit Invocation**:
-```
+
+```text
 User: "Use the architecture design agent to plan the auth module"
 → Claude explicitly invokes Architecture Design Agent
 ```
@@ -54,25 +59,31 @@ User: "Use the architecture design agent to plan the auth module"
 ## Agent Hierarchy (6 Levels)
 
 ### Level 0: Meta-Orchestrator
+
 - **Chief Architect Agent**: System-wide decisions, paper selection, strategic planning
 
 ### Level 1: Section Orchestrators
+
 - Foundation, Shared Library, Tooling, Paper, CI/CD, Agentic Workflows Orchestrators
 - Manage major repository sections
 
 ### Level 2: Module Design Agents
+
 - Architecture, Integration, Security Design Agents
 - Design module structure and interfaces
 
 ### Level 3: Component Specialists
+
 - Implementation, Test, Documentation, Performance, Security Specialists
 - Handle specific component aspects
 
 ### Level 4: Implementation Engineers
+
 - Senior, Standard, Test, Documentation, Performance Engineers
 - Write code, tests, documentation
 
 ### Level 5: Junior Engineers
+
 - Handle simple tasks, boilerplate, formatting
 
 **See [hierarchy.md](hierarchy.md) for complete details**
@@ -82,10 +93,12 @@ User: "Use the architecture design agent to plan the auth module"
 Skills are reusable capabilities separate from agents. They're in `.claude/skills/`.
 
 **Key Distinction**:
+
 - **Agents** = Decision-makers with separate contexts
 - **Skills** = Reusable capabilities invoked within agent context
 
 **Skills Taxonomy**:
+
 - **Tier 1**: Foundational (used by all agents) - code analysis, generation, testing
 - **Tier 2**: Domain-specific (specific agent types) - paper analysis, ML ops, documentation
 - **Tier 3**: Specialized (narrow use cases) - security scanning, performance profiling
@@ -95,14 +108,18 @@ Skills are reusable capabilities separate from agents. They're in `.claude/skill
 ## Delegation Patterns
 
 ### Decomposition Delegation
+
 Higher levels break tasks into smaller pieces and delegate down:
-```
+
+```text
 Chief Architect → Section Orchestrator → Module Agent → Component Specialist → Engineer
 ```
 
 ### Specialization Delegation
+
 Orchestrators delegate to specialists based on expertise:
-```
+
+```text
 Section Orchestrator
   ├─> Architecture Design (for architecture)
   ├─> Security Design (for security)
@@ -110,8 +127,10 @@ Section Orchestrator
 ```
 
 ### Parallel Delegation
+
 Independent tasks run simultaneously:
-```
+
+```text
 Component Specialist
   ├─> Test Engineer (parallel)
   ├─> Implementation Engineer (parallel)
@@ -125,17 +144,21 @@ Component Specialist
 ### 5-Phase Workflow
 
 **Phase 1: Plan** (Sequential)
+
 - Levels 0-2: Orchestrators and designers create specifications
 
 **Phases 2-4: Test/Implementation/Packaging** (Parallel)
+
 - Levels 3-5: Specialists and engineers execute in parallel
 
 **Phase 5: Cleanup** (Sequential)
+
 - All levels: Review and refactor
 
 ### Git Worktree Strategy
 
 Each GitHub issue gets its own worktree:
+
 - `worktrees/issue-62-plan-agents/` - Plan phase
 - `worktrees/issue-63-test-agents/` - Test phase (parallel)
 - `worktrees/issue-64-impl-agents/` - Implementation (parallel)
@@ -148,7 +171,7 @@ Each GitHub issue gets its own worktree:
 
 Agents follow Claude Code format with YAML frontmatter:
 
-```markdown
+```text
 ---
 name: agent-name
 description: Brief description of when to use this agent (critical for automatic invocation)
@@ -159,19 +182,24 @@ model: sonnet
 # Agent Name
 
 ## Role
+
 [Agent's role in the hierarchy]
 
 ## Responsibilities
+
 - Responsibility 1
 - Responsibility 2
 
 ## Instructions
+
 [Detailed instructions]
 
 ## Examples
+
 [Example tasks]
 
 ## Constraints
+
 [What NOT to do]
 ```
 
@@ -246,6 +274,7 @@ model: sonnet
 **Problem**: Claude doesn't automatically invoke your agent
 
 **Solutions**:
+
 1. Check description - make it specific and clear
 2. Add trigger keywords user would naturally say
 3. Test with explicit invocation first
@@ -256,6 +285,7 @@ model: sonnet
 **Problem**: Unclear which level agent belongs to
 
 **Solutions**:
+
 1. Review [hierarchy.md](hierarchy.md) for level definitions
 2. Consider decision scope: System → Section → Module → Component → Function → Line
 3. Ask: What does this agent decide vs execute?
@@ -265,6 +295,7 @@ model: sonnet
 **Problem**: Agents aren't coordinating effectively
 
 **Solutions**:
+
 1. Review [delegation-rules.md](delegation-rules.md)
 2. Use git worktrees for isolation
 3. Establish clear handoff protocols
@@ -273,6 +304,7 @@ model: sonnet
 ## Documentation
 
 ### In agents/ (This Directory)
+
 - **README.md** (this file) - Overview and quick start
 - **hierarchy.md** - Visual hierarchy diagram and quick reference
 - **agent-hierarchy.md** - Complete detailed hierarchy specification
@@ -280,6 +312,7 @@ model: sonnet
 - **templates/** - Agent configuration templates
 
 ### In notes/review/
+
 - **agent-architecture-review.md** - Architectural decisions and review
 - **skills-design.md** - Skills taxonomy and design
 - **orchestration-patterns.md** - Delegation and coordination details
@@ -288,6 +321,7 @@ model: sonnet
 - **agent-skills-implementation-summary.md** - Implementation summary and lessons learned
 
 ### In notes/issues/
+
 - **62/** through **67/** - Individual issue documentation for agents
 - **510/** through **514/** - Individual issue documentation for skills
 
@@ -320,6 +354,7 @@ model: sonnet
 ## Support
 
 For questions or issues:
+
 1. Review documentation in this directory
 2. Check `/notes/review/` for detailed specs and architectural reviews
 3. Check `/notes/issues/` for individual issue documentation
@@ -337,6 +372,7 @@ For questions or issues:
 ---
 
 **Implementation Status**:
+
 - Planning Complete: Issues #62, #67, #510 ✅
 - Ready for Implementation: Issues #63-66 (Agents), #511-514 (Skills)
 - See individual issue directories in `/notes/issues/` for specific implementation plans
