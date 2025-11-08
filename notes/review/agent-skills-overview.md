@@ -125,21 +125,24 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 
 ## Documentation Structure
 
-### In This Directory (`notes/issues/62-67/`)
-- `overview.md` - This file
-- `agent-hierarchy.md` - Complete 6-level hierarchy specification
-- `worktree-strategy.md` - Git worktree workflow
+### In Review Directory (`notes/review/` - This Directory)
+- `agent-skills-overview.md` - This file (system overview)
+- `agent-skills-implementation-summary.md` - Implementation summary and lessons learned
+- `agent-architecture-review.md` - Architectural decisions and trade-offs
 - `skills-design.md` - Skills taxonomy and design
 - `orchestration-patterns.md` - Delegation and coordination rules
-
-### In Review Directory (`notes/review/`)
-- `agent-architecture-review.md` - Architectural decisions and trade-offs
+- `worktree-strategy.md` - Git worktree workflow
 
 ### In Repository Root (`agents/`)
-- `README.md` - Team documentation
+- `README.md` - Team documentation and quick start
 - `hierarchy.md` - Visual hierarchy diagram
-- `delegation-rules.md` - Orchestration patterns
+- `agent-hierarchy.md` - Complete detailed hierarchy specification
+- `delegation-rules.md` - Quick reference delegation patterns
 - `templates/` - Configuration templates
+
+### In Issue Directories (`notes/issues/`)
+- `62/` through `67/` - Individual issue documentation for agents (Plan, Test, Impl, Package, Cleanup, Tools)
+- `510/` through `514/` - Individual issue documentation for skills (Plan, Test, Impl, Package, Cleanup)
 
 ## Key Distinctions
 

@@ -73,6 +73,12 @@ gh issue view <number>
 
 ```
 ml-odyssey/
+├── agents/                      # Team documentation (tracked in git)
+│   ├── README.md                # Quick start guide
+│   ├── hierarchy.md             # Visual hierarchy diagram
+│   ├── agent-hierarchy.md       # Complete agent specifications
+│   ├── delegation-rules.md      # Coordination patterns
+│   └── templates/               # Agent configuration templates
 ├── notes/
 │   ├── plan/                    # 4-level hierarchical plans (LOCAL ONLY - not in git)
 │   │   ├── 01-foundation/       # Repository structure and config
@@ -81,8 +87,14 @@ ml-odyssey/
 │   │   ├── 04-first-paper/      # LeNet-5 (proof of concept)
 │   │   ├── 05-ci-cd/            # CI/CD pipelines
 │   │   └── 06-agentic-workflows/# Claude-powered automation
-│   ├── issues/                  # Historical issue documentation (tracked in git)
-│   └── review/                  # PR review documentation (tracked in git)
+│   ├── issues/                  # Issue-specific documentation (tracked in git)
+│   │   ├── 62/README.md         # Issue #62: [Plan] Agents
+│   │   ├── 63/README.md         # Issue #63: [Test] Agents
+│   │   └── ...                  # One directory per issue
+│   └── review/                  # Comprehensive specs & architectural decisions (tracked in git)
+│       ├── agent-architecture-review.md
+│       ├── skills-design.md
+│       └── orchestration-patterns.md
 ├── scripts/                     # Python automation scripts
 ├── logs/                        # Execution logs and state files
 └── .clinerules                 # Claude Code conventions
@@ -101,6 +113,63 @@ Each component at any level has (locally, not in version control):
 - `github_issue.md` - Dynamically generated GitHub issue definitions (task-relative)
 
 **Important**: Plan files are for local planning and GitHub issue generation. Refer to tracked documentation in `notes/issues/`, `notes/review/`, and `agents/` for shared team documentation.
+
+### Documentation Organization
+
+The repository uses three separate locations for documentation to avoid duplication:
+
+#### 1. Team Documentation (`/agents/`)
+**Purpose**: Quick start guides, visual references, and templates for team onboarding.
+
+**Contents**:
+- Quick start guides (README.md)
+- Visual diagrams (hierarchy.md)
+- Quick reference cards (delegation-rules.md)
+- Configuration templates (templates/)
+
+**When to Use**: Creating new documentation for team onboarding or quick reference.
+
+#### 2. Comprehensive Specifications (`/notes/review/`)
+**Purpose**: Detailed architectural decisions, comprehensive specifications, and design documents.
+
+**Contents**:
+- Architectural reviews and decisions
+- Comprehensive design specifications (agent-hierarchy.md, skills-design.md)
+- Workflow strategies (orchestration-patterns.md, worktree-strategy.md)
+- Implementation summaries and lessons learned
+
+**When to Use**: Writing detailed specifications, architectural decisions, or comprehensive guides.
+
+#### 3. Issue-Specific Documentation (`/notes/issues/<issue-number>/`)
+**Purpose**: Implementation notes, findings, and decisions specific to a single GitHub issue.
+
+**Structure**: Each issue gets its own directory with a focused README.md:
+```markdown
+# Issue #XX: [Phase] Component Name
+
+## Objective
+What this specific issue accomplishes (1-2 sentences)
+
+## Deliverables
+- List of files/changes this issue creates
+
+## Success Criteria
+- Checklist of completion criteria
+
+## References
+- Links to shared documentation in /agents/ and /notes/review/
+- NO duplication of comprehensive docs
+
+## Implementation Notes
+- Notes discovered during implementation
+- Initially empty, filled as work progresses
+```
+
+**Important Rules**:
+- ✅ DO: Link to comprehensive docs in `/agents/` and `/notes/review/`
+- ✅ DO: Add issue-specific findings and decisions
+- ❌ DON'T: Duplicate comprehensive documentation
+- ❌ DON'T: Create shared specifications here (use `/notes/review/` instead)
 
 ### 5-Phase Development Workflow
 

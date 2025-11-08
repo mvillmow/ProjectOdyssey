@@ -21,6 +21,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import time
 from collections import defaultdict
 from dataclasses import dataclass, asdict
 from datetime import datetime
@@ -642,6 +643,9 @@ def create_all_issues(
                     success_count += 1
                 else:
                     error_count += 1
+
+                # Sleep for 2 seconds to avoid rate limiting
+                time.sleep(2)
             else:
                 error_count += 1
 

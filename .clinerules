@@ -8,26 +8,72 @@ This repository implements a comprehensive Mojo-based AI research platform for r
 
 ```
 ml-odyssey/
+├── agents/                      # Team documentation (tracked)
+│   ├── README.md                # Quick start guide
+│   ├── hierarchy.md             # Visual hierarchy
+│   ├── agent-hierarchy.md       # Complete specifications
+│   ├── delegation-rules.md      # Coordination patterns
+│   └── templates/               # Agent configuration templates
 ├── notes/
 │   ├── README.md                # GitHub issues plan and documentation
-│   ├── plan/                    # 4-level hierarchical plans
+│   ├── plan/                    # 4-level hierarchical plans (LOCAL - not tracked)
 │   │   ├── 01-foundation/
 │   │   ├── 02-shared-library/
 │   │   ├── 03-tooling/
 │   │   ├── 04-first-paper/
 │   │   ├── 05-ci-cd/
 │   │   └── 06-agentic-workflows/
-│   └── issues/                  # GitHub issue documentation
-│       └── 1/                   # Historical docs from issue #1
+│   ├── issues/                  # Issue-specific documentation (tracked)
+│   │   ├── 62/README.md         # Issue #62: [Plan] Agents
+│   │   ├── 63/README.md         # Issue #63: [Test] Agents
+│   │   └── ...                  # One directory per issue
+│   └── review/                  # Comprehensive specs & architectural decisions (tracked)
+│       ├── agent-architecture-review.md
+│       ├── skills-design.md
+│       └── orchestration-patterns.md
 ├── scripts/                     # Automation scripts
 │   ├── create_issues.py         # Main issue creation
 │   ├── create_single_component_issues.py
 │   ├── regenerate_github_issues.py  # Regenerate github_issue.md files
-│   ├── SCRIPTS_ANALYSIS.md      # Comprehensive scripts documentation
 │   └── README.md
 ├── logs/                        # Execution logs
 └── README.md                    # Main documentation
 ```
+
+## Documentation Organization
+
+The repository uses **three separate locations** for documentation to avoid duplication:
+
+### 1. Team Documentation (`/agents/`)
+**Purpose**: Quick start guides, visual references, and templates for team onboarding.
+- Quick start guides (README.md)
+- Visual diagrams (hierarchy.md)
+- Quick reference cards (delegation-rules.md)
+- Configuration templates (templates/)
+
+### 2. Comprehensive Specifications (`/notes/review/`)
+**Purpose**: Detailed architectural decisions, comprehensive specifications, and design documents.
+- Architectural reviews and decisions
+- Comprehensive design specifications
+- Workflow strategies
+- Implementation summaries and lessons learned
+
+### 3. Issue-Specific Documentation (`/notes/issues/<issue-number>/`)
+**Purpose**: Implementation notes, findings, and decisions specific to a single GitHub issue.
+
+Each issue directory contains a focused README.md with:
+- Issue number and title
+- Objective (what this specific issue accomplishes)
+- Deliverables (what files/changes this issue creates)
+- Success criteria
+- References to shared documentation (**links only, no duplication**)
+- Implementation notes (filled during work)
+
+**Important Rules**:
+- ✅ DO: Link to comprehensive docs in `/agents/` and `/notes/review/`
+- ✅ DO: Add issue-specific findings and decisions
+- ❌ DON'T: Duplicate comprehensive documentation
+- ❌ DON'T: Create shared specifications in `/notes/issues/` (use `/notes/review/` instead)
 
 ## Key Conventions
 
@@ -97,11 +143,13 @@ Note: github_issue.md files are regenerated dynamically from plan.md files using
 
 ### File Locations
 
-- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md`
-- **Issues**: `notes/plan/<section>/<subsection>/.../github_issue.md`
+- **Plans** (local, not tracked): `notes/plan/<section>/<subsection>/.../plan.md`
+- **Issues** (local, not tracked): `notes/plan/<section>/<subsection>/.../github_issue.md`
 - **Scripts**: `scripts/*.py` and `scripts/*.sh`
 - **Logs**: `logs/*.log`
-- **Historical docs**: `notes/issues/1/*.md`
+- **Team Docs** (tracked): `agents/*.md` and `agents/templates/*.md`
+- **Comprehensive Specs** (tracked): `notes/review/*.md`
+- **Issue-Specific Docs** (tracked): `notes/issues/<issue-number>/README.md`
 
 ## Development Workflow
 
@@ -237,11 +285,25 @@ set -e  # Exit on error
 
 ### Updating Documentation
 
-- Main docs: Update `README.md`
+Follow the **3-location pattern**:
+
+**Team Documentation** (`/agents/`):
+- Update for team onboarding, quick references, templates
+- Examples: `agents/README.md`, `agents/hierarchy.md`, templates
+
+**Comprehensive Specifications** (`/notes/review/`):
+- Add architectural decisions, comprehensive specs
+- Examples: `notes/review/agent-architecture-review.md`, `notes/review/skills-design.md`
+
+**Issue-Specific** (`/notes/issues/<issue-number>/`):
+- Add implementation notes to your issue's README.md
+- Link to comprehensive docs, don't duplicate them
+- Update during implementation with findings
+
+**General Documentation**:
+- Main README: Update `README.md`
 - Script docs: Update `scripts/README.md`
-- Issue plan: Update `notes/README.md`
-- Scripts analysis: Update `scripts/SCRIPTS_ANALYSIS.md`
-- Historical: Add to `notes/issues/<issue-number>/`
+- Issue planning: Update `notes/README.md`
 
 ### Debugging
 
