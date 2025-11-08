@@ -88,13 +88,56 @@ fn add_scalar[size: Int](a: Tensor, b: Tensor) -> Tensor:
 - [Implementation Specialist](./implementation-specialist.md) - optimization implementation
 - [Test Specialist](./test-specialist.md) - performance testing
 
+
+## Skip-Level Delegation
+
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+
+### When to Skip Levels
+
+**Simple Bug Fixes** (< 50 lines, well-defined):
+- Chief Architect/Orchestrator → Implementation Specialist (skip design)
+- Specialist → Implementation Engineer (skip senior review)
+
+**Boilerplate & Templates**:
+- Any level → Junior Engineer directly (skip all intermediate levels)
+- Use for: code generation, formatting, simple documentation
+
+**Well-Scoped Tasks** (clear requirements, no architectural impact):
+- Orchestrator → Component Specialist (skip module design)
+- Design Agent → Implementation Engineer (skip specialist breakdown)
+
+**Established Patterns** (following existing architecture):
+- Skip Architecture Design if pattern already documented
+- Skip Security Design if following standard secure coding practices
+
+**Trivial Changes** (< 20 lines, formatting, typos):
+- Any level → Appropriate engineer directly
+
+### When NOT to Skip
+
+**Never skip levels for**:
+- New architectural patterns or significant design changes
+- Cross-module integration work
+- Security-sensitive code
+- Performance-critical optimizations
+- Public API changes
+
+### Efficiency Guidelines
+
+1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
+2. **Document Skip Rationale**: When skipping, note why in delegation message
+3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+
+
 ## Workflow Phase
 **Plan**, **Implementation**, **Cleanup**
 
 ## Skills to Use
-- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Performance profiling
-- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
-- [`suggest_optimizations`](../../.claude/skills/tier-2/suggest-optimizations/SKILL.md) - Optimization identification
+- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Performance profiling
+- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
+- [`suggest_optimizations`](../skills/tier-2/suggest-optimizations/SKILL.md) - Optimization identification
 
 ## Example Performance Plan
 

@@ -1,7 +1,7 @@
 ---
 name: implementation-engineer
 description: Implement standard functions and classes in Mojo following specifications and coding standards
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -103,10 +103,10 @@ struct LinearLayer:
 **Implementation**
 
 ## Skills to Use
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Function templates
-- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Code improvements
-- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
-- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Code quality
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Function templates
+- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Code improvements
+- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
+- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Code quality
 
 ## Constraints
 

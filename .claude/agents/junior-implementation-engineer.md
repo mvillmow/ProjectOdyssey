@@ -1,7 +1,7 @@
 ---
 name: junior-implementation-engineer
 description: Write simple functions, generate boilerplate code, apply templates, format code, and run linters
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -90,9 +90,9 @@ Level 5 is the lowest level - no delegation to other agents.
 **Implementation**
 
 ## Skills to Use
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Template generation
-- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Simple refactorings
-- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Code linting
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Template generation
+- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Simple refactorings
+- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Code linting
 
 ## Constraints
 

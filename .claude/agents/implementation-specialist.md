@@ -1,7 +1,7 @@
 ---
 name: implementation-specialist
 description: Break down complex components into functions and classes, create detailed implementation plans, and coordinate implementation engineers
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -132,14 +132,57 @@ struct Adam(Optimizer):
 - [Documentation Specialist](./documentation-specialist.md) - API documentation
 - [Performance Specialist](./performance-specialist.md) - optimization
 
+
+## Skip-Level Delegation
+
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+
+### When to Skip Levels
+
+**Simple Bug Fixes** (< 50 lines, well-defined):
+- Chief Architect/Orchestrator → Implementation Specialist (skip design)
+- Specialist → Implementation Engineer (skip senior review)
+
+**Boilerplate & Templates**:
+- Any level → Junior Engineer directly (skip all intermediate levels)
+- Use for: code generation, formatting, simple documentation
+
+**Well-Scoped Tasks** (clear requirements, no architectural impact):
+- Orchestrator → Component Specialist (skip module design)
+- Design Agent → Implementation Engineer (skip specialist breakdown)
+
+**Established Patterns** (following existing architecture):
+- Skip Architecture Design if pattern already documented
+- Skip Security Design if following standard secure coding practices
+
+**Trivial Changes** (< 20 lines, formatting, typos):
+- Any level → Appropriate engineer directly
+
+### When NOT to Skip
+
+**Never skip levels for**:
+- New architectural patterns or significant design changes
+- Cross-module integration work
+- Security-sensitive code
+- Performance-critical optimizations
+- Public API changes
+
+### Efficiency Guidelines
+
+1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
+2. **Document Skip Rationale**: When skipping, note why in delegation message
+3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+
+
 ## Workflow Phase
 **Plan**, **Implementation**, **Cleanup**
 
 ## Skills to Use
-- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Understand component structure
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Create templates
-- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Code improvements
-- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Quality review
+- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Understand component structure
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Create templates
+- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Code improvements
+- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Quality review
 
 ## Example: Tensor Operations Component
 

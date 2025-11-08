@@ -74,10 +74,10 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
 Primarily **Plan** phase, oversight in all phases
 
 ## Skills to Use
-- [`extract_algorithm`](../../.claude/skills/tier-2/extract-algorithm/SKILL.md) - Paper analysis
-- [`identify_architecture`](../../.claude/skills/tier-2/identify-architecture/SKILL.md) - Model architectures
-- [`extract_hyperparameters`](../../.claude/skills/tier-2/extract-hyperparameters/SKILL.md) - Training parameters
-- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Cross-section dependencies
+- [`extract_algorithm`](../skills/tier-2/extract-algorithm/SKILL.md) - Paper analysis
+- [`identify_architecture`](../skills/tier-2/identify-architecture/SKILL.md) - Model architectures
+- [`extract_hyperparameters`](../skills/tier-2/extract-hyperparameters/SKILL.md) - Training parameters
+- [`extract_dependencies`](../skills/tier-2/extract-dependencies/SKILL.md) - Cross-section dependencies
 
 ## Constraints
 - **Do NOT**: Micromanage, skip documentation, override without rationale

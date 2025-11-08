@@ -1,7 +1,7 @@
 ---
 name: junior-documentation-engineer
 description: Fill in docstring templates, format documentation, generate changelog entries, and update simple README sections
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -92,9 +92,9 @@ Level 5 is the lowest level - no delegation.
 **Packaging**
 
 ## Skills to Use
-- [`generate_docstrings`](../../.claude/skills/tier-2/generate-docstrings/SKILL.md) - Docstring templates
-- [`generate_changelog`](../../.claude/skills/tier-2/generate-changelog/SKILL.md) - Changelog entries
-- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Documentation linting
+- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Docstring templates
+- [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Changelog entries
+- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Documentation linting
 
 ## Constraints
 

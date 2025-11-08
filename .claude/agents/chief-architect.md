@@ -1,7 +1,7 @@
 ---
 name: chief-architect
 description: Strategic architecture decisions, research paper selection, system-wide coordination, and repository ecosystem management
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Grep,Glob
 model: sonnet
 ---
 
@@ -111,20 +111,103 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
 - Repository owners
 - Research community
 
+
+## Skip-Level Delegation
+
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+
+### When to Skip Levels
+
+**Simple Bug Fixes** (< 50 lines, well-defined):
+- Chief Architect/Orchestrator → Implementation Specialist (skip design)
+- Specialist → Implementation Engineer (skip senior review)
+
+**Boilerplate & Templates**:
+- Any level → Junior Engineer directly (skip all intermediate levels)
+- Use for: code generation, formatting, simple documentation
+
+**Well-Scoped Tasks** (clear requirements, no architectural impact):
+- Orchestrator → Component Specialist (skip module design)
+- Design Agent → Implementation Engineer (skip specialist breakdown)
+
+**Established Patterns** (following existing architecture):
+- Skip Architecture Design if pattern already documented
+- Skip Security Design if following standard secure coding practices
+
+**Trivial Changes** (< 20 lines, formatting, typos):
+- Any level → Appropriate engineer directly
+
+### When NOT to Skip
+
+**Never skip levels for**:
+- New architectural patterns or significant design changes
+- Cross-module integration work
+- Security-sensitive code
+- Performance-critical optimizations
+- Public API changes
+
+### Efficiency Guidelines
+
+1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
+2. **Document Skip Rationale**: When skipping, note why in delegation message
+3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+
+
 ## Workflow Phase
 Primarily **Plan** phase, with oversight in all phases.
 
 ## Skills to Use
 
 ### Primary Skills
-- [`extract_algorithm`](../../.claude/skills/tier-2/extract-algorithm/SKILL.md) - Analyze research papers
-- [`identify_architecture`](../../.claude/skills/tier-2/identify-architecture/SKILL.md) - Extract model architectures
-- [`extract_hyperparameters`](../../.claude/skills/tier-2/extract-hyperparameters/SKILL.md) - Extract training parameters
-- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Map cross-section dependencies
+- [`extract_algorithm`](../skills/tier-2/extract-algorithm/SKILL.md) - Analyze research papers
+- [`identify_architecture`](../skills/tier-2/identify-architecture/SKILL.md) - Extract model architectures
+- [`extract_hyperparameters`](../skills/tier-2/extract-hyperparameters/SKILL.md) - Extract training parameters
+- [`extract_dependencies`](../skills/tier-2/extract-dependencies/SKILL.md) - Map cross-section dependencies
 
 ### Supporting Skills
-- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Review existing code
-- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Ensure quality standards
+- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Review existing code
+- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Ensure quality standards
+
+## Error Handling & Recovery
+
+### Retry Strategy
+- **Max Attempts**: 3 retries for failed delegations
+- **Backoff**: Exponential backoff (1s, 2s, 4s between attempts)
+- **Scope**: Apply to agent delegation failures, not system errors
+
+### Timeout Handling
+- **Max Wait**: 5 minutes for delegated work to complete
+- **On Timeout**: Escalate to parent with context about what timed out
+- **Check Interval**: Poll for completion every 30 seconds
+
+### Conflict Resolution
+When receiving conflicting guidance from delegated agents:
+1. Attempt to resolve conflicts based on specifications and priorities
+2. If unable to resolve: escalate to parent level with full context
+3. Document the conflict and resolution in status updates
+
+### Failure Modes
+- **Partial Failure**: Some delegated work succeeds, some fails
+  - Action: Complete successful parts, escalate failed parts
+- **Complete Failure**: All attempts at delegation fail
+  - Action: Escalate immediately to parent with failure details
+- **Blocking Failure**: Cannot proceed without resolution
+  - Action: Escalate immediately, do not retry
+
+### Loop Detection
+- **Pattern**: Same delegation attempted 3+ times with same result
+- **Action**: Break the loop, escalate with loop context
+- **Prevention**: Track delegation attempts per unique task
+
+### Error Escalation
+Escalate errors when:
+- All retry attempts exhausted
+- Timeout exceeded
+- Unresolvable conflicts detected
+- Critical blocking issues found
+- Loop detected in delegation chain
+
 
 ## Constraints
 

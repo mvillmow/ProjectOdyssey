@@ -1,7 +1,7 @@
 ---
 name: senior-implementation-engineer
 description: Implement complex functions and classes in Mojo with advanced features including SIMD optimization, memory management, and performance tuning
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -97,10 +97,10 @@ fn matmul_optimized[M: Int, N: Int, K: Int](
 **Implementation**
 
 ## Skills to Use
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Complex templates
-- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Optimization refactoring
-- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Performance profiling
-- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Complex templates
+- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Optimization refactoring
+- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Performance profiling
+- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
 
 ## Example
 

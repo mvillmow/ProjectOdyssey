@@ -1,7 +1,7 @@
 ---
 name: junior-test-engineer
 description: Write simple unit tests, generate test boilerplate, update existing tests, and run test suites
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -88,8 +88,8 @@ Level 5 is the lowest level - no delegation.
 **Test**
 
 ## Skills to Use
-- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test boilerplate
-- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
+- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test boilerplate
+- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
 
 ## Constraints
 

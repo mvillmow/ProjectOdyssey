@@ -1,7 +1,7 @@
 ---
 name: documentation-engineer
 description: Write docstrings, create code examples, write README sections, and maintain documentation as code changes
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -150,9 +150,9 @@ How to contribute to this module.
 **Packaging**
 
 ## Skills to Use
-- [`generate_docstrings`](../../.claude/skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
-- [`generate_api_docs`](../../.claude/skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
-- [`generate_changelog`](../../.claude/skills/tier-2/generate-changelog/SKILL.md) - Version documentation
+- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
+- [`generate_api_docs`](../skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
+- [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Version documentation
 
 ## Success Criteria
 - All public APIs documented

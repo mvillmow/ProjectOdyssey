@@ -76,8 +76,8 @@ Level 3 Component Specialist responsible for [specialist area] at component leve
 **[Primary Phase]**, **[Secondary Phases]**
 
 ## Skills to Use
-- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Code analysis
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Code generation
+- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Code analysis
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Code generation
 - [Add other relevant skills]
 
 ## Constraints

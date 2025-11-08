@@ -73,13 +73,56 @@ fn test_tensor_shape_mismatch():
 - [Implementation Specialist](./implementation-specialist.md) - TDD coordination
 - [Performance Specialist](./performance-specialist.md) - benchmark tests
 
+
+## Skip-Level Delegation
+
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+
+### When to Skip Levels
+
+**Simple Bug Fixes** (< 50 lines, well-defined):
+- Chief Architect/Orchestrator → Implementation Specialist (skip design)
+- Specialist → Implementation Engineer (skip senior review)
+
+**Boilerplate & Templates**:
+- Any level → Junior Engineer directly (skip all intermediate levels)
+- Use for: code generation, formatting, simple documentation
+
+**Well-Scoped Tasks** (clear requirements, no architectural impact):
+- Orchestrator → Component Specialist (skip module design)
+- Design Agent → Implementation Engineer (skip specialist breakdown)
+
+**Established Patterns** (following existing architecture):
+- Skip Architecture Design if pattern already documented
+- Skip Security Design if following standard secure coding practices
+
+**Trivial Changes** (< 20 lines, formatting, typos):
+- Any level → Appropriate engineer directly
+
+### When NOT to Skip
+
+**Never skip levels for**:
+- New architectural patterns or significant design changes
+- Cross-module integration work
+- Security-sensitive code
+- Performance-critical optimizations
+- Public API changes
+
+### Efficiency Guidelines
+
+1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
+2. **Document Skip Rationale**: When skipping, note why in delegation message
+3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+
+
 ## Workflow Phase
 **Plan**, **Test**
 
 ## Skills to Use
-- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
-- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Execute tests
-- [`calculate_coverage`](../../.claude/skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
+- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
+- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Execute tests
+- [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
 ## Example Test Plan
 

@@ -107,9 +107,9 @@ def test_large_tensor():
 **Test**
 
 ## Skills to Use
-- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
-- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
-- [`calculate_coverage`](../../.claude/skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
+- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
+- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
+- [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
 ## Example Test Suite
 

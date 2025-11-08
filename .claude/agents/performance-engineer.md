@@ -123,9 +123,9 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 **Implementation**, **Cleanup**
 
 ## Skills to Use
-- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Code profiling
-- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
-- [`suggest_optimizations`](../../.claude/skills/tier-2/suggest-optimizations/SKILL.md) - Optimization ideas
+- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Code profiling
+- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
+- [`suggest_optimizations`](../skills/tier-2/suggest-optimizations/SKILL.md) - Optimization ideas
 
 ## Example: Optimize Matrix Multiplication
 

@@ -1,7 +1,7 @@
 ---
 name: security-specialist
 description: Implement security requirements, apply security best practices, perform security testing, and fix vulnerabilities
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---
 
@@ -88,14 +88,57 @@ fn load_safe[max_size: Int](
 ### Coordinates With
 - [Test Specialist](./test-specialist.md) - security testing and validation
 
+
+## Skip-Level Delegation
+
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+
+### When to Skip Levels
+
+**Simple Bug Fixes** (< 50 lines, well-defined):
+- Chief Architect/Orchestrator → Implementation Specialist (skip design)
+- Specialist → Implementation Engineer (skip senior review)
+
+**Boilerplate & Templates**:
+- Any level → Junior Engineer directly (skip all intermediate levels)
+- Use for: code generation, formatting, simple documentation
+
+**Well-Scoped Tasks** (clear requirements, no architectural impact):
+- Orchestrator → Component Specialist (skip module design)
+- Design Agent → Implementation Engineer (skip specialist breakdown)
+
+**Established Patterns** (following existing architecture):
+- Skip Architecture Design if pattern already documented
+- Skip Security Design if following standard secure coding practices
+
+**Trivial Changes** (< 20 lines, formatting, typos):
+- Any level → Appropriate engineer directly
+
+### When NOT to Skip
+
+**Never skip levels for**:
+- New architectural patterns or significant design changes
+- Cross-module integration work
+- Security-sensitive code
+- Performance-critical optimizations
+- Public API changes
+
+### Efficiency Guidelines
+
+1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
+2. **Document Skip Rationale**: When skipping, note why in delegation message
+3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+
+
 ## Workflow Phase
 **Plan**, **Implementation**, **Test**, **Cleanup**
 
 ## Skills to Use
-- [`scan_vulnerabilities`](../../.claude/skills/tier-2/scan-vulnerabilities/SKILL.md) - Vulnerability scanning
-- [`check_dependencies`](../../.claude/skills/tier-2/check-dependencies/SKILL.md) - Dependency security
-- [`validate_inputs`](../../.claude/skills/tier-2/validate-inputs/SKILL.md) - Input validation review
-- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Security code review
+- [`scan_vulnerabilities`](../skills/tier-2/scan-vulnerabilities/SKILL.md) - Vulnerability scanning
+- [`check_dependencies`](../skills/tier-2/check-dependencies/SKILL.md) - Dependency security
+- [`validate_inputs`](../skills/tier-2/validate-inputs/SKILL.md) - Input validation review
+- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Security code review
 
 ## Example Security Plan
 

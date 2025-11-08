@@ -55,8 +55,8 @@ Level 5 is the lowest level - no delegation to other agents.
 **[Primary Phase]**
 
 ## Skills to Use
-- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Code generation
-- [`format_code`](../../.claude/skills/tier-1/format-code/SKILL.md) - Code formatting
+- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Code generation
+- [`format_code`](../skills/tier-1/format-code/SKILL.md) - Code formatting
 - [Add other relevant skills for simple tasks]
 
 ## Constraints

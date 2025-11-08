@@ -75,8 +75,8 @@ Level 1 Section Orchestrator responsible for coordinating [section description].
 [Primary workflow phases this agent participates in]
 
 ## Skills to Use
-- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Code analysis
-- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Dependency mapping
+- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Code analysis
+- [`extract_dependencies`](../skills/tier-2/extract-dependencies/SKILL.md) - Dependency mapping
 - [Add other relevant skills]
 
 ## Constraints
