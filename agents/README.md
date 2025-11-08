@@ -90,7 +90,7 @@ Skills are reusable capabilities separate from agents. They're in `.claude/skill
 - **Tier 2**: Domain-specific (specific agent types) - paper analysis, ML ops, documentation
 - **Tier 3**: Specialized (narrow use cases) - security scanning, performance profiling
 
-**See `/notes/issues/62-67/skills-design.md` for complete skills documentation**
+**See [/notes/review/skills-design.md](/notes/review/skills-design.md) for complete skills documentation**
 
 ## Delegation Patterns
 
@@ -142,7 +142,7 @@ Each GitHub issue gets its own worktree:
 - `worktrees/issue-65-pkg-agents/` - Packaging (parallel)
 - `worktrees/issue-66-cleanup-agents/` - Cleanup (sequential)
 
-**See `/notes/issues/62-67/worktree-strategy.md` for complete workflow**
+**See [/notes/review/worktree-strategy.md](/notes/review/worktree-strategy.md) for complete workflow**
 
 ## Configuration Format
 
@@ -272,28 +272,33 @@ model: sonnet
 
 ## Documentation
 
-### In This Directory
+### In agents/ (This Directory)
 - **README.md** (this file) - Overview and quick start
-- **hierarchy.md** - Complete 6-level hierarchy specification
+- **hierarchy.md** - Visual hierarchy diagram and quick reference
+- **agent-hierarchy.md** - Complete detailed hierarchy specification
 - **delegation-rules.md** - Coordination and delegation patterns
 - **templates/** - Agent configuration templates
 
-### In notes/issues/62-67/
-- **overview.md** - Issues 62-67 summary
-- **agent-hierarchy.md** - Detailed hierarchy specification
-- **skills-design.md** - Skills taxonomy and design
-- **orchestration-patterns.md** - Delegation and coordination
-- **worktree-strategy.md** - Git worktree workflow
-
 ### In notes/review/
 - **agent-architecture-review.md** - Architectural decisions and review
+- **skills-design.md** - Skills taxonomy and design
+- **orchestration-patterns.md** - Delegation and coordination details
+- **worktree-strategy.md** - Git worktree workflow
+- **agent-skills-overview.md** - System overview
+- **agent-skills-implementation-summary.md** - Implementation summary and lessons learned
+
+### In notes/issues/
+- **62/** through **67/** - Individual issue documentation for agents
+- **510/** through **514/** - Individual issue documentation for skills
 
 ## References
 
 - [Claude Code Sub-Agents Documentation](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code Skills Documentation](https://code.claude.com/docs/en/skills)
 - [Project 5-Phase Workflow](/notes/review/README.md)
-- [Complete Agent Hierarchy](/notes/issues/62-67/agent-hierarchy.md)
+- [Complete Agent Hierarchy](agent-hierarchy.md)
+- [Skills Design](/notes/review/skills-design.md)
+- [Orchestration Patterns](/notes/review/orchestration-patterns.md)
 
 ## Contributing
 
@@ -316,9 +321,10 @@ model: sonnet
 
 For questions or issues:
 1. Review documentation in this directory
-2. Check `/notes/issues/62-67/` for detailed specs
-3. Consult Claude Code documentation
-4. Ask in team channels
+2. Check `/notes/review/` for detailed specs and architectural reviews
+3. Check `/notes/issues/` for individual issue documentation
+4. Consult Claude Code documentation
+5. Ask in team channels
 
 ## Version History
 
@@ -330,4 +336,7 @@ For questions or issues:
 
 ---
 
-**Next Steps**: See `/notes/issues/62-67/overview.md` for implementation roadmap
+**Implementation Status**:
+- Planning Complete: Issues #62, #67, #510 ✅
+- Ready for Implementation: Issues #63-66 (Agents), #511-514 (Skills)
+- See individual issue directories in `/notes/issues/` for specific implementation plans

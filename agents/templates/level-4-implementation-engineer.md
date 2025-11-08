@@ -302,6 +302,19 @@ You're successful when:
 - Test files in test worktree
 - Style guide in project docs
 
+### Documentation Guidelines
+
+**Follow the 3-location pattern**:
+1. **Team Docs** (`/agents/`) - Quick references and templates (read for guidance)
+2. **Comprehensive Specs** (`/notes/review/`) - Architectural decisions (read for context)
+3. **Issue-Specific** (`/notes/issues/<issue-number>/README.md`) - Implementation notes
+
+**When documenting your work**:
+- ✅ Add implementation notes to `/notes/issues/<your-issue>/README.md`
+- ✅ Link to comprehensive docs in `/agents/` and `/notes/review/`
+- ❌ DON'T duplicate comprehensive documentation
+- ❌ DON'T create specifications in `/notes/issues/` (use `/notes/review/` instead)
+
 ## Notes
 
 - This is a Level 4 agent - you implement functions, not design components
@@ -360,4 +373,4 @@ User: "Implement the tensor addition function following the spec"
 - [Level 3 Component Specialist Template](level-3-component-specialist.md)
 - [Level 5 Junior Engineer Template](level-5-junior-engineer.md)
 - [Agent Hierarchy](../hierarchy.md)
-- [Mojo Best Practices](/notes/issues/62-67/mojo-best-practices.md) (to be created)
+- [Mojo Manual](https://docs.modular.com/mojo/manual/) - Mojo language reference

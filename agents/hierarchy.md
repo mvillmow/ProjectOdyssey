@@ -240,5 +240,6 @@ Strategic Alignment (Level 0)
 - [README.md](README.md) - Overview and quick start
 - [delegation-rules.md](delegation-rules.md) - Detailed coordination patterns
 - [templates/](templates/) - Agent configuration templates
-- [/notes/issues/62-67/agent-hierarchy.md](/notes/issues/62-67/agent-hierarchy.md) - Complete specification
+- [agent-hierarchy.md](agent-hierarchy.md) - Complete detailed specification
+- [/notes/review/orchestration-patterns.md](/notes/review/orchestration-patterns.md) - Orchestration patterns
 - [Mojo Documentation](https://docs.modular.com/mojo/manual/) - Mojo language reference
