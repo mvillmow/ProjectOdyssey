@@ -2,11 +2,12 @@
 
 ## Overview
 
-This document defines the complete 6-level agent hierarchy for the ml-odyssey project. Each level has distinct responsibilities, scope, and delegation patterns.
+This document defines the complete 6-level agent hierarchy for the ml-odyssey project. Each level has
+distinct responsibilities, scope, and delegation patterns.
 
 ## Hierarchy Diagram
 
-```
+```text
 Level 0: Meta-Orchestrator
     │
     ├─> Chief Architect Agent
@@ -63,6 +64,7 @@ Level 5: Junior Engineers
 **Scope**: Entire repository ecosystem
 
 **Responsibilities**:
+
 - Select which AI research papers to implement
 - Define repository-wide architectural patterns
 - Establish coding standards and conventions
@@ -72,12 +74,14 @@ Level 5: Junior Engineers
 - Monitor overall project health
 
 **Inputs**:
+
 - Research papers
 - User requirements
 - Project goals
 - Industry best practices
 
 **Outputs**:
+
 - High-level roadmap
 - Architectural decision records (ADRs)
 - Section assignments
@@ -103,6 +107,7 @@ Level 5: Junior Engineers
 **Scope**: Section 01-foundation
 
 **Responsibilities**:
+
 - Coordinate directory structure creation
 - Manage configuration file setup
 - Oversee initial documentation
@@ -117,6 +122,7 @@ Level 5: Junior Engineers
 **Scope**: Section 02-shared-library
 
 **Responsibilities**:
+
 - Design shared component architecture
 - Coordinate core operations, training utilities, data utilities
 - Ensure API consistency across modules
@@ -131,6 +137,7 @@ Level 5: Junior Engineers
 **Scope**: Section 03-tooling
 
 **Responsibilities**:
+
 - Coordinate tooling development
 - Ensure tools integrate with workflow
 - Manage CLI interfaces and automation scripts
@@ -144,6 +151,7 @@ Level 5: Junior Engineers
 **Scope**: Section 04-first-paper and future papers
 
 **Responsibilities**:
+
 - Analyze research paper requirements
 - Design paper-specific architecture
 - Coordinate data preparation, model implementation, training, evaluation
@@ -158,6 +166,7 @@ Level 5: Junior Engineers
 **Scope**: Section 05-ci-cd
 
 **Responsibilities**:
+
 - Design CI/CD pipeline architecture
 - Coordinate testing infrastructure, deployment processes, monitoring
 - Ensure quality gates are effective
@@ -171,6 +180,7 @@ Level 5: Junior Engineers
 **Scope**: Section 06-agentic-workflows
 
 **Responsibilities**:
+
 - Design agent system architecture
 - Coordinate research assistant, code review agent, documentation agent
 - Ensure agents follow Claude best practices
@@ -190,6 +200,7 @@ Level 5: Junior Engineers
 **Scope**: Module-level architecture
 
 **Responsibilities**:
+
 - Break down module into components
 - Define component interfaces and contracts
 - Design data flow within module
@@ -213,6 +224,7 @@ Level 5: Junior Engineers
 **Scope**: Module-level integration
 
 **Responsibilities**:
+
 - Design integration points between components
 - Define module-level APIs
 - Create integration test plans
@@ -229,6 +241,7 @@ Level 5: Junior Engineers
 **Scope**: Module-level security
 
 **Responsibilities**:
+
 - Threat modeling for module
 - Define security requirements
 - Design authentication/authorization if needed
@@ -249,6 +262,7 @@ Level 5: Junior Engineers
 **Scope**: Complex components
 
 **Responsibilities**:
+
 - Break component into functions/classes
 - Design component architecture
 - Create detailed implementation plan
@@ -269,6 +283,7 @@ Level 5: Junior Engineers
 **Scope**: Component-level testing
 
 **Responsibilities**:
+
 - Create test plan for component
 - Define test cases (unit, integration, edge cases)
 - Design test fixtures and mocks
@@ -287,6 +302,7 @@ Level 5: Junior Engineers
 **Scope**: Component-level documentation
 
 **Responsibilities**:
+
 - Write component README
 - Document APIs and interfaces
 - Create usage examples
@@ -305,6 +321,7 @@ Level 5: Junior Engineers
 **Scope**: Component-level performance
 
 **Responsibilities**:
+
 - Define performance requirements
 - Design benchmarks
 - Identify optimization opportunities
@@ -323,6 +340,7 @@ Level 5: Junior Engineers
 **Scope**: Component-level security implementation
 
 **Responsibilities**:
+
 - Implement security requirements
 - Code security best practices
 - Perform security testing
@@ -345,6 +363,7 @@ Level 5: Junior Engineers
 **Scope**: Complex functions/classes
 
 **Responsibilities**:
+
 - Write implementation code
 - Follow coding standards
 - Implement error handling
@@ -370,6 +389,7 @@ Level 5: Junior Engineers
 **Scope**: Standard functions/classes
 
 **Responsibilities**:
+
 - Write implementation code
 - Follow coding patterns
 - Write basic tests
@@ -390,6 +410,7 @@ Level 5: Junior Engineers
 **Scope**: Test implementation
 
 **Responsibilities**:
+
 - Implement unit tests
 - Implement integration tests
 - Create test fixtures
@@ -411,6 +432,7 @@ Level 5: Junior Engineers
 **Scope**: Documentation writing
 
 **Responsibilities**:
+
 - Write docstrings
 - Create code examples
 - Write README sections
@@ -429,6 +451,7 @@ Level 5: Junior Engineers
 **Scope**: Performance implementation
 
 **Responsibilities**:
+
 - Write benchmark code
 - Profile code execution
 - Implement optimizations
@@ -451,6 +474,7 @@ Level 5: Junior Engineers
 **Scope**: Simple functions, boilerplate code
 
 **Responsibilities**:
+
 - Write simple functions
 - Generate boilerplate code
 - Apply code templates
@@ -474,6 +498,7 @@ Level 5: Junior Engineers
 **Scope**: Simple test cases
 
 **Responsibilities**:
+
 - Write simple unit tests
 - Generate test boilerplate
 - Update existing tests
@@ -492,6 +517,7 @@ Level 5: Junior Engineers
 **Scope**: Simple documentation
 
 **Responsibilities**:
+
 - Fill in docstring templates
 - Format documentation
 - Generate changelog entries
@@ -510,30 +536,38 @@ Level 5: Junior Engineers
 ## Delegation Rules
 
 ### Rule 1: Scope Reduction
+
 Each delegation reduces scope by one level of abstraction:
+
 - System → Section → Module → Component → Function → Line
 
 ### Rule 2: Specification Detail
+
 Each level adds more detail to specifications:
+
 - Strategic goals → Tactical plans → Component specs → Implementation details → Code
 
 ### Rule 3: Autonomy Increase
+
 Lower levels have more implementation autonomy but less strategic freedom
 
 ### Rule 4: Review Responsibility
+
 Each level reviews work of the level below
 
 ### Rule 5: Escalation Path
+
 Issues escalate one level up until resolved
 
 ### Rule 6: Coordination Requirements
+
 Agents coordinate horizontally when sharing resources or dependencies
 
 ---
 
 ## Agent Configuration Template
 
-```markdown
+```text
 ---
 name: agent-name
 description: Brief description of when to use this agent
@@ -544,33 +578,42 @@ model: sonnet
 # Agent Name
 
 ## Role
+
 [Agent's role in the hierarchy]
 
 ## Responsibilities
+
 - Responsibility 1
 - Responsibility 2
 
 ## Scope
+
 [What this agent handles]
 
 ## Delegation
+
 Delegates to: [Lower level agents]
 Coordinates with: [Same level agents]
 
 ## Workflow Phase
+
 [Which phases this agent participates in]
 
 ## Skills Used
+
 - skill_name_1
 - skill_name_2
 
 ## Instructions
+
 [Detailed instructions for this agent]
 
 ## Examples
+
 [Example tasks this agent handles]
 
 ## Constraints
+
 [What this agent should NOT do]
 ```
 
@@ -579,6 +622,7 @@ Coordinates with: [Same level agents]
 ## Mapping to Organizational Models
 
 ### Traditional Hierarchy
+
 - Level 0 = CTO/VP Engineering
 - Level 1 = Engineering Managers
 - Level 2 = Principal/Staff Engineers
@@ -587,6 +631,7 @@ Coordinates with: [Same level agents]
 - Level 5 = Junior Engineers/Interns
 
 ### Spotify Model
+
 - Tribes = Level 1 (Section Orchestrators)
 - Squads = Level 2 (Module Design Agents)
 - Chapters = Cross-cutting specialists

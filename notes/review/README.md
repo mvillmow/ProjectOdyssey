@@ -5,6 +5,7 @@ This directory contains documentation templates and guidelines for reviewing pul
 ## Purpose
 
 This document provides:
+
 1. A template for documenting PR review comments
 2. Explanation of the 5-phase development hierarchy
 3. Guidelines for resolving review feedback
@@ -14,6 +15,7 @@ This document provides:
 When documenting PR review comments, use this format:
 
 ```markdown
+
 ## PR #[NUMBER] - [TITLE]
 
 **PR URL**: [URL]
@@ -23,6 +25,7 @@ When documenting PR review comments, use this format:
 ### Comments
 
 #### Comment [N]: [File/Location]
+
 **Type**: [Bug/Enhancement/Documentation/Cleanup]
 **Priority**: [High/Medium/Low]
 **Description**: [Description of the issue or requested change]
@@ -36,7 +39,7 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 
 ### Hierarchy Diagram
 
-```
+```text
 ┌──────────┐
 │   Plan   │
 └─────┬────┘
@@ -59,9 +62,11 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 ### Phase Details
 
 #### Phase 1: Plan
+
 **Purpose**: Create the detailed plan for the component
 
 **Responsibilities**:
+
 - Analyze current repository state
 - Define requirements and specifications
 - Create detailed plans for Test, Implementation, and Packaging phases
@@ -71,20 +76,24 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 **Dependencies**: None (starts the workflow)
 
 **Outputs**:
+
 - Detailed component plan (plan.md - local file, not tracked in git)
 - Specifications for Test, Implementation, and Packaging issues (tracked in notes/issues/)
 - Success criteria and acceptance tests
 
 **GitHub Issue**: Creates the foundational planning issue that other phases reference
 
-**Note**: plan.md files are task-relative and NOT tracked in version control. For tracked specifications, use notes/issues/ or notes/review/.
+**Note**: plan.md files are task-relative and NOT tracked in version control. For tracked specifications, use
+notes/issues/ or notes/review/.
 
 ---
 
 #### Phase 2: Test
+
 **Purpose**: Document and implement test cases
 
 **Responsibilities**:
+
 - Define test cases based on Plan specifications
 - Implement unit tests, integration tests, and system tests
 - Create test fixtures and mock data
@@ -92,10 +101,12 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 - Set up test automation
 
 **Dependencies**:
+
 - Requires Plan phase to be completed
 - Can run in parallel with Implementation and Packaging
 
 **Outputs**:
+
 - Test specifications
 - Test implementation code
 - Test fixtures and data
@@ -106,9 +117,11 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 ---
 
 #### Phase 3: Implementation
+
 **Purpose**: Build the main functionality
 
 **Responsibilities**:
+
 - Implement core functionality based on Plan specifications
 - Write clean, maintainable code following project conventions
 - Ensure code passes tests from Test phase
@@ -116,11 +129,13 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 - Implement error handling and validation
 
 **Dependencies**:
+
 - Requires Plan phase to be completed
 - Can run in parallel with Test and Packaging
 - Should integrate with Test phase for TDD approach
 
 **Outputs**:
+
 - Implementation code
 - Code documentation
 - API interfaces
@@ -131,9 +146,11 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 ---
 
 #### Phase 4: Packaging
+
 **Purpose**: Integrate and package the component
 
 **Responsibilities**:
+
 - Integrate Test and Implementation artifacts
 - Create self-contained installer/package
 - Write installation and setup documentation
@@ -142,11 +159,13 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 - Validate end-to-end functionality
 
 **Dependencies**:
+
 - Requires Plan phase to be completed
 - Can run in parallel with Test and Implementation
 - Should integrate artifacts from both phases when available
 
 **Outputs**:
+
 - Package/installer
 - Installation documentation
 - Setup scripts
@@ -158,9 +177,11 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 ---
 
 #### Phase 5: Cleanup
+
 **Purpose**: Refactor, finalize, and address accumulated issues
 
 **Responsibilities**:
+
 - Collect issues discovered during Test, Implementation, and Packaging phases
 - Refactor code for better maintainability
 - Fix technical debt and code smells
@@ -170,10 +191,12 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 - Performance optimization if needed
 
 **Dependencies**:
+
 - Requires Test, Implementation, and Packaging phases to be substantially complete
 - Final phase in the workflow
 
 **Outputs**:
+
 - Refactored, production-ready code
 - Updated documentation
 - Resolved technical debt
@@ -185,14 +208,20 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 
 ### Workflow Notes
 
-1. **Plan is the Foundation**: The Plan phase must be completed first as it produces the specifications for all other phases.
+1. **Plan is the Foundation**: The Plan phase must be completed first as it produces the specifications for all other
 
-2. **Parallel Execution**: Test, Implementation, and Packaging phases can run in parallel once Plan is complete, allowing for:
+   phases.
+
+2. **Parallel Execution**: Test, Implementation, and Packaging phases can run in parallel once Plan is complete, allowing
+
+   for:
    - TDD approach (Test → Implementation)
    - Early packaging preparation
    - More efficient development workflow
 
-3. **Cleanup is Continuous**: While Cleanup is the final phase, the Cleanup issue should be updated throughout Test, Implementation, and Packaging phases as issues are discovered. This ensures nothing is forgotten.
+3. **Cleanup is Continuous**: While Cleanup is the final phase, the Cleanup issue should be updated throughout Test,
+
+   Implementation, and Packaging phases as issues are discovered. This ensures nothing is forgotten.
 
 4. **Iterative Nature**: If major issues are discovered during Cleanup, it may be necessary to revisit earlier phases.
 

@@ -2,13 +2,15 @@
 
 ## Overview
 
-This repository uses a comprehensive 4-level hierarchical planning structure. Plan files are stored locally in `notes/plan/` and are **NOT tracked in version control** - they are task-relative and used for local planning and GitHub issue generation.
+This repository uses a comprehensive 4-level hierarchical planning structure. Plan files are stored
+locally in `notes/plan/` and are **NOT tracked in version control** - they are task-relative and used
+for local planning and GitHub issue generation.
 
 **Important**: For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/` directories.
 
 ## Repository Structure
 
-```
+```text
 ml-odyssey/
 ├── notes/
 │   ├── plan/                    # LOCAL ONLY (not in git) - task-relative planning
@@ -63,19 +65,25 @@ Each component generates 5 issues following a hierarchical workflow:
 ### Step 1: Test Issue Creation (✅ Complete)
 
 We've verified issue creation works:
+
 ```bash
+
 # Already tested - created 5 issues successfully
 # Note: Plan files are local (notes/plan/) and not tracked in git
-python3 scripts/create_single_component_issues.py notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md
+
+python3 scripts/create_single_component_issues.py \
+  notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md
 ```
 
-Results: https://github.com/mvillmow/ml-odyssey/issues/2-6
+Results: <https://github.com/mvillmow/ml-odyssey/issues/2-6>
 
 ### Step 2: Create All Issues
 
-**Option A: Section by Section (Recommended)**
+### Option A: Section by Section (Recommended)
+
 ```bash
 # Create issues for one section at a time
+
 python3 scripts/create_issues.py --section 01-foundation
 python3 scripts/create_issues.py --section 02-shared-library
 python3 scripts/create_issues.py --section 03-tooling
@@ -84,21 +92,26 @@ python3 scripts/create_issues.py --section 05-ci-cd
 python3 scripts/create_issues.py --section 06-agentic-workflows
 ```
 
-**Option B: All at Once**
+### Option B: All at Once
+
 ```bash
 # Create all issues
+
 python3 scripts/create_issues.py
 ```
 
-**Option C: Dry-Run First**
+### Option C: Dry-Run First
+
 ```bash
 # See what will be created without actually creating
+
 python3 scripts/create_issues.py --dry-run
 ```
 
 ### Step 3: Resume if Interrupted
 
 If the process is interrupted:
+
 ```bash
 python3 scripts/create_issues.py --resume
 ```
@@ -108,6 +121,7 @@ python3 scripts/create_issues.py --resume
 ### Automatic Label Creation
 
 The scripts automatically create necessary labels:
+
 - `planning` - Design and documentation phase
 - `documentation` - Documentation tasks
 - `testing` - Testing phase
@@ -136,11 +150,13 @@ The scripts automatically create necessary labels:
 After issue creation, all github_issue.md files are automatically updated:
 
 **Before:**
+
 ```markdown
 **GitHub Issue URL**: [To be created]
 ```
 
 **After:**
+
 ```markdown
 **GitHub Issue URL**: https://github.com/mvillmow/ml-odyssey/issues/123
 ```
@@ -152,7 +168,8 @@ After issue creation, all github_issue.md files are automatically updated:
 - **[notes/review/](review/)** - PR review documentation (tracked in git)
 - **[agents/](../agents/)** - Agent system documentation (tracked in git)
 
-**Note**: `notes/plan/` contains local planning files (not tracked in git, task-relative). Reference the tracked documentation above for team collaboration.
+**Note**: `notes/plan/` contains local planning files (not tracked in git, task-relative).
+Reference the tracked documentation above for team collaboration.
 
 ## Workflow
 
@@ -178,9 +195,11 @@ Each phase has its own GitHub issue with detailed instructions.
 ## Support
 
 For questions or issues:
+
 - Check the logs in `logs/`
 - Review [scripts/README.md](../scripts/README.md)
 - See existing issues on GitHub
 - Refer to tracked documentation in `notes/issues/`, `notes/review/`, `agents/`
 
-**Note**: Plan files in `notes/plan/` are task-relative (not in git). Generate them locally as needed for issue creation.
+**Note**: Plan files in `notes/plan/` are task-relative (not in git).
+Generate them locally as needed for issue creation.

@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document captures the architectural decisions, trade-offs, and rationale for the multi-level agent hierarchy implemented in issues 62-67.
+This document captures the architectural decisions, trade-offs, and rationale for the multi-level agent
+hierarchy implemented in issues 62-67.
 
 ## Architectural Decisions
 
@@ -11,12 +12,14 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Implement a 6-level agent hierarchy from meta-orchestrator to junior engineers
 
 **Rationale**:
+
 - Maps to proven organizational patterns (CTO → VP → Principal → Senior → Engineer → Junior)
 - Provides clear separation of concerns at each level
 - Enables effective task decomposition
 - Supports both small and large-scale projects
 
 **Alternatives Considered**:
+
 - **Flat structure**: All agents at same level
   - Rejected: No clear authority, coordination chaos
 - **3-level hierarchy**: Orchestrator → Specialist → Implementer
@@ -25,6 +28,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Excessive overhead, diminishing returns
 
 **Trade-offs**:
+
 - ✅ Pros: Clear delegation, proven pattern, scalable
 - ❌ Cons: More complexity, coordination overhead
 
@@ -37,12 +41,14 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Use `.claude/agents/` for working configs, `agents/` for documentation
 
 **Rationale**:
+
 - Follows Claude Code conventions (`.claude/agents/` is the standard location)
 - Separates operational code from documentation
 - Enables team documentation without cluttering operational configs
 - Clear distinction between "what runs" and "how to use"
 
 **Alternatives Considered**:
+
 - **Single `agents/` directory**: Everything in repository root
   - Rejected: Doesn't follow Claude Code conventions
 - **Only `.claude/agents/`**: No repository-root directory
@@ -51,6 +57,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Confusing, doesn't follow conventions
 
 **Trade-offs**:
+
 - ✅ Pros: Follows standards, clear separation, team-friendly
 - ❌ Cons: Two directories to maintain
 
@@ -63,6 +70,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Implement skills in `.claude/skills/` separate from sub-agents
 
 **Rationale**:
+
 - Skills and sub-agents serve different purposes
 - Skills = reusable capabilities (algorithmic)
 - Sub-agents = decision-makers (judgmental)
@@ -70,6 +78,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 - Enables skill reuse across multiple agents
 
 **Alternatives Considered**:
+
 - **Skills as sub-agents**: Everything is a sub-agent
   - Rejected: Overkill for simple operations, context pollution
 - **No skills system**: Only sub-agents
@@ -78,6 +87,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Claude Code provides this, don't reinvent
 
 **Trade-offs**:
+
 - ✅ Pros: Clear separation, reusable, follows conventions
 - ❌ Cons: Two systems to learn and maintain
 
@@ -90,12 +100,14 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Each GitHub issue gets its own git worktree
 
 **Rationale**:
+
 - Enables parallel work on multiple issues
 - Isolates agent contexts (one agent per worktree)
 - Prevents merge conflicts during development
 - Natural mapping: 1 issue = 1 worktree = 1 PR
 
 **Alternatives Considered**:
+
 - **Single main branch**: Everyone works on main
   - Rejected: Constant conflicts, risky
 - **Branches without worktrees**: Feature branches only
@@ -104,6 +116,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Too many worktrees, harder to track
 
 **Trade-offs**:
+
 - ✅ Pros: Isolation, parallel work, clear ownership
 - ❌ Cons: Disk space, more git commands
 
@@ -116,12 +129,14 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Organize skills into Tier 1 (Foundational), Tier 2 (Domain), Tier 3 (Specialized)
 
 **Rationale**:
+
 - Clear organization by usage breadth
 - Easy to find appropriate tier for new skills
 - Matches common skill patterns (universal → domain → specialized)
 - Helps with discoverability
 
 **Alternatives Considered**:
+
 - **Flat structure**: All skills in one directory
   - Rejected: Hard to navigate, unclear organization
 - **By agent type**: Skills organized by which agents use them
@@ -130,6 +145,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Some skills span domains
 
 **Trade-offs**:
+
 - ✅ Pros: Clear organization, easy to extend
 - ❌ Cons: Some skills could fit multiple tiers
 
@@ -142,12 +158,14 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Decision**: Map agent levels to 5-phase workflow (Plan → Test/Impl/Package → Cleanup)
 
 **Rationale**:
+
 - Leverages existing workflow
 - Clear phase boundaries
 - Enables parallel Test/Impl/Package phases
 - Natural fit: Planning agents → Plan, Implementation agents → Impl, etc.
 
 **Alternatives Considered**:
+
 - **New workflow**: Design workflow around agents
   - Rejected: Existing 5-phase workflow works well
 - **Ignore phases**: Agents work independently
@@ -156,6 +174,7 @@ This document captures the architectural decisions, trade-offs, and rationale fo
   - Rejected: Misses parallel execution opportunities
 
 **Trade-offs**:
+
 - ✅ Pros: Leverages existing structure, proven workflow
 - ❌ Cons: Must adapt agents to fit phases
 
@@ -170,10 +189,12 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Trade-off**: 6-level hierarchy is complex but powerful
 
 **Analysis**:
+
 - Complexity: More levels to understand, more coordination
 - Power: Fine-grained control, clear responsibilities, scalable
 
 **Mitigation**:
+
 - Comprehensive documentation
 - Templates for each level
 - Examples showing common patterns
@@ -188,10 +209,12 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Trade-off**: Following Claude Code conventions vs custom approaches
 
 **Analysis**:
+
 - Consistency: Easier for users familiar with Claude Code
 - Flexibility: Could customize to our exact needs
 
 **Mitigation**:
+
 - Follow conventions where they exist
 - Add customizations only when truly needed
 - Document deviations clearly
@@ -205,10 +228,12 @@ This document captures the architectural decisions, trade-offs, and rationale fo
 **Trade-off**: Time spent on docs vs implementation
 
 **Analysis**:
+
 - Good documentation: Helps team, reduces confusion, enables collaboration
 - Less documentation: Faster to implement, but harder to maintain
 
 **Mitigation**:
+
 - Document-first approach for foundational work
 - Templates reduce documentation burden
 - Living documentation (update as we learn)
@@ -308,11 +333,13 @@ When reviewing `.claude/skills/` configurations:
 ### For Test Phase (Issues 63, 69)
 
 **Questions to Answer**:
+
 - How do we test agent delegation?
 - What validates successful agent loading?
 - How do we test skill activation?
 
 **Review Focus**:
+
 - Test coverage for all agent types
 - Validation tests for configurations
 - Integration tests for delegation
@@ -320,11 +347,13 @@ When reviewing `.claude/skills/` configurations:
 ### For Implementation Phase (Issues 64, 70)
 
 **Questions to Answer**:
+
 - Which agents to implement first?
 - How do we test agents in isolation?
 - What's the learning curve for team?
 
 **Review Focus**:
+
 - Configuration correctness
 - Follows templates
 - Works with Claude Code
@@ -332,11 +361,13 @@ When reviewing `.claude/skills/` configurations:
 ### For Packaging Phase (Issues 65, 71)
 
 **Questions to Answer**:
+
 - How do team members discover agents?
 - What's the onboarding process?
 - How do we version control configs?
 
 **Review Focus**:
+
 - Documentation completeness
 - Setup instructions clarity
 - Team usability

@@ -2,7 +2,7 @@
 
 ## Hierarchy Diagram
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    Level 0: Meta-Orchestrator                │
 │                   Chief Architect Agent                      │
@@ -68,6 +68,7 @@
 ## Level Summaries
 
 ### Level 0: Meta-Orchestrator
+
 - **Agents**: 1 (Chief Architect)
 - **Scope**: Entire repository
 - **Decisions**: Strategic (paper selection, tech stack, architecture)
@@ -75,6 +76,7 @@
 - **Language Context**: Makes Mojo vs Python decisions for different components
 
 ### Level 1: Section Orchestrators
+
 - **Agents**: 6 (one per major section)
 - **Scope**: Repository sections
 - **Decisions**: Tactical (module organization, dependencies)
@@ -82,6 +84,7 @@
 - **Language Context**: Coordinates Mojo implementation across sections
 
 ### Level 2: Module Design Agents
+
 - **Agents**: 3 core types (Architecture, Integration, Security)
 - **Scope**: Modules within sections
 - **Decisions**: Module structure, interfaces, security
@@ -89,6 +92,7 @@
 - **Language Context**: Designs Mojo module structures, leverages Mojo features (SIMD, traits, structs)
 
 ### Level 3: Component Specialists
+
 - **Agents**: 5 types (Implementation, Test, Docs, Performance, Security)
 - **Scope**: Components within modules
 - **Decisions**: Component implementation approach
@@ -96,6 +100,7 @@
 - **Language Context**: Chooses Mojo patterns (fn vs def, struct vs class, SIMD usage)
 
 ### Level 4: Implementation Engineers
+
 - **Agents**: 5 types (Senior, Standard, Test, Docs, Performance)
 - **Scope**: Functions and classes
 - **Decisions**: Implementation details
@@ -103,6 +108,7 @@
 - **Language Context**: Writes Mojo code, uses Mojo standard library, implements algorithms
 
 ### Level 5: Junior Engineers
+
 - **Agents**: 3 types (Implementation, Test, Documentation)
 - **Scope**: Simple functions, boilerplate
 - **Decisions**: None (follows instructions)
@@ -114,18 +120,21 @@
 ### Language Expertise by Level
 
 **Level 0-2** (Architects and Designers):
+
 - Deep understanding of Mojo vs Python trade-offs
 - Knowledge of Mojo compilation model
 - Familiarity with SIMD operations and performance characteristics
 - Understanding of MAX platform integration
 
 **Level 3** (Specialists):
+
 - Proficiency in Mojo syntax and idioms
 - Knowledge of Mojo traits, structs, and memory management
 - Understanding of `fn` vs `def`, owned vs borrowed, etc.
 - Ability to design Mojo-specific patterns
 
 **Level 4-5** (Engineers):
+
 - Hands-on Mojo coding ability
 - Familiarity with Mojo standard library
 - Ability to write performance-critical code
@@ -150,7 +159,8 @@
 ## Delegation Flow
 
 ### Top-Down (Task Decomposition)
-```
+
+```text
 Paper Selection (Level 0)
     ↓
 Section Planning (Level 1)
@@ -165,7 +175,8 @@ Boilerplate Generation (Level 5)
 ```
 
 ### Bottom-Up (Status Reporting)
-```
+
+```text
 Code Metrics (Level 5)
     ↑
 Component Health (Level 4)
@@ -198,31 +209,37 @@ Strategic Alignment (Level 0)
 ### When to Use Each Level
 
 **Use Level 0** when:
+
 - Selecting which research paper to implement
 - Making system-wide architectural decisions
 - Resolving cross-section conflicts
 
 **Use Level 1** when:
+
 - Planning a major repository section
 - Coordinating multiple modules
 - Managing section dependencies
 
 **Use Level 2** when:
+
 - Designing module architecture
 - Defining component interfaces
 - Planning security or integration
 
 **Use Level 3** when:
+
 - Specifying component implementation
 - Planning tests for a component
 - Designing performance optimization strategy
 
 **Use Level 4** when:
+
 - Writing Mojo code for functions/classes
 - Implementing tests
 - Writing documentation
 
 **Use Level 5** when:
+
 - Generating Mojo boilerplate
 - Formatting code
 - Simple documentation tasks
