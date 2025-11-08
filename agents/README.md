@@ -207,12 +207,51 @@ model: sonnet
 
 ## Available Templates
 
-- [level-0-meta-orchestrator.md](templates/level-0-meta-orchestrator.md) - Chief Architect template
+- [level-0-chief-architect.md](templates/level-0-chief-architect.md) - Chief Architect template
 - [level-1-section-orchestrator.md](templates/level-1-section-orchestrator.md) - Section Orchestrator template
 - [level-2-module-design.md](templates/level-2-module-design.md) - Module Design Agent template
 - [level-3-component-specialist.md](templates/level-3-component-specialist.md) - Component Specialist template
 - [level-4-implementation-engineer.md](templates/level-4-implementation-engineer.md) - Implementation Engineer template
 - [level-5-junior-engineer.md](templates/level-5-junior-engineer.md) - Junior Engineer template
+
+## Operational Agents
+
+The operational agent configurations are in `.claude/agents/` (23 agents total):
+
+### Level 0: Meta-Orchestrator (1 agent)
+- `chief-architect.md` - Strategic decisions, paper selection, system-wide coordination
+
+### Level 1: Section Orchestrators (6 agents)
+- `foundation-orchestrator.md` - Section 01 (directory structure, configuration)
+- `shared-library-orchestrator.md` - Section 02 (core operations, training utilities)
+- `tooling-orchestrator.md` - Section 03 (CLI tools, automation scripts)
+- `papers-orchestrator.md` - Section 04 (research paper implementations)
+- `cicd-orchestrator.md` - Section 05 (testing, deployment pipelines)
+- `agentic-workflows-orchestrator.md` - Section 06 (research assistant, code review, documentation agents)
+
+### Level 2: Module Design Agents (3 agents)
+- `architecture-design.md` - Component breakdown, interface design, data flow
+- `integration-design.md` - Cross-component APIs, integration testing, Python-Mojo interop
+- `security-design.md` - Threat modeling, security requirements, vulnerability prevention
+
+### Level 3: Component Specialists (5 agents)
+- `implementation-specialist.md` - Break components into functions/classes, coordinate implementation
+- `test-specialist.md` - Test planning, test case definition, coverage requirements
+- `documentation-specialist.md` - Component READMEs, API docs, usage examples
+- `performance-specialist.md` - Performance requirements, benchmarking, optimization
+- `security-specialist.md` - Security implementation, testing, vulnerability remediation
+
+### Level 4: Implementation Engineers (5 agents)
+- `senior-implementation-engineer.md` - Complex functions, performance-critical code, SIMD optimization
+- `implementation-engineer.md` - Standard functions and classes, following specifications
+- `test-engineer.md` - Unit and integration tests, test fixtures, test maintenance
+- `documentation-engineer.md` - Docstrings, code examples, README updates
+- `performance-engineer.md` - Benchmark code, profiling, optimization implementation
+
+### Level 5: Junior Engineers (3 agents)
+- `junior-implementation-engineer.md` - Simple functions, boilerplate generation, code formatting
+- `junior-test-engineer.md` - Simple tests, test boilerplate, test execution
+- `junior-documentation-engineer.md` - Docstring templates, formatting, changelog entries
 
 ## Best Practices
 
