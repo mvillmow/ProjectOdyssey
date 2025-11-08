@@ -1,0 +1,7 @@
+# Exclude directories with existing content
+notes/blog/
+notes/review/
+notes/issues/
+
+# Exclude local plan files (not tracked in git)
+notes/plan/

@@ -1,0 +1,44 @@
+# Pre-commit hooks for ML Odyssey
+# See https://pre-commit.com for more information
+
+repos:
+  # Mojo formatting
+  - repo: local
+    hooks:
+      - id: mojo-format
+        name: Mojo Format
+        description: Format Mojo source files using mojo format
+        entry: mojo format
+        language: system
+        files: \.(mojo|🔥)$
+        pass_filenames: true
+
+  # Markdown linting - disabled until existing files are fixed
+  # Uncomment after addressing markdown linting issues in existing files
+  # - repo: https://github.com/DavidAnson/markdownlint-cli2
+  #   rev: v0.12.1
+  #   hooks:
+  #     - id: markdownlint-cli2
+  #       name: Markdown Lint
+  #       description: Lint markdown files for consistency
+  #       exclude: ^(notes/plan/|notes/blog/|notes/review/|notes/issues/)
+  #       args: ['--config', '.markdownlint.json']
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        exclude: ^notes/plan/
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        exclude: ^notes/plan/
+      - id: check-yaml
+        name: Check YAML
+      - id: check-added-large-files
+        name: Check for Large Files
+        args: ['--maxkb=1000']
+      - id: mixed-line-ending
+        name: Fix Mixed Line Endings
+        exclude: ^notes/plan/

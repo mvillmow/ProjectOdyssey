@@ -8,3 +8,4 @@ version = "0.1.0"
 
 [dependencies]
 mojo = ">=0.25.7.0.dev2025110405,<0.26"
+pre-commit = ">=3.5.0"

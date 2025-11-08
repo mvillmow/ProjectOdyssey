@@ -67,6 +67,35 @@ gh issue list
 gh issue view <number>
 ```
 
+### Pre-commit Hooks
+
+Pre-commit hooks automatically check code quality before commits. The hooks include `mojo format` for Mojo code and markdown linting for documentation.
+
+```bash
+# Install pre-commit hooks (one-time setup)
+pre-commit install
+
+# Run hooks manually on all files
+pre-commit run --all-files
+
+# Run hooks manually on staged files only
+pre-commit run
+
+# Skip hooks (use sparingly, only when necessary)
+git commit --no-verify
+```
+
+**Configured Hooks**:
+- `mojo format` - Auto-format Mojo code (`.mojo`, `.🔥` files)
+- `markdownlint-cli2` - Lint markdown files (currently disabled, will enable after fixing existing files)
+- `trailing-whitespace` - Remove trailing whitespace
+- `end-of-file-fixer` - Ensure files end with newline
+- `check-yaml` - Validate YAML syntax
+- `check-added-large-files` - Prevent large files from being committed (max 1MB)
+- `mixed-line-ending` - Fix mixed line endings
+
+**CI Enforcement**: The `.github/workflows/pre-commit.yml` workflow runs these checks on all PRs and pushes to `main`.
+
 ## Repository Architecture
 
 ### Project Structure
