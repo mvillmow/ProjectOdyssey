@@ -9,3 +9,4 @@ __pycache__
 logs/
 build/
 notes/plan/
+worktrees/
