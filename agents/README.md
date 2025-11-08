@@ -67,15 +67,30 @@ User: "Use the architecture design agent to plan the auth module"
 - Foundation, Shared Library, Tooling, Paper, CI/CD, Agentic Workflows Orchestrators
 - Manage major repository sections
 
-### Level 2: Module Design Agents
+### Level 2: Module Design Agents & Orchestrators
 
+**Design Agents**:
 - Architecture, Integration, Security Design Agents
 - Design module structure and interfaces
 
+**Review Orchestrators**:
+- Code Review Orchestrator
+- Coordinates 13 specialized review agents
+
 ### Level 3: Component Specialists
 
+**Implementation Specialists**:
 - Implementation, Test, Documentation, Performance, Security Specialists
 - Handle specific component aspects
+
+**Code Review Specialists** (13 agents):
+- Implementation, Documentation, Test Review Specialists
+- Security, Safety Review Specialists
+- Mojo Language, Performance Review Specialists
+- Algorithm, Architecture Review Specialists
+- Data Engineering Review Specialist
+- Paper, Research Review Specialists
+- Dependency Review Specialist
 
 ### Level 4: Implementation Engineers
 
@@ -167,6 +182,69 @@ Each GitHub issue gets its own worktree:
 
 **See [/notes/review/worktree-strategy.md](/notes/review/worktree-strategy.md) for complete workflow**
 
+## Code Review System
+
+### Overview
+
+A comprehensive code review system with 14 agents (1 orchestrator + 13 specialists) ensures thorough review across all dimensions:
+
+**Code Review Orchestrator** (Level 2):
+- Analyzes PRs and routes to appropriate specialists
+- Prevents overlap through dimension-based routing
+- Consolidates feedback from multiple specialists
+- Integrates with CI/CD pipeline
+
+**Review Specialists** (Level 3):
+- Implementation: Code correctness, logic, maintainability
+- Documentation: Markdown, comments, docstrings, API docs
+- Test: Test coverage, quality, assertions
+- Security: Vulnerabilities, OWASP top 10, input validation
+- Safety: Memory safety, type safety, undefined behavior
+- Mojo Language: Ownership, SIMD, fn vs def, traits
+- Performance: Algorithmic complexity, cache efficiency
+- Algorithm: ML algorithm correctness, numerical stability
+- Architecture: System design, modularity, patterns
+- Data Engineering: Data pipelines, preprocessing
+- Paper: Academic writing, citations
+- Research: Experimental design, reproducibility
+- Dependency: Version management, licenses
+
+### No-Overlap Strategy
+
+Each specialist reviews one dimension exclusively:
+
+| Dimension | Specialist | Example |
+|-----------|-----------|---------|
+| Logic Correctness | Implementation | Bug detection, control flow |
+| Memory Safety | Safety | Leaks, use-after-free |
+| Security Exploits | Security | SQL injection, XSS |
+| Language Idioms | Mojo Language | Ownership patterns, SIMD |
+| Performance | Performance | Big O complexity |
+| ML Correctness | Algorithm | Gradient computation |
+| System Design | Architecture | Module structure |
+| Test Quality | Test | Coverage, assertions |
+
+### Review Workflow
+
+```text
+PR Created
+  ↓
+Code Review Orchestrator analyzes
+  ↓
+Routes to specialists (parallel):
+  - .mojo files → Mojo Language + Implementation
+  - ML algorithms → Algorithm + Implementation
+  - Security code → Security + Safety
+  - Tests → Test Specialist
+  - Dependencies → Dependency + Security
+  ↓
+Consolidates feedback
+  ↓
+Comprehensive review report
+```
+
+**See individual agent docs in `.claude/agents/` for detailed checklists and examples**
+
 ## Configuration Format
 
 Agents follow Claude Code format with YAML frontmatter:
@@ -210,7 +288,9 @@ model: sonnet
 - [level-0-chief-architect.md](templates/level-0-chief-architect.md) - Chief Architect template
 - [level-1-section-orchestrator.md](templates/level-1-section-orchestrator.md) - Section Orchestrator template
 - [level-2-module-design.md](templates/level-2-module-design.md) - Module Design Agent template
+- [level-2-orchestrator.md](templates/level-2-orchestrator.md) - Generic Level 2 Orchestrator template
 - [level-3-component-specialist.md](templates/level-3-component-specialist.md) - Component Specialist template
+- [level-3-review-specialist.md](templates/level-3-review-specialist.md) - Generic Review Specialist template
 - [level-4-implementation-engineer.md](templates/level-4-implementation-engineer.md) - Implementation Engineer template
 - [level-5-junior-engineer.md](templates/level-5-junior-engineer.md) - Junior Engineer template
 
