@@ -11,29 +11,31 @@ GitHub Issue #1 established the complete planning foundation for the ML Odyssey 
 ## What Was Accomplished
 
 ### Planning Structure
-- Created complete 4-level hierarchical planning structure
-- All components have corresponding `plan.md` files following Template 1 format
+- Created complete 4-level hierarchical planning structure (local files in `notes/plan/`, NOT tracked in git)
+- All components have corresponding `plan.md` files following Template 1 format (task-relative, local only)
 - Proper parent-child linking throughout the hierarchy
 - All plans include: Overview, Inputs, Outputs, Steps, Success Criteria, and Notes sections
 
+**Important**: Plan files are task-relative and NOT tracked in version control. For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/`.
+
 ### GitHub Issues Planning
 - Designed 5-phase development workflow (Plan → [Test | Implementation | Packaging] → Cleanup)
-- Created system for generating GitHub issues dynamically from plan.md files
+- Created system for generating GitHub issues dynamically from plan.md files (local files)
 - Each component has 5 associated issues following the workflow
 
 ### Automation Scripts
-- **create_issues.py**: Main script to create GitHub issues from plan files
+- **create_issues.py**: Main script to create GitHub issues from local plan files
 - **create_single_component_issues.py**: Testing utility for single components
-- **regenerate_github_issues.py**: Consolidated script to regenerate github_issue.md files from plan.md files
+- **regenerate_github_issues.py**: Consolidated script to regenerate github_issue.md files from plan.md files (local files)
 
 ## Key Scripts
 
 ### Regenerating GitHub Issue Files
 
-Since github_issue.md files are dynamically generated, use the regeneration script when needed:
+Since github_issue.md files are dynamically generated from local plan.md files (NOT tracked in git), use the regeneration script when needed:
 
 ```bash
-# Regenerate all github_issue.md files
+# Regenerate all github_issue.md files (local files in notes/plan/)
 python3 scripts/regenerate_github_issues.py
 
 # Dry-run to preview changes
@@ -45,6 +47,8 @@ python3 scripts/regenerate_github_issues.py --section 01-foundation
 # Resume from previous run
 python3 scripts/regenerate_github_issues.py --resume
 ```
+
+**Note**: Both plan.md and github_issue.md files are task-relative and kept locally (not in git).
 
 ### Creating GitHub Issues
 
@@ -128,9 +132,9 @@ Each component's github_issue.md file contains 5 issues with the following struc
 
 ## File Organization
 
-### Plan Structure
+### Plan Structure (LOCAL ONLY - not in git)
 ```
-notes/plan/
+notes/plan/              # Task-relative, NOT tracked in git
 ├── 01-foundation/
 ├── 02-shared-library/
 ├── 03-tooling/
@@ -139,9 +143,11 @@ notes/plan/
 └── 06-agentic-workflows/
 ```
 
-Each directory contains:
-- `plan.md` - Component plan following Template 1 format
-- (github_issue.md files are generated dynamically, not committed to repository)
+Each directory contains (locally):
+- `plan.md` - Component plan following Template 1 format (local, not tracked)
+- (github_issue.md files are generated dynamically, not tracked in git)
+
+**For tracked documentation**, see notes/issues/, notes/review/, agents/
 
 ### Scripts
 ```
@@ -162,8 +168,13 @@ logs/
 
 ## Important Notes
 
+### Plan Files Are Local (Not Tracked)
+- plan.md files are task-relative and stored locally in `notes/plan/`
+- They are NOT tracked in version control (not in git)
+- For tracked team documentation, use `notes/issues/`, `notes/review/`, or `agents/`
+
 ### GitHub Issue Files
-- github_issue.md files are **dynamically generated** from plan.md files
+- github_issue.md files are **dynamically generated** from plan.md files (both local, not tracked)
 - They are NOT committed to the repository
 - Use `scripts/regenerate_github_issues.py` to generate them when needed
 - Never edit github_issue.md files manually - changes will be overwritten

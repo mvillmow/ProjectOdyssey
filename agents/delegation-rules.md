@@ -230,7 +230,7 @@ git merge --no-commit <branch>
 ```
 
 **Option 3**: Coordinate via specs
-- Document in plan.md
+- Document in specifications (local plan.md or tracked notes/issues/)
 - Implement independently
 - Merge during packaging phase
 
@@ -243,11 +243,13 @@ git merge --no-commit <branch>
 - Memory management patterns
 - SIMD vector widths
 
-**Document in plan.md**:
+**Document in specifications**:
 - Type signatures
 - Performance requirements
 - Memory constraints
 - Parallelization strategy
+
+**Note**: Use local plan.md files (not tracked in git) for task-relative planning, or tracked documentation in `notes/issues/` for team-wide specifications.
 
 ### Mojo Style Consistency
 **Level 2-3 Establishes**:

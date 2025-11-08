@@ -5,19 +5,21 @@ This directory contains Python automation scripts for the Mojo AI Research Repos
 ## Overview
 
 These scripts automate repository management tasks:
-- Creating GitHub issues from plan files
-- Regenerating github_issue.md files dynamically from plan.md files
+- Creating GitHub issues from plan files (local files in `notes/plan/`, not tracked in git)
+- Regenerating github_issue.md files dynamically from plan.md files (local, task-relative)
 - Testing issue creation for individual components
+
+**Important**: Plan files in `notes/plan/` are task-relative and NOT tracked in version control. They are used for local planning and GitHub issue generation. For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/`.
 
 ## Scripts
 
 ### Main Scripts
 
 #### `regenerate_github_issues.py`
-**Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files.
+**Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files (local files in `notes/plan/`, not tracked in git).
 
 **Features**:
-- Generates github_issue.md files from plan.md sources
+- Generates github_issue.md files from plan.md sources (task-relative, local only)
 - Supports dry-run mode for testing
 - Section-by-section processing
 - Resume capability with timestamped state files
@@ -49,12 +51,12 @@ python3 scripts/regenerate_github_issues.py --resume
 - Saves state to `logs/.issue_creation_state_<timestamp>.json`
 - Updates github_issue.md files in place
 
-**Important**: github_issue.md files are dynamically generated and should not be edited manually. Always regenerate them using this script.
+**Important**: github_issue.md files are dynamically generated and should not be edited manually. Always regenerate them using this script. These files are local (in `notes/plan/`) and NOT tracked in git.
 
 ---
 
 #### `create_issues.py`
-**Purpose**: Create GitHub issues from all github_issue.md files in the notes/plan directory.
+**Purpose**: Create GitHub issues from all github_issue.md files in the notes/plan directory (local files, not tracked in git).
 
 **Features**:
 - Creates GitHub issues using the gh CLI
@@ -130,10 +132,12 @@ python3 scripts/create_single_component_issues.py notes/plan/01-foundation/githu
 
 ### Typical Development Flow
 
-1. **Edit plan.md files** - Make changes to planning documents
-2. **Regenerate github_issue.md** - Run `regenerate_github_issues.py` to update issue files
+**Note**: Plan files are local (in `notes/plan/`) and NOT tracked in git.
+
+1. **Edit plan.md files** - Make changes to local planning documents
+2. **Regenerate github_issue.md** - Run `regenerate_github_issues.py` to update local issue files
 3. **Test with dry-run** - Run `create_issues.py --dry-run` to preview
-4. **Create issues** - Run `create_issues.py` to create GitHub issues
+4. **Create issues** - Run `create_issues.py` to create GitHub issues from local plans
 
 ### Creating All Issues
 
@@ -172,10 +176,10 @@ Execution logs are saved in the `logs/` directory:
 - Contains detailed progress and error information
 
 ### GitHub Issue Files
-github_issue.md files are dynamically generated:
-- Located in `notes/plan/**/github_issue.md`
-- Generated from corresponding plan.md files
-- Not committed to repository (regenerated as needed)
+github_issue.md files are dynamically generated (local, NOT tracked in git):
+- Located in `notes/plan/**/github_issue.md` (task-relative, not in version control)
+- Generated from corresponding plan.md files (also local, not tracked)
+- Regenerated locally as needed for issue creation
 - Each contains 5 issue definitions (Plan, Test, Implementation, Packaging, Cleanup)
 
 ---
@@ -238,8 +242,10 @@ rm logs/.issue_creation_state_*.json
 ### Permission Errors
 Ensure you have:
 - Write access to `logs/` directory
-- Write access to `notes/plan/` directory (for updating github_issue.md)
+- Write access to `notes/plan/` directory (local files, for updating github_issue.md)
 - GitHub repository write access
+
+**Note**: `notes/plan/` is local and NOT tracked in git.
 
 ### Rate Limiting
 GitHub API has rate limits. If you hit them:
@@ -271,16 +277,19 @@ Scripts expect this structure:
 ```
 ml-odyssey/
 ├── notes/
-│   └── plan/
-│       ├── 01-foundation/
-│       │   ├── plan.md
-│       │   └── (github_issue.md - generated)
-│       └── ...
+│   ├── plan/                # LOCAL ONLY (not in git) - task-relative planning
+│   │   ├── 01-foundation/
+│   │   │   ├── plan.md
+│   │   │   └── (github_issue.md - generated)
+│   │   └── ...
+│   ├── issues/              # Tracked docs - historical issue documentation
+│   └── review/              # Tracked docs - PR review documentation
+├── agents/                  # Tracked docs - agent system documentation
 ├── scripts/
 │   ├── create_issues.py
 │   ├── create_single_component_issues.py
 │   └── regenerate_github_issues.py
-└── logs/
+└── logs/                    # Not tracked
     ├── .issue_creation_state_*.json
     └── create_issues_*.log
 ```
@@ -312,6 +321,7 @@ ml-odyssey/
 6. **Keep github_issue.md files in sync**
    - Regenerate after editing plan.md files
    - Don't edit github_issue.md manually
+   - Remember: These are local files (not tracked in git)
 
 ---
 
@@ -383,7 +393,9 @@ ml-odyssey/
 ## Notes
 
 - All scripts use Python 3 standard library only
-- github_issue.md files are dynamically generated, not committed
+- github_issue.md files are dynamically generated, not committed (local only)
+- plan.md files are task-relative and NOT tracked in git
 - State files include timestamps for tracking multiple runs
 - Scripts handle errors gracefully with detailed logging
 - Resume capability prevents duplicate work if interrupted
+- For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/`

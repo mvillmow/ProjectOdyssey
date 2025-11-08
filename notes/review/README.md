@@ -71,11 +71,13 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 **Dependencies**: None (starts the workflow)
 
 **Outputs**:
-- Detailed component plan (plan.md)
-- Specifications for Test, Implementation, and Packaging issues
+- Detailed component plan (plan.md - local file, not tracked in git)
+- Specifications for Test, Implementation, and Packaging issues (tracked in notes/issues/)
 - Success criteria and acceptance tests
 
 **GitHub Issue**: Creates the foundational planning issue that other phases reference
+
+**Note**: plan.md files are task-relative and NOT tracked in version control. For tracked specifications, use notes/issues/ or notes/review/.
 
 ---
 

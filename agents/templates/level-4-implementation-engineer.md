@@ -298,7 +298,7 @@ You're successful when:
 - [Mojo Examples](https://github.com/modularml/mojo/tree/main/examples)
 
 ### Project Resources
-- Component specification in plan.md
+- Component specification in local plan.md (not tracked in git) or tracked docs in notes/issues/
 - Test files in test worktree
 - Style guide in project docs
 

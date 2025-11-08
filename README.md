@@ -5,24 +5,24 @@ Implementation of older AI papers for the modern age.
 
 ```
 ml-odyssey/
-├── notes/plan/          # 4-level hierarchical planning structure
-│   ├── 01-foundation/
-│   ├── 02-shared-library/
-│   ├── 03-tooling/
-│   ├── 04-first-paper/
-│   ├── 05-ci-cd/
-│   └── 06-agentic-workflows/
+├── notes/
+│   ├── plan/            # 4-level planning (LOCAL ONLY - not in git)
+│   ├── issues/          # Issue documentation (tracked in git)
+│   └── review/          # Review documentation (tracked in git)
+├── agents/              # Agent documentation (tracked in git)
 ├── scripts/             # Automation scripts
 │   ├── create_issues.py
 │   └── README.md
-└── logs/                # Script execution logs
+└── logs/                # Script execution logs (not tracked)
 ```
 
 ## Quick Start
 
 ### Creating GitHub Issues
 
-All planning has been documented in `notes/plan/` across 6 major sections using a 4-level hierarchical structure. To create GitHub issues:
+**Note**: Plan files are stored locally in `notes/plan/` and are NOT tracked in version control. They are task-relative and used for local planning and GitHub issue generation.
+
+To create GitHub issues from your local plan files:
 
 ```bash
 # Test with dry-run first
@@ -38,4 +38,8 @@ See [scripts/README.md](scripts/README.md) for detailed documentation.
 
 - [notes/README.md](notes/README.md) - Plan for creating GitHub issues
 - [scripts/README.md](scripts/README.md) - Automation scripts documentation
-- [notes/plan/](notes/plan/) - Complete hierarchical planning structure
+- [agents/README.md](agents/README.md) - Agent system documentation
+- [notes/issues/](notes/issues/) - Historical issue documentation (tracked)
+- [notes/review/](notes/review/) - Review documentation (tracked)
+
+**Note**: `notes/plan/` contains local planning files (not tracked in git). Reference tracked documentation above for team collaboration.

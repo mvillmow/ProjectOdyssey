@@ -9,16 +9,18 @@
 ## What Was Accomplished
 
 ### Phase 1: Analysis and Preparation ✅
-- Analyzed current plan.md files for issues 62-67
+- Analyzed current plan.md files (local, not tracked in git) for issues 62-67
 - Identified parent plan structure
 - Created comprehensive git worktree strategy document
 
 ### Phase 2: Plan Updates (Parallel Execution) ✅
-Updated all plan.md files with multi-level agent architecture:
+Updated all plan.md files (local, task-relative) with multi-level agent architecture:
 - **agents/plan.md**: 6-level hierarchy, .claude/agents/ vs agents/ distinction
 - **tools/plan.md**: Clarified distinction from scripts/, added Mojo context
 - **skills/plan.md**: NEW - Created 3-tier skills taxonomy
 - **parent plan.md**: Added skills as 6th child component
+
+**Note**: Plan files are task-relative and NOT tracked in git. Tracked documentation is in notes/issues/, notes/review/, and agents/.
 
 ### Phase 3: Comprehensive Documentation (Parallel Creation) ✅
 Created extensive documentation across three locations:
@@ -40,7 +42,7 @@ Created extensive documentation across three locations:
 - `templates/level-4-implementation-engineer.md` - Sample template with Mojo examples
 
 ### Phase 4: GitHub Integration ✅
-- Regenerated all github_issue.md files with updated plan content
+- Regenerated all github_issue.md files (local, from plan.md) with updated plan content
 - Updated GitHub issues 62-67 with new architecture details
 - Created new GitHub issues 510-514 for skills system
 
@@ -100,7 +102,7 @@ This document
 ## What Worked Well
 
 ### 1. Parallel Execution
-- Used parallel agents to update multiple plan.md files simultaneously
+- Used parallel agents to update multiple plan.md files (local, task-relative) simultaneously
 - Saved significant time compared to sequential updates
 - No conflicts or coordination issues
 

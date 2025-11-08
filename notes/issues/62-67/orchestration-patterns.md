@@ -122,7 +122,7 @@ Section Orchestrator
 Plan Phase must complete before Test/Impl/Package:
 
 1. Section Orchestrator → Architecture Design Agent (Plan)
-   ↓ Wait for plan.md completion
+   ↓ Wait for plan.md completion (local file, not tracked)
 2. Section Orchestrator → Component Specialists (Test/Impl/Package)
    ↓ Specialists work in parallel
 3. Section Orchestrator → All agents (Cleanup)
@@ -359,7 +359,7 @@ Component Specialists
   ↓ Detailed specifications
 ```
 
-**Completion Criteria**: All plan.md files created and reviewed
+**Completion Criteria**: All plan.md files (local, task-relative) created and reviewed
 
 #### Phase 2-4: Test/Implementation/Packaging (Parallel)
 ```
@@ -416,13 +416,15 @@ git merge --no-commit issue-63-test-agents
 git reset --hard  # Clean up if needed
 ```
 
-**Option 3: Coordinate through plan.md**
+**Option 3: Coordinate through specifications**
 ```
 Test Engineer: Commits test fixtures to issue-63 branch
-Implementation Engineer: Reads plan.md for fixture specifications
+Implementation Engineer: Reads specifications (local plan.md or tracked docs) for fixture specs
 Implementation Engineer: Creates fixtures independently in issue-64
 After both complete: Package Engineer merges both
 ```
+
+**Note**: plan.md files are task-relative and local (not tracked in git). For team-wide coordination, use tracked documentation in notes/issues/.
 
 ---
 
