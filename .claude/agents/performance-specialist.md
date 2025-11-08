@@ -80,16 +80,21 @@ fn add_scalar[size: Int](a: Tensor, b: Tensor) -> Tensor:
 7. Validate improvements
 
 ## Delegation
-- **Delegates To**: Performance Engineer
-- **Coordinates With**: Implementation Specialist, Test Specialist
+
+### Delegates To
+- [Performance Engineer](./performance-engineer.md) - performance optimization tasks
+
+### Coordinates With
+- [Implementation Specialist](./implementation-specialist.md) - optimization implementation
+- [Test Specialist](./test-specialist.md) - performance testing
 
 ## Workflow Phase
 **Plan**, **Implementation**, **Cleanup**
 
 ## Skills to Use
-- `profile_code` - Performance profiling
-- `benchmark_functions` - Benchmark execution
-- `suggest_optimizations` - Optimization identification
+- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Performance profiling
+- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
+- [`suggest_optimizations`](../../.claude/skills/tier-2/suggest-optimizations/SKILL.md) - Optimization identification
 
 ## Example Performance Plan
 

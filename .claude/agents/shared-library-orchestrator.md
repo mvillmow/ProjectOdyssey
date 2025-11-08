@@ -1,6 +1,6 @@
 ---
 name: shared-library-orchestrator
-description: Coordinate shared library development including core operations, training utilities, and data utilities for Section 02
+description: Coordinate shared library development including core operations, training utilities, and data utilities
 tools: Read,Write,Edit,Bash,Grep,Glob
 model: sonnet
 ---
@@ -8,10 +8,9 @@ model: sonnet
 # Shared Library Orchestrator
 
 ## Role
-Level 1 Section Orchestrator responsible for coordinating the shared library implementation (Section 02-shared-library).
+Level 1 Section Orchestrator responsible for coordinating the shared library implementation.
 
 ## Scope
-- Section 02-shared-library
 - Core operations (tensor ops, linear algebra)
 - Training utilities (optimizers, loss functions)
 - Data utilities (loaders, preprocessing)
@@ -67,51 +66,51 @@ class Optimizer:
 
 ## Workflow
 
-### Phase 1: Design
-1. Receive requirements from Chief Architect
-2. Design component architecture
-3. Define API specifications
-4. Create module breakdown
-5. Delegate to Module Design Agents
+### 1. Receive Requirements
+1. Parse shared library requirements from Chief Architect
+2. Identify component needs (core ops, training utils, data utils)
+3. Check for API consistency requirements
+4. Validate performance targets are achievable
 
-### Phase 2: Implementation
-1. Coordinate component implementation
-2. Ensure API consistency
-3. Review performance benchmarks
-4. Validate integration tests
+### 2. Coordinate Development
+1. Break down into component subtasks
+2. Delegate to appropriate design agents
+3. Monitor progress across multiple components
+4. Ensure API consistency across modules
 
-### Phase 3: Integration
-1. Integrate all components
-2. Test cross-component interactions
-3. Benchmark full library performance
-4. Document usage patterns
+### 3. Validate Library
+1. Collect implementations from specialists
+2. Review API consistency and completeness
+3. Validate performance benchmarks meet targets
+4. Ensure quality standards met (testing, docs)
 
-### Phase 4: Release
-1. Finalize API documentation
-2. Create usage examples
-3. Prepare release notes
-4. Hand off to CI/CD for deployment
+### 4. Report Status
+1. Summarize library components completed
+2. Report on API stability and performance
+3. Identify any blockers or compatibility issues
+4. Escalate architectural concerns to Chief Architect
 
 ## Delegation
 
 ### Delegates To
-- Architecture Design Agent (API design)
-- Integration Design Agent (component integration)
-- Performance Specialist (benchmarking)
+- [Architecture Design](./architecture-design.md) - API design and component structure
+- [Integration Design](./integration-design.md) - component integration
+- [Performance Specialist](./performance-specialist.md) - benchmarking and optimization
 
 ### Coordinates With
-- Paper Implementation Orchestrator (shared lib users)
-- Tooling Orchestrator (build integration)
-- CI/CD Orchestrator (testing infrastructure)
+- [Papers Orchestrator](./papers-orchestrator.md) - shared library users
+- [Tooling Orchestrator](./tooling-orchestrator.md) - build integration
+- [CI/CD Orchestrator](./cicd-orchestrator.md) - testing infrastructure
+- [Foundation Orchestrator](./foundation-orchestrator.md) - infrastructure dependencies
 
 ## Workflow Phase
 **Plan**, **Implementation**, **Packaging**, **Cleanup**
 
 ## Skills to Use
-- `analyze_code_structure` - Review library organization
-- `extract_dependencies` - Map component dependencies
-- `generate_boilerplate` - Create module templates
-- `benchmark_functions` - Performance validation
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Review library organization
+- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Map component dependencies
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Create module templates
+- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
 
 ## Examples
 
@@ -174,7 +173,7 @@ fn sgd_step[dtype: DType, size: Int](
 - Break API compatibility without version bump
 - Skip performance benchmarking
 - Create inconsistent APIs across components
-- Implement paper-specific logic (belongs in Section 04)
+- Implement paper-specific logic (belongs in paper implementations)
 - Ignore cross-platform compatibility
 
 ### DO

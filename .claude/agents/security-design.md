@@ -102,48 +102,48 @@ struct SecureData[dtype: DType, size: Int]:
 
 ## Workflow
 
-### Phase 1: Threat Analysis
-1. Receive module specifications
-2. Identify potential threats (STRIDE model)
-3. Assess risk levels
-4. Prioritize security requirements
+### 1. Receive Security Requirements
+1. Parse module specifications from Section Orchestrator
+2. Identify potential threats using STRIDE model
+3. Assess risk levels and prioritize
+4. Validate security requirements are achievable
 
-### Phase 2: Security Design
-1. Design input validation strategy
-2. Plan secure data handling
+### 2. Design Security
+1. Design input validation and sanitization strategy
+2. Plan secure data handling and memory management
 3. Define authentication/authorization if needed
 4. Create security specifications
 
-### Phase 3: Review
-1. Review with Section Orchestrator
-2. Coordinate with Architecture Design Agent
-3. Get approval
-4. Delegate to Security Implementation Specialist
+### 3. Produce Security Plan
+1. Document security design and threat mitigations
+2. Specify security testing requirements
+3. Define security review criteria
+4. Ensure specifications are implementable
 
-### Phase 4: Validation
-1. Review security implementation
-2. Verify security testing coverage
-3. Conduct security review
-4. Approve or request changes
+### 4. Validate and Delegate
+1. Review with Section Orchestrator and Architecture Design
+2. Get approval on security approach
+3. Delegate implementation to Security Specialist
+4. Validate final implementation meets security standards
 
 ## Delegation
 
 ### Delegates To
-- Security Implementation Specialist (Level 3)
-- Test Specialist (security testing)
+- [Security Specialist](./security-specialist.md) - security implementation
+- [Test Specialist](./test-specialist.md) - security testing and validation
 
 ### Coordinates With
-- Architecture Design Agent (security requirements in design)
-- Integration Design Agent (API security)
+- [Architecture Design](./architecture-design.md) - security requirements in design
+- [Integration Design](./integration-design.md) - API security
 
 ## Workflow Phase
 **Plan** phase, with validation in **Test** phase
 
 ## Skills to Use
-- `scan_vulnerabilities` - Identify potential vulns
-- `check_dependencies` - Vulnerable dependencies
-- `validate_inputs` - Input validation patterns
-- `analyze_code_structure` - Security code review
+- [`scan_vulnerabilities`](../../.claude/skills/tier-2/scan-vulnerabilities/SKILL.md) - Identify potential vulnerabilities
+- [`check_dependencies`](../../.claude/skills/tier-2/check-dependencies/SKILL.md) - Vulnerable dependencies
+- [`validate_inputs`](../../.claude/skills/tier-2/validate-inputs/SKILL.md) - Input validation patterns
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Security code review
 
 ## Examples
 

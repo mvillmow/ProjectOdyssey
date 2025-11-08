@@ -90,9 +90,9 @@ Level 5 is the lowest level - no delegation to other agents.
 **Implementation**
 
 ## Skills to Use
-- `generate_boilerplate` - Template generation
-- `refactor_code` - Simple refactorings
-- `lint_code` - Code linting
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Template generation
+- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Simple refactorings
+- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Code linting
 
 ## Examples
 

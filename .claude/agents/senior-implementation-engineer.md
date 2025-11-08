@@ -84,17 +84,23 @@ fn matmul_optimized[M: Int, N: Int, K: Int](
 7. Review and submit
 
 ## Delegation
-- **Delegates To**: Implementation Engineer (helper functions), Junior Engineer (boilerplate)
-- **Coordinates With**: Test Engineer (TDD), Performance Specialist (optimization)
+
+### Delegates To
+- [Implementation Engineer](./implementation-engineer.md) - helper functions and utilities
+- [Junior Implementation Engineer](./junior-implementation-engineer.md) - boilerplate code
+
+### Coordinates With
+- [Test Engineer](./test-engineer.md) - TDD and test coverage
+- [Performance Specialist](./performance-specialist.md) - optimization guidance
 
 ## Workflow Phase
 **Implementation**
 
 ## Skills to Use
-- `generate_boilerplate` - Complex templates
-- `refactor_code` - Optimization refactoring
-- `profile_code` - Performance profiling
-- `benchmark_functions` - Performance validation
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Complex templates
+- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Optimization refactoring
+- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Performance profiling
+- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
 
 ## Example
 

@@ -87,56 +87,50 @@ Optimizer.step (Mojo)
 
 ## Workflow
 
-### Phase 1: Requirements Analysis
-1. Receive module requirements from Section Orchestrator
-2. Understand scope and constraints
-3. Identify performance requirements
-4. Clarify ambiguities
+### 1. Receive Module Requirements
+1. Parse module requirements from Section Orchestrator
+2. Identify components needed and their scope
+3. Check for performance and interface requirements
+4. Validate requirements are achievable
 
-### Phase 2: Component Design
-1. Break module into components
-2. Define component responsibilities
-3. Design component interfaces
-4. Create architecture diagrams
+### 2. Design Architecture
+1. Break module into logical components
+2. Define component responsibilities and interfaces
+3. Design data flow between components
+4. Create architecture diagrams and specifications
 
-### Phase 3: Specification Creation
+### 3. Produce Specifications
 1. Write detailed component specifications
-2. Define data structures and types
-3. Specify error handling approach
-4. Document design decisions
+2. Document design decisions and rationale
+3. Define error handling and edge cases
+4. Ensure specifications are implementable
 
-### Phase 4: Review and Approval
-1. Present design to Section Orchestrator
-2. Address feedback
-3. Get approval
-4. Delegate to Component Specialists
-
-### Phase 5: Oversight
-1. Monitor implementation progress
-2. Ensure design is followed
+### 4. Delegate and Monitor
+1. Delegate component implementation to specialists
+2. Monitor progress and ensure design is followed
 3. Approve design changes if needed
-4. Validate final implementation
+4. Validate final implementation matches design
 
 ## Delegation
 
 ### Delegates To
-- Implementation Specialist (Level 3)
-- Test Specialist (Level 3)
-- Performance Specialist (Level 3)
+- [Implementation Specialist](./implementation-specialist.md) - component implementation
+- [Test Specialist](./test-specialist.md) - component testing
+- [Performance Specialist](./performance-specialist.md) - performance optimization
 
 ### Coordinates With
-- Integration Design Agent (Level 2) - For cross-component integration
-- Security Design Agent (Level 2) - For security requirements
-- Other Architecture Design Agents - For cross-module consistency
+- [Integration Design](./integration-design.md) - cross-component integration
+- [Security Design](./security-design.md) - security requirements
+- Other orchestrators - cross-module consistency
 
 ## Workflow Phase
 Primarily **Plan** phase, with oversight in Implementation
 
 ## Skills to Use
-- `analyze_code_structure` - Understand existing code
-- `extract_dependencies` - Map component dependencies
-- `extract_algorithm` - For algorithm-based components
-- `identify_architecture` - For ML model components
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Understand existing code
+- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Map component dependencies
+- [`extract_algorithm`](../../.claude/skills/tier-2/extract-algorithm/SKILL.md) - For algorithm-based components
+- [`identify_architecture`](../../.claude/skills/tier-2/identify-architecture/SKILL.md) - For ML model components
 
 ## Examples
 

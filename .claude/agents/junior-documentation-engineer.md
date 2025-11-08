@@ -92,9 +92,9 @@ Level 5 is the lowest level - no delegation.
 **Packaging**
 
 ## Skills to Use
-- `generate_docstrings` - Docstring templates
-- `generate_changelog` - Changelog entries
-- `lint_code` - Documentation linting
+- [`generate_docstrings`](../../.claude/skills/tier-2/generate-docstrings/SKILL.md) - Docstring templates
+- [`generate_changelog`](../../.claude/skills/tier-2/generate-changelog/SKILL.md) - Changelog entries
+- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Documentation linting
 
 ## Examples
 

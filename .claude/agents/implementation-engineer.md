@@ -92,17 +92,21 @@ struct LinearLayer:
 7. Submit
 
 ## Delegation
-- **Delegates To**: Junior Engineer (boilerplate, simple helpers)
-- **Coordinates With**: Test Engineer (TDD)
+
+### Delegates To
+- [Junior Implementation Engineer](./junior-implementation-engineer.md) - boilerplate and simple helpers
+
+### Coordinates With
+- [Test Engineer](./test-engineer.md) - TDD coordination
 
 ## Workflow Phase
 **Implementation**
 
 ## Skills to Use
-- `generate_boilerplate` - Function templates
-- `refactor_code` - Code improvements
-- `run_tests` - Test execution
-- `lint_code` - Code quality
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Function templates
+- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Code improvements
+- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
+- [`lint_code`](../../.claude/skills/tier-1/lint-code/SKILL.md) - Code quality
 
 ## Constraints
 

@@ -123,23 +123,23 @@ struct Adam(Optimizer):
 ## Delegation
 
 ### Delegates To
-- Senior Implementation Engineer (complex functions)
-- Implementation Engineer (standard functions)
-- Junior Engineer (boilerplate)
+- [Senior Implementation Engineer](./senior-implementation-engineer.md) - complex functions and algorithms
+- [Implementation Engineer](./implementation-engineer.md) - standard functions
+- [Junior Implementation Engineer](./junior-implementation-engineer.md) - boilerplate and simple functions
 
 ### Coordinates With
-- Test Specialist (TDD coordination)
-- Documentation Specialist (API docs)
-- Performance Specialist (optimization)
+- [Test Specialist](./test-specialist.md) - TDD coordination
+- [Documentation Specialist](./documentation-specialist.md) - API documentation
+- [Performance Specialist](./performance-specialist.md) - optimization
 
 ## Workflow Phase
 **Plan**, **Implementation**, **Cleanup**
 
 ## Skills to Use
-- `analyze_code_structure` - Understand component structure
-- `generate_boilerplate` - Create templates
-- `refactor_code` - Code improvements
-- `detect_code_smells` - Quality review
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Understand component structure
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - Create templates
+- [`refactor_code`](../../.claude/skills/tier-2/refactor-code/SKILL.md) - Code improvements
+- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Quality review
 
 ## Example: Tensor Operations Component
 

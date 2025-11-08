@@ -143,16 +143,16 @@ How to contribute to this module.
 7. Submit documentation
 
 ## Coordinates With
-- Documentation Specialist (documentation strategy)
-- Implementation Engineer (code understanding)
+- [Documentation Specialist](./documentation-specialist.md) - documentation strategy and requirements
+- [Implementation Engineer](./implementation-engineer.md) - code understanding
 
 ## Workflow Phase
 **Packaging**
 
 ## Skills to Use
-- `generate_docstrings` - Auto-generate docstrings
-- `generate_api_docs` - Create API reference
-- `generate_changelog` - Version documentation
+- [`generate_docstrings`](../../.claude/skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
+- [`generate_api_docs`](../../.claude/skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
+- [`generate_changelog`](../../.claude/skills/tier-2/generate-changelog/SKILL.md) - Version documentation
 
 ## Example Documentation
 

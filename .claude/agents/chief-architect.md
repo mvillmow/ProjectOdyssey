@@ -99,12 +99,12 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
 ## Delegation
 
 ### Delegates To
-- Foundation Orchestrator (Level 1)
-- Shared Library Orchestrator (Level 1)
-- Tooling Orchestrator (Level 1)
-- Paper Implementation Orchestrator (Level 1)
-- CI/CD Orchestrator (Level 1)
-- Agentic Workflows Orchestrator (Level 1)
+- [Foundation Orchestrator](./foundation-orchestrator.md) - repository foundation and setup
+- [Shared Library Orchestrator](./shared-library-orchestrator.md) - reusable components
+- [Tooling Orchestrator](./tooling-orchestrator.md) - development tools
+- [Papers Orchestrator](./papers-orchestrator.md) - paper implementations
+- [CI/CD Orchestrator](./cicd-orchestrator.md) - testing and deployment
+- [Agentic Workflows Orchestrator](./agentic-workflows-orchestrator.md) - automation agents
 
 ### Coordinates With
 - External stakeholders
@@ -117,14 +117,14 @@ Primarily **Plan** phase, with oversight in all phases.
 ## Skills to Use
 
 ### Primary Skills
-- `extract_algorithm` - Analyze research papers
-- `identify_architecture` - Extract model architectures
-- `extract_hyperparameters` - Extract training parameters
-- `extract_dependencies` - Map cross-section dependencies
+- [`extract_algorithm`](../../.claude/skills/tier-2/extract-algorithm/SKILL.md) - Analyze research papers
+- [`identify_architecture`](../../.claude/skills/tier-2/identify-architecture/SKILL.md) - Extract model architectures
+- [`extract_hyperparameters`](../../.claude/skills/tier-2/extract-hyperparameters/SKILL.md) - Extract training parameters
+- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Map cross-section dependencies
 
 ### Supporting Skills
-- `analyze_code_structure` - Review existing code
-- `detect_code_smells` - Ensure quality standards
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Review existing code
+- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Ensure quality standards
 
 ## Examples
 

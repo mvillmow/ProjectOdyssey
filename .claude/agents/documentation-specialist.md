@@ -109,16 +109,22 @@ How to contribute to this component.
 7. Review and publish
 
 ## Delegation
-- **Delegates To**: Documentation Engineer, Junior Documentation Engineer
-- **Coordinates With**: Implementation Specialist, Test Specialist
+
+### Delegates To
+- [Documentation Engineer](./documentation-engineer.md) - API docs and README writing
+- [Junior Documentation Engineer](./junior-documentation-engineer.md) - simple documentation tasks
+
+### Coordinates With
+- [Implementation Specialist](./implementation-specialist.md) - API understanding
+- [Test Specialist](./test-specialist.md) - test examples
 
 ## Workflow Phase
 **Packaging**, **Cleanup**
 
 ## Skills to Use
-- `generate_docstrings` - Auto-generate docstrings
-- `generate_api_docs` - Create API reference
-- `generate_changelog` - Version documentation
+- [`generate_docstrings`](../../.claude/skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
+- [`generate_api_docs`](../../.claude/skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
+- [`generate_changelog`](../../.claude/skills/tier-2/generate-changelog/SKILL.md) - Version documentation
 
 ## Example Documentation
 

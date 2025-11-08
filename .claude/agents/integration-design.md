@@ -92,49 +92,49 @@ core_ops_internal = { path = "../02-shared-library/core_ops" }
 
 ## Workflow
 
-### Phase 1: Integration Analysis
-1. Receive component specs from Architecture Design Agent
-2. Identify integration points
-3. Map dependencies
-4. Plan interop requirements
+### 1. Receive Integration Requirements
+1. Parse component specifications from Architecture Design Agent
+2. Identify integration points and dependencies
+3. Determine Python-Mojo interop needs
+4. Validate integration is achievable
 
-### Phase 2: API Design
-1. Design public module APIs
-2. Define integration contracts
-3. Plan version strategy
-4. Create API documentation
+### 2. Design Integration
+1. Design public module APIs and contracts
+2. Plan data conversion strategies across boundaries
+3. Define version and dependency management
+4. Create integration specifications
 
-### Phase 3: Integration Planning
-1. Design Python-Mojo boundaries
-2. Plan data conversion strategies
-3. Design integration test approach
-4. Specify error handling across boundaries
+### 3. Produce Integration Plan
+1. Document API specifications and contracts
+2. Specify error handling across boundaries
+3. Define integration test strategy
+4. Ensure specifications are implementable
 
-### Phase 4: Validation
-1. Review with Architecture Design Agent
-2. Ensure APIs are complete and consistent
-3. Validate dependencies are manageable
-4. Get Section Orchestrator approval
+### 4. Validate and Delegate
+1. Review with Architecture Design Agent for consistency
+2. Get Section Orchestrator approval
+3. Delegate implementation to specialists
+4. Validate final integration matches design
 
 ## Delegation
 
 ### Delegates To
-- Test Specialist (integration tests)
-- Implementation Specialist (API implementation)
-- Documentation Specialist (API docs)
+- [Test Specialist](./test-specialist.md) - integration tests
+- [Implementation Specialist](./implementation-specialist.md) - API implementation
+- [Documentation Specialist](./documentation-specialist.md) - API documentation
 
 ### Coordinates With
-- Architecture Design Agent (component specs)
-- Security Design Agent (API security)
-- Other Integration Design Agents (cross-module APIs)
+- [Architecture Design](./architecture-design.md) - component specifications
+- [Security Design](./security-design.md) - API security
+- Other orchestrators - cross-module integration
 
 ## Workflow Phase
 **Plan** phase, with validation in **Test** phase
 
 ## Skills to Use
-- `extract_dependencies` - Map module dependencies
-- `analyze_code_structure` - Understand existing APIs
-- `generate_boilerplate` - API templates
+- [`extract_dependencies`](../../.claude/skills/tier-2/extract-dependencies/SKILL.md) - Map module dependencies
+- [`analyze_code_structure`](../../.claude/skills/tier-1/analyze-code-structure/SKILL.md) - Understand existing APIs
+- [`generate_boilerplate`](../../.claude/skills/tier-1/generate-boilerplate/SKILL.md) - API templates
 
 ## Examples
 

@@ -64,16 +64,22 @@ fn test_tensor_shape_mismatch():
 6. Review test coverage and quality
 
 ## Delegation
-- **Delegates To**: Test Engineer, Junior Test Engineer
-- **Coordinates With**: Implementation Specialist (TDD), Performance Specialist (benchmarks)
+
+### Delegates To
+- [Test Engineer](./test-engineer.md) - standard test implementation
+- [Junior Test Engineer](./junior-test-engineer.md) - simple test tasks
+
+### Coordinates With
+- [Implementation Specialist](./implementation-specialist.md) - TDD coordination
+- [Performance Specialist](./performance-specialist.md) - benchmark tests
 
 ## Workflow Phase
 **Plan**, **Test**
 
 ## Skills to Use
-- `generate_tests` - Test scaffolding
-- `run_tests` - Execute tests
-- `calculate_coverage` - Coverage analysis
+- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
+- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Execute tests
+- [`calculate_coverage`](../../.claude/skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
 ## Example Test Plan
 

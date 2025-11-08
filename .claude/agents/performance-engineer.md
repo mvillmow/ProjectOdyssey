@@ -116,16 +116,16 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 7. Report results
 
 ## Coordinates With
-- Performance Specialist (optimization strategy)
-- Implementation Engineer (code changes)
+- [Performance Specialist](./performance-specialist.md) - optimization strategy and requirements
+- [Implementation Engineer](./implementation-engineer.md) - code changes and implementation
 
 ## Workflow Phase
 **Implementation**, **Cleanup**
 
 ## Skills to Use
-- `profile_code` - Code profiling
-- `benchmark_functions` - Benchmark execution
-- `suggest_optimizations` - Optimization ideas
+- [`profile_code`](../../.claude/skills/tier-2/profile-code/SKILL.md) - Code profiling
+- [`benchmark_functions`](../../.claude/skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
+- [`suggest_optimizations`](../../.claude/skills/tier-2/suggest-optimizations/SKILL.md) - Optimization ideas
 
 ## Example: Optimize Matrix Multiplication
 

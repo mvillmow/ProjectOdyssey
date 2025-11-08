@@ -80,17 +80,22 @@ fn load_safe[max_size: Int](
 7. Validate security measures
 
 ## Delegation
-- **Delegates To**: Implementation Engineer (security implementations)
-- **Coordinates With**: Test Specialist (security testing)
+
+### Delegates To
+- [Implementation Engineer](./implementation-engineer.md) - security control implementation
+- [Senior Implementation Engineer](./senior-implementation-engineer.md) - complex security features
+
+### Coordinates With
+- [Test Specialist](./test-specialist.md) - security testing and validation
 
 ## Workflow Phase
 **Plan**, **Implementation**, **Test**, **Cleanup**
 
 ## Skills to Use
-- `scan_vulnerabilities` - Vulnerability scanning
-- `check_dependencies` - Dependency security
-- `validate_inputs` - Input validation review
-- `detect_code_smells` - Security code review
+- [`scan_vulnerabilities`](../../.claude/skills/tier-2/scan-vulnerabilities/SKILL.md) - Vulnerability scanning
+- [`check_dependencies`](../../.claude/skills/tier-2/check-dependencies/SKILL.md) - Dependency security
+- [`validate_inputs`](../../.claude/skills/tier-2/validate-inputs/SKILL.md) - Input validation review
+- [`detect_code_smells`](../../.claude/skills/tier-2/detect-code-smells/SKILL.md) - Security code review
 
 ## Example Security Plan
 

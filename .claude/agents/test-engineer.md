@@ -100,16 +100,16 @@ def test_large_tensor():
 7. Maintain tests as code evolves
 
 ## Coordinates With
-- Implementation Engineer (TDD)
-- Test Specialist (test strategy)
+- [Implementation Engineer](./implementation-engineer.md) - TDD coordination
+- [Test Specialist](./test-specialist.md) - test strategy and requirements
 
 ## Workflow Phase
 **Test**
 
 ## Skills to Use
-- `generate_tests` - Test scaffolding
-- `run_tests` - Test execution
-- `calculate_coverage` - Coverage analysis
+- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
+- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
+- [`calculate_coverage`](../../.claude/skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
 ## Example Test Suite
 

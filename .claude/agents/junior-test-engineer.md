@@ -88,8 +88,8 @@ Level 5 is the lowest level - no delegation.
 **Test**
 
 ## Skills to Use
-- `generate_tests` - Test boilerplate
-- `run_tests` - Test execution
+- [`generate_tests`](../../.claude/skills/tier-2/generate-tests/SKILL.md) - Test boilerplate
+- [`run_tests`](../../.claude/skills/tier-1/run-tests/SKILL.md) - Test execution
 
 ## Examples
 
