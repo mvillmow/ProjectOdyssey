@@ -216,6 +216,8 @@ fn test_normalize():
 5. ❌ Very large/small values - Numerical stability?
 
 **Recommended Additional Tests**:
+
+```text
 ```
 
 ```mojo
@@ -262,6 +264,8 @@ fn test_normalize_boundary_values():
 
 **Implementation Issue**: The current implementation has a division-by-zero bug when all values are identical.
 Tests should catch this!
+
+```text
 ```
 
 ### Example 2: Weak Assertions
@@ -354,6 +358,8 @@ def test_load_dataset_missing_file():
 - Clear error messages
 - Tests both success and failure paths
 - Verifies data structure and quality
+
+```text
 ```
 
 ### Example 3: Poor Test Organization
@@ -522,6 +528,8 @@ fn test_save_creates_file():
 - Easy to identify which functionality failed
 - Proper setup/teardown
 - Descriptive test names
+
+```text
 ```
 
 ### Example 4: Good Test Pattern (Positive Feedback)

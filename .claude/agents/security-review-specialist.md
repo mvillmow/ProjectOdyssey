@@ -198,6 +198,7 @@ def get_user(username: str):
 SQL injection attacks.
 
 **Attack Scenario**:
+```
 
 ```python
 # Attacker provides: ' OR '1'='1
@@ -228,7 +229,8 @@ def get_user(username: str):
 **Impact**: CRITICAL - Full database compromise possible
 **OWASP**: A03:2021 - Injection
 **CWE**: CWE-89 (SQL Injection)
-```
+
+```text
 
 ### Example 2: Weak Cryptography
 
@@ -260,6 +262,7 @@ fn hash_password(password: String) -> String:
 - MD5 can be cracked in seconds to minutes
 
 **Fix**: Use approved password hashing:
+```
 
 ```mojo
 from crypto import argon2
@@ -299,7 +302,8 @@ fn verify_password(password: String, stored_hash: String) -> Bool:
 **Impact**: CRITICAL - All passwords compromised if database leaked
 **OWASP**: A02:2021 - Cryptographic Failures
 **CWE**: CWE-327 (Use of Broken Crypto)
-```
+
+```text
 
 ### Example 3: Hardcoded Credentials
 
@@ -343,6 +347,7 @@ class DatabaseConnection:
 - Violates principle of least privilege
 
 **Fix**: Use environment variables and secret management:
+```
 
 ```python
 import os
@@ -398,7 +403,8 @@ class DatabaseConnection:
 **Impact**: CRITICAL - Full database access compromise
 **OWASP**: A07:2021 - Identification and Authentication Failures
 **CWE**: CWE-798 (Hardcoded Credentials)
-```
+
+```text
 
 ### Example 4: Path Traversal Vulnerability
 
@@ -420,6 +426,7 @@ fn load_model(model_name: String) -> Model:
 directory traversal attacks.
 
 **Attack Scenarios**:
+```
 
 ```python
 # Scenario 1: Read arbitrary files
@@ -499,7 +506,8 @@ fn is_valid_model_name(name: String) -> Bool:
 **Impact**: CRITICAL - Arbitrary file read, potential RCE
 **OWASP**: A01:2021 - Broken Access Control
 **CWE**: CWE-22 (Path Traversal)
-```
+
+```text
 
 ### Example 5: Insecure Deserialization
 
@@ -516,13 +524,16 @@ def load_training_state(filename: str):
 ```
 
 **Review Feedback**:
-```
+
+```text
 🟠 HIGH: Insecure Deserialization (CWE-502, OWASP A08)
 
 **Vulnerability**: Python's pickle module can execute arbitrary code
 during deserialization.
 
 **Attack Scenario**:
+```
+
 ```python
 # Attacker crafts malicious pickle file
 import pickle
@@ -542,12 +553,14 @@ load_training_state('malicious.pkl')  # Runs 'rm -rf /'
 ```
 
 **Real-World Impact**:
+
 - Remote code execution
 - Data exfiltration
 - System compromise
 - Ransomware deployment
 
 **Fix**: Use safe serialization formats:
+
 ```python
 import json
 import numpy as np
@@ -603,6 +616,7 @@ def load_training_state(filename: str) -> Dict[str, Any]:
 ```
 
 **Alternative Safe Formats**:
+
 - JSON (safe, but limited types)
 - MessagePack (faster than JSON, more types)
 - Protocol Buffers (type-safe, versioned)
@@ -612,7 +626,8 @@ def load_training_state(filename: str) -> Dict[str, Any]:
 **Impact**: HIGH - Remote code execution possible
 **OWASP**: A08:2021 - Software and Data Integrity Failures
 **CWE**: CWE-502 (Deserialization of Untrusted Data)
-```
+
+```text
 
 ### Example 6: Good Security Practice (Positive Feedback)
 
@@ -670,7 +685,8 @@ fn authenticate_user(username: String, password: String) -> Result[User, AuthErr
 ```
 
 **Review Feedback**:
-```
+
+```text
 ✅ EXCELLENT: Secure Authentication Implementation
 
 **Security Strengths**:
@@ -701,6 +717,7 @@ No security vulnerabilities found. Approved for deployment.
 ## OWASP Top 10 (2021) Coverage
 
 ### A01: Broken Access Control
+
 - Check authorization on every protected resource
 - Verify principle of least privilege
 - Review CORS configurations
@@ -708,6 +725,7 @@ No security vulnerabilities found. Approved for deployment.
 - Validate ownership before operations
 
 ### A02: Cryptographic Failures
+
 - Verify strong algorithms (AES-256, SHA-256+)
 - Check for deprecated crypto (MD5, SHA1, DES)
 - Review key management
@@ -715,6 +733,7 @@ No security vulnerabilities found. Approved for deployment.
 - Check encryption at rest and in transit
 
 ### A03: Injection
+
 - SQL injection prevention (parameterized queries)
 - Command injection prevention (avoid shell execution)
 - LDAP, XPath, NoSQL injection checks
@@ -722,6 +741,7 @@ No security vulnerabilities found. Approved for deployment.
 - Server-side validation of all input
 
 ### A04: Insecure Design
+
 - Threat modeling performed
 - Security requirements defined
 - Defense in depth implemented
@@ -729,6 +749,7 @@ No security vulnerabilities found. Approved for deployment.
 - Security controls designed in, not bolted on
 
 ### A05: Security Misconfiguration
+
 - No default credentials
 - Unnecessary features disabled
 - Error messages don't leak information
@@ -736,6 +757,7 @@ No security vulnerabilities found. Approved for deployment.
 - Dependencies up to date
 
 ### A06: Vulnerable and Outdated Components
+
 - Dependencies scanned for vulnerabilities
 - Regular security updates applied
 - End-of-life software replaced
@@ -743,6 +765,7 @@ No security vulnerabilities found. Approved for deployment.
 - Software bill of materials (SBOM) maintained
 
 ### A07: Identification and Authentication Failures
+
 - Strong password requirements
 - Multi-factor authentication available
 - Session management secure
@@ -750,6 +773,7 @@ No security vulnerabilities found. Approved for deployment.
 - Secure password recovery
 
 ### A08: Software and Data Integrity Failures
+
 - Code signing implemented
 - Dependency integrity verified
 - CI/CD pipeline secured
@@ -757,6 +781,7 @@ No security vulnerabilities found. Approved for deployment.
 - Auto-update verification
 
 ### A09: Security Logging and Monitoring Failures
+
 - Security events logged
 - Logs protected from tampering
 - Alerting on suspicious activity
@@ -764,6 +789,7 @@ No security vulnerabilities found. Approved for deployment.
 - Audit trail maintained
 
 ### A10: Server-Side Request Forgery (SSRF)
+
 - URL validation and sanitization
 - Whitelist allowed protocols/domains
 - Network segmentation
@@ -773,6 +799,7 @@ No security vulnerabilities found. Approved for deployment.
 ## Mojo-Specific Security Considerations
 
 ### 1. Memory Safety Boundaries
+
 ```mojo
 # Security risk: Unsafe memory operations can leak data
 fn process_secret(data: UnsafePointer[UInt8], size: Int) -> String:
@@ -781,9 +808,11 @@ fn process_secret(data: UnsafePointer[UInt8], size: Int) -> String:
     # Security concern: potential data leakage
 ```
 
-**Security Implication**: While memory safety is handled by Safety Specialist, be aware that memory corruption bugs can lead to security vulnerabilities like data leakage.
+**Security Implication**: While memory safety is handled by Safety Specialist, be aware that memory
+corruption bugs can lead to security vulnerabilities like data leakage.
 
 ### 2. Interop with Python
+
 ```mojo
 # Security consideration: Python pickle deserialization
 fn load_python_object(path: String) -> PythonObject:
@@ -796,6 +825,7 @@ fn load_python_object(path: String) -> PythonObject:
 **Fix**: Validate Python objects or use safe serialization.
 
 ### 3. SIMD and Crypto
+
 ```mojo
 # Security consideration: SIMD timing attacks
 fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
@@ -809,6 +839,7 @@ fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
 ## Common Security Issues to Flag
 
 ### Critical Issues
+
 - SQL injection vulnerabilities
 - Command injection vulnerabilities
 - Hardcoded credentials or secrets
@@ -818,6 +849,7 @@ fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
 - Path traversal vulnerabilities
 
 ### High Issues
+
 - Missing authentication or authorization checks
 - Insufficient input validation
 - Sensitive data in logs or error messages
@@ -826,6 +858,7 @@ fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
 - Missing encryption for sensitive data
 
 ### Medium Issues
+
 - Weak password requirements
 - Missing security headers
 - Information disclosure in error messages
@@ -834,6 +867,7 @@ fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
 - Overly permissive CORS
 
 ### Low Issues
+
 - Security through obscurity
 - Missing security documentation
 - Outdated dependencies (no known exploits)
@@ -892,4 +926,5 @@ fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
 
 ---
 
-*Security Review Specialist protects the codebase from security vulnerabilities and attack vectors through comprehensive security-focused code review.*
+*Security Review Specialist protects the codebase from security vulnerabilities and attack vectors through
+comprehensive security-focused code review.*

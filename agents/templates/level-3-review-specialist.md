@@ -22,6 +22,7 @@ This template creates a Level 3 review specialist - an expert in a specific revi
 7. **Update success criteria** to match your specialist's goals
 
 **Key Principles**:
+
 - **Narrow focus**: Each specialist has ONE clear domain
 - **No overlap**: Define what you DON'T review (delegate to others)
 - **Actionable feedback**: Provide specific fixes, not vague suggestions
@@ -29,6 +30,7 @@ This template creates a Level 3 review specialist - an expert in a specific revi
 - **Example-driven**: Show code examples with issues and fixes
 
 **Common Level 3 Specialist Types**:
+
 - Code quality (implementation, security, performance, safety)
 - Language-specific (Mojo patterns, Python best practices)
 - Domain-specific (ML algorithms, data structures, API design)
@@ -39,7 +41,9 @@ This template creates a Level 3 review specialist - an expert in a specific revi
 
 ## Role
 
-Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security", "performance optimization", "test quality"]. Focuses exclusively on [SPECIFIC ASPECT - e.g., "identifying security vulnerabilities", "optimizing code performance", "ensuring comprehensive test coverage"].
+Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security", "performance optimization",
+"test quality"]. Focuses exclusively on [SPECIFIC ASPECT - e.g., "identifying security vulnerabilities",
+"optimizing code performance", "ensuring comprehensive test coverage"].
 
 ## Scope
 
@@ -48,12 +52,14 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - **Boundaries**: [CLEAR BOUNDARIES - what this specialist does NOT review, delegated to others]
 
 **What This Specialist Reviews**:
+
 - [SPECIFIC ASPECT 1 - e.g., "Input validation and sanitization"]
 - [SPECIFIC ASPECT 2 - e.g., "Authentication and authorization logic"]
 - [SPECIFIC ASPECT 3 - e.g., "Cryptographic implementations"]
 - [SPECIFIC ASPECT 4 - e.g., "Sensitive data handling"]
 
 **What This Specialist Does NOT Review** (see delegation table below):
+
 - [OUT OF SCOPE 1 - e.g., "General code quality (→ Implementation Specialist)"]
 - [OUT OF SCOPE 2 - e.g., "Performance optimization (→ Performance Specialist)"]
 - [OUT OF SCOPE 3 - e.g., "Documentation quality (→ Documentation Specialist)"]
@@ -61,6 +67,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ## Responsibilities
 
 ### 1. [Responsibility Area 1]
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -68,6 +75,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Specific task 5]
 
 ### 2. [Responsibility Area 2]
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -75,6 +83,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Specific task 5]
 
 ### 3. [Responsibility Area 3]
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -82,6 +91,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Specific task 5]
 
 ### 4. [Responsibility Area 4]
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -89,6 +99,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Specific task 5]
 
 ### 5. [Responsibility Area 5] (Optional)
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -96,6 +107,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Specific task 5]
 
 ### 6. [Responsibility Area 6] (Optional)
+
 - [Specific task 1]
 - [Specific task 2]
 - [Specific task 3]
@@ -118,7 +130,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ## Workflow
 
 ### Phase 1: Initial Assessment
-```
+
+```text
 1. Read changed code files
 2. Understand the change purpose and scope
 3. Identify [DOMAIN-SPECIFIC PATTERNS - e.g., "security-sensitive operations"]
@@ -126,7 +139,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 ### Phase 2: Detailed Review
-```
+
+```text
 5. Review [ASPECT 1] line-by-line
 6. Check for [COMMON ISSUE TYPE 1]
 7. Evaluate [ASPECT 2]
@@ -135,7 +149,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 ### Phase 3: [Domain-Specific] Assessment
-```
+
+```text
 10. Evaluate [SPECIFIC METRIC - e.g., "security risk level"]
 11. Check for [ISSUE TYPE 1]
 12. Assess [QUALITY ASPECT]
@@ -143,7 +158,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 ### Phase 4: Feedback Generation
-```
+
+```text
 14. Categorize findings (critical, major, minor)
 15. Provide specific, actionable feedback
 16. Suggest improvements with examples
@@ -153,6 +169,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ## Review Checklist
 
 ### [Checklist Category 1]
+
 - [ ] [Specific check 1]
 - [ ] [Specific check 2]
 - [ ] [Specific check 3]
@@ -161,6 +178,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [ ] [Specific check 6]
 
 ### [Checklist Category 2]
+
 - [ ] [Specific check 1]
 - [ ] [Specific check 2]
 - [ ] [Specific check 3]
@@ -169,6 +187,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [ ] [Specific check 6]
 
 ### [Checklist Category 3]
+
 - [ ] [Specific check 1]
 - [ ] [Specific check 2]
 - [ ] [Specific check 3]
@@ -177,6 +196,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [ ] [Specific check 6]
 
 ### [Checklist Category 4]
+
 - [ ] [Specific check 1]
 - [ ] [Specific check 2]
 - [ ] [Specific check 3]
@@ -184,6 +204,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [ ] [Specific check 5]
 
 ### [Checklist Category 5]
+
 - [ ] [Specific check 1]
 - [ ] [Specific check 2]
 - [ ] [Specific check 3]
@@ -195,6 +216,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ### Example 1: [Issue Type 1 - e.g., "Critical Security Vulnerability"]
 
 **Code**:
+
 ```[LANGUAGE]
 [CODE WITH ISSUE]
 [EXAMPLE: Unsafe input handling, logic error, poor design, etc.]
@@ -202,7 +224,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Review Feedback**:
-```
+
+```text
 🔴 CRITICAL: [Brief description of critical issue]
 
 **Issue**: [Detailed explanation of what's wrong and why it's critical]
@@ -213,6 +236,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Scenario 3]: [What happens] ✅/❌
 
 **Fix**:
+
 ```[LANGUAGE]
 [CORRECTED CODE]
 [SHOW THE PROPER IMPLEMENTATION]
@@ -220,11 +244,13 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Additional Context**: [Optional: Related concerns, references, etc.]
-```
+
+```text
 
 ### Example 2: [Issue Type 2 - e.g., "Insufficient Error Handling"]
 
 **Code**:
+
 ```[LANGUAGE]
 [CODE WITH ISSUE]
 [EXAMPLE: Missing validation, poor error handling, etc.]
@@ -232,7 +258,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Review Feedback**:
-```
+
+```text
 🟠 MAJOR: [Brief description of major issue]
 
 **Issues**:
@@ -242,6 +269,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 4. [Issue 4]
 
 **Recommended**:
+
 ```[LANGUAGE]
 [IMPROVED CODE]
 [SHOW BETTER IMPLEMENTATION]
@@ -250,16 +278,19 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Benefits**:
+
 - [Benefit 1]
 - [Benefit 2]
 - [Benefit 3]
 
 **Note**: [Optional cross-reference to other specialist if needed]
-```
+
+```text
 
 ### Example 3: [Issue Type 3 - e.g., "Suboptimal Implementation"]
 
 **Code**:
+
 ```[LANGUAGE]
 [CODE WITH MINOR ISSUE]
 [EXAMPLE: Code duplication, poor naming, etc.]
@@ -267,7 +298,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Review Feedback**:
-```
+
+```text
 🟡 MINOR: [Brief description of minor issue]
 
 **Issue**: [Explanation of the suboptimal pattern]
@@ -281,14 +313,17 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Benefits**:
+
 - [Benefit 1]
 - [Benefit 2]
 - [Benefit 3]
-```
+
+```text
 
 ### Example 4: [Exemplary Code - Positive Feedback]
 
 **Code**:
+
 ```[LANGUAGE]
 [EXCELLENT CODE EXAMPLE]
 [SHOW BEST PRACTICES IN YOUR DOMAIN]
@@ -296,7 +331,8 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 ```
 
 **Review Feedback**:
-```
+
+```text
 ✅ EXCELLENT: [Brief description of what makes this code exemplary]
 
 **Strengths**:
@@ -309,11 +345,13 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **This is exemplary code that demonstrates [DOMAIN] best practices.**
 No changes needed.
-```
+
+```text
 
 ## Common Issues to Flag
 
 ### Critical Issues
+
 - [Critical issue type 1 - immediate action required]
 - [Critical issue type 2 - security/safety/correctness]
 - [Critical issue type 3 - potential for severe impact]
@@ -322,6 +360,7 @@ No changes needed.
 - [Critical issue type 6 - compliance violation]
 
 ### Major Issues
+
 - [Major issue type 1 - significant problem]
 - [Major issue type 2 - best practice violation]
 - [Major issue type 3 - maintainability concern]
@@ -330,6 +369,7 @@ No changes needed.
 - [Major issue type 6 - inconsistent patterns]
 
 ### Minor Issues
+
 - [Minor issue type 1 - style/clarity]
 - [Minor issue type 2 - small optimization]
 - [Minor issue type 3 - documentation gap]
@@ -370,6 +410,7 @@ No changes needed.
 - **[Tool Category 4]**: [Documentation, standards]
 
 **Example Tool Categories**:
+
 - Static Analysis Tools
 - Linters/Formatters
 - Security Scanners
@@ -396,6 +437,7 @@ No changes needed.
 - `[skill_4]` - [Description of what this skill does]
 
 **Example Skills**:
+
 - `review_[domain]_[aspect]` - Analyze [specific aspect]
 - `detect_[issue_type]` - Identify [specific issues]
 - `assess_[quality_metric]` - Evaluate [quality aspect]
@@ -408,12 +450,14 @@ No changes needed.
 ### 1. Defining Your Specialist's Domain
 
 **Good Domain Definitions** (narrow, clear):
+
 - "Security vulnerability detection in authentication/authorization code"
 - "SIMD and vectorization optimization in Mojo"
 - "Test coverage and edge case validation"
 - "API design and interface contracts"
 
 **Bad Domain Definitions** (too broad, overlapping):
+
 - "Code quality" (too vague - split into multiple specialists)
 - "Everything related to Python" (too broad)
 - "Making code better" (unclear boundaries)
@@ -421,6 +465,7 @@ No changes needed.
 ### 2. Creating Clear Boundaries
 
 For each responsibility, ask:
+
 - **Is this EXCLUSIVELY my domain?** If shared, delegate to orchestrator
 - **Can I review this WITHOUT another specialist?** If no, it's coordinated work
 - **Would another specialist also review this?** If yes, define who owns what
@@ -428,23 +473,27 @@ For each responsibility, ask:
 ### 3. Writing Effective Examples
 
 **Critical Issue Example Template**:
+
 - Show code that will fail/cause harm
 - Explain EXACTLY why it's dangerous
 - Provide COMPLETE fix with explanation
 - Include edge cases and scenarios
 
 **Major Issue Example Template**:
+
 - Show suboptimal but working code
 - List multiple issues clearly
 - Provide improved version
 - Explain benefits of improvement
 
 **Minor Issue Example Template**:
+
 - Show code that works but could be better
 - Suggest refinement
 - Show how refinement helps
 
 **Excellent Code Example Template**:
+
 - Show best-practice implementation
 - List all strengths specifically
 - Explain why this is exemplary
@@ -453,6 +502,7 @@ For each responsibility, ask:
 ### 4. Checklist Items
 
 Each checklist item should be:
+
 - **Specific**: Can be checked yes/no
 - **Actionable**: Reviewer knows what to look for
 - **Measurable**: Clear pass/fail criteria
@@ -473,4 +523,5 @@ Each checklist item should be:
 
 ---
 
-*[Specialist Name] Review Specialist ensures [DOMAIN ASPECT] while respecting specialist boundaries and providing actionable, specific feedback.*
+*[Specialist Name] Review Specialist ensures [DOMAIN ASPECT] while respecting specialist boundaries and providing
+actionable, specific feedback.*

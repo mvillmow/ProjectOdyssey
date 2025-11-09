@@ -22,6 +22,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 ## Responsibilities
 
 ### 1. Memory Safety
+
 - Detect memory leaks and resource leaks
 - Identify use-after-free vulnerabilities
 - Find dangling pointer/reference issues
@@ -29,6 +30,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - Verify proper memory allocation/deallocation
 
 ### 2. Type Safety
+
 - Catch type confusion errors
 - Identify unsafe type casting
 - Verify type consistency across boundaries
@@ -36,6 +38,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - Validate generic type constraints
 
 ### 3. Null Safety
+
 - Identify null pointer dereferences
 - Check for missing null checks
 - Verify optional value handling
@@ -43,6 +46,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - Review defensive null checking patterns
 
 ### 4. Undefined Behavior
+
 - Detect integer overflows/underflows
 - Identify uninitialized variable usage
 - Find race conditions in concurrent code
@@ -50,6 +54,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - Flag platform-specific undefined behavior
 
 ### 5. Resource Management
+
 - Verify proper file handle cleanup
 - Check socket and connection management
 - Review lock acquisition/release patterns
@@ -109,6 +114,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 ## Review Checklist
 
 ### Memory Safety
+
 - [ ] All allocated memory has corresponding deallocation
 - [ ] No use-after-free vulnerabilities
 - [ ] No dangling pointers or references
@@ -117,6 +123,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - [ ] No memory leaks in loops or recursion
 
 ### Buffer Safety
+
 - [ ] Array bounds checked before access
 - [ ] String operations have length limits
 - [ ] No buffer overflows in copies (strcpy, memcpy)
@@ -124,6 +131,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - [ ] Slice operations stay within bounds
 
 ### Type Safety
+
 - [ ] No unsafe type casts without validation
 - [ ] Type conversions preserve data integrity
 - [ ] Generic constraints properly specified
@@ -131,6 +139,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - [ ] Type narrowing validated at runtime
 
 ### Null Safety
+
 - [ ] All nullable values checked before use
 - [ ] Optional unwrapping is safe
 - [ ] Null checks before pointer dereference
@@ -138,6 +147,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - [ ] Null propagation handled correctly
 
 ### Initialization
+
 - [ ] All variables initialized before use
 - [ ] Struct/class members initialized in constructors
 - [ ] Array elements initialized appropriately
@@ -145,6 +155,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 - [ ] Proper initialization in all code paths
 
 ### Resource Management
+
 - [ ] Files closed after use (even on error)
 - [ ] Network connections properly released
 - [ ] Locks released in all paths
@@ -156,6 +167,7 @@ preventing crashes, undefined behavior, and memory corruption bugs in both Pytho
 ### Example 1: Memory Leak - Missing Deallocation
 
 **Code**:
+
 ```mojo
 fn process_large_dataset(data_path: String) raises -> Tensor:
     """Process large dataset from file."""
@@ -232,7 +244,8 @@ fn process_large_dataset_safe(data_path: String) raises -> Tensor:
 ```
 
 **Note**: Prefer RAII/defer pattern for automatic cleanup in all paths.
-```
+
+```text
 
 ### Example 2: Use-After-Free Vulnerability
 
@@ -269,7 +282,7 @@ class DataLoader:
 deletes the buffer without invalidating the view.
 
 **Exploit Scenario**:
-```
+
 ```python
 loader = DataLoader()
 batch = loader.load_batch(1024)  # batch points to buffer
@@ -313,7 +326,8 @@ class DataLoader:
 ```
 
 **Best Practice**: Always invalidate references before freeing resources.
-```
+
+```text
 
 ### Example 3: Buffer Overflow
 
@@ -343,7 +357,7 @@ fn copy_string(dest: UnsafePointer[UInt8], src: String, max_len: Int):
 `src_len < max_len`, allowing buffer overflow.
 
 **Exploit Example**:
-```
+
 ```mojo
 let buffer = UnsafePointer[UInt8].alloc(10)
 copy_string(buffer, "This is a very long string", 10)
@@ -415,7 +429,8 @@ fn copy_string_safe(
 ```
 
 **Always validate buffer sizes before copying data.**
-```
+
+```text
 
 ### Example 4: Null Pointer Dereference
 
@@ -445,7 +460,7 @@ checking if it's None. Calling `model.predict()` when `model = None`
 causes AttributeError.
 
 **Problem**:
-```
+
 ```python
 model = load_model("nonexistent.pkl")  # Returns None
 result = process_model_output(model, data)
@@ -502,7 +517,8 @@ result = process_model_output(model, data)  # Type checker ensures non-null
 
 **Principle**: If None is invalid, use non-optional types and validate
 at boundaries.
-```
+
+```text
 
 ### Example 5: Integer Overflow
 
@@ -532,7 +548,7 @@ fn allocate_matrix(rows: Int, cols: Int) raises -> UnsafePointer[Float32]:
 leading to incorrect allocation size.
 
 **Exploit Example**:
-```
+
 ```mojo
 # Attempt to allocate 100,000 x 100,000 matrix
 let matrix = allocate_matrix(100_000, 100_000)
@@ -595,7 +611,8 @@ fn allocate_matrix(rows: Int, cols: Int) raises -> UnsafePointer[Float32]:
 ```
 
 **Always validate arithmetic operations that could overflow.**
-```
+
+```text
 
 ### Example 6: Type Confusion
 
@@ -621,7 +638,7 @@ behavior (iterating over elements). When data is np.ndarray, iteration
 behavior differs.
 
 **Problem Example**:
-```
+
 ```python
 # List of dicts - works as expected
 data1 = [{"a": 1}, {"b": 2}]
@@ -696,11 +713,13 @@ def process_array(data: np.ndarray):
 
 **Avoid union types when types have different semantics. Use separate
 functions or explicit type checking.**
-```
+
+```text
 
 ## Common Safety Issues to Flag
 
 ### Critical Issues (Immediate Fix Required)
+
 - Memory leaks in production code
 - Use-after-free vulnerabilities
 - Buffer overflows in data processing
@@ -710,6 +729,7 @@ functions or explicit type checking.**
 - Double-free errors
 
 ### Major Issues (Fix Before Release)
+
 - Resource leaks (files, sockets, locks)
 - Missing null checks on optional values
 - Unsafe type casts without validation
@@ -719,6 +739,7 @@ functions or explicit type checking.**
 - Implicit type conversions losing data
 
 ### Minor Issues (Improve Code Quality)
+
 - Defensive null checks for clarity
 - Type annotations missing for safety-critical functions
 - Resource cleanup could use RAII pattern

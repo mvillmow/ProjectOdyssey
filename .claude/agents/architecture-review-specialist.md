@@ -218,6 +218,9 @@ struct Trainer:
 
 ```text
 🔴 CRITICAL: Circular dependency between models and training
+```
+
+```text
 
 **Issue**: models/ and training/ modules depend on each other:
 - models.neural_network imports from training.trainer
@@ -234,6 +237,7 @@ struct Trainer:
 in wrong module.
 
 **Solution**: Extract shared validation logic to separate module
+```
 
 ```text
 src/
@@ -244,6 +248,7 @@ src/
 │   └── trainer.mojo  # Imports from models/
 └── validation/
     └── config_validator.mojo  # Shared validation logic
+
 ```
 
 **Refactored** (validation/config_validator.mojo):
@@ -277,6 +282,9 @@ struct NeuralNetwork:
 **Dependency Flow** (now acyclic):
 
 ```text
+```
+
+```text
 validation/ (no dependencies)
     ↑
     ├── models/ (depends on validation)
@@ -291,7 +299,7 @@ validation/ (no dependencies)
 - ✅ Each module testable independently
 - ✅ Clear dependency hierarchy
 
-```
+```text
 
 ### Example 2: Interface Bloat (Violation of ISP)
 
@@ -348,6 +356,9 @@ struct ImagePreprocessor(DataProcessor):
 
 ```text
 🟠 MAJOR: Interface bloat violates Interface Segregation Principle (ISP)
+```
+
+```text
 
 **Issue**: DataProcessor interface forces implementers to depend on
 methods they don't use. ImagePreprocessor must implement 11 methods
@@ -361,6 +372,7 @@ but only uses 2.
 5. Error-prone: Runtime errors instead of compile-time safety
 
 **Solution**: Split into focused, cohesive interfaces
+```
 
 ```mojo
 # Focused interfaces following ISP
@@ -429,12 +441,14 @@ fn save_processed_data(
 - ✅ No "not supported" stub methods
 - ✅ Compile-time type safety
 - ✅ Easier to test (smaller interfaces)
-```
+
+```text
 
 ### Example 3: Layer Violation
 
 **Structure**:
-```
+
+```text
 src/
 ├── domain/           # Core business logic (should have no dependencies)
 │   └── model.mojo
@@ -445,6 +459,7 @@ src/
 ```
 
 **Code** (domain/model.mojo):
+
 ```mojo
 from infrastructure.database import DatabaseConnection  # ❌ Layer violation
 
@@ -465,8 +480,12 @@ struct User:
 ```
 
 **Review Feedback**:
-```
+
+```text
 🔴 CRITICAL: Layer violation - Domain depends on Infrastructure
+```
+
+```text
 
 **Issue**: Domain model (User) directly imports and uses infrastructure
 code (DatabaseConnection). This violates clean architecture principles.
@@ -481,18 +500,22 @@ code (DatabaseConnection). This violates clean architecture principles.
 
 **Correct Dependency Flow**:
 ```
+
+```text
 Infrastructure → Application → Domain
      (depends on)      (depends on)
 ```
 
 **Current (Wrong)**:
-```
+
+```text
 Domain → Infrastructure  ❌ Reversed!
 ```
 
 **Solution**: Apply Dependency Inversion Principle
 
 **Step 1**: Define interface in domain layer
+
 ```mojo
 # domain/repository.mojo
 trait UserRepository:
@@ -503,6 +526,7 @@ trait UserRepository:
 ```
 
 **Step 2**: Update domain model
+
 ```mojo
 # domain/model.mojo
 struct User:
@@ -519,6 +543,7 @@ struct User:
 ```
 
 **Step 3**: Implement interface in infrastructure layer
+
 ```mojo
 # infrastructure/user_repository_impl.mojo
 from domain.repository import UserRepository
@@ -543,6 +568,7 @@ struct DatabaseUserRepository(UserRepository):
 ```
 
 **Step 4**: Use in application layer
+
 ```mojo
 # application/user_service.mojo
 from domain.repository import UserRepository
@@ -570,7 +596,8 @@ struct UserService:
 ```
 
 **Dependency Flow** (now correct):
-```
+
+```text
 Domain (defines UserRepository interface)
     ↑
     ├── Application (depends on domain abstractions)
@@ -579,17 +606,20 @@ Domain (defines UserRepository interface)
 ```
 
 **Benefits**:
+
 - ✅ Domain has zero external dependencies
 - ✅ Can test domain logic in isolation
 - ✅ Can swap database for file/memory storage
 - ✅ Business logic independent of frameworks
 - ✅ Follows Dependency Inversion Principle
 - ✅ Clear separation of concerns
-```
+
+```text
 
 ### Example 4: Tight Coupling
 
 **Code**:
+
 ```mojo
 struct ModelTrainer:
     """Trains neural network models."""
@@ -609,8 +639,12 @@ struct ModelTrainer:
 ```
 
 **Review Feedback**:
-```
+
+```text
 🟠 MAJOR: Tight coupling to concrete implementations
+```
+
+```text
 
 **Issues**:
 1. Cannot train different model architectures
@@ -621,6 +655,7 @@ struct ModelTrainer:
 6. Violates Open/Closed Principle (OCP)
 
 **Solution**: Depend on abstractions, inject dependencies
+```
 
 ```mojo
 # Define abstractions
@@ -668,6 +703,7 @@ struct ModelTrainer:
 ```
 
 **Usage**:
+
 ```mojo
 # Production: Use real implementations
 let trainer = ModelTrainer(
@@ -695,18 +731,21 @@ let adam_trainer = ModelTrainer(
 ```
 
 **Benefits**:
+
 - ✅ Flexible: Easy to swap implementations
 - ✅ Testable: Can inject mocks
 - ✅ Reusable: Works with any compatible components
 - ✅ Follows Open/Closed Principle
 - ✅ Follows Dependency Inversion Principle
 - ✅ Clear contracts via interfaces
-```
+
+```text
 
 ### Example 5: Good Architecture (Positive Feedback)
 
 **Structure**:
-```
+
+```text
 src/
 ├── domain/
 │   ├── model/
@@ -730,6 +769,7 @@ src/
 ```
 
 **Code** (domain/repository/model_repository.mojo):
+
 ```mojo
 from domain.model.layer import Layer
 
@@ -744,6 +784,7 @@ trait ModelRepository:
 ```
 
 **Code** (application/training/train_model.mojo):
+
 ```mojo
 from domain.model.layer import Layer
 from domain.operations.loss import LossFunction
@@ -777,8 +818,12 @@ struct TrainModel:
 ```
 
 **Review Feedback**:
-```
+
+```text
 ✅ EXCELLENT: Well-architected system with clear separation of concerns
+```
+
+```text
 
 **Strengths**:
 
@@ -813,46 +858,53 @@ struct TrainModel:
    - Can swap loss functions without code changes
 
 **This is exemplary architecture that demonstrates:**
+
 - SOLID principles
 - Clean Architecture / Hexagonal Architecture pattern
 - Proper separation of concerns
 - Excellent module boundaries
 
 **No changes needed. Use this as reference for other modules.**
-```
+
+```text
 
 ## SOLID Principles Application
 
 ### Single Responsibility Principle (SRP)
-```
+
+```text
 ✅ Each module has ONE reason to change
 ✅ Separate data access from business logic
 ✅ Separate presentation from domain logic
 ```
 
 ### Open/Closed Principle (OCP)
-```
+
+```text
 ✅ Open for extension via interfaces
 ✅ Closed for modification (add new implementations, don't change existing)
 ✅ Use dependency injection to add functionality
 ```
 
 ### Liskov Substitution Principle (LSP)
-```
+
+```text
 ✅ Implementations can replace interfaces without breaking clients
 ✅ Derived types preserve base type contracts
 ✅ No strengthening of preconditions or weakening of postconditions
 ```
 
 ### Interface Segregation Principle (ISP)
-```
+
+```text
 ✅ Many focused interfaces > one general-purpose interface
 ✅ Clients only depend on methods they use
 ✅ Split bloated interfaces into cohesive pieces
 ```
 
 ### Dependency Inversion Principle (DIP)
-```
+
+```text
 ✅ High-level modules don't depend on low-level modules
 ✅ Both depend on abstractions (interfaces)
 ✅ Domain defines interfaces, infrastructure implements
@@ -861,6 +913,7 @@ struct TrainModel:
 ## Common Architectural Issues to Flag
 
 ### Critical Issues
+
 - Circular dependencies between modules
 - Layer violations (domain depending on infrastructure)
 - Core domain coupled to external frameworks
@@ -868,6 +921,7 @@ struct TrainModel:
 - Violation of Dependency Inversion Principle
 
 ### Major Issues
+
 - Interface bloat (violating ISP)
 - Tight coupling to concrete implementations
 - Mixed concerns within single module
@@ -875,6 +929,7 @@ struct TrainModel:
 - Hidden dependencies (global state, singletons)
 
 ### Minor Issues
+
 - Suboptimal package organization
 - Minor coupling that could be reduced
 - Missing interfaces for testability
@@ -890,10 +945,10 @@ struct TrainModel:
 ## Escalates To
 
 - [Code Review Orchestrator](./code-review-orchestrator.md) when:
-  - Implementation details need review (→ Implementation Specialist)
-  - Documentation of architecture needed (→ Documentation Specialist)
-  - Performance implications identified (→ Performance Specialist)
-  - Security implications identified (→ Security Specialist)
+  - Implementation details need review (to Implementation Specialist)
+  - Documentation of architecture needed (to Documentation Specialist)
+  - Performance implications identified (to Performance Specialist)
+  - Security implications identified (to Security Specialist)
 
 ## Success Criteria
 
@@ -934,4 +989,5 @@ struct TrainModel:
 
 ---
 
-*Architecture Review Specialist ensures system design is modular, maintainable, and follows architectural best practices while respecting specialist boundaries.*
+*Architecture Review Specialist ensures system design is modular, maintainable, and follows architectural best practices
+while respecting specialist boundaries.*
