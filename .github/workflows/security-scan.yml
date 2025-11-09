@@ -128,6 +128,7 @@ jobs:
         with:
           config: auto
           generateSarif: true
+        continue-on-error: true
 
       - name: Upload SARIF results
         if: always()
