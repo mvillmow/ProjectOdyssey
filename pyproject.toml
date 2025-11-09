@@ -20,6 +20,11 @@ dependencies = [
     "pytest-xdist>=3.0.0",
 ]
 
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+exclude = ["tests*", "notes*", "agents*", "papers*", "docs*", "logs*", "scripts*"]
+
 [project.optional-dependencies]
 dev = [
     "pre-commit>=3.0.0",
