@@ -252,7 +252,7 @@ blockers with detailed report.
 - Run all tests on every commit
 - Enforce quality gates strictly
 - Monitor pipeline health
-- Keep pipelines fast (<10 min for quick feedback)
+- Keep pipelines fast (`10 min for quick feedback)
 - Cache dependencies
 - Parallelize tests when possible
 - Notify on failures
@@ -297,7 +297,7 @@ After creating PR:
 - Build pipeline fast and reliable
 - Deployment automated and safe
 - Monitoring and alerts working
-- Test coverage >90%
+- Test coverage `90%
 - No critical security vulnerabilities
 
 ## Artifacts Produced
@@ -328,6 +328,35 @@ After creating PR:
 - Performance benchmark results
 - Security scan results
 - Build metrics
+
+## Examples
+
+### Example 1: Coordinating Multi-Phase Workflow
+
+**Scenario**: Implementing a new component across multiple subsections
+
+**Actions**:
+
+1. Break down component into design, implementation, and testing phases
+2. Delegate design work to design agents
+3. Delegate implementation to implementation specialists
+4. Coordinate parallel work streams
+5. Monitor progress and resolve blockers
+
+**Outcome**: Component delivered with all phases complete and integrated
+
+### Example 2: Resolving Cross-Component Dependencies
+
+**Scenario**: Two subsections have conflicting approaches to shared interface
+
+**Actions**:
+
+1. Identify dependency conflict between subsections
+2. Escalate to design agents for interface specification
+3. Coordinate implementation updates across both subsections
+4. Validate integration through testing phase
+
+**Outcome**: Unified interface with both components working correctly
 
 ---
 

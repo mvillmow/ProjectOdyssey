@@ -587,6 +587,47 @@ After creating PR:
 - `assess_numerical_stability` - Identify stability risks
 - `validate_loss_functions` - Verify loss math
 
+## Delegation
+
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../../agents/delegation-rules.md).
+
+### Coordinates With
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - Receives review assignments, coordinates with other specialists
+
+### Escalates To
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - When issues fall outside this specialist's scope
+
+## Examples
+
+### Example 1: Softmax Numerical Stability Review
+
+**Scenario**: Reviewing a softmax implementation that causes overflow
+
+**Actions**:
+
+1. Identify direct exponentiation without max normalization
+2. Demonstrate overflow scenario with large logit values
+3. Provide mathematically correct log-sum-exp implementation
+4. Reference numerical stability best practices
+
+**Outcome**: Numerically stable softmax preventing NaN propagation in training
+
+### Example 2: LeNet-5 Activation Function Verification
+
+**Scenario**: Implementation uses ReLU instead of tanh as specified in 1998 paper
+
+**Actions**:
+
+1. Compare implementation against original LeNet-5 paper (LeCun et al., 1998)
+2. Identify incorrect ReLU activations (should be tanh)
+3. Provide historical context (ReLU came later with AlexNet 2012)
+4. Suggest either fixing to match paper or renaming to "LeNet5-Modern"
+
+**Outcome**: Paper-faithful implementation or properly documented deviation
+
 ---
 
 *Algorithm Review Specialist ensures ML implementations are mathematically correct, numerically stable, and faithful to

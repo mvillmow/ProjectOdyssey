@@ -439,6 +439,49 @@ End with energy pointing forward:
 - `ensure_markdown_compliance` - Follow all markdown linting rules
 - `coordinate_with_doc_review` - Hand off to Documentation Review Specialist for final validation
 
+## Delegation
+
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../../agents/delegation-rules.md).
+
+### Coordinates With
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - Receives review assignments, coordinates with other specialists
+
+### Escalates To
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - When issues fall outside this specialist's scope
+
+## Examples
+
+### Example 1: Development Cycle Blog Post
+
+**Scenario**: Writing about implementing LeNet-5 backpropagation in Mojo
+
+**Actions**:
+
+1. Structure post as "The Plan → What Happened → What I Learned"
+2. Include code snippets showing gradient computation bugs discovered
+3. Add conversational asides about confusion with tensor dimensions
+4. Reference specific commits and benchmark results
+5. Ensure markdown compliance (code blocks with language tags, proper headings)
+
+**Outcome**: Engaging blog post combining technical depth with personal narrative
+
+### Example 2: Converting Technical Specs to Blog Format
+
+**Scenario**: Transforming agent architecture documentation into readable blog post
+
+**Actions**:
+
+1. Extract key decisions and challenges from technical specs
+2. Reorganize into narrative flow instead of reference format
+3. Add context about why decisions matter to readers
+4. Include examples and practical implications
+5. Hand off to Documentation Review Specialist for accuracy check
+
+**Outcome**: Technical content accessible to broader audience while maintaining accuracy
+
 ---
 
 *Blog Writer Specialist transforms development work into engaging, narrative-driven blog posts that maintain

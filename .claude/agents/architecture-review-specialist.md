@@ -738,6 +738,47 @@ After creating PR:
 - `detect_layer_violations` - Identify architectural boundary violations
 - `suggest_refactoring` - Provide architectural improvement recommendations
 
+## Delegation
+
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../../agents/delegation-rules.md).
+
+### Coordinates With
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - Receives review assignments, coordinates with other specialists
+
+### Escalates To
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - When issues fall outside this specialist's scope
+
+## Examples
+
+### Example 1: Layer Violation Detection
+
+**Scenario**: Data preprocessing module directly importing neural network training code
+
+**Actions**:
+
+1. Identify circular dependency between data and training layers
+2. Flag violation of separation of concerns
+3. Propose interface-based abstraction to decouple modules
+4. Suggest dependency injection pattern
+
+**Outcome**: Clean layered architecture with unidirectional dependencies
+
+### Example 2: Interface Design Review
+
+**Scenario**: Public API exposing internal implementation details
+
+**Actions**:
+
+1. Review public interfaces for abstraction leaks
+2. Identify internal types exposed in public signatures
+3. Recommend facade pattern to hide complexity
+4. Validate interface stability and backward compatibility
+
+**Outcome**: Well-defined public API with encapsulated implementation
+
 ---
 
 *Architecture Review Specialist ensures system design is modular, maintainable, and follows architectural best practices

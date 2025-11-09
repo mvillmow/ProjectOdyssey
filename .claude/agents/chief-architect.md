@@ -74,9 +74,13 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 documented in the issue.
 
 - **Use Mojo for**: Performance-critical ML operations, training loops, tensor operations, SIMD-optimized code, **ALL
+
 scripts** (build, automation, CI/CD, utilities), **ALL tools**, **ALL new code**
+
 - **Use Python ONLY for**: Interfacing with Python-only libraries (no Mojo bindings available), explicit requirement in
+
 issue, rapid prototyping (must document Mojo conversion plan)
+
 - **Interop**: Design clear boundaries between Mojo and Python components
 
 **Script and Tool Language**:
@@ -455,6 +459,36 @@ Success when
 - When in doubt, favor simplicity and maintainability
 - Mojo is preferred for ML performance, Python for flexibility
 - All agents below should follow established patterns
+
+## Examples
+
+### Example 1: Component Implementation Planning
+
+**Scenario**: Breaking down backpropagation algorithm into implementable functions
+
+**Actions**:
+
+1. Analyze algorithm requirements from design spec
+2. Break down into functions: forward pass, backward pass, parameter update
+3. Define function signatures and data structures
+4. Create implementation plan with dependencies
+5. Delegate functions to engineers
+
+**Outcome**: Clear implementation plan with well-defined function boundaries
+
+### Example 2: Code Quality Improvement
+
+**Scenario**: Refactoring complex function with multiple responsibilities
+
+**Actions**:
+
+1. Analyze function complexity and identify separate concerns
+2. Extract sub-functions with single responsibilities
+3. Improve naming and add type hints
+4. Add documentation and usage examples
+5. Coordinate with test engineer for test updates
+
+**Outcome**: Maintainable code following single responsibility principle
 
 ---
 

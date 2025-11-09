@@ -575,3 +575,57 @@ After creating PR:
 
 *Code Review Orchestrator ensures comprehensive, non-overlapping reviews across all dimensions of code quality,
 security, performance, and correctness.*
+
+## Delegation
+
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../../agents/delegation-rules.md).
+
+### Delegates To
+
+- [Algorithm Review Specialist](./algorithm-review-specialist.md) - Mathematical correctness, gradients, numerical stability
+- [Architecture Review Specialist](./architecture-review-specialist.md) - System design, modularity, patterns
+- [Data Engineering Review Specialist](./data-engineering-review-specialist.md) - Data pipelines, preprocessing, splits
+- [Dependency Review Specialist](./dependency-review-specialist.md) - Dependencies, versions, compatibility
+- [Documentation Review Specialist](./documentation-review-specialist.md) - Documentation quality and completeness
+- [Implementation Review Specialist](./implementation-review-specialist.md) - Code quality, maintainability, patterns
+- [Mojo Language Review Specialist](./mojo-language-review-specialist.md) - Mojo-specific features and idioms
+- [Paper Review Specialist](./paper-review-specialist.md) - Academic paper quality and standards
+- [Performance Review Specialist](./performance-review-specialist.md) - Performance and optimization
+- [Research Review Specialist](./research-review-specialist.md) - Research methodology and rigor
+- [Safety Review Specialist](./safety-review-specialist.md) - Memory safety and type safety
+- [Security Review Specialist](./security-review-specialist.md) - Security vulnerabilities and threats
+- [Test Review Specialist](./test-review-specialist.md) - Test quality and coverage
+
+### Coordinates With
+
+- [CI/CD Orchestrator](./cicd-orchestrator.md) - Integration with automated reviews
+
+## Examples
+
+### Example 1: Coordinating Multi-Phase Workflow
+
+**Scenario**: Implementing a new component across multiple subsections
+
+**Actions**:
+
+1. Break down component into design, implementation, and testing phases
+2. Delegate design work to design agents
+3. Delegate implementation to implementation specialists
+4. Coordinate parallel work streams
+5. Monitor progress and resolve blockers
+
+**Outcome**: Component delivered with all phases complete and integrated
+
+### Example 2: Resolving Cross-Component Dependencies
+
+**Scenario**: Two subsections have conflicting approaches to shared interface
+
+**Actions**:
+
+1. Identify dependency conflict between subsections
+2. Escalate to design agents for interface specification
+3. Coordinate implementation updates across both subsections
+4. Validate integration through testing phase
+
+**Outcome**: Unified interface with both components working correctly

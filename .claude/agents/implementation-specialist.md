@@ -314,6 +314,36 @@ After creating PR:
 - Performance requirements met
 - Tests passing
 
+## Examples
+
+### Example 1: Component Implementation Planning
+
+**Scenario**: Breaking down backpropagation algorithm into implementable functions
+
+**Actions**:
+
+1. Analyze algorithm requirements from design spec
+2. Break down into functions: forward pass, backward pass, parameter update
+3. Define function signatures and data structures
+4. Create implementation plan with dependencies
+5. Delegate functions to engineers
+
+**Outcome**: Clear implementation plan with well-defined function boundaries
+
+### Example 2: Code Quality Improvement
+
+**Scenario**: Refactoring complex function with multiple responsibilities
+
+**Actions**:
+
+1. Analyze function complexity and identify separate concerns
+2. Extract sub-functions with single responsibilities
+3. Improve naming and add type hints
+4. Add documentation and usage examples
+5. Coordinate with test engineer for test updates
+
+**Outcome**: Maintainable code following single responsibility principle
+
 ---
 
 **Configuration File**: `.claude/agents/implementation-specialist.md`

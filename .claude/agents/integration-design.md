@@ -332,6 +332,36 @@ After creating PR:
 - Integration guides
 - Migration guides (for version changes)
 
+## Examples
+
+### Example 1: Module Architecture Design
+
+**Scenario**: Designing architecture for neural network training module
+
+**Actions**:
+
+1. Analyze requirements and define module boundaries
+2. Design component interfaces and data flow
+3. Create architectural diagrams and specifications
+4. Define integration points with existing modules
+5. Document design decisions and trade-offs
+
+**Outcome**: Clear architectural specification ready for implementation
+
+### Example 2: Interface Refactoring
+
+**Scenario**: Simplifying complex API with too many parameters
+
+**Actions**:
+
+1. Analyze current interface usage patterns
+2. Identify common parameter combinations
+3. Design simplified API with sensible defaults
+4. Plan backward compatibility strategy
+5. Document migration path
+
+**Outcome**: Cleaner API with improved developer experience
+
 ---
 
 **Configuration File**: `.claude/agents/integration-design.md`

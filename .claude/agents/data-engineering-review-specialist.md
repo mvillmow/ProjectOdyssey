@@ -576,3 +576,46 @@ After creating PR:
 
 *Data Engineering Review Specialist ensures data pipelines are correct, unbiased, and follow ML data engineering best
 practices while respecting specialist boundaries.*
+
+## Delegation
+
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../../agents/delegation-rules.md).
+
+### Coordinates With
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - Receives review assignments, coordinates with other specialists
+
+### Escalates To
+
+- [Code Review Orchestrator](./code-review-orchestrator.md) - When issues fall outside this specialist's scope
+
+## Examples
+
+### Example 1: Code Review for Numerical Stability
+
+**Scenario**: Reviewing implementation with potential overflow issues
+
+**Actions**:
+
+1. Identify operations that could overflow (exp, large multiplications)
+2. Check for numerical stability patterns (log-sum-exp, epsilon values)
+3. Provide specific fixes with mathematical justification
+4. Reference best practices and paper specifications
+5. Categorize findings by severity
+
+**Outcome**: Numerically stable implementation preventing runtime errors
+
+### Example 2: Architecture Review Feedback
+
+**Scenario**: Implementation tightly coupling unrelated components
+
+**Actions**:
+
+1. Analyze component dependencies and coupling
+2. Identify violations of separation of concerns
+3. Suggest refactoring with interface-based design
+4. Provide concrete code examples of improvements
+5. Group similar issues into single review comment
+
+**Outcome**: Actionable feedback leading to better architecture

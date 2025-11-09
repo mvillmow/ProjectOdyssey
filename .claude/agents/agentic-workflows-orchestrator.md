@@ -308,6 +308,35 @@ Agents assist humans, don't replace them
 
 Agents handle errors gracefully
 
+## Examples
+
+### Example 1: Research Assistant Workflow
+
+**Scenario**: Implementing LeNet-5 from the 1998 paper
+
+**Actions**:
+
+1. Research assistant extracts architecture and hyperparameters from paper
+2. Documentation agent generates initial API specifications
+3. Implementation specialist creates Mojo implementation
+4. Code review agent validates mathematical correctness
+5. Documentation agent updates with final implementation details
+
+**Outcome**: Complete paper implementation with validated correctness and comprehensive documentation
+
+### Example 2: Automated Code Review Integration
+
+**Scenario**: Setting up code review agent for PR quality gates
+
+**Actions**:
+
+1. Design code review agent with focus areas (Mojo patterns, performance, safety)
+2. Integrate with CI/CD pipeline for automatic PR reviews
+3. Configure delegation to specialist reviewers based on file types
+4. Test with sample PRs and validate review quality
+
+**Outcome**: Automated code review system providing consistent feedback on all PRs
+
 ---
 
 **Configuration File**: `.claude/agents/agentic-workflows-orchestrator.md`
