@@ -1,7 +1,6 @@
 ---
 name: cicd-orchestrator
-description: Coordinate CI/CD pipeline including testing infrastructure, deployment processes, quality gates, and
-monitoring
+description: Coordinate CI/CD pipeline including testing infrastructure, deployment processes, quality gates, and monitoring
 tools: Read,Grep,Glob
 model: sonnet
 ---

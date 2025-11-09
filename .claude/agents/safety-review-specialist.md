@@ -1,7 +1,6 @@
 ---
 name: safety-review-specialist
-description: Reviews code for memory safety and type safety issues including memory leaks, use-after-free, buffer
-overflows, null pointers, and undefined behavior
+description: Reviews code for memory safety and type safety issues including memory leaks, use-after-free, buffer overflows, null pointers, and undefined behavior
 tools: Read,Grep,Glob
 model: sonnet
 ---

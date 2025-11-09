@@ -1,7 +1,6 @@
 ---
 name: implementation-review-specialist
-description: Reviews code implementation for correctness, logic quality, maintainability, design patterns, and
-adherence to best practices
+description: Reviews code implementation for correctness, logic quality, maintainability, design patterns, and adherence to best practices
 tools: Read,Grep,Glob
 model: sonnet
 ---

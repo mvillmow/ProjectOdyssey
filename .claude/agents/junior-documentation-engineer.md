@@ -1,7 +1,6 @@
 ---
 name: junior-documentation-engineer
-description: Fill in docstring templates, format documentation, generate changelog entries, and update simple README
-sections
+description: Fill in docstring templates, format documentation, generate changelog entries, and update simple README sections
 tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---

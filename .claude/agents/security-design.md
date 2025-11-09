@@ -1,7 +1,6 @@
 ---
 name: security-design
-description: Design module-level security including threat modeling, security requirements, authentication,
-authorization, and vulnerability prevention
+description: Design module-level security including threat modeling, security requirements, authentication, authorization, and vulnerability prevention
 tools: Read,Write,Grep,Glob
 model: sonnet
 ---

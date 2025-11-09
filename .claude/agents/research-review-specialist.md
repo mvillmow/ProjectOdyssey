@@ -1,7 +1,6 @@
 ---
 name: research-review-specialist
-description: Reviews research methodology, experimental design, reproducibility, and adherence to scientific rigor
-standards
+description: Reviews research methodology, experimental design, reproducibility, and adherence to scientific rigor standards
 tools: Read,Grep,Glob
 model: sonnet
 ---

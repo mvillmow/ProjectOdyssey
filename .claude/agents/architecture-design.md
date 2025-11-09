@@ -1,7 +1,6 @@
 ---
 name: architecture-design
-description: Design module-level architecture including component breakdown, interfaces, data flow, and reusable
-patterns
+description: Design module-level architecture including component breakdown, interfaces, data flow, and reusable patterns
 tools: Read,Write,Grep,Glob
 model: sonnet
 ---
