@@ -58,16 +58,6 @@ body:
         - Tried approach X...
         - Searched for...
 
-  - type: textarea
-    id: environment
-    attributes:
-      label: Environment (if relevant)
-      description: System information, versions, configuration
-      placeholder: |
-        - OS: Ubuntu 22.04
-        - Mojo version: 24.5.0
-        - Component: Agent System
-
   - type: checkboxes
     id: checklist
     attributes:

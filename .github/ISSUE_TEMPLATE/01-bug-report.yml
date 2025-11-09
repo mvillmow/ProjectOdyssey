@@ -55,68 +55,27 @@ body:
     validations:
       required: true
 
-  - type: dropdown
-    id: component
-    attributes:
-      label: Component
-      description: Which component is affected?
-      options:
-        - Foundation (repository structure, config)
-        - Shared Library (core operations, training)
-        - Tooling (CLI, scripts, automation)
-        - Papers (research implementations)
-        - CI/CD (testing, deployment)
-        - Agents (agentic workflows)
-        - Documentation
-        - Other
-    validations:
-      required: true
-
-  - type: dropdown
-    id: severity
-    attributes:
-      label: Severity
-      description: How severe is this bug?
-      options:
-        - Critical (blocks all work)
-        - High (blocks major functionality)
-        - Medium (workaround available)
-        - Low (minor issue)
-    validations:
-      required: true
-
   - type: textarea
     id: environment
     attributes:
-      label: Environment
-      description: System information
-      placeholder: |
-        - OS: Ubuntu 22.04 / macOS 14.0 / Windows 11
-        - Mojo version: 24.5.0
-        - Python version: 3.11.5
-        - Pixi version: 0.30.0
-      value: |
-        - OS:
-        - Mojo version:
-        - Python version:
-        - Pixi version:
+      label: System Information
+      description: Run `scripts/get_system_info.sh` and paste the output here
+      placeholder: Paste the output of scripts/get_system_info.sh here...
+      render: text
     validations:
       required: true
 
   - type: textarea
     id: logs
     attributes:
-      label: Relevant Logs
-      description: Paste relevant logs, error messages, or terminal output
+      label: Logs and Additional Context
+      description: Paste relevant logs, error messages, terminal output, and any other context (screenshots, related issues, etc.)
       render: shell
-      placeholder: Paste logs here...
+      placeholder: |
+        Paste logs here...
 
-  - type: textarea
-    id: context
-    attributes:
-      label: Additional Context
-      description: Any other context about the problem (screenshots, related issues, etc.)
-      placeholder: This started happening after...
+        Additional context:
+        This started happening after...
 
   - type: checkboxes
     id: checklist
