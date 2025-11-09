@@ -12,11 +12,16 @@ Usage:
     python3 tests/agents/test_loading.py [agent_dir]
 """
 
+import logging
 import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
+
+
+# Security limits
+MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
 
 
 @dataclass
@@ -63,6 +68,14 @@ class AgentLoadingTester:
         print(f"Discovered {len(agent_files)} agent configuration files:")
 
         for agent_file in agent_files:
+            # Check file size before reading
+            file_size = agent_file.stat().st_size
+            if file_size > MAX_FILE_SIZE:
+                logging.warning(f"Skipping {agent_file.name} (file too large: {file_size} bytes)")
+                print(f"  ⚠ {agent_file.name} (file too large)")
+                self.errors.append(f"{agent_file.name}: File too large ({file_size} bytes)")
+                continue
+
             agent_info = self._load_agent(agent_file)
             if agent_info:
                 self.agents.append(agent_info)
@@ -82,9 +95,10 @@ class AgentLoadingTester:
             AgentInfo if loaded successfully, None otherwise
         """
         try:
-            content = file_path.read_text()
+            content = file_path.read_text(encoding='utf-8')
         except Exception as e:
             self.errors.append(f"Failed to read {file_path.name}: {e}")
+            logging.error(f"Failed to read {file_path.name}: {e}")
             return None
 
         # Extract frontmatter
@@ -336,9 +350,30 @@ def main() -> int:
     Returns:
         Exit code (0 for success, 1 for errors)
     """
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+
     # Determine agents directory
-    if len(sys.argv) > 1:
-        agents_dir = Path(sys.argv[1])
+    agents_dir_arg = sys.argv[1] if len(sys.argv) > 1 else None
+
+    # Validate input
+    if agents_dir_arg:
+        if not agents_dir_arg:
+            logger.error("agents_dir path is required")
+            return 1
+
+        agents_dir = Path(agents_dir_arg)
+        if not agents_dir.exists():
+            logger.error(f"Directory does not exist: {agents_dir_arg}")
+            return 1
+
+        if not agents_dir.is_dir():
+            logger.error(f"Path is not a directory: {agents_dir_arg}")
+            return 1
     else:
         current = Path.cwd()
         agents_dir = current / ".claude" / "agents"

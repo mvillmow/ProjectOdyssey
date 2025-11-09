@@ -16,11 +16,21 @@ Usage:
     If agent_dir not provided, checks .claude/agents/
 """
 
+import logging
 import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+
+
+# Security limits
+MAX_FILE_SIZE = 102400  # 100KB max file size to prevent DoS
+
+# Validation thresholds
+MIN_DESCRIPTION_LENGTH = 20  # Minimum description characters
+MIN_TOOL_COUNT = 1  # Minimum number of tools
+MAX_TOOL_COUNT = 10  # Maximum number of tools (sanity check)
 
 
 @dataclass
@@ -55,7 +65,16 @@ class AgentConfigValidator:
     # Required frontmatter fields
     REQUIRED_FIELDS = {"name", "description", "tools", "model"}
 
-    # Valid tool names (Claude Code tools)
+    # Valid Claude Code tools
+    # This list must be kept in sync with available tools in Claude Code.
+    # Reference: https://docs.claude.com/claude-code/tools
+    #
+    # To update when new tools are added:
+    # 1. Check Claude Code documentation for new tools
+    # 2. Add tool name to this list (comma-separated)
+    # 3. Update tests if tool validation logic changes
+    #
+    # Common tools: Read, Write, Edit, Bash, Grep, Glob, WebFetch, WebSearch, etc.
     VALID_TOOLS = {
         "Read", "Write", "Edit", "Bash", "Grep", "Glob",
         "WebFetch", "WebSearch", "NotebookEdit",
@@ -108,6 +127,18 @@ class AgentConfigValidator:
             return []
 
         for agent_file in agent_files:
+            # Check file size before reading
+            file_size = agent_file.stat().st_size
+            if file_size > MAX_FILE_SIZE:
+                logging.warning(f"Skipping {agent_file.name} (file too large: {file_size} bytes)")
+                self.results.append(ValidationResult(
+                    agent_file,
+                    False,
+                    [f"File too large: {file_size} bytes (max: {MAX_FILE_SIZE})"],
+                    []
+                ))
+                continue
+
             result = self.validate_file(agent_file)
             self.results.append(result)
 
@@ -126,9 +157,10 @@ class AgentConfigValidator:
         warnings = []
 
         try:
-            content = file_path.read_text()
+            content = file_path.read_text(encoding='utf-8')
         except Exception as e:
             errors.append(f"Failed to read file: {e}")
+            logging.error(f"Failed to read {file_path.name}: {e}")
             return ValidationResult(file_path, False, errors, warnings)
 
         # Validate YAML frontmatter
@@ -201,7 +233,7 @@ class AgentConfigValidator:
 
         if 'description' in frontmatter:
             desc = frontmatter['description']
-            if len(desc) < 20:
+            if len(desc) < MIN_DESCRIPTION_LENGTH:
                 warnings.append(f"Description too short ({len(desc)} chars) - may not trigger auto-invocation")
             if not any(word in desc.lower() for word in ['when', 'for', 'to', 'implement', 'design', 'test']):
                 warnings.append("Description should clearly state when to use this agent")
@@ -211,8 +243,10 @@ class AgentConfigValidator:
             invalid_tools = [t for t in tools if t not in self.VALID_TOOLS]
             if invalid_tools:
                 errors.append(f"Invalid tools: {', '.join(invalid_tools)}")
-            if not tools:
+            if not tools or len(tools) < MIN_TOOL_COUNT:
                 errors.append("No tools specified")
+            if len(tools) > MAX_TOOL_COUNT:
+                warnings.append(f"Large number of tools specified ({len(tools)}), verify this is intentional")
 
         if 'model' in frontmatter:
             model = frontmatter['model'].lower()
@@ -367,9 +401,30 @@ def main() -> int:
     Returns:
         Exit code (0 for success, 1 for failure)
     """
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s'
+    )
+    logger = logging.getLogger(__name__)
+
     # Determine agents directory
-    if len(sys.argv) > 1:
-        agents_dir = Path(sys.argv[1])
+    agents_dir_arg = sys.argv[1] if len(sys.argv) > 1 else None
+
+    # Validate input
+    if agents_dir_arg:
+        if not agents_dir_arg:
+            logger.error("agents_dir path is required")
+            return 1
+
+        agents_dir = Path(agents_dir_arg)
+        if not agents_dir.exists():
+            logger.error(f"Directory does not exist: {agents_dir_arg}")
+            return 1
+
+        if not agents_dir.is_dir():
+            logger.error(f"Path is not a directory: {agents_dir_arg}")
+            return 1
     else:
         # Default to .claude/agents/ in current or parent directories
         current = Path.cwd()

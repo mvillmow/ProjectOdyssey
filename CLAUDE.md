@@ -85,6 +85,43 @@ gh issue list
 gh issue view <number>
 ```
 
+### Agent Testing
+
+Agent configurations are automatically validated in CI on all PRs. Run tests locally before committing:
+
+```bash
+# Validate agent YAML frontmatter and configuration
+python3 tests/agents/validate_configs.py .claude/agents/
+
+# Test agent discovery and loading
+python3 tests/agents/test_loading.py .claude/agents/
+
+# Test delegation patterns
+python3 tests/agents/test_delegation.py .claude/agents/
+
+# Test workflow integration
+python3 tests/agents/test_integration.py .claude/agents/
+
+# Test Mojo-specific patterns
+python3 tests/agents/test_mojo_patterns.py .claude/agents/
+
+# Run all tests
+for script in tests/agents/test_*.py tests/agents/validate_*.py; do
+    python3 "$script" .claude/agents/
+done
+```
+
+**Test Coverage**:
+
+- Configuration validation (YAML frontmatter, required fields, tool specifications)
+- Agent discovery and loading (hierarchy coverage, activation patterns)
+- Delegation patterns (chain validation, escalation paths)
+- Workflow integration (5-phase coverage, parallel execution)
+- Mojo patterns (fn vs def, struct vs class, SIMD, memory management)
+
+**CI Integration**: The `.github/workflows/test-agents.yml` workflow runs these tests automatically on all PRs
+affecting agent configurations.
+
 ### Pre-commit Hooks
 
 Pre-commit hooks automatically check code quality before commits. The hooks include `mojo format` for Mojo code and
