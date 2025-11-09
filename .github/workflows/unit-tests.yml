@@ -1,0 +1,303 @@
+name: Unit Tests
+
+# Run fast unit tests for Mojo and Python code
+# Target duration: < 5 minutes
+
+on:
+  # Run on all pull requests
+  pull_request:
+
+  # Run on pushes to main
+  push:
+    branches:
+      - main
+
+  # Allow manual runs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write  # For PR comments
+
+jobs:
+  # ============================================================================
+  # Mojo Unit Tests
+  # ============================================================================
+  test-mojo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Cache Pixi environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.pixi
+          key: pixi-${{ runner.os }}-${{ hashFiles('pixi.toml') }}
+          restore-keys: |
+            pixi-${{ runner.os }}-
+
+      - name: Run Mojo unit tests
+        run: |
+          # Check if Mojo tests exist
+          if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
+            echo "Running Mojo unit tests..."
+            pixi run mojo test tests/unit/ --verbose
+          else
+            echo "⚠️  No Mojo unit tests found yet (tests/unit/*.mojo)"
+            echo "This is expected during initial development."
+            echo "Creating placeholder test results..."
+            mkdir -p test-results
+            echo "No Mojo tests to run" > test-results/mojo-tests.txt
+          fi
+        continue-on-error: false
+
+      - name: Generate coverage report
+        if: success()
+        run: |
+          echo "Coverage reporting will be added when Mojo tests exist"
+          # Future: Generate Mojo coverage with mojo test --coverage
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mojo-test-results
+          path: test-results/
+          retention-days: 7
+
+  # ============================================================================
+  # Python Unit Tests
+  # ============================================================================
+  test-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('requirements*.txt', 'pyproject.toml') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pytest-timeout
+
+          # Install additional dependencies if they exist
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          fi
+
+      - name: Cache pytest cache
+        uses: actions/cache@v4
+        with:
+          path: .pytest_cache
+          key: pytest-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            pytest-cache-${{ runner.os }}-
+
+      - name: Run Python unit tests
+        run: |
+          # Check if Python tests exist
+          if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name 'test_*.py' 2>/dev/null)" ]; then
+            echo "Running Python unit tests..."
+            pytest tests/unit/ \
+              --verbose \
+              --cov=. \
+              --cov-report=xml \
+              --cov-report=term \
+              --cov-report=html \
+              --timeout=300 \
+              --maxfail=5
+          else
+            echo "⚠️  No Python unit tests found yet (tests/unit/test_*.py)"
+            echo "This is expected during initial development."
+            echo "Creating placeholder coverage report..."
+            mkdir -p htmlcov
+            echo "No Python tests to run" > coverage.xml
+            exit 0
+          fi
+
+      - name: Upload coverage to artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-coverage
+          path: |
+            coverage.xml
+            htmlcov/
+          retention-days: 7
+
+      - name: Check coverage threshold
+        if: success()
+        run: |
+          # Extract coverage percentage if coverage.xml exists and has content
+          if [ -f coverage.xml ] && [ -s coverage.xml ]; then
+            COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree=ET.parse('coverage.xml'); print(tree.getroot().attrib.get('line-rate', '0'))" 2>/dev/null || echo "0")
+            COVERAGE_PCT=$(python -c "print(int(float('$COVERAGE') * 100))")
+
+            echo "Test coverage: ${COVERAGE_PCT}%"
+
+            if [ "$COVERAGE_PCT" -lt 80 ]; then
+              echo "⚠️  WARNING: Coverage is below 80% threshold"
+            fi
+
+            if [ "$COVERAGE_PCT" -ge 90 ]; then
+              echo "✅ Excellent coverage (>= 90%)"
+            fi
+          else
+            echo "Coverage report not available (no tests run)"
+          fi
+
+  # ============================================================================
+  # Combined Coverage Report
+  # ============================================================================
+  coverage-report:
+    needs: [test-mojo, test-python]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Download Mojo test results
+        uses: actions/download-artifact@v4
+        with:
+          name: mojo-test-results
+          path: mojo-results/
+
+      - name: Download Python coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: python-coverage
+          path: python-coverage/
+
+      - name: Generate combined report
+        run: |
+          echo "# 🧪 Unit Test Results" > coverage-report.md
+          echo "" >> coverage-report.md
+          echo "**Workflow Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> coverage-report.md
+          echo "" >> coverage-report.md
+
+          # Check Mojo results
+          if [ -f mojo-results/mojo-tests.txt ]; then
+            echo "## Mojo Tests" >> coverage-report.md
+            cat mojo-results/mojo-tests.txt >> coverage-report.md
+            echo "" >> coverage-report.md
+          fi
+
+          # Check Python coverage
+          if [ -f python-coverage/coverage.xml ] && [ -s python-coverage/coverage.xml ]; then
+            echo "## Python Tests" >> coverage-report.md
+            echo "Coverage report generated. See artifacts for details." >> coverage-report.md
+            echo "" >> coverage-report.md
+          else
+            echo "## Python Tests" >> coverage-report.md
+            echo "⚠️  No Python tests found yet." >> coverage-report.md
+            echo "" >> coverage-report.md
+          fi
+
+          echo "## Status" >> coverage-report.md
+          if [ "${{ needs.test-mojo.result }}" = "success" ] && [ "${{ needs.test-python.result }}" = "success" ]; then
+            echo "✅ All unit tests passed!" >> coverage-report.md
+          else
+            echo "❌ Some tests failed. Check individual job results above." >> coverage-report.md
+          fi
+
+      - name: Upload combined report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report.md
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            try {
+              const report = fs.readFileSync('coverage-report.md', 'utf8');
+
+              // Check if a comment already exists
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+
+              const botComment = comments.find(comment =>
+                comment.user.type === 'Bot' &&
+                comment.body.includes('🧪 Unit Test Results')
+              );
+
+              const commentBody = report;
+
+              if (botComment) {
+                // Update existing comment
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: commentBody
+                });
+                console.log('Updated existing PR comment');
+              } else {
+                // Create new comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: commentBody
+                });
+                console.log('Created new PR comment');
+              }
+            } catch (error) {
+              console.error('Failed to comment on PR:', error);
+            }
+
+      - name: Fail if coverage below threshold
+        run: |
+          # Check Python coverage threshold
+          if [ -f python-coverage/coverage.xml ] && [ -s python-coverage/coverage.xml ]; then
+            COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree=ET.parse('python-coverage/coverage.xml'); print(tree.getroot().attrib.get('line-rate', '0'))" 2>/dev/null || echo "0")
+            COVERAGE_PCT=$(python -c "print(int(float('$COVERAGE') * 100))")
+
+            echo "Final coverage: ${COVERAGE_PCT}%"
+
+            if [ "$COVERAGE_PCT" -lt 80 ]; then
+              echo "❌ FAIL: Coverage is below 80% threshold (${COVERAGE_PCT}%)"
+              exit 1
+            fi
+          else
+            echo "No coverage data available (expected during initial development)"
+            exit 0
+          fi

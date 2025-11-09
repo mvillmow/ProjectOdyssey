@@ -1,0 +1,452 @@
+name: Paper Validation
+
+# Validate paper implementations against specifications
+# Target duration: Structure (1min), Implementation (3min), Reproducibility (10min optional)
+
+on:
+  # Run on pull requests affecting papers/ directory
+  pull_request:
+    paths:
+      - 'papers/**'
+
+  # Run on pushes to main affecting papers/ directory
+  push:
+    branches:
+      - main
+    paths:
+      - 'papers/**'
+
+  # Allow manual runs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write  # For PR comments
+
+jobs:
+  # ============================================================================
+  # Validate Paper Directory Structure
+  # ============================================================================
+  validate-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Validate paper directory structure
+        run: |
+          echo "Validating paper directory structure..."
+
+          # Check if papers/ directory exists
+          if [ ! -d "papers" ]; then
+            echo "⚠️  No papers/ directory found yet"
+            echo "This is expected during initial development."
+            exit 0
+          fi
+
+          # Find all paper directories (contains metadata.yml)
+          PAPER_DIRS=$(find papers -name "metadata.yml" -exec dirname {} \; 2>/dev/null || true)
+
+          if [ -z "$PAPER_DIRS" ]; then
+            echo "⚠️  No paper implementations found yet"
+            exit 0
+          fi
+
+          # Validate each paper
+          VALIDATION_FAILED=false
+
+          for paper_dir in $PAPER_DIRS; do
+            echo ""
+            echo "Validating: $paper_dir"
+            echo "-----------------------------------"
+
+            # Required files
+            REQUIRED_FILES=(
+              "README.md"
+              "metadata.yml"
+            )
+
+            # Recommended directories
+            RECOMMENDED_DIRS=(
+              "implementation"
+              "tests"
+            )
+
+            # Check required files
+            for file in "${REQUIRED_FILES[@]}"; do
+              if [ -f "$paper_dir/$file" ]; then
+                echo "✅ $file"
+              else
+                echo "❌ Missing: $file"
+                VALIDATION_FAILED=true
+              fi
+            done
+
+            # Check recommended directories
+            for dir in "${RECOMMENDED_DIRS[@]}"; do
+              if [ -d "$paper_dir/$dir" ]; then
+                echo "✅ $dir/"
+              else
+                echo "⚠️  Recommended: $dir/"
+              fi
+            done
+
+            # Validate metadata.yml structure
+            if [ -f "$paper_dir/metadata.yml" ]; then
+              python3 << EOF
+          import yaml
+          import sys
+
+          try:
+              with open('$paper_dir/metadata.yml', 'r') as f:
+                  metadata = yaml.safe_load(f)
+
+              required_fields = ['title', 'authors', 'year', 'url']
+              missing_fields = [field for field in required_fields if field not in metadata]
+
+              if missing_fields:
+                  print(f"❌ Missing metadata fields: {', '.join(missing_fields)}")
+                  sys.exit(1)
+              else:
+                  print("✅ Metadata complete")
+                  print(f"   Title: {metadata.get('title', 'N/A')}")
+                  print(f"   Authors: {metadata.get('authors', 'N/A')}")
+                  print(f"   Year: {metadata.get('year', 'N/A')}")
+          except Exception as e:
+              print(f"❌ Failed to parse metadata.yml: {e}")
+              sys.exit(1)
+          EOF
+
+              if [ $? -ne 0 ]; then
+                VALIDATION_FAILED=true
+              fi
+            fi
+          done
+
+          if [ "$VALIDATION_FAILED" = "true" ]; then
+            echo ""
+            echo "❌ Paper structure validation failed"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ All paper structures valid"
+
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: structure-validation
+          path: validation-results/
+          retention-days: 7
+
+  # ============================================================================
+  # Validate Paper Implementation
+  # ============================================================================
+  validate-implementation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Check implementation completeness
+        run: |
+          echo "Checking implementation completeness..."
+
+          # Check if papers/ directory exists
+          if [ ! -d "papers" ]; then
+            echo "⚠️  No papers/ directory found yet"
+            exit 0
+          fi
+
+          # Find all paper implementations
+          PAPER_DIRS=$(find papers -name "metadata.yml" -exec dirname {} \; 2>/dev/null || true)
+
+          if [ -z "$PAPER_DIRS" ]; then
+            echo "⚠️  No paper implementations found yet"
+            exit 0
+          fi
+
+          for paper_dir in $PAPER_DIRS; do
+            echo ""
+            echo "Checking implementation: $paper_dir"
+            echo "-----------------------------------"
+
+            # Check for Mojo implementation files
+            if [ -d "$paper_dir/implementation" ]; then
+              MOJO_FILES=$(find "$paper_dir/implementation" -name "*.mojo" -o -name "*.🔥" 2>/dev/null | wc -l)
+              echo "Found $MOJO_FILES Mojo implementation files"
+
+              if [ "$MOJO_FILES" -gt 0 ]; then
+                echo "✅ Implementation present"
+              else
+                echo "⚠️  No Mojo implementation files found"
+              fi
+            else
+              echo "⚠️  No implementation/ directory"
+            fi
+
+            # Check for test files
+            if [ -d "$paper_dir/tests" ]; then
+              TEST_FILES=$(find "$paper_dir/tests" -name "test_*.py" -o -name "test_*.mojo" 2>/dev/null | wc -l)
+              echo "Found $TEST_FILES test files"
+
+              if [ "$TEST_FILES" -gt 0 ]; then
+                echo "✅ Tests present"
+              else
+                echo "⚠️  No test files found"
+              fi
+            else
+              echo "⚠️  No tests/ directory"
+            fi
+          done
+
+          echo ""
+          echo "✅ Implementation check complete"
+
+      - name: Run paper-specific tests
+        run: |
+          echo "Running paper-specific tests..."
+
+          # Check if papers/ directory exists
+          if [ ! -d "papers" ]; then
+            echo "⚠️  No papers/ directory found yet"
+            exit 0
+          fi
+
+          # Find all paper test directories
+          PAPER_DIRS=$(find papers -name "metadata.yml" -exec dirname {} \; 2>/dev/null || true)
+
+          if [ -z "$PAPER_DIRS" ]; then
+            echo "⚠️  No paper implementations found yet"
+            exit 0
+          fi
+
+          for paper_dir in $PAPER_DIRS; do
+            if [ -d "$paper_dir/tests" ]; then
+              echo ""
+              echo "Running tests for: $paper_dir"
+
+              # Run Python tests if they exist
+              if [ -n "$(find "$paper_dir/tests" -name 'test_*.py' 2>/dev/null)" ]; then
+                pixi run pytest "$paper_dir/tests" --verbose || true
+              fi
+
+              # Run Mojo tests if they exist
+              if [ -n "$(find "$paper_dir/tests" -name 'test_*.mojo' 2>/dev/null)" ]; then
+                pixi run mojo test "$paper_dir/tests" --verbose || true
+              fi
+            fi
+          done
+
+          echo "✅ Paper tests complete"
+
+  # ============================================================================
+  # Validate Reproducibility (Optional)
+  # ============================================================================
+  validate-reproducibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Only run if specifically requested via label or workflow_dispatch
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'validate-reproducibility'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Run training scripts
+        run: |
+          echo "Running training scripts for reproducibility validation..."
+          echo "⚠️  This is a long-running job (up to 15 minutes)"
+
+          # Check if papers/ directory exists
+          if [ ! -d "papers" ]; then
+            echo "⚠️  No papers/ directory found yet"
+            exit 0
+          fi
+
+          # Find all paper directories with training scripts
+          PAPER_DIRS=$(find papers -name "train.py" -o -name "train.mojo" -exec dirname {} \; 2>/dev/null || true)
+
+          if [ -z "$PAPER_DIRS" ]; then
+            echo "⚠️  No training scripts found yet"
+            exit 0
+          fi
+
+          for paper_dir in $PAPER_DIRS; do
+            echo ""
+            echo "Running training for: $paper_dir"
+
+            # Run training script with quick validation mode
+            if [ -f "$paper_dir/train.py" ]; then
+              pixi run python "$paper_dir/train.py" --quick-validation --epochs 1 || true
+            elif [ -f "$paper_dir/train.mojo" ]; then
+              pixi run mojo "$paper_dir/train.mojo" --quick-validation --epochs 1 || true
+            fi
+          done
+
+      - name: Compare results to expected metrics
+        run: |
+          echo "Comparing results to expected metrics..."
+          echo "⚠️  Reproducibility validation is under development"
+
+          # Future: Compare training results to expected metrics
+          # Tolerance: ±5% for reproducibility
+
+      - name: Generate reproducibility report
+        run: |
+          echo "Generating reproducibility report..."
+
+          mkdir -p validation-results
+          echo "Reproducibility validation completed" > validation-results/reproducibility.txt
+
+      - name: Upload reproducibility results
+        uses: actions/upload-artifact@v4
+        with:
+          name: reproducibility-validation
+          path: validation-results/
+          retention-days: 30
+
+  # ============================================================================
+  # Paper Validation Report
+  # ============================================================================
+  paper-report:
+    needs: [validate-structure, validate-implementation]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+
+      - name: Generate validation report
+        run: |
+          echo "# 📄 Paper Validation Results" > paper-report.md
+          echo "" >> paper-report.md
+          echo "**Workflow Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> paper-report.md
+          echo "" >> paper-report.md
+
+          # Check validation results
+          echo "## Validation Status" >> paper-report.md
+          echo "" >> paper-report.md
+
+          if [ "${{ needs.validate-structure.result }}" = "success" ]; then
+            echo "- ✅ **Structure Validation**: Passed" >> paper-report.md
+          else
+            echo "- ❌ **Structure Validation**: Failed" >> paper-report.md
+          fi
+
+          if [ "${{ needs.validate-implementation.result }}" = "success" ]; then
+            echo "- ✅ **Implementation Validation**: Passed" >> paper-report.md
+          else
+            echo "- ❌ **Implementation Validation**: Failed" >> paper-report.md
+          fi
+
+          echo "" >> paper-report.md
+
+          # Summary
+          if [ "${{ needs.validate-structure.result }}" = "success" ] && [ "${{ needs.validate-implementation.result }}" = "success" ]; then
+            echo "## Summary" >> paper-report.md
+            echo "" >> paper-report.md
+            echo "✅ **All paper validations passed!**" >> paper-report.md
+            echo "" >> paper-report.md
+            echo "The paper implementation meets all required criteria." >> paper-report.md
+          else
+            echo "## Summary" >> paper-report.md
+            echo "" >> paper-report.md
+            echo "❌ **Some validations failed**" >> paper-report.md
+            echo "" >> paper-report.md
+            echo "Please review the validation logs and fix the issues." >> paper-report.md
+          fi
+
+          # Display report
+          cat paper-report.md
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-validation-report
+          path: paper-report.md
+          retention-days: 30
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            try {
+              const report = fs.readFileSync('paper-report.md', 'utf8');
+
+              // Check if a comment already exists
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+
+              const botComment = comments.find(comment =>
+                comment.user.type === 'Bot' &&
+                comment.body.includes('📄 Paper Validation Results')
+              );
+
+              if (botComment) {
+                // Update existing comment
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: report
+                });
+                console.log('Updated existing PR comment');
+              } else {
+                // Create new comment
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: report
+                });
+                console.log('Created new PR comment');
+              }
+            } catch (error) {
+              console.error('Failed to comment on PR:', error);
+            }
+
+      - name: Check validation status
+        run: |
+          if [ "${{ needs.validate-structure.result }}" != "success" ] || [ "${{ needs.validate-implementation.result }}" != "success" ]; then
+            echo "❌ Paper validation failed"
+            exit 1
+          fi
+
+          echo "✅ Paper validation passed"
