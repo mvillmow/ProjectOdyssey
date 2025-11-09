@@ -217,7 +217,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **Code**:
 
-```[LANGUAGE]
+```text
 [CODE WITH ISSUE]
 [EXAMPLE: Unsafe input handling, logic error, poor design, etc.]
 [3-15 LINES OF CODE]
@@ -237,7 +237,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **Fix**:
 
-```[LANGUAGE]
+```mojo
 [CORRECTED CODE]
 [SHOW THE PROPER IMPLEMENTATION]
 [INCLUDE COMMENTS EXPLAINING KEY CHANGES]
@@ -245,13 +245,11 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **Additional Context**: [Optional: Related concerns, references, etc.]
 
-```text
-
 ### Example 2: [Issue Type 2 - e.g., "Insufficient Error Handling"]
 
 **Code**:
 
-```[LANGUAGE]
+```text
 [CODE WITH ISSUE]
 [EXAMPLE: Missing validation, poor error handling, etc.]
 [5-15 LINES OF CODE]
@@ -270,7 +268,7 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **Recommended**:
 
-```[LANGUAGE]
+```mojo
 [IMPROVED CODE]
 [SHOW BETTER IMPLEMENTATION]
 [INCLUDE DOCUMENTATION/COMMENTS]
@@ -285,13 +283,11 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **Note**: [Optional cross-reference to other specialist if needed]
 
-```text
-
 ### Example 3: [Issue Type 3 - e.g., "Suboptimal Implementation"]
 
 **Code**:
 
-```[LANGUAGE]
+```text
 [CODE WITH MINOR ISSUE]
 [EXAMPLE: Code duplication, poor naming, etc.]
 [10-20 LINES OF CODE SHOWING DUPLICATION OR POOR PATTERN]
@@ -305,8 +301,9 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 **Issue**: [Explanation of the suboptimal pattern]
 
 **Recommendation**: [Suggestion for improvement]
+```
 
-```[LANGUAGE]
+```mojo
 [REFACTORED CODE]
 [SHOW BETTER DESIGN/PATTERN]
 [DEMONSTRATE IMPROVEMENT]
@@ -318,13 +315,11 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 - [Benefit 2]
 - [Benefit 3]
 
-```text
-
 ### Example 4: [Exemplary Code - Positive Feedback]
 
 **Code**:
 
-```[LANGUAGE]
+```text
 [EXCELLENT CODE EXAMPLE]
 [SHOW BEST PRACTICES IN YOUR DOMAIN]
 [10-25 LINES DEMONSTRATING EXCELLENCE]
@@ -345,8 +340,6 @@ Level 3 specialist responsible for reviewing [DOMAIN AREA - e.g., "code security
 
 **This is exemplary code that demonstrates [DOMAIN] best practices.**
 No changes needed.
-
-```text
 
 ## Common Issues to Flag
 

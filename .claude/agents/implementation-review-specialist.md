@@ -190,6 +190,7 @@ is not evenly divisible by batch_size.
 **Fix**:
 
 ```mojo
+
 fn process_batch(data: Tensor, batch_size: Int) -> List[Tensor]:
     """Process data in batches, handling partial last batch."""
     var batches = List[Tensor]()
@@ -198,6 +199,7 @@ fn process_batch(data: Tensor, batch_size: Int) -> List[Tensor]:
         var batch = data[i:end]
         batches.append(batch)
     return batches
+
 ```
 
 ```text
@@ -228,6 +230,7 @@ def load_model(path: str):
 **Recommended**:
 
 ```python
+
 def load_model(path: str):
     """Load model from file.
 
@@ -258,6 +261,7 @@ def load_model(path: str):
 
     logger.info(f"Successfully loaded model from {path}")
     return model
+
 ```
 
 **Note**: Consider using safer serialization format than pickle.

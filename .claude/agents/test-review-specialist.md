@@ -218,9 +218,11 @@ fn test_normalize():
 **Recommended Additional Tests**:
 
 ```text
+
 ```
 
 ```mojo
+
 fn test_normalize_empty_list():
     """Test normalize with empty list."""
     let values = List[Float32]()
@@ -260,12 +262,14 @@ fn test_normalize_boundary_values():
     let result = normalize(values)
     assert result[0] == 0.0
     assert result[2] == 1.0
+
 ```
 
 **Implementation Issue**: The current implementation has a division-by-zero bug when all values are identical.
 Tests should catch this!
 
 ```text
+
 ```
 
 ### Example 2: Weak Assertions
@@ -273,17 +277,20 @@ Tests should catch this!
 **Test Code**:
 
 ```python
+
 def test_load_dataset():
     """Test dataset loading."""
     dataset = load_dataset("data/train.csv")
     assert dataset is not None
     assert len(dataset) > 0
     assert True  # Loaded successfully
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Weak and uninformative assertions
 
 **Issues**:
@@ -414,7 +421,9 @@ fn test_model():
 **Recommended Refactoring**:
 
 ```mojo
+
 # Shared fixture
+
 struct ModelFixture:
     var model: ConvNet
     var sample_input: Tensor
@@ -426,6 +435,7 @@ struct ModelFixture:
         self.sample_input.fill(0.5)
 
 # Test 1: Forward pass
+
 fn test_forward_pass_output_shape():
     """Test forward pass produces correct output shape."""
     # Arrange
@@ -452,6 +462,7 @@ fn test_forward_pass_output_range():
     assert abs(output.sum() - 1.0) < 1e-6, "Probabilities should sum to 1.0"
 
 # Test 2: Training
+
 fn test_train_step_reduces_loss():
     """Test training step reduces loss on same batch."""
     # Arrange
@@ -469,6 +480,7 @@ fn test_train_step_reduces_loss():
         f"Loss should decrease: {initial_loss} -> {final_loss}"
 
 # Test 3: Evaluation
+
 fn test_evaluate_accuracy_range():
     """Test evaluation returns accuracy in valid range."""
     # Arrange
@@ -483,6 +495,7 @@ fn test_evaluate_accuracy_range():
     assert accuracy <= 1.0, "Accuracy should not exceed 1.0"
 
 # Test 4: Save/Load
+
 fn test_save_and_load_preserves_weights():
     """Test model save/load preserves weights."""
     # Arrange
@@ -519,6 +532,7 @@ fn test_save_creates_file():
 
     # Cleanup
     os.remove(temp_path)
+
 ```
 
 **Benefits**:
@@ -530,6 +544,7 @@ fn test_save_creates_file():
 - Descriptive test names
 
 ```text
+
 ```
 
 ### Example 4: Good Test Pattern (Positive Feedback)
@@ -537,6 +552,7 @@ fn test_save_creates_file():
 **Test Code**:
 
 ```mojo
+
 fn test_gradient_descent_converges_on_convex_function():
     """Test gradient descent converges on simple convex quadratic function.
 
@@ -612,11 +628,13 @@ fn test_gradient_descent_fails_with_excessive_learning_rate():
     # Assert - Should diverge (get farther from zero)
     assert abs(x) > abs(initial_x), \
         f"Excessive LR should cause divergence: |{x}| > |{initial_x}|"
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 ✅ EXCELLENT: Exemplary test suite demonstrating best practices
 
 **Strengths**:
@@ -655,6 +673,7 @@ fn test_gradient_descent_fails_with_excessive_learning_rate():
    - Include key constraint or scenario
 
 **This is exemplary test code. No changes needed.**
+
 ```
 
 ## Common Issues to Flag

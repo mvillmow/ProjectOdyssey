@@ -251,6 +251,7 @@ fn process_large_dataset_safe(data_path: String) raises -> Tensor:
 
 **Code**:
 ```python
+
 class DataLoader:
     def __init__(self):
         self.buffer = None
@@ -271,11 +272,13 @@ class DataLoader:
     def get_batch(self):
         """Get current batch."""
         return self.current_batch  # May be use-after-free!
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Use-after-free vulnerability
 
 **Issue**: `current_batch` holds a memoryview to `buffer`, but `clear()`
@@ -333,6 +336,7 @@ class DataLoader:
 
 **Code**:
 ```mojo
+
 fn copy_string(dest: UnsafePointer[UInt8], src: String, max_len: Int):
     """Copy string to buffer.
 
@@ -346,11 +350,13 @@ fn copy_string(dest: UnsafePointer[UInt8], src: String, max_len: Int):
     for i in range(src_len):
         dest[i] = src[i]
     dest[src_len] = 0  # Null terminator
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Buffer overflow - no bounds checking
 
 **Issue**: Function copies `src_len` bytes without verifying that
@@ -436,6 +442,7 @@ fn copy_string_safe(
 
 **Code**:
 ```python
+
 def process_model_output(model: Optional[Model], input_data: np.ndarray):
     """Process model output."""
     # Get predictions
@@ -446,13 +453,16 @@ def process_model_output(model: Optional[Model], input_data: np.ndarray):
     return processed
 
 # Usage
+
 model = load_model("model.pkl")  # Returns None on error
 result = process_model_output(model, data)  # Crashes if model is None!
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Null pointer dereference - missing None check
 
 **Issue**: `model` has type `Optional[Model]` but is used without
@@ -524,6 +534,7 @@ at boundaries.
 
 **Code**:
 ```mojo
+
 fn allocate_matrix(rows: Int, cols: Int) raises -> UnsafePointer[Float32]:
     """Allocate matrix storage.
 
@@ -537,11 +548,13 @@ fn allocate_matrix(rows: Int, cols: Int) raises -> UnsafePointer[Float32]:
     let total_elements = rows * cols  # BUG: Can overflow!
     let size_bytes = total_elements * sizeof[Float32]()
     return UnsafePointer[Float32].alloc(size_bytes)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Integer overflow in size calculation
 
 **Issue**: Multiplication `rows * cols` can overflow for large values,
@@ -618,6 +631,7 @@ fn allocate_matrix(rows: Int, cols: Int) raises -> UnsafePointer[Float32]:
 
 **Code**:
 ```python
+
 def process_data(data: Union[list, np.ndarray]):
     """Process data from various sources."""
     # BUG: Assumes data is list without checking!
@@ -626,11 +640,13 @@ def process_data(data: Union[list, np.ndarray]):
             process_dict(item)
         else:
             process_value(item)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Type confusion - unsafe assumption about union type
 
 **Issue**: Function accepts `Union[list, np.ndarray]` but assumes list
@@ -752,37 +768,47 @@ functions or explicit type checking.**
 ### Safe Memory Management
 
 ```mojo
+
 # ✅ GOOD: RAII with defer
+
 fn process_data(path: String) raises:
     let buffer = UnsafePointer[UInt8].alloc(1024)
     defer buffer.free()  # Automatic cleanup
     # Use buffer...
 
 # ❌ BAD: Manual cleanup (easy to forget)
+
 fn process_data(path: String) raises:
     let buffer = UnsafePointer[UInt8].alloc(1024)
     # Use buffer...
     buffer.free()  # Forgotten on error paths!
+
 ```
 
 ### Safe Null Handling
 
 ```python
+
 # ✅ GOOD: Explicit null check
+
 def process(value: Optional[Data]) -> Result:
     if value is None:
         return default_result()
     return compute(value)
 
 # ❌ BAD: Assume non-null
+
 def process(value: Optional[Data]) -> Result:
     return compute(value)  # Crashes if None!
+
 ```
 
 ### Safe Buffer Operations
 
 ```mojo
+
 # ✅ GOOD: Bounds checking
+
 fn copy_data(dest: Buffer, src: Buffer, count: Int) raises:
     if count > dest.size or count > src.size:
         raise Error("Buffer overflow")
@@ -790,9 +816,11 @@ fn copy_data(dest: Buffer, src: Buffer, count: Int) raises:
         dest[i] = src[i]
 
 # ❌ BAD: No validation
+
 fn copy_data(dest: Buffer, src: Buffer, count: Int):
     for i in range(count):
         dest[i] = src[i]  # Can overflow!
+
 ```
 
 ## Coordinates With

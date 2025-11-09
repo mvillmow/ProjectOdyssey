@@ -95,10 +95,12 @@ Primarily **Plan** phase, oversight in all phases
 ```
 
 ## Customization
+
 1. Adapt to specific repository structure
 2. Add domain-specific architectural patterns
 3. Customize to team's tech stack
 
 ## See Also
+
 - Level 1 Section Orchestrator Template
 - Agent Hierarchy Documentation

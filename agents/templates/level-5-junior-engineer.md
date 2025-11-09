@@ -34,12 +34,16 @@ Level 5 Junior Engineer responsible for simple [task area].
 
 ### [Simple Pattern]
 ```mojo
+
 [Simple, straightforward example]
+
 ```
 
 ### [Template Application]
 ```[language]
+
 [Example of applying template]
+
 ```
 
 ## Workflow
@@ -109,18 +113,21 @@ Level 5 is the lowest level - no delegation to other agents.
 ## Examples by Engineer Type
 
 ### Junior Implementation Engineer
+
 - Simple function implementation
 - Boilerplate generation
 - Code formatting
 - Linting
 
 ### Junior Test Engineer
+
 - Simple unit tests
 - Test boilerplate
 - Test execution
 - Result reporting
 
 ### Junior Documentation Engineer
+
 - Docstring template filling
 - Documentation formatting
 - Changelog entries
@@ -136,6 +143,7 @@ Level 5 is the lowest level - no delegation to other agents.
 - **Level 0**: Strategic decisions
 
 ## See Also
+
 - Level 4 Implementation Engineer Template
 - Level 3 Component Specialist Template
 - Coding Standards Documentation

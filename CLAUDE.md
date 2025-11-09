@@ -455,8 +455,10 @@ All markdown files must follow these standards to pass `markdownlint-cli2` linti
 Some text before.
 
 ```python
+
 def hello():
     print("world")
+
 ```
 
 Some text after.
@@ -468,7 +470,9 @@ Some text after.
 ```markdown
 Some text before.
 ```text
+
 def hello():
+
 ```text
 Some text after.
 ```

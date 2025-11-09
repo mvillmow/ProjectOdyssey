@@ -42,12 +42,16 @@ Level 1 Section Orchestrator responsible for coordinating [section description].
 
 ### [Section-Specific Pattern]
 ```mojo
+
 [Example Mojo code relevant to this section]
+
 ```
 
 ### [Another Pattern]
 ```python
+
 [Example Python code if applicable]
+
 ```
 
 ## Workflow
@@ -133,6 +137,7 @@ Escalate to Chief Architect when:
    - Include coordination points with other sections
 
 ## See Also
+
 - Level 2 Module Design Agent Template
 - Level 0 Chief Architect Template
 - Agent Hierarchy Documentation

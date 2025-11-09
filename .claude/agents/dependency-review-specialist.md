@@ -18,6 +18,7 @@ and their management, not internal code dependencies or architecture.
 - **Exclusive Focus**: Dependency files, version pinning, conflicts, reproducibility, licenses
 - **File Types**: requirements.txt, pixi.toml, setup.py, pyproject.toml, Cargo.toml (for Mojo/Rust deps)
 - **Boundaries**: External package management (NOT code architecture, internal dependencies,
+
 or security vulnerabilities in dependencies)
 
 ## Responsibilities
@@ -194,10 +195,13 @@ without any code changes.
 
 **Recommended**:
 ```txt
+
 # Pin to known-working versions with compatible upper bounds
+
 numpy>=1.20,<2.0      # Avoid NumPy 2.0 breaking changes
 tensorflow>=2.10,<3.0  # TF 2.x series, exclude 3.0
 pandas>=1.5,<3.0      # Allow 1.x and 2.x, exclude future 3.0
+
 ```
 
 **Best Practice**: Use lock files (pixi.lock, poetry.lock) for
@@ -208,17 +212,21 @@ exact reproducibility, and constraints for version ranges.
 **File**: pixi.toml
 
 ```toml
+
 [dependencies]
 package-a = ">=2.0,<3.0"
 package-b = ">=1.5,<2.0"
 
 # package-a requires package-c >= 3.0
+
 # package-b requires package-c >= 2.0,<3.0
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Transitive dependency conflict detected
 
 **Conflict**:
@@ -243,7 +251,7 @@ Error: Conflicting requirements:
 
 1. **Option A - Update package-b** (Recommended):
 
-   ```toml
+```toml
    [dependencies]
    package-a = ">=2.0,<3.0"
    package-b = ">=2.0,<3.0"  # Updated to support package-c 3.x
@@ -251,7 +259,7 @@ Error: Conflicting requirements:
 
 2. **Option B - Downgrade package-a**:
 
-   ```toml
+```toml
    [dependencies]
    package-a = ">=1.5,<2.0"  # Older version compatible with package-c 2.x
    package-b = ">=1.5,<2.0"
@@ -291,19 +299,25 @@ matplotlib = ">=3.7,<4.0"
 **Example**:
 
 ```text
+
 Developer machine:   numpy 1.26.3 (latest in range)
 CI/Production:       numpy 1.24.0 (old locked version)
+
 ```
 
 **Fix**:
 
 ```bash
+
 # Update lock file to match new dependency constraints
+
 pixi update
 
 # Commit the updated lock file
+
 git add pixi.lock
 git commit -m "chore: update pixi.lock for dependency changes"
+
 ```
 
 **Best Practice**: ALWAYS regenerate and commit lock files when
@@ -314,19 +328,25 @@ modifying dependency specifications.
 **File**: requirements.txt
 
 ```txt
+
 # MIT License - OK
+
 requests>=2.28,<3.0
 
 # Apache 2.0 - OK
+
 numpy>=1.24,<2.0
 
 # GPL-3.0 - PROBLEM for proprietary code
+
 pytorch-geometric>=2.3,<3.0
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: GPL-3.0 dependency incompatible with proprietary project
 
 **Issue**: pytorch-geometric is licensed under GPL-3.0, which is a
@@ -349,7 +369,7 @@ pytorch-geometric>=2.3,<3.0
 
 1. **Use MIT/Apache licensed alternative**:
 
-   ```txt
+```txt
    # PyTorch Geometric has MIT-licensed alternatives
    torch-geometric>=2.3,<3.0  # MIT License
    # OR
@@ -400,13 +420,17 @@ maintained. Last release was 1.3.7 in 2015.
 **Migration Path**:
 
 ```txt
+
 # Remove deprecated nose
+
 # nose>=1.3,<2.0  # DEPRECATED - DO NOT USE
 
 # Use pytest instead (already present)
+
 pytest>=7.0,<8.0
 pytest-cov>=4.0,<5.0      # For coverage
 pytest-asyncio>=0.21,<1.0  # For async tests
+
 ```
 
 **Migration Guide**:
@@ -426,14 +450,17 @@ backlog.
 **File**: requirements.txt
 
 ```txt
+
 numpy>=1.24,<2.0
 torch>=2.0,<3.0
 pywin32>=305  # Windows-only package
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Platform-specific dependency not properly marked
 
 **Issue**: pywin32 is Windows-only but will fail installation on
@@ -514,9 +541,11 @@ causes unnecessary package installation in production environments.
 **Impact Example**:
 
 ```text
+
 Production image with all deps:  850 MB
 Production image (prod only):    320 MB
 Wasted space:                    530 MB (62%)
+
 ```
 
 **Recommended Structure**:
@@ -524,44 +553,56 @@ Wasted space:                    530 MB (62%)
 **requirements.txt** (production only):
 
 ```txt
+
 numpy>=1.24,<2.0
 flask>=2.3,<3.0
 gunicorn>=21.0,<22.0
+
 ```
 
 **requirements-dev.txt** (development tools):
 
 ```txt
+
 -r requirements.txt  # Include production deps
 
 # Testing
+
 pytest>=7.0,<8.0
 pytest-cov>=4.0,<5.0
 pytest-mock>=3.11,<4.0
 
 # Code quality
+
 black>=23.0,<24.0
 mypy>=1.5,<2.0
 ruff>=0.1,<0.2
 
 # Documentation
+
 sphinx>=7.0,<8.0
 sphinx-rtd-theme>=1.3,<2.0
+
 ```
 
 **Usage**:
 
 ```bash
+
 # Production
+
 pip install -r requirements.txt
 
 # Development
+
 pip install -r requirements-dev.txt
+
 ```
 
 **Alternative**: Use pixi.toml with feature groups:
 
 ```toml
+
 [dependencies]
 numpy = ">=1.24,<2.0"
 flask = ">=2.3,<3.0"
@@ -569,6 +610,7 @@ flask = ">=2.3,<3.0"
 [feature.dev.dependencies]
 pytest = ">=7.0,<8.0"
 black = ">=23.0,<24.0"
+
 ```
 
 ### Example 8: Good Dependency Management (Positive Feedback)
@@ -576,6 +618,7 @@ black = ">=23.0,<24.0"
 **File**: pixi.toml
 
 ```toml
+
 [project]
 name = "ml-odyssey"
 version = "0.1.0"
@@ -584,31 +627,39 @@ authors = ["ML Odyssey Team <team@example.com>"]
 license = "MIT"
 
 [dependencies]
+
 # Core numerical computing - pinned to stable versions
+
 numpy = ">=1.24,<2.0"      # NumPy 1.x series, avoid 2.0 breaking changes
 scipy = ">=1.10,<2.0"       # Scientific computing
 pandas = ">=2.0,<3.0"       # Data manipulation
 
 # ML frameworks - specify compatible versions
+
 torch = ">=2.0,<2.2"        # PyTorch 2.0-2.1 (2.2+ requires testing)
 torchvision = ">=0.15,<0.17"  # Compatible with torch 2.0-2.1
 
 # Visualization
+
 matplotlib = ">=3.7,<4.0"
 seaborn = ">=0.12,<1.0"
 
 [feature.dev.dependencies]
+
 # Testing framework
+
 pytest = ">=7.4,<8.0"
 pytest-cov = ">=4.1,<5.0"
 pytest-asyncio = ">=0.21,<1.0"
 
 # Code quality
+
 black = "23.11.*"           # Exact minor for consistent formatting
 ruff = ">=0.1.6,<0.2"       # Fast Python linter
 mypy = ">=1.7,<2.0"         # Type checking
 
 # Development tools
+
 pre-commit = ">=3.5,<4.0"
 ipython = ">=8.17,<9.0"
 
@@ -618,11 +669,14 @@ sphinx-rtd-theme = ">=2.0,<3.0"
 myst-parser = ">=2.0,<3.0"  # Markdown support for Sphinx
 
 # Platform-specific dependencies with markers
+
 [target.win-64.dependencies]
 pywin32 = ">=305"
 
 [target.linux-64.dependencies]
+
 # Linux-specific packages if needed
+
 ```
 
 **File**: pixi.lock (present and up-to-date)
@@ -630,6 +684,7 @@ pywin32 = ">=305"
 **Review Feedback**:
 
 ```text
+
 ✅ EXCELLENT: Well-structured dependency management
 
 **Strengths**:
@@ -666,6 +721,7 @@ pywin32 = ">=305"
    - No deprecated packages
 
 **This is exemplary dependency management.** No changes needed.
+
 ```
 
 ## Common Issues to Flag
@@ -703,29 +759,41 @@ pywin32 = ">=305"
 #### Strategy 1: Conservative Range (Recommended for Libraries)
 
 ```txt
+
 # Allow patch updates, block minor/major
+
 package>=1.2.3,<1.3.0  # Only 1.2.x patches
+
 ```
 
 #### Strategy 2: Semantic Versioning Range (Recommended for Applications)
 
 ```txt
+
 # Allow minor updates, block major
+
 package>=1.2,<2.0      # Any 1.x version
+
 ```
 
 #### Strategy 3: Exact Pinning (For Lock Files Only)
 
 ```txt
+
 # Exact version - only in lock files
+
 package==1.2.3
+
 ```
 
 #### Strategy 4: Minimum Only (Avoid in Production)
 
 ```txt
+
 # Too loose - can break in future
+
 package>=1.2           # ❌ Unbounded upper limit
+
 ```
 
 ### Lock File Usage
@@ -733,34 +801,47 @@ package>=1.2           # ❌ Unbounded upper limit
 **Pixi (Recommended for this project)**:
 
 ```bash
+
 # Update all dependencies to latest compatible versions
+
 pixi update
 
 # Update specific dependency
+
 pixi update numpy
 
 # Regenerate lock file from scratch
+
 rm pixi.lock && pixi install
+
 ```
 
 **Poetry**:
 
 ```bash
+
 # Update lock file
+
 poetry lock
 
 # Update dependencies
+
 poetry update
+
 ```
 
 **Pip + pip-tools**:
 
 ```bash
+
 # Generate lock file from requirements.in
+
 pip-compile requirements.in -o requirements.txt
 
 # Update locked versions
+
 pip-compile --upgrade requirements.in
+
 ```
 
 ### Handling Transitive Dependencies
@@ -776,16 +857,23 @@ pip-compile --upgrade requirements.in
 **Example**:
 
 ```toml
+
 [dependencies]
+
 # ✅ Direct dependency - you import this
+
 flask = ">=2.3,<3.0"
 
 # ❌ Transitive dependency - flask imports this
+
 # Don't specify unless you have a specific reason
+
 # werkzeug = ">=2.3,<3.0"
 
 # ✅ Exception: Conflict resolution
+
 # werkzeug = ">=2.3,<2.4"  # Flask 2.3 has bug with werkzeug 2.4+
+
 ```
 
 ### License Compatibility Matrix
@@ -815,11 +903,15 @@ flask = ">=2.3,<3.0"
 **Security Updates**: Apply immediately
 
 ```bash
+
 # Check for security advisories
+
 pixi audit
 
 # Update specific vulnerable package
+
 pixi update vulnerable-package
+
 ```
 
 **Patch Updates** (x.y.Z): Apply regularly (monthly)

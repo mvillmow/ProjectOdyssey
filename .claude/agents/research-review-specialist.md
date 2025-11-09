@@ -92,6 +92,7 @@ practices.
 ### Phase 2: Reproducibility Verification
 
 ```text
+
 6. Verify all hyperparameters are documented
 7. Check for missing implementation details
 8. Validate environment specifications exist
@@ -110,6 +111,7 @@ practices.
 ### Phase 4: Baseline & Comparison Review
 
 ```text
+
 16. Identify baselines used
 17. Verify baseline appropriateness
 18. Check baseline implementation fairness
@@ -128,11 +130,13 @@ practices.
 ### Phase 6: Feedback Generation
 
 ```text
+
 26. Categorize findings (critical, major, minor)
 27. Reference NeurIPS checklist items
 28. Provide specific, actionable feedback
 29. Suggest improvements with examples
 30. Highlight exemplary methodology
+
 ```
 
 ## Review Checklist (NeurIPS Standards)
@@ -211,28 +215,36 @@ practices.
 **Code**:
 
 ```python
+
 # train.py
+
 model = CNN()
 optimizer = Adam()
 for epoch in range(epochs):
     train_one_epoch(model, train_data)
+
 ```
 
 **Configuration**:
 
 ```yaml
+
 # config.yaml
+
 model: CNN
 optimizer: Adam
 dataset: MNIST
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Severely incomplete hyperparameter documentation
 
 **Missing Critical Hyperparameters**:
+
 1. ❌ Learning rate not specified
 2. ❌ Batch size not specified
 3. ❌ Number of epochs not specified (variable 'epochs' undefined)
@@ -324,7 +336,9 @@ With only single runs, we don't know if the 0.8% improvement is:
 **Required Fix**:
 
 ```python
+
 # evaluate.py - Fixed version
+
 import numpy as np
 from scipy import stats
 
@@ -361,6 +375,7 @@ def evaluate_model_multiple_runs(n_runs=5):
     return results
 
 # Compare baseline vs ours with t-test
+
 baseline_results = evaluate_model_multiple_runs(n_runs=5)
 ours_results = evaluate_model_multiple_runs(n_runs=5)
 
@@ -375,17 +390,20 @@ print(f"Ours: {ours_results['mean']:.2f}% "
       f"± {ours_results['stderr']:.2f}%")
 print(f"Statistical significance: p={p_value:.4f}")
 print(f"Significant at α=0.05: {p_value < 0.05}")
+
 ```
 
 **Improved Results Table**:
 
 ```markdown
+
 | Method | Accuracy (%) | 95% CI | p-value |
 |--------|--------------|--------|---------|
 | Baseline | 92.3 ± 0.4 | [91.8, 92.8] | - |
 | Ours | 93.1 ± 0.3 | [92.7, 93.5] | 0.023* |
 
 *Significant at α=0.05 (two-tailed t-test, n=5 runs each)
+
 ```
 
 **Note**: Report standard error (not std) for error bars in tables.
@@ -395,19 +413,24 @@ print(f"Significant at α=0.05: {p_value < 0.05}")
 **Experiment**:
 
 ```python
+
 # Paper compares new active learning method
+
 results = {
     'Random Sampling': 0.823,
     'Our Method': 0.891
 }
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Inadequate baseline comparisons
 
 **Issues**:
+
 1. ❌ Only trivial baseline (random sampling) included
 2. ❌ Missing state-of-the-art active learning methods
 3. ❌ Missing uncertainty-based baselines (entropy, BALD)
@@ -420,19 +443,23 @@ state-of-the-art.
 **Required Baselines**:
 
 **Trivial Baselines** (already have):
+
 - ✅ Random Sampling
 
 **Standard Baselines** (missing):
+
 - ❌ Uncertainty Sampling (entropy-based)
 - ❌ BALD (Bayesian Active Learning by Disagreement)
 - ❌ CoreSet (diversity-based selection)
 
 **State-of-the-Art** (missing):
+
 - ❌ BADGE (2020) - current SOTA on many benchmarks
 - ❌ ALFA (2021) - recent strong performer
 
 **Ablation Studies** (missing):
 If your method has components A, B, C:
+
 - ❌ Method without A
 - ❌ Method without B
 - ❌ Method without C
@@ -519,7 +546,9 @@ and research integrity principles.
 **Correct Implementation**:
 
 ```python
+
 # Preprocessing - CORRECT
+
 def preprocess_data(data):
     # Split FIRST
     train, test = train_test_split(data, test_size=0.2, random_state=42)
@@ -533,12 +562,15 @@ def preprocess_data(data):
     test_normalized = scaler.transform(test)
 
     return train_normalized, test_normalized, scaler
+
 ```
 
 **Additional Best Practices**:
 
 ```python
+
 # Even better: Use pipeline to prevent leakage
+
 from sklearn.pipeline import Pipeline
 
 pipeline = Pipeline([
@@ -547,7 +579,9 @@ pipeline = Pipeline([
 ])
 
 # Pipeline ensures scaler fits only on training data during cross-validation
+
 scores = cross_val_score(pipeline, X_train, y_train, cv=5)
+
 ```
 
 **Required Action**:
@@ -562,6 +596,7 @@ scores = cross_val_score(pipeline, X_train, y_train, cv=5)
 **Repository Structure**:
 
 ```text
+
 paper-implementation/
 ├── README.md              # Clear setup and run instructions
 ├── requirements.txt       # Exact library versions
@@ -581,12 +616,15 @@ paper-implementation/
 │   └── reproduce_table1.sh     # Reproduce specific table
 └── results/
     └── logs/             # All experimental logs included
+
 ```
 
 **Config File** (configs/mnist.yaml):
 
 ```yaml
+
 # Complete experimental configuration
+
 experiment:
   name: "CNN on MNIST"
   random_seed: 42
@@ -595,6 +633,7 @@ experiment:
 model:
   architecture: "CNN"
   layers:
+
     - {type: conv2d, filters: 32, kernel: 3, activation: relu}
     - {type: maxpool2d, size: 2}
     - {type: conv2d, filters: 64, kernel: 3, activation: relu}
@@ -639,6 +678,7 @@ compute:
   gpu: "NVIDIA V100 (16GB)"
   runtime_per_run: "~15 minutes"
   total_compute: "~1.25 GPU-hours for 5 runs"
+
 ```
 
 **README.md Example**:
@@ -654,6 +694,7 @@ The README includes:
 **Statistical Analysis** (src/evaluate.py):
 
 ```python
+
 def evaluate_with_statistics(config, n_runs=5):
     """Evaluate model over multiple runs with statistical analysis."""
 
@@ -695,14 +736,17 @@ def evaluate_with_statistics(config, n_runs=5):
         }
 
     return stats
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 ✅ EXEMPLARY: Outstanding reproducibility standards
 
 **Strengths**:
+
 1. ✅ Complete hyperparameter documentation in YAML
 2. ✅ Exact library versions specified (requirements.txt + environment.yaml)
 3. ✅ Random seeds fixed and documented
@@ -719,6 +763,7 @@ def evaluate_with_statistics(config, n_runs=5):
 14. ✅ Results organized and easy to understand
 
 **NeurIPS Checklist Compliance**:
+
 - ✅ Item #4: Experimental Reproducibility - EXCELLENT
 - ✅ Item #5: Open Access to Data and Code - EXCELLENT
 - ✅ Item #6: Experimental Settings/Details - EXCELLENT
@@ -729,6 +774,7 @@ def evaluate_with_statistics(config, n_runs=5):
 an excellent template for future work.**
 
 **Gold Standard Practices Demonstrated**:
+
 - Configuration as code (YAML files)
 - Automated reproduction scripts
 - Statistical rigor (multiple runs, significance tests)
@@ -737,6 +783,7 @@ an excellent template for future work.**
 - Realistic compute requirements
 
 No changes needed. This is exemplary work.
+
 ```
 
 ## Common Issues to Flag

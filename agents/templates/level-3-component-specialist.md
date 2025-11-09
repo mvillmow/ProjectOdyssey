@@ -42,12 +42,16 @@ Level 3 Component Specialist responsible for [specialist area] at component leve
 
 ### [Pattern or Best Practice]
 ```mojo
+
 [Example code showing pattern]
+
 ```
 
 ### [Another Pattern]
 ```[language]
+
 [Example]
+
 ```
 
 ## Workflow
@@ -129,30 +133,36 @@ Escalate to [Design Agent] when:
 ## Examples by Specialist Type
 
 ### Implementation Specialist
+
 - Component breakdown into functions
 - Class/struct design
 - Implementation coordination
 
 ### Test Specialist
+
 - Test plan creation
 - Test case definition
 - Coverage requirements
 
 ### Documentation Specialist
+
 - Component READMEs
 - API documentation
 - Usage examples
 
 ### Performance Specialist
+
 - Benchmark design
 - Profiling analysis
 - Optimization identification
 
 ### Security Specialist
+
 - Security controls implementation
 - Vulnerability testing
 - Security validation
 
 ## See Also
+
 - Level 4 Implementation Engineer Template
 - Level 2 Module Design Agent Template

@@ -193,6 +193,7 @@ logits contain large values.
 
 **Correct Implementation** (using log-sum-exp trick):
 ```mojo
+
 fn softmax(logits: Tensor) -> Tensor:
     """Compute numerically stable softmax activation.
 
@@ -208,6 +209,7 @@ fn softmax(logits: Tensor) -> Tensor:
     var sum_exp = exp_logits.sum()
 
     return exp_logits / sum_exp
+
 ```
 
 **Reference**: Goodfellow et al., Deep Learning (2016), Section 4.1
@@ -218,6 +220,7 @@ fn softmax(logits: Tensor) -> Tensor:
 ### Example 2: Incorrect Gradient - Cross Entropy Loss
 
 **Code**:
+
 ```python
 def cross_entropy_loss(predictions: Tensor, targets: Tensor) -> float:
     """Compute cross-entropy loss."""
@@ -254,6 +257,7 @@ Your implementation is missing the negative sign, resulting in:
 
 **Correct Implementation**:
 ```python
+
 def cross_entropy_loss(predictions: Tensor, targets: Tensor) -> float:
     """Compute cross-entropy loss.
 
@@ -280,6 +284,7 @@ def cross_entropy_loss(predictions: Tensor, targets: Tensor) -> float:
     loss = -(1.0 / batch_size) * sum(log(true_class_probs))
 
     return loss
+
 ```
 
 **Reference**: Bishop, Pattern Recognition and Machine Learning (2006), Eq. 4.90
@@ -290,6 +295,7 @@ def cross_entropy_loss(predictions: Tensor, targets: Tensor) -> float:
 ### Example 3: Incorrect LeNet-5 Architecture
 
 **Code**:
+
 ```mojo
 struct LeNet5:
     """LeNet-5 implementation."""
@@ -347,6 +353,7 @@ Document Recognition" (1998), Section II-B
 
 **Correct Implementation**:
 ```mojo
+
 fn forward(self, x: Tensor) -> Tensor:
     # C1: Conv + Tanh (original paper)
     var x = tanh(self.conv1(x))  # ✓ Matches paper
@@ -365,6 +372,7 @@ fn forward(self, x: Tensor) -> Tensor:
     x = self.fc3(x)
 
     return x
+
 ```
 
 **Decision Point**:
@@ -387,6 +395,7 @@ If you intentionally want to use ReLU as a modern improvement:
 ### Example 4: Gradient Vanishing Risk - Deep Sigmoid Network
 
 **Code**:
+
 ```mojo
 fn deep_network_forward(x: Tensor, weights: List[Tensor]) -> Tensor:
     """Forward pass through deep sigmoid network."""
@@ -431,6 +440,7 @@ or impossible.
 **Option 1**: Use ReLU activation (standard modern practice)
 
 ```mojo
+
 fn deep_network_forward(x: Tensor, weights: List[Tensor]) -> Tensor:
     """Forward pass with ReLU activation."""
     var activation = x
@@ -443,19 +453,23 @@ fn deep_network_forward(x: Tensor, weights: List[Tensor]) -> Tensor:
 fn relu(x: Tensor) -> Tensor:
     """ReLU: max(0, x). Gradient is 0 or 1 (no diminishing)."""
     return max(0.0, x)
+
 ```
 
 **Option 2**: Add residual connections (ResNet-style)
 
 ```mojo
+
 fn residual_block(x: Tensor, weight: Tensor) -> Tensor:
     """Residual block: f(x) = σ(Wx) + x"""
     return sigmoid(matmul(weight, x)) + x  # Identity shortcut
+
 ```
 
 **Option 3**: Use batch normalization between layers
 
 ```mojo
+
 fn deep_network_forward(x: Tensor, weights: List[Tensor]) -> Tensor:
     var activation = x
 
@@ -465,6 +479,7 @@ fn deep_network_forward(x: Tensor, weights: List[Tensor]) -> Tensor:
         activation = sigmoid(activation)
 
     return activation
+
 ```
 
 **Recommendation**:
@@ -486,6 +501,7 @@ For ML Odyssey reproducing classic papers:
 ### Example 5: Incorrect Batch Normalization
 
 **Code**:
+
 ```mojo
 fn batch_norm_forward(x: Tensor, gamma: Tensor, beta: Tensor) -> Tensor:
     """Batch normalization forward pass."""
@@ -518,16 +534,20 @@ where ε is a small constant (typically 1e-5) for numerical stability.
 **Problem Scenario**:
 
 ```python
+
 # If all batch values are identical (e.g., dead ReLUs):
+
 x = [1.0, 1.0, 1.0, 1.0]
 mean = 1.0
 variance = 0.0
 sqrt(variance) = 0.0  # ← Division by zero!
+
 ```
 
 **Correct Implementation**:
 
 ```mojo
+
 fn batch_norm_forward(
     x: Tensor,
     gamma: Tensor,
@@ -557,6 +577,7 @@ fn batch_norm_forward(
 
     # Scale and shift
     return gamma * x_norm + beta
+
 ```
 
 **Gradient Impact**:
@@ -569,6 +590,7 @@ Missing epsilon causes incorrect/unstable gradients.
 Add unit test with zero-variance batch:
 
 ```python
+
 def test_batch_norm_zero_variance():
     x = Tensor([1.0, 1.0, 1.0, 1.0])
     gamma = Tensor([2.0])
@@ -579,6 +601,7 @@ def test_batch_norm_zero_variance():
     # Should not produce NaN or Inf
     assert not result.isnan().any()
     assert not result.isinf().any()
+
 ```
 
 ```text
@@ -586,6 +609,7 @@ def test_batch_norm_zero_variance():
 ### Example 6: Correct Implementation (Positive Feedback)
 
 **Code**:
+
 ```mojo
 fn kaiming_init(tensor: Tensor, mode: String = "fan_in") -> Tensor:
     """Initialize weights using Kaiming (He) initialization.

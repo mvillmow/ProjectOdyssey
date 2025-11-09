@@ -4,6 +4,7 @@ Use this template to create Module Design agents that handle module-level archit
 
 ---
 
+
 ```markdown
 ---
 name: [design-area]-design
@@ -15,6 +16,7 @@ model: sonnet
 # [Design Area] Design Agent
 
 ## Role
+
 Level 2 Module Design Agent responsible for [design area description].
 
 ## Scope
@@ -37,18 +39,21 @@ Level 2 Module Design Agent responsible for [design area description].
 ## Mojo-Specific Guidelines
 
 ### [Pattern or Principle]
+
 ```mojo
 [Example showing pattern]
 ```
 
-### [Another Pattern]
-```[language]
+## [Another Pattern Group]
+
+```text
 [Example]
 ```
 
 ## Workflow
 
 ### Phase 1: [Phase Name]
+
 1. [Step 1]
 2. [Step 2]
 
@@ -57,12 +62,14 @@ Level 2 Module Design Agent responsible for [design area description].
 ## Delegation
 
 ### Delegates To
+
 - [Implementation Specialist](../.claude/agents/implementation-specialist.md) - component implementation
 - [Test Specialist](../.claude/agents/test-specialist.md) - testing strategy
 - [Performance Specialist](../.claude/agents/performance-specialist.md) - optimization
 - [Security Specialist](../.claude/agents/security-specialist.md) - security implementation
 
 ### Coordinates With
+
 - [Architecture Design](../.claude/agents/architecture-design.md) - architectural decisions
 - [Integration Design](../.claude/agents/integration-design.md) - integration concerns
 - [Security Design](../.claude/agents/security-design.md) - security requirements
@@ -71,6 +78,7 @@ Level 2 Module Design Agent responsible for [design area description].
 Primarily **Plan** phase, [other phases as applicable]
 
 ## Skills to Use
+
 - [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Code analysis
 - [`extract_dependencies`](../skills/tier-2/extract-dependencies/SKILL.md) - Dependency mapping
 - [Add other relevant skills]
@@ -78,23 +86,28 @@ Primarily **Plan** phase, [other phases as applicable]
 ## Constraints
 
 ### Do NOT
+
 - [Don't 1]
 - [Don't 2]
 
 ### DO
+
 - [Do 1]
 - [Do 2]
 
 ## Escalation Triggers
+
 Escalate to Section Orchestrator when:
 - [Trigger 1]
 - [Trigger 2]
 
 ## Success Criteria
+
 - [Criterion 1]
 - [Criterion 2]
 
 ## Artifacts Produced
+
 - [Artifact 1]
 - [Artifact 2]
 
@@ -128,20 +141,24 @@ Escalate to Section Orchestrator when:
 ## Examples by Design Area
 
 ### Architecture Design
+
 - Component breakdown
 - Interface definitions
 - Data flow design
 
 ### Integration Design
+
 - API specifications
 - Python-Mojo integration
 - Dependency management
 
 ### Security Design
+
 - Threat modeling
 - Security requirements
 - Input validation strategy
 
 ## See Also
+
 - Level 3 Component Specialist Template
 - Level 1 Section Orchestrator Template

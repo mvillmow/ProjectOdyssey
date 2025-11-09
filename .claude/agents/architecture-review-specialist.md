@@ -306,6 +306,7 @@ validation/ (no dependencies)
 **Code**:
 
 ```mojo
+
 trait DataProcessor:
     """Interface for data processing operations."""
 
@@ -327,12 +328,15 @@ trait DataProcessor:
     # Validation
     fn validate_schema(self, data: Tensor) -> Bool
     fn check_quality(self, data: Tensor) -> QualityReport
+
 ```
 
 **Usage**:
 
 ```mojo
+
 # Most implementations only need 2-3 of these methods
+
 struct ImagePreprocessor(DataProcessor):
     # Forced to implement 11 methods, but only needs normalize and resize
     fn load_from_file(inout self, path: String) raises -> Tensor:
@@ -350,12 +354,15 @@ struct ImagePreprocessor(DataProcessor):
     fn resize(inout self, data: Tensor, size: Int) -> Tensor:
         # Actual implementation
         return resize_tensor(data, size)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Interface bloat violates Interface Segregation Principle (ISP)
+
 ```
 
 ```text
@@ -365,6 +372,7 @@ methods they don't use. ImagePreprocessor must implement 11 methods
 but only uses 2.
 
 **Problems**:
+
 1. Violates ISP: Clients forced to depend on unused methods
 2. Brittle: Changes to unused methods force recompilation
 3. Misleading: Interface promises functionality that doesn't exist
@@ -372,10 +380,13 @@ but only uses 2.
 5. Error-prone: Runtime errors instead of compile-time safety
 
 **Solution**: Split into focused, cohesive interfaces
+
 ```
 
 ```mojo
+
 # Focused interfaces following ISP
+
 trait DataLoader:
     """Load data from sources."""
     fn load(inout self, source: DataSource) raises -> Tensor
@@ -391,12 +402,15 @@ trait DataSaver:
 trait DataValidator:
     """Validate data quality."""
     fn validate(self, data: Tensor) -> ValidationResult
+
 ```
 
 **Updated Implementation**:
 
 ```mojo
+
 # Only implement interfaces actually needed
+
 struct ImagePreprocessor(DataTransformer):
     """Preprocesses images for ML models."""
 
@@ -411,12 +425,15 @@ struct ImagePreprocessor(DataTransformer):
 
     fn resize(self, data: Tensor, size: Int) -> Tensor:
         return resize_tensor(data, size)
+
 ```
 
 **Usage**:
 
 ```mojo
+
 # Clients depend only on what they need
+
 fn prepare_training_data(
     transformer: DataTransformer,
     raw_data: Tensor
@@ -431,6 +448,7 @@ fn save_processed_data(
 ) raises:
     """Only needs saving capability."""
     saver.save(data, dest)
+
 ```
 
 **Benefits**:
@@ -621,6 +639,7 @@ Domain (defines UserRepository interface)
 **Code**:
 
 ```mojo
+
 struct ModelTrainer:
     """Trains neural network models."""
 
@@ -636,17 +655,21 @@ struct ModelTrainer:
             let pred = model.forward(batch.x)
             let loss_val = loss.compute(pred, batch.y)
             optimizer.step(model, loss_val)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Tight coupling to concrete implementations
+
 ```
 
 ```text
 
 **Issues**:
+
 1. Cannot train different model architectures
 2. Cannot use different data sources
 3. Cannot swap optimization algorithms
@@ -655,10 +678,13 @@ struct ModelTrainer:
 6. Violates Open/Closed Principle (OCP)
 
 **Solution**: Depend on abstractions, inject dependencies
+
 ```
 
 ```mojo
+
 # Define abstractions
+
 trait DataLoader:
     fn next_batch(inout self) -> Batch
 
@@ -673,6 +699,7 @@ trait LossFunction:
     fn compute(self, pred: Tensor, target: Tensor) -> Tensor
 
 # Flexible, testable trainer
+
 struct ModelTrainer:
     """Trains models with dependency injection."""
     var data_loader: DataLoader
@@ -700,12 +727,15 @@ struct ModelTrainer:
             let pred = self.model.forward(batch.x)
             let loss = self.loss_fn.compute(pred, batch.y)
             self.optimizer.step(self.model, loss)
+
 ```
 
 **Usage**:
 
 ```mojo
+
 # Production: Use real implementations
+
 let trainer = ModelTrainer(
     data_loader=CSVDataLoader("/data/train.csv"),
     model=LeNet5Model(),
@@ -714,6 +744,7 @@ let trainer = ModelTrainer(
 )
 
 # Testing: Use mock implementations
+
 let test_trainer = ModelTrainer(
     data_loader=MockDataLoader(),
     model=MockModel(),
@@ -722,12 +753,14 @@ let test_trainer = ModelTrainer(
 )
 
 # Different configuration: Swap components easily
+
 let adam_trainer = ModelTrainer(
     data_loader=TensorDataLoader(data),
     model=ResNetModel(),
     optimizer=AdamOptimizer(lr=0.001),
     loss_fn=MSELoss()
 )
+
 ```
 
 **Benefits**:

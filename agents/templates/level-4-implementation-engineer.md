@@ -409,15 +409,23 @@ You're successful when:
 cp this-template.md .claude/agents/implementation-engineer-example.md
 
 # 2. Test invocation
+
 # In Claude Code:
+
 # User: "Implement the tensor addition function following the spec"
+
 # Claude should invoke this agent
 
 # 3. Verify behavior
+
 # Agent should:
+
 # - Read specification
+
 # - Write Mojo code
+
 # - Use appropriate Mojo features
+
 # - Coordinate with Test Engineer
 
 ```

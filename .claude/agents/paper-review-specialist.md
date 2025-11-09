@@ -267,17 +267,20 @@ is better than some other methods.
 **Recommended Abstract Structure**:
 
 ```text
+
 Image classification on [specific dataset/task] suffers from
 [specific problem]. We propose [method name], a novel approach
 that [key innovation in 1-2 sentences]. Our method achieves
 [X]% accuracy on [dataset], outperforming [baseline method]
 by [Y]%. The key contribution is [technical insight], which
 enables [benefit]. These results demonstrate [implication].
+
 ```
 
 **Estimated word count**: Current ~50 words → Target 150-200 words
 
 ```text
+
 ```
 
 ### Example 2: Missing Citations
@@ -285,15 +288,18 @@ enables [benefit]. These results demonstrate [implication].
 **Paper Text**:
 
 ```text
+
 Convolutional neural networks have revolutionized computer vision.
 Residual connections help train very deep networks. Attention
 mechanisms improve model performance. We combine these techniques
 in our architecture.
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Missing citations for well-established concepts
 
 **Required Citations**:
@@ -353,12 +359,14 @@ established techniques in our architecture.
 **Caption**:
 
 ```text
+
 Figure 3: Architecture of proposed model showing three main
 components: (a) feature encoder with residual blocks (blue),
 (b) attention module (green), and (c) classification head
 (orange). Solid arrows indicate forward pass, dashed arrows
 show skip connections. Input dimensions and layer details
 shown in gray text.
+
 ```
 
 **Figure Requirements**:
@@ -376,6 +384,7 @@ shown in gray text.
 - Ensure grayscale printing is readable
 
 ```text
+
 ```
 
 ### Example 4: Results Don't Support Claims
@@ -383,6 +392,7 @@ shown in gray text.
 **Paper Text**:
 
 ```text
+
 Table 1 shows our method significantly outperforms all baselines.
 We achieve state-of-the-art performance on this benchmark.
 
@@ -393,11 +403,13 @@ Table 1: Results on ImageNet
 | ResNet-50   | 76.2%     |
 | EfficientNet| 77.1%     |
 | Ours        | 77.3%     |
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟠 MAJOR: Claims not supported by results
 
 **Issues**:
@@ -482,6 +494,7 @@ of time.
 **Recommended Revision**:
 
 ```text
+
 We train the network using Adam optimizer [Kingma 2015] with
 β₁ = 0.9, β₂ = 0.999, and ε = 1e-8. The initial learning rate
 is set to 1e-3 and decayed by a factor of 0.1 every 30 epochs.
@@ -491,6 +504,7 @@ model is trained for 100 epochs with batch size 128 on 4
 NVIDIA V100 GPUs, taking approximately 12 hours to converge.
 Early stopping is used with patience of 10 epochs based on
 validation accuracy.
+
 ```
 
 **Reproducibility Checklist**:
@@ -502,6 +516,7 @@ validation accuracy.
 - [ ] Random seed handling mentioned
 
 ```text
+
 ```
 
 ### Example 6: Good Academic Writing (Positive Feedback)
@@ -509,6 +524,7 @@ validation accuracy.
 **Paper Abstract**:
 
 ```text
+
 Neural architecture search (NAS) has achieved remarkable success
 in discovering high-performance architectures, but requires
 prohibitive computational resources (thousands of GPU days). We
@@ -521,11 +537,13 @@ to state-of-the-art NAS), while on Penn Treebank, it finds a
 model achieving 55.8 test perplexity. By making NAS practical,
 ENAS enables researchers to automatically discover domain-specific
 architectures without massive computational budgets.
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 ✅ EXCELLENT: Well-structured abstract demonstrating best practices
 
 **Strengths**:

@@ -225,10 +225,12 @@ fn matmul(a: Tensor, b: Tensor) -> Tensor:
 
     Example:
         ```mojo
+
         let a = Tensor.rand(2, 3)  # 2x3 matrix
         let b = Tensor.rand(3, 4)  # 3x4 matrix
         let c = matmul(a, b)       # 2x4 result
-        ```
+
+```
 
     Note:
         For large matrices, consider using SIMD-optimized variants
@@ -376,33 +378,42 @@ A Mojo-based AI research platform for reproducing classic machine learning resea
 1. Clone the repository:
 
    ```bash
+
    git clone https://github.com/your-org/ml-odyssey.git
    cd ml-odyssey
-   ```
+
+```
 
 1. Install dependencies using Pixi:
 
    ```bash
+
    pixi install
-   ```
+
+```
 
 1. Verify installation:
 
    ```bash
+
    pixi run test
-   ```
+
+```
 
 ## Quick Start
 
 Train LeNet-5 on MNIST:
 
 ```python
+
 from ml_odyssey.papers.lenet5 import LeNet5, train
 
 # Load model
+
 model = LeNet5(num_classes=10)
 
 # Train
+
 results = train(
     model=model,
     dataset="mnist",
@@ -411,6 +422,7 @@ results = train(
 )
 
 print(f"Final accuracy: {results['accuracy']:.2%}")
+
 ```
 
 ## Documentation
@@ -423,12 +435,14 @@ print(f"Final accuracy: {results['accuracy']:.2%}")
 ## Project Structure
 
 ```text
+
 ml-odyssey/
 ├── src/           # Source code
 ├── tests/         # Test suite
 ├── papers/        # Paper reproductions
 ├── docs/          # Documentation
 └── scripts/       # Utility scripts
+
 ```
 
 ## Contributing
@@ -444,21 +458,25 @@ MIT License - see [LICENSE](./LICENSE) for details.
 If you use this project in your research, please cite:
 
 ```bibtex
+
 @software{ml_odyssey,
   title={ML Odyssey: Reproducible Classic ML Papers},
   author={Your Name},
   year={2024},
   url={https://github.com/your-org/ml-odyssey}
 }
+
 ```
 
 ```text
+
 **Impact**: A comprehensive README significantly improves:
 
 - Project discoverability
 - Developer onboarding speed
 - User adoption
 - Community engagement
+
 ```
 
 ### Example 4: Excellent Mojo Docstring (Positive Feedback)
@@ -466,6 +484,7 @@ If you use this project in your research, please cite:
 **Code**:
 
 ```mojo
+
 fn conv2d(
     input: Tensor[Float32],
     kernel: Tensor[Float32],
@@ -493,7 +512,8 @@ fn conv2d(
         ValueError: If stride or padding are negative
 
     Example:
-        ```mojo
+
+```mojo
         # Standard 3x3 convolution with padding
         let input = Tensor[Float32](1, 3, 32, 32)   # NCHW format
         let kernel = Tensor[Float32](64, 3, 3, 3)   # 64 output channels
@@ -515,14 +535,17 @@ fn conv2d(
         http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf
     """
     # Implementation...
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 ✅ EXCELLENT: Comprehensive, well-structured docstring
 
 **Strengths**:
+
 1. ✅ Clear summary with context (CNN usage)
 2. ✅ Complete parameter documentation with shapes
 3. ✅ Return value includes exact shape formula
@@ -534,12 +557,14 @@ fn conv2d(
 9. ✅ Follows Mojo/Python docstring conventions
 
 **This is exemplary documentation that demonstrates best practices:**
+
 - Developers can use this function immediately without reading code
 - Examples cover both standard and advanced usage
 - Performance guidance helps with optimization decisions
 - Academic reference enables verification
 
 No changes needed. This should serve as a template for other APIs.
+
 ```
 
 ### Example 5: Valueless Comments
@@ -547,6 +572,7 @@ No changes needed. This should serve as a template for other APIs.
 **Code**:
 
 ```mojo
+
 fn train_model(model: Model, data: Tensor) -> Float32:
     # Initialize loss to zero
     var total_loss: Float32 = 0.0
@@ -567,11 +593,13 @@ fn train_model(model: Model, data: Tensor) -> Float32:
 
     # Return average loss
     return total_loss / data.num_batches()
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🟡 MINOR: Comments restate code without adding value
 
 **Issue**: Every comment simply describes what the next line does,
@@ -580,11 +608,13 @@ which is already obvious from reading the code itself.
 **Good Comments Explain WHY, Not WHAT**
 
 Current comments tell us WHAT (we can see that):
+
 - "Initialize loss to zero" → Code says: `var total_loss: Float32 = 0.0`
 - "Forward pass" → Code says: `model.forward(batch.x)`
 - "Calculate loss" → Code says: `cross_entropy(pred, batch.y)`
 
 **When Comments Add Value**:
+
 ```mojo
 fn train_model(model: Model, data: Tensor) -> Float32:
     """Train model for one epoch using cross-entropy loss."""
@@ -693,8 +723,10 @@ fn function_name[T: Type](
 
     Example:
         ```mojo
+
         let result = function_name(data, param2=5)
-        ```
+
+```
 
     Performance:
         Notes about performance characteristics if relevant
@@ -719,13 +751,15 @@ struct Tensor[dtype: DType]:
 
     Example:
         ```mojo
+
         # Create a 2D tensor
         var t = Tensor[Float32](2, 3)
         t[0, 1] = 3.14
 
         # Perform operations
         let result = t.matmul(other)
-        ```
+
+```
 
     Notes:
         Tensors are value types and follow Mojo ownership semantics.

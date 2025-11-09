@@ -706,6 +706,7 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
 **Suggested approach**:
 
 ```python
+
 import cProfile
 import pstats
 
@@ -717,13 +718,16 @@ profiler.disable()
 stats = pstats.Stats(profiler)
 stats.sort_stats('cumulative')
 stats.print_stats(20)
+
 ```
 
 ```text
+
 **Decision criteria**:
 
 - If sort > 50% time: Optimize sorting algorithm
 - If processing > 50% time: Optimize per-item processing
+
 ```
 
 ## Coordinates With

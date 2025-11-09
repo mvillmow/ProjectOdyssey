@@ -318,13 +318,17 @@ allowed-tools: Read,Write,Grep,Bash
 **Input**:
 
 ```text
+
 [example input]
+
 ```
 
 **Output**:
 
 ```text
+
 [example output]
+
 ```
 
 ### Example 2: [Another Scenario]

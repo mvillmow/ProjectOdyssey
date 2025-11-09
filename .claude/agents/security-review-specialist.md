@@ -237,20 +237,24 @@ def get_user(username: str):
 **Code**:
 
 ```mojo
+
 fn hash_password(password: String) -> String:
     """Hash password for storage."""
     # Using MD5 for password hashing
     var hasher = MD5()
     hasher.update(password.as_bytes())
     return hasher.hexdigest()
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Weak Cryptographic Algorithm (CWE-327, OWASP A02)
 
 **Issues**:
+
 1. MD5 is cryptographically broken and unsuitable for passwords
 2. No salt used (vulnerable to rainbow table attacks)
 3. Fast hashing allows brute force attacks
@@ -262,9 +266,11 @@ fn hash_password(password: String) -> String:
 - MD5 can be cracked in seconds to minutes
 
 **Fix**: Use approved password hashing:
+
 ```
 
 ```mojo
+
 from crypto import argon2
 
 fn hash_password(password: String) -> String:
@@ -296,6 +302,7 @@ fn verify_password(password: String, stored_hash: String) -> Bool:
         hash_len=32
     )
     return constant_time_compare(computed_hash, hash)
+
 ```
 
 **Alternative**: bcrypt or scrypt are also acceptable
@@ -411,39 +418,51 @@ class DatabaseConnection:
 **Code**:
 
 ```mojo
+
 fn load_model(model_name: String) -> Model:
     """Load ML model by name."""
     let model_path = "/var/models/" + model_name + ".mojo"
     return Model.load(model_path)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 🔴 CRITICAL: Path Traversal Vulnerability (CWE-22, OWASP A01)
 
 **Vulnerability**: Unvalidated user input in file path allows
 directory traversal attacks.
 
 **Attack Scenarios**:
+
 ```
 
 ```python
+
 # Scenario 1: Read arbitrary files
+
 load_model("../../../etc/passwd")
+
 # Accesses: /var/models/../../../etc/passwd = /etc/passwd
 
 # Scenario 2: Access other users' data
+
 load_model("../../user_data/secrets")
+
 # Accesses: /var/models/../../user_data/secrets
 
 # Scenario 3: Null byte injection (language-dependent)
+
 load_model("../../secrets/api_key\x00")
+
 ```
 
 **Fix**: Validate and sanitize file paths:
 
 ```mojo
+
 from os import path
 
 fn load_model(model_name: String) -> Result[Model, Error]:
@@ -501,6 +520,7 @@ fn is_valid_model_name(name: String) -> Bool:
             return False
 
     return True
+
 ```
 
 **Impact**: CRITICAL - Arbitrary file read, potential RCE
@@ -633,6 +653,7 @@ def load_training_state(filename: str) -> Dict[str, Any]:
 
 **Code**:
 ```mojo
+
 from crypto import constant_time_compare
 from auth import hash_password, verify_password
 
@@ -647,6 +668,7 @@ fn authenticate_user(username: String, password: String) -> Result[User, AuthErr
         Authenticated user or error
 
     Security Features:
+
     - Constant-time comparison prevents timing attacks
     - Argon2 password hashing with salt
     - Rate limiting on authentication attempts
@@ -682,14 +704,17 @@ fn authenticate_user(username: String, password: String) -> Result[User, AuthErr
     audit_log.record_auth_success(username)
 
     return Ok(user)
+
 ```
 
 **Review Feedback**:
 
 ```text
+
 ✅ EXCELLENT: Secure Authentication Implementation
 
 **Security Strengths**:
+
 1. ✅ Constant-time password comparison (prevents timing attacks)
 2. ✅ Argon2 password hashing (secure algorithm)
 3. ✅ Rate limiting (prevents brute force)
@@ -702,16 +727,19 @@ fn authenticate_user(username: String, password: String) -> Result[User, AuthErr
 **This is exemplary secure authentication code.**
 
 **Minor Recommendations** (not security issues):
+
 - Consider adding MFA support in future
 - Consider logging source IP for audit trail
 - Consider adding session token generation
 
 **OWASP Coverage**:
+
 - ✅ A01: Access Control (account lockout)
 - ✅ A07: Authentication (secure verification)
 - ✅ A09: Logging (audit events)
 
 No security vulnerabilities found. Approved for deployment.
+
 ```
 
 ## OWASP Top 10 (2021) Coverage
@@ -801,11 +829,14 @@ No security vulnerabilities found. Approved for deployment.
 ### 1. Memory Safety Boundaries
 
 ```mojo
+
 # Security risk: Unsafe memory operations can leak data
+
 fn process_secret(data: UnsafePointer[UInt8], size: Int) -> String:
     # If size is wrong, may read beyond allocation
     # Refer to Safety Review Specialist for memory safety
     # Security concern: potential data leakage
+
 ```
 
 **Security Implication**: While memory safety is handled by Safety Specialist, be aware that memory
@@ -814,12 +845,15 @@ corruption bugs can lead to security vulnerabilities like data leakage.
 ### 2. Interop with Python
 
 ```mojo
+
 # Security consideration: Python pickle deserialization
+
 fn load_python_object(path: String) -> PythonObject:
     let python = Python.import_module("builtins")
     let pickle = Python.import_module("pickle")
     # SECURITY: Vulnerable to arbitrary code execution
     return pickle.load(path)
+
 ```
 
 **Fix**: Validate Python objects or use safe serialization.
@@ -827,11 +861,14 @@ fn load_python_object(path: String) -> PythonObject:
 ### 3. SIMD and Crypto
 
 ```mojo
+
 # Security consideration: SIMD timing attacks
+
 fn compare_hashes_simd(hash1: SIMD[DType.uint8, 32],
                        hash2: SIMD[DType.uint8, 32]) -> Bool:
     # Early exit on first mismatch = timing attack
     return hash1 == hash2  # Potentially vulnerable
+
 ```
 
 **Fix**: Use constant-time comparison even with SIMD.
