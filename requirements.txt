@@ -1,0 +1,11 @@
+# Core testing dependencies
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-timeout>=2.1.0
+pytest-xdist>=3.0.0
+
+# Code quality
+ruff>=0.1.0
+
+# Type checking
+mypy>=1.0.0

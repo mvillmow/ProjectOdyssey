@@ -1,0 +1,16 @@
+# Development dependencies
+-r requirements.txt
+
+# Pre-commit hooks
+pre-commit>=3.0.0
+
+# Security scanning
+safety>=2.0.0
+bandit>=1.7.0
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.0.0
+
+# Benchmarking
+pytest-benchmark>=4.0.0

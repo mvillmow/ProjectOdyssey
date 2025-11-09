@@ -3,6 +3,10 @@
 ![Pre-commit Checks](https://github.com/mvillmow/ml-odyssey/actions/workflows/pre-commit.yml/badge.svg)
 ![Check Markdown Links](https://github.com/mvillmow/ml-odyssey/actions/workflows/link-check.yml/badge.svg)
 ![Agent Tests](https://github.com/mvillmow/ml-odyssey/actions/workflows/test-agents.yml/badge.svg)
+![Unit Tests](https://github.com/mvillmow/ml-odyssey/actions/workflows/unit-tests.yml/badge.svg)
+![Integration Tests](https://github.com/mvillmow/ml-odyssey/actions/workflows/integration-tests.yml/badge.svg)
+![Build Validation](https://github.com/mvillmow/ml-odyssey/actions/workflows/build-validation.yml/badge.svg)
+![Security Scan](https://github.com/mvillmow/ml-odyssey/actions/workflows/security-scan.yml/badge.svg)
 
 Implementation of older AI papers for the modern age.
 
