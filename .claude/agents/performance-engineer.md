@@ -137,6 +137,21 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 - [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
 - [`suggest_optimizations`](../skills/tier-2/suggest-optimizations/SKILL.md) - Optimization ideas
 
+## Constraints
+
+### Do NOT
+- Change function signatures without approval
+- Optimize without profiling first
+- Skip correctness verification after optimization
+- Make architectural changes (escalate to design)
+
+### DO
+- Benchmark before and after optimizations
+- Profile to identify actual bottlenecks
+- Verify optimized code produces correct results
+- Document performance improvements
+- Report optimization results with metrics
+
 ## Example: Optimize Matrix Multiplication
 
 **Baseline Benchmark:**

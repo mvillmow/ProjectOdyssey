@@ -441,6 +441,10 @@ The operational agent configurations are in `.claude/agents/` (23 agents total):
 - **agent-hierarchy.md** - Complete detailed hierarchy specification
 - **delegation-rules.md** - Coordination and delegation patterns
 - **templates/** - Agent configuration templates
+- **docs/** - Integration documentation
+  - **5-phase-integration.md** - How agents map to the 5-phase workflow
+  - **git-worktree-guide.md** - Using git worktrees with agents
+  - **workflows.md** - Common workflow examples (features, bugs, refactoring, etc.)
 
 ### In notes/review/
 

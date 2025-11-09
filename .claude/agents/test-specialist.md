@@ -137,6 +137,29 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 - [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Execute tests
 - [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
+## Constraints
+
+### Do NOT
+- Implement tests yourself (delegate to engineers)
+- Skip coverage requirements
+- Ignore test failures
+- Make architectural decisions (escalate to design agent)
+
+### DO
+- Create comprehensive test plans
+- Define clear test cases for all scenarios
+- Coordinate TDD with Implementation Specialist
+- Review test quality and coverage
+- Ensure all edge cases are tested
+
+## Escalation Triggers
+
+Escalate to Architecture Design Agent when:
+- Component specification unclear or untestable
+- Test requirements conflict with implementation
+- Need clarification on expected behavior
+- Component design makes testing difficult
+
 ## Example Test Plan
 
 ```markdown

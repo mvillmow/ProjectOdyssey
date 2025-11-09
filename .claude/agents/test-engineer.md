@@ -120,6 +120,21 @@ def test_large_tensor():
 - [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
 - [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
 
+## Constraints
+
+### Do NOT
+- Implement features (only write tests)
+- Skip edge case testing
+- Ignore failing tests
+- Modify implementation code without coordination
+
+### DO
+- Write comprehensive test cases
+- Follow TDD practices with Implementation Engineer
+- Test edge cases and error conditions
+- Maintain test suites as code evolves
+- Report test failures clearly
+
 ## Example Test Suite
 
 ```mojo

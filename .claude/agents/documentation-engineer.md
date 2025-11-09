@@ -176,6 +176,21 @@ How to contribute to this module.
 - [`generate_api_docs`](../skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
 - [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Version documentation
 
+## Constraints
+
+### Do NOT
+- Write or modify implementation code
+- Change API signatures
+- Make architectural decisions
+- Skip docstring requirements
+
+### DO
+- Document all public APIs
+- Write clear, concise documentation
+- Include usage examples
+- Keep documentation synchronized with code
+- Ask for clarification when functionality is unclear
+
 ## Success Criteria
 
 - All public APIs documented

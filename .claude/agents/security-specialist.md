@@ -154,6 +154,29 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 - [`validate_inputs`](../skills/tier-2/validate-inputs/SKILL.md) - Input validation review
 - [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Security code review
 
+## Constraints
+
+### Do NOT
+- Implement security fixes yourself (delegate to engineers)
+- Skip security testing
+- Make architectural security decisions (escalate to Security Design Agent)
+- Approve code with known vulnerabilities
+
+### DO
+- Identify and document all security issues
+- Create comprehensive security test plans
+- Review all code for security vulnerabilities
+- Coordinate with Implementation Engineers on fixes
+- Validate all security controls
+
+## Escalation Triggers
+
+Escalate to Security Design Agent when:
+- Critical vulnerabilities found requiring architectural changes
+- Security requirements conflict with functionality
+- Need fundamental security design changes
+- Component architecture has security flaws
+
 ## Example Security Plan
 
 ```markdown
