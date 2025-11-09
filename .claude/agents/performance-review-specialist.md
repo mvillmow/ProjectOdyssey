@@ -60,6 +60,28 @@ behavior, and I/O optimization. Focuses exclusively on performance characteristi
 - Review benchmark methodology
 - Validate performance assumptions
 
+## Documentation Location
+
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
+
+### Before Starting Work
+
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
+
+### Documentation Rules
+
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
+
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
+
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
@@ -77,42 +99,50 @@ behavior, and I/O optimization. Focuses exclusively on performance characteristi
 ### Phase 1: Complexity Analysis
 
 ```text
+
 1. Read changed code files
 2. Identify loops, recursion, data structures
 3. Analyze time complexity of each function
 4. Calculate space complexity
 5. Compare against theoretical optimal complexity
-```
+
+```text
 
 ### Phase 2: Memory Profiling
 
 ```text
+
 6. Identify allocation patterns
 7. Check for unnecessary copies
 8. Review object lifetimes
 9. Assess memory reuse opportunities
 10. Flag potential memory leaks
-```
+
+```text
 
 ### Phase 3: Cache & I/O Analysis
 
 ```text
+
 11. Review data access patterns
 12. Identify cache-unfriendly operations
 13. Check I/O buffering and batching
 14. Assess sequential vs random access
 15. Evaluate data structure layout
-```
+
+```text
 
 ### Phase 4: Performance Feedback
 
 ```text
+
 16. Categorize findings (critical, major, minor)
 17. Provide Big O analysis with examples
 18. Suggest concrete optimizations
 19. Estimate performance impact
 20. Recommend profiling if uncertain
-```
+
+```text
 
 ## Review Checklist
 
@@ -160,6 +190,53 @@ behavior, and I/O optimization. Focuses exclusively on performance characteristi
 - [ ] Profiling overhead accounted for
 - [ ] Performance regressions detected
 
+## Feedback Format
+
+### Concise Review Comments
+
+**Keep feedback focused and actionable.** Follow this template for all review comments:
+
+```markdown
+[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences in the PR
+
+Locations:
+
+- file.mojo:42: [brief 1-line description]
+- file.mojo:89: [brief 1-line description]
+- file.mojo:156: [brief 1-line description]
+
+Fix: [2-3 line solution]
+
+See: [link to doc if needed]
+```text
+
+### Batching Similar Issues
+
+**Group all occurrences of the same issue into ONE comment:**
+
+- ✅ Count total occurrences across the PR
+- ✅ List all file:line locations briefly
+- ✅ Provide ONE fix example that applies to all
+- ✅ End with "Fix all N occurrences in the PR"
+- ❌ Do NOT create separate comments for each occurrence
+
+### Severity Levels
+
+- 🔴 **CRITICAL** - Must fix before merge (security, safety, correctness)
+- 🟠 **MAJOR** - Should fix before merge (performance, maintainability, important issues)
+- 🟡 **MINOR** - Nice to have (style, clarity, suggestions)
+- 🔵 **INFO** - Informational (alternatives, future improvements)
+
+### Guidelines
+
+- **Be concise**: Each comment should be under 15 lines
+- **Be specific**: Always include file:line references
+- **Be actionable**: Provide clear fix, not just problem description
+- **Batch issues**: One comment per issue type, even if it appears many times
+- **Link don't duplicate**: Reference comprehensive docs instead of explaining everything
+
+See [code-review-orchestrator.md](./code-review-orchestrator.md#review-comment-protocol) for complete protocol.
+
 ## Example Reviews
 
 ### Example 1: Algorithmic Complexity - O(n²) to O(n)
@@ -175,7 +252,7 @@ def find_duplicates(items: List[str]) -> List[str]:
             if items[i] == items[j] and items[i] not in duplicates:
                 duplicates.append(items[i])
     return duplicates
-```
+```text
 
 **Review Feedback**:
 
@@ -183,6 +260,7 @@ def find_duplicates(items: List[str]) -> List[str]:
 🔴 CRITICAL: O(n²) complexity with O(n) solution available
 
 **Current Complexity**: O(n²)
+
 - Nested loops iterate all pairs: n × (n-1)/2 comparisons
 - For n=1000: ~500,000 comparisons
 - For n=10,000: ~50,000,000 comparisons
@@ -190,7 +268,7 @@ def find_duplicates(items: List[str]) -> List[str]:
 **Issue**: Quadratic growth makes this unusable for large inputs.
 
 **Optimal Solution - O(n)**:
-```
+```text
 
 ```python
 def find_duplicates(items: List[str]) -> List[str]:
@@ -208,7 +286,7 @@ def find_duplicates(items: List[str]) -> List[str]:
             seen.add(item)
 
     return list(duplicates)
-```
+```text
 
 ```text
 **Performance Impact**:
@@ -218,74 +296,7 @@ def find_duplicates(items: List[str]) -> List[str]:
 
 **Trade-off**: Uses O(n) memory, but this is acceptable for
 the massive speed improvement.
-```
-
-### Example 2: Memory Allocation - Unnecessary Copies
-
-**Code**:
-
-```mojo
-fn normalize_batch(data: Tensor) -> Tensor:
-    """Normalize batch to zero mean, unit variance."""
-    let mean = data.mean()
-    let std = data.std()
-
-    # Creates intermediate copies
-    let centered = data - mean  # Copy 1
-    let normalized = centered / std  # Copy 2
-    return normalized
-```
-
-**Review Feedback**:
-
 ```text
-🟠 MAJOR: Unnecessary memory allocations in hot path
-
-**Issue**: Creates two full tensor copies for operations that
-could be fused.
-
-**Memory Impact** (for 1000×1000 tensor):
-- Original: 1M floats × 4 bytes = 4MB
-- Intermediate copies: 4MB + 4MB = 8MB extra
-- Total: 12MB (3x memory usage)
-
-**For batch processing**:
-
-- 100 batches: 800MB wasted memory
-- Can cause cache thrashing, page faults
-
-**Optimized Version**:
-```
-
-```mojo
-fn normalize_batch(data: Tensor) -> Tensor:
-    """Normalize batch to zero mean, unit variance.
-
-    Optimized: In-place operations, single allocation.
-    """
-    let mean = data.mean()
-    let std = data.std()
-
-    # Allocate result once
-    var result = Tensor(data.shape())
-
-    # Fused operation: (data - mean) / std
-    for i in range(data.size()):
-        result[i] = (data[i] - mean) / std
-
-    return result
-```
-
-```text
-**Performance Impact**:
-
-- Memory usage: 3x → 2x (33% reduction)
-- Cache efficiency: Better locality, fewer cache misses
-- Estimated speedup: 1.5-2x for large tensors
-
-**Note**: For SIMD vectorization of this pattern, consult
-Mojo Language Specialist.
-```
 
 ### Example 3: Cache Inefficiency - Array-of-Structs vs Struct-of-Arrays
 
@@ -304,7 +315,7 @@ fn sum_x_coordinates(points: List[Point]) -> Float32:
     for point in points:
         total += point.x  # Accessing only x, but loading entire struct
     return total
-```
+```text
 
 **Review Feedback**:
 
@@ -315,7 +326,7 @@ fn sum_x_coordinates(points: List[Point]) -> Float32:
 when accessing single field.
 
 **Memory Layout Analysis**:
-```
+```text
 
 ```text
 AoS Layout (current):
@@ -324,14 +335,16 @@ AoS Layout (current):
  Access stride: ~40 bytes per element
 
 Cache line (64 bytes) utilization:
+
 - Only 1-2 structs fit per cache line
 - Loading x1 also loads y1, z1, meta1 (wasted bandwidth)
 - For 1000 points: ~1000 cache line loads
-```
+
+```text
 
 ```text
 **Recommended - Struct-of-Arrays (SoA)**:
-```
+```text
 
 ```mojo
 struct PointCloud:
@@ -349,11 +362,11 @@ fn sum_x_coordinates(points: PointCloud) -> Float32:
     for x_val in points.x:
         total += x_val
     return total
-```
+```text
 
 ```text
 **Memory Layout**:
-```
+```text
 
 ```text
 SoA Layout (optimized):
@@ -362,9 +375,11 @@ SoA Layout (optimized):
  Access stride: 4 bytes (sequential)
 
 Cache line utilization:
+
 - 16 floats fit per cache line (64 bytes / 4 bytes)
 - For 1000 points: ~63 cache line loads
-```
+
+```text
 
 ```text
 **Performance Impact**:
@@ -375,184 +390,7 @@ Cache line utilization:
 
 **Trade-off**: Adds complexity if you need to access all fields
 together frequently. Use AoS for general access, SoA for hot paths.
-```
-
-### Example 4: I/O Inefficiency - Redundant File Reads
-
-**Code**:
-
-```python
-def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
-    """Load specific samples from dataset file."""
-    samples = []
-    for idx in indices:
-        with open(file_path, 'rb') as f:
-            f.seek(idx * SAMPLE_SIZE)
-            data = f.read(SAMPLE_SIZE)
-            samples.append(parse_sample(data))
-    return samples
-```
-
-**Review Feedback**:
-
 ```text
-🔴 CRITICAL: Severe I/O inefficiency - file opened/closed repeatedly
-
-**Issue**: Opening file on every iteration causes massive overhead.
-
-**Performance Impact** (loading 1000 samples):
-
-- File opens: 1000 (should be 1)
-- System calls: ~3000 (open, seek, read each time)
-- Overhead: ~100ms per open = 100 seconds wasted
-
-**Problems**:
-
-1. File system overhead (inode lookup, permission checks)
-2. Buffer cache thrashing
-3. No opportunity for read-ahead
-4. Serializes I/O (can't batch operations)
-
-**Optimized Version - Single File Handle**:
-```
-
-```python
-def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
-    """Load specific samples from dataset file.
-
-    Optimized: Single file handle, batched reads.
-    """
-    samples = []
-    with open(file_path, 'rb') as f:
-        for idx in indices:
-            f.seek(idx * SAMPLE_SIZE)
-            data = f.read(SAMPLE_SIZE)
-            samples.append(parse_sample(data))
-    return samples
-```
-
-```text
-**Better - Batched I/O**:
-```
-
-```python
-def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
-    """Load specific samples efficiently with batched I/O."""
-    # Sort indices for sequential access
-    sorted_indices = sorted(indices)
-
-    samples = []
-    with open(file_path, 'rb') as f:
-        for idx in sorted_indices:
-            f.seek(idx * SAMPLE_SIZE)
-            data = f.read(SAMPLE_SIZE)
-            samples.append(parse_sample(data))
-
-    # Restore original order if needed
-    index_map = {idx: sample for idx, sample in zip(sorted_indices, samples)}
-    return [index_map[idx] for idx in indices]
-```
-
-```text
-**Best - Memory-Mapped I/O** (for large files):
-```
-
-```python
-import mmap
-
-def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
-    """Load samples using memory-mapped I/O for maximum efficiency."""
-    with open(file_path, 'rb') as f:
-        with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
-            samples = []
-            for idx in indices:
-                offset = idx * SAMPLE_SIZE
-                data = mm[offset:offset + SAMPLE_SIZE]
-                samples.append(parse_sample(data))
-            return samples
-```
-
-```text
-**Performance Comparison**:
-
-- Original: ~100 seconds (1000 opens)
-- Single handle: ~1 second (seek overhead)
-- Batched I/O: ~0.5 seconds (sequential reads)
-- Memory-mapped: ~0.1 seconds (OS page cache)
-
-**Speedup**: Up to 1000x improvement.
-```
-
-### Example 5: Good Performance Code (Positive Feedback)
-
-**Code**:
-
-```mojo
-fn compute_moving_average(
-    data: Tensor,
-    window_size: Int
-) -> Tensor:
-    """Compute moving average efficiently.
-
-    Complexity: O(n) time, O(1) extra space
-    Uses sliding window technique to avoid recomputation.
-    """
-    let n = data.size()
-    var result = Tensor(n - window_size + 1)
-
-    # Compute first window sum
-    var window_sum: Float32 = 0.0
-    for i in range(window_size):
-        window_sum += data[i]
-    result[0] = window_sum / window_size
-
-    # Slide window: remove left, add right
-    for i in range(1, n - window_size + 1):
-        window_sum -= data[i - 1]
-        window_sum += data[i + window_size - 1]
-        result[i] = window_sum / window_size
-
-    return result
-```
-
-**Review Feedback**:
-
-```text
-✅ EXCELLENT: Optimal performance implementation
-
-**Complexity Analysis**:
-- Time: O(n) - single pass through data
-- Space: O(1) extra - only window_sum variable
-- Optimal: Cannot be improved asymptotically
-
-**Naive approach** (for comparison):
-```
-
-```mojo
-# O(n × w) - recomputes sum for each window
-for i in range(n - window_size + 1):
-    var sum: Float32 = 0.0
-    for j in range(window_size):  # Redundant work
-        sum += data[i + j]
-    result[i] = sum / window_size
-```
-
-```text
-**Performance Advantage**:
-
-- Window size = 100, data size = 10,000:
-  - Naive: 1,000,000 additions
-  - Optimized: 10,000 additions
-  - Speedup: 100x
-
-**Cache Efficiency**:
-✅ Sequential access pattern (excellent cache locality)
-✅ No unnecessary allocations
-✅ Minimal memory footprint
-
-**This is exemplary performance-conscious code.**
-No optimization needed.
-```
 
 ## Common Performance Issues to Flag
 
@@ -589,49 +427,58 @@ No optimization needed.
 ### Pattern 1: Memoization for Expensive Computations
 
 ```python
+
 # Before: O(2^n) - recomputes fibonacci values
+
 def fibonacci(n: int) -> int:
-    if n <= 1:
+    if n `= 1:
         return n
     return fibonacci(n-1) + fibonacci(n-2)
 
 # After: O(n) - cache results
+
 from functools import lru_cache
 
 @lru_cache(maxsize=None)
-def fibonacci(n: int) -> int:
-    if n <= 1:
+def fibonacci(n: int) -` int:
+    if n `= 1:
         return n
     return fibonacci(n-1) + fibonacci(n-2)
-```
+```text
 
 ### Pattern 2: Pre-allocation for Known Sizes
 
 ```mojo
+
 # Before: Repeated reallocations as list grows
-fn build_range(n: Int) -> List[Int]:
+
+fn build_range(n: Int) -` List[Int]:
     var result = List[Int]()  # Starts small
     for i in range(n):
         result.append(i)  # May reallocate multiple times
     return result
 
 # After: Single allocation
+
 fn build_range(n: Int) -> List[Int]:
     var result = List[Int](capacity=n)  # Pre-allocate
     for i in range(n):
         result.append(i)  # No reallocation
     return result
-```
+```text
 
 ### Pattern 3: Batch Processing for I/O
 
 ```python
+
 # Before: Individual writes
+
 for record in records:
     file.write(record.to_bytes())
     file.flush()  # Expensive system call each time
 
 # After: Batched writes
+
 BATCH_SIZE = 1000
 batch = []
 for record in records:
@@ -640,16 +487,20 @@ for record in records:
         file.write(b''.join(batch))
         file.flush()
         batch.clear()
+
 # Write remaining
+
 if batch:
     file.write(b''.join(batch))
     file.flush()
-```
+```text
 
 ### Pattern 4: Loop Invariant Code Motion
 
 ```mojo
+
 # Before: Recomputes constant inside loop
+
 fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
     var result = List[Point]()
     for point in points:
@@ -658,13 +509,14 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
     return result
 
 # After: Compute once before loop
+
 fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
     let scale = factor * 2.0 + 1.0  # Computed once
     var result = List[Point]()
     for point in points:
         result.append(Point(point.x * scale, point.y * scale))
     return result
-```
+```text
 
 ## Profiling Recommendations
 
@@ -699,6 +551,7 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
 **Unclear**: Whether sorting or processing dominates runtime.
 
 **Recommendation**: Profile with realistic dataset to determine:
+
 1. Time spent in sort vs processing
 2. Memory allocation patterns
 3. Cache miss rates
@@ -719,7 +572,7 @@ stats = pstats.Stats(profiler)
 stats.sort_stats('cumulative')
 stats.print_stats(20)
 
-```
+```text
 
 ```text
 
@@ -728,7 +581,7 @@ stats.print_stats(20)
 - If sort > 50% time: Optimize sorting algorithm
 - If processing > 50% time: Optimize per-item processing
 
-```
+```text
 
 ## Coordinates With
 
@@ -743,6 +596,27 @@ stats.print_stats(20)
   - Algorithm design questions arise (→ Algorithm Specialist)
   - Architectural scalability concerns (→ Architecture Specialist)
   - Memory safety issues discovered (→ Safety Specialist)
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues, verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue `issue-number``, verify issue is linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 
@@ -763,6 +637,21 @@ stats.print_stats(20)
 - **Cache Analysis**: cachegrind, perf stat
 
 ## Constraints
+
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
 
 - Focus only on runtime performance and efficiency
 - Defer SIMD/vectorization to Mojo Language Specialist

@@ -1,6 +1,7 @@
 ---
 name: architecture-design
-description: Design module-level architecture including component breakdown, interfaces, data flow, and reusable patterns
+description: Design module-level architecture including component breakdown, interfaces, data flow, and reusable
+patterns
 tools: Read,Write,Grep,Glob
 model: sonnet
 ---
@@ -42,56 +43,79 @@ Level 2 Module Design Agent responsible for breaking down modules into component
 - Recommend patterns to Chief Architect for reuse
 - Document pattern applications
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Component Separation
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```text
-Module: core_ops
-├── tensor_ops.mojo      # Pure Mojo for performance
-│   ├── struct Tensor
-│   ├── fn add[...]
-│   ├── fn multiply[...]
-│   └── fn matmul[...]
-├── tensor_ops_api.py    # Python wrapper for convenience
-│   └── class TensorOps (wraps Mojo functions)
-└── __init__.py          # Public API
-```text
+### Before Starting Work
 
-### Interface Definition Pattern
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-```mojo
-# Define trait for common interface
-trait TensorOperation
-    fn apply[dtype: DType](
-        inout self,
-        tensor: Tensor[dtype]
-    ) -> Tensor[dtype]
+### Documentation Rules
 
-# Components implement trait
-struct Addition(TensorOperation)
-    fn apply[dtype: DType](
-        inout self,
-        tensor: Tensor[dtype]
-    ) -> Tensor[dtype]:
-        # Implementation
-```text
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-### Data Flow Design
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
-```mojo
-# Example: Training data flow
-DataLoader (Python)
-    ↓ yields batches
-Preprocessing (Mojo - fast)
-    ↓ preprocessed tensors
-Model.forward (Mojo - performance critical)
-    ↓ predictions
-Loss calculation (Mojo)
-    ↓ gradients
-Optimizer.step (Mojo)
-    ↓ updated parameters
-```text
+## Script Language Selection
+
+**All new scripts must be written in Mojo unless explicitly justified.**
+
+### Mojo for Scripts
+
+Use Mojo for:
+
+- ✅ **Build scripts** - Compilation, linking, packaging
+- ✅ **Automation tools** - Task runners, code generators, formatters
+- ✅ **CI/CD scripts** - Test runners, deployment, validation
+- ✅ **Data processing** - Preprocessing, transformations, loaders
+- ✅ **Development utilities** - Code analysis, metrics, reporting
+- ✅ **Project tools** - Setup, configuration, maintenance
+
+### Python Only When Necessary
+
+Use Python ONLY for:
+
+- ⚠️ **Python-only libraries** - No Mojo bindings available and library is required
+- ⚠️ **Explicit requirements** - Issue specifically requests Python
+- ⚠️ **Rapid prototyping** - Quick validation (must document conversion plan to Mojo)
+
+### Decision Process
+
+When creating a new script:
+
+1. **Default choice**: Mojo
+2. **Check requirement**: Does issue specify Python? If no → Mojo
+3. **Check dependencies**: Any Python-only libraries? If no → Mojo
+4. **Check justification**: Is there a strong reason for Python? If no → Mojo
+5. **Document decision**: If using Python, document why in code comments
+
+### Conversion Priority
+
+When encountering existing Python scripts:
+
+1. **High priority** - Frequently-used scripts, performance-critical
+2. **Medium priority** - Occasionally-used scripts, moderate performance impact
+3. **Low priority** - Rarely-used scripts, no performance requirements
+
+**Rule of Thumb**: New scripts are always Mojo. Existing Python scripts should be converted when touched or when time
+permits.
+
+See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selection philosophy.
+
+## Language Guidelines
+
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Workflow
 
@@ -137,49 +161,13 @@ Optimizer.step (Mojo)
 - [Security Design](./security-design.md) - security requirements
 - Section orchestrators as needed - cross-module consistency
 
-## Skip-Level Delegation
+### Skip-Level Guidelines
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
-### When to Skip Levels
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../delegation-rules.md#skip-level-delegation).
 
-**Simple Bug Fixes** (< 50 lines, well-defined)
-- Chief Architect/Orchestrator → Implementation Specialist (skip design)
-- Specialist → Implementation Engineer (skip senior review)
-
-### Boilerplate & Templates
-
-- Any level → Junior Engineer directly (skip all intermediate levels)
-- Use for: code generation, formatting, simple documentation
-
-**Well-Scoped Tasks** (clear requirements, no architectural impact):
-
-- Orchestrator → Component Specialist (skip module design)
-- Design Agent → Implementation Engineer (skip specialist breakdown)
-
-**Established Patterns** (following existing architecture):
-
-- Skip Architecture Design if pattern already documented
-- Skip Security Design if following standard secure coding practices
-
-**Trivial Changes** (< 20 lines, formatting, typos):
-
-- Any level → Appropriate engineer directly
-
-### When NOT to Skip
-
-**Never skip levels for**
-- New architectural patterns or significant design changes
-- Cross-module integration work
-- Security-sensitive code
-- Performance-critical optimizations
-- Public API changes
-
-### Efficiency Guidelines
-
-1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-1. **Document Skip Rationale**: When skipping, note why in delegation message
-1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly
+trivial fixes (` 20 lines, no design decisions).
 
 ## Workflow Phase
 
@@ -209,6 +197,7 @@ Primarily **Plan** phase, with oversight in Implementation
 ### Conflict Resolution
 
 When receiving conflicting guidance from delegated agents
+
 1. Attempt to resolve conflicts based on specifications and priorities
 1. If unable to resolve: escalate to parent level with full context
 1. Document the conflict and resolution in status updates
@@ -231,6 +220,7 @@ When receiving conflicting guidance from delegated agents
 ### Error Escalation
 
 Escalate errors when
+
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected
@@ -238,6 +228,21 @@ Escalate errors when
 - Loop detected in delegation chain
 
 ## Constraints
+
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
 
 ### Do NOT
 
@@ -260,11 +265,35 @@ Escalate errors when
 ## Escalation Triggers
 
 Escalate to Section Orchestrator when
+
 - Requirements are unclear or contradictory
 - Cross-module dependencies discovered
 - Performance requirements seem unachievable
 - Need to change module scope
 - Design conflicts with other modules
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 
@@ -288,11 +317,13 @@ Escalate to Section Orchestrator when
 ### Specifications
 
 ```markdown
+
 ## Component Specification: [Component Name]
 
 **Responsibility**: [What it does]
 
 ### Interface
+
 ```mojo
 
 [Function signatures]

@@ -27,65 +27,97 @@ Level 4 Implementation Engineer responsible for implementing standard functions 
 - Document code with docstrings
 - Coordinate with Test Engineer for TDD
 
+## Documentation Location
+
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
+
+### Before Starting Work
+
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
+
+### Documentation Rules
+
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
+
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
+
+## Script Language Selection
+
+**All new scripts must be written in Mojo unless explicitly justified.**
+
+### Mojo for Scripts
+
+Use Mojo for:
+
+- ✅ **Build scripts** - Compilation, linking, packaging
+- ✅ **Automation tools** - Task runners, code generators, formatters
+- ✅ **CI/CD scripts** - Test runners, deployment, validation
+- ✅ **Data processing** - Preprocessing, transformations, loaders
+- ✅ **Development utilities** - Code analysis, metrics, reporting
+- ✅ **Project tools** - Setup, configuration, maintenance
+
+### Python Only When Necessary
+
+Use Python ONLY for:
+
+- ⚠️ **Python-only libraries** - No Mojo bindings available and library is required
+- ⚠️ **Explicit requirements** - Issue specifically requests Python
+- ⚠️ **Rapid prototyping** - Quick validation (must document conversion plan to Mojo)
+
+### Decision Process
+
+When creating a new script:
+
+1. **Default choice**: Mojo
+2. **Check requirement**: Does issue specify Python? If no → Mojo
+3. **Check dependencies**: Any Python-only libraries? If no → Mojo
+4. **Check justification**: Is there a strong reason for Python? If no → Mojo
+5. **Document decision**: If using Python, document why in code comments
+
+### Conversion Priority
+
+When encountering existing Python scripts:
+
+1. **High priority** - Frequently-used scripts, performance-critical
+2. **Medium priority** - Occasionally-used scripts, moderate performance impact
+3. **Low priority** - Rarely-used scripts, no performance requirements
+
+**Rule of Thumb**: New scripts are always Mojo. Existing Python scripts should be converted when touched or when time
+permits.
+
+See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selection
+philosophy.
+
 ## Mojo-Specific Guidelines
 
-### Function Implementation
+### Function Definitions
 
-```mojo
-fn add[dtype: DType, size: Int](
-    a: Tensor[dtype, size],
-    b: Tensor[dtype, size]
-) -> Tensor[dtype, size]:
-    """Add two tensors element-wise.
+- Use `fn` for performance-critical code (compile-time checks, optimization)
+- Use `def` for prototyping or Python interop
+- Default to `fn` unless flexibility is needed
 
-    Args:
-        a: First tensor
-        b: Second tensor
+### Memory Management
 
-    Returns:
-        New tensor with element-wise sum
-    """
-    var result = Tensor[dtype, size]()
+- Use `owned` for ownership transfer
+- Use `borrowed` for read-only access
+- Use `inout` for mutable references
+- Prefer value semantics (struct) over reference semantics (class)
 
-    @parameter
-    fn vectorized[simd_width: Int](idx: Int):
-        result.store[width=simd_width](
-            idx,
-            a.load[width=simd_width](idx) +
-            b.load[width=simd_width](idx)
-        )
+### Performance
 
-    vectorize[vectorized, simd_width=16](size)
-    return result
-```
+- Leverage SIMD for vectorizable operations
+- Use `@parameter` for compile-time constants
+- Avoid unnecessary copies with move semantics (`^`)
 
-### Struct Implementation
-
-```mojo
-@value
-struct LinearLayer:
-    """Simple linear transformation layer."""
-    var weights: Tensor[DType.float32]
-    var bias: Tensor[DType.float32]
-
-    fn __init__(
-        inout self,
-        input_size: Int,
-        output_size: Int
-    ):
-        """Initialize with random weights."""
-        self.weights = Tensor[DType.float32](
-            output_size, input_size
-        ).randn()
-        self.bias = Tensor[DType.float32](output_size).zeros()
-
-    fn forward(
-        self,
-        input: Tensor[DType.float32]
-    ) -> Tensor[DType.float32]:
-        """Forward pass: output = input @ weights + bias."""
-        return matmul(input, self.weights) + self.bias
-```
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
 
 ## Workflow
 
@@ -120,6 +152,21 @@ Implementation
 
 ## Constraints
 
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
+
 ### Do NOT
 
 - Change function signatures without approval
@@ -134,6 +181,29 @@ Implementation
 - Test thoroughly
 - Document with docstrings
 - Ask for help when blocked
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue NUMBER`, verify issue
+is linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #NUMBER"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 

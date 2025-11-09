@@ -95,6 +95,44 @@ Orchestrator
 
 **Use When**: Parallel work needs final integration
 
+## Skip-Level Delegation
+
+**General Rule**: Follow the hierarchy (don't skip levels). However, for truly trivial tasks, skip-level delegation is acceptable.
+
+### When Skip-Level Is Acceptable
+
+**Simple Bug Fixes** (< 20 lines, well-defined, no design decisions):
+
+- Typos or obvious errors
+- Missing imports
+- Formatting issues
+- Clear, localized fixes
+
+**Process**: Higher-level agent can delegate directly to implementation level when:
+
+1. No design decisions needed
+2. No architectural impact
+3. Fix is obvious and unambiguous
+4. < 20 lines of code changes
+
+### When Skip-Level Is NOT Acceptable
+
+**Never skip levels for**:
+
+- New features (any size)
+- Refactoring (any scope)
+- Performance optimization
+- Security fixes
+- API changes
+- Anything requiring judgment or design
+
+**Rule of Thumb**: If it requires thinking beyond "fix the typo", use the full hierarchy.
+
+### Documentation Location
+
+All work, even trivial fixes, must document outputs in `/notes/issues/<issue-number>/README.md`. Always verify
+the GitHub issue exists before starting work.
+
 ## Mojo-Specific Delegation
 
 ### Language Choice Decisions

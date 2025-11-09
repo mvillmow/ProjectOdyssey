@@ -63,6 +63,28 @@ or security vulnerabilities in dependencies)
 - Verify security advisory awareness
 - Assess dependency maintenance status
 
+## Documentation Location
+
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
+
+### Before Starting Work
+
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
+
+### Documentation Rules
+
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
+
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
+
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
@@ -79,46 +101,56 @@ or security vulnerabilities in dependencies)
 ### Phase 1: Discovery
 
 ```text
+
 1. Identify all dependency files in the PR
 1. Read dependency specifications (requirements.txt, pixi.toml, etc.)
 1. Check for lock files (pixi.lock, poetry.lock, etc.)
 1. Identify changed vs. added dependencies
+
 ```text
 
 ### Phase 2: Version Analysis
 
 ```text
+
 1. Review version pinning strategy
 1. Check for version conflicts
 1. Validate semantic versioning usage
 1. Assess version constraint appropriateness
+
 ```text
 
 ### Phase 3: Reproducibility Check
 
 ```text
+
 1. Verify lock file updates match dependency changes
 1. Check for platform-specific dependencies
 1. Review environment consistency (dev/prod/CI)
 1. Validate build reproducibility
+
 ```text
 
 ### Phase 4: License & Hygiene
 
 ```text
+
 1. Check license compatibility
 1. Identify deprecated or unmaintained packages
 1. Flag unused dependencies
 1. Review dependency freshness
+
 ```text
 
 ### Phase 5: Feedback Generation
 
 ```text
+
 1. Categorize findings (critical, major, minor)
 1. Provide actionable recommendations
 1. Suggest version constraints or alternatives
 1. Document potential upgrade paths
+
 ```text
 
 ## Review Checklist
@@ -163,6 +195,53 @@ or security vulnerabilities in dependencies)
 - [ ] Security advisories reviewed
 - [ ] Maintenance status of critical dependencies checked
 
+## Feedback Format
+
+### Concise Review Comments
+
+**Keep feedback focused and actionable.** Follow this template for all review comments:
+
+```markdown
+[EMOJI] [SEVERITY]: [Issue summary] - Fix all N occurrences in the PR
+
+Locations:
+
+- file.mojo:42: [brief 1-line description]
+- file.mojo:89: [brief 1-line description]
+- file.mojo:156: [brief 1-line description]
+
+Fix: [2-3 line solution]
+
+See: [link to doc if needed]
+```text
+
+### Batching Similar Issues
+
+**Group all occurrences of the same issue into ONE comment:**
+
+- ✅ Count total occurrences across the PR
+- ✅ List all file:line locations briefly
+- ✅ Provide ONE fix example that applies to all
+- ✅ End with "Fix all N occurrences in the PR"
+- ❌ Do NOT create separate comments for each occurrence
+
+### Severity Levels
+
+- 🔴 **CRITICAL** - Must fix before merge (security, safety, correctness)
+- 🟠 **MAJOR** - Should fix before merge (performance, maintainability, important issues)
+- 🟡 **MINOR** - Nice to have (style, clarity, suggestions)
+- 🔵 **INFO** - Informational (alternatives, future improvements)
+
+### Guidelines
+
+- **Be concise**: Each comment should be under 15 lines
+- **Be specific**: Always include file:line references
+- **Be actionable**: Provide clear fix, not just problem description
+- **Batch issues**: One comment per issue type, even if it appears many times
+- **Link don't duplicate**: Reference comprehensive docs instead of explaining everything
+
+See [code-review-orchestrator.md](./code-review-orchestrator.md#review-comment-protocol) for complete protocol.
+
 ## Example Reviews
 
 ### Example 1: Unpinned Critical Dependency
@@ -181,11 +260,13 @@ pandas>=1.0
 🔴 CRITICAL: Overly loose version constraints risk breaking changes
 
 ### Issues
+
 1. TensorFlow 2.0 to 3.0 would be a major breaking change
 1. NumPy 1.20 to 2.0 broke compatibility with many libraries
 1. No upper bounds allow installing incompatible future versions
 
 ### Example Failure Scenario
+
 - Today: Install works with TensorFlow 2.15, NumPy 1.26
 - Tomorrow: NumPy 2.0 releases with breaking changes
 - Result: Build breaks for all new installations
@@ -194,91 +275,31 @@ pandas>=1.0
 without any code changes.
 
 ### Recommended
+
 ```txt
 
 # Pin to known-working versions with compatible upper bounds
 
-numpy>=1.20,<2.0      # Avoid NumPy 2.0 breaking changes
-tensorflow>=2.10,<3.0  # TF 2.x series, exclude 3.0
-pandas>=1.5,<3.0      # Allow 1.x and 2.x, exclude future 3.0
+numpy>=1.20,`2.0      # Avoid NumPy 2.0 breaking changes
+tensorflow`=2.10,`3.0  # TF 2.x series, exclude 3.0
+pandas`=1.5,`3.0      # Allow 1.x and 2.x, exclude future 3.0
 
 ```text
 
 **Best Practice**: Use lock files (pixi.lock, poetry.lock) for
 exact reproducibility, and constraints for version ranges.
 
-### Example 2: Dependency Conflict
-
-**File**: pixi.toml
-
-```toml
-
-[dependencies]
-package-a = ">=2.0,<3.0"
-package-b = ">=1.5,<2.0"
-
-# package-a requires package-c >= 3.0
-
-# package-b requires package-c >= 2.0,<3.0
-
-```text
-
-**Review Feedback**
-```text
-
-🔴 CRITICAL: Transitive dependency conflict detected
-
-### Conflict
-
-```text
-package-a (>=2.0) → requires package-c >= 3.0
-package-b (>=1.5) → requires package-c >= 2.0,<3.0
-
-Result: NO version of package-c satisfies both constraints
-```text
-
-**This will fail at install time:**
-
-```bash
-$ pixi install
-Error: Conflicting requirements:
-  package-c>=3.0 (from package-a)
-  package-c>=2.0,<3.0 (from package-b)
-```text
-
-### Resolution Options
-
-1. **Option A - Update package-b** (Recommended):
-
-```toml
-   [dependencies]
-   package-a = ">=2.0,<3.0"
-   package-b = ">=2.0,<3.0"  # Updated to support package-c 3.x
-   ```
-
-1. **Option B - Downgrade package-a**:
-
-```toml
-   [dependencies]
-   package-a = ">=1.5,<2.0"  # Older version compatible with package-c 2.x
-   package-b = ">=1.5,<2.0"
-   ```
-
-1. **Option C - Use different packages** (if no compatible versions exist)
-
-**Recommendation**: Check if package-b has a newer release compatible
-with package-c 3.x. If not, evaluate whether package-a's 2.x features
-are essential.
-
 ### Example 3: Missing Lock File
 
 **File**: pixi.toml (changed)
 
 ```toml
+
 [dependencies]
-numpy = ">=1.24,<2.0"
-scipy = ">=1.10,<2.0"
-matplotlib = ">=3.7,<4.0"
+numpy = "`=1.24,`2.0"
+scipy = "`=1.10,`2.0"
+matplotlib = "`=3.7,`4.0"
+
 ```text
 
 **File**: pixi.lock (not included in PR)
@@ -286,11 +307,13 @@ matplotlib = ">=3.7,<4.0"
 ### Review Feedback
 
 ```text
+
 🟠 MAJOR: Lock file not updated with dependency changes
 
 **Issue**: Modified pixi.toml but pixi.lock not updated in this PR.
 
 ### Why This Matters
+
 - CI builds will use OLD locked versions, not new constraints
 - Local development uses NEW versions from pixi.toml ranges
 - Result: "Works on my machine" but fails in CI/production
@@ -322,402 +345,6 @@ git commit -m "chore: update pixi.lock for dependency changes"
 **Best Practice**: ALWAYS regenerate and commit lock files when
 modifying dependency specifications.
 
-### Example 4: License Conflict
-
-**File**: requirements.txt
-
-```txt
-
-# MIT License - OK
-
-requests>=2.28,<3.0
-
-# Apache 2.0 - OK
-
-numpy>=1.24,<2.0
-
-# GPL-3.0 - PROBLEM for proprietary code
-
-pytorch-geometric>=2.3,<3.0
-
-```text
-
-**Review Feedback**
-```text
-
-🔴 CRITICAL: GPL-3.0 dependency incompatible with proprietary project
-
-**Issue**: pytorch-geometric is licensed under GPL-3.0, which is a
-"viral" copyleft license requiring all derivative works to be GPL-3.0.
-
-### Legal Implications
-
-1. Cannot distribute proprietary software that links to GPL libraries
-1. Must release source code under GPL-3.0 if distributing
-1. Commercial licensing may be impossible
-
-### Example Scenario
-
-- Your project: Proprietary ML platform for commercial sale
-- Includes: pytorch-geometric (GPL-3.0)
-- Result: Your entire codebase must be released as GPL-3.0 OR
-  you face potential legal action
-
-### Alternatives
-
-1. **Use MIT/Apache licensed alternative**:
-
-```txt
-   # PyTorch Geometric has MIT-licensed alternatives
-   torch-geometric>=2.3,<3.0  # MIT License
-   # OR
-   dgl>=1.1,<2.0              # Apache 2.0
-   ```
-
-1. **Contact vendor** for commercial license (if available)
-
-1. **Reimplement functionality** using permissive libraries
-
-**Recommendation**: Replace with MIT or Apache 2.0 licensed alternative.
-Consult legal team if GPL dependencies are unavoidable.
-
-### License Compatibility Reference
-
-- ✅ MIT + Apache 2.0 = OK
-- ✅ MIT + BSD = OK
-- ⚠️  Apache 2.0 + GPL = GPL (entire project becomes GPL)
-- ❌ Proprietary + GPL = Legal violation
-
-### Example 5: Deprecated Dependency
-
-**File**: requirements.txt
-
-```txt
-# Deprecated - no longer maintained
-nose>=1.3,<2.0
-
-# Active - good
-pytest>=7.0,<8.0
-```text
-
-**Review Feedback**
-```text
-🟠 MAJOR: Using deprecated testing framework
-
-**Issue**: `nose` has been deprecated since 2015 and is no longer
-maintained. Last release was 1.3.7 in 2015.
-
-### Risks
-
-1. Security vulnerabilities will not be patched
-1. Incompatible with modern Python versions (3.10+)
-1. No support for new features (async tests, etc.)
-1. Community has moved to pytest/unittest
-
-### Migration Path
-
-```txt
-
-# Remove deprecated nose
-
-# nose>=1.3,<2.0  # DEPRECATED - DO NOT USE
-
-# Use pytest instead (already present)
-
-pytest>=7.0,<8.0
-pytest-cov>=4.0,<5.0      # For coverage
-pytest-asyncio>=0.21,<1.0  # For async tests
-
-```text
-
-**Migration Guide**
-1. `nose.tools` → `pytest` fixtures
-1. `@with_setup` → `@pytest.fixture`
-1. `assert_equals(a, b)` → `assert a == b`
-
-**Recommendation**: Migrate tests from nose to pytest. Modern
-Python projects should use actively maintained testing frameworks.
-
-**Timeline**: Non-urgent but should be in next quarter's tech debt
-backlog.
-
-### Example 6: Platform-Specific Handling
-
-**File**: requirements.txt
-
-```txt
-
-numpy>=1.24,<2.0
-torch>=2.0,<3.0
-pywin32>=305  # Windows-only package
-
-```text
-
-### Review Feedback
-
-```text
-
-🟠 MAJOR: Platform-specific dependency not properly marked
-
-**Issue**: pywin32 is Windows-only but will fail installation on
-Linux/macOS, breaking CI and cross-platform development.
-
-### Current Behavior
-
-```bash
-# On Linux/macOS
-$ pip install -r requirements.txt
-ERROR: Could not find a version that satisfies the requirement pywin32
-```text
-
-**Fix**: Use environment markers for platform-specific dependencies:
-
-```txt
-numpy>=1.24,<2.0
-torch>=2.0,<3.0
-
-# Install only on Windows
-pywin32>=305; sys_platform == "win32"
-
-# Alternative: Linux-specific packages
-python-xlib>=0.33; sys_platform == "linux"
-
-# Alternative: macOS-specific packages
-pyobjc-framework-Cocoa>=9.0; sys_platform == "darwin"
-```text
-
-**Best Practice**: Always use environment markers for platform-specific
-dependencies to ensure cross-platform compatibility.
-
-**Testing**: Verify installation works on all target platforms:
-
-```bash
-# Test on Linux
-docker run -it python:3.11 pip install -r requirements.txt
-
-# Test on macOS
-# (CI should test this automatically)
-
-# Test on Windows
-# (CI should test this automatically)
-```text
-
-### Example 7: Development vs. Production Dependencies
-
-**File**: requirements.txt (mixed dependencies)
-
-```txt
-# Production dependencies
-numpy>=1.24,<2.0
-flask>=2.3,<3.0
-gunicorn>=21.0,<22.0
-
-# Development/testing dependencies (should NOT be here)
-pytest>=7.0,<8.0
-black>=23.0,<24.0
-mypy>=1.5,<2.0
-sphinx>=7.0,<8.0
-```text
-
-**Review Feedback**
-```text
-🟡 MINOR: Development and production dependencies not separated
-
-**Issue**: Development tools mixed with production dependencies. This
-causes unnecessary package installation in production environments.
-
-### Problems
-
-1. Larger production Docker images (includes testing tools)
-1. Increased attack surface (more packages = more vulnerabilities)
-1. Slower production deployments
-1. Confusion about what's actually needed in production
-
-### Impact Example
-
-```text
-
-Production image with all deps:  850 MB
-Production image (prod only):    320 MB
-Wasted space:                    530 MB (62%)
-
-```text
-
-### Recommended Structure
-
-**requirements.txt** (production only):
-
-```txt
-
-numpy>=1.24,<2.0
-flask>=2.3,<3.0
-gunicorn>=21.0,<22.0
-
-```text
-
-**requirements-dev.txt** (development tools):
-
-```txt
-
--r requirements.txt  # Include production deps
-
-# Testing
-
-pytest>=7.0,<8.0
-pytest-cov>=4.0,<5.0
-pytest-mock>=3.11,<4.0
-
-# Code quality
-
-black>=23.0,<24.0
-mypy>=1.5,<2.0
-ruff>=0.1,<0.2
-
-# Documentation
-
-sphinx>=7.0,<8.0
-sphinx-rtd-theme>=1.3,<2.0
-
-```text
-
-**Usage**
-```bash
-
-# Production
-
-pip install -r requirements.txt
-
-# Development
-
-pip install -r requirements-dev.txt
-
-```text
-
-**Alternative**: Use pixi.toml with feature groups:
-
-```toml
-
-[dependencies]
-numpy = ">=1.24,<2.0"
-flask = ">=2.3,<3.0"
-
-[feature.dev.dependencies]
-pytest = ">=7.0,<8.0"
-black = ">=23.0,<24.0"
-
-```text
-
-### Example 8: Good Dependency Management (Positive Feedback)
-
-**File**: pixi.toml
-
-```toml
-
-[project]
-name = "ml-odyssey"
-version = "0.1.0"
-description = "Mojo-based AI research platform"
-authors = ["ML Odyssey Team <team@example.com>"]
-license = "MIT"
-
-[dependencies]
-
-# Core numerical computing - pinned to stable versions
-
-numpy = ">=1.24,<2.0"      # NumPy 1.x series, avoid 2.0 breaking changes
-scipy = ">=1.10,<2.0"       # Scientific computing
-pandas = ">=2.0,<3.0"       # Data manipulation
-
-# ML frameworks - specify compatible versions
-
-torch = ">=2.0,<2.2"        # PyTorch 2.0-2.1 (2.2+ requires testing)
-torchvision = ">=0.15,<0.17"  # Compatible with torch 2.0-2.1
-
-# Visualization
-
-matplotlib = ">=3.7,<4.0"
-seaborn = ">=0.12,<1.0"
-
-[feature.dev.dependencies]
-
-# Testing framework
-
-pytest = ">=7.4,<8.0"
-pytest-cov = ">=4.1,<5.0"
-pytest-asyncio = ">=0.21,<1.0"
-
-# Code quality
-
-black = "23.11.*"           # Exact minor for consistent formatting
-ruff = ">=0.1.6,<0.2"       # Fast Python linter
-mypy = ">=1.7,<2.0"         # Type checking
-
-# Development tools
-
-pre-commit = ">=3.5,<4.0"
-ipython = ">=8.17,<9.0"
-
-[feature.docs.dependencies]
-sphinx = ">=7.2,<8.0"
-sphinx-rtd-theme = ">=2.0,<3.0"
-myst-parser = ">=2.0,<3.0"  # Markdown support for Sphinx
-
-# Platform-specific dependencies with markers
-
-[target.win-64.dependencies]
-pywin32 = ">=305"
-
-[target.linux-64.dependencies]
-
-# Linux-specific packages if needed
-
-```text
-
-**File**: pixi.lock (present and up-to-date)
-
-### Review Feedback
-
-```text
-
-✅ EXCELLENT: Well-structured dependency management
-
-### Strengths
-
-1. ✅ **Clear Organization**:
-   - Production dependencies in [dependencies]
-   - Development tools in [feature.dev]
-   - Documentation tools in [feature.docs]
-
-1. ✅ **Appropriate Version Constraints**:
-   - Conservative ranges prevent breaking changes
-   - Semantic versioning used correctly
-   - Critical tools (black) pinned to exact minor version
-
-1. ✅ **Platform-Specific Handling**:
-   - Windows dependencies properly isolated
-   - Uses Pixi's native platform targeting
-
-1. ✅ **Good Documentation**:
-   - Comments explain version choices
-   - Breaking change avoidance documented (NumPy 2.0, PyTorch 2.2)
-
-1. ✅ **Reproducibility**:
-   - Lock file present and committed
-   - Exact versions resolved for all platforms
-
-1. ✅ **License Compatibility**:
-   - All dependencies use permissive licenses (MIT, BSD, Apache 2.0)
-   - Project license clearly declared (MIT)
-
-1. ✅ **Maintenance-Friendly**:
-   - Dependencies are recent and actively maintained
-   - Version ranges allow security updates
-   - No deprecated packages
-
-**This is exemplary dependency management.** No changes needed.
-
-```text
-
 ## Common Issues to Flag
 
 ### Critical Issues
@@ -731,7 +358,7 @@ pywin32 = ">=305"
 
 ### Major Issues
 
-- Overly loose version constraints (>=X.Y with no upper bound)
+- Overly loose version constraints (`=X.Y with no upper bound)
 - Deprecated dependencies without migration plan
 - Development dependencies mixed with production
 - Lock files not updated after dependency changes
@@ -756,7 +383,7 @@ pywin32 = ">=305"
 
 # Allow patch updates, block minor/major
 
-package>=1.2.3,<1.3.0  # Only 1.2.x patches
+package>=1.2.3,`1.3.0  # Only 1.2.x patches
 
 ```text
 
@@ -766,7 +393,7 @@ package>=1.2.3,<1.3.0  # Only 1.2.x patches
 
 # Allow minor updates, block major
 
-package>=1.2,<2.0      # Any 1.x version
+package`=1.2,`2.0      # Any 1.x version
 
 ```text
 
@@ -786,13 +413,14 @@ package==1.2.3
 
 # Too loose - can break in future
 
-package>=1.2           # ❌ Unbounded upper limit
+package`=1.2           # ❌ Unbounded upper limit
 
 ```text
 
 ### Lock File Usage
 
 **Pixi (Recommended for this project)**
+
 ```bash
 
 # Update all dependencies to latest compatible versions
@@ -810,6 +438,7 @@ rm pixi.lock && pixi install
 ```text
 
 **Poetry**
+
 ```bash
 
 # Update lock file
@@ -823,6 +452,7 @@ poetry update
 ```text
 
 **Pip + pip-tools**
+
 ```bash
 
 # Generate lock file from requirements.in
@@ -853,17 +483,17 @@ pip-compile --upgrade requirements.in
 
 # ✅ Direct dependency - you import this
 
-flask = ">=2.3,<3.0"
+flask = ">=2.3,`3.0"
 
 # ❌ Transitive dependency - flask imports this
 
 # Don't specify unless you have a specific reason
 
-# werkzeug = ">=2.3,<3.0"
+# werkzeug = "`=2.3,`3.0"
 
 # ✅ Exception: Conflict resolution
 
-# werkzeug = ">=2.3,<2.4"  # Flask 2.3 has bug with werkzeug 2.4+
+# werkzeug = "`=2.3,`2.4"  # Flask 2.3 has bug with werkzeug 2.4+
 
 ```text
 
@@ -877,6 +507,7 @@ flask = ">=2.3,<3.0"
 | Proprietary | MIT, BSD, Apache 2.0 | GPL, AGPL | LGPL (with care) |
 
 **Common Permissive Licenses** (Safe for most projects)
+
 - MIT
 - BSD (2-Clause, 3-Clause)
 - Apache 2.0
@@ -937,6 +568,29 @@ pixi update vulnerable-package
   - Performance issues with dependency usage (→ Performance Specialist)
   - Complex dependency conflicts requiring deeper investigation
 
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
+
 ## Success Criteria
 
 - [ ] All dependency files reviewed (requirements.txt, pixi.toml, etc.)
@@ -957,6 +611,21 @@ pixi update vulnerable-package
 - **Version Databases**: PyPI, crates.io, conda-forge
 
 ## Constraints
+
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
 
 - Focus only on dependency management and reproducibility
 - Defer security vulnerability scanning to Security Specialist
