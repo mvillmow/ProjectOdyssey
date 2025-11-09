@@ -160,6 +160,36 @@ After creating PR:
 - Test suite runs successfully in CI
 - Coverage maintained
 
+## Examples
+
+### Example 1: Implementing Convolution Layer
+
+**Scenario**: Writing Mojo implementation of 2D convolution
+
+**Actions**:
+
+1. Review function specification and interface design
+2. Implement forward pass with proper tensor operations
+3. Add error handling and input validation
+4. Optimize with SIMD where applicable
+5. Write inline documentation
+
+**Outcome**: Working convolution implementation ready for testing
+
+### Example 2: Fixing Bug in Gradient Computation
+
+**Scenario**: Gradient shape mismatch causing training failures
+
+**Actions**:
+
+1. Reproduce bug with minimal test case
+2. Trace tensor dimensions through backward pass
+3. Fix dimension handling in gradient computation
+4. Verify fix with unit tests
+5. Update documentation if needed
+
+**Outcome**: Correct gradient computation with all tests passing
+
 ---
 
 **Configuration File**: `.claude/agents/junior-test-engineer.md`
