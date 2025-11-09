@@ -1,7 +1,6 @@
 ---
 name: test-engineer
-description: Implement unit tests, integration tests, maintain test suites, and ensure CI/CD integration for Mojo and
-Python code
+description: Implement unit tests, integration tests, maintain test suites, and ensure CI/CD integration for Mojo and Python code
 tools: Read,Write,Edit,Bash,Grep,Glob
 model: sonnet
 ---

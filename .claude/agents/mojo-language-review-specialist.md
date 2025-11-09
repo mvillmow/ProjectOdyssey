@@ -1,7 +1,6 @@
 ---
 name: mojo-language-review-specialist
-description: Reviews Mojo-specific language features, idioms, ownership patterns, SIMD usage, and compile-time
-optimizations
+description: Reviews Mojo-specific language features, idioms, ownership patterns, SIMD usage, and compile-time optimizations
 tools: Read,Grep,Glob
 model: sonnet
 ---

@@ -1,7 +1,6 @@
 ---
 name: test-specialist
-description: Create comprehensive test plans, define test cases, specify coverage requirements, and coordinate test
-engineers
+description: Create comprehensive test plans, define test cases, specify coverage requirements, and coordinate test engineers
 tools: Read,Write,Edit,Bash,Grep,Glob
 model: sonnet
 ---

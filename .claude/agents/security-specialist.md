@@ -1,7 +1,6 @@
 ---
 name: security-specialist
-description: Implement security requirements, apply security best practices, perform security testing, and fix
-vulnerabilities
+description: Implement security requirements, apply security best practices, perform security testing, and fix vulnerabilities
 tools: Read,Write,Edit,Grep,Glob
 model: sonnet
 ---

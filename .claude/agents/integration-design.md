@@ -1,7 +1,6 @@
 ---
 name: integration-design
-description: Design module-level integration including cross-component interfaces, APIs, integration tests, and
-dependency management
+description: Design module-level integration including cross-component interfaces, APIs, integration tests, and dependency management
 tools: Read,Write,Grep,Glob
 model: sonnet
 ---
