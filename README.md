@@ -10,6 +10,7 @@ Implementation of older AI papers for the modern age.
 
 ```text
 ml-odyssey/
+├── papers/              # Research paper implementations
 ├── notes/
 │   ├── plan/            # 4-level planning (LOCAL ONLY - not in git)
 │   ├── issues/          # Issue documentation (tracked in git)
@@ -39,6 +40,40 @@ python3 scripts/create_issues.py
 ```
 
 See [scripts/README.md](scripts/README.md) for detailed documentation.
+
+## Papers Directory
+
+The `papers/` directory at the repository root contains all research paper implementations. Each paper has its own
+subdirectory with a standardized structure.
+
+**Location**: `/home/mvillmow/ml-odyssey-manual/papers/`
+
+**Structure**: Each paper implementation follows this organization:
+
+```text
+papers/
+├── lenet-5/           # Example: LeNet-5 paper
+│   ├── README.md      # Paper-specific documentation
+│   ├── src/           # Implementation code
+│   ├── tests/         # Paper-specific tests
+│   └── benchmarks/    # Performance benchmarks
+└── alexnet/           # Example: AlexNet paper
+    ├── README.md
+    ├── src/
+    ├── tests/
+    └── benchmarks/
+```
+
+**Creating the Directory**:
+
+The papers/ directory can be created using the provided script:
+
+```bash
+python scripts/foundation/create_papers_dir.py
+```
+
+This script is idempotent and will create the directory if it doesn't exist, or safely report success if it
+already exists.
 
 ## Documentation
 
