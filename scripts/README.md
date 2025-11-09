@@ -9,10 +9,36 @@ These scripts automate repository management tasks:
 - Creating GitHub issues from plan files (local files in `notes/plan/`, not tracked in git)
 - Regenerating github_issue.md files dynamically from plan.md files (local, task-relative)
 - Testing issue creation for individual components
+- Agent system utilities and validation
 
 **Important**: Plan files in `notes/plan/` are task-relative and NOT tracked in version control.
 They are used for local planning and GitHub issue generation. For tracked team documentation,
 see `notes/issues/`, `notes/review/`, and `agents/`.
+
+## Directory Structure
+
+```text
+scripts/
+├── README.md                           # This file
+├── create_issues.py                    # Main GitHub issue creation
+├── create_single_component_issues.py   # Single component testing
+├── regenerate_github_issues.py         # Dynamic issue file generation
+├── agents/                             # Agent system utilities
+│   ├── README.md                       # Agent scripts documentation
+│   ├── agent_health_check.sh           # System health checks
+│   ├── agent_stats.py                  # Statistics and metrics
+│   ├── check_frontmatter.py            # YAML validation
+│   ├── list_agents.py                  # Agent discovery
+│   ├── setup_agents.sh                 # Setup automation
+│   ├── test_agent_loading.py           # Loading tests
+│   ├── validate_agents.py              # Configuration validation
+│   └── tests/                          # Agent test suite
+└── archive/                            # Historical scripts (preserved for reference)
+    ├── README.md                       # Archive documentation
+    ├── fix_markdown.py                 # One-time markdown fixes (2024)
+    ├── fix_markdown_linting.py         # One-time markdown fixes (2024)
+    └── fix_remaining_markdown.py       # One-time markdown fixes (2024)
+```
 
 ## Scripts
 
@@ -350,13 +376,15 @@ ml-odyssey/
 │   │   │   ├── plan.md
 │   │   │   └── (github_issue.md - generated)
 │   │   └── ...
-│   ├── issues/              # Tracked docs - historical issue documentation
+│   ├── issues/              # Tracked docs - issue-specific documentation
 │   └── review/              # Tracked docs - PR review documentation
 ├── agents/                  # Tracked docs - agent system documentation
 ├── scripts/
 │   ├── create_issues.py
 │   ├── create_single_component_issues.py
-│   └── regenerate_github_issues.py
+│   ├── regenerate_github_issues.py
+│   ├── agents/              # Agent utilities
+│   └── archive/             # Historical scripts
 └── logs/                    # Not tracked
     ├── .issue_creation_state_*.json
     └── create_issues_*.log
@@ -451,6 +479,42 @@ ml-odyssey/
 - **Implementation**: Goals, required inputs, outputs, implementation steps, success criteria
 - **Packaging**: Objectives, integration requirements, integration steps, success criteria
 - **Cleanup**: Objectives, cleanup tasks, success criteria, notes
+
+---
+
+## Archive
+
+The `archive/` directory contains historical scripts that are no longer actively used but preserved for reference.
+
+### Archived Scripts
+
+**Markdown Linting Fixes (2024)**:
+
+- `fix_markdown.py` - Systematic markdown linting fixes
+- `fix_markdown_linting.py` - Repository-wide markdown fixes
+- `fix_remaining_markdown.py` - Final cleanup pass
+
+These scripts successfully standardized all markdown files to pass `markdownlint-cli2` linting. The repository
+now uses pre-commit hooks (`markdownlint-cli2`) to maintain markdown quality, making these scripts obsolete.
+
+**Status**: Archived after successful completion of markdown standardization (November 2024).
+
+For detailed information about archived scripts, see [archive/README.md](archive/README.md).
+
+### Decision: Keep create_single_component_issues.py
+
+The `create_single_component_issues.py` script is intentionally kept separate from `create_issues.py` rather than
+being consolidated or archived. This decision follows "Option A: Keep Both Scripts" from the planning phase.
+
+**Rationale**:
+
+- **Clear separation of concerns**: Testing utility vs production tool
+- **Independent value**: Useful for validation before bulk operations
+- **Low maintenance cost**: Small focused script (198 LOC)
+- **Different use cases**: Quick validation vs comprehensive automation
+
+This separation improves the development workflow by providing a safe, focused tool for testing changes before
+running bulk operations.
 
 ---
 
