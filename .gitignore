@@ -10,3 +10,4 @@ logs/
 build/
 notes/plan/
 worktrees/
+dist/

@@ -73,12 +73,26 @@ The papers/ directory structure is already in place. To add a new paper implemen
 2. Follow the standard structure (src/, tests/, examples/, README.md)
 3. See `papers/README.md` for detailed guidelines and conventions
 
+**Packaging for Distribution**:
+
+Create a distributable tarball of the papers/ directory:
+
+```bash
+python3 scripts/package_papers.py
+
+# Or specify custom output directory
+python3 scripts/package_papers.py --output /path/to/output
+```
+
+This creates `dist/papers-YYYYMMDD.tar.gz` containing the entire papers directory structure.
+
 **Key Features**:
 
 - Each paper is self-contained in its own directory
 - Comprehensive README.md with paper overview and implementation notes
 - Mojo-based implementations for maximum performance
 - Complete test coverage and usage examples
+- Distributable tarball packaging for easy sharing
 
 ## Documentation
 
