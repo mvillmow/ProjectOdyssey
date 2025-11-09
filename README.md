@@ -43,37 +43,42 @@ See [scripts/README.md](scripts/README.md) for detailed documentation.
 
 ## Papers Directory
 
-The `papers/` directory at the repository root contains all research paper implementations. Each paper has its own
-subdirectory with a standardized structure.
+The `papers/` directory at the repository root contains all research paper implementations in Mojo. Each paper has its
+own subdirectory with a standardized structure.
 
-**Location**: `/home/mvillmow/ml-odyssey-manual/papers/`
+**Purpose**: Implementation of classic AI/ML research papers using Mojo for high performance.
 
 **Structure**: Each paper implementation follows this organization:
 
 ```text
 papers/
-├── lenet-5/           # Example: LeNet-5 paper
-│   ├── README.md      # Paper-specific documentation
-│   ├── src/           # Implementation code
-│   ├── tests/         # Paper-specific tests
-│   └── benchmarks/    # Performance benchmarks
-└── alexnet/           # Example: AlexNet paper
+├── README.md          # Overview and guidelines
+├── lenet-5/           # Example: LeNet-5 (1998)
+│   ├── README.md      # Paper details and implementation notes
+│   ├── src/           # Mojo implementation
+│   ├── tests/         # Test suite
+│   └── examples/      # Usage demonstrations
+└── alexnet/           # Example: AlexNet (2012)
     ├── README.md
     ├── src/
     ├── tests/
-    └── benchmarks/
+    └── examples/
 ```
 
-**Creating the Directory**:
+**Getting Started**:
 
-The papers/ directory can be created using the provided script:
+The papers/ directory structure is already in place. To add a new paper implementation:
 
-```bash
-python scripts/foundation/create_papers_dir.py
-```
+1. Create a subdirectory named after the paper (e.g., `papers/lenet5/`)
+2. Follow the standard structure (src/, tests/, examples/, README.md)
+3. See `papers/README.md` for detailed guidelines and conventions
 
-This script is idempotent and will create the directory if it doesn't exist, or safely report success if it
-already exists.
+**Key Features**:
+
+- Each paper is self-contained in its own directory
+- Comprehensive README.md with paper overview and implementation notes
+- Mojo-based implementations for maximum performance
+- Complete test coverage and usage examples
 
 ## Documentation
 
