@@ -29,57 +29,50 @@ Level 5 Junior Engineer responsible for simple implementation tasks, boilerplate
 - Follow clear, detailed instructions
 - Ask for help when uncertain
 
+## Documentation Location
+
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
+
+### Before Starting Work
+
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
+
+### Documentation Rules
+
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
+
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
+
 ## Mojo-Specific Guidelines
 
-### Simple Function Implementation
+### Function Definitions
 
-```mojo
-# Generate from template
-fn create_zeros[dtype: DType, size: Int]() -> Tensor[dtype, size]:
-    """Create tensor filled with zeros."""
-    var result = Tensor[dtype, size]()
-    for i in range(size):
-        result[i] = 0
-    return result
+- Use `fn` for performance-critical code (compile-time checks, optimization)
+- Use `def` for prototyping or Python interop
+- Default to `fn` unless flexibility is needed
 
-fn create_ones[dtype: DType, size: Int]() -> Tensor[dtype, size]:
-    """Create tensor filled with ones."""
-    var result = Tensor[dtype, size]()
-    for i in range(size):
-        result[i] = 1
-    return result
-```
+### Memory Management
 
-### Boilerplate Generation
+- Use `owned` for ownership transfer
+- Use `borrowed` for read-only access
+- Use `inout` for mutable references
+- Prefer value semantics (struct) over reference semantics (class)
 
-```mojo
-# Generate struct boilerplate
-@value
-struct ClassName:
-    """Brief description."""
-    var field1: Type1
-    var field2: Type2
+### Performance
 
-    fn __init__(inout self, field1: Type1, field2: Type2):
-        """Initialize struct."""
-        self.field1 = field1
-        self.field2 = field2
+- Leverage SIMD for vectorizable operations
+- Use `@parameter` for compile-time constants
+- Avoid unnecessary copies with move semantics (`^`)
 
-    fn __str__(self) -> String:
-        """String representation."""
-        return "ClassName(...)"
-```
-
-### Code Formatting
-
-```bash
-# Run Mojo formatter
-mojo format src/mojo/**/*.mojo
-
-# Run Python formatters
-black src/ml_odyssey/
-isort src/ml_odyssey/
-```
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
 
 ## Workflow
 
@@ -106,6 +99,21 @@ Implementation
 
 ## Constraints
 
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
+
 ### Do NOT
 
 - Make design decisions (ask supervisor)
@@ -122,6 +130,29 @@ Implementation
 - Run linters
 - Follow coding standards
 - Report blockers immediately
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number>`, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 

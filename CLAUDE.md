@@ -9,6 +9,71 @@ comprehensive 4-level hierarchical planning structure with automated GitHub issu
 
 **Current Status**: Planning phase - repository structure and GitHub issues are being established before implementation begins.
 
+## Working with Agents
+
+This project uses a hierarchical agent system for all development work. **Always use agents** as the primary
+method for completing tasks.
+
+### Agent Hierarchy Quick Reference
+
+- **Level 0**: Chief Architect - Strategic decisions and architecture
+- **Level 1**: Orchestrators (6) - Section coordination (foundation, shared-library, tooling, first-paper, ci-cd, agentic-workflows)
+- **Level 2**: Design/Orchestrators - Module design and code review coordination
+- **Level 3**: Specialists (12 review, 3 implementation) - Component-level work
+- **Level 4**: Engineers (3) - Implementation tasks
+- **Level 5**: Junior Engineers (3) - Simple, well-defined tasks
+
+### Key Agent Principles
+
+1. **Always start with orchestrators** for new section work
+2. **All outputs** must go to `/notes/issues/<issue-number>/README.md`
+3. **Link all PRs** to issues using `gh pr create --issue <number>` or "Closes #123" in description
+4. **Minimal changes only** - smallest change that solves the problem
+5. **No scope creep** - focus only on issue requirements
+6. **Reply to each review comment** with `✅ Fixed - [brief description]`
+
+### Documentation Rules
+
+- **Issue-specific outputs**: `/notes/issues/<issue-number>/README.md`
+- **Comprehensive specs**: `/notes/review/` (architectural decisions, design docs)
+- **Team guides**: `/agents/` (quick start, hierarchy, templates)
+- **Never duplicate** documentation across locations - link instead
+
+### Language Preference
+
+#### Mojo First - Always Default to Mojo
+
+- ✅ **Default to Mojo** for ALL new code:
+  - Implementation code (ML algorithms, data structures, core logic)
+  - Scripts (build scripts, automation, utilities, tools)
+  - Tests (unit tests, integration tests)
+  - CI/CD scripts and workflows
+  - Data processing and preprocessing
+  - Any new utilities or helpers
+
+- ⚠️ **Use Python ONLY when**:
+  - Interfacing with Python-only libraries that don't have Mojo bindings
+  - Explicit requirement in issue specifies Python
+  - Rapid prototyping (must convert to Mojo after validation)
+  - Quick one-off debugging scripts (document as temporary)
+
+- 🔄 **Convert Python to Mojo**:
+  - When feasible, convert existing Python scripts to Mojo
+  - Prioritize frequently-used scripts and performance-critical code
+  - Document Python code as "legacy" if not yet converted
+
+**Rule of Thumb**: If you're asking "Should I use Mojo or Python?", the answer is Mojo. Python requires justification.
+
+**Why Mojo**:
+
+- Performance: 10-100x faster for ML workloads
+- Type safety: Catch errors at compile time
+- Memory safety: Built-in ownership and borrow checking
+- Consistency: One language across the project
+- Future-proof: Designed for AI/ML from the ground up
+
+See `/agents/README.md` for complete agent documentation and `/agents/hierarchy.md` for visual hierarchy.
+
 ## Environment Setup
 
 This project uses Pixi for environment management:

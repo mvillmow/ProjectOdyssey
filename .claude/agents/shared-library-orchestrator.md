@@ -41,36 +41,33 @@ Level 1 Section Orchestrator responsible for coordinating the shared library imp
 - Performance benchmarking
 - Documentation completeness
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Performance-Critical Components (Use Mojo)
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```mojo
-# core_ops/matmul.mojo
-fn matmul[dtype: DType, M: Int, N: Int, K: Int](
-    A: Tensor[dtype, M, K],
-    B: Tensor[dtype, K, N]
-) -> Tensor[dtype, M, N]:
-    """High-performance matrix multiplication using SIMD."""
-    # Optimized implementation
-```
+### Before Starting Work
 
-### Flexible Interfaces (Use Python)
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-```python
-# training/optimizer.py
-class Optimizer:
-    """Base class for all optimizers with flexible API."""
-    def step(self, params, gradients):
-        # Flexible interface for different optimizers
-```
+### Documentation Rules
 
-### API Design Patterns
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-- **Consistency**: All similar operations use same parameter order
-- **Type Safety**: Use Mojo's type system for performance paths
-- **Flexibility**: Python wrappers for Mojo kernels when needed
-- **Documentation**: Every public API has docstring and example
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
+
+## Language Guidelines
+
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Workflow
 
@@ -117,52 +114,13 @@ class Optimizer:
 - [CI/CD Orchestrator](./cicd-orchestrator.md) - testing infrastructure
 - [Foundation Orchestrator](./foundation-orchestrator.md) - infrastructure dependencies
 
-## Skip-Level Delegation
+### Skip-Level Guidelines
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../delegation-rules.md#skip-level-delegation).
 
-### When to Skip Levels
-
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
-- Chief Architect/Orchestrator → Implementation Specialist (skip design)
-- Specialist → Implementation Engineer (skip senior review)
-
-**Boilerplate & Templates**:
-
-- Any level → Junior Engineer directly (skip all intermediate levels)
-- Use for: code generation, formatting, simple documentation
-
-**Well-Scoped Tasks** (clear requirements, no architectural impact):
-
-- Orchestrator → Component Specialist (skip module design)
-- Design Agent → Implementation Engineer (skip specialist breakdown)
-
-**Established Patterns** (following existing architecture):
-
-- Skip Architecture Design if pattern already documented
-- Skip Security Design if following standard secure coding practices
-
-**Trivial Changes** (< 20 lines, formatting, typos):
-
-- Any level → Appropriate engineer directly
-
-### When NOT to Skip
-
-**Never skip levels for**:
-
-- New architectural patterns or significant design changes
-- Cross-module integration work
-- Security-sensitive code
-- Performance-critical optimizations
-- Public API changes
-
-### Efficiency Guidelines
-
-1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly
+trivial fixes (` 20 lines, no design decisions).
 
 ## Workflow Phase
 
@@ -175,54 +133,30 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 - [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Create module templates
 - [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
 
-## Error Handling & Recovery
+## Error Handling
 
-### Retry Strategy
+For comprehensive error handling, recovery strategies, and escalation protocols, see
+[orchestration-patterns.md](../../notes/review/orchestration-patterns.md#error-handling--recovery).
 
-- **Max Attempts**: 3 retries for failed delegations
-- **Backoff**: Exponential backoff (1s, 2s, 4s between attempts)
-- **Scope**: Apply to agent delegation failures, not system errors
-
-### Timeout Handling
-
-- **Max Wait**: 5 minutes for delegated work to complete
-- **On Timeout**: Escalate to parent with context about what timed out
-- **Check Interval**: Poll for completion every 30 seconds
-
-### Conflict Resolution
-
-When receiving conflicting guidance from delegated agents:
-
-1. Attempt to resolve conflicts based on specifications and priorities
-2. If unable to resolve: escalate to parent level with full context
-3. Document the conflict and resolution in status updates
-
-### Failure Modes
-
-- **Partial Failure**: Some delegated work succeeds, some fails
-  - Action: Complete successful parts, escalate failed parts
-- **Complete Failure**: All attempts at delegation fail
-  - Action: Escalate immediately to parent with failure details
-- **Blocking Failure**: Cannot proceed without resolution
-  - Action: Escalate immediately, do not retry
-
-### Loop Detection
-
-- **Pattern**: Same delegation attempted 3+ times with same result
-- **Action**: Break the loop, escalate with loop context
-- **Prevention**: Track delegation attempts per unique task
-
-### Error Escalation
-
-Escalate errors when:
-
-- All retry attempts exhausted
-- Timeout exceeded
-- Unresolvable conflicts detected
-- Critical blocking issues found
-- Loop detected in delegation chain
+**Quick Summary**: Classify errors (transient/permanent/blocker), retry transient errors up to 3 times, escalate
+blockers with detailed report.
 
 ## Constraints
+
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
 
 ### Do NOT
 
@@ -250,6 +184,29 @@ Escalate to Chief Architect when:
 - Breaking changes required
 - Need new external dependencies
 - Architectural patterns need changes
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 

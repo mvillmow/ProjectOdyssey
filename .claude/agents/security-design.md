@@ -1,6 +1,7 @@
 ---
 name: security-design
-description: Design module-level security including threat modeling, security requirements, authentication, authorization, and vulnerability prevention
+description: Design module-level security including threat modeling, security requirements, authentication,
+authorization, and vulnerability prevention
 tools: Read,Write,Grep,Glob
 model: sonnet
 ---
@@ -42,71 +43,33 @@ Level 2 Module Design Agent responsible for designing security measures for modu
 - Plan security scanning
 - Define security best practices
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Memory Safety
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```mojo
-# Mojo provides memory safety through ownership
-fn process_data[size: Int](
-    owned data: Tensor[DType.float32, size]  # Ownership prevents use-after-free
-) -> Tensor[DType.float32, size]:
-    """Process data with memory safety guarantees."""
-    var result = data  # Ownership transferred
-    # Original 'data' no longer accessible - prevents double-free
-    return result
+### Before Starting Work
 
-# Use borrowed for read-only access
-fn validate_data[size: Int](
-    borrowed data: Tensor[DType.float32, size]  # Read-only, safe
-) raises -> Bool:
-    """Validate data without taking ownership."""
-    if data.size() == 0:
-        raise Error("Empty data not allowed")
-    return True
-```
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-### Input Validation
+### Documentation Rules
 
-```mojo
-fn load_model(path: String) raises -> Model:
-    """Load model with path validation."""
-    # Validate path to prevent directory traversal
-    if path.contains("..") or path.contains("~"):
-        raise SecurityError("Invalid path: directory traversal attempt")
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-    # Validate file extension
-    if not path.endswith(".mojo.model"):
-        raise SecurityError("Invalid model file extension")
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
-    # Validate file exists and is readable
-    if not file_exists(path):
-        raise FileNotFoundError(path)
+## Language Guidelines
 
-    # Load with size limits to prevent DoS
-    let max_size = 1_000_000_000  # 1GB max
-    if file_size(path) > max_size:
-        raise SecurityError("Model file too large")
-
-    return Model.load(path)
-```
-
-### Secure Data Handling
-
-```mojo
-struct SecureData[dtype: DType, size: Int]:
-    """Secure data container with automatic zeroing."""
-    var _data: DTypePointer[dtype]
-
-    fn __init__(inout self):
-        self._data = DTypePointer[dtype].alloc(size)
-
-    fn __del__(owned self):
-        """Zero memory before deallocation."""
-        for i in range(size):
-            self._data[i] = 0  # Zero sensitive data
-        self._data.free()
-```
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Workflow
 
@@ -150,52 +113,13 @@ struct SecureData[dtype: DType, size: Int]:
 - [Architecture Design](./architecture-design.md) - security requirements in design
 - [Integration Design](./integration-design.md) - API security
 
-## Skip-Level Delegation
+### Skip-Level Guidelines
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../delegation-rules.md#skip-level-delegation).
 
-### When to Skip Levels
-
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
-- Chief Architect/Orchestrator → Implementation Specialist (skip design)
-- Specialist → Implementation Engineer (skip senior review)
-
-**Boilerplate & Templates**:
-
-- Any level → Junior Engineer directly (skip all intermediate levels)
-- Use for: code generation, formatting, simple documentation
-
-**Well-Scoped Tasks** (clear requirements, no architectural impact):
-
-- Orchestrator → Component Specialist (skip module design)
-- Design Agent → Implementation Engineer (skip specialist breakdown)
-
-**Established Patterns** (following existing architecture):
-
-- Skip Architecture Design if pattern already documented
-- Skip Security Design if following standard secure coding practices
-
-**Trivial Changes** (< 20 lines, formatting, typos):
-
-- Any level → Appropriate engineer directly
-
-### When NOT to Skip
-
-**Never skip levels for**:
-
-- New architectural patterns or significant design changes
-- Cross-module integration work
-- Security-sensitive code
-- Performance-critical optimizations
-- Public API changes
-
-### Efficiency Guidelines
-
-1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly
+trivial fixes (` 20 lines, no design decisions).
 
 ## Workflow Phase
 
@@ -257,6 +181,21 @@ Escalate errors when:
 
 ## Constraints
 
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
+
 ### Do NOT
 
 - Skip threat modeling
@@ -286,6 +225,29 @@ Escalate to Section Orchestrator when:
 - Need security expertise beyond scope
 - Regulatory compliance issues arise
 - Third-party dependencies have vulnerabilities
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 

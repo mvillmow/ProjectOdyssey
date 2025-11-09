@@ -706,6 +706,161 @@ Escalate when:
 
 ---
 
+## Error Handling & Recovery
+
+This section defines how orchestrators and all agents handle errors, blockers, and failures. All orchestrators
+should reference this section rather than duplicating content.
+
+### Error Categories
+
+**Transient Errors** (retry-able):
+
+- GitHub API rate limits
+- Network timeouts
+- File locks
+- Temporary resource unavailability
+
+**Permanent Errors** (escalate):
+
+- Missing dependencies
+- Invalid specifications
+- Conflicting requirements
+- Design flaws
+
+**Agent Errors** (recover or escalate):
+
+- Delegated agent fails to complete task
+- Delegated agent reports blocker
+- Specification ambiguity
+- Resource conflicts between agents
+
+### Error Handling Protocol
+
+#### Step 1: Detect
+
+- Monitor task completion status
+- Check for error messages in agent outputs
+- Validate deliverables exist and are correct
+- Track timeouts and delays
+
+#### Step 2: Classify
+
+- **Transient**: Can retry automatically
+- **Recoverable**: Need adjustment, not escalation
+- **Blocker**: Must escalate to superior
+
+#### Step 3: Respond
+
+**For Transient Errors**:
+
+1. Wait with exponential backoff
+2. Retry up to 3 times
+3. If still failing, reclassify as blocker
+
+**For Recoverable Errors**:
+
+1. Clarify specification
+2. Provide additional context
+3. Re-delegate with improved instructions
+4. Document lesson learned in `/notes/issues/<issue-number>/README.md`
+
+**For Blockers**:
+
+1. Document what's blocked and impact
+2. Document what you've tried
+3. Escalate to immediate superior with clear report
+4. Continue with non-blocked tasks if possible
+
+### Escalation Report Format
+
+```markdown
+## Escalation Report
+
+**From**: [Your Agent Name/Level]
+**To**: [Superior Agent Name/Level]
+**Date**: [YYYY-MM-DD]
+**Issue**: [Brief summary]
+
+### What's Blocked
+
+- [Specific task or deliverable]
+
+### Root Cause
+
+- [What caused the blocker]
+
+### What I've Tried
+
+1. [Attempt 1] - [Result]
+2. [Attempt 2] - [Result]
+3. [Attempt 3] - [Result]
+
+### Impact
+
+- Timeline: [X days delayed]
+- Dependencies: [What other tasks are blocked]
+- Scope: [Can we proceed with other work?]
+
+### Recommended Action
+
+- [Your suggestion for resolution]
+```
+
+### Recovery Strategies
+
+#### Strategy 1: Specification Refinement
+
+- Agent reports ambiguity in task specification
+- Orchestrator clarifies and provides more detail
+- Agent proceeds with refined spec
+
+#### Strategy 2: Resource Reallocation
+
+- Agent reports resource conflict (file, API, etc.)
+- Orchestrator coordinates timing with other agents
+- Work proceeds in sequence instead of parallel
+
+#### Strategy 3: Scope Reduction
+
+- Task proves too complex for current approach
+- Orchestrator breaks into smaller subtasks
+- Delegates simpler pieces to agents
+
+#### Strategy 4: Agent Substitution
+
+- Delegated agent lacks capability
+- Orchestrator identifies appropriate specialist
+- Re-delegates to agent with right expertise
+
+#### Strategy 5: Escalation for Authority
+
+- Decision requires higher-level authority
+- Document options and trade-offs
+- Escalate with recommendation
+- Superior makes decision, orchestrator implements
+
+### Continuous Improvement
+
+After resolving errors:
+
+1. **Document** the error and resolution in `/notes/issues/<issue-number>/README.md`
+2. **Update** specifications to prevent recurrence
+3. **Share** lessons with peer agents (if applicable)
+4. **Improve** delegation instructions for future tasks
+
+### GitHub Issue Requirement
+
+**All work requires a GitHub issue**. If an error occurs and no issue exists:
+
+1. **STOP** work immediately
+2. **Create issue** using `gh issue create` or escalate to have issue created
+3. **Document** error in `/notes/issues/<issue-number>/README.md`
+4. **Resume** work after issue is created
+
+No outputs should be created outside `/notes/issues/<issue-number>/` directory.
+
+---
+
 ## References
 
 - [Agent Hierarchy](./agent-hierarchy.md)

@@ -51,44 +51,33 @@ Level 1 Section Orchestrator responsible for coordinating the foundational setup
 - Test development environment setup
 - Document setup procedures
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Project Configuration
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```toml
-# mojoproject.toml
-[project]
-name = "ml-odyssey"
-version = "0.1.0"
+### Before Starting Work
 
-[build]
-output-dir = "build"
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-[dependencies]
-# Mojo stdlib and packages
-```text
+### Documentation Rules
 
-### Directory Structure
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-```text
-ml-odyssey/
-├── src/
-│   ├── ml_odyssey/          # Python package
-│   └── mojo/                # Mojo modules
-├── tests/
-│   ├── python/
-│   └── mojo/
-├── docs/
-├── scripts/
-└── config/
-```text
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
-### Build System
+## Language Guidelines
 
-- Use Mojo's build system for .mojo files
-- Use setuptools/poetry for Python package
-- Coordinate both build systems
-- Ensure clean separation
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Workflow
 
@@ -136,49 +125,13 @@ ml-odyssey/
 - [CI/CD Orchestrator](./cicd-orchestrator.md) - depends on foundation
 - [Agentic Workflows Orchestrator](./agentic-workflows-orchestrator.md) - depends on foundation
 
-## Skip-Level Delegation
+### Skip-Level Guidelines
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
-### When to Skip Levels
+For standard delegation patterns, escalation rules, and skip-level guidelines, see
+[delegation-rules.md](../delegation-rules.md#skip-level-delegation).
 
-**Simple Bug Fixes** (< 50 lines, well-defined)
-- Chief Architect/Orchestrator → Implementation Specialist (skip design)
-- Specialist → Implementation Engineer (skip senior review)
-
-### Boilerplate & Templates
-
-- Any level → Junior Engineer directly (skip all intermediate levels)
-- Use for: code generation, formatting, simple documentation
-
-**Well-Scoped Tasks** (clear requirements, no architectural impact):
-
-- Orchestrator → Component Specialist (skip module design)
-- Design Agent → Implementation Engineer (skip specialist breakdown)
-
-**Established Patterns** (following existing architecture):
-
-- Skip Architecture Design if pattern already documented
-- Skip Security Design if following standard secure coding practices
-
-**Trivial Changes** (< 20 lines, formatting, typos):
-
-- Any level → Appropriate engineer directly
-
-### When NOT to Skip
-
-**Never skip levels for**
-- New architectural patterns or significant design changes
-- Cross-module integration work
-- Security-sensitive code
-- Performance-critical optimizations
-- Public API changes
-
-### Efficiency Guidelines
-
-1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-1. **Document Skip Rationale**: When skipping, note why in delegation message
-1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly
+trivial fixes (` 20 lines, no design decisions).
 
 ## Workflow Phase
 
@@ -197,52 +150,30 @@ Primarily **Plan** phase, must complete before other sections start Implementati
 - [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Validate configurations
 - [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test setup procedures
 
-## Error Handling & Recovery
+## Error Handling
 
-### Retry Strategy
+For comprehensive error handling, recovery strategies, and escalation protocols, see
+[orchestration-patterns.md](../../notes/review/orchestration-patterns.md#error-handling--recovery).
 
-- **Max Attempts**: 3 retries for failed delegations
-- **Backoff**: Exponential backoff (1s, 2s, 4s between attempts)
-- **Scope**: Apply to agent delegation failures, not system errors
-
-### Timeout Handling
-
-- **Max Wait**: 5 minutes for delegated work to complete
-- **On Timeout**: Escalate to parent with context about what timed out
-- **Check Interval**: Poll for completion every 30 seconds
-
-### Conflict Resolution
-
-When receiving conflicting guidance from delegated agents
-1. Attempt to resolve conflicts based on specifications and priorities
-1. If unable to resolve: escalate to parent level with full context
-1. Document the conflict and resolution in status updates
-
-### Failure Modes
-
-- **Partial Failure**: Some delegated work succeeds, some fails
-  - Action: Complete successful parts, escalate failed parts
-- **Complete Failure**: All attempts at delegation fail
-  - Action: Escalate immediately to parent with failure details
-- **Blocking Failure**: Cannot proceed without resolution
-  - Action: Escalate immediately, do not retry
-
-### Loop Detection
-
-- **Pattern**: Same delegation attempted 3+ times with same result
-- **Action**: Break the loop, escalate with loop context
-- **Prevention**: Track delegation attempts per unique task
-
-### Error Escalation
-
-Escalate errors when
-- All retry attempts exhausted
-- Timeout exceeded
-- Unresolvable conflicts detected
-- Critical blocking issues found
-- Loop detected in delegation chain
+**Quick Summary**: Classify errors (transient/permanent/blocker), retry transient errors up to 3 times, escalate
+blockers with detailed report.
 
 ## Constraints
+
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
 
 ### Do NOT
 
@@ -265,15 +196,40 @@ Escalate errors when
 ## Escalation Triggers
 
 Escalate to Chief Architect when
+
 - Configuration conflicts cannot be resolved
 - Platform compatibility issues arise
 - Build system doesn't support requirements
 - Need to change repository structure
 - Third-party tool limitations discovered
 
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
+
 ## Success Criteria
 
 Foundation is successful when
+
 - All directories created and documented
 - All configurations working correctly
 - Development environment setup is automated
@@ -307,7 +263,9 @@ Foundation is successful when
 ## Status Reporting
 
 Report to Chief Architect weekly during foundation setup
+
 ```markdown
+
 ## Foundation Orchestrator Status Report
 
 **Date**: [YYYY-MM-DD]
@@ -315,25 +273,31 @@ Report to Chief Architect weekly during foundation setup
 **Progress**: [X]%
 
 ### Completed
+
 - [Configuration files created]
 - [Directories set up]
 - [Documentation written]
 
 ### In Progress
+
 - [Current task]
 
 ### Blockers
+
 - [None / Description]
 
 ### Next Steps
+
 - [Next tasks]
 
 ### Readiness for Other Sections
+
 - Shared Library: [Ready/Not Ready]
 - Tooling: [Ready/Not Ready]
 - Paper Implementation: [Ready/Not Ready]
 - CI/CD: [Ready/Not Ready]
 - Agentic Workflows: [Ready/Not Ready]
+
 ```text
 
 ## Notes

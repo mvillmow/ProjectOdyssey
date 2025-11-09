@@ -27,90 +27,33 @@ Level 4 Performance Engineer responsible for benchmarking, profiling, and optimi
 - Verify performance improvements
 - Report performance metrics
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Benchmark Implementation
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```mojo
-from benchmark import Benchmark
+### Before Starting Work
 
-fn benchmark_tensor_add():
-    """Benchmark tensor addition performance."""
-    alias size = 1_000_000
-    var a = Tensor[DType.float32, size]()
-    var b = Tensor[DType.float32, size]()
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-    # Initialize with random data
-    a.randn()
-    b.randn()
+### Documentation Rules
 
-    @parameter
-    fn bench_fn():
-        _ = add(a, b)
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-    var report = Benchmark().run[bench_fn]()
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
-    # Report metrics
-    let mean_ns = report.mean()
-    let throughput = Float64(size) / (mean_ns / 1e9)
+## Language Guidelines
 
-    print("Tensor add performance:")
-    print("  Mean time:", mean_ns, "ns")
-    print("  Throughput:", throughput, "elements/sec")
-    print("  Bandwidth:", throughput * 8 / 1e9, "GB/s")
-```
-
-### Profiling Code
-
-```mojo
-from profiling import Profile
-
-fn profile_matmul():
-    """Profile matrix multiplication to find hotspots."""
-    alias M = 1024
-    alias N = 1024
-    alias K = 1024
-
-    var a = Tensor[DType.float32, M, K]().randn()
-    var b = Tensor[DType.float32, K, N]().randn()
-
-    with Profile("matmul"):
-        var result = matmul(a, b)
-
-    # Profile report shows:
-    # - Time spent in each function
-    # - Cache miss rates
-    # - SIMD utilization
-    # - Memory bandwidth
-```
-
-### Performance Optimization
-
-```mojo
-# Before: Scalar implementation
-fn add_slow[size: Int](a: Tensor, b: Tensor) -> Tensor:
-    var result = Tensor[size]()
-    for i in range(size):
-        result[i] = a[i] + b[i]  # Scalar, slow
-    return result
-
-# After: SIMD implementation
-fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
-    var result = Tensor[size]()
-
-    @parameter
-    fn vectorized[simd_width: Int](idx: Int):
-        result.store[width=simd_width](
-            idx,
-            a.load[width=simd_width](idx) +
-            b.load[width=simd_width](idx)
-        )
-
-    vectorize[vectorized, simd_width=16](size)
-    return result
-
-# Benchmark shows 10-16x speedup with SIMD
-```
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Workflow
 
@@ -139,6 +82,21 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 
 ## Constraints
 
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
+
 ### Do NOT
 
 - Change function signatures without approval
@@ -162,7 +120,7 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 Matrix multiplication (1024x1024):
   Mean time: 500ms
   Throughput: 4.3 GFLOPS
-```
+```text
 
 **Profiling Results:**
 
@@ -184,7 +142,7 @@ Matrix multiplication (1024x1024):
   Mean time: 25ms
   Throughput: 86 GFLOPS
   Speedup: 20x
-```
+```text
 
 **Verification:**
 
@@ -199,17 +157,19 @@ fn verify_optimization():
 
     # Verify results match
     let max_diff = max_abs_difference(result_slow, result_fast)
-    assert_true(max_diff < 1e-5)  # Within numerical precision
+    assert_true(max_diff ` 1e-5)  # Within numerical precision
 
     print("Optimization verified: results match")
-```
+```text
 
 ## Performance Report Template
 
 ```markdown
+
 ## Performance Report: [Component]
 
 ### Benchmarks
+
 | Operation | Baseline | Optimized | Speedup |
 |-----------|----------|-----------|---------|
 | add       | 100 ns   | 10 ns     | 10x     |
@@ -217,25 +177,52 @@ fn verify_optimization():
 | matmul    | 500 ms   | 25 ms     | 20x     |
 
 ### Profiling Results
+
 - Hotspot: Inner loop (80% of time)
 - Cache misses: 45% → 5% (after tiling)
 - SIMD utilization: 0% → 95%
 
 ### Optimizations Applied
+
 1. SIMD vectorization (16-wide)
 2. Cache-friendly tiling
 3. Loop unrolling (factor 4)
 
 ### Verification
+
 - All tests passing
 - Results match reference implementation
 - Numerical precision: < 1e-5 difference
 
 ### Requirements Met
+
 ✅ Add throughput: 10 GFLOPS (required: 5)
 ✅ Matmul throughput: 86 GFLOPS (required: 50)
 ✅ Memory bandwidth: 80% of peak (required: 70%)
-```
+```text
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is
+linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 

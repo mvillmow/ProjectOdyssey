@@ -27,69 +27,40 @@ Level 4 Documentation Engineer responsible for writing and maintaining code docu
 - Update documentation as code changes
 - Ensure documentation accuracy
 
-## Mojo-Specific Guidelines
+## Documentation Location
 
-### Docstring Format
+**All outputs must go to `/notes/issues/`issue-number`/README.md`**
 
-```mojo
-fn matmul[dtype: DType, M: Int, N: Int, K: Int](
-    a: Tensor[dtype, M, K],
-    b: Tensor[dtype, K, N]
-) -> Tensor[dtype, M, N]:
-    """Multiply two matrices.
+### Before Starting Work
 
-    Computes the matrix product C = A @ B where:
-    - A has shape (M, K)
-    - B has shape (K, N)
-    - C has shape (M, N)
+1. **Verify GitHub issue number** is provided
+2. **Check if `/notes/issues/`issue-number`/` exists**
+3. **If directory doesn't exist**: Create it with README.md
+4. **If no issue number provided**: STOP and escalate - request issue creation first
 
-    Parameters:
-        dtype: Data type of the tensors
-        M: Number of rows in A and C
-        N: Number of columns in B and C
-        K: Number of columns in A and rows in B
+### Documentation Rules
 
-    Args:
-        a: Left matrix with shape (M, K)
-        b: Right matrix with shape (K, N)
+- ✅ Write ALL findings, decisions, and outputs to `/notes/issues/`issue-number`/README.md`
+- ✅ Link to comprehensive docs in `/notes/review/` and `/agents/` (don't duplicate)
+- ✅ Keep issue-specific content focused and concise
+- ❌ Do NOT write documentation outside `/notes/issues/`issue-number`/`
+- ❌ Do NOT duplicate comprehensive documentation from other locations
+- ❌ Do NOT start work without a GitHub issue number
 
-    Returns:
-        Result matrix with shape (M, N) containing A @ B
+See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
-    Examples:
-        ```mojo
+## Language Guidelines
 
-        # Multiply 3x4 matrix by 4x5 matrix
-        var a = Tensor[DType.float32, 3, 4]()
-        var b = Tensor[DType.float32, 4, 5]()
-        var c = matmul(a, b)  # Shape: (3, 5)
-
-```text
-
-    Performance:
-        - Uses cache-friendly tiling
-        - SIMD vectorization for inner loops
-        - Complexity: O(M * N * K)
-
-    See Also:
-        - `add()` - Element-wise addition
-        - `multiply()` - Element-wise multiplication
-
-    Notes:
-        - Matrix dimensions must be compatible (A.cols == B.rows)
-        - This is checked at compile time via parametrics
-    """
-```text
-
-### README Template
-
-```markdown
-# Module Name
+When working with Mojo code, follow patterns in
+[mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
+`owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
 
 ## Overview
+
 Brief description of what this module does.
 
 ## Installation
+
 ```bash
 
 # How to install or import
@@ -97,6 +68,7 @@ Brief description of what this module does.
 ```text
 
 ## Quick Start
+
 ```mojo
 
 # Simple example showing basic usage
@@ -110,16 +82,20 @@ var result = function(input)
 ## API Reference
 
 ### `function(arg1, arg2)`
+
 Brief description.
 
 **Parameters:**
+
 - `arg1` - Description
 - `arg2` - Description
 
 **Returns:**
+
 - Description of return value
 
 **Example:**
+
 ```mojo
 
 var result = function(value1, value2)
@@ -129,6 +105,7 @@ var result = function(value1, value2)
 ## Examples
 
 ### Example 1: Basic Usage
+
 ```mojo
 
 # Detailed example
@@ -136,6 +113,7 @@ var result = function(value1, value2)
 ```text
 
 ### Example 2: Advanced Usage
+
 ```mojo
 
 # More complex example
@@ -149,6 +127,7 @@ Performance characteristics and benchmarks.
 ## Contributing
 
 How to contribute to this module.
+
 ```text
 
 ## Workflow
@@ -178,18 +157,56 @@ How to contribute to this module.
 
 ## Constraints
 
+### Minimal Changes Principle
+
+**Make the SMALLEST change that solves the problem.**
+
+- ✅ Touch ONLY files directly related to the issue requirements
+- ✅ Make focused changes that directly address the issue
+- ✅ Prefer 10-line fixes over 100-line refactors
+- ✅ Keep scope strictly within issue requirements
+- ❌ Do NOT refactor unrelated code
+- ❌ Do NOT add features beyond issue requirements
+- ❌ Do NOT "improve" code outside the issue scope
+- ❌ Do NOT restructure unless explicitly required by the issue
+
+**Rule of Thumb**: If it's not mentioned in the issue, don't change it.
+
 ### Do NOT
+
 - Write or modify implementation code
 - Change API signatures
 - Make architectural decisions
 - Skip docstring requirements
 
 ### DO
+
 - Document all public APIs
 - Write clear, concise documentation
 - Include usage examples
 - Keep documentation synchronized with code
 - Ask for clarification when functionality is unclear
+
+## Pull Request Creation
+
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues, verification steps, and requirements.
+
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue `issue-number``, verify issue is linked.
+
+### Verification
+
+After creating PR:
+
+1. **Verify** the PR is linked to the issue (check issue page in GitHub)
+2. **Confirm** link appears in issue's "Development" section
+3. **If link missing**: Edit PR description to add "Closes #`issue-number`"
+
+### PR Requirements
+
+- ✅ PR must be linked to GitHub issue
+- ✅ PR title should be clear and descriptive
+- ✅ PR description should summarize changes
+- ❌ Do NOT create PR without linking to issue
 
 ## Success Criteria
 
