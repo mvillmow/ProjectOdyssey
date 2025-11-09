@@ -145,13 +145,13 @@ All agent files validated for
 
 ### Lessons Learned
 
-1. **Consistency is Key**: Maintaining consistent structure across all 23 agents makes the system easier to understand and maintain
+1. **Consistency is Key**: Consistent structure across all 23 agents improves maintainability
 
 1. **Mojo-Specific Examples**: Including concrete Mojo code examples in each agent helps guide implementation decisions
 
-1. **Clear Delegation**: Explicitly stating "Delegates To" and "Coordinates With" prevents confusion about responsibility boundaries
+1. **Clear Delegation**: Explicit delegation patterns prevent confusion about responsibilities
 
-1. **Level-Appropriate Complexity**: Ensured examples and responsibilities match the complexity level (simple for Level 5, strategic for Level 0)
+1. **Level-Appropriate Complexity**: Examples and responsibilities match each level's complexity
 
 1. **Description Matters**: The description field is critical for auto-invocation - made each one specific and action-oriented
 

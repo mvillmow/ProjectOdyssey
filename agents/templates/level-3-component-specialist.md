@@ -1,6 +1,7 @@
 # Level 3 Component Specialist - Template
 
-Use this template to create Component Specialist agents that handle implementation, testing, documentation, performance, or security at the component level.
+Use this template to create Component Specialist agents that handle implementation,
+testing, documentation, performance, or security at the component level.
 
 ---
 
