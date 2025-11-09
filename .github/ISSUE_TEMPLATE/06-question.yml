@@ -1,0 +1,79 @@
+name: ❓ Question / Support
+description: Ask a question about the project
+title: "[Question] "
+labels: ["question", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help!
+
+        **Note**: For longer discussions, consider using [GitHub Discussions](https://github.com/mvillmow/ml-odyssey/discussions).
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What area is your question about?
+      options:
+        - Getting Started / Setup
+        - Agent System Usage
+        - Paper Implementation
+        - Code Understanding
+        - Architecture / Design
+        - Best Practices
+        - Troubleshooting
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: How do I... / Why does... / What is...
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide context about what you're trying to accomplish
+      placeholder: |
+        I'm trying to...
+        I've looked at...
+        I expected... but...
+
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What I've Tried
+      description: What have you already tried or researched?
+      placeholder: |
+        - Read the documentation at...
+        - Tried approach X...
+        - Searched for...
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: System information, versions, configuration
+      placeholder: |
+        - OS: Ubuntu 22.04
+        - Mojo version: 24.5.0
+        - Component: Agent System
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: I have checked the documentation
+          required: true

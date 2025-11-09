@@ -1,0 +1,196 @@
+name: 📄 Paper Implementation Request
+description: Request reproduction of a research paper
+title: "[Paper] "
+labels: ["paper", "research", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Request implementation of a research paper! This will create a full paper reproduction workflow
+        following our 4-level hierarchical planning structure.
+
+  - type: input
+    id: paper-title
+    attributes:
+      label: Paper Title
+      description: Full title of the research paper
+      placeholder: "Example: Gradient-Based Learning Applied to Document Recognition"
+    validations:
+      required: true
+
+  - type: input
+    id: authors
+    attributes:
+      label: Authors
+      description: Paper authors
+      placeholder: "LeCun, Y., Bottou, L., Bengio, Y., Haffner, P."
+    validations:
+      required: true
+
+  - type: input
+    id: year
+    attributes:
+      label: Publication Year
+      description: Year the paper was published
+      placeholder: "1998"
+    validations:
+      required: true
+
+  - type: input
+    id: venue
+    attributes:
+      label: Venue
+      description: Conference/journal where published
+      placeholder: "Proceedings of the IEEE"
+
+  - type: input
+    id: paper-url
+    attributes:
+      label: Paper URL
+      description: Link to the paper (arXiv, IEEE, ACM, etc.)
+      placeholder: "https://ieeexplore.ieee.org/document/726791"
+    validations:
+      required: true
+
+  - type: textarea
+    id: abstract
+    attributes:
+      label: Abstract
+      description: Brief summary of the paper (copy from paper or write your own)
+      placeholder: This paper presents...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: What type of paper is this?
+      options:
+        - Computer Vision
+        - Natural Language Processing
+        - Reinforcement Learning
+        - Generative Models
+        - Optimization
+        - Architecture
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: key-contributions
+    attributes:
+      label: Key Contributions
+      description: What are the main contributions of this paper?
+      placeholder: |
+        - Novel architecture design...
+        - New training technique...
+        - Improved performance on...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Implementation Complexity
+      description: Estimated complexity of implementing this paper
+      options:
+        - Low (simple model, standard techniques)
+        - Medium (moderate complexity, some novel components)
+        - High (complex architecture, novel techniques)
+        - Very High (extremely complex, cutting-edge research)
+    validations:
+      required: true
+
+  - type: textarea
+    id: datasets
+    attributes:
+      label: Datasets Required
+      description: What datasets are needed to reproduce the results?
+      placeholder: |
+        - MNIST (handwritten digits)
+        - CIFAR-10 (image classification)
+        - Custom dataset from paper
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: What special dependencies or requirements are needed?
+      placeholder: |
+        - Large GPU memory (16GB+)
+        - Specific hardware (TPU, multi-GPU)
+        - External libraries
+        - Pretrained models
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why should we implement this paper?
+      placeholder: |
+        This paper is important because...
+        It would enable...
+        It's a foundational work in...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is implementing this paper?
+      options:
+        - Critical (foundational paper, high impact)
+        - High (important contribution, widely cited)
+        - Medium (interesting work, moderate impact)
+        - Low (nice to have, exploratory)
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-notes
+    attributes:
+      label: Reproduction Notes
+      description: Any notes about reproducing the paper (official code, known issues, etc.)
+      placeholder: |
+        - Official implementation available at...
+        - Known to be difficult because...
+        - Community reproductions at...
+
+  - type: checkboxes
+    id: resources
+    attributes:
+      label: Available Resources
+      options:
+        - label: Official code is available
+        - label: Pretrained models are available
+        - label: Datasets are publicly available
+        - label: Author provided implementation details
+        - label: Community reproductions exist
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to help implement this paper
+          required: false
+        - label: I have relevant expertise in this area
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have verified the paper URL is accessible
+          required: true
+        - label: I have provided all required information above
+          required: true

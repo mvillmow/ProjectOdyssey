@@ -1,0 +1,120 @@
+name: 📚 Documentation Improvement
+description: Suggest improvements to documentation
+title: "[Docs] "
+labels: ["documentation", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us improve our documentation! Clear, comprehensive docs are critical for the project.
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation needs improvement?
+      options:
+        - README / Getting Started
+        - API Documentation
+        - Agent System Documentation
+        - Tutorial / Guide
+        - Code Comments / Docstrings
+        - Architecture / Design Docs
+        - Contributing Guidelines
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Where is the documentation that needs improvement?
+      placeholder: |
+        File: /path/to/file.md
+        Section: "Getting Started"
+        Lines: 50-75
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What's unclear, incorrect, or missing?
+      placeholder: |
+        The current documentation...
+        This section is confusing because...
+        Missing information about...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvement
+    attributes:
+      label: Proposed Improvement
+      description: How should the documentation be improved?
+      placeholder: |
+        Add section explaining...
+        Clarify that...
+        Include example showing...
+    validations:
+      required: true
+
+  - type: textarea
+    id: audience
+    attributes:
+      label: Target Audience
+      description: Who would benefit from this improvement?
+      placeholder: |
+        - New contributors
+        - Paper implementers
+        - Agent system users
+        - All users
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this improvement?
+      options:
+        - Critical (blocks understanding/usage)
+        - High (significantly improves clarity)
+        - Medium (helpful enhancement)
+        - Low (minor improvement)
+    validations:
+      required: true
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or References
+      description: Provide examples of good documentation or specific content suggestions
+      placeholder: |
+        Good example from project X...
+        Could include code like:
+        ```python
+        # Example code
+        ```
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to write or update this documentation
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have checked existing documentation to avoid duplicates
+          required: true
+        - label: I have identified specific areas for improvement
+          required: true

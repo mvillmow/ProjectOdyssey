@@ -1,0 +1,134 @@
+name: 🔧 Infrastructure / Tooling
+description: Infrastructure, tooling, or developer experience improvements
+title: "[Infra] "
+labels: ["infrastructure", "tooling", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Suggest improvements to project infrastructure, tooling, or developer experience.
+
+  - type: dropdown
+    id: infra-type
+    attributes:
+      label: Infrastructure Type
+      description: What type of infrastructure/tooling?
+      options:
+        - CI/CD Pipeline
+        - Build System
+        - Testing Infrastructure
+        - Development Tools
+        - Automation Scripts
+        - Repository Structure
+        - Environment Setup
+        - Performance Tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this solve? What pain point does it address?
+      placeholder: |
+        Currently, developers need to...
+        The build process is slow because...
+        Testing is difficult because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you improve this?
+      placeholder: |
+        Add a new script that...
+        Update the CI pipeline to...
+        Implement automation for...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      description: Who would benefit from this improvement?
+      options:
+        - All developers
+        - Paper implementers
+        - CI/CD maintainers
+        - New contributors
+        - Specific team/component
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this improvement?
+      options:
+        - Critical (blocks development)
+        - High (significant productivity impact)
+        - Medium (helpful improvement)
+        - Low (nice to have)
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation
+    attributes:
+      label: Implementation Details
+      description: Technical details about the proposed implementation
+      placeholder: |
+        Tools/technologies needed:
+        - Tool A for...
+        - Library B for...
+
+        Key steps:
+        1. Configure...
+        2. Implement...
+        3. Test...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches were considered?
+      placeholder: |
+        Option A: ... (rejected because...)
+        Option B: ... (could work but...)
+
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and Considerations
+      description: What risks or trade-offs should be considered?
+      placeholder: |
+        - May increase build time
+        - Requires additional dependencies
+        - Breaking change for existing workflows
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to implement this
+          required: false
+        - label: I have experience with the required technologies
+          required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have searched existing issues to avoid duplicates
+          required: true
+        - label: I have considered impact on existing workflows
+          required: true

@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/mvillmow/ml-odyssey/blob/main/README.md
+    about: Read the project documentation and guides
+  - name: 💬 Discussions
+    url: https://github.com/mvillmow/ml-odyssey/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🤖 Agent System
+    url: https://github.com/mvillmow/ml-odyssey/blob/main/agents/README.md
+    about: Learn about the multi-level agent hierarchy
