@@ -1,0 +1,2 @@
+Hello from Mojo!
+This is a test file.
