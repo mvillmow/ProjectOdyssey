@@ -83,7 +83,33 @@ gh issue list
 # View issue details
 
 gh issue view <number>
+
+# Reply to PR review comments (addressing feedback)
+
+gh pr comment <pr-number> --body "Short, concise explanation of what was done"
 ```
+
+### Handling PR Review Comments
+
+When addressing review comments on a pull request:
+
+1. **Make the requested changes** in your code
+2. **Reply to EACH review comment** with a short, concise explanation of what was done
+3. **Use the format**: `gh pr comment <pr-number> --body "✅ Fixed - [brief description]"`
+
+**Example responses**:
+
+- `✅ Fixed - Removed unnecessary __init__.py file`
+- `✅ Fixed - Deleted script as it's no longer needed`
+- `✅ Fixed - Added README.md to papers/ directory`
+- `✅ Fixed - Refactored to use list comprehension`
+
+**Important**:
+
+- Keep responses SHORT and CONCISE (1 line preferred)
+- Start with ✅ to indicate the issue is resolved
+- Explain WHAT was done, not why (unless asked)
+- Reply to ALL open review comments
 
 ### Agent Testing
 
