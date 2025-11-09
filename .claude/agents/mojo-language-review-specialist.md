@@ -193,6 +193,7 @@ Focuses exclusively on Mojo language idioms, ownership semantics, compile-time f
 ### Example 1: Incorrect Ownership - Unnecessary Copy
 
 **Code**:
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Float32:
     """Compute sum of tensor elements."""
@@ -559,6 +560,7 @@ four lifecycle methods: __init__, __copyinit__, __moveinit__, __del__
 ### Example 6: Excellent Mojo Code (Positive Feedback)
 
 **Code**:
+
 ```mojo
 from sys.info import simdwidthof
 
@@ -607,7 +609,8 @@ struct Vector[dtype: DType]:
 ```
 
 **Review Feedback**:
-```
+
+```text
 ✅ EXCELLENT: Exemplary Mojo implementation
 
 **Strengths**:
@@ -640,6 +643,8 @@ struct Vector[dtype: DType]:
 **Minor Suggestions**:
 
 🟡 Consider adding error handling for size mismatch:
+```
+
 ```mojo
 fn add(self, borrowed other: Self) raises -> Self:
     if self.size != other.size:
@@ -647,13 +652,17 @@ fn add(self, borrowed other: Self) raises -> Self:
     # ...
 ```
 
+```text
 🟡 Add bounds checking in debug builds:
+```
+
 ```mojo
 @parameter
 if debug_mode:
     debug_assert(i < self.size, "Index out of bounds")
 ```
 
+```text
 **This code demonstrates Mojo best practices and should serve as
 a reference implementation for vector operations.**
 ```
@@ -661,6 +670,7 @@ a reference implementation for vector operations.**
 ## Common Issues to Flag
 
 ### Critical Issues
+
 - Incorrect ownership causing memory leaks or double-frees
 - Missing lifecycle methods for types managing resources
 - SIMD operations with incorrect logic or alignment
@@ -669,6 +679,7 @@ a reference implementation for vector operations.**
 - Parameter usage in runtime-only contexts
 
 ### Major Issues
+
 - Unnecessary owned parameters forcing copies
 - Missed SIMD vectorization opportunities
 - Incorrect inout usage (should be borrowed)
@@ -677,6 +688,7 @@ a reference implementation for vector operations.**
 - Trait implementation errors
 
 ### Minor Issues
+
 - Inconsistent ownership patterns
 - Suboptimal SIMD width choices
 - Overly conservative borrowed usage
@@ -689,18 +701,21 @@ a reference implementation for vector operations.**
 ### Ownership Rules
 
 **Use `owned`**:
+
 - Taking ownership of a value
 - Storing in a struct field
 - Consuming the parameter
 - Transferring ownership
 
 **Use `borrowed`**:
+
 - Read-only access (most common)
 - Temporary inspection
 - No ownership transfer
 - Zero-copy access
 
 **Use `inout`**:
+
 - Mutating the parameter
 - In-place modifications
 - Caller expects changes
@@ -709,6 +724,7 @@ a reference implementation for vector operations.**
 ### fn vs def Guidelines
 
 **Use `fn`**:
+
 - Production code
 - Performance-critical paths
 - Public APIs
@@ -716,6 +732,7 @@ a reference implementation for vector operations.**
 - When optimization matters
 
 **Use `def`**:
+
 - Prototyping and exploration
 - Python interoperability
 - Flexible/dynamic behavior
@@ -725,12 +742,14 @@ a reference implementation for vector operations.**
 ### SIMD Best Practices
 
 **When to use SIMD**:
+
 - Element-wise array operations
 - Data-parallel computations
 - Contiguous memory access
 - Performance-critical loops
 
 **SIMD considerations**:
+
 - Handle remainder elements
 - Ensure proper alignment
 - Use hardware-specific widths
@@ -740,12 +759,14 @@ a reference implementation for vector operations.**
 ### Compile-Time Features
 
 **Use `@parameter`**:
+
 - Compile-time constants
 - Loop unrolling hints
 - Generic type parameters
 - Configuration values
 
 **Parameter guidelines**:
+
 - Keep parameter count reasonable
 - Document parameter constraints
 - Use meaningful parameter names
@@ -754,12 +775,14 @@ a reference implementation for vector operations.**
 ### Value Type Design
 
 **Lifecycle methods**:
+
 - `__init__`: Always required
 - `__copyinit__`: For deep copy semantics
 - `__moveinit__`: For efficient moves
 - `__del__`: For resource cleanup
 
 **When to implement**:
+
 - Always: `__init__`
 - Heap memory: All four methods
 - Trivial types: Only `__init__`
@@ -820,4 +843,5 @@ a reference implementation for vector operations.**
 
 ---
 
-*Mojo Language Review Specialist ensures code leverages Mojo's unique features effectively: zero-cost abstractions, compile-time optimization, SIMD vectorization, and safe ownership semantics.*
+*Mojo Language Review Specialist ensures code leverages Mojo's unique features effectively: zero-cost abstractions,
+compile-time optimization, SIMD vectorization, and safe ownership semantics.*

@@ -240,11 +240,9 @@ fn matmul(a: Tensor, b: Tensor) -> Tensor:
 
 **Why This Matters**:
 
-
 - Users cannot use the API correctly without parameter documentation
 - Missing constraints lead to runtime errors
 - Examples accelerate developer onboarding
-```
 
 ### Example 2: Misleading Comment
 
@@ -317,7 +315,6 @@ def calculate_loss(predictions, targets):
     loss = F.mse_loss(predictions, targets)
     return loss
 ```
-```
 
 ### Example 3: Poor README Structure
 
@@ -329,9 +326,11 @@ def calculate_loss(predictions, targets):
 This is a machine learning project.
 
 ## Installation
+
 Run pip install.
 
 ## Usage
+
 Import and use.
 ```
 
@@ -339,8 +338,10 @@ Import and use.
 
 ```text
 🟠 MAJOR: README lacks essential information and structure
+```
 
 **Missing Components**:
+
 1. ❌ Project description (what does it do?)
 2. ❌ Key features
 3. ❌ Prerequisites
@@ -379,13 +380,13 @@ A Mojo-based AI research platform for reproducing classic machine learning resea
    cd ml-odyssey
    ```
 
-2. Install dependencies using Pixi:
+1. Install dependencies using Pixi:
 
    ```bash
    pixi install
    ```
 
-3. Verify installation:
+1. Verify installation:
 
    ```bash
    pixi run test
@@ -441,6 +442,7 @@ MIT License - see [LICENSE](./LICENSE) for details.
 ## Citation
 
 If you use this project in your research, please cite:
+
 ```bibtex
 @software{ml_odyssey,
   title={ML Odyssey: Reproducible Classic ML Papers},
@@ -449,10 +451,9 @@ If you use this project in your research, please cite:
   url={https://github.com/your-org/ml-odyssey}
 }
 ```
-```
 
+```text
 **Impact**: A comprehensive README significantly improves:
-
 
 - Project discoverability
 - Developer onboarding speed
@@ -602,6 +603,7 @@ fn train_model(model: Model, data: Tensor) -> Float32:
 ```
 
 **Better: Let Code Self-Document**:
+
 ```mojo
 fn train_epoch(model: Model, data: Tensor) -> Float32:
     """Train model for one epoch, returning average loss."""
@@ -622,16 +624,21 @@ fn train_batch(model: Model, batch: Batch) -> Float32:
 that explain non-obvious decisions, algorithms, or constraints.
 
 **Keep Comments That Explain**:
+
 - Why a particular algorithm was chosen
 - Performance trade-offs in implementation
 - References to papers or external resources
 - Workarounds for known issues
 - Constraints or assumptions
+
+```text
+End of Example 5
 ```
 
 ## Common Issues to Flag
 
 ### Critical Issues
+
 - Documentation contradicts implementation
 - Incomplete public API documentation
 - Broken code examples in documentation
@@ -640,6 +647,7 @@ that explain non-obvious decisions, algorithms, or constraints.
 - Dead/broken links to critical resources
 
 ### Major Issues
+
 - Missing docstrings for public functions/classes
 - Incomplete parameter/return documentation
 - No usage examples for complex APIs
@@ -648,6 +656,7 @@ that explain non-obvious decisions, algorithms, or constraints.
 - Poor README (missing installation/usage)
 
 ### Minor Issues
+
 - Markdown formatting errors
 - Inconsistent heading capitalization
 - Missing language tags on code blocks
@@ -658,6 +667,7 @@ that explain non-obvious decisions, algorithms, or constraints.
 ## Mojo-Specific Documentation Patterns
 
 ### Mojo Function Docstring Template
+
 ```mojo
 fn function_name[T: Type](
     param1: T,
@@ -692,6 +702,7 @@ fn function_name[T: Type](
 ```
 
 ### Mojo Struct Docstring Template
+
 ```mojo
 struct Tensor[dtype: DType]:
     """Multi-dimensional array with type-safe operations.
@@ -723,6 +734,7 @@ struct Tensor[dtype: DType]:
 ```
 
 ### Python Docstring Template (NumPy Style)
+
 ```python
 def process_data(data: np.ndarray, normalize: bool = True) -> np.ndarray:
     """Process and optionally normalize input data.
@@ -818,4 +830,5 @@ def process_data(data: np.ndarray, normalize: bool = True) -> np.ndarray:
 
 ---
 
-*Documentation Review Specialist ensures all documentation is clear, complete, accurate, and helpful while respecting specialist boundaries.*
+*Documentation Review Specialist ensures all documentation is clear, complete, accurate, and helpful while
+respecting specialist boundaries.*

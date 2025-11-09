@@ -70,20 +70,24 @@ User: "Use the architecture design agent to plan the auth module"
 ### Level 2: Module Design Agents & Orchestrators
 
 **Design Agents**:
+
 - Architecture, Integration, Security Design Agents
 - Design module structure and interfaces
 
 **Review Orchestrators**:
+
 - Code Review Orchestrator
 - Coordinates 13 specialized review agents
 
 ### Level 3: Component Specialists
 
 **Implementation Specialists**:
+
 - Implementation, Test, Documentation, Performance, Security Specialists
 - Handle specific component aspects
 
 **Code Review Specialists** (13 agents):
+
 - Implementation, Documentation, Test Review Specialists
 - Security, Safety Review Specialists
 - Mojo Language, Performance Review Specialists
@@ -189,12 +193,14 @@ Each GitHub issue gets its own worktree:
 A comprehensive code review system with 14 agents (1 orchestrator + 13 specialists) ensures thorough review across all dimensions:
 
 **Code Review Orchestrator** (Level 2):
+
 - Analyzes PRs and routes to appropriate specialists
 - Prevents overlap through dimension-based routing
 - Consolidates feedback from multiple specialists
 - Integrates with CI/CD pipeline
 
 **Review Specialists** (Level 3):
+
 - Implementation: Code correctness, logic, maintainability
 - Documentation: Markdown, comments, docstrings, API docs
 - Test: Test coverage, quality, assertions

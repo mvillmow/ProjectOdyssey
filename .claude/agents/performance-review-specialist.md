@@ -165,6 +165,7 @@ behavior, and I/O optimization. Focuses exclusively on performance characteristi
 ### Example 1: Algorithmic Complexity - O(n²) to O(n)
 
 **Code**:
+
 ```python
 def find_duplicates(items: List[str]) -> List[str]:
     """Find duplicate items in list."""
@@ -189,6 +190,7 @@ def find_duplicates(items: List[str]) -> List[str]:
 **Issue**: Quadratic growth makes this unusable for large inputs.
 
 **Optimal Solution - O(n)**:
+```
 
 ```python
 def find_duplicates(items: List[str]) -> List[str]:
@@ -208,6 +210,7 @@ def find_duplicates(items: List[str]) -> List[str]:
     return list(duplicates)
 ```
 
+```text
 **Performance Impact**:
 
 - n=1000: 1,000 vs 500,000 operations (~500x faster)
@@ -220,6 +223,7 @@ the massive speed improvement.
 ### Example 2: Memory Allocation - Unnecessary Copies
 
 **Code**:
+
 ```mojo
 fn normalize_batch(data: Tensor) -> Tensor:
     """Normalize batch to zero mean, unit variance."""
@@ -251,6 +255,7 @@ could be fused.
 - Can cause cache thrashing, page faults
 
 **Optimized Version**:
+```
 
 ```mojo
 fn normalize_batch(data: Tensor) -> Tensor:
@@ -271,6 +276,7 @@ fn normalize_batch(data: Tensor) -> Tensor:
     return result
 ```
 
+```text
 **Performance Impact**:
 
 - Memory usage: 3x → 2x (33% reduction)
@@ -284,6 +290,7 @@ Mojo Language Specialist.
 ### Example 3: Cache Inefficiency - Array-of-Structs vs Struct-of-Arrays
 
 **Code**:
+
 ```mojo
 struct Point:
     var x: Float32
@@ -308,6 +315,7 @@ fn sum_x_coordinates(points: List[Point]) -> Float32:
 when accessing single field.
 
 **Memory Layout Analysis**:
+```
 
 ```text
 AoS Layout (current):
@@ -321,7 +329,9 @@ Cache line (64 bytes) utilization:
 - For 1000 points: ~1000 cache line loads
 ```
 
+```text
 **Recommended - Struct-of-Arrays (SoA)**:
+```
 
 ```mojo
 struct PointCloud:
@@ -341,7 +351,9 @@ fn sum_x_coordinates(points: PointCloud) -> Float32:
     return total
 ```
 
+```text
 **Memory Layout**:
+```
 
 ```text
 SoA Layout (optimized):
@@ -354,6 +366,7 @@ Cache line utilization:
 - For 1000 points: ~63 cache line loads
 ```
 
+```text
 **Performance Impact**:
 
 - Cache misses: ~1000 → ~63 (16x reduction)
@@ -367,6 +380,7 @@ together frequently. Use AoS for general access, SoA for hot paths.
 ### Example 4: I/O Inefficiency - Redundant File Reads
 
 **Code**:
+
 ```python
 def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
     """Load specific samples from dataset file."""
@@ -400,6 +414,7 @@ def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
 4. Serializes I/O (can't batch operations)
 
 **Optimized Version - Single File Handle**:
+```
 
 ```python
 def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
@@ -416,7 +431,9 @@ def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
     return samples
 ```
 
+```text
 **Better - Batched I/O**:
+```
 
 ```python
 def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
@@ -436,7 +453,9 @@ def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
     return [index_map[idx] for idx in indices]
 ```
 
+```text
 **Best - Memory-Mapped I/O** (for large files):
+```
 
 ```python
 import mmap
@@ -453,6 +472,7 @@ def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
             return samples
 ```
 
+```text
 **Performance Comparison**:
 
 - Original: ~100 seconds (1000 opens)
@@ -466,6 +486,7 @@ def load_dataset(file_path: str, indices: List[int]) -> List[Sample]:
 ### Example 5: Good Performance Code (Positive Feedback)
 
 **Code**:
+
 ```mojo
 fn compute_moving_average(
     data: Tensor,
@@ -505,6 +526,8 @@ fn compute_moving_average(
 - Optimal: Cannot be improved asymptotically
 
 **Naive approach** (for comparison):
+```
+
 ```mojo
 # O(n × w) - recomputes sum for each window
 for i in range(n - window_size + 1):
@@ -514,7 +537,9 @@ for i in range(n - window_size + 1):
     result[i] = sum / window_size
 ```
 
+```text
 **Performance Advantage**:
+
 - Window size = 100, data size = 10,000:
   - Naive: 1,000,000 additions
   - Optimized: 10,000 additions
@@ -532,6 +557,7 @@ No optimization needed.
 ## Common Performance Issues to Flag
 
 ### Critical Issues (Major Performance Impact)
+
 - O(n²) or worse when O(n log n) or O(n) exists
 - Memory leaks in loops or long-running processes
 - File/network I/O in tight loops without batching
@@ -541,6 +567,7 @@ No optimization needed.
 - String concatenation in loops (should use StringBuilder)
 
 ### Major Issues (Noticeable Performance Impact)
+
 - Suboptimal algorithm choice (e.g., bubble sort instead of quicksort)
 - Array-of-Structs when Struct-of-Arrays is better
 - Allocation inside hot loops
@@ -550,6 +577,7 @@ No optimization needed.
 - No pre-allocation for known-size containers
 
 ### Minor Issues (Micro-optimizations)
+
 - Small allocations that could be stack-based
 - Function calls in tight loops (inlining candidates)
 - Unnecessary type conversions
@@ -559,6 +587,7 @@ No optimization needed.
 ## Performance Patterns Library
 
 ### Pattern 1: Memoization for Expensive Computations
+
 ```python
 # Before: O(2^n) - recomputes fibonacci values
 def fibonacci(n: int) -> int:
@@ -577,6 +606,7 @@ def fibonacci(n: int) -> int:
 ```
 
 ### Pattern 2: Pre-allocation for Known Sizes
+
 ```mojo
 # Before: Repeated reallocations as list grows
 fn build_range(n: Int) -> List[Int]:
@@ -594,6 +624,7 @@ fn build_range(n: Int) -> List[Int]:
 ```
 
 ### Pattern 3: Batch Processing for I/O
+
 ```python
 # Before: Individual writes
 for record in records:
@@ -616,6 +647,7 @@ if batch:
 ```
 
 ### Pattern 4: Loop Invariant Code Motion
+
 ```mojo
 # Before: Recomputes constant inside loop
 fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
@@ -637,6 +669,7 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
 ## Profiling Recommendations
 
 ### When to Recommend Profiling
+
 - Performance characteristics unclear from static analysis
 - Multiple optimization paths possible
 - Trade-offs between memory and speed
@@ -644,19 +677,23 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
 - Need to validate optimization impact
 
 ### Profiling Tools by Language
+
 **Python**:
+
 - `cProfile` - Function-level profiling
 - `line_profiler` - Line-by-line profiling
 - `memory_profiler` - Memory usage tracking
 - `py-spy` - Sampling profiler (production safe)
 
 **Mojo**:
+
 - Built-in benchmark utilities
 - System profilers (perf, Instruments)
 - Custom timing instrumentation
 
 ### Example Profiling Request
-```
+
+```text
 ⚠️ PROFILING RECOMMENDED
 
 **Unclear**: Whether sorting or processing dominates runtime.
@@ -667,6 +704,7 @@ fn scale_points(points: List[Point], factor: Float32) -> List[Point]:
 3. Cache miss rates
 
 **Suggested approach**:
+
 ```python
 import cProfile
 import pstats
@@ -681,7 +719,9 @@ stats.sort_stats('cumulative')
 stats.print_stats(20)
 ```
 
+```text
 **Decision criteria**:
+
 - If sort > 50% time: Optimize sorting algorithm
 - If processing > 50% time: Optimize per-item processing
 ```
@@ -738,4 +778,5 @@ stats.print_stats(20)
 
 ---
 
-*Performance Review Specialist ensures code runs efficiently with optimal algorithmic complexity, memory usage, and I/O patterns while respecting specialist boundaries.*
+*Performance Review Specialist ensures code runs efficiently with optimal algorithmic complexity, memory usage, and I/O
+patterns while respecting specialist boundaries.*

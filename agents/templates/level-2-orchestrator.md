@@ -1,6 +1,7 @@
 # Level 2 Orchestrator - Template
 
-Use this template to create Level 2 Orchestrator agents that coordinate multiple specialist agents to accomplish complex, multi-dimensional tasks.
+Use this template to create Level 2 Orchestrator agents that coordinate multiple specialist agents to accomplish
+complex, multi-dimensional tasks.
 
 ---
 
@@ -53,7 +54,8 @@ model: sonnet
 
 ### Role
 
-Level 2 orchestrator responsible for coordinating [PRIMARY-DOMAIN] across the ml-odyssey project. Analyzes [work items] and routes different aspects to specialized [type] agents, ensuring thorough coverage without overlap.
+Level 2 orchestrator responsible for coordinating [PRIMARY-DOMAIN] across the ml-odyssey project. Analyzes [work items]
+and routes different aspects to specialized [type] agents, ensuring thorough coverage without overlap.
 
 ### Scope
 
@@ -487,7 +489,8 @@ cp agents/templates/level-2-orchestrator.md .claude/agents/[your-orchestrator].m
 - Domain (3): Algorithm, Data Engineering, Architecture
 - Research (3): Paper, Research, Dependency
 
-**Key innovation**: Dimension-based routing prevents overlap by assigning each specialist a unique dimension (correctness, security, performance, etc.)
+**Key innovation**: Dimension-based routing prevents overlap by assigning each specialist a unique dimension
+(correctness, security, performance, etc.)
 
 ---
 

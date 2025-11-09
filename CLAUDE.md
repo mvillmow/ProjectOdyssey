@@ -437,6 +437,151 @@ def function_name(param: str) -> bool:
 - Comprehensive error handling
 - Logging for important operations
 
+## Markdown Standards
+
+All markdown files must follow these standards to pass `markdownlint-cli2` linting:
+
+### Code Blocks (MD031, MD040)
+
+**Rule**: Fenced code blocks must be:
+
+1. Surrounded by blank lines (before and after)
+2. Have a language specified
+
+**Correct**:
+
+```markdown
+
+Some text before.
+
+```python
+def hello():
+    print("world")
+```
+
+Some text after.
+
+```text
+
+**Incorrect**:
+
+```markdown
+Some text before.
+```text
+def hello():
+```text
+Some text after.
+```
+
+**Language Examples**:
+
+- Python: ` ```python `
+- Bash: ` ```bash `
+- Text/plain: ` ```text `
+- Mojo: ` ```mojo `
+- YAML: ` ```yaml `
+- JSON: ` ```json `
+- Markdown: ` ```markdown `
+
+### Lists (MD032)
+
+**Rule**: Lists must be surrounded by blank lines (before and after)
+
+**Correct**:
+
+```markdown
+Some text before.
+
+- Item 1
+- Item 2
+- Item 3
+
+Some text after.
+```
+
+**Incorrect**:
+
+```markdown
+Some text before.
+- Item 1
+- Item 2
+Some text after.
+```
+
+### Headings (MD022)
+
+**Rule**: Headings must be surrounded by blank lines (one blank line before and after)
+
+**Correct**:
+
+```markdown
+Some content here.
+
+## Section Heading
+
+More content here.
+```
+
+**Incorrect**:
+
+```markdown
+Some content here.
+## Section Heading
+More content here.
+```
+
+### Line Length (MD013)
+
+**Rule**: Lines should not exceed 120 characters (except for URLs or code blocks)
+
+**Guidelines**:
+
+- Break long lines at 120 characters
+- For long sentences, break at natural boundaries (clauses, lists, etc.)
+- Code in code blocks is exempt
+- URLs in links are exempt (use reference-style links if needed)
+
+**Example**:
+
+```markdown
+This is a very long sentence that exceeds the 120 character limit and should be broken into
+multiple lines at a natural boundary point for better readability.
+```
+
+### Best Practices
+
+1. **Always add blank lines around code blocks and lists** - This is the #1 cause of linting failures
+2. **Always specify language for code blocks** - Use appropriate language tags
+3. **Check headings have surrounding blank lines** - Especially after subheadings
+4. **Use reference-style links for long URLs** - Helps avoid line length issues
+
+### Quick Checklist for New Content
+
+Before committing markdown files:
+
+- [ ] All code blocks have a language specified (` ```python ` not ` ``` `)
+- [ ] All code blocks have blank lines before and after
+- [ ] All lists have blank lines before and after
+- [ ] All headings have blank lines before and after
+- [ ] No lines exceed 120 characters
+- [ ] File ends with newline (enforced by pre-commit)
+- [ ] No trailing whitespace (enforced by pre-commit)
+
+### Running Markdown Linting Locally
+
+```bash
+
+# Check specific file
+npx markdownlint-cli2 path/to/file.md
+
+# Check all markdown files
+pre-commit run markdownlint-cli2 --all-files
+
+# View detailed errors
+npx markdownlint-cli2 path/to/file.md 2>&1
+
+```
+
 ## Debugging
 
 ### Check Logs

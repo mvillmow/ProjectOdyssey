@@ -212,7 +212,8 @@ fn softmax(logits: Tensor) -> Tensor:
 
 **Reference**: Goodfellow et al., Deep Learning (2016), Section 4.1
 **Priority**: Fix before merging - this will cause NaN propagation in training
-```
+
+```text
 
 ### Example 2: Incorrect Gradient - Cross Entropy Loss
 
@@ -283,7 +284,8 @@ def cross_entropy_loss(predictions: Tensor, targets: Tensor) -> float:
 
 **Reference**: Bishop, Pattern Recognition and Machine Learning (2006), Eq. 4.90
 **Testing**: Add unit test with known input/output to verify formula
-```
+
+```text
 
 ### Example 3: Incorrect LeNet-5 Architecture
 
@@ -379,7 +381,8 @@ If you intentionally want to use ReLU as a modern improvement:
 - Your code should either use these exact values or document simplification to tanh(a)
 
 **Priority**: This is a critical deviation from the paper specification.
-```
+
+```text
 
 ### Example 4: Gradient Vanishing Risk - Deep Sigmoid Network
 
@@ -478,7 +481,7 @@ For ML Odyssey reproducing classic papers:
 - He et al., "Deep Residual Learning for Image Recognition" (2015) - residual
   connections solution
 
-```
+```text
 
 ### Example 5: Incorrect Batch Normalization
 
@@ -513,6 +516,7 @@ Network Training by Reducing Internal Covariate Shift" (2015), Algorithm 1
 where ε is a small constant (typically 1e-5) for numerical stability.
 
 **Problem Scenario**:
+
 ```python
 # If all batch values are identical (e.g., dead ReLUs):
 x = [1.0, 1.0, 1.0, 1.0]
@@ -522,6 +526,7 @@ sqrt(variance) = 0.0  # ← Division by zero!
 ```
 
 **Correct Implementation**:
+
 ```mojo
 fn batch_norm_forward(
     x: Tensor,
@@ -562,6 +567,7 @@ Missing epsilon causes incorrect/unstable gradients.
 
 **Testing**:
 Add unit test with zero-variance batch:
+
 ```python
 def test_batch_norm_zero_variance():
     x = Tensor([1.0, 1.0, 1.0, 1.0])
@@ -574,7 +580,8 @@ def test_batch_norm_zero_variance():
     assert not result.isnan().any()
     assert not result.isinf().any()
 ```
-```
+
+```text
 
 ### Example 6: Correct Implementation (Positive Feedback)
 
@@ -615,7 +622,8 @@ fn kaiming_init(tensor: Tensor, mode: String = "fan_in") -> Tensor:
 ```
 
 **Review Feedback**:
-```
+
+```text
 ✅ EXCELLENT: Correct Kaiming initialization implementation
 
 **Strengths**:
@@ -644,12 +652,14 @@ For other activations, use appropriate initialization:
 
 **This is exemplary code that demonstrates mathematical correctness
 and proper paper implementation.**
-```
+
+```text
 
 ## ML-Specific Checks
 
 ### Initialization Schemes
-```
+
+```text
 - Xavier/Glorot (tanh/sigmoid): W ~ N(0, √(1/n_in))
 - He/Kaiming (ReLU): W ~ N(0, √(2/n_in))
 - LeCun (SELU): W ~ N(0, √(1/n_in))
@@ -657,7 +667,8 @@ and proper paper implementation.**
 ```
 
 ### Common Loss Functions
-```
+
+```text
 - Cross-Entropy: -Σ y_i log(ŷ_i)
 - MSE: (1/N) Σ (y_i - ŷ_i)²
 - MAE: (1/N) Σ |y_i - ŷ_i|
@@ -665,7 +676,8 @@ and proper paper implementation.**
 ```
 
 ### Activation Function Properties
-```
+
+```text
 Sigmoid:
   - Formula: σ(x) = 1/(1 + e^(-x))
   - Derivative: σ'(x) = σ(x)(1 - σ(x))
@@ -692,7 +704,8 @@ Leaky ReLU:
 ```
 
 ### Numerical Stability Patterns
-```
+
+```text
 Log-Sum-Exp Trick (softmax):
   log(Σ exp(x_i)) = m + log(Σ exp(x_i - m))
   where m = max(x_i)
@@ -709,6 +722,7 @@ Epsilon in Normalization:
 ## Common Algorithm Issues to Flag
 
 ### Critical Issues
+
 - Loss function formula incorrect (wrong sign, missing terms)
 - Gradients computed incorrectly (chain rule errors)
 - Architecture does not match paper specification
@@ -717,6 +731,7 @@ Epsilon in Normalization:
 - Incorrect initialization scheme for activation type
 
 ### Major Issues
+
 - Missing numerical stability measures (no epsilon, no clipping)
 - Gradient scaling incorrect (wrong batch size normalization)
 - Dimensions inconsistent with paper specification
@@ -724,6 +739,7 @@ Epsilon in Normalization:
 - Reduction operations (mean vs sum) incorrect
 
 ### Minor Issues
+
 - Hyperparameters differ from paper defaults (but still reasonable)
 - Initialization scheme suboptimal but not incorrect
 - Comments don't reference paper equations
@@ -781,4 +797,5 @@ Epsilon in Normalization:
 
 ---
 
-*Algorithm Review Specialist ensures ML implementations are mathematically correct, numerically stable, and faithful to original research papers.*
+*Algorithm Review Specialist ensures ML implementations are mathematically correct, numerically stable, and faithful to
+original research papers.*

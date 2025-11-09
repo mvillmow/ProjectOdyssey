@@ -200,7 +200,7 @@ fn process_batch(data: Tensor, batch_size: Int) -> List[Tensor]:
     return batches
 ```
 
-```
+```text
 
 ### Example 2: Poor Error Handling
 
@@ -263,7 +263,7 @@ def load_model(path: str):
 **Note**: Consider using safer serialization format than pickle.
 Refer to Security Review Specialist for security implications.
 
-```
+```text
 
 ### Example 3: Code Duplication
 
@@ -455,4 +455,5 @@ No changes needed.
 
 ---
 
-*Implementation Review Specialist ensures code is correct, maintainable, and follows software engineering best practices while respecting specialist boundaries.*
+*Implementation Review Specialist ensures code is correct, maintainable, and follows software engineering best
+practices while respecting specialist boundaries.*
