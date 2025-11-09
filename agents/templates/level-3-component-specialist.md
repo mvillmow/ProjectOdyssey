@@ -45,20 +45,20 @@ Level 3 Component Specialist responsible for [specialist area] at component leve
 
 [Example code showing pattern]
 
-```
+```text
 
 ### [Another Pattern]
 ```[language]
 
 [Example]
 
-```
+```text
 
 ## Workflow
 
 ### Phase 1: [Phase Name]
 1. [Step 1]
-2. [Step 2]
+1. [Step 2]
 
 ### Phase 2-4: [Continue phases]
 
@@ -95,7 +95,7 @@ Level 3 Component Specialist responsible for [specialist area] at component leve
 - [Do 2]
 
 ## Escalation Triggers
-Escalate to [Design Agent] when:
+Escalate to [Design Agent] when
 - [Trigger 1]
 - [Trigger 2]
 
@@ -106,27 +106,27 @@ Escalate to [Design Agent] when:
 ---
 
 **Configuration File**: `.claude/agents/[specialist-type]-specialist.md`
-```
+```text
 
 ## Customization Instructions
 
-1. **Select Specialist Type**:
+1. **Select Specialist Type**
    - Implementation Specialist (code breakdown, planning)
    - Test Specialist (test planning, coverage)
    - Documentation Specialist (docs, examples, tutorials)
    - Performance Specialist (benchmarks, optimization)
    - Security Specialist (security implementation, testing)
 
-2. **Define Component Scope**:
+1. **Define Component Scope**:
    - What aspect of components this specialist handles
    - How it coordinates with other specialists
 
-3. **Add Specialist Patterns**:
+1. **Add Specialist Patterns**:
    - Type-specific Mojo patterns
    - Best practices for this specialty
    - Common workflows
 
-4. **Specify Outputs**:
+1. **Specify Outputs**:
    - What artifacts this specialist produces
    - Quality criteria for outputs
 

@@ -60,7 +60,7 @@ fn matmul[dtype: DType, M: Int, N: Int, K: Int](
         var b = Tensor[DType.float32, 4, 5]()
         var c = matmul(a, b)  # 3x5 matrix
 
-```
+```text
 
     Performance:
         - Uses cache-friendly tiling
@@ -71,7 +71,7 @@ fn matmul[dtype: DType, M: Int, N: Int, K: Int](
         - add() - Element-wise addition
         - multiply() - Element-wise multiplication
     """
-```
+```text
 
 ### README Structure
 
@@ -93,7 +93,7 @@ How to use this component in the project.
 
 # Simple example
 
-```
+```text
 
 ## API Reference
 Link to detailed API docs.
@@ -106,17 +106,17 @@ Performance characteristics and benchmarks.
 
 ## Contributing
 How to contribute to this component.
-```
+```text
 
 ## Workflow
 
 1. Receive component spec and implemented code
-2. Analyze component functionality
-3. Create documentation structure
-4. Write API reference
-5. Create usage examples
-6. Delegate detailed docs to Documentation Engineers
-7. Review and publish
+1. Analyze component functionality
+1. Create documentation structure
+1. Write API reference
+1. Create usage examples
+1. Delegate detailed docs to Documentation Engineers
+1. Review and publish
 
 ## Delegation
 
@@ -132,16 +132,14 @@ How to contribute to this component.
 
 ## Skip-Level Delegation
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
-
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
 ### When to Skip Levels
 
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
+**Simple Bug Fixes** (< 50 lines, well-defined)
 - Chief Architect/Orchestrator → Implementation Specialist (skip design)
 - Specialist → Implementation Engineer (skip senior review)
 
-**Boilerplate & Templates**:
+### Boilerplate & Templates
 
 - Any level → Junior Engineer directly (skip all intermediate levels)
 - Use for: code generation, formatting, simple documentation
@@ -162,8 +160,7 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### When NOT to Skip
 
-**Never skip levels for**:
-
+**Never skip levels for**
 - New architectural patterns or significant design changes
 - Cross-module integration work
 - Security-sensitive code
@@ -173,9 +170,9 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 ### Efficiency Guidelines
 
 1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+1. **Document Skip Rationale**: When skipping, note why in delegation message
+1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
 
 ## Workflow Phase
 

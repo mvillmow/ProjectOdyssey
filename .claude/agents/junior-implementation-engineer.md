@@ -96,7 +96,7 @@ Level 5 is the lowest level - no delegation to other agents.
 
 ## Workflow Phase
 
-**Implementation**
+Implementation
 
 ## Skills to Use
 

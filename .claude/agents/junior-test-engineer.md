@@ -93,7 +93,7 @@ Level 5 is the lowest level - no delegation.
 
 ## Workflow Phase
 
-**Test**
+Test
 
 ## Skills to Use
 

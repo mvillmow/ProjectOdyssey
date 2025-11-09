@@ -109,7 +109,7 @@ struct LinearLayer:
 
 ## Workflow Phase
 
-**Implementation**
+Implementation
 
 ## Skills to Use
 

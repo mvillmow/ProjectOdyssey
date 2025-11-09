@@ -46,7 +46,7 @@ Level 2 Module Design Agent responsible for breaking down modules into component
 
 ### Component Separation
 
-```
+```text
 Module: core_ops
 ├── tensor_ops.mojo      # Pure Mojo for performance
 │   ├── struct Tensor
@@ -56,26 +56,26 @@ Module: core_ops
 ├── tensor_ops_api.py    # Python wrapper for convenience
 │   └── class TensorOps (wraps Mojo functions)
 └── __init__.py          # Public API
-```
+```text
 
 ### Interface Definition Pattern
 
 ```mojo
 # Define trait for common interface
-trait TensorOperation:
+trait TensorOperation
     fn apply[dtype: DType](
         inout self,
         tensor: Tensor[dtype]
     ) -> Tensor[dtype]
 
 # Components implement trait
-struct Addition(TensorOperation):
+struct Addition(TensorOperation)
     fn apply[dtype: DType](
         inout self,
         tensor: Tensor[dtype]
     ) -> Tensor[dtype]:
         # Implementation
-```
+```text
 
 ### Data Flow Design
 
@@ -91,37 +91,37 @@ Loss calculation (Mojo)
     ↓ gradients
 Optimizer.step (Mojo)
     ↓ updated parameters
-```
+```text
 
 ## Workflow
 
 ### 1. Receive Module Requirements
 
 1. Parse module requirements from Section Orchestrator
-2. Identify components needed and their scope
-3. Check for performance and interface requirements
-4. Validate requirements are achievable
+1. Identify components needed and their scope
+1. Check for performance and interface requirements
+1. Validate requirements are achievable
 
 ### 2. Design Architecture
 
 1. Break module into logical components
-2. Define component responsibilities and interfaces
-3. Design data flow between components
-4. Create architecture diagrams and specifications
+1. Define component responsibilities and interfaces
+1. Design data flow between components
+1. Create architecture diagrams and specifications
 
 ### 3. Produce Specifications
 
 1. Write detailed component specifications
-2. Document design decisions and rationale
-3. Define error handling and edge cases
-4. Ensure specifications are implementable
+1. Document design decisions and rationale
+1. Define error handling and edge cases
+1. Ensure specifications are implementable
 
 ### 4. Delegate and Monitor
 
 1. Delegate component implementation to specialists
-2. Monitor progress and ensure design is followed
-3. Approve design changes if needed
-4. Validate final implementation matches design
+1. Monitor progress and ensure design is followed
+1. Approve design changes if needed
+1. Validate final implementation matches design
 
 ## Delegation
 
@@ -139,16 +139,14 @@ Optimizer.step (Mojo)
 
 ## Skip-Level Delegation
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
-
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
 ### When to Skip Levels
 
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
+**Simple Bug Fixes** (< 50 lines, well-defined)
 - Chief Architect/Orchestrator → Implementation Specialist (skip design)
 - Specialist → Implementation Engineer (skip senior review)
 
-**Boilerplate & Templates**:
+### Boilerplate & Templates
 
 - Any level → Junior Engineer directly (skip all intermediate levels)
 - Use for: code generation, formatting, simple documentation
@@ -169,8 +167,7 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### When NOT to Skip
 
-**Never skip levels for**:
-
+**Never skip levels for**
 - New architectural patterns or significant design changes
 - Cross-module integration work
 - Security-sensitive code
@@ -180,9 +177,9 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 ### Efficiency Guidelines
 
 1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+1. **Document Skip Rationale**: When skipping, note why in delegation message
+1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
 
 ## Workflow Phase
 
@@ -211,11 +208,10 @@ Primarily **Plan** phase, with oversight in Implementation
 
 ### Conflict Resolution
 
-When receiving conflicting guidance from delegated agents:
-
+When receiving conflicting guidance from delegated agents
 1. Attempt to resolve conflicts based on specifications and priorities
-2. If unable to resolve: escalate to parent level with full context
-3. Document the conflict and resolution in status updates
+1. If unable to resolve: escalate to parent level with full context
+1. Document the conflict and resolution in status updates
 
 ### Failure Modes
 
@@ -234,8 +230,7 @@ When receiving conflicting guidance from delegated agents:
 
 ### Error Escalation
 
-Escalate errors when:
-
+Escalate errors when
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected
@@ -264,8 +259,7 @@ Escalate errors when:
 
 ## Escalation Triggers
 
-Escalate to Section Orchestrator when:
-
+Escalate to Section Orchestrator when
 - Requirements are unclear or contradictory
 - Cross-module dependencies discovered
 - Performance requirements seem unachievable
@@ -298,12 +292,12 @@ Escalate to Section Orchestrator when:
 
 **Responsibility**: [What it does]
 
-**Interface**:
+### Interface
 ```mojo
 
 [Function signatures]
 
-```
+```text
 
 **Dependencies**: [What it depends on]
 
@@ -312,7 +306,7 @@ Escalate to Section Orchestrator when:
 **Error Handling**: [Strategy]
 
 **Testing**: [Key test scenarios]
-```
+```text
 
 ---
 

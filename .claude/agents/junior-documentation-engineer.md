@@ -50,14 +50,13 @@ fn function_name(arg1: Type1, arg2: Type2) -> ReturnType:
 
         [Simple usage example]
 
-```
+```text
     """
-```
+```text
 
 ### Fill In Template Example
 
-**Template**:
-
+**Template**
 ```mojo
 fn add(a: Tensor, b: Tensor) -> Tensor:
     """[DESCRIPTION].
@@ -69,9 +68,9 @@ fn add(a: Tensor, b: Tensor) -> Tensor:
     Returns:
         [RETURN_DESC]
     """
-```
+```text
 
-**Filled**:
+### Filled
 
 ```mojo
 fn add(a: Tensor, b: Tensor) -> Tensor:
@@ -84,16 +83,16 @@ fn add(a: Tensor, b: Tensor) -> Tensor:
     Returns:
         New tensor containing element-wise sum
     """
-```
+```text
 
 ## Workflow
 
 1. Receive documentation task
-2. Use provided templates
-3. Fill in details
-4. Format consistently
-5. Check for typos
-6. Submit for review
+1. Use provided templates
+1. Fill in details
+1. Format consistently
+1. Check for typos
+1. Submit for review
 
 ## No Delegation
 

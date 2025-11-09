@@ -221,7 +221,7 @@ Skip-level delegation guidance added to address performance concerns:
 
 ### Agent Configurations (23 files)
 
-```
+```text
 .claude/agents/
 ├── chief-architect.md (L0)
 ├── foundation-orchestrator.md (L1)
@@ -250,7 +250,7 @@ Skip-level delegation guidance added to address performance concerns:
 
 ### Templates (6 files)
 
-```
+```text
 agents/templates/
 ├── level-0-chief-architect.md
 ├── level-1-section-orchestrator.md
@@ -262,7 +262,7 @@ agents/templates/
 
 ### Skills Placeholders (25 files)
 
-```
+```text
 .claude/skills/
 ├── tier-1/ (4 skills)
 │   ├── analyze-code-structure/

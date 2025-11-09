@@ -60,7 +60,7 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
 
 ### Project Structure
 
-```
+```text
 02-shared-library/
   core_ops/         # Mojo performance kernels
   training/         # Mojo training loops
@@ -69,45 +69,45 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
   model/            # Mojo model implementation
   training/         # Mojo training scripts
   evaluation/       # Python evaluation and visualization
-```
+```text
 
 ## Workflow
 
 ### Phase 1: Strategic Analysis
 
 1. Review user requirements and project goals
-2. Analyze research papers for implementation
-3. Assess feasibility and resource requirements
-4. Create high-level implementation strategy
+1. Analyze research papers for implementation
+1. Assess feasibility and resource requirements
+1. Create high-level implementation strategy
 
 ### Phase 2: Architecture Definition
 
 1. Define system-wide architecture
-2. Establish section boundaries and responsibilities
-3. Design cross-section interfaces
-4. Create dependency graph
-5. Document in ADRs
+1. Establish section boundaries and responsibilities
+1. Design cross-section interfaces
+1. Create dependency graph
+1. Document in ADRs
 
 ### Phase 3: Delegation
 
 1. Break down strategy into section-level tasks
-2. Assign tasks to appropriate Section Orchestrators
-3. Provide clear specifications and success criteria
-4. Set timeline and milestones
+1. Assign tasks to appropriate Section Orchestrators
+1. Provide clear specifications and success criteria
+1. Set timeline and milestones
 
 ### Phase 4: Oversight
 
 1. Monitor progress from Section Orchestrators
-2. Review and approve major decisions
-3. Resolve cross-section conflicts
-4. Ensure consistency across sections
+1. Review and approve major decisions
+1. Resolve cross-section conflicts
+1. Ensure consistency across sections
 
 ### Phase 5: Review
 
 1. Review final deliverables
-2. Validate against requirements
-3. Approve for integration
-4. Document lessons learned
+1. Validate against requirements
+1. Approve for integration
+1. Document lessons learned
 
 ## Delegation
 
@@ -128,16 +128,14 @@ Level 0 Meta-Orchestrator responsible for strategic decisions across the entire 
 
 ## Skip-Level Delegation
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
-
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
 ### When to Skip Levels
 
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
+**Simple Bug Fixes** (< 50 lines, well-defined)
 - Chief Architect/Orchestrator → Implementation Specialist (skip design)
 - Specialist → Implementation Engineer (skip senior review)
 
-**Boilerplate & Templates**:
+### Boilerplate & Templates
 
 - Any level → Junior Engineer directly (skip all intermediate levels)
 - Use for: code generation, formatting, simple documentation
@@ -158,8 +156,7 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### When NOT to Skip
 
-**Never skip levels for**:
-
+**Never skip levels for**
 - New architectural patterns or significant design changes
 - Cross-module integration work
 - Security-sensitive code
@@ -169,9 +166,9 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 ### Efficiency Guidelines
 
 1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+1. **Document Skip Rationale**: When skipping, note why in delegation message
+1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
 
 ## Workflow Phase
 
@@ -207,11 +204,10 @@ Primarily **Plan** phase, with oversight in all phases.
 
 ### Conflict Resolution
 
-When receiving conflicting guidance from delegated agents:
-
+When receiving conflicting guidance from delegated agents
 1. Attempt to resolve conflicts based on specifications and priorities
-2. If unable to resolve: escalate to parent level with full context
-3. Document the conflict and resolution in status updates
+1. If unable to resolve: escalate to parent level with full context
+1. Document the conflict and resolution in status updates
 
 ### Failure Modes
 
@@ -230,8 +226,7 @@ When receiving conflicting guidance from delegated agents:
 
 ### Error Escalation
 
-Escalate errors when:
-
+Escalate errors when
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected
@@ -260,8 +255,7 @@ Escalate errors when:
 
 ## Escalation Triggers
 
-Chief Architect is the top of the hierarchy. Escalations to external stakeholders when:
-
+Chief Architect is the top of the hierarchy. Escalations to external stakeholders when
 - Strategic business decisions required
 - Resource constraints impact feasibility
 - External dependencies or partnerships needed
@@ -289,8 +283,7 @@ Chief Architect is the top of the hierarchy. Escalations to external stakeholder
 
 ## Status Reporting
 
-Report to stakeholders monthly:
-
+Report to stakeholders monthly
 ```markdown
 ## Chief Architect Status Report
 
@@ -322,12 +315,11 @@ Report to stakeholders monthly:
 ### Next Period
 - [Strategic initiatives]
 - [Expected decisions]
-```
+```text
 
 ## Success Criteria
 
-Success when:
-
+Success when
 - Clear architectural vision documented
 - All sections aligned with strategy
 - Cross-section interfaces well-defined
@@ -338,16 +330,14 @@ Success when:
 
 ## Documentation Guidelines
 
-### Create ADRs for:
-
+### Create ADRs for
 - Technology stack decisions
 - Architectural patterns
 - Cross-section interfaces
 - Major design choices
 - Standard changes
 
-### ADR Format:
-
+### ADR Format
 ```markdown
 # ADR-NNN: [Decision Title]
 
@@ -355,22 +345,21 @@ Success when:
 
 **Date**: YYYY-MM-DD
 
-**Context**:
+### Context
 [Why this decision is needed]
 
-**Decision**:
+### Decision
 [What we decided]
 
-**Consequences**:
+### Consequences
 [Impacts of this decision]
 
-**Alternatives Considered**:
+### Alternatives Considered
 1. [Alternative 1] - [Why not chosen]
-2. [Alternative 2] - [Why not chosen]
-```
+1. [Alternative 2] - [Why not chosen]
+```text
 
-### Store ADRs in:
-
+### Store ADRs in
 - `/notes/review/adr/` - Architectural Decision Records
 
 ## Tools and Resources

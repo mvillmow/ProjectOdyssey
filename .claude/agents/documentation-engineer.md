@@ -64,7 +64,7 @@ fn matmul[dtype: DType, M: Int, N: Int, K: Int](
         var b = Tensor[DType.float32, 4, 5]()
         var c = matmul(a, b)  # Shape: (3, 5)
 
-```
+```text
 
     Performance:
         - Uses cache-friendly tiling
@@ -79,7 +79,7 @@ fn matmul[dtype: DType, M: Int, N: Int, K: Int](
         - Matrix dimensions must be compatible (A.cols == B.rows)
         - This is checked at compile time via parametrics
     """
-```
+```text
 
 ### README Template
 
@@ -94,7 +94,7 @@ Brief description of what this module does.
 
 # How to install or import
 
-```
+```text
 
 ## Quick Start
 ```mojo
@@ -105,7 +105,7 @@ from ml_odyssey.module import function
 
 var result = function(input)
 
-```
+```text
 
 ## API Reference
 
@@ -124,7 +124,7 @@ Brief description.
 
 var result = function(value1, value2)
 
-```
+```text
 
 ## Examples
 
@@ -133,14 +133,14 @@ var result = function(value1, value2)
 
 # Detailed example
 
-```
+```text
 
 ### Example 2: Advanced Usage
 ```mojo
 
 # More complex example
 
-```
+```text
 
 ## Performance
 
@@ -149,17 +149,17 @@ Performance characteristics and benchmarks.
 ## Contributing
 
 How to contribute to this module.
-```
+```text
 
 ## Workflow
 
 1. Receive code from Implementation Engineer
-2. Analyze functionality
-3. Write docstrings
-4. Create examples
-5. Update README
-6. Review for accuracy
-7. Submit documentation
+1. Analyze functionality
+1. Write docstrings
+1. Create examples
+1. Update README
+1. Review for accuracy
+1. Submit documentation
 
 ## Coordinates With
 

@@ -4,7 +4,6 @@ Use this template to create Module Design agents that handle module-level archit
 
 ---
 
-
 ```markdown
 ---
 name: [design-area]-design
@@ -42,20 +41,20 @@ Level 2 Module Design Agent responsible for [design area description].
 
 ```mojo
 [Example showing pattern]
-```
+```text
 
 ## [Another Pattern Group]
 
 ```text
 [Example]
-```
+```text
 
 ## Workflow
 
 ### Phase 1: [Phase Name]
 
 1. [Step 1]
-2. [Step 2]
+1. [Step 2]
 
 ### Phase 2-4: [Continue phases]
 
@@ -97,7 +96,7 @@ Primarily **Plan** phase, [other phases as applicable]
 
 ## Escalation Triggers
 
-Escalate to Section Orchestrator when:
+Escalate to Section Orchestrator when
 - [Trigger 1]
 - [Trigger 2]
 
@@ -114,25 +113,25 @@ Escalate to Section Orchestrator when:
 ---
 
 **Configuration File**: `.claude/agents/[design-area]-design.md`
-```
+```text
 
 ## Customization Instructions
 
-1. **Select Design Area**:
+1. **Select Design Area**
    - Architecture Design (component breakdown, interfaces)
    - Integration Design (APIs, cross-component integration)
    - Security Design (threat modeling, security requirements)
 
-2. **Define Scope**:
+1. **Define Scope**:
    - Specify what module-level aspects this agent handles
    - Clarify boundaries with other design agents
 
-3. **Add Domain Patterns**:
+1. **Add Domain Patterns**:
    - Include Mojo-specific design patterns
    - Show interface design examples
    - Demonstrate data flow patterns
 
-4. **Specify Artifacts**:
+1. **Specify Artifacts**:
    - Component specifications
    - API definitions
    - Design diagrams

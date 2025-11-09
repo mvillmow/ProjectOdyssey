@@ -80,49 +80,49 @@ and accuracy.
 
 ```text
 1. Identify all documentation files (*.md, docstrings, comments)
-2. Categorize by type (API docs, guides, README, inline)
-3. Assess scope and depth required
-4. Determine audience level (user vs developer)
-```
+1. Categorize by type (API docs, guides, README, inline)
+1. Assess scope and depth required
+1. Determine audience level (user vs developer)
+```text
 
 ### Phase 2: Structural Review
 
 ```text
-5. Check markdown syntax and formatting
-6. Verify heading hierarchy is logical
-7. Validate code blocks have language tags
-8. Ensure tables and lists are properly formatted
-9. Check for broken links and references
-```
+1. Check markdown syntax and formatting
+1. Verify heading hierarchy is logical
+1. Validate code blocks have language tags
+1. Ensure tables and lists are properly formatted
+1. Check for broken links and references
+```text
 
 ### Phase 3: Content Review
 
 ```text
-10. Assess clarity and readability
-11. Verify completeness (all APIs documented)
-12. Check accuracy (docs match code)
-13. Validate examples are correct and helpful
-14. Ensure consistent terminology
-```
+1. Assess clarity and readability
+1. Verify completeness (all APIs documented)
+1. Check accuracy (docs match code)
+1. Validate examples are correct and helpful
+1. Ensure consistent terminology
+```text
 
 ### Phase 4: Specialized Documentation
 
 ```text
-15. Review docstrings for completeness
-16. Assess inline comments for value
-17. Check API documentation coverage
-18. Validate README files are comprehensive
-19. Ensure migration/upgrade guides exist where needed
-```
+1. Review docstrings for completeness
+1. Assess inline comments for value
+1. Check API documentation coverage
+1. Validate README files are comprehensive
+1. Ensure migration/upgrade guides exist where needed
+```text
 
 ### Phase 5: Feedback Generation
 
 ```text
-20. Categorize findings (critical, major, minor)
-21. Provide specific, actionable feedback
-22. Suggest improvements with examples
-23. Highlight exemplary documentation
-```
+1. Categorize findings (critical, major, minor)
+1. Provide specific, actionable feedback
+1. Suggest improvements with examples
+1. Highlight exemplary documentation
+```text
 
 ## Review Checklist
 
@@ -182,29 +182,29 @@ and accuracy.
 
 ### Example 1: Incomplete Docstring
 
-**Code**:
+### Code
 
 ```mojo
 fn matmul(a: Tensor, b: Tensor) -> Tensor:
     """Matrix multiplication."""
     # Implementation...
     return result
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 🔴 CRITICAL: Incomplete docstring for public API
 
-**Issues**:
+### Issues
 1. Missing parameter descriptions (what are a and b?)
-2. Missing return value description
-3. Missing constraints (tensor shapes must be compatible)
-4. No example usage
-5. Missing error/exception documentation
-```
+1. Missing return value description
+1. Missing constraints (tensor shapes must be compatible)
+1. No example usage
+1. Missing error/exception documentation
+```text
 
-**Recommended**:
+### Recommended
 
 ```mojo
 fn matmul(a: Tensor, b: Tensor) -> Tensor:
@@ -230,7 +230,7 @@ fn matmul(a: Tensor, b: Tensor) -> Tensor:
         let b = Tensor.rand(3, 4)  # 3x4 matrix
         let c = matmul(a, b)       # 2x4 result
 
-```
+```text
 
     Note:
         For large matrices, consider using SIMD-optimized variants
@@ -238,9 +238,9 @@ fn matmul(a: Tensor, b: Tensor) -> Tensor:
     """
     # Implementation...
     return result
-```
+```text
 
-**Why This Matters**:
+### Why This Matters
 
 - Users cannot use the API correctly without parameter documentation
 - Missing constraints lead to runtime errors
@@ -248,7 +248,7 @@ fn matmul(a: Tensor, b: Tensor) -> Tensor:
 
 ### Example 2: Misleading Comment
 
-**Code**:
+### Code
 
 ```python
 def calculate_loss(predictions, targets):
@@ -256,9 +256,9 @@ def calculate_loss(predictions, targets):
     # Use cross-entropy loss for classification
     loss = F.cross_entropy(predictions, targets)
     return loss
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 🔴 CRITICAL: Documentation contradicts implementation
@@ -268,12 +268,12 @@ This is a critical documentation bug that will confuse users.
 
 **Root Cause**: Either:
 1. Implementation is wrong (should be MSE)
-2. Documentation is wrong (should say cross-entropy)
+1. Documentation is wrong (should say cross-entropy)
 
 **Recommended Action**: Verify intended behavior and fix either code or docs.
-```
+```text
 
-**If cross-entropy is correct**:
+### If cross-entropy is correct
 
 ```python
 def calculate_loss(predictions, targets):
@@ -294,9 +294,9 @@ def calculate_loss(predictions, targets):
     # Use cross-entropy loss for classification
     loss = F.cross_entropy(predictions, targets)
     return loss
-```
+```text
 
-**If MSE is correct**:
+### If MSE is correct
 
 ```python
 def calculate_loss(predictions, targets):
@@ -316,11 +316,11 @@ def calculate_loss(predictions, targets):
     """
     loss = F.mse_loss(predictions, targets)
     return loss
-```
+```text
 
 ### Example 3: Poor README Structure
 
-**Current README**:
+### Current README
 
 ```markdown
 # ML Odyssey
@@ -334,26 +334,25 @@ Run pip install.
 ## Usage
 
 Import and use.
-```
+```text
 
-**Review Feedback**:
-
+**Review Feedback**
 ```text
 🟠 MAJOR: README lacks essential information and structure
-```
+```text
 
-**Missing Components**:
+### Missing Components
 
 1. ❌ Project description (what does it do?)
-2. ❌ Key features
-3. ❌ Prerequisites
-4. ❌ Detailed installation steps
-5. ❌ Concrete usage examples
-6. ❌ Documentation links
-7. ❌ Contributing guidelines
-8. ❌ License information
+1. ❌ Key features
+1. ❌ Prerequisites
+1. ❌ Detailed installation steps
+1. ❌ Concrete usage examples
+1. ❌ Documentation links
+1. ❌ Contributing guidelines
+1. ❌ License information
 
-**Recommended Structure**:
+### Recommended Structure
 
 ```markdown
 # ML Odyssey
@@ -375,14 +374,13 @@ A Mojo-based AI research platform for reproducing classic machine learning resea
 
 ## Installation
 
-1. Clone the repository:
-
+1. Clone the repository
    ```bash
 
    git clone https://github.com/your-org/ml-odyssey.git
    cd ml-odyssey
 
-```
+```text
 
 1. Install dependencies using Pixi:
 
@@ -390,7 +388,7 @@ A Mojo-based AI research platform for reproducing classic machine learning resea
 
    pixi install
 
-```
+```text
 
 1. Verify installation:
 
@@ -398,12 +396,11 @@ A Mojo-based AI research platform for reproducing classic machine learning resea
 
    pixi run test
 
-```
+```text
 
 ## Quick Start
 
-Train LeNet-5 on MNIST:
-
+Train LeNet-5 on MNIST
 ```python
 
 from ml_odyssey.papers.lenet5 import LeNet5, train
@@ -423,7 +420,7 @@ results = train(
 
 print(f"Final accuracy: {results['accuracy']:.2%}")
 
-```
+```text
 
 ## Documentation
 
@@ -443,7 +440,7 @@ ml-odyssey/
 ├── docs/          # Documentation
 └── scripts/       # Utility scripts
 
-```
+```text
 
 ## Contributing
 
@@ -455,8 +452,7 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ## Citation
 
-If you use this project in your research, please cite:
-
+If you use this project in your research, please cite
 ```bibtex
 
 @software{ml_odyssey,
@@ -466,7 +462,7 @@ If you use this project in your research, please cite:
   url={https://github.com/your-org/ml-odyssey}
 }
 
-```
+```text
 
 ```text
 
@@ -477,11 +473,11 @@ If you use this project in your research, please cite:
 - User adoption
 - Community engagement
 
-```
+```text
 
 ### Example 4: Excellent Mojo Docstring (Positive Feedback)
 
-**Code**:
+### Code
 
 ```mojo
 
@@ -536,25 +532,25 @@ fn conv2d(
     """
     # Implementation...
 
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 
 ✅ EXCELLENT: Comprehensive, well-structured docstring
 
-**Strengths**:
+### Strengths
 
 1. ✅ Clear summary with context (CNN usage)
-2. ✅ Complete parameter documentation with shapes
-3. ✅ Return value includes exact shape formula
-4. ✅ All exceptions documented with conditions
-5. ✅ Multiple examples showing common patterns
-6. ✅ Performance notes guide optimization decisions
-7. ✅ Academic reference for algorithm
-8. ✅ Type annotations match function signature
-9. ✅ Follows Mojo/Python docstring conventions
+1. ✅ Complete parameter documentation with shapes
+1. ✅ Return value includes exact shape formula
+1. ✅ All exceptions documented with conditions
+1. ✅ Multiple examples showing common patterns
+1. ✅ Performance notes guide optimization decisions
+1. ✅ Academic reference for algorithm
+1. ✅ Type annotations match function signature
+1. ✅ Follows Mojo/Python docstring conventions
 
 **This is exemplary documentation that demonstrates best practices:**
 
@@ -565,11 +561,11 @@ fn conv2d(
 
 No changes needed. This should serve as a template for other APIs.
 
-```
+```text
 
 ### Example 5: Valueless Comments
 
-**Code**:
+### Code
 
 ```mojo
 
@@ -594,9 +590,9 @@ fn train_model(model: Model, data: Tensor) -> Float32:
     # Return average loss
     return total_loss / data.num_batches()
 
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 
@@ -613,7 +609,7 @@ Current comments tell us WHAT (we can see that):
 - "Forward pass" → Code says: `model.forward(batch.x)`
 - "Calculate loss" → Code says: `cross_entropy(pred, batch.y)`
 
-**When Comments Add Value**:
+### When Comments Add Value
 
 ```mojo
 fn train_model(model: Model, data: Tensor) -> Float32:
@@ -630,9 +626,9 @@ fn train_model(model: Model, data: Tensor) -> Float32:
         total_loss += loss
 
     return total_loss / data.num_batches()
-```
+```text
 
-**Better: Let Code Self-Document**:
+### Better: Let Code Self-Document
 
 ```mojo
 fn train_epoch(model: Model, data: Tensor) -> Float32:
@@ -648,12 +644,12 @@ fn train_batch(model: Model, batch: Batch) -> Float32:
     let loss = cross_entropy(prediction, batch.y)
     model.backward(loss)
     return loss
-```
+```text
 
 **Recommendation**: Remove comments that restate code. Add comments
 that explain non-obvious decisions, algorithms, or constraints.
 
-**Keep Comments That Explain**:
+### Keep Comments That Explain
 
 - Why a particular algorithm was chosen
 - Performance trade-offs in implementation
@@ -663,7 +659,7 @@ that explain non-obvious decisions, algorithms, or constraints.
 
 ```text
 End of Example 5
-```
+```text
 
 ## Common Issues to Flag
 
@@ -726,12 +722,12 @@ fn function_name[T: Type](
 
         let result = function_name(data, param2=5)
 
-```
+```text
 
     Performance:
         Notes about performance characteristics if relevant
     """
-```
+```text
 
 ### Mojo Struct Docstring Template
 
@@ -759,13 +755,13 @@ struct Tensor[dtype: DType]:
         # Perform operations
         let result = t.matmul(other)
 
-```
+```text
 
     Notes:
         Tensors are value types and follow Mojo ownership semantics.
         Large tensors should be passed by reference to avoid copies.
     """
-```
+```text
 
 ### Python Docstring Template (NumPy Style)
 
@@ -808,7 +804,7 @@ def process_data(data: np.ndarray, normalize: bool = True) -> np.ndarray:
     --------
     sklearn.preprocessing.StandardScaler : Similar functionality
     """
-```
+```text
 
 ## Coordinates With
 
@@ -819,7 +815,7 @@ def process_data(data: np.ndarray, normalize: bool = True) -> np.ndarray:
 
 ## Escalates To
 
-- [Code Review Orchestrator](./code-review-orchestrator.md) when:
+- [Code Review Orchestrator](./code-review-orchestrator.md) when
   - Documentation contradicts code (might indicate implementation bug)
   - API design issues found (→ Architecture Specialist)
   - Performance claims in docs need verification (→ Performance Specialist)

@@ -50,7 +50,7 @@ fn optimized_operation[
     vectorize[vectorized, simd_width=simd_width](size)
 
 # Use traits for polymorphism
-trait Layer:
+trait Layer
     fn forward[dtype: DType](
         self,
         input: Tensor[dtype]
@@ -58,7 +58,7 @@ trait Layer:
 
 struct ComplexLayer(Layer):
     # Advanced layer implementation
-```
+```text
 
 ### Memory Optimization
 
@@ -77,17 +77,17 @@ fn matmul_optimized[M: Int, N: Int, K: Int](
             for k in range(0, K, tile_size):
                 # Tiled computation for cache efficiency
                 matmul_tile(a, b, result, m, n, k, tile_size)
-```
+```text
 
 ## Workflow
 
 1. Receive complex function spec from Implementation Specialist
-2. Design algorithm and data structures
-3. Implement with optimization
-4. Write comprehensive tests
-5. Benchmark and profile
-6. Optimize based on profiling
-7. Review and submit
+1. Design algorithm and data structures
+1. Implement with optimization
+1. Write comprehensive tests
+1. Benchmark and profile
+1. Optimize based on profiling
+1. Review and submit
 
 ## Delegation
 
@@ -116,7 +116,7 @@ fn matmul_optimized[M: Int, N: Int, K: Int](
 
 **Spec**: Implement optimized matrix multiplication
 
-**Implementation**:
+### Implementation
 
 ```mojo
 fn matmul[
@@ -172,7 +172,7 @@ fn matmul_tile[
         pass
 
     vectorize[vectorized, simd_width=8](tile_size * tile_size)
-```
+```text
 
 ## Constraints
 

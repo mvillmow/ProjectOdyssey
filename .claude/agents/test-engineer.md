@@ -36,7 +36,7 @@ Level 4 Test Engineer responsible for implementing comprehensive test suites.
 # tests/mojo/test_tensor_ops.mojo
 from testing import assert_equal, assert_raises, assert_true
 
-fn test_tensor_add():
+fn test_tensor_add()
     """Test tensor addition."""
     var a = Tensor[DType.float32, 5]()
     var b = Tensor[DType.float32, 5]()
@@ -63,7 +63,7 @@ fn test_tensor_add_zero():
 
     for i in range(5):
         assert_equal(result[i], Float32(i))
-```
+```text
 
 ### Python Integration Tests
 
@@ -73,7 +73,7 @@ import pytest
 import numpy as np
 from ml_odyssey.tensor_ops import add
 
-def test_numpy_integration():
+def test_numpy_integration()
     """Test Mojo integration with NumPy."""
     a = np.array([1.0, 2.0, 3.0], dtype=np.float32)
     b = np.array([4.0, 5.0, 6.0], dtype=np.float32)
@@ -93,17 +93,17 @@ def test_large_tensor():
 
     expected = a + b
     np.testing.assert_allclose(result, expected, rtol=1e-5)
-```
+```text
 
 ## Workflow
 
 1. Receive test plan from Test Specialist
-2. Implement test cases
-3. Create fixtures and mocks
-4. Run tests locally
-5. Fix any issues
-6. Report results
-7. Maintain tests as code evolves
+1. Implement test cases
+1. Create fixtures and mocks
+1. Run tests locally
+1. Fix any issues
+1. Report results
+1. Maintain tests as code evolves
 
 ## Coordinates With
 
@@ -124,7 +124,7 @@ def test_large_tensor():
 
 ```mojo
 # tests/mojo/test_training.mojo
-fn test_training_epoch():
+fn test_training_epoch()
     """Test single training epoch."""
     # Setup
     var model = create_test_model()
@@ -154,7 +154,7 @@ fn test_gradient_computation():
     # Verify gradients exist and have correct shape
     assert_equal(gradients.weights.shape(), model.weights.shape())
     assert_equal(gradients.bias.shape(), model.bias.shape())
-```
+```text
 
 ## Success Criteria
 

@@ -66,11 +66,11 @@ output-dir = "build"
 
 [dependencies]
 # Mojo stdlib and packages
-```
+```text
 
 ### Directory Structure
 
-```
+```text
 ml-odyssey/
 ├── src/
 │   ├── ml_odyssey/          # Python package
@@ -81,7 +81,7 @@ ml-odyssey/
 ├── docs/
 ├── scripts/
 └── config/
-```
+```text
 
 ### Build System
 
@@ -95,30 +95,30 @@ ml-odyssey/
 ### 1. Receive Requirements
 
 1. Parse repository setup requirements from Chief Architect
-2. Identify infrastructure needs (directories, configs, docs)
-3. Check for dependencies on external tools or platforms
-4. Validate requirements are achievable
+1. Identify infrastructure needs (directories, configs, docs)
+1. Check for dependencies on external tools or platforms
+1. Validate requirements are achievable
 
 ### 2. Coordinate Setup Work
 
 1. Break down into setup subtasks (structure, configs, docs)
-2. Delegate to appropriate design agents
-3. Monitor progress across multiple setup areas
-4. Ensure configurations are compatible
+1. Delegate to appropriate design agents
+1. Monitor progress across multiple setup areas
+1. Ensure configurations are compatible
 
 ### 3. Validate Foundation
 
 1. Collect setup outputs from design agents
-2. Test complete setup on clean environment
-3. Verify all tools work correctly
-4. Ensure quality standards met
+1. Test complete setup on clean environment
+1. Verify all tools work correctly
+1. Ensure quality standards met
 
 ### 4. Report Status
 
 1. Summarize foundation work completed
-2. Document any setup issues or blockers
-3. Report readiness for other sections to proceed
-4. Escalate any architectural concerns to Chief Architect
+1. Document any setup issues or blockers
+1. Report readiness for other sections to proceed
+1. Escalate any architectural concerns to Chief Architect
 
 ## Delegation
 
@@ -138,16 +138,14 @@ ml-odyssey/
 
 ## Skip-Level Delegation
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
-
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
 ### When to Skip Levels
 
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
+**Simple Bug Fixes** (< 50 lines, well-defined)
 - Chief Architect/Orchestrator → Implementation Specialist (skip design)
 - Specialist → Implementation Engineer (skip senior review)
 
-**Boilerplate & Templates**:
+### Boilerplate & Templates
 
 - Any level → Junior Engineer directly (skip all intermediate levels)
 - Use for: code generation, formatting, simple documentation
@@ -168,8 +166,7 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### When NOT to Skip
 
-**Never skip levels for**:
-
+**Never skip levels for**
 - New architectural patterns or significant design changes
 - Cross-module integration work
 - Security-sensitive code
@@ -179,9 +176,9 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 ### Efficiency Guidelines
 
 1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+1. **Document Skip Rationale**: When skipping, note why in delegation message
+1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
 
 ## Workflow Phase
 
@@ -216,11 +213,10 @@ Primarily **Plan** phase, must complete before other sections start Implementati
 
 ### Conflict Resolution
 
-When receiving conflicting guidance from delegated agents:
-
+When receiving conflicting guidance from delegated agents
 1. Attempt to resolve conflicts based on specifications and priorities
-2. If unable to resolve: escalate to parent level with full context
-3. Document the conflict and resolution in status updates
+1. If unable to resolve: escalate to parent level with full context
+1. Document the conflict and resolution in status updates
 
 ### Failure Modes
 
@@ -239,8 +235,7 @@ When receiving conflicting guidance from delegated agents:
 
 ### Error Escalation
 
-Escalate errors when:
-
+Escalate errors when
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected
@@ -269,8 +264,7 @@ Escalate errors when:
 
 ## Escalation Triggers
 
-Escalate to Chief Architect when:
-
+Escalate to Chief Architect when
 - Configuration conflicts cannot be resolved
 - Platform compatibility issues arise
 - Build system doesn't support requirements
@@ -279,8 +273,7 @@ Escalate to Chief Architect when:
 
 ## Success Criteria
 
-Foundation is successful when:
-
+Foundation is successful when
 - All directories created and documented
 - All configurations working correctly
 - Development environment setup is automated
@@ -313,8 +306,7 @@ Foundation is successful when:
 
 ## Status Reporting
 
-Report to Chief Architect weekly during foundation setup:
-
+Report to Chief Architect weekly during foundation setup
 ```markdown
 ## Foundation Orchestrator Status Report
 
@@ -342,7 +334,7 @@ Report to Chief Architect weekly during foundation setup:
 - Paper Implementation: [Ready/Not Ready]
 - CI/CD: [Ready/Not Ready]
 - Agentic Workflows: [Ready/Not Ready]
-```
+```text
 
 ## Notes
 

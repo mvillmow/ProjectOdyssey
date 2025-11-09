@@ -71,15 +71,15 @@ model: sonnet
 
 ## Review Checklist
 1. Performance: Uses fn for hot paths?
-2. Memory: Proper ownership semantics?
-3. Types: Full type annotations?
-4. SIMD: Vectorization opportunities?
-5. Interop: Clean Python boundaries?
-```
+1. Memory: Proper ownership semantics?
+1. Types: Full type annotations?
+1. SIMD: Vectorization opportunities?
+1. Interop: Clean Python boundaries?
+```text
 
 ### Agent Coordination Example
 
-```
+```text
 Research Assistant Agent
   ↓ Analyzes paper, extracts algorithm
   ↓ Creates implementation specification
@@ -94,37 +94,37 @@ Implementation Specialist
   ↓ Applies improvements
 Documentation Agent
   ↓ Updates documentation
-```
+```text
 
 ## Workflow
 
 ### 1. Receive Task
 
 1. Parse task requirements for agent work
-2. Identify which agents are needed (research, review, documentation)
-3. Check for dependencies and prerequisites
-4. Validate task scope is appropriate for agents
+1. Identify which agents are needed (research, review, documentation)
+1. Check for dependencies and prerequisites
+1. Validate task scope is appropriate for agents
 
 ### 2. Coordinate Agent Work
 
 1. Break down into agent-specific subtasks
-2. Delegate to appropriate design agents or specialists
-3. Monitor progress across multiple agents
-4. Ensure agents coordinate properly (e.g., research feeds implementation)
+1. Delegate to appropriate design agents or specialists
+1. Monitor progress across multiple agents
+1. Ensure agents coordinate properly (e.g., research feeds implementation)
 
 ### 3. Validate Agent Outputs
 
 1. Collect outputs from agents
-2. Validate quality and completeness
-3. Ensure agents followed safety guidelines
-4. Check for infinite delegation loops or conflicts
+1. Validate quality and completeness
+1. Ensure agents followed safety guidelines
+1. Check for infinite delegation loops or conflicts
 
 ### 4. Report Status
 
 1. Summarize work completed by agents
-2. Identify any agent issues or blockers
-3. Recommend improvements to agent capabilities
-4. Escalate architectural concerns to Chief Architect
+1. Identify any agent issues or blockers
+1. Recommend improvements to agent capabilities
+1. Escalate architectural concerns to Chief Architect
 
 ## Delegation
 
@@ -144,16 +144,14 @@ Documentation Agent
 
 ## Skip-Level Delegation
 
-To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks:
-
+To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermediate levels for certain tasks
 ### When to Skip Levels
 
-**Simple Bug Fixes** (< 50 lines, well-defined):
-
+**Simple Bug Fixes** (< 50 lines, well-defined)
 - Chief Architect/Orchestrator → Implementation Specialist (skip design)
 - Specialist → Implementation Engineer (skip senior review)
 
-**Boilerplate & Templates**:
+### Boilerplate & Templates
 
 - Any level → Junior Engineer directly (skip all intermediate levels)
 - Use for: code generation, formatting, simple documentation
@@ -174,8 +172,7 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### When NOT to Skip
 
-**Never skip levels for**:
-
+**Never skip levels for**
 - New architectural patterns or significant design changes
 - Cross-module integration work
 - Security-sensitive code
@@ -185,9 +182,9 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 ### Efficiency Guidelines
 
 1. **Assess Task Complexity**: Before delegating, determine if intermediate levels add value
-2. **Document Skip Rationale**: When skipping, note why in delegation message
-3. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
-4. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
+1. **Document Skip Rationale**: When skipping, note why in delegation message
+1. **Monitor Outcomes**: If skipped delegation causes issues, revert to full hierarchy
+1. **Prefer Full Hierarchy**: When uncertain, use complete delegation chain
 
 ## Workflow Phase
 
@@ -216,11 +213,10 @@ To avoid unnecessary overhead in the 6-level hierarchy, agents may skip intermed
 
 ### Conflict Resolution
 
-When receiving conflicting guidance from delegated agents:
-
+When receiving conflicting guidance from delegated agents
 1. Attempt to resolve conflicts based on specifications and priorities
-2. If unable to resolve: escalate to parent level with full context
-3. Document the conflict and resolution in status updates
+1. If unable to resolve: escalate to parent level with full context
+1. Document the conflict and resolution in status updates
 
 ### Failure Modes
 
@@ -239,8 +235,7 @@ When receiving conflicting guidance from delegated agents:
 
 ### Error Escalation
 
-Escalate errors when:
-
+Escalate errors when
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected
@@ -269,8 +264,7 @@ Escalate errors when:
 
 ## Escalation Triggers
 
-Escalate to Chief Architect when:
-
+Escalate to Chief Architect when
 - Agent scope overlaps cause conflicts
 - Agents make incorrect decisions repeatedly
 - Need to change agent hierarchy

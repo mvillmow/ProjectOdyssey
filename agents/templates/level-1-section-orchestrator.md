@@ -45,21 +45,21 @@ Level 1 Section Orchestrator responsible for coordinating [section description].
 
 [Example Mojo code relevant to this section]
 
-```
+```text
 
 ### [Another Pattern]
 ```python
 
 [Example Python code if applicable]
 
-```
+```text
 
 ## Workflow
 
 ### Phase 1: [Phase Name]
 1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+1. [Step 2]
+1. [Step 3]
 
 ### Phase 2: [Phase Name]
 [Continue with relevant phases]
@@ -96,7 +96,7 @@ Level 1 Section Orchestrator responsible for coordinating [section description].
 - [Do 3]
 
 ## Escalation Triggers
-Escalate to Chief Architect when:
+Escalate to Chief Architect when
 - [Trigger 1]
 - [Trigger 2]
 - [Trigger 3]
@@ -114,25 +114,25 @@ Escalate to Chief Architect when:
 ---
 
 **Configuration File**: `.claude/agents/[section]-orchestrator.md`
-```
+```text
 
 ## Customization Instructions
 
-1. **Replace Placeholders**:
+1. **Replace Placeholders**
    - `[section]` - Section identifier (e.g., "foundation", "shared-library")
    - `[Section Name]` - Human-readable name
    - `[number]` - Section number (01, 02, etc.)
    - `[key responsibilities]` - Brief list of main responsibilities
 
-2. **Define Section Scope**:
+1. **Define Section Scope**:
    - List specific modules or components in this section
    - Clarify boundaries with other sections
 
-3. **Specify Mojo Patterns**:
+1. **Specify Mojo Patterns**:
    - Add section-specific Mojo patterns
    - Include Python integration if applicable
 
-4. **Detail Workflow**:
+1. **Detail Workflow**:
    - Break down section-specific workflow phases
    - Include coordination points with other sections
 

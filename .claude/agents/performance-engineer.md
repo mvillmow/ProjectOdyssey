@@ -141,7 +141,7 @@ fn add_fast[size: Int](a: Tensor, b: Tensor) -> Tensor:
 
 **Baseline Benchmark:**
 
-```
+```text
 Matrix multiplication (1024x1024):
   Mean time: 500ms
   Throughput: 4.3 GFLOPS
@@ -162,7 +162,7 @@ Matrix multiplication (1024x1024):
 
 **After Optimization:**
 
-```
+```text
 Matrix multiplication (1024x1024):
   Mean time: 25ms
   Throughput: 86 GFLOPS

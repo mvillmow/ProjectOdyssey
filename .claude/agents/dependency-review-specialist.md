@@ -80,46 +80,46 @@ or security vulnerabilities in dependencies)
 
 ```text
 1. Identify all dependency files in the PR
-2. Read dependency specifications (requirements.txt, pixi.toml, etc.)
-3. Check for lock files (pixi.lock, poetry.lock, etc.)
-4. Identify changed vs. added dependencies
-```
+1. Read dependency specifications (requirements.txt, pixi.toml, etc.)
+1. Check for lock files (pixi.lock, poetry.lock, etc.)
+1. Identify changed vs. added dependencies
+```text
 
 ### Phase 2: Version Analysis
 
 ```text
-5. Review version pinning strategy
-6. Check for version conflicts
-7. Validate semantic versioning usage
-8. Assess version constraint appropriateness
-```
+1. Review version pinning strategy
+1. Check for version conflicts
+1. Validate semantic versioning usage
+1. Assess version constraint appropriateness
+```text
 
 ### Phase 3: Reproducibility Check
 
 ```text
-9. Verify lock file updates match dependency changes
-10. Check for platform-specific dependencies
-11. Review environment consistency (dev/prod/CI)
-12. Validate build reproducibility
-```
+1. Verify lock file updates match dependency changes
+1. Check for platform-specific dependencies
+1. Review environment consistency (dev/prod/CI)
+1. Validate build reproducibility
+```text
 
 ### Phase 4: License & Hygiene
 
 ```text
-13. Check license compatibility
-14. Identify deprecated or unmaintained packages
-15. Flag unused dependencies
-16. Review dependency freshness
-```
+1. Check license compatibility
+1. Identify deprecated or unmaintained packages
+1. Flag unused dependencies
+1. Review dependency freshness
+```text
 
 ### Phase 5: Feedback Generation
 
 ```text
-17. Categorize findings (critical, major, minor)
-18. Provide actionable recommendations
-19. Suggest version constraints or alternatives
-20. Document potential upgrade paths
-```
+1. Categorize findings (critical, major, minor)
+1. Provide actionable recommendations
+1. Suggest version constraints or alternatives
+1. Document potential upgrade paths
+```text
 
 ## Review Checklist
 
@@ -173,19 +173,19 @@ or security vulnerabilities in dependencies)
 numpy>=1.20
 tensorflow>=2.0
 pandas>=1.0
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 🔴 CRITICAL: Overly loose version constraints risk breaking changes
 
-**Issues**:
+### Issues
 1. TensorFlow 2.0 to 3.0 would be a major breaking change
-2. NumPy 1.20 to 2.0 broke compatibility with many libraries
-3. No upper bounds allow installing incompatible future versions
+1. NumPy 1.20 to 2.0 broke compatibility with many libraries
+1. No upper bounds allow installing incompatible future versions
 
-**Example Failure Scenario**:
+### Example Failure Scenario
 - Today: Install works with TensorFlow 2.15, NumPy 1.26
 - Tomorrow: NumPy 2.0 releases with breaking changes
 - Result: Build breaks for all new installations
@@ -193,7 +193,7 @@ pandas>=1.0
 **Risk**: Production builds become non-reproducible and may break
 without any code changes.
 
-**Recommended**:
+### Recommended
 ```txt
 
 # Pin to known-working versions with compatible upper bounds
@@ -202,7 +202,7 @@ numpy>=1.20,<2.0      # Avoid NumPy 2.0 breaking changes
 tensorflow>=2.10,<3.0  # TF 2.x series, exclude 3.0
 pandas>=1.5,<3.0      # Allow 1.x and 2.x, exclude future 3.0
 
-```
+```text
 
 **Best Practice**: Use lock files (pixi.lock, poetry.lock) for
 exact reproducibility, and constraints for version ranges.
@@ -221,22 +221,21 @@ package-b = ">=1.5,<2.0"
 
 # package-b requires package-c >= 2.0,<3.0
 
-```
+```text
 
-**Review Feedback**:
-
+**Review Feedback**
 ```text
 
 🔴 CRITICAL: Transitive dependency conflict detected
 
-**Conflict**:
+### Conflict
 
 ```text
 package-a (>=2.0) → requires package-c >= 3.0
 package-b (>=1.5) → requires package-c >= 2.0,<3.0
 
 Result: NO version of package-c satisfies both constraints
-```
+```text
 
 **This will fail at install time:**
 
@@ -245,9 +244,9 @@ $ pixi install
 Error: Conflicting requirements:
   package-c>=3.0 (from package-a)
   package-c>=2.0,<3.0 (from package-b)
-```
+```text
 
-**Resolution Options**:
+### Resolution Options
 
 1. **Option A - Update package-b** (Recommended):
 
@@ -257,7 +256,7 @@ Error: Conflicting requirements:
    package-b = ">=2.0,<3.0"  # Updated to support package-c 3.x
    ```
 
-2. **Option B - Downgrade package-a**:
+1. **Option B - Downgrade package-a**:
 
 ```toml
    [dependencies]
@@ -265,7 +264,7 @@ Error: Conflicting requirements:
    package-b = ">=1.5,<2.0"
    ```
 
-3. **Option C - Use different packages** (if no compatible versions exist)
+1. **Option C - Use different packages** (if no compatible versions exist)
 
 **Recommendation**: Check if package-b has a newer release compatible
 with package-c 3.x. If not, evaluate whether package-a's 2.x features
@@ -280,32 +279,32 @@ are essential.
 numpy = ">=1.24,<2.0"
 scipy = ">=1.10,<2.0"
 matplotlib = ">=3.7,<4.0"
-```
+```text
 
 **File**: pixi.lock (not included in PR)
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 🟠 MAJOR: Lock file not updated with dependency changes
 
 **Issue**: Modified pixi.toml but pixi.lock not updated in this PR.
 
-**Why This Matters**:
+### Why This Matters
 - CI builds will use OLD locked versions, not new constraints
 - Local development uses NEW versions from pixi.toml ranges
 - Result: "Works on my machine" but fails in CI/production
 
-**Example**:
+### Example
 
 ```text
 
 Developer machine:   numpy 1.26.3 (latest in range)
 CI/Production:       numpy 1.24.0 (old locked version)
 
-```
+```text
 
-**Fix**:
+### Fix
 
 ```bash
 
@@ -318,7 +317,7 @@ pixi update
 git add pixi.lock
 git commit -m "chore: update pixi.lock for dependency changes"
 
-```
+```text
 
 **Best Practice**: ALWAYS regenerate and commit lock files when
 modifying dependency specifications.
@@ -341,10 +340,9 @@ numpy>=1.24,<2.0
 
 pytorch-geometric>=2.3,<3.0
 
-```
+```text
 
-**Review Feedback**:
-
+**Review Feedback**
 ```text
 
 🔴 CRITICAL: GPL-3.0 dependency incompatible with proprietary project
@@ -352,20 +350,20 @@ pytorch-geometric>=2.3,<3.0
 **Issue**: pytorch-geometric is licensed under GPL-3.0, which is a
 "viral" copyleft license requiring all derivative works to be GPL-3.0.
 
-**Legal Implications**:
+### Legal Implications
 
 1. Cannot distribute proprietary software that links to GPL libraries
-2. Must release source code under GPL-3.0 if distributing
-3. Commercial licensing may be impossible
+1. Must release source code under GPL-3.0 if distributing
+1. Commercial licensing may be impossible
 
-**Example Scenario**:
+### Example Scenario
 
 - Your project: Proprietary ML platform for commercial sale
 - Includes: pytorch-geometric (GPL-3.0)
 - Result: Your entire codebase must be released as GPL-3.0 OR
   you face potential legal action
 
-**Alternatives**:
+### Alternatives
 
 1. **Use MIT/Apache licensed alternative**:
 
@@ -383,7 +381,7 @@ pytorch-geometric>=2.3,<3.0
 **Recommendation**: Replace with MIT or Apache 2.0 licensed alternative.
 Consult legal team if GPL dependencies are unavoidable.
 
-**License Compatibility Reference**:
+### License Compatibility Reference
 
 - ✅ MIT + Apache 2.0 = OK
 - ✅ MIT + BSD = OK
@@ -400,24 +398,23 @@ nose>=1.3,<2.0
 
 # Active - good
 pytest>=7.0,<8.0
-```
+```text
 
-**Review Feedback**:
-
+**Review Feedback**
 ```text
 🟠 MAJOR: Using deprecated testing framework
 
 **Issue**: `nose` has been deprecated since 2015 and is no longer
 maintained. Last release was 1.3.7 in 2015.
 
-**Risks**:
+### Risks
 
 1. Security vulnerabilities will not be patched
-2. Incompatible with modern Python versions (3.10+)
-3. No support for new features (async tests, etc.)
-4. Community has moved to pytest/unittest
+1. Incompatible with modern Python versions (3.10+)
+1. No support for new features (async tests, etc.)
+1. Community has moved to pytest/unittest
 
-**Migration Path**:
+### Migration Path
 
 ```txt
 
@@ -431,13 +428,12 @@ pytest>=7.0,<8.0
 pytest-cov>=4.0,<5.0      # For coverage
 pytest-asyncio>=0.21,<1.0  # For async tests
 
-```
+```text
 
-**Migration Guide**:
-
+**Migration Guide**
 1. `nose.tools` → `pytest` fixtures
-2. `@with_setup` → `@pytest.fixture`
-3. `assert_equals(a, b)` → `assert a == b`
+1. `@with_setup` → `@pytest.fixture`
+1. `assert_equals(a, b)` → `assert a == b`
 
 **Recommendation**: Migrate tests from nose to pytest. Modern
 Python projects should use actively maintained testing frameworks.
@@ -455,9 +451,9 @@ numpy>=1.24,<2.0
 torch>=2.0,<3.0
 pywin32>=305  # Windows-only package
 
-```
+```text
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 
@@ -466,13 +462,13 @@ pywin32>=305  # Windows-only package
 **Issue**: pywin32 is Windows-only but will fail installation on
 Linux/macOS, breaking CI and cross-platform development.
 
-**Current Behavior**:
+### Current Behavior
 
 ```bash
 # On Linux/macOS
 $ pip install -r requirements.txt
 ERROR: Could not find a version that satisfies the requirement pywin32
-```
+```text
 
 **Fix**: Use environment markers for platform-specific dependencies:
 
@@ -488,7 +484,7 @@ python-xlib>=0.33; sys_platform == "linux"
 
 # Alternative: macOS-specific packages
 pyobjc-framework-Cocoa>=9.0; sys_platform == "darwin"
-```
+```text
 
 **Best Practice**: Always use environment markers for platform-specific
 dependencies to ensure cross-platform compatibility.
@@ -504,7 +500,7 @@ docker run -it python:3.11 pip install -r requirements.txt
 
 # Test on Windows
 # (CI should test this automatically)
-```
+```text
 
 ### Example 7: Development vs. Production Dependencies
 
@@ -521,24 +517,23 @@ pytest>=7.0,<8.0
 black>=23.0,<24.0
 mypy>=1.5,<2.0
 sphinx>=7.0,<8.0
-```
+```text
 
-**Review Feedback**:
-
+**Review Feedback**
 ```text
 🟡 MINOR: Development and production dependencies not separated
 
 **Issue**: Development tools mixed with production dependencies. This
 causes unnecessary package installation in production environments.
 
-**Problems**:
+### Problems
 
 1. Larger production Docker images (includes testing tools)
-2. Increased attack surface (more packages = more vulnerabilities)
-3. Slower production deployments
-4. Confusion about what's actually needed in production
+1. Increased attack surface (more packages = more vulnerabilities)
+1. Slower production deployments
+1. Confusion about what's actually needed in production
 
-**Impact Example**:
+### Impact Example
 
 ```text
 
@@ -546,9 +541,9 @@ Production image with all deps:  850 MB
 Production image (prod only):    320 MB
 Wasted space:                    530 MB (62%)
 
-```
+```text
 
-**Recommended Structure**:
+### Recommended Structure
 
 **requirements.txt** (production only):
 
@@ -558,7 +553,7 @@ numpy>=1.24,<2.0
 flask>=2.3,<3.0
 gunicorn>=21.0,<22.0
 
-```
+```text
 
 **requirements-dev.txt** (development tools):
 
@@ -583,10 +578,9 @@ ruff>=0.1,<0.2
 sphinx>=7.0,<8.0
 sphinx-rtd-theme>=1.3,<2.0
 
-```
+```text
 
-**Usage**:
-
+**Usage**
 ```bash
 
 # Production
@@ -597,7 +591,7 @@ pip install -r requirements.txt
 
 pip install -r requirements-dev.txt
 
-```
+```text
 
 **Alternative**: Use pixi.toml with feature groups:
 
@@ -611,7 +605,7 @@ flask = ">=2.3,<3.0"
 pytest = ">=7.0,<8.0"
 black = ">=23.0,<24.0"
 
-```
+```text
 
 ### Example 8: Good Dependency Management (Positive Feedback)
 
@@ -677,52 +671,52 @@ pywin32 = ">=305"
 
 # Linux-specific packages if needed
 
-```
+```text
 
 **File**: pixi.lock (present and up-to-date)
 
-**Review Feedback**:
+### Review Feedback
 
 ```text
 
 ✅ EXCELLENT: Well-structured dependency management
 
-**Strengths**:
+### Strengths
 
 1. ✅ **Clear Organization**:
    - Production dependencies in [dependencies]
    - Development tools in [feature.dev]
    - Documentation tools in [feature.docs]
 
-2. ✅ **Appropriate Version Constraints**:
+1. ✅ **Appropriate Version Constraints**:
    - Conservative ranges prevent breaking changes
    - Semantic versioning used correctly
    - Critical tools (black) pinned to exact minor version
 
-3. ✅ **Platform-Specific Handling**:
+1. ✅ **Platform-Specific Handling**:
    - Windows dependencies properly isolated
    - Uses Pixi's native platform targeting
 
-4. ✅ **Good Documentation**:
+1. ✅ **Good Documentation**:
    - Comments explain version choices
    - Breaking change avoidance documented (NumPy 2.0, PyTorch 2.2)
 
-5. ✅ **Reproducibility**:
+1. ✅ **Reproducibility**:
    - Lock file present and committed
    - Exact versions resolved for all platforms
 
-6. ✅ **License Compatibility**:
+1. ✅ **License Compatibility**:
    - All dependencies use permissive licenses (MIT, BSD, Apache 2.0)
    - Project license clearly declared (MIT)
 
-7. ✅ **Maintenance-Friendly**:
+1. ✅ **Maintenance-Friendly**:
    - Dependencies are recent and actively maintained
    - Version ranges allow security updates
    - No deprecated packages
 
 **This is exemplary dependency management.** No changes needed.
 
-```
+```text
 
 ## Common Issues to Flag
 
@@ -764,7 +758,7 @@ pywin32 = ">=305"
 
 package>=1.2.3,<1.3.0  # Only 1.2.x patches
 
-```
+```text
 
 #### Strategy 2: Semantic Versioning Range (Recommended for Applications)
 
@@ -774,7 +768,7 @@ package>=1.2.3,<1.3.0  # Only 1.2.x patches
 
 package>=1.2,<2.0      # Any 1.x version
 
-```
+```text
 
 #### Strategy 3: Exact Pinning (For Lock Files Only)
 
@@ -784,7 +778,7 @@ package>=1.2,<2.0      # Any 1.x version
 
 package==1.2.3
 
-```
+```text
 
 #### Strategy 4: Minimum Only (Avoid in Production)
 
@@ -794,12 +788,11 @@ package==1.2.3
 
 package>=1.2           # ❌ Unbounded upper limit
 
-```
+```text
 
 ### Lock File Usage
 
-**Pixi (Recommended for this project)**:
-
+**Pixi (Recommended for this project)**
 ```bash
 
 # Update all dependencies to latest compatible versions
@@ -814,10 +807,9 @@ pixi update numpy
 
 rm pixi.lock && pixi install
 
-```
+```text
 
-**Poetry**:
-
+**Poetry**
 ```bash
 
 # Update lock file
@@ -828,10 +820,9 @@ poetry lock
 
 poetry update
 
-```
+```text
 
-**Pip + pip-tools**:
-
+**Pip + pip-tools**
 ```bash
 
 # Generate lock file from requirements.in
@@ -842,7 +833,7 @@ pip-compile requirements.in -o requirements.txt
 
 pip-compile --upgrade requirements.in
 
-```
+```text
 
 ### Handling Transitive Dependencies
 
@@ -851,10 +842,10 @@ pip-compile --upgrade requirements.in
 **Rule**: Do NOT pin transitive dependencies unless:
 
 1. Resolving a conflict
-2. Working around a known bug
-3. Security vulnerability mitigation
+1. Working around a known bug
+1. Security vulnerability mitigation
 
-**Example**:
+### Example
 
 ```toml
 
@@ -874,7 +865,7 @@ flask = ">=2.3,<3.0"
 
 # werkzeug = ">=2.3,<2.4"  # Flask 2.3 has bug with werkzeug 2.4+
 
-```
+```text
 
 ### License Compatibility Matrix
 
@@ -885,8 +876,7 @@ flask = ">=2.3,<3.0"
 | GPL-3.0 | MIT, BSD, Apache 2.0, GPL | Proprietary | Must release as GPL |
 | Proprietary | MIT, BSD, Apache 2.0 | GPL, AGPL | LGPL (with care) |
 
-**Common Permissive Licenses** (Safe for most projects):
-
+**Common Permissive Licenses** (Safe for most projects)
 - MIT
 - BSD (2-Clause, 3-Clause)
 - Apache 2.0
@@ -912,7 +902,7 @@ pixi audit
 
 pixi update vulnerable-package
 
-```
+```text
 
 **Patch Updates** (x.y.Z): Apply regularly (monthly)
 
@@ -941,7 +931,7 @@ pixi update vulnerable-package
 
 ## Escalates To
 
-- [Code Review Orchestrator](./code-review-orchestrator.md) when:
+- [Code Review Orchestrator](./code-review-orchestrator.md) when
   - Security vulnerabilities found in dependencies (→ Security Specialist)
   - Architecture concerns about dependency choices (→ Architecture Specialist)
   - Performance issues with dependency usage (→ Performance Specialist)

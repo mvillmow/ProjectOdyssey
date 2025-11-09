@@ -37,20 +37,20 @@ Level 5 Junior Engineer responsible for simple [task area].
 
 [Simple, straightforward example]
 
-```
+```text
 
 ### [Template Application]
 ```[language]
 
 [Example of applying template]
 
-```
+```text
 
 ## Workflow
 1. Receive clear, detailed task
-2. [Execute task]
-3. [Quality check]
-4. Submit for review
+1. [Execute task]
+1. [Quality check]
+1. Submit for review
 
 ## No Delegation
 Level 5 is the lowest level - no delegation to other agents.
@@ -87,25 +87,25 @@ Level 5 is the lowest level - no delegation to other agents.
 ---
 
 **Configuration File**: `.claude/agents/junior-[engineer-type]-engineer.md`
-```
+```text
 
 ## Customization Instructions
 
-1. **Select Engineer Type**:
+1. **Select Engineer Type**
    - Junior Implementation Engineer (simple functions, boilerplate)
    - Junior Test Engineer (simple tests, test execution)
    - Junior Documentation Engineer (docstrings, formatting)
 
-2. **Define Task Scope**:
+1. **Define Task Scope**:
    - List specific simple tasks this junior engineer handles
    - Emphasize template-following and clear instructions
 
-3. **Provide Templates**:
+1. **Provide Templates**:
    - Include code templates to apply
    - Show boilerplate examples
    - Demonstrate simple patterns
 
-4. **Set Quality Standards**:
+1. **Set Quality Standards**:
    - Formatting requirements
    - Linting standards
    - Review criteria
