@@ -360,25 +360,25 @@ fn main() raises:
     print("\n=== Optimizer Performance Benchmarks ===\n")
 
     print("Running SGD benchmarks...")
-    let sgd_results = bench_sgd_update_speed()
+    var sgd_results = bench_sgd_update_speed()
     print_benchmark_results(sgd_results)
 
-    let sgd_momentum = bench_sgd_momentum_overhead()
+    var sgd_momentum = bench_sgd_momentum_overhead()
     sgd_momentum.print_result()
 
     print("\nRunning Adam benchmarks...")
-    let adam_results = bench_adam_update_speed()
+    var adam_results = bench_adam_update_speed()
     print_benchmark_results(adam_results)
 
-    let adam_memory = bench_adam_memory_usage()
+    var adam_memory = bench_adam_memory_usage()
     adam_memory.print_result()
 
     print("\nRunning optimizer comparison...")
-    let comparison = bench_optimizer_comparison()
+    var comparison = bench_optimizer_comparison()
     print_benchmark_results(comparison)
 
     print("\nRunning SIMD optimization benchmarks...")
-    let simd_result = bench_simd_vectorization()
+    var simd_result = bench_simd_vectorization()
     simd_result.print_result()
 
     print("\n=== Benchmarks Complete ===")

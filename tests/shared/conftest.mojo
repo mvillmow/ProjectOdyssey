@@ -54,7 +54,7 @@ fn assert_equal[T: Comparable](a: T, b: T, message: String = "") raises:
         Error if a != b.
     """
     if a != b:
-        let error_msg = message if message else String(a) + " != " + String(b)
+        var error_msg = message if message else String(a) + " != " + String(b)
         raise Error(error_msg)
 
 
@@ -70,7 +70,7 @@ fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
         Error if a == b.
     """
     if a == b:
-        let error_msg = message if message else String(a) + " == " + String(b)
+        var error_msg = message if message else String(a) + " == " + String(b)
         raise Error(error_msg)
 
 
@@ -93,7 +93,7 @@ fn assert_almost_equal(
     """
     let diff = abs(a - b)
     if diff > tolerance:
-        let error_msg = message if message else (
+        var error_msg = message if message else (
             String(a) + " !≈ " + String(b) + " (diff: " + String(diff) + ")"
         )
         raise Error(error_msg)
@@ -111,7 +111,7 @@ fn assert_greater(a: Float32, b: Float32, message: String = "") raises:
         Error if a <= b.
     """
     if a <= b:
-        let error_msg = message if message else String(a) + " <= " + String(b)
+        var error_msg = message if message else String(a) + " <= " + String(b)
         raise Error(error_msg)
 
 
@@ -127,7 +127,7 @@ fn assert_less(a: Float32, b: Float32, message: String = "") raises:
         Error if a >= b.
     """
     if a >= b:
-        let error_msg = message if message else String(a) + " >= " + String(b)
+        var error_msg = message if message else String(a) + " >= " + String(b)
         raise Error(error_msg)
 
 
