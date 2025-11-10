@@ -34,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -80,7 +80,7 @@ jobs:
 
       - name: Upload scan results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dependency-scan-results
           path: |
@@ -97,7 +97,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           fetch-depth: 0  # Full history for comprehensive scanning
 
@@ -121,7 +121,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
 
       - name: Run Semgrep
         uses: returntocorp/semgrep-action@v1
@@ -132,7 +132,7 @@ jobs:
 
       - name: Upload SARIF results
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
         continue-on-error: true
@@ -154,7 +154,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -174,10 +174,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
 
       - name: Download dependency scan results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: dependency-scan-results
           path: security-results/
@@ -261,7 +261,7 @@ jobs:
           cat security-report.md
 
       - name: Upload security report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: security-report
           path: security-report.md
@@ -269,7 +269,7 @@ jobs:
 
       - name: Comment on PR
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
