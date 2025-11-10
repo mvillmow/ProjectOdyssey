@@ -19,6 +19,7 @@ from tests.shared.conftest import (
 
 # ============================================================================
 # Basic Training Loop Tests
+
 # ============================================================================
 
 fn test_basic_training_loop() raises:
@@ -133,6 +134,7 @@ fn test_training_with_validation() raises:
 
 # ============================================================================
 # Training with Callbacks
+
 # ============================================================================
 
 fn test_training_with_early_stopping() raises:
@@ -231,6 +233,7 @@ fn test_training_with_checkpoint() raises:
 
 # ============================================================================
 # Multi-Epoch Training
+
 # ============================================================================
 
 fn test_multi_epoch_convergence() raises:
@@ -291,6 +294,7 @@ fn test_multi_epoch_convergence() raises:
 
 # ============================================================================
 # Gradient Flow Tests
+
 # ============================================================================
 
 fn test_gradient_flow_through_layers() raises:
@@ -340,6 +344,7 @@ fn test_gradient_flow_through_layers() raises:
 
 # ============================================================================
 # Test Main
+
 # ============================================================================
 
 fn main() raises:

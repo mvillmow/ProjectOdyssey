@@ -183,6 +183,7 @@ struct TestFixtures:
 # Benchmark Utilities
 # ============================================================================
 
+
 struct BenchmarkResult:
     """Results from a performance benchmark.
 
@@ -192,17 +193,18 @@ struct BenchmarkResult:
         throughput: Operations per second.
         memory_mb: Memory used in megabytes.
     """
+
     var name: String
     var duration_ms: Float64
     var throughput: Float64
     var memory_mb: Float64
 
     fn __init__(
-        inout self,
+        inoutself,
         name: String,
         duration_ms: Float64,
         throughput: Float64,
-        memory_mb: Float64 = 0.0
+        memory_mb: Float64 = 0.0,
     ):
         """Initialize benchmark result.
 
@@ -242,7 +244,8 @@ fn print_benchmark_results(results: List[BenchmarkResult]):
 # Test Helpers
 # ============================================================================
 
-fn measure_time[func: fn() raises -> None]() raises -> Float64:
+
+fn measure_time[func: fn () raises -> None]() raises -> Float64:
     """Measure execution time of a function.
 
     Parameters:
@@ -257,7 +260,7 @@ fn measure_time[func: fn() raises -> None]() raises -> Float64:
 
 
 fn measure_throughput[
-    func: fn() raises -> None
+    func: fn () raises -> None
 ](n_iterations: Int) raises -> Float64:
     """Measure throughput of a function.
 
@@ -279,6 +282,7 @@ fn measure_throughput[
 # Test Data Generators
 # ============================================================================
 
+
 fn create_test_vector(size: Int, value: Float32 = 1.0) -> List[Float32]:
     """Create test vector filled with specific value.
 
@@ -296,9 +300,7 @@ fn create_test_vector(size: Int, value: Float32 = 1.0) -> List[Float32]:
 
 
 fn create_test_matrix(
-    rows: Int,
-    cols: Int,
-    value: Float32 = 1.0
+    rows: Int, cols: Int, value: Float32 = 1.0
 ) -> List[List[Float32]]:
     """Create test matrix filled with specific value.
 
