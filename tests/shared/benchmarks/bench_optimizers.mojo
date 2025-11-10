@@ -25,6 +25,7 @@ from tests.shared.conftest import (
 # SGD Benchmarks
 # ============================================================================
 
+
 fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
     """Benchmark SGD parameter update throughput.
 
@@ -74,12 +75,14 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
 
     # Placeholder for TDD
     var results = List[BenchmarkResult]()
-    results.append(BenchmarkResult(
-        name="SGD-placeholder",
-        duration_ms=0.0,
-        throughput=0.0,
-        memory_mb=0.0
-    ))
+    results.append(
+        BenchmarkResult(
+            name="SGD-placeholder",
+            duration_ms=0.0,
+            throughput=0.0,
+            memory_mb=0.0,
+        )
+    )
     return results
 
 
@@ -121,13 +124,14 @@ fn bench_sgd_momentum_overhead() raises -> BenchmarkResult:
         name="SGD-momentum-overhead-placeholder",
         duration_ms=0.0,
         throughput=0.0,
-        memory_mb=0.0
+        memory_mb=0.0,
     )
 
 
 # ============================================================================
 # Adam Benchmarks
 # ============================================================================
+
 
 fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
     """Benchmark Adam parameter update throughput.
@@ -178,12 +182,14 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
 
     # Placeholder for TDD
     var results = List[BenchmarkResult]()
-    results.append(BenchmarkResult(
-        name="Adam-placeholder",
-        duration_ms=0.0,
-        throughput=0.0,
-        memory_mb=0.0
-    ))
+    results.append(
+        BenchmarkResult(
+            name="Adam-placeholder",
+            duration_ms=0.0,
+            throughput=0.0,
+            memory_mb=0.0,
+        )
+    )
     return results
 
 
@@ -229,13 +235,14 @@ fn bench_adam_memory_usage() raises -> BenchmarkResult:
         name="Adam-memory-usage-placeholder",
         duration_ms=0.0,
         throughput=0.0,
-        memory_mb=0.0
+        memory_mb=0.0,
     )
 
 
 # ============================================================================
 # Comparison Benchmarks
 # ============================================================================
+
 
 fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
     """Compare performance of all optimizer implementations.
@@ -288,18 +295,21 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
 
     # Placeholder for TDD
     var results = List[BenchmarkResult]()
-    results.append(BenchmarkResult(
-        name="Optimizer-comparison-placeholder",
-        duration_ms=0.0,
-        throughput=0.0,
-        memory_mb=0.0
-    ))
+    results.append(
+        BenchmarkResult(
+            name="Optimizer-comparison-placeholder",
+            duration_ms=0.0,
+            throughput=0.0,
+            memory_mb=0.0,
+        )
+    )
     return results
 
 
 # ============================================================================
 # SIMD Optimization Benchmarks
 # ============================================================================
+
 
 fn bench_simd_vectorization() raises -> BenchmarkResult:
     """Benchmark SIMD vectorization in optimizer updates.
@@ -351,13 +361,14 @@ fn bench_simd_vectorization() raises -> BenchmarkResult:
         name="SIMD-vectorization-placeholder",
         duration_ms=0.0,
         throughput=0.0,
-        memory_mb=0.0
+        memory_mb=0.0,
     )
 
 
 # ============================================================================
 # Test Main
 # ============================================================================
+
 
 fn main() raises:
     """Run all optimizer benchmarks and print results."""

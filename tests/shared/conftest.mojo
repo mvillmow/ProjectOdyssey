@@ -14,6 +14,7 @@ from random import seed, randn, randint
 # Assertion Functions
 # ============================================================================
 
+
 fn assert_true(condition: Bool, message: String = "Assertion failed") raises:
     """Assert that condition is true.
 
@@ -75,10 +76,7 @@ fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
 
 
 fn assert_almost_equal(
-    a: Float32,
-    b: Float32,
-    tolerance: Float32 = 1e-6,
-    message: String = ""
+    a: Float32, b: Float32, tolerance: Float32 = 1e-6, message: String = ""
 ) raises:
     """Assert floating point near-equality.
 
@@ -134,6 +132,7 @@ fn assert_less(a: Float32, b: Float32, message: String = "") raises:
 # ============================================================================
 # Test Fixtures
 # ============================================================================
+
 
 struct TestFixtures:
     """Collection of reusable test fixtures and utilities.
