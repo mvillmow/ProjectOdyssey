@@ -5,3 +5,7 @@ notes/issues/
 
 # Exclude local plan files (not tracked in git)
 notes/plan/
+
+# Exclude test documentation files (supporting evidence only)
+test_mojo_capabilities_results.md
+MOJO_SCRIPT_CONVERSION_ASSESSMENT.md
