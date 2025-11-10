@@ -240,7 +240,9 @@ mojo package shared --install
 
 ## Troubleshooting
 
-### Import Errors
+### Common Issues and Solutions
+
+#### Import Errors
 
 **Problem**: `Error: Cannot find module 'shared'`
 
@@ -249,6 +251,7 @@ mojo package shared --install
 1. Verify installation: `mojo list` should show `ml-odyssey-shared`
 2. Reinstall: `mojo package shared --install`
 3. Check MOJO_PATH: `echo $MOJO_PATH`
+4. Verify using: `mojo run scripts/verify_installation.mojo`
 
 **Problem**: `Error: Module 'shared' found but component 'Linear' not found`
 
@@ -257,8 +260,36 @@ mojo package shared --install
 - The implementation is not yet complete for that component
 - Check Issue #49 for implementation status
 - Use placeholder or stub for development
+- Check what's actually implemented:
 
-### Build Errors
+```bash
+find shared/ -name "*.mojo" -type f | while read f; do
+    if grep -q "^struct\|^fn" "$f" 2>/dev/null; then
+        echo "✓ $f (has implementation)"
+    else
+        echo "○ $f (stub/planning)"
+    fi
+done
+```
+
+**Problem**: `ImportError: cannot import name 'Linear' from 'shared.core'`
+
+**Solution**:
+
+```bash
+# Verify installation
+mojo run scripts/verify_installation.mojo
+
+# Reinstall package
+mojo package shared --install
+
+# Check available exports in Mojo REPL
+mojo repl
+# Then type: from shared import *
+# Then type: dir()
+```
+
+#### Build Errors
 
 **Problem**: Build fails with compilation errors
 
@@ -269,7 +300,20 @@ mojo package shared --install
 3. Update dependencies in `pixi.toml`
 4. Report issue if problem persists
 
-### Version Conflicts
+**Additional Solutions**:
+
+```bash
+# Update Mojo to latest version
+modular update mojo
+
+# Build with verbose output for debugging
+mojo package shared --verbose
+
+# Check for syntax errors
+mojo check shared/
+```
+
+#### Version Conflicts
 
 **Problem**: Multiple versions of shared library installed
 
@@ -285,6 +329,164 @@ mojo uninstall ml-odyssey-shared
 # Reinstall correct version
 mojo package shared --install
 ```
+
+**Problem**: API doesn't match documentation
+
+**Solution**:
+
+```bash
+# Check installed version
+mojo repl
+# Then: from shared import __version__
+# Then: print(__version__)
+
+# Reinstall latest version
+git pull
+mojo package shared --install --force
+```
+
+#### Performance Issues
+
+**Problem**: Code runs slower than expected
+
+**Solutions**:
+
+```bash
+# Build release version for better performance
+mojo build --release your_code.mojo
+
+# Check available build flags
+mojo build --help
+
+# Profile your code to find bottlenecks
+mojo run --profile your_code.mojo
+```
+
+#### Platform-Specific Issues
+
+**Problem**: Installation fails on WSL/Linux
+
+**Solutions**:
+
+```bash
+# Ensure proper permissions on scripts
+chmod +x scripts/*.mojo
+
+# Use absolute paths if needed
+MOJO_PATH=/path/to/packages mojo run script.mojo
+
+# Check file system case sensitivity
+ls -la shared/
+```
+
+**Problem**: Installation fails on macOS
+
+**Solutions**:
+
+```bash
+# Install Xcode Command Line Tools if needed
+xcode-select --install
+
+# Check architecture (Apple Silicon vs Intel)
+uname -m
+
+# Ensure Mojo is installed for correct architecture
+modular install mojo
+```
+
+### Verification Steps
+
+If installation seems successful but imports fail, run these checks:
+
+```bash
+# 1. Verify Mojo installation
+mojo --version
+# Expected: 24.5 or later
+
+# 2. Verify shared library directory structure
+ls -la shared/
+# Should show __init__.mojo and subdirectories (core, training, data, utils)
+
+# 3. Test basic import
+mojo repl
+# Then: from shared import __version__
+# Then: print(__version__)
+# Expected: "0.1.0" or similar
+
+# 4. Run verification script
+mojo run scripts/verify_installation.mojo
+# Should complete without errors
+```
+
+### Known Limitations
+
+#### Current Implementation Status
+
+The shared library is in active development. Some components may be:
+
+- **Planned**: Documented but not yet implemented
+- **Stubbed**: Interface defined, implementation incomplete
+- **Beta**: Implemented but not fully tested
+
+#### Platform Support
+
+- **Linux**: Fully supported ✓
+- **macOS**: Fully supported ✓
+- **Windows**: Via WSL only (native support coming soon)
+
+#### Mojo Version Requirements
+
+- **Minimum**: Mojo 24.5
+- **Recommended**: Latest stable release
+- **Beta features**: May require nightly builds
+
+### Getting Unstuck
+
+If you're still having issues after trying the solutions above:
+
+**1. Clean Install** - Remove everything and start fresh:
+
+```bash
+# Remove old installations
+rm -rf ~/.modular/packages/shared*
+
+# Clean build artifacts
+rm -rf shared/__pycache__ shared/**/__pycache__
+
+# Reinstall from scratch
+git pull
+mojo package shared --install
+```
+
+**2. Check Environment** - Print diagnostic information:
+
+```bash
+# Print environment info
+echo "Mojo: $(mojo --version)"
+echo "OS: $(uname -a)"
+echo "PATH: $PATH"
+echo "MOJO_PATH: $MOJO_PATH"
+```
+
+**3. Minimal Test Case** - Create a minimal test:
+
+```mojo
+# test_import.mojo
+from shared import __version__
+
+fn main():
+    print("Shared library version:", __version__)
+```
+
+Run it: `mojo run test_import.mojo`
+
+**4. File an Issue** - If none of the above works, file a GitHub issue with:
+
+- Mojo version: `mojo --version`
+- OS and architecture: `uname -a`
+- Full error message (copy/paste complete output)
+- Steps to reproduce the issue
+- Output from verification steps above
 
 ## Uninstallation
 
