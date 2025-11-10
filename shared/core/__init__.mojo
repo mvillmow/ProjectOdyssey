@@ -28,8 +28,38 @@ Example:
 # Package version
 alias VERSION = "0.1.0"
 
+# ============================================================================
+# Exports - Will be populated during implementation phase
+# ============================================================================
+# NOTE: These imports are commented out until implementation phase completes.
+
 # Core exports will be added here as components are implemented
 # from .layers import Linear, Conv2D, ReLU, Sigmoid, Tanh
 # from .ops import matmul, transpose, sum, mean
 # from .types import Tensor, Shape, DType
 # from .utils import xavier_init, he_init
+
+# ============================================================================
+# Public API
+# ============================================================================
+
+__all__ = [
+    # Layers
+    # "Linear",
+    # "Conv2D",
+    # "ReLU",
+    # "Sigmoid",
+    # "Tanh",
+    # Operations
+    # "matmul",
+    # "transpose",
+    # "sum",
+    # "mean",
+    # Types
+    # "Tensor",
+    # "Shape",
+    # "DType",
+    # Utils
+    # "xavier_init",
+    # "he_init",
+]

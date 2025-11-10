@@ -1,21 +1,112 @@
 # Usage Examples - ML Odyssey Shared Library
 
-This document provides comprehensive usage examples for the ML Odyssey shared library.
+This document provides comprehensive usage examples for the ML Odyssey shared library, from quick start to advanced patterns.
 
 **Note**: Examples use commented imports for components not yet implemented. Uncomment imports as Issue #49 completes implementation.
 
 ## Table of Contents
 
-1. [Basic Neural Network](#basic-neural-network)
-2. [Convolutional Neural Network](#convolutional-neural-network)
-3. [Training with Validation](#training-with-validation)
-4. [Custom Training Loop](#custom-training-loop)
-5. [Data Loading](#data-loading)
-6. [Learning Rate Scheduling](#learning-rate-scheduling)
-7. [Callbacks and Monitoring](#callbacks-and-monitoring)
-8. [Model Checkpointing](#model-checkpointing)
-9. [Multiple Metrics](#multiple-metrics)
-10. [Complete Example: MNIST Classifier](#complete-example-mnist-classifier)
+1. [Quickstart (5 Minutes)](#quickstart-5-minutes)
+2. [Basic Neural Network](#basic-neural-network)
+3. [Convolutional Neural Network](#convolutional-neural-network)
+4. [Training with Validation](#training-with-validation)
+5. [Custom Training Loop](#custom-training-loop)
+6. [Data Loading](#data-loading)
+7. [Learning Rate Scheduling](#learning-rate-scheduling)
+8. [Callbacks and Monitoring](#callbacks-and-monitoring)
+9. [Model Checkpointing](#model-checkpointing)
+10. [Multiple Metrics](#multiple-metrics)
+11. [Complete Example: MNIST Classifier](#complete-example-mnist-classifier)
+12. [Advanced Patterns](#advanced-patterns)
+
+## Quickstart (5 Minutes)
+
+Get started with the shared library in 5 minutes:
+
+### 1. Install (30 seconds)
+
+```bash
+cd ml-odyssey
+mojo package shared --install
+mojo run scripts/verify_installation.mojo
+```
+
+### 2. Hello World Model (2 minutes)
+
+Create `hello_ml.mojo`:
+
+```mojo
+from shared import Linear, ReLU, Sequential, SGD
+
+fn main():
+    # Create a simple 3-layer network
+    var model = Sequential([
+        Linear(784, 128),  # Input layer
+        ReLU(),
+        Linear(128, 10),   # Output layer
+    ])
+
+    # Create optimizer
+    var optimizer = SGD(learning_rate=0.01)
+
+    print("Model created successfully!")
+    print("Parameters:", model.num_parameters())
+```
+
+Run it: `mojo run hello_ml.mojo`
+
+### 3. Train on Dummy Data (2 minutes)
+
+Add training to `hello_ml.mojo`:
+
+```mojo
+from shared import Linear, ReLU, Sequential, SGD, DataLoader, TensorDataset
+from shared import train_epoch, Logger
+
+fn main():
+    # Setup logging
+    var logger = Logger("quickstart")
+    logger.info("Starting training...")
+
+    # Create model
+    var model = Sequential([
+        Linear(784, 128),
+        ReLU(),
+        Linear(128, 10),
+    ])
+
+    # Create dummy data (replace with real data)
+    var train_data = create_random_tensor((1000, 784))
+    var train_labels = create_random_labels(1000, 10)
+
+    # Create dataset and loader
+    var dataset = TensorDataset(train_data, train_labels)
+    var loader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+    # Create optimizer
+    var optimizer = SGD(learning_rate=0.01, momentum=0.9)
+
+    # Train for 5 epochs
+    for epoch in range(5):
+        var loss = train_epoch(model, optimizer, loader, cross_entropy_loss)
+        logger.info(f"Epoch {epoch}: Loss = {loss:.4f}")
+
+    logger.info("Training complete!")
+```
+
+**That's it!** You now have:
+
+- ✅ A neural network model
+- ✅ An optimizer
+- ✅ A data loader
+- ✅ A training loop
+
+### Next Steps After Quickstart
+
+- **Learn More**: Continue reading examples below
+- **Real Data**: Replace dummy data with MNIST/CIFAR-10
+- **Customize**: Add more layers, try different optimizers
+- **Visualize**: Add `plot_training_curves()` to see progress
 
 ## Basic Neural Network
 
@@ -808,12 +899,472 @@ fn mnist_classifier_complete():
     print("Final Test Accuracy:", test_acc.compute())
 ```
 
+## Advanced Patterns
+
+### Custom Layers
+
+Create custom layers by extending the Module interface:
+
+```mojo
+from shared.core import Module, Linear, ReLU
+
+struct ResidualBlock(Module):
+    """Residual block with skip connection."""
+    var conv1: Conv2D
+    var conv2: Conv2D
+    var relu: ReLU
+    var use_projection: Bool
+    var projection: Optional[Conv2D]
+
+    fn __init__(inout self, in_channels: Int, out_channels: Int, stride: Int = 1):
+        """Initialize residual block."""
+        self.conv1 = Conv2D(in_channels, out_channels, kernel_size=3, stride=stride, padding=1)
+        self.conv2 = Conv2D(out_channels, out_channels, kernel_size=3, padding=1)
+        self.relu = ReLU()
+
+        # Add projection if dimensions change
+        self.use_projection = (stride != 1) or (in_channels != out_channels)
+        if self.use_projection:
+            self.projection = Conv2D(in_channels, out_channels, kernel_size=1, stride=stride)
+
+    fn forward(self, x: Tensor) -> Tensor:
+        """Forward pass with residual connection."""
+        var identity = x
+
+        # Main path
+        var out = self.relu(self.conv1(x))
+        out = self.conv2(out)
+
+        # Skip connection
+        if self.use_projection:
+            identity = self.projection.value()(x)
+
+        # Add and activate
+        out = out + identity
+        return self.relu(out)
+
+    fn parameters(self) -> List[Tensor]:
+        """Return all trainable parameters."""
+        var params = List[Tensor]()
+        params.extend(self.conv1.parameters())
+        params.extend(self.conv2.parameters())
+        if self.use_projection:
+            params.extend(self.projection.value().parameters())
+        return params
+```
+
+### Custom Optimizers
+
+Implement custom optimization algorithms:
+
+```mojo
+from shared.training import Optimizer
+
+struct CustomOptimizer(Optimizer):
+    """Custom optimizer with adaptive learning rates."""
+    var learning_rate: Float32
+    var state: Dict[String, Tensor]
+
+    fn __init__(inout self, learning_rate: Float32 = 0.01):
+        """Initialize optimizer."""
+        self.learning_rate = learning_rate
+        self.state = Dict[String, Tensor]()
+
+    fn step(inout self, inout params: List[Tensor], grads: List[Tensor]):
+        """Custom optimization step."""
+        for i in range(len(params)):
+            var param = params[i]
+            var grad = grads[i]
+
+            # Custom update rule
+            var adaptive_lr = self.compute_adaptive_lr(param, grad)
+            param -= adaptive_lr * grad
+
+    fn compute_adaptive_lr(self, param: Tensor, grad: Tensor) -> Float32:
+        """Compute adaptive learning rate based on gradient statistics."""
+        var grad_norm = compute_norm(grad)
+        return self.learning_rate / (1.0 + grad_norm)
+```
+
+### Custom Loss Functions
+
+Define problem-specific loss functions:
+
+```mojo
+fn focal_loss(
+    predictions: Tensor,
+    targets: Tensor,
+    alpha: Float32 = 0.25,
+    gamma: Float32 = 2.0
+) -> Float32:
+    """
+    Focal loss for addressing class imbalance.
+
+    Args:
+        predictions: Model predictions (N, num_classes)
+        targets: Ground truth labels (N,)
+        alpha: Weighting factor
+        gamma: Focusing parameter
+
+    Returns:
+        Focal loss value
+    """
+    # Convert to probabilities
+    var probs = softmax(predictions)
+
+    # Get probabilities for correct classes
+    var target_probs = gather(probs, targets)
+
+    # Compute focal loss
+    var focal_weight = pow(1.0 - target_probs, gamma)
+    var ce_loss = -log(target_probs)
+    var loss = alpha * focal_weight * ce_loss
+
+    return loss.mean()
+
+
+fn contrastive_loss(
+    embeddings1: Tensor,
+    embeddings2: Tensor,
+    labels: Tensor,
+    margin: Float32 = 1.0
+) -> Float32:
+    """
+    Contrastive loss for metric learning.
+
+    Args:
+        embeddings1: First set of embeddings (N, D)
+        embeddings2: Second set of embeddings (N, D)
+        labels: Binary labels (0 = different, 1 = similar)
+        margin: Margin for dissimilar pairs
+
+    Returns:
+        Contrastive loss value
+    """
+    # Compute pairwise distances
+    var distances = euclidean_distance(embeddings1, embeddings2)
+
+    # Similar pairs: minimize distance
+    var loss_similar = labels * pow(distances, 2)
+
+    # Dissimilar pairs: maximize distance up to margin
+    var loss_dissimilar = (1 - labels) * pow(max(margin - distances, 0), 2)
+
+    return (loss_similar + loss_dissimilar).mean()
+```
+
+### Custom Data Transforms
+
+Create domain-specific transforms:
+
+```mojo
+from shared.data import Transform
+
+struct MixUp(Transform):
+    """MixUp data augmentation for better generalization."""
+    var alpha: Float32
+
+    fn __init__(inout self, alpha: Float32 = 1.0):
+        """Initialize MixUp with mixing parameter."""
+        self.alpha = alpha
+
+    fn __call__(self, batch: Batch) -> Batch:
+        """Apply MixUp to batch."""
+        var batch_size = batch.inputs.shape[0]
+
+        # Sample mixing coefficient
+        var lam = sample_beta(self.alpha, self.alpha)
+
+        # Random permutation
+        var indices = random_permutation(batch_size)
+
+        # Mix inputs and targets
+        var mixed_inputs = lam * batch.inputs + (1 - lam) * batch.inputs[indices]
+        var mixed_targets = lam * batch.targets + (1 - lam) * batch.targets[indices]
+
+        return Batch(mixed_inputs, mixed_targets, batch.indices)
+
+
+struct CutOut(Transform):
+    """CutOut augmentation - randomly mask regions."""
+    var mask_size: Int
+
+    fn __init__(inout self, mask_size: Int = 16):
+        """Initialize CutOut with mask size."""
+        self.mask_size = mask_size
+
+    fn __call__(self, x: Tensor) -> Tensor:
+        """Apply CutOut to image."""
+        var h = x.shape[1]
+        var w = x.shape[2]
+
+        # Random mask position
+        var y = random_int(0, h)
+        var x_pos = random_int(0, w)
+
+        # Calculate mask boundaries
+        var y1 = max(0, y - self.mask_size // 2)
+        var y2 = min(h, y + self.mask_size // 2)
+        var x1 = max(0, x_pos - self.mask_size // 2)
+        var x2 = min(w, x_pos + self.mask_size // 2)
+
+        # Apply mask
+        var output = x.copy()
+        output[:, y1:y2, x1:x2] = 0.0
+        return output
+```
+
+### Model Ensemble
+
+Combine multiple models for better performance:
+
+```mojo
+struct ModelEnsemble:
+    """Ensemble of models for robust predictions."""
+    var models: List[Module]
+    var weights: List[Float32]
+
+    fn __init__(inout self, models: List[Module], weights: Optional[List[Float32]] = None):
+        """Initialize ensemble with models and optional weights."""
+        self.models = models
+
+        if weights:
+            self.weights = weights.value()
+        else:
+            # Equal weights
+            var n = len(models)
+            self.weights = List[Float32]([1.0 / n for _ in range(n)])
+
+    fn predict(self, x: Tensor) -> Tensor:
+        """Ensemble prediction (weighted average)."""
+        var outputs = List[Tensor]()
+
+        # Get predictions from all models
+        for model in self.models:
+            outputs.append(model.forward(x))
+
+        # Weighted average
+        var ensemble_output = zeros_like(outputs[0])
+        for i in range(len(outputs)):
+            ensemble_output += self.weights[i] * outputs[i]
+
+        return ensemble_output
+
+    fn predict_with_uncertainty(self, x: Tensor) -> Tuple[Tensor, Tensor]:
+        """Return predictions with uncertainty estimates."""
+        var outputs = List[Tensor]()
+
+        for model in self.models:
+            outputs.append(model.forward(x))
+
+        # Compute mean and std
+        var mean = compute_mean(outputs)
+        var std = compute_std(outputs)
+
+        return (mean, std)
+```
+
+### Gradient Accumulation
+
+Train with larger effective batch sizes:
+
+```mojo
+fn train_with_gradient_accumulation(
+    model: Module,
+    optimizer: Optimizer,
+    loader: DataLoader,
+    accumulation_steps: Int = 4
+) -> Float32:
+    """
+    Train with gradient accumulation for larger effective batch size.
+
+    Args:
+        model: Model to train
+        optimizer: Optimizer
+        loader: Data loader
+        accumulation_steps: Number of batches to accumulate
+
+    Returns:
+        Average loss
+    """
+    var total_loss: Float32 = 0.0
+    var num_batches = 0
+    var accumulated_grads = initialize_grads(model)
+
+    for batch_idx, batch in enumerate(loader):
+        # Forward pass
+        var outputs = model.forward(batch.inputs)
+        var loss = cross_entropy_loss(outputs, batch.targets)
+
+        # Backward pass (accumulate gradients)
+        var grads = compute_gradients(loss, model)
+        for i in range(len(grads)):
+            accumulated_grads[i] += grads[i]
+
+        total_loss += loss.item()
+        num_batches += 1
+
+        # Update every accumulation_steps batches
+        if (batch_idx + 1) % accumulation_steps == 0:
+            # Average accumulated gradients
+            for grad in accumulated_grads:
+                grad /= Float32(accumulation_steps)
+
+            # Optimizer step
+            optimizer.step(model.parameters(), accumulated_grads)
+
+            # Reset accumulated gradients
+            accumulated_grads = initialize_grads(model)
+
+    return total_loss / Float32(num_batches)
+```
+
+### Mixed Precision Training
+
+Use lower precision for faster training:
+
+```mojo
+struct MixedPrecisionTrainer:
+    """Mixed precision training with automatic loss scaling."""
+    var model: Module
+    var optimizer: Optimizer
+    var scaler: GradScaler
+    var use_fp16: Bool
+
+    fn __init__(
+        inout self,
+        model: Module,
+        optimizer: Optimizer,
+        use_fp16: Bool = True
+    ):
+        """Initialize mixed precision trainer."""
+        self.model = model
+        self.optimizer = optimizer
+        self.use_fp16 = use_fp16
+        self.scaler = GradScaler() if use_fp16 else None
+
+    fn train_step(inout self, batch: Batch) -> Float32:
+        """Single training step with mixed precision."""
+        # Convert inputs to FP16 if needed
+        var inputs = batch.inputs.to(DType.float16) if self.use_fp16 else batch.inputs
+
+        # Forward pass in FP16
+        var outputs = self.model.forward(inputs)
+        var loss = cross_entropy_loss(outputs, batch.targets)
+
+        # Scale loss for FP16
+        if self.use_fp16:
+            loss = self.scaler.scale(loss)
+
+        # Backward pass
+        var grads = compute_gradients(loss, self.model)
+
+        # Unscale gradients
+        if self.use_fp16:
+            grads = self.scaler.unscale(grads)
+
+        # Optimizer step
+        self.optimizer.step(self.model.parameters(), grads)
+
+        # Update scaler
+        if self.use_fp16:
+            self.scaler.update()
+
+        return loss.item()
+```
+
+### Advanced Debugging
+
+Debug training with detailed inspection:
+
+```mojo
+from shared.utils import Logger
+
+struct TrainingDebugger:
+    """Advanced debugging utilities for training."""
+    var logger: Logger
+    var log_gradients: Bool
+    var log_activations: Bool
+
+    fn __init__(
+        inout self,
+        log_file: String = "debug.log",
+        log_gradients: Bool = True,
+        log_activations: Bool = False
+    ):
+        """Initialize debugger."""
+        self.logger = Logger(log_file)
+        self.log_gradients = log_gradients
+        self.log_activations = log_activations
+
+    fn debug_step(
+        self,
+        model: Module,
+        batch: Batch,
+        grads: List[Tensor],
+        loss: Float32
+    ):
+        """Log debugging information for training step."""
+        self.logger.debug(f"Loss: {loss:.6f}")
+
+        # Check for NaN/Inf in loss
+        if is_nan(loss) or is_inf(loss):
+            self.logger.error("Invalid loss detected!")
+
+        # Log gradient statistics
+        if self.log_gradients:
+            for i, grad in enumerate(grads):
+                var grad_norm = compute_norm(grad)
+                var grad_mean = grad.mean()
+                var grad_max = grad.max()
+
+                self.logger.debug(
+                    f"Grad[{i}]: norm={grad_norm:.6f}, "
+                    f"mean={grad_mean:.6f}, max={grad_max:.6f}"
+                )
+
+                # Check for vanishing/exploding gradients
+                if grad_norm < 1e-7:
+                    self.logger.warning(f"Vanishing gradient at layer {i}")
+                if grad_norm > 100:
+                    self.logger.warning(f"Exploding gradient at layer {i}")
+
+        # Log parameter statistics
+        for i, param in enumerate(model.parameters()):
+            var param_norm = compute_norm(param)
+            self.logger.debug(f"Param[{i}]: norm={param_norm:.6f}")
+```
+
+## Best Practices Summary
+
+### Performance Tips
+
+1. **Use SIMD**: Leverage vectorization for element-wise operations
+2. **Batch Operations**: Process data in batches for efficiency
+3. **Release Builds**: Use `mojo build --release` for production
+4. **Profile First**: Measure before optimizing
+
+### Code Organization
+
+1. **Separate Concerns**: Keep model, training, data separate
+2. **Config Files**: Use YAML/JSON for hyperparameters
+3. **Logging**: Log everything important
+4. **Reproducibility**: Always set random seeds
+
+### Common Pitfalls
+
+1. **Forgetting to Call train()/eval()**: Set model modes correctly
+2. **Not Resetting Metrics**: Reset between epochs
+3. **Wrong Learning Rates**: Start conservative
+4. **Ignoring Validation**: Always validate during training
+
 ## Next Steps
 
 - Review [API Documentation](docs/api/) for detailed API reference
 - Check [INSTALL.md](INSTALL.md) for installation instructions
 - See [README.md](README.md) for library overview
 - Browse tests in `tests/shared/` for more examples
+- Read [MIGRATION.md](MIGRATION.md) for paper integration patterns
 
 ## Notes
 
