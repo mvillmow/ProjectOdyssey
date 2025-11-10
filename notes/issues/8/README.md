@@ -566,7 +566,7 @@ The ML Odyssey project should:
 
 - [Mojo Changelog](https://docs.modular.com/mojo/changelog/) - Version history
 - [Mojo Stdlib](https://docs.modular.com/mojo/stdlib/) - Standard library reference
-- [Mojo Subprocess](https://docs.modular.com/mojo/subprocess/) - Subprocess module (minimal docs)
+- [Mojo Subprocess](https://docs.modular.com/mojo/stdlib/subprocess/) - Subprocess module (minimal docs)
 
 ### Project Documentation
 
