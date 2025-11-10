@@ -1,0 +1,45 @@
+# Example Configuration File
+#
+# This file demonstrates the expected format for configuration files.
+# Copy and modify for your specific paper implementation.
+
+# Model Configuration
+model:
+  name: "example_model"
+  architecture: "example_architecture"
+  input_shape: [28, 28, 1]
+  num_classes: 10
+
+# Training Configuration
+training:
+  batch_size: 32
+  epochs: 10
+  learning_rate: 0.001
+  optimizer: "adam"
+  loss_function: "cross_entropy"
+
+# Data Configuration
+data:
+  dataset_name: "example_dataset"
+  train_split: 0.8
+  val_split: 0.1
+  test_split: 0.1
+  shuffle: true
+  seed: 42
+
+# Paths
+paths:
+  data_dir: "data/raw"
+  processed_dir: "data/processed"
+  cache_dir: "data/cache"
+  checkpoint_dir: "checkpoints"
+  results_dir: "results"
+
+# Experiment Configuration
+experiment:
+  name: "baseline_experiment"
+  description: "Baseline experiment configuration"
+  tags: ["baseline", "initial"]
+  track_metrics: true
+  save_checkpoints: true
+  checkpoint_frequency: 5
