@@ -571,8 +571,8 @@ The ML Odyssey project should:
 ### Project Documentation
 
 - [GitHub Issue #8](https://github.com/mvillmow/ml-odyssey/issues/8) - Original conversion request
-- [scripts/README.md](/scripts/README.md) - Python scripts documentation
-- [CLAUDE.md](/CLAUDE.md) - Project guidelines
+- [scripts/README.md](../../../scripts/README.md) - Python scripts documentation
+- [CLAUDE.md](../../../CLAUDE.md) - Project guidelines
 
 ### Test Files
 
