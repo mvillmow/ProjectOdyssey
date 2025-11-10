@@ -41,36 +41,49 @@ method for completing tasks.
 
 ### Language Preference
 
-#### Mojo First - Always Default to Mojo
+#### Mojo First - With Pragmatic Exceptions
 
-- ✅ **Default to Mojo** for ALL new code:
-  - Implementation code (ML algorithms, data structures, core logic)
-  - Scripts (build scripts, automation, utilities, tools)
-  - Tests (unit tests, integration tests)
-  - CI/CD scripts and workflows
-  - Data processing and preprocessing
-  - Any new utilities or helpers
+**Default to Mojo** for ALL ML/AI implementations:
 
-- ⚠️ **Use Python ONLY when**:
-  - Interfacing with Python-only libraries that don't have Mojo bindings
-  - Explicit requirement in issue specifies Python
-  - Rapid prototyping (must convert to Mojo after validation)
-  - Quick one-off debugging scripts (document as temporary)
+- ✅ Neural network implementations (forward/backward passes, layers)
+- ✅ Training loops and optimization algorithms
+- ✅ Tensor operations and SIMD kernels
+- ✅ Performance-critical data processing
+- ✅ Type-safe model components
+- ✅ Gradient computation and backpropagation
+- ✅ Model inference engines
 
-- 🔄 **Convert Python to Mojo**:
-  - When feasible, convert existing Python scripts to Mojo
-  - Prioritize frequently-used scripts and performance-critical code
-  - Document Python code as "legacy" if not yet converted
+**Use Python for Automation** when technical limitations require it:
 
-**Rule of Thumb**: If you're asking "Should I use Mojo or Python?", the answer is Mojo. Python requires justification.
+- ✅ Subprocess output capture (Mojo v0.25.7 limitation - cannot capture stdout/stderr)
+- ✅ Regex-heavy text processing (no Mojo regex support in stdlib)
+- ✅ GitHub API interaction via Python libraries (`gh` CLI, REST API)
+- ⚠️ **MUST document justification** (see ADR-001 for header template)
 
-**Why Mojo**:
+**Rule of Thumb** (Decision Tree):
+
+1. **ML/AI implementation?** → Mojo (required)
+2. **Automation needing subprocess output?** → Python (allowed, document why)
+3. **Automation needing regex?** → Python (allowed, document why)
+4. **Interface with Python-only libraries?** → Python (allowed, document why)
+5. **Everything else?** → Mojo (default)
+
+**Why Mojo for ML/AI**:
 
 - Performance: 10-100x faster for ML workloads
 - Type safety: Catch errors at compile time
 - Memory safety: Built-in ownership and borrow checking
-- Consistency: One language across the project
+- SIMD optimization: Parallel tensor operations
 - Future-proof: Designed for AI/ML from the ground up
+
+**Conversion Strategy**:
+
+- Quarterly reviews of Python automation for conversion opportunities
+- Convert when Mojo gains required capabilities (subprocess output, regex)
+- Target timeline: Q2-Q3 2026 (estimated based on Mojo maturity)
+
+**See**: [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) for complete language selection strategy,
+monitoring plan, and justification requirements
 
 See `/agents/README.md` for complete agent documentation and `/agents/hierarchy.md` for visual hierarchy.
 

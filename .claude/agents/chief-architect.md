@@ -69,31 +69,47 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 
 ### Language Selection Strategy
 
-**Critical**: ALL new scripts, tools, and automation MUST be written in Mojo unless there's explicit justification
-documented in the issue.
+**Core Principle**: Use the right tool for the job - Mojo for ML/AI implementations, Python for automation when
+technically necessary.
 
-- **Use Mojo for**: Performance-critical ML operations, training loops, tensor operations, SIMD-optimized code, **ALL
+**Mojo REQUIRED**:
 
-scripts** (build, automation, CI/CD, utilities), **ALL tools**, **ALL new code**
+- ✅ ALL ML/AI implementations (neural networks, training loops, inference)
+- ✅ ALL performance-critical code (SIMD kernels, tensor operations)
+- ✅ ALL new code unless technical limitation documented
 
-- **Use Python ONLY for**: Interfacing with Python-only libraries (no Mojo bindings available), explicit requirement in
+**Python ALLOWED**:
 
-issue, rapid prototyping (must document Mojo conversion plan)
+- ✅ Automation requiring subprocess output capture (Mojo v0.25.7 limitation)
+- ✅ Text processing requiring regex (no Mojo stdlib support)
+- ✅ GitHub API interaction via Python libraries
+- ⚠️ **MUST document justification per ADR-001**
 
-- **Interop**: Design clear boundaries between Mojo and Python components
+**Decision Authority**:
 
-**Script and Tool Language**:
+- Chief Architect approves new Python automation
+- All Python usage must link to ADR-001 or have issue documenting justification
+- Quarterly reviews of Python code for conversion opportunities (see ADR-001 monitoring strategy)
 
-- Build scripts → Mojo
-- Test scripts → Mojo
-- CI/CD scripts → Mojo
-- Utilities → Mojo
-- Automation → Mojo
+**Decision Process** (when creating new components):
 
-Python is allowed ONLY when interfacing with Python-only libraries or explicitly required by issue. Document the
-justification.
+1. **ML/AI implementation?** → Mojo (required)
+2. **Need subprocess output capture?** → Python (allowed, document why)
+3. **Need regex parsing?** → Python (allowed, document why)
+4. **Interface with Python-only libraries?** → Python (allowed, document why)
+5. **Everything else?** → Mojo (default)
 
-See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selection philosophy.
+**Justification Requirements**:
+
+All Python automation must include header comment with:
+
+- Specific Mojo limitations blocking conversion
+- Conversion blockers and required Mojo features
+- Estimated conversion timeline
+- Link to ADR-001
+
+See [ADR-001](../../../notes/review/adr/ADR-001-language-selection-tooling.md) for complete language selection strategy
+and monitoring plan. See [CLAUDE.md](../../CLAUDE.md#language-preference) for quick reference.
 
 ### Architectural Patterns
 

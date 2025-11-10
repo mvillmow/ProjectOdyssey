@@ -98,6 +98,40 @@ This creates `dist/papers-YYYYMMDD.tar.gz` containing the entire papers director
 - Complete test coverage and usage examples
 - Distributable tarball packaging for easy sharing
 
+## Language Selection Strategy
+
+ML Odyssey uses a **Pragmatic Hybrid Approach** for language selection, documented in [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md).
+
+### Mojo (Required)
+
+**All ML/AI implementations use Mojo** for maximum performance:
+
+- ✅ Neural network implementations (layers, activations, loss functions)
+- ✅ Training loops and optimization algorithms
+- ✅ Tensor operations and SIMD kernels
+- ✅ Performance-critical data pipelines
+- ✅ Model inference engines
+
+**Why Mojo for ML/AI**: 10-100x faster than Python, type safety, memory safety, SIMD optimization.
+
+### Python (Allowed)
+
+**Automation scripts use Python** when Mojo limitations require it:
+
+- ✅ GitHub API interaction (`gh` CLI requires subprocess output capture)
+- ✅ Regex-heavy text processing (Mojo v0.25.7 has no regex support)
+- ✅ CI/CD automation requiring process output
+
+**Current Python scripts**:
+
+- `scripts/create_issues.py` - GitHub issue automation (requires subprocess capture)
+- `scripts/regenerate_github_issues.py` - Markdown parsing (requires regex)
+
+**Conversion Plan**: Python scripts will be converted to Mojo when subprocess output capture and regex support
+are available (target: Q2-Q3 2026).
+
+See [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) for complete strategy and rationale.
+
 ## Documentation
 
 - [notes/README.md](notes/README.md) - Plan for creating GitHub issues
