@@ -23,6 +23,7 @@ from tests.shared.conftest import (
 # Linear Layer Tests
 # ============================================================================
 
+
 fn test_linear_initialization() raises:
     """Test Linear layer initialization with specified dimensions.
 
@@ -101,6 +102,7 @@ fn test_linear_backward() raises:
 # ============================================================================
 # Conv2D Layer Tests
 # ============================================================================
+
 
 fn test_conv2d_initialization() raises:
     """Test Conv2D layer initialization.
@@ -191,6 +193,7 @@ fn test_conv2d_valid_padding() raises:
 # Activation Layer Tests
 # ============================================================================
 
+
 fn test_relu_activation() raises:
     """Test ReLU zeros negative values and preserves positive values.
 
@@ -280,6 +283,7 @@ fn test_tanh_range() raises:
 # Pooling Layer Tests
 # ============================================================================
 
+
 fn test_maxpool2d_downsampling() raises:
     """Test MaxPool2D downsamples spatial dimensions.
 
@@ -325,6 +329,7 @@ fn test_maxpool2d_max_selection() raises:
 # Property-Based Tests
 # ============================================================================
 
+
 fn test_layer_property_batch_independence() raises:
     """Property: Layer output for batch should equal individual outputs.
 
@@ -368,6 +373,7 @@ fn test_layer_property_deterministic() raises:
 # ============================================================================
 # Test Main
 # ============================================================================
+
 
 fn main() raises:
     """Run all layer tests."""

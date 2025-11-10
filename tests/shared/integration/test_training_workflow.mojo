@@ -21,6 +21,7 @@ from tests.shared.conftest import (
 # Basic Training Loop Tests
 # ============================================================================
 
+
 fn test_basic_training_loop() raises:
     """Test complete training loop with validation.
 
@@ -135,6 +136,7 @@ fn test_training_with_validation() raises:
 # Training with Callbacks
 # ============================================================================
 
+
 fn test_training_with_early_stopping() raises:
     """Test training loop with early stopping callback.
 
@@ -233,6 +235,7 @@ fn test_training_with_checkpoint() raises:
 # Multi-Epoch Training
 # ============================================================================
 
+
 fn test_multi_epoch_convergence() raises:
     """Test that multi-epoch training converges on simple problem.
 
@@ -293,6 +296,7 @@ fn test_multi_epoch_convergence() raises:
 # Gradient Flow Tests
 # ============================================================================
 
+
 fn test_gradient_flow_through_layers() raises:
     """Test that gradients flow correctly through stacked layers.
 
@@ -341,6 +345,7 @@ fn test_gradient_flow_through_layers() raises:
 # ============================================================================
 # Test Main
 # ============================================================================
+
 
 fn main() raises:
     """Run all training workflow integration tests."""

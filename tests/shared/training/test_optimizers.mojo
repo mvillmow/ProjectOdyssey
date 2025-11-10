@@ -24,6 +24,7 @@ from tests.shared.conftest import (
 # SGD Tests
 # ============================================================================
 
+
 fn test_sgd_initialization() raises:
     """Test SGD optimizer initialization with hyperparameters.
 
@@ -165,6 +166,7 @@ fn test_sgd_zero_grad() raises:
 # Adam Tests
 # ============================================================================
 
+
 fn test_adam_initialization() raises:
     """Test Adam optimizer initialization.
 
@@ -259,6 +261,7 @@ fn test_adam_bias_correction() raises:
 # AdamW Tests
 # ============================================================================
 
+
 fn test_adamw_weight_decay() raises:
     """Test AdamW applies decoupled weight decay.
 
@@ -286,6 +289,7 @@ fn test_adamw_weight_decay() raises:
 # ============================================================================
 # RMSprop Tests
 # ============================================================================
+
 
 fn test_rmsprop_initialization() raises:
     """Test RMSprop optimizer initialization.
@@ -337,6 +341,7 @@ fn test_rmsprop_parameter_update() raises:
 # ============================================================================
 # Property-Based Tests
 # ============================================================================
+
 
 fn test_optimizer_property_decreasing_loss() raises:
     """Property: Optimizer should decrease loss on convex function.
@@ -400,6 +405,7 @@ fn test_optimizer_property_gradient_shape() raises:
 # Numerical Accuracy Tests
 # ============================================================================
 
+
 fn test_sgd_matches_pytorch() raises:
     """Test SGD matches PyTorch implementation exactly.
 
@@ -438,6 +444,7 @@ fn test_adam_matches_pytorch() raises:
 # ============================================================================
 # Test Main
 # ============================================================================
+
 
 fn main() raises:
     """Run all optimizer tests."""
