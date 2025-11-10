@@ -115,7 +115,7 @@ All packaging infrastructure created:
 ### Mojo Package Documentation
 
 - [Mojo Packages Guide](https://docs.modular.com/mojo/manual/packages/)
-- [Mojo Build System](https://docs.modular.com/mojo/manual/build/)
+- [Mojo Build System](https://builds.modular.com/)
 
 ### Project Documentation
 

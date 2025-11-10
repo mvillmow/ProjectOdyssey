@@ -483,6 +483,6 @@ jobs:
 ## Additional Resources
 
 - [Mojo Packages Guide](https://docs.modular.com/mojo/manual/packages/)
-- [Mojo Build System](https://docs.modular.com/mojo/manual/build/)
+- [Mojo Build System](https://builds.modular.com/)
 - [Installation Guide](INSTALL.md)
 - [Contributing Guide](../CONTRIBUTING.md)
