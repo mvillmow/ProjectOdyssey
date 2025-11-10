@@ -7,6 +7,10 @@ Benchmarks measure:
 - Comparison to PyTorch performance
 
 Target: Within 2x of PyTorch performance
+
+Note: This file contains TODO comments that reference Issue #1538.
+All TODOs represent placeholder code that will be implemented once the
+shared library components from Issue #49 are available.
 """
 
 from tests.shared.conftest import (
@@ -33,7 +37,7 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
         - > 1B parameters/second on test hardware
         - Within 2x of PyTorch SGD performance
     """
-    # TODO: Implement when SGD and timing utilities are available
+    # TODO(#1538): Implement when SGD and timing utilities are available
     # let param_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
     # var results = List[BenchmarkResult]()
     #
@@ -89,7 +93,7 @@ fn bench_sgd_momentum_overhead() raises -> BenchmarkResult:
     Performance Target:
         - Momentum should add < 20% overhead
     """
-    # TODO: Implement when SGD is available
+    # TODO(#1538): Implement when SGD is available
     # let n = 10_000_000
     # var params = Tensor.randn(n)
     # var grads = Tensor.randn(n)
@@ -137,7 +141,7 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
         - > 500M parameters/second on test hardware
         - Within 2x of PyTorch Adam performance
     """
-    # TODO: Implement when Adam is available
+    # TODO(#1538): Implement when Adam is available
     # let param_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
     # var results = List[BenchmarkResult]()
     #
@@ -194,7 +198,7 @@ fn bench_adam_memory_usage() raises -> BenchmarkResult:
     Performance Target:
         - Memory usage within 10% of theoretical minimum (3x parameter size)
     """
-    # TODO: Implement when memory profiling is available
+    # TODO(#1538): Implement when memory profiling is available
     # let n = 10_000_000
     # var params = Tensor.randn(n)
     #
@@ -243,7 +247,7 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
 
     This helps users choose the right optimizer for their needs.
     """
-    # TODO: Implement when all optimizers are available
+    # TODO(#1538): Implement when all optimizers are available
     # let n = 10_000_000
     # var params = Tensor.randn(n)
     # var grads = Tensor.randn(n)
@@ -308,7 +312,7 @@ fn bench_simd_vectorization() raises -> BenchmarkResult:
     Performance Target:
         - SIMD version should be 4-8x faster than scalar
     """
-    # TODO: Implement when SIMD utilities are available
+    # TODO(#1538): Implement when SIMD utilities are available
     # alias simd_width = simdwidthof[DType.float32]()
     # let n = 10_000_000
     #

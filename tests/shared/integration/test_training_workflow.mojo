@@ -35,7 +35,7 @@ fn test_basic_training_loop() raises:
         - Validation accuracy improves
         - No runtime errors
     """
-    # TODO: Implement when all components are available
+    # TODO(#1538): Implement when all components are available
     # # Create small model (2 layer MLP)
     # var model = Sequential([
     #     Linear(10, 20),
@@ -106,7 +106,7 @@ fn test_training_with_validation() raises:
         - Model switches between train/eval modes
         - Gradients not computed during validation
     """
-    # TODO: Implement when components are available
+    # TODO(#1538): Implement when components are available
     # # Create model and data
     # var model = SimpleModel()
     # var train_data, val_data = create_datasets()
@@ -148,7 +148,7 @@ fn test_training_with_early_stopping() raises:
         - Training stops before max epochs if no improvement
         - Best model weights are restored
     """
-    # TODO: Implement when callbacks are available
+    # TODO(#1538): Implement when callbacks are available
     # var model = SimpleModel()
     # var train_data, val_data = create_datasets()
     # var optimizer = SGD(learning_rate=0.01)
@@ -193,7 +193,7 @@ fn test_training_with_checkpoint() raises:
         - Checkpoint contains model weights
         - Can restore from checkpoint
     """
-    # TODO: Implement when callbacks are available
+    # TODO(#1538): Implement when callbacks are available
     # var model = SimpleModel()
     # var train_data, val_data = create_datasets()
     # var optimizer = Adam(learning_rate=0.001)
@@ -247,7 +247,7 @@ fn test_multi_epoch_convergence() raises:
         - Final loss is close to optimal
         - Training is stable (no NaN, inf)
     """
-    # TODO: Implement when all components are available
+    # TODO(#1538): Implement when all components are available
     # # Simple problem: learn identity function
     # var model = Linear(10, 10)
     # var optimizer = SGD(learning_rate=0.01)
@@ -307,7 +307,7 @@ fn test_gradient_flow_through_layers() raises:
         - Gradient magnitudes are reasonable
         - No vanishing/exploding gradients
     """
-    # TODO: Implement when backpropagation is available
+    # TODO(#1538): Implement when backpropagation is available
     # # Create 3-layer network
     # var model = Sequential([
     #     Linear(10, 20),

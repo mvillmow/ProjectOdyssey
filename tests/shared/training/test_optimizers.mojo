@@ -36,7 +36,7 @@ fn test_sgd_initialization() raises:
             nesterov: Bool = False
         )
     """
-    # TODO: Implement when SGD is available
+    # TODO(#1538): Implement when SGD is available
     # var optimizer = SGD(
     #     learning_rate=0.01,
     #     momentum=0.9,
@@ -60,7 +60,7 @@ fn test_sgd_basic_update() raises:
 
     This is a CRITICAL test that defines the core SGD behavior.
     """
-    # TODO: Implement when SGD and Tensor are available
+    # TODO(#1538): Implement when SGD and Tensor are available
     # # Initial parameters: [1.0, 2.0, 3.0]
     # var params = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3))
     #
@@ -93,7 +93,7 @@ fn test_sgd_momentum_accumulation() raises:
 
     This is a CRITICAL test for momentum-based training.
     """
-    # TODO: Implement when SGD is available
+    # TODO(#1538): Implement when SGD is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -121,7 +121,7 @@ fn test_sgd_weight_decay() raises:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update
     """
-    # TODO: Implement when SGD is available
+    # TODO(#1538): Implement when SGD is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -144,7 +144,7 @@ fn test_sgd_nesterov_momentum() raises:
         - Gradient computed at lookahead position
         - Update using lookahead gradient
     """
-    # TODO: Implement when SGD supports Nesterov
+    # TODO(#1538): Implement when SGD supports Nesterov
     # This is an advanced feature, may be deferred
     pass
 
@@ -156,7 +156,7 @@ fn test_sgd_zero_grad() raises:
         optimizer.zero_grad() or similar method
         - Clears accumulated gradients or state
     """
-    # TODO: Implement if SGD has state management
+    # TODO(#1538): Implement if SGD has state management
     # This may not be needed if gradients are managed externally
     pass
 
@@ -176,7 +176,7 @@ fn test_adam_initialization() raises:
             epsilon: Float32 = 1e-8
         )
     """
-    # TODO: Implement when Adam is available
+    # TODO(#1538): Implement when Adam is available
     # var optimizer = Adam(
     #     learning_rate=0.001,
     #     beta1=0.9,
@@ -206,7 +206,7 @@ fn test_adam_parameter_update() raises:
 
     This is a CRITICAL test for Adam correctness.
     """
-    # TODO: Implement when Adam is available
+    # TODO(#1538): Implement when Adam is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -236,7 +236,7 @@ fn test_adam_bias_correction() raises:
 
     This is CRITICAL for Adam's fast convergence in early training.
     """
-    # TODO: Implement when Adam is available
+    # TODO(#1538): Implement when Adam is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -269,7 +269,7 @@ fn test_adamw_weight_decay() raises:
 
         This differs from L2 regularization used in standard Adam.
     """
-    # TODO: Implement when AdamW is available
+    # TODO(#1538): Implement when AdamW is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -298,7 +298,7 @@ fn test_rmsprop_initialization() raises:
             momentum: Float32 = 0.0
         )
     """
-    # TODO: Implement when RMSprop is available
+    # TODO(#1538): Implement when RMSprop is available
     # var optimizer = RMSprop(
     #     learning_rate=0.01,
     #     alpha=0.99,
@@ -318,7 +318,7 @@ fn test_rmsprop_parameter_update() raises:
         - v = alpha * v + (1 - alpha) * grad^2
         - params = params - lr * grad / (sqrt(v) + epsilon)
     """
-    # TODO: Implement when RMSprop is available
+    # TODO(#1538): Implement when RMSprop is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
     #
@@ -344,7 +344,7 @@ fn test_optimizer_property_decreasing_loss() raises:
     Test that all optimizers can minimize a simple quadratic function.
     This validates basic convergence behavior.
     """
-    # TODO: Implement when optimizers and loss functions are available
+    # TODO(#1538): Implement when optimizers and loss functions are available
     # # Define simple quadratic: f(x) = x^2
     # # Gradient: df/dx = 2x
     # # Minimum at x=0
@@ -380,7 +380,7 @@ fn test_optimizer_property_gradient_shape() raises:
 
     All optimizers should work with multi-dimensional parameter tensors.
     """
-    # TODO: Implement when optimizers are available
+    # TODO(#1538): Implement when optimizers are available
     # # Test with various parameter shapes
     # let shapes = [Shape(10), Shape(10, 5), Shape(3, 32, 32)]
     #
@@ -406,7 +406,7 @@ fn test_sgd_matches_pytorch() raises:
     This CRITICAL test validates numerical correctness against PyTorch.
     We load reference outputs from PyTorch and compare.
     """
-    # TODO: Implement when SGD is available
+    # TODO(#1538): Implement when SGD is available
     # # Load PyTorch reference data
     # let reference = load_pytorch_reference("sgd_update.json")
     #
@@ -430,7 +430,7 @@ fn test_adam_matches_pytorch() raises:
 
     This CRITICAL test validates Adam's complex update rules.
     """
-    # TODO: Implement when Adam is available
+    # TODO(#1538): Implement when Adam is available
     # Similar to test_sgd_matches_pytorch but for Adam
     pass
 

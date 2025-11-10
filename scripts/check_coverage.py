@@ -23,7 +23,7 @@ def parse_coverage_report(coverage_file: Path) -> Optional[float]:
     Returns:
         Coverage percentage (0-100) or None if parsing fails.
     """
-    # TODO: Implement actual coverage parsing when Mojo coverage format is known
+    # TODO(#1538): Implement actual coverage parsing when Mojo coverage format is known
     # For now, this is a placeholder for TDD
     print(f"Parsing coverage report: {coverage_file}")
 

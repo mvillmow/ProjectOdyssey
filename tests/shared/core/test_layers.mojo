@@ -32,7 +32,7 @@ fn test_linear_initialization() raises:
         - Creates bias vector (out_features) if bias=True
         - Initializes weights (implementation-dependent)
     """
-    # TODO: Implement when Linear layer is available
+    # TODO(#1538): Implement when Linear layer is available
     # var layer = Linear(in_features=10, out_features=5, bias=True)
     # assert_equal(layer.in_features, 10)
     # assert_equal(layer.out_features, 5)
@@ -50,7 +50,7 @@ fn test_linear_forward() raises:
         - Output shape: (batch_size, out_features)
         - Computation: output = input @ weights.T + bias
     """
-    # TODO: Implement when Linear layer is available
+    # TODO(#1538): Implement when Linear layer is available
     # # Create layer: in=10, out=5
     # var layer = Linear(in_features=10, out_features=5)
     # layer.weights.fill(0.1)  # Known weights for testing
@@ -79,7 +79,7 @@ fn test_linear_no_bias() raises:
         - No bias vector created
         - Forward computes: output = input @ weights.T
     """
-    # TODO: Implement when Linear layer is available
+    # TODO(#1538): Implement when Linear layer is available
     # var layer = Linear(in_features=10, out_features=5, bias=False)
     # assert_equal(layer.bias, None)  # Or appropriate null check
     pass
@@ -93,7 +93,7 @@ fn test_linear_backward() raises:
         - Returns gradient w.r.t. input
         - Computes gradients w.r.t. weights and bias
     """
-    # TODO: Implement when backward pass is available
+    # TODO(#1538): Implement when backward pass is available
     # This is important but may be deferred to Issue #49
     pass
 
@@ -115,7 +115,7 @@ fn test_conv2d_initialization() raises:
             bias: Bool = True
         )
     """
-    # TODO: Implement when Conv2D is available
+    # TODO(#1538): Implement when Conv2D is available
     # var layer = Conv2D(
     #     in_channels=3,
     #     out_channels=16,
@@ -139,7 +139,7 @@ fn test_conv2d_output_shape() raises:
         - Input: (batch, in_channels, height, width)
         - Output: (batch, out_channels, out_height, out_width)
     """
-    # TODO: Implement when Conv2D is available
+    # TODO(#1538): Implement when Conv2D is available
     # # Input: (batch=1, channels=3, height=32, width=32)
     # # Conv2D: out_channels=16, kernel=3, stride=1, padding=1
     # # Expected output: (1, 16, 32, 32) - same spatial size due to padding
@@ -157,7 +157,7 @@ fn test_conv2d_stride() raises:
     API Contract:
         Conv2D with stride=2 should halve spatial dimensions
     """
-    # TODO: Implement when Conv2D is available
+    # TODO(#1538): Implement when Conv2D is available
     # # Input: (1, 3, 32, 32)
     # # Conv2D: kernel=3, stride=2, padding=1
     # # Expected output: (1, 16, 16, 16) - halved spatial size
@@ -175,7 +175,7 @@ fn test_conv2d_valid_padding() raises:
     API Contract:
         Conv2D with padding=0 reduces spatial dimensions
     """
-    # TODO: Implement when Conv2D is available
+    # TODO(#1538): Implement when Conv2D is available
     # # Input: (1, 3, 32, 32)
     # # Conv2D: kernel=5, stride=1, padding=0
     # # Expected output: (1, 16, 28, 28) - reduced by kernel_size-1
@@ -198,7 +198,7 @@ fn test_relu_activation() raises:
         ReLU().forward(x: Tensor) -> Tensor
         - For each element: output = max(0, input)
     """
-    # TODO: Implement when ReLU is available
+    # TODO(#1538): Implement when ReLU is available
     # var relu = ReLU()
     #
     # # Test with known values
@@ -221,7 +221,7 @@ fn test_relu_in_place() raises:
         ReLU(inplace: Bool = False)
         - If inplace=True, modifies input tensor directly
     """
-    # TODO: Implement when ReLU supports inplace
+    # TODO(#1538): Implement when ReLU supports inplace
     # This is an optimization, may be deferred
     pass
 
@@ -234,7 +234,7 @@ fn test_sigmoid_range() raises:
         - For each element: output = 1 / (1 + exp(-input))
         - Output range: (0, 1)
     """
-    # TODO: Implement when Sigmoid is available
+    # TODO(#1538): Implement when Sigmoid is available
     # var sigmoid = Sigmoid()
     #
     # # Test with various inputs
@@ -259,7 +259,7 @@ fn test_tanh_range() raises:
         - For each element: output = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
         - Output range: (-1, 1)
     """
-    # TODO: Implement when Tanh is available
+    # TODO(#1538): Implement when Tanh is available
     # var tanh = Tanh()
     #
     # # Test with various inputs
@@ -287,7 +287,7 @@ fn test_maxpool2d_downsampling() raises:
         MaxPool2D(kernel_size: Int, stride: Int = None, padding: Int = 0)
         - Reduces spatial dimensions by kernel_size (if stride=kernel_size)
     """
-    # TODO: Implement when MaxPool2D is available
+    # TODO(#1538): Implement when MaxPool2D is available
     # # Input: (1, 16, 32, 32)
     # # MaxPool2D: kernel=2, stride=2
     # # Expected output: (1, 16, 16, 16)
@@ -305,7 +305,7 @@ fn test_maxpool2d_max_selection() raises:
     API Contract:
         MaxPool2D selects max over kernel_size x kernel_size window
     """
-    # TODO: Implement when MaxPool2D is available
+    # TODO(#1538): Implement when MaxPool2D is available
     # var pool = MaxPool2D(kernel_size=2)
     #
     # # Create input with known values
@@ -330,7 +330,7 @@ fn test_layer_property_batch_independence() raises:
 
     This tests that layers process batch elements independently.
     """
-    # TODO: Implement when layers are available
+    # TODO(#1538): Implement when layers are available
     # var layer = Linear(10, 5)
     #
     # # Create batch input
@@ -352,7 +352,7 @@ fn test_layer_property_deterministic() raises:
 
     Same input should always produce same output.
     """
-    # TODO: Implement when layers are available
+    # TODO(#1538): Implement when layers are available
     # var layer = Linear(10, 5)
     # var input = Tensor.randn(2, 10, seed=42)
     #

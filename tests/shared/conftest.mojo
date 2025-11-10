@@ -156,7 +156,7 @@ struct TestFixtures:
         """Set random seed for deterministic test execution."""
         seed(Self.deterministic_seed())
 
-    # TODO: Add tensor fixture methods when Tensor type is implemented
+    # TODO(#1538): Add tensor fixture methods when Tensor type is implemented
     # @staticmethod
     # fn small_tensor() -> Tensor:
     #     """Create small 3x3 tensor for unit tests."""
@@ -167,13 +167,13 @@ struct TestFixtures:
     #     """Create random tensor with deterministic seed."""
     #     pass
 
-    # TODO: Add model fixture methods when models are implemented
+    # TODO(#1538): Add model fixture methods when models are implemented
     # @staticmethod
     # fn simple_linear_model() -> Linear:
     #     """Create simple Linear layer with known weights."""
     #     pass
 
-    # TODO: Add dataset fixture methods when datasets are implemented
+    # TODO(#1538): Add dataset fixture methods when datasets are implemented
     # @staticmethod
     # fn synthetic_dataset(n_samples: Int = 100) -> TensorDataset:
     #     """Create synthetic dataset for testing."""
@@ -252,7 +252,7 @@ fn measure_time[func: fn() raises -> None]() raises -> Float64:
     Returns:
         Execution time in milliseconds.
     """
-    # TODO: Implement using Mojo's time module when available
+    # TODO(#1538): Implement using Mojo's time module when available
     # For now, placeholder for TDD
     return 0.0
 
@@ -271,7 +271,7 @@ fn measure_throughput[
     Returns:
         Operations per second.
     """
-    # TODO: Implement using Mojo's time module when available
+    # TODO(#1538): Implement using Mojo's time module when available
     let duration_ms = measure_time[func]()
     return Float64(n_iterations) / (duration_ms / 1000.0)
 
