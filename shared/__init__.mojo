@@ -95,7 +95,6 @@ __all__ = [
     "VERSION",
     "AUTHOR",
     "LICENSE",
-
     # Core - Layers (most common)
     # "Linear",
     # "Conv2D",
@@ -103,54 +102,43 @@ __all__ = [
     # "MaxPool2D",
     # "Dropout",
     # "Flatten",
-
     # Core - Activations (function form)
     # "relu",
     # "sigmoid",
     # "tanh",
     # "softmax",
-
     # Core - Module system
     # "Module",
     # "Sequential",
-
     # Core - Tensors
     # "Tensor",
     # "zeros",
     # "ones",
     # "randn",
-
     # Training - Optimizers
     # "SGD",
     # "Adam",
     # "AdamW",
-
     # Training - Schedulers
     # "StepLR",
     # "CosineAnnealingLR",
-
     # Training - Metrics
     # "Accuracy",
     # "LossTracker",
-
     # Training - Callbacks
     # "EarlyStopping",
     # "ModelCheckpoint",
-
     # Training - Loops
     # "train_epoch",
     # "validate_epoch",
-
     # Data - Datasets
     # "TensorDataset",
     # "ImageDataset",
     # "DataLoader",
-
     # Data - Transforms
     # "Normalize",
     # "ToTensor",
     # "Compose",
-
     # Utils
     # "Logger",
     # "plot_training_curves",

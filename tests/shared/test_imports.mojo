@@ -13,6 +13,7 @@ from testing import assert_true
 # Core Package Imports
 # ============================================================================
 
+
 fn test_core_imports() raises:
     """Test core package imports work correctly."""
     # NOTE: These imports are commented until implementation completes (Issue #49)
@@ -71,6 +72,7 @@ fn test_core_types_imports() raises:
 # ============================================================================
 # Training Package Imports
 # ============================================================================
+
 
 fn test_training_imports() raises:
     """Test training package imports work correctly."""
@@ -150,6 +152,7 @@ fn test_training_loops_imports() raises:
 # Data Package Imports
 # ============================================================================
 
+
 fn test_data_imports() raises:
     """Test data package imports work correctly."""
     # from shared.data import TensorDataset, DataLoader
@@ -197,6 +200,7 @@ fn test_data_transforms_imports() raises:
 # Utils Package Imports
 # ============================================================================
 
+
 fn test_utils_imports() raises:
     """Test utils package imports work correctly."""
     # from shared.utils import Logger
@@ -243,6 +247,7 @@ fn test_utils_config_imports() raises:
 # Root Package Imports
 # ============================================================================
 
+
 fn test_root_imports() raises:
     """Test root package convenience imports work."""
     # from shared import (
@@ -266,6 +271,7 @@ fn test_subpackage_imports() raises:
 # ============================================================================
 # Nested Imports
 # ============================================================================
+
 
 fn test_nested_optimizer_imports() raises:
     """Test nested imports from optimizer subpackages."""
@@ -292,6 +298,7 @@ fn test_nested_metric_imports() raises:
 # Version Info
 # ============================================================================
 
+
 fn test_version_info() raises:
     """Test version info is accessible."""
     from shared import VERSION, AUTHOR, LICENSE
@@ -308,11 +315,12 @@ fn test_version_info() raises:
 # Main Test Runner
 # ============================================================================
 
+
 fn main() raises:
     """Run all import validation tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Running Import Validation Tests")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Core package tests
     print("Testing Core Package...")
@@ -360,8 +368,8 @@ fn main() raises:
     test_version_info()
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ All Import Validation Tests Passed!")
-    print("="*70)
+    print("=" * 70)
     print("\nNote: Tests are placeholders awaiting implementation (Issue #49)")
     print("Uncomment imports in test functions as components become available")

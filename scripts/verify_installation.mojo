@@ -11,13 +11,14 @@ Exit codes:
     1 - Import errors detected
 """
 
+
 fn main():
     """Run installation verification checks."""
     var errors: Int = 0
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ML Odyssey Shared Library - Installation Verification")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # ========================================================================
     # Test 1: Version Info
@@ -41,7 +42,10 @@ fn main():
         # NOTE: These imports are commented until implementation completes
         # from shared.core import Linear, ReLU, Tensor
 
-        print("  ✓ Core package accessible (placeholder - awaiting implementation)")
+        print(
+            "  ✓ Core package accessible (placeholder - awaiting"
+            " implementation)"
+        )
     except:
         print("  ✗ Failed to import core package")
         errors += 1
@@ -53,7 +57,10 @@ fn main():
     try:
         # from shared.training import SGD, Adam
 
-        print("  ✓ Training package accessible (placeholder - awaiting implementation)")
+        print(
+            "  ✓ Training package accessible (placeholder - awaiting"
+            " implementation)"
+        )
     except:
         print("  ✗ Failed to import training package")
         errors += 1
@@ -65,7 +72,10 @@ fn main():
     try:
         # from shared.data import DataLoader
 
-        print("  ✓ Data package accessible (placeholder - awaiting implementation)")
+        print(
+            "  ✓ Data package accessible (placeholder - awaiting"
+            " implementation)"
+        )
     except:
         print("  ✗ Failed to import data package")
         errors += 1
@@ -77,7 +87,10 @@ fn main():
     try:
         # from shared.utils import Logger
 
-        print("  ✓ Utils package accessible (placeholder - awaiting implementation)")
+        print(
+            "  ✓ Utils package accessible (placeholder - awaiting"
+            " implementation)"
+        )
     except:
         print("  ✗ Failed to import utils package")
         errors += 1
@@ -89,7 +102,10 @@ fn main():
     try:
         # from shared import Linear, SGD
 
-        print("  ✓ Root imports accessible (placeholder - awaiting implementation)")
+        print(
+            "  ✓ Root imports accessible (placeholder - awaiting"
+            " implementation)"
+        )
     except:
         print("  ✗ Failed to import from root")
         errors += 1
@@ -97,21 +113,26 @@ fn main():
     # ========================================================================
     # Summary
     # ========================================================================
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
 
     if errors == 0:
         print("✅ Shared Library Installation Verified!")
-        print("="*70)
+        print("=" * 70)
         print("\nAll checks passed successfully.")
-        print("\nNote: Functional tests are placeholders awaiting implementation (Issue #49)")
-        print("Once implementation completes, uncomment imports in this script.")
+        print(
+            "\nNote: Functional tests are placeholders awaiting implementation"
+            " (Issue #49)"
+        )
+        print(
+            "Once implementation completes, uncomment imports in this script."
+        )
         print("\nNext steps:")
         print("  - See EXAMPLES.md for usage examples")
         print("  - Read API documentation for detailed reference")
         print("  - Run tests with: mojo test tests/shared/")
     else:
         print("❌ Installation Verification Failed!")
-        print("="*70)
+        print("=" * 70)
         print("\nFound", errors, "error(s)")
         print("\nTroubleshooting:")
         print("  1. Verify Mojo is installed: mojo --version")

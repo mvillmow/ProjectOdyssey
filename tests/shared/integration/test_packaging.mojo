@@ -13,6 +13,7 @@ from testing import assert_true, assert_equal
 # Package Structure Tests
 # ============================================================================
 
+
 fn test_package_version() raises:
     """Test package version is accessible and correct."""
     from shared import VERSION, AUTHOR, LICENSE
@@ -43,6 +44,7 @@ fn test_subpackage_accessibility() raises:
 # ============================================================================
 # Import Hierarchy Tests
 # ============================================================================
+
 
 fn test_root_level_imports() raises:
     """Test most commonly used components are available at root level."""
@@ -81,6 +83,7 @@ fn test_nested_imports() raises:
 # ============================================================================
 # Cross-Module Integration Tests
 # ============================================================================
+
 
 fn test_core_training_integration() raises:
     """Test integration between core and training modules."""
@@ -137,6 +140,7 @@ fn test_training_data_integration() raises:
 # ============================================================================
 # Complete Workflow Tests
 # ============================================================================
+
 
 fn test_complete_training_workflow() raises:
     """Test complete training workflow using all modules."""
@@ -210,6 +214,7 @@ fn test_paper_implementation_pattern() raises:
 # API Stability Tests
 # ============================================================================
 
+
 fn test_public_api_exports() raises:
     """Test that __all__ exports are consistent."""
     from shared import __all__
@@ -245,6 +250,7 @@ fn test_no_private_exports() raises:
 # Backward Compatibility Tests
 # ============================================================================
 
+
 fn test_deprecated_imports() raises:
     """Test that deprecated imports still work with warnings."""
     # When we deprecate APIs, they should still import but warn
@@ -272,11 +278,12 @@ fn test_api_version_compatibility() raises:
 # Main Test Runner
 # ============================================================================
 
+
 fn main() raises:
     """Run all packaging integration tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("Running Packaging Integration Tests")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     # Package structure
     print("Testing Package Structure...")
@@ -311,8 +318,11 @@ fn main() raises:
     test_api_version_compatibility()
 
     # Summary
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ All Packaging Integration Tests Passed!")
-    print("="*70)
-    print("\nNote: Most tests are placeholders awaiting implementation (Issue #49)")
+    print("=" * 70)
+    print(
+        "\nNote: Most tests are placeholders awaiting implementation (Issue"
+        " #49)"
+    )
     print("Uncomment test code as components become available")
