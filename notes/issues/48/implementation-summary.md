@@ -371,7 +371,7 @@ None. Test suite is complete and ready for implementation phase.
 - [Test Suite README](../../tests/shared/README.md) - How to run and write tests
 - [Issue #48](https://github.com/mvillmow/ml-odyssey/issues/48) - GitHub issue
 - [Issue #49](https://github.com/mvillmow/ml-odyssey/issues/49) - Implementation issue (next)
-- [5-Phase Workflow](/notes/review/README.md) - Project workflow documentation
+- [5-Phase Workflow](../../review/README.md) - Project workflow documentation
 
 ---
 
