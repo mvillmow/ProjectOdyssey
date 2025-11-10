@@ -279,15 +279,15 @@ None - All existing files preserved
 
 ### Short-term (During Implementation - Issue #49)
 
-3. **Uncomment imports** as components are implemented
-4. **Validate examples** against actual API
-5. **Test build process** with actual implementation
+1. **Uncomment imports** as components are implemented
+2. **Validate examples** against actual API
+3. **Test build process** with actual implementation
 
 ### Long-term (Cleanup - Issue #51)
 
-6. **Address documented issues** (8 issues with priorities)
-7. **Generate API documentation**
-8. **Test on all platforms**
+1. **Address documented issues** (8 issues with priorities)
+2. **Generate API documentation**
+3. **Test on all platforms**
 
 ## Coordination Status
 
