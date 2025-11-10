@@ -530,9 +530,9 @@ Planned features for future releases:
 
 ## References
 
-- [PyTorch DataLoader](https://pytorch.org/docs/stable/data.html)
+- [PyTorch DataLoader](https://docs.pytorch.org/docs/stable/data.html)
 - [TensorFlow Dataset API](https://www.tensorflow.org/guide/data)
-- [Mojo Performance Guide](https://docs.modular.com/mojo/manual/performance/)
+- [Mojo Performance Guide](https://docs.modular.com/mojo/faq/#performance)
 
 ## Contributing
 

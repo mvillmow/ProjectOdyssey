@@ -718,7 +718,7 @@ Planned features for future releases:
 
 - [Python logging](https://docs.python.org/3/library/logging.html)
 - [Matplotlib Documentation](https://matplotlib.org/stable/contents.html)
-- [Mojo Performance Guide](https://docs.modular.com/mojo/manual/performance/)
+- [Mojo Performance Guide](https://docs.modular.com/mojo/faq/#performance)
 
 ## Contributing
 
