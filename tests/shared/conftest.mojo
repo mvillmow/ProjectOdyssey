@@ -91,7 +91,7 @@ fn assert_almost_equal(
     Raises:
         Error if |a - b| > tolerance.
     """
-    let diff = abs(a - b)
+    var diff = abs(a - b)
     if diff > tolerance:
         var error_msg = message if message else (
             String(a) + " !≈ " + String(b) + " (diff: " + String(diff) + ")"
