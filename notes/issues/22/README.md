@@ -44,13 +44,13 @@ documentation for training infrastructure including optimizers, schedulers, metr
 
 ### Design Decisions
 
-**Mojo Package Structure**:
+__Mojo Package Structure__:
 
 - Using `__init__.mojo` files (not `__init__.py`) to maintain Mojo-first architecture
 - Following the same pattern as shared/core/ library
 - Each subdirectory represents a distinct category of training utilities
 
-**Directory Organization**:
+__Directory Organization__:
 
 - `optimizers/` - SGD, Adam, AdamW, RMSprop, etc.
 - `schedulers/` - Learning rate schedulers (step decay, cosine annealing, etc.)
