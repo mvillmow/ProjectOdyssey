@@ -6,6 +6,7 @@ According to web research, a JSON module was added in May 2025, but the API
 is not well documented. This test attempts to use the JSON module if available.
 """
 
+
 fn test_json_parsing() raises:
     """Test JSON parsing capabilities."""
     print("Testing JSON parsing...")
@@ -27,6 +28,7 @@ fn test_json_parsing() raises:
     #   var name = data["name"]
     #   var value = data["value"]
 
+
 fn test_json_serialization() raises:
     """Test JSON serialization capabilities."""
     print("\nTesting JSON serialization...")
@@ -41,6 +43,7 @@ fn test_json_serialization() raises:
     #   data["value"] = 42
     #   var json_str = dumps(data)
 
+
 fn test_json_state_file() raises:
     """Test JSON state file use case (critical for scripts)."""
     print("\nTesting JSON state file use case...")
@@ -50,6 +53,7 @@ fn test_json_state_file() raises:
     print("  Example state:")
     print('    {"timestamp": "2025-11-08T12:00:00", "processed": [1, 2, 3]}')
     print("  Status: Waiting for JSON API documentation")
+
 
 fn main() raises:
     """Run all JSON tests."""

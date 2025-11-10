@@ -1,6 +1,7 @@
 #!/usr/bin/env mojo
 """Test Mojo's file I/O capabilities for script conversion feasibility."""
 
+
 fn test_read_file() raises:
     """Test reading a file."""
     print("Testing file reading...")
@@ -20,6 +21,7 @@ fn test_read_file() raises:
     except e:
         print("✗ Failed to read file:", e)
         raise e
+
 
 fn test_write_file() raises:
     """Test writing to a file."""
@@ -50,6 +52,7 @@ fn test_write_file() raises:
         print("✗ Failed to write file:", e)
         raise e
 
+
 fn test_path_operations() raises:
     """Test path manipulation."""
     print("\nTesting path operations...")
@@ -61,6 +64,7 @@ fn test_path_operations() raises:
 
     print("✓ Path construction works")
     print("  Result:", full_path)
+
 
 fn main() raises:
     """Run all file I/O tests."""
