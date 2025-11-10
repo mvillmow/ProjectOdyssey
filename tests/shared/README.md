@@ -519,7 +519,7 @@ mojo test -m "not slow" tests/shared/
 
 - [Test Architecture](../../notes/issues/48/test-architecture.md) - Comprehensive test design
 - [Shared Library](../../shared/README.md) - Code being tested
-- [Mojo Testing Docs](https://docs.modular.com/mojo/manual/testing/) - Official Mojo testing guide
+- [Mojo Testing Docs](https://docs.modular.com/mojo/tools/testing) - Official Mojo testing guide
 - [Issue #48](https://github.com/mvillmow/ml-odyssey/issues/48) - Test implementation issue
 
 ## Questions?
