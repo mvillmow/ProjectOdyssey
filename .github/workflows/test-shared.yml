@@ -1,0 +1,134 @@
+name: Test Shared Library
+
+on:
+  pull_request:
+    paths:
+      - 'shared/**'
+      - 'tests/shared/**'
+      - '.github/workflows/test-shared.yml'
+  push:
+    branches:
+      - main
+  schedule:
+    # Nightly builds for stability testing
+    - cron: '0 2 * * *'
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Mojo
+        uses: modular/setup-mojo@v1
+        with:
+          mojo-version: latest
+
+      - name: Run core module tests
+        run: |
+          echo "Running core module tests..."
+          mojo test tests/shared/core/
+        continue-on-error: false
+
+      - name: Run training module tests
+        run: |
+          echo "Running training module tests..."
+          mojo test tests/shared/training/
+        continue-on-error: false
+
+      - name: Run data module tests
+        run: |
+          echo "Running data module tests..."
+          mojo test tests/shared/data/
+        continue-on-error: false
+
+      - name: Run utils module tests
+        run: |
+          echo "Running utils module tests..."
+          mojo test tests/shared/utils/
+        continue-on-error: false
+
+      - name: Run integration tests
+        run: |
+          echo "Running integration tests..."
+          mojo test tests/shared/integration/
+        continue-on-error: false
+
+      - name: Generate coverage report
+        run: |
+          echo "Generating coverage report..."
+          mojo test --coverage tests/shared/
+        continue-on-error: true
+
+      - name: Check coverage threshold
+        run: |
+          echo "Checking coverage threshold (≥90%)..."
+          python3 scripts/check_coverage.py --threshold 90 --path shared/
+        continue-on-error: true
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: shared-library
+          name: shared-library-coverage
+        continue-on-error: true
+
+  benchmark:
+    name: Run Benchmarks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only run benchmarks on main branch
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Mojo
+        uses: modular/setup-mojo@v1
+        with:
+          mojo-version: latest
+
+      - name: Run performance benchmarks
+        run: |
+          echo "Running performance benchmarks..."
+          mojo test tests/shared/benchmarks/
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: benchmark_results.json
+        continue-on-error: true
+
+  quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Mojo
+        uses: modular/setup-mojo@v1
+        with:
+          mojo-version: latest
+
+      - name: Format check
+        run: |
+          echo "Checking Mojo code formatting..."
+          mojo format --check tests/shared/
+        continue-on-error: false
+
+      - name: Lint check
+        run: |
+          echo "Running Mojo linter..."
+          # mojo lint tests/shared/
+          # Note: Uncomment when mojo lint is available
+        continue-on-error: true
