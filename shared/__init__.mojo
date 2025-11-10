@@ -1,0 +1,169 @@
+"""
+Shared Library for ML Odyssey Paper Implementations
+
+This package provides reusable ML/AI components including:
+- Core neural network components (layers, activations, tensors)
+- Training infrastructure (optimizers, schedulers, metrics, callbacks)
+- Data processing utilities (datasets, loaders, transforms)
+- Helper utilities (logging, visualization, configuration)
+
+Usage:
+    # Import commonly used components directly
+    from shared import Linear, Conv2D, ReLU, SGD, Adam, Tensor
+
+    # Import from specific modules for less common items
+    from shared.core.layers import MaxPool2D, Dropout
+    from shared.training.schedulers import CosineAnnealingLR
+    from shared.data.transforms import Normalize
+
+Example:
+    from shared import Linear, ReLU, Sequential, SGD
+
+    # Build a simple model
+    model = Sequential([
+        Linear(784, 256),
+        ReLU(),
+        Linear(256, 128),
+        ReLU(),
+        Linear(128, 10),
+    ])
+
+    # Create optimizer
+    optimizer = SGD(learning_rate=0.01, momentum=0.9)
+
+    # Training loop
+    for epoch in range(100):
+        loss = train_epoch(model, optimizer, train_loader)
+        print("Epoch", epoch, "Loss:", loss)
+"""
+
+# Package version
+alias VERSION = "0.1.0"
+alias AUTHOR = "ML Odyssey Team"
+alias LICENSE = "MIT"
+
+# ============================================================================
+# Core Exports - Most commonly used components
+# ============================================================================
+# NOTE: These imports are commented out until implementation phase completes.
+# Uncomment as components become available from Issue #49.
+
+# Core layers (most commonly used)
+# from .core.layers import Linear, Conv2D, ReLU, MaxPool2D, Dropout, Flatten
+
+# Core activations (function form)
+# from .core.activations import relu, sigmoid, tanh, softmax
+
+# Core module system
+# from .core.module import Module, Sequential
+
+# Core tensors
+# from .core.tensors import Tensor, zeros, ones, randn
+
+# Training optimizers (most commonly used)
+# from .training.optimizers import SGD, Adam, AdamW
+
+# Training schedulers (most commonly used)
+# from .training.schedulers import StepLR, CosineAnnealingLR
+
+# Training metrics (most commonly used)
+# from .training.metrics import Accuracy, LossTracker
+
+# Training callbacks (most commonly used)
+# from .training.callbacks import EarlyStopping, ModelCheckpoint
+
+# Training loops
+# from .training.loops import train_epoch, validate_epoch
+
+# Data components (most commonly used)
+# from .data.datasets import TensorDataset, ImageDataset
+# from .data.loaders import DataLoader
+# from .data.transforms import Normalize, ToTensor, Compose
+
+# Utils (most commonly used)
+# from .utils.logging import Logger
+# from .utils.visualization import plot_training_curves
+
+# ============================================================================
+# Public API
+# ============================================================================
+# This list defines what is exported when users do `from shared import *`
+# Keep this minimal - only the most commonly used items
+
+__all__ = [
+    # Version info
+    "VERSION",
+    "AUTHOR",
+    "LICENSE",
+
+    # Core - Layers (most common)
+    # "Linear",
+    # "Conv2D",
+    # "ReLU",
+    # "MaxPool2D",
+    # "Dropout",
+    # "Flatten",
+
+    # Core - Activations (function form)
+    # "relu",
+    # "sigmoid",
+    # "tanh",
+    # "softmax",
+
+    # Core - Module system
+    # "Module",
+    # "Sequential",
+
+    # Core - Tensors
+    # "Tensor",
+    # "zeros",
+    # "ones",
+    # "randn",
+
+    # Training - Optimizers
+    # "SGD",
+    # "Adam",
+    # "AdamW",
+
+    # Training - Schedulers
+    # "StepLR",
+    # "CosineAnnealingLR",
+
+    # Training - Metrics
+    # "Accuracy",
+    # "LossTracker",
+
+    # Training - Callbacks
+    # "EarlyStopping",
+    # "ModelCheckpoint",
+
+    # Training - Loops
+    # "train_epoch",
+    # "validate_epoch",
+
+    # Data - Datasets
+    # "TensorDataset",
+    # "ImageDataset",
+    # "DataLoader",
+
+    # Data - Transforms
+    # "Normalize",
+    # "ToTensor",
+    # "Compose",
+
+    # Utils
+    # "Logger",
+    # "plot_training_curves",
+]
+
+# ============================================================================
+# Convenience: Make subpackages accessible
+# ============================================================================
+# This allows users to do: from shared import core, training, data, utils
+# Then access via: shared.core.layers.Linear, shared.training.optimizers.SGD
+
+# NOTE: These imports will be uncommented during implementation
+# from . import core
+# from . import training
+# from . import data
+# from . import utils
