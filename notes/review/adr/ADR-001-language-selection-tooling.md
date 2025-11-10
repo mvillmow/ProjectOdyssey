@@ -66,6 +66,7 @@ var output = run("gh issue create ...")  # If this fails, no way to detect!
 ```
 
 **Testing Evidence**: Created test scripts (`test_mojo_capabilities.mojo`, `test_exit_code.mojo`) that prove:
+
 - ✓ stdout capture works: `run()` returns String output
 - ✗ Exit code access: NOT AVAILABLE - failures are silent
 - ✗ Error detection: No exceptions on non-zero exit
@@ -76,7 +77,7 @@ Without exit code access, scripts cannot detect command failures, making automat
 **HIGH RISK - Regex Not Production-Ready**:
 
 The scripts use 15+ regex patterns for markdown parsing. While a third-party `mojo-regex` library exists
-(https://github.com/msaelices/mojo-regex), it is explicitly **not production-ready**:
+([mojo-regex on GitHub](https://github.com/msaelices/mojo-regex)), it is explicitly **not production-ready**:
 
 ```python
 # Python regex patterns used throughout scripts
@@ -89,6 +90,7 @@ labels = re.findall(r'`([^`]+)`', labels_text)
 ```
 
 **mojo-regex limitations**:
+
 - Early development stage (author warns: "not yet feature-complete and may contain bugs")
 - Missing: compile(), case-insensitive matching, lookaheads, backreferences
 - Not available in pixi (installation failed during testing)
