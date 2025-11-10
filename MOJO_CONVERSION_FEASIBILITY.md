@@ -7,11 +7,18 @@
 
 ## Executive Summary
 
-**RECOMMENDATION: NO-GO (Postpone Conversion)**
+### RECOMMENDATION: NO-GO (Postpone Conversion)
 
-After comprehensive testing and analysis, converting the Python automation scripts to Mojo is **NOT FEASIBLE** at this time. While Mojo has made significant progress, critical capabilities required for the GitHub issue automation scripts are either missing or insufficiently mature. The primary blocker is the inability to capture subprocess output and exit codes, which is essential for the scripts' GitHub CLI integration.
+After comprehensive testing and analysis, converting the Python automation scripts to
+Mojo is **NOT FEASIBLE** at this time. While Mojo has made significant progress,
+critical capabilities required for the GitHub issue automation scripts are either
+missing or insufficiently mature. The primary blocker is the inability to capture
+subprocess output and exit codes, which is essential for the scripts' GitHub CLI
+integration.
 
-**Key Finding**: Mojo's `subprocess.run()` can execute commands but cannot capture stdout/stderr or access exit codes, making it impossible to replicate the Python scripts' functionality.
+**Key Finding**: Mojo's `subprocess.run()` can execute commands but cannot capture
+stdout/stderr or access exit codes, making it impossible to replicate the Python
+scripts' functionality.
 
 ## 1. Mojo Installation Status
 
@@ -295,7 +302,7 @@ class Issue:
     created: bool = False
 ```
 
-**Mojo Equivalent**: Likely requires manual struct definition with __init__
+**Mojo Equivalent**: Likely requires manual struct definition with `__init__`
 
 **Maturity**: **BETA** - Structs exist but may require more boilerplate
 
@@ -322,14 +329,14 @@ class Issue:
 
 ### Major Risks
 
-**1. Subprocess Output Capture (CRITICAL - BLOCKING)**
+#### 1. Subprocess Output Capture (CRITICAL - BLOCKING)
 
 - **Impact**: Cannot get issue URLs from `gh` CLI
 - **Probability**: 100% - confirmed limitation
 - **Mitigation**: None without Python interop
 - **Status**: **BLOCKS CONVERSION**
 
-**2. Regex Missing (HIGH)**
+#### 2. Regex Missing (HIGH)
 
 - **Impact**: Must rewrite all markdown parsing logic
 - **Probability**: 100% - confirmed missing
@@ -337,14 +344,14 @@ class Issue:
 - **Estimated Effort**: 2-3 weeks
 - **Risk**: High error rate, difficult to maintain
 
-**3. Stdlib Immaturity (MEDIUM)**
+#### 3. Stdlib Immaturity (MEDIUM)
 
 - **Impact**: Unexpected bugs, missing features
 - **Probability**: 60%
 - **Mitigation**: Extensive testing, fallbacks
 - **Status**: Acceptable with caution
 
-**4. Documentation Gaps (MEDIUM)**
+#### 4. Documentation Gaps (MEDIUM)
 
 - **Impact**: Slower development, trial-and-error
 - **Probability**: 80%
@@ -395,7 +402,9 @@ class Issue:
 
 ### Justification
 
-1. **Blocking Issue**: Subprocess output capture is not available and is CRITICAL for the scripts' core functionality. Without the ability to capture `gh` CLI output, we cannot get issue URLs, making the entire conversion pointless.
+1. **Blocking Issue**: Subprocess output capture is not available and is CRITICAL
+   for the scripts' core functionality. Without the ability to capture `gh` CLI
+   output, we cannot get issue URLs, making the entire conversion pointless.
 
 2. **High Complexity**: Even with workarounds, the conversion would require:
    - Python interop for subprocess (defeats purpose)
@@ -422,7 +431,7 @@ Our NO-GO criteria were:
 - ✅ Estimated time is excessive (7-9 weeks vs 2 week threshold)
 - ✅ Mojo too unstable for production scripting
 
-**4 out of 4 NO-GO criteria met**
+#### 4 out of 4 NO-GO criteria met
 
 ## 8. Alternative Approaches
 
@@ -443,7 +452,8 @@ Our NO-GO criteria were:
 
 **Recommendation**: **ADOPT THIS**
 
-The philosophical goal of "pure Mojo" is less important than having reliable, maintainable tooling. Python is the right tool for this job.
+The philosophical goal of "pure Mojo" is less important than having reliable,
+maintainable tooling. Python is the right tool for this job.
 
 ### Option B: Hybrid Approach
 
@@ -562,17 +572,25 @@ The philosophical goal of "pure Mojo" is less important than having reliable, ma
 
 ## 11. Conclusion
 
-The conversion of Python automation scripts to Mojo is **NOT FEASIBLE** at this time due to critical missing capabilities in Mojo's subprocess module. While Mojo shows promise and has made significant progress, it is not yet mature enough for systems scripting tasks that require subprocess output capture, regex parsing, and robust error handling.
+The conversion of Python automation scripts to Mojo is **NOT FEASIBLE** at this time
+due to critical missing capabilities in Mojo's subprocess module. While Mojo shows
+promise and has made significant progress, it is not yet mature enough for systems
+scripting tasks that require subprocess output capture, regex parsing, and robust
+error handling.
 
 **The Python scripts work perfectly and should remain as-is.**
 
-This decision is pragmatic, data-driven, and conservative. It prioritizes project stability and developer productivity over philosophical consistency. The ML Odyssey project should focus Mojo development efforts on the ML/AI implementation where Mojo's performance benefits are most valuable, not on rewriting working automation scripts.
+This decision is pragmatic, data-driven, and conservative. It prioritizes project
+stability and developer productivity over philosophical consistency. The ML Odyssey
+project should focus Mojo development efforts on the ML/AI implementation where
+Mojo's performance benefits are most valuable, not on rewriting working automation
+scripts.
 
 **Recommendation Status**: **NO-GO - Postpone until Q2-Q3 2026**
 
 ---
 
-**Appendix A: Test Files**
+## Appendix A: Test Files
 
 All test files are preserved in `/mojo_tests/`:
 
@@ -582,13 +600,13 @@ All test files are preserved in `/mojo_tests/`:
 - `test_string_ops.mojo` - String operation tests (⚠️ PARTIAL)
 - `test_json.mojo` - JSON capability tests (⚠️ UNTESTED)
 
-**Appendix B: References**
+## Appendix B: References
 
 - [Mojo subprocess docs](https://docs.modular.com/mojo/stdlib/subprocess/) - Minimal documentation
 - [Mojo changelog](https://docs.modular.com/mojo/changelog/) - Version history
-- [GitHub Issue #8](https://github.com/mark-villmow/ml-odyssey/issues/8) - Original conversion request
+- [GitHub Issue #8](https://github.com/mvillmow/ml-odyssey/issues/8) - Original conversion request
 
-**Appendix C: Agent Context**
+## Appendix C: Agent Context
 
 - **Agent**: Tooling Orchestrator (Level 1)
 - **Role**: Strategic decision-making for tooling and infrastructure

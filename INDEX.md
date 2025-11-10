@@ -31,11 +31,13 @@
 
 ## Key Decision
 
-**RECOMMENDATION: NO-GO (Postpone Conversion to Q2-Q3 2026)**
+### RECOMMENDATION: NO-GO (Postpone Conversion to Q2-Q3 2026)
 
-**Blocking Issue**: Mojo's subprocess module cannot capture stdout/stderr, making it impossible to get issue URLs from `gh` CLI.
+**Blocking Issue**: Mojo's subprocess module cannot capture stdout/stderr, making it
+impossible to get issue URLs from `gh` CLI.
 
-**Verdict**: Keep Python scripts as-is. Focus Mojo development on ML/AI implementations where performance benefits matter.
+**Verdict**: Keep Python scripts as-is. Focus Mojo development on ML/AI implementations
+where performance benefits matter.
 
 ## Documentation Structure
 
@@ -269,7 +271,7 @@ These tests can be re-run in future Mojo versions to check for improvements.
 
 ### Project Documentation
 
-- [GitHub Issue #8](https://github.com/mark-villmow/ml-odyssey/issues/8) - Original conversion request
+- [GitHub Issue #8](https://github.com/mvillmow/ml-odyssey/issues/8) - Original conversion request
 - [scripts/README.md](/scripts/README.md) - Python scripts documentation
 - [CLAUDE.md](CLAUDE.md) - Project guidelines
 
@@ -281,11 +283,15 @@ These tests can be re-run in future Mojo versions to check for improvements.
 
 ## Conclusion
 
-The comprehensive assessment concludes that **converting Python automation scripts to Mojo is not feasible** with Mojo v0.25.7 due to critical subprocess limitations.
+The comprehensive assessment concludes that **converting Python automation scripts to
+Mojo is not feasible** with Mojo v0.25.7 due to critical subprocess limitations.
 
 **The Python scripts will remain as-is, and this is the correct decision.**
 
-Mojo is a promising language making rapid progress, but it's not yet mature enough for systems scripting tasks that require subprocess output capture and regex parsing. The project should focus Mojo development efforts on ML/AI implementations where Mojo's performance advantages are most valuable.
+Mojo is a promising language making rapid progress, but it's not yet mature enough
+for systems scripting tasks that require subprocess output capture and regex parsing.
+The project should focus Mojo development efforts on ML/AI implementations where
+Mojo's performance advantages are most valuable.
 
 **Decision Status**: NO-GO - Postpone until Q2-Q3 2026
 

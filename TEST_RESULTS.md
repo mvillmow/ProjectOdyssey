@@ -395,9 +395,11 @@ from pathlib import Path  # ⚠️ MISSING - manual path handling
 
 ## Conclusion
 
-The test results are conclusive: **Mojo v0.25.7 cannot support the required functionality for converting the Python automation scripts.**
+The test results are conclusive: **Mojo v0.25.7 cannot support the required
+functionality for converting the Python automation scripts.**
 
-The single blocking issue (subprocess output capture) makes conversion impossible without defeating the purpose through Python interop.
+The single blocking issue (subprocess output capture) makes conversion impossible
+without defeating the purpose through Python interop.
 
 **Recommendation**: Wait for Mojo to mature. Monitor releases quarterly. Revisit in Q2-Q3 2026.
 

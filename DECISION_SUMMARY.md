@@ -8,7 +8,8 @@
 
 **Converting Python automation scripts to Mojo is NOT FEASIBLE.**
 
-**Blocking Issue**: Mojo's subprocess module cannot capture stdout/stderr, which is critical for getting issue URLs from `gh` CLI.
+**Blocking Issue**: Mojo's subprocess module cannot capture stdout/stderr,
+which is critical for getting issue URLs from `gh` CLI.
 
 **Recommendation**: Keep Python scripts, revisit in Q2-Q3 2026 when Mojo matures.
 
@@ -101,7 +102,7 @@ The ML Odyssey project should:
 
 - **Full Report**: [MOJO_CONVERSION_FEASIBILITY.md](MOJO_CONVERSION_FEASIBILITY.md)
 - **Test Results**: `/mojo_tests/` directory
-- **Issue**: [GitHub Issue #8](https://github.com/mark-villmow/ml-odyssey/issues/8)
+- **Issue**: [GitHub Issue #8](https://github.com/mvillmow/ml-odyssey/issues/8)
 
 ## Bottom Line
 
