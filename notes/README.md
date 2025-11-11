@@ -13,7 +13,7 @@ for local planning and GitHub issue generation.
 ```text
 ml-odyssey/
 ├── notes/
-│   ├── plan/                    # LOCAL ONLY (not in git) - task-relative planning
+│   ├── plan/                    # task-relative planning
 │   │   ├── 01-foundation/
 │   │   ├── 02-shared-library/
 │   │   ├── 03-tooling/
@@ -69,7 +69,7 @@ We've verified issue creation works:
 ```bash
 
 # Already tested - created 5 issues successfully
-# Note: Plan files are local (notes/plan/) and not tracked in git
+# Note: Plan files are local (notes/plan/)
 
 python3 scripts/create_single_component_issues.py \
   notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md
@@ -168,7 +168,7 @@ After issue creation, all github_issue.md files are automatically updated:
 - **[notes/review/](review/)** - PR review documentation (tracked in git)
 - **[agents/](../agents/)** - Agent system documentation (tracked in git)
 
-**Note**: `notes/plan/` contains local planning files (not tracked in git, task-relative).
+**Note**: `notes/plan/` contains local planning files.
 Reference the tracked documentation above for team collaboration.
 
 ## Workflow

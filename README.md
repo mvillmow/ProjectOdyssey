@@ -16,10 +16,10 @@ Implementation of older AI papers for the modern age.
 ml-odyssey/
 ├── papers/              # Research paper implementations
 ├── notes/
-│   ├── plan/            # 4-level planning (LOCAL ONLY - not in git)
-│   ├── issues/          # Issue documentation (tracked in git)
-│   └── review/          # Review documentation (tracked in git)
-├── agents/              # Agent documentation (tracked in git)
+│   ├── plan/            # 4-level planning
+│   ├── issues/          # Issue documentation
+│   └── review/          # Review documentation
+├── agents/              # Agent documentation
 ├── scripts/             # Automation scripts
 │   ├── create_issues.py
 │   └── README.md
@@ -30,7 +30,7 @@ ml-odyssey/
 
 ### Creating GitHub Issues
 
-**Note**: Plan files are stored locally in `notes/plan/` and are NOT tracked in version control. They are
+**Note**: Plan files are stored locally in `notes/plan/`. They are
 task-relative and used for local planning and GitHub issue generation.
 
 To create GitHub issues from your local plan files:
@@ -140,5 +140,5 @@ See [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) for comple
 - [notes/issues/](notes/issues/) - Historical issue documentation (tracked)
 - [notes/review/](notes/review/) - Review documentation (tracked)
 
-**Note**: `notes/plan/` contains local planning files (not tracked in git). Reference tracked documentation
+**Note**: `notes/plan/` contains local planning files. Reference tracked documentation
 above for team collaboration.

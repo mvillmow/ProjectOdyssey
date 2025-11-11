@@ -346,7 +346,7 @@ You're successful when:
 
 #### Project Resources
 
-- Component specification in local plan.md (not tracked in git) or tracked docs in notes/issues/
+- Component specification in local plan.md or tracked docs in notes/issues/
 - Test files in test worktree
 - Style guide in project docs
 

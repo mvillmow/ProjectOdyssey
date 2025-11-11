@@ -17,7 +17,7 @@ This document defines the git worktree strategy for implementing the multi-level
 - **Scope**: Design .claude/agents/ structure and agents/ documentation
 - **Agents**: Architecture Design Agent, Documentation Specialist
 - **Deliverables**:
-  - Updated plan.md (local, not tracked in git) with 6-level hierarchy
+  - Updated plan.md with 6-level hierarchy
   - Architecture decision records (tracked in notes/issues/)
   - Agent specifications for all levels
 
@@ -81,7 +81,7 @@ This document defines the git worktree strategy for implementing the multi-level
 - **Scope**: Design tools/ directory structure
 - **Agents**: Architecture Design Agent
 - **Deliverables**:
-  - Updated plan.md (local, not tracked) clarifying tools/ purpose
+  - Updated plan.md clarifying tools/ purpose
   - Tool categories and organization (tracked docs)
   - Integration with existing scripts/
 
@@ -99,7 +99,7 @@ This document defines the git worktree strategy for implementing the multi-level
 - **Scope**: Design .claude/skills/ structure
 - **Agents**: Architecture Design Agent, Skills Designer
 - **Deliverables**:
-  - New plan.md for skills (local, not tracked in git)
+  - New plan.md for skills
   - Skills taxonomy (Tier 1/2/3) (tracked in notes/issues/)
   - Skills vs sub-agents decision matrix (tracked)
 

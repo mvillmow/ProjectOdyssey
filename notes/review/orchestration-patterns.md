@@ -139,7 +139,7 @@ Plan Phase must complete before Test/Impl/Package:
 
 1. Section Orchestrator → Architecture Design Agent (Plan)
 
-   ↓ Wait for plan.md completion (local file, not tracked)
+   ↓ Wait for plan.md completion
 2. Section Orchestrator → Component Specialists (Test/Impl/Package)
 
    ↓ Specialists work in parallel
@@ -482,7 +482,7 @@ Implementation Engineer: Creates fixtures independently in issue-64
 After both complete: Package Engineer merges both
 ```
 
-**Note**: plan.md files are task-relative and local (not tracked in git). For team-wide coordination, use
+**Note**: plan.md files are task-relative. For team-wide coordination, use
 tracked documentation in notes/issues/.
 
 ---

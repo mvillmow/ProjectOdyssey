@@ -113,7 +113,7 @@ decomposition, specialized agents, and reusable skills.
 
 ### Phase 1: Plan (Issues 62, 67, 68)
 
-- Update plan.md files (local, not tracked) with new architecture ✅ COMPLETE
+- Update plan.md files with new architecture ✅ COMPLETE
 - Document 6-level hierarchy and skills taxonomy (tracked in notes/issues/) ✅ COMPLETE
 - Create implementation guidance IN PROGRESS
 
@@ -221,7 +221,7 @@ See [worktree-strategy.md](./worktree-strategy.md) for complete details.
 
 ## Next Steps
 
-1. ✅ Update plan.md files (local, not tracked) (Complete)
+1. ✅ Update plan.md files (Complete)
 2. ✅ Create tracked documentation in notes/issues/ (In Progress)
 3. Regenerate github_issue.md files (local, from plan.md)
 4. Update GitHub issues 62-67

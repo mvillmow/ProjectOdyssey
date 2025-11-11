@@ -77,7 +77,7 @@ All components in the ML Odyssey repository follow a structured 5-phase developm
 
 **Outputs**:
 
-- Detailed component plan (plan.md - local file, not tracked in git)
+- Detailed component plan (plan.md)
 - Specifications for Test, Implementation, and Packaging issues (tracked in notes/issues/)
 - Success criteria and acceptance tests
 
