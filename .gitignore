@@ -8,6 +8,5 @@ __pycache__
 # agentic build artifacts
 logs/
 build/
-notes/plan/
 worktrees/
 dist/

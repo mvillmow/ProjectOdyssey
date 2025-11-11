@@ -167,7 +167,7 @@ notes/plan/              # Task-relative, NOT tracked in git
 
 Each directory contains (locally):
 
-- `plan.md` - Component plan following Template 1 format (local, not tracked)
+- `plan.md` - Component plan following Template 1 format
 - (github_issue.md files are generated dynamically, not tracked in git)
 
 **For tracked documentation**, see notes/issues/, notes/review/, agents/
@@ -201,7 +201,7 @@ logs/
 
 ### GitHub Issue Files
 
-- github_issue.md files are **dynamically generated** from plan.md files (both local, not tracked)
+- github_issue.md files are **dynamically generated** from plan.md files
 - They are NOT committed to the repository
 - Use `scripts/regenerate_github_issues.py` to generate them when needed
 - Never edit github_issue.md files manually - changes will be overwritten

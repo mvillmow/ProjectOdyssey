@@ -333,7 +333,7 @@ git merge --no-commit <branch>
 - Memory constraints
 - Parallelization strategy
 
-**Note**: Use local plan.md files (not tracked in git) for task-relative planning, or tracked documentation in
+**Note**: Use local plan.md files for task-relative planning, or tracked documentation in
 `notes/issues/` for team-wide specifications.
 
 ### Mojo Style Consistency

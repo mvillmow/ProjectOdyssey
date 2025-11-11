@@ -105,7 +105,7 @@ This project uses Pixi for environment management:
 ```bash
 
 # Test issue creation for a single component
-# Note: Plan files are in notes/plan/ (local, not tracked in git)
+# Note: Plan files are in notes/plan/
 
 python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
 
@@ -297,7 +297,7 @@ ml-odyssey/
 
 ### Planning Hierarchy
 
-**4 Levels** (in local `notes/plan/` directory, not tracked in git):
+**4 Levels** (in local `notes/plan/` directory):
 
 1. **Section** (e.g., 01-foundation) - Major area of work
 2. **Subsection** (e.g., 01-directory-structure) - Logical grouping
@@ -404,7 +404,7 @@ Every component follows a hierarchical workflow with clear dependencies:
 
 ## Plan File Format (Template 1)
 
-**Note**: Plan files are task-relative and stored locally in `notes/plan/` (not tracked in git).
+**Note**: Plan files are task-relative and stored locally in `notes/plan/`.
 
 All plan.md files follow this 9-section format:
 

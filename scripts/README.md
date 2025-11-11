@@ -6,12 +6,12 @@ This directory contains Python automation scripts for the Mojo AI Research Repos
 
 These scripts automate repository management tasks:
 
-- Creating GitHub issues from plan files (local files in `notes/plan/`, not tracked in git)
+- Creating GitHub issues from plan files (files in `notes/plan/`)
 - Regenerating github_issue.md files dynamically from plan.md files (local, task-relative)
 - Testing issue creation for individual components
 - Agent system utilities and validation
 
-**Important**: Plan files in `notes/plan/` are task-relative and NOT tracked in version control.
+**Important**: Plan files in `notes/plan/` are task-relative.
 They are used for local planning and GitHub issue generation. For tracked team documentation,
 see `notes/issues/`, `notes/review/`, and `agents/`.
 
@@ -42,8 +42,7 @@ scripts/
 
 #### `regenerate_github_issues.py`
 
-**Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files
-(local files in `notes/plan/`, not tracked in git).
+**Purpose**: Regenerate all github_issue.md files dynamically from their corresponding plan.md files.
 
 **Features**:
 
@@ -95,7 +94,6 @@ Always regenerate them using this script. These files are local (in `notes/plan/
 #### `create_issues.py`
 
 **Purpose**: Create GitHub issues from all github_issue.md files in the notes/plan directory
-(local files, not tracked in git).
 
 **Features**:
 
@@ -310,7 +308,7 @@ Execution logs are saved in the `logs/` directory:
 github_issue.md files are dynamically generated (local, NOT tracked in git):
 
 - Located in `notes/plan/**/github_issue.md` (task-relative, not in version control)
-- Generated from corresponding plan.md files (also local, not tracked)
+- Generated from corresponding plan.md files
 - Regenerated locally as needed for issue creation
 - Each contains 5 issue definitions (Plan, Test, Implementation, Packaging, Cleanup)
 
