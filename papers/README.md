@@ -15,8 +15,9 @@ Each paper implementation is organized in its own subdirectory with:
 
 ```text
 papers/
-├── paper-name/
+├── <paper-name>/
 │   ├── src/              # Implementation code
+│   ├── scripts/          # Scripts to download/setup paper dependencies
 │   ├── tests/            # Test suite
 │   ├── examples/         # Usage examples
 │   └── README.md         # Paper-specific documentation
