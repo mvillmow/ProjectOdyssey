@@ -17,11 +17,11 @@ method for completing tasks.
 ### Agent Hierarchy Quick Reference
 
 - **Level 0**: Chief Architect - Strategic decisions and architecture
-- **Level 1**: Orchestrators (6) - Section coordination (foundation, shared-library, tooling, first-paper, ci-cd, agentic-workflows)
+- **Level 1**: Orchestrators - Section coordination (foundation, shared-library, tooling, first-paper, ci-cd, agentic-workflows)
 - **Level 2**: Design/Orchestrators - Module design and code review coordination
-- **Level 3**: Specialists (12 review, 3 implementation) - Component-level work
-- **Level 4**: Engineers (3) - Implementation tasks
-- **Level 5**: Junior Engineers (3) - Simple, well-defined tasks
+- **Level 3**: Specialists - Component-level work
+- **Level 4**: Engineers - Implementation tasks
+- **Level 5**: Junior Engineers - Simple, well-defined tasks
 
 ### Key Agent Principles
 
@@ -70,7 +70,7 @@ method for completing tasks.
 
 **Why Mojo for ML/AI**:
 
-- Performance: 10-100x faster for ML workloads
+- Performance: Faster for ML workloads
 - Type safety: Catch errors at compile time
 - Memory safety: Built-in ownership and borrow checking
 - SIMD optimization: Parallel tensor operations
@@ -99,52 +99,6 @@ This project uses Pixi for environment management:
 ```
 
 ## Common Commands
-
-### GitHub Issue Management
-
-```bash
-
-# Test issue creation for a single component
-# Note: Plan files are in notes/plan/
-
-python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
-
-# Create issues for one section (recommended approach)
-
-python3 scripts/create_issues.py --section 01-foundation
-
-# Preview what issues would be created without creating them
-
-python3 scripts/create_issues.py --dry-run
-
-# Resume interrupted issue creation
-
-python3 scripts/create_issues.py --resume
-
-# Create all issues (use with caution)
-
-python3 scripts/create_issues.py
-```
-
-### Plan File Management
-
-**Note**: Plan files in `notes/plan/` are task-relative and kept locally. They are NOT tracked in version control.
-Only tracked documentation (notes/issues/, notes/review/, agents/) should be referenced in commits.
-
-```bash
-
-# Regenerate github_issue.md files from plan.md sources (local files)
-
-python3 scripts/regenerate_github_issues.py
-
-# Preview changes without writing files
-
-python3 scripts/regenerate_github_issues.py --dry-run
-
-# Regenerate one section only
-
-python3 scripts/regenerate_github_issues.py --section 01-foundation
-```
 
 ### GitHub CLI
 
@@ -268,25 +222,25 @@ git commit --no-verify
 
 ```text
 ml-odyssey/
-├── agents/                      # Team documentation (tracked in git)
+├── agents/                      # Team documentation
 │   ├── README.md                # Quick start guide
 │   ├── hierarchy.md             # Visual hierarchy diagram
 │   ├── agent-hierarchy.md       # Complete agent specifications
 │   ├── delegation-rules.md      # Coordination patterns
 │   └── templates/               # Agent configuration templates
 ├── notes/
-│   ├── plan/                    # 4-level hierarchical plans (LOCAL ONLY - not in git)
+│   ├── plan/                    # 4-level hierarchical plans
 │   │   ├── 01-foundation/       # Repository structure and config
 │   │   ├── 02-shared-library/   # Core reusable components
 │   │   ├── 03-tooling/          # Development and testing tools
 │   │   ├── 04-first-paper/      # LeNet-5 (proof of concept)
 │   │   ├── 05-ci-cd/            # CI/CD pipelines
 │   │   └── 06-agentic-workflows/# Claude-powered automation
-│   ├── issues/                  # Issue-specific documentation (tracked in git)
+│   ├── issues/                  # Issue-specific documentation
 │   │   ├── 62/README.md         # Issue #62: [Plan] Agents
 │   │   ├── 63/README.md         # Issue #63: [Test] Agents
 │   │   └── ...                  # One directory per issue
-│   └── review/                  # Comprehensive specs & architectural decisions (tracked in git)
+│   └── review/                  # Comprehensive specs & architectural decisions
 │       ├── agent-architecture-review.md
 │       ├── skills-design.md
 │       └── orchestration-patterns.md
@@ -297,20 +251,12 @@ ml-odyssey/
 
 ### Planning Hierarchy
 
-**4 Levels** (in local `notes/plan/` directory):
+**4 Levels** (in `notes/plan/` directory):
 
 1. **Section** (e.g., 01-foundation) - Major area of work
 2. **Subsection** (e.g., 01-directory-structure) - Logical grouping
 3. **Component** (e.g., 01-create-papers-dir) - Specific deliverable
 4. **Subcomponent** (e.g., 01-create-base-dir) - Atomic task
-
-Each component at any level has (locally, not in version control):
-
-- `plan.md` - The planning document (Template 1 format, task-relative)
-- `github_issue.md` - Dynamically generated GitHub issue definitions (task-relative)
-
-**Important**: Plan files are for local planning and GitHub issue generation. Refer to tracked documentation in
-`notes/issues/`, `notes/review/`, and `agents/` for shared team documentation.
 
 ### Documentation Organization
 
@@ -404,7 +350,7 @@ Every component follows a hierarchical workflow with clear dependencies:
 
 ## Plan File Format (Template 1)
 
-**Note**: Plan files are task-relative and stored locally in `notes/plan/`.
+**Note**: Plan files are task-relative and stored in `notes/plan/`.
 
 All plan.md files follow this 9-section format:
 
@@ -453,47 +399,14 @@ Additional context
 - Use relative paths for links (e.g., `../plan.md`, not absolute paths)
 - After editing plan.md, regenerate github_issue.md files using `scripts/regenerate_github_issues.py`
 - NEVER edit github_issue.md files manually - they are dynamically generated
-- **Remember**: Plan files are task-relative and NOT tracked in git - only reference tracked documentation
-
-  (`notes/issues/`, `notes/review/`, `agents/`) in commits
-
-## Script Architecture
-
-### create_issues.py (854 LOC)
-
-Main script for creating GitHub issues. Key features:
-
-- Parses github_issue.md files and creates GitHub issues via `gh` CLI
-- Automatic label creation with predefined colors
-- Exponential backoff retry logic (up to 3 retries)
-- State management with resume capability (saves every 10 issues)
-- Updates markdown files with created issue URLs
-- Comprehensive error handling and logging
-
-### regenerate_github_issues.py (450+ LOC)
-
-Generates github_issue.md files from plan.md sources:
-
-- Extracts all sections from plan.md (overview, inputs, outputs, steps, criteria, notes)
-- Generates consistent 5-issue format for each component
-- Supports dry-run, section-by-section, and resume modes
-- Timestamped state files for tracking multiple runs
-
-### create_single_component_issues.py (198 LOC)
-
-Testing utility for single component issue creation:
-
-- Creates 5 issues for one component only
-- Useful for validation before bulk creation
-- Same label creation and markdown update logic as main script
 
 ## Working with Plans
 
-**Important**: Plan files are task-relative and kept locally in `notes/plan/`. They are NOT tracked in version control.
+**Important**: Plan files are task-relative and kept in `notes/plan/`.
 
 ### Creating a New Component
 
-1. Create directory structure under `notes/plan/` (local only)
+1. Create directory structure under `notes/plan/`
 2. Create `plan.md` following Template 1 format (9 sections)
 3. Update parent plan's "Child Plans" section
 4. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py --section <section>`
@@ -501,17 +414,16 @@ Testing utility for single component issue creation:
 
 ### Modifying Existing Plans
 
-1. Edit the `plan.md` file (maintain Template 1 format, local file)
+1. Edit the `plan.md` file (maintain Template 1 format)
 2. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py`
 3. If issues were already created, update them manually in GitHub
 
 ### File Locations
 
-- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md` (LOCAL ONLY - not in git)
-- **Generated Issues**: `notes/plan/<section>/<subsection>/.../github_issue.md` (LOCAL ONLY - DO NOT EDIT)
-- **Scripts**: `scripts/*.py` (tracked in git)
-- **Logs**: `logs/create_issues_*.log` (not tracked)
-- **State**: `logs/.issue_creation_state_*.json` (not tracked)
+- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md`
+- **Scripts**: `scripts/*.py`
+- **Logs**: `logs/create_issues_*.log`
+- **State**: `logs/.issue_creation_state_*.json`
 - **Tracked Docs**: `notes/issues/<issue-number>/`, `notes/review/`, `agents/` (reference these in commits)
 
 ## Git Workflow
@@ -800,7 +712,7 @@ gh auth refresh -h github.com
 
 ## Important Files
 
-- `.clinerules` - Comprehensive Claude Code conventions (350+ lines)
+- `.clinerules` - Comprehensive Claude Code conventions
 - `notes/README.md` - GitHub issues creation plan
 - `notes/review/README.md` - PR review guidelines and 5-phase workflow explanation
 - `scripts/README.md` - Complete scripts documentation
