@@ -27,23 +27,28 @@ cd papers/your-paper-name
 
 ```text
 your-paper-name/
-├── README.md                    # This file - update with paper details
-├── src/                         # Mojo implementation code
+├── README.md                   # This file - update with paper details
+├── src/                        # Mojo implementation code
 │   ├── __init__.mojo           # Package initialization
 │   └── .gitkeep                # Placeholder for empty directory
-├── tests/                       # Test suite
+├── script/                     # Scripts to download dependencies
+│   ├── paper.mojo              # Script to download the paper from its original source
+│   ├── dataset.mojo            # Script to download the dataset from its original or cached source
+│   ├── reference.mojo          # Script to download the reference implementation
+│   └── .gitkeep                # Placeholder for empty directory
+├── tests/                      # Test suite
 │   ├── __init__.mojo           # Test package initialization
 │   └── .gitkeep                # Placeholder for empty directory
-├── data/                        # Data management
+├── data/                       # Data management
 │   ├── raw/                    # Original, immutable datasets
 │   ├── processed/              # Cleaned and transformed datasets
 │   └── cache/                  # Cached computations
-├── configs/                     # Configuration files
+├── configs/                    # Configuration files
 │   ├── config.yaml             # Example configuration
 │   └── .gitkeep                # Placeholder for empty directory
-├── notebooks/                   # Jupyter notebooks
+├── notebooks/                  # Jupyter notebooks
 │   └── .gitkeep                # Placeholder for empty directory
-└── examples/                    # Demonstration scripts
+└── examples/                   # Demonstration scripts
     └── .gitkeep                # Placeholder for empty directory
 ```
 
@@ -109,6 +114,7 @@ Manages datasets and processed data.
 
 - Data files are NOT tracked in git (except .gitkeep files)
 - Add data files to `.gitignore` in the paper directory
+- Data files are downloaded from the data retrieval script
 - Document data sources and preprocessing steps in this README
 - Include download scripts or instructions in `examples/`
 
@@ -156,7 +162,6 @@ Demonstration scripts showing how to use the implementation.
 - `train.mojo` - Training script
 - `evaluate.mojo` - Evaluation script
 - `inference.mojo` - Inference/prediction script
-- `download_data.mojo` - Data download script
 
 **Characteristics**:
 
