@@ -10,3 +10,5 @@ logs/
 build/
 worktrees/
 dist/
+
+*.swp
