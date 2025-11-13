@@ -25,6 +25,7 @@ from time import now
 
 fn create_temp_dir(prefix: String = "ml_odyssey_test_") -> String:
     """Create temporary directory for testing.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Creates a unique temporary directory in the system temp location
     with a timestamp-based name for uniqueness.
@@ -63,6 +64,7 @@ fn create_temp_dir(prefix: String = "ml_odyssey_test_") -> String:
 
 fn cleanup_temp_dir(path: String) raises:
     """Remove temporary directory and all contents.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Recursively removes directory and all files/subdirectories.
 
@@ -128,6 +130,7 @@ fn temp_file_path(directory: String, filename: String) -> String:
 
 fn create_mock_config(path: String, content: String) raises:
     """Create mock configuration file.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Writes a configuration file (YAML or JSON) to the specified path.
 
@@ -172,6 +175,7 @@ fn create_mock_checkpoint(
     path: String, num_params: Int = 100, random_seed: Int = 42
 ) raises:
     """Create mock model checkpoint file.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Creates a simple checkpoint file with mock parameter data.
 
@@ -204,6 +208,7 @@ fn create_mock_checkpoint(
 
 fn create_mock_text_file(path: String, num_lines: Int = 10) raises:
     """Create mock text file with sample lines.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Full path where file should be created.
@@ -232,6 +237,7 @@ fn create_mock_text_file(path: String, num_lines: Int = 10) raises:
 
 fn get_test_data_path(filename: String) -> String:
     """Resolve path to test data file.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Returns absolute path to a file in the test data directory.
     Useful for loading reference data, images, etc.
@@ -281,6 +287,7 @@ fn get_fixtures_dir() -> String:
 
 fn file_exists(path: String) -> Bool:
     """Check if file exists at path.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Path to check.
@@ -308,6 +315,7 @@ fn file_exists(path: String) -> Bool:
 
 fn dir_exists(path: String) -> Bool:
     """Check if directory exists at path.
+    WARNING: NOT YET IMPLEMENTED - Placeholder interface only.
 
     Args:
         path: Path to check.

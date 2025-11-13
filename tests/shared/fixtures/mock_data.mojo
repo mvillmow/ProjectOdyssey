@@ -44,7 +44,7 @@ struct MockDataset:
     var random_seed: Int
 
     fn __init__(
-        inoutself,
+        inout self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -135,7 +135,7 @@ struct MockClassificationDataset:
     var random_seed: Int
 
     fn __init__(
-        inoutself,
+        inout self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         num_classes: Int = 5,
@@ -220,7 +220,7 @@ struct MockRegressionDataset:
     var noise_scale: Float32
 
     fn __init__(
-        inoutself,
+        inout self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -321,7 +321,7 @@ struct MockDataLoader:
     var num_batches: Int
 
     fn __init__(
-        inoutself, num_samples: Int, batch_size: Int, shuffle: Bool = False
+        inout self, num_samples: Int, batch_size: Int, shuffle: Bool = False
     ):
         """Initialize data loader.
 

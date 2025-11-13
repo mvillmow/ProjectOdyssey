@@ -41,7 +41,7 @@ struct MockLayer:
     var scale: Float32
 
     fn __init__(
-        inoutself, input_dim: Int, output_dim: Int, scale: Float32 = 1.0
+        inout self, input_dim: Int, output_dim: Int, scale: Float32 = 1.0
     ):
         """Initialize mock layer.
 
@@ -145,7 +145,7 @@ struct SimpleLinearModel:
     var use_bias: Bool
 
     fn __init__(
-        inoutself,
+        inout self,
         input_dim: Int,
         output_dim: Int,
         use_bias: Bool = True,
@@ -244,7 +244,7 @@ struct SimpleLinearModel:
             n_params += len(self.bias)
         return n_params
 
-    fn randomize_weights(inoutself, random_seed: Int = 42):
+    fn randomize_weights(inout self, random_seed: Int = 42):
         """Randomize model weights.
 
         Args:
@@ -307,7 +307,7 @@ struct SimpleMLP:
     var layer3_bias: List[Float32]
 
     fn __init__(
-        inoutself,
+        inout self,
         input_dim: Int,
         hidden_dim: Int,
         output_dim: Int,
