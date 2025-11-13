@@ -1,0 +1,49 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2025-01-13T00:00:00Z",
+  "environment": {
+    "os": "linux",
+    "cpu": "x86_64",
+    "mojo_version": "0.25.7",
+    "git_commit": "placeholder"
+  },
+  "benchmarks": [
+    {
+      "name": "tensor_add_small",
+      "description": "Element-wise addition of 100x100 tensors",
+      "duration_ms": 10.0,
+      "throughput": 1000000.0,
+      "memory_mb": 0.08,
+      "iterations": 100
+    },
+    {
+      "name": "tensor_add_large",
+      "description": "Element-wise addition of 1000x1000 tensors",
+      "duration_ms": 100.0,
+      "throughput": 10000000.0,
+      "memory_mb": 8.0,
+      "iterations": 100
+    },
+    {
+      "name": "matmul_small",
+      "description": "Matrix multiplication of 100x100 matrices",
+      "duration_ms": 15.0,
+      "throughput": 666666.0,
+      "memory_mb": 0.08,
+      "iterations": 100
+    },
+    {
+      "name": "matmul_large",
+      "description": "Matrix multiplication of 1000x1000 matrices",
+      "duration_ms": 500.0,
+      "throughput": 2000000.0,
+      "memory_mb": 8.0,
+      "iterations": 10
+    }
+  ],
+  "metadata": {
+    "created_by": "Issue #53 - TDD Test Suite",
+    "purpose": "Initial baseline for benchmark comparison",
+    "notes": "Placeholder values - will be updated with real benchmarks in Issue #54"
+  }
+}
