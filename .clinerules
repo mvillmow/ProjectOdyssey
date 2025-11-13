@@ -1,268 +1,9 @@
 # ML Odyssey - Claude Coding Rules
 
-## Project Overview
+> **Note**: For comprehensive project documentation, workflows, and conventions, see [CLAUDE.md](CLAUDE.md).
+> This file contains quick reference templates and troubleshooting tips.
 
-This repository implements a comprehensive Mojo-based AI research platform for reproducing research papers. The project uses a 4-level hierarchical planning structure with detailed plans and GitHub issue tracking.
-
-## Repository Structure
-
-```
-ml-odyssey/
-├── agents/                      # Team documentation (tracked)
-│   ├── README.md                # Quick start guide
-│   ├── hierarchy.md             # Visual hierarchy
-│   ├── agent-hierarchy.md       # Complete specifications
-│   ├── delegation-rules.md      # Coordination patterns
-│   └── templates/               # Agent configuration templates
-├── notes/
-│   ├── README.md                # GitHub issues plan and documentation
-│   ├── plan/                    # 4-level hierarchical plans (LOCAL - not tracked)
-│   │   ├── 01-foundation/
-│   │   ├── 02-shared-library/
-│   │   ├── 03-tooling/
-│   │   ├── 04-first-paper/
-│   │   ├── 05-ci-cd/
-│   │   └── 06-agentic-workflows/
-│   ├── issues/                  # Issue-specific documentation (tracked)
-│   │   ├── 62/README.md         # Issue #62: [Plan] Agents
-│   │   ├── 63/README.md         # Issue #63: [Test] Agents
-│   │   └── ...                  # One directory per issue
-│   └── review/                  # Comprehensive specs & architectural decisions (tracked)
-│       ├── agent-architecture-review.md
-│       ├── skills-design.md
-│       └── orchestration-patterns.md
-├── scripts/                     # Automation scripts
-│   ├── create_issues.py         # Main issue creation
-│   ├── create_single_component_issues.py
-│   ├── regenerate_github_issues.py  # Regenerate github_issue.md files
-│   └── README.md
-├── logs/                        # Execution logs
-└── README.md                    # Main documentation
-```
-
-## Documentation Organization
-
-The repository uses **three separate locations** for documentation to avoid duplication:
-
-### 1. Team Documentation (`/agents/`)
-**Purpose**: Quick start guides, visual references, and templates for team onboarding.
-- Quick start guides (README.md)
-- Visual diagrams (hierarchy.md)
-- Quick reference cards (delegation-rules.md)
-- Configuration templates (templates/)
-
-### 2. Comprehensive Specifications (`/notes/review/`)
-**Purpose**: Detailed architectural decisions, comprehensive specifications, and design documents.
-- Architectural reviews and decisions
-- Comprehensive design specifications
-- Workflow strategies
-- Implementation summaries and lessons learned
-
-### 3. Issue-Specific Documentation (`/notes/issues/<issue-number>/`)
-**Purpose**: Implementation notes, findings, and decisions specific to a single GitHub issue.
-
-Each issue directory contains a focused README.md with:
-- Issue number and title
-- Objective (what this specific issue accomplishes)
-- Deliverables (what files/changes this issue creates)
-- Success criteria
-- References to shared documentation (**links only, no duplication**)
-- Implementation notes (filled during work)
-
-**Important Rules**:
-- ✅ DO: Link to comprehensive docs in `/agents/` and `/notes/review/`
-- ✅ DO: Add issue-specific findings and decisions
-- ❌ DON'T: Duplicate comprehensive documentation
-- ❌ DON'T: Create shared specifications in `/notes/issues/` (use `/notes/review/` instead)
-
-## Key Conventions
-
-### Plan Structure
-
-All plans follow Template 1 format:
-
-```markdown
-# Component Name
-
-## Overview
-Brief description (2-3 sentences)
-
-## Parent Plan
-[../plan.md](../plan.md) or "None (top-level)"
-
-## Child Plans
-- [child1/plan.md](child1/plan.md)
-Or "None (leaf node)" for level 4
-
-## Inputs
-- Prerequisite 1
-- Prerequisite 2
-
-## Outputs
-- Deliverable 1
-- Deliverable 2
-
-## Steps
-1. Step 1
-2. Step 2
-
-## Success Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Notes
-Additional context
-```
-
-### GitHub Issue Structure
-
-Each component has 5 issues following a hierarchical workflow. The `github_issue.md` files are dynamically generated from plan.md files and define:
-
-**5-Phase Hierarchy**: Plan → [Test | Implementation | Packaging] → Cleanup
-
-- **Plan**: Creates the detailed plan for the component, including specifications for Test, Implementation, and Packaging phases
-- **Test**: Documents and implements test cases (can run in parallel with Implementation and Packaging after Plan completes)
-- **Implementation**: Main implementation work (can run in parallel with Test and Packaging after Plan completes)
-- **Packaging**: Integrates Test and Implementation artifacts into a self-contained installer (can run in parallel after Plan completes)
-- **Cleanup**: Final phase that collects issues discovered during Test/Implementation/Packaging and handles refactoring and finalization (runs after the other three complete)
-
-Note: github_issue.md files are regenerated dynamically from plan.md files using `scripts/regenerate_github_issues.py` and should not be edited manually.
-
-```markdown
-# GitHub Issues for Component Name
-
-## Plan Issue
-**Title**: `[Plan] Component Name - Design and Documentation`
-**Labels**: `planning`, `documentation`
-**Body**: [Detailed instructions]
-**GitHub Issue URL**: [URL after creation]
-
-## Test Issue
-[Similar structure...]
-```
-
-### File Locations
-
-- **Plans** (local, not tracked): `notes/plan/<section>/<subsection>/.../plan.md`
-- **Issues** (local, not tracked): `notes/plan/<section>/<subsection>/.../github_issue.md`
-- **Scripts**: `scripts/*.py` and `scripts/*.sh`
-- **Logs**: `logs/*.log`
-- **Team Docs** (tracked): `agents/*.md` and `agents/templates/*.md`
-- **Comprehensive Specs** (tracked): `notes/review/*.md`
-- **Issue-Specific Docs** (tracked): `notes/issues/<issue-number>/README.md`
-
-## Development Workflow
-
-### 1. Working with Plans
-
-When modifying plans:
-- Maintain Template 1 format consistently
-- Update parent/child links when adding components
-- Keep all 9 required sections
-- Use relative paths for links
-- Never modify github_issue.md manually (regenerate with scripts)
-
-### 2. Creating GitHub Issues
-
-Use the automation scripts:
-
-```bash
-# Test single component
-python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md
-
-# Create section
-python3 scripts/create_issues.py --section 01-foundation
-
-# Create all
-python3 scripts/create_issues.py
-
-# Dry-run
-python3 scripts/create_issues.py --dry-run
-```
-
-### 3. 5-Phase Development Process
-
-Each component follows a hierarchical workflow with clear dependencies:
-
-**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
-
-1. **Plan** (Sequential, must complete first)
-   - Creates detailed specifications for the component
-   - Defines requirements for Test, Implementation, and Packaging phases
-   - Documents design decisions and success criteria
-   - Outputs: Specifications for all subsequent phases
-
-2. **Test** (Parallel after Plan)
-   - Documents and implements test cases following TDD principles
-   - Can run in parallel with Implementation and Packaging
-   - Defines test fixtures, edge cases, and coverage requirements
-
-3. **Implementation** (Parallel after Plan)
-   - Main implementation work to build the functionality
-   - Can run in parallel with Test and Packaging
-   - Should integrate with Test phase for TDD approach
-
-4. **Packaging** (Parallel after Plan)
-   - Integrates Test and Implementation artifacts
-   - Creates self-contained installer/package for reproducibility
-   - Can run in parallel with Test and Implementation
-
-5. **Cleanup** (Sequential, runs after Test/Implementation/Packaging)
-   - Collects issues discovered during the parallel phases
-   - Handles refactoring, documentation, and finalization
-   - Final validation before considering component complete
-
-**Key Points**:
-- Plan phase MUST complete before other phases begin
-- Test, Implementation, and Packaging can run in parallel
-- Cleanup issue should be updated throughout as issues are discovered
-- Each phase has a separate GitHub issue with detailed instructions
-
-### 4. Scripts and Automation
-
-- All automation scripts live in `scripts/`
-- Use Python 3.7+ for scripts
-- Scripts automatically create labels if needed
-- Progress is saved to `.issue_creation_state.json`
-- Logs go to `logs/` directory
-
-## Coding Standards
-
-### Python Scripts
-
-```python
-#!/usr/bin/env python3
-"""
-Script description
-
-Usage:
-    python scripts/script_name.py [options]
-"""
-
-# Standard imports first
-import sys
-import re
-from pathlib import Path
-
-# Type hints required
-def function_name(param: str) -> bool:
-    """Clear docstring with purpose, params, returns."""
-    pass
-```
-
-### Mojo Code (Future)
-
-```mojo
-# Will be added when implementing papers
-# Follow Mojo best practices:
-# - Use fn for performance-critical code
-# - Use def for prototyping
-# - Leverage SIMD operations
-# - Clear type annotations
-# - All code must pass `mojo format` before committing
-```
-
-**Code Quality**: Pre-commit hooks enforce `mojo format` on all `.mojo` and `.🔥` files.
+## Code Templates
 
 ### Shell Scripts
 
@@ -272,147 +13,131 @@ def function_name(param: str) -> bool:
 # Usage: script_name.sh [options]
 
 set -e  # Exit on error
+set -u  # Error on undefined variables
+set -o pipefail  # Catch errors in pipelines
+
+# Script implementation here
 ```
 
-## Common Operations
+### Mojo Code
 
-### Adding a New Component
+```mojo
+# Mojo implementation template
+# Follow Mojo best practices from CLAUDE.md
 
-1. Create directory structure under `notes/plan/`
-2. Create `plan.md` following Template 1
-3. Run issue generator:
-   ```bash
-   python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md
-   ```
-4. Verify issues created correctly
+from memory import memset_zero
+from sys.info import simdwidthof
 
-### Updating Documentation
+fn performance_critical_function[T: DType](inout data: Tensor[T]) -> None:
+    """Performance-critical function using fn.
 
-Follow the **3-location pattern**:
+    Args:
+        data: Input tensor to process in-place.
+    """
+    # Use SIMD operations for performance
+    alias simd_width = simdwidthof[T]()
+    # Implementation here
+    pass
 
-**Team Documentation** (`/agents/`):
-- Update for team onboarding, quick references, templates
-- Examples: `agents/README.md`, `agents/hierarchy.md`, templates
+def prototype_function(data: object) -> object:
+    """Prototype function using def for flexibility.
 
-**Comprehensive Specifications** (`/notes/review/`):
-- Add architectural decisions, comprehensive specs
-- Examples: `notes/review/agent-architecture-review.md`, `notes/review/skills-design.md`
+    Args:
+        data: Input data (flexible typing during prototyping).
 
-**Issue-Specific** (`/notes/issues/<issue-number>/`):
-- Add implementation notes to your issue's README.md
-- Link to comprehensive docs, don't duplicate them
-- Update during implementation with findings
+    Returns:
+        Processed data.
+    """
+    # Implementation here
+    return data
 
-**General Documentation**:
-- Main README: Update `README.md`
-- Script docs: Update `scripts/README.md`
-- Issue planning: Update `notes/README.md`
+struct TypeSafeStruct:
+    """Use struct for type safety and performance."""
+    var field: Int
 
-### Debugging
-
-- Check logs: `tail -100 logs/create_issues_*.log`
-- Verify state: `cat .issue_creation_state.json`
-- Test parsing: `python3 scripts/create_issues.py --dry-run`
-- Single component: Use `create_single_component_issues.py`
-
-## Git Workflow
-
-### Branch Naming
-
-- `main` - Production
-- `feature/<issue-number>-<description>`
-- `fix/<issue-number>-<description>`
-
-### Commit Messages
-
-Follow conventional commits:
-
-```
-feat(section): Add new component
-fix(scripts): Correct parsing issue
-docs(readme): Update instructions
-refactor(plans): Standardize to Template 1
+    fn __init__(inout self, value: Int):
+        self.field = value
 ```
 
-### Pull Requests
+**Mojo Best Practices**:
 
-- Link to relevant GitHub issues
-- Include plan references
-- Update documentation
-- Run dry-run tests before submitting
+- Use `fn` for performance-critical code (compile-time optimizations)
+- Use `def` for prototyping and flexibility
+- Leverage SIMD operations for parallel processing
+- Always include type annotations
+- All code must pass `mojo format` before committing (enforced by pre-commit hooks)
 
-## Labels
+## Quick Troubleshooting
 
-Standard labels used in issues:
+### GitHub CLI Issues
 
-- `planning` - Design phase
-- `documentation` - Documentation work
-- `testing` - Testing phase
-- `tdd` - Test-driven development
-- `implementation` - Implementation phase
-- `packaging` - Integration/packaging
-- `integration` - Integration tasks
-- `cleanup` - Cleanup/finalization
+```bash
+# Authentication problems
+gh auth status
+gh auth refresh -h github.com
 
-## Important Files
+# Issue creation fails
+gh auth status  # Check authentication
+gh issue list   # Verify repo access
+```
 
-- `README.md` - Main documentation
-- `notes/README.md` - Issue creation plan
-- `scripts/README.md` - Scripts documentation
-- `scripts/SCRIPTS_ANALYSIS.md` - Comprehensive scripts analysis
-- `notes/plan/*/plan.md` - Individual component plans
-- `scripts/create_issues.py` - Main automation script
+### Script Errors
 
-## Best Practices
+```bash
+# Python version check
+python3 --version  # Requires 3.7+
 
-### When Writing Code
+# Check logs
+tail -100 logs/create_issues_*.log
 
-1. **Keep it simple** - Avoid premature optimization
-2. **Follow TDD** - Write tests first
-3. **Document clearly** - Every public function/class
-4. **Use type hints** - For Python and Mojo
-5. **Error handling** - Comprehensive error handling
-6. **Logging** - Log important operations
+# Test without creating issues
+python3 scripts/create_issues.py --dry-run
+```
 
-### When Creating Plans
+### Pre-commit Hook Failures
 
-1. **Be specific** - Clear, actionable steps
-2. **Link properly** - Correct parent/child links
-3. **Complete sections** - All 9 required sections
-4. **Consistent format** - Always use Template 1
-5. **Clear criteria** - Measurable success criteria
+```bash
+# Run hooks manually
+pre-commit run --all-files
 
-### When Working with Issues
+# Mojo format issues
+pixi run mojo format path/to/file.mojo
 
-1. **One phase at a time** - Complete Plan before Test, etc.
-2. **Update status** - Close issues when complete
-3. **Link PRs** - Always link PR to issue
-4. **Reference plans** - Link back to plan.md files
-5. **Track progress** - Update issue comments with progress
+# Markdown linting issues
+npx markdownlint-cli2 path/to/file.md
 
-## Troubleshooting
+# Skip hooks (use sparingly)
+git commit --no-verify
+```
 
-### Common Issues
+### Common Errors
 
-**Issue creation fails:**
-- Check GitHub CLI auth: `gh auth status`
-- Verify label exists: Created automatically by script
-- Check issue body: Must be valid markdown
+**"Plans not found"**:
 
-**Links broken:**
+- Plans are in `notes/plan/` (local, not tracked in git)
+- Check if directory exists: `ls notes/plan/`
+
+**"Links broken in plan.md"**:
+
 - Use relative paths: `../plan.md` not absolute
-- Verify file exists: Check path is correct
-- Update after moving: Fix links if files moved
+- Verify parent/child files exist
 
-**Script errors:**
-- Check Python version: Requires 3.7+
-- Install dependencies: `pip install tqdm` (optional)
-- Check permissions: Scripts need execute permission
+**"Mojo format fails"**:
 
-## References
+- Ensure Pixi environment is active
+- Run: `pixi run mojo format file.mojo`
+- Check syntax errors in Mojo code
 
-- Main docs: [README.md](README.md)
-- Scripts: [scripts/README.md](scripts/README.md)
-- Scripts analysis: [scripts/SCRIPTS_ANALYSIS.md](scripts/SCRIPTS_ANALYSIS.md)
-- Plans: [notes/plan/](notes/plan/)
-- Issue plan: [notes/README.md](notes/README.md)
+**"GitHub issue creation fails"**:
+
+- Check auth: `gh auth status`
+- Verify repo access: `gh repo view`
+- Check issue body is valid markdown
+
+## See Also
+
+- [CLAUDE.md](CLAUDE.md) - Comprehensive project documentation
+- [README.md](README.md) - Main project README
+- [scripts/README.md](scripts/README.md) - Scripts documentation
+- [agents/README.md](agents/README.md) - Agent system documentation
+- [notes/review/](notes/review/) - Architectural decisions and comprehensive specs
