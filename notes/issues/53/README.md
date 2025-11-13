@@ -44,7 +44,7 @@ tests/tooling/benchmarks/
 
 ## References
 
-- **Planning**: [Issue #52 README.md](/home/mvillmow/ml-odyssey/notes/issues/52/README.md)
+- **Planning**: [Issue #52 README.md](../../52/README.md)
 - **Planning Files**: `notes/plan/03-tooling/` (benchmark components)
 - **Shared Fixtures**: `tests/shared/conftest.mojo`
 - **Related Issues**: #52 (Plan), #54 (Implementation), #55 (Packaging), #56 (Cleanup)

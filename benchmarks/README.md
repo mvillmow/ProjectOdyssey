@@ -136,7 +136,7 @@ See `.github/workflows/benchmarks.yml` for CI configuration.
 
 ## References
 
-- **Planning**: `notes/issues/52/README.md` (Issue #52 - Plan)
-- **Tests**: `tests/tooling/benchmarks/` (Issue #53 - Test)
-- **Implementation**: Issue #54
-- **CI/CD**: `.github/workflows/benchmarks.yml`
+- **Planning**: [Issue #52](../notes/issues/52/README.md) - Plan
+- **Tests**: [Issue #53](../tests/tooling/benchmarks/) - Test
+- **Implementation**: [Issue #54](../notes/issues/54/README.md) - Implementation
+- **CI/CD**: [Benchmarks Workflow](../.github/workflows/benchmarks.yml)
