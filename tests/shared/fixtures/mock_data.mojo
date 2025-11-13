@@ -44,7 +44,7 @@ struct MockDataset:
     var random_seed: Int
 
     fn __init__(
-        inout self,
+        inoutself,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -104,7 +104,9 @@ struct MockDataset:
         var item_seed = self.random_seed + index
 
         # Generate input
-        var input = create_random_tensor([self.input_dim], random_seed=item_seed)
+        var input = create_random_tensor(
+            [self.input_dim], random_seed=item_seed
+        )
 
         # Generate output
         var output = create_random_tensor(
@@ -133,7 +135,7 @@ struct MockClassificationDataset:
     var random_seed: Int
 
     fn __init__(
-        inout self,
+        inoutself,
         num_samples: Int = 100,
         input_dim: Int = 10,
         num_classes: Int = 5,
@@ -186,7 +188,9 @@ struct MockClassificationDataset:
         var item_seed = self.random_seed + index
 
         # Generate input features
-        var input = create_random_tensor([self.input_dim], random_seed=item_seed)
+        var input = create_random_tensor(
+            [self.input_dim], random_seed=item_seed
+        )
 
         # Generate class label (deterministic but varied)
         seed(item_seed)
@@ -216,7 +220,7 @@ struct MockRegressionDataset:
     var noise_scale: Float32
 
     fn __init__(
-        inout self,
+        inoutself,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -272,7 +276,9 @@ struct MockRegressionDataset:
         var item_seed = self.random_seed + index
 
         # Generate input
-        var input = create_random_tensor([self.input_dim], random_seed=item_seed)
+        var input = create_random_tensor(
+            [self.input_dim], random_seed=item_seed
+        )
 
         # Generate output as simple function of input
         # Output = mean(input) + small noise
@@ -314,7 +320,9 @@ struct MockDataLoader:
     var shuffle: Bool
     var num_batches: Int
 
-    fn __init__(inout self, num_samples: Int, batch_size: Int, shuffle: Bool = False):
+    fn __init__(
+        inoutself, num_samples: Int, batch_size: Int, shuffle: Bool = False
+    ):
         """Initialize data loader.
 
         Args:
@@ -433,7 +441,9 @@ fn create_mock_batch(
     var outputs = List[List[Float32]](capacity=batch_size)
 
     for i in range(batch_size):
-        var input = create_random_tensor([input_dim], random_seed=random_seed + i)
+        var input = create_random_tensor(
+            [input_dim], random_seed=random_seed + i
+        )
         var output = create_random_tensor(
             [output_dim], random_seed=random_seed + i + 1000
         )
@@ -473,7 +483,9 @@ fn create_mock_classification_batch(
     var labels = List[Int](capacity=batch_size)
 
     for i in range(batch_size):
-        var input = create_random_tensor([input_dim], random_seed=random_seed + i)
+        var input = create_random_tensor(
+            [input_dim], random_seed=random_seed + i
+        )
         inputs.append(input)
 
         # Generate class label

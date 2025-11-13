@@ -22,7 +22,9 @@ from random import seed, randn
 # ============================================================================
 
 
-fn create_random_tensor(shape: List[Int], random_seed: Int = 42) -> List[Float32]:
+fn create_random_tensor(
+    shape: List[Int], random_seed: Int = 42
+) -> List[Float32]:
     """Create random tensor with deterministic seed.
 
     Generates a flat list of random Float32 values representing a tensor.
@@ -116,7 +118,9 @@ fn create_ones_tensor(shape: List[Int]) -> List[Float32]:
     return data
 
 
-fn create_sequential_tensor(shape: List[Int], start: Float32 = 0.0) -> List[Float32]:
+fn create_sequential_tensor(
+    shape: List[Int], start: Float32 = 0.0
+) -> List[Float32]:
     """Create tensor with sequential values [start, start+1, start+2, ...].
 
     Args:
@@ -212,7 +216,9 @@ fn assert_tensors_equal(
     # Check sizes match
     if len(a) != len(b):
         var error_msg = message if message else "Tensor sizes don't match"
-        error_msg = error_msg + " (a: " + str(len(a)) + ", b: " + str(len(b)) + ")"
+        error_msg = (
+            error_msg + " (a: " + str(len(a)) + ", b: " + str(len(b)) + ")"
+        )
         raise Error(error_msg)
 
     # Compare elements
