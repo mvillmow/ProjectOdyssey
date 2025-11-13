@@ -38,19 +38,13 @@ fn test_checkpointing_initialization() raises:
         - save_best_only: If True, only save when monitored metric improves
         - save_frequency: Save every N epochs
     """
-    # TODO(#34): Implement when Checkpointing is available
-    # var checkpoint = Checkpointing(
-    #     filepath="checkpoints/model_{epoch}.pt",
-    #     monitor="val_loss",
-    #     save_best_only=True,
-    #     save_frequency=1
-    # )
-    #
-    # # Verify parameters
-    # assert_equal(checkpoint.filepath, "checkpoints/model_{epoch}.pt")
-    # assert_equal(checkpoint.monitor, "val_loss")
-    # assert_true(checkpoint.save_best_only)
-    pass
+    from shared.training.stubs import MockCheckpoint
+
+    var checkpoint = MockCheckpoint(save_path="checkpoints/model.pt")
+
+    # Verify parameters
+    assert_equal(checkpoint.save_path, "checkpoints/model.pt")
+    assert_equal(checkpoint.save_count, 0)
 
 
 fn test_checkpointing_saves_at_epoch_end() raises:

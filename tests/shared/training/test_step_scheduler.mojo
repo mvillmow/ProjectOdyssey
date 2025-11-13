@@ -35,15 +35,14 @@ fn test_step_scheduler_initialization() raises:
         - step_size: Number of epochs between LR reductions
         - gamma: Multiplicative factor for LR reduction
     """
-    # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=0.1)
-    # var scheduler = StepLR(optimizer, step_size=10, gamma=0.1)
-    #
-    # # Verify initial parameters
-    # assert_equal(scheduler.step_size, 10)
-    # assert_almost_equal(scheduler.gamma, 0.1)
-    # assert_almost_equal(optimizer.learning_rate, 0.1)  # Unchanged initially
-    pass
+    from shared.training.stubs import MockStepLR
+
+    var scheduler = MockStepLR(base_lr=0.1, step_size=10, gamma=0.1)
+
+    # Verify initial parameters
+    assert_equal(scheduler.step_size, 10)
+    assert_almost_equal(scheduler.gamma, 0.1)
+    assert_almost_equal(scheduler.base_lr, 0.1)
 
 
 fn test_step_scheduler_reduces_lr_at_step() raises:
@@ -56,22 +55,22 @@ fn test_step_scheduler_reduces_lr_at_step() raises:
 
     This is a CRITICAL test for step scheduler behavior.
     """
-    # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
-    #
-    # # Initial LR
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
-    #
-    # # Steps 1-4: LR unchanged
-    # for epoch in range(1, 5):
-    #     scheduler.step(epoch)
-    #     assert_almost_equal(optimizer.learning_rate, 1.0)
-    #
-    # # Step 5: LR reduced
-    # scheduler.step(5)
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    pass
+    from shared.training.stubs import MockStepLR
+
+    var scheduler = MockStepLR(base_lr=1.0, step_size=5, gamma=0.1)
+
+    # Initial LR (epoch 0)
+    var lr0 = scheduler.get_lr(epoch=0)
+    assert_almost_equal(lr0, 1.0)
+
+    # Steps 1-4: LR unchanged
+    for epoch in range(1, 5):
+        var lr = scheduler.get_lr(epoch=epoch)
+        assert_almost_equal(lr, 1.0)
+
+    # Step 5: LR reduced
+    var lr5 = scheduler.get_lr(epoch=5)
+    assert_almost_equal(lr5, 0.1)
 
 
 fn test_step_scheduler_multiple_steps() raises:
