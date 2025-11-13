@@ -18,36 +18,7 @@ Coverage Target: >95%
 import pytest
 from pathlib import Path
 from typing import List
-
-
-@pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
-    """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
-
-    Returns:
-        Path to temporary directory acting as repository root
-    """
-    return tmp_path
-
-
-@pytest.fixture
-def getting_started_dir(repo_root: Path) -> Path:
-    """
-    Provide the getting-started directory path.
-
-    Args:
-        repo_root: Temporary repository root directory
-
-    Returns:
-        Path to docs/getting-started directory
-    """
-    gs_path = repo_root / "docs" / "getting-started"
-    gs_path.mkdir(parents=True, exist_ok=True)
-    return gs_path
+from .conftest import MIN_DOC_LENGTH
 
 
 class TestREADME:

@@ -19,19 +19,6 @@ import pytest
 from pathlib import Path
 
 
-@pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
-    """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
-
-    Returns:
-        Path to temporary directory acting as repository root
-    """
-    return tmp_path
-
 
 @pytest.fixture
 def advanced_docs_dir(repo_root: Path) -> Path:

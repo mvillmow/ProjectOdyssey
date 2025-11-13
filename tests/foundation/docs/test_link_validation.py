@@ -18,36 +18,9 @@ import re
 import pytest
 from pathlib import Path
 from typing import List, Tuple
+from .conftest import MIN_DOC_LENGTH
 
 
-@pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
-    """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
-
-    Returns:
-        Path to temporary directory acting as repository root
-    """
-    return tmp_path
-
-
-@pytest.fixture
-def docs_root(repo_root: Path) -> Path:
-    """
-    Provide the expected docs directory path.
-
-    Args:
-        repo_root: Temporary repository root directory
-
-    Returns:
-        Path to docs directory within repository root
-    """
-    docs_path = repo_root / "docs"
-    docs_path.mkdir(parents=True, exist_ok=True)
-    return docs_path
 
 
 def extract_markdown_links(content: str) -> List[Tuple[str, str]]:

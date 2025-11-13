@@ -1,0 +1,195 @@
+"""
+Shared pytest fixtures for documentation test suite.
+
+This module provides common fixtures used across all documentation tests
+to eliminate code duplication and ensure consistency.
+
+Fixtures:
+- repo_root: Mock repository root directory
+- docs_root: Mock docs/ directory
+- tier_directories: All tier directory paths
+- all_doc_files: All documentation files paths
+"""
+
+import pytest
+from pathlib import Path
+from typing import List, Dict
+
+
+# Constants for test configuration
+MIN_DOC_LENGTH = 100
+MAX_LINE_LENGTH = 120
+TIER_NAMES = ["getting-started", "core", "advanced", "dev"]
+ROOT_DOCS = ["README.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
+
+
+@pytest.fixture
+def repo_root(tmp_path: Path) -> Path:
+    """
+    Provide a mock repository root directory for testing.
+
+    Args:
+        tmp_path: pytest built-in fixture providing temporary directory
+
+    Returns:
+        Path to temporary directory acting as repository root
+    """
+    return tmp_path
+
+
+@pytest.fixture
+def docs_root(repo_root: Path) -> Path:
+    """
+    Provide the expected docs directory path.
+
+    Args:
+        repo_root: Temporary repository root directory
+
+    Returns:
+        Path to docs directory within repository root
+    """
+    docs_path = repo_root / "docs"
+    docs_path.mkdir(parents=True, exist_ok=True)
+    return docs_path
+
+
+@pytest.fixture
+def tier_directories(docs_root: Path) -> Dict[str, Path]:
+    """
+    Provide paths to all tier directories.
+
+    Args:
+        docs_root: Path to docs directory
+
+    Returns:
+        Dictionary mapping tier names to their paths
+    """
+    tiers = {}
+    for tier_name in TIER_NAMES:
+        tier_path = docs_root / tier_name
+        tier_path.mkdir(parents=True, exist_ok=True)
+        tiers[tier_name] = tier_path
+    return tiers
+
+
+@pytest.fixture
+def getting_started_docs(tier_directories: Dict[str, Path]) -> List[Path]:
+    """
+    Provide list of Getting Started (Tier 1) documentation files.
+
+    Args:
+        tier_directories: Dictionary of tier directory paths
+
+    Returns:
+        List of paths to Tier 1 documentation files
+    """
+    tier1_dir = tier_directories["getting-started"]
+    doc_files = [
+        "README.md",
+        "installation.md",
+        "quick-start.md",
+        "first-steps.md",
+        "core-concepts.md",
+        "tutorials.md",
+    ]
+    return [tier1_dir / doc for doc in doc_files]
+
+
+@pytest.fixture
+def core_docs(tier_directories: Dict[str, Path]) -> List[Path]:
+    """
+    Provide list of Core Documentation (Tier 2) files.
+
+    Args:
+        tier_directories: Dictionary of tier directory paths
+
+    Returns:
+        List of paths to Tier 2 documentation files
+    """
+    tier2_dir = tier_directories["core"]
+    doc_files = [
+        "README.md",
+        "architecture.md",
+        "api-reference.md",
+        "data-structures.md",
+        "algorithms.md",
+        "configuration.md",
+        "modules.md",
+        "utilities.md",
+    ]
+    return [tier2_dir / doc for doc in doc_files]
+
+
+@pytest.fixture
+def advanced_docs(tier_directories: Dict[str, Path]) -> List[Path]:
+    """
+    Provide list of Advanced Topics (Tier 3) documentation files.
+
+    Args:
+        tier_directories: Dictionary of tier directory paths
+
+    Returns:
+        List of paths to Tier 3 documentation files
+    """
+    tier3_dir = tier_directories["advanced"]
+    doc_files = [
+        "README.md",
+        "optimization.md",
+        "custom-ops.md",
+        "distributed.md",
+        "performance.md",
+        "advanced-patterns.md",
+    ]
+    return [tier3_dir / doc for doc in doc_files]
+
+
+@pytest.fixture
+def dev_docs(tier_directories: Dict[str, Path]) -> List[Path]:
+    """
+    Provide list of Development Guides (Tier 4) documentation files.
+
+    Args:
+        tier_directories: Dictionary of tier directory paths
+
+    Returns:
+        List of paths to Tier 4 documentation files
+    """
+    tier4_dir = tier_directories["dev"]
+    doc_files = [
+        "README.md",
+        "contributing.md",
+        "testing.md",
+        "ci-cd.md",
+    ]
+    return [tier4_dir / doc for doc in doc_files]
+
+
+@pytest.fixture
+def all_doc_files(
+    getting_started_docs: List[Path],
+    core_docs: List[Path],
+    advanced_docs: List[Path],
+    dev_docs: List[Path],
+    repo_root: Path,
+) -> List[Path]:
+    """
+    Provide list of all documentation files across all tiers.
+
+    Args:
+        getting_started_docs: Tier 1 documentation files
+        core_docs: Tier 2 documentation files
+        advanced_docs: Tier 3 documentation files
+        dev_docs: Tier 4 documentation files
+        repo_root: Repository root path
+
+    Returns:
+        List of all documentation file paths
+    """
+    all_docs = (
+        getting_started_docs
+        + core_docs
+        + advanced_docs
+        + dev_docs
+        + [repo_root / doc for doc in ROOT_DOCS]
+    )
+    return all_docs

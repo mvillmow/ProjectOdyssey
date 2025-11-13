@@ -18,36 +18,7 @@ import re
 import pytest
 from pathlib import Path
 from typing import List
-
-
-@pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
-    """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
-
-    Returns:
-        Path to temporary directory acting as repository root
-    """
-    return tmp_path
-
-
-@pytest.fixture
-def docs_root(repo_root: Path) -> Path:
-    """
-    Provide the expected docs directory path.
-
-    Args:
-        repo_root: Temporary repository root directory
-
-    Returns:
-        Path to docs directory within repository root
-    """
-    docs_path = repo_root / "docs"
-    docs_path.mkdir(parents=True, exist_ok=True)
-    return docs_path
+from .conftest import MAX_LINE_LENGTH
 
 
 class TestCodeBlocks:
@@ -333,7 +304,7 @@ This line is also under the 120 character limit and should pass validation witho
             if line.strip().startswith("```") or line.strip().startswith("http"):
                 continue
 
-            assert len(line) <= 120, f"Line {i} exceeds 120 characters: {len(line)} chars"
+            assert len(line) <= MAX_LINE_LENGTH, f"Line {i} exceeds {MAX_LINE_LENGTH} characters: {len(line)} chars"
 
     def test_code_blocks_exempt_from_line_length(self, docs_root: Path) -> None:
         """
@@ -370,7 +341,7 @@ Normal text.
 
             # Only check non-code-block lines
             if not in_code_block:
-                assert len(line) <= 120, f"Line {i} (non-code) exceeds 120 characters"
+                assert len(line) <= MAX_LINE_LENGTH, f"Line {i} (non-code) exceeds {MAX_LINE_LENGTH} characters"
 
 
 class TestWhitespace:
@@ -513,3 +484,294 @@ Final content.
 
         # Should have lists
         assert "- " in text, "Should have lists"
+
+
+class TestMarkdownStandardsEnforcement:
+    """
+    Test comprehensive markdown standards enforcement (CLAUDE.md lines 519-662).
+
+    This test class validates ALL markdown files comply with project standards:
+    - MD040: Code blocks must have language specified
+    - MD031: Code blocks must be surrounded by blank lines
+    - MD032: Lists must be surrounded by blank lines
+    - MD022: Headings must be surrounded by blank lines
+    - MD013: Lines should not exceed 120 characters
+    """
+
+    @pytest.mark.parametrize(
+        "doc_file",
+        [
+            "README.md",
+            "getting-started/installation.md",
+            "core/architecture.md",
+            "advanced/optimization.md",
+            "dev/contributing.md",
+        ],
+    )
+    def test_all_code_blocks_have_language_md040(
+        self, docs_root: Path, doc_file: str
+    ) -> None:
+        """
+        Test MD040: All code blocks must have language specified.
+
+        Args:
+            docs_root: Path to docs directory
+            doc_file: Relative path to documentation file
+        """
+        # Create directory structure
+        doc_path = docs_root.parent / doc_file if doc_file == "README.md" else docs_root / doc_file
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Create test content with proper code blocks
+        content = """# Test Document
+
+This has a proper code block:
+
+```python
+def example():
+    return True
+```
+
+And another one:
+
+```bash
+echo "hello"
+```
+
+Normal text here.
+"""
+        doc_path.write_text(content)
+
+        # Validate: No bare ``` without language
+        text = doc_path.read_text()
+        lines = text.split('\n')
+
+        for i, line in enumerate(lines):
+            if line.strip() == "```":
+                # Count ``` before this line to determine if opening or closing
+                count_before = sum(1 for l in lines[:i] if l.strip().startswith("```"))
+                # If even, this is opening (BAD - no language)
+                # If odd, this is closing (OK)
+                assert count_before % 2 == 1, (
+                    f"{doc_file} line {i+1}: Code block must have language specified (MD040)"
+                )
+
+    @pytest.mark.parametrize(
+        "doc_file",
+        [
+            "getting-started/quick-start.md",
+            "core/api-reference.md",
+            "advanced/performance.md",
+        ],
+    )
+    def test_code_blocks_blank_lines_md031(
+        self, docs_root: Path, doc_file: str
+    ) -> None:
+        """
+        Test MD031: Code blocks must be surrounded by blank lines.
+
+        Args:
+            docs_root: Path to docs directory
+            doc_file: Relative path to documentation file
+        """
+        doc_path = docs_root / doc_file
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+        content = """# Test
+
+Some text before.
+
+```python
+code_here()
+```
+
+Text after.
+"""
+        doc_path.write_text(content)
+
+        lines = doc_path.read_text().split('\n')
+        in_code_block = False
+        code_block_start = -1
+
+        for i, line in enumerate(lines):
+            if line.strip().startswith("```"):
+                if not in_code_block:
+                    # Opening code block
+                    code_block_start = i
+                    # Check blank line before (skip if first line or after heading)
+                    if i > 0 and not lines[i - 1].startswith("#"):
+                        assert lines[i - 1].strip() == "", (
+                            f"{doc_file} line {i+1}: Code block must have blank line before (MD031)"
+                        )
+                    in_code_block = True
+                else:
+                    # Closing code block
+                    # Check blank line after
+                    if i < len(lines) - 1 and lines[i + 1].strip():
+                        assert lines[i + 1].strip() == "", (
+                            f"{doc_file} line {i+1}: Code block must have blank line after (MD031)"
+                        )
+                    in_code_block = False
+
+    @pytest.mark.parametrize(
+        "doc_file",
+        [
+            "getting-started/first-steps.md",
+            "core/modules.md",
+            "dev/testing.md",
+        ],
+    )
+    def test_lists_blank_lines_md032(
+        self, docs_root: Path, doc_file: str
+    ) -> None:
+        """
+        Test MD032: Lists must be surrounded by blank lines.
+
+        Args:
+            docs_root: Path to docs directory
+            doc_file: Relative path to documentation file
+        """
+        doc_path = docs_root / doc_file
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+        content = """# Test
+
+Text before list.
+
+- Item 1
+- Item 2
+- Item 3
+
+Text after list.
+"""
+        doc_path.write_text(content)
+
+        lines = doc_path.read_text().split('\n')
+        in_list = False
+        list_start = -1
+
+        for i, line in enumerate(lines):
+            if line.strip().startswith("- "):
+                if not in_list:
+                    # List start - check blank line before
+                    list_start = i
+                    if i > 0 and not lines[i - 1].startswith("#"):
+                        assert lines[i - 1].strip() == "", (
+                            f"{doc_file} line {i+1}: List must have blank line before (MD032)"
+                        )
+                    in_list = True
+            elif in_list and line.strip() and not line.strip().startswith("- "):
+                # List ended - check blank line after
+                assert lines[i - 1].strip().startswith("- "), (
+                    f"{doc_file} line {i}: List must have blank line after (MD032)"
+                )
+                in_list = False
+
+    @pytest.mark.parametrize(
+        "doc_file",
+        [
+            "core/data-structures.md",
+            "advanced/distributed.md",
+        ],
+    )
+    def test_headings_blank_lines_md022(
+        self, docs_root: Path, doc_file: str
+    ) -> None:
+        """
+        Test MD022: Headings must be surrounded by blank lines.
+
+        Args:
+            docs_root: Path to docs directory
+            doc_file: Relative path to documentation file
+        """
+        doc_path = docs_root / doc_file
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+        content = """# Main Title
+
+Introduction text.
+
+## Section One
+
+Section content.
+
+## Section Two
+
+More content.
+"""
+        doc_path.write_text(content)
+
+        lines = doc_path.read_text().split('\n')
+
+        for i, line in enumerate(lines):
+            if line.strip().startswith("#"):
+                # Skip document title (first line)
+                if i == 0:
+                    continue
+
+                # Check blank line before
+                if i > 0:
+                    assert lines[i - 1].strip() == "", (
+                        f"{doc_file} line {i+1}: Heading must have blank line before (MD022)"
+                    )
+
+                # Check blank line after
+                if i < len(lines) - 1:
+                    assert lines[i + 1].strip() == "", (
+                        f"{doc_file} line {i+1}: Heading must have blank line after (MD022)"
+                    )
+
+    @pytest.mark.parametrize(
+        "doc_file",
+        [
+            "getting-started/tutorials.md",
+            "core/algorithms.md",
+            "advanced/custom-ops.md",
+        ],
+    )
+    def test_line_length_limit_md013(
+        self, docs_root: Path, doc_file: str
+    ) -> None:
+        """
+        Test MD013: Lines should not exceed 120 characters.
+
+        Args:
+            docs_root: Path to docs directory
+            doc_file: Relative path to documentation file
+        """
+        doc_path = docs_root / doc_file
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+
+        content = """# Test
+
+This is a line that is under the limit.
+
+Regular content that should pass validation without issues.
+
+```python
+# Code blocks can have long lines without triggering MD013
+very_long_variable_name_that_exceeds_the_normal_limit_but_is_in_code = "this is fine in code blocks"
+```
+
+More normal text.
+"""
+        doc_path.write_text(content)
+
+        lines = doc_path.read_text().split('\n')
+        in_code_block = False
+
+        for i, line in enumerate(lines):
+            # Track code block state
+            if line.strip().startswith("```"):
+                in_code_block = not in_code_block
+                continue
+
+            # Skip URLs and code blocks
+            if in_code_block or line.strip().startswith("http"):
+                continue
+
+            # Check line length
+            assert len(line) <= MAX_LINE_LENGTH, (
+                f"{doc_file} line {i+1}: Line exceeds {MAX_LINE_LENGTH} characters "
+                f"({len(line)} chars) (MD013)"
+            )

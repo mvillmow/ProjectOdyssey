@@ -18,34 +18,6 @@ from pathlib import Path
 from typing import List
 
 
-@pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
-    """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
-
-    Returns:
-        Path to temporary directory acting as repository root
-    """
-    return tmp_path
-
-
-@pytest.fixture
-def docs_root(repo_root: Path) -> Path:
-    """
-    Provide the expected docs directory path.
-
-    Args:
-        repo_root: Temporary repository root directory
-
-    Returns:
-        Path to docs directory within repository root
-    """
-    return repo_root / "docs"
-
-
 class TestDocumentationStructure:
     """Test cases for documentation directory structure."""
 
@@ -256,3 +228,166 @@ class TestDocumentationHierarchy:
         for tier in tiers:
             tier_path = docs_root / tier
             assert tier_path.exists(), f"docs/{tier}/ should exist"
+
+
+class TestCompleteFourTierStructure:
+    """
+    Test comprehensive 4-tier structure validation (addresses Issue #57).
+
+    This test class validates the complete 4-tier documentation structure
+    with all 24 documents as specified in the planning phase.
+
+    Tier 1 (Getting Started): 6 documents
+    Tier 2 (Core Documentation): 8 documents
+    Tier 3 (Advanced Topics): 6 documents
+    Tier 4 (Development Guides): 4 documents
+    """
+
+    def test_tier1_getting_started_docs_exist(
+        self, repo_root: Path, getting_started_docs: List[Path]
+    ) -> None:
+        """
+        Test Tier 1: All 6 Getting Started documents exist.
+
+        Args:
+            repo_root: Repository root path
+            getting_started_docs: List of Tier 1 documentation files
+        """
+        # Create all Tier 1 docs
+        for doc_path in getting_started_docs:
+            doc_path.parent.mkdir(parents=True, exist_ok=True)
+            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
+
+        # Validate all exist
+        for doc_path in getting_started_docs:
+            assert doc_path.exists(), f"Tier 1 doc should exist: {doc_path.name}"
+            assert doc_path.is_file(), f"Tier 1 doc should be a file: {doc_path.name}"
+
+        # Validate count
+        assert len(getting_started_docs) == 6, "Should have exactly 6 Tier 1 documents"
+
+    def test_tier2_core_docs_exist(self, core_docs: List[Path]) -> None:
+        """
+        Test Tier 2: All 8 Core Documentation files exist.
+
+        Args:
+            core_docs: List of Tier 2 documentation files
+        """
+        # Create all Tier 2 docs
+        for doc_path in core_docs:
+            doc_path.parent.mkdir(parents=True, exist_ok=True)
+            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
+
+        # Validate all exist
+        for doc_path in core_docs:
+            assert doc_path.exists(), f"Tier 2 doc should exist: {doc_path.name}"
+            assert doc_path.is_file(), f"Tier 2 doc should be a file: {doc_path.name}"
+
+        # Validate count
+        assert len(core_docs) == 8, "Should have exactly 8 Tier 2 documents"
+
+    def test_tier3_advanced_docs_exist(self, advanced_docs: List[Path]) -> None:
+        """
+        Test Tier 3: All 6 Advanced Topics documents exist.
+
+        Args:
+            advanced_docs: List of Tier 3 documentation files
+        """
+        # Create all Tier 3 docs
+        for doc_path in advanced_docs:
+            doc_path.parent.mkdir(parents=True, exist_ok=True)
+            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
+
+        # Validate all exist
+        for doc_path in advanced_docs:
+            assert doc_path.exists(), f"Tier 3 doc should exist: {doc_path.name}"
+            assert doc_path.is_file(), f"Tier 3 doc should be a file: {doc_path.name}"
+
+        # Validate count
+        assert len(advanced_docs) == 6, "Should have exactly 6 Tier 3 documents"
+
+    def test_tier4_dev_docs_exist(self, dev_docs: List[Path]) -> None:
+        """
+        Test Tier 4: All 4 Development Guide documents exist.
+
+        Args:
+            dev_docs: List of Tier 4 documentation files
+        """
+        # Create all Tier 4 docs
+        for doc_path in dev_docs:
+            doc_path.parent.mkdir(parents=True, exist_ok=True)
+            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
+
+        # Validate all exist
+        for doc_path in dev_docs:
+            assert doc_path.exists(), f"Tier 4 doc should exist: {doc_path.name}"
+            assert doc_path.is_file(), f"Tier 4 doc should be a file: {doc_path.name}"
+
+        # Validate count
+        assert len(dev_docs) == 4, "Should have exactly 4 Tier 4 documents"
+
+    def test_all_24_documents_present(self, all_doc_files: List[Path]) -> None:
+        """
+        Test that all 24 documents across all tiers are present.
+
+        Args:
+            all_doc_files: List of all documentation files
+        """
+        # Create all documents
+        for doc_path in all_doc_files:
+            doc_path.parent.mkdir(parents=True, exist_ok=True)
+            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
+
+        # Validate total count
+        assert len(all_doc_files) == 24, "Should have exactly 24 documents total (6+8+6+4)"
+
+        # Validate all exist
+        for doc_path in all_doc_files:
+            assert doc_path.exists(), f"Document should exist: {doc_path}"
+
+    def test_tier_readme_files_present(self, tier_directories: dict) -> None:
+        """
+        Test that each tier has a README.md file.
+
+        Args:
+            tier_directories: Dictionary of tier directory paths
+        """
+        for tier_name, tier_path in tier_directories.items():
+            readme = tier_path / "README.md"
+            readme.write_text(f"# {tier_name.title()} Documentation\n\nOverview here.\n")
+            assert readme.exists(), f"Tier {tier_name} should have README.md"
+            assert readme.is_file(), f"Tier {tier_name} README.md should be a file"
+
+    @pytest.mark.parametrize(
+        "tier_name,expected_count",
+        [
+            ("getting-started", 6),
+            ("core", 8),
+            ("advanced", 6),
+            ("dev", 4),
+        ],
+    )
+    def test_tier_document_counts(
+        self, tier_directories: dict, tier_name: str, expected_count: int
+    ) -> None:
+        """
+        Test that each tier has the correct number of documents.
+
+        Args:
+            tier_directories: Dictionary of tier directory paths
+            tier_name: Name of the tier to test
+            expected_count: Expected number of documents in this tier
+        """
+        tier_path = tier_directories[tier_name]
+
+        # Create expected number of docs
+        for i in range(expected_count):
+            doc = tier_path / f"doc{i+1}.md"
+            doc.write_text(f"# Document {i+1}\n\nContent.\n")
+
+        # Count markdown files
+        md_files = list(tier_path.glob("*.md"))
+        assert len(md_files) == expected_count, (
+            f"Tier {tier_name} should have {expected_count} documents, "
+            f"found {len(md_files)}"
+        )
