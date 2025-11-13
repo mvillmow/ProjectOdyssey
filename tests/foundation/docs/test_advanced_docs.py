@@ -26,7 +26,7 @@ def advanced_docs_dir(repo_root: Path) -> Path:
     Provide the advanced documentation directory path.
 
     Args:
-        repo_root: Temporary repository root directory
+        repo_root: Real repository root directory
 
     Returns:
         Path to docs/advanced directory

@@ -5,8 +5,8 @@ This module provides common fixtures used across all documentation tests
 to eliminate code duplication and ensure consistency.
 
 Fixtures:
-- repo_root: Mock repository root directory
-- docs_root: Mock docs/ directory
+- repo_root: Real repository root directory
+- docs_root: Real docs/ directory
 - tier_directories: All tier directory paths
 - all_doc_files: All documentation files paths
 """
@@ -24,17 +24,16 @@ ROOT_DOCS = ["README.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md"]
 
 
 @pytest.fixture
-def repo_root(tmp_path: Path) -> Path:
+def repo_root() -> Path:
     """
-    Provide a mock repository root directory for testing.
-
-    Args:
-        tmp_path: pytest built-in fixture providing temporary directory
+    Provide the real repository root directory for testing.
 
     Returns:
-        Path to temporary directory acting as repository root
+        Path to the actual repository root directory
     """
-    return tmp_path
+    # Navigate up from tests/foundation/docs/ to repository root
+    current_file = Path(__file__)
+    return current_file.parent.parent.parent.parent
 
 
 @pytest.fixture
@@ -43,7 +42,7 @@ def docs_root(repo_root: Path) -> Path:
     Provide the expected docs directory path.
 
     Args:
-        repo_root: Temporary repository root directory
+        repo_root: Real repository root directory
 
     Returns:
         Path to docs directory within repository root

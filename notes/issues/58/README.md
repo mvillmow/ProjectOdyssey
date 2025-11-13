@@ -7,20 +7,20 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 ## Deliverables
 
-- 8 test files in `tests/foundation/docs/`
+- 7 test files in `tests/foundation/docs/`
 - Full test coverage for 4-tier documentation structure
 - Validation of all 24 documents
-- Link validation (internal and external)
-- Markdown compliance checking
+- Link validation (internal links)
+- Note: Markdown compliance is handled by pre-commit hooks
 
 ## Success Criteria
 
 - [ ] All 24 documents validated for existence
 - [ ] Documentation hierarchy structure verified (4 tiers)
 - [ ] Cross-references between documents validated
-- [ ] Markdown linting compliance checked
 - [ ] Link validation working (internal links)
 - [ ] Tests passing and integrated into CI/CD
+- [ ] Note: Markdown linting is handled by pre-commit hooks, not test suite
 
 ## References
 
@@ -72,23 +72,8 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 **Coverage**: Link parsing, path resolution, cross-reference validation
 
-### 4. test_markdown_linting.py (515 lines)
 
-**Purpose**: Validate markdown compliance with markdownlint rules.
-
-**Key Test Cases**:
-
-- Code blocks have language specified (MD040)
-- Code blocks surrounded by blank lines (MD031)
-- Lists surrounded by blank lines (MD032)
-- Headings surrounded by blank lines (MD022)
-- Line length compliance (MD013, 120 chars)
-- No trailing whitespace
-- Files end with newline
-
-**Coverage**: Markdown formatting, linting rules, style compliance
-
-### 5. test_getting_started.py (484 lines)
+### 4. test_getting_started.py (484 lines)
 
 **Purpose**: Validate Tier 1 (Getting Started) documents - 6 documents.
 
@@ -103,7 +88,7 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 **Coverage**: Tier 1 structure, content requirements, user-facing docs
 
-### 6. test_core_docs.py (439 lines)
+### 5. test_core_docs.py (439 lines)
 
 **Purpose**: Validate Tier 2 (Core Documentation) - 8 documents.
 
@@ -120,7 +105,7 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 **Coverage**: Tier 2 structure, technical docs, developer references
 
-### 7. test_advanced_docs.py (412 lines)
+### 6. test_advanced_docs.py (412 lines)
 
 **Purpose**: Validate Tier 3 (Advanced Topics) - 6 documents.
 
@@ -135,7 +120,7 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 **Coverage**: Tier 3 structure, advanced content, specialized topics
 
-### 8. test_dev_docs.py (445 lines)
+### 7. test_dev_docs.py (445 lines)
 
 **Purpose**: Validate Tier 4 (Development Guides) - 4 documents.
 
@@ -150,16 +135,16 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 
 ## Test Coverage Summary
 
-**Total Test Files**: 8
-**Total Test Cases**: 200 (collected by pytest)
-**Total Lines of Code**: 3,411 lines
+**Total Test Files**: 7
+**Total Test Cases**: Approximately 150+ (collected by pytest)
+**Total Lines of Code**: Approximately 2,800 lines
 **Coverage Areas**:
 
 - Structure validation (1 file)
 - Completeness checking (1 file)
 - Link validation (1 file)
-- Markdown linting (1 file)
 - Tier-specific validation (4 files, one per tier)
+- Note: Markdown linting is handled by pre-commit hooks
 
 **4-Tier Coverage**:
 
@@ -276,7 +261,7 @@ ensuring structure exists, documents are complete, links work, and markdown is c
 - [x] All 24 documents validated for existence → test_doc_completeness.py
 - [x] Documentation hierarchy structure verified → test_doc_structure.py
 - [x] Cross-references between documents validated → test_link_validation.py
-- [x] Markdown linting compliance checked → test_markdown_linting.py
+- [x] Markdown linting compliance → Handled by pre-commit hooks
 - [x] All tests passing and integrated into CI/CD → pytest.ini configured
 
 ### Test Strategy
@@ -391,14 +376,15 @@ pytest tests/foundation/docs/ --cov=docs --cov-report=html
 
 ## Summary
 
-- ✅ Created 8 comprehensive test files (3,419 lines)
-- ✅ Implemented 116 test functions (200 collected tests via parametrization)
+- ✅ Created 7 comprehensive test files (approximately 2,800 lines)
+- ✅ Implemented 100+ test functions (150+ collected tests via parametrization)
 - ✅ Validated 4-tier structure with 24 documents
 - ✅ Aligned with planning docs (Issue #57)
 - ✅ Used TDD principles (tests before implementation)
 - ✅ Self-contained (no external dependencies beyond pytest)
 - ✅ All tests syntactically correct and importable
 - ✅ Ready for implementation phase (Issue #59)
+- ✅ Markdown linting handled by pre-commit hooks (not duplicate testing)
 
 ## Test Suite Detailed Breakdown
 
@@ -409,23 +395,22 @@ pytest tests/foundation/docs/ --cov=docs --cov-report=html
 | test_doc_structure.py | 259 | 2 | 13 | Structure validation |
 | test_doc_completeness.py | 439 | 5 | 14 | Completeness checking |
 | test_link_validation.py | 421 | 4 | 13 | Link validation |
-| test_markdown_linting.py | 516 | 6 | 13 | Markdown linting |
 | test_getting_started.py | 485 | 7 | 21 | Tier 1 validation |
 | test_core_docs.py | 440 | 10 | 14 | Tier 2 validation |
 | test_advanced_docs.py | 413 | 8 | 13 | Tier 3 validation |
 | test_dev_docs.py | 446 | 6 | 15 | Tier 4 validation |
-| **TOTAL** | **3,419** | **48** | **116** | **200 collected tests** |
+| **TOTAL** | **~2,900** | **42** | **103** | **~150+ collected tests** |
 
 ### Test Distribution
 
 - **Structure Tests**: 13 functions (test_doc_structure.py)
 - **Completeness Tests**: 14 functions (test_doc_completeness.py)
 - **Link Validation Tests**: 13 functions (test_link_validation.py)
-- **Markdown Linting Tests**: 13 functions (test_markdown_linting.py)
 - **Tier 1 Tests**: 21 functions (test_getting_started.py)
 - **Tier 2 Tests**: 14 functions (test_core_docs.py)
 - **Tier 3 Tests**: 13 functions (test_advanced_docs.py)
 - **Tier 4 Tests**: 15 functions (test_dev_docs.py)
+- **Note**: Markdown linting handled by pre-commit hooks
 
-**Note**: pytest parametrization expands 116 test functions into 200 collected tests by running each
+**Note**: pytest parametrization expands 103 test functions into 150+ collected tests by running each
 parametrized test with multiple inputs (e.g., testing all 8 Tier 2 documents with the same test function).
