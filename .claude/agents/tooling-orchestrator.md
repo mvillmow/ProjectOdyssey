@@ -1,7 +1,7 @@
 ---
 name: tooling-orchestrator
 description: Coordinate tooling development including CLI interfaces, automation scripts, and developer tools
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash,Task
 model: sonnet
 ---
 

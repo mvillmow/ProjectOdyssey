@@ -1,7 +1,7 @@
 ---
 name: junior-implementation-engineer
 description: Write simple functions, generate boilerplate code, apply templates, format code, and run linters
-tools: Read,Write,Edit,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob,Bash
 model: haiku
 ---
 

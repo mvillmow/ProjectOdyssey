@@ -1,7 +1,7 @@
 ---
 name: papers-orchestrator
 description: Coordinate research paper implementations including architecture extraction, data preparation, model implementation, training, and evaluation
-tools: Read,Grep,Glob,WebFetch
+tools: Read,Grep,Glob,Bash,Task,WebFetch
 model: opus
 ---
 

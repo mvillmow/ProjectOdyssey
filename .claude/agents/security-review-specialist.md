@@ -1,7 +1,7 @@
 ---
 name: security-review-specialist
 description: Reviews code for security vulnerabilities, attack vectors, input validation, authentication, cryptography, and OWASP Top 10 risks
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash
 model: haiku
 ---
 

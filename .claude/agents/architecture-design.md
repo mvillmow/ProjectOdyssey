@@ -1,7 +1,7 @@
 ---
 name: architecture-design
 description: Design module-level architecture including component breakdown, interfaces, data flow, and reusable patterns
-tools: Read,Write,Grep,Glob
+tools: Read,Write,Grep,Glob,Bash,Task
 model: sonnet
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: implementation-specialist
 description: Break down complex components into functions and classes, create detailed implementation plans, and coordinate implementation engineers
-tools: Read,Write,Edit,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob,Bash,Task
 model: sonnet
 ---
 

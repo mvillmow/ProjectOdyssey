@@ -1,7 +1,7 @@
 ---
 name: chief-architect
 description: Strategic architecture decisions, research paper selection, system-wide coordination, and repository ecosystem management
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash,Task
 model: opus
 ---
 

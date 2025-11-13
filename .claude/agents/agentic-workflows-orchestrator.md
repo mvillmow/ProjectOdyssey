@@ -1,7 +1,7 @@
 ---
 name: agentic-workflows-orchestrator
 description: Coordinate agentic workflow development including research assistant, code review agent, and documentation agent
-tools: Read,Grep,Glob,WebFetch
+tools: Read,Grep,Glob,Bash,Task,WebFetch
 model: opus
 ---
 

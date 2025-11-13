@@ -1,7 +1,7 @@
 ---
 name: dependency-review-specialist
 description: Reviews dependency management, version pinning, environment reproducibility, and license compatibility
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash
 model: haiku
 ---
 

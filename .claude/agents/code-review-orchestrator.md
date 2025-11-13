@@ -1,7 +1,7 @@
 ---
 name: code-review-orchestrator
 description: Coordinates comprehensive code reviews by routing changes to appropriate specialist reviewers based on file type, change scope, and impact
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash,Task
 model: opus
 ---
 
