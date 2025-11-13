@@ -1,7 +1,7 @@
 ---
 name: implementation-engineer
 description: Implement standard functions and classes in Mojo following specifications and coding standards
-tools: Read,Write,Edit,Grep,Glob
+tools: Read,Write,Edit,Grep,Glob,Bash
 model: sonnet
 ---
 

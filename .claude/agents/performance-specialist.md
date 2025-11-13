@@ -1,7 +1,7 @@
 ---
 name: performance-specialist
 description: Define performance requirements, design benchmarks, identify optimization opportunities, and profile code performance
-tools: Read,Write,Edit,Bash,Grep,Glob
+tools: Read,Write,Edit,Bash,Grep,Glob,Task
 model: sonnet
 ---
 

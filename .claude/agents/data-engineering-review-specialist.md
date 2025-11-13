@@ -1,7 +1,7 @@
 ---
 name: data-engineering-review-specialist
 description: Reviews data pipeline quality, correctness, and ML data engineering best practices including preprocessing, augmentation, splits, and data loaders
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash
 model: haiku
 ---
 

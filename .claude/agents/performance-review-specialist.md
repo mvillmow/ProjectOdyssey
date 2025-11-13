@@ -1,7 +1,7 @@
 ---
 name: performance-review-specialist
 description: Reviews runtime performance, algorithmic complexity, memory usage, cache efficiency, and I/O optimization
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash
 model: haiku
 ---
 

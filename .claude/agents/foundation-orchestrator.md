@@ -1,7 +1,7 @@
 ---
 name: foundation-orchestrator
 description: Coordinate foundation setup including directory structure, configuration files, and initial documentation
-tools: Read,Grep,Glob
+tools: Read,Grep,Glob,Bash,Task
 model: opus
 ---
 
