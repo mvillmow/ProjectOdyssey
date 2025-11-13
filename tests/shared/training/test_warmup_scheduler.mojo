@@ -38,15 +38,13 @@ fn test_warmup_scheduler_initialization() raises:
         - start_lr: Initial learning rate (default 0.0)
         - Target LR is optimizer's current LR
     """
-    # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=0.1)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.0)
-    #
-    # # Verify parameters
-    # assert_equal(scheduler.warmup_epochs, 5)
-    # assert_almost_equal(scheduler.start_lr, 0.0)
-    # assert_almost_equal(scheduler.target_lr, 0.1)
-    pass
+    from shared.training.stubs import MockWarmupScheduler
+
+    var scheduler = MockWarmupScheduler(base_lr=0.1, warmup_epochs=5)
+
+    # Verify parameters
+    assert_equal(scheduler.warmup_epochs, 5)
+    assert_almost_equal(scheduler.base_lr, 0.1)
 
 
 fn test_warmup_scheduler_linear_increase() raises:
@@ -61,30 +59,29 @@ fn test_warmup_scheduler_linear_increase() raises:
 
     This is a CRITICAL test for warmup scheduler behavior.
     """
-    # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=10, start_lr=0.0)
-    #
-    # # Initial: Should set LR to start_lr
-    # scheduler.step(0)
-    # assert_almost_equal(optimizer.learning_rate, 0.0)
-    #
-    # # Epoch 1: lr = 0.0 + (1.0 - 0.0) * (1/10) = 0.1
-    # scheduler.step(1)
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    #
-    # # Epoch 5: lr = 0.0 + (1.0 - 0.0) * (5/10) = 0.5
-    # scheduler.step(5)
-    # assert_almost_equal(optimizer.learning_rate, 0.5)
-    #
-    # # Epoch 10: lr = 1.0 (target reached)
-    # scheduler.step(10)
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
-    #
-    # # Epoch 11+: lr remains at target
-    # scheduler.step(11)
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
-    pass
+    from shared.training.stubs import MockWarmupScheduler
+
+    var scheduler = MockWarmupScheduler(base_lr=1.0, warmup_epochs=10)
+
+    # Initial: epoch 0
+    var lr0 = scheduler.get_lr(epoch=0)
+    assert_almost_equal(lr0, 0.0)
+
+    # Epoch 1: lr = 1.0 * (1/10) = 0.1
+    var lr1 = scheduler.get_lr(epoch=1)
+    assert_almost_equal(lr1, 0.1)
+
+    # Epoch 5: lr = 1.0 * (5/10) = 0.5
+    var lr5 = scheduler.get_lr(epoch=5)
+    assert_almost_equal(lr5, 0.5)
+
+    # Epoch 10: lr = 1.0 (target reached)
+    var lr10 = scheduler.get_lr(epoch=10)
+    assert_almost_equal(lr10, 1.0)
+
+    # Epoch 11+: lr remains at target
+    var lr11 = scheduler.get_lr(epoch=11)
+    assert_almost_equal(lr11, 1.0)
 
 
 fn test_warmup_scheduler_reaches_target() raises:

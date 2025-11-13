@@ -36,18 +36,13 @@ fn test_logging_callback_initialization() raises:
         - log_frequency: Log every N epochs
         - verbose: 0=silent, 1=progress bar, 2=one line per epoch
     """
-    # TODO(#34): Implement when LoggingCallback is available
-    # var logger = LoggingCallback(
-    #     metrics=["loss", "accuracy"],
-    #     log_frequency=1,
-    #     verbose=1
-    # )
-    #
-    # # Verify parameters
-    # assert_equal(len(logger.metrics), 2)
-    # assert_equal(logger.log_frequency, 1)
-    # assert_equal(logger.verbose, 1)
-    pass
+    from shared.training.stubs import MockLoggingCallback
+
+    var logger = MockLoggingCallback(log_interval=1)
+
+    # Verify parameters
+    assert_equal(logger.log_interval, 1)
+    assert_equal(logger.log_count, 0)
 
 
 fn test_logging_callback_logs_at_epoch_end() raises:

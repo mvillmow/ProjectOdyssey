@@ -38,15 +38,14 @@ fn test_cosine_scheduler_initialization() raises:
         - T_max: Maximum number of iterations (period of cosine)
         - eta_min: Minimum learning rate
     """
-    # TODO(#34): Implement when CosineAnnealingLR is available
-    # var optimizer = SGD(learning_rate=0.1)
-    # var scheduler = CosineAnnealingLR(optimizer, T_max=100, eta_min=0.0)
-    #
-    # # Verify parameters
-    # assert_equal(scheduler.T_max, 100)
-    # assert_almost_equal(scheduler.eta_min, 0.0)
-    # assert_almost_equal(optimizer.learning_rate, 0.1)  # Unchanged initially
-    pass
+    from shared.training.stubs import MockCosineAnnealingLR
+
+    var scheduler = MockCosineAnnealingLR(base_lr=0.1, T_max=100, eta_min=0.0)
+
+    # Verify parameters
+    assert_equal(scheduler.T_max, 100)
+    assert_almost_equal(scheduler.eta_min, 0.0)
+    assert_almost_equal(scheduler.base_lr, 0.1)
 
 
 fn test_cosine_scheduler_follows_cosine_curve() raises:

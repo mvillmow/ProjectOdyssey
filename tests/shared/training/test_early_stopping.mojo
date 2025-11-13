@@ -39,20 +39,16 @@ fn test_early_stopping_initialization() raises:
         - min_delta: Minimum change to qualify as improvement
         - restore_best_weights: Restore model to best weights when stopping
     """
-    # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=5,
-    #     min_delta=0.001,
-    #     restore_best_weights=True
-    # )
-    #
-    # # Verify parameters
-    # assert_equal(early_stop.monitor, "val_loss")
-    # assert_equal(early_stop.patience, 5)
-    # assert_almost_equal(early_stop.min_delta, 0.001)
-    # assert_true(early_stop.restore_best_weights)
-    pass
+    from shared.training.stubs import MockEarlyStopping
+
+    var early_stop = MockEarlyStopping(
+        monitor="val_loss", patience=5, min_delta=0.001
+    )
+
+    # Verify parameters
+    assert_equal(early_stop.monitor, "val_loss")
+    assert_equal(early_stop.patience, 5)
+    assert_almost_equal(early_stop.min_delta, 0.001)
 
 
 fn test_early_stopping_triggers_after_patience() raises:
@@ -65,26 +61,36 @@ fn test_early_stopping_triggers_after_patience() raises:
 
     This is a CRITICAL test for early stopping behavior.
     """
-    # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=3
-    # )
-    #
-    # # Initial best: 0.5
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5})
-    # assert_false(early_stop.should_stop())
-    #
-    # # No improvement for 3 epochs
-    # early_stop.on_epoch_end(2, {"val_loss": 0.6})
-    # assert_false(early_stop.should_stop())
-    #
-    # early_stop.on_epoch_end(3, {"val_loss": 0.6})
-    # assert_false(early_stop.should_stop())
-    #
-    # early_stop.on_epoch_end(4, {"val_loss": 0.6})
-    # assert_true(early_stop.should_stop())  # Patience exhausted
-    pass
+    from shared.training.stubs import MockEarlyStopping
+    from shared.training.base import TrainingState
+
+    var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
+
+    # Initialize state
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Initial best: 0.5
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())
+
+    # No improvement for epoch 2
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())
+
+    # No improvement for epoch 3
+    state.epoch = 3
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())
+
+    # No improvement for epoch 4 - patience exhausted
+    state.epoch = 4
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    assert_true(early_stop.should_stop())  # Patience exhausted
 
 
 fn test_early_stopping_resets_patience_on_improvement() raises:
