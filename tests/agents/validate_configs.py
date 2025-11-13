@@ -78,7 +78,7 @@ class AgentConfigValidator:
     VALID_TOOLS = {
         "Read", "Write", "Edit", "Bash", "Grep", "Glob",
         "WebFetch", "WebSearch", "NotebookEdit",
-        "AskUserQuestion", "TodoWrite", "Skill", "SlashCommand"
+        "AskUserQuestion", "TodoWrite", "Task", "Skill", "SlashCommand"
     }
 
     # Valid model values
