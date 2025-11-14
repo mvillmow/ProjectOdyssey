@@ -39,13 +39,13 @@ fn test_trainer_interface_required_methods() raises:
 
     var trainer = MockTrainer()
 
-    # Verify all required methods are callable
+    Verify all required methods are callable
     _ = trainer.train(epochs=1)
     _ = trainer.validate()
     trainer.save_checkpoint("test.pt")
     trainer.load_checkpoint("test.pt")
 
-    # Test passes if no errors raised
+    Test passes if no errors raised
     assert_true(True)
 
 
@@ -70,11 +70,11 @@ fn test_trainer_train_signature() raises:
 
     var trainer = MockTrainer()
 
-    # Train for 3 epochs
+    Train for 3 epochs
     var results = trainer.train(epochs=3)
 
-    # Verify return type contains train and val losses
-    # Stub returns train_loss_0, train_loss_1, ... format
+    Verify return type contains train and val losses
+    Stub returns train_loss_0, train_loss_1, ... format
     assert_true("train_loss_0" in results)
     assert_true("val_loss_0" in results)
     assert_true("train_loss_2" in results)
@@ -95,10 +95,10 @@ fn test_trainer_validate_signature() raises:
 
     var trainer = MockTrainer()
 
-    # Run validation
+    Run validation
     var results = trainer.validate()
 
-    # Verify return type contains loss and accuracy
+    Verify return type contains loss and accuracy
     assert_true("loss" in results)
     assert_true("accuracy" in results)
 
@@ -118,11 +118,11 @@ fn test_trainer_checkpoint_path() raises:
 
     var trainer = MockTrainer()
 
-    # Test save/load with different paths (no-op in stub but tests signature)
+    Test save/load with different paths (no-op in stub but tests signature)
     trainer.save_checkpoint("checkpoints/model_epoch_10.pt")
     trainer.load_checkpoint("checkpoints/model_epoch_10.pt")
 
-    # Test passes if no errors raised
+    Test passes if no errors raised
     assert_true(True)
 
 
@@ -146,18 +146,17 @@ fn test_trainer_training_reduces_loss() raises:
     This is a CRITICAL test for basic training functionality.
     """
     # TODO(#34): Implement when Trainer is available
-    # var trainer = ConcreteTrainer(model, optimizer, loss_fn)
-    # var train_loader = create_simple_dataset()
-    # var val_loader = create_simple_dataset()
+    var trainer = ConcreteTrainer(model, optimizer, loss_fn)
+    var train_loader = create_simple_dataset()
+    var val_loader = create_simple_dataset()
     #
-    # # Train for multiple epochs
-    # var results = trainer.train(epochs=5, train_loader, val_loader)
+    # Train for multiple epochs
+    var results = trainer.train(epochs=5, train_loader, val_loader)
     #
-    # # Loss should decrease over training
-    # let initial_loss = results["train_loss"][0]
-    # let final_loss = results["train_loss"][-1]
-    # assert_less(final_loss, initial_loss)
-    pass
+    # Loss should decrease over training
+    let initial_loss = results["train_loss"][0]
+    let final_loss = results["train_loss"][-1]
+    assert_less(final_loss, initial_loss)
 
 
 fn test_trainer_validation_during_training() raises:
@@ -170,16 +169,15 @@ fn test_trainer_validation_during_training() raises:
         - Both train and validation losses tracked
     """
     # TODO(#34): Implement when Trainer is available
-    # var trainer = ConcreteTrainer(model, optimizer, loss_fn)
-    # var train_loader = create_mock_dataloader()
-    # var val_loader = create_mock_dataloader()
+    var trainer = ConcreteTrainer(model, optimizer, loss_fn)
+    var train_loader = create_mock_dataloader()
+    var val_loader = create_mock_dataloader()
     #
-    # # Train for 3 epochs
-    # var results = trainer.train(epochs=3, train_loader, val_loader)
+    # Train for 3 epochs
+    var results = trainer.train(epochs=3, train_loader, val_loader)
     #
-    # # Should have 3 validation losses (one per epoch)
-    # assert_equal(len(results["val_loss"]), 3)
-    pass
+    # Should have 3 validation losses (one per epoch)
+    assert_equal(len(results["val_loss"]), 3)
 
 
 fn test_trainer_respects_epochs_parameter() raises:
@@ -192,16 +190,15 @@ fn test_trainer_respects_epochs_parameter() raises:
         - Return N validation losses
     """
     # TODO(#34): Implement when Trainer is available
-    # var trainer = ConcreteTrainer(model, optimizer, loss_fn)
-    # var train_loader = create_mock_dataloader()
-    # var val_loader = create_mock_dataloader()
+    var trainer = ConcreteTrainer(model, optimizer, loss_fn)
+    var train_loader = create_mock_dataloader()
+    var val_loader = create_mock_dataloader()
     #
-    # # Test different epoch counts
-    # for n_epochs in [1, 3, 5, 10]:
-    #     var results = trainer.train(epochs=n_epochs, train_loader, val_loader)
-    #     assert_equal(len(results["train_loss"]), n_epochs)
-    #     assert_equal(len(results["val_loss"]), n_epochs)
-    pass
+    # Test different epoch counts
+    for n_epochs in [1, 3, 5, 10]:
+        var results = trainer.train(epochs=n_epochs, train_loader, val_loader)
+        assert_equal(len(results["train_loss"]), n_epochs)
+        assert_equal(len(results["val_loss"]), n_epochs)
 
 
 # ============================================================================
@@ -224,26 +221,25 @@ fn test_trainer_checkpoint_preserves_state() raises:
     This is a CRITICAL test for training resumption.
     """
     # TODO(#34): Implement when Trainer is available
-    # # Create and train for 2 epochs
-    # var trainer1 = ConcreteTrainer(model, optimizer, loss_fn)
-    # var train_loader = create_mock_dataloader()
-    # var val_loader = create_mock_dataloader()
+    # Create and train for 2 epochs
+    var trainer1 = ConcreteTrainer(model, optimizer, loss_fn)
+    var train_loader = create_mock_dataloader()
+    var val_loader = create_mock_dataloader()
     #
-    # var results1 = trainer1.train(epochs=2, train_loader, val_loader)
+    var results1 = trainer1.train(epochs=2, train_loader, val_loader)
     #
-    # # Save checkpoint
-    # trainer1.save_checkpoint("/tmp/checkpoint.pt")
+    # Save checkpoint
+    trainer1.save_checkpoint("/tmp/checkpoint.pt")
     #
-    # # Create new trainer and load checkpoint
-    # var trainer2 = ConcreteTrainer(model, optimizer, loss_fn)
-    # trainer2.load_checkpoint("/tmp/checkpoint.pt")
+    # Create new trainer and load checkpoint
+    var trainer2 = ConcreteTrainer(model, optimizer, loss_fn)
+    trainer2.load_checkpoint("/tmp/checkpoint.pt")
     #
-    # # Verify model produces same outputs
-    # var test_input = create_test_input()
-    # var output1 = trainer1.model.forward(test_input)
-    # var output2 = trainer2.model.forward(test_input)
-    # assert_tensor_equal(output1, output2)
-    pass
+    # Verify model produces same outputs
+    var test_input = create_test_input()
+    var output1 = trainer1.model.forward(test_input)
+    var output2 = trainer2.model.forward(test_input)
+    assert_tensor_equal(output1, output2)
 
 
 fn test_trainer_checkpoint_model_only() raises:
@@ -256,8 +252,7 @@ fn test_trainer_checkpoint_model_only() raises:
         - Useful for inference or transfer learning
     """
     # TODO(#34): Implement if model-only checkpointing is supported
-    # This is a nice-to-have feature, may be deferred
-    pass
+    This is a nice-to-have feature, may be deferred
 
 
 # ============================================================================
@@ -277,19 +272,18 @@ fn test_trainer_validate_no_gradient() raises:
     This is CRITICAL for memory efficiency and correctness.
     """
     # TODO(#34): Implement when Trainer is available
-    # var trainer = ConcreteTrainer(model, optimizer, loss_fn)
-    # var val_loader = create_mock_dataloader()
+    var trainer = ConcreteTrainer(model, optimizer, loss_fn)
+    var val_loader = create_mock_dataloader()
     #
-    # # Get initial weights
-    # var initial_weights = model.get_weights().copy()
+    # Get initial weights
+    var initial_weights = model.get_weights().copy()
     #
-    # # Run validation
-    # var results = trainer.validate(val_loader)
+    # Run validation
+    var results = trainer.validate(val_loader)
     #
-    # # Weights should be unchanged
-    # var final_weights = model.get_weights()
-    # assert_tensor_equal(initial_weights, final_weights)
-    pass
+    # Weights should be unchanged
+    var final_weights = model.get_weights()
+    assert_tensor_equal(initial_weights, final_weights)
 
 
 fn test_trainer_validate_deterministic() raises:
@@ -300,16 +294,15 @@ fn test_trainer_validate_deterministic() raises:
         identical results (assuming deterministic model).
     """
     # TODO(#34): Implement when Trainer is available
-    # var trainer = ConcreteTrainer(model, optimizer, loss_fn)
-    # var val_loader = create_mock_dataloader(seed=42)
+    var trainer = ConcreteTrainer(model, optimizer, loss_fn)
+    var val_loader = create_mock_dataloader(seed=42)
     #
-    # # Run validation twice
-    # var results1 = trainer.validate(val_loader)
-    # var results2 = trainer.validate(val_loader)
+    # Run validation twice
+    var results1 = trainer.validate(val_loader)
+    var results2 = trainer.validate(val_loader)
     #
-    # # Results should be identical
-    # assert_almost_equal(results1["loss"], results2["loss"])
-    pass
+    # Results should be identical
+    assert_almost_equal(results1["loss"], results2["loss"])
 
 
 # ============================================================================
@@ -324,8 +317,7 @@ fn test_trainer_property_forward_backward_consistency() raises:
     the same loss used for backward pass.
     """
     # TODO(#34): Implement when Trainer is available
-    # This tests internal consistency of the training loop
-    pass
+    This tests internal consistency of the training loop
 
 
 fn test_trainer_property_batch_independence() raises:
@@ -335,8 +327,7 @@ fn test_trainer_property_batch_independence() raises:
     (within stochastic variance).
     """
     # TODO(#34): Implement when Trainer is available
-    # This is a statistical property test
-    pass
+    This is a statistical property test
 
 
 # ============================================================================

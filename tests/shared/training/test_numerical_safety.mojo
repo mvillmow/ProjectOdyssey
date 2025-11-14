@@ -37,17 +37,17 @@ fn test_numerical_safety_valid_loss() raises:
     """
     from shared.training.base import is_valid_loss
 
-    # Valid losses
+    Valid losses
     assert_true(is_valid_loss(0.0))
     assert_true(is_valid_loss(0.5))
     assert_true(is_valid_loss(1.0))
     assert_true(is_valid_loss(100.0))
 
     # TODO(#34): Add NaN/Inf detection when implemented
-    # Currently stub always returns True
-    # assert_false(is_valid_loss(Float64.nan()))
-    # assert_false(is_valid_loss(Float64.inf()))
-    # assert_false(is_valid_loss(Float64.neg_inf()))
+    Currently stub always returns True
+    assert_false(is_valid_loss(Float64.nan()))
+    assert_false(is_valid_loss(Float64.inf()))
+    assert_false(is_valid_loss(Float64.neg_inf()))
 
 
 fn test_numerical_safety_nan_loss() raises:
@@ -59,11 +59,10 @@ fn test_numerical_safety_nan_loss() raises:
         - Training should stop or handle gracefully
     """
     # TODO(#34): Implement when Float64.nan() is available
-    # from shared.training.base import is_valid_loss
+    from shared.training.base import is_valid_loss
     #
-    # var nan_loss = Float64.nan()
-    # assert_false(is_valid_loss(nan_loss))
-    pass
+    var nan_loss = Float64.nan()
+    assert_false(is_valid_loss(nan_loss))
 
 
 fn test_numerical_safety_inf_loss() raises:
@@ -75,14 +74,13 @@ fn test_numerical_safety_inf_loss() raises:
         - Indicates gradient explosion or numerical instability
     """
     # TODO(#34): Implement when Float64.inf() is available
-    # from shared.training.base import is_valid_loss
+    from shared.training.base import is_valid_loss
     #
-    # var inf_loss = Float64.inf()
-    # var neg_inf_loss = Float64.neg_inf()
+    var inf_loss = Float64.inf()
+    var neg_inf_loss = Float64.neg_inf()
     #
-    # assert_false(is_valid_loss(inf_loss))
-    # assert_false(is_valid_loss(neg_inf_loss))
-    pass
+    assert_false(is_valid_loss(inf_loss))
+    assert_false(is_valid_loss(neg_inf_loss))
 
 
 # ============================================================================
@@ -101,11 +99,11 @@ fn test_numerical_safety_valid_gradients() raises:
     """
     from shared.training.base import clip_gradients
 
-    # Test that gradient clipping accepts valid gradients
+    Test that gradient clipping accepts valid gradients
     var valid_grads = List[Float64](0.1, -0.2, 0.3, -0.4)
     var result = clip_gradients(valid_grads, max_norm=1.0)
 
-    # Verify list is returned
+    Verify list is returned
     assert_equal(len(result), 4)
 
 
@@ -118,11 +116,10 @@ fn test_numerical_safety_nan_gradients() raises:
         - Training should stop or skip update
     """
     # TODO(#34): Implement when gradient checking is available
-    # from shared.training.base import is_valid_gradient
+    from shared.training.base import is_valid_gradient
     #
-    # var nan_grads = List[Float64](0.1, Float64.nan(), 0.3)
-    # assert_false(is_valid_gradient(nan_grads))
-    pass
+    var nan_grads = List[Float64](0.1, Float64.nan(), 0.3)
+    assert_false(is_valid_gradient(nan_grads))
 
 
 fn test_numerical_safety_inf_gradients() raises:
@@ -135,11 +132,10 @@ fn test_numerical_safety_inf_gradients() raises:
         - Should use gradient clipping
     """
     # TODO(#34): Implement when gradient checking is available
-    # from shared.training.base import is_valid_gradient
+    from shared.training.base import is_valid_gradient
     #
-    # var inf_grads = List[Float64](0.1, Float64.inf(), 0.3)
-    # assert_false(is_valid_gradient(inf_grads))
-    pass
+    var inf_grads = List[Float64](0.1, Float64.inf(), 0.3)
+    assert_false(is_valid_gradient(inf_grads))
 
 
 # ============================================================================
@@ -161,8 +157,8 @@ fn test_numerical_safety_gradient_clipping_basic() raises:
     var large_grads = List[Float64](10.0, 20.0, 30.0)
     var clipped = clip_gradients(large_grads, max_norm=1.0)
 
-    # Verify stub returns gradients (currently unchanged)
-    # Real implementation will clip to max_norm
+    Verify stub returns gradients (currently unchanged)
+    Real implementation will clip to max_norm
     assert_equal(len(clipped), 3)
 
 
@@ -174,16 +170,15 @@ fn test_numerical_safety_gradient_clipping_preserves_direction() raises:
         clipped[i] / clipped[j] == original[i] / original[j]
     """
     # TODO(#34): Implement when clip_gradients is available
-    # from shared.training.base import clip_gradients
+    from shared.training.base import clip_gradients
     #
-    # var original = List[Float64](3.0, 4.0)  # Norm = 5.0
-    # var clipped = clip_gradients(original, max_norm=1.0)
+    var original = List[Float64](3.0, 4.0)  # Norm = 5.0
+    var clipped = clip_gradients(original, max_norm=1.0)
     #
-    # # Direction should be preserved (ratio of components)
-    # var original_ratio = original[0] / original[1]  # 3/4 = 0.75
-    # var clipped_ratio = clipped[0] / clipped[1]
-    # assert_almost_equal(original_ratio, clipped_ratio)
-    pass
+    # Direction should be preserved (ratio of components)
+    var original_ratio = original[0] / original[1]  # 3/4 = 0.75
+    var clipped_ratio = clipped[0] / clipped[1]
+    assert_almost_equal(original_ratio, clipped_ratio)
 
 
 fn test_numerical_safety_gradient_clipping_no_op_when_below_threshold() raises:
@@ -193,15 +188,14 @@ fn test_numerical_safety_gradient_clipping_no_op_when_below_threshold() raises:
         If gradient norm < max_norm, gradients unchanged.
     """
     # TODO(#34): Implement when clip_gradients is available
-    # from shared.training.base import clip_gradients
+    from shared.training.base import clip_gradients
     #
-    # var small_grads = List[Float64](0.1, 0.2)  # Norm ≈ 0.22
-    # var clipped = clip_gradients(small_grads, max_norm=1.0)
+    var small_grads = List[Float64](0.1, 0.2)  # Norm ≈ 0.22
+    var clipped = clip_gradients(small_grads, max_norm=1.0)
     #
-    # # Should be unchanged
-    # for i in range(len(small_grads)):
-    #     assert_equal(clipped[i], small_grads[i])
-    pass
+    # Should be unchanged
+    for i in range(len(small_grads)):
+        assert_equal(clipped[i], small_grads[i])
 
 
 # ============================================================================
@@ -219,31 +213,30 @@ fn test_numerical_safety_detects_loss_explosion() raises:
         - Loss growth rate is exponential
     """
     # TODO(#34): Implement when training loop is available
-    # from shared.training import TrainingLoop
+    from shared.training import TrainingLoop
     #
-    # # Create unstable training scenario (high LR)
-    # var model = create_simple_model()
-    # var optimizer = SGD(learning_rate=100.0)  # Way too high
-    # var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    # Create unstable training scenario (high LR)
+    var model = create_simple_model()
+    var optimizer = SGD(learning_rate=100.0)  # Way too high
+    var training_loop = TrainingLoop(model, optimizer, loss_fn)
     #
-    # var data_loader = create_mock_dataloader()
+    var data_loader = create_mock_dataloader()
     #
-    # # Try training - should detect divergence
-    # try:
-    #     var losses = []
-    #     for epoch in range(10):
-    #         var loss = training_loop.run_epoch(data_loader)
-    #         losses.append(loss)
+    # Try training - should detect divergence
+    try:
+        var losses = []
+        for epoch in range(10):
+            var loss = training_loop.run_epoch(data_loader)
+            losses.append(loss)
     #
-    #         # Should stop when loss explodes
-    #         if loss > 1e6 or loss != loss:  # Inf or NaN
-    #             break
+            # Should stop when loss explodes
+            if loss > 1e6 or loss != loss:  # Inf or NaN
+                break
     #
-    #     # Should have stopped early
-    #     assert_less(len(losses), 10)
-    # except DivergenceError:
-    #     pass  # Expected - training diverged
-    pass
+        # Should have stopped early
+        assert_less(len(losses), 10)
+    except DivergenceError:
+        pass  # Expected - training diverged
 
 
 fn test_numerical_safety_handles_zero_gradients() raises:
@@ -256,23 +249,22 @@ fn test_numerical_safety_handles_zero_gradients() raises:
         - Training should continue
     """
     # TODO(#34): Implement when training loop is available
-    # from shared.training import TrainingLoop
+    from shared.training import TrainingLoop
     #
-    # var model = create_model_with_dead_neurons()
-    # var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var model = create_model_with_dead_neurons()
+    var training_loop = TrainingLoop(model, optimizer, loss_fn)
     #
-    # # Get initial weights
-    # var initial_weights = model.get_weights().copy()
+    # Get initial weights
+    var initial_weights = model.get_weights().copy()
     #
-    # # Training step with zero gradients
-    # var inputs = Tensor.zeros(4, 10)
-    # var targets = Tensor.zeros(4, 1)
-    # var loss = training_loop.step(inputs, targets)
+    # Training step with zero gradients
+    var inputs = Tensor.zeros(4, 10)
+    var targets = Tensor.zeros(4, 1)
+    var loss = training_loop.step(inputs, targets)
     #
-    # # Weights should be unchanged
-    # var final_weights = model.get_weights()
-    # assert_tensor_equal(initial_weights, final_weights)
-    pass
+    # Weights should be unchanged
+    var final_weights = model.get_weights()
+    assert_tensor_equal(initial_weights, final_weights)
 
 
 # ============================================================================
@@ -290,18 +282,17 @@ fn test_numerical_safety_loss_computation_stable() raises:
         - Use log-sum-exp trick for exponentials
     """
     # TODO(#34): Implement when loss functions are available
-    # from shared.core.loss import CrossEntropyLoss
+    from shared.core.loss import CrossEntropyLoss
     #
-    # # Create large logits (could overflow in naive softmax)
-    # var large_logits = Tensor.fill(10, 1000.0)
-    # var targets = Tensor.fill(10, 0)
+    # Create large logits (could overflow in naive softmax)
+    var large_logits = Tensor.fill(10, 1000.0)
+    var targets = Tensor.fill(10, 0)
     #
-    # var loss_fn = CrossEntropyLoss()
-    # var loss = loss_fn(large_logits, targets)
+    var loss_fn = CrossEntropyLoss()
+    var loss = loss_fn(large_logits, targets)
     #
-    # # Should be finite (not overflow to Inf)
-    # assert_true(is_valid_loss(loss))
-    pass
+    # Should be finite (not overflow to Inf)
+    assert_true(is_valid_loss(loss))
 
 
 fn test_numerical_safety_optimizer_step_stable() raises:
@@ -314,26 +305,25 @@ fn test_numerical_safety_optimizer_step_stable() raises:
         - Skip update if gradients invalid
     """
     # TODO(#34): Implement when optimizer is available
-    # from shared.training.optimizers import SGD
+    from shared.training.optimizers import SGD
     #
-    # var model = create_simple_model()
-    # var optimizer = SGD(learning_rate=0.1, clip_gradients=True, max_norm=1.0)
+    var model = create_simple_model()
+    var optimizer = SGD(learning_rate=0.1, clip_gradients=True, max_norm=1.0)
     #
-    # # Set large gradients
-    # for param in model.parameters():
-    #     param.grad = Tensor.fill(param.shape, 100.0)
+    # Set large gradients
+    for param in model.parameters():
+        param.grad = Tensor.fill(param.shape, 100.0)
     #
-    # # Get initial weights
-    # var initial_weights = model.parameters()[0].data.copy()
+    # Get initial weights
+    var initial_weights = model.parameters()[0].data.copy()
     #
-    # # Optimizer step (should clip gradients)
-    # optimizer.step()
+    # Optimizer step (should clip gradients)
+    optimizer.step()
     #
-    # # Weights should change, but not too much (gradients clipped)
-    # var final_weights = model.parameters()[0].data
-    # var weight_change = (final_weights - initial_weights).abs().max()
-    # assert_less(weight_change, 1.0)  # Reasonable change due to clipping
-    pass
+    # Weights should change, but not too much (gradients clipped)
+    var final_weights = model.parameters()[0].data
+    var weight_change = (final_weights - initial_weights).abs().max()
+    assert_less(weight_change, 1.0)  # Reasonable change due to clipping
 
 
 # ============================================================================

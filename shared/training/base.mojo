@@ -27,7 +27,7 @@ struct CallbackSignal:
 
     var value: Int
 
-    fn __init__(inoutself, value: Int):
+    fn __init__(out self, value: Int):
         """Initialize callback signal.
 
         Args:
@@ -71,7 +71,7 @@ struct TrainingState:
     var should_stop: Bool
 
     fn __init__(
-        inoutself,
+        out self,
         epoch: Int = 0,
         batch: Int = 0,
         learning_rate: Float64 = 0.0,
@@ -260,9 +260,13 @@ fn is_valid_loss(loss: Float64) -> Bool:
         if not is_valid_loss(loss):
             print("Training diverged! Loss is", loss)
             break
+
+    Warning:
+        This is a placeholder implementation that always returns True.
+        It will be replaced with proper NaN/inf detection in Issue #34.
     """
-    # TODO(#34): Implement NaN/inf detection
-    # For now, assume all losses are valid
+    print("[WARNING] is_valid_loss is a placeholder - always returns True")
+    # TODO(#34): Implement NaN/inf detection with proper Float64 checks
     return True
 
 
@@ -278,7 +282,11 @@ fn clip_gradients(gradients: List[Float64], max_norm: Float64) -> List[Float64]:
 
     Example:
         clipped_grads = clip_gradients(grads, max_norm=1.0)
+
+    Warning:
+        This is a placeholder implementation that returns gradients unchanged.
+        It will be replaced with proper gradient clipping in Issue #34.
     """
-    # TODO(#34): Implement gradient clipping
-    # For now, return gradients unchanged
+    print("[WARNING] clip_gradients is a placeholder - returns gradients unchanged")
+    # TODO(#34): Implement gradient norm computation and clipping
     return gradients

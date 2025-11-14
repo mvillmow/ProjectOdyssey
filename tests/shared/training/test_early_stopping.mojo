@@ -45,7 +45,7 @@ fn test_early_stopping_initialization() raises:
         monitor="val_loss", patience=5, min_delta=0.001
     )
 
-    # Verify parameters
+    Verify parameters
     assert_equal(early_stop.monitor, "val_loss")
     assert_equal(early_stop.patience, 5)
     assert_almost_equal(early_stop.min_delta, 0.001)
@@ -66,27 +66,27 @@ fn test_early_stopping_triggers_after_patience() raises:
 
     var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
 
-    # Initialize state
+    Initialize state
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    # Initial best: 0.5
+    Initial best: 0.5
     state.metrics["val_loss"] = 0.5
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    # No improvement for epoch 2
+    No improvement for epoch 2
     state.epoch = 2
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    # No improvement for epoch 3
+    No improvement for epoch 3
     state.epoch = 3
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    # No improvement for epoch 4 - patience exhausted
+    No improvement for epoch 4 - patience exhausted
     state.epoch = 4
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
@@ -108,24 +108,24 @@ fn test_early_stopping_resets_patience_on_improvement() raises:
     var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    # Initial: 0.5
+    Initial: 0.5
     state.metrics["val_loss"] = 0.5
     _ = early_stop.on_epoch_end(state)
 
-    # No improvement for 2 epochs
+    No improvement for 2 epochs
     state.epoch = 2
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     state.epoch = 3
     _ = early_stop.on_epoch_end(state)
 
-    # Improvement! Reset patience
+    Improvement! Reset patience
     state.epoch = 4
     state.metrics["val_loss"] = 0.4
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    # Verify wait count was reset (counter should be 0 after improvement)
+    Verify wait count was reset (counter should be 0 after improvement)
     assert_equal(early_stop.wait_count, 0)
 
 
@@ -144,27 +144,26 @@ fn test_early_stopping_min_delta() raises:
         Small improvements below threshold don't reset patience.
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=2,
-    #     min_delta=0.01
-    # )
+    var early_stop = EarlyStopping(
+        monitor="val_loss",
+        patience=2,
+        min_delta=0.01
+    )
     #
-    # # Initial: 0.5
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5})
+    # Initial: 0.5
+    early_stop.on_epoch_end(1, {"val_loss": 0.5})
     #
-    # # Small improvement (0.495, delta=0.005 < 0.01): NOT counted
-    # early_stop.on_epoch_end(2, {"val_loss": 0.495})
-    # assert_false(early_stop.should_stop())
+    # Small improvement (0.495, delta=0.005 < 0.01): NOT counted
+    early_stop.on_epoch_end(2, {"val_loss": 0.495})
+    assert_false(early_stop.should_stop())
     #
-    # # Another small non-improvement
-    # early_stop.on_epoch_end(3, {"val_loss": 0.496})
-    # assert_false(early_stop.should_stop())
+    # Another small non-improvement
+    early_stop.on_epoch_end(3, {"val_loss": 0.496})
+    assert_false(early_stop.should_stop())
     #
-    # # Patience exhausted (2 epochs without significant improvement)
-    # early_stop.on_epoch_end(4, {"val_loss": 0.496})
-    # assert_true(early_stop.should_stop())
-    pass
+    # Patience exhausted (2 epochs without significant improvement)
+    early_stop.on_epoch_end(4, {"val_loss": 0.496})
+    assert_true(early_stop.should_stop())
 
 
 fn test_early_stopping_min_delta_large_improvement() raises:
@@ -174,24 +173,23 @@ fn test_early_stopping_min_delta_large_improvement() raises:
         Improvement > min_delta resets patience.
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=2,
-    #     min_delta=0.01
-    # )
+    var early_stop = EarlyStopping(
+        monitor="val_loss",
+        patience=2,
+        min_delta=0.01
+    )
     #
-    # # Initial: 0.5
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5})
+    # Initial: 0.5
+    early_stop.on_epoch_end(1, {"val_loss": 0.5})
     #
-    # # Large improvement (0.48, delta=0.02 > 0.01): Counted
-    # early_stop.on_epoch_end(2, {"val_loss": 0.48})
-    # assert_false(early_stop.should_stop())
+    # Large improvement (0.48, delta=0.02 > 0.01): Counted
+    early_stop.on_epoch_end(2, {"val_loss": 0.48})
+    assert_false(early_stop.should_stop())
     #
-    # # Can continue for another patience epochs
-    # early_stop.on_epoch_end(3, {"val_loss": 0.49})
-    # early_stop.on_epoch_end(4, {"val_loss": 0.49})
-    # assert_false(early_stop.should_stop())
-    pass
+    # Can continue for another patience epochs
+    early_stop.on_epoch_end(3, {"val_loss": 0.49})
+    early_stop.on_epoch_end(4, {"val_loss": 0.49})
+    assert_false(early_stop.should_stop())
 
 
 # ============================================================================
@@ -211,37 +209,36 @@ fn test_early_stopping_restore_best_weights() raises:
     This is CRITICAL for getting best model at early stopping.
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var model = create_simple_model()
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=2,
-    #     restore_best_weights=True
-    # )
+    var model = create_simple_model()
+    var early_stop = EarlyStopping(
+        monitor="val_loss",
+        patience=2,
+        restore_best_weights=True
+    )
     #
-    # # Epoch 1: val_loss = 0.5 (best so far)
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5}, model=model)
-    # var best_weights = model.get_weights().copy()
+    # Epoch 1: val_loss = 0.5 (best so far)
+    early_stop.on_epoch_end(1, {"val_loss": 0.5}, model=model)
+    var best_weights = model.get_weights().copy()
     #
-    # # Epoch 2: val_loss = 0.4 (new best)
-    # train_one_epoch(model)  # Weights change
-    # early_stop.on_epoch_end(2, {"val_loss": 0.4}, model=model)
-    # var new_best_weights = model.get_weights().copy()
+    # Epoch 2: val_loss = 0.4 (new best)
+    train_one_epoch(model)  # Weights change
+    early_stop.on_epoch_end(2, {"val_loss": 0.4}, model=model)
+    var new_best_weights = model.get_weights().copy()
     #
-    # # Epochs 3-4: No improvement, weights continue changing
-    # train_one_epoch(model)
-    # early_stop.on_epoch_end(3, {"val_loss": 0.5}, model=model)
-    # train_one_epoch(model)
-    # early_stop.on_epoch_end(4, {"val_loss": 0.5}, model=model)
+    # Epochs 3-4: No improvement, weights continue changing
+    train_one_epoch(model)
+    early_stop.on_epoch_end(3, {"val_loss": 0.5}, model=model)
+    train_one_epoch(model)
+    early_stop.on_epoch_end(4, {"val_loss": 0.5}, model=model)
     #
-    # # Epoch 5: Patience exhausted, should restore best weights
-    # var final_weights_before_restore = model.get_weights().copy()
-    # early_stop.on_epoch_end(5, {"val_loss": 0.5}, model=model)
+    # Epoch 5: Patience exhausted, should restore best weights
+    var final_weights_before_restore = model.get_weights().copy()
+    early_stop.on_epoch_end(5, {"val_loss": 0.5}, model=model)
     #
-    # # Weights should be restored to epoch 2 (best)
-    # var restored_weights = model.get_weights()
-    # assert_tensor_equal(restored_weights, new_best_weights)
-    # assert_not_equal_tensor(restored_weights, final_weights_before_restore)
-    pass
+    # Weights should be restored to epoch 2 (best)
+    var restored_weights = model.get_weights()
+    assert_tensor_equal(restored_weights, new_best_weights)
+    assert_not_equal_tensor(restored_weights, final_weights_before_restore)
 
 
 fn test_early_stopping_no_restore() raises:
@@ -253,28 +250,27 @@ fn test_early_stopping_no_restore() raises:
         - When stopping, keep current weights
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var model = create_simple_model()
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=2,
-    #     restore_best_weights=False
-    # )
+    var model = create_simple_model()
+    var early_stop = EarlyStopping(
+        monitor="val_loss",
+        patience=2,
+        restore_best_weights=False
+    )
     #
-    # # Train for several epochs
-    # for epoch in range(1, 6):
-    #     train_one_epoch(model)
-    #     early_stop.on_epoch_end(epoch, {"val_loss": 0.5}, model=model)
+    # Train for several epochs
+    for epoch in range(1, 6):
+        train_one_epoch(model)
+        early_stop.on_epoch_end(epoch, {"val_loss": 0.5}, model=model)
     #
-    # # Get final weights
-    # var final_weights = model.get_weights()
+    # Get final weights
+    var final_weights = model.get_weights()
     #
-    # # Trigger early stopping
-    # early_stop.on_epoch_end(6, {"val_loss": 0.5}, model=model)
+    # Trigger early stopping
+    early_stop.on_epoch_end(6, {"val_loss": 0.5}, model=model)
     #
-    # # Weights should be unchanged (not restored)
-    # var weights_after_stop = model.get_weights()
-    # assert_tensor_equal(weights_after_stop, final_weights)
-    pass
+    # Weights should be unchanged (not restored)
+    var weights_after_stop = model.get_weights()
+    assert_tensor_equal(weights_after_stop, final_weights)
 
 
 # ============================================================================
@@ -291,29 +287,28 @@ fn test_early_stopping_monitor_accuracy() raises:
         - Improvement = new_value > best_value
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_accuracy",
-    #     patience=3,
-    #     mode="max"  # Maximize accuracy
-    # )
+    var early_stop = EarlyStopping(
+        monitor="val_accuracy",
+        patience=3,
+        mode="max"  # Maximize accuracy
+    )
     #
-    # # Initial: 0.5
-    # early_stop.on_epoch_end(1, {"val_accuracy": 0.5})
+    # Initial: 0.5
+    early_stop.on_epoch_end(1, {"val_accuracy": 0.5})
     #
-    # # Improvement: 0.6 > 0.5
-    # early_stop.on_epoch_end(2, {"val_accuracy": 0.6})
-    # assert_false(early_stop.should_stop())
+    # Improvement: 0.6 > 0.5
+    early_stop.on_epoch_end(2, {"val_accuracy": 0.6})
+    assert_false(early_stop.should_stop())
     #
-    # # No improvement: 0.5 < 0.6
-    # early_stop.on_epoch_end(3, {"val_accuracy": 0.5})
-    # early_stop.on_epoch_end(4, {"val_accuracy": 0.5})
-    # early_stop.on_epoch_end(5, {"val_accuracy": 0.5})
-    # assert_false(early_stop.should_stop())
+    # No improvement: 0.5 < 0.6
+    early_stop.on_epoch_end(3, {"val_accuracy": 0.5})
+    early_stop.on_epoch_end(4, {"val_accuracy": 0.5})
+    early_stop.on_epoch_end(5, {"val_accuracy": 0.5})
+    assert_false(early_stop.should_stop())
     #
-    # # Patience exhausted
-    # early_stop.on_epoch_end(6, {"val_accuracy": 0.5})
-    # assert_true(early_stop.should_stop())
-    pass
+    # Patience exhausted
+    early_stop.on_epoch_end(6, {"val_accuracy": 0.5})
+    assert_true(early_stop.should_stop())
 
 
 # ============================================================================
@@ -331,26 +326,25 @@ fn test_early_stopping_integration_with_trainer() raises:
         - Break training loop if True
     """
     # TODO(#34): Implement when Trainer and EarlyStopping are available
-    # var model = create_simple_model()
-    # var optimizer = SGD(learning_rate=0.1)
-    # var early_stop = EarlyStopping(monitor="val_loss", patience=3)
+    var model = create_simple_model()
+    var optimizer = SGD(learning_rate=0.1)
+    var early_stop = EarlyStopping(monitor="val_loss", patience=3)
     #
-    # var trainer = Trainer(model, optimizer, loss_fn, callbacks=[early_stop])
+    var trainer = Trainer(model, optimizer, loss_fn, callbacks=[early_stop])
     #
-    # # Train for max 100 epochs, but should stop early
-    # var results = trainer.train(
-    #     epochs=100,
-    #     train_loader=create_plateaued_dataset(),  # Loss stops improving
-    #     val_loader=create_plateaued_dataset()
-    # )
+    # Train for max 100 epochs, but should stop early
+    var results = trainer.train(
+        epochs=100,
+        train_loader=create_plateaued_dataset(),  # Loss stops improving
+        val_loader=create_plateaued_dataset()
+    )
     #
-    # # Should stop before 100 epochs
-    # var actual_epochs = len(results["train_loss"])
-    # assert_less(actual_epochs, 100)
+    # Should stop before 100 epochs
+    var actual_epochs = len(results["train_loss"])
+    assert_less(actual_epochs, 100)
     #
-    # # Should stop around when patience exhausted
-    # # (exact number depends on when loss plateaus)
-    pass
+    # Should stop around when patience exhausted
+    # (exact number depends on when loss plateaus)
 
 
 # ============================================================================
@@ -367,15 +361,14 @@ fn test_early_stopping_zero_patience() raises:
         - Effectively requires improvement every epoch
     """
     # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(monitor="val_loss", patience=0)
+    var early_stop = EarlyStopping(monitor="val_loss", patience=0)
     #
-    # # Initial: 0.5
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5})
+    # Initial: 0.5
+    early_stop.on_epoch_end(1, {"val_loss": 0.5})
     #
-    # # No improvement immediately triggers stop
-    # early_stop.on_epoch_end(2, {"val_loss": 0.5})
-    # assert_true(early_stop.should_stop())
-    pass
+    # No improvement immediately triggers stop
+    early_stop.on_epoch_end(2, {"val_loss": 0.5})
+    assert_true(early_stop.should_stop())
 
 
 fn test_early_stopping_missing_monitored_metric() raises:
@@ -387,15 +380,14 @@ fn test_early_stopping_missing_monitored_metric() raises:
         - Skip epoch with warning
     """
     # TODO(#34): Implement error handling when EarlyStopping is available
-    # var early_stop = EarlyStopping(monitor="val_loss", patience=3)
+    var early_stop = EarlyStopping(monitor="val_loss", patience=3)
     #
-    # # Logs missing val_loss
-    # try:
-    #     early_stop.on_epoch_end(1, {"train_loss": 0.5})
-    #     # Should raise error or handle gracefully
-    # except Error:
-    #     pass  # Expected
-    pass
+    # Logs missing val_loss
+    try:
+        early_stop.on_epoch_end(1, {"train_loss": 0.5})
+        # Should raise error or handle gracefully
+    except Error:
+        pass  # Expected
 
 
 # ============================================================================

@@ -42,7 +42,7 @@ fn test_warmup_scheduler_initialization() raises:
 
     var scheduler = MockWarmupScheduler(base_lr=0.1, warmup_epochs=5)
 
-    # Verify parameters
+    Verify parameters
     assert_equal(scheduler.warmup_epochs, 5)
     assert_almost_equal(scheduler.base_lr, 0.1)
 
@@ -63,23 +63,23 @@ fn test_warmup_scheduler_linear_increase() raises:
 
     var scheduler = MockWarmupScheduler(base_lr=1.0, warmup_epochs=10)
 
-    # Initial: epoch 0
+    Initial: epoch 0
     var lr0 = scheduler.get_lr(epoch=0)
     assert_almost_equal(lr0, 0.0)
 
-    # Epoch 1: lr = 1.0 * (1/10) = 0.1
+    Epoch 1: lr = 1.0 * (1/10) = 0.1
     var lr1 = scheduler.get_lr(epoch=1)
     assert_almost_equal(lr1, 0.1)
 
-    # Epoch 5: lr = 1.0 * (5/10) = 0.5
+    Epoch 5: lr = 1.0 * (5/10) = 0.5
     var lr5 = scheduler.get_lr(epoch=5)
     assert_almost_equal(lr5, 0.5)
 
-    # Epoch 10: lr = 1.0 (target reached)
+    Epoch 10: lr = 1.0 (target reached)
     var lr10 = scheduler.get_lr(epoch=10)
     assert_almost_equal(lr10, 1.0)
 
-    # Epoch 11+: lr remains at target
+    Epoch 11+: lr remains at target
     var lr11 = scheduler.get_lr(epoch=11)
     assert_almost_equal(lr11, 1.0)
 
@@ -96,11 +96,11 @@ fn test_warmup_scheduler_reaches_target() raises:
 
     var scheduler = MockWarmupScheduler(base_lr=0.1, warmup_epochs=5)
 
-    # After warmup, should be at target
+    After warmup, should be at target
     var lr_after_warmup = scheduler.get_lr(epoch=5)
     assert_almost_equal(lr_after_warmup, 0.1)
 
-    # Continue stepping - should remain at target
+    Continue stepping - should remain at target
     var lr_later = scheduler.get_lr(epoch=20)
     assert_almost_equal(lr_later, 0.1)
 
@@ -120,20 +120,19 @@ fn test_warmup_scheduler_different_start_lrs() raises:
         - Fraction of target_lr (e.g., 0.1 * target_lr)
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # var target_lr = Float32(1.0)
+    var target_lr = Float32(1.0)
     #
-    # # Test start_lr = 0.0
-    # var optimizer1 = SGD(learning_rate=target_lr)
-    # var scheduler1 = LinearWarmup(optimizer1, warmup_epochs=10, start_lr=0.0)
-    # scheduler1.step(0)
-    # assert_almost_equal(optimizer1.learning_rate, 0.0)
+    # Test start_lr = 0.0
+    var optimizer1 = SGD(learning_rate=target_lr)
+    var scheduler1 = LinearWarmup(optimizer1, warmup_epochs=10, start_lr=0.0)
+    scheduler1.step(0)
+    assert_almost_equal(optimizer1.learning_rate, 0.0)
     #
-    # # Test start_lr = 0.1
-    # var optimizer2 = SGD(learning_rate=target_lr)
-    # var scheduler2 = LinearWarmup(optimizer2, warmup_epochs=10, start_lr=0.1)
-    # scheduler2.step(0)
-    # assert_almost_equal(optimizer2.learning_rate, 0.1)
-    pass
+    # Test start_lr = 0.1
+    var optimizer2 = SGD(learning_rate=target_lr)
+    var scheduler2 = LinearWarmup(optimizer2, warmup_epochs=10, start_lr=0.1)
+    scheduler2.step(0)
+    assert_almost_equal(optimizer2.learning_rate, 0.1)
 
 
 fn test_warmup_scheduler_start_lr_equals_target() raises:
@@ -144,14 +143,13 @@ fn test_warmup_scheduler_start_lr_equals_target() raises:
         - LR should remain constant (no warmup needed)
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=0.1)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=10, start_lr=0.1)
+    var optimizer = SGD(learning_rate=0.1)
+    var scheduler = LinearWarmup(optimizer, warmup_epochs=10, start_lr=0.1)
     #
-    # # LR should remain constant
-    # for epoch in range(15):
-    #     scheduler.step(epoch)
-    #     assert_almost_equal(optimizer.learning_rate, 0.1)
-    pass
+    # LR should remain constant
+    for epoch in range(15):
+        scheduler.step(epoch)
+        assert_almost_equal(optimizer.learning_rate, 0.1)
 
 
 # ============================================================================
@@ -168,23 +166,22 @@ fn test_warmup_scheduler_different_warmup_periods() raises:
         - Large warmup_epochs: Slow warmup
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # # Fast warmup (2 epochs)
-    # var optimizer1 = SGD(learning_rate=1.0)
-    # var scheduler1 = LinearWarmup(optimizer1, warmup_epochs=2, start_lr=0.0)
+    # Fast warmup (2 epochs)
+    var optimizer1 = SGD(learning_rate=1.0)
+    var scheduler1 = LinearWarmup(optimizer1, warmup_epochs=2, start_lr=0.0)
     #
-    # scheduler1.step(1)
-    # assert_almost_equal(optimizer1.learning_rate, 0.5)  # Halfway after 1 epoch
+    scheduler1.step(1)
+    assert_almost_equal(optimizer1.learning_rate, 0.5)  # Halfway after 1 epoch
     #
-    # scheduler1.step(2)
-    # assert_almost_equal(optimizer1.learning_rate, 1.0)  # Target after 2 epochs
+    scheduler1.step(2)
+    assert_almost_equal(optimizer1.learning_rate, 1.0)  # Target after 2 epochs
     #
-    # # Slow warmup (100 epochs)
-    # var optimizer2 = SGD(learning_rate=1.0)
-    # var scheduler2 = LinearWarmup(optimizer2, warmup_epochs=100, start_lr=0.0)
+    # Slow warmup (100 epochs)
+    var optimizer2 = SGD(learning_rate=1.0)
+    var scheduler2 = LinearWarmup(optimizer2, warmup_epochs=100, start_lr=0.0)
     #
-    # scheduler2.step(1)
-    # assert_almost_equal(optimizer2.learning_rate, 0.01)  # Small increase
-    pass
+    scheduler2.step(1)
+    assert_almost_equal(optimizer2.learning_rate, 0.01)  # Small increase
 
 
 fn test_warmup_scheduler_single_epoch_warmup() raises:
@@ -196,15 +193,14 @@ fn test_warmup_scheduler_single_epoch_warmup() raises:
         - Epoch 1+: target_lr
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=1, start_lr=0.0)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = LinearWarmup(optimizer, warmup_epochs=1, start_lr=0.0)
     #
-    # scheduler.step(0)
-    # assert_almost_equal(optimizer.learning_rate, 0.0)
+    scheduler.step(0)
+    assert_almost_equal(optimizer.learning_rate, 0.0)
     #
-    # scheduler.step(1)
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
-    pass
+    scheduler.step(1)
+    assert_almost_equal(optimizer.learning_rate, 1.0)
 
 
 # ============================================================================
@@ -225,25 +221,24 @@ fn test_warmup_scheduler_chained_with_step_lr() raises:
         - Or composite scheduler
     """
     # TODO(#34): Implement when both schedulers available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var warmup = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.1)
-    # var step_lr = StepLR(optimizer, step_size=10, gamma=0.1)
+    var optimizer = SGD(learning_rate=1.0)
+    var warmup = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.1)
+    var step_lr = StepLR(optimizer, step_size=10, gamma=0.1)
     #
-    # # Epochs 0-4: Warmup
-    # for epoch in range(5):
-    #     warmup.step(epoch)
-    #     # Don't step step_lr during warmup
+    # Epochs 0-4: Warmup
+    for epoch in range(5):
+        warmup.step(epoch)
+        # Don't step step_lr during warmup
     #
-    # # Verify reached target
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
+    # Verify reached target
+    assert_almost_equal(optimizer.learning_rate, 1.0)
     #
-    # # Epochs 5+: Step decay
-    # for epoch in range(5, 20):
-    #     step_lr.step(epoch - 5)  # Adjust epoch for step_lr
+    # Epochs 5+: Step decay
+    for epoch in range(5, 20):
+        step_lr.step(epoch - 5)  # Adjust epoch for step_lr
     #
-    # # At epoch 15 (step_lr epoch 10): LR should be 0.1
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    pass
+    # At epoch 15 (step_lr epoch 10): LR should be 0.1
+    assert_almost_equal(optimizer.learning_rate, 0.1)
 
 
 fn test_warmup_scheduler_chained_with_cosine() raises:
@@ -255,21 +250,20 @@ fn test_warmup_scheduler_chained_with_cosine() raises:
         2. Cosine annealing after warmup
     """
     # TODO(#34): Implement when both schedulers available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var warmup = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.0)
-    # var cosine = CosineAnnealingLR(optimizer, T_max=45, eta_min=0.0)
+    var optimizer = SGD(learning_rate=1.0)
+    var warmup = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.0)
+    var cosine = CosineAnnealingLR(optimizer, T_max=45, eta_min=0.0)
     #
-    # # Epochs 0-4: Warmup
-    # for epoch in range(5):
-    #     warmup.step(epoch)
+    # Epochs 0-4: Warmup
+    for epoch in range(5):
+        warmup.step(epoch)
     #
-    # # Epochs 5-49: Cosine annealing
-    # for epoch in range(45):
-    #     cosine.step(epoch)
+    # Epochs 5-49: Cosine annealing
+    for epoch in range(45):
+        cosine.step(epoch)
     #
-    # # At end of cosine: LR should be near eta_min
-    # assert_almost_equal(optimizer.learning_rate, 0.0, tolerance=1e-5)
-    pass
+    # At end of cosine: LR should be near eta_min
+    assert_almost_equal(optimizer.learning_rate, 0.0, tolerance=1e-5)
 
 
 # ============================================================================
@@ -287,8 +281,7 @@ fn test_warmup_scheduler_stabilizes_early_training() raises:
         - Then ramp up to full learning rate
     """
     # TODO(#34): Implement when warmup and training available
-    # This is more of an integration test with actual training
-    pass
+    This is more of an integration test with actual training
 
 
 # ============================================================================
@@ -305,20 +298,19 @@ fn test_warmup_scheduler_zero_warmup_epochs() raises:
         - Or raise error (design choice)
     """
     # TODO(#34): Implement error handling when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
+    var optimizer = SGD(learning_rate=1.0)
     #
-    # # Option 1: Immediate target
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=0, start_lr=0.0)
-    # scheduler.step(0)
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
+    # Option 1: Immediate target
+    var scheduler = LinearWarmup(optimizer, warmup_epochs=0, start_lr=0.0)
+    scheduler.step(0)
+    assert_almost_equal(optimizer.learning_rate, 1.0)
     #
-    # # Option 2: Raise error
-    # # try:
-    # #     var scheduler = LinearWarmup(optimizer, warmup_epochs=0)
-    # #     assert_true(False, "Expected error")
-    # # except Error:
-    # #     pass
-    pass
+    # Option 2: Raise error
+    # try:
+    #     var scheduler = LinearWarmup(optimizer, warmup_epochs=0)
+    #     assert_true(False, "Expected error")
+    # except Error:
+    #     pass
 
 
 fn test_warmup_scheduler_negative_warmup_epochs() raises:
@@ -328,14 +320,13 @@ fn test_warmup_scheduler_negative_warmup_epochs() raises:
         warmup_epochs must be non-negative.
     """
     # TODO(#34): Implement error handling when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
+    var optimizer = SGD(learning_rate=1.0)
     #
-    # try:
-    #     var scheduler = LinearWarmup(optimizer, warmup_epochs=-5)
-    #     assert_true(False, "Expected error for negative warmup_epochs")
-    # except Error:
-    #     pass  # Expected
-    pass
+    try:
+        var scheduler = LinearWarmup(optimizer, warmup_epochs=-5)
+        assert_true(False, "Expected error for negative warmup_epochs")
+    except Error:
+        pass  # Expected
 
 
 # ============================================================================
@@ -349,18 +340,17 @@ fn test_warmup_scheduler_property_monotonic_increase() raises:
     During warmup period, LR should never decrease.
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=20, start_lr=0.0)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = LinearWarmup(optimizer, warmup_epochs=20, start_lr=0.0)
     #
-    # var previous_lr = Float32(0.0)
-    # for epoch in range(21):
-    #     scheduler.step(epoch)
-    #     var current_lr = optimizer.learning_rate
+    var previous_lr = Float32(0.0)
+    for epoch in range(21):
+        scheduler.step(epoch)
+        var current_lr = optimizer.learning_rate
     #
-    #     # LR should not decrease
-    #     assert_greater_or_equal(current_lr, previous_lr)
-    #     previous_lr = current_lr
-    pass
+        # LR should not decrease
+        assert_greater_or_equal(current_lr, previous_lr)
+        previous_lr = current_lr
 
 
 fn test_warmup_scheduler_property_linear() raises:
@@ -369,20 +359,19 @@ fn test_warmup_scheduler_property_linear() raises:
     Equal epoch increments should produce equal LR increments.
     """
     # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=10, start_lr=0.0)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = LinearWarmup(optimizer, warmup_epochs=10, start_lr=0.0)
     #
-    # var lr_values = List[Float32]()
-    # for epoch in range(11):
-    #     scheduler.step(epoch)
-    #     lr_values.append(optimizer.learning_rate)
+    var lr_values = List[Float32]()
+    for epoch in range(11):
+        scheduler.step(epoch)
+        lr_values.append(optimizer.learning_rate)
     #
-    # # Check linear spacing
-    # var increment = lr_values[1] - lr_values[0]
-    # for i in range(1, 10):
-    #     var current_increment = lr_values[i+1] - lr_values[i]
-    #     assert_almost_equal(current_increment, increment, tolerance=1e-6)
-    pass
+    # Check linear spacing
+    var increment = lr_values[1] - lr_values[0]
+    for i in range(1, 10):
+        var current_increment = lr_values[i+1] - lr_values[i]
+        assert_almost_equal(current_increment, increment, tolerance=1e-6)
 
 
 # ============================================================================

@@ -39,7 +39,7 @@ fn test_step_scheduler_initialization() raises:
 
     var scheduler = MockStepLR(base_lr=0.1, step_size=10, gamma=0.1)
 
-    # Verify initial parameters
+    Verify initial parameters
     assert_equal(scheduler.step_size, 10)
     assert_almost_equal(scheduler.gamma, 0.1)
     assert_almost_equal(scheduler.base_lr, 0.1)
@@ -59,16 +59,16 @@ fn test_step_scheduler_reduces_lr_at_step() raises:
 
     var scheduler = MockStepLR(base_lr=1.0, step_size=5, gamma=0.1)
 
-    # Initial LR (epoch 0)
+    Initial LR (epoch 0)
     var lr0 = scheduler.get_lr(epoch=0)
     assert_almost_equal(lr0, 1.0)
 
-    # Steps 1-4: LR unchanged
+    Steps 1-4: LR unchanged
     for epoch in range(1, 5):
         var lr = scheduler.get_lr(epoch=epoch)
         assert_almost_equal(lr, 1.0)
 
-    # Step 5: LR reduced
+    Step 5: LR reduced
     var lr5 = scheduler.get_lr(epoch=5)
     assert_almost_equal(lr5, 0.1)
 
@@ -87,15 +87,15 @@ fn test_step_scheduler_multiple_steps() raises:
 
     var scheduler = MockStepLR(base_lr=1.0, step_size=5, gamma=0.1)
 
-    # Epoch 0: LR = 1.0
+    Epoch 0: LR = 1.0
     var lr0 = scheduler.get_lr(epoch=0)
     assert_almost_equal(lr0, 1.0)
 
-    # Epoch 5: LR = 0.1
+    Epoch 5: LR = 0.1
     var lr5 = scheduler.get_lr(epoch=5)
     assert_almost_equal(lr5, 0.1)
 
-    # Epoch 10: LR = 0.01
+    Epoch 10: LR = 0.01
     var lr10 = scheduler.get_lr(epoch=10)
     assert_almost_equal(lr10, 0.01)
 
@@ -115,23 +115,22 @@ fn test_step_scheduler_different_gamma_values() raises:
         - gamma=0.9: LR reduced to 90% of previous value
     """
     # TODO(#34): Implement when StepLR is available
-    # # Test gamma = 0.5
-    # var optimizer1 = SGD(learning_rate=1.0)
-    # var scheduler1 = StepLR(optimizer1, step_size=1, gamma=0.5)
+    # Test gamma = 0.5
+    var optimizer1 = SGD(learning_rate=1.0)
+    var scheduler1 = StepLR(optimizer1, step_size=1, gamma=0.5)
     #
-    # scheduler1.step(1)
-    # assert_almost_equal(optimizer1.learning_rate, 0.5)
+    scheduler1.step(1)
+    assert_almost_equal(optimizer1.learning_rate, 0.5)
     #
-    # scheduler1.step(2)
-    # assert_almost_equal(optimizer1.learning_rate, 0.25)
+    scheduler1.step(2)
+    assert_almost_equal(optimizer1.learning_rate, 0.25)
     #
-    # # Test gamma = 0.9 (smaller reduction)
-    # var optimizer2 = SGD(learning_rate=1.0)
-    # var scheduler2 = StepLR(optimizer2, step_size=1, gamma=0.9)
+    # Test gamma = 0.9 (smaller reduction)
+    var optimizer2 = SGD(learning_rate=1.0)
+    var scheduler2 = StepLR(optimizer2, step_size=1, gamma=0.9)
     #
-    # scheduler2.step(1)
-    # assert_almost_equal(optimizer2.learning_rate, 0.9)
-    pass
+    scheduler2.step(1)
+    assert_almost_equal(optimizer2.learning_rate, 0.9)
 
 
 fn test_step_scheduler_gamma_one() raises:
@@ -142,14 +141,13 @@ fn test_step_scheduler_gamma_one() raises:
         This is a degenerate case but should be handled.
     """
     # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=1, gamma=1.0)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = StepLR(optimizer, step_size=1, gamma=1.0)
     #
-    # # LR should remain constant
-    # for epoch in range(1, 11):
-    #     scheduler.step(epoch)
-    #     assert_almost_equal(optimizer.learning_rate, 1.0)
-    pass
+    # LR should remain constant
+    for epoch in range(1, 11):
+        scheduler.step(epoch)
+        assert_almost_equal(optimizer.learning_rate, 1.0)
 
 
 # ============================================================================
@@ -167,29 +165,28 @@ fn test_step_scheduler_different_step_sizes() raises:
         - step_size=100: Reduce every 100 epochs
     """
     # TODO(#34): Implement when StepLR is available
-    # # Test step_size = 1 (reduce every epoch)
-    # var optimizer1 = SGD(learning_rate=1.0)
-    # var scheduler1 = StepLR(optimizer1, step_size=1, gamma=0.5)
+    # Test step_size = 1 (reduce every epoch)
+    var optimizer1 = SGD(learning_rate=1.0)
+    var scheduler1 = StepLR(optimizer1, step_size=1, gamma=0.5)
     #
-    # scheduler1.step(1)
-    # assert_almost_equal(optimizer1.learning_rate, 0.5)
+    scheduler1.step(1)
+    assert_almost_equal(optimizer1.learning_rate, 0.5)
     #
-    # scheduler1.step(2)
-    # assert_almost_equal(optimizer1.learning_rate, 0.25)
+    scheduler1.step(2)
+    assert_almost_equal(optimizer1.learning_rate, 0.25)
     #
-    # # Test step_size = 10 (reduce every 10 epochs)
-    # var optimizer2 = SGD(learning_rate=1.0)
-    # var scheduler2 = StepLR(optimizer2, step_size=10, gamma=0.5)
+    # Test step_size = 10 (reduce every 10 epochs)
+    var optimizer2 = SGD(learning_rate=1.0)
+    var scheduler2 = StepLR(optimizer2, step_size=10, gamma=0.5)
     #
-    # # Epochs 1-9: No change
-    # for epoch in range(1, 10):
-    #     scheduler2.step(epoch)
-    #     assert_almost_equal(optimizer2.learning_rate, 1.0)
+    # Epochs 1-9: No change
+    for epoch in range(1, 10):
+        scheduler2.step(epoch)
+        assert_almost_equal(optimizer2.learning_rate, 1.0)
     #
-    # # Epoch 10: Reduce
-    # scheduler2.step(10)
-    # assert_almost_equal(optimizer2.learning_rate, 0.5)
-    pass
+    # Epoch 10: Reduce
+    scheduler2.step(10)
+    assert_almost_equal(optimizer2.learning_rate, 0.5)
 
 
 # ============================================================================
@@ -207,26 +204,25 @@ fn test_step_scheduler_updates_optimizer_lr() raises:
     This is CRITICAL for proper training with LR scheduling.
     """
     # TODO(#34): Implement when StepLR and optimizer are available
-    # var model = create_simple_model()
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
+    var model = create_simple_model()
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
     #
-    # # Train for 10 epochs
-    # var data_loader = create_mock_dataloader()
-    # for epoch in range(10):
-    #     # Training loop
-    #     for batch in data_loader:
-    #         optimizer.step(batch)
+    # Train for 10 epochs
+    var data_loader = create_mock_dataloader()
+    for epoch in range(10):
+        # Training loop
+        for batch in data_loader:
+            optimizer.step(batch)
     #
-    #     # Expected LR
-    #     var expected_lr = 1.0 if epoch < 5 else 0.1
+        # Expected LR
+        var expected_lr = 1.0 if epoch < 5 else 0.1
     #
-    #     # Step scheduler
-    #     scheduler.step(epoch)
+        # Step scheduler
+        scheduler.step(epoch)
     #
-    #     # Verify optimizer LR
-    #     assert_almost_equal(optimizer.learning_rate, expected_lr)
-    pass
+        # Verify optimizer LR
+        assert_almost_equal(optimizer.learning_rate, expected_lr)
 
 
 fn test_step_scheduler_works_with_multiple_param_groups() raises:
@@ -237,8 +233,7 @@ fn test_step_scheduler_works_with_multiple_param_groups() raises:
         scheduler should update all groups proportionally.
     """
     # TODO(#34): Implement if multiple param groups are supported
-    # This is an advanced feature, may be deferred
-    pass
+    This is an advanced feature, may be deferred
 
 
 # ============================================================================
@@ -254,15 +249,14 @@ fn test_step_scheduler_zero_step_size() raises:
         step_size=0 should either raise error or be treated as step_size=1.
     """
     # TODO(#34): Implement error handling when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
+    var optimizer = SGD(learning_rate=1.0)
     #
-    # # Should raise error
-    # try:
-    #     var scheduler = StepLR(optimizer, step_size=0, gamma=0.1)
-    #     assert_true(False, "Expected error for step_size=0")
-    # except Error:
-    #     pass  # Expected
-    pass
+    # Should raise error
+    try:
+        var scheduler = StepLR(optimizer, step_size=0, gamma=0.1)
+        assert_true(False, "Expected error for step_size=0")
+    except Error:
+        pass  # Expected
 
 
 fn test_step_scheduler_negative_gamma() raises:
@@ -273,15 +267,14 @@ fn test_step_scheduler_negative_gamma() raises:
         Negative gamma should raise error.
     """
     # TODO(#34): Implement error handling when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
+    var optimizer = SGD(learning_rate=1.0)
     #
-    # # Should raise error
-    # try:
-    #     var scheduler = StepLR(optimizer, step_size=5, gamma=-0.1)
-    #     assert_true(False, "Expected error for negative gamma")
-    # except Error:
-    #     pass  # Expected
-    pass
+    # Should raise error
+    try:
+        var scheduler = StepLR(optimizer, step_size=5, gamma=-0.1)
+        assert_true(False, "Expected error for negative gamma")
+    except Error:
+        pass  # Expected
 
 
 fn test_step_scheduler_very_small_lr() raises:
@@ -292,16 +285,15 @@ fn test_step_scheduler_very_small_lr() raises:
         Numerical precision may become an issue, but scheduler continues.
     """
     # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=1, gamma=0.1)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = StepLR(optimizer, step_size=1, gamma=0.1)
     #
-    # # Step many times to get very small LR
-    # for epoch in range(1, 11):
-    #     scheduler.step(epoch)
+    # Step many times to get very small LR
+    for epoch in range(1, 11):
+        scheduler.step(epoch)
     #
-    # # After 10 steps: LR = 1.0 * 0.1^10 = 1e-10
-    # assert_almost_equal(optimizer.learning_rate, 1e-10, tolerance=1e-15)
-    pass
+    # After 10 steps: LR = 1.0 * 0.1^10 = 1e-10
+    assert_almost_equal(optimizer.learning_rate, 1e-10, tolerance=1e-15)
 
 
 # ============================================================================
@@ -315,18 +307,17 @@ fn test_step_scheduler_property_monotonic_decrease() raises:
     StepLR should only decrease or maintain LR, never increase it.
     """
     # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=5, gamma=0.5)
+    var optimizer = SGD(learning_rate=1.0)
+    var scheduler = StepLR(optimizer, step_size=5, gamma=0.5)
     #
-    # var previous_lr = optimizer.learning_rate
-    # for epoch in range(1, 51):
-    #     scheduler.step(epoch)
-    #     var current_lr = optimizer.learning_rate
+    var previous_lr = optimizer.learning_rate
+    for epoch in range(1, 51):
+        scheduler.step(epoch)
+        var current_lr = optimizer.learning_rate
     #
-    #     # LR should not increase
-    #     assert_less_or_equal(current_lr, previous_lr)
-    #     previous_lr = current_lr
-    pass
+        # LR should not increase
+        assert_less_or_equal(current_lr, previous_lr)
+        previous_lr = current_lr
 
 
 # ============================================================================
