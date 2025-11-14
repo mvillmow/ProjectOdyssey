@@ -4,7 +4,12 @@ Tests Pipeline which composes multiple transforms into a single transform,
 enabling flexible and reusable data preprocessing workflows.
 """
 
-from tests.shared.conftest import assert_true, assert_equal, assert_not_equal, TestFixtures
+from tests.shared.conftest import (
+    assert_true,
+    assert_equal,
+    assert_not_equal,
+    TestFixtures,
+)
 
 
 # ============================================================================
@@ -14,17 +19,23 @@ from tests.shared.conftest import assert_true, assert_equal, assert_not_equal, T
 
 struct StubData:
     """Minimal stub data for transform testing."""
+
     var value: Float32
 
-    fn __init__(inout self, value: Float32):
+    fn __init__(
+        inoutself, value: Float32
+    ):
         self.value = value
 
 
 struct StubTransform:
     """Minimal stub transform that adds a fixed value."""
+
     var delta: Float32
 
-    fn __init__(inout self, delta: Float32):
+    fn __init__(
+        inoutself, delta: Float32
+    ):
         self.delta = delta
 
     fn apply(self, data: StubData) -> StubData:
@@ -34,12 +45,17 @@ struct StubTransform:
 
 struct StubPipeline:
     """Minimal stub pipeline that chains transforms sequentially."""
+
     var transforms: List[StubTransform]
 
-    fn __init__(inout self):
+    fn __init__(
+        inoutself
+    ):
         self.transforms = List[StubTransform]()
 
-    fn add_transform(inout self, transform: StubTransform):
+    fn add_transform(
+        inoutself, transform: StubTransform
+    ):
         """Add a transform to the pipeline."""
         self.transforms.append(transform)
 

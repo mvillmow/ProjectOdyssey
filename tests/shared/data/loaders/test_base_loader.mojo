@@ -14,9 +14,12 @@ from tests.shared.conftest import assert_true, assert_equal, TestFixtures
 
 struct StubDataset:
     """Minimal stub dataset for loader testing."""
+
     var size: Int
 
-    fn __init__(inout self, size: Int):
+    fn __init__(
+        inoutself, size: Int
+    ):
         self.size = size
 
     fn __len__(self) -> Int:
@@ -30,14 +33,19 @@ struct StubDataset:
 
 struct StubBatch:
     """Minimal stub batch for testing batch operations."""
+
     var data: List[Float32]
     var labels: List[Int]
 
-    fn __init__(inout self, capacity: Int):
+    fn __init__(
+        inoutself, capacity: Int
+    ):
         self.data = List[Float32](capacity=capacity)
         self.labels = List[Int](capacity=capacity)
 
-    fn add_sample(inout self, data: Float32, label: Int):
+    fn add_sample(
+        inoutself, data: Float32, label: Int
+    ):
         self.data.append(data)
         self.labels.append(label)
 
@@ -50,12 +58,18 @@ struct StubDataLoader:
 
     Provides basic batching functionality without complex features.
     """
+
     var dataset: StubDataset
     var batch_size: Int
     var drop_last: Bool
     var num_batches: Int
 
-    fn __init__(inout self, dataset: StubDataset, batch_size: Int, drop_last: Bool = False) raises:
+    fn __init__(
+        inoutself,
+        dataset: StubDataset,
+        batch_size: Int,
+        drop_last: Bool = False,
+    ) raises:
         """Create stub data loader.
 
         Args:
