@@ -22,8 +22,7 @@ from tests.shared.conftest import (
 
 
 fn test_log_level_hierarchy():
-    """Test log levels are ordered correctly (DEBUG < INFO < WARNING < ERROR).
-    """
+    """Test log levels are ordered correctly (DEBUG < INFO < WARNING < ERROR)."""
     # TODO(#44): Implement when LogLevel enum is created
     # This test validates the log level hierarchy
     # DEBUG(10) < INFO(20) < WARNING(30) < ERROR(40)
