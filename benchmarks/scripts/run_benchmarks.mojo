@@ -132,6 +132,9 @@ fn matmul_large_impl() raises:
 # Timing and Measurement
 # ============================================================================
 
+# Constants
+alias MAX_INT64: Int64 = 9223372036854775807
+
 
 struct BenchmarkMetrics:
     """Metrics collected from a benchmark run."""
@@ -190,7 +193,7 @@ fn measure_benchmark[func: fn () raises -> None](
         BenchmarkMetrics with timing and throughput data.
     """
     var total_duration_us: Int64 = 0
-    var min_duration_us: Int64 = 9223372036854775807  # Max Int64
+    var min_duration_us: Int64 = MAX_INT64
     var max_duration_us: Int64 = 0
 
     # Run multiple times to get stable measurements
