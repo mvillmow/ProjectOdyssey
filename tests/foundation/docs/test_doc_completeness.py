@@ -698,7 +698,6 @@ The context manager ensures proper cleanup.
             min_sections: Minimum number of sections (h2 headers) required
         """
         doc_path = docs_root / doc_file
-        # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
 
         # Create content with required sections
         sections = []
