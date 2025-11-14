@@ -14,6 +14,8 @@ Example:
     var loaded = load_checkpoint("checkpoint.pt")
 """
 
+from python import Python
+
 
 # ============================================================================
 # Checkpoint Structure
@@ -26,6 +28,7 @@ struct Checkpoint:
     Holds model state, optimizer state, training metadata (epoch, loss, etc.)
     and allows flexible extension for additional data.
     """
+
     var model_state: Dict[String, String]  # Serialized model weights
     var optimizer_state: Dict[String, String]  # Serialized optimizer state
     var epoch: Int
@@ -33,7 +36,7 @@ struct Checkpoint:
     var accuracy: Float32
     var metadata: Dict[String, String]
 
-    fn __init__(inout self):
+    fn __init__(inoutself):
         """Create empty checkpoint."""
         self.model_state = Dict[String, String]()
         self.optimizer_state = Dict[String, String]()
@@ -42,19 +45,19 @@ struct Checkpoint:
         self.accuracy = 0.0
         self.metadata = Dict[String, String]()
 
-    fn set_epoch(inout self, epoch: Int):
+    fn set_epoch(inoutself, epoch: Int):
         """Set checkpoint epoch."""
         self.epoch = epoch
 
-    fn set_loss(inout self, loss: Float32):
+    fn set_loss(inoutself, loss: Float32):
         """Set loss value."""
         self.loss = loss
 
-    fn set_accuracy(inout self, accuracy: Float32):
+    fn set_accuracy(inoutself, accuracy: Float32):
         """Set accuracy value."""
         self.accuracy = accuracy
 
-    fn set_metadata(inout self, key: String, value: String):
+    fn set_metadata(inoutself, key: String, value: String):
         """Set arbitrary metadata."""
         self.metadata[key] = value
 
@@ -175,9 +178,7 @@ fn _deserialize_checkpoint(content: String) -> Checkpoint:
 
 
 fn save_checkpoint(
-    filepath: String,
-    checkpoint: Checkpoint,
-    backup: Bool = True
+    filepath: String, checkpoint: Checkpoint, backup: Bool = True
 ) -> Bool:
     """Save model checkpoint to file with optional backup.
 
@@ -243,11 +244,12 @@ fn load_checkpoint(filepath: String) -> Checkpoint:
 
 struct TensorMetadata:
     """Metadata for serialized tensor."""
+
     var dtype: String
     var shape: List[Int]
     var size_bytes: Int
 
-    fn __init__(inout self):
+    fn __init__(inoutself):
         """Create empty metadata."""
         self.dtype = ""
         self.shape = List[Int]()
@@ -256,10 +258,11 @@ struct TensorMetadata:
 
 struct SerializedTensor:
     """Serialized tensor with metadata and data."""
+
     var metadata: TensorMetadata
     var data: List[String]  # Simplified: list of string representations
 
-    fn __init__(inout self):
+    fn __init__(inoutself):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
         self.data = List[String]()
@@ -283,7 +286,9 @@ fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
     # Set metadata
     serialized.metadata.dtype = "string"  # Simplified for now
     serialized.metadata.shape.append(len(data))
-    serialized.metadata.size_bytes = 0  # Will be calculated based on actual data
+    serialized.metadata.size_bytes = (
+        0  # Will be calculated based on actual data
+    )
 
     # Copy data
     for i in range(len(data)):
@@ -534,24 +539,14 @@ fn expand_path(filepath: String) -> String:
     Returns:
         Expanded absolute path
     """
-    # Expand ~ to home directory
-    var expanded = filepath
-    if expanded.startswith("~"):
-        # NOTE: Mojo v0.25.7 doesn't have os.environ or pathlib
-        # In production, would use os.environ["HOME"] or pathlib.Path.home()
-        # For now, assume /home/user as placeholder
-        var home = "/home/user"  # Placeholder
-        if len(expanded) == 1:
-            expanded = home
-        elif expanded[1] == "/":
-            expanded = home + expanded[1:]
-        else:
-            expanded = home + "/" + expanded[1:]
-
-    # TODO: Resolve relative paths (., .., etc.)
-    # Would use pathlib.Path.resolve() in production
-
-    return expanded
+    # Use Python os.path.expanduser() for proper ~ expansion
+    try:
+        var python = Python.import_module("os.path")
+        var expanded = python.expanduser(filepath)
+        return str(expanded)
+    except:
+        # Fall back to returning original path if Python interop fails
+        return filepath
 
 
 # ============================================================================
