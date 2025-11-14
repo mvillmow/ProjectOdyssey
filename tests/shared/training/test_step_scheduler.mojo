@@ -83,31 +83,21 @@ fn test_step_scheduler_multiple_steps() raises:
         - Epoch 10-14: LR = initial_lr * gamma^2
         - etc.
     """
-    # TODO(#34): Implement when StepLR is available
-    # var optimizer = SGD(learning_rate=1.0)
-    # var scheduler = StepLR(optimizer, step_size=5, gamma=0.1)
-    #
-    # # Epoch 0: LR = 1.0
-    # assert_almost_equal(optimizer.learning_rate, 1.0)
-    #
-    # # Epochs 1-4: LR = 1.0
-    # for epoch in range(1, 5):
-    #     scheduler.step(epoch)
-    #     assert_almost_equal(optimizer.learning_rate, 1.0)
-    #
-    # # Epoch 5: LR = 0.1
-    # scheduler.step(5)
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    #
-    # # Epochs 6-9: LR = 0.1
-    # for epoch in range(6, 10):
-    #     scheduler.step(epoch)
-    #     assert_almost_equal(optimizer.learning_rate, 0.1)
-    #
-    # # Epoch 10: LR = 0.01
-    # scheduler.step(10)
-    # assert_almost_equal(optimizer.learning_rate, 0.01)
-    pass
+    from shared.training.stubs import MockStepLR
+
+    var scheduler = MockStepLR(base_lr=1.0, step_size=5, gamma=0.1)
+
+    # Epoch 0: LR = 1.0
+    var lr0 = scheduler.get_lr(epoch=0)
+    assert_almost_equal(lr0, 1.0)
+
+    # Epoch 5: LR = 0.1
+    var lr5 = scheduler.get_lr(epoch=5)
+    assert_almost_equal(lr5, 0.1)
+
+    # Epoch 10: LR = 0.01
+    var lr10 = scheduler.get_lr(epoch=10)
+    assert_almost_equal(lr10, 0.01)
 
 
 # ============================================================================

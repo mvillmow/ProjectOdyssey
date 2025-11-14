@@ -102,33 +102,31 @@ fn test_early_stopping_resets_patience_on_improvement() raises:
         - Update best value
         - Continue training
     """
-    # TODO(#34): Implement when EarlyStopping is available
-    # var early_stop = EarlyStopping(
-    #     monitor="val_loss",
-    #     patience=3
-    # )
-    #
-    # # Initial: 0.5
-    # early_stop.on_epoch_end(1, {"val_loss": 0.5})
-    #
-    # # No improvement for 2 epochs
-    # early_stop.on_epoch_end(2, {"val_loss": 0.6})
-    # early_stop.on_epoch_end(3, {"val_loss": 0.6})
-    #
-    # # Improvement! Reset patience
-    # early_stop.on_epoch_end(4, {"val_loss": 0.4})
-    # assert_false(early_stop.should_stop())
-    #
-    # # Can continue for another 3 epochs without improvement
-    # early_stop.on_epoch_end(5, {"val_loss": 0.5})
-    # early_stop.on_epoch_end(6, {"val_loss": 0.5})
-    # early_stop.on_epoch_end(7, {"val_loss": 0.5})
-    # assert_false(early_stop.should_stop())
-    #
-    # # Now patience exhausted
-    # early_stop.on_epoch_end(8, {"val_loss": 0.5})
-    # assert_true(early_stop.should_stop())
-    pass
+    from shared.training.stubs import MockEarlyStopping
+    from shared.training.base import TrainingState
+
+    var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Initial: 0.5
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
+    # No improvement for 2 epochs
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    state.epoch = 3
+    _ = early_stop.on_epoch_end(state)
+
+    # Improvement! Reset patience
+    state.epoch = 4
+    state.metrics["val_loss"] = 0.4
+    _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())
+
+    # Verify wait count was reset (counter should be 0 after improvement)
+    assert_equal(early_stop.wait_count, 0)
 
 
 # ============================================================================

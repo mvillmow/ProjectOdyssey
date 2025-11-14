@@ -92,24 +92,17 @@ fn test_warmup_scheduler_reaches_target() raises:
         - LR should equal target_lr
         - LR should remain at target_lr
     """
-    # TODO(#34): Implement when LinearWarmup is available
-    # var optimizer = SGD(learning_rate=0.1)
-    # var scheduler = LinearWarmup(optimizer, warmup_epochs=5, start_lr=0.01)
-    #
-    # # Step through warmup period
-    # for epoch in range(6):
-    #     scheduler.step(epoch)
-    #
-    # # Should be at target
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    #
-    # # Continue stepping
-    # for epoch in range(6, 20):
-    #     scheduler.step(epoch)
-    #
-    # # Should remain at target
-    # assert_almost_equal(optimizer.learning_rate, 0.1)
-    pass
+    from shared.training.stubs import MockWarmupScheduler
+
+    var scheduler = MockWarmupScheduler(base_lr=0.1, warmup_epochs=5)
+
+    # After warmup, should be at target
+    var lr_after_warmup = scheduler.get_lr(epoch=5)
+    assert_almost_equal(lr_after_warmup, 0.1)
+
+    # Continue stepping - should remain at target
+    var lr_later = scheduler.get_lr(epoch=20)
+    assert_almost_equal(lr_later, 0.1)
 
 
 # ============================================================================
