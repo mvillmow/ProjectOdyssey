@@ -18,6 +18,7 @@ Output:
 """
 
 from sys import argv
+from python import Python
 
 
 # ============================================================================
@@ -465,9 +466,11 @@ fn main() raises:
         var regression_report = generate_regression_report(comparisons)
         print(regression_report)
         print("Status: FAILED - Performance regressions detected")
-        # Exit with code 1
-        return
+        # Exit with code 1 to signal failure to CI/CD
+        var sys = Python.import_module("sys")
+        sys.exit(1)
     else:
         print("Status: PASSED - No performance regressions detected")
-        # Exit with code 0
-        return
+        # Exit with code 0 to signal success
+        var sys = Python.import_module("sys")
+        sys.exit(0)
