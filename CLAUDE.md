@@ -145,25 +145,59 @@ gh pr comment <pr-number> --body "Short, concise explanation of what was done"
 
 ### Handling PR Review Comments
 
+**CRITICAL**: There are TWO types of comments - do NOT confuse them:
+
+1. **PR-level comments** - General comments in the PR timeline (`gh pr comment`)
+2. **Review comment replies** - Specific replies to inline code review comments (GitHub API)
+
 When addressing review comments on a pull request:
 
 1. **Make the requested changes** in your code
-2. **Reply to EACH review comment** with a short, concise explanation of what was done
-3. **Use the format**: `gh pr comment <pr-number> --body "✅ Fixed - [brief description]"`
+2. **Reply to EACH review comment individually** using the correct API
+3. **Verify replies were posted** before reporting completion
+4. **Check CI status** after pushing changes
+
+#### Correct Way to Reply to Review Comments
+
+**DO NOT USE** `gh pr comment` - that creates a general PR comment, not a reply to review comments.
+
+**CORRECT approach:**
+
+```bash
+# Step 1: Get review comment IDs
+gh api repos/OWNER/REPO/pulls/PR/comments --jq '.[] | select(.user.login == "REVIEWER") | {id: .id, path: .path, body: .body}'
+
+# Step 2: Reply to EACH comment
+gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
+  --method POST \
+  -f body="✅ Fixed - [brief description]"
+
+# Step 3: Verify replies posted
+gh api repos/OWNER/REPO/pulls/PR/comments --jq '.[] | select(.in_reply_to_id)'
+
+# Step 4: Check CI status
+sleep 30  # Wait for CI to start
+gh pr checks PR
+```
 
 **Example responses**:
 
-- `✅ Fixed - Removed unnecessary __init__.py file`
-- `✅ Fixed - Deleted script as it's no longer needed`
-- `✅ Fixed - Added README.md to papers/ directory`
-- `✅ Fixed - Refactored to use list comprehension`
+- `✅ Fixed - Updated conftest.py to use real repository root instead of mock tmp_path`
+- `✅ Fixed - Deleted test_link_validation.py since link validation is handled by pre-commit`
+- `✅ Fixed - Removed markdown linting section from README.md`
 
 **Important**:
 
 - Keep responses SHORT and CONCISE (1 line preferred)
 - Start with ✅ to indicate the issue is resolved
 - Explain WHAT was done, not why (unless asked)
-- Reply to ALL open review comments
+- Reply to ALL open review comments individually
+- **VERIFY** replies were posted - don't assume
+- **CHECK CI** status after pushing - local pre-commit can differ from CI
+
+**See detailed guide:** `/agents/guides/github-review-comments.md`
+
+**See verification checklist:** `/agents/guides/verification-checklist.md`
 
 ### Agent Testing
 
