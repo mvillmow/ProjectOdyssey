@@ -1,3 +1,0 @@
-# Core Documentation
-
-Overview here.

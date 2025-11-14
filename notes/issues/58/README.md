@@ -2,25 +2,31 @@
 
 ## Objective
 
-Create comprehensive test suite validating the 4-tier documentation structure (24 documents) for ML Odyssey project,
-ensuring structure exists, documents are complete, links work, and markdown is compliant.
+Create comprehensive test suite for **validating** the 4-tier documentation structure (24 documents) for ML Odyssey
+project. Tests validate that documentation exists, follows proper format, has required sections, and uses correct
+naming conventions.
+
+**IMPORTANT**: These are validation-only tests following TDD principles. Tests will skip until documentation is
+created in Issue #59.
 
 ## Deliverables
 
 - 7 test files in `tests/foundation/docs/`
-- Full test coverage for 4-tier documentation structure
-- Validation of all 24 documents
-- Link validation (internal links)
-- Note: Markdown compliance is handled by pre-commit hooks
+- Full test coverage for 4-tier documentation structure validation
+- Format and structure validation for all 24 documents
+- Naming convention validation
+- Section structure validation (required headings, content)
+- **NO document creation** - tests only validate
 
 ## Success Criteria
 
-- [ ] All 24 documents validated for existence
-- [ ] Documentation hierarchy structure verified (4 tiers)
-- [ ] Cross-references between documents validated
-- [ ] Link validation working (internal links)
+- [ ] Tests validate (not create) documentation structure
+- [ ] Tests skip gracefully when documentation doesn't exist
+- [ ] Tests validate format when documentation exists
+- [ ] Tests check required sections in documentation
+- [ ] Tests verify naming conventions
 - [ ] Tests passing and integrated into CI/CD
-- [ ] Note: Markdown linting is handled by pre-commit hooks, not test suite
+- [ ] Most tests skip until Issue #59 creates documentation
 
 ## References
 

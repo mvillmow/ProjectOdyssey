@@ -1,3 +1,0 @@
-# Architecture
-
-Documentation coming soon.

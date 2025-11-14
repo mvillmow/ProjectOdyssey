@@ -1,3 +1,0 @@
-# quick-start
-
-Content here.

@@ -1,3 +1,0 @@
-# distributed
-
-Content here.

@@ -1,3 +1,0 @@
-# algorithms
-
-Content here.
