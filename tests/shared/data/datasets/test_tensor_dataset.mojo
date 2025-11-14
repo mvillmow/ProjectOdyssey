@@ -22,11 +22,14 @@ struct StubTensorDataset:
 
     Stores data and labels as simple lists for in-memory access.
     """
+
     var data: List[Float32]
     var labels: List[Int]
     var size: Int
 
-    fn __init__(inout self, data: List[Float32], labels: List[Int]) raises:
+    fn __init__(
+        inoutself, data: List[Float32], labels: List[Int]
+    ) raises:
         """Create tensor dataset from data and labels.
 
         Args:

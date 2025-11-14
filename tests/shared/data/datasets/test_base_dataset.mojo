@@ -18,10 +18,13 @@ struct StubDataset:
     This stub provides the minimum interface that all datasets must implement,
     allowing tests to execute and validate the Dataset API contract.
     """
+
     var size: Int
     var data: List[Float32]
 
-    fn __init__(inout self, size: Int):
+    fn __init__(
+        inoutself, size: Int
+    ):
         """Create stub dataset with specified size.
 
         Args:
@@ -111,7 +114,9 @@ fn test_dataset_getitem_index_validation() raises:
         var sample = dataset[100]  # Out of bounds
     except:
         error_raised = True
-    assert_true(error_raised, "Should have raised error for out of bounds index")
+    assert_true(
+        error_raised, "Should have raised error for out of bounds index"
+    )
 
 
 fn test_dataset_supports_negative_indexing() raises:

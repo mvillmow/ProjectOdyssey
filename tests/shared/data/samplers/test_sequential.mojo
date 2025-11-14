@@ -17,9 +17,12 @@ struct StubSequentialSampler:
 
     Yields indices in sequential order [0, 1, 2, ..., n-1].
     """
+
     var size: Int
 
-    fn __init__(inout self, size: Int):
+    fn __init__(
+        inoutself, size: Int
+    ):
         """Create sequential sampler.
 
         Args:
