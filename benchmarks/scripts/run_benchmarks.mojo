@@ -161,7 +161,11 @@ struct BenchmarkMetrics:
 
 
 fn measure_benchmark[func: fn () raises -> None](
-    name: String, description: String, iterations: Int, memory_mb: Float64 = 0.0
+    name: String,
+    description: String,
+    iterations: Int,
+    memory_mb: Float64 = 0.0,
+    operations_per_iteration: Float64 = 10000.0,
 ) raises -> BenchmarkMetrics:
     """Measure a benchmark's performance.
 
@@ -173,6 +177,8 @@ fn measure_benchmark[func: fn () raises -> None](
         description: Description of what benchmark measures.
         iterations: Number of iterations to run.
         memory_mb: Memory used in MB.
+        operations_per_iteration: Number of operations performed per iteration.
+            Used for throughput calculation. Defaults to 10000.0.
 
     Returns:
         BenchmarkMetrics with timing and throughput data.
@@ -202,8 +208,6 @@ fn measure_benchmark[func: fn () raises -> None](
     var duration_ms = Float64(mean_duration_us) / 1000.0
 
     # Calculate throughput (operations per second)
-    # For now using a fixed operation count per benchmark
-    var operations_per_iteration = 10000.0
     var throughput = operations_per_iteration / (duration_ms / 1000.0)
 
     return BenchmarkMetrics(name, description, duration_ms, throughput, memory_mb, iterations)
@@ -376,6 +380,7 @@ fn main() raises:
         "Element-wise addition of 100x100 tensors",
         100,
         0.08,
+        10000.0,  # 100 * 100 = 10,000 additions
     )
     benchmarks.append(metric1)
     print("  Duration: ", metric1.duration_ms, " ms")
@@ -389,6 +394,7 @@ fn main() raises:
         "Element-wise addition of 1000x1000 tensors",
         10,
         8.0,
+        1000000.0,  # 1000 * 1000 = 1,000,000 additions
     )
     benchmarks.append(metric2)
     print("  Duration: ", metric2.duration_ms, " ms")
@@ -402,6 +408,7 @@ fn main() raises:
         "Matrix multiplication of 100x100 matrices",
         100,
         0.08,
+        1000000.0,  # 100 * 100 * 100 = 1,000,000 multiply-adds
     )
     benchmarks.append(metric3)
     print("  Duration: ", metric3.duration_ms, " ms")
@@ -415,6 +422,7 @@ fn main() raises:
         "Matrix multiplication of 1000x1000 matrices",
         1,
         8.0,
+        1000000000.0,  # 1000 * 1000 * 1000 = 1,000,000,000 multiply-adds
     )
     benchmarks.append(metric4)
     print("  Duration: ", metric4.duration_ms, " ms")
