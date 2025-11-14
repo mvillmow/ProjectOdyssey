@@ -130,7 +130,11 @@ fn parse_float_value(line: String, field_name: String) raises -> Float64:
 
 
 fn atof(s: String) -> Float64:
-    """Convert string to float64.
+    """Convert string to float64 with scientific notation support.
+
+    Supports formats:
+    - Regular: "123.456", "-78.9"
+    - Scientific: "1.23e-4", "5.67E+10", "-3.14e2"
 
     Args:
         s: String to convert.
@@ -138,7 +142,6 @@ fn atof(s: String) -> Float64:
     Returns:
         Float64 value.
     """
-    # Simplified implementation - would use proper parsing in production
     var result: Float64 = 0.0
     var sign: Float64 = 1.0
     var i = 0
@@ -149,7 +152,7 @@ fn atof(s: String) -> Float64:
         i = 1
 
     # Parse integer part
-    while i < len(s) and s[i] != ".":
+    while i < len(s) and s[i] != "." and s[i] != "e" and s[i] != "E":
         result = result * 10.0 + Float64(ord(s[i]) - ord("0"))
         i += 1
 
@@ -157,10 +160,29 @@ fn atof(s: String) -> Float64:
     if i < len(s) and s[i] == ".":
         i += 1
         var decimal_place: Float64 = 0.1
-        while i < len(s):
+        while i < len(s) and s[i] != "e" and s[i] != "E":
             result = result + Float64(ord(s[i]) - ord("0")) * decimal_place
             decimal_place = decimal_place * 0.1
             i += 1
+
+    # Parse exponent (scientific notation)
+    if i < len(s) and (s[i] == "e" or s[i] == "E"):
+        i += 1
+        var exp_sign = 1
+        if i < len(s) and s[i] == "-":
+            exp_sign = -1
+            i += 1
+        elif i < len(s) and s[i] == "+":
+            i += 1
+
+        var exponent = 0
+        while i < len(s):
+            exponent = exponent * 10 + (ord(s[i]) - ord("0"))
+            i += 1
+
+        # Apply exponent: result * 10^exponent
+        var exp_value = Float64(exp_sign * exponent)
+        result = result * (10.0 ** exp_value)
 
     return result * sign
 
