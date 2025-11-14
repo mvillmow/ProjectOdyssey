@@ -272,15 +272,10 @@ class TestCompleteFourTierStructure:
             repo_root: Repository root path
             getting_started_docs: List of Tier 1 documentation files
         """
-        # Create all Tier 1 docs
+        # Validate all Tier 1 docs exist
         for doc_path in getting_started_docs:
-            # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
             if not doc_path.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
-
-
-            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
 
         # Validate all exist
         for doc_path in getting_started_docs:
@@ -297,15 +292,10 @@ class TestCompleteFourTierStructure:
         Args:
             core_docs: List of Tier 2 documentation files
         """
-        # Create all Tier 2 docs
+        # Validate all Tier 2 docs exist
         for doc_path in core_docs:
-            # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
             if not doc_path.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
-
-
-            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
 
         # Validate all exist
         for doc_path in core_docs:
@@ -322,15 +312,10 @@ class TestCompleteFourTierStructure:
         Args:
             advanced_docs: List of Tier 3 documentation files
         """
-        # Create all Tier 3 docs
+        # Validate all Tier 3 docs exist
         for doc_path in advanced_docs:
-            # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
             if not doc_path.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
-
-
-            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
 
         # Validate all exist
         for doc_path in advanced_docs:
@@ -347,15 +332,10 @@ class TestCompleteFourTierStructure:
         Args:
             dev_docs: List of Tier 4 documentation files
         """
-        # Create all Tier 4 docs
+        # Validate all Tier 4 docs exist
         for doc_path in dev_docs:
-            # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
             if not doc_path.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
-
-
-            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
 
         # Validate all exist
         for doc_path in dev_docs:
@@ -372,15 +352,10 @@ class TestCompleteFourTierStructure:
         Args:
             all_doc_files: List of all documentation files
         """
-        # Create all documents
+        # Validate all documents exist
         for doc_path in all_doc_files:
-            # doc_path.parent.mkdir(parents=True, exist_ok=True)  # Removed - tests should not create directories
             if not doc_path.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
-
-
-            doc_path.write_text(f"# {doc_path.stem}\n\nContent here.\n")
 
         # Validate total count
         assert len(all_doc_files) == 24, "Should have exactly 24 documents total (6+8+6+4)"
@@ -399,11 +374,8 @@ class TestCompleteFourTierStructure:
         for tier_name, tier_path in tier_directories.items():
             readme = tier_path / "README.md"
             if not readme.exists():
-
                 pytest.skip(f"Documentation file not created yet: {readme}")
 
-
-            readme.write_text(f"# {tier_name.title()} Documentation\n\nOverview here.\n")
             assert readme.exists(), f"Tier {tier_name} should have README.md"
             assert readme.is_file(), f"Tier {tier_name} README.md should be a file"
 
@@ -429,15 +401,11 @@ class TestCompleteFourTierStructure:
         """
         tier_path = tier_directories[tier_name]
 
-        # Create expected number of docs
+        # Validate expected number of docs exist
         for i in range(expected_count):
             doc = tier_path / f"doc{i+1}.md"
             if not doc.exists():
-
                 pytest.skip(f"Documentation file not created yet: {doc}")
-
-
-            doc.write_text(f"# Document {i+1}\n\nContent.\n")
 
         # Count markdown files
         md_files = list(tier_path.glob("*.md"))

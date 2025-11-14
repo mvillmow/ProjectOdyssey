@@ -11,7 +11,7 @@ created in Issue #59.
 
 ## Deliverables
 
-- 7 test files in `tests/foundation/docs/`
+- 6 test files in `tests/foundation/docs/`
 - Full test coverage for 4-tier documentation structure validation
 - Format and structure validation for all 24 documents
 - Naming convention validation
@@ -141,9 +141,9 @@ created in Issue #59.
 
 ## Test Coverage Summary
 
-**Total Test Files**: 7
+**Total Test Files**: 6
 **Total Test Cases**: Approximately 150+ (collected by pytest)
-**Total Lines of Code**: Approximately 2,800 lines
+**Total Lines of Code**: 2,976 lines
 **Coverage Areas**:
 
 - Structure validation (1 file)
@@ -398,25 +398,23 @@ pytest tests/foundation/docs/ --cov=docs --cov-report=html
 
 | File | Lines | Classes | Functions | Description |
 |------|-------|---------|-----------|-------------|
-| test_doc_structure.py | 259 | 2 | 13 | Structure validation |
-| test_doc_completeness.py | 439 | 5 | 14 | Completeness checking |
-| test_link_validation.py | 421 | 4 | 13 | Link validation |
-| test_getting_started.py | 485 | 7 | 21 | Tier 1 validation |
-| test_core_docs.py | 440 | 10 | 14 | Tier 2 validation |
-| test_advanced_docs.py | 413 | 8 | 13 | Tier 3 validation |
-| test_dev_docs.py | 446 | 6 | 15 | Tier 4 validation |
-| **TOTAL** | **~2,900** | **42** | **103** | **~150+ collected tests** |
+| test_doc_structure.py | 447 | 3 | 20 | Structure validation |
+| test_doc_completeness.py | 726 | 6 | 15 | Completeness checking |
+| test_getting_started.py | 381 | 5 | 15 | Tier 1 validation |
+| test_core_docs.py | 483 | 10 | 14 | Tier 2 validation |
+| test_advanced_docs.py | 448 | 8 | 13 | Tier 3 validation |
+| test_dev_docs.py | 491 | 6 | 15 | Tier 4 validation |
+| **TOTAL** | **2,976** | **38** | **92** | **~150+ collected tests** |
 
 ### Test Distribution
 
-- **Structure Tests**: 13 functions (test_doc_structure.py)
-- **Completeness Tests**: 14 functions (test_doc_completeness.py)
-- **Link Validation Tests**: 13 functions (test_link_validation.py)
-- **Tier 1 Tests**: 21 functions (test_getting_started.py)
+- **Structure Tests**: 20 functions (test_doc_structure.py)
+- **Completeness Tests**: 15 functions (test_doc_completeness.py)
+- **Tier 1 Tests**: 15 functions (test_getting_started.py)
 - **Tier 2 Tests**: 14 functions (test_core_docs.py)
 - **Tier 3 Tests**: 13 functions (test_advanced_docs.py)
 - **Tier 4 Tests**: 15 functions (test_dev_docs.py)
-- **Note**: Markdown linting handled by pre-commit hooks
+- **Note**: Link validation and markdown linting handled by pre-commit hooks
 
-**Note**: pytest parametrization expands 103 test functions into 150+ collected tests by running each
+**Note**: pytest parametrization expands 92 test functions into 150+ collected tests by running each
 parametrized test with multiple inputs (e.g., testing all 8 Tier 2 documents with the same test function).
