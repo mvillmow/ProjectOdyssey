@@ -142,6 +142,8 @@ struct BenchmarkMetrics:
     var throughput: Float64
     var memory_mb: Float64
     var iterations: Int
+    var min_duration_ms: Float64
+    var max_duration_ms: Float64
 
     fn __init__(
         inout self,
@@ -151,6 +153,8 @@ struct BenchmarkMetrics:
         throughput: Float64,
         memory_mb: Float64,
         iterations: Int,
+        min_duration_ms: Float64,
+        max_duration_ms: Float64,
     ):
         self.name = name
         self.description = description
@@ -158,6 +162,8 @@ struct BenchmarkMetrics:
         self.throughput = throughput
         self.memory_mb = memory_mb
         self.iterations = iterations
+        self.min_duration_ms = min_duration_ms
+        self.max_duration_ms = max_duration_ms
 
 
 fn measure_benchmark[func: fn () raises -> None](
@@ -206,11 +212,15 @@ fn measure_benchmark[func: fn () raises -> None](
     # Convert microseconds to milliseconds
     var mean_duration_us = total_duration_us / iterations
     var duration_ms = Float64(mean_duration_us) / 1000.0
+    var min_ms = Float64(min_duration_us) / 1000.0
+    var max_ms = Float64(max_duration_us) / 1000.0
 
     # Calculate throughput (operations per second)
     var throughput = operations_per_iteration / (duration_ms / 1000.0)
 
-    return BenchmarkMetrics(name, description, duration_ms, throughput, memory_mb, iterations)
+    return BenchmarkMetrics(
+        name, description, duration_ms, throughput, memory_mb, iterations, min_ms, max_ms
+    )
 
 
 # ============================================================================
@@ -302,6 +312,8 @@ fn generate_json_output(benchmarks: List[BenchmarkMetrics]) raises -> String:
         json += '      "name": "' + bench.name + '",\n'
         json += '      "description": "' + bench.description + '",\n'
         json += '      "duration_ms": ' + String(bench.duration_ms) + ',\n'
+        json += '      "min_duration_ms": ' + String(bench.min_duration_ms) + ',\n'
+        json += '      "max_duration_ms": ' + String(bench.max_duration_ms) + ',\n'
         json += '      "throughput": ' + String(bench.throughput) + ',\n'
         json += '      "memory_mb": ' + String(bench.memory_mb) + ',\n'
         json += '      "iterations": ' + String(bench.iterations) + '\n'
