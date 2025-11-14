@@ -29,11 +29,6 @@ theme:
 
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
-  - Documentation:
-    - Architecture: architecture.md
-    - Development: development.md
-  - API Reference: api/index.md
 
 markdown_extensions:
   - pymdownx.highlight:
