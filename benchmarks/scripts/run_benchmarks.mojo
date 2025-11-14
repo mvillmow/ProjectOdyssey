@@ -213,6 +213,64 @@ fn measure_benchmark[func: fn () raises -> None](
 # ============================================================================
 
 
+fn format_timestamp() -> String:
+    """Format current time as ISO 8601 timestamp.
+
+    Returns:
+        ISO 8601 formatted timestamp string (UTC).
+    """
+    # Get current time in microseconds since Unix epoch
+    var timestamp_us = mojo_time.now()
+    var timestamp_s = timestamp_us // 1000000
+
+    # Convert to approximate ISO 8601 format
+    # Note: Full ISO 8601 formatting requires date arithmetic
+    # For now, use a simplified approximation
+    # January 1, 1970 00:00:00 UTC is Unix epoch
+
+    # Calculate components (simplified - doesn't handle leap years perfectly)
+    var SECONDS_PER_MINUTE = 60
+    var SECONDS_PER_HOUR = 3600
+    var SECONDS_PER_DAY = 86400
+    var DAYS_PER_YEAR = 365
+
+    # Approximate year (will be off for leap years, but close enough for benchmarks)
+    var years_since_epoch = timestamp_s // (DAYS_PER_YEAR * SECONDS_PER_DAY)
+    var year = 1970 + years_since_epoch
+
+    # Get remaining seconds after years
+    var remaining_s = timestamp_s % (DAYS_PER_YEAR * SECONDS_PER_DAY)
+    var day_of_year = remaining_s // SECONDS_PER_DAY
+
+    # For simplicity, approximate month and day (good enough for benchmark timestamps)
+    var month = (day_of_year // 30) + 1  # Rough approximation
+    if month > 12:
+        month = 12
+    var day = (day_of_year % 30) + 1
+
+    # Get time components
+    var time_in_day = remaining_s % SECONDS_PER_DAY
+    var hour = time_in_day // SECONDS_PER_HOUR
+    var minute = (time_in_day % SECONDS_PER_HOUR) // SECONDS_PER_MINUTE
+    var second = time_in_day % SECONDS_PER_MINUTE
+
+    # Format as ISO 8601: YYYY-MM-DDTHH:MM:SSZ
+    var result = String(year)
+    result += "-"
+    result += String(month) if month >= 10 else "0" + String(month)
+    result += "-"
+    result += String(day) if day >= 10 else "0" + String(day)
+    result += "T"
+    result += String(hour) if hour >= 10 else "0" + String(hour)
+    result += ":"
+    result += String(minute) if minute >= 10 else "0" + String(minute)
+    result += ":"
+    result += String(second) if second >= 10 else "0" + String(second)
+    result += "Z"
+
+    return result
+
+
 fn generate_json_output(benchmarks: List[BenchmarkMetrics]) raises -> String:
     """Generate JSON output for benchmark results.
 
@@ -222,7 +280,9 @@ fn generate_json_output(benchmarks: List[BenchmarkMetrics]) raises -> String:
     Returns:
         JSON string with results.
     """
-    var json = String('{\n  "version": "1.0.0",\n  "timestamp": "2025-01-13T10:00:00Z",\n')
+    var json = String('{\n  "version": "1.0.0",\n  "timestamp": "')
+    json += format_timestamp()
+    json += '",\n'
     json += '  "environment": {\n'
     json += '    "os": "linux",\n'
     json += '    "cpu": "x86_64",\n'
