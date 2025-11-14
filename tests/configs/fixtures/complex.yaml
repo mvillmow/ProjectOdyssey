@@ -1,0 +1,32 @@
+# Complex nested configuration
+model:
+  name: LeNet-5
+  architecture:
+    conv1:
+      filters: 6
+      kernel_size: 5
+    conv2:
+      filters: 16
+      kernel_size: 5
+  num_classes: 10
+
+training:
+  optimizer:
+    name: adam
+    learning_rate: 0.001
+    betas:
+      - 0.9
+      - 0.999
+  scheduler:
+    name: cosine
+    T_max: 100
+  epochs: 50
+  batch_size: 128
+
+data:
+  dataset: mnist
+  augmentation:
+    enabled: true
+    transforms:
+      - random_crop
+      - horizontal_flip

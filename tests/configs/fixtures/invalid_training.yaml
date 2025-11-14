@@ -1,0 +1,9 @@
+# Invalid training configuration for testing (negative learning rate)
+optimizer:
+  name: invalid_optimizer
+  learning_rate: -0.01
+  momentum: 1.5
+
+training:
+  epochs: -10
+  batch_size: 0

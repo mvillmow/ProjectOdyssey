@@ -1,0 +1,28 @@
+"""Configuration tests package.
+
+This package contains comprehensive tests for the configuration management system.
+Tests follow TDD principles and will be validated by Issue #74 implementation.
+
+Test Files:
+- test_loading.mojo: Configuration loading from YAML/JSON
+- test_merging.mojo: Configuration merging (defaults → paper → experiment)
+- test_validation.mojo: Configuration validation (types, ranges, enums)
+- test_env_vars.mojo: Environment variable substitution
+- test_schema.py: JSON schema validation (Python/pytest)
+- test_integration.mojo: End-to-end integration tests
+
+Fixtures:
+- fixtures/valid_training.yaml: Valid training configuration
+- fixtures/invalid_training.yaml: Invalid configuration for error testing
+- fixtures/minimal.yaml: Minimal valid configuration
+- fixtures/complex.yaml: Complex nested configuration
+- fixtures/env_vars.yaml: Configuration with environment variables
+
+Run Tests:
+    mojo test tests/configs/test_loading.mojo
+    mojo test tests/configs/test_merging.mojo
+    mojo test tests/configs/test_validation.mojo
+    mojo test tests/configs/test_env_vars.mojo
+    mojo test tests/configs/test_integration.mojo
+    pytest tests/configs/test_schema.py
+"""

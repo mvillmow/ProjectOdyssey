@@ -1,0 +1,5 @@
+# Configuration with environment variable substitution
+data_dir: ${DATA_DIR}
+output_dir: ${OUTPUT_DIR:-/tmp/output}
+model_path: ${MODEL_PATH:-./models/default.mojo}
+use_gpu: ${USE_GPU:-false}
