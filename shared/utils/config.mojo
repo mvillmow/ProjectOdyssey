@@ -12,6 +12,8 @@ Example:
     var batch_size = config.get_int("batch_size")
 """
 
+from python import Python
+
 
 # ============================================================================
 # Configuration Value Union Type
@@ -683,13 +685,66 @@ struct Config:
 
             if val.value_type == "string":
                 var str_val = val.str_val
-                var new_val = str_val  # TODO: Implement env var substitution
-
-                # Simple implementation - replace ${VAR} patterns
-                # This is a placeholder - real implementation would use regex
+                var new_val = self._substitute_env_in_string(str_val)
                 result.set(key, new_val)
             else:
                 result.data[key] = val
+
+        return result
+
+    fn _substitute_env_in_string(self, value: String) -> String:
+        """Helper to substitute environment variables in a string.
+
+        Replaces ${VAR} or ${VAR:-default} patterns with environment values.
+
+        Args:
+            value: String that may contain ${VAR} patterns
+
+        Returns:
+            String with substituted values
+        """
+        var result = value
+
+        # Find all ${...} patterns and replace them
+        # Simple implementation without regex - iterate and find patterns
+        var start_pos = 0
+        while True:
+            var dollar_pos = result.find("${", start_pos)
+            if dollar_pos == -1:
+                break
+
+            var close_pos = result.find("}", dollar_pos)
+            if close_pos == -1:
+                break  # Malformed pattern, skip
+
+            # Extract variable spec: VAR or VAR:-default
+            var var_spec = result[dollar_pos + 2 : close_pos]
+
+            # Check for default value syntax: VAR:-default
+            var default_value = ""
+            var var_name = var_spec
+            var colon_pos = var_spec.find(":-")
+            if colon_pos != -1:
+                var_name = var_spec[:colon_pos]
+                default_value = var_spec[colon_pos + 2 :]
+
+            # Get environment variable value using Python
+            var env_value = default_value
+            try:
+                var python = Python.import_module("os")
+                var py_value = python.getenv(var_name, default_value)
+                env_value = str(py_value)
+            except:
+                # If Python interop fails, use default value
+                pass
+
+            # Replace ${...} with environment value
+            var before = result[:dollar_pos]
+            var after = result[close_pos + 1 :]
+            result = before + env_value + after
+
+            # Move start position past the replaced value
+            start_pos = len(before) + len(env_value)
 
         return result
 
