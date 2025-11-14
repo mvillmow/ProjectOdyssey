@@ -360,6 +360,8 @@ fn compare_benchmarks(
 ) raises -> List[ComparisonResult]:
     """Compare baseline and current results.
 
+    Optimized with O(1) lookup using dictionary instead of O(n) linear search.
+
     Args:
         baseline_results: List of baseline benchmark data.
         current_results: List of current benchmark data.
@@ -369,29 +371,28 @@ fn compare_benchmarks(
     """
     var comparisons = List[ComparisonResult](capacity=baseline_results.len())
 
-    # Create map of current results by name for lookup
-    var current_map = List[BenchmarkData](capacity=current_results.len())
-    for i in range(len(current_results)):
-        current_map.append(current_results[i])
+    # Create dictionary (hash map) of current results by name for O(1) lookup
+    # Use Python dict since Mojo v0.25.7 doesn't have native Dict with custom types
+    var builtins = Python.import_module("builtins")
+    var current_dict = builtins.dict()
 
-    # Compare each baseline to current
+    # Build dictionary mapping name -> index in current_results
+    for i in range(len(current_results)):
+        current_dict[current_results[i].name] = i
+
+    # Compare each baseline to current (now O(n) instead of O(n²))
     for i in range(len(baseline_results)):
         var baseline = baseline_results[i]
-        var found = False
-        var current: BenchmarkData = baseline
-        var current_duration: Float64 = baseline.duration_ms
 
-        # Find matching current result
-        for j in range(len(current_map)):
-            if current_map[j].name == baseline.name:
-                current = current_map[j]
-                current_duration = current.duration_ms
-                found = True
-                break
-
-        if not found:
+        # O(1) lookup in dictionary
+        if baseline.name not in current_dict:
             print("Warning: Benchmark '" + baseline.name + "' not found in current results")
             continue
+
+        # Get current result via index from dictionary
+        var current_idx = Int(current_dict[baseline.name])
+        var current = current_results[current_idx]
+        var current_duration = current.duration_ms
 
         # Calculate percentage change
         var pct_change = calculate_percentage_change(baseline.duration_ms, current_duration)
