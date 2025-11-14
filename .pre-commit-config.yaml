@@ -2,16 +2,18 @@
 # See https://pre-commit.com for more information
 
 repos:
-  # Mojo formatting (optional - skips if mojo not found)
-  - repo: local
-    hooks:
-      - id: mojo-format
-        name: Mojo Format
-        description: Format Mojo source files using mojo format (skips if mojo not available)
-        entry: bash -c 'if command -v mojo &> /dev/null; then mojo format "$@"; else echo "⚠️  Mojo not found, skipping format"; exit 0; fi' --
-        language: system
-        files: \.(mojo|🔥)$
-        pass_filenames: true
+  # Mojo formatting (DISABLED - bug in mojo format removes space in "inout self")
+  # See: https://github.com/modular/modular/issues/5573
+  # TODO: Re-enable when bug is fixed
+  # - repo: local
+  #   hooks:
+  #     - id: mojo-format
+  #       name: Mojo Format
+  #       description: Format Mojo source files using mojo format (skips if mojo not available)
+  #       entry: bash -c 'if command -v mojo &> /dev/null; then mojo format "$@"; else echo "⚠️  Mojo not found, skipping format"; exit 0; fi' --
+  #       language: system
+  #       files: \.(mojo|🔥)$
+  #       pass_filenames: true
 
   # Markdown linting
   - repo: https://github.com/DavidAnson/markdownlint-cli2
