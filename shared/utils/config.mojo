@@ -526,6 +526,12 @@ struct Config:
     fn from_json(filepath: String) raises -> Config:
         """Load configuration from JSON file with validation.
 
+        NOTE: Current implementation only supports flat key-value pairs.
+        Nested objects and arrays are not yet supported. For complex configs,
+        use flattened keys (e.g., "model.learning_rate" instead of nested
+        {"model": {"learning_rate": 0.001}}) or consider using Python's json
+        module for parsing and converting to Config.
+
         Args:
             filepath: Path to JSON file
 
@@ -535,7 +541,7 @@ struct Config:
         Raises:
             Error if file not found, empty, or invalid JSON
         """
-        # TODO: Implement actual JSON parsing
+        # TODO: Implement full JSON parsing with nested object/array support
         # For now, implement basic key-value parsing similar to YAML with validation
         var config = Config()
 
