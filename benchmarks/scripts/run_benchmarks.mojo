@@ -14,6 +14,7 @@ Output:
 
 from sys import argv
 import time as mojo_time
+from python import Python
 
 
 # ============================================================================
@@ -317,11 +318,35 @@ fn write_results_file(results: String, filepath: String) raises:
     Args:
         results: JSON string to write.
         filepath: Path to output file.
+
+    Raises:
+        Error: If file cannot be written.
     """
     print("Writing results to:", filepath)
-    # For now, just print to stdout and indicate where it would be saved
-    # In a real implementation, would use file I/O
-    print(results)
+
+    try:
+        # Use Python for file I/O since Mojo v0.25.7 lacks native file writing
+        var builtins = Python.import_module("builtins")
+        var os_path = Python.import_module("os.path")
+        var os_module = Python.import_module("os")
+
+        # Get directory from filepath
+        var directory = os_path.dirname(filepath)
+
+        # Create directory if it doesn't exist
+        if directory and not os_path.exists(directory):
+            os_module.makedirs(directory, exist_ok=True)
+
+        # Write file using Python
+        var file = builtins.open(filepath, "w")
+        file.write(results)
+        file.close()
+
+        print("✓ Results successfully written to:", filepath)
+    except e:
+        print("✗ Failed to write results to file:", filepath)
+        print("  Error:", e)
+        raise Error("Failed to write benchmark results to file")
 
 
 # ============================================================================
