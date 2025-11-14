@@ -581,11 +581,14 @@ fn directory_exists(dirpath: String) -> Bool:
     Returns:
         True if directory exists, False otherwise
     """
-    # NOTE: Mojo v0.25.7 doesn't have os.path.isdir()
-    # In production, would use os.path.isdir(dirpath)
-    # For now, placeholder that returns False
-    # TODO: Implement using Python interop when available
-    return False
+    # Use Python os.path.isdir() to check if directory exists
+    try:
+        var python = Python.import_module("os.path")
+        var result = python.isdir(dirpath)
+        return Bool(result)
+    except:
+        # Fall back to False if Python interop fails
+        return False
 
 
 fn create_directory(dirpath: String) -> Bool:
