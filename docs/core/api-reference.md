@@ -1,3 +1,0 @@
-# api-reference
-
-Content here.

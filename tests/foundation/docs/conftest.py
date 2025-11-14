@@ -39,7 +39,7 @@ def repo_root() -> Path:
 @pytest.fixture
 def docs_root(repo_root: Path) -> Path:
     """
-    Provide the expected docs directory path.
+    Provide the expected docs directory path (may not exist yet).
 
     Args:
         repo_root: Real repository root directory
@@ -47,15 +47,13 @@ def docs_root(repo_root: Path) -> Path:
     Returns:
         Path to docs directory within repository root
     """
-    docs_path = repo_root / "docs"
-    docs_path.mkdir(parents=True, exist_ok=True)
-    return docs_path
+    return repo_root / "docs"
 
 
 @pytest.fixture
 def tier_directories(docs_root: Path) -> Dict[str, Path]:
     """
-    Provide paths to all tier directories.
+    Provide paths to all tier directories (may not exist yet).
 
     Args:
         docs_root: Path to docs directory
@@ -63,12 +61,21 @@ def tier_directories(docs_root: Path) -> Dict[str, Path]:
     Returns:
         Dictionary mapping tier names to their paths
     """
-    tiers = {}
-    for tier_name in TIER_NAMES:
-        tier_path = docs_root / tier_name
-        tier_path.mkdir(parents=True, exist_ok=True)
-        tiers[tier_name] = tier_path
-    return tiers
+    return {tier_name: docs_root / tier_name for tier_name in TIER_NAMES}
+
+
+@pytest.fixture
+def getting_started_dir(docs_root: Path) -> Path:
+    """
+    Provide the getting-started documentation directory path (may not exist yet).
+
+    Args:
+        docs_root: Path to docs directory
+
+    Returns:
+        Path to docs/getting-started directory
+    """
+    return docs_root / "getting-started"
 
 
 @pytest.fixture

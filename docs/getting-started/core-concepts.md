@@ -1,3 +1,0 @@
-# core-concepts
-
-Content here.

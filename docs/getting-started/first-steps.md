@@ -1,3 +1,0 @@
-# first-steps
-
-Content here.
