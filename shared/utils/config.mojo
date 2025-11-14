@@ -33,7 +33,7 @@ struct ConfigValue:
     var bool_val: Bool
     var list_val: List[String]
 
-    fn __init__(inout self, value: Int):
+    fn __init__(inoutself, value: Int):
         """Create ConfigValue from Int."""
         self.value_type = "int"
         self.int_val = value
@@ -42,7 +42,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inout self, value: Float64):
+    fn __init__(inoutself, value: Float64):
         """Create ConfigValue from Float64."""
         self.value_type = "float"
         self.int_val = 0
@@ -51,7 +51,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inout self, value: String):
+    fn __init__(inoutself, value: String):
         """Create ConfigValue from String."""
         self.value_type = "string"
         self.int_val = 0
@@ -60,7 +60,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inout self, value: Bool):
+    fn __init__(inoutself, value: Bool):
         """Create ConfigValue from Bool."""
         self.value_type = "bool"
         self.int_val = 0
@@ -69,7 +69,7 @@ struct ConfigValue:
         self.bool_val = value
         self.list_val = List[String]()
 
-    fn __init__(inout self, value: List[String]):
+    fn __init__(inoutself, value: List[String]):
         """Create ConfigValue from List[String]."""
         self.value_type = "list"
         self.int_val = 0
@@ -78,7 +78,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = value
 
-    fn __init__(inout self, value: List[Int]):
+    fn __init__(inoutself, value: List[Int]):
         """Create ConfigValue from List[Int]."""
         self.value_type = "list"
         self.int_val = 0
@@ -106,31 +106,31 @@ struct Config:
 
     var data: Dict[String, ConfigValue]
 
-    fn __init__(inout self):
+    fn __init__(inoutself):
         """Create empty configuration."""
         self.data = Dict[String, ConfigValue]()
 
-    fn set(inout self, key: String, value: Int):
+    fn set(inoutself, key: String, value: Int):
         """Set integer configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inout self, key: String, value: Float64):
+    fn set(inoutself, key: String, value: Float64):
         """Set float configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inout self, key: String, value: String):
+    fn set(inoutself, key: String, value: String):
         """Set string configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inout self, key: String, value: Bool):
+    fn set(inoutself, key: String, value: Bool):
         """Set boolean configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inout self, key: String, value: List[Int]):
+    fn set(inoutself, key: String, value: List[Int]):
         """Set list of integers configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inout self, key: String, value: List[String]):
+    fn set(inoutself, key: String, value: List[String]):
         """Set list of strings configuration value."""
         self.data[key] = ConfigValue(value)
 
@@ -374,9 +374,18 @@ struct Config:
 
         var val = self.data[key]
         if val.value_type != type_name:
-            raise Error("Type mismatch for key '" + key + "': expected " + type_name + " but got " + val.value_type)
+            raise Error(
+                "Type mismatch for key '"
+                + key
+                + "': expected "
+                + type_name
+                + " but got "
+                + val.value_type
+            )
 
-    fn validate_range(self, key: String, min_val: Float64, max_val: Float64) raises:
+    fn validate_range(
+        self, key: String, min_val: Float64, max_val: Float64
+    ) raises:
         """Validate that a numeric value is in range.
 
         Args:
@@ -401,7 +410,15 @@ struct Config:
             raise Error("Cannot validate range for non-numeric type")
 
         if num_val < min_val or num_val > max_val:
-            raise Error("Value for key '" + key + "' is out of range [" + str(min_val) + ", " + str(max_val) + "]")
+            raise Error(
+                "Value for key '"
+                + key
+                + "' is out of range ["
+                + str(min_val)
+                + ", "
+                + str(max_val)
+                + "]"
+            )
 
     fn validate_enum(self, key: String, valid_values: List[String]) raises:
         """Validate that a value is one of allowed enum values.
@@ -447,6 +464,12 @@ struct Config:
     fn from_yaml(filepath: String) raises -> Config:
         """Load configuration from YAML file with validation.
 
+        NOTE: Current implementation only supports flat key-value pairs.
+        Nested objects and arrays are not yet supported. For complex configs,
+        use flattened keys (e.g., "model.learning_rate" instead of nested
+        "model: {learning_rate: 0.001}") or consider using Python's PyYAML
+        for parsing and converting to Config.
+
         Args:
             filepath: Path to YAML file
 
@@ -456,7 +479,7 @@ struct Config:
         Raises:
             Error if file not found, empty, or invalid YAML
         """
-        # TODO: Implement actual YAML parsing
+        # TODO: Implement full YAML parsing with nested object/array support
         # For now, implement basic key-value parsing with validation
         var config = Config()
 
@@ -525,7 +548,9 @@ struct Config:
                     raise Error("Config file is empty: " + filepath)
 
                 # Remove braces and parse key:value pairs
-                var clean = content.replace("{", "").replace("}", "").replace('"', "")
+                var clean = (
+                    content.replace("{", "").replace("}", "").replace('"', "")
+                )
                 var pairs = clean.split(",")
 
                 for i in range(len(pairs)):
@@ -782,12 +807,12 @@ struct ConfigValidator:
     var required_keys: List[String]
     var allowed_keys: Dict[String, String]  # key -> type name
 
-    fn __init__(inout self):
+    fn __init__(inoutself):
         """Create empty validator."""
         self.required_keys = List[String]()
         self.allowed_keys = Dict[String, String]()
 
-    fn require(inout self, key: String) -> Self:
+    fn require(inoutself, key: String) -> Self:
         """Mark key as required.
 
         Args:
@@ -799,7 +824,7 @@ struct ConfigValidator:
         self.required_keys.append(key)
         return self
 
-    fn allow(inout self, key: String, type_name: String) -> Self:
+    fn allow(inoutself, key: String, type_name: String) -> Self:
         """Mark key as allowed with specific type.
 
         Args:
