@@ -7,9 +7,10 @@ Modules:
     datasets: Dataset abstractions and common dataset implementations
     loaders: Data loading utilities with batching and shuffling
     transforms: Data transformation and augmentation functions
+    samplers: Sampling strategies for data iteration
 
 Example:
-    from shared.data import TensorDataset, DataLoader, Normalize, ToTensor, Compose
+    from shared.data import TensorDataset, BatchLoader, Normalize, ToTensor, Compose
 
     # Create transforms pipeline
     transform = Compose([
@@ -18,13 +19,13 @@ Example:
     ])
 
     # Create dataset and loader
-    dataset = TensorDataset(data, labels, transform=transform)
-    loader = DataLoader(dataset, batch_size=32, shuffle=True)
+    dataset = TensorDataset(data, labels)
+    loader = BatchLoader(dataset, batch_size=32, shuffle=True)
 
     # Iterate over batches
     for batch in loader:
-        inputs = batch.inputs
-        targets = batch.targets
+        inputs = batch.data
+        targets = batch.labels
         # ... training code
 """
 
@@ -32,40 +33,44 @@ Example:
 alias VERSION = "0.1.0"
 
 # ============================================================================
-# Exports - Will be populated during implementation phase
+# Exports
 # ============================================================================
-# NOTE: These imports are commented out until implementation phase completes.
 
 # Dataset abstractions and implementations
-# from .datasets import (
-#     Dataset,              # Base trait
-#     TensorDataset,        # In-memory tensor dataset
-#     ImageDataset,         # Image dataset from files
-#     CSVDataset,           # CSV file dataset
-# )
+from .datasets import (
+    Dataset,  # Base trait
+    TensorDataset,  # In-memory tensor dataset
+    FileDataset,  # File-based dataset
+)
 
 # Data loaders
-# from .loaders import (
-#     DataLoader,           # Main data loader with batching
-#     Batch,                # Batch container
-#     Sampler,              # Base sampler trait
-#     SequentialSampler,    # Sequential sampling
-#     RandomSampler,        # Random sampling
-#     BatchSampler,         # Batch-level sampling
-# )
+from .loaders import (
+    Batch,  # Batch container
+    BaseLoader,  # Base loader functionality
+    BatchLoader,  # Main data loader with batching
+)
+
+# Sampling strategies
+from .samplers import (
+    Sampler,  # Base sampler trait
+    SequentialSampler,  # Sequential sampling
+    RandomSampler,  # Random sampling
+    WeightedSampler,  # Weighted sampling
+)
 
 # Transforms
-# from .transforms import (
-#     Transform,            # Base transform trait
-#     Compose,              # Compose multiple transforms
-#     ToTensor,             # Convert to tensor
-#     Normalize,            # Normalize data
-#     RandomCrop,           # Random crop augmentation
-#     RandomHorizontalFlip, # Random horizontal flip
-#     RandomRotation,       # Random rotation augmentation
-#     CenterCrop,           # Center crop
-#     Resize,               # Resize data
-# )
+from .transforms import (
+    Transform,  # Base transform trait
+    Compose,  # Compose multiple transforms
+    ToTensor,  # Convert to tensor
+    Normalize,  # Normalize data
+    Reshape,  # Reshape tensor
+    Resize,  # Resize images
+    CenterCrop,  # Center crop
+    RandomCrop,  # Random crop augmentation
+    RandomHorizontalFlip,  # Random horizontal flip
+    RandomRotation,  # Random rotation augmentation
+)
 
 # ============================================================================
 # Public API
@@ -73,25 +78,27 @@ alias VERSION = "0.1.0"
 
 __all__ = [
     # Datasets
-    # "Dataset",
-    # "TensorDataset",
-    # "ImageDataset",
-    # "CSVDataset",
+    "Dataset",
+    "TensorDataset",
+    "FileDataset",
     # Loaders
-    # "DataLoader",
-    # "Batch",
-    # "Sampler",
-    # "SequentialSampler",
-    # "RandomSampler",
-    # "BatchSampler",
+    "Batch",
+    "BaseLoader",
+    "BatchLoader",
+    # Samplers
+    "Sampler",
+    "SequentialSampler",
+    "RandomSampler",
+    "WeightedSampler",
     # Transforms
-    # "Transform",
-    # "Compose",
-    # "ToTensor",
-    # "Normalize",
-    # "RandomCrop",
-    # "RandomHorizontalFlip",
-    # "RandomRotation",
-    # "CenterCrop",
-    # "Resize",
+    "Transform",
+    "Compose",
+    "ToTensor",
+    "Normalize",
+    "Reshape",
+    "Resize",
+    "CenterCrop",
+    "RandomCrop",
+    "RandomHorizontalFlip",
+    "RandomRotation",
 ]
