@@ -19,8 +19,8 @@ All scripts and documentation are in place. The actual `.mojopkg` file needs to 
 Execute the build script to create the actual `.mojopkg` file:
 
 ```bash
-# Navigate to worktree
-cd /home/mvillmow/ml-odyssey/worktrees/45-pkg-utils
+# Navigate to repository root
+cd /path/to/ml-odyssey
 
 # Make scripts executable
 chmod +x scripts/*.sh

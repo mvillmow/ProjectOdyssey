@@ -12,7 +12,7 @@ This document provides step-by-step instructions for building the Utils module d
 
 ```bash
 # Navigate to project root
-cd /home/mvillmow/ml-odyssey/worktrees/45-pkg-utils
+cd /path/to/ml-odyssey
 
 # Make scripts executable
 chmod +x scripts/*.sh
@@ -232,6 +232,6 @@ After building the package:
 
 ## Reference
 
-- Package phase guide: `/home/mvillmow/ml-odyssey/agents/guides/package-phase-guide.md`
-- Issue documentation: `/home/mvillmow/ml-odyssey/worktrees/45-pkg-utils/notes/issues/45/README.md`
-- Source code: `/home/mvillmow/ml-odyssey/worktrees/45-pkg-utils/shared/utils/`
+- Package phase guide: `agents/guides/package-phase-guide.md`
+- Issue documentation: `notes/issues/45/README.md`
+- Source code: `shared/utils/`

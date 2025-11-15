@@ -20,7 +20,7 @@ The Package phase creates **actual distributable artifacts**, not just documenta
 3. Testing package installation in clean environments
 4. Documenting the build and installation process
 
-**Reference**: See `/home/mvillmow/ml-odyssey/agents/guides/package-phase-guide.md` for complete Package phase requirements.
+**Reference**: See `agents/guides/package-phase-guide.md` for complete Package phase requirements.
 
 ## Artifacts Created
 
@@ -116,8 +116,8 @@ SKIP_INSTALL_TEST=1 ./scripts/package_utils.sh
 ### Quick Start
 
 ```bash
-# From worktree root
-cd /home/mvillmow/ml-odyssey/worktrees/45-pkg-utils
+# From repository root
+cd /path/to/ml-odyssey
 
 # Run complete packaging workflow
 chmod +x scripts/package_utils.sh
@@ -351,7 +351,7 @@ After Package phase completion:
 ## References
 
 - GitHub Issue: #45
-- Package guide: `/home/mvillmow/ml-odyssey/agents/guides/package-phase-guide.md`
+- Package guide: `agents/guides/package-phase-guide.md`
 - Source location: `shared/utils/`
 - Related issues:
   - #42 [Test] Utils
