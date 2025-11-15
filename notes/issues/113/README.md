@@ -39,6 +39,59 @@ detailed specifications, design the architecture, and document dependency organi
 
 *(To be filled during implementation)*
 
+## Current State Analysis
+
+### Existing Dependencies in pyproject.toml
+
+The project currently has dependencies defined in `pyproject.toml` that need to be reorganized:
+
+**Current Runtime Dependencies** (`[project.dependencies]`):
+
+- `pytest>=7.0.0` - Testing framework (should be moved to test group)
+- `pytest-cov>=4.0.0` - Coverage reporting (should be moved to test group)
+- `pytest-timeout>=2.1.0` - Test timeout utilities (should be moved to test group)
+- `pytest-xdist>=3.0.0` - Parallel test execution (should be moved to test group)
+
+**Current Dev Dependencies** (`[project.optional-dependencies.dev]`):
+
+- `pre-commit>=3.0.0` - Git hook framework (correctly placed)
+- `safety>=2.0.0` - Security vulnerability scanner (correctly placed)
+- `bandit>=1.7.0` - Security linting (correctly placed)
+- `mkdocs>=1.5.0` - Documentation generator (should be moved to docs group)
+- `mkdocs-material>=9.0.0` - MkDocs theme (should be moved to docs group)
+- `pytest-benchmark>=4.0.0` - Performance benchmarking (should be moved to test group)
+- `ruff>=0.1.0` - Fast Python linter and formatter (correctly placed)
+- `mypy>=1.0.0` - Static type checker (correctly placed)
+
+### Reorganization Strategy
+
+**Migration Plan**:
+
+1. **Move pytest dependencies from runtime to test group**:
+   - All pytest-related packages are test dependencies, not runtime dependencies
+   - Runtime dependencies should be minimal or empty for this Mojo-first project
+
+2. **Move documentation dependencies to separate docs group**:
+   - `mkdocs` and `mkdocs-material` belong in a dedicated docs group
+   - Keeps documentation builds isolated from development environment
+
+3. **Move pytest-benchmark to test group**:
+   - Benchmarking is a testing activity, not a general dev tool
+
+4. **Keep in dev group**:
+   - `pre-commit`, `safety`, `bandit` - Development quality tools
+   - `ruff`, `mypy` - Code quality and type checking
+
+**Expected Result**:
+
+- `[project.dependencies]` - Empty or minimal (following YAGNI for Mojo-first project)
+- `[project.optional-dependencies.dev]` - Development tools only (pre-commit, safety, bandit, ruff, mypy)
+- `[project.optional-dependencies.test]` - All pytest packages and benchmarking
+- `[project.optional-dependencies.docs]` - Documentation generation (mkdocs, mkdocs-material)
+- `[project.optional-dependencies.all]` - Meta-group combining all optional dependencies
+
+This reorganization will be implemented in the Implementation phase (#115).
+
 ## Design Decisions
 
 ### Dependency Groups
