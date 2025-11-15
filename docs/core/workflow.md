@@ -1,11 +1,14 @@
 # Development Workflow
 
-ML Odyssey's complete development workflow including the 5-phase process, git workflow, and best practices.
+ML Odyssey's development workflow including the 5-phase process, git workflow, and best practices.
+
+> **📚 Detailed Reference**: For complete examples, troubleshooting, and advanced topics, see
+> [Workflow Details Appendix](../appendices/workflow-details.md).
 
 ## Overview
 
 ML Odyssey follows a structured, hierarchical development workflow that ensures quality, consistency, and
-maintainability. This guide covers the entire development lifecycle from planning to deployment.
+maintainability. This guide covers the essential development lifecycle from planning to deployment.
 
 ## 5-Phase Development Process
 
@@ -775,15 +778,12 @@ gh api repos/OWNER/REPO/pulls/PR/comments/ID/replies -f body="✅ Fixed"
 - [ ] **Packaging**: Integrated, documented, examples working
 - [ ] **Cleanup**: Refactored, optimized, final review complete
 
-## Next Steps
+## See Also
 
+- **[Workflow Details Appendix](../appendices/workflow-details.md)** - Complete reference with all examples
 - **[Agent System](agent-system.md)** - Understanding agent coordination
 - **[Testing Strategy](testing-strategy.md)** - Comprehensive testing approach
 - **[Project Structure](project-structure.md)** - Repository organization
 - **[Configuration](configuration.md)** - Environment configuration
-
-## Related Documentation
-
 - [Git Worktree Strategy](/notes/review/worktree-strategy.md) - Advanced worktree usage
 - [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Agent coordination
-- [Contributing Guide](/CONTRIBUTING.md) - Contribution guidelines
