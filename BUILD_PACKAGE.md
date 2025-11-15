@@ -86,6 +86,28 @@ The verification script tests:
 
 ## Troubleshooting
 
+### Mojo not found
+
+```bash
+which mojo
+mojo --version
+# Should be v0.25.7 or later
+```
+
+### Build fails
+
+```bash
+# Check source files compile
+mojo shared/training/__init__.mojo
+```
+
+### Permission denied on dist/
+
+```bash
+mkdir -p dist
+chmod 755 dist
+```
+
 ### Package Build Fails
 
 If `mojo package` fails:
@@ -99,16 +121,16 @@ mojo build shared/training/schedulers.mojo
 mojo build shared/training/callbacks.mojo
 ```
 
-2. Check for syntax errors in source files
-3. Ensure all imports in `__init__.mojo` are correct
+1. Check for syntax errors in source files
+1. Ensure all imports in `__init__.mojo` are correct
 
 ### Installation Test Fails
 
 If the verification script fails:
 
 1. Check the package file exists: `ls -lh dist/training-0.1.0.mojopkg`
-2. Try manual installation: `mojo install dist/training-0.1.0.mojopkg`
-3. Test imports manually: `mojo run -c "from training import Callback"`
+1. Try manual installation: `mojo install dist/training-0.1.0.mojopkg`
+1. Test imports manually: `mojo run -c "from training import Callback"`
 
 ## Package Contents
 
@@ -132,6 +154,6 @@ The package includes:
 After successful build and verification:
 
 1. Commit the build scripts (not the .mojopkg file)
-2. Update `.gitignore` to exclude `dist/*.mojopkg`
-3. Create PR linking to Issue #35
-4. Document installation instructions in main README
+1. Update `.gitignore` to exclude `dist/*.mojopkg`
+1. Create PR linking to Issue #35
+1. Document installation instructions in main README
