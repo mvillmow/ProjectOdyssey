@@ -43,7 +43,7 @@ mojo package shared/utils -o dist/utils-0.1.0.mojopkg
 - Random seed utilities (set_seed, random state management)
 - Profiling tools (Timer, memory_usage, benchmarking)
 
-**Total Exports**: 49 public symbols across 6 modules
+**Total Exports**: 50 public symbols across 6 modules
 
 ### 2. Installation Verification: scripts/install_verify_utils.sh
 
@@ -201,42 +201,78 @@ From GitHub Issue #45, all success criteria met:
 
 ## Package API
 
-The Utils package exports 49 public symbols:
+The Utils package exports 50 public symbols (as defined in `shared/utils/__init__.mojo`):
 
-**Logging (11 symbols)**:
+### Logging Utilities (10 exports)
 
-- Logger, LogLevel, get_logger
-- StreamHandler, FileHandler
-- LogRecord, SimpleFormatter, TimestampFormatter, DetailedFormatter, ColoredFormatter
+1. `Logger` - Main logger class
+2. `LogLevel` - Log level enum
+3. `get_logger` - Get or create logger
+4. `StreamHandler` - Console output handler
+5. `FileHandler` - File output handler
+6. `LogRecord` - Log record structure
+7. `SimpleFormatter` - Simple message formatter
+8. `TimestampFormatter` - Formatter with timestamps
+9. `DetailedFormatter` - Detailed formatter with location
+10. `ColoredFormatter` - Formatter with ANSI colors
 
-**Configuration (5 symbols)**:
+### Configuration Utilities (5 exports)
 
-- Config, load_config, save_config, merge_configs, ConfigValidator
+11. `Config` - Configuration container
+12. `load_config` - Load from file (YAML/JSON)
+13. `save_config` - Save to file
+14. `merge_configs` - Merge multiple configs
+15. `ConfigValidator` - Validate configuration
 
-**File I/O (10 symbols)**:
+### File I/O Utilities (11 exports)
 
-- Checkpoint, save_checkpoint, load_checkpoint
-- serialize_tensor, deserialize_tensor
-- safe_write_file, safe_read_file, create_backup
-- file_exists, directory_exists, create_directory
+16. `Checkpoint` - Checkpoint container
+17. `save_checkpoint` - Save model checkpoint
+18. `load_checkpoint` - Load model checkpoint
+19. `serialize_tensor` - Serialize tensor
+20. `deserialize_tensor` - Deserialize tensor
+21. `safe_write_file` - Atomic file write
+22. `safe_read_file` - Safe file read
+23. `create_backup` - Backup creation
+24. `file_exists` - Check file existence
+25. `directory_exists` - Check directory existence
+26. `create_directory` - Create directory
 
-**Visualization (8 symbols)**:
+### Visualization Utilities (8 exports)
 
-- plot_training_curves, plot_loss_only, plot_accuracy_only
-- plot_confusion_matrix, visualize_model_architecture
-- show_images, visualize_feature_maps, save_figure
+27. `plot_training_curves` - Plot loss/accuracy curves
+28. `plot_loss_only` - Plot single loss curve
+29. `plot_accuracy_only` - Plot single accuracy curve
+30. `plot_confusion_matrix` - Plot confusion matrix
+31. `visualize_model_architecture` - Model architecture diagram
+32. `show_images` - Display image grid
+33. `visualize_feature_maps` - Feature map visualization
+34. `save_figure` - Save matplotlib figure
 
-**Random Seeds (9 symbols)**:
+### Random Seed Utilities (9 exports)
 
-- set_seed, get_global_seed
-- get_random_state, set_random_state, RandomState
-- random_uniform, random_normal, random_int, shuffle
+35. `set_seed` - Set random seed globally
+36. `get_global_seed` - Get current seed
+37. `get_random_state` - Get current random state
+38. `set_random_state` - Restore random state
+39. `RandomState` - Random state container
+40. `random_uniform` - Generate uniform random
+41. `random_normal` - Generate normal random
+42. `random_int` - Generate random integer
+43. `shuffle` - Shuffle list in-place
 
-**Profiling (6 symbols)**:
+### Profiling Utilities (7 exports)
 
-- Timer, memory_usage
-- profile_function, benchmark_function
-- MemoryStats, TimingStats, ProfilingReport
+44. `Timer` - Context manager for timing
+45. `memory_usage` - Get current memory usage
+46. `profile_function` - Profile function execution
+47. `benchmark_function` - Benchmark function
+48. `MemoryStats` - Memory statistics
+49. `TimingStats` - Timing statistics
+50. `ProfilingReport` - Profiling report
+
+**Note**: The `__all__` list in `shared/utils/__init__.mojo` defines these 50 exports explicitly. All are tested in
+`scripts/install_verify_utils.sh` to ensure package integrity
 
 ## Integration Points
 
@@ -294,7 +330,7 @@ chmod +x scripts/*.sh
 ### Design Decisions
 
 1. **Modular organization** - Each utility category in separate file
-2. **Comprehensive exports** - All 49 symbols explicitly listed in `__all__`
+2. **Comprehensive exports** - All 50 symbols explicitly listed in `__all__`
 3. **Clean environment testing** - Installation verification uses temporary directory
 4. **Build automation** - Multiple scripts for different use cases
 

@@ -1,9 +1,13 @@
 #!/bin/bash
-# Build script for utils package
+set -euo pipefail
+trap 'echo "Error on line $LINENO"' ERR
 
-set -e
+VERSION="0.1.0"
+PACKAGE_NAME="utils"
+OUTPUT_DIR="dist"
 
-echo "Building utils package..."
+# Validate Mojo is installed
+command -v mojo >/dev/null 2>&1 || { echo "❌ Mojo not found in PATH"; exit 1; }
 
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,20 +15,18 @@ PROJECT_ROOT="$SCRIPT_DIR/.."
 
 cd "$PROJECT_ROOT"
 
-# Create dist directory
-mkdir -p dist
+# Create output directory
+mkdir -p "${OUTPUT_DIR}"
 
-# Build the package
-echo "Running: mojo package shared/utils -o dist/utils-0.1.0.mojopkg"
-mojo package shared/utils -o dist/utils-0.1.0.mojopkg
+# Build package
+echo "Building ${PACKAGE_NAME}-${VERSION}.mojopkg..."
+mojo package "shared/${PACKAGE_NAME}" -o "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"
 
 # Verify package was created
-if [ -f "dist/utils-0.1.0.mojopkg" ]; then
-    echo "✓ Package built successfully!"
-    ls -lh dist/utils-0.1.0.mojopkg
-else
-    echo "✗ Package build failed!"
+if [[ ! -f "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg" ]]; then
+    echo "❌ ERROR: Package file not created"
     exit 1
 fi
 
-echo "Build complete!"
+echo "✅ Package built successfully: ${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"
+ls -lh "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"

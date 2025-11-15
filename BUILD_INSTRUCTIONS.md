@@ -104,15 +104,16 @@ Use this to test an existing package without rebuilding.
 
 ## Troubleshooting
 
-### "mojo: command not found"
+### Mojo not found
 
-**Issue**: Mojo is not in PATH
+**Issue**: `mojo: command not found` or Mojo is not in PATH
 
 **Solution**:
 
 ```bash
-# Check if Mojo is installed
+# Verify Mojo installation
 which mojo
+mojo --version
 
 # If not found, ensure Mojo is installed via Pixi:
 pixi run mojo --version
@@ -120,6 +121,17 @@ pixi run mojo --version
 # Or activate the Pixi environment:
 pixi shell
 mojo --version
+```
+
+### Permission errors on dist/
+
+**Issue**: Cannot create dist/ directory or write to it
+
+**Solution**:
+
+```bash
+mkdir -p dist
+chmod 755 dist
 ```
 
 ### "Permission denied" when running scripts
@@ -130,6 +142,24 @@ mojo --version
 
 ```bash
 chmod +x scripts/*.sh
+```
+
+### Import errors after installation
+
+**Issue**: Package installs but imports fail
+
+**Solution**:
+
+```bash
+# Verify package installation
+mojo list-packages
+
+# Check if utils package is listed
+# If not, reinstall:
+mojo install dist/utils-0.1.0.mojopkg
+
+# Test basic import
+mojo run -c "import utils; print('Success!')"
 ```
 
 ### Package build fails with syntax errors

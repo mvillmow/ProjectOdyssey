@@ -1,7 +1,8 @@
 #!/bin/bash
 # Complete packaging workflow for utils module
 
-set -e
+set -euo pipefail
+trap 'echo "Error on line $LINENO"' ERR
 
 # Colors for output
 GREEN='\033[0;32m'
