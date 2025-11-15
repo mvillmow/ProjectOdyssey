@@ -634,4 +634,4 @@ pixi run pytest tests/ --durations=10
 - **[Testing Strategy](../core/testing-strategy.md)** - Writing testable code
 - **[Workflow](../core/workflow.md)** - Development process
 - [GitHub Actions Docs](https://docs.github.com/en/actions) - Official documentation
-- [Pre-commit Hooks](../core/workflow.md#pre-commit-hooks) - Local checks
+- [Pre-commit Hooks](../core/workflow.md) - Local checks

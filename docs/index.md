@@ -53,8 +53,8 @@ For contributors:
 
 - [GitHub Repository](https://github.com/mvillmow/ml-odyssey)
 - [Issue Tracker](https://github.com/mvillmow/ml-odyssey/issues)
-- [Contributing Guidelines](../CONTRIBUTING.md)
-- [Code of Conduct](../CODE_OF_CONDUCT.md)
+- [Contributing Guidelines](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md)
+- [Code of Conduct](https://github.com/mvillmow/ml-odyssey/blob/main/CODE_OF_CONDUCT.md)
 
 ## Project Status
 
@@ -69,8 +69,8 @@ ML Odyssey is under active development. Current focus areas:
 
 - **Issues**: Report bugs or request features on [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues)
 - **Discussions**: Ask questions and share ideas
-- **Contributing**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for contribution guidelines
+- **Contributing**: See our [contribution guidelines](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md)
 
 ## License
 
-This project is open source. See [LICENSE](../LICENSE) for details.
+This project is open source. See [LICENSE](https://github.com/mvillmow/ml-odyssey/blob/main/LICENSE) for details.
