@@ -1,34 +1,19 @@
 # LeNet-5 Training Configuration
-# Based on original paper training procedure
-# Last updated: 2024-11-14
+# Based on original paper specifications
 
-# Optimizer (paper used custom SGD variant)
+extends: "defaults/training.yaml"
+
 optimizer:
   name: "sgd"
-  learning_rate: 0.01    # Higher than modern defaults
+  learning_rate: 0.001
   momentum: 0.9
-  weight_decay: 0.0      # No weight decay in original
 
-# Learning rate schedule (paper used manual schedule)
-scheduler:
-  name: "step"
-  step_size: 30
-  gamma: 0.5             # Halve LR periodically
-
-# Training parameters
 training:
-  epochs: 20             # Original trained for fewer epochs
-  batch_size: 128        # Larger batch than default
-  validation_split: 0.2  # 10K validation from 60K training
-  shuffle: true
-  seed: 1998             # Year of paper publication
+  epochs: 20
+  batch_size: 64
 
-# Specific to LeNet-5
-gradient:
-  clip_norm: 0.0         # No gradient clipping in original
-
-# Logging
-logging:
-  interval: 100          # Log every 100 batches
-  save_checkpoints: true
-  checkpoint_frequency: 5
+lr_scheduler:
+  enabled: true
+  type: "step"
+  step_size: 10
+  gamma: 0.1

@@ -1,82 +1,51 @@
-# LeNet-5 Model Architecture Configuration
-# Based on: LeCun et al., "Gradient-Based Learning Applied to Document Recognition" (1998)
-# Paper URL: http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf
-# Last updated: 2024-11-14
+# LeNet-5 Model Configuration
+# Paper: "Gradient-Based Learning Applied to Document Recognition" (LeCun et al., 1998)
 
-# Model metadata
-name: "LeNet-5"
-paper: "LeCun et al., 1998"
-input_shape: [1, 28, 28]  # MNIST: 1 channel, 28x28 pixels
-num_classes: 10           # MNIST: 10 digit classes
+extends: "defaults/model.yaml"
 
-# Architecture definition (sequential layers)
-layers:
-  # C1: Convolutional Layer 1
-  - name: "C1"
-    type: "conv2d"
-    in_channels: 1
-    out_channels: 6
-    kernel_size: 5
-    stride: 1
-    padding: 2           # To maintain 28x28 output
-    activation: "tanh"   # Original paper used tanh
+model:
+  name: "lenet5"
+  architecture:
+    # Conv Layer 1: 1x32x32 -> 6x28x28
+    conv1:
+      filters: 6
+      kernel_size: 5
+      stride: 1
+      padding: 0
+      activation: "tanh"
 
-  # S2: Subsampling Layer 1 (Average Pooling)
-  - name: "S2"
-    type: "avgpool2d"
-    kernel_size: 2
-    stride: 2
-    # Output: 6x14x14
+    # Pool Layer 1: 6x28x28 -> 6x14x14
+    pool1:
+      type: "avg_pool"
+      kernel_size: 2
+      stride: 2
 
-  # C3: Convolutional Layer 2
-  - name: "C3"
-    type: "conv2d"
-    in_channels: 6
-    out_channels: 16
-    kernel_size: 5
-    stride: 1
-    padding: 0
-    activation: "tanh"
-    # Note: Original paper had complex connectivity table
-    # We use full connectivity for simplicity
+    # Conv Layer 2: 6x14x14 -> 16x10x10
+    conv2:
+      filters: 16
+      kernel_size: 5
+      stride: 1
+      padding: 0
+      activation: "tanh"
 
-  # S4: Subsampling Layer 2
-  - name: "S4"
-    type: "avgpool2d"
-    kernel_size: 2
-    stride: 2
-    # Output: 16x5x5
+    # Pool Layer 2: 16x10x10 -> 16x5x5
+    pool2:
+      type: "avg_pool"
+      kernel_size: 2
+      stride: 2
 
-  # C5: Convolutional Layer 3 (Fully Connected)
-  - name: "C5"
-    type: "conv2d"
-    in_channels: 16
-    out_channels: 120
-    kernel_size: 5      # Input is 5x5, so this becomes FC
-    stride: 1
-    padding: 0
-    activation: "tanh"
-    # Output: 120x1x1
+    # Fully Connected Layers
+    fc1:
+      units: 120
+      activation: "tanh"
 
-  # Flatten for fully connected layers
-  - name: "flatten"
-    type: "flatten"
+    fc2:
+      units: 84
+      activation: "tanh"
 
-  # F6: Fully Connected Layer
-  - name: "F6"
-    type: "linear"
-    in_features: 120
-    out_features: 84
-    activation: "tanh"
+    fc3:
+      units: 10
+      activation: "softmax"
 
-  # Output Layer
-  - name: "output"
-    type: "linear"
-    in_features: 84
-    out_features: 10
-    activation: null     # Raw logits for cross-entropy loss
-
-# Loss function
-loss:
-  name: "cross_entropy"
-  label_smoothing: 0.0
+  input_shape: [1, 32, 32]
+  output_classes: 10

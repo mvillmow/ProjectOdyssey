@@ -1,62 +1,18 @@
-# LeNet-5 with Modern Augmentation
-# Tests impact of data augmentation on LeNet-5
-# Last updated: 2024-11-14
+# LeNet-5 with Data Augmentation
+# Tests impact of modern augmentation techniques
 
-# Experiment metadata
 experiment:
   name: "lenet5_augmented"
-  description: "LeNet-5 with modern data augmentation techniques"
+  description: "LeNet-5 with data augmentation"
   paper: "lenet5"
-  tags: ["augmentation", "ablation", "mnist"]
-  author: "ML Odyssey Team"
-  date: "2024-11-14"
+  tags: ["augmented", "ablation"]
 
-# Inherit base configuration
 extends:
-  - ../../papers/lenet5/model.yaml
-  - ../../papers/lenet5/training.yaml
-  - ../../papers/lenet5/data.yaml
+  - "experiments/lenet5/baseline.yaml"
 
-# Override: Add data augmentation
-augmentation:
-  enabled: true
-  random_rotation: 15           # ±15 degrees
-  random_affine:
-    degrees: 0
-    translate: [0.1, 0.1]      # 10% translation
-    scale: [0.9, 1.1]          # 90-110% scaling
-    shear: 5                   # 5 degree shear
-  random_erasing:
-    enabled: true
-    probability: 0.1
-    scale: [0.02, 0.33]
-    ratio: [0.3, 3.3]
-
-# Adjust training for augmented data
-training:
-  epochs: 30                   # More epochs for augmented data
-  batch_size: 64              # Smaller batch for more updates
-
-# Different optimizer
-optimizer:
-  name: "adam"                # Modern optimizer
-  learning_rate: 0.001
-  weight_decay: 0.0001        # Add regularization
-
-# Cosine annealing schedule
-scheduler:
-  name: "cosine"
-  T_max: 30                   # Match epochs
-  eta_min: 1.0e-06
-
-# Enhanced tracking
-tracking:
-  metrics: ["train_loss", "val_loss", "train_acc", "val_acc", "test_acc", "learning_rate"]
-  log_frequency: 50
-  save_predictions: true
-  save_confusion_matrix: true
-  tensorboard: true
-  wandb:
-    enabled: false
-    project: "ml-odyssey"
-    name: "lenet5_augmented"
+preprocessing:
+  augmentation: true
+  augmentation_config:
+    random_rotation: 15
+    random_shift: 0.1
+    random_zoom: 0.1

@@ -1,42 +1,16 @@
 # Default Data Configuration
-# Data loading and preprocessing settings
-# Last updated: 2024-11-14
+# Data loading and preprocessing defaults
 
-# Data preprocessing
+data:
+  dataset_root: "${ML_ODYSSEY_DATA:-./data}"
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+
 preprocessing:
-  normalize: true                         # Apply normalization
-  mean: [0.485, 0.456, 0.406]            # ImageNet normalization mean
-  std: [0.229, 0.224, 0.225]             # ImageNet normalization std
-  resize: null                            # Target size [height, width]
-  center_crop: null                       # Center crop size
+  normalize: true
+  augmentation: false
 
-# Data augmentation
-augmentation:
-  enabled: false                          # Enable augmentation
-  random_horizontal_flip: false           # Horizontal flip probability
-  random_vertical_flip: false             # Vertical flip probability
-  random_rotation: 0                      # Max rotation degrees
-  random_crop: null                       # Random crop size
-  color_jitter:
-    enabled: false
-    brightness: 0.2
-    contrast: 0.2
-    saturation: 0.2
-    hue: 0.1
-
-# Data loading
-loader:
-  batch_size: 32                         # Batch size (can be overridden by training config)
-  num_workers: 4                         # Parallel data loading workers
-  pin_memory: true                       # Pin memory for GPU transfer
-  shuffle_train: true                    # Shuffle training data
-  shuffle_val: false                    # Shuffle validation data
-  shuffle_test: false                   # Shuffle test data
-  drop_last: true                       # Drop incomplete batches
-
-# Dataset split
-split:
-  train: 0.8                             # Training data fraction
-  val: 0.1                               # Validation data fraction
-  test: 0.1                              # Test data fraction
-  stratified: true                       # Use stratified split
+validation:
+  split: 0.1
+  stratified: true

@@ -1,56 +1,33 @@
 # Default Training Configuration
-# These values are used unless overridden by paper or experiment configs
-# Last updated: 2024-11-14
+# These defaults apply to all papers unless overridden
 
-# Optimizer configuration
 optimizer:
-  name: "sgd"              # Optimizer type: sgd, adam, adamw, rmsprop
-  learning_rate: 0.001     # Initial learning rate
-  momentum: 0.9            # Momentum factor (SGD)
-  weight_decay: 0.0001     # L2 regularization
-  betas: [0.9, 0.999]      # Adam beta parameters
-  eps: 1.0e-08             # Adam epsilon
+  name: "sgd"
+  learning_rate: 0.01
+  momentum: 0.9
+  weight_decay: 0.0001
+  nesterov: false
 
-# Learning rate scheduler
-scheduler:
-  name: "step"             # Scheduler type: step, cosine, exponential, none
-  step_size: 30            # Steps between LR decay (step scheduler)
-  gamma: 0.1               # LR decay factor
-  min_lr: 1.0e-06          # Minimum learning rate
-
-# Training loop configuration
 training:
-  epochs: 100              # Maximum training epochs
-  batch_size: 32           # Training batch size
-  validation_split: 0.1    # Fraction of data for validation
-  shuffle: true            # Shuffle training data
-  seed: 42                 # Random seed for reproducibility
+  epochs: 100
+  batch_size: 128
+  validation_split: 0.1
+  shuffle: true
+  seed: 42
 
-  # Early stopping
-  early_stopping:
-    enabled: false         # Enable early stopping
-    patience: 10           # Epochs without improvement
-    min_delta: 0.001       # Minimum change to qualify as improvement
-    mode: "min"            # min for loss, max for accuracy
-
-# Gradient configuration
-gradient:
-  clip_norm: 0.0           # Gradient clipping (0 = disabled)
-  accumulation_steps: 1    # Gradient accumulation steps
-
-# Logging configuration
 logging:
-  level: "INFO"            # Log level: DEBUG, INFO, WARNING, ERROR
-  interval: 10             # Log every N batches
-  save_checkpoints: true   # Save model checkpoints
-  checkpoint_frequency: 5  # Save every N epochs
-  best_only: true          # Save only best checkpoint
-  metric: "val_loss"       # Metric for best checkpoint
-  mode: "min"              # min or max for metric
+  log_interval: 100
+  save_interval: 1000
+  checkpoint_dir: "${ML_ODYSSEY_CHECKPOINTS:-./checkpoints}"
+  log_dir: "${ML_ODYSSEY_LOGS:-./logs}"
 
-# Hardware configuration
-hardware:
-  device: "auto"           # Device: auto, cpu, cuda, mps
-  mixed_precision: false   # Use mixed precision training
-  num_workers: 4           # Dataloader workers
-  pin_memory: true         # Pin memory for GPU
+early_stopping:
+  enabled: false
+  patience: 10
+  min_delta: 0.0001
+
+lr_scheduler:
+  enabled: false
+  type: "step"
+  step_size: 30
+  gamma: 0.1

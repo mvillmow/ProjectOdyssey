@@ -1,38 +1,24 @@
 # Paper Configuration Template
-# Copy to configs/papers/<paper_name>/ and customize
-# Last updated: 2024-11-14
+# Copy this template to create a new paper configuration
 
-# Paper metadata (required)
-paper:
-  name: "PAPER_NAME"              # e.g., "ResNet"
-  authors: "Author et al."        # e.g., "He et al."
-  year: 2024                      # Publication year
-  url: "https://arxiv.org/abs/..." # Paper URL
-  conference: "CONFERENCE"        # e.g., "CVPR", "NeurIPS"
+extends: "defaults/model.yaml"
 
-# Model architecture (customize completely)
 model:
-  name: "model_name"
-  input_shape: [3, 224, 224]     # [channels, height, width]
-  num_classes: 1000               # Number of output classes
+  name: "PAPER_NAME"
+  architecture:
+    # Define your model architecture here
+    # Example:
+    # layer1:
+    #   type: "conv"
+    #   filters: 64
+    #   kernel_size: 3
 
-  # Define architecture here
-  layers:
-    - type: "conv2d"
-      # ... layer parameters
+  input_shape: [CHANNELS, HEIGHT, WIDTH]
+  output_classes: NUM_CLASSES
 
-# Training configuration (override defaults as needed)
-training:
-  epochs: 100
-  batch_size: 256
-  # Add paper-specific training settings
-
-# Data configuration (override defaults as needed)
-data:
-  dataset: "dataset_name"
-  # Add dataset-specific settings
-
-# Notes and references
-notes: |
-  Add any implementation notes, special considerations,
-  or deviations from the paper here.
+# Paper-specific settings
+paper:
+  title: "Paper Title"
+  authors: "Authors"
+  year: YEAR
+  url: "https://arxiv.org/..."

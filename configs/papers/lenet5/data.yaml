@@ -1,36 +1,15 @@
-# LeNet-5 Data Configuration for MNIST
-# Last updated: 2024-11-14
+# LeNet-5 Data Configuration
+# MNIST dataset configuration
 
-# Dataset information
-dataset:
-  name: "MNIST"
-  path: "${DATA_DIR:-./data}/mnist"
-  download: true
+extends: "defaults/data.yaml"
 
-# MNIST-specific preprocessing
+data:
+  dataset: "mnist"
+  input_size: [32, 32]  # MNIST images padded to 32x32 for LeNet-5
+  num_classes: 10
+
 preprocessing:
   normalize: true
-  mean: [0.1307]         # MNIST mean
-  std: [0.3081]          # MNIST std
-  resize: [28, 28]       # Already 28x28, but explicit
-  center_crop: null
-
-# No augmentation in original paper
-augmentation:
-  enabled: false
-
-# Data loading
-loader:
-  batch_size: 128        # Override from training config
-  num_workers: 2         # Less workers for small dataset
-  pin_memory: true
-  shuffle_train: true
-  shuffle_val: false
-  shuffle_test: false
-  drop_last: false       # Keep all data
-
-# Dataset split (MNIST standard)
-split:
-  train: 60000           # Absolute numbers for MNIST
-  val: 10000            # From training set
-  test: 10000           # Separate test set
+  mean: [0.1307]
+  std: [0.3081]
+  padding: 2  # Pad 28x28 MNIST to 32x32

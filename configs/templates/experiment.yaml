@@ -1,50 +1,21 @@
 # Experiment Configuration Template
-# Copy to configs/experiments/<paper>/<experiment_name>.yaml
-# Last updated: 2024-11-14
+# Copy this template to create a new experiment
 
-# Experiment metadata (required)
 experiment:
   name: "EXPERIMENT_NAME"
-  description: "What this experiment tests or explores"
-  paper: "PAPER_NAME"             # Which paper this builds on
-  tags: []                        # e.g., ["ablation", "hyperparameter"]
-  author: "Your Name"
-  date: "YYYY-MM-DD"
+  description: "Brief description of this experiment"
+  paper: "PAPER_NAME"
+  tags: ["tag1", "tag2"]
 
-  # Hypothesis (optional but recommended)
-  hypothesis: |
-    What you expect to discover or validate
-    with this experiment.
-
-# Configuration inheritance (required)
 extends:
-  - ../../papers/PAPER_NAME/model.yaml
-  - ../../papers/PAPER_NAME/training.yaml
-  - ../../papers/PAPER_NAME/data.yaml
+  - "papers/PAPER_NAME/model.yaml"
+  - "papers/PAPER_NAME/training.yaml"
+  - "papers/PAPER_NAME/data.yaml"
 
-# Experiment-specific overrides
-# Only include what you're changing from the base configuration
-
-# Example: Override learning rate
-#optimizer:
-#  learning_rate: 0.01
-
-# Example: Change batch size
-#training:
-#  batch_size: 64
-
-# Results tracking (optional but recommended)
-tracking:
-  metrics: ["loss", "accuracy"]
-  log_frequency: 100
-  save_predictions: false
-
-# Expected results (optional)
-expected_results:
-  metric_name: expected_value
-  tolerance: acceptable_variance
-
-# Notes (optional)
-notes: |
-  Any special considerations, observations,
-  or future work based on this experiment.
+# Override any settings specific to this experiment
+# Example:
+# optimizer:
+#   learning_rate: 0.0001
+#
+# training:
+#   epochs: 50

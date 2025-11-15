@@ -1,32 +1,13 @@
 # LeNet-5 Baseline Experiment
-# Reproduces original paper results
-# Last updated: 2024-11-14
+# Exact reproduction of paper configuration
 
-# Experiment metadata
 experiment:
   name: "lenet5_baseline"
-  description: "Baseline LeNet-5 reproduction on MNIST"
+  description: "Baseline LeNet-5 reproduction with paper settings"
   paper: "lenet5"
-  tags: ["baseline", "reproduction", "mnist"]
-  author: "ML Odyssey Team"
-  date: "2024-11-14"
+  tags: ["baseline", "reproduction"]
 
-# Inherit from paper configuration
 extends:
-  - ../../papers/lenet5/model.yaml
-  - ../../papers/lenet5/training.yaml
-  - ../../papers/lenet5/data.yaml
-
-# No overrides for baseline - use paper defaults exactly
-
-# Results tracking
-tracking:
-  metrics: ["train_loss", "val_loss", "train_acc", "val_acc", "test_acc"]
-  log_frequency: 100
-  save_predictions: false
-  save_confusion_matrix: true
-
-# Expected results (from paper)
-expected_results:
-  test_accuracy: 0.991    # 99.1% accuracy reported in paper
-  tolerance: 0.003        # ±0.3% acceptable variance
+  - "papers/lenet5/model.yaml"
+  - "papers/lenet5/training.yaml"
+  - "papers/lenet5/data.yaml"

@@ -1,27 +1,9 @@
-# Default Paths Configuration
-# Directory paths with environment variable support
-# Last updated: 2024-11-14
+# Default Path Configuration
+# Centralized path management with environment variable support
 
-# Data directories
 paths:
-  data_dir: "${DATA_DIR:-./data}"              # Root data directory
-  cache_dir: "${CACHE_DIR:-~/.cache/ml-odyssey}"  # Cache for downloaded files
-  output_dir: "${OUTPUT_DIR:-./output}"        # Output directory for results
-  checkpoint_dir: "${OUTPUT_DIR:-./output}/checkpoints"  # Model checkpoints
-  log_dir: "${OUTPUT_DIR:-./output}/logs"      # Training logs
-
-# Dataset-specific paths
-datasets:
-  mnist: "${DATA_DIR:-./data}/mnist"           # MNIST dataset
-  cifar10: "${DATA_DIR:-./data}/cifar10"       # CIFAR-10 dataset
-  imagenet: "${DATA_DIR:-./data}/imagenet"     # ImageNet dataset
-
-# Experiment tracking
-tracking:
-  tensorboard_dir: "${OUTPUT_DIR:-./output}/tensorboard"  # TensorBoard logs
-  weights_and_biases: false                     # W&B integration
-
-# Environment variable expansion note
-# Pattern: ${VAR_NAME:-default_value}
-# If VAR_NAME is set, use its value
-# Otherwise, use default_value
+  data_dir: "${ML_ODYSSEY_DATA:-./data}"
+  checkpoint_dir: "${ML_ODYSSEY_CHECKPOINTS:-./checkpoints}"
+  log_dir: "${ML_ODYSSEY_LOGS:-./logs}"
+  output_dir: "${ML_ODYSSEY_OUTPUT:-./output}"
+  cache_dir: "${ML_ODYSSEY_CACHE:-./cache}"
