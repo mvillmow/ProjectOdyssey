@@ -1,41 +1,41 @@
 #!/bin/bash
-# Build script for training module package
-#
-# Creates the distributable .mojopkg file for the training module
+set -euo pipefail
+trap 'echo "Error on line $LINENO"' ERR
 
-set -e
+# Constants
+VERSION="0.1.0"
+PACKAGE_NAME="training"
+OUTPUT_DIR="dist"
 
-echo "================================"
-echo "Building Training Package"
-echo "================================"
-echo ""
+# Validate Mojo installation
+command -v mojo >/dev/null 2>&1 || {
+    echo "❌ ERROR: Mojo not found in PATH"
+    echo "Install from: https://docs.modular.com/mojo/manual/get-started/"
+    exit 1
+}
 
-# Determine script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(dirname "$SCRIPT_DIR")"
-
-cd "$REPO_ROOT"
-
-# Create dist directory if it doesn't exist
-mkdir -p dist/
-
-echo "Building training-0.1.0.mojopkg..."
-echo ""
-
-# Build the package
-mojo package shared/training -o dist/training-0.1.0.mojopkg
-
-# Check if build succeeded
-if [ -f "dist/training-0.1.0.mojopkg" ]; then
-    echo ""
-    echo "================================"
-    echo "✓ Package built successfully!"
-    echo "================================"
-    echo ""
-    ls -lh dist/training-0.1.0.mojopkg
-    echo ""
-else
-    echo ""
-    echo "ERROR: Package build failed!"
+# Validate source directory exists
+if [[ ! -d "shared/${PACKAGE_NAME}" ]]; then
+    echo "❌ ERROR: Package source not found: shared/${PACKAGE_NAME}"
     exit 1
 fi
+
+# Create output directory
+mkdir -p "${OUTPUT_DIR}"
+
+# Build package
+echo "Building ${PACKAGE_NAME}-${VERSION}.mojopkg..."
+mojo package "shared/${PACKAGE_NAME}" -o "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg" || {
+    echo "❌ ERROR: Package build failed"
+    exit 1
+}
+
+# Verify package creation
+if [[ ! -f "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg" ]]; then
+    echo "❌ ERROR: Package file not created"
+    exit 1
+fi
+
+echo "✅ Package built successfully!"
+echo "Package: ${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"
+ls -lh "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"

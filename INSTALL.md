@@ -162,14 +162,14 @@ rm -rf "$TEMP_DIR"
 mojo --version
 ```
 
-2. Check source files compile individually:
+1. Check source files compile individually:
 
 ```bash
 mojo build shared/training/__init__.mojo
 mojo build shared/training/base.mojo
 ```
 
-3. Review error messages for syntax errors or import issues
+1. Review error messages for syntax errors or import issues
 
 ### Installation Fails
 
@@ -183,13 +183,13 @@ mojo build shared/training/base.mojo
 ls -lh dist/training-0.1.0.mojopkg
 ```
 
-2. Check file permissions:
+1. Check file permissions:
 
 ```bash
 chmod 644 dist/training-0.1.0.mojopkg
 ```
 
-3. Try installing to custom location:
+1. Try installing to custom location:
 
 ```bash
 mojo install --prefix /custom/path dist/training-0.1.0.mojopkg
@@ -207,13 +207,13 @@ mojo install --prefix /custom/path dist/training-0.1.0.mojopkg
 mojo run -c "import sys; print(sys.path)"
 ```
 
-2. Try explicit path:
+1. Try explicit path:
 
 ```bash
 mojo run -M /path/to/installed/packages -c "from training import Callback"
 ```
 
-3. Reinstall package:
+1. Reinstall package:
 
 ```bash
 mojo uninstall training
@@ -232,28 +232,71 @@ mojo install dist/training-0.1.0.mojopkg
 ls -lh dist/training-0.1.0.mojopkg
 ```
 
-2. Run script with verbose output:
+1. Run script with verbose output:
 
 ```bash
 bash -x scripts/install_verify_training.sh
 ```
 
-3. Test specific imports manually:
+1. Test specific imports manually:
 
 ```bash
 mojo run -c "from training import Callback"
+```
+
+## Package Exports (16 total)
+
+The training package includes:
+
+### Core Components (3)
+
+- `TrainingState` - Training state management
+- `Callback` - Base callback interface
+- `CallbackSignal` - Callback signal types
+
+### Callback Signals (2)
+
+- `CONTINUE` - Continue training signal
+- `STOP` - Stop training signal
+
+### Learning Rate Schedulers (4)
+
+- `LRScheduler` - Base scheduler interface
+- `StepLR` - Step learning rate scheduler
+- `CosineAnnealingLR` - Cosine annealing scheduler
+- `WarmupLR` - Warmup learning rate scheduler
+
+### Training Callbacks (3)
+
+- `EarlyStopping` - Early stopping callback
+- `ModelCheckpoint` - Model checkpointing callback
+- `LoggingCallback` - Training logging callback
+
+### Utilities (2)
+
+- `is_valid_loss` - Loss validation utility
+- `clip_gradients` - Gradient clipping utility
+
+### Installation Verification
+
+After installation, verify all exports work:
+
+```bash
+./scripts/install_verify_training.sh
+```
+
+Or test manually:
+
+```mojo
+from training import Optimizer, LRScheduler, EarlyStopping
+print("Training module installed successfully!")
 ```
 
 ## Package Contents
 
 ### Training Module (training-0.1.0.mojopkg)
 
-**Exports**:
-
-- **Base Interfaces**: Callback, CallbackSignal, CONTINUE, STOP, TrainingState, LRScheduler
-- **Utilities**: is_valid_loss, clip_gradients
-- **Schedulers**: StepLR, CosineAnnealingLR, WarmupLR
-- **Callbacks**: EarlyStopping, ModelCheckpoint, LoggingCallback
+**Total Exports**: 16 (see section above for details)
 
 **Dependencies**: Mojo standard library
 
@@ -304,9 +347,9 @@ For issues or questions:
 After installation:
 
 1. Review module documentation in `shared/training/README.md`
-2. Explore examples in `examples/` directory
-3. Check test files in `tests/shared/training/` for usage patterns
-4. Read the comprehensive guides in `docs/`
+1. Explore examples in `examples/` directory
+1. Check test files in `tests/shared/training/` for usage patterns
+1. Read the comprehensive guides in `docs/`
 
 ## Building Other Modules
 
