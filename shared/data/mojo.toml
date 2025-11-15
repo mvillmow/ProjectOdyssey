@@ -1,0 +1,9 @@
+[project]
+name = "ml-odyssey-data"
+version = "0.1.0"
+description = "Data utilities for ML Odyssey - datasets, loaders, and transformations"
+authors = ["ML Odyssey Contributors"]
+license = "BSD-3-Clause"
+
+[dependencies]
+# Add dependencies if needed

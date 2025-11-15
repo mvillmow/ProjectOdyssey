@@ -1,47 +1,57 @@
 #!/bin/bash
-# Installation verification script for Data module package
-# Usage: ./scripts/install_verify_data.sh
+set -euo pipefail
 
-set -e
+VERSION="0.1.0"
+PACKAGE_PATH="$(pwd)/dist/data-${VERSION}.mojopkg"
 
-echo "Testing data package installation..."
-
-# Get absolute path to package
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-PACKAGE_PATH="$REPO_ROOT/dist/data-0.1.0.mojopkg"
-
-if [ ! -f "$PACKAGE_PATH" ]; then
-    echo "Error: Package not found at $PACKAGE_PATH"
+# Verify package exists
+if [[ ! -f "${PACKAGE_PATH}" ]]; then
+    echo "❌ ERROR: Package not found at ${PACKAGE_PATH}"
+    echo "Run: ./scripts/build_data_package.sh"
     exit 1
 fi
 
-# Create temporary directory
-TEMP_DIR=$(mktemp -d)
-echo "Testing in temporary directory: $TEMP_DIR"
-
-# Cleanup function
-cleanup() {
-    cd "$REPO_ROOT"
-    rm -rf "$TEMP_DIR"
-    echo "Cleanup complete"
+# Create clean test environment
+TEMP_DIR=$(mktemp -d) || {
+    echo "❌ ERROR: Failed to create temporary directory"
+    exit 1
 }
-trap cleanup EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 cd "$TEMP_DIR"
 
 # Install package
-echo "Installing package from $PACKAGE_PATH..."
-mojo install "$PACKAGE_PATH"
+echo "Installing data package..."
+mojo install "${PACKAGE_PATH}" || {
+    echo "❌ ERROR: Package installation failed"
+    exit 1
+}
 
-# Test imports
-echo "Testing imports..."
-mojo run -c "from data import Dataset; print('Dataset import OK')"
-mojo run -c "from data import TensorDataset; print('TensorDataset import OK')"
-mojo run -c "from data import BatchLoader; print('BatchLoader import OK')"
-mojo run -c "from data import Transform; print('Transform import OK')"
-mojo run -c "from data import Compose; print('Compose import OK')"
+# Test all 19 public exports
+echo "Testing all 19 data module exports..."
+cat > test_imports.mojo << 'EOF'
+# Core data structures
+from data import Dataset, TensorDataset, FileDataset
 
-echo ""
-echo "✅ Data package verification complete!"
-echo "All imports successful"
+# Batch processing
+from data import Batch, BaseLoader, BatchLoader
+
+# Sampling strategies
+from data import Sampler, SequentialSampler, RandomSampler, WeightedSampler
+
+# Data transformations
+from data import Transform, Compose, ToTensor, Normalize
+from data import Reshape, Resize, CenterCrop, RandomCrop
+from data import RandomHorizontalFlip, RandomRotation
+
+fn main() raises:
+    print("✅ All 19 imports successful!")
+EOF
+
+mojo run test_imports.mojo || {
+    echo "❌ ERROR: Import verification failed"
+    exit 1
+}
+
+echo "✅ Installation verification complete!"
+echo "All 19 public exports work correctly."

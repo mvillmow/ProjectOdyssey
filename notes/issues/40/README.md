@@ -90,6 +90,40 @@ mojo install dist/data-0.1.0.mojopkg
 mojo run -c "from data import Dataset, TensorDataset, BatchLoader; print('Data module installed successfully')"
 ```
 
+## Package Exports (19 total)
+
+### Core Data Structures (3)
+
+- `Dataset` - Base dataset interface
+- `TensorDataset` - Tensor-based dataset
+- `FileDataset` - File-based dataset
+
+### Batch Processing (3)
+
+- `Batch` - Batch container
+- `BaseLoader` - Base loader functionality
+- `BatchLoader` - Batch data loader
+
+### Sampling Strategies (4)
+
+- `Sampler` - Base sampler interface
+- `SequentialSampler` - Sequential sampling
+- `RandomSampler` - Random sampling
+- `WeightedSampler` - Weighted random sampling
+
+### Transformations (9)
+
+- `Transform` - Base transformation interface
+- `Compose` - Compose multiple transforms
+- `ToTensor` - Convert data to tensors
+- `Normalize` - Normalize data
+- `Reshape` - Reshape tensor
+- `Resize` - Resize images
+- `CenterCrop` - Center crop
+- `RandomCrop` - Random crop augmentation
+- `RandomHorizontalFlip` - Random horizontal flip
+- `RandomRotation` - Random rotation augmentation
+
 ## Package Structure
 
 Source files packaged:
@@ -101,7 +135,8 @@ shared/data/
 ├── datasets.mojo         # Dataset abstractions
 ├── loaders.mojo          # Data loaders and batching
 ├── samplers.mojo         # Sampling strategies
-└── transforms.mojo       # Data transforms
+├── transforms.mojo       # Data transforms
+└── mojo.toml             # Package metadata
 ```
 
 ## Implementation Notes

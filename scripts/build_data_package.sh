@@ -1,42 +1,42 @@
 #!/bin/bash
-# Build script for Data module package
-# Usage: ./scripts/build_data_package.sh
+set -euo pipefail
+trap 'echo "Error on line $LINENO"' ERR
 
-set -e
+# Constants
+VERSION="0.1.0"
+PACKAGE_NAME="data"
+OUTPUT_DIR="dist"
 
-echo "Building Data module package..."
+# Validate environment
+command -v mojo >/dev/null 2>&1 || {
+    echo "❌ ERROR: Mojo not found in PATH"
+    echo "Install Mojo from: https://docs.modular.com/mojo/manual/get-started/"
+    exit 1
+}
 
-# Get script directory and repository root
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
-
-cd "$REPO_ROOT"
-
-# Create dist directory if it doesn't exist
-echo "Creating dist/ directory..."
-mkdir -p dist
-
-# Build package
-echo "Building package: dist/data-0.1.0.mojopkg"
-mojo package shared/data -o dist/data-0.1.0.mojopkg
-
-# Verify package was created
-if [ ! -f dist/data-0.1.0.mojopkg ]; then
-    echo "Error: Package file was not created"
+# Validate package source exists
+if [[ ! -d "shared/${PACKAGE_NAME}" ]]; then
+    echo "❌ ERROR: Package source directory not found: shared/${PACKAGE_NAME}"
     exit 1
 fi
 
-# Show package information
-echo ""
-echo "Package created successfully:"
-ls -lh dist/data-0.1.0.mojopkg
-echo ""
-file dist/data-0.1.0.mojopkg || echo "file command not available"
+# Create output directory
+mkdir -p "${OUTPUT_DIR}"
 
-echo ""
-echo "✅ Build complete!"
-echo "Package: dist/data-0.1.0.mojopkg"
-echo ""
-echo "Next steps:"
-echo "1. Make verification script executable: chmod +x scripts/install_verify_data.sh"
-echo "2. Run verification: ./scripts/install_verify_data.sh"
+# Build package
+echo "Building ${PACKAGE_NAME}-${VERSION}.mojopkg..."
+mojo package "shared/${PACKAGE_NAME}" -o "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg" || {
+    echo "❌ ERROR: Package build failed"
+    exit 1
+}
+
+# Verify package was created
+if [[ ! -f "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg" ]]; then
+    echo "❌ ERROR: Package file not created"
+    exit 1
+fi
+
+# Display package info
+echo "✅ Package built successfully!"
+echo "Package: ${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"
+ls -lh "${OUTPUT_DIR}/${PACKAGE_NAME}-${VERSION}.mojopkg"
