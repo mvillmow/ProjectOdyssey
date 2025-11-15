@@ -2,6 +2,9 @@
 
 Complete workflow for implementing research papers in ML Odyssey.
 
+> **📚 Detailed Reference**: For complete examples, troubleshooting guides, and advanced patterns, see
+> [Paper Implementation Examples Appendix](../appendices/paper-impl-examples.md).
+
 ## Overview
 
 This guide walks you through the process of implementing a research paper, from initial planning to final benchmarking.
@@ -617,15 +620,12 @@ trainer.train(train_loader, epochs=100)
 2. **Model Size**: Use smaller model variant
 3. **Gradient Accumulation**: Accumulate gradients over multiple batches
 
-## Next Steps
+## See Also
 
+- **[Paper Implementation Examples Appendix](../appendices/paper-impl-examples.md)** - Complete examples and troubleshooting
 - **[Testing Strategy](testing-strategy.md)** - Write comprehensive tests
 - **[Performance Guide](../advanced/performance.md)** - Optimize your implementation
 - **[Custom Layers](../advanced/custom-layers.md)** - Implement paper-specific components
 - **[Workflow](workflow.md)** - Understand the 5-phase development process
-
-## Related Documentation
-
 - [Shared Library Guide](shared-library.md) - Reusable components
-- [Project Structure](project-structure.md) - Repository organization
 - [Configuration](configuration.md) - Managing hyperparameters

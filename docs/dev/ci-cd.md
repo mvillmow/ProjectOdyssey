@@ -2,10 +2,13 @@
 
 Continuous integration and deployment infrastructure for ML Odyssey.
 
+> **📚 Detailed Reference**: For complete workflow configurations, troubleshooting, and advanced patterns, see
+> [CI/CD Details Appendix](../appendices/ci-cd-details.md).
+
 ## Overview
 
-ML Odyssey uses GitHub Actions for automated testing, code quality checks, and deployment. This document covers
-the CI/CD pipeline, workflows, and best practices.
+ML Odyssey uses GitHub Actions for automated testing, code quality checks, and deployment. This guide covers
+essential CI/CD pipeline setup and workflows.
 
 ## Pipeline Architecture
 
@@ -628,14 +631,11 @@ pixi run pytest tests/ --durations=10
 - Skip expensive operations in CI
 - Use test markers (`pytest -m "not slow"`)
 
-## Next Steps
+## See Also
 
+- **[CI/CD Details Appendix](../appendices/ci-cd-details.md)** - Complete reference with all workflows
 - **[Release Process](release-process.md)** - Release workflow
 - **[Testing Strategy](../core/testing-strategy.md)** - Writing testable code
 - **[Workflow](../core/workflow.md)** - Development process
-
-## Related Documentation
-
 - [GitHub Actions Docs](https://docs.github.com/en/actions) - Official documentation
-- [Contributing Guide](../../CONTRIBUTING.md) - Contribution workflow
 - [Pre-commit Hooks](../core/workflow.md#pre-commit-hooks) - Local checks
