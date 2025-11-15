@@ -125,4 +125,4 @@ For optimal performance:
 
 - [Documentation](../index.md) - Complete documentation
 - [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues) - Report bugs or ask questions
-- [Contributing](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) - Contribution guidelines
+- Contributing (`CONTRIBUTING.md`) - Contribution guidelines
