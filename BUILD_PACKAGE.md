@@ -7,7 +7,7 @@ This document provides instructions for building the distributable training modu
 ## Prerequisites
 
 - Mojo compiler installed and available in PATH
-- Repository checked out to worktree: `/home/mvillmow/ml-odyssey/worktrees/35-pkg-training`
+- Repository checked out (any location works)
 - Training module source code in `shared/training/`
 
 ## Build Steps
@@ -15,7 +15,8 @@ This document provides instructions for building the distributable training modu
 ### 1. Create Distribution Directory
 
 ```bash
-cd /home/mvillmow/ml-odyssey/worktrees/35-pkg-training
+# Navigate to repository root
+cd /path/to/ml-odyssey
 mkdir -p dist/
 ```
 
