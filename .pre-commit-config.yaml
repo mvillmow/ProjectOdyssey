@@ -31,10 +31,10 @@ repos:
     hooks:
       - id: trailing-whitespace
         name: Trim Trailing Whitespace
-        exclude: ^notes/plan/
+        exclude: ^notes/(plan|review)/
       - id: end-of-file-fixer
         name: Fix End of Files
-        exclude: ^notes/plan/
+        exclude: ^notes/(plan|review)/
       - id: check-yaml
         name: Check YAML
       - id: check-added-large-files
@@ -42,4 +42,4 @@ repos:
         args: ['--maxkb=1000']
       - id: mixed-line-ending
         name: Fix Mixed Line Endings
-        exclude: ^notes/plan/
+        exclude: ^notes/(plan|review)/
