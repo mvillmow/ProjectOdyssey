@@ -852,5 +852,5 @@ git worktree remove worktrees/issue-64-impl-agents-experiment
 - [5-Phase Integration](./5-phase-integration.md) - How workflow phases integrate
 - [Common Workflows](./workflows.md) - Complete workflow examples
 - [Delegation Rules](../delegation-rules.md) - Agent coordination patterns
-- [Worktree Strategy](/notes/review/worktree-strategy.md) - Complete worktree strategy
+- [Worktree Strategy](../../notes/review/worktree-strategy.md) - Complete worktree strategy
 - [Git Worktree Documentation](https://git-scm.com/docs/git-worktree) - Official git documentation

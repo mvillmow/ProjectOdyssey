@@ -1291,7 +1291,7 @@ Templates for each level (0-5) available.
 - **Agent Catalog**: [agent-catalog.md](agent-catalog.md)
 - **Visual Hierarchy**: [../hierarchy.md](../hierarchy.md)
 - **Delegation Rules**: [../delegation-rules.md](../delegation-rules.md)
-- **Orchestration Patterns**: [/notes/review/orchestration-patterns.md](/notes/review/orchestration-patterns.md)
+- **Orchestration Patterns**: [/notes/review/orchestration-patterns.md](../../notes/review/orchestration-patterns.md)
 
 ### Configuration Files
 

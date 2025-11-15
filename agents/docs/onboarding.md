@@ -1376,9 +1376,9 @@ For security-critical components:
 
 ### Deepening Understanding
 
-1. **Read orchestration patterns**: [/notes/review/orchestration-patterns.md](/notes/review/orchestration-patterns.md)
-2. **Study worktree strategy**: [/notes/review/worktree-strategy.md](/notes/review/worktree-strategy.md)
-3. **Explore skills system**: [/notes/review/skills-design.md](/notes/review/skills-design.md)
+1. **Read orchestration patterns**: [/notes/review/orchestration-patterns.md](../../notes/review/orchestration-patterns.md)
+2. **Study worktree strategy**: [/notes/review/worktree-strategy.md](../../notes/review/worktree-strategy.md)
+3. **Explore skills system**: [/notes/review/skills-design.md](../../notes/review/skills-design.md)
 
 ### Getting Help
 

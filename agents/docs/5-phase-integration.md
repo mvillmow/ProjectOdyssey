@@ -935,4 +935,4 @@ mojo build src/
 - [Common Workflows](./workflows.md) - Workflow examples
 - [Agent Hierarchy](../agent-hierarchy.md) - Complete agent specification
 - [Delegation Rules](../delegation-rules.md) - How agents coordinate
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Detailed coordination patterns
+- [Orchestration Patterns](../../notes/review/orchestration-patterns.md) - Detailed coordination patterns

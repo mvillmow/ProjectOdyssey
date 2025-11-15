@@ -449,4 +449,4 @@ Should I delegate this?
 
 - [hierarchy.md](hierarchy.md) - Visual hierarchy and levels
 - [README.md](README.md) - Overview and quick start
-- [/notes/review/orchestration-patterns.md](/notes/review/orchestration-patterns.md) - Detailed patterns
+- [/notes/review/orchestration-patterns.md](../notes/review/orchestration-patterns.md) - Detailed patterns

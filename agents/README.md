@@ -122,7 +122,7 @@ Skills are reusable capabilities separate from agents. They're in `.claude/skill
 - **Tier 2**: Domain-specific (specific agent types) - paper analysis, ML ops, documentation
 - **Tier 3**: Specialized (narrow use cases) - security scanning, performance profiling
 
-**See [/notes/review/skills-design.md](/notes/review/skills-design.md) for complete skills documentation**
+**See [/notes/review/skills-design.md](../notes/review/skills-design.md) for complete skills documentation**
 
 ## Delegation Patterns
 
@@ -187,7 +187,7 @@ Each GitHub issue gets its own worktree:
 - `worktrees/issue-65-pkg-agents/` - Packaging (parallel)
 - `worktrees/issue-66-cleanup-agents/` - Cleanup (sequential)
 
-**See [/notes/review/worktree-strategy.md](/notes/review/worktree-strategy.md) for complete workflow**
+**See [/notes/review/worktree-strategy.md](../notes/review/worktree-strategy.md) for complete workflow**
 
 ## Code Review System
 
@@ -467,10 +467,10 @@ The operational agent configurations are in `.claude/agents/` (23 agents total):
 
 - [Claude Code Sub-Agents Documentation](https://code.claude.com/docs/en/sub-agents)
 - [Claude Code Skills Documentation](https://code.claude.com/docs/en/skills)
-- [Project 5-Phase Workflow](/notes/review/README.md)
+- [Project 5-Phase Workflow](../notes/review/README.md)
 - [Complete Agent Hierarchy](agent-hierarchy.md)
-- [Skills Design](/notes/review/skills-design.md)
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md)
+- [Skills Design](../notes/review/skills-design.md)
+- [Orchestration Patterns](../notes/review/orchestration-patterns.md)
 
 ## Contributing
 
