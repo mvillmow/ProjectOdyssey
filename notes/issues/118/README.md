@@ -23,7 +23,7 @@ and test runners (pytest). These configurations ensure consistent code quality a
 
 ## References
 
-- Source Plan: `/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md`
+- Parent Plan: `/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md`
 - Parent Component: #123 (Pyproject TOML)
 - Related Issues: #119 (Test), #120 (Impl), #121 (Package), #122 (Cleanup)
 - Current pyproject.toml: `/pyproject.toml`
@@ -105,6 +105,7 @@ select = [
     "UP",  # pyupgrade
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
+    "S",   # flake8-bandit security checks
     "SIM", # flake8-simplify
 ]
 ignore = [
