@@ -19,7 +19,7 @@ trait Transform:
     Transforms modify data in-place or return transformed copies.
     """
 
-    fn __call__(self, data: Tensor) -> Tensor:
+    fn __call__(self, data: Tensor) raises -> Tensor:
         """Apply the transform to data.
 
         Args:
@@ -27,6 +27,9 @@ trait Transform:
 
         Returns:
             Transformed tensor.
+
+        Raises:
+            Error if transform cannot be applied.
         """
         ...
 
@@ -53,7 +56,7 @@ struct Compose(Transform):
         """
         self.transforms = transforms^
 
-    fn __call__(self, data: Tensor) -> Tensor:
+    fn __call__(self, data: Tensor) raises -> Tensor:
         """Apply all transforms sequentially.
 
         Args:
@@ -61,6 +64,9 @@ struct Compose(Transform):
 
         Returns:
             Transformed tensor after all transforms.
+
+        Raises:
+            Error if any transform cannot be applied.
         """
         var result = data
         for t in self.transforms:
@@ -92,7 +98,7 @@ struct ToTensor(Transform):
     Ensures data is in tensor format with appropriate dtype.
     """
 
-    fn __call__(self, data: Tensor) -> Tensor:
+    fn __call__(self, data: Tensor) raises -> Tensor:
         """Convert to tensor.
 
         Args:
@@ -100,6 +106,9 @@ struct ToTensor(Transform):
 
         Returns:
             Data as tensor.
+
+        Raises:
+            Error if conversion fails.
         """
         # Already a tensor, just return
         return data
@@ -125,17 +134,24 @@ struct Normalize(Transform):
         self.mean = mean
         self.std = std
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Normalize the tensor.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Normalize tensor - NOT IMPLEMENTED.
+
+        TODO: Implement: (data - self.mean) / self.std
+        Ensure proper broadcasting for multi-dimensional tensors
 
         Args:
             data: Input tensor.
 
         Returns:
             Normalized tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would normalize
-        return data  # (data - self.mean) / self.std
+        raise Error(
+            "Normalize transform not yet implemented - use: (data - mean) / std"
+        )
 
 
 @value
@@ -155,17 +171,22 @@ struct Reshape(Transform):
         """
         self.target_shape = target_shape^
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Reshape the tensor.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Reshape tensor - NOT IMPLEMENTED.
+
+        TODO: Implement tensor reshape operation
+        Validate total elements match between old and new shapes
 
         Args:
             data: Input tensor.
 
         Returns:
             Reshaped tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would reshape
-        return data  # data.reshape(self.target_shape)
+        raise Error("Reshape transform not yet implemented")
 
 
 # ============================================================================
@@ -195,17 +216,26 @@ struct Resize(Transform):
         self.size = size
         self.interpolation = interpolation
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Resize the image.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Resize image tensor - NOT IMPLEMENTED.
+
+        TODO: Implement image resizing (bilinear or nearest-neighbor interpolation)
+        Expected input: [H, W, C] or [C, H, W] tensor
+        Output: [new_height, new_width, C] or [C, new_height, new_width]
 
         Args:
             data: Input image tensor.
 
         Returns:
             Resized image tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would resize
-        return data
+        raise Error(
+            "Resize transform not yet implemented - requires interpolation"
+            " algorithm"
+        )
 
 
 @value
@@ -225,17 +255,22 @@ struct CenterCrop(Transform):
         """
         self.size = size
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Apply center crop.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Center crop image - NOT IMPLEMENTED.
+
+        TODO: Crop center region of size (crop_height, crop_width)
+        Calculate offsets: (H - crop_H) / 2, (W - crop_W) / 2
 
         Args:
             data: Input image tensor.
 
         Returns:
             Cropped image tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would crop
-        return data
+        raise Error("CenterCrop transform not yet implemented")
 
 
 @value
@@ -258,17 +293,22 @@ struct RandomCrop(Transform):
         self.size = size
         self.padding = padding
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Apply random crop.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Random crop image - NOT IMPLEMENTED.
+
+        TODO: Crop random region of size (crop_height, crop_width)
+        Use random offsets within valid range
 
         Args:
             data: Input image tensor.
 
         Returns:
             Randomly cropped image tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would randomly crop
-        return data
+        raise Error("RandomCrop transform not yet implemented")
 
 
 @value
@@ -288,19 +328,22 @@ struct RandomHorizontalFlip(Transform):
         """
         self.p = p
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Apply random horizontal flip.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Randomly flip image horizontally - NOT IMPLEMENTED.
+
+        TODO: Flip along width dimension with probability self.p
+        Reverse width axis if flip is triggered
 
         Args:
             data: Input image tensor.
 
         Returns:
             Possibly flipped image tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        if random_si64(0, 1000) / 1000.0 < self.p:
-            # Placeholder - actual implementation would flip
-            return data
-        return data
+        raise Error("RandomHorizontalFlip transform not yet implemented")
 
 
 @value
@@ -325,14 +368,22 @@ struct RandomRotation(Transform):
         self.degrees = degrees
         self.fill_value = fill_value
 
-    fn __call__(self, data: Tensor) -> Tensor:
-        """Apply random rotation.
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Randomly rotate image - NOT IMPLEMENTED.
+
+        TODO: Rotate by random angle in self.degrees range
+        Requires rotation matrix and interpolation
 
         Args:
             data: Input image tensor.
 
         Returns:
             Rotated image tensor.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder - actual implementation would rotate
-        return data
+        raise Error(
+            "RandomRotation transform not yet implemented - requires affine"
+            " transform"
+        )

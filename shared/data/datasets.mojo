@@ -174,7 +174,12 @@ struct FileDataset(Dataset):
             idx = self._len + idx
 
         if idx < 0 or idx >= self._len:
-            raise Error("Index out of bounds")
+            raise Error(
+                "Index "
+                + str(index)
+                + " out of bounds for dataset of size "
+                + str(self._len)
+            )
 
         # Check cache first
         if self.cache_enabled:
@@ -194,7 +199,13 @@ struct FileDataset(Dataset):
         return result
 
     fn _load_file(self, path: String) raises -> Tensor:
-        """Load data from file.
+        """Load data from file - NOT IMPLEMENTED.
+
+        TODO: Implement file loading based on format:
+        - For images: Load from disk, decode, convert to tensor
+        - For numpy: Load .npy or .npz files
+        - For CSV: Parse and convert to tensors
+        - Expected return: data tensor
 
         Args:
             path: Path to file.
@@ -205,6 +216,7 @@ struct FileDataset(Dataset):
         Raises:
             Error if file cannot be loaded.
         """
-        # Placeholder - actual implementation would load from disk
-        # For now, return dummy data
-        return Tensor.zeros([1, 28, 28])  # Example for image data
+        raise Error(
+            "FileDataset file loading not yet implemented - see TODO for"
+            " implementation details"
+        )

@@ -79,7 +79,7 @@ struct BaseLoader:
             Error if batch_size is invalid.
         """
         if batch_size <= 0:
-            raise Error("Batch size must be positive")
+            raise Error("Batch size must be positive, got: " + str(batch_size))
 
         self.dataset = dataset^
         self.batch_size = batch_size
@@ -177,26 +177,32 @@ struct BatchLoader(BaseLoader):
                 batch_labels.append(sample[1])
 
             # Stack into batch tensors
-            var data_tensor = self._stack_tensors(batch_data)
-            var labels_tensor = self._stack_tensors(batch_labels)
+            var data_tensor = self._stack_tensors(batch_data)^
+            var labels_tensor = self._stack_tensors(batch_labels)^
 
             batches.append(Batch(data_tensor^, labels_tensor^, batch_indices^))
             batch_start = batch_end
 
         return batches
 
-    fn _stack_tensors(self, tensors: List[Tensor]) -> Tensor:
-        """Stack list of tensors into a batch tensor.
+    fn _stack_tensors(self, tensors: List[Tensor]) raises -> Tensor:
+        """Stack list of tensors into a batch tensor - NOT IMPLEMENTED.
+
+        TODO: Implement proper tensor stacking:
+        - Create new tensor with shape [batch_size, *tensor_shape]
+        - Copy each tensor into the batch dimension
+        - Return stacked result
 
         Args:
             tensors: List of tensors to stack.
 
         Returns:
             Stacked tensor with batch dimension.
+
+        Raises:
+            Error if not yet implemented.
         """
-        # Placeholder implementation - actual would stack along batch dim
-        # For now, return first tensor
-        if len(tensors) > 0:
-            return tensors[0]
-        else:
-            return Tensor.zeros([1])
+        raise Error(
+            "Tensor stacking not yet implemented - see TODO for implementation"
+            " details"
+        )
