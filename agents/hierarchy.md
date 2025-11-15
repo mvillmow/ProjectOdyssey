@@ -96,24 +96,27 @@
 - **Agents**: 5 types (Implementation, Test, Docs, Performance, Security)
 - **Scope**: Components within modules
 - **Decisions**: Component implementation approach
-- **Phase**: Plan, Test, Implementation, Packaging
+- **Phase**: Plan, Test, Implementation, Package
 - **Language Context**: Chooses Mojo patterns (fn vs def, struct vs class, SIMD usage)
+- **Package Phase**: Design packaging strategy, specify .mojopkg requirements, plan CI/CD workflows
 
 ### Level 4: Implementation Engineers
 
 - **Agents**: 5 types (Senior, Standard, Test, Docs, Performance)
 - **Scope**: Functions and classes
 - **Decisions**: Implementation details
-- **Phase**: Test, Implementation, Packaging
+- **Phase**: Test, Implementation, Package
 - **Language Context**: Writes Mojo code, uses Mojo standard library, implements algorithms
+- **Package Phase**: Build .mojopkg files, create distribution archives, implement packaging scripts
 
 ### Level 5: Junior Engineers
 
 - **Agents**: 3 types (Implementation, Test, Documentation)
 - **Scope**: Simple functions, boilerplate
 - **Decisions**: None (follows instructions)
-- **Phase**: Test, Implementation, Packaging
+- **Phase**: Test, Implementation, Package
 - **Language Context**: Generates Mojo boilerplate, applies formatting
+- **Package Phase**: Run package builds, verify installations, execute packaging commands
 
 ## Mojo-Specific Considerations
 

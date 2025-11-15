@@ -307,12 +307,13 @@ Level 5: Junior Engineers
 - Document APIs and interfaces
 - Create usage examples
 - Write tutorials if needed
+- **Package Phase**: Create distribution documentation, installation guides, package metadata
 
 **Delegates To**: Documentation Writers (Level 4)
 
-**Artifacts**: READMEs, API docs, tutorials
+**Artifacts**: READMEs, API docs, tutorials, package documentation
 
-**Workflow Phase**: Plan, Packaging, Cleanup
+**Workflow Phase**: Plan, Package, Cleanup
 
 **Configuration File**: `.claude/agents/documentation-specialist.md`
 
@@ -437,10 +438,11 @@ Level 5: Junior Engineers
 - Create code examples
 - Write README sections
 - Update documentation as code changes
+- **Package Phase**: Write installation guides, package READMEs, distribution documentation
 
-**Artifacts**: Documentation files, docstrings
+**Artifacts**: Documentation files, docstrings, package documentation
 
-**Workflow Phase**: Packaging
+**Workflow Phase**: Package
 
 **Skills Used**: documentation_generation, example_extraction
 
@@ -646,7 +648,7 @@ Coordinates with: [Same level agents]
 | Plan | 0, 1, 2, 3 | Orchestrators and designers create specifications |
 | Test | 3, 4, 5 | Specialists and engineers write tests |
 | Implementation | 3, 4, 5 | Specialists and engineers build functionality |
-| Packaging | 3, 4, 5 | Specialists and engineers integrate artifacts |
+| Package | 3, 4, 5 | Specialists and engineers create distributable packages (.mojopkg, archives, CI/CD) |
 | Cleanup | All | All levels review and refactor their work |
 
 ---

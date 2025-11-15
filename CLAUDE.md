@@ -389,18 +389,25 @@ What this specific issue accomplishes (1-2 sentences)
 
 Every component follows a hierarchical workflow with clear dependencies:
 
-**Workflow**: Plan → [Test | Implementation | Packaging] → Cleanup
+**Workflow**: Plan → [Test | Implementation | Package] → Cleanup
 
 1. **Plan** - Design and documentation (MUST complete first)
 2. **Test** - Write tests following TDD (parallel after Plan)
 3. **Implementation** - Build the functionality (parallel after Plan)
-4. **Packaging** - Integration and packaging (parallel after Plan)
+4. **Package** - Create distributable packages (parallel after Plan)
+   - Build binary packages (`.mojopkg` files for Mojo modules)
+   - Create distribution archives (`.tar.gz`, `.zip` for tooling/docs)
+   - Configure package metadata and installation procedures
+   - Add components to existing packages
+   - Test package installation in clean environments
+   - Create CI/CD packaging workflows
+   - **NOT just documenting** - must create actual distributable artifacts
 5. **Cleanup** - Refactor and finalize (runs after parallel phases complete)
 
 **Key Points**:
 
 - Plan phase produces specifications for all other phases
-- Test/Implementation/Packaging can run in parallel after Plan completes
+- Test/Implementation/Package can run in parallel after Plan completes
 - Cleanup collects issues discovered during the parallel phases
 - Each phase has a separate GitHub issue with detailed instructions
 

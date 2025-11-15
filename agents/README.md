@@ -166,9 +166,12 @@ Component Specialist
 
 - Levels 0-2: Orchestrators and designers create specifications
 
-**Phases 2-4: Test/Implementation/Packaging** (Parallel)
+**Phases 2-4: Test/Implementation/Package** (Parallel)
 
 - Levels 3-5: Specialists and engineers execute in parallel
+- **Package Phase**: Create distributable artifacts (.mojopkg files, archives, CI/CD workflows)
+  - NOT just documenting existing structures
+  - Must produce actual installable packages
 
 **Phase 5: Cleanup** (Sequential)
 
