@@ -1,368 +1,278 @@
-# ML Odyssey Installation Guide
+# Benchmark Tooling Installation Guide
 
 ## Overview
 
-ML Odyssey provides distributable Mojo packages for machine learning research. This guide covers installation of the
-training module and other shared library components.
+This guide explains how to install and use the ML Odyssey benchmarking infrastructure.
 
-## Prerequisites
+## Distribution Package
 
-- Mojo compiler installed ([Modular Installation Guide](https://docs.modular.com/mojo/manual/get-started/))
-- Mojo available in PATH
-- Compatible operating system (Linux, macOS)
+**Version**: 0.1.0
 
-## Quick Start
+**Package**: `benchmarks-0.1.0.tar.gz`
 
-### Installing Pre-built Packages
+**Contents**:
 
-If you have access to pre-built `.mojopkg` files:
+- Benchmark execution scripts (Mojo)
+- Baseline comparison tools
+- Sample baseline results
+- Documentation
+- License
 
-```bash
-# Install training module
-mojo install dist/training-0.1.0.mojopkg
+## Installation
 
-# Verify installation
-mojo run -c "from training import Callback, LRScheduler; print('Training module ready!')"
-```
+### From Distribution Archive
 
-### Building from Source
-
-To build packages from source:
+1. Extract the archive:
 
 ```bash
-# Build training package
-./scripts/build_training_package.sh
-
-# Test installation
-./scripts/install_verify_training.sh
+tar -xzf benchmarks-0.1.0.tar.gz
 ```
 
-## Package Modules
+This will create a `benchmarks/` directory with the following structure:
 
-### Training Module
+```text
+benchmarks/
+├── README.md                      # Comprehensive documentation
+├── baselines/                     # Baseline results
+│   └── baseline_results.json      # Reference baseline
+├── scripts/                       # Benchmark execution scripts
+│   ├── run_benchmarks.mojo        # Main benchmark runner
+│   └── compare_results.mojo       # Baseline comparison tool
+└── results/                       # Results directory (initially empty)
+```
 
-**Package**: `training-0.1.0.mojopkg`
-
-**Description**: Training utilities including optimizers, schedulers, callbacks, and training loops.
-
-**Installation**:
+1. Verify installation:
 
 ```bash
-mojo install dist/training-0.1.0.mojopkg
+cd benchmarks
+ls -la scripts/
 ```
 
-**Verification**:
+### System Requirements
+
+- **OS**: Linux, macOS (Intel/Apple Silicon), Windows (WSL2)
+- **Memory**: 4GB minimum, 8GB recommended
+- **Disk Space**: 500MB for installation + space for results
+- **Bash**: Version 4.0+ required
+
+### Prerequisites
+
+- Mojo compiler (v0.25.7 or later)
+- Python 3.7+ (for JSON result processing)
+- Sufficient disk space for results storage
+
+## Usage
+
+### Running Benchmarks
+
+Execute all benchmarks:
 
 ```bash
-./scripts/install_verify_training.sh
+mojo benchmarks/scripts/run_benchmarks.mojo
 ```
 
-**Usage Example**:
+Output will be written to:
 
-```mojo
-from training import (
-    Callback,
-    CallbackSignal,
-    CONTINUE,
-    STOP,
-    TrainingState,
-    LRScheduler,
-    StepLR,
-    CosineAnnealingLR,
-    WarmupLR,
-    EarlyStopping,
-    ModelCheckpoint,
-    LoggingCallback,
-    is_valid_loss,
-    clip_gradients,
-)
-
-# Create learning rate scheduler
-var scheduler = StepLR(initial_lr=0.1, step_size=10, gamma=0.1)
-
-# Create early stopping callback
-var early_stop = EarlyStopping(patience=5, min_delta=0.001)
+```text
+benchmarks/results/{timestamp}_results.json
 ```
 
-## Building Packages
+### Comparing Results to Baseline
 
-### Training Module
+Compare your results against the baseline:
 
 ```bash
-# Navigate to repository root
-cd /path/to/ml-odyssey
-
-# Create distribution directory
-mkdir -p dist/
-
-# Build package
-mojo package shared/training -o dist/training-0.1.0.mojopkg
-
-# Verify build
-ls -lh dist/training-0.1.0.mojopkg
+mojo benchmarks/scripts/compare_results.mojo \
+  --baseline benchmarks/baselines/baseline_results.json \
+  --current benchmarks/results/{timestamp}_results.json
 ```
 
-### Automated Build
+**Exit codes**:
 
-Use the provided build scripts:
+- `0` - No performance regressions detected
+- `1` - Performance regressions detected (>10% slowdown)
+
+**Regression severity levels**:
+
+- **Minor**: 10-20% slowdown (warning)
+- **Moderate**: 20-50% slowdown (requires investigation)
+- **Severe**: >50% slowdown (critical issue)
+
+## CI/CD Integration
+
+The distribution includes automated benchmark execution via GitHub Actions.
+
+### Workflow File
+
+Location: `.github/workflows/benchmark.yml`
+
+**Triggers**:
+
+- Manual dispatch (`workflow_dispatch`)
+- Scheduled nightly runs (2 AM UTC)
+- Pull requests with `benchmark` label
+
+**Features**:
+
+- Matrix strategy for parallel execution
+- Baseline comparison
+- Regression detection
+- PR comments with results
+- Artifact retention (90 days)
+
+### Manual Trigger
 
 ```bash
-# Make script executable
-chmod +x scripts/build_training_package.sh
+# Using GitHub CLI
+gh workflow run benchmark.yml
 
-# Build package
-./scripts/build_training_package.sh
+# Or via GitHub web interface
+# Actions → Performance Benchmarks → Run workflow
+```
+
+### PR Integration
+
+Add the `benchmark` label to any PR to trigger benchmarks:
+
+```bash
+gh pr edit <PR_NUMBER> --add-label benchmark
+```
+
+## Benchmark Suites
+
+The workflow supports three benchmark suites:
+
+1. **tensor-ops** - Tensor operation benchmarks
+2. **model-training** - Training loop benchmarks
+3. **data-loading** - Data pipeline benchmarks
+
+Run specific suite:
+
+```bash
+gh workflow run benchmark.yml -f suite=tensor-ops
 ```
 
 ## Verification
 
-### Automated Testing
-
-Each module has a verification script:
+### Test Benchmark Execution
 
 ```bash
-# Training module
-chmod +x scripts/install_verify_training.sh
-./scripts/install_verify_training.sh
+cd benchmarks
+mojo scripts/run_benchmarks.mojo
 ```
 
-### Manual Testing
+Expected output:
 
-Test installation manually:
+```text
+Running benchmarks...
+- tensor_add_small: XX.X ms
+- tensor_add_large: XX.X ms
+- matmul_small: XX.X ms
+- matmul_large: XX.X ms
+
+Results written to: results/{timestamp}_results.json
+```
+
+### Test Baseline Comparison
 
 ```bash
-# Create test environment
-TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR"
+mojo scripts/compare_results.mojo \
+  --baseline baselines/baseline_results.json \
+  --current results/{latest_timestamp}_results.json
+```
 
-# Install package
-mojo install /path/to/dist/training-0.1.0.mojopkg
+Expected output:
 
-# Test imports
-mojo run -c "from training import Callback; print('Success!')"
-mojo run -c "from training import LRScheduler; print('Success!')"
-mojo run -c "from training import StepLR; print('Success!')"
+```text
+Comparing results...
+✓ tensor_add_small: 0.5% faster
+✓ tensor_add_large: 1.2% slower
+✓ matmul_small: 0.8% faster
+✓ matmul_large: 2.1% slower
 
-# Cleanup
-cd -
-rm -rf "$TEMP_DIR"
+No regressions detected
 ```
 
 ## Troubleshooting
 
-### Package Build Fails
+### Issue: Benchmark fails to run
 
-**Issue**: `mojo package` command fails
+**Solution**:
 
-**Solutions**:
+1. Verify Mojo compiler is installed: `mojo --version`
+1. Check file permissions: `chmod +x scripts/*.mojo`
+1. Ensure all dependencies are available
 
-1. Verify Mojo compiler is installed:
+### Issue: Comparison fails
 
-```bash
-mojo --version
-```
+**Solution**:
 
-1. Check source files compile individually:
+1. Verify baseline file exists: `ls baselines/baseline_results.json`
+1. Check result file exists: `ls results/*.json`
+1. Validate JSON syntax: `python3 -m json.tool < results/file.json`
 
-```bash
-mojo build shared/training/__init__.mojo
-mojo build shared/training/base.mojo
-```
+### Issue: CI workflow doesn't run
 
-1. Review error messages for syntax errors or import issues
+**Solution**:
 
-### Installation Fails
+1. Verify workflow file is in `.github/workflows/`
+1. Check workflow triggers are configured correctly
+1. Ensure GitHub Actions are enabled for repository
+1. Verify `benchmark` label is applied to PR
 
-**Issue**: `mojo install` command fails
+## Updating Baselines
 
-**Solutions**:
+Baseline results should only be updated after verification:
 
-1. Verify package file exists:
-
-```bash
-ls -lh dist/training-0.1.0.mojopkg
-```
-
-1. Check file permissions:
+1. Run benchmarks and verify results are expected
+1. Copy new results to baselines:
 
 ```bash
-chmod 644 dist/training-0.1.0.mojopkg
+cp results/{timestamp}_results.json baselines/baseline_results.json
 ```
 
-1. Try installing to custom location:
+1. Commit updated baseline:
 
 ```bash
-mojo install --prefix /custom/path dist/training-0.1.0.mojopkg
+git add baselines/baseline_results.json
+git commit -m "chore(benchmarks): update baseline results"
 ```
 
-### Import Errors After Installation
-
-**Issue**: Imports fail after successful installation
-
-**Solutions**:
-
-1. Verify package is in Mojo's module search path:
-
-```bash
-mojo run -c "import sys; print(sys.path)"
-```
-
-1. Try explicit path:
-
-```bash
-mojo run -M /path/to/installed/packages -c "from training import Callback"
-```
-
-1. Reinstall package:
-
-```bash
-mojo uninstall training
-mojo install dist/training-0.1.0.mojopkg
-```
-
-### Verification Script Fails
-
-**Issue**: `install_verify_training.sh` fails
-
-**Solutions**:
-
-1. Check package was built:
-
-```bash
-ls -lh dist/training-0.1.0.mojopkg
-```
-
-1. Run script with verbose output:
-
-```bash
-bash -x scripts/install_verify_training.sh
-```
-
-1. Test specific imports manually:
-
-```bash
-mojo run -c "from training import Callback"
-```
-
-## Package Exports (16 total)
-
-The training package includes:
-
-### Core Components (3)
-
-- `TrainingState` - Training state management
-- `Callback` - Base callback interface
-- `CallbackSignal` - Callback signal types
-
-### Callback Signals (2)
-
-- `CONTINUE` - Continue training signal
-- `STOP` - Stop training signal
-
-### Learning Rate Schedulers (4)
-
-- `LRScheduler` - Base scheduler interface
-- `StepLR` - Step learning rate scheduler
-- `CosineAnnealingLR` - Cosine annealing scheduler
-- `WarmupLR` - Warmup learning rate scheduler
-
-### Training Callbacks (3)
-
-- `EarlyStopping` - Early stopping callback
-- `ModelCheckpoint` - Model checkpointing callback
-- `LoggingCallback` - Training logging callback
-
-### Utilities (2)
-
-- `is_valid_loss` - Loss validation utility
-- `clip_gradients` - Gradient clipping utility
-
-### Installation Verification
-
-After installation, verify all exports work:
-
-```bash
-./scripts/install_verify_training.sh
-```
-
-Or test manually:
-
-```mojo
-from training import Optimizer, LRScheduler, EarlyStopping
-print("Training module installed successfully!")
-```
-
-## Package Contents
-
-### Training Module (training-0.1.0.mojopkg)
-
-**Total Exports**: 16 (see section above for details)
-
-**Dependencies**: Mojo standard library
-
-**Version**: 0.1.0
-
-**License**: BSD-3-Clause
+1. Document reason for baseline update in commit message
 
 ## Uninstallation
 
-To remove installed packages:
+To remove the benchmark tooling:
 
 ```bash
-# Uninstall training module
-mojo uninstall training
-
-# Verify removal
-mojo run -c "from training import Callback" 2>&1 | grep -q "ModuleNotFoundError" && echo "Uninstalled successfully"
+rm -rf benchmarks/
 ```
 
-## Development Installation
-
-For development, use the source directly without installing:
+To remove CI/CD integration:
 
 ```bash
-# Set MOJO_PATH to include source directory
-export MOJO_PATH=/path/to/ml-odyssey/shared:$MOJO_PATH
-
-# Run code using source directly
-mojo run your_script.mojo
+rm .github/workflows/benchmark.yml
 ```
-
-## Version Information
-
-| Package  | Version | Release Date | Status        |
-|----------|---------|--------------|---------------|
-| training | 0.1.0   | 2025-11-14   | In Development|
 
 ## Support
 
-For issues or questions:
+For issues, questions, or contributions:
 
-- Report bugs via GitHub Issues
-- Check documentation in `shared/training/README.md`
-- Review build documentation in `BUILD_PACKAGE.md`
+- **Documentation**: See `benchmarks/README.md`
+- **Issue Tracking**: GitHub Issues
+- **Planning**: Issue #52 ([Plan] Benchmarks)
+- **Testing**: Issue #53 ([Test] Benchmarks)
+- **Implementation**: Issue #54 ([Impl] Benchmarks)
+- **Packaging**: Issue #55 ([Package] Benchmarks)
 
-## Next Steps
+## License
 
-After installation:
+BSD 3-Clause License - See LICENSE file for details
 
-1. Review module documentation in `shared/training/README.md`
-1. Explore examples in `examples/` directory
-1. Check test files in `tests/shared/training/` for usage patterns
-1. Read the comprehensive guides in `docs/`
+## Version History
 
-## Building Other Modules
-
-As additional modules are packaged, they will follow the same pattern:
-
-```bash
-# Data module (future)
-mojo package shared/data -o dist/data-0.1.0.mojopkg
-./scripts/install_verify_data.sh
-
-# Utils module (future)
-mojo package shared/utils -o dist/utils-0.1.0.mojopkg
-./scripts/install_verify_utils.sh
-```
-
-Check individual module README files for specific installation instructions.
+- **0.1.0** (2025-01-14): Initial distribution release
+  - Benchmark runner implementation
+  - Baseline comparison tool
+  - CI/CD workflow integration
+  - Placeholder baseline values (to be updated with real benchmarks)

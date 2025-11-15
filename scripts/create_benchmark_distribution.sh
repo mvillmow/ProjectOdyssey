@@ -11,8 +11,12 @@
 # Outputs:
 #   dist/benchmarks-0.1.0.tar.gz - Distribution archive
 #
-# Prerequisites:
+# Requirements:
+#   - Bash 4.0+ (for associative arrays)
 #   - tar command available
+#   - Mojo v0.25.7+
+#
+# Prerequisites:
 #   - All benchmark files in place
 #
 
@@ -93,7 +97,7 @@ fi
 # Create tar.gz archive
 tar -czf "$ARCHIVE_PATH" \
     benchmarks/ \
-    LICENSE
+    LICENSE || { echo "❌ ERROR: Failed to create archive"; exit 1; }
 
 echo "✅ Created archive: $ARCHIVE_PATH"
 echo ""
@@ -127,7 +131,7 @@ echo ""
 
 # 7. Test extraction
 echo "Step 7: Testing archive extraction..."
-TEST_DIR="dist/test_extract_$$"
+TEST_DIR="dist/test_extract_$(date +%s)_$$"
 mkdir -p "$TEST_DIR"
 
 tar -xzf "$ARCHIVE_PATH" -C "$TEST_DIR"
