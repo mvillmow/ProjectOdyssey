@@ -52,8 +52,7 @@ pixi run mojo format shared/
 
 Let's create a simple neural network using the shared library.
 
-See [`examples/getting-started/quickstart_example.mojo`](
-../../examples/getting-started/quickstart_example.mojo) for a complete working example.
+See `examples/getting-started/quickstart_example.mojo`](
 
 Key concepts demonstrated:
 
@@ -71,7 +70,7 @@ var trainer = Trainer(model, optimizer)
 trainer.train(train_loader, epochs=10)
 ```
 
-Full example: [`examples/getting-started/quickstart_example.mojo`](../../examples/getting-started/quickstart_example.mojo)
+Full example: `examples/getting-started/quickstart_example.mojo`
 
 Run the example:
 
@@ -126,4 +125,4 @@ For optimal performance:
 
 - [Documentation](../index.md) - Complete documentation
 - [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues) - Report bugs or ask questions
-- [Contributing](../../CONTRIBUTING.md) - Contribution guidelines
+- [Contributing](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) - Contribution guidelines

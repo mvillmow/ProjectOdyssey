@@ -57,8 +57,7 @@ fn simd_example():
 
 Convert scalar loops to SIMD for massive performance gains.
 
-See [`examples/performance/simd_optimization.mojo`](
-../../examples/performance/simd_optimization.mojo) for complete working examples.
+See `examples/performance/simd_optimization.mojo`](
 
 Key pattern:
 
@@ -75,7 +74,7 @@ fn relu_simd(inout tensor: Tensor):
     vectorize[simd_width, vectorized_relu](tensor.size())
 ```
 
-Full example: [`examples/performance/simd_optimization.mojo`](../../examples/performance/simd_optimization.mojo)
+Full example: `examples/performance/simd_optimization.mojo`
 
 ### Matrix Multiplication
 
@@ -181,8 +180,7 @@ struct ParallelLinear:
 
 Avoid unnecessary allocations for better memory efficiency.
 
-See [`examples/performance/memory_optimization.mojo`](
-../../examples/performance/memory_optimization.mojo) for complete working examples.
+See `examples/performance/memory_optimization.mojo`](
 
 Key pattern:
 
@@ -201,7 +199,7 @@ fn best_update(inout weights: Tensor, borrowed grad: Tensor, lr: Float64):
     # ... (see full example for SIMD implementation)
 ```
 
-Full example: [`examples/performance/memory_optimization.mojo`](../../examples/performance/memory_optimization.mojo)
+Full example: `examples/performance/memory_optimization.mojo`
 
 ### Memory Layout
 

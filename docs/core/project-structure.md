@@ -296,6 +296,6 @@ Git worktrees allow parallel development on multiple features.
 
 ## Related Documentation
 
-- [Repository README](../../README.md) - Project overview
-- [Contributing Guide](../../CONTRIBUTING.md) - Contribution guidelines
+- [Repository README](https://github.com/mvillmow/ml-odyssey/blob/main/README.md) - Project overview
+- [Contributing Guide](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) - Contribution guidelines
 - [Agent System](agent-system.md) - Development workflow with agents

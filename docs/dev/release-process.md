@@ -548,6 +548,6 @@ python scripts/bump_version.py minor  # 0.1.0 → 0.2.0
 
 ## Related Documentation
 
-- [Contributing Guide](../../CONTRIBUTING.md) - Contribution workflow
+- [Contributing Guide](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) - Contribution workflow
 - [Testing Strategy](../core/testing-strategy.md) - Release testing
 - [Workflow](../core/workflow.md) - Development process

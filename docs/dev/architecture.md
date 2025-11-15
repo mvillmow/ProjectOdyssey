@@ -212,7 +212,7 @@ Transforms
 - Python ecosystem for tooling
 - Clear separation of concerns
 
-**Details**: See [ADR-001](../../notes/review/adr/ADR-001-language-selection-tooling.md)
+**Details**: See [ADR-001](https://github.com/mvillmow/ml-odyssey/blob/main/notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ### ADR-002: Memory Management
 
@@ -507,4 +507,4 @@ Designed for easy extension:
 
 - [Project Structure](../core/project-structure.md) - Repository organization
 - [Mojo Patterns](../core/mojo-patterns.md) - Language-specific patterns
-- [ADRs](../../notes/review/adr/) - Architecture decision records
+- [ADRs](https://github.com/mvillmow/ml-odyssey/blob/main/notes/review/adr/) - Architecture decision records

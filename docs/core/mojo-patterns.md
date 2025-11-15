@@ -79,8 +79,7 @@ struct Linear:
 
 Mojo's ownership system prevents memory errors.
 
-See [`examples/mojo-patterns/ownership_example.mojo`](
-../../examples/mojo-patterns/ownership_example.mojo) for a complete working example.
+See `examples/mojo-patterns/ownership_example.mojo`](
 
 Key patterns:
 
@@ -102,7 +101,7 @@ fn update_weights(inout weights: Tensor, borrowed gradients: Tensor, lr: Float64
 - Use `owned` only when consuming resources
 - Avoid unnecessary copies
 
-Full example: [`examples/mojo-patterns/ownership_example.mojo`](../../examples/mojo-patterns/ownership_example.mojo)
+Full example: `examples/mojo-patterns/ownership_example.mojo`
 
 ### In-Place Operations
 
@@ -134,7 +133,7 @@ fn update_good(inout weights: Tensor, borrowed grad: Tensor, lr: Float64):
 
 Leverage SIMD for parallel computation.
 
-See [`examples/mojo-patterns/simd_example.mojo`](../../examples/mojo-patterns/simd_example.mojo) for a complete working example.
+See `examples/mojo-patterns/simd_example.mojo` for a complete working example.
 
 Key pattern:
 
@@ -151,7 +150,7 @@ fn relu_simd(inout tensor: Tensor):
     vectorize[simd_width, vectorized_relu](tensor.size())
 ```
 
-Full example: [`examples/mojo-patterns/simd_example.mojo`](../../examples/mojo-patterns/simd_example.mojo)
+Full example: `examples/mojo-patterns/simd_example.mojo`
 
 ### Parallel Loops
 
@@ -181,8 +180,7 @@ fn batch_forward(borrowed inputs: Tensor, borrowed weights: Tensor) -> Tensor:
 
 Create reusable interfaces with traits.
 
-See [`examples/mojo-patterns/trait_example.mojo`](
-../../examples/mojo-patterns/trait_example.mojo) for a complete working example.
+See `examples/mojo-patterns/trait_example.mojo`](
 
 Key pattern:
 
@@ -198,7 +196,7 @@ struct Linear(Module):
         return input @ self.weight.T + self.bias
 ```
 
-Full example: [`examples/mojo-patterns/trait_example.mojo`](../../examples/mojo-patterns/trait_example.mojo)
+Full example: `examples/mojo-patterns/trait_example.mojo`
 
 ### Generic Functions
 

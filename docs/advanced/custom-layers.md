@@ -66,8 +66,7 @@ var output = layer.forward(input)  # Scaled by learnable parameter
 
 Parametric ReLU with learnable slope.
 
-See [`examples/custom-layers/prelu_activation.mojo`](
-../../examples/custom-layers/prelu_activation.mojo) for a complete working example.
+See `examples/custom-layers/prelu_activation.mojo`](
 
 Key implementation:
 
@@ -82,7 +81,7 @@ struct PReLU(Module):
         return positive + self.alpha[0] * negative
 ```
 
-Full example: [`examples/custom-layers/prelu_activation.mojo`](../../examples/custom-layers/prelu_activation.mojo)
+Full example: `examples/custom-layers/prelu_activation.mojo`
 
 ## Advanced Custom Layer
 
@@ -223,8 +222,7 @@ struct CustomLinear(Module):
 
 Custom loss for imbalanced datasets.
 
-See [`examples/custom-layers/focal_loss.mojo`](
-../../examples/custom-layers/focal_loss.mojo) for a complete working example.
+See `examples/custom-layers/focal_loss.mojo`](
 
 Key implementation:
 
@@ -245,7 +243,7 @@ struct FocalLoss:
         return (self.alpha * focal_weight * -log(p_t + 1e-7)).mean()
 ```
 
-Full example: [`examples/custom-layers/focal_loss.mojo`](../../examples/custom-layers/focal_loss.mojo)
+Full example: `examples/custom-layers/focal_loss.mojo`
 
 ## Attention Mechanism
 
@@ -253,8 +251,7 @@ Full example: [`examples/custom-layers/focal_loss.mojo`](../../examples/custom-l
 
 Multi-head self-attention mechanism used in Transformers.
 
-See [`examples/custom-layers/attention_layer.mojo`](
-../../examples/custom-layers/attention_layer.mojo) for a complete working example.
+See `examples/custom-layers/attention_layer.mojo`](
 
 Key implementation:
 
@@ -277,7 +274,7 @@ struct MultiHeadAttention(Module):
         # ... (see full example)
 ```
 
-Full example: [`examples/custom-layers/attention_layer.mojo`](../../examples/custom-layers/attention_layer.mojo)
+Full example: `examples/custom-layers/attention_layer.mojo`
 
 ## Testing Custom Layers
 

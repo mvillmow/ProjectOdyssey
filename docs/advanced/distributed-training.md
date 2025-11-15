@@ -217,7 +217,7 @@ Learn from existing frameworks:
 
 ## Related Documentation
 
-- [Roadmap](../../README.md#roadmap) - Project roadmap
-- [Contributing](../../CONTRIBUTING.md) - How to contribute
+- [Roadmap](https://github.com/mvillmow/ml-odyssey/blob/main/README.md#roadmap) - Project roadmap
+- [Contributing](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) - How to contribute
 - [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues?q=label%3Adistributed-training)
   - Distributed training issues
