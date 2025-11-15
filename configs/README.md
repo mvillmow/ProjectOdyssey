@@ -34,7 +34,7 @@ mojo run papers/lenet5/train.mojo --config configs/experiments/custom/my_experim
 
 ## Directory Structure
 
-```
+```text
 configs/
 ├── README.md                           # This file
 ├── defaults/                           # Default configurations used as base
@@ -70,6 +70,7 @@ for common parameters.
 #### training.yaml
 
 Defines default training parameters:
+
 - Optimizer settings (SGD, learning rate, momentum)
 - Learning rate scheduler configuration
 - Training loop parameters (epochs, batch size, seed)
@@ -91,6 +92,7 @@ optimizer:
 #### model.yaml
 
 Defines default model settings:
+
 - Weight initialization methods
 - Regularization techniques (dropout, batch norm)
 - Architecture defaults (activation, pooling, padding)
@@ -98,6 +100,7 @@ Defines default model settings:
 #### data.yaml
 
 Defines default data processing:
+
 - Preprocessing (normalization, resizing)
 - Data augmentation settings (disabled by default)
 - Data loading parameters (batch size, workers)
@@ -106,6 +109,7 @@ Defines default data processing:
 #### paths.yaml
 
 Defines default directory paths with environment variable support:
+
 - Data directory: `${DATA_DIR:-./data}`
 - Cache directory: `${CACHE_DIR:-~/.cache/ml-odyssey}`
 - Output directory: `${OUTPUT_DIR:-./output}`
@@ -113,6 +117,7 @@ Defines default directory paths with environment variable support:
 - Experiment tracking paths
 
 **Environment variable syntax**: `${VAR_NAME:-default_value}`
+
 - If `VAR_NAME` is set in the environment, its value is used
 - Otherwise, `default_value` is used
 - Example: `${DATA_DIR:-./data}` expands to `/home/user/data` if `DATA_DIR=/home/user/data`, else `./data`
@@ -124,6 +129,7 @@ Paper-specific configurations define the exact model architecture and training p
 #### LeNet-5 Example
 
 **model.yaml**: Complete LeNet-5 architecture
+
 - Input shape: 1x28x28 (MNIST)
 - 2 convolutional blocks with average pooling
 - 2 fully connected layers
@@ -131,12 +137,14 @@ Paper-specific configurations define the exact model architecture and training p
 - Activation: tanh (as per original paper)
 
 **training.yaml**: Training parameters from paper
+
 - SGD optimizer with lr=0.01 (higher than modern defaults)
 - Step learning rate schedule with gamma=0.5
 - 20 epochs, batch size=128
 - Seed=1998 (year of paper)
 
 **data.yaml**: MNIST dataset configuration
+
 - Normalization with MNIST-specific mean/std
 - No data augmentation
 - 60K training, 10K validation, 10K test splits
@@ -149,6 +157,7 @@ Experiment configurations extend paper configurations with variations to test hy
 #### LeNet-5 Baseline
 
 **baseline.yaml**: Exact paper reproduction
+
 - Inherits all settings from paper configuration
 - Expects 99.1% test accuracy (as reported)
 - Tracks: train/val loss, train/val/test accuracy
@@ -156,6 +165,7 @@ Experiment configurations extend paper configurations with variations to test hy
 #### LeNet-5 Augmented
 
 **augmented.yaml**: Modern techniques experiment
+
 - Adds data augmentation (rotation, translation, scaling)
 - Uses Adam optimizer instead of SGD
 - Cosine annealing learning rate schedule
@@ -168,76 +178,76 @@ Experiment configurations extend paper configurations with variations to test hy
 
 1. Create directory structure:
 
-```bash
-mkdir -p configs/papers/your_paper
-cd configs/papers/your_paper
-```
+   ```bash
+   mkdir -p configs/papers/your_paper
+   cd configs/papers/your_paper
+   ```
 
-2. Copy template and customize:
+1. Copy template and customize:
 
-```bash
-cp ../../templates/paper.yaml model.yaml
-cp ../../defaults/training.yaml training.yaml
-cp ../../defaults/data.yaml data.yaml
-```
+   ```bash
+   cp ../../templates/paper.yaml model.yaml
+   cp ../../defaults/training.yaml training.yaml
+   cp ../../defaults/data.yaml data.yaml
+   ```
 
-3. Edit each file to match paper specifications:
+1. Edit each file to match paper specifications:
 
-```yaml
-# model.yaml
-name: "YourModel"
-paper: "Author et al., 2024"
-input_shape: [3, 224, 224]
-num_classes: 1000
+   ```yaml
+   # model.yaml
+   name: "YourModel"
+   paper: "Author et al., 2024"
+   input_shape: [3, 224, 224]
+   num_classes: 1000
 
-layers:
-  - name: "conv1"
-    type: "conv2d"
-    out_channels: 64
-    kernel_size: 7
-    stride: 2
-    # ... more layers
-```
+   layers:
+     - name: "conv1"
+       type: "conv2d"
+       out_channels: 64
+       kernel_size: 7
+       stride: 2
+       # ... more layers
+   ```
 
-4. Update training and data configurations as needed
+1. Update training and data configurations as needed
 
 ### Adding a New Experiment
 
 1. Create directory if needed:
 
-```bash
-mkdir -p configs/experiments/paper_name
-```
+   ```bash
+   mkdir -p configs/experiments/paper_name
+   ```
 
-2. Copy and customize template:
+1. Copy and customize template:
 
-```bash
-cp ../../templates/experiment.yaml my_experiment.yaml
-```
+   ```bash
+   cp ../../templates/experiment.yaml my_experiment.yaml
+   ```
 
-3. Define inheritance:
+1. Define inheritance:
 
-```yaml
-extends:
-  - ../../papers/paper_name/model.yaml
-  - ../../papers/paper_name/training.yaml
-  - ../../papers/paper_name/data.yaml
-```
+   ```yaml
+   extends:
+     - ../../papers/paper_name/model.yaml
+     - ../../papers/paper_name/training.yaml
+     - ../../papers/paper_name/data.yaml
+   ```
 
-4. Add only the overrides for your experiment:
+1. Add only the overrides for your experiment:
 
-```yaml
-# Only change what's different from paper config
-optimizer:
-  learning_rate: 0.005  # Override to test different LR
+   ```yaml
+   # Only change what's different from paper config
+   optimizer:
+     learning_rate: 0.005  # Override to test different LR
 
-training:
-  epochs: 50  # Run longer
+   training:
+     epochs: 50  # Run longer
 
-augmentation:
-  enabled: true
-  random_rotation: 10
-```
+   augmentation:
+     enabled: true
+     random_rotation: 10
+   ```
 
 ## Configuration Inheritance
 
@@ -251,10 +261,11 @@ extends:
 ```
 
 **Merging Rules**:
+
 1. Load all parent configurations in order
-2. Merge dictionaries recursively
-3. Later files override earlier values
-4. Current file overrides all parents
+1. Merge dictionaries recursively
+1. Later files override earlier values
+1. Current file overrides all parents
 
 **Example**:
 
@@ -273,6 +284,7 @@ optimizer:
 ```
 
 Result after merging:
+
 ```yaml
 optimizer:
   name: "sgd"          # From parent
@@ -505,18 +517,21 @@ training:
 ### Configuration Not Loading
 
 1. Check YAML syntax:
+
    ```bash
    python3 -c "import yaml; yaml.safe_load(open('your_config.yaml'))"
    ```
 
-2. Check extends paths are relative and correct:
+1. Check extends paths are relative and correct:
+
    ```yaml
    extends:
      - ../../papers/lenet5/model.yaml  # Good (relative)
      - /absolute/path/model.yaml       # Bad (absolute)
    ```
 
-3. Verify file exists:
+1. Verify file exists:
+
    ```bash
    ls -la configs/experiments/lenet5/baseline.yaml
    ```
@@ -524,12 +539,15 @@ training:
 ### Environment Variables Not Expanding
 
 1. Check syntax: `${VAR_NAME:-default}`
-2. Verify variable is set:
+
+1. Verify variable is set:
+
    ```bash
    echo $DATA_DIR
    ```
 
-3. Set if needed:
+1. Set if needed:
+
    ```bash
    export DATA_DIR=/path/to/data
    ```
@@ -537,20 +555,22 @@ training:
 ### Schema Validation Fails
 
 1. Check schema file exists:
+
    ```bash
    ls configs/schemas/training.schema.yaml
    ```
 
-2. Validate schema itself:
+1. Validate schema itself:
+
    ```bash
    python3 -c "import yaml; yaml.safe_load(open('configs/schemas/training.schema.yaml'))"
    ```
 
-3. Check configuration matches schema requirements
+1. Check configuration matches schema requirements
 
 ## References
 
-- YAML Syntax: https://yaml.org/spec/1.2/spec.html
-- JSON Schema: https://json-schema.org/
+- YAML Syntax: [https://yaml.org/spec/1.2/spec.html](https://yaml.org/spec/1.2/spec.html)
+- JSON Schema: [https://json-schema.org/](https://json-schema.org/)
 - Mojo Config Utils: `shared/utils/config.mojo`
 - Papers: `papers/` directory structure
