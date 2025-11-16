@@ -1046,3 +1046,38 @@ The directory structure is now:
 Directory structure is production-ready and can support paper implementations.
 EOF
 )"
+
+# PR for Issues #87-91 - Base Config (all phases combined)
+gh pr create --title "feat: Complete Base Config - magic.toml (#87-91)" --body "$(cat <<'EOF'
+## Summary
+
+Complete implementation of magic.toml configuration file for Magic package manager.
+
+Closes #87, #88, #89, #90, #91
+
+## What Changed
+
+### Created magic.toml ✅
+- Project metadata (name, version, description)
+- Mojo version requirement
+- Placeholder sections for future dependencies and channels
+
+### Created Validation Tests ✅
+- `tests/config/test_magic_toml.py` with 3 tests
+- Validates file existence, TOML syntax, metadata completeness
+
+### Documentation ✅
+- Issue documentation for all 5 phases
+- Comments in magic.toml explaining each section
+
+## All Phases Complete
+
+- ✅ #87 Plan: Design and structure defined
+- ✅ #88 Test: Validation tests created
+- ✅ #89 Impl: magic.toml created
+- ✅ #90 Package: Integrated with repository
+- ✅ #91 Cleanup: Validated and production-ready
+
+magic.toml is ready for use with the Magic package manager.
+EOF
+)"
