@@ -15,12 +15,13 @@ Design and document the overview section of the main README.md file. This includ
 
 ## Success Criteria
 
-- [ ] Project description clearly articulates ML Odyssey's purpose
-- [ ] Key features are well-defined and compelling
-- [ ] Target audience is clearly identified
-- [ ] Value proposition is clearly communicated
-- [ ] Writing tone and style are documented
-- [ ] Overview content aligns with project architecture
+- [ ] Project description clearly articulates ML Odyssey's purpose (1-2 sentences as specified)
+- [ ] Key features list contains 4-6 items with both technical aspects and practical benefits
+- [ ] Target audience includes all 4 groups: ML researchers, Mojo developers, students, contributors
+- [ ] Value proposition highlights at least 3 unique differentiators
+- [ ] Writing tone and style guidelines documented with specific examples
+- [ ] Overview section length is 150-300 words as specified
+- [ ] Badge strategy includes: build status, version/release, license, and documentation badges
 - [ ] Documentation approved by Architecture Design Agent
 
 ## References
@@ -35,7 +36,12 @@ Design and document the overview section of the main README.md file. This includ
 
 ## Implementation Notes
 
-To be filled during implementation.
+To be filled during implementation. Capture:
+- Decisions made during content writing
+- Feedback received during reviews
+- Adjustments to the planned structure or tone
+- Badge selection and placement decisions
+- Any deviations from the design decisions and rationale
 
 ## Design Decisions
 
@@ -100,16 +106,32 @@ To be filled during implementation.
 - Agent-driven development methodology
 - Comprehensive 5-phase workflow for quality assurance
 
+### Badges and Metadata
+
+**Badge Strategy**: Include all standard project badges for transparency and quick reference
+
+**Required Badges**:
+1. **Build Status**: CI/CD build status from GitHub Actions workflows
+2. **Version/Release**: Current version or latest release badge
+3. **License**: BSD 3-Clause license badge
+4. **Documentation**: Link to hosted documentation (when available)
+
+**Placement**: Badges should appear at the top of the README, immediately after the title
+
+**Purpose**: Provide immediate visibility into project status, licensing, and resources
+
 ### Content Structure
 
 **Recommended Overview Structure**:
 1. Opening statement (1-2 sentences) - What is ML Odyssey?
 2. Key features (bullet list, 4-6 items)
 3. Target audience (1-2 sentences or small bullet list)
-4. Current status and roadmap (brief)
+4. Current status and roadmap (high-level only - planned papers/features without timeline)
 5. Quick start link (pointing to installation/setup)
 
 **Length**: Approximately 150-300 words for the overview section
+
+**Roadmap Approach**: Keep roadmap high-level - mention planned papers and major features without detailed timelines or phase breakdowns
 
 ## Next Steps
 
