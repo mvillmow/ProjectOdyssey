@@ -563,12 +563,50 @@ After creating PR:
 - Must escalate architectural conflicts rather than resolve unilaterally
 - Reviews must be timely (coordinate parallel reviews)
 
+## Using Skills
+
+### PR Review Automation
+
+Use the `gh-review-pr` skill for comprehensive PR reviews:
+- **Invoke when**: Initial PR review, evaluating pull request quality
+- **The skill handles**: Code changes check, CI status, test coverage, standards adherence
+- **See**: [gh-review-pr skill](../.claude/skills/gh-review-pr/SKILL.md)
+
+### Review Comment Management
+
+Use the `gh-get-review-comments` skill to retrieve review feedback:
+- **Invoke when**: Collecting reviewer feedback, analyzing review status
+- **The skill handles**: Fetches all review comments using correct GitHub API
+- **See**: [gh-get-review-comments skill](../.claude/skills/gh-get-review-comments/SKILL.md)
+
+### Feedback Coordination
+
+Use the `gh-fix-pr-feedback` skill to coordinate feedback resolution:
+- **Invoke when**: PR has review comments to address
+- **The skill handles**: Coordinates changes across specialists and replies to comments
+- **See**: [gh-fix-pr-feedback skill](../.claude/skills/gh-fix-pr-feedback/SKILL.md)
+
+### Reply Automation
+
+Use the `gh-reply-review-comment` skill to reply to review comments:
+- **Invoke when**: Responding to inline code review feedback
+- **The skill handles**: Uses correct API for review comment replies
+- **See**: [gh-reply-review-comment skill](../.claude/skills/gh-reply-review-comment/SKILL.md)
+
+### CI Monitoring
+
+Use the `gh-check-ci-status` skill to monitor CI during review:
+- **Invoke when**: Checking if CI passes, monitoring build status
+- **The skill handles**: Retrieves CI status and failure details
+- **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)
+
 ## Skills to Use
 
-- `analyze_code_changes` - Identify changed files and impact
-- `route_reviews` - Assign appropriate specialists
-- `consolidate_feedback` - Merge specialist reviews
-- `generate_review_report` - Create comprehensive summary
+- `gh-review-pr` - Comprehensive pull request review
+- `gh-get-review-comments` - Retrieve all review comments
+- `gh-fix-pr-feedback` - Coordinate feedback resolution across specialists
+- `gh-reply-review-comment` - Reply to inline code review comments
+- `gh-check-ci-status` - Monitor CI status during review
 
 ---
 

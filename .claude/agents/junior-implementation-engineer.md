@@ -78,9 +78,9 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 
 1. Receive clear, detailed task
 2. Generate or implement code
-3. Format code
-4. Run linters
-5. Fix any linting errors
+3. **Use the `mojo-format` skill to format code**
+4. **Use the `quality-run-linters` skill to run all linters**
+5. **If linting errors: Use the `quality-fix-formatting` skill to auto-fix**
 6. Submit for review
 
 ## No Delegation
@@ -91,11 +91,50 @@ Level 5 is the lowest level - no delegation to other agents.
 
 Implementation
 
+## Using Skills
+
+### Code Formatting
+
+Use the `mojo-format` skill to format Mojo code:
+- **Invoke when**: Before committing code, when formatting checks fail
+- **The skill handles**: All .mojo and .🔥 files automatically
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
+### Running Linters
+
+Use the `quality-run-linters` skill to run all configured linters:
+- **Invoke when**: Before committing, pre-PR validation
+- **The skill handles**: Mojo format, markdownlint, and pre-commit hooks
+- **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
+
+### Fixing Formatting
+
+Use the `quality-fix-formatting` skill to auto-fix formatting issues:
+- **Invoke when**: Linters report formatting errors
+- **The skill handles**: Auto-fixes for Python, Mojo, and markdown
+- **See**: [quality-fix-formatting skill](../.claude/skills/quality-fix-formatting/SKILL.md)
+
+### Creating Pull Requests
+
+Use the `gh-create-pr-linked` skill to create pull requests:
+- **Invoke when**: Ready to submit work for review
+- **The skill ensures**: PR is properly linked to GitHub issue
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
+### Monitoring CI Status
+
+Use the `gh-check-ci-status` skill to monitor CI:
+- **Invoke when**: PR submitted, checking if CI passes
+- **The skill provides**: CI status and failure details
+- **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Template generation
-- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Simple refactorings
-- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Code linting
+- `mojo-format` - Format Mojo code files
+- `quality-run-linters` - Run all configured linters
+- `quality-fix-formatting` - Auto-fix formatting issues
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 
