@@ -7,11 +7,15 @@ to ensure consistency and reduce duplication.
 Fixtures:
 - repo_root: Real repository root directory
 - supporting_dirs: All supporting directory paths
+- papers_dir: Papers directory path
+- shared_dir: Shared library directory path
+- template_dir: Papers template directory path
+- expected_template_structure: Expected template directory layout
 """
 
 import pytest
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 
 @pytest.fixture
@@ -25,6 +29,141 @@ def repo_root() -> Path:
     # Navigate up from tests/foundation/ to repository root
     current_file = Path(__file__)
     return current_file.parent.parent.parent
+
+
+@pytest.fixture
+def papers_dir(repo_root: Path) -> Path:
+    """
+    Provide the papers/ directory path.
+
+    Args:
+        repo_root: Real repository root directory
+
+    Returns:
+        Path to papers directory
+    """
+    return repo_root / "papers"
+
+
+@pytest.fixture
+def shared_dir(repo_root: Path) -> Path:
+    """
+    Provide the shared/ directory path.
+
+    Args:
+        repo_root: Real repository root directory
+
+    Returns:
+        Path to shared directory
+    """
+    return repo_root / "shared"
+
+
+@pytest.fixture
+def template_dir(papers_dir: Path) -> Path:
+    """
+    Provide the papers template directory path.
+
+    Args:
+        papers_dir: Papers directory path
+
+    Returns:
+        Path to template directory
+    """
+    return papers_dir / "_template"
+
+
+@pytest.fixture
+def shared_core_dir(shared_dir: Path) -> Path:
+    """
+    Provide the shared/core/ directory path.
+
+    Args:
+        shared_dir: Shared directory path
+
+    Returns:
+        Path to shared/core directory
+    """
+    return shared_dir / "core"
+
+
+@pytest.fixture
+def shared_training_dir(shared_dir: Path) -> Path:
+    """
+    Provide the shared/training/ directory path.
+
+    Args:
+        shared_dir: Shared directory path
+
+    Returns:
+        Path to shared/training directory
+    """
+    return shared_dir / "training"
+
+
+@pytest.fixture
+def shared_data_dir(shared_dir: Path) -> Path:
+    """
+    Provide the shared/data/ directory path.
+
+    Args:
+        shared_dir: Shared directory path
+
+    Returns:
+        Path to shared/data directory
+    """
+    return shared_dir / "data"
+
+
+@pytest.fixture
+def shared_utils_dir(shared_dir: Path) -> Path:
+    """
+    Provide the shared/utils/ directory path.
+
+    Args:
+        shared_dir: Shared directory path
+
+    Returns:
+        Path to shared/utils directory
+    """
+    return shared_dir / "utils"
+
+
+@pytest.fixture
+def expected_template_structure() -> Dict[str, List[str]]:
+    """
+    Provide expected template directory structure.
+
+    Returns:
+        Dictionary mapping directory paths to expected contents
+    """
+    return {
+        "root": ["README.md", "src", "scripts", "tests", "data", "configs", "notebooks", "examples"],
+        "src": ["__init__.mojo", ".gitkeep"],
+        "scripts": [".gitkeep"],
+        "tests": ["__init__.mojo", ".gitkeep"],
+        "data": ["raw", "processed", "cache"],
+        "configs": ["config.yaml", ".gitkeep"],
+        "notebooks": [".gitkeep"],
+        "examples": [".gitkeep"]
+    }
+
+
+@pytest.fixture
+def expected_shared_structure() -> Dict[str, List[str]]:
+    """
+    Provide expected shared directory structure.
+
+    Returns:
+        Dictionary mapping directory paths to expected contents
+    """
+    return {
+        "root": ["README.md", "__init__.mojo", "core", "training", "data", "utils"],
+        "core": ["README.md", "__init__.mojo"],
+        "training": ["README.md", "__init__.mojo"],
+        "data": ["README.md", "__init__.mojo"],
+        "utils": ["README.md", "__init__.mojo"]
+    }
 
 
 @pytest.fixture
