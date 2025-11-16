@@ -125,12 +125,14 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 ## Workflow
 
 1. Receive test plan from Test Specialist
-1. Implement test cases using real implementations and simple test data
-1. Run tests locally
-1. Verify tests run in CI/CD pipeline
-1. Fix any issues
-1. Report results
-1. Maintain tests as code evolves
+2. **Use the `phase-test-tdd` skill to set up TDD workflow**
+3. Implement test cases using real implementations and simple test data
+4. **Use the `mojo-test-runner` skill to run tests locally**
+5. Verify tests run in CI/CD pipeline
+6. Fix any issues
+7. **Use the `quality-coverage-report` skill to generate coverage analysis**
+8. Report results
+9. Maintain tests as code evolves
 
 ## Coordinates With
 
@@ -141,11 +143,42 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 
 **Test**
 
+## Using Skills
+
+### TDD Workflow
+
+Use the `phase-test-tdd` skill for test-driven development:
+- **Invoke when**: Starting test phase of workflow
+- **The skill handles**: Test scaffolding generation, TDD practice coordination
+- **See**: [phase-test-tdd skill](../.claude/skills/phase-test-tdd/SKILL.md)
+
+### Test Execution
+
+Use the `mojo-test-runner` skill to run Mojo test suites:
+- **Invoke when**: Running tests locally, validating implementations
+- **The skill handles**: Test execution and result parsing
+- **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
+
+### Coverage Analysis
+
+Use the `quality-coverage-report` skill to generate test coverage reports:
+- **Invoke when**: Checking test coverage, identifying untested code
+- **The skill handles**: Coverage calculation and HTML report generation
+- **See**: [quality-coverage-report skill](../.claude/skills/quality-coverage-report/SKILL.md)
+
+### Pre-commit Validation
+
+Use the `ci-run-precommit` skill before committing tests:
+- **Invoke when**: Before committing test code
+- **The skill handles**: Pre-commit hooks including test formatting
+- **See**: [ci-run-precommit skill](../.claude/skills/ci-run-precommit/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
-- [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
+- `phase-test-tdd` - TDD workflow automation and test generation
+- `mojo-test-runner` - Execute Mojo test suites and parse results
+- `quality-coverage-report` - Generate test coverage reports
+- `ci-run-precommit` - Pre-commit validation including test formatting
 
 ## Constraints
 

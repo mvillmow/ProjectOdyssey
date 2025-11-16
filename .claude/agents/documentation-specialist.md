@@ -126,11 +126,42 @@ For standard delegation patterns, escalation rules, and skip-level guidelines, s
 
 **Packaging**, **Cleanup**
 
+## Using Skills
+
+### Architecture Decision Records
+
+Use the `doc-generate-adr` skill to create ADRs:
+- **Invoke when**: Documenting architectural decisions
+- **The skill handles**: Properly formatted ADR file creation with templates
+- **See**: [doc-generate-adr skill](../.claude/skills/doc-generate-adr/SKILL.md)
+
+### Issue Documentation
+
+Use the `doc-issue-readme` skill to generate issue-specific documentation:
+- **Invoke when**: Starting work on an issue, creating /notes/issues/<number>/ structure
+- **The skill handles**: README.md creation in issue directories
+- **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
+
+### Markdown Validation
+
+Use the `doc-validate-markdown` skill before committing documentation:
+- **Invoke when**: Before committing markdown files, checking documentation quality
+- **The skill handles**: Formatting validation, link checking, style compliance
+- **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
+
+### Blog Updates
+
+Use the `doc-update-blog` skill for development blog maintenance:
+- **Invoke when**: Updating blog posts with milestones and learnings
+- **The skill handles**: Blog formatting, milestone updates
+- **See**: [doc-update-blog skill](../.claude/skills/doc-update-blog/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
-- [`generate_api_docs`](../skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
-- [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Version documentation
+- `doc-generate-adr` - Create Architecture Decision Records
+- `doc-issue-readme` - Generate issue-specific README files
+- `doc-validate-markdown` - Validate markdown formatting and style
+- `doc-update-blog` - Update development blog posts
 
 ## Constraints
 

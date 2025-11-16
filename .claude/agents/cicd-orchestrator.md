@@ -206,12 +206,66 @@ trivial fixes (` 20 lines, no design decisions).
 
 **Test**, **Packaging**, **Cleanup**
 
+## Using Skills
+
+### Pre-commit Validation
+
+Use the `ci-run-precommit` skill for code quality checks:
+- **Invoke when**: Validating code before commit, testing if CI will pass
+- **The skill handles**: All configured pre-commit hooks (formatting, linting, trailing whitespace, etc.)
+- **See**: [ci-run-precommit skill](../.claude/skills/ci-run-precommit/SKILL.md)
+
+### Workflow Validation
+
+Use the `ci-validate-workflow` skill to ensure workflow correctness:
+- **Invoke when**: Creating/modifying GitHub Actions workflows, troubleshooting CI issues
+- **The skill handles**: Syntax checking, job dependency validation, best practices
+- **See**: [ci-validate-workflow skill](../.claude/skills/ci-validate-workflow/SKILL.md)
+
+### CI Failure Diagnosis
+
+Use the `ci-fix-failures` skill when CI issues occur:
+- **Invoke when**: CI checks fail, investigating build or test issues
+- **The skill handles**: Log analysis, root cause identification, suggested fixes
+- **See**: [ci-fix-failures skill](../.claude/skills/ci-fix-failures/SKILL.md)
+
+### Package Workflow Creation
+
+Use the `ci-package-workflow` skill to create package automation:
+- **Invoke when**: Setting up automated package building in CI
+- **The skill handles**: Workflow file generation for .mojopkg and distribution archives
+- **See**: [ci-package-workflow skill](../.claude/skills/ci-package-workflow/SKILL.md)
+
+### Test Execution
+
+Use the `mojo-test-runner` skill for Mojo test execution in CI:
+- **Invoke when**: Running Mojo tests in pipeline
+- **The skill handles**: Test execution and result parsing
+- **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
+
+### Security Scanning
+
+Use the `quality-security-scan` skill for vulnerability detection:
+- **Invoke when**: Security validation in pipeline
+- **The skill handles**: Dependency scanning, vulnerability reporting
+- **See**: [quality-security-scan skill](../.claude/skills/quality-security-scan/SKILL.md)
+
+### Coverage Reporting
+
+Use the `quality-coverage-report` skill for test coverage tracking:
+- **Invoke when**: Generating coverage metrics in CI
+- **The skill handles**: Coverage calculation and report generation
+- **See**: [quality-coverage-report skill](../.claude/skills/quality-coverage-report/SKILL.md)
+
 ## Skills to Use
 
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test automation
-- [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage reporting
-- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Performance testing
-- [`scan_vulnerabilities`](../skills/tier-2/scan-vulnerabilities/SKILL.md) - Security scanning
+- `ci-run-precommit` - Pre-commit hook execution and validation
+- `ci-validate-workflow` - GitHub Actions workflow validation
+- `ci-fix-failures` - CI failure diagnosis and resolution
+- `ci-package-workflow` - Automated package workflow generation
+- `mojo-test-runner` - Mojo test execution in CI
+- `quality-security-scan` - Security vulnerability scanning
+- `quality-coverage-report` - Test coverage reporting
 
 ## Error Handling
 
