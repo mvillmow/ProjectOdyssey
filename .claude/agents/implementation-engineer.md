@@ -143,12 +143,50 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 
 Implementation
 
+## Using Skills
+
+### Code Formatting
+
+Use the `mojo-format` skill to format Mojo code:
+- **Invoke when**: Before committing code
+- **The skill handles**: All .mojo and .🔥 files automatically
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
+### Package Building
+
+Use the `mojo-build-package` skill to build Mojo packages:
+- **Invoke when**: Creating distributable .mojopkg files
+- **The skill handles**: Package compilation and manifest creation
+- **See**: [mojo-build-package skill](../.claude/skills/mojo-build-package/SKILL.md)
+
+### Test Execution
+
+Use the `mojo-test-runner` skill to run tests:
+- **Invoke when**: Running Mojo test suites
+- **The skill handles**: Test execution and result parsing
+- **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Ready to submit work for review
+- **The skill ensures**: PR is properly linked to GitHub issue
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
+### CI Status Monitoring
+
+Use the `gh-check-ci-status` skill to monitor CI:
+- **Invoke when**: PR submitted, checking if CI passes
+- **The skill provides**: CI status and failure details
+- **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Function templates
-- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Code improvements
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
-- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Code quality
+- `mojo-format` - Format Mojo code files
+- `mojo-build-package` - Build .mojopkg packages
+- `mojo-test-runner` - Run Mojo test suites
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 

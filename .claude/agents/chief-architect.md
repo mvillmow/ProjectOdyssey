@@ -197,19 +197,42 @@ trivial fixes (` 20 lines, no design decisions).
 
 Primarily **Plan** phase, with oversight in all phases.
 
+## Using Skills
+
+### Agent System Management
+
+Use the `agent-run-orchestrator` skill to delegate to section orchestrators:
+- **Invoke when**: Need to run a specific section orchestrator
+- **The skill handles**: Orchestrator invocation and coordination
+- **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)
+
+Use the `agent-validate-config` skill to validate agent configurations:
+- **Invoke when**: Creating or modifying agent configurations
+- **The skill handles**: YAML frontmatter and configuration validation
+- **See**: [agent-validate-config skill](../.claude/skills/agent-validate-config/SKILL.md)
+
+Use the `agent-test-delegation` skill to test agent delegation patterns:
+- **Invoke when**: Validating agent system before deployment
+- **The skill handles**: Delegation chain testing and escalation path verification
+- **See**: [agent-test-delegation skill](../.claude/skills/agent-test-delegation/SKILL.md)
+
+Use the `agent-coverage-check` skill to ensure complete agent coverage:
+- **Invoke when**: Checking that all workflow phases have agent support
+- **The skill handles**: Coverage analysis across hierarchy levels
+- **See**: [agent-coverage-check skill](../.claude/skills/agent-coverage-check/SKILL.md)
+
+Use the `agent-hierarchy-diagram` skill to visualize agent relationships:
+- **Invoke when**: Creating or updating agent documentation
+- **The skill handles**: Hierarchy diagram generation
+- **See**: [agent-hierarchy-diagram skill](../.claude/skills/agent-hierarchy-diagram/SKILL.md)
+
 ## Skills to Use
 
-### Primary Skills
-
-- [`extract_algorithm`](../skills/tier-2/extract-algorithm/SKILL.md) - Analyze research papers
-- [`identify_architecture`](../skills/tier-2/identify-architecture/SKILL.md) - Extract model architectures
-- [`extract_hyperparameters`](../skills/tier-2/extract-hyperparameters/SKILL.md) - Extract training parameters
-- [`extract_dependencies`](../skills/tier-2/extract-dependencies/SKILL.md) - Map cross-section dependencies
-
-### Supporting Skills
-
-- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Review existing code
-- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Ensure quality standards
+- `agent-run-orchestrator` - Run section orchestrators
+- `agent-validate-config` - Validate agent configurations
+- `agent-test-delegation` - Test delegation patterns
+- `agent-coverage-check` - Ensure complete workflow coverage
+- `agent-hierarchy-diagram` - Generate hierarchy visualizations
 
 ## Error Handling & Recovery
 

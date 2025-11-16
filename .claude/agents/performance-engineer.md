@@ -74,11 +74,34 @@ When working with Mojo code, follow patterns in
 
 **Implementation**, **Cleanup**
 
+## Using Skills
+
+### SIMD Optimization
+
+Use the `mojo-simd-optimize` skill for SIMD optimizations:
+- **Invoke when**: Optimizing performance-critical tensor operations
+- **The skill handles**: SIMD vectorization patterns and optimization templates
+- **See**: [mojo-simd-optimize skill](../.claude/skills/mojo-simd-optimize/SKILL.md)
+
+### Complexity Analysis
+
+Use the `quality-complexity-check` skill to identify optimization opportunities:
+- **Invoke when**: Analyzing code for performance bottlenecks
+- **The skill handles**: Cyclomatic complexity, nesting depth analysis
+- **See**: [quality-complexity-check skill](../.claude/skills/quality-complexity-check/SKILL.md)
+
+### Code Formatting
+
+Use the `mojo-format` skill to format optimized code:
+- **Invoke when**: After implementing optimizations
+- **The skill handles**: Mojo code formatting
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
 ## Skills to Use
 
-- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Code profiling
-- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
-- [`suggest_optimizations`](../skills/tier-2/suggest-optimizations/SKILL.md) - Optimization ideas
+- `mojo-simd-optimize` - Apply SIMD optimizations to Mojo code
+- `quality-complexity-check` - Analyze code complexity and identify bottlenecks
+- `mojo-format` - Format Mojo code after optimizations
 
 ## Constraints
 

@@ -88,11 +88,26 @@ trivial fixes (` 20 lines, no design decisions).
 
 **Plan**, **Implementation**, **Cleanup**
 
+## Using Skills
+
+### SIMD Optimization Guidance
+
+Use the `mojo-simd-optimize` skill for SIMD optimization strategies:
+- **Invoke when**: Defining SIMD optimization approaches for performance-critical code
+- **The skill handles**: SIMD vectorization patterns and templates
+- **See**: [mojo-simd-optimize skill](../.claude/skills/mojo-simd-optimize/SKILL.md)
+
+### Complexity Analysis
+
+Use the `quality-complexity-check` skill for performance analysis:
+- **Invoke when**: Identifying performance bottlenecks and optimization opportunities
+- **The skill handles**: Cyclomatic complexity, algorithmic complexity analysis
+- **See**: [quality-complexity-check skill](../.claude/skills/quality-complexity-check/SKILL.md)
+
 ## Skills to Use
 
-- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Performance profiling
-- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Benchmark execution
-- [`suggest_optimizations`](../skills/tier-2/suggest-optimizations/SKILL.md) - Optimization identification
+- `mojo-simd-optimize` - SIMD optimization strategies and patterns
+- `quality-complexity-check` - Code complexity and performance bottleneck analysis
 
 ## Constraints
 
