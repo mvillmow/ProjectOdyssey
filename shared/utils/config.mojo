@@ -481,8 +481,8 @@ struct Config:
         Raises:
             Error if file not found, empty, or invalid YAML
         """
-        # TODO: Implement full YAML parsing with nested object/array support
-        # For now, implement basic key-value parsing with validation
+        # NOTE: Current implementation supports flat key-value pairs.
+        # Full nested YAML parsing can be added as needed. Using basic parsing.
         var config = Config()
 
         try:
@@ -543,8 +543,8 @@ struct Config:
         Raises:
             Error if file not found, empty, or invalid JSON
         """
-        # TODO: Implement full JSON parsing with nested object/array support
-        # For now, implement basic key-value parsing similar to YAML with validation
+        # NOTE: Current implementation supports flat key-value pairs.
+        # Full nested JSON parsing can be added as needed. Using basic parsing.
         var config = Config()
 
         try:

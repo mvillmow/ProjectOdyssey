@@ -165,3 +165,83 @@ JSON Schema validation will be added in `configs/schemas/` to provide:
 - [MIGRATION.md](MIGRATION.md) - Migration guide
 - [shared/utils/config_loader.mojo](../shared/utils/config_loader.mojo) - Loading utilities
 - [papers/_template/examples/train.mojo](../papers/_template/examples/train.mojo) - Usage example
+
+## Advanced Usage
+
+### Environment Variable Substitution
+
+Configuration files support environment variables with defaults:
+
+```yaml
+# In configs/defaults/paths.yaml
+checkpoint_dir: "${ML_ODYSSEY_CHECKPOINTS:-./checkpoints}"
+log_dir: "${ML_ODYSSEY_LOGS:-./logs}"
+data_dir: "${ML_ODYSSEY_DATA:-./data}"
+```
+
+### Configuration Validation
+
+Use the linting tool to validate configurations:
+
+```bash
+# Validate all configs
+python scripts/lint_configs.py configs/
+
+# Validate specific file
+python scripts/lint_configs.py configs/experiments/lenet5/baseline.yaml
+
+# Verbose output for debugging
+python scripts/lint_configs.py -v configs/
+```
+
+### Creating New Configurations
+
+1. **For a new paper implementation:**
+   ```bash
+   # Create directory
+   mkdir -p configs/papers/resnet
+   
+   # Copy templates
+   cp configs/templates/paper.yaml configs/papers/resnet/model.yaml
+   cp configs/defaults/training.yaml configs/papers/resnet/training.yaml
+   
+   # Edit with paper-specific values
+   vim configs/papers/resnet/model.yaml
+   ```
+
+2. **For a new experiment:**
+   ```bash
+   # Copy template
+   cp configs/templates/experiment.yaml configs/experiments/resnet/improved.yaml
+   
+   # Edit to override specific values
+   vim configs/experiments/resnet/improved.yaml
+   ```
+
+### Performance Tips
+
+1. **Use flat configurations** - The current parser is optimized for flat key-value pairs
+2. **Leverage defaults** - Only override what's different from defaults
+3. **Cache loaded configs** - Reuse parsed configurations when possible
+4. **Validate early** - Run linting before training to catch issues
+
+### Troubleshooting
+
+**Issue**: Configuration not loading
+- Check file path exists
+- Validate YAML syntax with linter
+- Ensure proper indentation (2 spaces)
+
+**Issue**: Environment variable not resolved
+- Export the variable: `export ML_ODYSSEY_DATA=/path/to/data`
+- Or use the default value after `:-` in the config
+
+**Issue**: Value type mismatch
+- Ensure numbers don't have quotes
+- Use proper boolean values: `true/false` not `"true"/"false"`
+
+## See Also
+
+- [Configuration Best Practices](BEST_PRACTICES.md) - Guidelines and anti-patterns
+- [Configuration Cookbook](COOKBOOK.md) - Ready-to-use recipes
+- [Migration Guide](MIGRATION.md) - Migrating from other config systems
