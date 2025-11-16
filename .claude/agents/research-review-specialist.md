@@ -92,7 +92,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Paper writing quality and clarity | Paper Writing Specialist |
 | Algorithm correctness and implementation | Algorithm Review Specialist |
 | Code implementation quality | Implementation Review Specialist |
@@ -538,7 +538,7 @@ carefully and document).
 ## NeurIPS Checklist Quick Reference
 
 | Item | Question | Critical? |
-|------|----------|-----------|
+|------|----------|--- -------- |
 | #4 | Experimental Reproducibility | Yes |
 | #5 | Open Access to Data and Code | Recommended |
 | #6 | Experimental Settings/Details | Yes |

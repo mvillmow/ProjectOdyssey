@@ -91,7 +91,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Memory safety (buffer overflows, use-after-free) | Safety Review Specialist |
 | Type safety and null pointer issues | Safety Review Specialist |
 | Performance optimization | Performance Review Specialist |

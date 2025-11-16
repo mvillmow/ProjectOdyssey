@@ -114,7 +114,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Code documentation and docstrings | Documentation Review Specialist |
 | Experimental methodology correctness | Research Specialist |
 | Statistical analysis validity | Algorithm Review Specialist |

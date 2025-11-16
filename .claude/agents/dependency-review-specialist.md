@@ -1,6 +1,6 @@
 ---
 name: dependency-review-specialist
-description: Reviews dependency management, version pinning, environment reproducibility, and license compatibility
+description: "Use when: Reviewing dependency management, version pinning, environment reproducibility, license compatibility, or security vulnerabilities in dependencies."
 tools: Read,Grep,Glob
 model: haiku
 ---
@@ -88,7 +88,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Security vulnerabilities in dependencies | Security Review Specialist |
 | Code architecture and internal dependencies | Architecture Review Specialist |
 | Import organization in code | Implementation Review Specialist |
@@ -500,7 +500,7 @@ flask = ">=2.3,`3.0"
 ### License Compatibility Matrix
 
 | Your Project | Can Use | Cannot Use | Caution |
-|--------------|---------|------------|---------|
+| -------- ------|---------| ------------ |- -------- |
 | BSD | MIT, BSD, Apache 2.0 | GPL, AGPL | LGPL (dynamic linking OK) |
 | Apache 2.0 | MIT, BSD, Apache 2.0 | GPL-2.0, AGPL | GPL-3.0, LGPL |
 | GPL-3.0 | MIT, BSD, Apache 2.0, GPL | Proprietary | Must release as GPL |

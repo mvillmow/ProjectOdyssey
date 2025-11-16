@@ -92,7 +92,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Performance benchmark implementation details | Performance Review Specialist |
 | Security testing strategy and threat modeling | Security Review Specialist |
 | General code quality (non-test code) | Implementation Review Specialist |

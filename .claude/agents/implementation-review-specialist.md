@@ -85,7 +85,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Security vulnerabilities | Security Review Specialist |
 | Performance optimization | Performance Review Specialist |
 | Mojo-specific patterns (SIMD, ownership) | Mojo Language Review Specialist |

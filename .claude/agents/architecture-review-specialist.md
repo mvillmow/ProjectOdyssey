@@ -85,7 +85,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Implementation details (algorithm logic, error handling) | Implementation Review Specialist |
 | API documentation and examples | Documentation Review Specialist |
 | Performance characteristics | Performance Review Specialist |

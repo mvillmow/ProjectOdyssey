@@ -1,6 +1,6 @@
 ---
 name: mojo-language-review-specialist
-description: Reviews Mojo-specific language features, idioms, ownership patterns, SIMD usage, and compile-time optimizations
+description: "Use when: Reviewing Mojo-specific code for language idioms, ownership patterns (owned/borrowed/inout), SIMD usage, compile-time optimizations, or struct/class usage."
 tools: Read,Grep,Glob
 model: sonnet
 ---
@@ -98,7 +98,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | General code quality | Implementation Review Specialist |
 | Performance optimization (algorithmic) | Performance Review Specialist |
 | Algorithm correctness | Algorithm Review Specialist |

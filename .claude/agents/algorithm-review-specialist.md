@@ -91,7 +91,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Performance optimization (SIMD, vectorization) | Performance Review Specialist |
 | General code quality and structure | Implementation Review Specialist |
 | Memory management and safety | Safety Review Specialist |
