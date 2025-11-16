@@ -87,7 +87,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Academic paper writing | Paper Review Specialist |
 | Research methodology | Research Review Specialist |
 | Code correctness | Implementation Review Specialist |

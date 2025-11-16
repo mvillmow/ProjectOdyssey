@@ -1,6 +1,6 @@
 ---
 name: agentic-workflows-orchestrator
-description: Coordinate agentic workflow development including research assistant, code review agent, and documentation agent
+description: "Use when: Coordinating agentic workflow development, implementing research assistants, code review agents, or documentation automation. Orchestrates Section 06 automation efforts."
 tools: Read,Grep,Glob,Task,WebFetch
 model: opus
 ---

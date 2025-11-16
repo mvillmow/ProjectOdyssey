@@ -116,7 +116,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Do
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Markdown linting validation | Documentation Review Specialist |
 | Code quality assessment | Implementation Review Specialist |
 | Technical documentation | Documentation Specialist |

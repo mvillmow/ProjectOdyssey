@@ -1,6 +1,6 @@
 ---
 name: shared-library-orchestrator
-description: Coordinate shared library development including core operations, training utilities, and data utilities
+description: "Use when: Coordinating shared library development, designing reusable components, managing cross-section dependencies, or establishing common interfaces. Orchestrates Section 02 shared components."
 tools: Read,Grep,Glob,Task
 model: opus
 ---

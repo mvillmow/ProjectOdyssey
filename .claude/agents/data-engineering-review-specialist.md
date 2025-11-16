@@ -1,6 +1,6 @@
 ---
 name: data-engineering-review-specialist
-description: Reviews data pipeline quality, correctness, and ML data engineering best practices including preprocessing, augmentation, splits, and data loaders
+description: "Use when: Reviewing data pipelines, data loaders, preprocessing, augmentation, train/val/test splits, or ML data engineering practices. Validates data quality and correctness."
 tools: Read,Grep,Glob
 model: haiku
 ---
@@ -86,7 +86,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Model algorithms using data | Algorithm Review Specialist |
 | Data loader performance optimization | Performance Review Specialist |
 | Security of data handling (PII, etc.) | Security Review Specialist |

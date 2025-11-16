@@ -69,6 +69,25 @@ performance-critical code.
 ## No Delegation
 
 Level 5 is the lowest level - no delegation.
+## Delegation
+
+### Delegates To
+
+**No delegation** - This is a leaf node in the hierarchy. All work is done directly by this engineer.
+
+### Receives Delegation From
+
+- Implementation Specialist - for standard implementation tasks
+- Test Specialist - for test implementation
+- Documentation Specialist - for documentation tasks
+- Performance Specialist - for optimization tasks
+
+### Escalation Path
+
+When blocked or needing guidance:
+1. Escalate to immediate supervisor (relevant Specialist)
+2. If still blocked, Specialist escalates to Design level
+3. If architectural issue, escalates to Orchestrator level
 
 ## Workflow Phase
 

@@ -85,7 +85,7 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 ## What This Specialist Does NOT Review
 
 | Aspect | Delegated To |
-|--------|--------------|
+| -------- |------ -------- |
 | Mojo ownership semantics (^, &, owned) | Mojo Language Review Specialist |
 | Security exploits (injection, XSS) | Security Review Specialist |
 | Performance optimization | Performance Review Specialist |
