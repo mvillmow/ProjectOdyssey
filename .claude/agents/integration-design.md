@@ -1,7 +1,7 @@
 ---
 name: integration-design
 description: Design module-level integration including cross-component interfaces, APIs, integration tests, and dependency management
-tools: Read,Write,Grep,Glob,Bash,Task
+tools: Read,Write,Grep,Glob,Task
 model: sonnet
 ---
 

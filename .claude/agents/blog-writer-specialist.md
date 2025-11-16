@@ -1,7 +1,7 @@
 ---
 name: blog-writer-specialist
 description: Writes and improves development blog posts in the informal "cycle format", maintaining conversational tone while ensuring proper structure and markdown compliance
-tools: Read,Grep,Glob,Bash,Task
+tools: Read,Grep,Glob,Task
 model: haiku
 ---
 

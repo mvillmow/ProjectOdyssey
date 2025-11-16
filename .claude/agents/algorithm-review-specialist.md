@@ -1,7 +1,7 @@
 ---
 name: algorithm-review-specialist
 description: Reviews ML algorithm implementations for mathematical correctness, gradient computation accuracy, numerical stability, and adherence to research papers
-tools: Read,Grep,Glob,Bash
+tools: Read,Grep,Glob
 model: haiku
 ---
 

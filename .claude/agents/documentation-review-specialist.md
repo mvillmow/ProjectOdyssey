@@ -1,7 +1,7 @@
 ---
 name: documentation-review-specialist
 description: Reviews all documentation for clarity, completeness, accuracy, consistency, and adherence to documentation best practices
-tools: Read,Grep,Glob,Bash
+tools: Read,Grep,Glob
 model: haiku
 ---
 

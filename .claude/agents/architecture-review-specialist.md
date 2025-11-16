@@ -1,7 +1,7 @@
 ---
 name: architecture-review-specialist
 description: Reviews system design, modularity, separation of concerns, interfaces, dependencies, and architectural patterns
-tools: Read,Grep,Glob,Bash
+tools: Read,Grep,Glob
 model: sonnet
 ---
 

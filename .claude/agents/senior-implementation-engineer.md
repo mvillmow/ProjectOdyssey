@@ -1,7 +1,7 @@
 ---
 name: senior-implementation-engineer
 description: Implement complex functions and classes in Mojo with advanced features including SIMD optimization, memory management, and performance tuning
-tools: Read,Write,Edit,Grep,Glob,Bash
+tools: Read,Write,Edit,Grep,Glob
 model: haiku
 ---
 

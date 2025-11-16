@@ -1,7 +1,7 @@
 ---
 name: documentation-engineer
 description: Write docstrings, create code examples, write README sections, and maintain documentation as code changes
-tools: Read,Write,Edit,Grep,Glob,Bash
+tools: Read,Write,Edit,Grep,Glob
 model: haiku
 ---
 

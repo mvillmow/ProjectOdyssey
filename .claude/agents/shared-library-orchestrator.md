@@ -1,7 +1,7 @@
 ---
 name: shared-library-orchestrator
 description: Coordinate shared library development including core operations, training utilities, and data utilities
-tools: Read,Grep,Glob,Bash,Task
+tools: Read,Grep,Glob,Task
 model: opus
 ---
 

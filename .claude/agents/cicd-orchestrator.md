@@ -1,7 +1,7 @@
 ---
 name: cicd-orchestrator
 description: Coordinate CI/CD pipeline including testing infrastructure, deployment processes, quality gates, and monitoring
-tools: Read,Grep,Glob,Bash,Task
+tools: Read,Grep,Glob,Task
 model: opus
 ---
 

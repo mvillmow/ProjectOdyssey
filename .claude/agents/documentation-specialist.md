@@ -1,7 +1,7 @@
 ---
 name: documentation-specialist
 description: Create comprehensive component documentation including READMEs, API docs, usage examples, and tutorials
-tools: Read,Write,Edit,Grep,Glob,Bash,Task
+tools: Read,Write,Edit,Grep,Glob,Task
 model: sonnet
 ---
 

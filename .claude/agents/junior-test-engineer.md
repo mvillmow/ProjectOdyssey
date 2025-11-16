@@ -1,7 +1,7 @@
 ---
 name: junior-test-engineer
 description: Write simple unit tests, update existing tests, run test suites, and verify CI integration
-tools: Read,Write,Edit,Grep,Glob,Bash
+tools: Read,Write,Edit,Grep,Glob
 model: haiku
 ---
 

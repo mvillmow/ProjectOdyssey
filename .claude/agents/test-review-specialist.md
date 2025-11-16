@@ -1,7 +1,7 @@
 ---
 name: test-review-specialist
 description: Reviews test code quality, coverage completeness, assertions, organization, and edge case handling
-tools: Read,Grep,Glob,Bash
+tools: Read,Grep,Glob
 model: sonnet
 ---
 
