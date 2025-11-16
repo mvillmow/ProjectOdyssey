@@ -192,12 +192,62 @@ For standard delegation patterns, escalation rules, and skip-level guidelines, s
 
 **Plan**, **Implementation**, **Cleanup**
 
+## Using Skills
+
+### Parallel Development
+
+Use the `worktree-create` skill to enable parallel agent development:
+- **Invoke when**: Working on multiple agent features simultaneously
+- **The skill handles**: Creates isolated worktrees for each agent feature branch
+- **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
+
+### Worktree Cleanup
+
+Use the `worktree-cleanup` skill to maintain repository organization:
+- **Invoke when**: After merging agent PRs
+- **The skill handles**: Cleans up merged or stale worktrees
+- **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
+
+### Issue Implementation
+
+Use the `gh-implement-issue` skill for agent development:
+- **Invoke when**: Starting work on an agent implementation issue
+- **The skill handles**: Branch creation, implementation, testing, PR creation
+- **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
+
+### Plan Management
+
+Use the `plan-regenerate-issues` skill to sync agent plans:
+- **Invoke when**: Modifying agent component plans
+- **The skill handles**: Regenerates github_issue.md files from plan.md
+- **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
+
+### Agent System Coordination
+
+Use the `agent-run-orchestrator` skill to coordinate agent specialists:
+- **Invoke when**: Running multiple agent specialists in parallel
+- **The skill handles**: Specialist invocation and coordination
+- **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)
+
+### Agent Configuration Validation
+
+Use the `agent-validate-config` skill to validate agent configurations:
+- **Invoke when**: Creating or modifying agent YAML frontmatter
+- **The skill handles**: Validates YAML structure, required fields, tool specifications
+- **See**: [agent-validate-config skill](../.claude/skills/agent-validate-config/SKILL.md)
+
 ## Skills to Use
 
-- [`extract_algorithm`](../skills/tier-2/extract-algorithm/SKILL.md) - Research assistant
-- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Code review agent
-- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Documentation agent
-- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - All agents
+- `worktree-create` - Create git worktrees for parallel development
+- `worktree-cleanup` - Clean up merged or stale worktrees
+- `worktree-sync` - Sync worktrees with remote changes
+- `gh-implement-issue` - End-to-end issue implementation automation
+- `plan-regenerate-issues` - Regenerate GitHub issues from plans
+- `plan-validate-structure` - Validate plan directory structure
+- `agent-run-orchestrator` - Run agent specialists
+- `agent-validate-config` - Validate agent YAML configurations
+- `agent-test-delegation` - Test agent delegation patterns
+- `agent-hierarchy-diagram` - Generate agent hierarchy diagrams
 
 ## Error Handling
 

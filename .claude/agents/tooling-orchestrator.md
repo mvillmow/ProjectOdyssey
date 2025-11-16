@@ -175,11 +175,53 @@ truly trivial fixes (< 20 lines, no design decisions).
 
 **Plan**, **Implementation**, **Packaging**
 
+## Using Skills
+
+### Parallel Development
+
+Use the `worktree-create` skill to enable parallel tool development:
+- **Invoke when**: Working on multiple tools simultaneously
+- **The skill handles**: Creates isolated worktrees for each tool feature
+- **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
+
+### Worktree Cleanup
+
+Use the `worktree-cleanup` skill to maintain repository organization:
+- **Invoke when**: After merging tool PRs
+- **The skill handles**: Cleans up merged or stale worktrees
+- **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
+
+### Issue Implementation
+
+Use the `gh-implement-issue` skill for tool development:
+- **Invoke when**: Starting work on a tooling issue
+- **The skill handles**: Branch creation, implementation, testing, PR creation
+- **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
+
+### Plan Management
+
+Use the `plan-regenerate-issues` skill to sync plans:
+- **Invoke when**: Modifying tooling component plans
+- **The skill handles**: Regenerates github_issue.md files from plan.md
+- **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
+
+### Agent Coordination
+
+Use the `agent-run-orchestrator` skill to coordinate specialists:
+- **Invoke when**: Running multiple tool specialists in parallel
+- **The skill handles**: Specialist invocation and coordination
+- **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - CLI templates
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test automation scripts
-- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Tool organization
+- `worktree-create` - Create git worktrees for parallel development
+- `worktree-cleanup` - Clean up merged or stale worktrees
+- `worktree-sync` - Sync worktrees with remote changes
+- `gh-implement-issue` - End-to-end issue implementation automation
+- `plan-regenerate-issues` - Regenerate GitHub issues from plans
+- `plan-validate-structure` - Validate plan directory structure
+- `agent-run-orchestrator` - Run tool specialists
+- `agent-validate-config` - Validate agent configurations
 
 ## Error Handling
 

@@ -90,10 +90,51 @@ Level 5 is the lowest level - no delegation.
 
 Test
 
+## Using Skills
+
+### Test Execution
+
+Use the `mojo-test-runner` skill to run tests:
+- **Invoke when**: Executing Mojo tests, verifying test coverage
+- **The skill handles**: Test execution with reporting and filtering
+- **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
+
+### Test Coverage
+
+Use the `quality-coverage-report` skill for coverage reports:
+- **Invoke when**: Checking test coverage after writing tests
+- **The skill handles**: Coverage report generation
+- **See**: [quality-coverage-report skill](../.claude/skills/quality-coverage-report/SKILL.md)
+
+### Pre-commit Checks
+
+Use the `ci-run-precommit` skill before committing:
+- **Invoke when**: Before committing tests
+- **The skill handles**: Runs pre-commit hooks locally
+- **See**: [ci-run-precommit skill](../.claude/skills/ci-run-precommit/SKILL.md)
+
+### Code Formatting
+
+Use the `mojo-format` skill to format test code:
+- **Invoke when**: Before committing Mojo test files
+- **The skill handles**: Formats all .mojo and .🔥 files
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Tests complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test boilerplate
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Test execution
+- `mojo-test-runner` - Execute Mojo tests with reporting
+- `quality-coverage-report` - Generate test coverage reports
+- `ci-run-precommit` - Run pre-commit hooks locally
+- `mojo-format` - Format Mojo code files
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 

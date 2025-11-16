@@ -74,11 +74,43 @@ Level 5 is the lowest level - no delegation.
 
 Packaging
 
+## Using Skills
+
+### Markdown Validation
+
+Use the `doc-validate-markdown` skill to validate markdown:
+- **Invoke when**: Before committing markdown files, checking formatting
+- **The skill handles**: Formatting validation, link checking, style compliance
+- **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
+
+### Markdown Formatting Fixes
+
+Use the `quality-fix-formatting` skill to auto-fix issues:
+- **Invoke when**: When markdown linting fails
+- **The skill handles**: Auto-fixes formatting issues using markdownlint --fix
+- **See**: [quality-fix-formatting skill](../.claude/skills/quality-fix-formatting/SKILL.md)
+
+### Issue Documentation
+
+Use the `doc-issue-readme` skill for issue documentation:
+- **Invoke when**: Creating or updating issue-specific documentation
+- **The skill handles**: README.md creation in issue directories
+- **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Documentation updates complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Docstring templates
-- [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Changelog entries
-- [`lint_code`](../skills/tier-1/lint-code/SKILL.md) - Documentation linting
+- `doc-validate-markdown` - Validate markdown formatting and style
+- `quality-fix-formatting` - Auto-fix formatting issues
+- `doc-issue-readme` - Generate issue-specific README files
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 

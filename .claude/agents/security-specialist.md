@@ -88,12 +88,51 @@ trivial fixes (` 20 lines, no design decisions).
 
 **Plan**, **Implementation**, **Test**, **Cleanup**
 
+## Using Skills
+
+### Security Scanning
+
+Use the `quality-security-scan` skill for vulnerability scanning:
+- **Invoke when**: Before committing sensitive code, in security reviews
+- **The skill handles**: Scans code for security vulnerabilities and unsafe patterns
+- **See**: [quality-security-scan skill](../.claude/skills/quality-security-scan/SKILL.md)
+
+### Code Quality Review
+
+Use the `quality-run-linters` skill for security code review:
+- **Invoke when**: Reviewing code for security issues
+- **The skill handles**: Runs all configured linters to catch potential issues
+- **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
+
+### Memory Safety Validation
+
+Use the `mojo-memory-check` skill for memory safety:
+- **Invoke when**: Reviewing Mojo code for memory safety issues
+- **The skill handles**: Verifies ownership, borrowing, and lifetime management
+- **See**: [mojo-memory-check skill](../.claude/skills/mojo-memory-check/SKILL.md)
+
+### Type Safety Validation
+
+Use the `mojo-type-safety` skill for type safety:
+- **Invoke when**: Reviewing Mojo code for type errors
+- **The skill handles**: Validates parametric types, trait constraints, compile-time checks
+- **See**: [mojo-type-safety skill](../.claude/skills/mojo-type-safety/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Security fixes complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`scan_vulnerabilities`](../skills/tier-2/scan-vulnerabilities/SKILL.md) - Vulnerability scanning
-- [`check_dependencies`](../skills/tier-2/check-dependencies/SKILL.md) - Dependency security
-- [`validate_inputs`](../skills/tier-2/validate-inputs/SKILL.md) - Input validation review
-- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Security code review
+- `quality-security-scan` - Scan code for security vulnerabilities
+- `quality-run-linters` - Run all configured linters
+- `mojo-memory-check` - Verify Mojo memory safety
+- `mojo-type-safety` - Validate Mojo type safety
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 

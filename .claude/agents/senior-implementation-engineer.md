@@ -146,12 +146,52 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 
 Implementation
 
+## Using Skills
+
+### SIMD Optimization
+
+Use the `mojo-simd-optimize` skill for performance-critical code:
+- **Invoke when**: Optimizing tensor operations, vectorizable loops
+- **The skill handles**: SIMD vectorization patterns and optimization templates
+- **See**: [mojo-simd-optimize skill](../.claude/skills/mojo-simd-optimize/SKILL.md)
+
+### Code Formatting
+
+Use the `mojo-format` skill to format code:
+- **Invoke when**: Before committing Mojo code
+- **The skill handles**: Formats all .mojo and .🔥 files
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
+### Memory Safety
+
+Use the `mojo-memory-check` skill for memory validation:
+- **Invoke when**: Reviewing complex memory management code
+- **The skill handles**: Ownership, borrowing, lifetime verification
+- **See**: [mojo-memory-check skill](../.claude/skills/mojo-memory-check/SKILL.md)
+
+### Code Quality
+
+Use the `quality-run-linters` skill before committing:
+- **Invoke when**: Before creating PRs, validating code quality
+- **The skill handles**: Runs all configured linters
+- **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Implementation complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Complex templates
-- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Optimization refactoring
-- [`profile_code`](../skills/tier-2/profile-code/SKILL.md) - Performance profiling
-- [`benchmark_functions`](../skills/tier-2/benchmark-functions/SKILL.md) - Performance validation
+- `mojo-simd-optimize` - Apply SIMD optimizations to Mojo code
+- `mojo-format` - Format Mojo code files
+- `mojo-memory-check` - Verify Mojo memory safety
+- `quality-run-linters` - Run all configured linters
+- `quality-complexity-check` - Analyze code complexity
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Example
 

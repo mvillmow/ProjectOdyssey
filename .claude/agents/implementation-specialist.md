@@ -189,12 +189,52 @@ trivial fixes (` 20 lines, no design decisions).
 
 **Plan**, **Implementation**, **Cleanup**
 
+## Using Skills
+
+### Implementation Phase Coordination
+
+Use the `phase-implement` skill to coordinate implementation:
+- **Invoke when**: Coordinating complex component implementation across engineers
+- **The skill handles**: Task delegation, progress monitoring, code quality checks
+- **See**: [phase-implement skill](../.claude/skills/phase-implement/SKILL.md)
+
+### Code Quality
+
+Use the `quality-run-linters` skill before committing:
+- **Invoke when**: Before creating PRs, validating code quality
+- **The skill handles**: Runs all configured linters (mojo format, markdownlint, pre-commit)
+- **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
+
+### Code Formatting
+
+Use the `mojo-format` skill to format code:
+- **Invoke when**: Before committing Mojo code
+- **The skill handles**: Formats all .mojo and .🔥 files
+- **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Component implementation complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
+### CI Status Monitoring
+
+Use the `gh-check-ci-status` skill to monitor PR checks:
+- **Invoke when**: After creating PR, verifying CI passes
+- **The skill handles**: Checks workflow runs, test results, check statuses
+- **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)
+
 ## Skills to Use
 
-- [`analyze_code_structure`](../skills/tier-1/analyze-code-structure/SKILL.md) - Understand component structure
-- [`generate_boilerplate`](../skills/tier-1/generate-boilerplate/SKILL.md) - Create templates
-- [`refactor_code`](../skills/tier-2/refactor-code/SKILL.md) - Code improvements
-- [`detect_code_smells`](../skills/tier-2/detect-code-smells/SKILL.md) - Quality review
+- `phase-implement` - Coordinate implementation phase across engineers
+- `mojo-format` - Format Mojo code files
+- `quality-run-linters` - Run all configured linters
+- `quality-fix-formatting` - Auto-fix formatting issues
+- `quality-complexity-check` - Analyze code complexity
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Example: Tensor Operations Component
 

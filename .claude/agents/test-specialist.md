@@ -199,11 +199,51 @@ truly trivial fixes (< 20 lines, no design decisions).
 
 **Plan**, **Test**
 
+## Using Skills
+
+### Test-Driven Development
+
+Use the `phase-test-tdd` skill for TDD workflow:
+- **Invoke when**: Starting test phase, coordinating TDD with implementation
+- **The skill handles**: Test generation, TDD workflow automation, test coverage
+- **See**: [phase-test-tdd skill](../.claude/skills/phase-test-tdd/SKILL.md)
+
+### Test Execution
+
+Use the `mojo-test-runner` skill to run tests:
+- **Invoke when**: Executing Mojo tests, verifying test coverage
+- **The skill handles**: Test execution with reporting and filtering
+- **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
+
+### Coverage Analysis
+
+Use the `quality-coverage-report` skill for coverage:
+- **Invoke when**: Generating test coverage reports, identifying untested code
+- **The skill handles**: Coverage report generation showing which code paths are tested
+- **See**: [quality-coverage-report skill](../.claude/skills/quality-coverage-report/SKILL.md)
+
+### Pre-commit Checks
+
+Use the `ci-run-precommit` skill before committing:
+- **Invoke when**: Before committing tests, ensuring quality standards
+- **The skill handles**: Runs pre-commit hooks locally
+- **See**: [ci-run-precommit skill](../.claude/skills/ci-run-precommit/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Test implementation complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_tests`](../skills/tier-2/generate-tests/SKILL.md) - Test scaffolding
-- [`run_tests`](../skills/tier-1/run-tests/SKILL.md) - Execute tests
-- [`calculate_coverage`](../skills/tier-2/calculate-coverage/SKILL.md) - Coverage analysis
+- `phase-test-tdd` - Generate tests and coordinate TDD workflow
+- `mojo-test-runner` - Execute Mojo tests with reporting
+- `quality-coverage-report` - Generate test coverage reports
+- `ci-run-precommit` - Run pre-commit hooks locally
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 

@@ -129,21 +129,53 @@ trivial fixes (` 20 lines, no design decisions).
 
 **Plan**, **Implementation**, **Test**, **Packaging**
 
+## Using Skills
+
+### Parallel Development
+
+Use the `worktree-create` skill to enable parallel paper implementation:
+- **Invoke when**: Working on multiple paper components simultaneously
+- **The skill handles**: Creates isolated worktrees for data, model, training branches
+- **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
+
+### Worktree Cleanup
+
+Use the `worktree-cleanup` skill to maintain repository organization:
+- **Invoke when**: After merging paper implementation PRs
+- **The skill handles**: Cleans up merged or stale worktrees
+- **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
+
+### Issue Implementation
+
+Use the `gh-implement-issue` skill for paper components:
+- **Invoke when**: Starting work on data preparation, model implementation, or training
+- **The skill handles**: Branch creation, implementation, testing, PR creation
+- **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
+
+### Plan Management
+
+Use the `plan-regenerate-issues` skill to sync paper plans:
+- **Invoke when**: Modifying paper component plans
+- **The skill handles**: Regenerates github_issue.md files from plan.md
+- **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
+
+### Agent Coordination
+
+Use the `agent-run-orchestrator` skill to coordinate paper specialists:
+- **Invoke when**: Running multiple paper component specialists in parallel
+- **The skill handles**: Specialist invocation and coordination
+- **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)
+
 ## Skills to Use
 
-### Primary Skills
-
-- [`extract_algorithm`](../skills/tier-2/extract-algorithm/SKILL.md) - Extract algorithms from paper
-- [`identify_architecture`](../skills/tier-2/identify-architecture/SKILL.md) - Extract model architecture
-- [`extract_hyperparameters`](../skills/tier-2/extract-hyperparameters/SKILL.md) - Extract training params
-- [`analyze_equations`](../skills/tier-2/analyze-equations/SKILL.md) - Convert math to code
-
-### Supporting Skills
-
-- [`prepare_dataset`](../skills/tier-2/prepare-dataset/SKILL.md) - Data preprocessing
-- [`train_model`](../skills/tier-2/train-model/SKILL.md) - Training orchestration
-- [`evaluate_model`](../skills/tier-2/evaluate-model/SKILL.md) - Evaluation metrics
-- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Documentation
+- `worktree-create` - Create git worktrees for parallel development
+- `worktree-cleanup` - Clean up merged or stale worktrees
+- `worktree-sync` - Sync worktrees with remote changes
+- `gh-implement-issue` - End-to-end issue implementation automation
+- `plan-regenerate-issues` - Regenerate GitHub issues from plans
+- `plan-validate-structure` - Validate plan directory structure
+- `agent-run-orchestrator` - Run paper component specialists
+- `agent-validate-config` - Validate agent configurations
 
 ## Error Handling
 

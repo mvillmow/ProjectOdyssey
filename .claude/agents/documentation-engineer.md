@@ -149,11 +149,51 @@ How to contribute to this module.
 
 **Packaging**
 
+## Using Skills
+
+### Issue Documentation
+
+Use the `doc-issue-readme` skill to generate issue documentation:
+- **Invoke when**: Starting work on documentation issue
+- **The skill handles**: README.md creation in issue directories
+- **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
+
+### Architecture Decision Records
+
+Use the `doc-generate-adr` skill to create ADRs:
+- **Invoke when**: Documenting architectural decisions
+- **The skill handles**: Properly formatted ADR file creation with templates
+- **See**: [doc-generate-adr skill](../.claude/skills/doc-generate-adr/SKILL.md)
+
+### Markdown Validation
+
+Use the `doc-validate-markdown` skill before committing:
+- **Invoke when**: Before committing markdown files
+- **The skill handles**: Formatting validation, link checking, style compliance
+- **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
+
+### Blog Updates
+
+Use the `doc-update-blog` skill for blog maintenance:
+- **Invoke when**: Updating blog posts with milestones
+- **The skill handles**: Blog formatting, milestone updates
+- **See**: [doc-update-blog skill](../.claude/skills/doc-update-blog/SKILL.md)
+
+### Pull Request Creation
+
+Use the `gh-create-pr-linked` skill to create PRs:
+- **Invoke when**: Documentation complete and ready for review
+- **The skill handles**: PR creation with proper issue linking
+- **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
+
 ## Skills to Use
 
-- [`generate_docstrings`](../skills/tier-2/generate-docstrings/SKILL.md) - Auto-generate docstrings
-- [`generate_api_docs`](../skills/tier-2/generate-api-docs/SKILL.md) - Create API reference
-- [`generate_changelog`](../skills/tier-2/generate-changelog/SKILL.md) - Version documentation
+- `doc-issue-readme` - Generate issue-specific README files
+- `doc-generate-adr` - Create Architecture Decision Records
+- `doc-validate-markdown` - Validate markdown formatting and style
+- `doc-update-blog` - Update development blog posts
+- `gh-create-pr-linked` - Create PRs with proper issue linking
+- `gh-check-ci-status` - Monitor CI status
 
 ## Constraints
 
