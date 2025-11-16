@@ -1,0 +1,22 @@
+# Python dependencies for ML Odyssey tools
+# These are only needed for Python-based tools following ADR-001
+
+# Template engine (paper scaffolding, code generation)
+jinja2>=3.0.0
+
+# YAML parsing (configuration)
+pyyaml>=6.0
+
+# Optional: CLI framework (improves UX for command-line tools)
+click>=8.0.0
+
+# Optional: Visualization (benchmarking reports)
+# Uncomment if you need report generation with charts
+# matplotlib>=3.5.0
+# pandas>=1.3.0
+# seaborn>=0.12.0
+
+# Optional: Testing utilities (pytest integration)
+# Uncomment if you need coverage analysis
+# pytest>=7.0.0
+# pytest-cov>=4.0.0
