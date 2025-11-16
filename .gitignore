@@ -16,3 +16,4 @@ site/
 .cache/
 
 *.swp
+.coverage
