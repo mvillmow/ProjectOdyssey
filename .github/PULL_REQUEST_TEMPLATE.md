@@ -1,6 +1,6 @@
 ## Description
 
-<!-- Brief description of what this PR does -->
+Brief description of changes (1-2 sentences).
 
 ## Related Issues
 
@@ -8,16 +8,6 @@ Closes #
 
 ## Changes
 
--
--
--
-
-## Testing
-
-- [ ] Tests pass locally
-- [ ] Pre-commit hooks pass
-
-## Checklist
-
-- [ ] Code follows project conventions
-- [ ] Documentation updated (if needed)
+- Change 1
+- Change 2
+- Change 3
