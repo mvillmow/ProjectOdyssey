@@ -2,48 +2,77 @@
 
 Boilerplate and pattern generators for common ML implementation code.
 
-## Status
+## Available Tools
 
-🚧 **Coming Soon**: This tool category will be implemented in a future phase.
+### 1. Mojo Boilerplate Generator (`mojo_boilerplate.py`)
 
-## Planned Features
+Generate Mojo structs and neural network layers.
 
-- **Mojo Boilerplate**: Generate struct definitions and implementations
-- **Training Templates**: Create training loop boilerplate
-- **Data Pipelines**: Generate data loading and processing code
-- **Metrics Generators**: Create metrics calculation code
+**Language**: Python (justified by template processing, string manipulation)
 
-## Example Usage (Planned)
+**Usage**:
 
 ```bash
-# Generate layer implementation
-python tools/codegen/mojo_boilerplate.py \
-    --type layer \
-    --name Conv2D \
-    --params "in_channels,out_channels,kernel_size"
-    
-# Generate training loop
-python tools/codegen/training_template.py \
-    --optimizer SGD \
-    --loss CrossEntropy \
-    --metrics "accuracy,loss"
+# Generate a simple struct
+python tools/codegen/mojo_boilerplate.py struct Point \
+    --fields x:Float64 y:Float64
+
+# Generate a linear layer
+python tools/codegen/mojo_boilerplate.py layer Linear \
+    --params in_features:784 out_features:10
+
+# Generate a Conv2D layer
+python tools/codegen/mojo_boilerplate.py layer Conv2D \
+    --params in_channels:1 out_channels:32 kernel_size:3
 ```
 
-## Language Choice
+**Output**: Mojo code printed to stdout (redirect to file as needed)
 
-- **Python**: All code generators (string templating, regex for parsing)
-- **Mojo**: Generated output code
+### 2. Training Template Generator (`training_template.py`)
 
-## Justification for Python
+Generate training loop boilerplate with customizable optimizer and loss function.
 
-Code generation requires:
-- Complex string templating and substitution
-- Regex-based parsing of specifications
-- No performance requirements (one-time generation)
+**Language**: Python (justified by template processing)
 
-Per ADR-001, Python is appropriate for this use case.
+**Usage**:
+
+```bash
+# Generate basic training loop
+python tools/codegen/training_template.py
+
+# Generate with custom optimizer and loss
+python tools/codegen/training_template.py \
+    --optimizer Adam \
+    --loss MSE \
+    --metrics loss accuracy
+```
+
+**Output**: Complete Mojo training loop code
+
+## Design Principles
+
+- **Simple templates**: Focus on common patterns without over-engineering
+- **Customizable**: Allow parameter customization while providing sensible defaults
+- **Composable**: Generate code that works with other tools
+- **Educational**: Generated code includes TODOs and comments
+
+## Language Justification
+
+Per [ADR-001](../../notes/review/adr/ADR-001-language-selection-tooling.md):
+
+- **Why Python**: Template processing, string manipulation, no performance requirements
+- **Conversion blocker**: Mojo regex not production-ready
+- **Review**: Quarterly per ADR-001 monitoring strategy
+
+## Future Enhancements
+
+- Data pipeline generators
+- Metrics calculation code
+- Backward pass auto-generation from forward definitions
+- More layer types (RNN, Attention, etc.)
 
 ## References
 
 - [Issue #67](https://github.com/mvillmow/ml-odyssey/issues/67): Tools planning
+- [Issue #69](https://github.com/mvillmow/ml-odyssey/issues/69): Tools implementation
 - [ADR-001](../../notes/review/adr/ADR-001-language-selection-tooling.md): Language strategy

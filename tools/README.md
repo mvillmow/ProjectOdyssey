@@ -4,13 +4,16 @@ Development utilities and helper tools for ML paper implementation workflows.
 
 ## Overview
 
-The `tools/` directory contains focused development utilities that enhance developer productivity during ML paper implementation. These tools are distinct from automation scripts in `scripts/` and provide practical solutions for common development tasks.
+The `tools/` directory contains focused development utilities that enhance developer productivity during ML paper
+implementation. These tools are distinct from automation scripts in `scripts/` and provide practical solutions for
+common development tasks.
 
 ## Purpose
 
 **Development Support**: Tools that developers use directly during implementation work.
 
 **Key Distinctions**:
+
 - **`tools/`**: Development utilities used by developers during implementation
 - **`scripts/`**: Automation scripts for repository management and CI/CD
 - **Claude Code tools**: Built-in IDE functions and commands
@@ -18,40 +21,77 @@ The `tools/` directory contains focused development utilities that enhance devel
 ## Tool Categories
 
 ### 1. Paper Scaffolding (`paper-scaffold/`)
+
 Generate complete directory structures and boilerplate for new paper implementations.
 
-**Coming Soon**:
-- Template-based paper structure generation
-- Model implementation stubs
-- Test file templates
-- Documentation scaffolding
+**Available Now**:
+
+- `scaffold.py` - CLI tool for generating paper structure
+- Template system with variable substitution
+- Model, training, and test file stubs
+- Documentation scaffolding (README, notes)
+
+**Usage**:
+
+```bash
+python tools/paper-scaffold/scaffold.py \
+    --paper lenet5 \
+    --title "LeNet-5" \
+    --authors "LeCun et al." \
+    --year 1998 \
+    --url "http://..." \
+    --output papers/
+```
 
 ### 2. Testing Utilities (`test-utils/`)
+
 Reusable testing components for ML implementations.
 
-**Coming Soon**:
-- Synthetic test data generators
-- Common test fixtures
+**Available Now**:
+
+- `data_generators.mojo` - Tensor generation utilities (Mojo)
+- `fixtures.mojo` - Test model fixtures (Mojo)
+- Random, zero, and one-filled tensor generation
+- SimpleCNN and LinearModel test fixtures
+
+**Future**:
+
 - Coverage analysis tools
-- Performance testing utilities
+- More sophisticated data distributions
 
 ### 3. Benchmarking (`benchmarking/`)
+
 Performance measurement and tracking tools.
 
-**Coming Soon**:
-- Model inference benchmarks
-- Training throughput measurement
+**Available Now**:
+
+- `benchmark.mojo` - Core benchmarking framework (Mojo)
+- `runner.mojo` - Benchmark suite runner (Mojo)
+- Inference latency measurement
+- Throughput calculation
+- Warmup iteration support
+
+**Future**:
+
 - Memory usage tracking
-- Performance report generation
+- Performance report generation (JSON/visualization)
 
 ### 4. Code Generation (`codegen/`)
+
 Boilerplate and pattern generators for common ML code.
 
-**Coming Soon**:
-- Mojo struct generators
-- Training loop templates
+**Available Now**:
+
+- `mojo_boilerplate.py` - Struct and layer generators (Python)
+- `training_template.py` - Training loop generator (Python)
+- Linear and Conv2D layer templates
+- Customizable optimizer and loss function
+
+**Future**:
+
 - Data pipeline generators
 - Metrics calculation code
+- More layer types (RNN, Attention)
 
 ## Language Strategy
 
@@ -65,6 +105,7 @@ Each Python tool includes justification per ADR-001 requirements.
 ## Quick Start
 
 Tools will be added incrementally as needed. Each tool will include:
+
 - Clear documentation with examples
 - Simple CLI interface
 - Comprehensive test suite
@@ -77,13 +118,15 @@ Tools will be added incrementally as needed. Each tool will include:
 1. **Identify Need**: Document the problem being solved
 2. **Choose Language**: Follow ADR-001 decision tree
 3. **Create Structure**:
-   ```
+
+   ```text
    tools/<category>/<tool_name>/
    ├── README.md
    ├── <tool>.[py|mojo]
    ├── tests/
    └── examples/
    ```
+
 4. **Document**: Write clear usage documentation
 5. **Test**: Add comprehensive test coverage
 
@@ -109,7 +152,7 @@ tools/
 ## Comparison with scripts/
 
 | Aspect | tools/ | scripts/ |
-|--------|---------|----------|
+| ------ | ------ | -------- |
 | **Users** | Developers | CI/CD, Maintainers |
 | **Usage** | Interactive, on-demand | Automated, scheduled |
 | **Focus** | Implementation support | Repository management |
@@ -117,7 +160,15 @@ tools/
 
 ## Status
 
-🚧 **Under Construction**: This directory is being established as part of Issue #67. Tools will be added incrementally based on actual development needs.
+✅ **Active Development**: Basic tools implemented as part of Issue #69. Tools are functional and ready for use,
+with future enhancements planned.
+
+### Current Implementation Status
+
+- ✅ **Paper Scaffolding**: Basic scaffolder with templates (Python)
+- ✅ **Testing Utilities**: Data generators and fixtures (Mojo)
+- ✅ **Benchmarking**: Performance measurement framework (Mojo)
+- ✅ **Code Generation**: Struct and layer generators (Python)
 
 ## References
 
@@ -128,4 +179,5 @@ tools/
 
 ---
 
-**Note**: This is a living document that will evolve as tools are added. Focus is on practical utilities that solve real problems without over-engineering.
+**Note**: This is a living document that will evolve as tools are added. Focus is on practical utilities that solve
+real problems without over-engineering.

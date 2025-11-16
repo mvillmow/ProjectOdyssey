@@ -1,0 +1,47 @@
+"""
+{{PAPER_TITLE}} - Model Tests
+
+Paper: {{PAPER_URL}}
+Authors: {{AUTHORS}} ({{YEAR}})
+"""
+
+from model import {{MODEL_NAME}}, create_model
+from testing import assert_equal, assert_true
+
+
+fn test_model_creation():
+    """Test that model can be created."""
+    let model = create_model()
+    # TODO: Add assertions
+    print("✓ Model creation test passed")
+
+
+fn test_forward_pass():
+    """Test forward pass with dummy input."""
+    let model = create_model()
+
+    # TODO: Create test input
+    # let input = create_test_tensor(...)
+    # let output = model.forward(input)
+
+    # TODO: Verify output shape and values
+    print("✓ Forward pass test passed")
+
+
+fn test_backward_pass():
+    """Test backward pass computation."""
+    let model = create_model()
+
+    # TODO: Test backward pass
+    print("✓ Backward pass test passed")
+
+
+fn main():
+    """Run all model tests."""
+    print("Running {{MODEL_NAME}} tests...")
+
+    test_model_creation()
+    test_forward_pass()
+    test_backward_pass()
+
+    print("All tests passed!")

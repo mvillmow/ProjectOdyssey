@@ -2,36 +2,118 @@
 
 Performance measurement and tracking tools for ML implementations.
 
-## Status
+## Available Tools
 
-🚧 **Coming Soon**: This tool category will be implemented in a future phase.
+### 1. Benchmark Framework (`benchmark.mojo`)
 
-## Planned Features
+Core benchmarking framework for measuring model performance.
 
-- **Model Benchmarks**: Measure inference latency and throughput
-- **Training Benchmarks**: Track training speed and convergence
-- **Memory Tracking**: Monitor memory usage during execution
-- **Report Generation**: Create performance reports with visualizations
+**Language**: Mojo (required for accurate ML performance measurement)
 
-## Example Usage (Planned)
+**Usage**:
 
 ```mojo
-from tools.benchmarking import ModelBenchmark
+from tools.benchmarking.benchmark import ModelBenchmark, BenchmarkResult
+from tools.test_utils.fixtures import create_test_model
+from tools.test_utils.data_generators import TensorGenerator
 
-fn benchmark_lenet():
-    let bench = ModelBenchmark("LeNet-5")
-    bench.measure_inference(batch_sizes=[1, 8, 32, 128])
-    bench.measure_training(epochs=1, batch_size=32)
-    bench.measure_memory()
-    bench.save_results("benchmarks/lenet5.json")
+fn benchmark_example():
+    # Create model and data
+    let model = create_test_model("cnn")
+    let generator = TensorGenerator()
+    let input = generator.generate_batch(32, 1, 28, 28)
+
+    # Create benchmark
+    let bench = ModelBenchmark(
+        name="MyModel",
+        num_warmup=10,
+        num_iterations=100
+    )
+
+    # Measure inference
+    let result = bench.measure_inference(model, input, batch_size=32)
+    result.print_summary()
 ```
 
-## Language Choice
+**Features**:
 
-- **Mojo**: All benchmarking code (required for accurate ML performance measurement)
-- **Python**: Report generation only (matplotlib/pandas for visualization)
+- Inference latency measurement
+- Training step benchmarking
+- Warmup iterations for stable results
+- Throughput calculation (samples/second)
+- Memory tracking (TODO)
+
+### 2. Benchmark Runner (`runner.mojo`)
+
+CLI tool for running benchmark suites.
+
+**Language**: Mojo (required for accurate performance measurement)
+
+**Usage**:
+
+```bash
+# Run benchmark suite
+mojo tools/benchmarking/runner.mojo
+```
+
+**Output**:
+
+```text
+============================================================
+ML Odyssey Benchmark Suite
+============================================================
+
+Model: SimpleCNN (test model)
+
+Running inference benchmark...
+Benchmark: SimpleCNN Inference
+  Latency: 0.123 ms
+  Throughput: 260416.67 samples/sec
+  Memory: 0.0 MB
+
+Running quick benchmark...
+  Quick latency: 0.118 ms
+
+============================================================
+Benchmark complete!
+============================================================
+```
+
+## Benchmark Results
+
+Results include:
+
+- **Latency**: Average time per iteration (ms)
+- **Throughput**: Samples processed per second
+- **Memory**: Peak memory usage (MB) - TODO
+
+## Design Principles
+
+- **Accurate**: No Python overhead, pure Mojo measurement
+- **Stable**: Warmup iterations for consistent results
+- **Comprehensive**: Measure multiple aspects (latency, throughput, memory)
+- **Comparable**: Consistent methodology across models
+
+## Language Justification
+
+Per [ADR-001](../../notes/review/adr/ADR-001-language-selection-tooling.md):
+
+- **Why Mojo**: Required for accurate ML performance measurement
+- **Benefits**: Zero Python overhead, precise timing, SIMD optimization
+- **Critical**: Performance measurement must not introduce overhead
+- **Required**: ML/AI implementation (not automation)
+
+## Future Enhancements
+
+- Memory usage tracking
+- Multi-batch size sweeps
+- Comparison reports
+- JSON output for CI/CD integration
+- Visualization tools (Python for plotting)
 
 ## References
 
 - [Issue #67](https://github.com/mvillmow/ml-odyssey/issues/67): Tools planning
+- [Issue #69](https://github.com/mvillmow/ml-odyssey/issues/69): Tools implementation
 - [ADR-001](../../notes/review/adr/ADR-001-language-selection-tooling.md): Language strategy
+- [Mojo Best Practices](../../.claude/agents/mojo-language-review-specialist.md)

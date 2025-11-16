@@ -1,0 +1,64 @@
+# {{PAPER_TITLE}}
+
+**Authors**: {{AUTHORS}}
+**Year**: {{YEAR}}
+**Original Paper**: {{PAPER_URL}}
+
+## Overview
+
+{{DESCRIPTION}}
+
+## Implementation Status
+
+- [ ] Model architecture
+- [ ] Training loop
+- [ ] Data preprocessing
+- [ ] Evaluation metrics
+- [ ] Reproduce paper results
+
+## Project Structure
+
+```text
+{{PAPER_NAME}}/
+├── README.md              # This file
+├── model.mojo             # Model implementation
+├── train.mojo             # Training script
+├── data.mojo              # Data loading and preprocessing
+├── metrics.mojo           # Evaluation metrics
+├── tests/                 # Test suite
+│   ├── test_model.mojo
+│   ├── test_train.mojo
+│   └── test_data.mojo
+└── notes/                 # Implementation notes
+    ├── architecture.md    # Architecture notes
+    └── results.md         # Reproduction results
+```
+
+## Usage
+
+### Training
+
+```bash
+mojo train.mojo --epochs 10 --batch-size 32
+```
+
+### Evaluation
+
+```bash
+mojo eval.mojo --checkpoint checkpoints/best.mojo
+```
+
+## Reproduction Results
+
+| Metric | Paper | Ours | Status |
+|--------|-------|------|--------|
+| TBD    | TBD   | TBD  | 🔄     |
+
+## Notes
+
+Implementation notes and deviations from the original paper.
+
+## References
+
+- Original Paper: {{PAPER_URL}}
+- ML Odyssey: [Repository](https://github.com/mvillmow/ml-odyssey)

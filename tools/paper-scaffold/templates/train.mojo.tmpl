@@ -1,0 +1,58 @@
+"""
+{{PAPER_TITLE}} - Training Script
+
+Paper: {{PAPER_URL}}
+Authors: {{AUTHORS}} ({{YEAR}})
+"""
+
+from model import {{MODEL_NAME}}, create_model
+
+
+fn train_epoch(
+    inout model: {{MODEL_NAME}},
+    # TODO: Add optimizer, data loader, loss function
+) -> Float64:
+    """
+    Train model for one epoch.
+
+    Returns:
+        Average training loss
+    """
+    # TODO: Implement training loop
+    var total_loss: Float64 = 0.0
+
+    # Training loop placeholder
+    # for batch in train_loader:
+    #     Forward pass
+    #     Compute loss
+    #     Backward pass
+    #     Update weights
+
+    return total_loss
+
+
+fn main():
+    """Main training function."""
+    print("Training {{PAPER_TITLE}}...")
+
+    # Create model
+    var model = create_model()
+
+    # Training configuration
+    let num_epochs: Int = 10
+    let learning_rate: Float64 = 0.001
+
+    # TODO: Initialize optimizer, data loaders, loss function
+
+    # Training loop
+    for epoch in range(num_epochs):
+        print("Epoch", epoch + 1, "/", num_epochs)
+
+        # Train
+        let train_loss = train_epoch(model)
+        print("  Train loss:", train_loss)
+
+        # TODO: Validation
+        # TODO: Save checkpoint
+
+    print("Training complete!")

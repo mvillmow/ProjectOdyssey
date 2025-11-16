@@ -1,0 +1,58 @@
+"""
+{{PAPER_TITLE}} - Model Implementation
+
+Paper: {{PAPER_URL}}
+Authors: {{AUTHORS}} ({{YEAR}})
+"""
+
+from tensor import Tensor, TensorShape
+
+
+struct {{MODEL_NAME}}:
+    """
+    {{PAPER_TITLE}} model architecture.
+
+    TODO: Add architecture description and diagram.
+    """
+
+    # Model parameters
+    # TODO: Add model fields
+
+    fn __init__(inout self):
+        """Initialize model with default configuration."""
+        # TODO: Initialize model parameters
+        pass
+
+    fn forward(self, borrowed input: Tensor[DType.float32]) -> Tensor[DType.float32]:
+        """
+        Forward pass through the network.
+
+        Args:
+            input: Input tensor
+
+        Returns:
+            Output tensor
+        """
+        # TODO: Implement forward pass
+        return input  # Placeholder
+
+    fn backward(
+        self,
+        borrowed grad_output: Tensor[DType.float32]
+    ) -> Tensor[DType.float32]:
+        """
+        Backward pass (gradient computation).
+
+        Args:
+            grad_output: Gradient of loss w.r.t. output
+
+        Returns:
+            Gradient w.r.t. input
+        """
+        # TODO: Implement backward pass
+        return grad_output  # Placeholder
+
+
+fn create_model() -> {{MODEL_NAME}}:
+    """Factory function to create model instance."""
+    return {{MODEL_NAME}}()
