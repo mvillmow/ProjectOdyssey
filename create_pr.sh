@@ -189,3 +189,70 @@ All validation tests now pass with zero errors:
 - **Validation Pass Rate**: 100%
 EOF
 )"
+
+# PR for Issue #67 - Tools Planning
+gh pr create --issue 67 --title "feat(tools): [Plan] Tools directory design and documentation" --body "$(cat <<'EOF'
+## Summary
+
+Comprehensive planning and basic structure for the tools/ directory system containing development utilities and helper tools for ML paper implementation workflows.
+
+Closes #67 - [Plan] Tools - Design and Documentation
+
+## What Changed
+
+### Planning Documentation ✅
+
+Created comprehensive planning in `/notes/issues/67/README.md` covering:
+- Detailed design for tools directory structure
+- Clear distinction between tools/ and scripts/ directories
+- Language selection strategy aligned with ADR-001
+- Contribution guidelines and maintenance strategy
+- Risk mitigation and success metrics
+
+### Basic Tools Directory Structure ✅
+
+Created tools/ directory at repository root with four categories:
+- `paper-scaffold/` - Paper implementation scaffolding
+- `test-utils/` - Testing utilities
+- `benchmarking/` - Performance measurement tools
+- `codegen/` - Code generation utilities
+
+### Documentation Created
+
+- **Main README** (`tools/README.md`) - Purpose and quick start guide
+- **Category READMEs** (4 files) - Planned features and language choices
+- **Planning Documentation** - Comprehensive design and strategy
+
+## Key Design Decisions
+
+**Language Strategy**:
+- Mojo for ML/AI performance-critical utilities (benchmarking, data generation)
+- Python for template processing and external tool integration (with ADR-001 justification)
+
+**Design Principles**:
+- KISS (Keep It Simple Stupid)
+- YAGNI (You Ain't Gonna Need It)
+- Composability and independence
+- Documentation first approach
+
+## Files Created
+
+- `/notes/issues/67/README.md` - Comprehensive planning
+- `/tools/README.md` - Main directory documentation
+- `/tools/paper-scaffold/README.md` - Paper scaffolding category
+- `/tools/test-utils/README.md` - Testing utilities category
+- `/tools/benchmarking/README.md` - Benchmarking category
+- `/tools/codegen/README.md` - Code generation category
+
+## Success Criteria Met
+
+- ✅ Directory exists at root
+- ✅ Clear purpose documentation
+- ✅ Organized by category
+- ✅ Distinguished from scripts/
+- ✅ Contribution guidelines included
+- ✅ Foundation ready for development
+
+The tools directory is now established with a clear foundation for incremental development.
+EOF
+)"
