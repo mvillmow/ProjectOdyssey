@@ -674,14 +674,14 @@ steps:
 
 ### Next Steps
 
-1. Review [STRUCTURE.md](../../STRUCTURE.md) for repository organization
+1. Review STRUCTURE.md (in repository root) for repository organization
 2. Check [getting-started/repository-structure.md](../getting-started/repository-structure.md) for team onboarding
 3. Read individual directory READMEs for detailed usage
 4. Try the example workflows in this guide
 
 ## References
 
-- **STRUCTURE.md**: Repository structure overview
+- **STRUCTURE.md** (in repository root): Repository structure overview
 - **Issue #80**: Package phase documentation
 - **benchmarks/README.md**: Benchmarking infrastructure
 - **docs/README.md**: Documentation system

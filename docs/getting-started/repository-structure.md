@@ -10,10 +10,10 @@ This guide helps you quickly navigate the ML Odyssey repository and understand w
 
 **First Steps**:
 
-1. **Read**: [README.md](../../README.md) - Project overview
-2. **Install**: [getting-started/installation.md](installation.md) - Set up environment
-3. **Explore**: [STRUCTURE.md](../../STRUCTURE.md) - Repository organization
-4. **Try**: [examples/](../../examples/) - Working examples
+1. **Read**: README.md (in repository root) - Project overview
+2. **Install**: [installation.md](installation.md) - Set up environment
+3. **Explore**: STRUCTURE.md (in repository root) - Repository organization
+4. **Try**: examples/ directory (in repository root) - Working examples
 
 ### "I Want to Implement a Paper"
 
@@ -571,7 +571,7 @@ pre-commit run --all-files
 ### For New Contributors
 
 1. **Setup**: Follow installation guide
-2. **Explore**: Browse `examples/`
+2. **Explore**: Browse examples/ directory in repository root
 3. **Read**: Check `docs/core/` for concepts
 4. **Try**: Implement a simple example
 5. **Ask**: Use team channels for questions
@@ -627,7 +627,7 @@ pre-commit run --all-files
 - `tools/` - Utilities
 - `configs/` - Configuration
 
-**When in Doubt**: Check STRUCTURE.md or ask the team!
+**When in Doubt**: Check STRUCTURE.md in repository root or ask the team!
 
 ---
 
