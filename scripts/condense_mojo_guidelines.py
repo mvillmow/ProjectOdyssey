@@ -14,6 +14,9 @@ import re
 from pathlib import Path
 from typing import Dict, Tuple
 
+# Import shared utilities
+from common import get_agents_dir
+
 # Files that should keep full Mojo sections
 KEEP_FULL = {
     'mojo-language-review-specialist.md',
@@ -114,7 +117,7 @@ def condense_mojo_section(filepath: Path) -> Dict:
 
 
 def main():
-    agents_dir = Path('/home/mvillmow/ml-odyssey-manual/.claude/agents')
+    agents_dir = get_agents_dir()
 
     # Get all agent files with Mojo sections
     agent_files = [

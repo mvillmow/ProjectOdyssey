@@ -15,6 +15,9 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+# Import shared constants
+from common import LABEL_COLORS
+
 
 def parse_github_issue_file(file_path):
     """Parse a github_issue.md file and extract all 5 issues."""
@@ -53,19 +56,7 @@ def parse_github_issue_file(file_path):
 
 def create_label_if_needed(label, repo='mvillmow/ml-odyssey'):
     """Create a label if it doesn't exist."""
-    # Define colors for different label types
-    label_colors = {
-        'planning': 'd4c5f9',
-        'documentation': '0075ca',
-        'testing': 'fbca04',
-        'tdd': 'fbca04',
-        'implementation': '1d76db',
-        'packaging': 'c2e0c6',
-        'integration': 'c2e0c6',
-        'cleanup': 'd93f0b'
-    }
-
-    color = label_colors.get(label, '000000')
+    color = LABEL_COLORS.get(label, '000000')
 
     # Try to create label (will fail silently if it exists)
     cmd = ['gh', 'label', 'create', label, '--color', color, '--repo', repo]

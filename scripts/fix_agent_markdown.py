@@ -18,6 +18,9 @@ import re
 from pathlib import Path
 from typing import List
 
+# Import shared utilities
+from common import get_agents_dir
+
 
 def remove_pr_template_sections(content: str) -> str:
     """Remove PR template sections and footer text."""
@@ -243,7 +246,7 @@ def fix_markdown_file(file_path: Path) -> bool:
 
 def main():
     """Main function to fix all agent markdown files."""
-    agents_dir = Path('/home/mvillmow/ml-odyssey-manual/.claude/agents')
+    agents_dir = get_agents_dir()
 
     if not agents_dir.exists():
         print(f"Error: Directory not found: {agents_dir}")
