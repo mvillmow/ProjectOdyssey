@@ -4,7 +4,7 @@
 
 ### List Review Comments
 
-```
+```http
 GET /repos/{owner}/{repo}/pulls/{pull_number}/comments
 ```
 
@@ -12,7 +12,7 @@ Returns all review comments on a pull request.
 
 ### Create Review Comment Reply
 
-```
+```http
 POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies
 ```
 
@@ -65,25 +65,25 @@ gh pr checks PR
 
 ### Standard Fix Confirmation
 
-```
+```text
 ✅ Fixed - [concise description of change]
 ```
 
 ### Need Clarification
 
-```
+```text
 ❓ Question - [specific question about the request]
 ```
 
 ### Won't Fix (with reason)
 
-```
+```text
 ⚠️ Skipped - [brief reason why not applicable]
 ```
 
 ### In Progress
 
-```
+```text
 🔄 Working on it - [expected completion]
 ```
 

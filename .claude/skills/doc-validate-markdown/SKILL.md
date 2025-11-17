@@ -31,30 +31,26 @@ npx markdownlint-cli2 --fix "**/*.md"
 
 ### MD040: Code blocks need language
 
-```markdown
+````markdown
 # ❌ Wrong
 ```
-
 code here
-
 ```
 
 # ✅ Correct
 ```python
 code here
 ```
-
-```
+````
 
 ### MD031: Blank lines around code blocks
 
-```markdown
+````markdown
 # ❌ Wrong
 Text before
 ```python
 code
 ```
-
 Text after
 
 # ✅ Correct
@@ -66,8 +62,7 @@ code
 ```
 
 Text after
-
-```
+````
 
 ### MD013: Line too long
 
