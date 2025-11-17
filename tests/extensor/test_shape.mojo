@@ -7,7 +7,7 @@ flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 from sys import DType
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange
+from extensor import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
 
 # Import test helpers
 from ..helpers.assertions import (
@@ -28,14 +28,13 @@ fn test_reshape_valid() raises:
     var shape_orig = DynamicVector[Int](1)
     shape_orig[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
-    # var new_shape = DynamicVector[Int](2)
-    # new_shape[0] = 3
-    # new_shape[1] = 4
-    # let b = reshape(a, new_shape)  # TODO: Implement reshape()
+    var new_shape = DynamicVector[Int](2)
+    new_shape[0] = 3
+    new_shape[1] = 4
+    let b = reshape(a, new_shape)
 
-    # assert_dim(b, 2, "Reshaped tensor should be 2D")
-    # assert_numel(b, 12, "Reshaped tensor should have same number of elements")
-    pass  # Placeholder
+    assert_dim(b, 2, "Reshaped tensor should be 2D")
+    assert_numel(b, 12, "Reshaped tensor should have same number of elements")
 
 
 fn test_reshape_invalid_size() raises:
@@ -57,14 +56,13 @@ fn test_reshape_infer_dimension() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)
-    # var new_shape = DynamicVector[Int](2)
-    # new_shape[0] = 3
-    # new_shape[1] = -1  # Infer: should be 4
-    # let b = reshape(a, new_shape)  # TODO: Implement -1 inference
+    var new_shape = DynamicVector[Int](2)
+    new_shape[0] = 3
+    new_shape[1] = -1  # Infer: should be 4
+    let b = reshape(a, new_shape)
 
-    # assert_dim(b, 2, "Should be 2D")
-    # assert_numel(b, 12, "Should have 12 elements")
-    pass  # Placeholder
+    assert_dim(b, 2, "Should be 2D")
+    assert_numel(b, 12, "Should have 12 elements")
 
 
 # ============================================================================
@@ -79,12 +77,11 @@ fn test_squeeze_all_dims() raises:
     shape[2] = 1
     shape[3] = 4
     let a = ones(shape, DType.float32)  # Shape (1, 3, 1, 4)
-    # let b = squeeze(a)  # TODO: Implement squeeze()
+    let b = squeeze(a)
 
     # Result should be (3, 4)
-    # assert_dim(b, 2, "Should remove all size-1 dims")
-    # assert_numel(b, 12, "Should have 12 elements")
-    pass  # Placeholder
+    assert_dim(b, 2, "Should remove all size-1 dims")
+    assert_numel(b, 12, "Should have 12 elements")
 
 
 fn test_squeeze_specific_dim() raises:
@@ -94,11 +91,10 @@ fn test_squeeze_specific_dim() raises:
     shape[1] = 3
     shape[2] = 4
     let a = ones(shape, DType.float32)  # Shape (1, 3, 4)
-    # let b = squeeze(a, dim=0)  # TODO: Implement dim parameter
+    let b = squeeze(a, dim=0)
 
     # Result should be (3, 4)
-    # assert_dim(b, 2, "Should remove dim 0")
-    pass  # Placeholder
+    assert_dim(b, 2, "Should remove dim 0")
 
 
 # ============================================================================
@@ -111,12 +107,11 @@ fn test_unsqueeze_add_dim() raises:
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)  # Shape (3, 4)
-    # let b = unsqueeze(a, dim=0)  # TODO: Implement unsqueeze()
+    let b = unsqueeze(a, dim=0)
 
     # Result should be (1, 3, 4)
-    # assert_dim(b, 3, "Should add dimension")
-    # assert_numel(b, 12, "Should have same elements")
-    pass  # Placeholder
+    assert_dim(b, 3, "Should add dimension")
+    assert_numel(b, 12, "Should have same elements")
 
 
 fn test_expand_dims_at_end() raises:
@@ -125,11 +120,10 @@ fn test_expand_dims_at_end() raises:
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)
-    # let b = expand_dims(a, dim=-1)  # TODO: Implement expand_dims()
+    let b = expand_dims(a, dim=-1)
 
     # Result should be (3, 4, 1)
-    # assert_dim(b, 3, "Should add trailing dimension")
-    pass  # Placeholder
+    assert_dim(b, 3, "Should add trailing dimension")
 
 
 # ============================================================================
@@ -142,12 +136,10 @@ fn test_flatten_c_order() raises:
     shape[0] = 3
     shape[1] = 4
     let a = arange(0.0, 12.0, 1.0, DType.float32)
-    # Reshape to 3x4 first
-    # let b = flatten(a)  # TODO: Implement flatten()
+    let b = flatten(a)
 
-    # assert_dim(b, 1, "Flattened tensor should be 1D")
-    # assert_numel(b, 12, "Should have 12 elements")
-    pass  # Placeholder
+    assert_dim(b, 1, "Flattened tensor should be 1D")
+    assert_numel(b, 12, "Should have 12 elements")
 
 
 fn test_ravel_view() raises:
@@ -156,12 +148,10 @@ fn test_ravel_view() raises:
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)
-    # let b = ravel(a)  # TODO: Implement ravel()
+    let b = ravel(a)
 
-    # Should be 1D view of same data
-    # assert_dim(b, 1, "Ravel should be 1D")
-    # TODO: Test that it's a view (shares memory)
-    pass  # Placeholder
+    # Should be 1D view of same data (currently copies, TODO: implement views)
+    assert_dim(b, 1, "Ravel should be 1D")
 
 
 # ============================================================================
@@ -179,12 +169,15 @@ fn test_concatenate_axis_0() raises:
 
     let a = ones(shape_a, DType.float32)  # 2x3
     let b = full(shape_b, 2.0, DType.float32)  # 3x3
-    # let c = concatenate([a, b], axis=0)  # TODO: Implement concatenate()
+
+    var tensors = DynamicVector[ExTensor](2)
+    tensors[0] = a
+    tensors[1] = b
+    let c = concatenate(tensors, axis=0)
 
     # Result should be 5x3 (2+3 rows, 3 cols)
-    # assert_dim(c, 2, "Concatenated tensor should be 2D")
-    # assert_numel(c, 15, "Should have 15 elements (5*3)")
-    pass  # Placeholder
+    assert_dim(c, 2, "Concatenated tensor should be 2D")
+    assert_numel(c, 15, "Should have 15 elements (5*3)")
 
 
 fn test_concatenate_axis_1() raises:
@@ -198,11 +191,14 @@ fn test_concatenate_axis_1() raises:
 
     let a = ones(shape_a, DType.float32)  # 3x2
     let b = full(shape_b, 2.0, DType.float32)  # 3x4
-    # let c = concatenate([a, b], axis=1)  # TODO: Implement concatenate()
+
+    var tensors = DynamicVector[ExTensor](2)
+    tensors[0] = a
+    tensors[1] = b
+    let c = concatenate(tensors, axis=1)
 
     # Result should be 3x6 (3 rows, 2+4 cols)
-    # assert_numel(c, 18, "Should have 18 elements (3*6)")
-    pass  # Placeholder
+    assert_numel(c, 18, "Should have 18 elements (3*6)")
 
 
 # ============================================================================
@@ -217,12 +213,15 @@ fn test_stack_new_axis() raises:
 
     let a = ones(shape, DType.float32)  # 2x3
     let b = full(shape, 2.0, DType.float32)  # 2x3
-    # let c = stack([a, b], axis=0)  # TODO: Implement stack()
+
+    var tensors = DynamicVector[ExTensor](2)
+    tensors[0] = a
+    tensors[1] = b
+    let c = stack(tensors, axis=0)
 
     # Result should be 2x2x3 (stacked along new axis 0)
-    # assert_dim(c, 3, "Stacked tensor should be 3D")
-    # assert_numel(c, 12, "Should have 12 elements (2*2*3)")
-    pass  # Placeholder
+    assert_dim(c, 3, "Stacked tensor should be 3D")
+    assert_numel(c, 12, "Should have 12 elements (2*2*3)")
 
 
 fn test_stack_axis_1() raises:
@@ -233,11 +232,14 @@ fn test_stack_axis_1() raises:
 
     let a = ones(shape, DType.float32)
     let b = full(shape, 2.0, DType.float32)
-    # let c = stack([a, b], axis=1)  # TODO: Implement stack() with axis
+
+    var tensors = DynamicVector[ExTensor](2)
+    tensors[0] = a
+    tensors[1] = b
+    let c = stack(tensors, axis=1)
 
     # Result should be 2x2x3 (stacked along axis 1)
-    # assert_dim(c, 3, "Should be 3D")
-    pass  # Placeholder
+    assert_dim(c, 3, "Should be 3D")
 
 
 # ============================================================================
