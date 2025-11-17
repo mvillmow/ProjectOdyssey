@@ -14,6 +14,9 @@ from datetime import datetime
 import json
 import argparse
 
+# Import shared utilities
+from common import get_plan_dir
+
 
 def read_plan_file(plan_path):
     """Read and parse a plan.md file to extract all sections."""
@@ -396,13 +399,22 @@ Examples:
     parser.add_argument('--resume', action='store_true',
                         help='Resume from last saved state')
     parser.add_argument('--plan-dir', type=str,
-                        default='/home/mvillmow/ml-odyssey/notes/plan',
-                        help='Path to plan directory (default: /home/mvillmow/ml-odyssey/notes/plan)')
+                        default=None,
+                        help='Path to plan directory (default: auto-detected from repository root)')
 
     args = parser.parse_args()
 
+    # Get plan directory (use provided path or auto-detect)
+    if args.plan_dir:
+        plan_dir = Path(args.plan_dir)
+    else:
+        try:
+            plan_dir = get_plan_dir()
+        except RuntimeError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            return 1
+
     # Validate plan directory exists
-    plan_dir = Path(args.plan_dir)
     if not plan_dir.exists():
         print(f"ERROR: Plan directory not found: {plan_dir}", file=sys.stderr)
         return 1

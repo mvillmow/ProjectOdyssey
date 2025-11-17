@@ -20,10 +20,23 @@ see `notes/issues/`, `notes/review/`, and `agents/`.
 ```text
 scripts/
 ├── README.md                           # This file
+├── common.py                           # Shared utilities and constants
 ├── create_issues.py                    # Main GitHub issue creation
 ├── create_single_component_issues.py   # Single component testing
 ├── regenerate_github_issues.py         # Dynamic issue file generation
 ├── fix_markdown.py                     # Unified markdown linting fixer
+├── validate_links.py                   # Markdown link validation
+├── validate_structure.py               # Repository structure validation
+├── check_readmes.py                    # README completeness validation
+├── lint_configs.py                     # YAML configuration linting
+├── get_system_info.py                  # System information collector
+├── merge_prs.py                        # PR merge automation
+├── package_papers.py                   # Papers directory packaging
+├── fix_duplicate_delegation.py         # Agent refactoring (legacy)
+├── cleanup_agent_redundancy.py         # Agent refactoring (legacy)
+├── fix_agent_markdown.py               # Agent refactoring (legacy)
+├── condense_pr_sections.py             # Agent refactoring (legacy)
+├── condense_mojo_guidelines.py         # Agent refactoring (legacy)
 └── agents/                             # Agent system utilities
     ├── README.md                       # Agent scripts documentation
     ├── agent_health_check.sh           # System health checks
@@ -78,7 +91,7 @@ python3 scripts/regenerate_github_issues.py --resume
 - `--dry-run`: Show what would be done without making changes
 - `--section SECTION`: Process only one section (e.g., 01-foundation)
 - `--resume`: Resume from last saved state
-- `--plan-dir PATH`: Specify plan directory (default: /home/mvillmow/ml-odyssey/notes/plan)
+- `--plan-dir PATH`: Specify plan directory (default: auto-detected from repository root)
 
 **Output**:
 
@@ -244,6 +257,259 @@ Summary:
   Files modified: 2
   Total fixes: 8
 ```
+
+---
+
+#### `validate_links.py`
+
+**Purpose**: Validate all markdown links in the repository.
+
+**Features**:
+
+- Checks relative file links and anchors
+- Validates internal markdown links
+- Reports broken links with line numbers
+- Supports dry-run mode
+- Exit code indicates validation status
+
+**Usage**:
+
+```bash
+# Validate links in all markdown files
+python3 scripts/validate_links.py
+
+# Validate links in specific directory
+python3 scripts/validate_links.py notes/
+```
+
+**Exit Codes**:
+
+- 0 = All links valid
+- 1 = Broken links found
+
+---
+
+#### `validate_structure.py`
+
+**Purpose**: Validate repository directory structure and required files.
+
+**Features**:
+
+- Checks for required directories
+- Validates presence of key files
+- Section-by-section validation
+- Clear error reporting
+
+**Usage**:
+
+```bash
+# Validate repository structure
+python3 scripts/validate_structure.py
+
+# Validate specific section
+python3 scripts/validate_structure.py --section 01-foundation
+```
+
+**Exit Codes**:
+
+- 0 = Structure valid
+- 1 = Validation errors found
+
+---
+
+#### `check_readmes.py`
+
+**Purpose**: Validate README.md files for completeness and consistency.
+
+**Features**:
+
+- Checks required sections in README files
+- Validates markdown formatting
+- Reports missing sections
+- Comprehensive validation
+
+**Usage**:
+
+```bash
+# Check all README files
+python3 scripts/check_readmes.py
+
+# Check specific directory
+python3 scripts/check_readmes.py notes/
+```
+
+**Exit Codes**:
+
+- 0 = All README files valid
+- 1 = Issues found
+
+---
+
+#### `lint_configs.py`
+
+**Purpose**: Lint YAML configuration files for syntax and formatting.
+
+**Features**:
+
+- YAML syntax validation
+- Indentation checking
+- Nested key validation
+- Can remove unused sections
+- Verbose output mode
+
+**Usage**:
+
+```bash
+# Lint all YAML files
+python3 scripts/lint_configs.py
+
+# Lint with verbose output
+python3 scripts/lint_configs.py --verbose
+
+# Remove unused sections
+python3 scripts/lint_configs.py --remove-unused
+```
+
+**Exit Codes**:
+
+- 0 = All configs valid
+- 1 = Linting errors found
+
+---
+
+#### `get_system_info.py`
+
+**Purpose**: Collect system information for bug reports and debugging.
+
+**Features**:
+
+- Gathers git information
+- Collects Mojo version details
+- Python environment info
+- System details (OS, CPU, etc.)
+- Graceful handling of missing tools
+
+**Usage**:
+
+```bash
+# Collect system information
+python3 scripts/get_system_info.py
+
+# Output in JSON format
+python3 scripts/get_system_info.py --json
+```
+
+---
+
+#### `merge_prs.py`
+
+**Purpose**: Merge pull requests using GitHub API.
+
+**Features**:
+
+- Uses PyGithub library
+- Configurable merge method
+- Delete branch after merge option
+- Requires GITHUB_TOKEN
+
+**Usage**:
+
+```bash
+# Merge PR by number
+python3 scripts/merge_prs.py <pr-number>
+
+# Merge with squash
+python3 scripts/merge_prs.py <pr-number> --squash
+
+# Delete branch after merge
+python3 scripts/merge_prs.py <pr-number> --delete-branch
+```
+
+**Requirements**:
+
+- PyGithub library: `pip install PyGithub`
+- GITHUB_TOKEN environment variable
+
+---
+
+#### `package_papers.py`
+
+**Purpose**: Create tarball distribution of papers directory.
+
+**Features**:
+
+- Creates compressed archive
+- Validates directory structure
+- Timestamped output files
+- Error handling
+
+**Usage**:
+
+```bash
+# Create papers package
+python3 scripts/package_papers.py
+
+# Specify output directory
+python3 scripts/package_papers.py --output dist/
+```
+
+---
+
+### Agent Modification Scripts
+
+These scripts were used to refactor agent configuration files. They are kept for reference but may not be needed for regular development.
+
+#### `fix_duplicate_delegation.py`
+
+**Purpose**: Fix duplicate Delegation sections in agent files.
+
+**Usage**:
+
+```bash
+python3 scripts/fix_duplicate_delegation.py
+```
+
+#### `cleanup_agent_redundancy.py`
+
+**Purpose**: Remove redundant sections from agent files and replace with references.
+
+**Usage**:
+
+```bash
+python3 scripts/cleanup_agent_redundancy.py
+```
+
+#### `fix_agent_markdown.py`
+
+**Purpose**: Fix markdown linting errors in agent configuration files.
+
+**Usage**:
+
+```bash
+python3 scripts/fix_agent_markdown.py
+```
+
+#### `condense_pr_sections.py`
+
+**Purpose**: Replace verbose PR creation sections with concise references.
+
+**Usage**:
+
+```bash
+python3 scripts/condense_pr_sections.py
+```
+
+#### `condense_mojo_guidelines.py`
+
+**Purpose**: Condense Mojo-specific guidelines sections in agent files.
+
+**Usage**:
+
+```bash
+python3 scripts/condense_mojo_guidelines.py
+```
+
+**Note**: These agent modification scripts use shared utilities from `common.py` for path detection and may be archived in the future if no longer needed.
 
 ---
 

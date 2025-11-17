@@ -8,6 +8,9 @@ Replace with a 5-line reference.
 
 import re
 from pathlib import Path
+
+# Import shared utilities
+from common import get_agents_dir
 from typing import Dict, Tuple
 
 # Short reference for PR creation
@@ -57,7 +60,7 @@ def process_file(filepath: Path) -> Dict:
 
 
 def main():
-    agents_dir = Path('/home/mvillmow/ml-odyssey-manual/.claude/agents')
+    agents_dir = get_agents_dir()
 
     # Get all agent markdown files
     agent_files = sorted(agents_dir.glob('*.md'))

@@ -11,6 +11,9 @@ import re
 from pathlib import Path
 from typing import Dict
 
+# Import shared utilities
+from common import get_agents_dir
+
 def fix_duplicate_delegation(content: str) -> tuple[str, bool]:
     """
     Fix duplicate Delegation sections.
@@ -82,7 +85,7 @@ def process_file(filepath: Path) -> Dict:
 
 
 def main():
-    agents_dir = Path('/home/mvillmow/ml-odyssey-manual/.claude/agents')
+    agents_dir = get_agents_dir()
 
     # Get all agent markdown files
     agent_files = sorted(agents_dir.glob('*.md'))
