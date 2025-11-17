@@ -389,6 +389,6 @@ See [Mojo Patterns](../core/mojo-patterns.md) for:
 ## Further Reading
 
 - [Mojo Patterns Guide](../core/mojo-patterns.md) - Language optimization techniques
-- [SIMD Optimization Examples](../../examples/performance/simd_optimization.mojo)
-- [Memory Efficiency Examples](../../examples/performance/memory_optimization.mojo)
+- SIMD optimization examples in `examples/performance/simd_optimization.mojo`
+- Memory efficiency examples in `examples/performance/memory_optimization.mojo`
 - [Intel VTune Profiler Guide](https://www.intel.com/content/www/us/en/develop/documentation/vtune-profiler-user-guide/)

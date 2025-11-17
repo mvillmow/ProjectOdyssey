@@ -376,7 +376,7 @@ mojo run -I shared.mojopkg examples/test.mojo
 
 ## Related Documentation
 
-- [Contributing Guide](../../CONTRIBUTING.md) - Development workflow
+- **Contributing Guide** (`CONTRIBUTING.md` in repo root) - Development workflow
 - [CI/CD Pipeline](ci-cd.md) - Automated testing and deployment
 - [Testing Strategy](../core/testing-strategy.md) - Quality assurance
 

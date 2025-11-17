@@ -261,11 +261,11 @@ Each phase has its own GitHub issue with detailed instructions:
 - **Package Issue**: Contains distribution requirements and CI/CD setup
 - **Cleanup Issue**: Contains refactoring and finalization checklist
 
-See `/agents/hierarchy.md` for which specialists lead each phase.
+See `agents/hierarchy.md` for which specialists lead each phase.
 
 ## References
 
-- [Orchestration Patterns](../../notes/review/orchestration-patterns.md) - Detailed coordination rules
-- [Agent Hierarchy](../../agents/hierarchy.md) - Which agents lead each phase
-- [CLAUDE.md](../../CLAUDE.md#5-phase-development-workflow) - Complete phase definitions
-- [Worktree Strategy](../../notes/review/worktree-strategy.md) - Git workflow coordination
+- **Orchestration Patterns** (`notes/review/orchestration-patterns.md`) - Detailed coordination rules
+- **Agent Hierarchy** (`agents/hierarchy.md`) - Which agents lead each phase
+- **CLAUDE.md** (repo root) - Complete phase definitions
+- **Worktree Strategy** (`notes/review/worktree-strategy.md`) - Git workflow coordination

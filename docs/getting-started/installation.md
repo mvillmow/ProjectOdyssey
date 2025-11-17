@@ -406,7 +406,7 @@ If you encounter issues not covered in this guide:
 
 ## Development Setup (For Contributors)
 
-If you plan to contribute to ML Odyssey, see [CONTRIBUTING.md](../../CONTRIBUTING.md) for additional setup steps including:
+If you plan to contribute to ML Odyssey, see `CONTRIBUTING.md` in the repository root for additional setup steps including:
 
 - Running tests with `pixi run test`
 - Code style guidelines

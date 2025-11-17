@@ -426,14 +426,14 @@ fn relu_simd(inout tensor: Tensor):
 
 fn sum_simd(borrowed tensor: Tensor) -> Float32:
     """Sum all elements using SIMD."""
-    alias simd_width = simdwidthof[DType.float32]()
-    var accumulator = SIMD[DType.float32, simd_width](0.0)
+    alias simd_width = simdwidthof\[DType.float32\]()
+    var accumulator = SIMD\[DType.float32, simd_width\](0.0)
 
     @parameter
-    fn vectorized_sum[width: Int](idx: Int):
-        accumulator += tensor.data.simd_load[width](idx)
+    fn vectorized_sum\[width: Int\](idx: Int):
+        accumulator += tensor.data.simd_load\[width\](idx)
 
-    vectorize[simd_width, vectorized_sum](tensor.size())
+    vectorize\[simd_width, vectorized_sum\](tensor.size())
     return accumulator.reduce_add()
 
 ```text
@@ -455,20 +455,20 @@ fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
     var k = a.shape[1]
 
     var result = Tensor.zeros(m, n)
-    alias simd_width = simdwidthof[DType.float32]()
+    alias simd_width = simdwidthof\[DType.float32\]()
 
     for i in range(m):
         for j in range(n):
-            var sum = SIMD[DType.float32, simd_width](0.0)
+            var sum = SIMD\[DType.float32, simd_width\](0.0)
 
             @parameter
-            fn dot_product[width: Int](idx: Int):
-                var a_vec = a.load[width](i * k + idx)
-                var b_vec = b.load[width](idx * n + j)
+            fn dot_product\[width: Int\](idx: Int):
+                var a_vec = a.load\[width\](i * k + idx)
+                var b_vec = b.load\[width\](idx * n + j)
                 sum += a_vec * b_vec
 
-            vectorize[simd_width, dot_product](k)
-            result[i, j] = sum.reduce_add()
+            vectorize\[simd_width, dot_product\](k)
+            result\[i, j\] = sum.reduce_add()
 
     return result
 

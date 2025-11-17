@@ -81,8 +81,8 @@ separates ML implementations, reusable components, documentation, tools, and con
 
   workflows
 
-- **[STRUCTURE.md](../../STRUCTURE.md)** (in repo root) - Complete directory tree with descriptions
+- **STRUCTURE.md** (in repo root) - Complete directory tree with descriptions
 - **[Installation Guide](../getting-started/installation.md)** - Environment setup
-- **[Contributing Guidelines](../../CONTRIBUTING.md)** - Development workflow and standards
-- **[Agent System](../../agents/)** - AI agent hierarchy and delegation
+- **CONTRIBUTING.md** (in repo root) - Development workflow and standards
+- **Agent System** (`agents/` directory) - AI agent hierarchy and delegation
 - **[Quick Start: New Paper](../integration/quick-start-new-paper.md)** - Creating new papers

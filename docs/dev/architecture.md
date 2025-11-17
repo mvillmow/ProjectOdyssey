@@ -50,7 +50,7 @@ ml-odyssey/
 
 ```text
 
-See [STRUCTURE.md](../../STRUCTURE.md) for complete directory documentation.
+See `STRUCTURE.md` in the repository root for complete directory documentation.
 
 ## Shared Library Architecture
 
@@ -147,7 +147,7 @@ The agent system implements a 6-level hierarchy enabling AI-assisted development
 - Mojo-specific tools (formatting, testing, optimization)
 - Workflow automation (phase management, planning, packaging)
 
-See [Agent System Overview](../../notes/review/agent-system-overview.md) for complete hierarchy documentation.
+See `notes/review/agent-system-overview.md` for complete hierarchy documentation.
 
 ## Build and Deployment
 
@@ -186,13 +186,13 @@ Each phase has dedicated agent roles, clear entry/exit criteria, and automated C
 
 For comprehensive architectural decisions and design rationale, see:
 
-- **Agent Architecture** - [agent-architecture-review.md](../../notes/review/agent-architecture-review.md)
-- **Skills Design** - [skills-design.md](../../notes/review/skills-design.md)
-- **Orchestration Patterns** - [orchestration-patterns.md](../../notes/review/orchestration-patterns.md)
-- **Git Workflow** - [worktree-strategy.md](../../notes/review/worktree-strategy.md)
-- **System Overview** - [agent-system-overview.md](../../notes/review/agent-system-overview.md)
+- **Agent Architecture** - `notes/review/agent-architecture-review.md`
+- **Skills Design** - `notes/review/skills-design.md`
+- **Orchestration Patterns** - `notes/review/orchestration-patterns.md`
+- **Git Workflow** - `notes/review/worktree-strategy.md`
+- **System Overview** - `notes/review/agent-system-overview.md`
 
-See [notes/review/README.md](../../notes/review/README.md) for the complete specifications index.
+See `notes/review/README.md` for the complete specifications index.
 
 ## Design Principles
 
