@@ -31,8 +31,21 @@ from .extensor import ExTensor
 # Creation operations
 from .extensor import zeros, ones, full, empty, arange, eye, linspace
 
-# TODO: Export other operation categories as they are implemented
-# from .arithmetic import add, subtract, multiply, divide
-# from .matrix import matmul, transpose
-# from .reduction import sum, mean, max, min
+# Broadcasting utilities
+from .broadcasting import broadcast_shapes, are_shapes_broadcastable
+
+# Arithmetic operations
+from .arithmetic import add, subtract, multiply, divide, floor_divide, modulo, power
+
+# Matrix operations
+from .matrix import matmul, transpose, dot, outer
+
+# Reduction operations
+from .reduction import sum, mean, max_reduce, min_reduce
+
+# TODO: Export remaining operation categories
+# from .comparison import equal, not_equal, less, greater
+# from .pointwise_math import sin, cos, exp, log, sqrt
+# from .shape import reshape, squeeze, unsqueeze, concatenate
+# from .indexing import getitem, setitem, take, gather
 # etc.
