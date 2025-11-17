@@ -65,7 +65,9 @@ from .reduction import sum, mean, max_reduce, min_reduce
 # Element-wise mathematical operations
 from .elementwise_math import abs, sign, exp, log, sqrt, sin, cos, tanh, clip
 
+# Shape manipulation operations
+from .shape import reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
+
 # TODO: Export remaining operation categories
-# from .shape import reshape, squeeze, unsqueeze, concatenate
 # from .indexing import getitem, setitem, take, gather
 # etc.
