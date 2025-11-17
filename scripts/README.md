@@ -8,8 +8,10 @@ These scripts automate repository management tasks:
 
 - Creating GitHub issues from plan files (files in `notes/plan/`)
 - Regenerating github_issue.md files dynamically from plan.md files (local, task-relative)
-- Testing issue creation for individual components
+- Markdown and link validation
+- Repository structure validation
 - Agent system utilities and validation
+- Shared utilities and validation framework
 
 **Important**: Plan files in `notes/plan/` are task-relative.
 They are used for local planning and GitHub issue generation. For tracked team documentation,
@@ -21,8 +23,8 @@ see `notes/issues/`, `notes/review/`, and `agents/`.
 scripts/
 ├── README.md                           # This file
 ├── common.py                           # Shared utilities and constants
+├── validation.py                       # Shared validation framework
 ├── create_issues.py                    # Main GitHub issue creation
-├── create_single_component_issues.py   # Single component testing
 ├── regenerate_github_issues.py         # Dynamic issue file generation
 ├── fix_markdown.py                     # Unified markdown linting fixer
 ├── validate_links.py                   # Markdown link validation
@@ -32,11 +34,6 @@ scripts/
 ├── get_system_info.py                  # System information collector
 ├── merge_prs.py                        # PR merge automation
 ├── package_papers.py                   # Papers directory packaging
-├── fix_duplicate_delegation.py         # Agent refactoring (legacy)
-├── cleanup_agent_redundancy.py         # Agent refactoring (legacy)
-├── fix_agent_markdown.py               # Agent refactoring (legacy)
-├── condense_pr_sections.py             # Agent refactoring (legacy)
-├── condense_mojo_guidelines.py         # Agent refactoring (legacy)
 └── agents/                             # Agent system utilities
     ├── README.md                       # Agent scripts documentation
     ├── agent_health_check.sh           # System health checks
@@ -46,10 +43,54 @@ scripts/
     ├── setup_agents.sh                 # Setup automation
     ├── test_agent_loading.py           # Loading tests
     ├── validate_agents.py              # Configuration validation
-    └── tests/                          # Agent test suite
+    ├── tests/                          # Agent test suite
+    └── playground/                     # Deprecated/experimental scripts
+        ├── README.md                   # Playground documentation
+        ├── create_single_component_issues.py  # (Deprecated - use create_issues.py --file)
+        ├── fix_duplicate_delegation.py        # Agent refactoring (historical)
+        ├── cleanup_agent_redundancy.py        # Agent refactoring (historical)
+        ├── fix_agent_markdown.py              # Agent refactoring (historical)
+        ├── condense_pr_sections.py            # Agent refactoring (historical)
+        └── condense_mojo_guidelines.py        # Agent refactoring (historical)
 ```
 
 ## Scripts
+
+### Shared Modules
+
+#### `common.py`
+
+**Purpose**: Shared utilities and constants used across multiple scripts.
+
+**Provides**:
+
+- `LABEL_COLORS` - Standard GitHub label colors for 5-phase workflow
+- `get_repo_root()` - Portable repository root detection
+- `get_agents_dir()` - Get .claude/agents directory path
+- `get_plan_dir()` - Get notes/plan directory path
+
+**Usage**: Imported by other scripts to avoid code duplication.
+
+---
+
+#### `validation.py`
+
+**Purpose**: Shared validation framework for consistency across validation scripts.
+
+**Provides**:
+
+- `find_markdown_files()` - Find markdown files with exclusions
+- `validate_file_exists()` - Check file existence
+- `validate_directory_exists()` - Check directory existence
+- `check_required_sections()` - Validate markdown sections
+- `extract_markdown_links()` - Extract links from markdown
+- `validate_relative_link()` - Validate markdown links
+- `count_markdown_issues()` - Count common markdown issues
+- `setup_logger()` - Configure logging consistently
+
+**Usage**: Imported by validation scripts to ensure consistent validation logic.
+
+---
 
 ### Main Scripts
 
@@ -121,29 +162,25 @@ Always regenerate them using this script. These files are local (in `notes/plan/
 **Usage**:
 
 ```bash
-
 # Dry-run mode (recommended first - shows what would be created)
-
 python3 scripts/create_issues.py --dry-run
 
 # Test with one section only
-
 python3 scripts/create_issues.py --section 01-foundation
 
-# Resume from interruption
+# Test with single file (replaces create_single_component_issues.py)
+python3 scripts/create_issues.py --file notes/plan/.../github_issue.md
 
+# Resume from interruption
 python3 scripts/create_issues.py --resume
 
 # Create all issues
-
 python3 scripts/create_issues.py
 
 # Disable colored output
-
 python3 scripts/create_issues.py --no-color
 
 # Specify repository explicitly
-
 python3 scripts/create_issues.py --repo username/repo
 ```
 
@@ -165,36 +202,6 @@ python3 scripts/create_issues.py --repo username/repo
 
 - GitHub CLI (`gh`) must be installed and authenticated
 - Run `gh auth login` if not already authenticated
-
----
-
-#### `create_single_component_issues.py`
-
-**Purpose**: Test script to create GitHub issues for a single component.
-
-**Features**:
-
-- Creates 5 issues for one component (Plan, Test, Implementation, Packaging, Cleanup)
-- Useful for testing before bulk creation
-- Updates github_issue.md with created issue URLs
-
-**Usage**:
-
-```bash
-
-# Test with a specific component
-
-python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
-```
-
-**Example**:
-
-```bash
-
-# This creates 5 issues for the foundation component
-
-python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
-```
 
 ---
 
@@ -455,61 +462,17 @@ python3 scripts/package_papers.py --output dist/
 
 ---
 
-### Agent Modification Scripts
+---
 
-These scripts were used to refactor agent configuration files. They are kept for reference but may not be needed for regular development.
+### Deprecated Scripts
 
-#### `fix_duplicate_delegation.py`
+Historical and experimental scripts have been moved to `scripts/agents/playground/`.
+See [scripts/agents/playground/README.md](agents/playground/README.md) for details.
 
-**Purpose**: Fix duplicate Delegation sections in agent files.
+**Recommended alternatives:**
 
-**Usage**:
-
-```bash
-python3 scripts/fix_duplicate_delegation.py
-```
-
-#### `cleanup_agent_redundancy.py`
-
-**Purpose**: Remove redundant sections from agent files and replace with references.
-
-**Usage**:
-
-```bash
-python3 scripts/cleanup_agent_redundancy.py
-```
-
-#### `fix_agent_markdown.py`
-
-**Purpose**: Fix markdown linting errors in agent configuration files.
-
-**Usage**:
-
-```bash
-python3 scripts/fix_agent_markdown.py
-```
-
-#### `condense_pr_sections.py`
-
-**Purpose**: Replace verbose PR creation sections with concise references.
-
-**Usage**:
-
-```bash
-python3 scripts/condense_pr_sections.py
-```
-
-#### `condense_mojo_guidelines.py`
-
-**Purpose**: Condense Mojo-specific guidelines sections in agent files.
-
-**Usage**:
-
-```bash
-python3 scripts/condense_mojo_guidelines.py
-```
-
-**Note**: These agent modification scripts use shared utilities from `common.py` for path detection and may be archived in the future if no longer needed.
+- Instead of `create_single_component_issues.py`, use `create_issues.py --file <path>`
+- Agent modification scripts are historical; see playground README for context
 
 ---
 
@@ -674,12 +637,31 @@ python3 scripts/regenerate_github_issues.py
 
 ---
 
+## Testing
+
+Unit tests for shared modules are located in `/tests/`:
+
+```bash
+# Run tests for common.py
+python3 tests/test_common.py
+
+# Run tests for validation.py
+python3 tests/test_validation.py
+
+# Run all tests (requires pytest)
+pytest tests/
+```
+
+---
+
 ## Script Dependencies
 
 ### Python Requirements
 
 - Python 3.7+
-- No external Python packages required (uses standard library only)
+- Standard library only for main scripts
+- Optional: `pytest` for running unit tests
+- Optional: `tqdm` for better progress bars in create_issues.py
 
 ### External Tools
 
