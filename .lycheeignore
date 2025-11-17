@@ -12,8 +12,10 @@ example\.com
 example\.org
 
 # Ignore template files with placeholder URLs
-\.claude/skills/.*/templates/
-agents/templates/
+\.claude/skills/.*/templates/.*
+agents/templates/.*
+# Specific placeholder URLs in templates
+https://github.com/org/repo/issues/XX
 
 # Add additional patterns below as needed
 # Examples:

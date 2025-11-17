@@ -96,7 +96,7 @@ fn add(x: Int32, y: Int32) -> Int32:
 
 For automation scripts that require Python:
 
-- Follow [PEP 8](https://www.python.org/dev/peps/pep-0008/)
+- Follow [PEP 8](https://peps.python.org/pep-0008/)
 - Use type hints for all function parameters and return values
 - Write clear docstrings using the Google style
 - Use `black` for code formatting (included in pre-commit)
@@ -335,7 +335,7 @@ If you have questions:
 - [Project Architecture](../../CLAUDE.md)
 - [Development Workflow](../../docs/dev/workflow.md)
 - [5-Phase Development Process](../../notes/review/workflow.md)
-- [Mojo Documentation](https://docs.modular.com/mojo/)
+- [Mojo Documentation](https://docs.modular.com/mojo/manual/)
 - [ML Odyssey README](../../README.md)
 
 ## Code of Conduct

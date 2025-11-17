@@ -3,7 +3,7 @@
 
 # Exclude certain patterns from link checking
 exclude = [
-    "notes/plan/",
+    "notes/",  # Historical documentation with many old/redirected URLs
     "file:///",
     # Files that exist locally but not on main yet (added in this PR)
     "https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md",

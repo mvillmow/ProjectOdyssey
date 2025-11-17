@@ -605,8 +605,8 @@ Configure for `main` branch:
 ## References
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Workflow Syntax](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions)
-- [Security Best Practices](https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions)
+- [Workflow Syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
+- [Security Best Practices](https://docs.github.com/en/actions/reference/security/secure-use)
 
 ---
 

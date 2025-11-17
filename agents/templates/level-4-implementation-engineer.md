@@ -342,7 +342,7 @@ You're successful when:
 
 - [Mojo Manual](https://docs.modular.com/mojo/manual/)
 - [Mojo Standard Library](https://docs.modular.com/mojo/lib/)
-- [Mojo Examples](https://github.com/modularml/mojo/tree/main/examples)
+- [Mojo Examples](https://github.com/modular/modular/tree/main/examples)
 
 #### Project Resources
 

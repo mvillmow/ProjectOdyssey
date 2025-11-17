@@ -605,7 +605,7 @@ When reporting installation issues:
 
 ## Additional Resources
 
-- [Mojo Documentation](https://docs.modular.com/mojo/)
+- [Mojo Documentation](https://docs.modular.com/mojo/manual/)
 - [Mojo Packages Guide](https://docs.modular.com/mojo/manual/packages/)
 - [Project README](../README.md)
 - [Contributing Guide](../CONTRIBUTING.md)
