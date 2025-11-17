@@ -52,9 +52,9 @@ platforms = ["linux-64", "osx-arm64"]
 
 ### 4. .gitattributes (Lines 1-7)
 
-- Mojo file language detection (*.mojo, *.🔥 linguist-language=Mojo)
+- Mojo file language detection (`*.mojo`, `*.🔥` linguist-language=Mojo)
 - pixi.lock binary merge strategy
-- Git LFS patterns (future: *.pth, *.onnx, *.safetensors)
+- Git LFS patterns (future: `*.pth`, `*.onnx`, `*.safetensors`)
 
 ### 5. Git LFS
 
