@@ -71,6 +71,7 @@ Break lines at 120 characters.
 ## Configuration
 
 `.markdownlint.yaml`:
+
 ```yaml
 line-length:
   line_length: 120

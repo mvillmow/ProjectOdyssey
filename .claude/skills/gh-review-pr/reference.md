@@ -23,7 +23,7 @@
 
 Follow conventional commits:
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>
@@ -134,7 +134,7 @@ Types: feat, fix, docs, refactor, test, chore
 
 ### Approval
 
-```
+```markdown
 ✅ **Approved**
 
 Great work! This PR:
@@ -145,7 +145,7 @@ Ready to merge.
 
 ### Request Changes
 
-```
+```markdown
 🔧 **Changes Requested**
 
 Issues that need to be addressed:
@@ -156,7 +156,7 @@ Please fix these issues and I'll review again.
 
 ### Comments Only
 
-```
+```markdown
 💬 **Comments**
 
 Overall looks good. Some suggestions:

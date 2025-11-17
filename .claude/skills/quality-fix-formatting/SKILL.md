@@ -167,18 +167,17 @@ fn add(x: Int, y: Int) -> Int:
 
 **Before:**
 
-```markdown
+````markdown
 Some text before.
 ```text
 code block
 ```
-
 Some text after.
-
-```
+````
 
 **After:**
-```markdown
+
+````markdown
 Some text before.
 
 ```text
@@ -186,8 +185,7 @@ code block
 ```
 
 Some text after.
-
-```
+````
 
 ### Trailing Whitespace
 
@@ -210,20 +208,17 @@ Some issues need manual intervention:
 
 ### Markdown Language Tags
 
-```markdown
+````markdown
 # Before (need to add manually)
 ```
-
 code here
-
 ```
 
 # After
 ```python
 code here
 ```
-
-```
+````
 
 ### Line Length
 
