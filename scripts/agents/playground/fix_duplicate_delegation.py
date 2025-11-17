@@ -8,13 +8,15 @@ This script merges them properly.
 """
 
 import re
+import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Tuple
 
-# Import shared utilities
-from common import get_agents_dir
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from scripts.common import get_agents_dir
 
-def fix_duplicate_delegation(content: str) -> tuple[str, bool]:
+def fix_duplicate_delegation(content: str) -> Tuple[str, bool]:
     """
     Fix duplicate Delegation sections.
 
@@ -84,7 +86,7 @@ def process_file(filepath: Path) -> Dict:
     return result
 
 
-def main():
+def main() -> None:
     agents_dir = get_agents_dir()
 
     # Get all agent markdown files

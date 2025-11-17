@@ -2,6 +2,9 @@
 
 This directory contains validation and utility scripts for the agent system in `.claude/agents/`.
 
+**Note**: Historical and experimental scripts have been moved to the `playground/` subdirectory.
+See [playground/README.md](playground/README.md) for details on deprecated scripts.
+
 ## Scripts
 
 ### validate_agents.py

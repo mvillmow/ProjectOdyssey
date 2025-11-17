@@ -9,6 +9,7 @@ from interruptions, and detailed progress tracking.
 Usage:
     python create_issues.py --dry-run              # Show what would be done
     python create_issues.py --section 01-foundation # Only process one section
+    python create_issues.py --file notes/plan/.../github_issue.md # Test single file
     python create_issues.py --resume               # Resume from saved state
     python create_issues.py                        # Actually create all issues
 """
@@ -739,6 +740,12 @@ def main():
     )
 
     parser.add_argument(
+        '--file',
+        type=str,
+        help='Process a single github_issue.md file (for testing)'
+    )
+
+    parser.add_argument(
         '--resume',
         action='store_true',
         help='Resume from saved state'
@@ -757,6 +764,11 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Validate mutually exclusive options
+    if args.file and args.section:
+        print(f"{Colors.FAIL}Error: --file and --section are mutually exclusive{Colors.ENDC}")
+        sys.exit(1)
 
     # Disable colors if requested or not a TTY
     if args.no_color or not sys.stdout.isatty():
@@ -809,8 +821,18 @@ def main():
         # Create new state manager with timestamped file
         state_manager = StateManager(state_file)
 
-    # Find all issue files
-    issue_files = find_all_issue_files(plan_dir, args.section)
+    # Find all issue files or use single file
+    if args.file:
+        file_path = Path(args.file)
+        if not file_path.exists():
+            print(f"{Colors.FAIL}Error: File not found: {args.file}{Colors.ENDC}")
+            sys.exit(1)
+        if not file_path.name == 'github_issue.md':
+            print(f"{Colors.WARNING}Warning: File is not named 'github_issue.md'{Colors.ENDC}")
+        issue_files = [file_path]
+        print(f"{Colors.OKCYAN}Processing single file: {file_path}{Colors.ENDC}\n")
+    else:
+        issue_files = find_all_issue_files(plan_dir, args.section)
 
     if not issue_files:
         print(f"{Colors.FAIL}No github_issue.md files found{Colors.ENDC}")

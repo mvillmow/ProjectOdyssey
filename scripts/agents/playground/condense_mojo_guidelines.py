@@ -11,11 +11,13 @@ For other roles, replace with short reference.
 """
 
 import re
+import sys
 from pathlib import Path
 from typing import Dict, Tuple
 
-# Import shared utilities
-from common import get_agents_dir
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from scripts.common import get_agents_dir
 
 # Files that should keep full Mojo sections
 KEEP_FULL = {
@@ -116,7 +118,7 @@ def condense_mojo_section(filepath: Path) -> Dict:
     return result
 
 
-def main():
+def main() -> None:
     agents_dir = get_agents_dir()
 
     # Get all agent files with Mojo sections

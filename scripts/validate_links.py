@@ -12,11 +12,19 @@ Exit codes:
     1: One or more broken links found
 """
 
-import sys
+import logging
 import re
+import sys
 from pathlib import Path
 from typing import List, Tuple, Dict
 from urllib.parse import urlparse
+
+# Setup logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s: %(message)s'
+)
 
 
 def get_repo_root() -> Path:
@@ -157,10 +165,10 @@ def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List
     markdown_files = find_markdown_files(directory)
     
     if not markdown_files:
-        print(f"No markdown files found in {directory}")
+        logger.warning(f"No markdown files found in {directory}")
         return results
-    
-    print(f"Found {len(markdown_files)} markdown files\n")
+
+    logger.info(f"Found {len(markdown_files)} markdown files\n")
     
     for md_file in markdown_files:
         result = validate_links(md_file, repo_root, verbose)
@@ -171,13 +179,13 @@ def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List
         if len(result["broken_links"]) == 0:
             results["passed"].append(result["path"])
             if verbose:
-                print(f"✓ {result['path']} ({result['total_links']} links)")
+                logger.info(f"✓ {result['path']} ({result['total_links']} links)")
         else:
             results["failed"].append(result)
-            print(f"✗ {result['path']} ({len(result['broken_links'])} broken)")
+            logger.error(f"✗ {result['path']} ({len(result['broken_links'])} broken)")
             for broken in result["broken_links"]:
-                print(f"    Line {broken['line']}: [{broken['text']}]({broken['target']})")
-                print(f"      → {broken['error']}")
+                logger.error(f"    Line {broken['line']}: [{broken['text']}]({broken['target']})")
+                logger.error(f"      → {broken['error']}")
     
     return results
 
@@ -189,22 +197,22 @@ def print_summary(results: Dict[str, any]) -> None:
     failed_files = len(results["failed"])
     total_links = results["total_links"]
     broken_links = results["broken_links"]
-    
-    print("\n" + "=" * 70)
-    print("LINK VALIDATION SUMMARY")
-    print("=" * 70)
-    print(f"Total files: {total_files}")
-    print(f"Files with valid links: {passed_files}")
-    print(f"Files with broken links: {failed_files}")
-    print(f"\nTotal links checked: {total_links}")
-    print(f"Broken links: {broken_links}")
-    
+
+    logger.info("\n" + "=" * 70)
+    logger.info("LINK VALIDATION SUMMARY")
+    logger.info("=" * 70)
+    logger.info(f"Total files: {total_files}")
+    logger.info(f"Files with valid links: {passed_files}")
+    logger.info(f"Files with broken links: {failed_files}")
+    logger.info(f"\nTotal links checked: {total_links}")
+    logger.info(f"Broken links: {broken_links}")
+
     if failed_files > 0:
-        print(f"\nFiles with broken links ({failed_files}):")
+        logger.info(f"\nFiles with broken links ({failed_files}):")
         for result in results["failed"]:
-            print(f"  {result['path']} - {len(result['broken_links'])} broken")
-    
-    print("=" * 70)
+            logger.info(f"  {result['path']} - {len(result['broken_links'])} broken")
+
+    logger.info("=" * 70)
 
 
 def main() -> int:
@@ -223,10 +231,10 @@ def main() -> int:
         directory = get_repo_root()
     
     if not directory.exists():
-        print(f"Error: Directory not found: {directory}")
+        logger.error(f"Directory not found: {directory}")
         return 1
-    
-    print(f"Validating links in: {directory}\n")
+
+    logger.info(f"Validating links in: {directory}\n")
     
     results = validate_all_links(directory, verbose)
     print_summary(results)

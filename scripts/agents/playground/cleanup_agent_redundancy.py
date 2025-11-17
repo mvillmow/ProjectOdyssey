@@ -9,11 +9,13 @@ This script:
 """
 
 import re
+import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-# Import shared utilities
-from common import get_agents_dir
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from scripts.common import get_agents_dir
 
 # Define the replacement text
 SKIP_LEVEL_REPLACEMENT = """## Delegation
@@ -85,7 +87,7 @@ def process_file(filepath: Path, process_skip_level: bool = True, process_error_
     return result
 
 
-def main():
+def main() -> None:
     agents_dir = get_agents_dir()
 
     # Files with Skip-Level Delegation sections

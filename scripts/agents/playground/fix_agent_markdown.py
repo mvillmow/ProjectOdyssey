@@ -15,11 +15,13 @@ Usage:
 """
 
 import re
+import sys
 from pathlib import Path
 from typing import List
 
-# Import shared utilities
-from common import get_agents_dir
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from scripts.common import get_agents_dir
 
 
 def remove_pr_template_sections(content: str) -> str:
@@ -244,7 +246,7 @@ def fix_markdown_file(file_path: Path) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     """Main function to fix all agent markdown files."""
     agents_dir = get_agents_dir()
 

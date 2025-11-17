@@ -9,14 +9,16 @@ Example:
     python scripts/create_single_component_issues.py notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md
 """
 
-import sys
 import re
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
+from typing import Dict, List, Optional
 
-# Import shared constants
-from common import LABEL_COLORS
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+from scripts.common import LABEL_COLORS
 
 
 def parse_github_issue_file(file_path):
@@ -134,7 +136,7 @@ def update_github_issue_file(file_path, issue_urls):
     print(f"\n✅ Updated {file_path} with issue URLs")
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 2:
         print("Usage: python scripts/create_single_component_issues.py <path-to-github_issue.md>")
         print("\nExample:")
