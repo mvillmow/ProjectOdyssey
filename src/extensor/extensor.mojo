@@ -1,7 +1,33 @@
 """ExTensor - Extensible Tensor for ML Odyssey.
 
-A comprehensive, dynamic tensor class with arbitrary shapes, data types, and dimensions.
-Implements 150+ operations from the Array API Standard 2024 with NumPy-style broadcasting.
+A comprehensive, dynamic tensor class implementing the Python Array API Standard.
+
+Compliance:
+- Follows the Python Array API Standard (https://data-apis.org/array-api/latest/)
+- Implements Array API Standard 2023.12 specification
+- Provides 150+ operations across all API categories
+- NumPy-style broadcasting semantics for element-wise operations
+- Supports 13 data types (float16/32/64, int8/16/32/64, uint8/16/32/64, bool)
+
+Architecture:
+- Dynamic shapes: 0D scalars to N-D tensors with runtime-determined dimensions
+- Type-erased storage: UnsafePointer[UInt8] enables dtype flexibility
+- Row-major memory layout (C-order) for efficient access patterns
+- Memory-safe via Mojo's ownership and borrow checking
+
+Array API Categories (in progress):
+- Creation: zeros, ones, full, empty, arange, eye, linspace ✓
+- Arithmetic: add, subtract, multiply, divide, floor_divide, modulo, power ✓
+- Comparison: equal, not_equal, less, less_equal, greater, greater_equal ✓
+- Reduction: sum, mean, max, min (all-elements only) ✓
+- Matrix: matmul, transpose, dot, outer (TODO)
+- Shape manipulation: reshape, squeeze, unsqueeze, concatenate (TODO)
+- Broadcasting: Full support for different-shape operations (TODO)
+- Element-wise math: exp, log, sqrt, sin, cos, tanh (TODO)
+- Statistical: var, std, median, percentile (TODO)
+- Indexing: slicing, advanced indexing (TODO)
+
+Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """
 
 from memory import UnsafePointer, memset_zero

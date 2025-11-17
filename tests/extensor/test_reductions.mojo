@@ -1,0 +1,329 @@
+"""Tests for ExTensor reduction operations.
+
+Tests reduction operations following the Array API Standard:
+sum, mean, max_reduce, min_reduce with all-elements reduction (axis=-1).
+"""
+
+from sys import DType
+
+# Import ExTensor and reduction operations
+from extensor import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
+
+# Import test helpers
+from ..helpers.assertions import (
+    assert_dtype,
+    assert_numel,
+    assert_dim,
+    assert_value_at,
+)
+
+
+# ============================================================================
+# Test sum()
+# ============================================================================
+
+fn test_sum_all_ones() raises:
+    """Test sum of all ones."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 10
+    let a = ones(shape, DType.float32)
+    let b = sum(a)  # Sum all elements
+
+    assert_dim(b, 0, "Sum should return scalar (0D)")
+    assert_numel(b, 1, "Scalar should have 1 element")
+    assert_value_at(b, 0, 10.0, 1e-6, "Sum of 10 ones should be 10.0")
+
+
+fn test_sum_2d_tensor() raises:
+    """Test sum of 2D tensor."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 2.0, DType.float32)
+    let b = sum(a)  # Sum all 12 elements
+
+    assert_dim(b, 0, "Sum should return scalar")
+    assert_value_at(b, 0, 24.0, 1e-6, "Sum of 12 twos should be 24.0")
+
+
+fn test_sum_arange() raises:
+    """Test sum of range [0, 1, 2, 3, 4]."""
+    let a = arange(0.0, 5.0, 1.0, DType.float32)
+    let b = sum(a)
+
+    # 0 + 1 + 2 + 3 + 4 = 10
+    assert_value_at(b, 0, 10.0, 1e-6, "Sum of [0,1,2,3,4] should be 10.0")
+
+
+fn test_sum_with_keepdims() raises:
+    """Test sum with keepdims=True."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = ones(shape, DType.float32)
+    let b = sum(a, keepdims=True)
+
+    # Should be (1, 1) shape instead of scalar
+    assert_dim(b, 2, "keepdims should preserve dimensions")
+    assert_value_at(b, 0, 12.0, 1e-6, "Sum should still be 12.0")
+
+
+fn test_sum_preserves_dtype() raises:
+    """Test that sum preserves dtype."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = ones(shape, DType.float64)
+    let b = sum(a)
+
+    assert_dtype(b, DType.float64, "Sum should preserve float64 dtype")
+    assert_value_at(b, 0, 5.0, 1e-10, "Sum of 5 ones should be 5.0")
+
+
+# ============================================================================
+# Test mean()
+# ============================================================================
+
+fn test_mean_all_ones() raises:
+    """Test mean of all ones."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 10
+    let a = ones(shape, DType.float32)
+    let b = mean(a)
+
+    assert_dim(b, 0, "Mean should return scalar")
+    assert_value_at(b, 0, 1.0, 1e-6, "Mean of ones should be 1.0")
+
+
+fn test_mean_2d_tensor() raises:
+    """Test mean of 2D tensor."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 5.0, DType.float32)
+    let b = mean(a)
+
+    assert_dim(b, 0, "Mean should return scalar")
+    assert_value_at(b, 0, 5.0, 1e-6, "Mean of all 5s should be 5.0")
+
+
+fn test_mean_arange() raises:
+    """Test mean of range [0, 1, 2, 3, 4]."""
+    let a = arange(0.0, 5.0, 1.0, DType.float32)
+    let b = mean(a)
+
+    # (0 + 1 + 2 + 3 + 4) / 5 = 10 / 5 = 2.0
+    assert_value_at(b, 0, 2.0, 1e-6, "Mean of [0,1,2,3,4] should be 2.0")
+
+
+fn test_mean_with_keepdims() raises:
+    """Test mean with keepdims=True."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 2
+    shape[1] = 3
+    let a = full(shape, 6.0, DType.float32)
+    let b = mean(a, keepdims=True)
+
+    # Should be (1, 1) shape instead of scalar
+    assert_dim(b, 2, "keepdims should preserve dimensions")
+    assert_value_at(b, 0, 6.0, 1e-6, "Mean should be 6.0")
+
+
+fn test_mean_preserves_dtype() raises:
+    """Test that mean preserves dtype."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 4
+    let a = full(shape, 8.0, DType.float64)
+    let b = mean(a)
+
+    assert_dtype(b, DType.float64, "Mean should preserve float64 dtype")
+    assert_value_at(b, 0, 8.0, 1e-10, "Mean of all 8s should be 8.0")
+
+
+# ============================================================================
+# Test max_reduce()
+# ============================================================================
+
+fn test_max_all_same() raises:
+    """Test max of all same values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 10
+    let a = full(shape, 7.0, DType.float32)
+    let b = max_reduce(a)
+
+    assert_dim(b, 0, "Max should return scalar")
+    assert_value_at(b, 0, 7.0, 1e-6, "Max of all 7s should be 7.0")
+
+
+fn test_max_arange() raises:
+    """Test max of range [0, 1, 2, 3, 4]."""
+    let a = arange(0.0, 5.0, 1.0, DType.float32)
+    let b = max_reduce(a)
+
+    assert_value_at(b, 0, 4.0, 1e-6, "Max of [0,1,2,3,4] should be 4.0")
+
+
+fn test_max_negative_values() raises:
+    """Test max with negative values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -3.0, DType.float32)
+    let b = max_reduce(a)
+
+    assert_value_at(b, 0, -3.0, 1e-6, "Max of all -3s should be -3.0")
+
+
+fn test_max_with_keepdims() raises:
+    """Test max with keepdims=True."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = arange(0.0, 12.0, 1.0, DType.float32)
+    # Note: arange creates 1D, would need reshape for 2D, but keepdims test still valid
+    var shape2d = DynamicVector[Int](2)
+    shape2d[0] = 3
+    shape2d[1] = 4
+    let a2d = full(shape2d, 9.0, DType.float32)
+    let b = max_reduce(a2d, keepdims=True)
+
+    assert_dim(b, 2, "keepdims should preserve dimensions")
+    assert_value_at(b, 0, 9.0, 1e-6, "Max should be 9.0")
+
+
+fn test_max_preserves_dtype() raises:
+    """Test that max preserves dtype."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = arange(0.0, 5.0, 1.0, DType.float64)
+    let b = max_reduce(a)
+
+    assert_dtype(b, DType.float64, "Max should preserve float64 dtype")
+    assert_value_at(b, 0, 4.0, 1e-10, "Max should be 4.0")
+
+
+# ============================================================================
+# Test min_reduce()
+# ============================================================================
+
+fn test_min_all_same() raises:
+    """Test min of all same values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 10
+    let a = full(shape, 3.0, DType.float32)
+    let b = min_reduce(a)
+
+    assert_dim(b, 0, "Min should return scalar")
+    assert_value_at(b, 0, 3.0, 1e-6, "Min of all 3s should be 3.0")
+
+
+fn test_min_arange() raises:
+    """Test min of range [0, 1, 2, 3, 4]."""
+    let a = arange(0.0, 5.0, 1.0, DType.float32)
+    let b = min_reduce(a)
+
+    assert_value_at(b, 0, 0.0, 1e-6, "Min of [0,1,2,3,4] should be 0.0")
+
+
+fn test_min_negative_values() raises:
+    """Test min with negative values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -7.0, DType.float32)
+    let b = min_reduce(a)
+
+    assert_value_at(b, 0, -7.0, 1e-6, "Min of all -7s should be -7.0")
+
+
+fn test_min_with_keepdims() raises:
+    """Test min with keepdims=True."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 2.5, DType.float32)
+    let b = min_reduce(a, keepdims=True)
+
+    assert_dim(b, 2, "keepdims should preserve dimensions")
+    assert_value_at(b, 0, 2.5, 1e-6, "Min should be 2.5")
+
+
+fn test_min_preserves_dtype() raises:
+    """Test that min preserves dtype."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = arange(1.0, 6.0, 1.0, DType.float64)
+    let b = min_reduce(a)
+
+    assert_dtype(b, DType.float64, "Min should preserve float64 dtype")
+    assert_value_at(b, 0, 1.0, 1e-10, "Min should be 1.0")
+
+
+# ============================================================================
+# Test reduction combinations
+# ============================================================================
+
+fn test_reductions_consistent() raises:
+    """Test that reductions are consistent with each other."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 10
+    let a = full(shape, 5.0, DType.float32)
+
+    let sum_result = sum(a)
+    let mean_result = mean(a)
+    let max_result = max_reduce(a)
+    let min_result = min_reduce(a)
+
+    # For all same values:
+    # sum = n * value
+    # mean = value
+    # max = value
+    # min = value
+    assert_value_at(sum_result, 0, 50.0, 1e-6, "Sum should be 10 * 5 = 50")
+    assert_value_at(mean_result, 0, 5.0, 1e-6, "Mean should be 5")
+    assert_value_at(max_result, 0, 5.0, 1e-6, "Max should be 5")
+    assert_value_at(min_result, 0, 5.0, 1e-6, "Min should be 5")
+
+
+# ============================================================================
+# Main test runner
+# ============================================================================
+
+fn main() raises:
+    """Run all reduction operation tests."""
+    print("Running ExTensor reduction operation tests...")
+
+    # sum() tests
+    print("  Testing sum()...")
+    test_sum_all_ones()
+    test_sum_2d_tensor()
+    test_sum_arange()
+    test_sum_with_keepdims()
+    test_sum_preserves_dtype()
+
+    # mean() tests
+    print("  Testing mean()...")
+    test_mean_all_ones()
+    test_mean_2d_tensor()
+    test_mean_arange()
+    test_mean_with_keepdims()
+    test_mean_preserves_dtype()
+
+    # max_reduce() tests
+    print("  Testing max_reduce()...")
+    test_max_all_same()
+    test_max_arange()
+    test_max_negative_values()
+    test_max_with_keepdims()
+    test_max_preserves_dtype()
+
+    # min_reduce() tests
+    print("  Testing min_reduce()...")
+    test_min_all_same()
+    test_min_arange()
+    test_min_negative_values()
+    test_min_with_keepdims()
+    test_min_preserves_dtype()
+
+    # Combination tests
+    print("  Testing reduction consistency...")
+    test_reductions_consistent()
+
+    print("All reduction operation tests completed!")

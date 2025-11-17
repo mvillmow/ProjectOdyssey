@@ -7,7 +7,7 @@ modulo, power, and matmul with same-shape tensors, broadcasting, and edge cases.
 from sys import DType
 
 # Import ExTensor and arithmetic operations
-from extensor import ExTensor, zeros, ones, full, add, subtract, multiply
+from extensor import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
 
 # Import test helpers
 from ..helpers.assertions import (
@@ -387,6 +387,181 @@ fn test_add_mismatched_dtypes_raises_error() raises:
 
 
 # ============================================================================
+# Test divide()
+# ============================================================================
+
+fn test_divide_same_shape() raises:
+    """Test dividing two tensors with same shape."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 6.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = divide(a, b)
+
+    assert_numel(c, 5, "Result should have 5 elements")
+    assert_dtype(c, DType.float32, "Result should have float32 dtype")
+    assert_all_values(c, 3.0, 1e-6, "6.0 / 2.0 should be 3.0")
+
+
+fn test_divide_by_one() raises:
+    """Test dividing by one (identity)."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 7.5, DType.float32)
+    let b = ones(shape, DType.float32)
+    let c = divide(a, b)
+
+    assert_all_values(c, 7.5, 1e-6, "x / 1 should be x")
+
+
+fn test_divide_by_two() raises:
+    """Test dividing by two."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 10.0, DType.float64)
+    let b = full(shape, 2.0, DType.float64)
+    let c = divide(a, b)
+
+    assert_dtype(c, DType.float64, "Should preserve float64")
+    assert_all_values(c, 5.0, 1e-8, "10.0 / 2.0 should be 5.0")
+
+
+fn test_divide_negative() raises:
+    """Test dividing negative values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -6.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = divide(a, b)
+
+    assert_all_values(c, -3.0, 1e-6, "-6.0 / 2.0 should be -3.0")
+
+
+# ============================================================================
+# Test floor_divide()
+# ============================================================================
+
+fn test_floor_divide_same_shape() raises:
+    """Test floor division with same shape."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 7.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = floor_divide(a, b)
+
+    assert_all_values(c, 3.0, 1e-6, "7.0 // 2.0 should be 3.0")
+
+
+fn test_floor_divide_positive() raises:
+    """Test floor division with positive values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 9.0, DType.float32)
+    let b = full(shape, 4.0, DType.float32)
+    let c = floor_divide(a, b)
+
+    assert_all_values(c, 2.0, 1e-6, "9.0 // 4.0 should be 2.0")
+
+
+fn test_floor_divide_negative() raises:
+    """Test floor division with negative dividend."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -7.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = floor_divide(a, b)
+
+    assert_all_values(c, -4.0, 1e-6, "-7.0 // 2.0 should be -4.0")
+
+
+# ============================================================================
+# Test modulo()
+# ============================================================================
+
+fn test_modulo_positive() raises:
+    """Test modulo with positive values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 7.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = modulo(a, b)
+
+    assert_all_values(c, 1.0, 1e-6, "7.0 % 3.0 should be 1.0")
+
+
+fn test_modulo_negative_dividend() raises:
+    """Test modulo with negative dividend."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -7.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = modulo(a, b)
+
+    # Python semantics: -7 % 3 = 2 (not -1)
+    assert_all_values(c, 2.0, 1e-6, "-7.0 % 3.0 should be 2.0 (Python semantics)")
+
+
+fn test_modulo_fractional() raises:
+    """Test modulo with fractional values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 7.5, DType.float32)
+    let b = full(shape, 2.5, DType.float32)
+    let c = modulo(a, b)
+
+    assert_all_values(c, 0.0, 1e-6, "7.5 % 2.5 should be 0.0")
+
+
+# ============================================================================
+# Test power()
+# ============================================================================
+
+fn test_power_integer_exponent() raises:
+    """Test power with small integer exponent."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 2.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = power(a, b)
+
+    assert_all_values(c, 8.0, 1e-6, "2.0 ** 3.0 should be 8.0")
+
+
+fn test_power_zero_exponent() raises:
+    """Test power with zero exponent."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 5.0, DType.float32)
+    let b = full(shape, 0.0, DType.float32)
+    let c = power(a, b)
+
+    assert_all_values(c, 1.0, 1e-6, "x ** 0 should be 1.0")
+
+
+fn test_power_one_exponent() raises:
+    """Test power with exponent of one."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 7.5, DType.float32)
+    let b = full(shape, 1.0, DType.float32)
+    let c = power(a, b)
+
+    assert_all_values(c, 7.5, 1e-6, "x ** 1 should be x")
+
+
+fn test_power_negative_base() raises:
+    """Test power with negative base."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, -2.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = power(a, b)
+
+    assert_all_values(c, 4.0, 1e-6, "(-2.0) ** 2.0 should be 4.0")
+
+
+# ============================================================================
 # Main test runner
 # ============================================================================
 
@@ -440,5 +615,31 @@ fn main() raises:
     test_add_mismatched_shapes_raises_error()
     test_multiply_mismatched_shapes_raises_error()
     test_add_mismatched_dtypes_raises_error()
+
+    # divide() tests
+    print("  Testing divide()...")
+    test_divide_same_shape()
+    test_divide_by_one()
+    test_divide_by_two()
+    test_divide_negative()
+
+    # floor_divide() tests
+    print("  Testing floor_divide()...")
+    test_floor_divide_same_shape()
+    test_floor_divide_positive()
+    test_floor_divide_negative()
+
+    # modulo() tests
+    print("  Testing modulo()...")
+    test_modulo_positive()
+    test_modulo_negative_dividend()
+    test_modulo_fractional()
+
+    # power() tests
+    print("  Testing power()...")
+    test_power_integer_exponent()
+    test_power_zero_exponent()
+    test_power_one_exponent()
+    test_power_negative_base()
 
     print("All arithmetic operation tests completed!")
