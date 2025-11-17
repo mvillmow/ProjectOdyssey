@@ -270,7 +270,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Setup Mojo
-        uses: modularml/mojo-action@v1
+        uses: mvillmow/ml-odyssey-action@v1
       - name: Install Test Runner
         run: ./scripts/verify_paper_tests_install.sh
       - name: Run Paper Tests
