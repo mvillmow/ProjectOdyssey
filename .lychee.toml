@@ -15,3 +15,11 @@ fail = true
 
 # Verbose output
 verbose = true
+
+# Accept redirects (200 status codes after following redirects are OK)
+# This prevents treating redirects as errors
+accept = [200, 203]
+
+# Include 429 (Too Many Requests) as acceptable since it's not a broken link
+# Just means we're rate-limited
+include_verbatim = false

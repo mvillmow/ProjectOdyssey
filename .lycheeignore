@@ -11,6 +11,10 @@ file:///
 example\.com
 example\.org
 
+# Ignore template files with placeholder URLs
+\.claude/skills/.*/templates/
+agents/templates/
+
 # Add additional patterns below as needed
 # Examples:
 # localhost
