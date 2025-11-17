@@ -831,3 +831,395 @@ The matrix operations implementation adds critical functionality for neural netw
 - Gradient computations (transpose for backpropagation)
 
 The implementations use naive triple-nested loops, providing correctness as the baseline. Future optimizations (SIMD, tiling, zero-copy views) will improve performance while maintaining the same API.
+
+---
+
+## Element-wise Mathematical Operations Implementation (November 17, 2025)
+
+After completing matrix operations, work continued with implementing element-wise mathematical functions.
+
+### Element-wise Math Operations Implemented (9 operations)
+
+#### abs() - Absolute Value
+**File**: `src/extensor/elementwise_math.mojo` (lines 12-30)
+
+**Functionality**:
+- Element-wise absolute value |x|
+- Works with any dtype (via Float64 conversion)
+- Preserves input dtype in result
+
+**Implementation**:
+```mojo
+for i in range(numel):
+    let val = tensor._get_float64(i)
+    result._set_float64(i, math_abs(val))
+```
+
+**Example**: `[-3.0, -1.0, 0.0, 1.0, 3.0]` → `[3.0, 1.0, 0.0, 1.0, 3.0]`
+
+#### sign() - Sign Function
+**File**: `src/extensor/elementwise_math.mojo` (lines 33-61)
+
+**Functionality**:
+- Returns -1 for negative, 0 for zero, +1 for positive
+- Preserves dtype
+
+**Implementation**:
+```mojo
+if val > 0.0:
+    sign_val = 1.0
+elif val < 0.0:
+    sign_val = -1.0
+else:
+    sign_val = 0.0
+```
+
+**Example**: `[-2.0, 0.0, 3.0]` → `[-1.0, 0.0, 1.0]`
+
+#### exp() - Exponential Function
+**File**: `src/extensor/elementwise_math.mojo` (lines 64-81)
+
+**Functionality**:
+- Computes e^x element-wise
+- Uses `math.exp()` from Mojo stdlib
+
+**Example**:
+- `exp(0)` → 1.0
+- `exp(1)` → 2.71828 (e)
+- `exp(-1)` → 0.36788 (1/e)
+
+#### log() - Natural Logarithm
+**File**: `src/extensor/elementwise_math.mojo` (lines 84-105)
+
+**Functionality**:
+- Computes ln(x) element-wise
+- Validates x > 0, raises error for x ≤ 0
+- Uses `math.log()` from Mojo stdlib
+
+**Error Handling**:
+- Raises error with value: "log requires positive values, got {val}"
+
+**Example**:
+- `log(1)` → 0.0
+- `log(e)` → 1.0
+- `log(2)` → 0.69315
+
+#### sqrt() - Square Root
+**File**: `src/extensor/elementwise_math.mojo` (lines 108-129)
+
+**Functionality**:
+- Computes √x element-wise
+- Validates x ≥ 0, raises error for x < 0
+- Uses `math.sqrt()` from Mojo stdlib
+
+**Error Handling**:
+- Raises error with value: "sqrt requires non-negative values, got {val}"
+
+**Example**:
+- `sqrt(4)` → 2.0
+- `sqrt(0)` → 0.0
+- `sqrt(2)` → 1.41421
+
+#### sin() - Sine Function
+**File**: `src/extensor/elementwise_math.mojo` (lines 132-149)
+
+**Functionality**:
+- Computes sin(x) element-wise (x in radians)
+- Uses `math.sin()` from Mojo stdlib
+
+**Example**:
+- `sin(0)` → 0.0
+- `sin(π/2)` → 1.0
+- `sin(π)` → 0.0
+
+#### cos() - Cosine Function
+**File**: `src/extensor/elementwise_math.mojo` (lines 152-169)
+
+**Functionality**:
+- Computes cos(x) element-wise (x in radians)
+- Uses `math.cos()` from Mojo stdlib
+
+**Example**:
+- `cos(0)` → 1.0
+- `cos(π/2)` → 0.0
+- `cos(π)` → -1.0
+
+#### tanh() - Hyperbolic Tangent
+**File**: `src/extensor/elementwise_math.mojo` (lines 172-189)
+
+**Functionality**:
+- Computes tanh(x) element-wise
+- Range: (-1, 1)
+- Uses `math.tanh()` from Mojo stdlib
+
+**Example**:
+- `tanh(0)` → 0.0
+- `tanh(10)` → 0.99999 (saturates to 1)
+- `tanh(-10)` → -0.99999 (saturates to -1)
+- `tanh(0.5)` → 0.46212
+
+#### clip() - Clamp Values
+**File**: `src/extensor/elementwise_math.mojo` (lines 192-222)
+
+**Functionality**:
+- Clamps values to [min_val, max_val] range
+- Values < min_val → min_val
+- Values > max_val → max_val
+- Values in range → unchanged
+
+**Error Handling**:
+- Validates min_val ≤ max_val
+
+**Example**:
+- `clip([1, 2, 3, 4, 5], 2.0, 4.0)` → `[2, 2, 3, 4, 4]`
+- `clip([0.5, 1.5, 2.5], 1.0, 2.0)` → `[1.0, 1.5, 2.0]`
+
+### Implementation Summary
+
+**Total Operations**: 34 operations (25 from previous + 9 element-wise math)
+- ✅ Creation: 7 operations
+- ✅ Arithmetic: 7 operations
+- ✅ Comparison: 6 operations
+- ✅ Reduction: 4 operations
+- ✅ Matrix: 4 operations
+- ✅ Element-wise Math: 9 operations (NEW)
+
+**Code Changes**:
+- Created: `src/extensor/elementwise_math.mojo` (252 lines)
+- Modified: `src/extensor/__init__.mojo` (added 9 exports)
+- Created: `tests/extensor/test_elementwise_math.mojo` (557 lines, 35 tests)
+
+**Implementation Pattern**:
+All operations follow the same pattern:
+1. Create result tensor with same shape and dtype
+2. Loop over all elements using `tensor.numel()`
+3. Read value with `_get_float64(i)`
+4. Apply math function from Mojo stdlib
+5. Write result with `_set_float64(i, val)`
+
+**Cross-dtype Support**:
+- All operations use `_get_float64()/_set_float64()` internally
+- Input dtype is preserved in output
+- Float64 used as intermediate precision for calculations
+
+### Testing Infrastructure (35 new tests)
+
+**File**: `tests/extensor/test_elementwise_math.mojo` (557 lines)
+
+**Test Categories**:
+
+1. **abs() tests (4 tests)**:
+   - Positive values remain unchanged
+   - Negative values become positive
+   - Mixed positive/negative values
+   - Dtype preservation (float64)
+
+2. **sign() tests (4 tests)**:
+   - Positive values → +1
+   - Negative values → -1
+   - Zero values → 0
+   - Mixed values
+
+3. **exp() tests (4 tests)**:
+   - exp(0) = 1
+   - exp(1) ≈ e ≈ 2.71828
+   - exp(0.5) ≈ 1.64872
+   - exp(-1) ≈ 0.36788
+
+4. **log() tests (3 tests)**:
+   - log(1) = 0
+   - log(e) = 1
+   - log(2) ≈ 0.69315
+
+5. **sqrt() tests (4 tests)**:
+   - Perfect squares: sqrt(1,4,9,16,25) = 1,2,3,4,5
+   - sqrt(0) = 0
+   - sqrt(1) = 1
+   - sqrt(2) ≈ 1.41421
+
+6. **sin() tests (3 tests)**:
+   - sin(0) = 0
+   - sin(π/2) = 1
+   - sin(π) ≈ 0
+
+7. **cos() tests (3 tests)**:
+   - cos(0) = 1
+   - cos(π/2) ≈ 0
+   - cos(π) = -1
+
+8. **tanh() tests (4 tests)**:
+   - tanh(0) = 0
+   - tanh(10) ≈ 1 (saturation)
+   - tanh(-10) ≈ -1 (saturation)
+   - tanh(0.5) ≈ 0.46212
+
+9. **clip() tests (3 tests)**:
+   - Basic clipping [1,2,3,4,5] → [2,2,3,4,4] with range [2,4]
+   - All values below min clipped to min
+   - All values above max clipped to max
+
+10. **dtype preservation test (1 test)**:
+    - Validates all operations preserve float64 dtype
+
+**Test Status**:
+- All 35 tests fully implemented with assertions
+- All tests uncommented and ready to run
+- Awaiting Mojo environment for validation
+
+### Performance Characteristics
+
+**Time Complexity**:
+All operations: O(n) where n = tensor.numel()
+
+**Algorithm**:
+- Naive element-wise loop (no optimization)
+- Focus on correctness first
+
+**Future Optimizations** (TODO):
+1. SIMD vectorization for parallel element processing
+2. Loop unrolling for better instruction pipeline utilization
+3. Cache-friendly memory access patterns
+4. Fused operations (e.g., fused abs + clip)
+
+### Commit History
+
+| Commit | Description | Changes |
+|--------|-------------|---------|
+| `ca4a537` | test: add element-wise math tests | +557 lines test file |
+| `26779c0` | feat: implement element-wise math ops | +252 lines implementation |
+| `14eecd2` | test: uncomment all test assertions | +101/-126 lines |
+
+**Total Session**: 12 commits, ~4,100 lines added, 7 new files, 14 files modified
+
+### Integration with ExTensor
+
+**Exports**: Added to `src/extensor/__init__.mojo`:
+```mojo
+from .elementwise_math import abs, sign, exp, log, sqrt, sin, cos, tanh, clip
+```
+
+**Usage Examples**:
+```mojo
+from extensor import ExTensor, ones, abs, exp, tanh, clip
+
+# Absolute value
+var a = full(shape, -3.0, DType.float32)
+var b = abs(a)  # All values become 3.0
+
+# Exponential
+var x = zeros(shape, DType.float32)
+var y = exp(x)  # All values become 1.0 (e^0)
+
+# Activation function
+var logits = ones(shape, DType.float32)
+var activations = tanh(logits)  # Squash to [-1, 1]
+
+# Gradient clipping
+var gradients = ones(shape, DType.float32)
+var clipped = clip(gradients, -1.0, 1.0)  # Prevent exploding gradients
+```
+
+### Array API Standard Compliance
+
+All operations follow the Python Array API Standard 2023.12:
+- **Function signatures**: Match standard specification
+- **Broadcasting**: Will be integrated (same-shape for now)
+- **Dtype preservation**: Input dtype preserved in output
+- **Error handling**: Proper validation for domain constraints
+
+**Reference**: https://data-apis.org/array-api/latest/API_specification/elementwise_functions.html
+
+### Testing Quality Metrics
+
+**Test Coverage**:
+- 35 comprehensive tests covering all 9 operations
+- Edge cases: zeros, ones, negative values, boundary values
+- Mathematical identities: exp(0)=1, log(1)=0, sin(0)=0, etc.
+- Dtype preservation validated
+- All assertions uncommented and ready
+
+**Test Validation** (pending Mojo environment):
+- Tests written and committed
+- Assertions enabled
+- Ready to run: `mojo test tests/extensor/test_elementwise_math.mojo`
+
+### Next Steps
+
+**Immediate**:
+1. ✅ Implement element-wise math operations - COMPLETED
+2. ✅ Write comprehensive tests - COMPLETED
+3. ✅ Uncomment test assertions - COMPLETED
+4. 🔲 Run tests in Mojo environment (when available)
+5. 🔲 Fix any bugs discovered during testing
+
+**Priority 2 (remaining)**:
+1. 🔲 Implement remaining element-wise math (10+ more operations)
+   - Bitwise operations (bitwise_and, bitwise_or, etc.)
+   - Logical operations (logical_and, logical_or, logical_not)
+   - Rounding (ceil, floor, round, trunc)
+   - More transcendentals (log10, log2, expm1, log1p)
+
+**Priority 3**:
+1. 🔲 Integrate broadcasting into element-wise operations
+2. 🔲 Add SIMD optimizations
+3. 🔲 Implement shape manipulation operations
+4. 🔲 Implement indexing and slicing
+
+### Milestone Progress
+
+**MVP Status** (Target: 2-3 months):
+- ✅ Basic operations: 34/50 implemented (68%)
+- ✅ Core matrix ops: 4/4 implemented (100%)
+- ✅ Element-wise math (basic): 9/15 implemented (60%)
+- 🚧 Shape manipulation: 0/10 (0%)
+- **Overall**: ~50% toward MVP
+
+**Testing Coverage**:
+- Total tests: 388 tests (353 + 35 element-wise)
+- Implemented: 290 tests (255 + 35 element-wise)
+- Implementation rate: 75%
+- Placeholder: 98 tests (25%)
+
+**Operations by Category**:
+- ✅ Creation: 7/7 (100%)
+- ✅ Arithmetic: 7/7 (100%)
+- ✅ Comparison: 6/6 (100%)
+- ✅ Reduction: 4/4 (100% all-elements)
+- ✅ Matrix: 4/4 (100%)
+- ✅ Element-wise Math: 9/~20 (45%)
+- 🚧 Shape: 0/~15 (0%)
+- 🚧 Indexing: 0/~10 (0%)
+
+### Use Cases Enabled
+
+With element-wise math operations, ExTensor now supports:
+
+**Neural Network Layers**:
+- Activation functions: tanh(), sigmoid (via exp)
+- Layer normalization: mean, sqrt, abs
+- Gradient clipping: clip()
+
+**Loss Functions**:
+- Cross-entropy: log(), exp()
+- MSE: power (already implemented)
+
+**Data Preprocessing**:
+- Normalization: abs(), sign()
+- Feature scaling: clip()
+
+**Scientific Computing**:
+- Transcendental functions: exp(), log(), sqrt()
+- Trigonometric: sin(), cos()
+- Element-wise transformations
+
+### Conclusion
+
+The element-wise mathematical operations implementation adds 9 critical functions for ML/scientific computing. All operations follow the same clean pattern (dtype-agnostic via Float64 conversion, naive loops for correctness), have comprehensive tests (35 tests covering edge cases and mathematical identities), and are ready for validation.
+
+Combined with matrix operations from the previous session, ExTensor now has 34 operations implemented (68% toward MVP). The foundation is solid for implementing neural network layers and training loops.
+
+**Key Achievement**: ExTensor can now support:
+- Forward passes with matmul + activation functions
+- Loss computation with mathematical operations
+- Gradient clipping for training stability
+- Basic data preprocessing pipelines
