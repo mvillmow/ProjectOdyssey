@@ -17,8 +17,11 @@
       "img",
       "a",
       "sub",
-      "sup"
+      "sup",
+      "issue-number",
+      "number"
     ]
   },
+  "MD036": false,
   "MD041": false
 }
