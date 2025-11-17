@@ -63,7 +63,12 @@ from .matrix import matmul, transpose, dot, outer
 from .reduction import sum, mean, max_reduce, min_reduce
 
 # Element-wise mathematical operations
-from .elementwise_math import abs, sign, exp, log, sqrt, sin, cos, tanh, clip
+from .elementwise_math import (
+    abs, sign, exp, log, sqrt, sin, cos, tanh, clip,
+    ceil, floor, round, trunc,
+    logical_and, logical_or, logical_not, logical_xor,
+    log10, log2
+)
 
 # Shape manipulation operations
 from .shape import reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
