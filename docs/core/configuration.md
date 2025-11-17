@@ -1,3 +1,3 @@
-# Configuration.Md
+# Configuration
 
 Content here.

@@ -1,3 +1,3 @@
-# Testing Strategy.Md
+# Testing Strategy
 
 Content here.

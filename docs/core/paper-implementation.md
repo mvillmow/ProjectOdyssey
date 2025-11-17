@@ -1,3 +1,3 @@
-# Paper Implementation.Md
+# Paper Implementation
 
 Content here.

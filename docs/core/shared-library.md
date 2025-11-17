@@ -1,3 +1,3 @@
-# Shared Library.Md
+# Shared Library
 
 Content here.

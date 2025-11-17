@@ -67,7 +67,7 @@ fn prepare_mnist() raises -> (TensorDataset, TensorDataset):
 
 Create `model.mojo` with your neural network architecture.
 
-See `examples/getting-started/first_model_model.mojo`](
+See `examples/getting-started/first_model_model.mojo`
 
 Key architecture:
 
@@ -89,7 +89,7 @@ Full example: `examples/getting-started/first_model_model.mojo`
 
 Create `train.mojo` to train your model.
 
-See `examples/getting-started/first_model_train.mojo`](
+See `examples/getting-started/first_model_train.mojo`
 
 Key training steps:
 

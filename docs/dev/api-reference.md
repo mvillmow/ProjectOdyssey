@@ -1,3 +1,3 @@
-# Api Reference.Md
+# API Reference
 
 Content here.

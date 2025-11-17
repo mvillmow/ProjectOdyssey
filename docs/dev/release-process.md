@@ -1,3 +1,3 @@
-# Release Process.Md
+# Release Process
 
 Content here.

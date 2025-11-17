@@ -1,3 +1,3 @@
-# Performance.Md
+# Performance
 
 Content here.

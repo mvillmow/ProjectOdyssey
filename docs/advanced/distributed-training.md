@@ -1,3 +1,3 @@
-# Distributed Training.Md
+# Distributed Training
 
 Content here.

@@ -1,3 +1,3 @@
-# Project Structure.Md
+# Project Structure
 
 Content here.

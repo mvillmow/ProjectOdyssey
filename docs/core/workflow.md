@@ -1,3 +1,3 @@
-# Workflow.Md
+# Workflow
 
 Content here.

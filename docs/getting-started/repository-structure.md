@@ -48,7 +48,7 @@ mojo benchmarks/scripts/run_benchmarks.mojo --paper {name}
 **Documentation Locations**:
 
 | Type | Location | Purpose |
-|------|----------|---------|
+| ------ | ---------- | --------- |
 | **User Docs** | `docs/` | Tutorials, guides, API reference |
 | **Issue Docs** | `notes/issues/{number}/` | Issue-specific implementation notes |
 | **Architectural** | `notes/review/` | Design decisions, comprehensive specs |
@@ -582,7 +582,7 @@ pre-commit run --all-files
 ### Essential Files
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | `README.md` | Project overview |
 | `STRUCTURE.md` | Repository organization |
 | `CONTRIBUTING.md` | Contribution guidelines |
@@ -592,7 +592,7 @@ pre-commit run --all-files
 ### Essential Directories
 
 | Directory | Quick Description |
-|-----------|-------------------|
+| ----------- | ------------------- |
 | `papers/` | ML implementations |
 | `shared/` | Reusable components |
 | `benchmarks/` | Performance tracking |
