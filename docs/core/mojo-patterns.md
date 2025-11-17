@@ -928,9 +928,8 @@ pixi run mojo run examples/path/to/example.mojo
 ## Additional Resources
 
 - [Mojo Language Documentation](https://docs.modular.com/mojo/)
-- [ML Odyssey Architecture](../architecture/overview.md)
+- [ML Odyssey Architecture](../dev/architecture.md)
 - [Performance Optimization Guide](../advanced/performance.md)
-- [Language Selection Strategy](../../notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ## Contributing
 

@@ -141,7 +141,6 @@ pixi run mojo --version
 ### Still Having Issues
 
 - Check [Installation Guide](installation.md) for detailed setup
-- Review [Common Issues](../dev/troubleshooting.md)
 - Open an issue on GitHub
 
 ## Summary

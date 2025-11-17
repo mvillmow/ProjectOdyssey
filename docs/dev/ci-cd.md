@@ -375,7 +375,6 @@ See `.claude/skills/` for details.
 
 - [Testing Strategy](../core/testing-strategy.md) - What gets tested
 - [Contributing Guide](../../CONTRIBUTING.md) - Development workflow
-- [Agent Validation](../../tests/agents/README.md) - Agent testing
 - [Pre-commit Hooks](../core/configuration.md#pre-commit-hooks) - Local hooks
 
 ## Summary

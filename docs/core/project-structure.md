@@ -85,4 +85,4 @@ separates ML implementations, reusable components, documentation, tools, and con
 - **[Installation Guide](../getting-started/installation.md)** - Environment setup
 - **[Contributing Guidelines](../../CONTRIBUTING.md)** - Development workflow and standards
 - **[Agent System](../../agents/)** - AI agent hierarchy and delegation
-- **[Paper Scaffold Tool](../api/tools/paper-scaffold.md)** - Automated paper creation
+- **[Quick Start: New Paper](../integration/quick-start-new-paper.md)** - Creating new papers
