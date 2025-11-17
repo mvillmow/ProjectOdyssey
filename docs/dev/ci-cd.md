@@ -374,7 +374,7 @@ See `.claude/skills/` for details.
 ## Related Documentation
 
 - [Testing Strategy](../core/testing-strategy.md) - What gets tested
-- [Contributing Guide](../../CONTRIBUTING.md) - Development workflow
+- **Contributing Guide** (`CONTRIBUTING.md` in repo root) - Development workflow
 - [Pre-commit Hooks](../core/configuration.md#pre-commit-hooks) - Local hooks
 
 ## Summary

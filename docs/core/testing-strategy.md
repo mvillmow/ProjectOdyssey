@@ -105,17 +105,17 @@ tests/
 fn test_sgd_basic_update():
     """Test SGD performs parameter update correctly."""
     # Arrange
-    var params = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3))
-    var grads = Tensor(List[Float32](0.1, 0.2, 0.3), Shape(3))
+    var params = Tensor(List\[Float32\](1.0, 2.0, 3.0), Shape(3))
+    var grads = Tensor(List\[Float32\](0.1, 0.2, 0.3), Shape(3))
     var optimizer = SGD(lr=0.1)
 
     # Act
     optimizer.step(params, grads)
 
     # Assert: params = params - lr * grads
-    assert_almost_equal(params[0], 0.99)  # 1.0 - 0.1*0.1
-    assert_almost_equal(params[1], 1.98)  # 2.0 - 0.1*0.2
-    assert_almost_equal(params[2], 2.97)  # 3.0 - 0.1*0.3
+    assert_almost_equal(params\[0\], 0.99)  # 1.0 - 0.1*0.1
+    assert_almost_equal(params\[1\], 1.98)  # 2.0 - 0.1*0.2
+    assert_almost_equal(params\[2\], 2.97)  # 3.0 - 0.1*0.3
 
 ```text
 
@@ -166,19 +166,19 @@ fn test_training_workflow():
 fn test_sgd_matches_pytorch():
     """Test SGD produces same results as PyTorch."""
     # Mojo implementation
-    var params_mojo = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3))
-    var grads = Tensor(List[Float32](0.1, 0.2, 0.3), Shape(3))
+    var params_mojo = Tensor(List\[Float32\](1.0, 2.0, 3.0), Shape(3))
+    var grads = Tensor(List\[Float32\](0.1, 0.2, 0.3), Shape(3))
     var optimizer_mojo = SGD(lr=0.1)
     optimizer_mojo.step(params_mojo, grads)
 
     # PyTorch reference
-    var params_torch = torch.tensor([1.0, 2.0, 3.0])
-    var grads_torch = torch.tensor([0.1, 0.2, 0.3])
+    var params_torch = torch.tensor(\[1.0, 2.0, 3.0\])
+    var grads_torch = torch.tensor(\[0.1, 0.2, 0.3\])
     params_torch -= 0.1 * grads_torch
 
     # Compare
     for i in range(3):
-        assert_almost_equal(params_mojo[i], params_torch[i].item(), tolerance=1e-6)
+        assert_almost_equal(params_mojo\[i\], params_torch\[i\].item(), tolerance=1e-6)
 
 ```text
 
@@ -194,11 +194,11 @@ Write the test BEFORE implementation:
 
 fn test_tensor_multiply():
     """Test element-wise multiplication."""
-    var a = Tensor(List[Float32](2.0, 3.0), Shape(2))
-    var b = Tensor(List[Float32](4.0, 5.0), Shape(2))
+    var a = Tensor(List\[Float32\](2.0, 3.0), Shape(2))
+    var b = Tensor(List\[Float32\](4.0, 5.0), Shape(2))
     var result = a * b  # Doesn't exist yet
-    assert_almost_equal(result[0], 8.0)
-    assert_almost_equal(result[1], 15.0)
+    assert_almost_equal(result\[0\], 8.0)
+    assert_almost_equal(result\[1\], 15.0)
 
 ```text
 
@@ -271,11 +271,11 @@ fn test_function_name() raises:
 
 fn test_tensor_addition() raises:
     """Test tensor element-wise addition."""
-    var a = Tensor(List[Float32](1.0, 2.0), Shape(2))
-    var b = Tensor(List[Float32](3.0, 4.0), Shape(2))
+    var a = Tensor(List\[Float32\](1.0, 2.0), Shape(2))
+    var b = Tensor(List\[Float32\](3.0, 4.0), Shape(2))
     var result = a + b
-    assert_almost_equal(result[0], 4.0)
-    assert_almost_equal(result[1], 6.0)
+    assert_almost_equal(result\[0\], 4.0)
+    assert_almost_equal(result\[1\], 6.0)
 
 ```text
 
