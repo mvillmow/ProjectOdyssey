@@ -72,7 +72,8 @@ pip install pyyaml>=6.0      # YAML parsing
 pip install click>=8.0.0     # CLI framework (optional)
 ```
 
-**Note**: Python dependencies are only needed for Python-based tools (scaffolding, code generation, report generation). Mojo tools have no Python dependencies.
+**Note**: Python dependencies are only needed for Python-based tools (scaffolding, code generation, report generation).
+Mojo tools have no Python dependencies.
 
 ### Step 2: Verify Mojo Tools
 

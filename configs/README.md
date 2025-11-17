@@ -160,7 +160,7 @@ JSON Schema validation will be added in `configs/schemas/` to provide:
 - Value range constraints
 - Clear error messages
 
-## See Also
+## Related Files
 
 - [MIGRATION.md](MIGRATION.md) - Migration guide
 - [shared/utils/config_loader.mojo](../shared/utils/config_loader.mojo) - Loading utilities

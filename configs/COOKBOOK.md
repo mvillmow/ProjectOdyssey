@@ -567,4 +567,5 @@ python scripts/lint_configs.py configs/experiments/my_config.yaml
 
 ## Summary
 
-These recipes provide starting points for common ML scenarios. Adapt them to your specific needs, and always validate configurations before training!
+These recipes provide starting points for common ML scenarios. Adapt them to your specific needs, and always validate
+configurations before training!

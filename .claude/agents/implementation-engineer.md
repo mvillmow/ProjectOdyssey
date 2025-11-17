@@ -394,7 +394,7 @@ After creating PR:
 
 **Configuration File**: `.claude/agents/implementation-engineer.md`
 
-## Examples
+## Code Examples
 
 ### Example 1: Implementing Neural Network Layer
 
