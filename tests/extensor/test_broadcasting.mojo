@@ -283,13 +283,15 @@ fn test_broadcast_incompatible_shapes_different_sizes() raises:
     let a = ones(shape_a, DType.float32)
     let b = ones(shape_b, DType.float32)
 
-    # TODO: Verify this raises an error once error handling is implemented
-    # try:
-    #     let c = add(a, b)
-    #     raise Error("Should have raised error for incompatible shapes")
-    # except:
-    #     pass  # Expected
-    pass  # Placeholder
+    # Verify this raises an error
+    var error_raised = False
+    try:
+        let c = add(a, b)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for incompatible broadcast shapes (3,4) and (3,5)")
 
 
 fn test_broadcast_incompatible_inner_dims() raises:
@@ -306,8 +308,15 @@ fn test_broadcast_incompatible_inner_dims() raises:
     let a = ones(shape_a, DType.float32)
     let b = ones(shape_b, DType.float32)
 
-    # TODO: Verify error handling
-    pass  # Placeholder
+    # Verify this raises an error
+    var error_raised = False
+    try:
+        let c = add(a, b)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for incompatible broadcast shapes (2,3,4) and (2,5,4)")
 
 
 # ============================================================================
@@ -383,6 +392,120 @@ fn test_broadcast_preserves_dtype() raises:
 
 
 # ============================================================================
+# Test broadcasting integration with comparison operations
+# ============================================================================
+
+fn test_broadcast_with_comparison_scalar() raises:
+    """Test broadcasting scalar with comparison operations."""
+    from extensor import greater
+
+    var shape_vec = DynamicVector[Int](1)
+    shape_vec[0] = 5
+    var shape_scalar = DynamicVector[Int](0)
+
+    let a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
+    let b = full(shape_scalar, 2.0, DType.float32)  # scalar 2
+    let c = greater(a, b)  # Should broadcast: [True, True, True, True, True]
+
+    assert_numel(c, 5, "Result should have 5 elements")
+    assert_dtype(c, DType.bool, "Comparison should return bool dtype")
+    for i in range(5):
+        assert_value_at(c, i, 1.0, 1e-6, "3 > 2 should be True")
+
+
+fn test_broadcast_with_comparison_vector_matrix() raises:
+    """Test broadcasting vector to matrix with comparison."""
+    from extensor import less_equal
+
+    var shape_mat = DynamicVector[Int](2)
+    shape_mat[0] = 3
+    shape_mat[1] = 4
+    var shape_vec = DynamicVector[Int](1)
+    shape_vec[0] = 4
+
+    let a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
+    let b = full(shape_vec, 2.0, DType.float32)  # vector [2, 2, 2, 2]
+    let c = less_equal(a, b)  # 1 <= 2 broadcasts to 3x4
+
+    assert_numel(c, 12, "Result should have 12 elements")
+    assert_dtype(c, DType.bool, "Comparison should return bool dtype")
+    for i in range(12):
+        assert_value_at(c, i, 1.0, 1e-6, "1 <= 2 should be True")
+
+
+fn test_broadcast_chained_operations() raises:
+    """Test chained operations with broadcasting."""
+    var shape_mat = DynamicVector[Int](2)
+    shape_mat[0] = 2
+    shape_mat[1] = 3
+    var shape_scalar = DynamicVector[Int](0)
+
+    let a = full(shape_mat, 5.0, DType.float32)  # 2x3 matrix
+    let b = full(shape_scalar, 2.0, DType.float32)  # scalar
+    let c = full(shape_scalar, 3.0, DType.float32)  # scalar
+
+    # (a + b) * c = (5 + 2) * 3 = 7 * 3 = 21
+    let result = multiply(add(a, b), c)
+
+    assert_numel(result, 6, "Result should have 6 elements")
+    assert_all_values(result, 21.0, 1e-6, "(5 + 2) * 3 should be 21")
+
+
+fn test_broadcast_with_subtract() raises:
+    """Test broadcasting with subtraction."""
+    from extensor import subtract
+
+    var shape_2d = DynamicVector[Int](2)
+    shape_2d[0] = 3
+    shape_2d[1] = 4
+    var shape_1d = DynamicVector[Int](1)
+    shape_1d[0] = 4
+
+    let a = full(shape_2d, 10.0, DType.float32)  # 3x4 matrix of 10s
+    let b = full(shape_1d, 3.0, DType.float32)  # vector [3, 3, 3, 3]
+    let c = subtract(a, b)  # 10 - 3 = 7, broadcast to 3x4
+
+    assert_numel(c, 12, "Result should have 12 elements")
+    assert_all_values(c, 7.0, 1e-6, "10 - 3 should broadcast to all 7s")
+
+
+fn test_broadcast_with_divide() raises:
+    """Test broadcasting with division."""
+    from extensor import divide
+
+    var shape_mat = DynamicVector[Int](2)
+    shape_mat[0] = 2
+    shape_mat[1] = 5
+    var shape_scalar = DynamicVector[Int](0)
+
+    let a = full(shape_mat, 20.0, DType.float32)  # 2x5 matrix of 20s
+    let b = full(shape_scalar, 4.0, DType.float32)  # scalar 4
+    let c = divide(a, b)  # 20 / 4 = 5, broadcast
+
+    assert_numel(c, 10, "Result should have 10 elements")
+    assert_all_values(c, 5.0, 1e-6, "20 / 4 should broadcast to all 5s")
+
+
+fn test_broadcast_complex_3d_with_multiply() raises:
+    """Test complex 3D broadcasting with multiply."""
+    var shape_a = DynamicVector[Int](3)
+    shape_a[0] = 2
+    shape_a[1] = 1
+    shape_a[2] = 4
+    var shape_b = DynamicVector[Int](3)
+    shape_b[0] = 1
+    shape_b[1] = 3
+    shape_b[2] = 4
+
+    let a = full(shape_a, 3.0, DType.float32)  # 2x1x4
+    let b = full(shape_b, 4.0, DType.float32)  # 1x3x4
+    let c = multiply(a, b)  # 3 * 4 = 12, broadcast to 2x3x4
+
+    assert_numel(c, 24, "Result should have 24 elements")
+    assert_all_values(c, 12.0, 1e-6, "3 * 4 should broadcast to all 12s")
+
+
+# ============================================================================
 # Main test runner
 # ============================================================================
 
@@ -432,5 +555,14 @@ fn main() raises:
     # Dtype preservation
     print("  Testing dtype preservation...")
     test_broadcast_preserves_dtype()
+
+    # Integration tests
+    print("  Testing broadcasting integration with operations...")
+    test_broadcast_with_comparison_scalar()
+    test_broadcast_with_comparison_vector_matrix()
+    test_broadcast_chained_operations()
+    test_broadcast_with_subtract()
+    test_broadcast_with_divide()
+    test_broadcast_complex_3d_with_multiply()
 
     print("All broadcasting tests completed!")

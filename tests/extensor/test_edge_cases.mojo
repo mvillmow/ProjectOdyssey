@@ -8,7 +8,11 @@ from sys import DType
 from math import isnan, isinf
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange, add, multiply
+from extensor import (
+    ExTensor, zeros, ones, full, arange,
+    add, subtract, multiply, divide, floor_divide, modulo, power,
+    equal, not_equal, less, less_equal, greater, greater_equal
+)
 
 # Import test helpers
 from ..helpers.assertions import (
@@ -310,13 +314,15 @@ fn test_divide_by_zero_float() raises:
     shape[0] = 3
     let a = full(shape, 1.0, DType.float32)
     let b = zeros(shape, DType.float32)
-    # let c = divide(a, b)  # TODO: Implement divide()
+    let c = divide(a, b)
 
-    # IEEE 754: 1/0 = inf, -1/0 = -inf, 0/0 = NaN
-    # for i in range(3):
-    #     let val = c._get_float64(i)
-    #     assert_true(isinf(val), "1/0 should be inf")
-    pass  # Placeholder
+    # IEEE 754: 1/0 = inf
+    for i in range(3):
+        let val = c._get_float64(i)
+        if not isinf(val):
+            raise Error("1/0 should be inf per IEEE 754")
+        if val < 0:
+            raise Error("1/0 should be positive infinity")
 
 
 fn test_divide_by_zero_int() raises:
@@ -338,13 +344,222 @@ fn test_divide_zero_by_zero() raises:
     shape[0] = 3
     let a = zeros(shape, DType.float32)
     let b = zeros(shape, DType.float32)
-    # let c = divide(a, b)  # TODO: Implement divide()
+    let c = divide(a, b)
 
-    # 0/0 = NaN (indeterminate form)
-    # for i in range(3):
-    #     let val = c._get_float64(i)
-    #     assert_true(isnan(val), "0/0 should be NaN")
-    pass  # Placeholder
+    # 0/0 = NaN (indeterminate form per IEEE 754)
+    for i in range(3):
+        let val = c._get_float64(i)
+        if not isnan(val):
+            raise Error("0/0 should be NaN per IEEE 754")
+
+
+fn test_divide_negative_by_zero() raises:
+    """Test -1/0 (should give -inf for floats)."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    let a = full(shape, -1.0, DType.float32)
+    let b = zeros(shape, DType.float32)
+    let c = divide(a, b)
+
+    # IEEE 754: -1/0 = -inf
+    for i in range(3):
+        let val = c._get_float64(i)
+        if not isinf(val):
+            raise Error("-1/0 should be -inf per IEEE 754")
+        if val > 0:
+            raise Error("-1/0 should be negative infinity")
+
+
+# ============================================================================
+# Test modulo edge cases
+# ============================================================================
+
+fn test_modulo_by_zero() raises:
+    """Test modulo by zero (should give NaN for floats)."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    let a = full(shape, 5.0, DType.float32)
+    let b = zeros(shape, DType.float32)
+    let c = modulo(a, b)
+
+    # Modulo by zero: undefined, should give NaN
+    for i in range(3):
+        let val = c._get_float64(i)
+        if not isnan(val):
+            raise Error("x % 0 should be NaN")
+
+
+fn test_modulo_with_negative_divisor() raises:
+    """Test modulo with negative divisor."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, 7.0, DType.float32)
+    let b = full(shape, -3.0, DType.float32)
+    let c = modulo(a, b)
+
+    # Python semantics: 7 % -3 = -2 (result has sign of divisor)
+    assert_value_at(c, 0, -2.0, 1e-6, "7 % -3 should be -2 (Python semantics)")
+
+
+fn test_modulo_both_negative() raises:
+    """Test modulo with both negative values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, -7.0, DType.float32)
+    let b = full(shape, -3.0, DType.float32)
+    let c = modulo(a, b)
+
+    # Python semantics: -7 % -3 = -1
+    assert_value_at(c, 0, -1.0, 1e-6, "-7 % -3 should be -1 (Python semantics)")
+
+
+# ============================================================================
+# Test power edge cases
+# ============================================================================
+
+fn test_power_zero_to_zero() raises:
+    """Test 0^0 (mathematically undefined, conventionally 1)."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    let a = zeros(shape, DType.float32)
+    let b = zeros(shape, DType.float32)
+    let c = power(a, b)
+
+    # Convention: 0^0 = 1 (used in polynomial evaluation)
+    assert_all_values(c, 1.0, 1e-6, "0^0 should be 1 by convention")
+
+
+fn test_power_negative_base_even() raises:
+    """Test negative base with even exponent."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, -2.0, DType.float32)
+    let b = full(shape, 2.0, DType.float32)
+    let c = power(a, b)
+
+    # (-2)^2 = 4
+    assert_value_at(c, 0, 4.0, 1e-6, "(-2)^2 should be 4")
+
+
+fn test_power_negative_base_odd() raises:
+    """Test negative base with odd exponent."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, -2.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = power(a, b)
+
+    # (-2)^3 = -8
+    assert_value_at(c, 0, -8.0, 1e-6, "(-2)^3 should be -8")
+
+
+fn test_power_zero_base_positive_exp() raises:
+    """Test 0^n for positive n."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    let a = zeros(shape, DType.float32)
+    let b = full(shape, 5.0, DType.float32)
+    let c = power(a, b)
+
+    # 0^5 = 0
+    assert_all_values(c, 0.0, 1e-6, "0^n should be 0 for positive n")
+
+
+# ============================================================================
+# Test floor_divide edge cases
+# ============================================================================
+
+fn test_floor_divide_by_zero() raises:
+    """Test floor division by zero."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    let a = full(shape, 10.0, DType.float32)
+    let b = zeros(shape, DType.float32)
+    let c = floor_divide(a, b)
+
+    # Floor division by zero should give inf (like regular division)
+    for i in range(3):
+        let val = c._get_float64(i)
+        if not isinf(val):
+            raise Error("x // 0 should be inf")
+
+
+fn test_floor_divide_with_remainder() raises:
+    """Test floor division with remainder."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, 7.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = floor_divide(a, b)
+
+    # 7 // 3 = 2 (floor of 2.333...)
+    assert_value_at(c, 0, 2.0, 1e-6, "7 // 3 should be 2")
+
+
+fn test_floor_divide_negative_result() raises:
+    """Test floor division with negative result."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, -7.0, DType.float32)
+    let b = full(shape, 3.0, DType.float32)
+    let c = floor_divide(a, b)
+
+    # -7 // 3 = -3 (floor of -2.333... = -3, not -2)
+    assert_value_at(c, 0, -3.0, 1e-6, "-7 // 3 should be -3 (floor toward -inf)")
+
+
+# ============================================================================
+# Test comparison edge cases
+# ============================================================================
+
+fn test_comparison_with_zero() raises:
+    """Test comparison operations with zero."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+
+    let positive = full(shape, 1.0, DType.float32)
+    let negative = full(shape, -1.0, DType.float32)
+    let zero = zeros(shape, DType.float32)
+
+    # Test greater than zero
+    let pos_gt_zero = greater(positive, zero)
+    assert_all_values(pos_gt_zero, 1.0, 1e-6, "1.0 > 0 should be True")
+
+    let neg_gt_zero = greater(negative, zero)
+    assert_all_values(neg_gt_zero, 0.0, 1e-6, "-1.0 > 0 should be False")
+
+    # Test less than zero
+    let neg_lt_zero = less(negative, zero)
+    assert_all_values(neg_lt_zero, 1.0, 1e-6, "-1.0 < 0 should be True")
+
+
+fn test_comparison_equal_values() raises:
+    """Test equality comparison with same values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    let a = full(shape, 3.14159, DType.float64)
+    let b = full(shape, 3.14159, DType.float64)
+    let c = equal(a, b)
+
+    assert_dtype(c, DType.bool, "Comparison should return bool")
+    assert_all_values(c, 1.0, 1e-10, "Equal values should be equal")
+
+
+fn test_comparison_very_close_values() raises:
+    """Test comparison with very close but not equal values."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    let a = full(shape, 1.0, DType.float32)
+    let b = full(shape, 1.0000001, DType.float32)
+
+    # These should NOT be equal (exact comparison, no tolerance)
+    let eq = equal(a, b)
+    let ne = not_equal(a, b)
+
+    # Depending on float32 precision, these might be equal or not
+    # For now, just verify bool dtype
+    assert_dtype(eq, DType.bool, "equal() should return bool")
+    assert_dtype(ne, DType.bool, "not_equal() should return bool")
 
 
 # ============================================================================
@@ -498,6 +713,32 @@ fn main() raises:
     test_divide_by_zero_float()
     test_divide_by_zero_int()
     test_divide_zero_by_zero()
+    test_divide_negative_by_zero()
+
+    # Modulo edge cases
+    print("  Testing modulo edge cases...")
+    test_modulo_by_zero()
+    test_modulo_with_negative_divisor()
+    test_modulo_both_negative()
+
+    # Power edge cases
+    print("  Testing power edge cases...")
+    test_power_zero_to_zero()
+    test_power_negative_base_even()
+    test_power_negative_base_odd()
+    test_power_zero_base_positive_exp()
+
+    # Floor divide edge cases
+    print("  Testing floor_divide edge cases...")
+    test_floor_divide_by_zero()
+    test_floor_divide_with_remainder()
+    test_floor_divide_negative_result()
+
+    # Comparison edge cases
+    print("  Testing comparison edge cases...")
+    test_comparison_with_zero()
+    test_comparison_equal_values()
+    test_comparison_very_close_values()
 
     # Subnormal numbers
     print("  Testing subnormal numbers...")
