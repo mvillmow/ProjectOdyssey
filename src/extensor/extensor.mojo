@@ -160,6 +160,24 @@ struct ExTensor:
             expected_stride *= self._shape[i]
         return True
 
+    fn _get_float64(self, index: Int) -> Float64:
+        """Internal: Get value at index as Float64 (assumes float-compatible dtype)."""
+        let dtype_size = self._get_dtype_size()
+        let offset = index * dtype_size
+
+        if self._dtype == DType.float16:
+            let ptr = (self._data + offset).bitcast[Float16]()
+            return ptr[].cast[DType.float64]()
+        elif self._dtype == DType.float32:
+            let ptr = (self._data + offset).bitcast[Float32]()
+            return ptr[].cast[DType.float64]()
+        elif self._dtype == DType.float64:
+            let ptr = (self._data + offset).bitcast[Float64]()
+            return ptr[]
+        else:
+            # For integer types, cast to float64
+            return Float64(self._get_int64(index))
+
     fn _set_float64(self, index: Int, value: Float64):
         """Internal: Set value at index (assumes float-compatible dtype)."""
         let dtype_size = self._get_dtype_size()
@@ -174,6 +192,41 @@ struct ExTensor:
         elif self._dtype == DType.float64:
             let ptr = (self._data + offset).bitcast[Float64]()
             ptr[] = value
+
+    fn _get_int64(self, index: Int) -> Int64:
+        """Internal: Get value at index as Int64 (assumes integer-compatible dtype)."""
+        let dtype_size = self._get_dtype_size()
+        let offset = index * dtype_size
+
+        if self._dtype == DType.int8:
+            let ptr = (self._data + offset).bitcast[Int8]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.int16:
+            let ptr = (self._data + offset).bitcast[Int16]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.int32:
+            let ptr = (self._data + offset).bitcast[Int32]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.int64:
+            let ptr = (self._data + offset).bitcast[Int64]()
+            return ptr[]
+        elif self._dtype == DType.uint8:
+            let ptr = (self._data + offset).bitcast[UInt8]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.uint16:
+            let ptr = (self._data + offset).bitcast[UInt16]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.uint32:
+            let ptr = (self._data + offset).bitcast[UInt32]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.uint64:
+            let ptr = (self._data + offset).bitcast[UInt64]()
+            return ptr[].cast[DType.int64]()
+        elif self._dtype == DType.bool:
+            let ptr = (self._data + offset).bitcast[Bool]()
+            return 1 if ptr[] else 0
+        else:
+            return 0  # Default fallback
 
     fn _set_int64(self, index: Int, value: Int64):
         """Internal: Set value at index (assumes integer-compatible dtype)."""

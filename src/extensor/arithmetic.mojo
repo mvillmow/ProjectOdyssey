@@ -174,9 +174,23 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     let result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, a.dtype())
 
-    # TODO: Implement division
-    result._fill_zero()
+    # Simple case: same shape (no broadcasting)
+    if len(a.shape()) == len(b.shape()):
+        var same_shape = True
+        for i in range(len(a.shape())):
+            if a.shape()[i] != b.shape()[i]:
+                same_shape = False
+                break
 
+        if same_shape:
+            for i in range(a.numel()):
+                let a_val = a._get_float64(i)
+                let b_val = b._get_float64(i)
+                result._set_float64(i, a_val / b_val)
+            return result^
+
+    # TODO: Implement full broadcasting for different shapes
+    result._fill_zero()
     return result^
 
 
@@ -204,9 +218,26 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     let result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, a.dtype())
 
-    # TODO: Implement floor division
-    result._fill_zero()
+    # Simple case: same shape (no broadcasting)
+    if len(a.shape()) == len(b.shape()):
+        var same_shape = True
+        for i in range(len(a.shape())):
+            if a.shape()[i] != b.shape()[i]:
+                same_shape = False
+                break
 
+        if same_shape:
+            for i in range(a.numel()):
+                let a_val = a._get_float64(i)
+                let b_val = b._get_float64(i)
+                # Floor division: convert result to int, then back to float
+                let div_result = a_val / b_val
+                let floored = Float64(int(div_result)) if div_result >= 0.0 else Float64(int(div_result) - 1)
+                result._set_float64(i, floored)
+            return result^
+
+    # TODO: Implement full broadcasting for different shapes
+    result._fill_zero()
     return result^
 
 
@@ -234,9 +265,26 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     let result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, a.dtype())
 
-    # TODO: Implement modulo
-    result._fill_zero()
+    # Simple case: same shape (no broadcasting)
+    if len(a.shape()) == len(b.shape()):
+        var same_shape = True
+        for i in range(len(a.shape())):
+            if a.shape()[i] != b.shape()[i]:
+                same_shape = False
+                break
 
+        if same_shape:
+            for i in range(a.numel()):
+                let a_val = a._get_float64(i)
+                let b_val = b._get_float64(i)
+                # Modulo: a % b = a - floor(a/b) * b
+                let div_result = a_val / b_val
+                let floored = Float64(int(div_result)) if div_result >= 0.0 else Float64(int(div_result) - 1)
+                result._set_float64(i, a_val - floored * b_val)
+            return result^
+
+    # TODO: Implement full broadcasting for different shapes
+    result._fill_zero()
     return result^
 
 
@@ -264,9 +312,36 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
     let result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, a.dtype())
 
-    # TODO: Implement power
-    result._fill_zero()
+    # Simple case: same shape (no broadcasting)
+    if len(a.shape()) == len(b.shape()):
+        var same_shape = True
+        for i in range(len(a.shape())):
+            if a.shape()[i] != b.shape()[i]:
+                same_shape = False
+                break
 
+        if same_shape:
+            for i in range(a.numel()):
+                let a_val = a._get_float64(i)
+                let b_val = b._get_float64(i)
+                # Power: a ** b
+                # For now, use simple implementation: repeated multiplication for small integer exponents
+                # TODO: Implement proper pow function using exp(b * log(a))
+                var pow_result: Float64 = 1.0
+                let exp_int = int(b_val)
+                if b_val == Float64(exp_int) and exp_int >= 0 and exp_int < 100:
+                    # Integer exponent case
+                    for _ in range(exp_int):
+                        pow_result *= a_val
+                else:
+                    # For non-integer or large exponents, use approximation
+                    # TODO: Implement proper exp/log for general case
+                    pow_result = a_val  # Placeholder
+                result._set_float64(i, pow_result)
+            return result^
+
+    # TODO: Implement full broadcasting for different shapes
+    result._fill_zero()
     return result^
 
 
