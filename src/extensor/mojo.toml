@@ -1,0 +1,119 @@
+# Mojo Package Configuration for ExTensor
+
+[package]
+name = "extensor"
+version = "0.1.0"
+description = "Extensible tensor library for Mojo with NumPy-style broadcasting"
+authors = ["ML Odyssey Contributors"]
+license = "BSD-3-Clause"
+readme = "../../docs/extensor/README.md"
+homepage = "https://github.com/mvillmow/ml-odyssey"
+repository = "https://github.com/mvillmow/ml-odyssey"
+keywords = ["tensor", "array", "mojo", "broadcasting", "linear-algebra"]
+
+[dependencies]
+# Mojo standard library (implicit)
+# No external dependencies
+
+[build]
+# Build configuration
+src = "."                    # Source directory (current directory)
+out = "../../build/extensor" # Output directory for .mojopkg
+test = "../../tests/extensor" # Test directory
+
+# Optimization settings
+[build.release]
+optimization-level = 3       # Maximum optimization for release builds
+debug-info = false           # Strip debug symbols in release
+
+[build.debug]
+optimization-level = 0       # No optimization for debug builds
+debug-info = true            # Include full debug symbols
+
+[paths]
+# Path configuration for package structure
+tests = "../../tests/extensor"
+examples = "../../examples/extensor"
+docs = "../../docs/extensor"
+
+[metadata]
+# Additional metadata
+categories = ["machine-learning", "linear-algebra", "tensor-operations"]
+
+# Package exports
+[exports]
+# Main module exports
+ExTensor = "extensor.ExTensor"
+
+# Creation operations
+zeros = "creation.zeros"
+ones = "creation.ones"
+full = "creation.full"
+empty = "creation.empty"
+arange = "creation.arange"
+eye = "creation.eye"
+linspace = "creation.linspace"
+
+# Arithmetic operations with broadcasting
+add = "arithmetic.add"
+subtract = "arithmetic.subtract"
+multiply = "arithmetic.multiply"
+divide = "arithmetic.divide"
+floor_divide = "arithmetic.floor_divide"
+modulo = "arithmetic.modulo"
+power = "arithmetic.power"
+
+# Broadcasting utilities
+broadcast_shapes = "broadcasting.broadcast_shapes"
+are_shapes_broadcastable = "broadcasting.are_shapes_broadcastable"
+
+# Comparison operations
+equal = "comparison.equal"
+not_equal = "comparison.not_equal"
+less = "comparison.less"
+less_equal = "comparison.less_equal"
+greater = "comparison.greater"
+greater_equal = "comparison.greater_equal"
+
+# Element-wise math operations
+abs = "elementwise_math.abs"
+sign = "elementwise_math.sign"
+exp = "elementwise_math.exp"
+log = "elementwise_math.log"
+sqrt = "elementwise_math.sqrt"
+sin = "elementwise_math.sin"
+cos = "elementwise_math.cos"
+tanh = "elementwise_math.tanh"
+clip = "elementwise_math.clip"
+ceil = "elementwise_math.ceil"
+floor = "elementwise_math.floor"
+round = "elementwise_math.round"
+trunc = "elementwise_math.trunc"
+logical_and = "elementwise_math.logical_and"
+logical_or = "elementwise_math.logical_or"
+logical_not = "elementwise_math.logical_not"
+logical_xor = "elementwise_math.logical_xor"
+log10 = "elementwise_math.log10"
+log2 = "elementwise_math.log2"
+
+# Matrix operations
+matmul = "matrix.matmul"
+transpose = "matrix.transpose"
+dot = "matrix.dot"
+outer = "matrix.outer"
+
+# Reduction operations
+sum = "reduction.sum"
+mean = "reduction.mean"
+max_reduce = "reduction.max_reduce"
+min_reduce = "reduction.min_reduce"
+
+# Shape manipulation operations
+reshape = "shape.reshape"
+squeeze = "shape.squeeze"
+unsqueeze = "shape.unsqueeze"
+expand_dims = "shape.expand_dims"
+flatten = "shape.flatten"
+ravel = "shape.ravel"
+concatenate = "shape.concatenate"
+stack = "shape.stack"
