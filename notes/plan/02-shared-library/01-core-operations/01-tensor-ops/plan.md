@@ -30,8 +30,8 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
 
 ## Outputs
 
-- **ExTensorStatic:** Compile-time optimized tensor with static shapes
-- **ExTensorDynamic:** Runtime flexible tensor with dynamic shapes
+- **ExStaticTensor:** Compile-time optimized tensor with static shapes
+- **ExTensor:** Runtime flexible tensor with dynamic shapes
 - **Complete tensor API:** Creation, arithmetic, matrix ops, reductions, shape manipulation, indexing, comparisons
 - **Broadcasting support:** NumPy-style broadcasting for all compatible operations
 - **Multi-dtype support:** Float16/32/64, Int8/16/32/64, UInt8/16/32/64, Bool
@@ -56,7 +56,7 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
    - Test edge cases (empty tensors, scalars, overflow)
 
 3. **Implementation Phase (Issue #220):** (parallel after Plan)
-   - Implement ExTensorStatic and ExTensorDynamic structs
+   - Implement ExStaticTensor and ExTensor structs
    - Implement all creation operations
    - Implement arithmetic operations with broadcasting
    - Implement matrix operations
@@ -96,7 +96,7 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
 
 **Key Design Principles:**
 
-- **Dual type system:** ExTensorStatic (compile-time optimized) and ExTensorDynamic (runtime flexible) sharing common trait interface
+- **Dual type system:** ExStaticTensor (compile-time optimized) and ExTensor (runtime flexible) sharing common trait interface
 - **Tensor calculus foundation:** Operations preserve mathematical semantics (rank preservation, proper broadcasting, contraction)
 - **Array API Standard 2024 compliance:** Follow latest standard for ecosystem compatibility
 - **YAGNI approach:** Implement minimal complete API, defer advanced features (autograd, GPU, einsum)

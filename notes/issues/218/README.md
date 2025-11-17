@@ -6,8 +6,8 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 ## Deliverables
 
-- **ExTensorStatic specification** - Compile-time optimized tensor with static shapes
-- **ExTensorDynamic specification** - Runtime flexible tensor with dynamic shapes
+- **ExStaticTensor specification** - Compile-time optimized tensor with static shapes
+- **ExTensor specification** - Runtime flexible tensor with dynamic shapes
 - **Complete API specification** - 40+ operations including:
   - Creation operations (zeros, ones, full, arange, from_array)
   - Element-wise arithmetic (add, subtract, multiply, divide, power, negative)
@@ -42,7 +42,7 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 ### 1. Dual Type System (Static + Dynamic)
 
-**Decision**: Implement both ExTensorStatic and ExTensorDynamic variants sharing a common trait interface.
+**Decision**: Implement both ExStaticTensor and ExTensor variants sharing a common trait interface.
 
 **Rationale**:
 
@@ -159,13 +159,13 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 **Decision**: Compile-time validation for static tensors, runtime validation for dynamic tensors.
 
-**Static tensors (ExTensorStatic)**:
+**Static tensors (ExStaticTensor)**:
 
 - Shape mismatches caught at compile-time
 - Type mismatches caught at compile-time
 - Zero runtime overhead for validation
 
-**Dynamic tensors (ExTensorDynamic)**:
+**Dynamic tensors (ExTensor)**:
 
 - Shape validation at runtime with clear error messages
 - Type validation at runtime
@@ -287,7 +287,7 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 These questions must be answered during the planning phase:
 
-1. **Static vs Dynamic API Unification**: Should there be a unified API that automatically selects ExTensorStatic vs ExTensorDynamic based on compile-time information, or should users explicitly choose?
+1. **Static vs Dynamic API Unification**: Should there be a unified API that automatically selects ExStaticTensor vs ExTensor based on compile-time information, or should users explicitly choose?
 
 2. **Shape Representation**: How should shapes be represented?
    - Static: Parametric types? Variadic parameters? Fixed-size array?
@@ -345,7 +345,7 @@ This section will be updated as the planning phase progresses with any discoveri
 2. Create detailed API specification document (function signatures, type annotations)
 3. Document broadcasting algorithm with pseudocode
 4. Specify memory layout and stride calculations
-5. Define trait interfaces for ExTensorStatic and ExTensorDynamic
+5. Define trait interfaces for ExStaticTensor and ExTensor
 6. Document SIMD optimization opportunities
 7. Create examples showing static vs dynamic usage patterns
 8. Prepare specifications for Test phase (issue #219)

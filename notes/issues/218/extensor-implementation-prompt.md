@@ -24,24 +24,26 @@ Re-interpret GitHub issues #218-222 (originally scoped for basic arithmetic oper
 
 Implement both static and dynamic tensor variants using Mojo's parametric type system:
 
-**Static Tensor (ExTensorStatic):**
-- Shape known at compile-time via parametric types (e.g., `ExTensorStatic[DType.float32, 3, 224, 224]`)
-- Optimized code paths with compile-time bounds checking
-- Zero runtime overhead for shape validation
-- SIMD vectorization opportunities
-- Memory layout determined at compile-time
-
-**Dynamic Tensor (ExTensorDynamic):**
+**Dynamic Tensor (ExTensor):**
 - Shape determined at runtime (default variant)
 - Flexible for research and experimentation
 - Runtime shape validation
 - Support for dynamic reshaping and shape inference
 - Compatible with Python-style workflow
+- **Primary tensor type** for most use cases
+
+**Static Tensor (ExStaticTensor):**
+- Shape known at compile-time via parametric types (e.g., `ExStaticTensor[DType.float32, 3, 224, 224]`)
+- Optimized code paths with compile-time bounds checking
+- Zero runtime overhead for shape validation
+- SIMD vectorization opportunities
+- Memory layout determined at compile-time
+- **Performance-optimized variant** for when shapes are known ahead of time
 
 **Relationship between variants:**
 - Both should share a common trait interface (e.g., `TensorOps` trait)
-- ExTensorDynamic is the default for ease of use
-- ExTensorStatic provides opt-in optimization when shapes are known
+- ExTensor is the default for ease of use
+- ExStaticTensor provides opt-in optimization when shapes are known
 - Seamless conversion between static and dynamic when needed
 
 ### 2. Tensor Calculus Foundation
@@ -60,9 +62,9 @@ Implement operations grounded in tensor calculus principles:
 - Clear semantics for covariant vs contravariant indices (future extension)
 - Support for Einstein summation notation (future extension)
 
-### 3. Minimal Complete Tensor API
+### 3. Complete Tensor API (Array API Standard 2024 + Mojo Built-ins)
 
-Based on the **Array API Standard 2024** and PyTorch/NumPy conventions, implement this minimal set of operations for a complete tensor implementation:
+Based on the **Array API Standard 2024**, **Mojo's built-in operations**, and PyTorch/NumPy conventions, implement this complete set of operations:
 
 #### Creation Operations
 - `zeros(shape, dtype)` - Create tensor filled with zeros
@@ -70,56 +72,173 @@ Based on the **Array API Standard 2024** and PyTorch/NumPy conventions, implemen
 - `full(shape, fill_value, dtype)` - Create tensor filled with a value
 - `arange(start, stop, step, dtype)` - Create 1D tensor with evenly spaced values
 - `from_array(data)` - Create tensor from array/list data
+- `eye(n, m, k, dtype)` - Create 2D tensor with ones on diagonal
+- `linspace(start, stop, num, dtype)` - Create 1D tensor with evenly spaced values
+- `empty(shape, dtype)` - Create uninitialized tensor (fast)
 
-#### Element-wise Arithmetic (broadcasting support)
-- `add(a, b)` / `a + b` - Element-wise addition
-- `subtract(a, b)` / `a - b` - Element-wise subtraction
-- `multiply(a, b)` / `a * b` - Element-wise multiplication
-- `divide(a, b)` / `a / b` - Element-wise division (IEEE 754 semantics)
-- `power(a, b)` / `a ** b` - Element-wise exponentiation
-- `negative(a)` / `-a` - Element-wise negation
+#### Arithmetic Operations (Dunder Methods + Broadcasting)
+
+**Binary Arithmetic** - Normal, reflected, and in-place variants:
+- `add(a, b)` / `__add__` / `a + b` - Element-wise addition
+- `subtract(a, b)` / `__sub__` / `a - b` - Element-wise subtraction
+- `multiply(a, b)` / `__mul__` / `a * b` - Element-wise multiplication
+- `divide(a, b)` / `__truediv__` / `a / b` - Element-wise true division
+- `floor_divide(a, b)` / `__floordiv__` / `a // b` - Element-wise floor division
+- `modulo(a, b)` / `__mod__` / `a % b` - Element-wise modulo
+- `power(a, b)` / `__pow__` / `a ** b` - Element-wise exponentiation
+- `matmul(a, b)` / `__matmul__` / `a @ b` - Matrix multiplication
+
+**Reflected Variants** (for reverse operations like `2 + tensor`):
+- `__radd__`, `__rsub__`, `__rmul__`, `__rtruediv__`, `__rfloordiv__`, `__rmod__`, `__rpow__`, `__rmatmul__`
+
+**In-place Variants** (for operations like `a += b`):
+- `__iadd__`, `__isub__`, `__imul__`, `__itruediv__`, `__ifloordiv__`, `__imod__`, `__ipow__`, `__imatmul__`
+
+**Unary Operations**:
+- `negative(a)` / `__neg__` / `-a` - Element-wise negation
+- `positive(a)` / `__pos__` / `+a` - Element-wise positive (identity)
+- `abs(a)` / `__abs__` - Element-wise absolute value
+- `invert(a)` / `__invert__` / `~a` - Bitwise NOT (for integer/bool tensors)
+
+#### Bitwise Operations (for integer and bool tensors)
+
+**Binary Bitwise** - Normal, reflected, and in-place variants:
+- `bitwise_and(a, b)` / `__and__` / `a & b` - Bitwise AND
+- `bitwise_or(a, b)` / `__or__` / `a | b` - Bitwise OR
+- `bitwise_xor(a, b)` / `__xor__` / `a ^ b` - Bitwise XOR
+- `left_shift(a, b)` / `__lshift__` / `a << b` - Left shift
+- `right_shift(a, b)` / `__rshift__` / `a >> b` - Right shift
+
+**Reflected Bitwise**:
+- `__rand__`, `__ror__`, `__rxor__`, `__rlshift__`, `__rrshift__`
+
+**In-place Bitwise**:
+- `__iand__`, `__ior__`, `__ixor__`, `__ilshift__`, `__irshift__`
+
+#### Comparison Operations (return bool tensors)
+- `equal(a, b)` / `__eq__` / `a == b` - Element-wise equality
+- `not_equal(a, b)` / `__ne__` / `a != b` - Element-wise inequality
+- `less(a, b)` / `__lt__` / `a < b` - Element-wise less-than
+- `less_equal(a, b)` / `__le__` / `a <= b` - Element-wise less-or-equal
+- `greater(a, b)` / `__gt__` / `a > b` - Element-wise greater-than
+- `greater_equal(a, b)` / `__ge__` / `a >= b` - Element-wise greater-or-equal
+
+#### Pointwise Math Operations (Element-wise)
+
+**Trigonometric Functions**:
+- `sin(a)` - Element-wise sine
+- `cos(a)` - Element-wise cosine
+- `tan(a)` - Element-wise tangent
+- `asin(a)` - Element-wise arcsine
+- `acos(a)` - Element-wise arccosine
+- `atan(a)` - Element-wise arctangent
+- `atan2(a, b)` - Element-wise 2-argument arctangent
+
+**Hyperbolic Functions**:
+- `sinh(a)` - Element-wise hyperbolic sine
+- `cosh(a)` - Element-wise hyperbolic cosine
+- `tanh(a)` - Element-wise hyperbolic tangent
+- `asinh(a)` - Element-wise inverse hyperbolic sine
+- `acosh(a)` - Element-wise inverse hyperbolic cosine
+- `atanh(a)` - Element-wise inverse hyperbolic tangent
+
+**Exponential and Logarithmic**:
+- `exp(a)` - Element-wise exponential (e^x)
+- `exp2(a)` - Element-wise base-2 exponential (2^x)
+- `expm1(a)` - Element-wise exp(x) - 1 (accurate for small x)
+- `log(a)` - Element-wise natural logarithm
+- `log2(a)` - Element-wise base-2 logarithm
+- `log10(a)` - Element-wise base-10 logarithm
+- `log1p(a)` - Element-wise log(1 + x) (accurate for small x)
+
+**Power and Root Functions**:
+- `sqrt(a)` - Element-wise square root
+- `cbrt(a)` - Element-wise cube root
+- `square(a)` - Element-wise square (x^2)
+- `rsqrt(a)` - Element-wise reciprocal square root (1/sqrt(x))
+
+**Rounding Functions** (Dunder Methods):
+- `ceil(a)` / `__ceil__` - Element-wise ceiling
+- `floor(a)` / `__floor__` - Element-wise floor
+- `trunc(a)` / `__trunc__` - Element-wise truncation toward zero
+- `round(a)` / `__round__` - Element-wise rounding to nearest integer
+
+**Other Pointwise Operations**:
+- `sign(a)` - Element-wise sign (-1, 0, +1)
+- `copysign(a, b)` - Element-wise copy sign from b to |a|
+- `fma(a, b, c)` - Fused multiply-add: a*b + c
+- `clip(a, min, max)` - Clamp values to range [min, max]
+- `reciprocal(a)` - Element-wise reciprocal (1/x)
 
 #### Matrix Operations
 - `matmul(a, b)` / `a @ b` - Matrix multiplication
 - `transpose(a, axes=None)` - Transpose tensor along specified axes
 - `dot(a, b)` - Dot product (1D) or matrix product
+- `outer(a, b)` - Outer product of vectors
+- `inner(a, b)` - Inner product of tensors
+- `tensordot(a, b, axes)` - Tensor contraction along specified axes
 
 #### Reduction Operations
 - `sum(a, axis=None, keepdims=False)` - Sum along axis
+- `prod(a, axis=None, keepdims=False)` - Product along axis
 - `mean(a, axis=None, keepdims=False)` - Mean along axis
+- `var(a, axis=None, keepdims=False)` - Variance along axis
+- `std(a, axis=None, keepdims=False)` - Standard deviation along axis
 - `max(a, axis=None, keepdims=False)` - Maximum along axis
 - `min(a, axis=None, keepdims=False)` - Minimum along axis
+- `argmax(a, axis=None)` - Index of maximum along axis
+- `argmin(a, axis=None)` - Index of minimum along axis
 - `count_nonzero(a, axis=None)` - Count non-zero elements (Array API 2024)
 - `cumulative_sum(a, axis)` - Cumulative sum along axis
 - `cumulative_prod(a, axis)` - Cumulative product (Array API 2024)
+- `all(a, axis=None, keepdims=False)` - Test if all elements are True
+- `any(a, axis=None, keepdims=False)` - Test if any element is True
 
 #### Shape Manipulation
 - `reshape(a, new_shape)` - Reshape tensor
 - `squeeze(a, axis=None)` - Remove dimensions of size 1
-- `expand_dims(a, axis)` - Add dimension of size 1
+- `unsqueeze(a, axis)` / `expand_dims(a, axis)` - Add dimension of size 1
 - `flatten(a)` - Flatten to 1D
-- `concatenate(tensors, axis)` - Join tensors along axis
+- `ravel(a)` - Return flattened view (zero-copy if possible)
+- `concatenate(tensors, axis)` - Join tensors along existing axis
 - `stack(tensors, axis)` - Stack tensors along new axis
+- `split(a, indices_or_sections, axis)` - Split tensor into multiple sub-tensors
+- `tile(a, reps)` - Repeat tensor along axes
+- `repeat(a, repeats, axis)` - Repeat elements along axis
+- `broadcast_to(a, shape)` - Broadcast tensor to new shape
+- `permute(a, axes)` - Permute tensor dimensions
 
 #### Indexing and Slicing
 - `__getitem__(indices)` / `a[i, j, k]` - Tensor indexing
 - `__setitem__(indices, value)` / `a[i, j, k] = value` - Tensor assignment
+- `take(a, indices, axis)` - Take elements along axis
 - `take_along_axis(a, indices, axis)` - Gather along axis (Array API 2024)
-- `slice(a, start, end, step)` - Slice along dimensions
+- `put(a, indices, values)` - Put values at indices
+- `gather(a, dim, index)` - Gather values along dimension
+- `scatter(a, dim, index, src)` - Scatter values along dimension
+- `where(condition, x, y)` - Select elements from x or y based on condition
+- `masked_select(a, mask)` - Select elements where mask is True
 
-#### Comparison Operations
-- `equal(a, b)` / `a == b` - Element-wise equality
-- `greater(a, b)` / `a > b` - Element-wise greater-than
-- `less(a, b)` / `a < b` - Element-wise less-than
-- `greater_equal(a, b)` / `a >= b`
-- `less_equal(a, b)` / `a <= b`
-
-#### Utility Operations
-- `copy(a)` - Create deep copy
-- `diff(a, axis)` - Discrete difference (Array API 2024)
-- `clip(a, min, max)` - Clamp values to range
-- `abs(a)` - Absolute value
-- `sqrt(a)` - Square root
+#### Utility and Inspection Operations
+- `copy(a)` / `clone(a)` - Create deep copy
+- `diff(a, n=1, axis=-1)` - Discrete difference (Array API 2024)
+- `__len__` - Return size of first dimension
+- `__bool__` - Convert single-element tensor to bool
+- `__int__` - Convert single-element tensor to int
+- `__float__` - Convert single-element tensor to float
+- `__str__` - String representation
+- `__repr__` - Detailed representation
+- `__hash__` - Hash for hashable tensors (if immutable)
+- `__contains__` - Check if value is in tensor
+- `__divmod__(a, b)` - Return (quotient, remainder) tuple
+- `item()` - Extract scalar value (for single-element tensors)
+- `tolist()` - Convert to nested Python list
+- `numel()` - Total number of elements
+- `dim()` - Number of dimensions
+- `size(axis=None)` - Shape of tensor or size along axis
+- `stride(axis=None)` - Stride of tensor or stride along axis
+- `is_contiguous()` - Check if tensor has contiguous memory layout
+- `contiguous()` - Return contiguous copy if not already contiguous
 
 ### 4. Data Type Support
 
@@ -345,7 +464,7 @@ Please provide your deliverables in this structure:
 ```xml
 <implementation>
   <core_types>
-    <!-- ExTensorStatic and ExTensorDynamic structs -->
+    <!-- ExTensor (dynamic) and ExStaticTensor (static) structs -->
   </core_types>
 
   <operations>
@@ -485,7 +604,7 @@ Please provide your deliverables in this structure:
 
 ## Questions to Address in Your Design
 
-1. **Static vs Dynamic API:** Should users explicitly choose `ExTensorStatic` vs `ExTensorDynamic`, or should there be a unified API that automatically selects the variant based on compile-time information?
+1. **Static vs Dynamic API:** Should users explicitly choose `ExStaticTensor` vs `ExTensor`, or should there be a unified API that automatically selects the variant based on compile-time information?
 
 2. **Shape Representation:** How should shapes be represented for static tensors (parametric types? variadic parameters?) vs dynamic tensors (runtime array/list?)?
 
