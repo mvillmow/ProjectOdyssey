@@ -467,31 +467,48 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Perform power: a ** b
         let a_val = a._get_float64(idx_a)
         let b_val = b._get_float64(idx_b)
-        # For now, use simple implementation: repeated multiplication for small integer exponents
-        # TODO: Implement proper pow function using exp(b * log(a))
+
+        # Current implementation: repeated multiplication for small integer exponents
+        # LIMITATION: Only supports integer exponents in range [0, 100)
+        # For general case (fractional/large exponents), proper implementation requires:
+        #   - exp(b * log(a)) for general exponents
+        #   - Special handling for negative bases with fractional exponents
+        #   - Proper handling of edge cases (0^0, inf^0, etc.)
         var pow_result: Float64 = 1.0
         let exp_int = int(b_val)
         if b_val == Float64(exp_int) and exp_int >= 0 and exp_int < 100:
-            # Integer exponent case
+            # Integer exponent case (naive repeated multiplication)
             for _ in range(exp_int):
                 pow_result *= a_val
         else:
-            # For non-integer or large exponents, use approximation
-            # TODO: Implement proper exp/log for general case
-            pow_result = a_val  # Placeholder
+            # LIMITATION: Non-integer and large exponents not yet supported
+            # Returns base value as placeholder (incorrect result)
+            pow_result = a_val
         result._set_float64(result_idx, pow_result)
 
     return result^
 
 
-# TODO: Implement dunder methods on ExTensor struct:
-# fn __add__(self, other: ExTensor) -> ExTensor
-# fn __sub__(self, other: ExTensor) -> ExTensor
-# fn __mul__(self, other: ExTensor) -> ExTensor
-# fn __truediv__(self, other: ExTensor) -> ExTensor
-# fn __floordiv__(self, other: ExTensor) -> ExTensor
-# fn __mod__(self, other: ExTensor) -> ExTensor
-# fn __pow__(self, other: ExTensor) -> ExTensor
+# ==============================================================================
+# FUTURE WORK: Operator Overloading (out of scope for issues #219-220)
+# ==============================================================================
 #
-# And reflected variants (__radd__, __rsub__, etc.)
-# And in-place variants (__iadd__, __isub__, etc.)
+# The following dunder methods should be implemented on the ExTensor struct
+# to enable natural operator syntax (e.g., a + b instead of add(a, b)):
+#
+# Basic operators:
+#   fn __add__(self, other: ExTensor) -> ExTensor
+#   fn __sub__(self, other: ExTensor) -> ExTensor
+#   fn __mul__(self, other: ExTensor) -> ExTensor
+#   fn __truediv__(self, other: ExTensor) -> ExTensor
+#   fn __floordiv__(self, other: ExTensor) -> ExTensor
+#   fn __mod__(self, other: ExTensor) -> ExTensor
+#   fn __pow__(self, other: ExTensor) -> ExTensor
+#
+# Reflected variants (for operations like: 2 + tensor):
+#   fn __radd__, __rsub__, __rmul__, __rtruediv__, etc.
+#
+# In-place variants (for operations like: tensor += 2):
+#   fn __iadd__, __isub__, __imul__, __itruediv__, etc.
+#
+# These implementations should delegate to the functions in this module.
