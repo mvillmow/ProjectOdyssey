@@ -17,7 +17,6 @@ All custom layers should integrate seamlessly with the shared library.
 Every layer must implement:
 
 ```mojo
-```mojo
 
 struct CustomLayer:
     """Custom neural network layer."""
@@ -46,7 +45,6 @@ struct CustomLayer:
 ### Step 1: Define Structure
 
 ```mojo
-```mojo
 
 struct MyCustomLayer:
     """Custom layer with learnable parameters."""
@@ -58,7 +56,6 @@ struct MyCustomLayer:
 
 ### Step 2: Initialize Parameters
 
-```mojo
 ```mojo
 
 fn __init__(inout self, input_size: Int, output_size: Int):
@@ -73,7 +70,6 @@ fn __init__(inout self, input_size: Int, output_size: Int):
 ### Step 3: Implement Forward Pass
 
 ```mojo
-```mojo
 
 fn forward(self, borrowed input: Tensor) -> Tensor:
     """Compute layer output."""
@@ -86,7 +82,6 @@ fn forward(self, borrowed input: Tensor) -> Tensor:
 
 ### Step 4: Implement Backward Pass
 
-```mojo
 ```mojo
 
 fn backward(self, borrowed grad_output: Tensor, borrowed input: Tensor) -> Tensor:
@@ -106,7 +101,6 @@ fn backward(self, borrowed grad_output: Tensor, borrowed input: Tensor) -> Tenso
 
 ### Example 1: Custom Attention Layer
 
-```mojo
 ```mojo
 
 struct SelfAttention:
@@ -137,7 +131,6 @@ struct SelfAttention:
 ### Example 2: Custom Activation
 
 ```mojo
-```mojo
 
 struct Swish:
     """Swish activation: x * sigmoid(x)."""
@@ -160,7 +153,6 @@ struct Swish:
 
 ### Example 3: Custom Conv2D with Padding
 
-```mojo
 ```mojo
 
 struct CustomConv2D:
@@ -195,7 +187,6 @@ struct CustomConv2D:
 ### Unit Tests
 
 ```mojo
-```mojo
 
 fn test_custom_layer_forward():
     """Test forward pass produces correct output shape."""
@@ -224,7 +215,6 @@ fn test_custom_layer_gradients():
 
 ### Integration Tests
 
-```mojo
 ```mojo
 
 fn test_custom_layer_in_network():
@@ -260,7 +250,6 @@ If your layer is reusable, contribute it to the shared library:
 Build on existing shared library components:
 
 ```mojo
-```mojo
 
 from shared.core.layers import Linear
 from shared.core.ops import matmul, softmax
@@ -290,7 +279,6 @@ struct CustomBlock:
 Begin with a basic implementation, verify correctness, then optimize:
 
 ```mojo
-```mojo
 
 # First: Get it working
 fn forward_simple(self, x: Tensor) -> Tensor:
@@ -313,7 +301,6 @@ fn forward_optimized(self, x: Tensor) -> Tensor:
 Use numerical gradient checking during development:
 
 ```mojo
-```mojo
 
 fn validate_gradients(layer: YourLayer, input: Tensor):
     """Compare analytical vs numerical gradients."""
@@ -326,7 +313,6 @@ fn validate_gradients(layer: YourLayer, input: Tensor):
 
 **3. Test Edge Cases**
 
-```mojo
 ```mojo
 
 fn test_edge_cases():
@@ -352,7 +338,6 @@ fn test_edge_cases():
 
 **4. Document Thoroughly**
 
-```mojo
 ```mojo
 
 struct MyLayer:
@@ -385,7 +370,6 @@ struct MyLayer:
 
 **5. Profile Performance**
 
-```mojo
 ```mojo
 
 fn benchmark_layer():

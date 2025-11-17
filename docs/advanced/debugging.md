@@ -17,7 +17,6 @@ Common ML bugs fall into three categories:
 **Step 1: Isolate the Problem**
 
 ```mojo
-```mojo
 
 # Test components individually
 fn test_layer_isolation():
@@ -32,7 +31,6 @@ fn test_layer_isolation():
 **Step 2: Verify Shapes**
 
 ```mojo
-```mojo
 
 fn debug_shapes(model: Model, input: Tensor):
     """Print shapes at each layer."""
@@ -46,7 +44,6 @@ fn debug_shapes(model: Model, input: Tensor):
 
 **Step 3: Check for NaN/Inf**
 
-```mojo
 ```mojo
 
 fn check_numerical_health(tensor: Tensor, name: String):
@@ -64,7 +61,6 @@ fn check_numerical_health(tensor: Tensor, name: String):
 ### Print Debugging
 
 ```mojo
-```mojo
 
 fn forward(self, x: Tensor) -> Tensor:
     print("Forward input shape:", x.shape)
@@ -79,7 +75,6 @@ fn forward(self, x: Tensor) -> Tensor:
 ### Assertions
 
 ```mojo
-```mojo
 
 fn forward(self, x: Tensor) -> Tensor:
     debug_assert(x.shape[1] == self.input_size, "Input size mismatch")
@@ -91,7 +86,6 @@ fn forward(self, x: Tensor) -> Tensor:
 
 ### Conditional Compilation
 
-```mojo
 ```mojo
 
 @parameter
@@ -114,7 +108,6 @@ if DEBUG:
 
 **Solutions**:
 
-```mojo
 ```mojo
 
 # 1. Clip gradients
@@ -149,7 +142,6 @@ var optimizer = SGD(lr=0.001)  # Start smaller
 **Diagnosis**:
 
 ```mojo
-```mojo
 
 fn diagnose_gradients(model: Model):
     """Check gradient magnitudes."""
@@ -167,7 +159,6 @@ fn diagnose_gradients(model: Model):
 
 **Solutions**:
 
-```mojo
 ```mojo
 
 # 1. Gradient clipping
@@ -196,7 +187,6 @@ fn forward_with_skip(self, x: Tensor) -> Tensor:
 **Diagnosis**:
 
 ```mojo
-```mojo
 
 fn trace_shapes(model: Model, input: Tensor):
     """Print all intermediate shapes."""
@@ -216,7 +206,6 @@ fn trace_shapes(model: Model, input: Tensor):
 
 **Prevention**:
 
-```mojo
 ```mojo
 
 struct Layer:
@@ -240,7 +229,6 @@ struct Layer:
 **Diagnosis**:
 
 ```mojo
-```mojo
 
 fn monitor_memory():
     """Track memory usage during training."""
@@ -256,7 +244,6 @@ fn monitor_memory():
 
 **Solutions**:
 
-```mojo
 ```mojo
 
 # 1. Reuse buffers
@@ -285,7 +272,6 @@ fn update_inplace(inout params: Tensor, grad: Tensor, lr: Float64):
 
 Compare analytical gradients (backprop) with numerical gradients:
 
-```mojo
 ```mojo
 
 fn numerical_gradient(model: Model, input: Tensor, epsilon: Float64 = 1e-5) -> List[Tensor]:
@@ -340,7 +326,6 @@ fn test_gradients():
 Verify model can overfit a tiny dataset:
 
 ```mojo
-```mojo
 
 fn test_overfit_single_batch():
     """Model should achieve near-zero loss on single batch."""
@@ -374,7 +359,6 @@ fn test_overfit_single_batch():
 
 ### Profiling
 
-```mojo
 ```mojo
 
 fn profile_training():
@@ -410,7 +394,6 @@ fn profile_training():
 
 ### Memory Profiling
 
-```mojo
 ```mojo
 
 fn profile_memory():

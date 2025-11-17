@@ -11,7 +11,6 @@ Before starting, ensure you have completed the [Installation Guide](installation
 First, verify that Mojo and ML Odyssey are properly installed:
 
 ```bash
-```bash
 
 # Check Mojo version
 pixi run mojo --version
@@ -25,7 +24,6 @@ ls shared/
 Expected output:
 
 ```text
-```text
 
 mojo 25.1.0 (...)
 core  data  training  utils
@@ -36,7 +34,6 @@ core  data  training  utils
 
 Let's create and run a simple neural network layer:
 
-```bash
 ```bash
 
 # Create example file
@@ -72,7 +69,6 @@ pixi run mojo run hello_ml.mojo
 
 Expected output:
 
-```text
 ```text
 
 === ML Odyssey Quick Start ===
@@ -113,7 +109,6 @@ Ready for a complete example? Follow the [First Model Tutorial](first_model.md) 
 ### Try Examples
 
 ```bash
-```bash
 
 # Explore example implementations
 ls examples/
@@ -126,7 +121,6 @@ cd examples/getting-started/
 ### "Module not found" Error
 
 ```bash
-```bash
 
 # Ensure you're running from the repository root
 cd /path/to/ml-odyssey
@@ -136,7 +130,6 @@ pixi run mojo run hello_ml.mojo
 
 ### Mojo Version Issues
 
-```bash
 ```bash
 
 # Update Mojo to latest version

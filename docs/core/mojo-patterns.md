@@ -30,7 +30,6 @@ C/C++ while maintaining Python-like syntax. For ML workloads, this translates to
 **Compile-time Error Detection**: Mojo's strong type system catches errors before runtime:
 
 ```mojo
-```mojo
 
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Compiler enforces shape compatibility and type consistency
@@ -60,7 +59,6 @@ Benefits:
 
 **First-Class Vectorization**: Mojo treats SIMD as a core language feature, not an afterthought:
 
-```mojo
 ```mojo
 
 fn vectorized_relu(inout tensor: Tensor):
@@ -114,7 +112,6 @@ Mojo provides two function declaration keywords with different trade-offs.
 - Prevents accidental mutations
 
 ```mojo
-```mojo
 
 fn forward_pass[dtype: DType](
     borrowed input: Tensor[dtype],
@@ -152,7 +149,6 @@ fn forward_pass[dtype: DType](
 - Compatible with Python calling conventions
 
 ```mojo
-```mojo
 
 def load_dataset(path: String) -> PythonObject:
     """Load dataset using Python library."""
@@ -173,7 +169,6 @@ def load_dataset(path: String) -> PythonObject:
 
 #### Decision Guide
 
-```text
 ```text
 
 Need performance? ──────────────────────> Use `fn`
@@ -205,7 +200,6 @@ Mojo provides both `struct` and `class` with distinct semantics.
 - No inheritance (composition over inheritance)
 - Optimized for performance
 
-```mojo
 ```mojo
 
 struct Layer:
@@ -259,7 +253,6 @@ struct Layer:
 - Similar to Python classes
 
 ```mojo
-```mojo
 
 class Model:
     """Neural network model as a reference type."""
@@ -294,7 +287,6 @@ class Model:
 #### Decision Guide
 
 ```text
-```text
 
 Need value semantics? ───────────────────> Use `struct`
     │
@@ -319,7 +311,6 @@ Mojo's ownership system provides memory safety without garbage collection.
 - Multiple concurrent readers needed
 
 ```mojo
-```mojo
 
 fn compute_loss(borrowed predictions: Tensor, borrowed targets: Tensor) -> Float64:
     """Compute loss without taking ownership."""
@@ -343,7 +334,6 @@ fn compute_loss(borrowed predictions: Tensor, borrowed targets: Tensor) -> Float
 - Ownership transfer is intentional
 - Resource cleanup needed
 
-```mojo
 ```mojo
 
 fn consume_tensor(owned tensor: Tensor) -> Float64:
@@ -370,7 +360,6 @@ fn consume_tensor(owned tensor: Tensor) -> Float64:
 - Efficient mutations without copying
 
 ```mojo
-```mojo
 
 fn update_weights(
     inout weights: Tensor,
@@ -392,7 +381,6 @@ fn update_weights(
 #### Ownership Decision Guide
 
 ```text
-```text
 
 Need to read? ──────────────────────────> Use `borrowed`
     │
@@ -410,7 +398,6 @@ SIMD (Single Instruction, Multiple Data) enables parallel processing of tensor e
 
 #### Element-wise Operations
 
-```mojo
 ```mojo
 
 fn relu_simd(inout tensor: Tensor):
@@ -436,7 +423,6 @@ fn relu_simd(inout tensor: Tensor):
 #### Reduction Operations
 
 ```mojo
-```mojo
 
 fn sum_simd(borrowed tensor: Tensor) -> Float32:
     """Sum all elements using SIMD."""
@@ -460,7 +446,6 @@ fn sum_simd(borrowed tensor: Tensor) -> Float32:
 
 #### Matrix Multiplication
 
-```mojo
 ```mojo
 
 fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
@@ -500,7 +485,6 @@ fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
 #### In-Place Operations
 
 ```mojo
-```mojo
 
 # Anti-pattern: Allocates temporary tensors
 fn bad_update(weights: Tensor, grad: Tensor, lr: Float64) -> Tensor:
@@ -538,7 +522,6 @@ fn best_update(inout weights: Tensor, borrowed grad: Tensor, lr: Float64):
 #### Buffer Reuse
 
 ```mojo
-```mojo
 
 struct EfficientConv2D:
     """Conv2D with preallocated buffers."""
@@ -574,7 +557,6 @@ struct EfficientConv2D:
 #### Compile-Time Shape Validation
 
 ```mojo
-```mojo
 
 struct FixedShape[rows: Int, cols: Int]:
     """Tensor with compile-time known shape."""
@@ -606,7 +588,6 @@ struct FixedShape[rows: Int, cols: Int]:
 #### Type-Safe Gradient Computation
 
 ```mojo
-```mojo
 
 struct Variable[dtype: DType]:
     """Tensor with attached gradient."""
@@ -635,7 +616,6 @@ struct Variable[dtype: DType]:
 ### Pattern 1: Layer Implementation
 
 ```mojo
-```mojo
 
 struct Linear:
     """Fully connected linear layer."""
@@ -662,7 +642,6 @@ struct Linear:
 
 ### Pattern 2: Optimizer Implementation
 
-```mojo
 ```mojo
 
 struct SGD:
@@ -703,7 +682,6 @@ struct SGD:
 ### Pattern 3: Training Loop
 
 ```mojo
-```mojo
 
 fn train_epoch(
     inout model: Model,
@@ -739,7 +717,6 @@ fn train_epoch(
 
 ### Pattern 4: Trait-Based Abstraction
 
-```mojo
 ```mojo
 
 trait Module:
@@ -788,7 +765,6 @@ struct Adam(Optimizer):
 ### Anti-Pattern 1: Unnecessary Allocations
 
 ```mojo
-```mojo
 
 # BAD: Creates many temporary tensors
 fn bad_forward(x: Tensor, w1: Tensor, w2: Tensor, w3: Tensor) -> Tensor:
@@ -819,7 +795,6 @@ fn good_forward(
 ### Anti-Pattern 2: Missing Ownership Annotations
 
 ```mojo
-```mojo
 
 # BAD: Unclear ownership semantics
 fn unclear_function(x: Tensor) -> Tensor:
@@ -844,7 +819,6 @@ fn clear_consume(owned x: Tensor) -> Tensor:
 ### Anti-Pattern 3: Ignoring SIMD Opportunities
 
 ```mojo
-```mojo
 
 # BAD: Scalar operations
 fn bad_relu(inout tensor: Tensor):
@@ -868,7 +842,6 @@ fn good_relu(inout tensor: Tensor):
 ### Anti-Pattern 4: Using `class` When `struct` Suffices
 
 ```mojo
-```mojo
 
 # BAD: Unnecessary heap allocation and indirection
 class BadLayer:
@@ -889,7 +862,6 @@ struct GoodLayer:
 ### Anti-Pattern 5: Missing Type Annotations with `fn`
 
 ```mojo
-```mojo
 
 # BAD: fn requires explicit types
 fn bad_function(x, y):  # Compile error!
@@ -907,7 +879,6 @@ fn generic_function[dtype: DType](x: SIMD[dtype, 1], y: SIMD[dtype, 1]) -> SIMD[
 
 ### Anti-Pattern 6: Not Leveraging Compile-Time Features
 
-```mojo
 ```mojo
 
 # BAD: Runtime computation
@@ -937,7 +908,6 @@ Complete examples demonstrating these patterns are available in the `examples/` 
 
 Run any example with:
 
-```bash
 ```bash
 
 pixi run mojo run examples/path/to/example.mojo

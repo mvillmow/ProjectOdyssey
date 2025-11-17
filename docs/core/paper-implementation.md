@@ -30,7 +30,6 @@ Document your choice in a GitHub issue with:
 Copy the template to start a new paper:
 
 ```bash
-```bash
 
 cp -r papers/_template papers/your-paper-name
 cd papers/your-paper-name
@@ -39,7 +38,6 @@ cd papers/your-paper-name
 
 Each paper has this structure:
 
-```text
 ```text
 
 your-paper-name/
@@ -132,7 +130,6 @@ Finalize and review:
 Papers leverage shared components to reduce duplication:
 
 ```mojo
-```mojo
 
 from shared.core import Layer, Module, Tensor
 from shared.training import Optimizer, Loss
@@ -157,7 +154,6 @@ Only implement custom layers when paper requires unique operations not in shared
 ### Test Organization
 
 ```text
-```text
 
 tests/
 ├── __init__.mojo
@@ -179,7 +175,6 @@ tests/
 
 ### Running Tests
 
-```bash
 ```bash
 
 # Run all tests
@@ -212,7 +207,6 @@ Every paper implementation must include:
 All public functions and structs must have:
 
 ```mojo
-```mojo
 
 fn compute_loss(predictions: Tensor, targets: Tensor) -> Tensor:
     """Compute cross-entropy loss.
@@ -239,7 +233,6 @@ Provide runnable examples in `examples/`:
 
 Define hyperparameters in `configs/config.yaml`:
 
-```yaml
 ```yaml
 
 model:

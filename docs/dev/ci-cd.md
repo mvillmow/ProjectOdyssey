@@ -31,7 +31,6 @@ Located in `.github/workflows/`:
 **Jobs**:
 
 ```yaml
-```yaml
 
 name: Test Suite
 
@@ -107,7 +106,6 @@ jobs:
 - Large file prevention
 
 ```yaml
-```yaml
 
 name: Pre-commit Checks
 
@@ -138,7 +136,6 @@ jobs:
 
 **Purpose**: Validate agent YAML configurations
 
-```yaml
 ```yaml
 
 name: Validate Agents
@@ -173,7 +170,6 @@ jobs:
 
 Run CI checks locally before pushing:
 
-```bash
 ```bash
 
 # Run all pre-commit hooks
@@ -227,7 +223,6 @@ Settings → Branches → Branch protection rules → `main`
 3. Update documentation URL
 
 ```yaml
-```yaml
 
 name: Deploy Documentation
 
@@ -273,7 +268,6 @@ jobs:
 **Future workflow**: `.github/workflows/release.yml`
 
 ```yaml
-```yaml
 
 name: Build and Release
 
@@ -312,7 +306,6 @@ jobs:
 Speed up CI with caching:
 
 ```yaml
-```yaml
 
 - name: Cache Pixi environment
 - name: Cache Pixi environment
@@ -347,7 +340,6 @@ Required secrets in GitHub:
 
 Add to README.md:
 
-```markdown
 ```markdown
 
 ![Tests](https://github.com/owner/ml-odyssey/workflows/Test%20Suite/badge.svg)

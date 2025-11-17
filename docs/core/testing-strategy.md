@@ -59,7 +59,6 @@ refactoring.
 ### Directory Organization
 
 ```text
-```text
 
 tests/
 ├── unit/              # Fast unit tests
@@ -102,7 +101,6 @@ tests/
 **Example**:
 
 ```mojo
-```mojo
 
 fn test_sgd_basic_update():
     """Test SGD performs parameter update correctly."""
@@ -135,7 +133,6 @@ fn test_sgd_basic_update():
 **Example**:
 
 ```mojo
-```mojo
 
 fn test_training_workflow():
     """Test complete training loop with validation."""
@@ -164,7 +161,6 @@ fn test_training_workflow():
 
 **Example**:
 
-```mojo
 ```mojo
 
 fn test_sgd_matches_pytorch():
@@ -195,7 +191,6 @@ fn test_sgd_matches_pytorch():
 Write the test BEFORE implementation:
 
 ```mojo
-```mojo
 
 fn test_tensor_multiply():
     """Test element-wise multiplication."""
@@ -214,7 +209,6 @@ Run test - should FAIL.
 Implement just enough to pass:
 
 ```mojo
-```mojo
 
 struct Tensor:
     fn __mul__(self, other: Tensor) -> Tensor:
@@ -231,7 +225,6 @@ Run test - should PASS.
 
 Optimize while keeping tests passing:
 
-```mojo
 ```mojo
 
 struct Tensor:
@@ -255,7 +248,6 @@ Run tests - should still PASS.
 ### Test Structure (Arrange-Act-Assert)
 
 ```mojo
-```mojo
 
 fn test_function_name() raises:
     """Clear docstring describing what is tested."""
@@ -276,7 +268,6 @@ fn test_function_name() raises:
 **Use `fn` for Tests**:
 
 ```mojo
-```mojo
 
 fn test_tensor_addition() raises:
     """Test tensor element-wise addition."""
@@ -290,7 +281,6 @@ fn test_tensor_addition() raises:
 
 **Gradient Checking**:
 
-```mojo
 ```mojo
 
 fn test_layer_gradients():
@@ -316,7 +306,6 @@ fn test_layer_gradients():
 ### Local Execution
 
 ```bash
-```bash
 
 # Run all Mojo tests
 mojo test tests/
@@ -339,7 +328,6 @@ pytest --cov=scripts --cov-report=html tests/
 
 All tests run automatically in CI:
 
-```yaml
 ```yaml
 
 # .github/workflows/test.yml
@@ -370,7 +358,6 @@ jobs:
 ### 1. Test One Thing Per Test
 
 ```mojo
-```mojo
 
 # Good: Focused test
 fn test_sgd_basic_update():
@@ -394,7 +381,6 @@ fn test_sgd_everything():
 ### 2. Clear Test Names
 
 ```mojo
-```mojo
 
 # Good: Descriptive names
 fn test_sgd_updates_parameters_correctly()
@@ -410,7 +396,6 @@ fn test_conv()
 
 ### 3. Test Independence
 
-```mojo
 ```mojo
 
 # Good: Each test is independent
@@ -441,7 +426,6 @@ fn test_step_2():
 Always check gradients for ML components:
 
 ```mojo
-```mojo
 
 fn validate_gradients(layer: Layer, input: Tensor):
     """Compare analytical vs numerical gradients."""
@@ -454,7 +438,6 @@ fn validate_gradients(layer: Layer, input: Tensor):
 
 ### 5. Test Edge Cases
 
-```mojo
 ```mojo
 
 fn test_edge_cases():
@@ -483,7 +466,6 @@ fn test_edge_cases():
 ### Measuring Coverage
 
 ```bash
-```bash
 
 # Mojo coverage (when available)
 mojo test --coverage tests/
@@ -496,7 +478,6 @@ open htmlcov/index.html
 
 ### Coverage Reporting in CI
 
-```yaml
 ```yaml
 
 - name: Check Coverage
@@ -512,7 +493,6 @@ open htmlcov/index.html
 
 ### Test Failures
 
-```bash
 ```bash
 
 # Run specific test for debugging

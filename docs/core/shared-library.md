@@ -12,7 +12,6 @@ and use. This eliminates code duplication, ensures consistency, and allows all p
 ## Architecture
 
 ```text
-```text
 
 shared/
 ├── core/           # Core ML operations
@@ -39,7 +38,6 @@ shared/
 **Basic Operations**:
 
 ```mojo
-```mojo
 
 # Element-wise
 fn add(a: Tensor, b: Tensor) -> Tensor
@@ -62,7 +60,6 @@ fn mean(x: Tensor, dim: Optional[Int] = None) -> Tensor
 **Linear (Dense) Layer**:
 
 ```mojo
-```mojo
 
 struct Linear:
     """Fully connected layer: output = input @ weight^T + bias"""
@@ -80,7 +77,6 @@ struct Linear:
 
 **Convolutional Layer**:
 
-```mojo
 ```mojo
 
 struct Conv2D:
@@ -102,7 +98,6 @@ struct Conv2D:
 **Pooling Layers**:
 
 ```mojo
-```mojo
 
 struct MaxPool2D:
     fn __init__(inout self, kernel_size: Int, stride: Optional[Int] = None)
@@ -116,7 +111,6 @@ struct AvgPool2D:
 
 ### Activation Functions
 
-```mojo
 ```mojo
 
 # Activations as layers
@@ -139,7 +133,6 @@ struct Softmax:
 
 ### Initialization (`shared/core/utils/`)
 
-```mojo
 ```mojo
 
 # Weight initialization
@@ -164,7 +157,6 @@ fn kaiming_init(inout tensor: Tensor, mode: String = "fan_in"):
 
 **SGD with Momentum**:
 
-```mojo
 ```mojo
 
 struct SGD:
@@ -196,7 +188,6 @@ struct SGD:
 **Adam Optimizer** (Planned):
 
 ```mojo
-```mojo
 
 struct Adam:
     """Adam optimizer with adaptive learning rates."""
@@ -212,7 +203,6 @@ struct Adam:
 
 ### Learning Rate Schedulers (`shared/training/schedulers/`)
 
-```mojo
 ```mojo
 
 struct StepLR:
@@ -242,7 +232,6 @@ struct CosineAnnealingLR:
 **Base Callback Interface**:
 
 ```mojo
-```mojo
 
 trait Callback:
     fn on_train_begin(inout self, inout state: TrainingState) -> CallbackSignal
@@ -256,7 +245,6 @@ trait Callback:
 
 **Built-in Callbacks**:
 
-```mojo
 ```mojo
 
 struct ModelCheckpoint(Callback):
@@ -297,7 +285,6 @@ struct EarlyStopping(Callback):
 ### Dataset Interface (`shared/data/datasets.mojo`)
 
 ```mojo
-```mojo
 
 trait Dataset:
     """Base dataset interface."""
@@ -308,7 +295,6 @@ trait Dataset:
 
 ### Data Loader (`shared/data/loaders.mojo`)
 
-```mojo
 ```mojo
 
 struct DataLoader:
@@ -327,7 +313,6 @@ struct DataLoader:
 
 ### Transforms (`shared/data/transforms.mojo`)
 
-```mojo
 ```mojo
 
 struct Normalize:
@@ -364,7 +349,6 @@ struct Compose:
 ### Example 1: Building a Simple Network
 
 ```mojo
-```mojo
 
 from shared.core.layers import Linear, ReLU
 from shared.core.utils import kaiming_init
@@ -391,7 +375,6 @@ struct SimpleNet:
 
 ### Example 2: Training Loop
 
-```mojo
 ```mojo
 
 from shared.training import SGD, StepLR
@@ -430,7 +413,6 @@ fn train():
 
 ### Example 3: Data Pipeline
 
-```mojo
 ```mojo
 
 from shared.data import DataLoader, Compose, Normalize, RandomFlip
@@ -480,7 +462,6 @@ fn create_dataloaders():
 
 ### Example: Adding a New Layer
 
-```mojo
 ```mojo
 
 # 1. Implement in shared/core/layers/new_layer.mojo

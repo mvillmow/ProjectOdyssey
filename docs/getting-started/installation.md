@@ -46,7 +46,6 @@ Pixi is our environment manager that handles all dependencies including Mojo.
 **Linux/macOS**:
 
 ```bash
-```bash
 
 curl -fsSL <https://pixi.sh/install.sh> | bash
 
@@ -55,7 +54,6 @@ curl -fsSL <https://pixi.sh/install.sh> | bash
 **Windows (PowerShell)**:
 
 ```powershell
-```powershell
 
 iwr -useb <https://pixi.sh/install.ps1> | iex
 
@@ -63,7 +61,6 @@ iwr -useb <https://pixi.sh/install.ps1> | iex
 
 **Verify Installation**:
 
-```bash
 ```bash
 
 pixi --version
@@ -75,7 +72,6 @@ You should see output like: `pixi 0.x.x`
 **Troubleshooting**: If `pixi` command is not found, restart your terminal or add Pixi to your PATH:
 
 ```bash
-```bash
 
 # Add to ~/.bashrc or ~/.zshrc
 export PATH="$HOME/.pixi/bin:$PATH"
@@ -86,7 +82,6 @@ export PATH="$HOME/.pixi/bin:$PATH"
 
 Clone the ML Odyssey repository to your local machine:
 
-```bash
 ```bash
 
 # Clone via HTTPS
@@ -104,7 +99,6 @@ cd ml-odyssey
 
 Pixi will automatically install Mojo and all other dependencies defined in `pixi.toml`:
 
-```bash
 ```bash
 
 # Install all dependencies (this may take a few minutes)
@@ -129,7 +123,6 @@ pixi shell
 Pre-commit hooks automatically check code quality before commits:
 
 ```bash
-```bash
 
 # Install pre-commit hooks (one-time setup)
 pre-commit install
@@ -152,7 +145,6 @@ pre-commit install
 ### Verify Pixi Installation
 
 ```bash
-```bash
 
 pixi --version
 
@@ -162,7 +154,6 @@ Expected output: `pixi 0.x.x` or similar
 
 ### Verify Mojo Installation
 
-```bash
 ```bash
 
 # Inside the pixi shell
@@ -174,7 +165,6 @@ Expected output: `mojo 0.25.7` or later
 
 **If Mojo is not found**:
 
-```bash
 ```bash
 
 # Ensure you're in the pixi shell
@@ -188,7 +178,6 @@ mojo --version
 ### Verify Python Installation
 
 ```bash
-```bash
 
 python3 --version
 
@@ -198,7 +187,6 @@ Expected output: `Python 3.7.x` or later
 
 ### Verify Pre-commit Hooks
 
-```bash
 ```bash
 
 # Run pre-commit on all files (should pass)
@@ -212,7 +200,6 @@ Expected output: All hooks should pass with green checkmarks.
 
 Test that everything is working by running a simple Mojo command:
 
-```bash
 ```bash
 
 # Create a simple test file
@@ -248,7 +235,6 @@ Now that you have ML Odyssey installed, you can:
 **Solution**: Restart your terminal or add Pixi to PATH manually:
 
 ```bash
-```bash
 
 # For bash
 echo 'export PATH="$HOME/.pixi/bin:$PATH"' >> ~/.bashrc
@@ -264,7 +250,6 @@ source ~/.zshrc
 
 **Solution**: Ensure you're in the Pixi shell:
 
-```bash
 ```bash
 
 # Activate the environment
@@ -282,7 +267,6 @@ mojo --version
 **Ubuntu/Debian**:
 
 ```bash
-```bash
 
 sudo apt-get update
 sudo apt-get install curl build-essential
@@ -291,7 +275,6 @@ sudo apt-get install curl build-essential
 
 **Fedora/RHEL**:
 
-```bash
 ```bash
 
 sudo dnf install curl gcc gcc-c++ make
@@ -302,7 +285,6 @@ sudo dnf install curl gcc gcc-c++ make
 
 **Solution**: Run pre-commit manually to see detailed errors:
 
-```bash
 ```bash
 
 # Run with verbose output
@@ -320,7 +302,6 @@ Most formatting issues are auto-fixed by pre-commit. Just review and commit the 
 **Solution**: Check your GitHub authentication:
 
 ```bash
-```bash
 
 # For HTTPS, you may need a personal access token
 # For SSH, ensure your SSH key is configured
@@ -334,7 +315,6 @@ See GitHub's documentation for setting up SSH keys: [https://docs.github.com/en/
 
 **Solution**: Update the Pixi environment:
 
-```bash
 ```bash
 
 # Update all dependencies to latest compatible versions
@@ -351,7 +331,6 @@ mojo --version
 **Solution**: Free up disk space and retry:
 
 ```bash
-```bash
 
 # Check available space
 df -h
@@ -365,7 +344,6 @@ pixi clean cache
 
 **Solution**: Try installing with increased timeout:
 
-```bash
 ```bash
 
 # Set longer timeout for downloads
