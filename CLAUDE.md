@@ -90,7 +90,8 @@ Foreground tasks: `gh-create-pr-linked` (invoke explicitly)
 - **Plan**: plan-regenerate-issues, plan-validate-structure, plan-create-component
 - **Quality**: quality-run-linters, quality-fix-formatting, quality-security-scan, quality-coverage-report
 
-See `.claude/skills/` for complete implementations and `notes/review/skills-agents-integration-complete.md` for integration details.
+See `.claude/skills/` for complete implementations and `notes/review/skills-agents-integration-complete.md` for
+integration details.
 
 ### Key Development Principles
 

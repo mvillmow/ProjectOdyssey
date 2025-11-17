@@ -124,10 +124,11 @@ Performance characteristics and benchmarks.
 
 How to contribute to this module.
 
-```text
-### Mojo Language Patterns
+```
 
-#### Function Definitions (fn vs def)
+## Mojo Language Patterns
+
+### Function Definitions (fn vs def)
 
 **Use `fn` for**:
 - Performance-critical functions (compile-time optimization)
@@ -153,7 +154,7 @@ def load_dataset(path: String) -> PythonObject:
     ...
 ```
 
-#### Type Definitions (struct vs class)
+### Type Definitions (struct vs class)
 
 **Use `struct` for**:
 
@@ -187,7 +188,7 @@ class Model:
         self.layers.append(layer)
 ```
 
-#### Memory Management Patterns
+### Memory Management Patterns
 
 **Ownership Patterns**:
 
@@ -209,7 +210,7 @@ fn update_tensor(inout tensor: Tensor):
     tensor.normalize_()
 ```
 
-#### SIMD and Vectorization
+### SIMD and Vectorization
 
 **Use SIMD for**:
 
@@ -353,7 +354,8 @@ Use the `gh-create-pr-linked` skill to create PRs:
 
 ## Pull Request Creation
 
-See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues, verification steps, and requirements.
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
 
 **Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue`issue-number``, verify issue is linked.
 

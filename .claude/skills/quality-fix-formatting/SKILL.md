@@ -190,6 +190,7 @@ Some text after.
 ### Trailing Whitespace
 
 **Before:**
+
 ```text
 line with trailing spaces
 another line

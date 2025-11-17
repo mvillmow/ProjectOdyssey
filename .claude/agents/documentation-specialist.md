@@ -92,12 +92,11 @@ Performance characteristics and benchmarks.
 
 How to contribute to this component.
 
-```text
+```
+
 ## Mojo Language Patterns
 
-### Mojo Language Patterns
-
-#### Function Definitions (fn vs def)
+### Function Definitions (fn vs def)
 
 **Use `fn` for**:
 - Performance-critical functions (compile-time optimization)
@@ -123,7 +122,7 @@ def load_dataset(path: String) -> PythonObject:
     ...
 ```
 
-#### Type Definitions (struct vs class)
+### Type Definitions (struct vs class)
 
 **Use `struct` for**:
 
@@ -157,7 +156,7 @@ class Model:
         self.layers.append(layer)
 ```
 
-#### Memory Management Patterns
+### Memory Management Patterns
 
 **Ownership Patterns**:
 
@@ -179,7 +178,7 @@ fn update_tensor(inout tensor: Tensor):
     tensor.normalize_()
 ```
 
-#### SIMD and Vectorization
+### SIMD and Vectorization
 
 **Use SIMD for**:
 
@@ -224,7 +223,8 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 
 For standard delegation patterns, escalation rules, and skip-level guidelines, see [delegation-rules.md](../delegation-rules.md#skip-level-delegation).
 
-**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly trivial fixes (` 20 lines, no design decisions).
+**Quick Summary**: Follow hierarchy for all non-trivial work. Skip-level delegation is acceptable only for truly
+trivial fixes (< 20 lines, no design decisions).
 
 ## Workflow Phase
 
@@ -314,7 +314,8 @@ Escalate to Architecture Design Agent when:
 
 ## Pull Request Creation
 
-See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues, verification steps, and requirements.
+See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
+verification steps, and requirements.
 
 **Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue <issue-number``, verify issue is linked.
 
