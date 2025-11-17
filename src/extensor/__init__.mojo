@@ -62,8 +62,10 @@ from .matrix import matmul, transpose, dot, outer
 # Reduction operations
 from .reduction import sum, mean, max_reduce, min_reduce
 
+# Element-wise mathematical operations
+from .elementwise_math import abs, sign, exp, log, sqrt, sin, cos, tanh, clip
+
 # TODO: Export remaining operation categories
-# from .pointwise_math import sin, cos, exp, log, sqrt
 # from .shape import reshape, squeeze, unsqueeze, concatenate
 # from .indexing import getitem, setitem, take, gather
 # etc.
