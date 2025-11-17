@@ -26,7 +26,7 @@ Before installing ML Odyssey, ensure you have:
 
 1. **Git** - Version control system
    - Check: `git --version`
-   - Install: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+   - Install: [https://git-scm.com/downloads](https://git-scm.com/downloads/)
 
 2. **Python 3.7+** - For automation scripts
    - Check: `python3 --version`
