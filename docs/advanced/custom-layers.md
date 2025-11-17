@@ -360,7 +360,6 @@ struct MyLayer:
 
         - Paper: "Title" (Author et al., Year)
         - <https://arxiv.org/abs/XXXX.XXXXX>
-        - <https://arxiv.org/abs/XXXX.XXXXX>
 
     """
     var weight: Tensor

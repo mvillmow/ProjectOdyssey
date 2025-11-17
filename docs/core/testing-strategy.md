@@ -342,11 +342,9 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Setup Mojo
-      - name: Setup Mojo
 
         uses: modularml/setup-mojo@v1
 
-      - name: Run tests
       - name: Run tests
 
         run: mojo test tests/
@@ -480,7 +478,6 @@ open htmlcov/index.html
 
 ```yaml
 
-- name: Check Coverage
 - name: Check Coverage
 
   run: |

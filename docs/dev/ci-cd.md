@@ -46,21 +46,17 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Setup Mojo
-      - name: Setup Mojo
 
         uses: modularml/setup-mojo@v1
 
-      - name: Install dependencies
       - name: Install dependencies
 
         run: pixi install
 
       - name: Run Mojo tests
-      - name: Run Mojo tests
 
         run: pixi run mojo test tests/
 
-      - name: Upload coverage
       - name: Upload coverage
 
         uses: codecov/codecov-action@v3
@@ -71,20 +67,17 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Setup Python
-      - name: Setup Python
 
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
 
       - name: Install dependencies
-      - name: Install dependencies
 
         run: |
           pip install pytest pytest-cov
           pip install -r requirements.txt
 
-      - name: Run Python tests
       - name: Run Python tests
 
         run: pytest tests/ --cov=scripts --cov-report=xml
@@ -119,11 +112,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - name: Install pre-commit
-      - name: Install pre-commit
 
         run: pip install pre-commit
 
-      - name: Run pre-commit
       - name: Run pre-commit
 
         run: pre-commit run --all-files
@@ -155,11 +146,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - name: Validate agent configs
-      - name: Validate agent configs
 
         run: python3 tests/agents/validate_configs.py .claude/agents/
 
-      - name: Test delegation patterns
       - name: Test delegation patterns
 
         run: python3 tests/agents/test_delegation.py .claude/agents/
@@ -242,16 +231,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
       - name: Install MkDocs
-      - name: Install MkDocs
 
         run: pip install mkdocs-material
 
       - name: Build docs
-      - name: Build docs
 
         run: mkdocs build
 
-      - name: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
 
         uses: peaceiris/actions-gh-pages@v3
@@ -282,16 +268,13 @@ jobs:
 
       - uses: actions/checkout@v4
       - name: Setup Mojo
-      - name: Setup Mojo
 
         uses: modularml/setup-mojo@v1
 
       - name: Build .mojopkg
-      - name: Build .mojopkg
 
         run: mojo package shared/
 
-      - name: Upload package
       - name: Upload package
 
         uses: actions/upload-artifact@v3
@@ -308,14 +291,12 @@ Speed up CI with caching:
 ```yaml
 
 - name: Cache Pixi environment
-- name: Cache Pixi environment
 
   uses: actions/cache@v3
   with:
     path: ~/.pixi
     key: ${{ runner.os }}-pixi-${{ hashFiles('pixi.toml') }}
 
-- name: Cache Python packages
 - name: Cache Python packages
 
   uses: actions/cache@v3
