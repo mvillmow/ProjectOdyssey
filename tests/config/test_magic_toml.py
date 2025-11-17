@@ -22,7 +22,7 @@ def test_magic_toml_has_project_metadata():
     magic_toml = repo_root / "magic.toml"
     with open(magic_toml, "rb") as f:
         config = tomllib.load(f)
-    
+
     assert "project" in config, "magic.toml should have [project] section"
     project = config["project"]
     assert "name" in project, "Project should have name"

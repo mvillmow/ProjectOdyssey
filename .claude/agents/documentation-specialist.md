@@ -99,10 +99,12 @@ How to contribute to this component.
 ### Function Definitions (fn vs def)
 
 **Use `fn` for**:
+
 - Performance-critical functions (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Functions that don't need dynamic behavior
+
 ```mojo
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Optimized, type-safe implementation
