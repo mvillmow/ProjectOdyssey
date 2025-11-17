@@ -18,7 +18,7 @@ from typing import Dict, List, Optional
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from scripts.common import LABEL_COLORS
+from common import LABEL_COLORS
 
 
 def parse_github_issue_file(file_path):
@@ -56,8 +56,24 @@ def parse_github_issue_file(file_path):
     return issues
 
 
-def create_label_if_needed(label, repo='mvillmow/ml-odyssey'):
+def get_repo_name():
+    """Auto-detect repository name from git."""
+    try:
+        result = subprocess.run(
+            ['gh', 'repo', 'view', '--json', 'nameWithOwner', '-q', '.nameWithOwner'],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except:
+        return 'mvillmow/ml-odyssey'  # Fallback
+
+
+def create_label_if_needed(label, repo=None):
     """Create a label if it doesn't exist."""
+    if repo is None:
+        repo = get_repo_name()
     color = LABEL_COLORS.get(label, '000000')
 
     # Try to create label (will fail silently if it exists)
@@ -65,8 +81,10 @@ def create_label_if_needed(label, repo='mvillmow/ml-odyssey'):
     subprocess.run(cmd, capture_output=True, text=True)
 
 
-def create_github_issue(title, labels, body, repo='mvillmow/ml-odyssey'):
+def create_github_issue(title, labels, body, repo=None):
     """Create a single GitHub issue using gh CLI."""
+    if repo is None:
+        repo = get_repo_name()
     # Ensure labels exist
     for label in labels.split(','):
         create_label_if_needed(label.strip(), repo)

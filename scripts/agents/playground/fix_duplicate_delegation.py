@@ -14,7 +14,7 @@ from typing import Dict, List, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from scripts.common import get_agents_dir
+from common import get_agents_dir
 
 def fix_duplicate_delegation(content: str) -> Tuple[str, bool]:
     """

@@ -5,10 +5,15 @@ Maps existing files to issues and creates proper documentation.
 """
 
 import os
+import sys
 from pathlib import Path
 
+# Add scripts directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_repo_root
+
 # Base path for issues documentation
-ISSUES_PATH = Path("/home/user/ml-odyssey/notes/issues")
+ISSUES_PATH = get_repo_root() / 'notes' / 'issues'
 
 
 def ensure_dir(path):

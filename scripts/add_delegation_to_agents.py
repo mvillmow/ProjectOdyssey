@@ -9,6 +9,9 @@ Adds Delegation sections to:
 
 import re
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_agents_dir
 
 # Standard delegation section for review specialists
 REVIEW_SPECIALIST_DELEGATION = """## Delegation
@@ -93,7 +96,7 @@ def add_delegation_section(file_path: Path, delegation_content: str, dry_run: bo
 def main():
     import sys
 
-    agents_dir = Path(".claude/agents")
+    agents_dir = get_agents_dir()
     dry_run = "--dry-run" in sys.argv
 
     if dry_run:

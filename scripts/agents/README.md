@@ -267,6 +267,6 @@ python scripts/agents/validate_agents.py --agents-dir /path/to/agents
 
 ## See Also
 
-- [Agent Documentation](/home/mvillmow/ml-odyssey/agents/README.md) - Team documentation
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey/agents/agent-hierarchy.md) - Complete agent specifications
-- [Delegation Rules](/home/mvillmow/ml-odyssey/agents/delegation-rules.md) - Coordination patterns
+- [Agent Documentation](../../agents/README.md) - Team documentation
+- [Agent Hierarchy](../../agents/agent-hierarchy.md) - Complete agent specifications
+- [Delegation Rules](../../agents/delegation-rules.md) - Coordination patterns

@@ -19,6 +19,9 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from common import get_agents_dir
 
 try:
     import yaml
@@ -243,11 +246,14 @@ Examples:
     parser.add_argument(
         '--agents-dir',
         type=Path,
-        default=Path('.claude/agents'),
+        default=None  # Will use get_agents_dir() if not specified,
         help='Path to agents directory (default: .claude/agents)'
     )
 
     args = parser.parse_args()
+    # Use get_agents_dir() if no custom path specified
+    if args.agents_dir is None:
+        args.agents_dir = get_agents_dir()
 
     # Find repository root
     repo_root = Path.cwd()

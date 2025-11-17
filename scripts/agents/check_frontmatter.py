@@ -18,7 +18,10 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
+import sys
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from common import get_agents_dir
 
 try:
     import yaml
@@ -70,7 +73,7 @@ def extract_frontmatter(content: str) -> Optional[Tuple[str, int, int]]:
     return frontmatter_text, start_line, end_line
 
 
-def validate_field_type(field_name: str, value: any, expected_type: type) -> Optional[str]:
+def validate_field_type(field_name: str, value: Any, expected_type: type) -> Optional[str]:
     """
     Validate that a field has the expected type.
 
@@ -210,11 +213,14 @@ Examples:
     parser.add_argument(
         '--agents-dir',
         type=Path,
-        default=Path('.claude/agents'),
+        default=None  # Will use get_agents_dir() if not specified,
         help='Path to agents directory (default: .claude/agents)'
     )
 
     args = parser.parse_args()
+    # Use get_agents_dir() if no custom path specified
+    if args.agents_dir is None:
+        args.agents_dir = get_agents_dir()
 
     # Find repository root (directory containing .claude)
     repo_root = Path.cwd()

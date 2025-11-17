@@ -8,6 +8,9 @@ based on the agent's role type.
 
 import re
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from common import get_agents_dir
 from typing import Dict
 
 # Agent-specific examples based on role patterns
@@ -208,7 +211,7 @@ def add_examples_section(file_path: Path, dry_run: bool = False) -> bool:
 def main():
     import sys
 
-    agents_dir = Path(".claude/agents")
+    agents_dir = get_agents_dir()
     dry_run = "--dry-run" in sys.argv
 
     if dry_run:
