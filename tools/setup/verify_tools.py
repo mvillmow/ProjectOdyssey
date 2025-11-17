@@ -71,9 +71,9 @@ def get_repo_root() -> Optional[Path]:
 def check_prerequisites(verbose: bool = False) -> int:
     """Check system prerequisites"""
     print(f"\n{Color.BOLD}Prerequisites{Color.RESET}")
-    
+
     errors = 0
-    
+
     # Python version
     version = sys.version_info
     python_ok = version.major == 3 and version.minor >= 8
@@ -85,41 +85,41 @@ def check_prerequisites(verbose: bool = False) -> int:
     )
     if not python_ok:
         errors += 1
-    
+
     # Mojo
     code, stdout, _ = run_command("mojo --version")
     mojo_ok = code == 0
     check_item("Mojo", mojo_ok, stdout if mojo_ok else "Not found", verbose)
     if not mojo_ok:
         errors += 1
-    
+
     # Git
     code, stdout, _ = run_command("git --version")
     git_ok = code == 0
     check_item("Git", git_ok, stdout.split()[2] if git_ok else "Not found", verbose)
     if not git_ok:
         errors += 1
-    
+
     # Repository root
     repo_root = get_repo_root()
     repo_ok = repo_root is not None
     check_item("Repository", repo_ok, str(repo_root) if repo_ok else "Not in git repo", verbose)
     if not repo_ok:
         errors += 1
-    
+
     return errors
 
 
 def check_python_dependencies(verbose: bool = False) -> int:
     """Check Python package dependencies"""
     print(f"\n{Color.BOLD}Python Dependencies{Color.RESET}")
-    
+
     packages = [
         ("jinja2", "Template engine"),
         ("yaml", "YAML parser"),
         ("click", "CLI framework (optional)"),
     ]
-    
+
     errors = 0
     for package, description in packages:
         try:
@@ -130,14 +130,14 @@ def check_python_dependencies(verbose: bool = False) -> int:
             check_item(package, False, f"Not installed - {description}", verbose)
             if package != "click":  # click is optional
                 errors += 1
-    
+
     return errors
 
 
 def check_tool_structure(repo_root: Path, verbose: bool = False) -> int:
     """Check tools directory structure"""
     print(f"\n{Color.BOLD}Tool Structure{Color.RESET}")
-    
+
     required_items = [
         ("tools/README.md", "Main documentation"),
         ("tools/INTEGRATION.md", "Integration guide"),
@@ -149,7 +149,7 @@ def check_tool_structure(repo_root: Path, verbose: bool = False) -> int:
         ("tools/codegen/", "Code generation"),
         ("tools/setup/", "Setup scripts"),
     ]
-    
+
     errors = 0
     for item, description in required_items:
         full_path = repo_root / item
@@ -157,21 +157,21 @@ def check_tool_structure(repo_root: Path, verbose: bool = False) -> int:
         check_item(item, exists, description, verbose)
         if not exists:
             errors += 1
-    
+
     return errors
 
 
 def check_tool_readmes(repo_root: Path, verbose: bool = False) -> int:
     """Check that each tool category has a README"""
     print(f"\n{Color.BOLD}Tool Documentation{Color.RESET}")
-    
+
     tool_dirs = [
         "paper-scaffold",
         "test-utils",
         "benchmarking",
         "codegen",
     ]
-    
+
     errors = 0
     for tool_dir in tool_dirs:
         readme_path = repo_root / "tools" / tool_dir / "README.md"
@@ -179,19 +179,19 @@ def check_tool_readmes(repo_root: Path, verbose: bool = False) -> int:
         check_item(f"{tool_dir}/README.md", exists, "", verbose)
         if not exists:
             errors += 1
-    
+
     return errors
 
 
 def check_directories(repo_root: Path, verbose: bool = False) -> int:
     """Check required directories exist"""
     print(f"\n{Color.BOLD}Output Directories{Color.RESET}")
-    
+
     dirs = [
         ("benchmarks", "Benchmark output"),
         ("logs", "Log files"),
     ]
-    
+
     errors = 0
     for dirname, description in dirs:
         dir_path = repo_root / dirname
@@ -199,7 +199,7 @@ def check_directories(repo_root: Path, verbose: bool = False) -> int:
         check_item(dirname, exists, description, verbose)
         if not exists:
             errors += 1
-    
+
     return errors
 
 
@@ -208,16 +208,16 @@ def main():
     parser = argparse.ArgumentParser(description="Verify ML Odyssey tools installation")
     parser.add_argument("-v", "--verbose", action="store_true", help="Verbose output")
     args = parser.parse_args()
-    
+
     print(f"{Color.BOLD}{Color.BLUE}ML Odyssey Tools Verification{Color.RESET}")
-    
+
     # Get repository root
     repo_root = get_repo_root()
     if not repo_root:
         print(f"\n{Color.RED}Error: Not in a git repository{Color.RESET}")
         print("Please run from ml-odyssey directory")
         return 1
-    
+
     # Run checks
     total_errors = 0
     total_errors += check_prerequisites(args.verbose)
@@ -225,7 +225,7 @@ def main():
     total_errors += check_tool_structure(repo_root, args.verbose)
     total_errors += check_tool_readmes(repo_root, args.verbose)
     total_errors += check_directories(repo_root, args.verbose)
-    
+
     # Summary
     print(f"\n{Color.BOLD}Summary{Color.RESET}")
     if total_errors == 0:

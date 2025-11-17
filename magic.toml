@@ -19,6 +19,6 @@ requires-mojo = ">=24.4"
 # [dependencies]
 # Add Mojo package dependencies here
 
-# Future: Channels section  
+# Future: Channels section
 # [tool.magic.channels]
 # Add custom package channels here

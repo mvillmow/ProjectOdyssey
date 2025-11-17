@@ -58,11 +58,11 @@ def print_error(msg: str):
 def run_command(cmd: str, check: bool = False) -> Tuple[int, str, str]:
     """
     Run shell command and return exit code, stdout, stderr
-    
+
     Args:
         cmd: Command to run
         check: Raise exception on non-zero exit
-        
+
     Returns:
         Tuple of (exit_code, stdout, stderr)
     """
@@ -139,11 +139,11 @@ def detect_platform() -> str:
 def install_python_dependencies(repo_root: Path) -> bool:
     """Install Python dependencies from requirements.txt"""
     req_file = repo_root / "tools" / "requirements.txt"
-    
+
     if not req_file.exists():
         print_warning(f"No requirements.txt found at {req_file}")
         print("  Creating minimal requirements.txt...")
-        
+
         # Create basic requirements file
         with open(req_file, 'w') as f:
             f.write("# Python dependencies for ML Odyssey tools\n\n")
@@ -156,12 +156,12 @@ def install_python_dependencies(repo_root: Path) -> bool:
             f.write("# Optional: Visualization (benchmarking reports)\n")
             f.write("# matplotlib>=3.5.0\n")
             f.write("# pandas>=1.3.0\n")
-        
+
         print_success(f"Created {req_file}")
-    
+
     print(f"\nInstalling Python dependencies from {req_file}...")
     code, stdout, stderr = run_command(f"pip install -r {req_file}")
-    
+
     if code == 0:
         print_success("Python dependencies installed")
         return True
@@ -177,7 +177,7 @@ def create_directories(repo_root: Path) -> bool:
         repo_root / "benchmarks",
         repo_root / "logs",
     ]
-    
+
     all_created = True
     for directory in dirs:
         try:
@@ -186,7 +186,7 @@ def create_directories(repo_root: Path) -> bool:
         except Exception as e:
             print_error(f"Failed to create {directory}: {e}")
             all_created = False
-    
+
     return all_created
 
 
@@ -199,7 +199,7 @@ def verify_tool_structure(repo_root: Path) -> bool:
         "tools/benchmarking",
         "tools/codegen",
     ]
-    
+
     all_exist = True
     for dir_path in required_dirs:
         full_path = repo_root / dir_path
@@ -208,62 +208,62 @@ def verify_tool_structure(repo_root: Path) -> bool:
         else:
             print_error(f"Missing: {dir_path}/")
             all_exist = False
-    
+
     return all_exist
 
 
 def main():
     """Main installation function"""
     print_header("ML Odyssey Tools Installation")
-    
+
     # Detect platform
     platform_name = detect_platform()
     print(f"Platform: {platform_name}\n")
-    
+
     # Check prerequisites
     print_header("Checking Prerequisites")
-    
+
     python_ok = check_python_version()
     git_ok = check_git()
     mojo_ok = check_mojo()
-    
+
     if not python_ok or not git_ok:
         print_error("\nCritical prerequisites missing. Please install and retry.")
         return 1
-    
+
     # Get repository root
     repo_root = get_repo_root()
     if not repo_root:
         print_error("Not in a git repository. Please run from ml-odyssey directory.")
         return 1
-    
+
     print_success(f"Repository root: {repo_root}")
-    
+
     # Verify tool structure
     print_header("Verifying Tools Structure")
     if not verify_tool_structure(repo_root):
         print_error("\nTools directory structure incomplete.")
         print("  This is expected during development. Tools will be added incrementally.")
-    
+
     # Create directories
     print_header("Creating Directories")
     if not create_directories(repo_root):
         print_warning("Some directories could not be created")
-    
+
     # Install Python dependencies
     print_header("Installing Python Dependencies")
     deps_ok = install_python_dependencies(repo_root)
-    
+
     # Final status
     print_header("Installation Summary")
-    
+
     if python_ok and git_ok and deps_ok:
         print_success("Installation completed successfully!")
-        
+
         if not mojo_ok:
             print_warning("Mojo not found - some tools will not work")
             print("  Install Mojo: https://docs.modular.com/mojo/")
-        
+
         print("\nNext steps:")
         print(f"  1. Run verification: python3 {repo_root}/tools/setup/verify_tools.py")
         print(f"  2. Read integration guide: {repo_root}/tools/INTEGRATION.md")

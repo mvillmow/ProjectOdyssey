@@ -41,26 +41,26 @@ def find_markdown_files(directory: Path) -> List[Path]:
 def extract_links(content: str, file_path: Path) -> List[Tuple[str, int, str]]:
     """
     Extract markdown links from content
-    
+
     Returns:
         List of (link_text, line_number, link_target) tuples
     """
     links = []
-    
+
     # Match markdown links: [text](url)
     link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
-    
+
     for line_num, line in enumerate(content.split("\n"), 1):
         for match in re.finditer(link_pattern, line):
             link_text = match.group(1)
             link_target = match.group(2)
-            
+
             # Skip anchor-only links (#section)
             if link_target.startswith("#"):
                 continue
-            
+
             links.append((link_text, line_num, link_target))
-    
+
     return links
 
 
@@ -76,17 +76,17 @@ def is_url(link: str) -> bool:
 def validate_internal_link(link: str, source_file: Path, repo_root: Path) -> Tuple[bool, str]:
     """
     Validate an internal (file) link
-    
+
     Returns:
         (is_valid, error_message)
     """
     # Remove anchor if present
     link_path = link.split("#")[0]
-    
+
     if not link_path:
         # Pure anchor link - skip for now
         return True, ""
-    
+
     # Resolve relative to source file
     if link_path.startswith("/"):
         # Absolute path from repo root
@@ -94,17 +94,17 @@ def validate_internal_link(link: str, source_file: Path, repo_root: Path) -> Tup
     else:
         # Relative path
         target_path = (source_file.parent / link_path).resolve()
-    
+
     if not target_path.exists():
         return False, f"File not found: {link_path}"
-    
+
     return True, ""
 
 
 def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> Dict[str, any]:
     """
     Validate all links in a markdown file
-    
+
     Returns:
         Dictionary with validation results
     """
@@ -114,7 +114,7 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
     except ValueError:
         # File is not under repo_root, use absolute path
         rel_path = str(file_path.resolve())
-    
+
     result = {
         "path": rel_path,
         "total_links": 0,
@@ -122,21 +122,21 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
         "broken_links": [],
         "skipped_urls": 0,
     }
-    
+
     try:
         content = file_path.read_text()
         links = extract_links(content, file_path)
         result["total_links"] = len(links)
-        
+
         for link_text, line_num, link_target in links:
             # Skip external URLs (would need network access to validate)
             if is_url(link_target):
                 result["skipped_urls"] += 1
                 continue
-            
+
             # Validate internal link
             is_valid, error = validate_internal_link(link_target, file_path, repo_root)
-            
+
             if is_valid:
                 result["valid_links"] += 1
             else:
@@ -146,36 +146,36 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
                     "target": link_target,
                     "error": error,
                 })
-    
+
     except Exception as e:
         result["error"] = str(e)
-    
+
     return result
 
 
 def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List]:
     """Validate links in all markdown files"""
     results = {"passed": [], "failed": [], "total_links": 0, "broken_links": 0}
-    
+
     repo_root = get_repo_root()
-    
+
     # Resolve directory to absolute path
     directory = directory.resolve()
-    
+
     markdown_files = find_markdown_files(directory)
-    
+
     if not markdown_files:
         logger.warning(f"No markdown files found in {directory}")
         return results
 
     logger.info(f"Found {len(markdown_files)} markdown files\n")
-    
+
     for md_file in markdown_files:
         result = validate_links(md_file, repo_root, verbose)
-        
+
         results["total_links"] += result["total_links"]
         results["broken_links"] += len(result["broken_links"])
-        
+
         if len(result["broken_links"]) == 0:
             results["passed"].append(result["path"])
             if verbose:
@@ -186,7 +186,7 @@ def validate_all_links(directory: Path, verbose: bool = False) -> Dict[str, List
             for broken in result["broken_links"]:
                 logger.error(f"    Line {broken['line']}: [{broken['text']}]({broken['target']})")
                 logger.error(f"      → {broken['error']}")
-    
+
     return results
 
 
@@ -219,26 +219,26 @@ def main() -> int:
     """Main validation function"""
     # Parse arguments
     verbose = "--verbose" in sys.argv or "-v" in sys.argv
-    
+
     # Get directory to check (first positional arg or default to repo root)
     directory = None
     for arg in sys.argv[1:]:
         if not arg.startswith("-"):
             directory = Path(arg)
             break
-    
+
     if directory is None:
         directory = get_repo_root()
-    
+
     if not directory.exists():
         logger.error(f"Directory not found: {directory}")
         return 1
 
     logger.info(f"Validating links in: {directory}\n")
-    
+
     results = validate_all_links(directory, verbose)
     print_summary(results)
-    
+
     return 0 if len(results["failed"]) == 0 else 1
 
 

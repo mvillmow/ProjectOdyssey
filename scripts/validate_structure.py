@@ -101,14 +101,14 @@ def check_subdirectory_exists(base_path: Path, parent_dir: str, subdir: str) -> 
 def validate_structure(repo_root: Path, verbose: bool = False) -> Dict[str, List[str]]:
     """
     Validate repository directory structure
-    
+
     Returns:
         Dictionary with 'passed' and 'failed' lists of validation messages
     """
     results = {"passed": [], "failed": []}
-    
+
     print("Validating ML Odyssey directory structure...\n")
-    
+
     # Check required top-level directories
     print("Checking top-level directories...")
     for dir_name in REQUIRED_DIRECTORIES:
@@ -120,7 +120,7 @@ def validate_structure(repo_root: Path, verbose: bool = False) -> Dict[str, List
         else:
             results["failed"].append(message)
             print(f"  ✗ {message}")
-    
+
     # Check required files
     print("\nChecking required files...")
     for dir_name, files in REQUIRED_FILES.items():
@@ -133,7 +133,7 @@ def validate_structure(repo_root: Path, verbose: bool = False) -> Dict[str, List
             else:
                 results["failed"].append(message)
                 print(f"  ✗ {message}")
-    
+
     # Check required subdirectories
     print("\nChecking required subdirectories...")
     for parent_dir, subdirs in REQUIRED_SUBDIRS.items():
@@ -146,7 +146,7 @@ def validate_structure(repo_root: Path, verbose: bool = False) -> Dict[str, List
             else:
                 results["failed"].append(message)
                 print(f"  ✗ {message}")
-    
+
     return results
 
 
@@ -155,32 +155,32 @@ def print_summary(results: Dict[str, List[str]]) -> None:
     total_checks = len(results["passed"]) + len(results["failed"])
     passed = len(results["passed"])
     failed = len(results["failed"])
-    
+
     print("\n" + "=" * 70)
     print("VALIDATION SUMMARY")
     print("=" * 70)
     print(f"Total checks: {total_checks}")
     print(f"Passed: {passed}")
     print(f"Failed: {failed}")
-    
+
     if failed > 0:
         print("\nFailed checks:")
         for message in results["failed"]:
             print(f"  - {message}")
-    
+
     print("=" * 70)
 
 
 def main() -> int:
     """Main validation function"""
     verbose = "--verbose" in sys.argv or "-v" in sys.argv
-    
+
     repo_root = get_repo_root()
     print(f"Repository root: {repo_root}\n")
-    
+
     results = validate_structure(repo_root, verbose)
     print_summary(results)
-    
+
     # Return exit code based on results
     return 0 if len(results["failed"]) == 0 else 1
 
