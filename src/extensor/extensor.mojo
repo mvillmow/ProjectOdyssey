@@ -321,9 +321,38 @@ struct ExTensor:
         from .matrix import matmul
         return matmul(self, other)
 
+    fn __eq__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise equality: a == b"""
+        from .comparison import equal
+        return equal(self, other)
+
+    fn __ne__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise inequality: a != b"""
+        from .comparison import not_equal
+        return not_equal(self, other)
+
+    fn __lt__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise less than: a < b"""
+        from .comparison import less
+        return less(self, other)
+
+    fn __le__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise less or equal: a <= b"""
+        from .comparison import less_equal
+        return less_equal(self, other)
+
+    fn __gt__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise greater than: a > b"""
+        from .comparison import greater
+        return greater(self, other)
+
+    fn __ge__(self, other: ExTensor) raises -> ExTensor:
+        """Element-wise greater or equal: a >= b"""
+        from .comparison import greater_equal
+        return greater_equal(self, other)
+
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
     # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
-    # TODO: Add comparison operators (__eq__, __lt__, etc.)
     # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
 
 
