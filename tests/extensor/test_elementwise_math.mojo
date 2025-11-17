@@ -8,7 +8,7 @@ from sys import DType
 from math import abs as math_abs
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange
+from extensor import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
 
 # Import test helpers
 from ..helpers.assertions import (
@@ -30,11 +30,14 @@ fn test_abs_positive() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 5
     let a = arange(1.0, 6.0, 1.0, DType.float32)  # [1, 2, 3, 4, 5]
-    # let b = abs(a)  # TODO: Implement abs()
+    let b = abs(a)
 
     # Positive values should remain unchanged
-    # assert_all_values(b, expected, 1e-6, "abs(positive) = positive")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.0, 1e-6, "abs(1) = 1")
+    assert_value_at(b, 1, 2.0, 1e-6, "abs(2) = 2")
+    assert_value_at(b, 2, 3.0, 1e-6, "abs(3) = 3")
+    assert_value_at(b, 3, 4.0, 1e-6, "abs(4) = 4")
+    assert_value_at(b, 4, 5.0, 1e-6, "abs(5) = 5")
 
 
 fn test_abs_negative() raises:
@@ -42,26 +45,24 @@ fn test_abs_negative() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 5
     let a = full(shape, -3.0, DType.float32)
-    # let b = abs(a)  # TODO: Implement abs()
+    let b = abs(a)
 
     # Should convert to positive
-    # assert_all_values(b, 3.0, 1e-6, "abs(negative) = positive")
-    pass  # Placeholder
+    assert_all_values(b, 3.0, 1e-6, "abs(negative) = positive")
 
 
 fn test_abs_mixed() raises:
     """Test abs with mixed positive/negative values."""
     # Create array: [-2, -1, 0, 1, 2]
     let a = arange(-2.0, 3.0, 1.0, DType.float32)
-    # let b = abs(a)  # TODO: Implement abs()
+    let b = abs(a)
 
     # Expected: [2, 1, 0, 1, 2]
-    # assert_value_at(b, 0, 2.0, 1e-6, "abs(-2) = 2")
-    # assert_value_at(b, 1, 1.0, 1e-6, "abs(-1) = 1")
-    # assert_value_at(b, 2, 0.0, 1e-6, "abs(0) = 0")
-    # assert_value_at(b, 3, 1.0, 1e-6, "abs(1) = 1")
-    # assert_value_at(b, 4, 2.0, 1e-6, "abs(2) = 2")
-    pass  # Placeholder
+    assert_value_at(b, 0, 2.0, 1e-6, "abs(-2) = 2")
+    assert_value_at(b, 1, 1.0, 1e-6, "abs(-1) = 1")
+    assert_value_at(b, 2, 0.0, 1e-6, "abs(0) = 0")
+    assert_value_at(b, 3, 1.0, 1e-6, "abs(1) = 1")
+    assert_value_at(b, 4, 2.0, 1e-6, "abs(2) = 2")
 
 
 fn test_abs_preserves_dtype() raises:
@@ -69,10 +70,9 @@ fn test_abs_preserves_dtype() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 5
     let a = ones(shape, DType.float64)
-    # let b = abs(a)
+    let b = abs(a)
 
-    # assert_dtype(b, DType.float64, "abs should preserve float64")
-    pass  # Placeholder
+    assert_dtype(b, DType.float64, "abs should preserve float64")
 
 
 # ============================================================================
@@ -84,11 +84,10 @@ fn test_sign_positive() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = full(shape, 5.0, DType.float32)
-    # let b = sign(a)  # TODO: Implement sign()
+    let b = sign(a)
 
     # Positive values should give +1
-    # assert_all_values(b, 1.0, 1e-6, "sign(positive) = 1")
-    pass  # Placeholder
+    assert_all_values(b, 1.0, 1e-6, "sign(positive) = 1")
 
 
 fn test_sign_negative() raises:
@@ -96,11 +95,10 @@ fn test_sign_negative() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = full(shape, -5.0, DType.float32)
-    # let b = sign(a)  # TODO: Implement sign()
+    let b = sign(a)
 
     # Negative values should give -1
-    # assert_all_values(b, -1.0, 1e-6, "sign(negative) = -1")
-    pass  # Placeholder
+    assert_all_values(b, -1.0, 1e-6, "sign(negative) = -1")
 
 
 fn test_sign_zero() raises:
@@ -108,26 +106,24 @@ fn test_sign_zero() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = zeros(shape, DType.float32)
-    # let b = sign(a)  # TODO: Implement sign()
+    let b = sign(a)
 
     # Zero should give 0
-    # assert_all_values(b, 0.0, 1e-6, "sign(0) = 0")
-    pass  # Placeholder
+    assert_all_values(b, 0.0, 1e-6, "sign(0) = 0")
 
 
 fn test_sign_mixed() raises:
     """Test sign with mixed values."""
     # Create array: [-2, -1, 0, 1, 2]
     let a = arange(-2.0, 3.0, 1.0, DType.float32)
-    # let b = sign(a)  # TODO: Implement sign()
+    let b = sign(a)
 
     # Expected: [-1, -1, 0, 1, 1]
-    # assert_value_at(b, 0, -1.0, 1e-6, "sign(-2) = -1")
-    # assert_value_at(b, 1, -1.0, 1e-6, "sign(-1) = -1")
-    # assert_value_at(b, 2, 0.0, 1e-6, "sign(0) = 0")
-    # assert_value_at(b, 3, 1.0, 1e-6, "sign(1) = 1")
-    # assert_value_at(b, 4, 1.0, 1e-6, "sign(2) = 1")
-    pass  # Placeholder
+    assert_value_at(b, 0, -1.0, 1e-6, "sign(-2) = -1")
+    assert_value_at(b, 1, -1.0, 1e-6, "sign(-1) = -1")
+    assert_value_at(b, 2, 0.0, 1e-6, "sign(0) = 0")
+    assert_value_at(b, 3, 1.0, 1e-6, "sign(1) = 1")
+    assert_value_at(b, 4, 1.0, 1e-6, "sign(2) = 1")
 
 
 # ============================================================================
@@ -139,11 +135,10 @@ fn test_exp_zeros() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 5
     let a = zeros(shape, DType.float32)
-    # let b = exp(a)  # TODO: Implement exp()
+    let b = exp(a)
 
     # exp(0) = 1
-    # assert_all_values(b, 1.0, 1e-6, "exp(0) should be 1")
-    pass  # Placeholder
+    assert_all_values(b, 1.0, 1e-6, "exp(0) should be 1")
 
 
 fn test_exp_ones() raises:
@@ -151,11 +146,10 @@ fn test_exp_ones() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = ones(shape, DType.float32)
-    # let b = exp(a)  # TODO: Implement exp()
+    let b = exp(a)
 
     # exp(1) ≈ e ≈ 2.71828
-    # assert_all_values(b, 2.71828, 1e-5, "exp(1) should be approximately e")
-    pass  # Placeholder
+    assert_all_values(b, 2.71828, 1e-5, "exp(1) should be approximately e")
 
 
 fn test_exp_small_values() raises:
@@ -163,11 +157,10 @@ fn test_exp_small_values() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 0.5, DType.float32)
-    # let b = exp(a)  # TODO: Implement exp()
+    let b = exp(a)
 
     # exp(0.5) ≈ 1.64872
-    # assert_value_at(b, 0, 1.64872, 1e-4, "exp(0.5) should be ~1.649")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.64872, 1e-4, "exp(0.5) should be ~1.649")
 
 
 fn test_exp_negative() raises:
@@ -175,11 +168,10 @@ fn test_exp_negative() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, -1.0, DType.float32)
-    # let b = exp(a)  # TODO: Implement exp()
+    let b = exp(a)
 
     # exp(-1) ≈ 0.36788 (1/e)
-    # assert_value_at(b, 0, 0.36788, 1e-4, "exp(-1) should be ~0.368")
-    pass  # Placeholder
+    assert_value_at(b, 0, 0.36788, 1e-4, "exp(-1) should be ~0.368")
 
 
 # ============================================================================
@@ -191,11 +183,10 @@ fn test_log_one() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 5
     let a = ones(shape, DType.float32)
-    # let b = log(a)  # TODO: Implement log()
+    let b = log(a)
 
     # log(1) = 0
-    # assert_all_values(b, 0.0, 1e-6, "log(1) should be 0")
-    pass  # Placeholder
+    assert_all_values(b, 0.0, 1e-6, "log(1) should be 0")
 
 
 fn test_log_e() raises:
@@ -203,11 +194,10 @@ fn test_log_e() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 2.71828, DType.float32)  # e
-    # let b = log(a)  # TODO: Implement log()
+    let b = log(a)
 
     # log(e) = 1
-    # assert_value_at(b, 0, 1.0, 1e-4, "log(e) should be 1")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.0, 1e-4, "log(e) should be 1")
 
 
 fn test_log_powers_of_2() raises:
@@ -215,11 +205,10 @@ fn test_log_powers_of_2() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 2.0, DType.float32)
-    # let b = log(a)  # TODO: Implement log()
+    let b = log(a)
 
     # log(2) ≈ 0.69315
-    # assert_value_at(b, 0, 0.69315, 1e-4, "log(2) should be ~0.693")
-    pass  # Placeholder
+    assert_value_at(b, 0, 0.69315, 1e-4, "log(2) should be ~0.693")
 
 
 # ============================================================================
@@ -231,16 +220,20 @@ fn test_sqrt_perfect_squares() raises:
     # Create array: [1, 4, 9, 16, 25]
     var shape = DynamicVector[Int](1)
     shape[0] = 5
-    # let a = ... (create [1, 4, 9, 16, 25])
-    # let b = sqrt(a)  # TODO: Implement sqrt()
+    var a = ExTensor(shape, DType.float32)
+    a._set_float64(0, 1.0)
+    a._set_float64(1, 4.0)
+    a._set_float64(2, 9.0)
+    a._set_float64(3, 16.0)
+    a._set_float64(4, 25.0)
+    let b = sqrt(a)
 
     # Expected: [1, 2, 3, 4, 5]
-    # assert_value_at(b, 0, 1.0, 1e-6, "sqrt(1) = 1")
-    # assert_value_at(b, 1, 2.0, 1e-6, "sqrt(4) = 2")
-    # assert_value_at(b, 2, 3.0, 1e-6, "sqrt(9) = 3")
-    # assert_value_at(b, 3, 4.0, 1e-6, "sqrt(16) = 4")
-    # assert_value_at(b, 4, 5.0, 1e-6, "sqrt(25) = 5")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.0, 1e-6, "sqrt(1) = 1")
+    assert_value_at(b, 1, 2.0, 1e-6, "sqrt(4) = 2")
+    assert_value_at(b, 2, 3.0, 1e-6, "sqrt(9) = 3")
+    assert_value_at(b, 3, 4.0, 1e-6, "sqrt(16) = 4")
+    assert_value_at(b, 4, 5.0, 1e-6, "sqrt(25) = 5")
 
 
 fn test_sqrt_zero() raises:
@@ -248,11 +241,10 @@ fn test_sqrt_zero() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = zeros(shape, DType.float32)
-    # let b = sqrt(a)  # TODO: Implement sqrt()
+    let b = sqrt(a)
 
     # sqrt(0) = 0
-    # assert_all_values(b, 0.0, 1e-6, "sqrt(0) should be 0")
-    pass  # Placeholder
+    assert_all_values(b, 0.0, 1e-6, "sqrt(0) should be 0")
 
 
 fn test_sqrt_one() raises:
@@ -260,11 +252,10 @@ fn test_sqrt_one() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = ones(shape, DType.float32)
-    # let b = sqrt(a)  # TODO: Implement sqrt()
+    let b = sqrt(a)
 
     # sqrt(1) = 1
-    # assert_all_values(b, 1.0, 1e-6, "sqrt(1) should be 1")
-    pass  # Placeholder
+    assert_all_values(b, 1.0, 1e-6, "sqrt(1) should be 1")
 
 
 fn test_sqrt_two() raises:
@@ -272,11 +263,10 @@ fn test_sqrt_two() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 2.0, DType.float32)
-    # let b = sqrt(a)  # TODO: Implement sqrt()
+    let b = sqrt(a)
 
     # sqrt(2) ≈ 1.41421
-    # assert_value_at(b, 0, 1.41421, 1e-4, "sqrt(2) should be ~1.414")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.41421, 1e-4, "sqrt(2) should be ~1.414")
 
 
 # ============================================================================
@@ -288,11 +278,10 @@ fn test_sin_zero() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = zeros(shape, DType.float32)
-    # let b = sin(a)  # TODO: Implement sin()
+    let b = sin(a)
 
     # sin(0) = 0
-    # assert_all_values(b, 0.0, 1e-6, "sin(0) should be 0")
-    pass  # Placeholder
+    assert_all_values(b, 0.0, 1e-6, "sin(0) should be 0")
 
 
 fn test_sin_pi_over_2() raises:
@@ -300,11 +289,10 @@ fn test_sin_pi_over_2() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 1.5708, DType.float32)  # π/2 ≈ 1.5708
-    # let b = sin(a)  # TODO: Implement sin()
+    let b = sin(a)
 
     # sin(π/2) = 1
-    # assert_value_at(b, 0, 1.0, 1e-4, "sin(π/2) should be 1")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.0, 1e-4, "sin(π/2) should be 1")
 
 
 fn test_sin_pi() raises:
@@ -312,11 +300,10 @@ fn test_sin_pi() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 3.14159, DType.float32)  # π
-    # let b = sin(a)  # TODO: Implement sin()
+    let b = sin(a)
 
     # sin(π) ≈ 0
-    # assert_value_at(b, 0, 0.0, 1e-5, "sin(π) should be ~0")
-    pass  # Placeholder
+    assert_value_at(b, 0, 0.0, 1e-5, "sin(π) should be ~0")
 
 
 # ============================================================================
@@ -328,11 +315,10 @@ fn test_cos_zero() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = zeros(shape, DType.float32)
-    # let b = cos(a)  # TODO: Implement cos()
+    let b = cos(a)
 
     # cos(0) = 1
-    # assert_all_values(b, 1.0, 1e-6, "cos(0) should be 1")
-    pass  # Placeholder
+    assert_all_values(b, 1.0, 1e-6, "cos(0) should be 1")
 
 
 fn test_cos_pi_over_2() raises:
@@ -340,11 +326,10 @@ fn test_cos_pi_over_2() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 1.5708, DType.float32)  # π/2
-    # let b = cos(a)  # TODO: Implement cos()
+    let b = cos(a)
 
     # cos(π/2) ≈ 0
-    # assert_value_at(b, 0, 0.0, 1e-4, "cos(π/2) should be ~0")
-    pass  # Placeholder
+    assert_value_at(b, 0, 0.0, 1e-4, "cos(π/2) should be ~0")
 
 
 fn test_cos_pi() raises:
@@ -352,11 +337,10 @@ fn test_cos_pi() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 3.14159, DType.float32)  # π
-    # let b = cos(a)  # TODO: Implement cos()
+    let b = cos(a)
 
     # cos(π) = -1
-    # assert_value_at(b, 0, -1.0, 1e-4, "cos(π) should be ~-1")
-    pass  # Placeholder
+    assert_value_at(b, 0, -1.0, 1e-4, "cos(π) should be ~-1")
 
 
 # ============================================================================
@@ -368,11 +352,10 @@ fn test_tanh_zero() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = zeros(shape, DType.float32)
-    # let b = tanh(a)  # TODO: Implement tanh()
+    let b = tanh(a)
 
     # tanh(0) = 0
-    # assert_all_values(b, 0.0, 1e-6, "tanh(0) should be 0")
-    pass  # Placeholder
+    assert_all_values(b, 0.0, 1e-6, "tanh(0) should be 0")
 
 
 fn test_tanh_large_positive() raises:
@@ -380,11 +363,10 @@ fn test_tanh_large_positive() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 10.0, DType.float32)
-    # let b = tanh(a)  # TODO: Implement tanh()
+    let b = tanh(a)
 
     # tanh(10) ≈ 1 (saturates)
-    # assert_value_at(b, 0, 1.0, 1e-5, "tanh(large) should be ~1")
-    pass  # Placeholder
+    assert_value_at(b, 0, 1.0, 1e-5, "tanh(large) should be ~1")
 
 
 fn test_tanh_large_negative() raises:
@@ -392,11 +374,10 @@ fn test_tanh_large_negative() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, -10.0, DType.float32)
-    # let b = tanh(a)  # TODO: Implement tanh()
+    let b = tanh(a)
 
     # tanh(-10) ≈ -1 (saturates)
-    # assert_value_at(b, 0, -1.0, 1e-5, "tanh(-large) should be ~-1")
-    pass  # Placeholder
+    assert_value_at(b, 0, -1.0, 1e-5, "tanh(-large) should be ~-1")
 
 
 fn test_tanh_small_values() raises:
@@ -404,11 +385,10 @@ fn test_tanh_small_values() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 1
     let a = full(shape, 0.5, DType.float32)
-    # let b = tanh(a)  # TODO: Implement tanh()
+    let b = tanh(a)
 
     # tanh(0.5) ≈ 0.46212
-    # assert_value_at(b, 0, 0.46212, 1e-4, "tanh(0.5) should be ~0.462")
-    pass  # Placeholder
+    assert_value_at(b, 0, 0.46212, 1e-4, "tanh(0.5) should be ~0.462")
 
 
 # ============================================================================
@@ -419,15 +399,14 @@ fn test_clip_basic() raises:
     """Test clip with basic range."""
     # Create array: [1, 2, 3, 4, 5]
     let a = arange(1.0, 6.0, 1.0, DType.float32)
-    # let b = clip(a, 2.0, 4.0)  # TODO: Implement clip()
+    let b = clip(a, 2.0, 4.0)
 
     # Expected: [2, 2, 3, 4, 4]
-    # assert_value_at(b, 0, 2.0, 1e-6, "clip(1, 2, 4) = 2")
-    # assert_value_at(b, 1, 2.0, 1e-6, "clip(2, 2, 4) = 2")
-    # assert_value_at(b, 2, 3.0, 1e-6, "clip(3, 2, 4) = 3")
-    # assert_value_at(b, 3, 4.0, 1e-6, "clip(4, 2, 4) = 4")
-    # assert_value_at(b, 4, 4.0, 1e-6, "clip(5, 2, 4) = 4")
-    pass  # Placeholder
+    assert_value_at(b, 0, 2.0, 1e-6, "clip(1, 2, 4) = 2")
+    assert_value_at(b, 1, 2.0, 1e-6, "clip(2, 2, 4) = 2")
+    assert_value_at(b, 2, 3.0, 1e-6, "clip(3, 2, 4) = 3")
+    assert_value_at(b, 3, 4.0, 1e-6, "clip(4, 2, 4) = 4")
+    assert_value_at(b, 4, 4.0, 1e-6, "clip(5, 2, 4) = 4")
 
 
 fn test_clip_all_below() raises:
@@ -435,11 +414,10 @@ fn test_clip_all_below() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = ones(shape, DType.float32)
-    # let b = clip(a, 5.0, 10.0)  # TODO: Implement clip()
+    let b = clip(a, 5.0, 10.0)
 
     # All values should be clipped to min
-    # assert_all_values(b, 5.0, 1e-6, "clip(1, 5, 10) should be 5")
-    pass  # Placeholder
+    assert_all_values(b, 5.0, 1e-6, "clip(1, 5, 10) should be 5")
 
 
 fn test_clip_all_above() raises:
@@ -447,11 +425,10 @@ fn test_clip_all_above() raises:
     var shape = DynamicVector[Int](1)
     shape[0] = 3
     let a = full(shape, 20.0, DType.float32)
-    # let b = clip(a, 5.0, 10.0)  # TODO: Implement clip()
+    let b = clip(a, 5.0, 10.0)
 
     # All values should be clipped to max
-    # assert_all_values(b, 10.0, 1e-6, "clip(20, 5, 10) should be 10")
-    pass  # Placeholder
+    assert_all_values(b, 10.0, 1e-6, "clip(20, 5, 10) should be 10")
 
 
 # ============================================================================
@@ -465,22 +442,20 @@ fn test_operations_preserve_dtype() raises:
     let a = ones(shape, DType.float64)
 
     # All operations should preserve float64
-    # let b_abs = abs(a)
-    # assert_dtype(b_abs, DType.float64, "abs should preserve dtype")
+    let b_abs = abs(a)
+    assert_dtype(b_abs, DType.float64, "abs should preserve dtype")
 
-    # let b_sign = sign(a)
-    # assert_dtype(b_sign, DType.float64, "sign should preserve dtype")
+    let b_sign = sign(a)
+    assert_dtype(b_sign, DType.float64, "sign should preserve dtype")
 
-    # let b_exp = exp(a)
-    # assert_dtype(b_exp, DType.float64, "exp should preserve dtype")
+    let b_exp = exp(a)
+    assert_dtype(b_exp, DType.float64, "exp should preserve dtype")
 
-    # let b_log = log(a)
-    # assert_dtype(b_log, DType.float64, "log should preserve dtype")
+    let b_log = log(a)
+    assert_dtype(b_log, DType.float64, "log should preserve dtype")
 
-    # let b_sqrt = sqrt(a)
-    # assert_dtype(b_sqrt, DType.float64, "sqrt should preserve dtype")
-
-    pass  # Placeholder
+    let b_sqrt = sqrt(a)
+    assert_dtype(b_sqrt, DType.float64, "sqrt should preserve dtype")
 
 
 # ============================================================================
