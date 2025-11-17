@@ -66,12 +66,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Benchmark ML implementations for performance tracking and regression detection
 
 **Key Contents**:
+
 - Benchmark execution scripts (`scripts/`)
 - Baseline results storage (`baselines/`)
 - Timestamped results (`results/`)
 - CI/CD integration
 
 **When to Use**:
+
 - Measuring performance of new implementations
 - Detecting performance regressions
 - Comparing implementations
@@ -82,12 +84,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Comprehensive documentation for users, contributors, and developers
 
 **Key Contents**:
+
 - Getting started guides (`getting-started/`)
 - Core concepts (`core/`)
 - Advanced topics (`advanced/`)
 - Developer documentation (`dev/`)
 
 **When to Use**:
+
 - Onboarding new team members
 - Understanding repository organization
 - Learning ML concepts and patterns
@@ -98,12 +102,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Documentation and templates for the Claude agent hierarchy
 
 **Key Contents**:
+
 - Agent hierarchy overview (`hierarchy.md`)
 - Delegation rules (`delegation-rules.md`)
 - Configuration templates (`templates/`)
 - Integration guides (`docs/`)
 
 **When to Use**:
+
 - Understanding agent hierarchy
 - Creating new agents
 - Coordinating multi-agent workflows
@@ -114,12 +120,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Developer productivity tools for implementation work
 
 **Key Contents**:
+
 - Paper scaffolding (`paper-scaffold/`)
 - Testing utilities (`test-utils/`)
 - Benchmarking framework (`benchmarking/`)
 - Code generation (`codegen/`)
 
 **When to Use**:
+
 - Starting new paper implementations
 - Generating test fixtures
 - Creating boilerplate code
@@ -130,12 +138,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Centralized configuration for experiments and environments
 
 **Key Contents**:
+
 - Default configurations (`defaults/`)
 - Paper-specific configs (`papers/`)
 - Experiment variations (`experiments/`)
 - Configuration templates (`templates/`)
 
 **When to Use**:
+
 - Starting new experiments
 - Configuring training parameters
 - Managing environment variables
@@ -190,12 +200,14 @@ The five supporting directories provide critical infrastructure for the ml-odyss
 **Purpose**: Verify all supporting directories have required files and structure
 
 **Checks**:
+
 - All 5 directories exist
 - Each has README.md
 - Required subdirectories present
 - No unexpected files
 
 **Usage**:
+
 ```bash
 python scripts/validate_structure.py
 # Exit code 0: All checks passed
@@ -209,12 +221,14 @@ python scripts/validate_structure.py
 **Purpose**: Ensure all READMEs have required sections
 
 **Checks**:
+
 - Required sections present
 - Markdown linting compliance
 - Code blocks properly formatted
 - Links are valid
 
 **Usage**:
+
 ```bash
 python scripts/check_readmes.py --directory benchmarks/
 ```
@@ -226,12 +240,14 @@ python scripts/check_readmes.py --directory benchmarks/
 **Purpose**: Check all documentation links are valid
 
 **Checks**:
+
 - Internal links point to existing files
 - Markdown links properly formatted
 - No broken references
 - Anchor links valid
 
 **Usage**:
+
 ```bash
 python scripts/validate_links.py docs/
 ```
@@ -241,34 +257,41 @@ python scripts/validate_links.py docs/
 ### Decision Tree: Where to Place Content
 
 **Q1: Is this performance-related?**
+
 - Yes → `benchmarks/`
 - No → Q2
 
 **Q2: Is this user-facing documentation?**
+
 - Yes → `docs/`
 - No → Q3
 
 **Q3: Is this about agents or automation?**
+
 - Yes → `agents/`
 - No → Q4
 
 **Q4: Is this a development utility?**
+
 - Yes → `tools/`
 - No → Q5
 
 **Q5: Is this a configuration file?**
+
 - Yes → `configs/`
 - No → Check other top-level directories
 
 ### Directory-Specific Guidelines
 
 #### benchmarks/
+
 - Add benchmark scripts to appropriate subdirectory
 - Follow benchmark design principles (deterministic, isolated, fast)
 - Update baselines only with approval
 - Document new benchmarks in README
 
 #### docs/
+
 - Place getting-started content in `getting-started/`
 - Core concepts go in `core/`
 - Advanced topics in `advanced/`
@@ -276,18 +299,21 @@ python scripts/validate_links.py docs/
 - Follow markdown linting standards
 
 #### agents/
+
 - Agent configs go in `.claude/agents/`
 - Documentation goes in `agents/`
 - Use appropriate template for new agents
 - Update hierarchy.md if adding new level
 
 #### tools/
+
 - Create subdirectory for each tool
 - Include README with usage examples
 - Justify language choice per ADR-001
 - Add comprehensive tests
 
 #### configs/
+
 - Use 3-level hierarchy (defaults → paper → experiment)
 - Follow YAML formatting standards
 - Use environment variables for paths
@@ -365,50 +391,60 @@ python scripts/validate_links.py docs/
 ### benchmarks/ Dependencies
 
 **Uses**:
+
 - `configs/` - Load experiment configurations
 - `papers/` - Import models to benchmark
 - `shared/` - Common utilities
 
 **Used By**:
+
 - `.github/workflows/` - CI/CD benchmarking
 - `docs/` - Performance documentation
 
 ### docs/ Dependencies
 
 **Uses**:
+
 - All directories for content and examples
 
 **Used By**:
+
 - Team for learning and reference
 - Contributors for guidelines
 
 ### agents/ Dependencies
 
 **Uses**:
+
 - `notes/review/` - Architectural decisions
 - `scripts/` - Automation integration
 
 **Used By**:
+
 - Claude Code for agent invocation
 - Team for creating new agents
 
 ### tools/ Dependencies
 
 **Uses**:
+
 - `configs/templates/` - Configuration generation
 - `papers/_template/` - Paper scaffolding
 
 **Used By**:
+
 - Developers during implementation
 - CI/CD for automation
 
 ### configs/ Dependencies
 
 **Uses**:
+
 - Environment variables for paths
 - `shared/` - Config loading utilities
 
 **Used By**:
+
 - All paper implementations
 - Experiment scripts
 - Training pipelines
@@ -436,6 +472,7 @@ python scripts/validate_links.py docs/
 ### Validation
 
 All documentation validated in CI:
+
 ```bash
 # Markdown linting
 pre-commit run markdownlint-cli2 --all-files
@@ -454,6 +491,7 @@ python scripts/check_readmes.py
 **Location**: `tests/foundation/test_directory_structure.py`
 
 **Tests**:
+
 - All supporting directories exist
 - Required files present
 - No unexpected files
@@ -464,6 +502,7 @@ python scripts/check_readmes.py
 **Location**: `tests/foundation/test_documentation.py`
 
 **Tests**:
+
 - All READMEs have required sections
 - Markdown linting passes
 - Links are valid
@@ -474,6 +513,7 @@ python scripts/check_readmes.py
 **Location**: `tests/foundation/test_integration.py`
 
 **Tests**:
+
 - Cross-directory workflows work
 - Tools can access configs
 - Benchmarks can import models
@@ -508,6 +548,7 @@ python scripts/check_readmes.py
 ### Directory Creation Complete
 
 All 5 supporting directories have been created with:
+
 - Comprehensive README files
 - Subdirectory structure
 - Initial content and templates
@@ -516,6 +557,7 @@ All 5 supporting directories have been created with:
 ### Validation Scripts Created
 
 Three validation scripts ensure structure integrity:
+
 1. `validate_structure.py` - Directory structure
 2. `check_readmes.py` - README completeness
 3. `validate_links.py` - Link validation
@@ -523,6 +565,7 @@ Three validation scripts ensure structure integrity:
 ### Documentation Created
 
 Comprehensive documentation in multiple locations:
+
 1. `STRUCTURE.md` - Repository structure overview
 2. `docs/core/supporting-directories.md` - Integration guide
 3. `docs/getting-started/repository-structure.md` - Team onboarding
@@ -531,6 +574,7 @@ Comprehensive documentation in multiple locations:
 ### Testing Complete
 
 All supporting directories tested for:
+
 - Structure compliance
 - README completeness
 - Link validity

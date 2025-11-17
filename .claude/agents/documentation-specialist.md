@@ -69,6 +69,7 @@ Brief description of component and its purpose.
 How to use this component in the project.
 
 ## Quick Start
+
 ```mojo
 
 # Simple example
@@ -108,23 +109,29 @@ fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[d
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -134,11 +141,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -146,12 +156,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -165,13 +178,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -181,6 +197,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     vectorize[add_simd, simd_width](a.num_elements())
     return result
 ```
+
 ## Workflow
 
 1. Receive component spec and implemented code
@@ -218,6 +235,7 @@ For standard delegation patterns, escalation rules, and skip-level guidelines, s
 ### Architecture Decision Records
 
 Use the `doc-generate-adr` skill to create ADRs:
+
 - **Invoke when**: Documenting architectural decisions
 - **The skill handles**: Properly formatted ADR file creation with templates
 - **See**: [doc-generate-adr skill](../.claude/skills/doc-generate-adr/SKILL.md)
@@ -225,6 +243,7 @@ Use the `doc-generate-adr` skill to create ADRs:
 ### Issue Documentation
 
 Use the `doc-issue-readme` skill to generate issue-specific documentation:
+
 - **Invoke when**: Starting work on an issue, creating /notes/issues/<number>/ structure
 - **The skill handles**: README.md creation in issue directories
 - **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
@@ -232,6 +251,7 @@ Use the `doc-issue-readme` skill to generate issue-specific documentation:
 ### Markdown Validation
 
 Use the `doc-validate-markdown` skill before committing documentation:
+
 - **Invoke when**: Before committing markdown files, checking documentation quality
 - **The skill handles**: Formatting validation, link checking, style compliance
 - **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
@@ -239,6 +259,7 @@ Use the `doc-validate-markdown` skill before committing documentation:
 ### Blog Updates
 
 Use the `doc-update-blog` skill for development blog maintenance:
+
 - **Invoke when**: Updating blog posts with milestones and learnings
 - **The skill handles**: Blog formatting, milestone updates
 - **See**: [doc-update-blog skill](../.claude/skills/doc-update-blog/SKILL.md)

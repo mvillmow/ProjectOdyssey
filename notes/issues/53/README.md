@@ -55,7 +55,7 @@ tests/tooling/benchmarks/
 
 Created 6 test files (1,026 total lines) in `tests/tooling/benchmarks/`:
 
-1. **__init__.mojo** (22 lines) - Package documentation and test suite overview
+1. ****init**.mojo** (22 lines) - Package documentation and test suite overview
 2. **test_benchmark_runner.mojo** (187 lines) - Tests for benchmark execution, timing, iterations, and result collection
 3. **test_baseline_loader.mojo** (184 lines) - Tests for loading baseline JSON, parsing, validation, and error handling
 4. **test_result_comparison.mojo** (205 lines) - Tests for comparison logic, percentage calculations, and threshold checking

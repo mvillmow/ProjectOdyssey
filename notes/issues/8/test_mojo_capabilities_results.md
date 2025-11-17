@@ -110,6 +110,7 @@ var result = run("ls /nonexistent 2>&1")
 - **Alternative**: Build from source (not practical for this project)
 
 **Features** (if it were available):
+
 - Character classes, quantifiers, groups, alternation
 - **Missing**: Non-greedy quantifiers, word boundaries, case-insensitive matching
 
@@ -124,11 +125,13 @@ fn run(cmd: String) -> String
 ```
 
 **What it provides**:
+
 - Single String command argument
 - Returns stdout as String
 - Trailing whitespace removed
 
 **What it DOESN'T provide**:
+
 - Exit code access (exit codes are silently ignored)
 - Exception on command failure (non-zero exits pass silently)
 - Separate stderr stream
@@ -159,6 +162,7 @@ var output = run("gh auth status")
 Total Python scripts: 14 files in `/home/mvillmow/ml-odyssey/scripts/`
 
 **Complex Scripts** (NOT convertible):
+
 1. `create_issues.py` (854 LOC)
    - Heavy regex parsing
    - Exit code checking
@@ -195,6 +199,7 @@ if success:
 ```
 
 **Conversion blockers**:
+
 - Exit code checking (lines 39, 199, 204, 209)
 - Tuple returns with success status
 - Conditional logic based on command success
@@ -216,6 +221,7 @@ if success:
 ### 1. Keep Python Scripts in Python (RECOMMENDED)
 
 **Rationale**:
+
 - Existing scripts work perfectly
 - No functional benefit from conversion
 - Significant development cost
@@ -223,6 +229,7 @@ if success:
 - Loss of features (exit codes, regex)
 
 **Scripts to keep in Python**:
+
 - ALL current scripts in `/home/mvillmow/ml-odyssey/scripts/`
 - Focus on maintaining existing functionality
 - Wait for Mojo stdlib to mature
@@ -230,6 +237,7 @@ if success:
 ### 2. Use Mojo for New Simple Utilities (FUTURE)
 
 **Good candidates** (when writing new code):
+
 - Simple wrappers that only need stdout
 - Tools where exceptions are acceptable errors
 - Utilities using only string operations
@@ -252,6 +260,7 @@ fn main() raises:
 ### 3. Wait for Mojo Stdlib Improvements
 
 **Missing features needed**:
+
 - Exit code access: `result.exit_code`
 - Separate stderr: `result.stderr`
 - Command as list: `run(["gh", "auth", "status"])`
@@ -262,12 +271,14 @@ fn main() raises:
 ### 4. Focus Mojo Development on ML Code
 
 **Better use of Mojo**:
+
 - Implement LeNet-5 in Mojo (Issue #4)
 - Build tensor operations in Mojo
 - Performance-critical ML algorithms
 - Core ML library components
 
 **Not a good use of Mojo**:
+
 - Converting working Python scripts
 - Automation tools
 - Build scripts
@@ -280,6 +291,7 @@ fn main() raises:
 **Mojo subprocess API is too limited for script conversion**
 
 Critical missing features:
+
 1. **Exit code access** - Exit codes are silently ignored, no way to check success/failure
 2. **No exceptions on failure** - Commands can fail silently with no indication
 3. **Separate stderr stream** - Only stdout captured, stderr lost unless redirected
@@ -303,6 +315,7 @@ This makes Mojo's `run()` **unsafe for production scripts** that need reliabilit
 **Original claim**: "Convert Python scripts to Mojo"
 
 **Reality**:
+
 - ✗ NOT FEASIBLE for existing scripts
 - ✗ NOT RECOMMENDED even if possible
 - ✗ NO functional benefit
@@ -341,6 +354,7 @@ pixi run mojo test_mojo_capabilities.mojo
 ```
 
 **Test coverage**:
+
 - ✓ Subprocess stdout capture
 - ✓ External command execution (gh CLI)
 - ✓ Exit code access (FAILED - not available)
@@ -350,7 +364,7 @@ pixi run mojo test_mojo_capabilities.mojo
 
 ## References
 
-- Mojo subprocess docs: https://docs.modular.com/mojo/stdlib/subprocess/subprocess/run
-- mojo-regex: https://github.com/msaelices/mojo-regex
+- Mojo subprocess docs: <https://docs.modular.com/mojo/stdlib/subprocess/subprocess/run>
+- mojo-regex: <https://github.com/msaelices/mojo-regex>
 - Issue #8: Convert Python scripts to Mojo
 - Test script: `/home/mvillmow/ml-odyssey/test_mojo_capabilities.mojo`

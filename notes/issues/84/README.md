@@ -126,9 +126,9 @@ shared/
   - Common patterns
   - Contributing guidelines
   - Paper-specific information template
-- Source code structure (src/__init__.mojo)
-- Test structure (tests/__init__.mojo)
-- Script structure (scripts/__init__.mojo)
+- Source code structure (src/**init**.mojo)
+- Test structure (tests/**init**.mojo)
+- Script structure (scripts/**init**.mojo)
 - Examples (examples/train.mojo)
 - Configuration (configs/config.yaml)
 
@@ -228,14 +228,14 @@ The directory structure implementation was completed in previous work (likely Is
 1. **papers/** directory and template created with:
    - Comprehensive template README
    - All necessary subdirectories (src, tests, scripts, examples, configs)
-   - Placeholder __init__.mojo files
+   - Placeholder **init**.mojo files
    - Example configuration file
 
 2. **shared/** directory created with:
    - Main README and supporting documentation (BUILD.md, INSTALL.md, MIGRATION.md, EXAMPLES.md)
    - Four subdirectories (core, training, data, utils)
    - Comprehensive README for each subdirectory
-   - __init__.mojo files for package structure
+   - **init**.mojo files for package structure
    - Initial implementation files (stubs, base classes)
 
 ### Findings

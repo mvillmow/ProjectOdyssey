@@ -1,6 +1,7 @@
 # Issue #138: [Plan] Setup Git LFS - Design and Documentation
 
 ## Objective
+
 Plan Git LFS (Large File Storage) strategy for large model files and datasets.
 
 ## Planning Complete - LFS Intentionally Deferred
@@ -16,11 +17,13 @@ Git LFS is **intentionally not configured** at this time because:
 **Design Planning (For Future Implementation):**
 
 **When to Enable LFS:**
+
 - When adding pre-trained model weights (>100MB)
 - When including training datasets (>50MB)
 - When storing benchmark results with large outputs
 
 **Planned LFS Patterns:**
+
 ```gitattributes
 # Model weights
 *.pt filter=lfs diff=lfs merge=lfs -text
@@ -38,6 +41,7 @@ datasets/*.gz filter=lfs diff=lfs merge=lfs -text
 ```
 
 **Installation Steps (When Needed):**
+
 ```bash
 # Install Git LFS
 git lfs install
@@ -54,6 +58,7 @@ git lfs ls-files
 ```
 
 **Success Criteria:**
+
 - ✅ LFS strategy planned for future use
 - ✅ Patterns designed for ML model files
 - ✅ Installation steps documented
@@ -62,5 +67,6 @@ git lfs ls-files
 **Status:** COMPLETE (planning done, implementation intentionally deferred)
 
 **References:**
+
 - Not yet implemented - to be added in Section 04 when large files are introduced
 - Strategy documented for future activation

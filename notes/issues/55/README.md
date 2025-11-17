@@ -523,13 +523,13 @@ After running the packaging script:
 ls -lh dist/benchmarks-0.1.0.tar.gz
 ```
 
-2. **Check archive contents**:
+1. **Check archive contents**:
 
 ```bash
 tar -tzf dist/benchmarks-0.1.0.tar.gz | head -20
 ```
 
-3. **Test extraction**:
+1. **Test extraction**:
 
 ```bash
 mkdir -p /tmp/test_benchmark_install
@@ -538,7 +538,7 @@ tar -xzf /home/mvillmow/ml-odyssey/worktrees/55-pkg-benchmarks/dist/benchmarks-0
 ls -la benchmarks/
 ```
 
-4. **Verify CI/CD workflow**:
+1. **Verify CI/CD workflow**:
 
 ```bash
 cat .github/workflows/benchmark.yml | grep "name:"

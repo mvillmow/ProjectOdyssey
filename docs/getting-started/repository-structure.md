@@ -1,6 +1,6 @@
 # Repository Structure Guide - Team Onboarding
 
-## Welcome to ML Odyssey!
+## Welcome to ML Odyssey
 
 This guide helps you quickly navigate the ML Odyssey repository and understand where to find what you need.
 
@@ -128,10 +128,12 @@ ml-odyssey/
 **What**: ML research paper implementations
 
 **Structure**:
+
 - Each paper in its own directory
 - `_template/` for starting new papers
 
 **Example**:
+
 ```text
 papers/
 ├── _template/
@@ -149,6 +151,7 @@ papers/
 **What**: Core ML components used across papers
 
 **Structure**:
+
 - `core/` - Layers, activations, loss functions
 - `training/` - Optimizers, schedulers
 - `data/` - Data loaders
@@ -163,11 +166,13 @@ papers/
 **Purpose**: Track and compare performance
 
 **Key Files**:
+
 - `scripts/` - Benchmark execution
 - `baselines/` - Baseline results
 - `results/` - Timestamped results
 
 **Common Tasks**:
+
 ```bash
 # Run benchmarks
 mojo benchmarks/scripts/run_benchmarks.mojo
@@ -181,12 +186,14 @@ mojo benchmarks/scripts/compare_results.mojo
 **Purpose**: Comprehensive documentation for all users
 
 **Key Sections**:
+
 - `getting-started/` - Onboarding
 - `core/` - Core concepts
 - `advanced/` - Advanced topics
 - `dev/` - Developer docs
 
 **Common Tasks**:
+
 - Read guides: Browse `docs/`
 - Add docs: Create in appropriate section
 - Validate: `python scripts/validate_links.py docs/`
@@ -196,11 +203,13 @@ mojo benchmarks/scripts/compare_results.mojo
 **Purpose**: Agent hierarchy documentation
 
 **Key Files**:
+
 - `hierarchy.md` - Agent levels
 - `delegation-rules.md` - Coordination
 - `templates/` - Agent templates
 
 **Common Tasks**:
+
 - Understand agents: Read `hierarchy.md`
 - Create agent: Use `templates/`
 - Find agent configs: Check `.claude/agents/`
@@ -210,12 +219,14 @@ mojo benchmarks/scripts/compare_results.mojo
 **Purpose**: Developer productivity tools
 
 **Key Tools**:
+
 - `paper-scaffold/` - Generate paper structure
 - `test-utils/` - Testing utilities
 - `benchmarking/` - Benchmark framework
 - `codegen/` - Code generation
 
 **Common Tasks**:
+
 ```bash
 # Scaffold paper
 python tools/paper-scaffold/scaffold.py --paper {name}
@@ -229,12 +240,14 @@ python tools/codegen/mojo_boilerplate.py --layer Conv2D
 **Purpose**: Centralized experiment configuration
 
 **Key Sections**:
+
 - `defaults/` - Default settings
 - `papers/` - Paper-specific configs
 - `experiments/` - Experiment variations
 - `templates/` - Config templates
 
 **Common Tasks**:
+
 ```bash
 # Create experiment
 cp configs/templates/experiment.yaml configs/experiments/{paper}/{name}.yaml
@@ -250,6 +263,7 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
 **Steps**:
 
 1. **Scaffold**:
+
    ```bash
    python tools/paper-scaffold/scaffold.py \
        --paper resnet \
@@ -259,6 +273,7 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
    ```
 
 2. **Configure**:
+
    ```bash
    # Copy and edit configs
    cp configs/templates/paper.yaml configs/papers/resnet/model.yaml
@@ -266,17 +281,20 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
    ```
 
 3. **Implement**:
+
    ```bash
    cd papers/resnet/
    # Edit model.mojo, train.mojo
    ```
 
 4. **Test**:
+
    ```bash
    mojo test tests/papers/resnet/
    ```
 
 5. **Document**:
+
    ```bash
    # Update papers/resnet/README.md
    # Add docs/api/papers/resnet.md
@@ -287,12 +305,14 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
 **Steps**:
 
 1. **Implement**:
+
    ```bash
    # Add to appropriate location
    vim shared/core/layers/attention.mojo
    ```
 
 2. **Test**:
+
    ```bash
    # Add tests
    vim tests/shared/core/layers/test_attention.mojo
@@ -300,12 +320,14 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
    ```
 
 3. **Document**:
+
    ```bash
    # Update API docs
    vim docs/api/shared/layers.md
    ```
 
 4. **Example**:
+
    ```bash
    # Add usage example
    vim examples/custom_layer/attention_example.mojo
@@ -316,6 +338,7 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
 **Steps**:
 
 1. **Create Config**:
+
    ```bash
    cp configs/experiments/lenet5/baseline.yaml \
       configs/experiments/lenet5/augmented.yaml
@@ -323,17 +346,20 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
    ```
 
 2. **Run Training**:
+
    ```bash
    mojo papers/lenet5/train.mojo --config experiments/lenet5/augmented
    ```
 
 3. **Benchmark**:
+
    ```bash
    mojo benchmarks/scripts/run_benchmarks.mojo \
        --experiment lenet5/augmented
    ```
 
 4. **Document**:
+
    ```bash
    # Record results
    vim docs/research/experiments/lenet5_augmentation.md
@@ -344,27 +370,32 @@ python scripts/lint_configs.py configs/experiments/{paper}/{name}.yaml
 **Steps**:
 
 1. **Measure**:
+
    ```bash
    mojo benchmarks/scripts/run_benchmarks.mojo --paper lenet5
    ```
 
 2. **Profile**:
+
    ```bash
    mojo tools/benchmarking/runner.mojo --target lenet5 --profile
    ```
 
 3. **Optimize**:
+
    ```bash
    # Edit code based on profiling
    vim papers/lenet5/model.mojo
    ```
 
 4. **Verify**:
+
    ```bash
    mojo benchmarks/scripts/run_benchmarks.mojo --paper lenet5 --compare
    ```
 
 5. **Document**:
+
    ```bash
    vim docs/advanced/optimization_techniques.md
    ```
@@ -467,6 +498,7 @@ Architectural Decision?
 **Solution**: Use the decision tree above or ask in team channel
 
 **Quick Check**:
+
 - ML implementation? → `papers/` or `shared/`
 - Tool/utility? → `tools/`
 - Configuration? → `configs/`
@@ -477,11 +509,13 @@ Architectural Decision?
 **Solution**: Use the 3-level hierarchy
 
 **Hierarchy**:
+
 1. `configs/defaults/` - Base settings
 2. `configs/papers/{paper}/` - Paper overrides
 3. `configs/experiments/{paper}/{exp}/` - Experiment overrides
 
 **Example**:
+
 ```bash
 # For baseline reproduction
 mojo papers/lenet5/train.mojo --config experiments/lenet5/baseline
@@ -503,6 +537,7 @@ python scripts/validate_links.py docs/path/to/file.md
 ```
 
 **Common Issues**:
+
 - Wrong relative path
 - File moved/renamed
 - Missing file extension

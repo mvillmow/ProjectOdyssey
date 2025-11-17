@@ -129,16 +129,19 @@ class TestComponentName:
 ## Examples
 
 **Generate unit test:**
+
 ```bash
 ./scripts/generate_test.sh "matrix_multiply" "unit"
 ```
 
 **Generate integration test:**
+
 ```bash
 ./scripts/generate_test.sh "neural_network" "integration"
 ```
 
 **Run specific test:**
+
 ```bash
 ./scripts/run_test.sh "test_matrix_multiply"
 ```

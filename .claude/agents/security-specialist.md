@@ -93,6 +93,7 @@ trivial fixes (` 20 lines, no design decisions).
 ### Security Scanning
 
 Use the `quality-security-scan` skill for vulnerability scanning:
+
 - **Invoke when**: Before committing sensitive code, in security reviews
 - **The skill handles**: Scans code for security vulnerabilities and unsafe patterns
 - **See**: [quality-security-scan skill](../.claude/skills/quality-security-scan/SKILL.md)
@@ -100,6 +101,7 @@ Use the `quality-security-scan` skill for vulnerability scanning:
 ### Code Quality Review
 
 Use the `quality-run-linters` skill for security code review:
+
 - **Invoke when**: Reviewing code for security issues
 - **The skill handles**: Runs all configured linters to catch potential issues
 - **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
@@ -107,6 +109,7 @@ Use the `quality-run-linters` skill for security code review:
 ### Memory Safety Validation
 
 Use the `mojo-memory-check` skill for memory safety:
+
 - **Invoke when**: Reviewing Mojo code for memory safety issues
 - **The skill handles**: Verifies ownership, borrowing, and lifetime management
 - **See**: [mojo-memory-check skill](../.claude/skills/mojo-memory-check/SKILL.md)
@@ -114,6 +117,7 @@ Use the `mojo-memory-check` skill for memory safety:
 ### Type Safety Validation
 
 Use the `mojo-type-safety` skill for type safety:
+
 - **Invoke when**: Reviewing Mojo code for type errors
 - **The skill handles**: Validates parametric types, trait constraints, compile-time checks
 - **See**: [mojo-type-safety skill](../.claude/skills/mojo-type-safety/SKILL.md)
@@ -121,6 +125,7 @@ Use the `mojo-type-safety` skill for type safety:
 ### Pull Request Creation
 
 Use the `gh-create-pr-linked` skill to create PRs:
+
 - **Invoke when**: Security fixes complete and ready for review
 - **The skill handles**: PR creation with proper issue linking
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)

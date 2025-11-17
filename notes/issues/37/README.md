@@ -12,22 +12,26 @@ efficient and reproducible machine learning data handling.
 The data utilities are organized into four major subsystems with 13 total components:
 
 #### 1. Dataset Classes (3 components)
+
 - **Base Dataset**: Abstract interface for all datasets
 - **Tensor Dataset**: In-memory dataset for tensors
 - **File Dataset**: Lazy-loading dataset from files
 
 #### 2. Data Loaders (3 components)
+
 - **Base Loader**: Core data loading interface
 - **Batch Loader**: Efficient batching with shuffling
 - **Parallel Loader**: Multi-threaded data loading
 
 #### 3. Transforms (4 components)
+
 - **Transform Pipeline**: Composable transformations
 - **Image Transforms**: Resize, crop, normalize
 - **Tensor Transforms**: Reshape, type conversion
 - **Augmentation Transforms**: Random augmentations
 
 #### 4. Samplers (3 components)
+
 - **Sequential Sampler**: Ordered sampling
 - **Random Sampler**: Shuffled sampling
 - **Weighted Sampler**: Class-balanced sampling

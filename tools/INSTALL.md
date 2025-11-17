@@ -45,6 +45,7 @@ python3 tools/setup/verify_tools.py
 ```
 
 The setup script will:
+
 1. Detect your environment (OS, Python, Mojo versions)
 2. Check for required dependencies
 3. Install Python packages (if needed)
@@ -224,6 +225,7 @@ sudo apt install python3 python3-pip git
 **Problem**: `ModuleNotFoundError: No module named 'tools'`
 
 **Solution**:
+
 ```bash
 # Option 1: Run from repository root
 cd /path/to/ml-odyssey
@@ -238,6 +240,7 @@ export PYTHONPATH=/path/to/ml-odyssey:$PYTHONPATH
 **Problem**: `Error: could not find module 'test_utils'`
 
 **Solution**:
+
 ```bash
 # Set MOJO_PATH
 export MOJO_PATH=/path/to/ml-odyssey
@@ -251,6 +254,7 @@ mojo -I /path/to/ml-odyssey/tools tools/benchmarking/model_bench.mojo
 **Problem**: `Permission denied` when running scripts
 
 **Solution**:
+
 ```bash
 # Make scripts executable
 chmod +x tools/*/\*.py
@@ -264,6 +268,7 @@ python3 tools/paper-scaffold/scaffold.py
 **Problem**: `ModuleNotFoundError: No module named 'jinja2'`
 
 **Solution**:
+
 ```bash
 # Install missing Python packages
 pip install jinja2 pyyaml
@@ -277,6 +282,7 @@ pip install -r tools/requirements.txt
 **Problem**: `mojo: command not found`
 
 **Solution**:
+
 ```bash
 # Install Mojo following official docs
 curl https://get.modular.com | sh -
@@ -297,6 +303,7 @@ python3 tools/setup/verify_tools.py --verbose
 ```
 
 **Expected Output**:
+
 ```text
 Checking prerequisites...
 ✓ Python 3.11.5 (required: 3.8+)

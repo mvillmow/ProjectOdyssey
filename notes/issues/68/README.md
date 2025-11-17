@@ -51,6 +51,7 @@ tests/tooling/tools/
 **Purpose**: Validate the tools/ directory structure exists and is properly organized.
 
 **Critical Tests** (MUST have):
+
 - `test_tools_directory_exists` - Verify tools/ exists at repository root
 - `test_tools_directory_location` - Verify correct location (under repo root)
 - `test_tools_directory_permissions` - Verify read/write/execute permissions
@@ -58,11 +59,13 @@ tests/tooling/tools/
 - `test_category_directory_names` - Verify correct naming (paper-scaffold, test-utils, benchmarking, codegen)
 
 **Important Tests** (SHOULD have):
+
 - `test_no_unexpected_directories` - Verify no extra directories
 - `test_category_directory_permissions` - Verify category dir permissions
 - `test_tools_readme_exists` - Verify main README.md present
 
 **Edge Cases**:
+
 - Directory already exists (idempotent)
 - Parent directories missing (should not occur in real repo)
 - Permission denied scenarios (testing error handling)
@@ -74,6 +77,7 @@ tests/tooling/tools/
 **Purpose**: Validate README.md files explain purpose and provide contribution guidelines.
 
 **Critical Tests** (MUST have):
+
 - `test_main_readme_exists` - Main tools/README.md present
 - `test_main_readme_has_purpose` - Contains "Purpose" or "Overview" section
 - `test_main_readme_has_categories` - Documents all 4 categories
@@ -82,6 +86,7 @@ tests/tooling/tools/
 - `test_category_readme_completeness` - Each README has required sections
 
 **Important Tests** (SHOULD have):
+
 - `test_main_readme_has_examples` - Contains usage examples
 - `test_main_readme_has_contribution_guide` - Has contribution section
 - `test_category_readme_has_coming_soon` - Documents future plans
@@ -89,6 +94,7 @@ tests/tooling/tools/
 
 **Documentation Requirements**:
 Each README.md must contain:
+
 - Clear purpose statement (what this tool/category does)
 - Language selection justification (Mojo vs Python)
 - Usage examples or "Coming Soon" placeholder
@@ -101,6 +107,7 @@ Each README.md must contain:
 **Purpose**: Validate tool categories have correct structure and organization.
 
 **Critical Tests** (MUST have):
+
 - `test_paper_scaffold_category_structure` - Verify paper-scaffold/ structure
 - `test_test_utils_category_structure` - Verify test-utils/ structure
 - `test_benchmarking_category_structure` - Verify benchmarking/ structure
@@ -109,11 +116,13 @@ Each README.md must contain:
 - `test_category_follows_naming_convention` - Lowercase with hyphens
 
 **Important Tests** (SHOULD have):
+
 - `test_category_has_templates_dir` - paper-scaffold has templates/
 - `test_category_supports_subdirectories` - Can create tool subdirectories
 - `test_language_strategy_alignment` - Category aligns with ADR-001
 
 **Edge Cases**:
+
 - Category with no tools yet (expected state)
 - Category with placeholder README only
 - Future tool additions (extensibility)
@@ -125,6 +134,7 @@ Each README.md must contain:
 **Purpose**: Provide reusable fixtures for future tool development tests.
 
 **Fixtures to Provide**:
+
 - `tools_root` - Path to tools/ directory
 - `category_paths` - Dictionary of category directory paths
 - `mock_tool_structure` - Sample tool directory for testing
@@ -132,6 +142,7 @@ Each README.md must contain:
 - `sample_python_tool` - Example Python tool with justification header
 
 **Usage Pattern**:
+
 ```python
 def test_tool_creation(tools_root, mock_tool_structure):
     """Test creating a new tool in a category."""
@@ -143,6 +154,7 @@ def test_tool_creation(tools_root, mock_tool_structure):
 Following Test Specialist guidelines, focusing on **quality over quantity**:
 
 **MUST Write** (Critical Infrastructure):
+
 1. Directory structure exists and is accessible
 2. All 4 categories present with correct names
 3. Main README.md exists and has purpose
@@ -150,12 +162,14 @@ Following Test Specialist guidelines, focusing on **quality over quantity**:
 5. All tests run in CI/CD pipeline
 
 **SHOULD Write** (Important Validation):
+
 1. Documentation completeness checks
 2. Language strategy documented
 3. Contribution guidelines present
 4. Fixtures for future tool development
 
 **Skip These Tests**:
+
 - Implementation details of tools (no tools exist yet)
 - Performance tests (no code to benchmark)
 - Complex integration tests (testing infrastructure only)
@@ -166,17 +180,20 @@ Following Test Specialist guidelines, focusing on **quality over quantity**:
 Following guidelines for **real implementations over mocks**:
 
 **Use Real Filesystem**:
+
 - ✅ Test against actual repository structure
 - ✅ Use pathlib.Path for real file operations
 - ✅ Use pytest tmp_path for isolated test environments when needed
 
 **Minimal Test Doubles**:
+
 - ✅ Use pytest fixtures for common paths
 - ✅ Create simple helper functions for validation
 - ❌ Do NOT create elaborate mocking frameworks
 - ❌ Do NOT mock filesystem operations (use tmp_path)
 
 **Example Approach**:
+
 ```python
 import pytest
 from pathlib import Path
@@ -212,6 +229,7 @@ def test_tools_exists(tools_root: Path) -> None:
    - Coverage enforced by CI (threshold: 80% overall)
 
 4. **Workflow Integration**:
+
    ```yaml
    # Already integrated via unit-tests.yml
    - name: Run Python unit tests
@@ -226,29 +244,34 @@ def test_tools_exists(tools_root: Path) -> None:
 ### Test Implementation Strategy
 
 **Phase 1: Directory Structure Tests** (Priority: Critical)
+
 - Create `test_directory_structure.py`
 - Validate tools/ and category directories exist
 - Test permissions and locations
 - **Estimated**: 30 minutes
 
 **Phase 2: Documentation Tests** (Priority: Critical)
+
 - Create `test_documentation.py`
 - Validate README completeness
 - Check documentation structure
 - **Estimated**: 45 minutes
 
 **Phase 3: Category Organization Tests** (Priority: Important)
+
 - Create `test_category_organization.py`
 - Validate category structure
 - Test naming conventions
 - **Estimated**: 30 minutes
 
 **Phase 4: Test Fixtures** (Priority: Important)
+
 - Create `conftest.py` with shared fixtures
 - Add helper fixtures for future tools
 - **Estimated**: 15 minutes
 
 **Phase 5: CI/CD Verification** (Priority: Critical)
+
 - Run tests locally
 - Verify pytest discovers all tests
 - Confirm fast execution (< 5 seconds)
@@ -277,6 +300,7 @@ pytest tests/tooling/tools/test_directory_structure.py::test_tools_directory_exi
 ### CI/CD Testing
 
 Tests automatically run on:
+
 - All pull requests
 - Pushes to main branch
 - Manual workflow dispatch
@@ -302,6 +326,7 @@ Workflow: `.github/workflows/unit-tests.yml`
 Tests provide clear, actionable error messages:
 
 **Good Error**:
+
 ```
 AssertionError: tools/paper-scaffold/README.md should exist
 Expected: /home/user/ml-odyssey/tools/paper-scaffold/README.md
@@ -311,6 +336,7 @@ Fix: Create README.md in paper-scaffold directory
 ```
 
 **Bad Error**:
+
 ```
 AssertionError: False is not True
 ```
@@ -320,6 +346,7 @@ AssertionError: False is not True
 ### Expected Outcomes
 
 After implementation, all tests should:
+
 - ✅ Pass on first run (infrastructure already created in planning phase)
 - ✅ Execute in < 5 seconds total
 - ✅ Achieve 100% coverage of infrastructure validation
@@ -329,6 +356,7 @@ After implementation, all tests should:
 ### Coverage Report
 
 Expected coverage for tools/ infrastructure:
+
 - `tools/README.md` - 100% (structure validated)
 - `tools/*/README.md` - 100% (all category READMEs validated)
 - Test files - 100% (all test code executed)
@@ -399,17 +427,20 @@ tests/tooling/tools/test_category_organization.py::test_paper_scaffold_structure
 ## Test Results Summary
 
 **Test Execution**:
+
 - Total Tests: 42
 - Passed: 42 (100%)
 - Failed: 0
 - Execution Time: 0.13 seconds
 
 **Test Breakdown**:
+
 - Directory Structure Tests: 11 tests (all passed)
 - Documentation Tests: 16 tests (all passed)
 - Category Organization Tests: 15 tests (all passed)
 
 **Success Metrics**:
+
 - All tests pass on first run after infrastructure creation
 - Execution time well under 5-second target (0.13s)
 - Tests are deterministic and reliable
@@ -417,6 +448,7 @@ tests/tooling/tools/test_category_organization.py::test_paper_scaffold_structure
 - Tests integrated into CI/CD pipeline via unit-tests.yml
 
 **Infrastructure Validated**:
+
 - tools/ directory exists at repository root with correct permissions
 - All 4 category directories present and accessible (paper-scaffold, test-utils, benchmarking, codegen)
 - Main tools/README.md documents purpose, categories, and language strategy

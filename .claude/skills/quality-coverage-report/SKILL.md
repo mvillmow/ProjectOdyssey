@@ -41,6 +41,7 @@ mojo test --coverage tests/
 ### Line Coverage
 
 Percentage of lines executed:
+
 ```text
 src/module.mojo
   Lines: 45/50 (90%)
@@ -50,6 +51,7 @@ src/module.mojo
 ### Branch Coverage
 
 Percentage of decision branches taken:
+
 ```text
 Branches: 8/10 (80%)
 Missing branches: 12->15, 18->20

@@ -3,6 +3,7 @@
 ## API Endpoints
 
 ### List Review Comments
+
 ```
 GET /repos/{owner}/{repo}/pulls/{pull_number}/comments
 ```
@@ -10,6 +11,7 @@ GET /repos/{owner}/{repo}/pulls/{pull_number}/comments
 Returns all review comments on a pull request.
 
 ### Create Review Comment Reply
+
 ```
 POST /repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies
 ```
@@ -21,12 +23,14 @@ Creates a reply to a review comment.
 ### Review Comments vs PR Comments
 
 **Review Comments** (inline code comments):
+
 - Attached to specific lines of code
 - Created during code review
 - Accessed via `/pulls/{pr}/comments` endpoint
 - Can have threaded replies
 
 **PR Comments** (general timeline comments):
+
 - Not attached to code
 - Show in PR timeline
 - Created via `gh pr comment`
@@ -60,21 +64,25 @@ gh pr checks PR
 ## Response Templates
 
 ### Standard Fix Confirmation
+
 ```
 ✅ Fixed - [concise description of change]
 ```
 
 ### Need Clarification
+
 ```
 ❓ Question - [specific question about the request]
 ```
 
 ### Won't Fix (with reason)
+
 ```
 ⚠️ Skipped - [brief reason why not applicable]
 ```
 
 ### In Progress
+
 ```
 🔄 Working on it - [expected completion]
 ```
@@ -82,15 +90,18 @@ gh pr checks PR
 ## Common Errors
 
 ### Error: 404 Not Found
+
 - Comment ID is invalid
 - PR number is wrong
 - Repository path is incorrect
 
 ### Error: 403 Forbidden
+
 - Insufficient permissions
 - Need to refresh auth: `gh auth refresh`
 
 ### Error: Comment not showing in thread
+
 - Used wrong endpoint (probably `gh pr comment`)
 - Comment ID was for different PR
 - Network error during POST

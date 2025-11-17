@@ -9,6 +9,7 @@
 **File**: `papers/_template/train.mojo`
 
 Add configuration loading:
+
 ```mojo
 from shared.utils import load_config, merge_configs
 
@@ -31,6 +32,7 @@ fn main() raises:
 **File**: `shared/training/trainer.mojo`
 
 Add config-driven initialization:
+
 ```mojo
 struct Trainer:
     var config: Config
@@ -79,6 +81,7 @@ jobs:
 #### 1. Update Main README
 
 Add configuration section:
+
 - How to use configurations
 - Link to configs/README.md
 - Example code snippets
@@ -109,6 +112,7 @@ Add configuration section:
 #### 1. Refactor Config Utility
 
 Review and improve `shared/utils/config.mojo`:
+
 - Remove TODO comments
 - Optimize performance
 - Improve error messages
@@ -117,6 +121,7 @@ Review and improve `shared/utils/config.mojo`:
 #### 2. Standardize Config Files
 
 Ensure all configs follow standards:
+
 - Consistent formatting (2-space indent)
 - Descriptive comments
 - No redundant values
@@ -151,6 +156,7 @@ Ensure all configs follow standards:
 **File**: `configs/COOKBOOK.md`
 
 Common recipes:
+
 - Multi-GPU configuration
 - Distributed training setup
 - Hyperparameter sweep configs
@@ -168,6 +174,7 @@ Common recipes:
 #### 2. Config Linting
 
 Create `scripts/lint_configs.py`:
+
 - Check for unused parameters
 - Detect duplicate values
 - Warn about deprecated keys
@@ -251,6 +258,7 @@ Issue #76 (Cleanup) ← Requires #73, #74, #75 complete
 ### Parallel Work Opportunities
 
 After Issue #72 completes:
+
 - #73, #74, #75 can proceed in parallel
 - Different team members can work simultaneously
 - Daily sync to ensure alignment

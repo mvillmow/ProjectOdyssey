@@ -139,23 +139,29 @@ fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[d
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -165,11 +171,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -177,12 +186,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -196,13 +208,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -227,6 +242,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 
 - [Documentation Specialist](./documentation-specialist.md) - documentation strategy and requirements
 - [Implementation Engineer](./implementation-engineer.md) - code understanding
+
 ## Delegation
 
 ### Delegates To
@@ -243,6 +259,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 ### Escalation Path
 
 When blocked or needing guidance:
+
 1. Escalate to immediate supervisor (relevant Specialist)
 2. If still blocked, Specialist escalates to Design level
 3. If architectural issue, escalates to Orchestrator level
@@ -256,6 +273,7 @@ When blocked or needing guidance:
 ### Issue Documentation
 
 Use the `doc-issue-readme` skill to generate issue documentation:
+
 - **Invoke when**: Starting work on documentation issue
 - **The skill handles**: README.md creation in issue directories
 - **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
@@ -263,6 +281,7 @@ Use the `doc-issue-readme` skill to generate issue documentation:
 ### Architecture Decision Records
 
 Use the `doc-generate-adr` skill to create ADRs:
+
 - **Invoke when**: Documenting architectural decisions
 - **The skill handles**: Properly formatted ADR file creation with templates
 - **See**: [doc-generate-adr skill](../.claude/skills/doc-generate-adr/SKILL.md)
@@ -270,6 +289,7 @@ Use the `doc-generate-adr` skill to create ADRs:
 ### Markdown Validation
 
 Use the `doc-validate-markdown` skill before committing:
+
 - **Invoke when**: Before committing markdown files
 - **The skill handles**: Formatting validation, link checking, style compliance
 - **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
@@ -277,6 +297,7 @@ Use the `doc-validate-markdown` skill before committing:
 ### Blog Updates
 
 Use the `doc-update-blog` skill for blog maintenance:
+
 - **Invoke when**: Updating blog posts with milestones
 - **The skill handles**: Blog formatting, milestone updates
 - **See**: [doc-update-blog skill](../.claude/skills/doc-update-blog/SKILL.md)
@@ -284,6 +305,7 @@ Use the `doc-update-blog` skill for blog maintenance:
 ### Pull Request Creation
 
 Use the `gh-create-pr-linked` skill to create PRs:
+
 - **Invoke when**: Documentation complete and ready for review
 - **The skill handles**: PR creation with proper issue linking
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
@@ -333,7 +355,7 @@ Use the `gh-create-pr-linked` skill to create PRs:
 
 See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues, verification steps, and requirements.
 
-**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue `issue-number``, verify issue is linked.
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue`issue-number``, verify issue is linked.
 
 ### Verification
 

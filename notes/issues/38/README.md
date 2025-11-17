@@ -9,7 +9,7 @@ Create comprehensive test suite for data processing utilities following TDD prin
 ### Datasets (3 components, 3 test files)
 
 1. **test_base_dataset.mojo** (7 tests, 100 lines)
-   - Dataset interface requirements (__len__, __getitem__)
+   - Dataset interface requirements (**len**, **getitem**)
    - Index validation and negative indexing
    - Consistency and immutability guarantees
 
@@ -26,17 +26,17 @@ Create comprehensive test suite for data processing utilities following TDD prin
 
 ### Loaders (3 components, 3 test files)
 
-4. **test_base_loader.mojo** (9 tests, 155 lines)
+1. **test_base_loader.mojo** (9 tests, 155 lines)
    - DataLoader interface requirements
    - Iteration and batch size consistency
    - drop_last and multi-epoch support
 
-5. **test_batch_loader.mojo** (11 tests, 240 lines)
+2. **test_batch_loader.mojo** (11 tests, 240 lines)
    - Fixed-size batching with tensor stacking
    - Shuffling (deterministic with seed, varies per epoch)
    - Performance and memory efficiency
 
-6. **test_parallel_loader.mojo** (12 tests, 260 lines)
+3. **test_parallel_loader.mojo** (12 tests, 260 lines)
    - Multi-threaded data loading
    - Worker coordination and correctness
    - Prefetching and resource cleanup
@@ -44,24 +44,24 @@ Create comprehensive test suite for data processing utilities following TDD prin
 
 ### Transforms (4 components, 4 test files)
 
-7. **test_pipeline.mojo** (12 tests, 200 lines)
+1. **test_pipeline.mojo** (12 tests, 200 lines)
    - Transform composition and chaining
    - Sequential application order
    - Error propagation and validation
 
-8. **test_image_transforms.mojo** (16 tests, 285 lines)
+2. **test_image_transforms.mojo** (16 tests, 285 lines)
    - Resize (upscaling, aspect ratio, interpolation)
    - Crop (center, random, with padding)
    - Normalize (basic, per-channel, range)
    - ColorJitter and Flip operations
 
-9. **test_tensor_transforms.mojo** (15 tests, 250 lines)
+3. **test_tensor_transforms.mojo** (15 tests, 250 lines)
    - Reshape (flatten, squeeze, unsqueeze)
    - Type conversion (Float32, Int32, uint8 scaling)
    - Transpose and permute dimensions
    - Lambda and Clamp transforms
 
-10. **test_augmentations.mojo** (11 tests, 215 lines)
+4. **test_augmentations.mojo** (11 tests, 215 lines)
     - Random augmentation determinism
     - RandomRotation, RandomCrop, RandomHorizontalFlip
     - RandomErasing (cutout)
@@ -69,17 +69,17 @@ Create comprehensive test suite for data processing utilities following TDD prin
 
 ### Samplers (3 components, 3 test files)
 
-11. **test_sequential.mojo** (11 tests, 190 lines)
+1. **test_sequential.mojo** (11 tests, 190 lines)
     - Sequential index generation
     - Deterministic ordering
     - Integration with DataLoader
 
-12. **test_random.mojo** (13 tests, 245 lines)
+2. **test_random.mojo** (13 tests, 245 lines)
     - Random shuffling with/without seed
     - Sampling with replacement
     - Correctness (all indices, no duplicates)
 
-13. **test_weighted.mojo** (16 tests, 320 lines)
+3. **test_weighted.mojo** (16 tests, 320 lines)
     - Weighted probabilistic sampling
     - Class balancing and inverse frequency
     - Determinism and error handling
@@ -113,21 +113,25 @@ Create comprehensive test suite for data processing utilities following TDD prin
 ### Critical Functionality (MUST have)
 
 ✅ **Dataset Interface**
+
 - `__len__` and `__getitem__` contracts
 - Index validation and negative indexing
 - Tuple return format (data, label)
 
 ✅ **Data Loading**
+
 - Batch creation and tensor stacking
 - Shuffling with deterministic seed
 - Parallel loading correctness
 
 ✅ **Transforms**
+
 - Sequential composition in Pipeline
 - Image operations (resize, crop, normalize)
 - Augmentation reproducibility
 
 ✅ **Sampling**
+
 - Sequential ordering preservation
 - Random permutation without replacement
 - Weighted sampling proportional to weights
@@ -135,16 +139,19 @@ Create comprehensive test suite for data processing utilities following TDD prin
 ### Important Functionality (SHOULD have)
 
 ✅ **Edge Cases**
+
 - Empty datasets and loaders
 - Single-sample datasets
 - Partial last batches
 
 ✅ **Integration**
+
 - DataLoader with custom samplers
 - Pipeline with multiple transforms
 - FileDataset with ParallelLoader
 
 ✅ **Determinism**
+
 - Seed-based reproducibility for all random operations
 - Consistent behavior across epochs
 
@@ -153,16 +160,19 @@ Create comprehensive test suite for data processing utilities following TDD prin
 ### From `tests/shared/conftest.mojo`
 
 ✅ **Assertion Functions**
+
 - `assert_true`, `assert_false`
 - `assert_equal`, `assert_not_equal`
 - `assert_almost_equal` (float comparison)
 - `assert_greater`, `assert_less`
 
 ✅ **Test Fixtures**
+
 - `TestFixtures.set_seed()` - Deterministic randomness
 - `TestFixtures.deterministic_seed()` - Fixed seed value (42)
 
 ✅ **Placeholder Fixtures** (to be implemented in Issue #1538)
+
 - `TestFixtures.small_tensor()` - 3x3 test tensor
 - `TestFixtures.synthetic_dataset()` - Synthetic data
 - `TestFixtures.sequential_dataset()` - Sequential indices
@@ -172,42 +182,49 @@ Create comprehensive test suite for data processing utilities following TDD prin
 ### 1. Test Structure
 
 **Decision**: One test file per component, organized by subsystem
+
 - **Rationale**: Mirrors implementation structure for easy navigation
 - **Benefit**: Clear mapping between tests and code being tested
 
 ### 2. TODO Comments
 
 **Decision**: All tests use `TODO(#39)` comments with implementation placeholders
+
 - **Rationale**: Tests are written but can't run until Issue #39 implements components
 - **Benefit**: TDD approach - tests define implementation requirements
 
 ### 3. Comprehensive Docstrings
 
 **Decision**: Every test function has detailed docstring explaining what/why
+
 - **Rationale**: Tests serve as specification and documentation
 - **Benefit**: Implementation engineers understand requirements clearly
 
 ### 4. Real Implementations Focus
 
 **Decision**: Tests assume real implementations, minimal mocking
+
 - **Rationale**: Follows project philosophy of testing behavior not implementation
 - **Benefit**: Tests survive refactoring, focus on correctness
 
 ### 5. Deterministic Testing
 
 **Decision**: All random operations use `TestFixtures.set_seed()` for reproducibility
+
 - **Rationale**: Ensures tests are not flaky, results are reproducible
 - **Benefit**: Debugging is easier, CI is reliable
 
 ## Alignment with Planning (Issue #37)
 
 ✅ **All 13 Components Covered**
+
 - Datasets: Base, Tensor, File ✓
 - Loaders: Base, Batch, Parallel ✓
 - Transforms: Pipeline, Image, Tensor, Augmentations ✓
 - Samplers: Sequential, Random, Weighted ✓
 
 ✅ **File Structure Matches Plan**
+
 ```text
 tests/shared/data/
 ├── datasets/
@@ -230,6 +247,7 @@ tests/shared/data/
 ```
 
 ✅ **Success Criteria Coverage**
+
 - Datasets load/iterate data efficiently: 30 tests ✓
 - Data loaders batch and shuffle: 32 tests ✓
 - Transforms compose correctly: 54 tests ✓
@@ -275,6 +293,7 @@ mojo test --coverage tests/shared/data/
 ### CI Workflow
 
 Tests will automatically run:
+
 - On PR creation/update (`.github/workflows/test-shared.yml`)
 - On push to `main` branch
 - As part of nightly builds

@@ -134,6 +134,7 @@ trivial fixes (` 20 lines, no design decisions).
 ### Parallel Development
 
 Use the `worktree-create` skill to enable parallel paper implementation:
+
 - **Invoke when**: Working on multiple paper components simultaneously
 - **The skill handles**: Creates isolated worktrees for data, model, training branches
 - **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
@@ -141,6 +142,7 @@ Use the `worktree-create` skill to enable parallel paper implementation:
 ### Worktree Cleanup
 
 Use the `worktree-cleanup` skill to maintain repository organization:
+
 - **Invoke when**: After merging paper implementation PRs
 - **The skill handles**: Cleans up merged or stale worktrees
 - **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
@@ -148,6 +150,7 @@ Use the `worktree-cleanup` skill to maintain repository organization:
 ### Issue Implementation
 
 Use the `gh-implement-issue` skill for paper components:
+
 - **Invoke when**: Starting work on data preparation, model implementation, or training
 - **The skill handles**: Branch creation, implementation, testing, PR creation
 - **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
@@ -155,6 +158,7 @@ Use the `gh-implement-issue` skill for paper components:
 ### Plan Management
 
 Use the `plan-regenerate-issues` skill to sync paper plans:
+
 - **Invoke when**: Modifying paper component plans
 - **The skill handles**: Regenerates github_issue.md files from plan.md
 - **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
@@ -162,6 +166,7 @@ Use the `plan-regenerate-issues` skill to sync paper plans:
 ### Agent Coordination
 
 Use the `agent-run-orchestrator` skill to coordinate paper specialists:
+
 - **Invoke when**: Running multiple paper component specialists in parallel
 - **The skill handles**: Specialist invocation and coordination
 - **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)

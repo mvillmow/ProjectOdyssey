@@ -60,6 +60,7 @@ done
 ### GitHub Actions Workflows
 
 Common workflows in ML Odyssey:
+
 - **test-agents** - Agent configuration validation
 - **pre-commit** - Code formatting and linting
 - **test-mojo** - Mojo unit tests (future)
@@ -88,6 +89,7 @@ gh run view <run-id> --log-failed
 ```
 
 **Fix:**
+
 ```bash
 pre-commit run --all-files
 git add .
@@ -126,6 +128,7 @@ gh run rerun <run-id>
 ## Verification Before Merge
 
 Checklist:
+
 - [ ] All required checks passing
 - [ ] No pending checks
 - [ ] Latest commit has checks
@@ -141,16 +144,19 @@ gh pr diff <pr-number>         # Changes look correct?
 ## Examples
 
 **Check PR status:**
+
 ```bash
 gh pr checks 42
 ```
 
 **Watch CI progress:**
+
 ```bash
 gh pr checks 42 --watch
 ```
 
 **View failed logs:**
+
 ```bash
 # Get run ID
 gh pr checks 42
@@ -160,6 +166,7 @@ gh run view 123456789 --log-failed
 ```
 
 **Rerun failed checks:**
+
 ```bash
 gh run rerun <run-id>
 ```

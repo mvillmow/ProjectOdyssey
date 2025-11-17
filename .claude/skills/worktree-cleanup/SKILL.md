@@ -48,6 +48,7 @@ git worktree remove --force ../ml-odyssey-42-feature
 ## Safety Checks
 
 Before removing, verify:
+
 - Branch is merged or no longer needed
 - No uncommitted changes (or backed up)
 - Not currently in worktree

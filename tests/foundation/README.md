@@ -78,6 +78,7 @@ Comprehensive test suite for supporting directories validation (benchmarks/, doc
 ### conftest.py
 
 Shared pytest fixtures for foundation tests:
+
 - `repo_root` - Real repository root directory
 - `benchmarks_dir` - Path to benchmarks/ directory
 - `docs_dir` - Path to docs/ directory

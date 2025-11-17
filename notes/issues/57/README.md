@@ -10,6 +10,7 @@ core concepts, advanced topics, and development guides.
 ### 4-Tier Documentation Structure
 
 #### Tier 1: Getting Started (6 documents)
+
 - README.md (project overview)
 - docs/getting-started/quickstart.md
 - docs/getting-started/installation.md
@@ -18,6 +19,7 @@ core concepts, advanced topics, and development guides.
 - CODE_OF_CONDUCT.md
 
 #### Tier 2: Core Documentation (8 documents)
+
 - docs/core/project-structure.md
 - docs/core/shared-library.md
 - docs/core/paper-implementation.md
@@ -28,6 +30,7 @@ core concepts, advanced topics, and development guides.
 - docs/core/configuration.md
 
 #### Tier 3: Advanced Topics (6 documents)
+
 - docs/advanced/performance.md
 - docs/advanced/custom-layers.md
 - docs/advanced/distributed-training.md
@@ -36,6 +39,7 @@ core concepts, advanced topics, and development guides.
 - docs/advanced/integration.md
 
 #### Tier 4: Development Guides (4 documents)
+
 - docs/dev/architecture.md
 - docs/dev/api-reference.md
 - docs/dev/release-process.md

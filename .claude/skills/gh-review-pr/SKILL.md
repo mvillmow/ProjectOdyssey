@@ -45,6 +45,7 @@ Use the review checklist from reference.md to ensure thorough evaluation:
 ### 3. Analyze Code Changes
 
 Focus on:
+
 - **Quality**: Clean, readable, maintainable code
 - **Standards**: Follows CLAUDE.md guidelines
 - **Security**: No vulnerabilities or unsafe patterns
@@ -64,6 +65,7 @@ Use the review comment template from templates/review_comment.md to provide stru
 ## Output Format
 
 Provide review as markdown with sections:
+
 1. **Summary** - Overall assessment
 2. **Strengths** - What's done well
 3. **Issues** - Problems that must be fixed
@@ -73,11 +75,13 @@ Provide review as markdown with sections:
 ## Examples
 
 **Good usage:**
+
 - "Review PR #42"
 - "Check if PR #15 is ready to merge"
 - "Evaluate the quality of pull request 7"
 
 **Scripts Available:**
+
 - `scripts/check_pr_status.sh` - Check CI and review status
 - `scripts/analyze_changes.sh` - Analyze code changes
 - `scripts/validate_tests.sh` - Validate test coverage

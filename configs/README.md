@@ -197,6 +197,7 @@ python scripts/lint_configs.py -v configs/
 ### Creating New Configurations
 
 1. **For a new paper implementation:**
+
    ```bash
    # Create directory
    mkdir -p configs/papers/resnet
@@ -210,6 +211,7 @@ python scripts/lint_configs.py -v configs/
    ```
 
 2. **For a new experiment:**
+
    ```bash
    # Copy template
    cp configs/templates/experiment.yaml configs/experiments/resnet/improved.yaml
@@ -228,15 +230,18 @@ python scripts/lint_configs.py -v configs/
 ### Troubleshooting
 
 **Issue**: Configuration not loading
+
 - Check file path exists
 - Validate YAML syntax with linter
 - Ensure proper indentation (2 spaces)
 
 **Issue**: Environment variable not resolved
+
 - Export the variable: `export ML_ODYSSEY_DATA=/path/to/data`
 - Or use the default value after `:-` in the config
 
 **Issue**: Value type mismatch
+
 - Ensure numbers don't have quotes
 - Use proper boolean values: `true/false` not `"true"/"false"`
 

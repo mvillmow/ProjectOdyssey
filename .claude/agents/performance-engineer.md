@@ -54,37 +54,46 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 When working with Mojo code, follow patterns in
 [mojo-language-review-specialist.md](./mojo-language-review-specialist.md). Key principles: prefer `fn` over `def`, use
 `owned`/`borrowed` for memory safety, leverage SIMD for performance-critical code.
+
 ### Mojo Language Patterns
 
 #### Function Definitions (fn vs def)
 
 **Use `fn` for**:
+
 - Performance-critical functions (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Functions that don't need dynamic behavior
+
 ```mojo
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -94,11 +103,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -106,12 +118,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -125,13 +140,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -156,6 +174,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 
 - [Performance Specialist](./performance-specialist.md) - optimization strategy and requirements
 - [Implementation Engineer](./implementation-engineer.md) - code changes and implementation
+
 ## Delegation
 
 ### Delegates To
@@ -172,6 +191,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 ### Escalation Path
 
 When blocked or needing guidance:
+
 1. Escalate to immediate supervisor (relevant Specialist)
 2. If still blocked, Specialist escalates to Design level
 3. If architectural issue, escalates to Orchestrator level
@@ -185,6 +205,7 @@ When blocked or needing guidance:
 ### SIMD Optimization
 
 Use the `mojo-simd-optimize` skill for SIMD optimizations:
+
 - **Invoke when**: Optimizing performance-critical tensor operations
 - **The skill handles**: SIMD vectorization patterns and optimization templates
 - **See**: [mojo-simd-optimize skill](../.claude/skills/mojo-simd-optimize/SKILL.md)
@@ -192,6 +213,7 @@ Use the `mojo-simd-optimize` skill for SIMD optimizations:
 ### Complexity Analysis
 
 Use the `quality-complexity-check` skill to identify optimization opportunities:
+
 - **Invoke when**: Analyzing code for performance bottlenecks
 - **The skill handles**: Cyclomatic complexity, nesting depth analysis
 - **See**: [quality-complexity-check skill](../.claude/skills/quality-complexity-check/SKILL.md)
@@ -199,6 +221,7 @@ Use the `quality-complexity-check` skill to identify optimization opportunities:
 ### Code Formatting
 
 Use the `mojo-format` skill to format optimized code:
+
 - **Invoke when**: After implementing optimizations
 - **The skill handles**: Mojo code formatting
 - **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)

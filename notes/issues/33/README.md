@@ -30,19 +30,19 @@ Created 9 test files covering all training utility components (4,268 total lines
 
 ### Learning Rate Scheduler Tests (3 files, 1,181 lines)
 
-4. **test_step_scheduler.mojo** (374 lines, 13 test cases)
+1. **test_step_scheduler.mojo** (374 lines, 13 test cases)
    - Step decay at fixed intervals
    - Learning rate reduction by gamma factor
    - Multiple step reductions
    - Edge cases (zero step, negative gamma)
 
-5. **test_cosine_scheduler.mojo** (374 lines, 11 test cases)
+2. **test_cosine_scheduler.mojo** (374 lines, 11 test cases)
    - Cosine annealing curve following
    - Smooth continuous decay
    - eta_min (minimum LR) parameter
    - T_max (period) configuration
 
-6. **test_warmup_scheduler.mojo** (433 lines, 15 test cases)
+3. **test_warmup_scheduler.mojo** (433 lines, 15 test cases)
    - Linear warmup from start_lr to target_lr
    - Integration with other schedulers (chaining)
    - Monotonic increase property
@@ -50,19 +50,19 @@ Created 9 test files covering all training utility components (4,268 total lines
 
 ### Callback System Tests (3 files, 1,279 lines)
 
-7. **test_checkpointing.mojo** (402 lines, 12 test cases)
+1. **test_checkpointing.mojo** (402 lines, 12 test cases)
    - Saving complete training state
    - Loading and restoring state
    - Best model tracking
    - Filepath templates and directory creation
 
-8. **test_early_stopping.mojo** (427 lines, 12 test cases)
+2. **test_early_stopping.mojo** (427 lines, 12 test cases)
    - Monitoring validation metrics
    - Stopping when no improvement
    - Patience parameter handling
    - Restoring best weights
 
-9. **test_logging_callback.mojo** (450 lines, 18 test cases)
+3. **test_logging_callback.mojo** (450 lines, 18 test cases)
    - Training progress logging
    - Metric tracking and history
    - Verbosity levels (silent, progress bar, one-line)
@@ -75,16 +75,19 @@ Created 9 test files covering all training utility components (4,268 total lines
 All 9 components from Issue #32 planning have comprehensive test coverage:
 
 **Base Trainer (3 components)**:
+
 - Trainer Interface: Contract validation, training workflow, checkpointing
 - Training Loop: Forward/backward passes, weight updates, batch processing
 - Validation Loop: Evaluation without updates, metrics computation
 
 **Learning Rate Schedulers (3 components)**:
+
 - Step Scheduler: Fixed interval decay, gamma factor, multiple steps
 - Cosine Scheduler: Smooth annealing, cosine curve, eta_min/T_max
 - Warmup Scheduler: Linear increase, scheduler chaining, stability
 
 **Callback System (3 components)**:
+
 - Checkpointing: State save/load, best model tracking, file management
 - Early Stopping: Patience-based stopping, best weight restoration
 - Logging Callback: Progress tracking, metric history, formatting
@@ -92,6 +95,7 @@ All 9 components from Issue #32 planning have comprehensive test coverage:
 ### Test Categories
 
 Each component includes:
+
 - **Initialization tests**: Parameter validation and setup
 - **Core functionality tests**: Primary behavior and API contracts
 - **Integration tests**: Interaction with other components
@@ -101,6 +105,7 @@ Each component includes:
 ### Key Test Scenarios
 
 **Critical Tests (MUST work)**:
+
 - Training loop updates weights correctly
 - Validation never modifies weights
 - Schedulers adjust learning rates as specified
@@ -109,6 +114,7 @@ Each component includes:
 - Callbacks integrate with training workflow
 
 **Important Tests (SHOULD work)**:
+
 - Gradient accumulation and zeroing
 - Different batch sizes handling
 - Multiple scheduler chaining
@@ -120,16 +126,19 @@ Each component includes:
 ### From tests/shared/conftest.mojo
 
 **Assertion Functions**:
+
 - `assert_true()`, `assert_false()`, `assert_equal()`
 - `assert_almost_equal()` - Float comparison with tolerance
 - `assert_greater()`, `assert_less()` - Numeric comparisons
 
 **Test Data Generators**:
+
 - `create_test_vector()` - Simple test vectors
 - `create_test_matrix()` - 2D test matrices
 - `create_sequential_vector()` - Sequential values
 
 **Test Fixtures**:
+
 - `TestFixtures.deterministic_seed()` - Reproducible randomness
 - Future fixtures for tensors, models, datasets (TODO in conftest)
 
@@ -180,6 +189,7 @@ All 9 components from Issue #32 have dedicated test files:
 Tests define API contracts for all planned interfaces:
 
 **Trainer Interface**:
+
 ```mojo
 trait Trainer:
     fn train(self, epochs: Int, train_loader: DataLoader, val_loader: DataLoader) -> Dict
@@ -189,6 +199,7 @@ trait Trainer:
 ```
 
 **Learning Rate Schedulers**:
+
 ```mojo
 StepLR(optimizer: Optimizer, step_size: Int, gamma: Float32 = 0.1)
 CosineAnnealingLR(optimizer: Optimizer, T_max: Int, eta_min: Float32 = 0.0)
@@ -196,6 +207,7 @@ LinearWarmup(optimizer: Optimizer, warmup_epochs: Int, start_lr: Float32 = 0.0)
 ```
 
 **Callbacks**:
+
 ```mojo
 Checkpointing(filepath: String, monitor: String, save_best_only: Bool, save_frequency: Int)
 EarlyStopping(monitor: String, patience: Int, min_delta: Float32, restore_best_weights: Bool)
@@ -264,6 +276,7 @@ LoggingCallback(metrics: List[String], log_frequency: Int, verbose: Int)
 ### Test Implementation Strategy
 
 Following TDD workflow:
+
 1. **Red**: Tests written (currently failing/stubbed)
 2. **Green**: Implementation makes tests pass (Issue #34)
 3. **Refactor**: Code cleanup and optimization (Issue #36)
@@ -271,16 +284,19 @@ Following TDD workflow:
 ### Testing Philosophy
 
 **Quality over Quantity**:
+
 - Each test validates specific behavior
 - Tests should survive refactoring (test behavior, not implementation)
 - No tests "just for coverage" - each test adds value
 
 **Critical Path Focus**:
+
 - Core functionality thoroughly tested (training loop, weight updates)
 - Integration points tested (scheduler+optimizer, callbacks+trainer)
 - Edge cases for security/correctness (validation no-op, checkpoint restore)
 
 **Deterministic and Fast**:
+
 - All tests use fixed seeds
 - No flaky tests allowed
 - Tests run in < 5 minutes (CI requirement)
@@ -288,6 +304,7 @@ Following TDD workflow:
 ### Validation Against PyTorch
 
 Several tests include PyTorch reference comparisons (TODO):
+
 - `test_sgd_matches_pytorch()` - Numerical correctness
 - `test_adam_matches_pytorch()` - Complex update rules
 - Cosine scheduler formula validation
@@ -299,6 +316,7 @@ These ensure our implementations match industry-standard behavior.
 Created comprehensive test suite for training utilities with **131 test cases** across **9 test files** (4,268 lines total). All tests define clear API contracts following TDD principles, covering 9 components from Issue #32 planning. Tests ready for implementation phase (Issue #34).
 
 **Test Distribution**:
+
 - Base Trainer: 50 test cases (38%)
 - Schedulers: 39 test cases (30%)
 - Callbacks: 42 test cases (32%)

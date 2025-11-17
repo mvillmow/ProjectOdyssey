@@ -38,6 +38,7 @@ method for completing tasks.
 Agents delegate to skills for automation using five standard patterns:
 
 **Pattern 1: Direct Delegation** - Agent needs specific automation
+
 ```markdown
 Use the `skill-name` skill to [action]:
 - **Invoke when**: [trigger condition]
@@ -45,6 +46,7 @@ Use the `skill-name` skill to [action]:
 ```
 
 **Pattern 2: Conditional Delegation** - Agent decides based on conditions
+
 ```markdown
 If [condition]:
   - Use the `skill-name` skill to [action]
@@ -53,6 +55,7 @@ Otherwise:
 ```
 
 **Pattern 3: Multi-Skill Workflow** - Agent orchestrates multiple skills
+
 ```markdown
 To accomplish [goal]:
 1. Use the `skill-1` skill to [step 1]
@@ -61,6 +64,7 @@ To accomplish [goal]:
 ```
 
 **Pattern 4: Skill Selection** - Orchestrator chooses skill based on analysis
+
 ```markdown
 Analyze [context]:
 - If [scenario A]: Use `skill-A`
@@ -68,12 +72,14 @@ Analyze [context]:
 ```
 
 **Pattern 5: Background vs Foreground** - Distinguishing automatic vs explicit invocation
+
 ```markdown
 Background automation: `ci-run-precommit` (runs automatically)
 Foreground tasks: `gh-create-pr-linked` (invoke explicitly)
 ```
 
 **Available Skills** (43 total across 9 categories):
+
 - **GitHub**: gh-review-pr, gh-fix-pr-feedback, gh-create-pr-linked, gh-check-ci-status, gh-implement-issue
 - **Worktree**: worktree-create, worktree-cleanup, worktree-switch, worktree-sync
 - **Phase Workflow**: phase-plan-generate, phase-test-tdd, phase-implement, phase-package, phase-cleanup

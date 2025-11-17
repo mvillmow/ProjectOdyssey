@@ -38,6 +38,7 @@ Clear separation of concerns between tools and scripts:
 | **Examples** | scaffold.py, benchmark.mojo | create_issues.py, validate_configs.sh |
 
 **Integration Pattern**:
+
 - Scripts may invoke tools for validation (e.g., `scripts/validate_configs.sh` could use `tools/validation/`)
 - Tools do NOT invoke scripts (separation of concerns)
 - Both respect repository conventions (language selection, file structure)
@@ -68,6 +69,7 @@ Tools can be integrated into GitHub Actions workflows:
 #### Current Integration Status
 
 **Existing Workflows** (`.github/workflows/`):
+
 - `pre-commit.yml` - Could integrate validation tools
 - `test-agents.yml` - Could use test utilities
 - `unit-tests.yml` - Could leverage test-utils fixtures
@@ -79,12 +81,14 @@ Tools can be integrated into GitHub Actions workflows:
 Tools support agent-driven workflows (`.claude/agents/`):
 
 **Agent Tool Usage**:
+
 - **Planning Agents**: Reference tool capabilities in specifications
 - **Implementation Agents**: Use tools for code generation and scaffolding
 - **Test Agents**: Leverage test utilities and fixtures
 - **Package Agents**: Use tools for distribution preparation
 
 **Example Agent Integration**:
+
 ```markdown
 ## Skills to Use
 
@@ -99,6 +103,7 @@ Tools support agent-driven workflows (`.claude/agents/`):
 ### Scenario 1: Creating a New Paper Implementation
 
 **Workflow**:
+
 ```bash
 # 1. Scaffold paper structure
 python tools/paper-scaffold/scaffold.py \
@@ -121,6 +126,7 @@ from tools.test_utils import generate_batch, ModelFixture
 ### Scenario 2: Running Benchmarks
 
 **Workflow**:
+
 ```bash
 # 1. Benchmark model performance
 mojo tools/benchmarking/model_bench.mojo \
@@ -136,6 +142,7 @@ python tools/benchmarking/report_generator.py \
 ### Scenario 3: Test-Driven Development
 
 **Workflow**:
+
 ```mojo
 // 1. Use test data generators
 from tools.test_utils import generate_batch
@@ -174,6 +181,7 @@ Tools respect repository configuration:
 See [`INSTALL.md`](./INSTALL.md) for complete setup instructions.
 
 Quick setup:
+
 ```bash
 # Run setup script
 python tools/setup/install_tools.py
@@ -187,6 +195,7 @@ python tools/setup/verify_tools.py
 ### Finding the Right Tool
 
 **Decision Tree**:
+
 ```text
 What do you need?
 ├── Create new paper structure → paper-scaffold/scaffold.py
@@ -211,11 +220,13 @@ See [`CATALOG.md`](./CATALOG.md) for complete tool listing with examples.
 ### 1. Tool Selection
 
 **DO**:
+
 - Use tools for repetitive tasks (scaffolding, code generation)
 - Use tools for performance measurement (benchmarking)
 - Use tools for test data generation (consistent, reproducible)
 
 **DON'T**:
+
 - Use tools for one-off tasks (write code directly)
 - Over-complicate simple tasks (KISS principle)
 - Rely on tools for critical logic (implement directly in Mojo)
@@ -223,6 +234,7 @@ See [`CATALOG.md`](./CATALOG.md) for complete tool listing with examples.
 ### 2. Integration Guidelines
 
 **When creating new tools**:
+
 - Follow ADR-001 language selection
 - Document integration points
 - Provide usage examples
@@ -230,6 +242,7 @@ See [`CATALOG.md`](./CATALOG.md) for complete tool listing with examples.
 - Update this integration guide
 
 **When modifying workflows**:
+
 - Consider tool integration opportunities
 - Update documentation
 - Test integration end-to-end
@@ -238,6 +251,7 @@ See [`CATALOG.md`](./CATALOG.md) for complete tool listing with examples.
 ### 3. Maintenance
 
 **Tool Health Checks**:
+
 ```bash
 # Verify all tools are functional
 python tools/setup/verify_tools.py --verbose
@@ -247,6 +261,7 @@ python tools/setup/check_dependencies.py
 ```
 
 **Quarterly Reviews**:
+
 - Assess tool usage (which tools are actually used?)
 - Update dependencies
 - Review Python tools for Mojo conversion

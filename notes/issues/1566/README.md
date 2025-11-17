@@ -20,12 +20,14 @@ Update the agent configuration validator to recognize `Task` as a valid tool, fi
 ## Problem
 
 PR #1565 added the `Task` tool to 17 agent configurations to enable sub-agent delegation:
+
 - 8 orchestrators (chief-architect, code-review-orchestrator, etc.)
 - 3 design agents (architecture-design, integration-design, security-design)
 - 3 coordination specialists
 - 3 specialists with delegation capabilities
 
 However, the validation script was not updated, causing CI failures:
+
 ```
 FAIL: code-review-orchestrator.md
   Errors:
@@ -61,11 +63,13 @@ VALID_TOOLS = {
 ### Changes Made
 
 **File: tests/agents/validate_configs.py**
+
 - Line 81: Added `"Task"` to `VALID_TOOLS` set
 
 ### Validation Results
 
 Before fix:
+
 ```
 Total files: 38
 Passed: 21
@@ -74,6 +78,7 @@ Total errors: 17
 ```
 
 After fix:
+
 ```
 Total files: 38
 Passed: 38
@@ -84,6 +89,7 @@ Total errors: 0
 ### Affected Agents (17 total)
 
 All these agents now pass validation:
+
 - agentic-workflows-orchestrator
 - architecture-design
 - blog-writer-specialist
@@ -106,4 +112,4 @@ All these agents now pass validation:
 
 - Issue #1566: This fix
 - PR #1565: Added Task tool to agent configurations
-- Failed CI run: https://github.com/mvillmow/ml-odyssey/actions/runs/19344583313/job/55341523510
+- Failed CI run: <https://github.com/mvillmow/ml-odyssey/actions/runs/19344583313/job/55341523510>

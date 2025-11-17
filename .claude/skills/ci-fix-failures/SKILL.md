@@ -55,6 +55,7 @@ Trailing whitespace....Failed
 ```
 
 **Fix:**
+
 ```bash
 pre-commit run --all-files
 git add .
@@ -69,6 +70,7 @@ test_tensor_add....FAILED
 ```
 
 **Fix:**
+
 ```bash
 # Run tests locally
 mojo test tests/
@@ -85,6 +87,7 @@ Markdown lint....Failed
 ```
 
 **Fix:**
+
 ```bash
 npx markdownlint-cli2 --fix "**/*.md"
 git add .
@@ -99,6 +102,7 @@ Error: Cannot find module
 ```
 
 **Fix:**
+
 ```bash
 # Check dependencies
 # Update imports

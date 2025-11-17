@@ -227,6 +227,7 @@ agents/
 ### Foundation Layer
 
 **configs/** is the foundation - no dependencies:
+
 - Provides configuration to all other directories
 - Used by papers/, benchmarks/, tools/
 - Loaded by shared/utils/config_loader
@@ -234,6 +235,7 @@ agents/
 ### Integration Layer
 
 **tools/** integrates multiple directories:
+
 - Scaffolds papers/
 - Generates configs/
 - Creates test templates
@@ -242,6 +244,7 @@ agents/
 ### Coordination Layer
 
 **agents/** coordinates all workflows:
+
 - Automates paper implementation
 - Manages code review
 - Generates documentation
@@ -263,6 +266,7 @@ agents/
 6. **Document** in `docs/`
 
 **Integration**:
+
 - Tools generate structure → Papers implement → Configs provide parameters → Benchmarks measure → Docs explain
 
 ### Scenario 2: Optimizing Performance
@@ -278,6 +282,7 @@ agents/
 5. **Document** in `docs/advanced/`
 
 **Integration**:
+
 - Benchmarks identify issue → Tools profile → Code optimization → Benchmarks verify → Docs preserve knowledge
 
 ### Scenario 3: Running Experiments
@@ -293,6 +298,7 @@ agents/
 5. **Document** findings in `docs/research/`
 
 **Integration**:
+
 - Configs define variations → Papers execute → Benchmarks measure → Docs record results
 
 ### Scenario 4: Contributing Documentation
@@ -308,6 +314,7 @@ agents/
 5. **Review** with `agents/` (optional)
 
 **Integration**:
+
 - Docs created → Scripts validate → Agents review → Team benefits
 
 ### Scenario 5: Automating Workflows
@@ -323,6 +330,7 @@ agents/
 5. **Document** usage in `docs/`
 
 **Integration**:
+
 - Agents automate → Tools provide capabilities → Configs control behavior → Docs explain usage
 
 ## Best Practices
@@ -332,6 +340,7 @@ agents/
 **1. Use Configs for All Parameters**
 
 Don't hardcode:
+
 ```mojo
 # Bad
 var learning_rate = 0.001
@@ -346,6 +355,7 @@ var batch_size = config.get_int("training.batch_size")
 **2. Benchmark After Changes**
 
 Always run benchmarks after code changes:
+
 ```bash
 # After implementing optimization
 mojo benchmarks/scripts/run_benchmarks.mojo --compare
@@ -354,6 +364,7 @@ mojo benchmarks/scripts/run_benchmarks.mojo --compare
 **3. Generate Before Implementing**
 
 Use tools to avoid boilerplate:
+
 ```bash
 # Generate structure first
 python tools/paper-scaffold/scaffold.py --paper new_paper
@@ -366,6 +377,7 @@ cd papers/new_paper/
 **4. Document as You Go**
 
 Update documentation with code:
+
 ```bash
 # After implementing feature
 vim papers/new_paper/README.md  # Update paper docs
@@ -375,6 +387,7 @@ vim docs/api/papers/new_paper.md  # Update API docs
 **5. Validate Continuously**
 
 Run validation throughout development:
+
 ```bash
 # Validate structure
 python scripts/validate_structure.py
@@ -389,12 +402,14 @@ mojo test tests/
 ### Anti-Patterns to Avoid
 
 **Don't: Bypass Configs**
+
 ```mojo
 # Bad - hardcoded parameters
 var lr = 0.001
 ```
 
 **Do: Use Config System**
+
 ```mojo
 # Good - configurable parameters
 var config = load_paper_config("lenet5", "training")
@@ -402,12 +417,14 @@ var lr = config.get_float("optimizer.learning_rate")
 ```
 
 **Don't: Skip Benchmarking**
+
 ```bash
 # Bad - deploy without measuring
 git commit -m "optimized code" && git push
 ```
 
 **Do: Benchmark Before Committing**
+
 ```bash
 # Good - verify performance
 mojo benchmarks/scripts/run_benchmarks.mojo
@@ -415,6 +432,7 @@ git commit -m "optimized code (15% faster)" && git push
 ```
 
 **Don't: Duplicate Boilerplate**
+
 ```bash
 # Bad - manually create every file
 mkdir papers/new_paper
@@ -423,18 +441,21 @@ touch papers/new_paper/model.mojo
 ```
 
 **Do: Use Scaffolding Tools**
+
 ```bash
 # Good - generate structure
 python tools/paper-scaffold/scaffold.py --paper new_paper
 ```
 
 **Don't: Document in Isolation**
+
 ```text
 # Bad - docs not linked or indexed
 papers/my_paper/some_notes.txt
 ```
 
 **Do: Integrate with Doc System**
+
 ```text
 # Good - proper location and linking
 docs/research/my_paper_analysis.md
@@ -448,12 +469,14 @@ docs/index.md (with link to analysis)
 **Symptoms**: Configuration values not found or errors loading config
 
 **Check**:
+
 1. File exists at expected path
 2. YAML syntax is valid
 3. Environment variables are set
 4. Config hierarchy is correct
 
 **Solution**:
+
 ```bash
 # Validate config syntax
 python scripts/lint_configs.py configs/experiments/my_experiment.yaml
@@ -470,12 +493,14 @@ mojo -c "from shared.utils.config_loader import load_experiment_config; var c = 
 **Symptoms**: Benchmarks show performance degradation
 
 **Check**:
+
 1. Recent code changes
 2. Configuration changes
 3. Dependency updates
 4. System resource contention
 
 **Solution**:
+
 ```bash
 # Compare with baseline
 mojo benchmarks/scripts/compare_results.mojo \
@@ -494,12 +519,14 @@ git diff HEAD~1 papers/affected_paper/
 **Symptoms**: Tool script not executing or import errors
 
 **Check**:
+
 1. Tool exists in correct directory
 2. Python path includes tools/
 3. Dependencies installed
 4. File permissions correct
 
 **Solution**:
+
 ```bash
 # Check tool exists
 ls -la tools/paper-scaffold/scaffold.py
@@ -519,12 +546,14 @@ python /home/user/ml-odyssey/tools/paper-scaffold/scaffold.py
 **Symptoms**: Link validation errors or 404s in docs
 
 **Check**:
+
 1. File paths are correct
 2. Relative paths used properly
 3. Files not moved or renamed
 4. Markdown syntax correct
 
 **Solution**:
+
 ```bash
 # Validate all links
 python scripts/validate_links.py docs/
@@ -666,6 +695,7 @@ steps:
 ### Quick Reference
 
 **Need to...**
+
 - **Start new paper** → tools/paper-scaffold/ + configs/templates/
 - **Measure performance** → benchmarks/scripts/ + tools/benchmarking/
 - **Run experiments** → configs/experiments/ + papers/

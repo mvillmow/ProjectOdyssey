@@ -59,6 +59,7 @@ python3 scripts/regenerate_github_issues.py --section 02-shared-library
 ## Template 1 Format
 
 All components must follow 9-section format:
+
 1. Title
 2. Overview
 3. Parent Plan

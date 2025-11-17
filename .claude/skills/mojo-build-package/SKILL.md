@@ -18,6 +18,7 @@ This skill builds Mojo packages (`.mojopkg` files) for distribution and modular 
 ## What is a Mojo Package?
 
 A `.mojopkg` file is Mojo's compiled package format:
+
 - **Pre-compiled** - Faster loading than source
 - **Distributable** - Share without source code
 - **Modular** - Import as module
@@ -218,21 +219,25 @@ fn test():
 ## Examples
 
 **Build single package:**
+
 ```bash
 ./scripts/build_package.sh tensor
 ```
 
 **Build all packages:**
+
 ```bash
 ./scripts/build_all_packages.sh
 ```
 
 **Build and test:**
+
 ```bash
 ./scripts/build_package.sh tensor --test
 ```
 
 **Create distribution:**
+
 ```bash
 ./scripts/create_package_archive.sh v0.1.0
 ```
@@ -247,7 +252,7 @@ fn test():
 
 ## Templates
 
-- `templates/package_init.mojo` - Package __init__.mojo template
+- `templates/package_init.mojo` - Package **init**.mojo template
 - `templates/package_toml.toml` - Package metadata template
 
 ## Best Practices

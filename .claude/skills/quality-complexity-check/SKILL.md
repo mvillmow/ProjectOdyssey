@@ -19,6 +19,7 @@ Analyze and report code complexity metrics.
 ### 1. Cyclomatic Complexity
 
 Measures decision points (if, for, while):
+
 - **1-10**: Simple, easy to test
 - **11-20**: Moderate, consider refactoring
 - **21+**: Complex, needs refactoring
@@ -26,6 +27,7 @@ Measures decision points (if, for, while):
 ### 2. Nesting Depth
 
 Maximum levels of nesting:
+
 - **1-3**: Good
 - **4-5**: Consider flattening
 - **6+**: Needs refactoring
@@ -33,6 +35,7 @@ Maximum levels of nesting:
 ### 3. Function Length
 
 Lines of code in function:
+
 - **1-20**: Good
 - **21-50**: Acceptable
 - **51+**: Consider splitting

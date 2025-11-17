@@ -123,19 +123,19 @@ chmod +x scripts/build_training_package.sh
 mkdir -p dist/
 ```
 
-2. **Build binary package**:
+1. **Build binary package**:
 
 ```bash
 mojo package shared/training -o dist/training-0.1.0.mojopkg
 ```
 
-3. **Verify package created**:
+1. **Verify package created**:
 
 ```bash
 ls -lh dist/training-0.1.0.mojopkg
 ```
 
-4. **Test installation** (optional but recommended):
+1. **Test installation** (optional but recommended):
 
 ```bash
 ./scripts/install_verify_training.sh
@@ -274,7 +274,7 @@ The verification script ensures:
 - Package phase guide: `/agents/guides/package-phase-guide.md`
 - Training module source: `/shared/training/`
 - 5-phase workflow: `/notes/review/README.md`
-- Mojo packaging docs: https://docs.modular.com/mojo/manual/packages/
+- Mojo packaging docs: <https://docs.modular.com/mojo/manual/packages/>
 
 ## Next Steps
 

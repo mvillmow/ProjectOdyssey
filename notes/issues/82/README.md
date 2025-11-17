@@ -7,6 +7,7 @@ Design and document the comprehensive directory structure for `papers/` and `sha
 ## Summary
 
 This planning phase defines the complete directory structure and organization for:
+
 - **Papers Directory**: Individual paper implementations with consistent structure
 - **Shared Directory**: Reusable components across all paper implementations
 - **API Contracts**: Clear interfaces between papers and shared code
@@ -15,18 +16,21 @@ This planning phase defines the complete directory structure and organization fo
 ## Deliverables
 
 ### 1. Directory Structure Specifications
+
 - ✅ Papers directory template and organization
 - ✅ Shared library component organization
 - ✅ Clear separation of concerns
 - ✅ Dependency flow documentation
 
 ### 2. API Contracts
+
 - ✅ Interface definitions for shared components
 - ✅ Data flow contracts between layers
 - ✅ Type specifications for Mojo implementations
 - ✅ Integration points documentation
 
 ### 3. Architectural Design Documents
+
 - ✅ Component interaction patterns
 - ✅ Dependency management strategy
 - ✅ Performance considerations
@@ -108,6 +112,7 @@ papers/
 Each paper follows this standardized structure:
 
 #### Source Code (`src/`)
+
 ```text
 src/
 ├── __init__.mojo               # Package exports
@@ -121,6 +126,7 @@ src/
 ```
 
 #### Scripts (`scripts/`)
+
 ```text
 scripts/
 ├── download_paper.mojo         # Download original paper PDF
@@ -130,6 +136,7 @@ scripts/
 ```
 
 #### Tests (`tests/`)
+
 ```text
 tests/
 ├── __init__.mojo               # Test package initialization
@@ -141,6 +148,7 @@ tests/
 ```
 
 #### Data Management (`data/`)
+
 ```text
 data/
 ├── raw/                        # Original datasets (git-ignored)
@@ -150,6 +158,7 @@ data/
 ```
 
 #### Configuration (`configs/`)
+
 ```text
 configs/
 ├── base.yaml                   # Base configuration
@@ -163,6 +172,7 @@ configs/
 ### 1.3 Paper Naming Conventions
 
 Papers should be named using this convention:
+
 - Format: `<year>-<short-name>` or just `<short-name>`
 - Examples: `1998-lenet5`, `2012-alexnet`, `resnet`, `transformer`
 - Use lowercase with hyphens (kebab-case)
@@ -212,6 +222,7 @@ shared/
 ### 2.2 Component Details
 
 #### Core Components (`core/`)
+
 ```text
 core/
 ├── layers/
@@ -241,6 +252,7 @@ core/
 ```
 
 #### Training Components (`training/`)
+
 ```text
 training/
 ├── optimizers/
@@ -282,6 +294,7 @@ training/
 ### 3.1 Core Interfaces
 
 #### Module Interface
+
 ```mojo
 trait Module:
     """Base interface for all neural network modules."""
@@ -304,6 +317,7 @@ trait Module:
 ```
 
 #### Layer Interface
+
 ```mojo
 trait Layer(Module):
     """Base interface for neural network layers."""
@@ -320,6 +334,7 @@ trait Layer(Module):
 ### 3.2 Training Interfaces
 
 #### Optimizer Interface
+
 ```mojo
 trait Optimizer:
     """Base interface for optimizers."""
@@ -338,6 +353,7 @@ trait Optimizer:
 ```
 
 #### Dataset Interface
+
 ```mojo
 trait Dataset:
     """Base interface for datasets."""
@@ -354,12 +370,14 @@ trait Dataset:
 ### 3.3 Data Flow Contracts
 
 #### Tensor Shape Conventions
+
 - **Images**: `[batch, channels, height, width]` (NCHW format)
 - **Sequences**: `[batch, sequence_length, features]`
 - **Tabular**: `[batch, features]`
 - **Labels**: `[batch]` for classification, `[batch, targets]` for regression
 
 #### Type Specifications
+
 - **Default dtype**: `float32` for computations
 - **Integer types**: `int64` for indices, `int32` for counts
 - **Boolean types**: `bool` for masks and flags
@@ -371,6 +389,7 @@ trait Dataset:
 ### 4.1 Paper-Shared Integration
 
 Papers import from shared library:
+
 ```mojo
 # In papers/lenet5/src/model.mojo
 from shared.core.layers import Conv2D, Linear, ReLU
@@ -401,6 +420,7 @@ Utils → Core
 ### 4.3 Extension Points
 
 Papers can extend shared components:
+
 1. **Custom Layers**: Inherit from `Layer` trait
 2. **Custom Optimizers**: Implement `Optimizer` interface
 3. **Custom Datasets**: Implement `Dataset` interface
@@ -413,6 +433,7 @@ Papers can extend shared components:
 ### 5.1 When to Move Code to Shared
 
 Code should be moved from papers to shared when:
+
 - ✅ Used by 3+ paper implementations
 - ✅ Represents a standard ML component
 - ✅ Has a stable, well-defined interface
@@ -450,6 +471,7 @@ Code should be moved from papers to shared when:
 ### 6.1 Optimization Guidelines
 
 #### Mojo-Specific Optimizations
+
 - Use `fn` for performance-critical functions
 - Leverage SIMD for vectorizable operations
 - Use `@always_inline` for hot paths
@@ -457,6 +479,7 @@ Code should be moved from papers to shared when:
 - Use `owned`/`borrowed` for memory safety
 
 #### Data Loading Performance
+
 - Implement lazy loading for large datasets
 - Use prefetching to overlap I/O with computation
 - Cache transformed data when possible
@@ -465,6 +488,7 @@ Code should be moved from papers to shared when:
 ### 6.2 Performance Targets
 
 Shared components should achieve:
+
 - Matrix operations: Within 2x of BLAS performance
 - Data loading: No bottleneck on training
 - Memory usage: Minimal allocations in hot paths
@@ -477,6 +501,7 @@ Shared components should achieve:
 ### 7.1 Shared Library Testing
 
 All shared components must have:
+
 - ✅ Unit tests (≥90% coverage)
 - ✅ Integration tests
 - ✅ Performance benchmarks
@@ -486,6 +511,7 @@ All shared components must have:
 ### 7.2 Paper Implementation Testing
 
 Each paper should include:
+
 - ✅ Model architecture tests
 - ✅ Training pipeline tests
 - ✅ Accuracy verification
@@ -499,6 +525,7 @@ Each paper should include:
 ### 8.1 Shared Library Documentation
 
 Each component needs:
+
 - **API Documentation**: Complete docstrings
 - **Usage Examples**: Code snippets
 - **Performance Notes**: Complexity, memory usage
@@ -507,6 +534,7 @@ Each component needs:
 ### 8.2 Paper Documentation
 
 Each paper requires:
+
 - **Paper Summary**: Key contributions
 - **Implementation Notes**: Deviations, design choices
 - **Results**: Comparison with original
@@ -518,6 +546,7 @@ Each paper requires:
 ## 9. Quality Assurance Checklist
 
 ### Before Adding to Shared
+
 - [ ] Used by 3+ papers or standard component?
 - [ ] Has comprehensive tests?
 - [ ] Well-documented with examples?
@@ -525,6 +554,7 @@ Each paper requires:
 - [ ] Reviewed by team?
 
 ### Before Implementing Paper
+
 - [ ] Template structure copied?
 - [ ] README updated with paper details?
 - [ ] Dependencies identified?
@@ -536,6 +566,7 @@ Each paper requires:
 ## 10. Future Enhancements
 
 ### Planned Improvements
+
 1. **Distributed Training Support**
    - Data parallel training
    - Model parallel training
@@ -573,6 +604,7 @@ The established API contracts and integration patterns provide a solid foundatio
 ## Next Steps
 
 With this planning complete, the implementation phases can proceed:
+
 1. **Test Phase**: Write tests for directory structure validation
 2. **Implementation Phase**: Create the actual directories and files
 3. **Package Phase**: Create distributable packages

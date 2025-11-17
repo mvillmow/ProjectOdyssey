@@ -43,11 +43,13 @@ gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | select(.in_reply_to_
 Keep responses **SHORT and CONCISE** (1 line preferred):
 
 **Good examples:**
+
 - `✅ Fixed - Updated conftest.py to use real repository root`
 - `✅ Fixed - Deleted test file as requested`
 - `✅ Fixed - Removed markdown linting section`
 
 **Bad examples:**
+
 - Long explanations (unless specifically asked)
 - Defensive responses
 - Multiple paragraphs

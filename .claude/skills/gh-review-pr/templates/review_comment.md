@@ -13,12 +13,15 @@
 ## Issues 🔧
 
 ### Critical
+
 - {Security vulnerabilities, breaking changes, test failures}
 
 ### Major
+
 - {Code quality issues, missing tests, documentation gaps}
 
 ### Minor
+
 - {Style improvements, optional refactorings}
 
 ## Suggestions 💡

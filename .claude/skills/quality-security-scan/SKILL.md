@@ -57,6 +57,7 @@ safety check
 ### .gitignore
 
 Ensure sensitive files ignored:
+
 ```text
 .env
 *.key

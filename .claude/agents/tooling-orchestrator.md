@@ -180,6 +180,7 @@ truly trivial fixes (< 20 lines, no design decisions).
 ### Parallel Development
 
 Use the `worktree-create` skill to enable parallel tool development:
+
 - **Invoke when**: Working on multiple tools simultaneously
 - **The skill handles**: Creates isolated worktrees for each tool feature
 - **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
@@ -187,6 +188,7 @@ Use the `worktree-create` skill to enable parallel tool development:
 ### Worktree Cleanup
 
 Use the `worktree-cleanup` skill to maintain repository organization:
+
 - **Invoke when**: After merging tool PRs
 - **The skill handles**: Cleans up merged or stale worktrees
 - **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
@@ -194,6 +196,7 @@ Use the `worktree-cleanup` skill to maintain repository organization:
 ### Issue Implementation
 
 Use the `gh-implement-issue` skill for tool development:
+
 - **Invoke when**: Starting work on a tooling issue
 - **The skill handles**: Branch creation, implementation, testing, PR creation
 - **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
@@ -201,6 +204,7 @@ Use the `gh-implement-issue` skill for tool development:
 ### Plan Management
 
 Use the `plan-regenerate-issues` skill to sync plans:
+
 - **Invoke when**: Modifying tooling component plans
 - **The skill handles**: Regenerates github_issue.md files from plan.md
 - **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
@@ -208,6 +212,7 @@ Use the `plan-regenerate-issues` skill to sync plans:
 ### Agent Coordination
 
 Use the `agent-run-orchestrator` skill to coordinate specialists:
+
 - **Invoke when**: Running multiple tool specialists in parallel
 - **The skill handles**: Specialist invocation and coordination
 - **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)

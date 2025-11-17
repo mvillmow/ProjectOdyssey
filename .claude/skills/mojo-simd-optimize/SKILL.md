@@ -38,6 +38,7 @@ fn simd_add(a: Tensor[DType.float32], b: Tensor[DType.float32]):
 ### 1. Vectorize Loops
 
 **Before:**
+
 ```mojo
 fn add_scalar(a: Tensor, b: Tensor):
     for i in range(a.size):
@@ -45,6 +46,7 @@ fn add_scalar(a: Tensor, b: Tensor):
 ```
 
 **After:**
+
 ```mojo
 fn add_simd(a: Tensor, b: Tensor):
     alias width = simdwidthof[DType.float32]()
@@ -90,6 +92,7 @@ fn aligned_load[width: Int](ptr: DTypePointer, offset: Int):
 ## Examples
 
 **Vector addition:**
+
 ```mojo
 fn add[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     alias width = simdwidthof[dtype]()
@@ -99,6 +102,7 @@ fn add[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
 ```
 
 **Matrix multiplication (tiled):**
+
 ```mojo
 fn matmul_simd[dtype: DType](A: Matrix[dtype], B: Matrix[dtype]):
     # Tile for cache + SIMD

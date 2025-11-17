@@ -19,6 +19,7 @@ This skill creates and manages git worktrees for parallel development on multipl
 Git worktrees allow multiple working directories from the same repository, each on a different branch.
 
 **Benefits:**
+
 - Work on multiple branches simultaneously
 - No need to stash/commit when switching contexts
 - Isolated environments for each issue
@@ -37,6 +38,7 @@ Git worktrees allow multiple working directories from the same repository, each 
 ```
 
 This creates:
+
 - Branch: `42-implement-tensor-ops`
 - Directory: `../ml-odyssey-42-implement-tensor-ops/`
 
@@ -120,23 +122,27 @@ cd ../ml-odyssey
 ## Examples
 
 **Create worktree for new feature:**
+
 ```bash
 ./scripts/create_worktree.sh 42 "tensor-operations"
 # Creates: ../ml-odyssey-42-tensor-operations/
 ```
 
 **Create worktree with custom location:**
+
 ```bash
 ./scripts/create_worktree.sh 42 "bugfix" "/tmp/worktrees"
 # Creates: /tmp/worktrees/ml-odyssey-42-bugfix/
 ```
 
 **List all worktrees:**
+
 ```bash
 git worktree list
 ```
 
 **Clean up merged worktrees:**
+
 ```bash
 ./scripts/cleanup_worktrees.sh
 ```

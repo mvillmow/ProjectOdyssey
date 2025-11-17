@@ -23,6 +23,7 @@ Top-level strategic decisions and architecture.
 ### Level 1: Section Orchestrators
 
 Coordinate entire sections:
+
 - Foundation Orchestrator
 - Shared Library Orchestrator
 - Tooling Orchestrator

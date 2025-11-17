@@ -5,6 +5,7 @@
 ### Code Quality Criteria
 
 **Mojo Code:**
+
 - Uses `fn` for performance-critical functions
 - Proper ownership and borrowing patterns
 - Type annotations present
@@ -12,6 +13,7 @@
 - Memory safety verified
 
 **Python Code:**
+
 - Type hints on all functions
 - Clear docstrings
 - Follows PEP 8
@@ -20,6 +22,7 @@
 ### Commit Message Standards
 
 Follow conventional commits:
+
 ```
 <type>(<scope>): <subject>
 
@@ -69,18 +72,21 @@ Types: feat, fix, docs, refactor, test, chore
 ## Review Severity Levels
 
 **Critical (Must Fix):**
+
 - Security vulnerabilities
 - Breaking changes without migration
 - Tests failing
 - CI failures
 
 **Major (Should Fix):**
+
 - Code quality issues
 - Missing tests
 - Incomplete documentation
 - Performance regressions
 
 **Minor (Nice to Have):**
+
 - Code style improvements
 - Refactoring opportunities
 - Additional tests
@@ -102,12 +108,14 @@ Types: feat, fix, docs, refactor, test, chore
 ### Language-Specific Issues
 
 **Mojo:**
+
 - Using `def` instead of `fn` for performance code
 - Missing type annotations
 - Unsafe memory operations
 - No SIMD optimizations in hot paths
 
 **Python:**
+
 - Missing type hints
 - No docstrings
 - Using Python for ML code (should use Mojo)
@@ -125,6 +133,7 @@ Types: feat, fix, docs, refactor, test, chore
 ## Review Response Templates
 
 ### Approval
+
 ```
 ✅ **Approved**
 
@@ -135,6 +144,7 @@ Ready to merge.
 ```
 
 ### Request Changes
+
 ```
 🔧 **Changes Requested**
 
@@ -145,6 +155,7 @@ Please fix these issues and I'll review again.
 ```
 
 ### Comments Only
+
 ```
 💬 **Comments**
 

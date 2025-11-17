@@ -68,17 +68,20 @@ tools/
 **Purpose**: Generate complete directory structure and boilerplate files for new paper implementations.
 
 **Core Functionality**:
+
 - Create paper directory structure following repository conventions
 - Generate model implementation stubs from templates
 - Create test file templates with proper structure
 - Generate documentation templates (README, notes)
 - Configure paper metadata and settings
 
-**Language Choice**: 
+**Language Choice**:
+
 - **Python** for main scaffolding script (requires regex for template processing)
 - **Mojo** templates for generated code (actual implementation files)
 
 **Example Usage**:
+
 ```bash
 # Create new paper implementation
 python tools/paper-scaffold/scaffold.py \
@@ -93,17 +96,20 @@ python tools/paper-scaffold/scaffold.py \
 **Purpose**: Provide reusable testing components for ML implementations.
 
 **Core Functionality**:
+
 - Generate synthetic test data (images, tensors, sequences)
 - Provide common test fixtures (models, datasets, configs)
 - Analyze test coverage and identify gaps
 - Measure and track performance metrics
 
 **Language Choice**:
+
 - **Mojo** for data generators and fixtures (performance, type safety)
 - **Python** for coverage analysis (integration with existing tools)
 - **Mojo** for performance utilities (accurate measurements)
 
 **Example Usage**:
+
 ```mojo
 from tools.test_utils import generate_batch, ModelFixture
 
@@ -119,6 +125,7 @@ fn test_forward_pass():
 **Purpose**: Measure and track performance characteristics of ML implementations.
 
 **Core Functionality**:
+
 - Benchmark model inference latency
 - Measure training throughput (samples/second)
 - Track memory usage during training/inference
@@ -126,10 +133,12 @@ fn test_forward_pass():
 - Generate performance reports and visualizations
 
 **Language Choice**:
+
 - **Mojo** for all benchmarking code (required for accurate ML performance measurement)
 - **Python** for report generation only (matplotlib/pandas for visualization)
 
 **Example Usage**:
+
 ```mojo
 from tools.benchmarking import ModelBenchmark
 
@@ -146,6 +155,7 @@ fn benchmark_lenet():
 **Purpose**: Generate boilerplate code and common patterns for ML implementations.
 
 **Core Functionality**:
+
 - Generate Mojo struct definitions from specifications
 - Create training loop boilerplate with proper structure
 - Generate data pipeline code for common formats
@@ -153,10 +163,12 @@ fn benchmark_lenet():
 - Generate backward pass implementations from forward definitions
 
 **Language Choice**:
+
 - **Python** for all code generators (string templating, regex for parsing)
 - Generated output is Mojo code
 
 **Example Usage**:
+
 ```bash
 # Generate layer implementation
 python tools/codegen/mojo_boilerplate.py \
@@ -229,6 +241,7 @@ Reference: ADR-001
 **Purpose**: Repository automation and maintenance
 
 **Contents**:
+
 - GitHub issue creation and management
 - CI/CD automation scripts
 - Repository maintenance utilities
@@ -236,6 +249,7 @@ Reference: ADR-001
 - Build and packaging scripts
 
 **Characteristics**:
+
 - Focused on repository operations
 - Integrate with external services (GitHub)
 - Run as part of CI/CD pipelines
@@ -246,12 +260,14 @@ Reference: ADR-001
 **Purpose**: Developer productivity during implementation
 
 **Contents**:
+
 - Paper scaffolding generators
 - Testing utilities and helpers
 - Performance benchmarking tools
 - Code generation utilities
 
 **Characteristics**:
+
 - Focused on development workflow
 - Used directly by developers
 - Support implementation tasks
@@ -270,30 +286,35 @@ Reference: ADR-001
 ## Design Principles
 
 ### 1. KISS (Keep It Simple Stupid)
+
 - Single-purpose tools with clear functionality
 - Minimal dependencies and configuration
 - Straightforward CLI interfaces
 - Clear error messages and help text
 
 ### 2. YAGNI (You Ain't Gonna Need It)
+
 - Build tools only when needed
 - Start with minimal feature set
 - Add complexity only when justified
 - Avoid premature optimization
 
 ### 3. Composability
+
 - Tools should work independently
 - Output formats that other tools can consume
 - Unix philosophy: do one thing well
 - Pipeline-friendly interfaces
 
 ### 4. Documentation First
+
 - Every tool has clear README
 - Usage examples for common scenarios
 - Error messages guide users to solutions
 - Contribution guidelines for extensions
 
 ### 5. Maintainability
+
 - Clear code structure and organization
 - Comprehensive test coverage
 - Regular dependency updates
@@ -314,6 +335,7 @@ Reference: ADR-001
    - Default to Mojo unless blocked
 
 3. **Create Tool Structure**
+
    ```text
    tools/<category>/<tool_name>/
    ├── README.md        # Documentation
@@ -337,18 +359,21 @@ Reference: ADR-001
 ### Maintenance Strategy
 
 **Regular Reviews** (Quarterly):
+
 - Assess tool usage and value
 - Update dependencies
 - Review Python tools for Mojo conversion
 - Archive unused tools
 
 **Version Compatibility**:
+
 - Track Mojo version requirements
 - Document breaking changes
 - Maintain compatibility matrix
 - Provide migration guides
 
 **Quality Standards**:
+
 - All tools must have tests
 - Documentation required before merge
 - Code review by tool category owner
@@ -357,30 +382,35 @@ Reference: ADR-001
 ## Implementation Phases
 
 ### Phase 1: Foundation (Week 1)
+
 - [x] Create planning documentation
 - [ ] Create tools/ directory structure
 - [ ] Write main README.md
 - [ ] Set up category subdirectories
 
 ### Phase 2: Paper Scaffolding (Week 2)
+
 - [ ] Create template system
 - [ ] Implement scaffold.py
 - [ ] Add paper templates
 - [ ] Write documentation
 
 ### Phase 3: Testing Utilities (Week 3)
+
 - [ ] Implement data generators
 - [ ] Create test fixtures
 - [ ] Add coverage integration
 - [ ] Document usage patterns
 
 ### Phase 4: Benchmarking (Week 4)
+
 - [ ] Create benchmark framework
 - [ ] Implement measurement tools
 - [ ] Add report generation
 - [ ] Create example benchmarks
 
 ### Phase 5: Code Generation (Week 5)
+
 - [ ] Design template system
 - [ ] Implement generators
 - [ ] Add common patterns
@@ -391,37 +421,45 @@ Reference: ADR-001
 ### Technical Risks
 
 **Risk**: Tool proliferation and maintenance burden
+
 - **Mitigation**: Quarterly reviews, clear archival process
 
 **Risk**: Language inconsistency confusion
+
 - **Mitigation**: Clear decision tree, ADR-001 reference
 
 **Risk**: Poor tool adoption
+
 - **Mitigation**: Focus on real problems, excellent documentation
 
 ### Process Risks
 
 **Risk**: Scope creep in tool functionality
+
 - **Mitigation**: Single-purpose principle, YAGNI enforcement
 
 **Risk**: Duplicate functionality with scripts/
+
 - **Mitigation**: Clear distinction documentation, reviews
 
 ## Monitoring and Success Metrics
 
 ### Usage Metrics
+
 - Number of papers scaffolded
 - Test utility adoption rate
 - Benchmark execution frequency
 - Code generation usage
 
 ### Quality Metrics
+
 - Tool test coverage (target: >80%)
 - Documentation completeness
 - Issue resolution time
 - User feedback scores
 
 ### Maintenance Metrics
+
 - Dependency update frequency
 - Python to Mojo conversion progress
 - Tool deprecation rate

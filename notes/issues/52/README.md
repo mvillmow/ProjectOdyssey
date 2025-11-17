@@ -10,16 +10,19 @@ to ensure performance consistency across development.
 ### 3-Tier Architecture
 
 #### Tier 1: Benchmarks Directory
+
 - Performance testing infrastructure
 - Benchmark scripts and results storage
 - Reproducible testing environment
 
 #### Tier 2: Benchmark Validator Tool
+
 - Load baseline benchmark data
 - Compare current results to baseline
 - Detect performance regressions
 
 #### Tier 3: CI/CD Integration
+
 - Automated benchmark execution
 - Baseline comparison in PR checks
 - Historical tracking

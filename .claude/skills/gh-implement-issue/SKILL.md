@@ -70,6 +70,7 @@ This executes:
 ```
 
 Output:
+
 ```text
 ✅ Issue #42: Add tensor operations
 ✅ Branch created: 42-add-tensor-ops
@@ -135,6 +136,7 @@ gh pr create --issue 42
 Format: `<issue-number>-<description>`
 
 Examples:
+
 - `42-add-tensor-ops`
 - `73-fix-memory-leak`
 - `105-update-docs`
@@ -198,6 +200,7 @@ Before creating PR:
 ## Examples
 
 **Implement feature:**
+
 ```bash
 ./scripts/implement_issue.sh 42
 # ... make changes ...
@@ -205,6 +208,7 @@ Before creating PR:
 ```
 
 **Implement bugfix:**
+
 ```bash
 ./scripts/implement_issue.sh 73
 # ... fix bug and add test ...

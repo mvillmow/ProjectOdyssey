@@ -20,6 +20,7 @@ This skill tests agent delegation patterns to ensure proper hierarchy and coordi
 ### Delegation Chains
 
 Verify agents delegate to correct subordinates:
+
 ```text
 Chief Architect (L0)
   → Section Orchestrator (L1)
@@ -31,6 +32,7 @@ Chief Architect (L0)
 ### Escalation Paths
 
 Verify agents can escalate to correct superiors:
+
 ```text
 Engineer (L4)
   → Specialist (L3)
@@ -40,6 +42,7 @@ Engineer (L4)
 ### Circular References
 
 Detect circular delegation:
+
 ```text
 ❌ Agent A → Agent B → Agent A
 ✅ Proper tree structure
@@ -93,6 +96,7 @@ python3 tests/agents/test_delegation.py .claude/agents/
 ### 1. Level Hierarchy
 
 Agents must delegate to lower levels:
+
 ```yaml
 # ✅ Correct
 level: 2
@@ -106,6 +110,7 @@ delegates_to: ["level-2-agent"]  # Higher level
 ### 2. Escalation Direction
 
 Agents must escalate to higher levels:
+
 ```yaml
 # ✅ Correct
 level: 3
@@ -130,6 +135,7 @@ Agent A → Agent C
 ### 4. Valid References
 
 All delegation targets must exist:
+
 ```yaml
 # ✅ Correct
 delegates_to: ["existing-agent"]
@@ -164,21 +170,25 @@ delegates_to: ["nonexistent-agent"]
 ## Examples
 
 **Test all delegation:**
+
 ```bash
 python3 tests/agents/test_delegation.py .claude/agents/
 ```
 
 **Test specific agent:**
+
 ```bash
 ./scripts/test_agent_delegation.sh implementation-specialist
 ```
 
 **Visualize hierarchy:**
+
 ```bash
 ./scripts/visualize_delegation.sh > delegation_tree.txt
 ```
 
 **Find circular dependencies:**
+
 ```bash
 ./scripts/find_circular_delegation.sh
 ```

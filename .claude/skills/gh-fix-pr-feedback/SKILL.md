@@ -33,6 +33,7 @@ This skill automates the process of addressing PR review feedback by making chan
 ### 2. Make Changes
 
 Address each review comment by:
+
 - Fixing code issues
 - Implementing suggestions
 - Refactoring as requested
@@ -69,12 +70,14 @@ git push
 Always use concise, clear replies:
 
 **Good replies:**
+
 - `✅ Fixed - Updated conftest.py to use real repository root`
 - `✅ Fixed - Removed duplicate test file`
 - `✅ Fixed - Added error handling for edge case`
 - `✅ Done - Renamed variable for clarity`
 
 **Bad replies:**
+
 - "Done" (not specific)
 - Long explanations (keep it brief)
 - Defensive responses (be constructive)
@@ -82,13 +85,17 @@ Always use concise, clear replies:
 ## CRITICAL: Two Types of Comments
 
 ### 1. PR-level Comments
+
 General comments in PR timeline:
+
 ```bash
 gh pr comment <pr-number> --body "Response"
 ```
 
 ### 2. Review Comment Replies
+
 Inline code review comment replies:
+
 ```bash
 gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
   --method POST \
@@ -131,16 +138,19 @@ After addressing feedback:
 ## Examples
 
 **Fix all feedback:**
+
 ```bash
 ./scripts/fix_all_feedback.sh 42
 ```
 
 **Reply to specific comment:**
+
 ```bash
 ./scripts/reply_to_comment.sh 42 123456 "✅ Fixed - Added validation"
 ```
 
 **Check if all comments addressed:**
+
 ```bash
 ./scripts/check_feedback_status.sh 42
 ```

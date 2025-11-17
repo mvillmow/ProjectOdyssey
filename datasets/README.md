@@ -28,6 +28,7 @@ download_mnist("datasets/mnist/")
 ### Dataset Organization
 
 Each dataset should be organized in its own subdirectory with:
+
 - `raw/` - Original downloaded data
 - `processed/` - Preprocessed data ready for training
 - `README.md` - Dataset documentation
@@ -44,6 +45,7 @@ Each dataset should be organized in its own subdirectory with:
 ### Dataset Format
 
 All datasets should provide:
+
 - Training data
 - Validation data  
 - Test data
@@ -52,18 +54,21 @@ All datasets should provide:
 ## Available Datasets
 
 ### MNIST
+
 - 60,000 training images
 - 10,000 test images
 - 28x28 grayscale images
 - 10 digit classes (0-9)
 
 ### CIFAR-10
+
 - 50,000 training images
 - 10,000 test images
 - 32x32 color images
 - 10 object classes
 
 ### Synthetic
+
 - Generated datasets for testing
 - Configurable size and complexity
 - Used for unit tests

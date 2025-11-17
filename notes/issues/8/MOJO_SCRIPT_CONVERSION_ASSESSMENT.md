@@ -62,6 +62,7 @@ var output = run("gh auth status")
 **Convertible**: 0
 
 **Reasons ALL scripts are blocked**:
+
 - Exit code checking required (authentication, command validation)
 - Regex parsing required (markdown, issue parsing)
 - File parsing with patterns
@@ -70,6 +71,7 @@ var output = run("gh auth status")
 ### Example: get_system_info.py
 
 Blocked by:
+
 - Line 39: `return (result.returncode == 0, result.stdout.strip())`
 - Line 199: `success, _ = run_command(["git", "rev-parse", "--git-dir"])`
 - Pattern: Check success, act on failure
@@ -95,6 +97,7 @@ Blocked by:
 | String manipulation | ✓ PASS | Basic methods work |
 
 **Exit code test results**:
+
 - `true` (exit 0): ✓ No exception
 - `false` (exit 1): ✓ No exception (should fail!)
 - `exit 42`: ✓ No exception (should fail!)
@@ -105,6 +108,7 @@ Blocked by:
 ### 1. Keep All Python Scripts in Python ✓ RECOMMENDED
 
 **Why**:
+
 - Existing scripts work reliably
 - No functional benefit from conversion
 - Avoid introducing silent failure bugs
@@ -116,12 +120,14 @@ Blocked by:
 ### 2. Use Mojo for ML Implementation ✓ RECOMMENDED
 
 **Good uses of Mojo**:
+
 - LeNet-5 implementation (Issue #4)
 - Tensor operations
 - Performance-critical algorithms
 - Core ML library code
 
 **Poor uses of Mojo**:
+
 - Automation scripts (no error checking)
 - Build tools (need reliability)
 - CI/CD scripts (need exit codes)
@@ -130,6 +136,7 @@ Blocked by:
 ### 3. Wait for Subprocess API Improvements
 
 **Needed features**:
+
 - Exit code access: `result.exit_code` or exception on failure
 - Separate stderr: `result.stderr`
 - Command as list: `run(["gh", "auth", "status"])`
@@ -146,6 +153,7 @@ Blocked by:
 > After thorough capability testing, Mojo's subprocess API is insufficient for script conversion:
 >
 > **Critical limitations**:
+>
 > 1. Exit codes are silently ignored - no way to detect command failure
 > 2. No exceptions raised on non-zero exit codes
 > 3. No regex support (mojo-regex not available in pixi)
@@ -180,8 +188,8 @@ Blocked by:
 
 ## References
 
-- **Mojo subprocess docs**: https://docs.modular.com/mojo/stdlib/subprocess/subprocess/run
-- **mojo-regex GitHub**: https://github.com/msaelices/mojo-regex (not available in pixi)
+- **Mojo subprocess docs**: <https://docs.modular.com/mojo/stdlib/subprocess/subprocess/run>
+- **mojo-regex GitHub**: <https://github.com/msaelices/mojo-regex> (not available in pixi)
 - **Issue #8**: Convert Python scripts to Mojo
 - **Test evidence**: See test scripts and results files above
 

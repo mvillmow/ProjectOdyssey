@@ -77,11 +77,13 @@ gh issue view <issue-number>
 ## Examples
 
 **Create PR linked to issue:**
+
 ```bash
 ./scripts/create_linked_pr.sh 42
 ```
 
 **Create PR with custom body:**
+
 ```bash
 ./scripts/create_linked_pr.sh 42 "Custom description of changes"
 ```

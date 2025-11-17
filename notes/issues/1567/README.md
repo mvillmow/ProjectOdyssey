@@ -38,27 +38,33 @@ reformatted tests/shared/fixtures/mock_models.mojo
 The mojo formatter makes these stylistic changes:
 
 ### 1. Function Signatures
+
 Removes space between `inout` and `self`:
 
 **Before:**
+
 ```mojo
 fn __init__(inout self, num_samples: Int = 100):
 ```
 
 **After:**
+
 ```mojo
 fn __init__(inoutself, num_samples: Int = 100):
 ```
 
 ### 2. Long Function Calls
+
 Breaks into multiple lines for readability:
 
 **Before:**
+
 ```mojo
 var input = create_random_tensor([self.input_dim], random_seed=item_seed)
 ```
 
 **After:**
+
 ```mojo
 var input = create_random_tensor(
     [self.input_dim], random_seed=item_seed
@@ -78,16 +84,19 @@ pixi run mojo format tests/shared/fixtures/*.mojo
 ### Changes Made
 
 **File: tests/shared/fixtures/mock_data.mojo**
+
 - 24 formatting changes
 - Reformatted 4 `__init__` signatures (removed `inout self` space)
 - Reformatted 6 long function calls (multi-line)
 
 **File: tests/shared/fixtures/mock_models.mojo**
+
 - 8 formatting changes
 - Reformatted 2 `__init__` signatures
 - Reformatted 3 long function calls
 
 **File: tests/shared/fixtures/mock_tensors.mojo**
+
 - 9 formatting changes
 - Reformatted 3 `__init__` signatures
 - Reformatted 2 long function calls
@@ -95,12 +104,14 @@ pixi run mojo format tests/shared/fixtures/*.mojo
 ### Validation Results
 
 Before formatting:
+
 ```bash
 $ pre-commit run --all-files
 Mojo Format..............................................................Failed
 ```
 
 After formatting:
+
 ```bash
 $ pre-commit run --all-files
 Mojo Format..............................................................Passed
@@ -121,5 +132,5 @@ This may be a formatter quirk or intended behavior in the current Mojo version.
 ## References
 
 - Issue #1567: This fix
-- Failed CI run: https://github.com/mvillmow/ml-odyssey/actions/runs/19345166126/job/55343508311
+- Failed CI run: <https://github.com/mvillmow/ml-odyssey/actions/runs/19345166126/job/55343508311>
 - Pre-commit config: `.pre-commit-config.yaml`

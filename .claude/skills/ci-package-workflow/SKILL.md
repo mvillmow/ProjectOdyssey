@@ -49,6 +49,7 @@ jobs:
 ### 1. Build on Tag
 
 Trigger on version tags:
+
 ```yaml
 on:
   push:
@@ -59,6 +60,7 @@ on:
 ### 2. Build on PR
 
 Validate packaging on PR:
+
 ```yaml
 on:
   pull_request:
@@ -70,6 +72,7 @@ on:
 ### 3. Manual Trigger
 
 Allow manual workflow runs:
+
 ```yaml
 on:
   workflow_dispatch:

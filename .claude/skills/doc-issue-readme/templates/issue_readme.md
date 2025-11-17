@@ -26,13 +26,14 @@ Brief description of what this issue accomplishes (1-2 sentences).
 - Agent guide: /agents/[relevant-agent].md
 - Design spec: /notes/review/[relevant-spec].md
 - Related issue: #XX
-- GitHub issue: https://github.com/org/repo/issues/XX
+- GitHub issue: <https://github.com/org/repo/issues/XX>
 
 ## Implementation Notes
 
 YYYY-MM-DD: [Note about progress or discoveries]
 
 Example:
+
 - Started implementation
 - Discovered issue with X, solved by Y
 - Performance optimization applied
@@ -43,6 +44,7 @@ Example:
 YYYY-MM-DD: [Note about testing]
 
 Example:
+
 - Unit tests created
 - Coverage: 85%
 - Edge cases identified and tested
@@ -53,6 +55,7 @@ Example:
 YYYY-MM-DD: [Note about review comments and resolutions]
 
 Example:
+
 - Reviewer suggested improvement to X
 - Fixed naming inconsistency
 - Added documentation for Y

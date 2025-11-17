@@ -142,6 +142,7 @@ Primarily **Plan** phase, must complete before other sections start Implementati
 ### Parallel Development
 
 Use the `worktree-create` skill to enable parallel development:
+
 - **Invoke when**: Starting work on multiple issues simultaneously
 - **The skill handles**: Creates isolated worktrees for each feature branch
 - **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
@@ -149,6 +150,7 @@ Use the `worktree-create` skill to enable parallel development:
 ### Worktree Cleanup
 
 Use the `worktree-cleanup` skill to maintain repository organization:
+
 - **Invoke when**: After merging PRs or when worktrees are no longer needed
 - **The skill handles**: Cleans up merged or stale worktrees
 - **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
@@ -156,6 +158,7 @@ Use the `worktree-cleanup` skill to maintain repository organization:
 ### Issue Implementation
 
 Use the `gh-implement-issue` skill for end-to-end automation:
+
 - **Invoke when**: Starting work on an issue from scratch
 - **The skill handles**: Branch creation, implementation, testing, PR creation
 - **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
@@ -163,6 +166,7 @@ Use the `gh-implement-issue` skill for end-to-end automation:
 ### Plan Management
 
 Use the `plan-regenerate-issues` skill to sync plans with GitHub:
+
 - **Invoke when**: plan.md files are modified
 - **The skill handles**: Regenerates github_issue.md files from plan.md
 - **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
@@ -170,6 +174,7 @@ Use the `plan-regenerate-issues` skill to sync plans with GitHub:
 ### Plan Validation
 
 Use the `plan-validate-structure` skill before committing:
+
 - **Invoke when**: Creating or modifying plan.md files
 - **The skill handles**: Validates directory structure and Template 1 format
 - **See**: [plan-validate-structure skill](../.claude/skills/plan-validate-structure/SKILL.md)
@@ -177,6 +182,7 @@ Use the `plan-validate-structure` skill before committing:
 ### Agent Coordination
 
 Use the `agent-run-orchestrator` skill to coordinate sub-orchestrators:
+
 - **Invoke when**: Running section orchestrators for parallel work
 - **The skill handles**: Orchestrator invocation and coordination
 - **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)

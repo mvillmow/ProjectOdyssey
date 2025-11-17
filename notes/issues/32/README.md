@@ -11,16 +11,19 @@ Build utilities for training machine learning models including a base trainer wi
 The training utilities are organized into three major subsystems with 13 total components:
 
 #### 1. Base Trainer (3 components)
+
 - **Trainer Interface**: Contract for all training implementations
 - **Training Loop**: Core iteration handling forward/backward passes
 - **Validation Loop**: Model evaluation without weight updates
 
 #### 2. Learning Rate Schedulers (3 components)
+
 - **Step Scheduler**: Reduces LR by fixed factor at intervals
 - **Cosine Scheduler**: Smooth annealing following cosine curve
 - **Warmup Scheduler**: Gradually increases LR to stabilize early training
 
 #### 3. Callback System (3 components)
+
 - **Checkpointing**: Saves/restores complete training state
 - **Early Stopping**: Terminates when validation stops improving
 - **Logging Callback**: Tracks and reports training progress
@@ -28,6 +31,7 @@ The training utilities are organized into three major subsystems with 13 total c
 ### Dependencies
 
 **Inputs Required**:
+
 - Core operations for forward and backward passes
 - Model architectures to train
 - Training configuration parameters

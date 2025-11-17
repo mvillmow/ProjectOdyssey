@@ -111,11 +111,13 @@ Additional context, considerations, or references.
 ## Examples
 
 **Generate new component plan:**
+
 ```bash
 ./scripts/generate_plan.sh "tensor-operations" "notes/plan/02-shared-library/01-core"
 ```
 
 **Validate existing plan:**
+
 ```bash
 ./scripts/validate_plan.sh "notes/plan/02-shared-library/01-core/plan.md"
 ```

@@ -51,6 +51,7 @@ Document progress and learnings in blog format.
 ## Location
 
 Progress blog entries go in:
+
 - `notes/blog/progress/YYYY-MM-DD-title.md`
 - `notes/blog/technical/topic-name.md`
 

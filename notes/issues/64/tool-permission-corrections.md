@@ -119,6 +119,7 @@ restricting Bash access to only test and performance specialists/engineers.
 ## Rationale
 
 Following the principle of least privilege:
+
 - **Bash access** is only needed for agents that must run tests or benchmarks
 - **Write access** is only needed for agents that create/modify files
 - **Edit access** is only needed for agents that update existing files

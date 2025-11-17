@@ -59,6 +59,7 @@ alias wtcd='cd $(git worktree list | fzf | awk "{print \$1}")'
 ### Terminal Multiplexer
 
 Use tmux/screen for persistent sessions per worktree:
+
 ```bash
 # Session per worktree
 tmux new -s issue-42

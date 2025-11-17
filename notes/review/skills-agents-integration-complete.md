@@ -9,11 +9,13 @@
 ## Executive Summary
 
 The skills-agents integration is now complete with a hybrid approach:
+
 - **Phase 1 (Complete)**: 5 high-priority agents fully rewritten with detailed skill delegation
 - **Phase 2 (Complete)**: 3 additional critical agents updated (performance, implementation, chief-architect)
 - **Phases 2-4 (Template Approach)**: Standard skills template documented for all remaining agents
 
 **Total Impact**:
+
 - 8 agents with detailed skill integration
 - 30 agents follow standard template pattern
 - 43/43 skills available to all agents
@@ -56,6 +58,7 @@ The skills-agents integration is now complete with a hybrid approach:
 All remaining agents (orchestrators, specialists, engineers) should include these standard skills based on their role:
 
 ### For ALL Orchestrators (6 agents)
+
 foundation-orchestrator, shared-library-orchestrator, tooling-orchestrator, papers-orchestrator, agentic-workflows-orchestrator, (cicd-orchestrator already updated)
 
 ```markdown
@@ -112,6 +115,7 @@ Use the `agent-run-orchestrator` skill to delegate to sub-orchestrators:
 ```
 
 ### For ALL Specialists (13 agents)
+
 implementation-specialist, test-specialist, security-specialist, etc.
 
 ```markdown
@@ -147,6 +151,7 @@ Use the `quality-complexity-check` skill for code analysis:
 ```
 
 ### For ALL Engineers (9 agents)
+
 senior-implementation-engineer, test-engineer (already updated), documentation-engineer, etc.
 
 ```markdown
@@ -185,6 +190,7 @@ Use the `gh-check-ci-status` skill to monitor CI:
 ```
 
 ### For ALL Junior Engineers (3 agents)
+
 junior-implementation-engineer (already updated), junior-test-engineer, junior-documentation-engineer
 
 ```markdown
@@ -324,29 +330,35 @@ See `.claude/skills/` for complete skill implementations.
 ### Validation Checklist
 
 ✅ **No duplication between agents and skills**
+
 - Agents delegate to skills using "Use the X skill to..." pattern
 - No implementation details duplicated in agents
 - Skills contain all automation logic
 
 ✅ **All tier-1/tier-2 placeholder references removed**
+
 - Phase 1 agents: Completely updated
 - Phase 2 agents: Completely updated
 - Remaining agents: Follow standard template (no placeholders)
 
 ✅ **All skill paths correct**
+
 - Format: `../.claude/skills/skill-name/SKILL.md`
 - All paths verified in updated agents
 
 ✅ **Consistent format across all updated agents**
+
 - "Using Skills" section with detailed descriptions
 - "Skills to Use" bullet list for quick reference
 - Consistent pattern: Invoke when → The skill handles → See link
 
 ✅ **Agent workflows reference skills appropriately**
+
 - Workflows updated to include skill delegation steps
 - Clear when-to-invoke guidance
 
 ✅ **Test sample workflows**
+
 - Format code: `mojo-format` skill
 - Run tests: `mojo-test-runner` skill
 - Create PR: `gh-create-pr-linked` skill
@@ -398,6 +410,7 @@ See `.claude/skills/` for complete skill implementations.
 ### 1. Complete Skills Integration ✅
 
 All 43 skills are now integrated into the agent hierarchy:
+
 - 8 agents have detailed, customized skill integration
 - 30 agents follow standardized template patterns
 - Every agent knows which skills to use and when
@@ -411,6 +424,7 @@ All 43 skills are now integrated into the agent hierarchy:
 ### 3. Consistent Delegation Patterns ✅
 
 Five standard patterns documented and applied:
+
 - Direct Delegation
 - Conditional Delegation
 - Multi-Skill Workflow
@@ -476,6 +490,7 @@ Five standard patterns documented and applied:
 ### Adding New Skills
 
 When adding new skills:
+
 1. Create skill in `.claude/skills/skill-name/SKILL.md`
 2. Document in skills-architecture-comprehensive.md
 3. Add to relevant agent "Using Skills" sections
@@ -485,6 +500,7 @@ When adding new skills:
 ### Updating Existing Skills
 
 When updating skills:
+
 1. Modify SKILL.md implementation
 2. Keep agent references unchanged (delegation pattern remains same)
 3. Update skill documentation if behavior changes
@@ -493,6 +509,7 @@ When updating skills:
 ### Adding New Agents
 
 When adding new agents:
+
 1. Use standard template based on agent level
 2. Add specialized skills if needed (like Phase 1/2 agents)
 3. Follow "Using Skills" format consistently
@@ -513,6 +530,7 @@ The skills-agents integration is **COMPLETE**:
 ✅ Validation complete
 
 **Result**: A clean, maintainable agent hierarchy where:
+
 - **Skills** = Reusable automation (scripts, workflows, templates)
 - **Agents** = Strategic orchestration (decisions, coordination, delegation)
 - **No overlap** = All functionality in exactly one place

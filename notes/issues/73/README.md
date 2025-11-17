@@ -37,11 +37,13 @@ Write comprehensive test cases for the configs/ directory configuration manageme
 **Status**: Ready to start (depends on Issue #72 complete)
 
 **Dependencies**:
+
 - Issue #72 (Plan) must be complete ✅
 - Can proceed in parallel with Issue #74 (Implementation)
 - Coordinates with Issue #74 for TDD workflow
 
 **Test Coverage Goals**:
+
 - Configuration loading: All file types (defaults, papers, experiments)
 - Configuration merging: 2-level and 3-level inheritance
 - Validation: Required fields, type checking, range validation
@@ -50,6 +52,7 @@ Write comprehensive test cases for the configs/ directory configuration manageme
 - Error handling: Missing files, invalid YAML, merge conflicts
 
 **Key Test Files**:
+
 1. `test_loading.mojo` - Load configs from all directories
 2. `test_merging.mojo` - Merge hierarchy (default → paper → experiment)
 3. `test_validation.mojo` - Validate config structure and values
@@ -58,12 +61,14 @@ Write comprehensive test cases for the configs/ directory configuration manageme
 6. `test_integration.mojo` - End-to-end workflows
 
 **TDD Approach**:
+
 - Write tests BEFORE implementation (coordinate with #74)
 - Tests should fail initially
 - Implementation in #74 makes tests pass
 - Iterate on test refinement
 
 **Next Steps**:
+
 - Review test specifications in `notes/issues/72/test-specifications.md`
 - Create test directory structure
 - Implement test cases following Mojo testing conventions

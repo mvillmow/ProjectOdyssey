@@ -72,6 +72,7 @@ git commit -m "docs: update foundation plan"
 ## Script Behavior
 
 The script:
+
 - Extracts title from plan.md
 - Formats sections for GitHub
 - Preserves issue numbers
@@ -81,6 +82,7 @@ The script:
 ## Validation
 
 After regenerating:
+
 ```bash
 # Validate issue format
 ./scripts/validate_issue_format.sh notes/plan/01-foundation/github_issue.md

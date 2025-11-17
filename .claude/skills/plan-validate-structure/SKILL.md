@@ -75,6 +75,7 @@ Validate plan structure follows Template 1 format.
 ```
 
 **Fix:**
+
 ```markdown
 ## Success Criteria
 
@@ -85,6 +86,7 @@ Validate plan structure follows Template 1 format.
 ## Template 1 Format
 
 Required sections:
+
 1. Title (# heading)
 2. Overview
 3. Parent Plan

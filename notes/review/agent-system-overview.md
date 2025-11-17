@@ -47,6 +47,7 @@ ml-odyssey/
 **Purpose**: Strategic decision-making and system-wide architecture
 
 **Responsibilities**:
+
 - Select AI research papers for implementation
 - Define repository-wide architectural patterns
 - Establish coding standards for Python and Mojo
@@ -58,6 +59,7 @@ ml-odyssey/
 **Purpose**: Coordinate work within major sections of the repository
 
 **Sections**:
+
 1. **Foundation** - Repository structure and configuration
 2. **Shared Library** - Core reusable components
 3. **Tooling** - Development and testing tools
@@ -70,6 +72,7 @@ ml-odyssey/
 **Purpose**: Design modules and coordinate code reviews
 
 **Types**:
+
 - **Architecture Design** - Module structure and interfaces
 - **Integration Design** - Cross-module coordination
 - **Security Design** - Security patterns and validation
@@ -81,6 +84,7 @@ ml-odyssey/
 **Purpose**: Specialized expertise for components and reviews
 
 **Component Specialists**:
+
 - Implementation - Core functionality
 - Test - Test strategy and coverage
 - Documentation - User and developer docs
@@ -88,6 +92,7 @@ ml-odyssey/
 - Security - Vulnerability assessment
 
 **Review Specialists** (coordinated by Code Review Orchestrator):
+
 - Algorithm Review - Correctness and complexity
 - Architecture Review - Design patterns
 - Data Engineering Review - Data flow
@@ -106,6 +111,7 @@ ml-odyssey/
 **Purpose**: Execute implementation tasks
 
 **Types**:
+
 - Senior Engineer - Complex implementations
 - Implementation Engineer - Standard features
 - Test Engineer - Test implementation
@@ -117,6 +123,7 @@ ml-odyssey/
 **Purpose**: Simple, well-defined tasks
 
 **Types**:
+
 - Junior Implementation - Basic coding
 - Junior Test - Simple tests
 - Junior Documentation - Basic documentation
@@ -126,7 +133,9 @@ ml-odyssey/
 ### Three-Tier Architecture
 
 #### Tier 1: Foundational Skills (10 skills)
+
 Basic capabilities every agent needs:
+
 - `analyze_code_structure` - Parse and understand code
 - `analyze_dependencies` - Map package dependencies
 - `check_consistency` - Verify coherence
@@ -139,7 +148,9 @@ Basic capabilities every agent needs:
 - `validate_syntax` - Check code syntax
 
 #### Tier 2: Domain Skills (15 skills)
+
 ML/AI and architecture-specific capabilities:
+
 - `analyze_model_architecture` - ML model structure
 - `detect_code_smells` - Code quality issues
 - `evaluate_complexity` - Algorithmic complexity
@@ -157,7 +168,9 @@ ML/AI and architecture-specific capabilities:
 - `suggest_improvements` - Enhancement ideas
 
 #### Tier 3: Specialized Skills (10 skills)
+
 Advanced, context-specific capabilities:
+
 - `adapt_to_mojo` - Python to Mojo conversion
 - `benchmark_performance` - Performance testing
 - `create_integration_tests` - End-to-end tests
@@ -192,30 +205,36 @@ Advanced, context-specific capabilities:
 Every component follows this structured workflow:
 
 ### Phase 1: Plan (Sequential)
+
 - Design specifications
 - Architecture decisions
 - Success criteria definition
 - Dependency mapping
 
 ### Phase 2-4: Parallel Execution
+
 After planning completes, three phases run in parallel:
 
 **Test Phase**:
+
 - Write tests first (TDD)
 - Define test scenarios
 - Create fixtures
 
 **Implementation Phase**:
+
 - Build functionality
 - Follow specifications
 - Implement features
 
 **Package Phase**:
+
 - Create distributable artifacts
 - Build `.mojopkg` files
 - Package documentation
 
 ### Phase 5: Cleanup (Sequential)
+
 - Refactor code
 - Fix issues found
 - Finalize documentation
@@ -226,12 +245,14 @@ After planning completes, three phases run in parallel:
 ### Language Selection Strategy
 
 **Mojo Required**:
+
 - ALL ML/AI implementations
 - Performance-critical code
 - SIMD kernels
 - Tensor operations
 
 **Python Allowed** (with justification):
+
 - Automation with subprocess output capture
 - Regex-heavy text processing
 - GitHub API interaction
@@ -295,16 +316,19 @@ After planning completes, three phases run in parallel:
 ## Future Enhancements
 
 ### Near-term (3 months)
+
 - Automated agent selection based on task type
 - Performance profiling for agent interactions
 - Enhanced error recovery patterns
 
 ### Mid-term (6 months)
+
 - Machine learning for optimal delegation paths
 - Automated skill composition
 - Cross-project agent reuse
 
 ### Long-term (12+ months)
+
 - Self-organizing agent networks
 - Autonomous architecture evolution
 - Industry-standard agent patterns
@@ -317,6 +341,7 @@ workflow integration, it enables efficient reproduction of classic ML papers whi
 quality and documentation standards.
 
 The system's design prioritizes:
+
 - **Clarity** through well-defined roles and responsibilities
 - **Scalability** through hierarchical decomposition
 - **Reusability** through shared skills and patterns

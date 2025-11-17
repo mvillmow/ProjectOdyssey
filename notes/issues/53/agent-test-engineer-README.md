@@ -54,6 +54,7 @@ All tests use **real, simple test data** rather than complex mocks:
 - No mocking frameworks - only built-in Mojo types
 
 Example:
+
 ```mojo
 # Before (stub):
 fn test_multiple_iterations():
@@ -343,6 +344,7 @@ fn test_something():
 ### No External Dependencies
 
 Tests import only from:
+
 - `tests/shared/conftest.mojo` - Assertion functions and BenchmarkResult
 - Standard Mojo types (List, Float64, String, etc.)
 

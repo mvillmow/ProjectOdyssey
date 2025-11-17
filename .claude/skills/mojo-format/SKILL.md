@@ -148,21 +148,25 @@ Pre-commit CI workflow checks formatting:
 ## Examples
 
 **Format single file:**
+
 ```bash
 mojo format src/tensor.mojo
 ```
 
 **Format directory:**
+
 ```bash
 ./scripts/format_mojo.sh src/
 ```
 
 **Check formatting:**
+
 ```bash
 ./scripts/format_mojo.sh --check .
 ```
 
 **Format changed files:**
+
 ```bash
 git diff --name-only | grep '\.mojo$' | xargs -r mojo format
 ```

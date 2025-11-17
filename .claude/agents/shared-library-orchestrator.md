@@ -131,6 +131,7 @@ trivial fixes (` 20 lines, no design decisions).
 ### Parallel Development
 
 Use the `worktree-create` skill to enable parallel development:
+
 - **Invoke when**: Working on multiple library components simultaneously
 - **The skill handles**: Creates isolated worktrees for each feature branch
 - **See**: [worktree-create skill](../.claude/skills/worktree-create/SKILL.md)
@@ -138,6 +139,7 @@ Use the `worktree-create` skill to enable parallel development:
 ### Worktree Cleanup
 
 Use the `worktree-cleanup` skill to maintain repository organization:
+
 - **Invoke when**: After merging component PRs
 - **The skill handles**: Cleans up merged or stale worktrees
 - **See**: [worktree-cleanup skill](../.claude/skills/worktree-cleanup/SKILL.md)
@@ -145,6 +147,7 @@ Use the `worktree-cleanup` skill to maintain repository organization:
 ### Issue Implementation
 
 Use the `gh-implement-issue` skill for component development:
+
 - **Invoke when**: Starting work on a library component issue
 - **The skill handles**: Branch creation, implementation, testing, PR creation
 - **See**: [gh-implement-issue skill](../.claude/skills/gh-implement-issue/SKILL.md)
@@ -152,6 +155,7 @@ Use the `gh-implement-issue` skill for component development:
 ### Plan Management
 
 Use the `plan-regenerate-issues` skill to sync plans:
+
 - **Invoke when**: Modifying shared library component plans
 - **The skill handles**: Regenerates github_issue.md files from plan.md
 - **See**: [plan-regenerate-issues skill](../.claude/skills/plan-regenerate-issues/SKILL.md)
@@ -159,6 +163,7 @@ Use the `plan-regenerate-issues` skill to sync plans:
 ### Agent Coordination
 
 Use the `agent-run-orchestrator` skill to coordinate specialists:
+
 - **Invoke when**: Running multiple component specialists in parallel
 - **The skill handles**: Specialist invocation and coordination
 - **See**: [agent-run-orchestrator skill](../.claude/skills/agent-run-orchestrator/SKILL.md)

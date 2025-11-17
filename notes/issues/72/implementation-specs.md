@@ -3,6 +3,7 @@
 ## Directory Creation Tasks
 
 ### 1. Root Structure
+
 ```bash
 mkdir -p configs/
 mkdir -p configs/defaults/
@@ -13,6 +14,7 @@ mkdir -p configs/templates/
 ```
 
 ### 2. Paper-Specific Directories
+
 ```bash
 mkdir -p configs/papers/lenet5/
 mkdir -p configs/experiments/lenet5/
@@ -23,6 +25,7 @@ mkdir -p configs/experiments/lenet5/
 ### 1. Root README (configs/README.md)
 
 Create a comprehensive user guide that includes:
+
 - Quick start guide for using configurations
 - Directory structure explanation
 - How to create new paper configs
@@ -32,22 +35,26 @@ Create a comprehensive user guide that includes:
 ### 2. Default Configurations
 
 **configs/defaults/training.yaml**:
+
 - Default optimizer settings (SGD with lr=0.001)
 - Default scheduler configuration
 - Default training loop parameters
 - Default logging settings
 
 **configs/defaults/model.yaml**:
+
 - Default initialization methods
 - Default regularization settings
 - Default architecture components
 
 **configs/defaults/data.yaml**:
+
 - Default preprocessing parameters
 - Default augmentation settings (disabled)
 - Default dataloader configuration
 
 **configs/defaults/paths.yaml**:
+
 - Default directory paths with environment variable support
 - Cache directory configuration
 - Output directory structure
@@ -55,16 +62,19 @@ Create a comprehensive user guide that includes:
 ### 3. LeNet-5 Paper Configurations
 
 **configs/papers/lenet5/model.yaml**:
+
 - Complete LeNet-5 architecture specification
 - Layer-by-layer definition
 - Activation functions (tanh as per original paper)
 
 **configs/papers/lenet5/training.yaml**:
+
 - Training parameters from the paper
 - SGD optimizer settings
 - Learning rate schedule
 
 **configs/papers/lenet5/data.yaml**:
+
 - MNIST dataset configuration
 - Preprocessing for 28x28 grayscale images
 - Train/validation split
@@ -72,10 +82,12 @@ Create a comprehensive user guide that includes:
 ### 4. Example Experiments
 
 **configs/experiments/lenet5/baseline.yaml**:
+
 - Minimal config that extends paper defaults
 - Used for reproducing original results
 
 **configs/experiments/lenet5/augmented.yaml**:
+
 - Adds data augmentation
 - Modern training techniques
 - Demonstrates override pattern
@@ -83,12 +95,14 @@ Create a comprehensive user guide that includes:
 ### 5. Schema Files
 
 **configs/schemas/training.schema.yaml**:
+
 - JSON Schema format
 - Define required fields
 - Specify type constraints
 - Document valid ranges
 
 **configs/schemas/model.schema.yaml**:
+
 - Architecture validation rules
 - Layer type definitions
 - Parameter constraints
@@ -96,11 +110,13 @@ Create a comprehensive user guide that includes:
 ### 6. Templates
 
 **configs/templates/paper.yaml**:
+
 - Boilerplate for new paper implementations
 - Standard structure with placeholders
 - Documentation comments
 
 **configs/templates/experiment.yaml**:
+
 - Boilerplate for new experiments
 - Metadata fields
 - Inheritance examples

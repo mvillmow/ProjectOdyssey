@@ -7,6 +7,7 @@ Create comprehensive test cases following TDD for validating the directory struc
 ## Summary
 
 This TEST phase implements comprehensive tests for the Directory Structure component. Tests validate that:
+
 - Papers directory has correct structure and template
 - Shared directory has correct organization
 - Templates are complete and usable
@@ -16,12 +17,14 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
 ## Deliverables
 
 ### 1. Test Plan (this document)
+
 - ✅ Test strategy and coverage plan
 - ✅ Test categories and priorities
 - ✅ Test data approach
 - ✅ CI/CD integration requirements
 
 ### 2. Directory Structure Tests
+
 - `tests/foundation/test_directory_structure.py` - Core validation tests
   - Papers directory structure
   - Shared directory structure
@@ -29,6 +32,7 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
   - Required files validation
 
 ### 3. Template Verification Tests
+
 - `tests/foundation/test_template_structure.py` - Template validation
   - Template directory structure
   - Template file contents
@@ -36,6 +40,7 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
   - Placeholder file verification
 
 ### 4. API Contract Tests
+
 - `tests/foundation/test_api_contracts.py` - Interface validation
   - Module interface structure
   - Layer interface structure
@@ -44,6 +49,7 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
   - Type specifications
 
 ### 5. Integration Tests
+
 - `tests/foundation/test_structure_integration.py` - Cross-component tests
   - Papers importing from shared
   - Template instantiation
@@ -51,6 +57,7 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
   - File creation workflows
 
 ### 6. Test Fixtures
+
 - `tests/foundation/conftest.py` - Enhanced fixtures
   - Real repository paths
   - Template helpers
@@ -79,6 +86,7 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
 ### Test Strategy
 
 Following TDD principles and FIRST testing guidelines:
+
 - **F**ast - Tests run quickly (< 1 second each)
 - **I**ndependent - Tests don't depend on each other
 - **R**epeatable - Tests produce same results every time
@@ -90,20 +98,23 @@ Following TDD principles and FIRST testing guidelines:
 #### 1. Unit Tests (MUST have - Critical)
 
 **Papers Directory Structure**:
+
 - ✅ `papers/` directory exists at repository root
 - ✅ `papers/README.md` exists and has correct content
 - ✅ `papers/_template/` directory exists
 - ✅ Directory permissions are correct (read, write, execute)
 
 **Shared Directory Structure**:
+
 - ✅ `shared/` directory exists at repository root
 - ✅ `shared/README.md` exists
 - ✅ `shared/__init__.mojo` exists
 - ✅ Subdirectories: `core/`, `training/`, `data/`, `utils/`
 - ✅ Each subdirectory has README.md
-- ✅ Each subdirectory has __init__.mojo
+- ✅ Each subdirectory has **init**.mojo
 
 **Template Structure**:
+
 - ✅ Template has all required directories
 - ✅ Template has all required placeholder files
 - ✅ Template README has correct structure
@@ -112,12 +123,14 @@ Following TDD principles and FIRST testing guidelines:
 #### 2. Integration Tests (MUST have - Critical)
 
 **Template Usage**:
+
 - ✅ Template can be copied to create new paper
 - ✅ Copied template has independent file system
 - ✅ Template files can be modified without affecting original
 - ✅ Template structure is complete after copy
 
 **Cross-Directory Integration**:
+
 - ✅ Papers can reference shared library paths
 - ✅ Import paths resolve correctly
 - ✅ No circular dependencies
@@ -126,12 +139,14 @@ Following TDD principles and FIRST testing guidelines:
 #### 3. API Contract Tests (SHOULD have - Important)
 
 **Interface Definitions**:
+
 - ✅ Module interface structure documented
 - ✅ Layer interface structure documented
 - ✅ Optimizer interface structure documented
 - ✅ Dataset interface structure documented
 
 **Type Specifications**:
+
 - ✅ Tensor shape conventions documented
 - ✅ Data type specifications documented
 - ✅ Type consistency across components
@@ -139,6 +154,7 @@ Following TDD principles and FIRST testing guidelines:
 #### 4. Edge Cases (SHOULD have - Important)
 
 **Error Handling**:
+
 - ✅ Missing directories are detected
 - ✅ Missing required files are detected
 - ✅ Permission errors are handled
@@ -149,12 +165,14 @@ Following TDD principles and FIRST testing guidelines:
 **Coverage Target**: 100% for directory structure validation
 
 **Focus Areas**:
+
 - ✅ Directory existence and structure (100%)
 - ✅ Required files presence (100%)
 - ✅ Template completeness (100%)
 - ✅ Integration paths (100%)
 
 **Non-Goals** (Skip These):
+
 - ❌ File content implementation (tested elsewhere)
 - ❌ Mojo code execution (not testing implementation)
 - ❌ Performance benchmarks (separate test suite)
@@ -162,12 +180,14 @@ Following TDD principles and FIRST testing guidelines:
 ### Test Data Approach
 
 **Use Real Implementations**:
+
 - ✅ Test against actual repository structure
 - ✅ Use real file paths from `repo_root` fixture
 - ✅ Verify actual files exist, not mocks
 - ✅ Use temporary directories only for modification tests
 
 **Simple, Concrete Data**:
+
 - ✅ Direct path validation (Path.exists(), Path.is_dir())
 - ✅ String matching for file contents
 - ✅ List comprehension for directory listings
@@ -177,6 +197,7 @@ Following TDD principles and FIRST testing guidelines:
 ### CI/CD Integration
 
 **Test Execution**:
+
 - Tests run automatically on all PRs
 - Tests run on pushes to main branch
 - Tests are part of `.github/workflows/test.yml`
@@ -196,6 +217,7 @@ pytest tests/foundation/ --cov=. --cov-report=term-missing
 ```
 
 **CI Configuration**:
+
 - Already integrated in existing test workflow
 - No new test framework needed (using pytest)
 - Tests run in same environment as other tests
@@ -217,21 +239,25 @@ tests/foundation/
 ### Test Implementation Priority
 
 **Phase 1: Core Structure Tests** (Immediate)
+
 1. ✅ Directory existence validation
 2. ✅ Required files validation
 3. ✅ Subdirectory structure validation
 
 **Phase 2: Template Tests** (Next)
+
 1. ✅ Template completeness
 2. ✅ Template file validation
 3. ✅ Template copy functionality
 
 **Phase 3: API Contract Tests** (Then)
+
 1. ✅ Interface structure validation
 2. ✅ Type specification validation
 3. ✅ Documentation completeness
 
 **Phase 4: Integration Tests** (Finally)
+
 1. ✅ Cross-directory integration
 2. ✅ Import path validation
 3. ✅ Workflow validation
@@ -349,6 +375,7 @@ def test_shared_module_interface_documented() -> None:
 ### Coverage Tracking
 
 **Coverage Requirements**:
+
 - Line coverage: 100% for validation code
 - Branch coverage: 100% for conditional logic
 - Path coverage: All directory paths tested
@@ -394,18 +421,21 @@ The tests created here will serve as the validation suite for the implementation
 ### Design Decisions
 
 **Why test against real repository structure?**
+
 - Ensures tests reflect actual state
 - Catches real-world issues
 - No mock drift from reality
 - Simpler test setup
 
 **Why 100% coverage target?**
+
 - Directory structure is foundational
 - Small, focused scope makes 100% achievable
 - High confidence needed for critical infrastructure
 - Clear pass/fail criteria
 
 **Why separate test files?**
+
 - Clear organization by concern
 - Easier to run specific test categories
 - Better test isolation

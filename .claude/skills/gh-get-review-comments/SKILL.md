@@ -30,6 +30,7 @@ gh api repos/{owner}/{repo}/pulls/{pr-number}/comments --jq '.[] | select(.in_re
 ## Output Format
 
 Comments are returned with:
+
 - `id` - Comment ID
 - `path` - File path
 - `line` - Line number
@@ -46,16 +47,19 @@ Comments are returned with:
 ## Examples
 
 **Get all comments:**
+
 ```bash
 ./scripts/fetch_comments.sh 42
 ```
 
 **Filter by reviewer:**
+
 ```bash
 ./scripts/fetch_comments.sh 42 reviewer-username
 ```
 
 **Get unresolved only:**
+
 ```bash
 ./scripts/fetch_comments.sh 42 --unresolved
 ```

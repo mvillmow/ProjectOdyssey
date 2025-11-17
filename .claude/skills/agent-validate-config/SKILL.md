@@ -20,6 +20,7 @@ This skill validates agent configuration files to ensure they meet ML Odyssey's 
 ### YAML Frontmatter
 
 Required fields:
+
 ```yaml
 ---
 name: agent-name
@@ -70,6 +71,7 @@ python3 tests/agents/validate_configs.py .claude/agents/
 ### CI Validation
 
 Runs automatically in CI:
+
 ```bash
 # .github/workflows/test-agents.yml
 python3 tests/agents/validate_configs.py .claude/agents/
@@ -170,16 +172,19 @@ tools: "Read"        # Must be array
 ## Examples
 
 **Validate specific agent:**
+
 ```bash
 ./scripts/validate_agent.sh .claude/agents/implementation-specialist.md
 ```
 
 **Validate all agents:**
+
 ```bash
 python3 tests/agents/validate_configs.py .claude/agents/
 ```
 
 **Fix validation errors:**
+
 ```bash
 # Run validation
 ./scripts/validate_agent.sh .claude/agents/my-agent.md

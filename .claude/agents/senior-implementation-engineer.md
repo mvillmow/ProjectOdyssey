@@ -119,37 +119,46 @@ See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selec
 - Avoid unnecessary copies with move semantics (`^`)
 
 See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+
 ### Mojo Language Patterns
 
 #### Function Definitions (fn vs def)
 
 **Use `fn` for**:
+
 - Performance-critical functions (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Functions that don't need dynamic behavior
+
 ```mojo
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -159,11 +168,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -171,12 +183,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -190,13 +205,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -238,6 +256,7 @@ Implementation
 ### SIMD Optimization
 
 Use the `mojo-simd-optimize` skill for performance-critical code:
+
 - **Invoke when**: Optimizing tensor operations, vectorizable loops
 - **The skill handles**: SIMD vectorization patterns and optimization templates
 - **See**: [mojo-simd-optimize skill](../.claude/skills/mojo-simd-optimize/SKILL.md)
@@ -245,6 +264,7 @@ Use the `mojo-simd-optimize` skill for performance-critical code:
 ### Code Formatting
 
 Use the `mojo-format` skill to format code:
+
 - **Invoke when**: Before committing Mojo code
 - **The skill handles**: Formats all .mojo and .🔥 files
 - **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
@@ -252,6 +272,7 @@ Use the `mojo-format` skill to format code:
 ### Memory Safety
 
 Use the `mojo-memory-check` skill for memory validation:
+
 - **Invoke when**: Reviewing complex memory management code
 - **The skill handles**: Ownership, borrowing, lifetime verification
 - **See**: [mojo-memory-check skill](../.claude/skills/mojo-memory-check/SKILL.md)
@@ -259,6 +280,7 @@ Use the `mojo-memory-check` skill for memory validation:
 ### Code Quality
 
 Use the `quality-run-linters` skill before committing:
+
 - **Invoke when**: Before creating PRs, validating code quality
 - **The skill handles**: Runs all configured linters
 - **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
@@ -266,6 +288,7 @@ Use the `quality-run-linters` skill before committing:
 ### Pull Request Creation
 
 Use the `gh-create-pr-linked` skill to create PRs:
+
 - **Invoke when**: Implementation complete and ready for review
 - **The skill handles**: PR creation with proper issue linking
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
@@ -285,6 +308,7 @@ Use the `gh-create-pr-linked` skill to create PRs:
 **Spec**: Implement optimized matrix multiplication
 
 ### Implementation
+
 ```mojo
 fn matmul[
     dtype: DType,

@@ -41,6 +41,7 @@ python3 -m pytest tests/ --cov=. --cov-report=html
 ### Writing Tests
 
 All tests follow TDD/FIRST principles:
+
 - Fast: Tests should run quickly
 - Independent: Tests should not depend on each other
 - Repeatable: Tests should produce same results
@@ -50,6 +51,7 @@ All tests follow TDD/FIRST principles:
 ### Test Organization
 
 Tests are organized to mirror the source code structure:
+
 - Unit tests: Test individual functions/classes
 - Integration tests: Test module interactions
 - System tests: Test end-to-end workflows
@@ -57,21 +59,27 @@ Tests are organized to mirror the source code structure:
 ## Test Categories
 
 ### Foundation Tests
+
 Tests for repository structure, configuration, and supporting directories.
 
 ### Shared Library Tests
+
 Tests for core reusable components and utilities.
 
 ### Tools Tests
+
 Tests for development and testing tools.
 
 ### Papers Tests
+
 Tests for paper implementations and model training.
 
 ### Agent Tests
+
 Tests for agent configurations and validation.
 
 ### Integration Tests
+
 End-to-end tests validating complete workflows.
 
 ## Running Tests
@@ -115,19 +123,24 @@ python3 -m pytest -k "supporting"
 ## Test Standards
 
 ### Naming Conventions
+
 - Test files: `test_*.py`
 - Test classes: `Test*`
 - Test methods: `test_*`
 
 ### Documentation
+
 All test files must include:
+
 - Module docstring describing test purpose
 - Test category (unit/integration/system)
 - Coverage target
 - Class/method docstrings
 
 ### Assertions
+
 Use descriptive assertion messages:
+
 ```python
 assert result == expected, f"Expected {expected}, got {result}"
 ```
@@ -135,6 +148,7 @@ assert result == expected, f"Expected {expected}, got {result}"
 ## CI/CD Integration
 
 Tests are automatically run in CI/CD:
+
 - On all pull requests
 - Before merging to main
 - During deployment

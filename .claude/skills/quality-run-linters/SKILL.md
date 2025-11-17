@@ -20,6 +20,7 @@ This skill runs all configured linters to ensure code quality standards.
 ### 1. Mojo Format
 
 Formats Mojo code files:
+
 ```bash
 mojo format src/**/*.mojo
 ```
@@ -27,6 +28,7 @@ mojo format src/**/*.mojo
 ### 2. Markdownlint
 
 Lints markdown files:
+
 ```bash
 npx markdownlint-cli2 "**/*.md"
 ```
@@ -34,11 +36,13 @@ npx markdownlint-cli2 "**/*.md"
 ### 3. Pre-commit Hooks
 
 Runs all pre-commit hooks:
+
 ```bash
 pre-commit run --all-files
 ```
 
 Includes:
+
 - Trailing whitespace removal
 - End-of-file fixer
 - YAML validation
@@ -87,6 +91,7 @@ Includes:
 ### Mojo Format
 
 **What it checks:**
+
 - Indentation (4 spaces)
 - Line length
 - Spacing around operators
@@ -105,6 +110,7 @@ mojo format --check src/tensor.mojo
 ### Markdownlint
 
 **What it checks:**
+
 - Code blocks have language specified
 - Blank lines around code blocks/lists/headings
 - Line length (120 chars)
@@ -123,6 +129,7 @@ npx markdownlint-cli2 --fix "**/*.md"
 ### Pre-commit Hooks
 
 **What it checks:**
+
 - Trailing whitespace
 - File ends with newline
 - YAML syntax
@@ -224,21 +231,25 @@ git commit -m "fix: address linting issues"
 ## Examples
 
 **Run all linters:**
+
 ```bash
 ./scripts/run_all_linters.sh
 ```
 
 **Check without fixing:**
+
 ```bash
 ./scripts/run_all_linters.sh --check
 ```
 
 **Run specific linter:**
+
 ```bash
 ./scripts/run_linters.sh --mojo
 ```
 
 **Fix markdown issues:**
+
 ```bash
 npx markdownlint-cli2 --fix "**/*.md"
 ```
@@ -262,6 +273,7 @@ npx markdownlint-cli2 --fix "**/*.md"
 ### False Positives
 
 If linter reports false positive:
+
 - Check configuration (`.markdownlint.yaml`, `.pre-commit-config.yaml`)
 - Add exception if justified
 - Document why exception needed

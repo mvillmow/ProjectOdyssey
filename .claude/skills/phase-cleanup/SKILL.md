@@ -36,18 +36,21 @@ cat notes/issues/<number>/package-issues.md
 Address code quality issues:
 
 **Remove duplication:**
+
 ```bash
 ./scripts/detect_duplication.sh
 # Refactor duplicated code into shared functions
 ```
 
 **Improve naming:**
+
 ```bash
 ./scripts/check_naming.sh
 # Rename unclear variables/functions
 ```
 
 **Simplify complexity:**
+
 ```bash
 ./scripts/check_complexity.sh
 # Break down complex functions
@@ -193,11 +196,13 @@ fn safe_operation() raises -> Result:
 ## Integration with Workflow
 
 **Cleanup runs after:**
+
 - Test phase completes
 - Implementation phase completes
 - Package phase completes
 
 **Cleanup produces:**
+
 - Refactored, clean code
 - Updated documentation
 - Passing quality checks

@@ -67,6 +67,7 @@ ml-odyssey/
 **Purpose**: Implementations of ML research papers
 
 **Structure**:
+
 ```text
 papers/
 ├── _template/          # Template for new papers
@@ -79,6 +80,7 @@ papers/
 ```
 
 **When to Use**:
+
 - Implementing a new research paper
 - Looking for ML model implementations
 - Finding paper-specific training code
@@ -90,6 +92,7 @@ papers/
 **Purpose**: Core ML components used across paper implementations
 
 **Structure**:
+
 ```text
 shared/
 ├── core/               # Core ML operations
@@ -106,6 +109,7 @@ shared/
 ```
 
 **When to Use**:
+
 - Building ML models (use layers, activations)
 - Training models (use optimizers, schedulers)
 - Loading data (use data loaders)
@@ -120,6 +124,7 @@ shared/
 **Purpose**: Benchmark ML implementations for performance tracking
 
 **Structure**:
+
 ```text
 benchmarks/
 ├── scripts/            # Benchmark execution scripts
@@ -128,6 +133,7 @@ benchmarks/
 ```
 
 **When to Use**:
+
 - Measuring performance of implementations
 - Detecting performance regressions
 - Comparing different approaches
@@ -140,6 +146,7 @@ benchmarks/
 **Purpose**: Comprehensive documentation for users and contributors
 
 **Structure**:
+
 ```text
 docs/
 ├── getting-started/    # New user onboarding
@@ -149,6 +156,7 @@ docs/
 ```
 
 **When to Use**:
+
 - Onboarding new team members
 - Learning how to use the platform
 - Understanding core concepts
@@ -161,6 +169,7 @@ docs/
 **Purpose**: Documentation for the Claude agent hierarchy
 
 **Structure**:
+
 ```text
 agents/
 ├── hierarchy.md        # Visual hierarchy diagram
@@ -173,6 +182,7 @@ agents/
 **Operational Configs**: `.claude/agents/` (actual agent files)
 
 **When to Use**:
+
 - Understanding agent hierarchy
 - Creating new agents
 - Debugging agent workflows
@@ -185,6 +195,7 @@ agents/
 **Purpose**: Tools for developer productivity during implementation
 
 **Structure**:
+
 ```text
 tools/
 ├── paper-scaffold/     # Generate paper structure
@@ -194,6 +205,7 @@ tools/
 ```
 
 **When to Use**:
+
 - Starting new paper implementations
 - Generating test fixtures
 - Creating boilerplate code
@@ -206,6 +218,7 @@ tools/
 **Purpose**: Centralized configuration for experiments
 
 **Structure**:
+
 ```text
 configs/
 ├── defaults/           # Default configurations
@@ -215,6 +228,7 @@ configs/
 ```
 
 **When to Use**:
+
 - Creating new experiments
 - Configuring training parameters
 - Managing environment settings
@@ -229,6 +243,7 @@ configs/
 **Purpose**: Comprehensive test coverage for all components
 
 **Structure**:
+
 ```text
 tests/
 ├── foundation/         # Foundation tests (structure, configs)
@@ -240,6 +255,7 @@ tests/
 **Organization**: Tests mirror the structure they test
 
 **When to Use**:
+
 - Running tests (`mojo test tests/`)
 - Adding new tests
 - Checking test coverage
@@ -251,6 +267,7 @@ tests/
 **Purpose**: Working examples and tutorials
 
 **Structure**:
+
 ```text
 examples/
 ├── mnist/              # MNIST dataset examples
@@ -259,6 +276,7 @@ examples/
 ```
 
 **When to Use**:
+
 - Learning how to use components
 - Finding working code examples
 - Understanding best practices
@@ -270,6 +288,7 @@ examples/
 **Purpose**: Repository management and automation
 
 **Structure**:
+
 ```text
 scripts/
 ├── setup.py            # Environment setup
@@ -279,6 +298,7 @@ scripts/
 ```
 
 **When to Use**:
+
 - Setting up development environment
 - Automating repository tasks
 - Running validation checks
@@ -291,6 +311,7 @@ scripts/
 **Purpose**: Planning hierarchies, issue docs, and architectural reviews
 
 **Structure**:
+
 ```text
 notes/
 ├── plan/               # 4-level hierarchical plans
@@ -299,6 +320,7 @@ notes/
 ```
 
 **When to Use**:
+
 - Understanding project planning
 - Reading issue-specific notes
 - Reviewing architectural decisions
@@ -308,7 +330,7 @@ notes/
 
 ## Decision Tree: Where to Add Content
 
-### Is it...
+### Is it
 
 **An ML paper implementation?**
 → `papers/{paper_name}/`
@@ -409,21 +431,25 @@ agents/
 ### Key Relationships
 
 **papers/** depends on:
+
 - `shared/` - Reusable components
 - `configs/` - Configuration files
 - `tools/` - Scaffolding and utilities
 
 **shared/** used by:
+
 - `papers/` - Paper implementations
 - `examples/` - Usage examples
 - `tests/` - Test suites
 
 **configs/** used by:
+
 - `papers/` - Training scripts
 - `benchmarks/` - Benchmark configs
 - `tools/` - Template generation
 
 **tools/** generates:
+
 - `papers/` - Paper structure
 - `configs/` - Configuration files
 - `tests/` - Test templates
@@ -433,6 +459,7 @@ agents/
 ### 1. Single Responsibility
 
 Each directory has one clear purpose. Don't mix:
+
 - User documentation (`docs/`) with planning notes (`notes/`)
 - Development tools (`tools/`) with automation scripts (`scripts/`)
 - Agent docs (`agents/`) with agent configs (`.claude/agents/`)
@@ -440,12 +467,14 @@ Each directory has one clear purpose. Don't mix:
 ### 2. Mirrored Structure
 
 Tests mirror the structure they test:
+
 - `shared/core/layers/` ↔ `tests/shared/core/layers/`
 - `tools/paper-scaffold/` ↔ `tests/tools/paper-scaffold/`
 
 ### 3. Template Pattern
 
 Reusable templates in dedicated locations:
+
 - `papers/_template/` - Paper implementation template
 - `configs/templates/` - Configuration templates
 - `agents/templates/` - Agent configuration templates
@@ -453,6 +482,7 @@ Reusable templates in dedicated locations:
 ### 4. Clear Separation
 
 Operational files separate from documentation:
+
 - `.claude/agents/` - Operational agent configs
 - `agents/` - Agent documentation
 - `.github/workflows/` - CI/CD workflows
@@ -463,6 +493,7 @@ Operational files separate from documentation:
 ### Structure Validation
 
 Check directory structure is correct:
+
 ```bash
 python scripts/validate_structure.py
 ```
@@ -470,6 +501,7 @@ python scripts/validate_structure.py
 ### Documentation Validation
 
 Validate all READMEs are complete:
+
 ```bash
 python scripts/check_readmes.py
 ```
@@ -477,6 +509,7 @@ python scripts/check_readmes.py
 ### Link Validation
 
 Check all documentation links:
+
 ```bash
 python scripts/validate_links.py
 ```

@@ -9,6 +9,7 @@
 ## Context
 
 Describe the issue or decision that needs to be made. Include:
+
 - Current situation
 - Constraints
 - Requirements
@@ -21,6 +22,7 @@ State the decision clearly and concisely. Be specific about what is being decide
 ## Rationale
 
 Explain why this decision was made. Include:
+
 - Key reasons
 - Supporting evidence
 - Trade-offs considered
@@ -50,6 +52,7 @@ Explain why this decision was made. Include:
 Description of the alternative approach.
 
 **Why not chosen:**
+
 - Reason 1
 - Reason 2
 
@@ -58,6 +61,7 @@ Description of the alternative approach.
 Description of the alternative approach.
 
 **Why not chosen:**
+
 - Reason 1
 - Reason 2
 

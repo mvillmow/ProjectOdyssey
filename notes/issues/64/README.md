@@ -271,16 +271,19 @@ After this PR merges
 Verified existing implementation against requirements:
 
 **Agent Configurations** (.claude/agents/):
+
 - Total files: 38 agents (exceeds requirement of ~23)
 - YAML validation: All 38 pass ✅
 - Structure: All agents have proper frontmatter ✅
 - Content: Comprehensive role definitions ✅
 
 **Templates** (agents/templates/):
+
 - Total files: 8 templates (exceeds requirement of 6)
 - All levels covered: L0-L5 ✅
 
 **Team Documentation** (agents/):
+
 - README.md: Comprehensive ✅
 - hierarchy.md: Complete ✅
 - delegation-rules.md: Complete ✅
@@ -288,11 +291,13 @@ Verified existing implementation against requirements:
 ### Discrepancies Found
 
 **CRITICAL: Tool Permissions Not Applied**
+
 - README documents M1 fix (tool permissions restricted per level)
 - ACTUAL STATE: All 38 agents still have Bash access
 - EXPECTED: Only 5 agents should have Bash (test/performance specialists)
 
 **Level-by-Level Analysis**:
+
 - L0-L1 (7 agents): Should have `Read,Grep,Glob` only
 - L2 (3 agents): Should have `Read,Write,Grep,Glob` only
 - L3 (18 agents): Should have `Read,Write,Edit,Grep,Glob` (Bash only for test/perf)
@@ -302,22 +307,26 @@ Verified existing implementation against requirements:
 ### Implementation Plan
 
 **Phase 1: Tool Permission Audit** (Implementation Engineer)
+
 1. Categorize all 38 agents by level
 2. Identify which agents need Bash (test/performance only)
 3. Create correction matrix
 
 **Phase 2: Apply Corrections** (Implementation Engineer)
+
 1. Update tool permissions for each agent
 2. Verify no unintended Bash access remains
 3. Ensure Task tool is available where needed
 
 **Phase 3: Validation** (Implementation Specialist)
+
 1. Run validation suite on all agents
 2. Verify tool permissions match requirements
 3. Check for any regressions
 4. Confirm all tests pass
 
 **Phase 4: Documentation** (Implementation Specialist)
+
 1. Update implementation notes
 2. Document actual changes made
 3. Prepare commit message
@@ -325,34 +334,40 @@ Verified existing implementation against requirements:
 ### Delegation
 
 **Task 1: Tool Permission Audit**
+
 - Assignee: Implementation Engineer
 - Deliverable: Agent categorization matrix with required tools per agent
 - Files: All 38 agents in `.claude/agents/`
 
 **Task 2: Apply Tool Permission Fixes**
+
 - Assignee: Implementation Engineer
 - Deliverable: Updated agent configs with correct tool permissions
 - Validation: All agents pass permission audit
 
 **Task 3: Final Validation**
+
 - Assignee: Implementation Specialist (self)
 - Deliverable: Validation report confirming all requirements met
 
 ### Execution Results
 
 **Phase 1: Tool Permission Audit** - COMPLETE ✅
+
 - Created detailed correction matrix in `tool-permission-corrections.md`
 - Categorized all 38 agents by level
 - Identified 4 agents that need Bash (test/performance only)
 - Documented 33 agents requiring updates
 
 **Phase 2: Apply Corrections** - COMPLETE ✅
+
 - Applied tool permission updates to 33 agent configs
 - Used automated script for consistency
 - Zero manual errors
 - All files updated successfully
 
 **Phase 3: Validation** - COMPLETE ✅
+
 - Ran validation suite: All 38 agents PASS ✅
 - Zero errors, 12 minor warnings (same as before, non-blocking)
 - Tool permission audit: 100% correct ✅
@@ -360,6 +375,7 @@ Verified existing implementation against requirements:
 - Agents without Bash: 34
 
 **Phase 4: Documentation** - COMPLETE ✅
+
 - Updated implementation notes in this README
 - Created detailed correction matrix document
 - Documented all changes and rationale
@@ -367,6 +383,7 @@ Verified existing implementation against requirements:
 ### Final Verification
 
 **Tool Permission Summary**:
+
 ```
 Level 0 (1 agent):   Read,Grep,Glob,Task (no Bash) ✅
 Level 1 (6 agents):  Read,Grep,Glob,Task,WebFetch (no Bash) ✅
@@ -381,6 +398,7 @@ Level 5 (3 agents):  Read,Write,Edit,Grep,Glob (no Bash) ✅
 ```
 
 **Success Criteria Met**:
+
 - ✅ All ~23 agent configs created (actually 38 - exceeds requirement)
 - ✅ All configurations follow Claude Code format with valid frontmatter
 - ✅ Each agent has clear Mojo-specific context
@@ -395,6 +413,7 @@ Level 5 (3 agents):  Read,Write,Edit,Grep,Glob (no Bash) ✅
 ### Files Changed
 
 **Agent Configuration Updates** (33 files):
+
 - Level 0: chief-architect.md
 - Level 1: 6 orchestrator files
 - Level 2: 4 design/orchestrator files
@@ -403,6 +422,7 @@ Level 5 (3 agents):  Read,Write,Edit,Grep,Glob (no Bash) ✅
 - Level 5: 3 junior engineer files
 
 **Documentation Created**:
+
 - /notes/issues/64/tool-permission-corrections.md (specification)
 
 ### Commit Completed
@@ -413,11 +433,13 @@ Level 5 (3 agents):  Read,Write,Edit,Grep,Glob (no Bash) ✅
 **Lines**: +310 insertions, -34 deletions
 
 **Commit Message**:
+
 ```
 feat(agents): restrict Bash tool access following least privilege principle (#64)
 ```
 
 **Next Steps**:
+
 1. Push branch to remote
 2. Create pull request linked to Issue #64
 3. Request code review
@@ -456,6 +478,7 @@ All requirements for Issue #64 have been successfully implemented and committed.
 **Production Ready**: ✅ YES
 
 The agent system is fully implemented, validated, and ready for use:
+
 - All 38 agents operational
 - Proper tool permissions enforced
 - Documentation complete
@@ -473,6 +496,7 @@ The agent system is fully implemented, validated, and ready for use:
 ### Developer Experience Improvements
 
 By restricting Bash access:
+
 - **Security**: Reduced attack surface for most agents
 - **Safety**: Prevents accidental command execution
 - **Clarity**: Makes agent capabilities explicit

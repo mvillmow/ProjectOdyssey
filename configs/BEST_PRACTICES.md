@@ -305,6 +305,7 @@ features:
 ## Summary
 
 Following these best practices will help you:
+
 - Create maintainable, secure configurations
 - Optimize configuration loading performance
 - Avoid common pitfalls and anti-patterns

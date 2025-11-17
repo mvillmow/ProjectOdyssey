@@ -91,6 +91,7 @@ cp .claude/skills/doc-issue-readme/templates/issue_readme.md notes/issues/42/REA
 Format: `# Issue #XX: [Phase] Component Name`
 
 Examples:
+
 - `# Issue #42: [Implementation] Tensor Operations`
 - `# Issue #73: [Test] Neural Network Tests`
 - `# Issue #105: [Package] Distribution Archive`
@@ -100,10 +101,12 @@ Examples:
 **Be specific** - What does this issue accomplish?
 
 Good:
+
 - "Implement basic tensor operations (add, multiply, matmul) with SIMD optimization"
 - "Create comprehensive test suite for neural network layers"
 
 Bad:
+
 - "Work on tensors" (too vague)
 - "Fix stuff" (not descriptive)
 
@@ -188,17 +191,20 @@ Bad:
 ## Examples
 
 **Generate for new issue:**
+
 ```bash
 ./scripts/generate_issue_readme.sh 42
 ```
 
 **Update with progress:**
+
 ```bash
 # Edit README to add implementation notes
 echo "2024-11-15: Completed tensor add operation" >> notes/issues/42/README.md
 ```
 
 **Check completeness:**
+
 ```bash
 ./scripts/check_issue_docs.sh 42
 ```

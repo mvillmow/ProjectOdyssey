@@ -54,6 +54,7 @@ The ML Odyssey project uses Pixi for environment management (as specified in CLA
    - System requirements (OS, memory, disk space)
 
 3. **Installation Flow**:
+
    ```bash
    # Clone repository
    git clone <repo-url>
@@ -69,16 +70,19 @@ The ML Odyssey project uses Pixi for environment management (as specified in CLA
 **First Example - Verification**:
 
 Choose a minimal example that verifies both:
+
 1. Environment setup (Pixi/Mojo working)
 2. Basic functionality (can run Mojo code)
 
 **Proposed Example**:
+
 - Simple "Hello, World" Mojo script
 - Demonstrates Mojo compilation and execution
 - Verifies environment is correctly configured
 - Takes < 1 minute to run
 
 **Progressive Complexity**:
+
 - Start with simplest possible verification
 - Link to more complex examples in separate documentation
 - Keep quickstart focused on "zero to working"
@@ -110,22 +114,26 @@ Choose a minimal example that verifies both:
 **Step-by-Step Flow for New Users**:
 
 **Phase 1: Prerequisites (2 minutes)**
+
 1. Check system requirements
 2. Install Pixi (if not present)
 3. Install Git + Git LFS
 
 **Phase 2: Installation (3-5 minutes)**
+
 1. Clone repository
 2. Navigate to project directory
 3. Run `pixi install` (downloads and configures environment)
 4. Activate environment with `pixi shell`
 
 **Phase 3: Verification (1 minute)**
+
 1. Run simple verification example
 2. Confirm Mojo is working
 3. Confirm environment is correctly set up
 
 **Phase 4: Next Steps (0 minutes - just links)**
+
 1. Link to full documentation
 2. Link to first tutorial
 3. Link to agent system documentation
@@ -134,6 +142,7 @@ Choose a minimal example that verifies both:
 **Total Time to Working System**: 6-8 minutes (excluding download time)
 
 **Key Principles**:
+
 - **Simplicity**: Minimal steps, clear instructions
 - **Speed**: Get to working system ASAP
 - **Verification**: Clear success indicators

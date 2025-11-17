@@ -202,6 +202,7 @@ fn test_validation_completeness():
 ### Fixtures Directory
 
 Create `tests/configs/fixtures/`:
+
 - `valid_training.yaml` - Valid training config
 - `invalid_training.yaml` - Invalid training config (for error testing)
 - `minimal.yaml` - Minimal valid config

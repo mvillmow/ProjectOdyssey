@@ -143,16 +143,19 @@ rich = ">=13.0.0,<14.0.0"          # Rich terminal output for better UX
 ### 5. Migration from Pixi
 
 **Current pixi.toml dependencies:**
+
 ```toml
 mojo = ">=0.25.7.0.dev2025110405,<0.26"
 pre-commit = ">=3.5.0"
 ```
 
 **Migration mapping:**
+
 - `mojo` → Replaced by `max` (includes Mojo)
 - `pre-commit` → Maintained with upper bound added
 
 **Migration steps:**
+
 1. Create magic.toml with all dependencies
 2. Test both environments work
 3. Gradually transition workflows
@@ -172,6 +175,7 @@ pre-commit = ">=3.5.0"
 #### 6.2 Documentation Requirements
 
 Each dependency should have:
+
 - Clear purpose comment
 - Version constraint rationale
 - Usage location reference
@@ -189,20 +193,24 @@ Each dependency should have:
 #### 7.1 Potential Future Dependencies
 
 **Computer Vision** (for CNN papers):
+
 - `pillow` - Image processing
 - `opencv-python` - Advanced vision operations
 
 **Data Processing** (if needed):
+
 - `pandas` - Dataframe operations
 - `scikit-learn` - Reference implementations
 
 **Deep Learning** (for comparison only):
+
 - NOT including PyTorch/TensorFlow by design
 - Implement everything in Mojo for learning
 
 #### 7.2 Mojo-specific Packages
 
 As Mojo ecosystem grows, prioritize:
+
 - Native Mojo packages over Python
 - MAX-optimized libraries
 - Community Mojo implementations

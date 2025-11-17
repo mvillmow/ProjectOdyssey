@@ -11,6 +11,7 @@ This document contains the comprehensive planning for supporting directories tha
 ## Deliverables
 
 ### Primary Deliverables
+
 1. Detailed specifications for `benchmarks/` directory
 2. Comprehensive design for `docs/` directory
 3. Architecture for `agents/` directory
@@ -24,6 +25,7 @@ This document contains the comprehensive planning for supporting directories tha
 ### Overview
 
 The supporting directories provide critical infrastructure for the ml-odyssey repository:
+
 - **benchmarks/**: Performance measurement and optimization
 - **docs/**: User documentation and tutorials
 - **agents/**: AI agent configurations and automation
@@ -33,9 +35,11 @@ The supporting directories provide critical infrastructure for the ml-odyssey re
 ## 1. benchmarks/ - Performance Benchmarking Infrastructure
 
 ### Purpose
+
 Provide comprehensive performance measurement, profiling, and optimization tracking for all ML implementations in the repository.
 
 ### Directory Structure
+
 ```text
 benchmarks/
 ├── README.md                 # Benchmarking overview and quick start
@@ -81,6 +85,7 @@ benchmarks/
 ```
 
 ### README.md Template
+
 ```markdown
 # Benchmarks
 
@@ -102,16 +107,19 @@ python scripts/compare.py papers/lenet5 papers/alexnet
 ## Benchmark Suites
 
 ### Inference Benchmarks
+
 - **Latency**: Single-sample prediction time
 - **Throughput**: Samples processed per second
 - **Memory**: Peak and average memory usage
 
 ### Training Benchmarks
+
 - **Convergence**: Time to reach target accuracy
 - **Gradient**: Backpropagation performance
 - **Optimizer**: Parameter update efficiency
 
 ### Kernel Benchmarks
+
 - **SIMD**: Vectorized operation performance
 - **MatMul**: Matrix multiplication variants
 - **Conv**: Convolution implementations
@@ -119,6 +127,7 @@ python scripts/compare.py papers/lenet5 papers/alexnet
 ## Results
 
 Results are automatically saved with timestamps and system information:
+
 - `results/latest/`: Most recent run
 - `results/history/YYYY-MM-DD/`: Historical results
 - `results/reports/`: Analysis and visualizations
@@ -133,6 +142,7 @@ Results are automatically saved with timestamps and system information:
 ## CI/CD Integration
 
 Benchmarks run automatically on:
+
 - Pull requests (quick suite)
 - Merges to main (comprehensive suite)
 - Nightly builds (full comparison)
@@ -144,6 +154,7 @@ Benchmarks run automatically on:
 | LeNet-5 Inference | <1ms | 0.8ms |
 | Training Throughput | >1000 img/s | 1200 img/s |
 | Memory Efficiency | <100MB | 85MB |
+
 ```
 
 ### Key Features
@@ -208,6 +219,7 @@ docs/
 ```
 
 ### README.md Template
+
 ```markdown
 # ML Odyssey Documentation
 
@@ -257,6 +269,7 @@ Found an issue or have suggestions? Please [open an issue](https://github.com/mv
 ```
 
 ### Key Features
+
 - Progressive learning path from beginner to advanced
 - Comprehensive API documentation
 - Research paper implementation guides
@@ -266,9 +279,11 @@ Found an issue or have suggestions? Please [open an issue](https://github.com/mv
 ## 3. agents/ - AI Agent Configuration and Orchestration
 
 ### Purpose
+
 Define and manage Claude AI agents for automated development, testing, and maintenance tasks across the repository.
 
 ### Directory Structure
+
 ```text
 agents/
 ├── README.md                # Agent system overview and quick start
@@ -315,6 +330,7 @@ agents/
 ```
 
 ### README.md Template
+
 ```markdown
 # Agent System
 
@@ -337,9 +353,11 @@ claude workflow agents/workflows/pr-review.yaml --pr 123
 See [hierarchy.md](hierarchy.md) for visual representation.
 
 ### Level 0: Chief Architect
+
 Strategic decisions and cross-section coordination.
 
 ### Level 1: Section Orchestrators
+
 - Foundation: Repository structure
 - Shared Library: Reusable components
 - Tooling: Development tools
@@ -348,7 +366,9 @@ Strategic decisions and cross-section coordination.
 - Agentic Workflows: Agent automation
 
 ### Specialists
+
 Domain experts for specific technical areas:
+
 - Mojo Expert: Language-specific guidance
 - ML Researcher: Algorithm implementation
 - Test Engineer: Testing strategies
@@ -360,6 +380,7 @@ Domain experts for specific technical areas:
 See [delegation-rules.md](delegation-rules.md) for coordination patterns.
 
 Key principles:
+
 1. Hierarchical delegation (top-down)
 2. Clear ownership boundaries
 3. Minimal skip-level communication
@@ -368,6 +389,7 @@ Key principles:
 ## Skills System
 
 Reusable capabilities organized by complexity:
+
 - **Tier 1**: Basic operations (file, git)
 - **Tier 2**: Advanced tasks (review, testing)
 - **Tier 3**: Expert decisions (architecture, optimization)
@@ -375,6 +397,7 @@ Reusable capabilities organized by complexity:
 ## Workflows
 
 Automated multi-agent workflows for common tasks:
+
 - PR Review: Comprehensive code review
 - Issue Triage: Automatic labeling and assignment
 - Release: Coordinated release process
@@ -386,6 +409,7 @@ Automated multi-agent workflows for common tasks:
 3. Specify required skills
 4. Add delegation relationships
 5. Test with sample tasks
+
 ```
 
 ### Key Features
@@ -445,6 +469,7 @@ tools/
 ```
 
 ### README.md Template
+
 ```markdown
 # Development Tools
 
@@ -469,28 +494,33 @@ python tools/build/package.py --version 0.1.0
 ## Tool Categories
 
 ### Build Tools
+
 - **package.py**: Create distributable packages
 - **release.py**: Automate release process
 - **version.py**: Manage version numbers
 
 ### Testing Tools
+
 - **runner.py**: Execute tests with various configurations
 - **coverage.py**: Analyze code coverage
 - **fixtures.py**: Generate test data
 
 ### Development Tools
+
 - **formatter.py**: Auto-format code (Mojo and Python)
 - **linter.py**: Check code quality
 - **analyzer.py**: Static code analysis
 - **profiler.py**: Performance profiling
 
 ### Automation Tools
+
 - **pre-commit.py**: Git hook automation
 - **ci-runner.py**: Simulate CI locally
 - **issue-creator.py**: Bulk issue creation
 - **pr-helper.py**: PR management
 
 ### Analysis Tools
+
 - **complexity.py**: Calculate cyclomatic complexity
 - **dependencies.py**: Map dependencies
 - **security.py**: Security vulnerability scanning
@@ -499,6 +529,7 @@ python tools/build/package.py --version 0.1.0
 ## Tool Configuration
 
 Tools use configuration from `configs/` directory:
+
 - `tools.yaml`: Global tool settings
 - `formatter.yaml`: Formatting rules
 - `linter.yaml`: Linting rules
@@ -506,6 +537,7 @@ Tools use configuration from `configs/` directory:
 ## CI/CD Integration
 
 Most tools integrate with GitHub Actions:
+
 ```yaml
 - name: Run Tools
   run: |
@@ -527,6 +559,7 @@ Most tools integrate with GitHub Actions:
 - Python 3.8+
 - Mojo 0.7.0+
 - Additional requirements in `requirements.txt`
+
 ```
 
 ### Key Features
@@ -594,6 +627,7 @@ configs/
 ```
 
 ### README.md Template
+
 ```markdown
 # Configuration Management
 
@@ -615,28 +649,35 @@ python scripts/setup.py --env configs/environments/development.yaml
 ## Configuration Categories
 
 ### Mojo Configurations
+
 - Project settings (`mojoproject.toml`)
 - Compilation flags for optimization
 - Formatter settings for consistent code style
 
 ### Python Configurations
+
 - Project metadata (`pyproject.toml`)
 - Dependencies management
 - Linting and formatting rules
 
 ### CI/CD Configurations
+
 - Pre-commit hooks for code quality
 - GitHub Actions workflows
 - Coverage and dependency management
 
 ### Environment Configurations
+
 Layered configuration system:
+
 1. `base.yaml`: Shared settings
 2. Environment-specific overrides
 3. Local overrides (`.env.local`)
 
 ### Editor Configurations
+
 Pre-configured settings for popular editors:
+
 - VS Code: Extensions, debugging, formatting
 - Vim: Syntax highlighting, indentation
 - Emacs: Major modes, key bindings
@@ -654,11 +695,13 @@ environment.yaml (dev/test/prod)
 ## Environment Variables
 
 Required variables:
+
 - `MOJO_PATH`: Mojo installation directory
 - `ML_ODYSSEY_HOME`: Repository root
 - `PYTHONPATH`: Python module paths
 
 Optional variables:
+
 - `DEBUG`: Enable debug mode
 - `LOG_LEVEL`: Logging verbosity
 - `CACHE_DIR`: Cache location
@@ -681,9 +724,11 @@ Optional variables:
 ## Validation
 
 Validate configurations:
+
 ```bash
 python tools/validators/config_validator.py configs/
 ```
+
 ```
 
 ### Key Features

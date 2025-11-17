@@ -69,6 +69,7 @@ performance-critical code.
 ## No Delegation
 
 Level 5 is the lowest level - no delegation.
+
 ## Delegation
 
 ### Delegates To
@@ -85,6 +86,7 @@ Level 5 is the lowest level - no delegation.
 ### Escalation Path
 
 When blocked or needing guidance:
+
 1. Escalate to immediate supervisor (relevant Specialist)
 2. If still blocked, Specialist escalates to Design level
 3. If architectural issue, escalates to Orchestrator level
@@ -98,6 +100,7 @@ Packaging
 ### Markdown Validation
 
 Use the `doc-validate-markdown` skill to validate markdown:
+
 - **Invoke when**: Before committing markdown files, checking formatting
 - **The skill handles**: Formatting validation, link checking, style compliance
 - **See**: [doc-validate-markdown skill](../.claude/skills/doc-validate-markdown/SKILL.md)
@@ -105,6 +108,7 @@ Use the `doc-validate-markdown` skill to validate markdown:
 ### Markdown Formatting Fixes
 
 Use the `quality-fix-formatting` skill to auto-fix issues:
+
 - **Invoke when**: When markdown linting fails
 - **The skill handles**: Auto-fixes formatting issues using markdownlint --fix
 - **See**: [quality-fix-formatting skill](../.claude/skills/quality-fix-formatting/SKILL.md)
@@ -112,6 +116,7 @@ Use the `quality-fix-formatting` skill to auto-fix issues:
 ### Issue Documentation
 
 Use the `doc-issue-readme` skill for issue documentation:
+
 - **Invoke when**: Creating or updating issue-specific documentation
 - **The skill handles**: README.md creation in issue directories
 - **See**: [doc-issue-readme skill](../.claude/skills/doc-issue-readme/SKILL.md)
@@ -119,6 +124,7 @@ Use the `doc-issue-readme` skill for issue documentation:
 ### Pull Request Creation
 
 Use the `gh-create-pr-linked` skill to create PRs:
+
 - **Invoke when**: Documentation updates complete and ready for review
 - **The skill handles**: PR creation with proper issue linking
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)

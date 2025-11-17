@@ -65,6 +65,7 @@ test_edge_case_empty ... ok
 Location: `tests/unit/`
 
 Fast, isolated tests for individual functions/classes:
+
 ```bash
 mojo test tests/unit/
 ```
@@ -74,6 +75,7 @@ mojo test tests/unit/
 Location: `tests/integration/`
 
 Tests for component interactions:
+
 ```bash
 mojo test tests/integration/
 ```
@@ -83,6 +85,7 @@ mojo test tests/integration/
 Location: `tests/performance/`
 
 Benchmarks and performance validation:
+
 ```bash
 mojo test tests/performance/
 ```
@@ -90,6 +93,7 @@ mojo test tests/performance/
 ## Test Discovery
 
 Mojo discovers tests by:
+
 - Files matching `test_*.mojo` or `*_test.mojo`
 - Functions starting with `test_`
 - In specified directory or file
@@ -122,6 +126,7 @@ test_tensor_addition
 ```
 
 **Actions:**
+
 1. Review failure message
 2. Fix code or test
 3. Re-run tests
@@ -169,16 +174,19 @@ Tests run automatically in CI:
 ## TDD Workflow
 
 1. **Write failing test** (Red)
+
    ```bash
    mojo test tests/test_feature.mojo  # Fails
    ```
 
 2. **Implement minimal code** (Green)
+
    ```bash
    mojo test tests/test_feature.mojo  # Passes
    ```
 
 3. **Refactor** (Refactor)
+
    ```bash
    mojo test tests/test_feature.mojo  # Still passes
    ```
@@ -186,21 +194,25 @@ Tests run automatically in CI:
 ## Examples
 
 **Run all tests:**
+
 ```bash
 ./scripts/run_tests.sh
 ```
 
 **Run specific file:**
+
 ```bash
 ./scripts/run_tests.sh test_tensor
 ```
 
 **Run unit tests only:**
+
 ```bash
 ./scripts/run_tests.sh --unit
 ```
 
 **Watch mode (re-run on changes):**
+
 ```bash
 ./scripts/run_tests.sh --watch
 ```

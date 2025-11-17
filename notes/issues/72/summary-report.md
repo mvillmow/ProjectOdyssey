@@ -5,6 +5,7 @@
 Issue #72 has successfully completed the design and documentation phase for the ML Odyssey configs/ directory system. The design provides a robust, scalable, three-tier configuration hierarchy (defaults → paper-specific → experiment) that integrates seamlessly with existing Mojo utilities while following KISS and YAGNI principles.
 
 **Key Achievements:**
+
 - ✅ Comprehensive architecture designed and documented
 - ✅ Integration with existing `shared/utils/config.mojo` specified
 - ✅ Clear specifications for all downstream issues (#73-#76)
@@ -20,6 +21,7 @@ Issue #72 has successfully completed the design and documentation phase for the 
 3. **Experiments** (`configs/experiments/`): Experimental variations and ablations
 
 This hierarchy enables:
+
 - **Inheritance**: Experiments inherit from papers, papers from defaults
 - **DRY Principle**: No duplication of configuration values
 - **Flexibility**: Override only what changes
@@ -59,6 +61,7 @@ configs/
 **Decision**: Use YAML for human-readable configs with JSON as secondary format
 
 **Rationale**:
+
 - Human readability for research configs
 - Support for comments and documentation
 - Existing Mojo utilities support both formats
@@ -69,6 +72,7 @@ configs/
 **Decision**: Leverage existing `shared/utils/config.mojo` utilities
 
 **Rationale**:
+
 - Type-safe configuration access
 - Already implemented and tested
 - Performance optimized for Mojo
@@ -79,6 +83,7 @@ configs/
 **Decision**: Support `${VAR:-default}` syntax for deployment flexibility
 
 **Rationale**:
+
 - Different paths across environments
 - Security for sensitive values
 - CI/CD integration
@@ -89,6 +94,7 @@ configs/
 **Decision**: Use JSON Schema for configuration validation
 
 **Rationale**:
+
 - Industry standard format
 - Tooling ecosystem available
 - Clear validation rules
@@ -99,6 +105,7 @@ configs/
 **Decision**: Explicit `extends` field for configuration inheritance
 
 **Rationale**:
+
 - Clear dependency chain
 - Predictable merge order
 - Supports multiple inheritance
@@ -109,6 +116,7 @@ configs/
 ### For Issue #74 (Implementation)
 
 **Primary Tasks:**
+
 1. Create directory structure
 2. Implement default configurations
 3. Create LeNet-5 paper configs
@@ -116,6 +124,7 @@ configs/
 5. Write comprehensive README
 
 **Key Files to Create:**
+
 - `configs/defaults/training.yaml` - Default training parameters
 - `configs/papers/lenet5/model.yaml` - LeNet-5 architecture
 - `configs/experiments/lenet5/baseline.yaml` - Baseline experiment
@@ -124,6 +133,7 @@ configs/
 ### For Issue #73 (Testing)
 
 **Test Coverage Required:**
+
 1. Configuration loading tests
 2. Merge functionality tests
 3. Validation tests
@@ -131,6 +141,7 @@ configs/
 5. Integration tests
 
 **Test Files:**
+
 - `tests/configs/test_loading.mojo`
 - `tests/configs/test_merging.mojo`
 - `tests/configs/test_validation.mojo`
@@ -139,12 +150,14 @@ configs/
 ### For Issue #75 (Packaging)
 
 **Integration Points:**
+
 1. Update paper template to use configs
 2. Integrate with training utilities
 3. Add CI/CD validation
 4. Update documentation
 
 **Key Updates:**
+
 - `papers/_template/train.mojo` - Add config loading
 - `shared/training/trainer.mojo` - Config-driven initialization
 - `.github/workflows/validate-configs.yml` - CI validation
@@ -152,6 +165,7 @@ configs/
 ### For Issue #76 (Cleanup)
 
 **Polish Tasks:**
+
 1. Optimize config loading performance
 2. Complete documentation
 3. Add best practices guide
@@ -159,6 +173,7 @@ configs/
 5. Achieve 100% test coverage
 
 **Deliverables:**
+
 - Performance < 10ms load time
 - Complete test coverage
 - Polished documentation
@@ -250,7 +265,7 @@ These can proceed in parallel after Issue #72:
 
 After #73-75 complete:
 
-4. **Issue #76 (Cleanup)**: Polish and optimize
+1. **Issue #76 (Cleanup)**: Polish and optimize
 
 ### Recommended Approach
 

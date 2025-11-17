@@ -218,58 +218,58 @@ The Utils package exports 50 public symbols (as defined in `shared/utils/__init_
 
 ### Configuration Utilities (5 exports)
 
-11. `Config` - Configuration container
-12. `load_config` - Load from file (YAML/JSON)
-13. `save_config` - Save to file
-14. `merge_configs` - Merge multiple configs
-15. `ConfigValidator` - Validate configuration
+1. `Config` - Configuration container
+2. `load_config` - Load from file (YAML/JSON)
+3. `save_config` - Save to file
+4. `merge_configs` - Merge multiple configs
+5. `ConfigValidator` - Validate configuration
 
 ### File I/O Utilities (11 exports)
 
-16. `Checkpoint` - Checkpoint container
-17. `save_checkpoint` - Save model checkpoint
-18. `load_checkpoint` - Load model checkpoint
-19. `serialize_tensor` - Serialize tensor
-20. `deserialize_tensor` - Deserialize tensor
-21. `safe_write_file` - Atomic file write
-22. `safe_read_file` - Safe file read
-23. `create_backup` - Backup creation
-24. `file_exists` - Check file existence
-25. `directory_exists` - Check directory existence
-26. `create_directory` - Create directory
+1. `Checkpoint` - Checkpoint container
+2. `save_checkpoint` - Save model checkpoint
+3. `load_checkpoint` - Load model checkpoint
+4. `serialize_tensor` - Serialize tensor
+5. `deserialize_tensor` - Deserialize tensor
+6. `safe_write_file` - Atomic file write
+7. `safe_read_file` - Safe file read
+8. `create_backup` - Backup creation
+9. `file_exists` - Check file existence
+10. `directory_exists` - Check directory existence
+11. `create_directory` - Create directory
 
 ### Visualization Utilities (8 exports)
 
-27. `plot_training_curves` - Plot loss/accuracy curves
-28. `plot_loss_only` - Plot single loss curve
-29. `plot_accuracy_only` - Plot single accuracy curve
-30. `plot_confusion_matrix` - Plot confusion matrix
-31. `visualize_model_architecture` - Model architecture diagram
-32. `show_images` - Display image grid
-33. `visualize_feature_maps` - Feature map visualization
-34. `save_figure` - Save matplotlib figure
+1. `plot_training_curves` - Plot loss/accuracy curves
+2. `plot_loss_only` - Plot single loss curve
+3. `plot_accuracy_only` - Plot single accuracy curve
+4. `plot_confusion_matrix` - Plot confusion matrix
+5. `visualize_model_architecture` - Model architecture diagram
+6. `show_images` - Display image grid
+7. `visualize_feature_maps` - Feature map visualization
+8. `save_figure` - Save matplotlib figure
 
 ### Random Seed Utilities (9 exports)
 
-35. `set_seed` - Set random seed globally
-36. `get_global_seed` - Get current seed
-37. `get_random_state` - Get current random state
-38. `set_random_state` - Restore random state
-39. `RandomState` - Random state container
-40. `random_uniform` - Generate uniform random
-41. `random_normal` - Generate normal random
-42. `random_int` - Generate random integer
-43. `shuffle` - Shuffle list in-place
+1. `set_seed` - Set random seed globally
+2. `get_global_seed` - Get current seed
+3. `get_random_state` - Get current random state
+4. `set_random_state` - Restore random state
+5. `RandomState` - Random state container
+6. `random_uniform` - Generate uniform random
+7. `random_normal` - Generate normal random
+8. `random_int` - Generate random integer
+9. `shuffle` - Shuffle list in-place
 
 ### Profiling Utilities (7 exports)
 
-44. `Timer` - Context manager for timing
-45. `memory_usage` - Get current memory usage
-46. `profile_function` - Profile function execution
-47. `benchmark_function` - Benchmark function
-48. `MemoryStats` - Memory statistics
-49. `TimingStats` - Timing statistics
-50. `ProfilingReport` - Profiling report
+1. `Timer` - Context manager for timing
+2. `memory_usage` - Get current memory usage
+3. `profile_function` - Profile function execution
+4. `benchmark_function` - Benchmark function
+5. `MemoryStats` - Memory statistics
+6. `TimingStats` - Timing statistics
+7. `ProfilingReport` - Profiling report
 
 **Note**: The `__all__` list in `shared/utils/__init__.mojo` defines these 50 exports explicitly. All are tested in
 `scripts/install_verify_utils.sh` to ensure package integrity

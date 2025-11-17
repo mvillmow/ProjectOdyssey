@@ -21,6 +21,7 @@ Update all 36 agent configuration files with correct tool specifications to enab
 ### Priority 1: Orchestrators (8 files)
 
 **Base orchestrators (6 files)** - Added Bash,Task:
+
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/chief-architect.md`
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/code-review-orchestrator.md`
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/foundation-orchestrator.md`
@@ -29,6 +30,7 @@ Update all 36 agent configuration files with correct tool specifications to enab
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/cicd-orchestrator.md`
 
 **Research orchestrators (2 files)** - Added Bash,Task before WebFetch:
+
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/papers-orchestrator.md`
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/agentic-workflows-orchestrator.md`
 
@@ -47,10 +49,12 @@ Update all 36 agent configuration files with correct tool specifications to enab
 ### Priority 4: Specialists with Bash (3 files)
 
 **Test/Performance specialists** - Added Task:
+
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/test-specialist.md`
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/performance-specialist.md`
 
 **Blog writer specialist** - Added Task:
+
 - `/home/mvillmow/ml-odyssey/worktrees/issue-1563-fix-agent-tools/.claude/agents/blog-writer-specialist.md`
 
 ### Priority 5: Review Specialists (13 files)
@@ -83,23 +87,29 @@ Update all 36 agent configuration files with correct tool specifications to enab
 ### Changes Made
 
 **Priority 1: Orchestrators**
+
 - Standard orchestrators: `Read,Grep,Glob` → `Read,Grep,Glob,Bash,Task`
 - Research orchestrators: `Read,Grep,Glob,WebFetch` → `Read,Grep,Glob,Bash,Task,WebFetch`
 
 **Priority 2: Design Agents**
+
 - All design agents: `Read,Write,Grep,Glob` → `Read,Write,Grep,Glob,Bash,Task`
 
 **Priority 3: Coordination Specialists**
+
 - All coordination specialists: `Read,Write,Edit,Grep,Glob` → `Read,Write,Edit,Grep,Glob,Bash,Task`
 
 **Priority 4: Specialists with Bash**
+
 - Test/Performance specialists: `Read,Write,Edit,Bash,Grep,Glob` → `Read,Write,Edit,Bash,Grep,Glob,Task`
 - Blog writer specialist: `Read,Grep,Glob,Bash` → `Read,Grep,Glob,Bash,Task`
 
 **Priority 5: Review Specialists**
+
 - All review specialists: `Read,Grep,Glob` → `Read,Grep,Glob,Bash`
 
 **Priority 6: Engineers**
+
 - All engineers: `Read,Write,Edit,Grep,Glob` → `Read,Write,Edit,Grep,Glob,Bash`
 
 ## Implementation Notes

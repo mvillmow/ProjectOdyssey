@@ -19,6 +19,7 @@ This skill coordinates the package phase to create distributable artifacts.
 ### 1. Mojo Packages (.mojopkg)
 
 Compiled Mojo modules:
+
 ```bash
 ./scripts/package_mojo_module.sh tensor
 # Creates: packages/tensor.mojopkg
@@ -27,6 +28,7 @@ Compiled Mojo modules:
 ### 2. Distribution Archives
 
 Tar/zip archives for tooling and documentation:
+
 ```bash
 ./scripts/create_distribution.sh ml-odyssey-v0.1.0
 # Creates: dist/ml-odyssey-v0.1.0.tar.gz
@@ -35,6 +37,7 @@ Tar/zip archives for tooling and documentation:
 ### 3. Installation Procedures
 
 Scripts and documentation for installation:
+
 ```bash
 ./scripts/create_installer.sh tensor
 # Creates: install_tensor.sh, INSTALL.md
@@ -131,23 +134,26 @@ Before finalizing package:
 ## Error Handling
 
 - **Build failures**: Fix source code issues
-- **Import errors**: Check __init__.mojo exports
+- **Import errors**: Check **init**.mojo exports
 - **Missing dependencies**: Document in package metadata
 - **Installation failures**: Test and fix installer
 
 ## Examples
 
 **Package Mojo module:**
+
 ```bash
 ./scripts/package_mojo_module.sh tensor
 ```
 
 **Create distribution:**
+
 ```bash
 ./scripts/create_distribution.sh v0.1.0
 ```
 
 **Test package:**
+
 ```bash
 ./scripts/test_package.sh tensor.mojopkg
 ```

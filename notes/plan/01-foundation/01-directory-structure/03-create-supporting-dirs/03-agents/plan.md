@@ -31,11 +31,13 @@ The 6-level agent hierarchy spans from meta-orchestration down to junior impleme
 ## Outputs
 
 **`.claude/agents/` directory** containing:
+
 - Sub-agent configuration files for operational agents at each hierarchy level
 - Level 0, 1, 2 orchestrator configurations
 - Level 3, 4, 5 specialist and implementation agent configurations
 
 **`agents/` directory** (repository root) containing:
+
 - `README.md` - Comprehensive explanation of the agent system, directory purposes, and usage
 - `hierarchy.md` - Visual hierarchy diagram and level descriptions
 - `delegation-rules.md` - Orchestration patterns and task delegation guidelines

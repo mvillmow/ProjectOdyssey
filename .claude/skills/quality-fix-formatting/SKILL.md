@@ -150,12 +150,14 @@ git push --force-with-lease
 ### Mojo Formatting
 
 **Before:**
+
 ```mojo
 fn add(x:Int,y:Int)->Int:
     return x+y
 ```
 
 **After:**
+
 ```mojo
 fn add(x: Int, y: Int) -> Int:
     return x + y
@@ -164,12 +166,15 @@ fn add(x: Int, y: Int) -> Int:
 ### Markdown Formatting
 
 **Before:**
+
 ```markdown
 Some text before.
 ```text
 code block
 ```
+
 Some text after.
+
 ```
 
 **After:**
@@ -181,6 +186,7 @@ code block
 ```
 
 Some text after.
+
 ```
 
 ### Trailing Whitespace
@@ -192,6 +198,7 @@ another line
 ```
 
 **After:**
+
 ```text
 line with trailing spaces
 another line
@@ -206,13 +213,16 @@ Some issues need manual intervention:
 ```markdown
 # Before (need to add manually)
 ```
+
 code here
+
 ```
 
 # After
 ```python
 code here
 ```
+
 ```
 
 ### Line Length
@@ -255,21 +265,25 @@ Error: File contains merge conflict markers
 ## Examples
 
 **Fix all formatting:**
+
 ```bash
 ./scripts/fix_all_formatting.sh
 ```
 
 **Fix only Mojo:**
+
 ```bash
 mojo format src/**/*.mojo
 ```
 
 **Fix only markdown:**
+
 ```bash
 npx markdownlint-cli2 --fix "**/*.md"
 ```
 
 **Fix and commit:**
+
 ```bash
 ./scripts/fix_all_formatting.sh
 git add .

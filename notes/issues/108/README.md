@@ -39,18 +39,21 @@ Create the basic pyproject.toml file with project metadata including name, versi
 The pyproject.toml will follow PEP 621 standards with the following metadata fields:
 
 **Required Fields:**
+
 - `name` = "ml-odyssey" - Project name following PyPI naming conventions
 - `version` = "0.1.0" - Semantic versioning starting at 0.1.0 for initial development
 - `description` = "Mojo-based AI research platform for reproducing classic ML papers"
 - `authors` = List of author objects with name and email
 
 **Optional Fields (for initial version):**
+
 - `readme` = "README.md" - Link to project README
 - `requires-python` = ">=3.7" - Minimum Python version requirement
 - `license` = {text = "MIT"} or similar - To be determined
 - `keywords` = ["mojo", "machine-learning", "ai", "research"] - Project keywords
 
 **Structure:**
+
 ```toml
 [project]
 name = "ml-odyssey"
@@ -69,12 +72,14 @@ keywords = ["mojo", "machine-learning", "ai", "research"]
 **Decision: Use `setuptools` with `setuptools-scm` for version management**
 
 **Rationale:**
+
 - **setuptools**: Most widely adopted and stable Python build backend
 - **Mature ecosystem**: Extensive documentation and community support
 - **Compatibility**: Works seamlessly with pip and standard Python tooling
 - **Future-proof**: Can be migrated to hatchling or other backends later if needed
 
 **Configuration:**
+
 ```toml
 [build-system]
 requires = ["setuptools>=61.0", "setuptools-scm"]
@@ -82,11 +87,13 @@ build-backend = "setuptools.build_meta"
 ```
 
 **Alternatives Considered:**
+
 - **hatchling**: Modern, simpler configuration, but less mature
 - **poetry**: Opinionated dependency management, but adds complexity
 - **flit**: Minimal approach, but may lack features as project grows
 
 **Decision Factors:**
+
 1. **Stability**: setuptools is battle-tested in production environments
 2. **Flexibility**: Easy to extend with custom build steps if needed
 3. **Migration Path**: Can switch backends later without major refactoring
@@ -97,22 +104,26 @@ build-backend = "setuptools.build_meta"
 **Decision: Minimum Python 3.7, Target Python 3.11+**
 
 **Rationale:**
+
 - **Python 3.7**: End of life June 2023, but provides wide compatibility
 - **Python 3.11**: Current stable version with performance improvements
 - **Future-looking**: Avoid bleeding-edge to ensure stability
 
 **Compatibility Approach:**
+
 1. **Minimum viable**: Set `requires-python = ">=3.7"` initially
 2. **Testing**: Test on Python 3.7, 3.9, 3.11 in CI/CD
 3. **Migration**: Plan to bump to 3.9 minimum after initial release
 4. **Type hints**: Use Python 3.7-compatible type hints (no PEP 604 union syntax)
 
 **Version Constraint Syntax:**
+
 ```toml
 requires-python = ">=3.7"  # Minimum version
 ```
 
 **Future Considerations:**
+
 - Python 3.13+ introduces performance improvements for ML workloads
 - May want to add `<4.0` upper bound for Python 4 compatibility
 - Monitor Python release schedule for EOL dates
@@ -122,12 +133,14 @@ requires-python = ">=3.7"  # Minimum version
 **Location:** Repository root (`/pyproject.toml`)
 
 **Section Order (PEP 621 recommended):**
+
 1. `[build-system]` - Build requirements (PEP 518)
 2. `[project]` - Core metadata (PEP 621)
 3. `[project.optional-dependencies]` - Development dependencies (future)
 4. `[tool.*]` - Tool-specific configurations (future)
 
 **Validation:**
+
 - Must be valid TOML syntax
 - Must pass `pip install -e .` validation
 - Should pass `pyproject-validate` or similar linting
@@ -168,6 +181,7 @@ classifiers = [
 ### Extensibility Considerations
 
 **Future Additions (Not in Initial Version):**
+
 1. **Dependencies**: Will be added in #113 (Add Python Deps)
 2. **Tool Configurations**: Will be added in #114 (Configure Tools)
 3. **Scripts/Entry Points**: To be determined based on CLI needs
@@ -175,6 +189,7 @@ classifiers = [
 
 **Design Principle:**
 Start with minimal valid configuration and expand incrementally. Each addition should:
+
 - Have clear purpose and justification
 - Follow PEP standards
 - Be documented in subsequent issues
@@ -182,10 +197,12 @@ Start with minimal valid configuration and expand incrementally. Each addition s
 ### Validation Strategy
 
 **Pre-commit Checks:**
+
 1. TOML syntax validation (`check-toml` hook)
 2. File format validation (trailing whitespace, EOF newline)
 
 **Manual Validation:**
+
 ```bash
 # Verify TOML syntax
 python3 -c "import tomllib; tomllib.load(open('pyproject.toml', 'rb'))"
@@ -198,6 +215,7 @@ pyproject-validate pyproject.toml
 ```
 
 **CI/CD Validation:**
+
 - Include in pre-commit CI workflow
 - Test installation on multiple Python versions
 

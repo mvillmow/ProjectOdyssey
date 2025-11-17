@@ -49,16 +49,19 @@ grep "Success Criteria" -A 10 plan.md
 Delegate based on complexity:
 
 **Complex** → Senior Implementation Engineer
+
 - Algorithms
 - Performance-critical code
 - SIMD optimizations
 
 **Standard** → Implementation Engineer
+
 - Standard functions
 - Business logic
 - Data structures
 
 **Simple** → Junior Implementation Engineer
+
 - Boilerplate
 - Simple helpers
 - Type definitions
@@ -79,6 +82,7 @@ Delegate based on complexity:
 ### 5. Code Review
 
 Review all implementations for:
+
 - **Quality** - Clean, maintainable code
 - **Standards** - Follows Mojo guidelines
 - **Tests** - Adequate coverage
@@ -206,16 +210,19 @@ mojo test tests/
 ## Examples
 
 **Start implementation phase:**
+
 ```bash
 ./scripts/start_implementation.sh tensor-operations
 ```
 
 **Delegate task:**
+
 ```bash
 ./scripts/delegate_task.sh "implement matmul" senior-engineer
 ```
 
 **Check status:**
+
 ```bash
 ./scripts/check_implementation_status.sh
 ```

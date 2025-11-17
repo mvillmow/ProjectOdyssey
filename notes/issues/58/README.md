@@ -78,7 +78,6 @@ created in Issue #59.
 
 **Coverage**: Link parsing, path resolution, cross-reference validation
 
-
 ### 4. test_getting_started.py (484 lines)
 
 **Purpose**: Validate Tier 1 (Getting Started) documents - 6 documents.
@@ -297,11 +296,11 @@ created in Issue #59.
 
 ### Important Tests (Medium Priority)
 
-6. **Directory structure correct** - Validates organization
-7. **Document headers present** - Ensures structure
-8. **Cross-tier references valid** - Ensures cohesion
-9. **Getting started complete** - Critical user docs
-10. **Core docs complete** - Critical developer docs
+1. **Directory structure correct** - Validates organization
+2. **Document headers present** - Ensures structure
+3. **Cross-tier references valid** - Ensures cohesion
+4. **Getting started complete** - Critical user docs
+5. **Core docs complete** - Critical developer docs
 
 ### Edge Cases Covered
 

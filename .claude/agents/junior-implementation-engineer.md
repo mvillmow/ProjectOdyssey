@@ -73,37 +73,46 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 - Avoid unnecessary copies with move semantics (`^`)
 
 See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+
 ### Mojo Language Patterns
 
 #### Function Definitions (fn vs def)
 
 **Use `fn` for**:
+
 - Performance-critical functions (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Functions that don't need dynamic behavior
+
 ```mojo
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -113,11 +122,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -125,12 +137,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -144,13 +159,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -173,6 +191,7 @@ fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
 ## No Delegation
 
 Level 5 is the lowest level - no delegation to other agents.
+
 ## Delegation
 
 ### Delegates To
@@ -189,6 +208,7 @@ Level 5 is the lowest level - no delegation to other agents.
 ### Escalation Path
 
 When blocked or needing guidance:
+
 1. Escalate to immediate supervisor (relevant Specialist)
 2. If still blocked, Specialist escalates to Design level
 3. If architectural issue, escalates to Orchestrator level
@@ -202,6 +222,7 @@ Implementation
 ### Code Formatting
 
 Use the `mojo-format` skill to format Mojo code:
+
 - **Invoke when**: Before committing code, when formatting checks fail
 - **The skill handles**: All .mojo and .🔥 files automatically
 - **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
@@ -209,6 +230,7 @@ Use the `mojo-format` skill to format Mojo code:
 ### Running Linters
 
 Use the `quality-run-linters` skill to run all configured linters:
+
 - **Invoke when**: Before committing, pre-PR validation
 - **The skill handles**: Mojo format, markdownlint, and pre-commit hooks
 - **See**: [quality-run-linters skill](../.claude/skills/quality-run-linters/SKILL.md)
@@ -216,6 +238,7 @@ Use the `quality-run-linters` skill to run all configured linters:
 ### Fixing Formatting
 
 Use the `quality-fix-formatting` skill to auto-fix formatting issues:
+
 - **Invoke when**: Linters report formatting errors
 - **The skill handles**: Auto-fixes for Python, Mojo, and markdown
 - **See**: [quality-fix-formatting skill](../.claude/skills/quality-fix-formatting/SKILL.md)
@@ -223,6 +246,7 @@ Use the `quality-fix-formatting` skill to auto-fix formatting issues:
 ### Creating Pull Requests
 
 Use the `gh-create-pr-linked` skill to create pull requests:
+
 - **Invoke when**: Ready to submit work for review
 - **The skill ensures**: PR is properly linked to GitHub issue
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
@@ -230,6 +254,7 @@ Use the `gh-create-pr-linked` skill to create pull requests:
 ### Monitoring CI Status
 
 Use the `gh-check-ci-status` skill to monitor CI:
+
 - **Invoke when**: PR submitted, checking if CI passes
 - **The skill provides**: CI status and failure details
 - **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)

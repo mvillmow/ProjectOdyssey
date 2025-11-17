@@ -112,12 +112,14 @@ pre-commit install
 ### Auto-Fix Hooks
 
 These hooks fix issues automatically:
+
 - `trailing-whitespace` - Removes trailing spaces
 - `end-of-file-fixer` - Adds final newline
 - `mixed-line-ending` - Fixes line endings
 - `mojo-format` - Formats Mojo code
 
 **Workflow when auto-fix runs:**
+
 ```bash
 git commit -m "message"
 # Hooks run, fix files, commit aborts
@@ -130,6 +132,7 @@ git commit -m "message"  # Commit again
 ### Check-Only Hooks
 
 These hooks check but don't fix:
+
 - `check-yaml` - Reports YAML errors
 - `check-added-large-files` - Reports large files
 
@@ -171,6 +174,7 @@ Fixing file.md
 ```
 
 **Fix:**
+
 ```bash
 # Files were fixed, just stage and re-commit
 git add .
@@ -200,6 +204,7 @@ large_file.bin (1500 KB) exceeds 1000 KB
 ```
 
 **Fix:**
+
 - Don't commit large files
 - Use Git LFS if needed
 - Add to `.gitignore`
@@ -217,6 +222,7 @@ SKIP=trailing-whitespace git commit -m "message"
 ```
 
 **When to skip:**
+
 - Emergency hotfix
 - Hook has bug
 - False positive
@@ -226,11 +232,13 @@ SKIP=trailing-whitespace git commit -m "message"
 ## Examples
 
 **Run all hooks:**
+
 ```bash
 pre-commit run --all-files
 ```
 
 **Run before committing:**
+
 ```bash
 # Check if commit will pass
 pre-commit run
@@ -240,11 +248,13 @@ git commit -m "message"
 ```
 
 **Install hooks:**
+
 ```bash
 pre-commit install
 ```
 
 **Update hooks:**
+
 ```bash
 pre-commit autoupdate
 ```

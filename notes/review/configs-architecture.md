@@ -55,6 +55,7 @@ configs/
 System-wide defaults that apply to all papers and experiments unless overridden.
 
 **training.yaml**:
+
 ```yaml
 # Default Training Configuration
 # These values are used unless overridden by paper or experiment configs
@@ -86,6 +87,7 @@ logging:
 ```
 
 **model.yaml**:
+
 ```yaml
 # Default Model Configuration
 # Common model settings and initialization
@@ -105,6 +107,7 @@ architecture:
 ```
 
 **data.yaml**:
+
 ```yaml
 # Default Data Processing Configuration
 
@@ -131,6 +134,7 @@ loader:
 Paper-specific configurations that override defaults for reproducing published results.
 
 **papers/lenet5/model.yaml**:
+
 ```yaml
 # LeNet-5 Architecture Configuration
 # Based on LeCun et al., 1998
@@ -169,6 +173,7 @@ layers:
 Experiment-specific overrides for testing variations and improvements.
 
 **experiments/lenet5/augmented.yaml**:
+
 ```yaml
 # LeNet-5 with Data Augmentation Experiment
 
@@ -203,12 +208,14 @@ training:
 YAML is the primary format for human-readable configurations.
 
 **Advantages**:
+
 - Human-readable and writable
 - Support for comments and documentation
 - Hierarchical structure
 - Multi-line strings for descriptions
 
 **Example Structure**:
+
 ```yaml
 # Configuration header comment
 version: "1.0"
@@ -233,6 +240,7 @@ paths:
 JSON supported for programmatic generation and interoperability.
 
 **Use Cases**:
+
 - Auto-generated configurations
 - API responses
 - Cross-language compatibility
@@ -244,6 +252,7 @@ JSON supported for programmatic generation and interoperability.
 Each configuration type has a corresponding schema in `schemas/`.
 
 **training.schema.yaml**:
+
 ```yaml
 # Training Configuration Schema
 type: object
@@ -438,6 +447,7 @@ fn create_experiment_config(
 ### Paper Configuration Template
 
 **templates/paper.yaml**:
+
 ```yaml
 # Paper Configuration Template
 # Copy this file to configs/papers/<paper_name>/ and customize
@@ -469,6 +479,7 @@ data:
 ### Experiment Template
 
 **templates/experiment.yaml**:
+
 ```yaml
 # Experiment Configuration Template
 # Copy to configs/experiments/<paper>/<experiment>.yaml
@@ -635,6 +646,7 @@ fn test_validate_training_config():
 This configuration architecture provides a robust, scalable foundation for managing ML experiments in ML Odyssey. The three-tier hierarchy (defaults → paper → experiment) ensures both reproducibility and flexibility, while the integration with Mojo's type system provides safety and performance.
 
 Key benefits:
+
 - **Reproducibility**: Every experiment fully defined by configuration
 - **Reusability**: Inherit and override configurations efficiently  
 - **Type Safety**: Leverage Mojo's type system for validation

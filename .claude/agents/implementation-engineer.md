@@ -118,37 +118,46 @@ philosophy.
 - Avoid unnecessary copies with move semantics (`^`)
 
 See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+
 ### Mojo Language Patterns
 
 #### Function Definitions (fn vs def)
 
 **Use `fn` for**:
+
 - Performance-critical functions (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Functions that don't need dynamic behavior
+
 ```mojo
 fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
     # Optimized, type-safe implementation
     ...
 ```
+
 **Use `def` for**:
+
 - Python-compatible functions
 - Dynamic typing needed
 - Quick prototypes
 - Functions with Python interop
+
 ```mojo
 def load_dataset(path: String) -> PythonObject:
     # Flexible, Python-compatible implementation
     ...
 ```
+
 #### Type Definitions (struct vs class)
 
 **Use `struct` for**:
+
 - Value types with stack allocation
 - Performance-critical data structures
 - Immutable or copy-by-value semantics
 - SIMD-compatible types
+
 ```mojo
 struct Layer:
     var weights: Tensor[DType.float32]
@@ -158,11 +167,14 @@ struct Layer:
     fn forward(self, input: Tensor) -> Tensor:
         ...
 ```
+
 **Use `class` for**:
+
 - Reference types with heap allocation
 - Object-oriented inheritance
 - Shared mutable state
 - Python interoperability
+
 ```mojo
 class Model:
     var layers: List[Layer]
@@ -170,12 +182,15 @@ class Model:
     def add_layer(self, layer: Layer):
         self.layers.append(layer)
 ```
+
 #### Memory Management Patterns
 
 **Ownership Patterns**:
+
 - `owned`: Transfer ownership (move semantics)
 - `borrowed`: Read-only access without ownership
 - `inout`: Mutable access without ownership transfer
+
 ```mojo
 fn process_tensor(owned tensor: Tensor) -> Tensor:
     # Takes ownership, tensor moved
@@ -189,13 +204,16 @@ fn update_tensor(inout tensor: Tensor):
     # Mutate in place, no ownership transfer
     tensor.normalize_()
 ```
+
 #### SIMD and Vectorization
 
 **Use SIMD for**:
+
 - Element-wise tensor operations
 - Matrix/vector computations
 - Batch processing
 - Performance-critical loops
+
 ```mojo
 fn vectorized_add[simd_width: Int](a: Tensor, b: Tensor) -> Tensor:
     @parameter
@@ -235,6 +253,7 @@ Implementation
 ### Code Formatting
 
 Use the `mojo-format` skill to format Mojo code:
+
 - **Invoke when**: Before committing code
 - **The skill handles**: All .mojo and .🔥 files automatically
 - **See**: [mojo-format skill](../.claude/skills/mojo-format/SKILL.md)
@@ -242,6 +261,7 @@ Use the `mojo-format` skill to format Mojo code:
 ### Package Building
 
 Use the `mojo-build-package` skill to build Mojo packages:
+
 - **Invoke when**: Creating distributable .mojopkg files
 - **The skill handles**: Package compilation and manifest creation
 - **See**: [mojo-build-package skill](../.claude/skills/mojo-build-package/SKILL.md)
@@ -249,6 +269,7 @@ Use the `mojo-build-package` skill to build Mojo packages:
 ### Test Execution
 
 Use the `mojo-test-runner` skill to run tests:
+
 - **Invoke when**: Running Mojo test suites
 - **The skill handles**: Test execution and result parsing
 - **See**: [mojo-test-runner skill](../.claude/skills/mojo-test-runner/SKILL.md)
@@ -256,6 +277,7 @@ Use the `mojo-test-runner` skill to run tests:
 ### Pull Request Creation
 
 Use the `gh-create-pr-linked` skill to create PRs:
+
 - **Invoke when**: Ready to submit work for review
 - **The skill ensures**: PR is properly linked to GitHub issue
 - **See**: [gh-create-pr-linked skill](../.claude/skills/gh-create-pr-linked/SKILL.md)
@@ -263,6 +285,7 @@ Use the `gh-create-pr-linked` skill to create PRs:
 ### CI Status Monitoring
 
 Use the `gh-check-ci-status` skill to monitor CI:
+
 - **Invoke when**: PR submitted, checking if CI passes
 - **The skill provides**: CI status and failure details
 - **See**: [gh-check-ci-status skill](../.claude/skills/gh-check-ci-status/SKILL.md)
@@ -370,6 +393,7 @@ After creating PR:
 ---
 
 **Configuration File**: `.claude/agents/implementation-engineer.md`
+
 ## Examples
 
 ### Example 1: Implementing Neural Network Layer
@@ -377,6 +401,7 @@ After creating PR:
 **Scenario**: Implementing a fully connected layer with ReLU activation in Mojo
 
 **Actions**:
+
 ```mojo
 struct FCLayer:
     var weights: Tensor[DType.float32]
@@ -394,6 +419,7 @@ struct FCLayer:
             output = output.relu()
         return output
 ```
+
 **Outcome**: Type-safe, performant layer implementation with SIMD optimizations
 
 ### Example 2: Implementing Batch Data Loader
@@ -401,6 +427,7 @@ struct FCLayer:
 **Scenario**: Creating a data loader that efficiently batches training data
 
 **Actions**:
+
 ```mojo
 fn create_batches[dtype: DType](
     data: Tensor[dtype], 
@@ -423,6 +450,7 @@ fn create_batches[dtype: DType](
     
     return batches
 ```
+
 **Outcome**: Efficient batching with optional shuffling and proper memory management
 
 ### Example 3: Error Handling in Model Training
@@ -430,6 +458,7 @@ fn create_batches[dtype: DType](
 **Scenario**: Implementing robust error handling for training loop
 
 **Actions**:
+
 ```mojo
 fn train_step(
     inout model: Model,
@@ -460,6 +489,7 @@ fn train_step(
     
     return loss
 ```
+
 **Outcome**: Robust training step with comprehensive validation and error recovery
 
 ---

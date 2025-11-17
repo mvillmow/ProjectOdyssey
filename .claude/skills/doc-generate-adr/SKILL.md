@@ -18,6 +18,7 @@ This skill generates Architecture Decision Records (ADRs) for technical decision
 ## What is an ADR?
 
 An ADR documents:
+
 - **Context** - The issue or decision to be made
 - **Decision** - What was decided
 - **Rationale** - Why this decision was made
@@ -94,6 +95,7 @@ Description and why not chosen.
 ### Number Assignment
 
 ADRs are numbered sequentially:
+
 - ADR-001 - First decision
 - ADR-002 - Second decision
 - ADR-XXX - Next available number
@@ -227,6 +229,7 @@ Adopt TDD (write tests before implementation) for all new code.
 ## Storage Location
 
 ADRs are stored in:
+
 ```text
 notes/review/adr/
 ├── ADR-001-language-selection.md
@@ -245,16 +248,19 @@ notes/review/adr/
 ## Examples
 
 **Create ADR:**
+
 ```bash
 ./scripts/create_adr.sh "Mojo Memory Management Strategy"
 ```
 
 **List all ADRs:**
+
 ```bash
 ./scripts/list_adrs.sh
 ```
 
 **Update ADR status:**
+
 ```bash
 ./scripts/update_adr_status.sh ADR-001 "Superseded"
 ```
