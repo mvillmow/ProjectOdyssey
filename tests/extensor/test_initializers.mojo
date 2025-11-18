@@ -5,6 +5,7 @@ weight initialization strategies.
 
 Test coverage:
 - #259: Xavier/Glorot tests (uniform and normal variants)
+- #269: Uniform/Normal basic distribution tests
 
 Testing strategy:
 - Statistical properties: Verify variance matches theoretical values
@@ -16,7 +17,7 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from collections.vector import DynamicVector
 from math import abs, sqrt
-from extensor import ExTensor, xavier_uniform, xavier_normal
+from extensor import ExTensor, xavier_uniform, xavier_normal, uniform, normal, constant
 
 
 fn compute_variance(tensor: ExTensor) raises -> Float64:
@@ -320,6 +321,217 @@ fn test_xavier_float16() raises:
     print("  ✓ Xavier float16 test passed")
 
 
+fn test_uniform_bounds() raises:
+    """Test uniform distribution stays within bounds."""
+    print("Testing uniform bounds...")
+
+    var shape = DynamicVector[Int](100, 50)
+    var low = -0.5
+    var high = 0.5
+
+    var weights = uniform(shape, low=low, high=high, seed_val=42)
+
+    # Check all values are within [low, high]
+    for i in range(weights._numel):
+        var val = Float64(weights._data.bitcast[Float32]()[i])
+        assert_true(val >= low and val <= high, "Uniform values should be in bounds")
+
+    print("  Expected bounds: [", low, ",", high, "]")
+    print("  ✓ Uniform bounds test passed")
+
+
+fn test_uniform_mean() raises:
+    """Test uniform distribution has correct mean."""
+    print("Testing uniform mean...")
+
+    var shape = DynamicVector[Int](200, 100)
+    var low = -1.0
+    var high = 1.0
+
+    var weights = uniform(shape, low=low, high=high, seed_val=123)
+
+    # Compute mean
+    var sum: Float64 = 0.0
+    for i in range(weights._numel):
+        sum += Float64(weights._data.bitcast[Float32]()[i])
+
+    var mean = sum / Float64(weights._numel)
+    var expected_mean = (low + high) / 2.0
+
+    print("  Expected mean:", expected_mean)
+    print("  Actual mean:  ", mean)
+
+    # Mean should be close to (low + high) / 2
+    var tolerance = (high - low) * 0.05  # 5% of range
+    assert_true(abs(mean - expected_mean) < tolerance, "Uniform should have correct mean")
+
+    print("  ✓ Uniform mean test passed")
+
+
+fn test_uniform_reproducibility() raises:
+    """Test uniform with fixed seed is reproducible."""
+    print("Testing uniform reproducibility...")
+
+    var shape = DynamicVector[Int](50, 50)
+
+    # Generate with same seed twice
+    var w1 = uniform(shape, low=-0.2, high=0.2, seed_val=999)
+    var w2 = uniform(shape, low=-0.2, high=0.2, seed_val=999)
+
+    # Should be identical
+    for i in range(w1._numel):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2, "Same seed should produce identical values")
+
+    print("  ✓ Uniform reproducibility test passed")
+
+
+fn test_normal_mean_and_std() raises:
+    """Test normal distribution has correct mean and standard deviation."""
+    print("Testing normal mean and std...")
+
+    var shape = DynamicVector[Int](200, 100)
+    var expected_mean = 0.5
+    var expected_std = 0.1
+
+    var weights = normal(shape, mean=expected_mean, std=expected_std, seed_val=42)
+
+    # Compute mean
+    var sum: Float64 = 0.0
+    for i in range(weights._numel):
+        sum += Float64(weights._data.bitcast[Float32]()[i])
+
+    var actual_mean = sum / Float64(weights._numel)
+
+    # Compute variance
+    var var_sum: Float64 = 0.0
+    for i in range(weights._numel):
+        var val = Float64(weights._data.bitcast[Float32]()[i])
+        var diff = val - actual_mean
+        var_sum += diff * diff
+
+    var actual_var = var_sum / Float64(weights._numel)
+    var actual_std = sqrt(actual_var)
+
+    print("  Expected mean:", expected_mean)
+    print("  Actual mean:  ", actual_mean)
+    print("  Expected std: ", expected_std)
+    print("  Actual std:   ", actual_std)
+
+    # Allow 10% tolerance for statistical variation
+    var mean_tolerance = expected_std * 0.1
+    var std_tolerance = expected_std * 0.1
+
+    assert_true(abs(actual_mean - expected_mean) < mean_tolerance, "Normal should have correct mean")
+    assert_true(abs(actual_std - expected_std) < std_tolerance, "Normal should have correct std")
+
+    print("  ✓ Normal mean and std test passed")
+
+
+fn test_normal_reproducibility() raises:
+    """Test normal with fixed seed is reproducible."""
+    print("Testing normal reproducibility...")
+
+    var shape = DynamicVector[Int](50, 50)
+
+    # Generate with same seed twice
+    var w1 = normal(shape, mean=0.0, std=0.05, seed_val=555)
+    var w2 = normal(shape, mean=0.0, std=0.05, seed_val=555)
+
+    # Should be identical
+    for i in range(w1._numel):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2, "Same seed should produce identical values")
+
+    print("  ✓ Normal reproducibility test passed")
+
+
+fn test_constant_values() raises:
+    """Test constant initialization fills with correct value."""
+    print("Testing constant values...")
+
+    var shape = DynamicVector[Int](10, 10)
+    var value = 0.42
+
+    var weights = constant(shape, value)
+
+    # All values should equal the constant
+    for i in range(weights._numel):
+        var val = Float64(weights._data.bitcast[Float32]()[i])
+        assert_equal(val, value, "All values should equal constant")
+
+    print("  Constant value:", value)
+    print("  ✓ Constant values test passed")
+
+
+fn test_constant_ones_and_zeros() raises:
+    """Test constant can create ones and zeros."""
+    print("Testing constant ones and zeros...")
+
+    var shape = DynamicVector[Int](5, 5)
+
+    # Test ones
+    var ones_tensor = constant(shape, 1.0)
+    for i in range(ones_tensor._numel):
+        var val = Float64(ones_tensor._data.bitcast[Float32]()[i])
+        assert_equal(val, 1.0, "Should be 1.0")
+
+    # Test zeros
+    var zeros_tensor = constant(shape, 0.0)
+    for i in range(zeros_tensor._numel):
+        var val = Float64(zeros_tensor._data.bitcast[Float32]()[i])
+        assert_equal(val, 0.0, "Should be 0.0")
+
+    print("  ✓ Constant ones and zeros test passed")
+
+
+fn test_uniform_float64() raises:
+    """Test uniform with float64 dtype."""
+    print("Testing uniform with float64...")
+
+    var shape = DynamicVector[Int](50, 50)
+    var weights = uniform(shape, low=-1.0, high=1.0, dtype=DType.float64, seed_val=42)
+
+    assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")
+
+    # Check bounds
+    for i in range(weights._numel):
+        var val = weights._data.bitcast[Float64]()[i]
+        assert_true(val >= -1.0 and val <= 1.0, "Values should be in bounds")
+
+    print("  ✓ Uniform float64 test passed")
+
+
+fn test_normal_float64() raises:
+    """Test normal with float64 dtype."""
+    print("Testing normal with float64...")
+
+    var shape = DynamicVector[Int](50, 50)
+    var weights = normal(shape, mean=0.0, std=0.1, dtype=DType.float64, seed_val=42)
+
+    assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")
+
+    print("  ✓ Normal float64 test passed")
+
+
+fn test_constant_float64() raises:
+    """Test constant with float64 dtype."""
+    print("Testing constant with float64...")
+
+    var shape = DynamicVector[Int](5, 5)
+    var weights = constant(shape, 0.5, dtype=DType.float64)
+
+    assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")
+
+    for i in range(weights._numel):
+        var val = weights._data.bitcast[Float64]()[i]
+        assert_equal(val, 0.5, "Should be 0.5")
+
+    print("  ✓ Constant float64 test passed")
+
+
 fn main() raises:
     """Run all initializer tests."""
     print("\n" + "="*70)
@@ -344,6 +556,25 @@ fn main() raises:
     test_xavier_configurations()
     test_xavier_float64()
     test_xavier_float16()
+
+    print("\nUniform Distribution Tests (#269)")
+    print("-" * 70)
+    test_uniform_bounds()
+    test_uniform_mean()
+    test_uniform_reproducibility()
+    test_uniform_float64()
+
+    print("\nNormal Distribution Tests (#269)")
+    print("-" * 70)
+    test_normal_mean_and_std()
+    test_normal_reproducibility()
+    test_normal_float64()
+
+    print("\nConstant Initialization Tests (#269)")
+    print("-" * 70)
+    test_constant_values()
+    test_constant_ones_and_zeros()
+    test_constant_float64()
 
     print("\n" + "="*70)
     print("ALL INITIALIZER TESTS PASSED ✓")

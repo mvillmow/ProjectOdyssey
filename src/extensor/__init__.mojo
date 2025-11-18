@@ -108,7 +108,10 @@ from .activations import (
 )
 
 # Weight initializers
-from .initializers import xavier_uniform, xavier_normal
+from .initializers import (
+    xavier_uniform, xavier_normal,
+    uniform, normal, constant
+)
 
 # Loss functions (forward pass)
 from .losses import (
