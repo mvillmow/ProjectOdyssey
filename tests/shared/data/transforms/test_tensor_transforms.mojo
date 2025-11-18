@@ -23,7 +23,6 @@ fn test_reshape_basic():
     Should change tensor shape without changing data order,
     common for converting between different representations.
     """
-    # TODO(#39): Implement when Reshape exists
     # var data = Tensor.arange(0, 28*28).reshape(784)  # Flat
     # var reshape = Reshape(28, 28)
     # var result = reshape(data)
@@ -40,7 +39,6 @@ fn test_reshape_flatten():
     Should convert any shape to 1D vector,
     common for feeding images to fully-connected layers.
     """
-    # TODO(#39): Implement when Flatten exists
     # var data = Tensor.ones(28, 28, 3)
     # var flatten = Flatten()
     # var result = flatten(data)
@@ -56,7 +54,6 @@ fn test_reshape_add_dimension():
     Should add dimension of size 1, e.g., (28, 28) → (28, 28, 1),
     useful for grayscale images.
     """
-    # TODO(#39): Implement when Unsqueeze exists
     # var data = Tensor.ones(28, 28)
     # var unsqueeze = Unsqueeze(dim=-1)  # Add dimension at end
     # var result = unsqueeze(data)
@@ -72,7 +69,6 @@ fn test_reshape_remove_dimension():
     Should remove singleton dimensions, e.g., (28, 28, 1) → (28, 28),
     useful for compatibility with 2D operations.
     """
-    # TODO(#39): Implement when Squeeze exists
     # var data = Tensor.ones(28, 28, 1)
     # var squeeze = Squeeze(dim=-1)
     # var result = squeeze(data)
@@ -94,7 +90,6 @@ fn test_to_float32():
     Should convert from any numeric type to Float32,
     common for neural network inputs.
     """
-    # TODO(#39): Implement when ToFloat32 exists
     # var data = Tensor([1, 2, 3], dtype=Int32)
     # var convert = ToFloat32()
     # var result = convert(data)
@@ -110,7 +105,6 @@ fn test_to_int32():
     Should convert from float to int, truncating decimals,
     useful for label conversion.
     """
-    # TODO(#39): Implement when ToInt32 exists
     # var data = Tensor([1.9, 2.1, 3.5], dtype=Float32)
     # var convert = ToInt32()
     # var result = convert(data)
@@ -127,7 +121,6 @@ fn test_scale_uint8_to_float():
     Common preprocessing for image data loaded from files,
     which are typically stored as uint8.
     """
-    # TODO(#39): Implement when ScaleUInt8ToFloat exists
     # var data = Tensor([0, 127, 255], dtype=UInt8)
     # var scale = ScaleUInt8ToFloat()
     # var result = scale(data)
@@ -144,7 +137,6 @@ fn test_scale_float_to_uint8():
     Useful for saving processed images back to disk
     in standard image formats.
     """
-    # TODO(#39): Implement when ScaleFloatToUInt8 exists
     # var data = Tensor([0.0, 0.5, 1.0], dtype=Float32)
     # var scale = ScaleFloatToUInt8()
     # var result = scale(data)
@@ -167,7 +159,6 @@ fn test_transpose_2d():
     Should swap dimensions: (H, W) → (W, H),
     useful for matrix operations.
     """
-    # TODO(#39): Implement when Transpose exists
     # var data = Tensor.arange(0, 12).reshape(3, 4)
     # var transpose = Transpose()
     # var result = transpose(data)
@@ -185,7 +176,6 @@ fn test_permute_dimensions():
     Should reorder dimensions: (H, W, C) → (C, H, W),
     common for converting between channel formats.
     """
-    # TODO(#39): Implement when Permute exists
     # var data = Tensor.ones(28, 28, 3)  # HWC format
     # var permute = Permute([2, 0, 1])  # To CHW format
     # var result = permute(data)
@@ -202,7 +192,6 @@ fn test_channel_first_to_last():
     PyTorch uses CHW, TensorFlow uses HWC,
     so conversion is needed for interop.
     """
-    # TODO(#39): Implement when ChannelFirstToLast exists
     # var data = Tensor.ones(3, 28, 28)  # CHW
     # var convert = ChannelFirstToLast()
     # var result = convert(data)
@@ -224,7 +213,6 @@ fn test_lambda_basic():
     Should allow arbitrary function to be used as transform,
     enabling flexible custom preprocessing.
     """
-    # TODO(#39): Implement when Lambda exists
     # fn square(x: Tensor) -> Tensor:
     #     return x * x
     #
@@ -244,7 +232,6 @@ fn test_lambda_with_closure():
     Should support closures for parameterized custom transforms,
     useful for one-off preprocessing steps.
     """
-    # TODO(#39): Implement when Lambda with closures exists
     # var scale_factor = 2.0
     # fn scale(x: Tensor) -> Tensor:
     #     return x * scale_factor
@@ -269,7 +256,6 @@ fn test_clamp_range():
     Should clip values outside [min, max] range,
     useful for ensuring valid input ranges.
     """
-    # TODO(#39): Implement when Clamp exists
     # var data = Tensor([-1.0, 0.5, 2.0])
     # var clamp = Clamp(min=0.0, max=1.0)
     # var result = clamp(data)

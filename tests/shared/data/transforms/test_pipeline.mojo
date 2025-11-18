@@ -169,7 +169,6 @@ fn test_pipeline_composition():
     Should support Pipeline(pipeline1 + pipeline2) to create
     longer pipelines from smaller reusable pieces.
     """
-    # TODO(#39): Implement when Pipeline composition exists
     # var preprocess = Pipeline([Resize(224, 224)])
     # var augment = Pipeline([RandomFlip(), RandomCrop(200, 200)])
     # var normalize = Pipeline([Normalize(0.5, 0.5)])
@@ -188,7 +187,6 @@ fn test_pipeline_append():
     Should support adding transforms after pipeline creation
     for incremental pipeline building.
     """
-    # TODO(#39): Implement when Pipeline.append exists
     # var pipeline = Pipeline([Resize(224, 224)])
     # pipeline.append(Normalize(0.5, 0.5))
     # pipeline.append(RandomFlip())
@@ -210,7 +208,6 @@ fn test_pipeline_transform_error_propagation():
     If a transform raises error, pipeline should propagate it
     with context about which transform failed.
     """
-    # TODO(#39): Implement when Pipeline error handling exists
     # var pipeline = Pipeline([
     #     Resize(224, 224),
     #     InvalidTransform(),  # This will raise error
@@ -233,7 +230,6 @@ fn test_pipeline_shape_mismatch():
     If transform N outputs shape incompatible with transform N+1,
     should raise clear error.
     """
-    # TODO(#39): Implement when Pipeline validation exists
     # # Reshape to 3D, then try to apply 2D-only transform
     # var pipeline = Pipeline([
     #     Reshape(10, 10, 3),
@@ -260,7 +256,6 @@ fn test_pipeline_str_representation():
     Should show list of transforms for debugging,
     e.g., 'Pipeline([Resize(224), Normalize(0.5)])'.
     """
-    # TODO(#39): Implement when Pipeline.__str__ exists
     # var pipeline = Pipeline([Resize(224, 224), Normalize(0.5, 0.5)])
     # var repr = str(pipeline)
     #
@@ -276,7 +271,6 @@ fn test_pipeline_len():
     len(pipeline) should return number of transforms,
     useful for debugging and validation.
     """
-    # TODO(#39): Implement when Pipeline.__len__ exists
     # var pipeline = Pipeline([Resize(224, 224), Normalize(0.5, 0.5)])
     # assert_equal(len(pipeline), 2)
     pass
