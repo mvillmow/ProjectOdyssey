@@ -47,6 +47,9 @@ from .extensor import ExTensor
 # Creation operations
 from .extensor import zeros, ones, full, empty, arange, eye, linspace
 
+# Creation utilities (shape-matching helpers)
+from .extensor import ones_like, zeros_like, full_like
+
 # Broadcasting utilities
 from .broadcasting import broadcast_shapes, are_shapes_broadcastable
 
@@ -106,6 +109,16 @@ from .activations import (
 
 # Weight initializers
 from .initializers import xavier_uniform, xavier_normal
+
+# Loss functions (forward pass)
+from .losses import (
+    binary_cross_entropy, mean_squared_error, cross_entropy
+)
+
+# Loss gradients (backward pass)
+from .losses import (
+    binary_cross_entropy_backward, mean_squared_error_backward, cross_entropy_backward
+)
 
 # TODO: Export remaining operation categories
 # from .indexing import getitem, setitem, take, gather

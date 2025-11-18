@@ -13,10 +13,12 @@ All optimizers implement the Optimizer trait for consistent interface.
 """
 
 # Export optimizer implementations
-# These will be populated during implementation phase
 
+# SGD optimizer (basic implementation)
+from .sgd import sgd_step, sgd_step_simple
+
+# TODO: Implement remaining optimizers
 # from .base import Optimizer
-# from .sgd import SGD
 # from .adam import Adam
 # from .adamw import AdamW
 # from .rmsprop import RMSprop

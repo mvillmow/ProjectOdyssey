@@ -627,3 +627,52 @@ fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) -> ExTensor:
                 tensor._set_int64(i, int(value))
 
     return tensor^
+
+
+fn ones_like(tensor: ExTensor) -> ExTensor:
+    """Create tensor of ones with same shape and dtype as input.
+
+    Args:
+        tensor: Template tensor to match shape and dtype
+
+    Returns:
+        A new ExTensor filled with ones, same shape and dtype as input
+
+    Example:
+        var x = zeros(DynamicVector[Int](3, 4), DType.float32)
+        var y = ones_like(x)  # (3, 4) tensor of ones, float32
+    """
+    return ones(tensor.shape(), tensor.dtype())
+
+
+fn zeros_like(tensor: ExTensor) -> ExTensor:
+    """Create tensor of zeros with same shape and dtype as input.
+
+    Args:
+        tensor: Template tensor to match shape and dtype
+
+    Returns:
+        A new ExTensor filled with zeros, same shape and dtype as input
+
+    Example:
+        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var y = zeros_like(x)  # (3, 4) tensor of zeros, float32
+    """
+    return zeros(tensor.shape(), tensor.dtype())
+
+
+fn full_like(tensor: ExTensor, fill_value: Float64) -> ExTensor:
+    """Create tensor filled with a value, same shape and dtype as input.
+
+    Args:
+        tensor: Template tensor to match shape and dtype
+        fill_value: Value to fill the tensor with
+
+    Returns:
+        A new ExTensor filled with fill_value, same shape and dtype as input
+
+    Example:
+        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
+    """
+    return full(tensor.shape(), fill_value, tensor.dtype())
