@@ -564,3 +564,254 @@ fn log2(tensor: ExTensor) raises -> ExTensor:
         result._set_float64(i, math_log(val) / math_log(2.0))
 
     return result^
+
+
+# ============================================================================
+# Backward Pass (Gradient Computation)
+# ============================================================================
+
+
+fn exp_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+    """Compute gradient for exponential function.
+
+    For Y = exp(X), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y * exp(X) = ∂L/∂Y * Y
+
+    Uses output from forward pass to avoid recomputing exp(X).
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        output: Output from forward pass (Y = exp(X))
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = ones([3, 4])
+        var y = exp(x)  # Forward pass
+        var grad_y = ones([3, 4])
+        var grad_x = exp_backward(grad_y, y)  # grad_x = grad_y * y
+    """
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let out_val = output._get_float64(i)
+        result._set_float64(i, grad * out_val)
+
+    return result
+
+
+fn log_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for natural logarithm.
+
+    For Y = log(X), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y / X
+
+    Includes numerical stability: adds epsilon to prevent division by zero.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        x: Input from forward pass (must be positive)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = full([3, 4], 2.0)
+        var y = log(x)
+        var grad_y = ones([3, 4])
+        var grad_x = log_backward(grad_y, x)  # grad_x = grad_y / x
+
+    Numerical Stability:
+        Uses epsilon = 1e-10 to prevent division by zero.
+    """
+    alias EPSILON = 1e-10
+
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let x_val = x._get_float64(i)
+        # Add epsilon for numerical stability
+        result._set_float64(i, grad / (x_val + EPSILON))
+
+    return result
+
+
+fn sqrt_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+    """Compute gradient for square root.
+
+    For Y = sqrt(X), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y / (2 * sqrt(X)) = ∂L/∂Y / (2 * Y)
+
+    Uses output from forward pass to avoid recomputing sqrt(X).
+    Includes numerical stability.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        output: Output from forward pass (Y = sqrt(X))
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = full([3, 4], 4.0)
+        var y = sqrt(x)  # y = 2.0
+        var grad_y = ones([3, 4])
+        var grad_x = sqrt_backward(grad_y, y)  # grad_x = grad_y / (2 * 2.0) = 0.25
+
+    Numerical Stability:
+        Uses epsilon = 1e-10 to prevent division by zero when Y ≈ 0.
+    """
+    alias EPSILON = 1e-10
+
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let out_val = output._get_float64(i)
+        # grad / (2 * sqrt(x)) = grad / (2 * output)
+        # Add epsilon for numerical stability
+        result._set_float64(i, grad / (2.0 * out_val + EPSILON))
+
+    return result
+
+
+fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for absolute value.
+
+    For Y = |X|, given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y * sign(X)
+
+    where sign(X) = 1 if X > 0, -1 if X < 0, 0 if X = 0.
+
+    Note: Gradient at X=0 is technically undefined, we use 0 by convention.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        x: Input from forward pass
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
+        var y = abs(x)
+        var grad_y = ones([5])
+        var grad_x = abs_backward(grad_y, x)  # [-1, -1, 0, 1, 1]
+    """
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let x_val = x._get_float64(i)
+
+        # Compute sign(x): 1 if x > 0, -1 if x < 0, 0 if x = 0
+        var sign_x: Float64 = 0.0
+        if x_val > 0.0:
+            sign_x = 1.0
+        elif x_val < 0.0:
+            sign_x = -1.0
+        # else: sign_x = 0.0 (at x=0, gradient is undefined, use 0)
+
+        result._set_float64(i, grad * sign_x)
+
+    return result
+
+
+fn clip_backward(grad_output: ExTensor, x: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor:
+    """Compute gradient for clip (clamp) operation.
+
+    For Y = clip(X, min, max), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y  if min <= X <= max
+        ∂L/∂X = 0       if X < min or X > max
+
+    Gradient flows through only where input is within bounds.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        x: Input from forward pass
+        min_val: Minimum clip value
+        max_val: Maximum clip value
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
+        var y = clip(x, -1.0, 1.0)  # [-1, -1, 0, 1, 1]
+        var grad_y = ones([5])
+        var grad_x = clip_backward(grad_y, x, -1.0, 1.0)  # [0, 1, 1, 1, 0]
+    """
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let x_val = x._get_float64(i)
+
+        # Gradient flows through only if min <= x <= max
+        if x_val >= min_val and x_val <= max_val:
+            result._set_float64(i, grad)
+        else:
+            result._set_float64(i, 0.0)
+
+    return result
+
+
+fn log10_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for base-10 logarithm.
+
+    For Y = log10(X), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y / (X * ln(10))
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        x: Input from forward pass (must be positive)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Numerical Stability:
+        Uses epsilon = 1e-10 to prevent division by zero.
+    """
+    alias EPSILON = 1e-10
+    alias LN10 = 2.302585092994046  # ln(10)
+
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let x_val = x._get_float64(i)
+        result._set_float64(i, grad / (x_val * LN10 + EPSILON))
+
+    return result
+
+
+fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient for base-2 logarithm.
+
+    For Y = log2(X), given ∂L/∂Y, computes:
+        ∂L/∂X = ∂L/∂Y / (X * ln(2))
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+        x: Input from forward pass (must be positive)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Numerical Stability:
+        Uses epsilon = 1e-10 to prevent division by zero.
+    """
+    alias EPSILON = 1e-10
+    alias LN2 = 0.6931471805599453  # ln(2)
+
+    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+
+    for i in range(grad_output.numel()):
+        let grad = grad_output._get_float64(i)
+        let x_val = x._get_float64(i)
+        result._set_float64(i, grad / (x_val * LN2 + EPSILON))
+
+    return result

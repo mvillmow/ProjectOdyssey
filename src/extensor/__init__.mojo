@@ -73,12 +73,18 @@ from .reduction import sum, mean, max_reduce, min_reduce
 # Reduction gradients (backward pass)
 from .reduction import sum_backward, mean_backward
 
-# Element-wise mathematical operations
+# Element-wise mathematical operations (forward pass)
 from .elementwise_math import (
     abs, sign, exp, log, sqrt, sin, cos, tanh, clip,
     ceil, floor, round, trunc,
     logical_and, logical_or, logical_not, logical_xor,
     log10, log2
+)
+
+# Element-wise math gradients (backward pass)
+from .elementwise_math import (
+    exp_backward, log_backward, sqrt_backward, abs_backward,
+    clip_backward, log10_backward, log2_backward
 )
 
 # Shape manipulation operations
