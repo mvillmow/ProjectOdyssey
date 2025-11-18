@@ -13,6 +13,12 @@ Includes:
 All metrics implement the Metric trait for consistent interface.
 """
 
+# Export base metric interface and utilities
+from .base import (
+    Metric, MetricResult, MetricCollection,
+    MetricLogger, create_metric_summary
+)
+
 # Export metric implementations
 from .accuracy import top1_accuracy, topk_accuracy, per_class_accuracy, AccuracyMetric
 from .loss_tracker import LossTracker, Statistics, ComponentTracker
