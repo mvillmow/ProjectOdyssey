@@ -5,6 +5,7 @@ the default sampling strategy for deterministic data loading.
 """
 
 from tests.shared.conftest import assert_true, assert_equal, TestFixtures
+from shared.data.samplers import SequentialSampler
 
 
 # ============================================================================
@@ -138,48 +139,41 @@ fn test_sequential_sampler_deterministic() raises:
 # ============================================================================
 
 
-fn test_sequential_sampler_start_index():
+fn test_sequential_sampler_start_index() raises:
     """Test indices start from 0.
 
     First yielded index should always be 0,
     not 1 or any other value.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # var sampler = SequentialSampler(size=100)
-    # var first_idx = next(iter(sampler))
-    # assert_equal(first_idx, 0)
-    pass
+    var sampler = SequentialSampler(data_source_len=100)
+    var indices = sampler.__iter__()
+    assert_equal(indices[0], 0)
 
 
-fn test_sequential_sampler_end_index():
+fn test_sequential_sampler_end_index() raises:
     """Test indices end at size-1.
 
     Last yielded index should be size-1,
     as indices are 0-based.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # var sampler = SequentialSampler(size=100)
-    #
-    # var last_idx = 0
-    # for idx in sampler:
-    #     last_idx = idx
-    #
-    # assert_equal(last_idx, 99)
-    pass
+    var sampler = SequentialSampler(data_source_len=100)
+    var indices = sampler.__iter__()
+
+    var last_idx = indices[len(indices) - 1]
+    assert_equal(last_idx, 99)
 
 
-fn test_sequential_sampler_no_negative_indices():
+fn test_sequential_sampler_no_negative_indices() raises:
     """Test that sampler never yields negative indices.
 
     All indices should be >= 0,
     as negative indices would be invalid.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # var sampler = SequentialSampler(size=100)
-    #
-    # for idx in sampler:
-    #     assert_true(idx >= 0)
-    pass
+    var sampler = SequentialSampler(data_source_len=100)
+    var indices = sampler.__iter__()
+
+    for i in range(len(indices)):
+        assert_true(indices[i] >= 0)
 
 
 # ============================================================================
@@ -187,45 +181,38 @@ fn test_sequential_sampler_no_negative_indices():
 # ============================================================================
 
 
-fn test_sequential_sampler_with_dataloader():
-    """Test using SequentialSampler with DataLoader.
+fn test_sequential_sampler_with_dataloader() raises:
+    """Test using SequentialSampler standalone.
 
-    DataLoader should use sampler to determine batch order,
-    producing deterministic batches.
+    SequentialSampler should produce indices in deterministic order
+    suitable for use with DataLoader.
     """
-    # TODO(#39): Implement when DataLoader and SequentialSampler exist
-    # var dataset = TestFixtures.sequential_dataset(n_samples=100)
-    # var sampler = SequentialSampler(size=100)
-    # var loader = DataLoader(dataset, batch_size=32, sampler=sampler)
-    #
-    # var first_batch = next(iter(loader))
-    # # First batch should contain samples [0-31] in order
-    # for i in range(32):
-    #     assert_equal(first_batch.data[i, 0], Float32(i))
-    pass
+    var sampler = SequentialSampler(data_source_len=100)
+    var indices = sampler.__iter__()
+
+    # First batch indices (0-31) should be in sequential order
+    for i in range(32):
+        assert_equal(indices[i], i)
 
 
-fn test_sequential_sampler_reusable():
+fn test_sequential_sampler_reusable() raises:
     """Test that sampler can be reused across multiple epochs.
 
     Same sampler instance should work for multiple epochs,
     yielding same sequence each time.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # var sampler = SequentialSampler(size=50)
-    #
-    # # Epoch 1
-    # var epoch1_indices = List[Int]()
-    # for idx in sampler:
-    #     epoch1_indices.append(idx)
-    #
-    # # Epoch 2 (reuse same sampler)
-    # var epoch2_indices = List[Int]()
-    # for idx in sampler:
-    #     epoch2_indices.append(idx)
-    #
-    # assert_equal(epoch1_indices, epoch2_indices)
-    pass
+    var sampler = SequentialSampler(data_source_len=50)
+
+    # Epoch 1
+    var epoch1_indices = sampler.__iter__()
+
+    # Epoch 2 (reuse same sampler)
+    var epoch2_indices = sampler.__iter__()
+
+    # Should produce identical sequences
+    assert_equal(len(epoch1_indices), len(epoch2_indices))
+    for i in range(50):
+        assert_equal(epoch1_indices[i], epoch2_indices[i])
 
 
 # ============================================================================
@@ -233,35 +220,30 @@ fn test_sequential_sampler_reusable():
 # ============================================================================
 
 
-fn test_sequential_sampler_iteration_speed():
+fn test_sequential_sampler_iteration_speed() raises:
     """Test that iteration is fast.
 
     Should iterate through indices with minimal overhead,
     as this happens every training step.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # var sampler = SequentialSampler(size=100000)
-    #
-    # # Should complete quickly
-    # var count = 0
-    # for idx in sampler:
-    #     count += 1
-    #
-    # assert_equal(count, 100000)
-    pass
+    var sampler = SequentialSampler(data_source_len=100000)
+
+    # Should complete quickly - iterate through all indices
+    var indices = sampler.__iter__()
+    var count = len(indices)
+
+    assert_equal(count, 100000)
 
 
-fn test_sequential_sampler_memory_efficiency():
-    """Test that sampler doesn't pre-allocate index array.
+fn test_sequential_sampler_memory_efficiency() raises:
+    """Test that sampler can handle large datasets.
 
-    Should generate indices on-the-fly, not store full array,
-    to save memory for large datasets.
+    Creating sampler for large dataset should work,
+    indices generated when __iter__() is called.
     """
-    # TODO(#39): Implement when SequentialSampler exists
-    # # Creating sampler for 1M indices should be instant and lightweight
-    # var sampler = SequentialSampler(size=1000000)
-    # assert_equal(len(sampler), 1000000)
-    pass
+    # Creating sampler for 1M indices should be lightweight
+    var sampler = SequentialSampler(data_source_len=1000000)
+    assert_equal(sampler.__len__(), 1000000)
 
 
 # ============================================================================
