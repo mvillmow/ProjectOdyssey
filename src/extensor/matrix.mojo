@@ -316,3 +316,141 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
             result._set_float64(i * len_b + j, product)
 
     return result^
+
+
+# ============================================================================
+# Backward Pass (Gradient Computation)
+# ============================================================================
+
+
+fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (ExTensor, ExTensor):
+    """Compute gradients for matrix multiplication.
+
+    For C = A @ B, given ∂L/∂C, computes:
+        ∂L/∂A = ∂L/∂C @ B^T
+        ∂L/∂B = A^T @ ∂L/∂C
+
+    Supports all matmul cases:
+        - 2D @ 2D: Standard matrix multiplication
+        - 2D @ 1D: Matrix-vector multiplication
+        - 1D @ 2D: Vector-matrix multiplication
+        - Batched: N-D tensors with batched matmul
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂C)
+        a: First input from forward pass (A)
+        b: Second input from forward pass (B)
+
+    Returns:
+        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+
+    Examples:
+        # Forward pass
+        var a = zeros(DynamicVector[Int](3, 4), DType.float32)
+        var b = zeros(DynamicVector[Int](4, 5), DType.float32)
+        var c = matmul(a, b)  # Shape (3, 5)
+
+        # Backward pass
+        var grad_c = ones(DynamicVector[Int](3, 5), DType.float32)
+        var grads = matmul_backward(grad_c, a, b)
+        var grad_a = grads[0]  # Shape (3, 4)
+        var grad_b = grads[1]  # Shape (4, 5)
+
+    Mathematical Derivation:
+        For element-wise: C[i,j] = Σ_k A[i,k] * B[k,j]
+        ∂L/∂A[i,k] = Σ_j (∂L/∂C[i,j] * B[k,j]) = (∂L/∂C @ B^T)[i,k]
+        ∂L/∂B[k,j] = Σ_i (∂L/∂A[i,k] * A[i,k]) = (A^T @ ∂L/∂C)[k,j]
+    """
+    let a_shape = a.shape()
+    let b_shape = b.shape()
+    let a_ndim = len(a_shape)
+    let b_ndim = len(b_shape)
+
+    # Handle 2D @ 1D case
+    if a_ndim == 2 and b_ndim == 1:
+        # Forward: C (m,) = A (m, k) @ b (k,)
+        # grad_a (m, k) = grad_output (m,) @ b^T (1, k) -> outer product
+        # grad_b (k,) = A^T (k, m) @ grad_output (m,)
+
+        # grad_a: Outer product of grad_output and b
+        var grad_a_shape = DynamicVector[Int](2)
+        grad_a_shape[0] = a_shape[0]  # m
+        grad_a_shape[1] = a_shape[1]  # k
+        var grad_a = ExTensor(grad_a_shape, a.dtype())
+
+        let m = a_shape[0]
+        let k = a_shape[1]
+
+        # grad_a[i, j] = grad_output[i] * b[j]
+        for i in range(m):
+            for j in range(k):
+                let grad_val = grad_output._get_float64(i)
+                let b_val = b._get_float64(j)
+                grad_a._set_float64(i * k + j, grad_val * b_val)
+
+        # grad_b: A^T @ grad_output
+        var b_t = transpose(a)  # Transpose A to get (k, m)
+        var grad_b = matmul(b_t, grad_output)  # (k, m) @ (m,) -> (k,)
+
+        return (grad_a, grad_b)
+
+    # Handle 1D @ 2D case
+    if a_ndim == 1 and b_ndim == 2:
+        # Forward: C (n,) = a (k,) @ B (k, n)
+        # grad_a (k,) = B (k, n) @ grad_output (n,)
+        # grad_b (k, n) = a^T (k, 1) @ grad_output^T (1, n) -> outer product
+
+        # grad_a: B @ grad_output
+        var grad_a = matmul(b, grad_output)  # (k, n) @ (n,) -> (k,)
+
+        # grad_b: Outer product of a and grad_output
+        var grad_b_shape = DynamicVector[Int](2)
+        grad_b_shape[0] = b_shape[0]  # k
+        grad_b_shape[1] = b_shape[1]  # n
+        var grad_b = ExTensor(grad_b_shape, b.dtype())
+
+        let k = b_shape[0]
+        let n = b_shape[1]
+
+        # grad_b[i, j] = a[i] * grad_output[j]
+        for i in range(k):
+            for j in range(n):
+                let a_val = a._get_float64(i)
+                let grad_val = grad_output._get_float64(j)
+                grad_b._set_float64(i * n + j, a_val * grad_val)
+
+        return (grad_a, grad_b)
+
+    # Handle 2D @ 2D and batched cases
+    # Standard: grad_a = grad_output @ B^T, grad_b = A^T @ grad_output
+    var b_t = transpose(b)
+    var a_t = transpose(a)
+
+    var grad_a = matmul(grad_output, b_t)
+    var grad_b = matmul(a_t, grad_output)
+
+    return (grad_a, grad_b)
+
+
+fn transpose_backward(grad_output: ExTensor) raises -> ExTensor:
+    """Compute gradient for transpose operation.
+
+    For Y = transpose(X), given ∂L/∂Y, computes:
+        ∂L/∂X = transpose(∂L/∂Y)
+
+    The gradient of transpose is simply transposing the gradient back.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = zeros(DynamicVector[Int](3, 4), DType.float32)
+        var y = transpose(x)  # Shape (4, 3)
+        var grad_y = ones(DynamicVector[Int](4, 3), DType.float32)
+        var grad_x = transpose_backward(grad_y)  # Shape (3, 4)
+    """
+    # Transpose is self-inverse for gradients
+    return transpose(grad_output)
