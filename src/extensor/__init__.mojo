@@ -50,17 +50,28 @@ from .extensor import zeros, ones, full, empty, arange, eye, linspace
 # Broadcasting utilities
 from .broadcasting import broadcast_shapes, are_shapes_broadcastable
 
-# Arithmetic operations
+# Arithmetic operations (forward pass)
 from .arithmetic import add, subtract, multiply, divide, floor_divide, modulo, power
+
+# Arithmetic gradients (backward pass)
+from .arithmetic import (
+    add_backward, subtract_backward, multiply_backward, divide_backward
+)
 
 # Comparison operations
 from .comparison import equal, not_equal, less, less_equal, greater, greater_equal
 
-# Matrix operations
+# Matrix operations (forward pass)
 from .matrix import matmul, transpose, dot, outer
 
-# Reduction operations
+# Matrix gradients (backward pass)
+from .matrix import matmul_backward, transpose_backward
+
+# Reduction operations (forward pass)
 from .reduction import sum, mean, max_reduce, min_reduce
+
+# Reduction gradients (backward pass)
+from .reduction import sum_backward, mean_backward
 
 # Element-wise mathematical operations
 from .elementwise_math import (

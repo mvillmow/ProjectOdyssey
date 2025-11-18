@@ -349,3 +349,139 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
             result._set_float64(result_idx, min_val)
 
         return result^
+
+
+# ============================================================================
+# Backward Pass (Gradient Computation)
+# ============================================================================
+
+
+fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: Int = -1) raises -> ExTensor:
+    """Compute gradient for sum reduction.
+
+    For Y = sum(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X = broadcast(∂L/∂Y, input_shape)
+
+    The gradient broadcasts the reduced gradient back to the original input shape.
+    Each element of the input contributes equally to the sum, so gradient is 1.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
+        input_shape: Original shape of input before reduction
+        axis: Axis along which sum was computed (-1 for all axes)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape
+
+    Examples:
+        # Sum all elements
+        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var y = sum(x, axis=-1)  # Scalar
+        var grad_y = ones(DynamicVector[Int](), DType.float32)  # Scalar gradient
+        var grad_x = sum_backward(grad_y, x.shape(), axis=-1)  # Shape (3, 4)
+
+        # Sum along specific axis
+        var x2 = ones(DynamicVector[Int](3, 4), DType.float32)
+        var y2 = sum(x2, axis=1)  # Shape (3,)
+        var grad_y2 = ones(DynamicVector[Int](3), DType.float32)
+        var grad_x2 = sum_backward(grad_y2, x2.shape(), axis=1)  # Shape (3, 4)
+    """
+    # Create result tensor with input shape
+    var result = ExTensor(input_shape, grad_output.dtype())
+
+    if axis == -1:
+        # Sum over all elements - broadcast scalar gradient to all elements
+        let grad_val = grad_output._get_float64(0)
+        for i in range(result.numel()):
+            result._set_float64(i, grad_val)
+    else:
+        # Sum along specific axis - broadcast gradient along that axis
+        # The gradient value is replicated axis_size times
+
+        # Compute strides for input tensor
+        var strides = DynamicVector[Int](len(input_shape))
+        var stride = 1
+        for i in range(len(input_shape) - 1, -1, -1):
+            strides[i] = stride
+            stride *= input_shape[i]
+
+        let axis_size = input_shape[axis]
+
+        # For each position in grad_output, broadcast it to all positions along axis
+        for result_idx in range(result.numel()):
+            # Convert result index to coordinates
+            var coords = DynamicVector[Int](len(input_shape))
+            var temp_idx = result_idx
+            for i in range(len(input_shape) - 1, -1, -1):
+                coords[i] = temp_idx % input_shape[i]
+                temp_idx //= input_shape[i]
+
+            # Map to grad_output coordinates (remove axis dimension)
+            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var coord_idx = 0
+            for i in range(len(input_shape)):
+                if i != axis:
+                    grad_coords[coord_idx] = coords[i]
+                    coord_idx += 1
+
+            # Convert grad_coords to linear index in grad_output
+            var grad_idx = 0
+            var grad_stride = 1
+            for i in range(grad_output.dim() - 1, -1, -1):
+                grad_idx += grad_coords[i] * grad_stride
+                grad_stride *= grad_output.shape()[i]
+
+            # Set result value
+            let grad_val = grad_output._get_float64(grad_idx)
+            result._set_float64(result_idx, grad_val)
+
+    return result
+
+
+fn mean_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: Int = -1) raises -> ExTensor:
+    """Compute gradient for mean reduction.
+
+    For Y = mean(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X = broadcast(∂L/∂Y, input_shape) / N
+
+    where N is the number of elements that were averaged.
+
+    Similar to sum_backward, but scaled by 1/N since each input element
+    contributes 1/N to the mean.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
+        input_shape: Original shape of input before reduction
+        axis: Axis along which mean was computed (-1 for all axes)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X) - broadcast and scaled
+
+    Examples:
+        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var y = mean(x, axis=-1)  # Scalar mean
+        var grad_y = ones(DynamicVector[Int](), DType.float32)
+        var grad_x = mean_backward(grad_y, x.shape(), axis=-1)
+        # Each element gets gradient / 12
+    """
+    # First get the sum backward (broadcasts gradient)
+    var grad_sum = sum_backward(grad_output, input_shape, axis)
+
+    # Compute number of elements that were averaged
+    var n: Int = 0
+    if axis == -1:
+        # Mean over all elements
+        n = 1
+        for i in range(len(input_shape)):
+            n *= input_shape[i]
+    else:
+        # Mean along specific axis
+        n = input_shape[axis]
+
+    # Scale by 1/N
+    let scale = 1.0 / Float64(n)
+    for i in range(grad_sum.numel()):
+        let val = grad_sum._get_float64(i)
+        grad_sum._set_float64(i, val * scale)
+
+    return grad_sum
