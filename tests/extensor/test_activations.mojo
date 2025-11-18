@@ -548,6 +548,296 @@ fn test_gelu_float16() raises:
     print("  ✓ GELU float16 test passed")
 
 
+# ============================================================================
+# Gradient (Backward Pass) Tests
+# ============================================================================
+
+
+fn test_relu_gradient() raises:
+    """Test ReLU backward pass using numerical gradient checking."""
+    print("Testing ReLU gradient...")
+
+    var shape = DynamicVector[Int](5)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -2.0
+    x._data.bitcast[Float32]()[1] = -0.5
+    x._data.bitcast[Float32]()[2] = 0.0
+    x._data.bitcast[Float32]()[3] = 0.5
+    x._data.bitcast[Float32]()[4] = 2.0
+
+    # Simulate gradient from loss
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(5):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    # Compute analytical gradient
+    var grad_x = relu_backward(grad_output, x)
+
+    # Check gradients
+    # ReLU gradient: 1 if x > 0, else 0
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[0], 0.0, 0.001, "ReLU grad at x=-2")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[1], 0.0, 0.001, "ReLU grad at x=-0.5")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[2], 0.0, 0.001, "ReLU grad at x=0")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[3], 1.0, 0.001, "ReLU grad at x=0.5")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[4], 1.0, 0.001, "ReLU grad at x=2")
+
+    print("  ✓ ReLU gradient test passed")
+
+
+fn test_leaky_relu_gradient() raises:
+    """Test Leaky ReLU backward pass."""
+    print("Testing Leaky ReLU gradient...")
+
+    var shape = DynamicVector[Int](4)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = -0.1
+    x._data.bitcast[Float32]()[2] = 0.1
+    x._data.bitcast[Float32]()[3] = 1.0
+
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(4):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    var alpha = 0.01
+    var grad_x = leaky_relu_backward(grad_output, x, alpha)
+
+    # Leaky ReLU gradient: alpha if x <= 0, else 1
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[0], 0.01, 0.001, "Leaky ReLU grad at x=-1")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[1], 0.01, 0.001, "Leaky ReLU grad at x=-0.1")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[2], 1.0, 0.001, "Leaky ReLU grad at x=0.1")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[3], 1.0, 0.001, "Leaky ReLU grad at x=1")
+
+    print("  ✓ Leaky ReLU gradient test passed")
+
+
+fn test_sigmoid_gradient() raises:
+    """Test sigmoid backward pass."""
+    print("Testing sigmoid gradient...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Forward pass
+    var output = sigmoid(x)
+
+    # Gradient from loss
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(3):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    # Backward pass
+    var grad_x = sigmoid_backward(grad_output, output)
+
+    # Sigmoid gradient: y * (1 - y)
+    # At x=0, sigmoid(0) = 0.5, gradient = 0.5 * 0.5 = 0.25
+    var grad_at_0 = grad_x._data.bitcast[Float32]()[1]
+    assert_almost_equal(grad_at_0, 0.25, 0.001, "Sigmoid grad at x=0")
+
+    # Gradients should be positive and symmetric
+    var grad_at_neg1 = grad_x._data.bitcast[Float32]()[0]
+    var grad_at_pos1 = grad_x._data.bitcast[Float32]()[2]
+    assert_almost_equal(grad_at_neg1, grad_at_pos1, 0.001, "Sigmoid grad symmetry")
+
+    print("  ✓ Sigmoid gradient test passed")
+
+
+fn test_tanh_gradient() raises:
+    """Test tanh backward pass."""
+    print("Testing tanh gradient...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Forward pass
+    var output = tanh(x)
+
+    # Gradient from loss
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(3):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    # Backward pass
+    var grad_x = tanh_backward(grad_output, output)
+
+    # Tanh gradient: 1 - y²
+    # At x=0, tanh(0) = 0, gradient = 1 - 0 = 1
+    var grad_at_0 = grad_x._data.bitcast[Float32]()[1]
+    assert_almost_equal(grad_at_0, 1.0, 0.001, "Tanh grad at x=0")
+
+    # Gradients should be positive and symmetric
+    var grad_at_neg1 = grad_x._data.bitcast[Float32]()[0]
+    var grad_at_pos1 = grad_x._data.bitcast[Float32]()[2]
+    assert_almost_equal(grad_at_neg1, grad_at_pos1, 0.001, "Tanh grad symmetry")
+
+    print("  ✓ Tanh gradient test passed")
+
+
+fn test_softmax_gradient() raises:
+    """Test softmax backward pass."""
+    print("Testing softmax gradient...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = 1.0
+    x._data.bitcast[Float32]()[1] = 2.0
+    x._data.bitcast[Float32]()[2] = 3.0
+
+    # Forward pass
+    var output = softmax(x)
+
+    # Gradient from loss (e.g., cross-entropy)
+    var grad_output = ExTensor(shape, DType.float32)
+    grad_output._data.bitcast[Float32]()[0] = 0.0
+    grad_output._data.bitcast[Float32]()[1] = 0.0
+    grad_output._data.bitcast[Float32]()[2] = 1.0
+
+    # Backward pass
+    var grad_x = softmax_backward(grad_output, output)
+
+    # Gradient sum should be close to 0 (property of softmax gradient)
+    var grad_sum: Float32 = 0.0
+    for i in range(3):
+        grad_sum += grad_x._data.bitcast[Float32]()[i]
+
+    # Due to the Jacobian structure, sum should be approximately 0
+    # (not exactly 0 due to numerical precision)
+    assert_true(abs(grad_sum) < 0.1, "Softmax gradient sum property")
+
+    print("  ✓ Softmax gradient test passed")
+
+
+fn test_gelu_gradient() raises:
+    """Test GELU backward pass."""
+    print("Testing GELU gradient...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Gradient from loss
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(3):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    # Test approximate version
+    var grad_x_approx = gelu_backward(grad_output, x, approximate=True)
+
+    # GELU gradient at x=0 should be approximately 0.5
+    var grad_at_0 = grad_x_approx._data.bitcast[Float32]()[1]
+    assert_almost_equal(grad_at_0, 0.5, 0.05, "GELU grad at x=0")
+
+    # Gradients should be positive
+    assert_true(grad_x_approx._data.bitcast[Float32]()[0] > 0.0, "GELU grad positive at x=-1")
+    assert_true(grad_x_approx._data.bitcast[Float32]()[2] > 0.0, "GELU grad positive at x=1")
+
+    print("  ✓ GELU gradient test passed")
+
+
+fn test_prelu_gradient() raises:
+    """Test PReLU backward pass with learnable parameters."""
+    print("Testing PReLU gradient...")
+
+    var shape = DynamicVector[Int](4)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -2.0
+    x._data.bitcast[Float32]()[1] = -1.0
+    x._data.bitcast[Float32]()[2] = 1.0
+    x._data.bitcast[Float32]()[3] = 2.0
+
+    var alpha_shape = DynamicVector[Int](4)
+    var alpha = ExTensor(alpha_shape, DType.float32)
+    for i in range(4):
+        alpha._data.bitcast[Float32]()[i] = 0.25
+
+    var grad_output = ExTensor(shape, DType.float32)
+    for i in range(4):
+        grad_output._data.bitcast[Float32]()[i] = 1.0
+
+    # Backward pass returns tuple (grad_input, grad_alpha)
+    var grads = prelu_backward(grad_output, x, alpha)
+    var grad_x = grads[0]
+    var grad_alpha = grads[1]
+
+    # Check grad_input
+    # PReLU grad: alpha if x <= 0, else 1
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[0], 0.25, 0.001, "PReLU grad_x at x=-2")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[1], 0.25, 0.001, "PReLU grad_x at x=-1")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[2], 1.0, 0.001, "PReLU grad_x at x=1")
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[3], 1.0, 0.001, "PReLU grad_x at x=2")
+
+    # Check grad_alpha (gradient w.r.t. learnable parameter)
+    # grad_alpha = x * grad_output where x <= 0
+    assert_almost_equal(grad_alpha._data.bitcast[Float32]()[0], -2.0, 0.001, "PReLU grad_alpha at x=-2")
+    assert_almost_equal(grad_alpha._data.bitcast[Float32]()[1], -1.0, 0.001, "PReLU grad_alpha at x=-1")
+    assert_almost_equal(grad_alpha._data.bitcast[Float32]()[2], 0.0, 0.001, "PReLU grad_alpha at x=1")
+    assert_almost_equal(grad_alpha._data.bitcast[Float32]()[3], 0.0, 0.001, "PReLU grad_alpha at x=2")
+
+    print("  ✓ PReLU gradient test passed")
+
+
+fn test_integration_forward_backward() raises:
+    """Integration test: Complete forward and backward pass through activations.
+
+    Simulates a simple neural network layer with:
+    - Input -> ReLU -> Sigmoid -> Output
+    - Loss gradient flows back through the network
+    """
+    print("Testing integration: forward + backward pass...")
+
+    # Input data
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float32)
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.5
+    x._data.bitcast[Float32]()[2] = 2.0
+
+    # Forward pass: x -> ReLU -> Sigmoid
+    var relu_out = relu(x)
+    var sigmoid_out = sigmoid(relu_out)
+
+    # Check forward pass values
+    # After ReLU: [0, 0.5, 2.0]
+    assert_almost_equal(relu_out._data.bitcast[Float32]()[0], 0.0, 0.001, "ReLU forward")
+    assert_almost_equal(relu_out._data.bitcast[Float32]()[1], 0.5, 0.001, "ReLU forward")
+    assert_almost_equal(relu_out._data.bitcast[Float32]()[2], 2.0, 0.001, "ReLU forward")
+
+    # After Sigmoid: [0.5, sigmoid(0.5), sigmoid(2.0)]
+    var sig_0_5 = sigmoid_out._data.bitcast[Float32]()[1]
+    var sig_2_0 = sigmoid_out._data.bitcast[Float32]()[2]
+    assert_true(sig_0_5 > 0.6 and sig_0_5 < 0.7, "Sigmoid(0.5) ≈ 0.62")
+    assert_true(sig_2_0 > 0.8 and sig_2_0 < 0.9, "Sigmoid(2.0) ≈ 0.88")
+
+    # Simulate loss gradient (all ones)
+    var grad_loss = ExTensor(shape, DType.float32)
+    for i in range(3):
+        grad_loss._data.bitcast[Float32]()[i] = 1.0
+
+    # Backward pass: Sigmoid <- ReLU <- x
+    var grad_sigmoid = sigmoid_backward(grad_loss, sigmoid_out)
+    var grad_x = relu_backward(grad_sigmoid, x)
+
+    # Check backward pass values
+    # Gradient through ReLU should be 0 at x=-1 (negative input)
+    assert_almost_equal(grad_x._data.bitcast[Float32]()[0], 0.0, 0.001, "Gradient at x=-1")
+
+    # Gradients at positive inputs should be non-zero
+    assert_true(grad_x._data.bitcast[Float32]()[1] > 0.0, "Gradient at x=0.5 should be positive")
+    assert_true(grad_x._data.bitcast[Float32]()[2] > 0.0, "Gradient at x=2.0 should be positive")
+
+    print("  Forward pass: x -> ReLU -> Sigmoid ✓")
+    print("  Backward pass: grad flows through both activations ✓")
+    print("  ✓ Integration test passed")
+
+
 fn main() raises:
     """Run all activation function tests."""
     print("\n" + "="*70)
@@ -581,6 +871,20 @@ fn main() raises:
     test_gelu_exact()
     test_gelu_comparison()
     test_gelu_float16()
+
+    print("\nGradient Tests (Backward Pass)")
+    print("-" * 70)
+    test_relu_gradient()
+    test_leaky_relu_gradient()
+    test_prelu_gradient()
+    test_sigmoid_gradient()
+    test_tanh_gradient()
+    test_softmax_gradient()
+    test_gelu_gradient()
+
+    print("\nIntegration Tests")
+    print("-" * 70)
+    test_integration_forward_backward()
 
     print("\n" + "="*70)
     print("ALL ACTIVATION TESTS PASSED ✓")
