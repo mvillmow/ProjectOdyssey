@@ -464,6 +464,90 @@ fn test_gelu_comparison() raises:
     print("  ✓ GELU comparison test passed")
 
 
+fn test_relu_integer_types() raises:
+    """Test ReLU with integer types."""
+    print("Testing ReLU with integer types...")
+
+    # Test int32
+    var shape = DynamicVector[Int](5)
+    var x_int32 = ExTensor(shape, DType.int32)
+    x_int32._data.bitcast[Int32]()[0] = -2
+    x_int32._data.bitcast[Int32]()[1] = -1
+    x_int32._data.bitcast[Int32]()[2] = 0
+    x_int32._data.bitcast[Int32]()[3] = 1
+    x_int32._data.bitcast[Int32]()[4] = 2
+
+    var y_int32 = relu(x_int32)
+
+    # Expected: [0, 0, 0, 1, 2]
+    assert_equal(y_int32._data.bitcast[Int32]()[0], 0, "ReLU int32: -2 -> 0")
+    assert_equal(y_int32._data.bitcast[Int32]()[1], 0, "ReLU int32: -1 -> 0")
+    assert_equal(y_int32._data.bitcast[Int32]()[2], 0, "ReLU int32: 0 -> 0")
+    assert_equal(y_int32._data.bitcast[Int32]()[3], 1, "ReLU int32: 1 -> 1")
+    assert_equal(y_int32._data.bitcast[Int32]()[4], 2, "ReLU int32: 2 -> 2")
+
+    # Test uint8 (already non-negative)
+    var x_uint8 = ExTensor(shape, DType.uint8)
+    x_uint8._data.bitcast[UInt8]()[0] = 0
+    x_uint8._data.bitcast[UInt8]()[1] = 1
+    x_uint8._data.bitcast[UInt8]()[2] = 128
+    x_uint8._data.bitcast[UInt8]()[3] = 255
+    x_uint8._data.bitcast[UInt8]()[4] = 100
+
+    var y_uint8 = relu(x_uint8)
+
+    # Should be unchanged
+    assert_equal(y_uint8._data.bitcast[UInt8]()[0], 0, "ReLU uint8: 0 -> 0")
+    assert_equal(y_uint8._data.bitcast[UInt8]()[1], 1, "ReLU uint8: 1 -> 1")
+    assert_equal(y_uint8._data.bitcast[UInt8]()[2], 128, "ReLU uint8: 128 -> 128")
+    assert_equal(y_uint8._data.bitcast[UInt8]()[3], 255, "ReLU uint8: 255 -> 255")
+
+    print("  ✓ ReLU integer types test passed")
+
+
+fn test_sigmoid_float16() raises:
+    """Test sigmoid with float16."""
+    print("Testing sigmoid with float16...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float16)
+    x._data.bitcast[Float16]()[0] = Float16(-1.0)
+    x._data.bitcast[Float16]()[1] = Float16(0.0)
+    x._data.bitcast[Float16]()[2] = Float16(1.0)
+
+    var y = sigmoid(x)
+
+    # Check sigmoid(0) = 0.5
+    var val_0 = Float32(y._data.bitcast[Float16]()[1])
+    assert_almost_equal(val_0, 0.5, 0.01, "sigmoid float16: sigmoid(0) = 0.5")
+
+    # Check range (0, 1)
+    for i in range(3):
+        var val = Float32(y._data.bitcast[Float16]()[i])
+        assert_true(val > 0.0 and val < 1.0, "sigmoid float16: output in (0, 1)")
+
+    print("  ✓ Sigmoid float16 test passed")
+
+
+fn test_gelu_float16() raises:
+    """Test GELU with float16."""
+    print("Testing GELU with float16...")
+
+    var shape = DynamicVector[Int](3)
+    var x = ExTensor(shape, DType.float16)
+    x._data.bitcast[Float16]()[0] = Float16(-1.0)
+    x._data.bitcast[Float16]()[1] = Float16(0.0)
+    x._data.bitcast[Float16]()[2] = Float16(1.0)
+
+    var y = gelu(x, approximate=True)
+
+    # GELU(0) should be 0
+    var val_0 = Float32(y._data.bitcast[Float16]()[1])
+    assert_almost_equal(val_0, 0.0, 0.01, "GELU float16: GELU(0) = 0")
+
+    print("  ✓ GELU float16 test passed")
+
+
 fn main() raises:
     """Run all activation function tests."""
     print("\n" + "="*70)
@@ -474,6 +558,7 @@ fn main() raises:
     print("-" * 70)
     test_relu_basic()
     test_relu_non_negativity()
+    test_relu_integer_types()
     test_leaky_relu_basic()
     test_leaky_relu_custom_alpha()
     test_prelu_scalar_alpha()
@@ -483,6 +568,7 @@ fn main() raises:
     print("-" * 70)
     test_sigmoid_basic()
     test_sigmoid_numerical_stability()
+    test_sigmoid_float16()
     test_tanh_basic()
     test_tanh_values()
 
@@ -494,6 +580,7 @@ fn main() raises:
     test_gelu_approximate()
     test_gelu_exact()
     test_gelu_comparison()
+    test_gelu_float16()
 
     print("\n" + "="*70)
     print("ALL ACTIVATION TESTS PASSED ✓")

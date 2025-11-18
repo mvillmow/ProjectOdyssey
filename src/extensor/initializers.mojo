@@ -9,6 +9,9 @@ Mathematical foundations:
 - Kaiming: Var(W) = 2/fan_in for ReLU activations
 - Uniform/Normal: Basic distributions with configurable parameters
 
+Type support:
+- All initializers: float16, float32, float64
+
 Issues covered:
 - #258-260: Xavier/Glorot initialization (uniform and normal variants)
 """
@@ -38,6 +41,8 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
     - Target variance: 2/(fan_in + fan_out)
     - Therefore: a²/3 = 2/(fan_in + fan_out)
     - Solving: a = sqrt(6/(fan_in + fan_out))
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         fan_in: Number of input units to the layer
@@ -77,9 +82,14 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [-bound, bound]
-    if dtype == DType.float32:
+    if dtype == DType.float16:
         for i in range(result._numel):
             # random_float64() returns [0, 1), transform to [-bound, bound]
+            var rand_val = random_float64()
+            var scaled_val = Float16((2.0 * rand_val - 1.0) * bound)
+            result._data.bitcast[Float16]()[i] = scaled_val
+    elif dtype == DType.float32:
+        for i in range(result._numel):
             var rand_val = random_float64()
             var scaled_val = Float32((2.0 * rand_val - 1.0) * bound)
             result._data.bitcast[Float32]()[i] = scaled_val
@@ -89,7 +99,7 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
             var scaled_val = (2.0 * rand_val - 1.0) * bound
             result._data.bitcast[Float64]()[i] = scaled_val
     else:
-        raise Error("xavier_uniform: only float32 and float64 dtypes supported")
+        raise Error("xavier_uniform: only float16, float32, and float64 dtypes supported")
 
     return result
 
@@ -108,6 +118,8 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
     - Target variance: 2/(fan_in + fan_out)
     - Therefore: σ² = 2/(fan_in + fan_out)
     - Standard deviation: σ = sqrt(2/(fan_in + fan_out))
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         fan_in: Number of input units to the layer
@@ -147,7 +159,29 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
-    if dtype == DType.float32:
+    if dtype == DType.float16:
+        var i = 0
+        while i < result._numel:
+            # Box-Muller transform to generate normal distribution
+            var u1 = random_float64()
+            var u2 = random_float64()
+
+            # Avoid log(0)
+            if u1 < 1e-10:
+                u1 = 1e-10
+
+            var mag = std * sqrt(-2.0 * log(u1))
+            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
+            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
+
+            result._data.bitcast[Float16]()[i] = Float16(z0)
+            i += 1
+
+            if i < result._numel:
+                result._data.bitcast[Float16]()[i] = Float16(z1)
+                i += 1
+
+    elif dtype == DType.float32:
         var i = 0
         while i < result._numel:
             # Box-Muller transform to generate normal distribution
@@ -190,7 +224,7 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
                 result._data.bitcast[Float64]()[i] = z1
                 i += 1
     else:
-        raise Error("xavier_normal: only float32 and float64 dtypes supported")
+        raise Error("xavier_normal: only float16, float32, and float64 dtypes supported")
 
     return result
 

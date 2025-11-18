@@ -295,6 +295,31 @@ fn test_xavier_float64() raises:
     print("  ✓ Xavier float64 test passed")
 
 
+fn test_xavier_float16() raises:
+    """Test Xavier initialization with float16 dtype."""
+    print("Testing Xavier with float16...")
+
+    var fan_in = 100
+    var fan_out = 50
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    # Test uniform with float16
+    var w_uniform = xavier_uniform(fan_in, fan_out, shape, DType.float16, seed_val=42)
+    assert_equal(w_uniform._dtype, DType.float16, "Should use float16 dtype")
+
+    # Test normal with float16
+    var w_normal = xavier_normal(fan_in, fan_out, shape, DType.float16, seed_val=42)
+    assert_equal(w_normal._dtype, DType.float16, "Should use float16 dtype")
+
+    # Check variance for uniform (with looser tolerance for float16)
+    var expected_var = 2.0 / Float64(fan_in + fan_out)
+    var actual_var_uniform = compute_variance(w_uniform)
+    var tolerance = expected_var * 0.15  # Float16 has less precision
+    assert_true(abs(actual_var_uniform - expected_var) < tolerance, "Float16 variance should match")
+
+    print("  ✓ Xavier float16 test passed")
+
+
 fn main() raises:
     """Run all initializer tests."""
     print("\n" + "="*70)
@@ -318,6 +343,7 @@ fn main() raises:
     print("-" * 70)
     test_xavier_configurations()
     test_xavier_float64()
+    test_xavier_float16()
 
     print("\n" + "="*70)
     print("ALL INITIALIZER TESTS PASSED ✓")
