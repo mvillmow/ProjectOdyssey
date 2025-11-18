@@ -30,6 +30,7 @@ Array API Categories (in progress):
 Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 """
 
+from collections.vector import DynamicVector
 from memory import UnsafePointer, memset_zero
 from sys import simdwidthof
 from math import ceildiv

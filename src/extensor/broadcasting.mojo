@@ -3,6 +3,8 @@
 Implements NumPy-style broadcasting rules for tensor operations.
 """
 
+from collections.vector import DynamicVector
+
 
 fn broadcast_shapes(
     shape1: DynamicVector[Int], shape2: DynamicVector[Int]

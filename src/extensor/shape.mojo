@@ -4,6 +4,7 @@ Implements shape operations like reshape, squeeze, unsqueeze, flatten, concatena
 Following the Python Array API Standard 2023.12.
 """
 
+from collections.vector import DynamicVector
 from .extensor import ExTensor
 
 

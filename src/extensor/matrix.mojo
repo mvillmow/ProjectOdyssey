@@ -3,6 +3,7 @@
 Implements linear algebra operations like matrix multiplication and transpose.
 """
 
+from collections.vector import DynamicVector
 from extensor.extensor import ExTensor
 
 

@@ -3,6 +3,7 @@
 Implements operations that reduce tensors along specified axes.
 """
 
+from collections.vector import DynamicVector
 from .extensor import ExTensor
 
 

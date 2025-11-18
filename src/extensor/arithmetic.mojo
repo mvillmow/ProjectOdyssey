@@ -3,6 +3,7 @@
 Implements element-wise arithmetic operations following NumPy-style broadcasting.
 """
 
+from collections.vector import DynamicVector
 from .extensor import ExTensor
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
 
