@@ -257,6 +257,144 @@ fn test_min_preserves_dtype() raises:
 
 
 # ============================================================================
+# Test axis-specific reductions
+# ============================================================================
+
+fn test_sum_axis_0() raises:
+    """Test sum along axis 0."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 2.0, DType.float32)  # 3x4 matrix of 2s
+    let b = sum(a, axis=0)  # Sum along rows -> shape (4,)
+
+    # Should sum 3 values (each 2.0) per column
+    assert_dim(b, 1, "Sum along axis 0 should be 1D")
+    assert_numel(b, 4, "Sum along axis 0 should have 4 elements")
+    assert_value_at(b, 0, 6.0, 1e-6, "Each column sum should be 6.0")
+    assert_value_at(b, 1, 6.0, 1e-6, "Each column sum should be 6.0")
+    assert_value_at(b, 2, 6.0, 1e-6, "Each column sum should be 6.0")
+    assert_value_at(b, 3, 6.0, 1e-6, "Each column sum should be 6.0")
+
+
+fn test_sum_axis_1() raises:
+    """Test sum along axis 1."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 2.0, DType.float32)  # 3x4 matrix of 2s
+    let b = sum(a, axis=1)  # Sum along columns -> shape (3,)
+
+    # Should sum 4 values (each 2.0) per row
+    assert_dim(b, 1, "Sum along axis 1 should be 1D")
+    assert_numel(b, 3, "Sum along axis 1 should have 3 elements")
+    assert_value_at(b, 0, 8.0, 1e-6, "Each row sum should be 8.0")
+    assert_value_at(b, 1, 8.0, 1e-6, "Each row sum should be 8.0")
+    assert_value_at(b, 2, 8.0, 1e-6, "Each row sum should be 8.0")
+
+
+fn test_sum_axis_keepdims() raises:
+    """Test sum with axis and keepdims=True."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = ones(shape, DType.float32)
+    let b = sum(a, axis=0, keepdims=True)
+
+    # Should be shape (1, 4) instead of (4,)
+    assert_dim(b, 2, "keepdims should preserve dimensions")
+    assert_numel(b, 4, "Should have 4 elements")
+
+
+fn test_mean_axis_0() raises:
+    """Test mean along axis 0."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 6.0, DType.float32)  # 3x4 matrix of 6s
+    let b = mean(a, axis=0)  # Mean along rows -> shape (4,)
+
+    # Should average 3 values (each 6.0) per column
+    assert_dim(b, 1, "Mean along axis 0 should be 1D")
+    assert_numel(b, 4, "Mean along axis 0 should have 4 elements")
+    assert_value_at(b, 0, 6.0, 1e-6, "Each column mean should be 6.0")
+    assert_value_at(b, 1, 6.0, 1e-6, "Each column mean should be 6.0")
+
+
+fn test_mean_axis_1() raises:
+    """Test mean along axis 1."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 2
+    shape[1] = 5
+    let a = full(shape, 10.0, DType.float32)  # 2x5 matrix of 10s
+    let b = mean(a, axis=1)  # Mean along columns -> shape (2,)
+
+    # Should average 5 values (each 10.0) per row
+    assert_dim(b, 1, "Mean along axis 1 should be 1D")
+    assert_numel(b, 2, "Mean along axis 1 should have 2 elements")
+    assert_value_at(b, 0, 10.0, 1e-6, "Each row mean should be 10.0")
+    assert_value_at(b, 1, 10.0, 1e-6, "Each row mean should be 10.0")
+
+
+fn test_max_axis_0() raises:
+    """Test max along axis 0."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 7.0, DType.float32)
+    let b = max_reduce(a, axis=0)
+
+    # Should find max of 3 values per column
+    assert_dim(b, 1, "Max along axis 0 should be 1D")
+    assert_numel(b, 4, "Max along axis 0 should have 4 elements")
+    assert_value_at(b, 0, 7.0, 1e-6, "Max should be 7.0")
+
+
+fn test_max_axis_1() raises:
+    """Test max along axis 1."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 2
+    shape[1] = 3
+    let a = full(shape, 9.0, DType.float32)
+    let b = max_reduce(a, axis=1)
+
+    # Should find max of 3 values per row
+    assert_dim(b, 1, "Max along axis 1 should be 1D")
+    assert_numel(b, 2, "Max along axis 1 should have 2 elements")
+    assert_value_at(b, 0, 9.0, 1e-6, "Max should be 9.0")
+    assert_value_at(b, 1, 9.0, 1e-6, "Max should be 9.0")
+
+
+fn test_min_axis_0() raises:
+    """Test min along axis 0."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 3
+    shape[1] = 4
+    let a = full(shape, 3.5, DType.float32)
+    let b = min_reduce(a, axis=0)
+
+    # Should find min of 3 values per column
+    assert_dim(b, 1, "Min along axis 0 should be 1D")
+    assert_numel(b, 4, "Min along axis 0 should have 4 elements")
+    assert_value_at(b, 0, 3.5, 1e-6, "Min should be 3.5")
+
+
+fn test_min_axis_1() raises:
+    """Test min along axis 1."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 2
+    shape[1] = 3
+    let a = full(shape, 2.5, DType.float32)
+    let b = min_reduce(a, axis=1)
+
+    # Should find min of 3 values per row
+    assert_dim(b, 1, "Min along axis 1 should be 1D")
+    assert_numel(b, 2, "Min along axis 1 should have 2 elements")
+    assert_value_at(b, 0, 2.5, 1e-6, "Min should be 2.5")
+    assert_value_at(b, 1, 2.5, 1e-6, "Min should be 2.5")
+
+
+# ============================================================================
 # Test reduction combinations
 # ============================================================================
 
@@ -321,6 +459,24 @@ fn main() raises:
     test_min_negative_values()
     test_min_with_keepdims()
     test_min_preserves_dtype()
+
+    # Axis-specific reduction tests
+    print("  Testing axis-specific sum()...")
+    test_sum_axis_0()
+    test_sum_axis_1()
+    test_sum_axis_keepdims()
+
+    print("  Testing axis-specific mean()...")
+    test_mean_axis_0()
+    test_mean_axis_1()
+
+    print("  Testing axis-specific max_reduce()...")
+    test_max_axis_0()
+    test_max_axis_1()
+
+    print("  Testing axis-specific min_reduce()...")
+    test_min_axis_0()
+    test_min_axis_1()
 
     # Combination tests
     print("  Testing reduction consistency...")
