@@ -73,11 +73,18 @@ from .elementwise_math import (
 # Shape manipulation operations
 from .shape import reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
 
-# Activation functions
+# Activation functions (forward pass)
 from .activations import (
     relu, leaky_relu, prelu,
     sigmoid, tanh,
     softmax, gelu
+)
+
+# Activation gradients (backward pass)
+from .activations import (
+    relu_backward, leaky_relu_backward, prelu_backward,
+    sigmoid_backward, tanh_backward,
+    softmax_backward, gelu_backward
 )
 
 # Weight initializers

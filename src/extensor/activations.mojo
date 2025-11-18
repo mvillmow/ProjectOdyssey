@@ -541,3 +541,511 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
         raise Error("gelu: only float16, float32, and float64 dtypes supported")
 
     return result
+
+
+# ============================================================================
+# Backward Pass (Gradient Computation)
+# ============================================================================
+
+
+fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Compute gradient of ReLU activation.
+
+    ReLU gradient: ∂L/∂x = ∂L/∂y * (x > 0)
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        x: Input tensor from forward pass
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+
+    Examples:
+        var x = ExTensor(...)  # Input
+        var y = relu(x)        # Forward pass
+        var grad_y = ExTensor(...)  # Gradient from loss
+        var grad_x = relu_backward(grad_y, x)  # Backward pass
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("relu_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("relu_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float16]()[i]
+            var grad = grad_output._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = grad if x_val > Float16(0) else Float16(0)
+    elif x._dtype == DType.float32:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            result._data.bitcast[Float32]()[i] = grad if x_val > 0.0 else 0.0
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            result._data.bitcast[Float64]()[i] = grad if x_val > 0.0 else 0.0
+    elif x._dtype == DType.int32:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Int32]()[i]
+            var grad = grad_output._data.bitcast[Int32]()[i]
+            result._data.bitcast[Int32]()[i] = grad if x_val > 0 else 0
+    elif x._dtype == DType.int64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Int64]()[i]
+            var grad = grad_output._data.bitcast[Int64]()[i]
+            result._data.bitcast[Int64]()[i] = grad if x_val > 0 else 0
+    else:
+        raise Error("relu_backward: only float16/32/64 and int32/64 supported for gradients")
+
+    return result
+
+
+fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
+    """Compute gradient of Leaky ReLU activation.
+
+    Leaky ReLU gradient: ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        x: Input tensor from forward pass
+        alpha: Slope for negative values (default: 0.01)
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("leaky_relu_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("leaky_relu_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        var alpha16 = Float16(alpha)
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float16]()[i]
+            var grad = grad_output._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = grad if x_val > Float16(0) else grad * alpha16
+    elif x._dtype == DType.float32:
+        var alpha32 = Float32(alpha)
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            result._data.bitcast[Float32]()[i] = grad if x_val > 0.0 else grad * alpha32
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            result._data.bitcast[Float64]()[i] = grad if x_val > 0.0 else grad * alpha
+    else:
+        raise Error("leaky_relu_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises -> (ExTensor, ExTensor):
+    """Compute gradients of PReLU activation.
+
+    PReLU gradients:
+    - ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
+    - ∂L/∂alpha = sum(∂L/∂y * x) where x <= 0
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        x: Input tensor from forward pass
+        alpha: Learnable slope parameter
+
+    Returns:
+        Tuple of (grad_input, grad_alpha)
+    """
+    if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
+        raise Error("prelu_backward: all tensors must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("prelu_backward: grad_output and x must have same shape")
+
+    var grad_input = ExTensor(x._shape, x._dtype)
+    var grad_alpha = ExTensor(alpha._shape, alpha._dtype)
+    var is_scalar = alpha._numel == 1
+
+    # Initialize grad_alpha to zero
+    for i in range(grad_alpha._numel):
+        if grad_alpha._dtype == DType.float16:
+            grad_alpha._data.bitcast[Float16]()[i] = Float16(0)
+        elif grad_alpha._dtype == DType.float32:
+            grad_alpha._data.bitcast[Float32]()[i] = 0.0
+        elif grad_alpha._dtype == DType.float64:
+            grad_alpha._data.bitcast[Float64]()[i] = 0.0
+
+    if x._dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float16]()[i]
+            var grad = grad_output._data.bitcast[Float16]()[i]
+            var a = alpha._data.bitcast[Float16]()[0] if is_scalar else alpha._data.bitcast[Float16]()[i]
+
+            if x_val > Float16(0):
+                grad_input._data.bitcast[Float16]()[i] = grad
+            else:
+                grad_input._data.bitcast[Float16]()[i] = grad * a
+                # Accumulate gradient for alpha
+                var alpha_idx = 0 if is_scalar else i
+                grad_alpha._data.bitcast[Float16]()[alpha_idx] += grad * x_val
+
+    elif x._dtype == DType.float32:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            var a = alpha._data.bitcast[Float32]()[0] if is_scalar else alpha._data.bitcast[Float32]()[i]
+
+            if x_val > 0.0:
+                grad_input._data.bitcast[Float32]()[i] = grad
+            else:
+                grad_input._data.bitcast[Float32]()[i] = grad * a
+                var alpha_idx = 0 if is_scalar else i
+                grad_alpha._data.bitcast[Float32]()[alpha_idx] += grad * x_val
+
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            var a = alpha._data.bitcast[Float64]()[0] if is_scalar else alpha._data.bitcast[Float64]()[i]
+
+            if x_val > 0.0:
+                grad_input._data.bitcast[Float64]()[i] = grad
+            else:
+                grad_input._data.bitcast[Float64]()[i] = grad * a
+                var alpha_idx = 0 if is_scalar else i
+                grad_alpha._data.bitcast[Float64]()[alpha_idx] += grad * x_val
+    else:
+        raise Error("prelu_backward: only float16/32/64 dtypes supported")
+
+    return (grad_input, grad_alpha)
+
+
+fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+    """Compute gradient of sigmoid activation.
+
+    Sigmoid gradient: ∂L/∂x = ∂L/∂y * y * (1 - y)
+    where y = sigmoid(x)
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        output: Output from forward pass (sigmoid(x))
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+
+    Note:
+        Takes output instead of input to avoid recomputing sigmoid.
+    """
+    if grad_output._dtype != output._dtype:
+        raise Error("sigmoid_backward: grad_output and output must have same dtype")
+    if grad_output._numel != output._numel:
+        raise Error("sigmoid_backward: grad_output and output must have same shape")
+
+    var result = ExTensor(output._shape, output._dtype)
+
+    if output._dtype == DType.float16:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float16]()[i]
+            var grad = grad_output._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = grad * y * (Float16(1.0) - y)
+    elif output._dtype == DType.float32:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            result._data.bitcast[Float32]()[i] = grad * y * (1.0 - y)
+    elif output._dtype == DType.float64:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            result._data.bitcast[Float64]()[i] = grad * y * (1.0 - y)
+    else:
+        raise Error("sigmoid_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+    """Compute gradient of tanh activation.
+
+    Tanh gradient: ∂L/∂x = ∂L/∂y * (1 - y²)
+    where y = tanh(x)
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        output: Output from forward pass (tanh(x))
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+
+    Note:
+        Takes output instead of input to avoid recomputing tanh.
+    """
+    if grad_output._dtype != output._dtype:
+        raise Error("tanh_backward: grad_output and output must have same dtype")
+    if grad_output._numel != output._numel:
+        raise Error("tanh_backward: grad_output and output must have same shape")
+
+    var result = ExTensor(output._shape, output._dtype)
+
+    if output._dtype == DType.float16:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float16]()[i]
+            var grad = grad_output._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = grad * (Float16(1.0) - y * y)
+    elif output._dtype == DType.float32:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            result._data.bitcast[Float32]()[i] = grad * (1.0 - y * y)
+    elif output._dtype == DType.float64:
+        for i in range(output._numel):
+            var y = output._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            result._data.bitcast[Float64]()[i] = grad * (1.0 - y * y)
+    else:
+        raise Error("tanh_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) raises -> ExTensor:
+    """Compute gradient of GELU activation.
+
+    GELU gradient (exact): ∂L/∂x = ∂L/∂y * [Φ(x) + x*φ(x)]
+    where Φ is CDF and φ is PDF of standard normal
+
+    GELU gradient (approximate): Uses derivative of tanh approximation
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        x: Input tensor from forward pass
+        approximate: Use tanh approximation (True) or exact erf (False)
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("gelu_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("gelu_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    alias SQRT_2 = 1.4142135623730951
+    alias SQRT_2_OVER_PI = 0.7978845608028654
+    alias GELU_COEFF = 0.044715
+    alias INV_SQRT_2PI = 0.3989422804014327  # 1/sqrt(2π)
+
+    if x._dtype == DType.float32:
+        if approximate:
+            # d/dx[0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))]
+            for i in range(x._numel):
+                var x_val = x._data.bitcast[Float32]()[i]
+                var grad = grad_output._data.bitcast[Float32]()[i]
+
+                var x_cubed = x_val * x_val * x_val
+                var inner = Float32(SQRT_2_OVER_PI) * (x_val + Float32(GELU_COEFF) * x_cubed)
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+
+                # Derivative computation
+                var dtanh = Float32(SQRT_2_OVER_PI) * (1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+
+                result._data.bitcast[Float32]()[i] = grad * dgelu
+        else:
+            # d/dx[x * 0.5 * (1 + erf(x / sqrt(2)))] = 0.5 * [1 + erf(x/√2)] + x * φ(x)
+            for i in range(x._numel):
+                var x_val = x._data.bitcast[Float32]()[i]
+                var grad = grad_output._data.bitcast[Float32]()[i]
+
+                var erf_val = erf(x_val / Float32(SQRT_2))
+                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)  # φ(x)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+
+                result._data.bitcast[Float32]()[i] = grad * dgelu
+
+    elif x._dtype == DType.float64:
+        if approximate:
+            for i in range(x._numel):
+                var x_val = x._data.bitcast[Float64]()[i]
+                var grad = grad_output._data.bitcast[Float64]()[i]
+
+                var x_cubed = x_val * x_val * x_val
+                var inner = SQRT_2_OVER_PI * (x_val + GELU_COEFF * x_cubed)
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+
+                var dtanh = SQRT_2_OVER_PI * (1.0 + 3.0 * GELU_COEFF * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+
+                result._data.bitcast[Float64]()[i] = grad * dgelu
+        else:
+            for i in range(x._numel):
+                var x_val = x._data.bitcast[Float64]()[i]
+                var grad = grad_output._data.bitcast[Float64]()[i]
+
+                var erf_val = erf(x_val / SQRT_2)
+                var pdf = INV_SQRT_2PI * exp(-0.5 * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+
+                result._data.bitcast[Float64]()[i] = grad * dgelu
+
+    elif x._dtype == DType.float16:
+        # Use float32 intermediate precision
+        if approximate:
+            for i in range(x._numel):
+                var x_val = Float32(x._data.bitcast[Float16]()[i])
+                var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+
+                var x_cubed = x_val * x_val * x_val
+                var inner = Float32(SQRT_2_OVER_PI) * (x_val + Float32(GELU_COEFF) * x_cubed)
+                var tanh_val = math_tanh(inner)
+                var sech2 = 1.0 - tanh_val * tanh_val
+
+                var dtanh = Float32(SQRT_2_OVER_PI) * (1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+
+                result._data.bitcast[Float16]()[i] = Float16(grad * dgelu)
+        else:
+            for i in range(x._numel):
+                var x_val = Float32(x._data.bitcast[Float16]()[i])
+                var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+
+                var erf_val = erf(x_val / Float32(SQRT_2))
+                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+
+                result._data.bitcast[Float16]()[i] = Float16(grad * dgelu)
+    else:
+        raise Error("gelu_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) raises -> ExTensor:
+    """Compute gradient of softmax activation.
+
+    Softmax gradient (along axis):
+        ∂L/∂x_i = y_i * (∂L/∂y_i - sum_j(∂L/∂y_j * y_j))
+
+    where y = softmax(x) is the output from the forward pass.
+
+    The gradient takes into account that each output depends on all inputs
+    through the normalization term, creating a Jacobian matrix.
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂y)
+        output: Softmax output from forward pass (y = softmax(x))
+        axis: Axis along which softmax was computed (default: -1)
+
+    Returns:
+        Gradient with respect to input (∂L/∂x)
+
+    Raises:
+        Error: If dtypes don't match or shapes incompatible
+
+    Examples:
+        var x = ExTensor(...)  # Input
+        var y = softmax(x)     # Forward pass
+        var grad_y = ExTensor(...)  # Gradient from loss
+        var grad_x = softmax_backward(grad_y, y)  # Backward pass
+
+    References:
+        The gradient formula accounts for the fact that softmax output y_i
+        depends on all inputs x_j, not just x_i, due to the normalization.
+    """
+    if grad_output._dtype != output._dtype:
+        raise Error("softmax_backward: grad_output and output must have same dtype")
+    if grad_output._numel != output._numel:
+        raise Error("softmax_backward: grad_output and output must have same shape")
+
+    var result = ExTensor(output._shape, output._dtype)
+
+    # Normalize axis to positive index
+    var ndim = len(output._shape)
+    var normalized_axis = axis if axis >= 0 else ndim + axis
+
+    if normalized_axis < 0 or normalized_axis >= ndim:
+        raise Error("softmax_backward: axis out of bounds")
+
+    # Calculate stride for the softmax axis
+    var axis_size = output._shape[normalized_axis]
+    var axis_stride = 1
+    for i in range(normalized_axis + 1, ndim):
+        axis_stride *= output._shape[i]
+
+    # Calculate outer size (product of dimensions before axis)
+    var outer_size = 1
+    for i in range(normalized_axis):
+        outer_size *= output._shape[i]
+
+    if output._dtype == DType.float32:
+        # For each outer position
+        for outer in range(outer_size):
+            # For each inner position
+            for inner in range(axis_stride):
+                # Calculate sum(grad_output * output) along axis
+                var dot_sum: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = grad_output._data.bitcast[Float32]()[idx]
+                    var out_val = output._data.bitcast[Float32]()[idx]
+                    dot_sum += grad_val * out_val
+
+                # Compute gradient for each position along axis
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = grad_output._data.bitcast[Float32]()[idx]
+                    var out_val = output._data.bitcast[Float32]()[idx]
+                    result._data.bitcast[Float32]()[idx] = out_val * (grad_val - dot_sum)
+
+    elif output._dtype == DType.float64:
+        # For each outer position
+        for outer in range(outer_size):
+            # For each inner position
+            for inner in range(axis_stride):
+                # Calculate sum(grad_output * output) along axis
+                var dot_sum: Float64 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = grad_output._data.bitcast[Float64]()[idx]
+                    var out_val = output._data.bitcast[Float64]()[idx]
+                    dot_sum += grad_val * out_val
+
+                # Compute gradient for each position along axis
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = grad_output._data.bitcast[Float64]()[idx]
+                    var out_val = output._data.bitcast[Float64]()[idx]
+                    result._data.bitcast[Float64]()[idx] = out_val * (grad_val - dot_sum)
+
+    elif output._dtype == DType.float16:
+        # Use float32 intermediate precision
+        for outer in range(outer_size):
+            for inner in range(axis_stride):
+                # Calculate sum(grad_output * output) along axis
+                var dot_sum: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = Float32(grad_output._data.bitcast[Float16]()[idx])
+                    var out_val = Float32(output._data.bitcast[Float16]()[idx])
+                    dot_sum += grad_val * out_val
+
+                # Compute gradient for each position along axis
+                for k in range(axis_size):
+                    var idx = (outer * axis_size + k) * axis_stride + inner
+                    var grad_val = Float32(grad_output._data.bitcast[Float16]()[idx])
+                    var out_val = Float32(output._data.bitcast[Float16]()[idx])
+                    result._data.bitcast[Float16]()[idx] = Float16(out_val * (grad_val - dot_sum))
+    else:
+        raise Error("softmax_backward: only float16/32/64 dtypes supported")
+
+    return result
