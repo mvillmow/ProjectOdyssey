@@ -110,6 +110,7 @@ from .activations import (
 # Weight initializers
 from .initializers import (
     xavier_uniform, xavier_normal,
+    kaiming_uniform, kaiming_normal,
     uniform, normal, constant
 )
 
