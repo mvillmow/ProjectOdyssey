@@ -23,7 +23,6 @@ fn test_resize_basic():
     Should resize input tensor from any size to specified (height, width),
     using bilinear interpolation by default.
     """
-    # TODO(#39): Implement when Resize exists
     # var image = Tensor.ones(100, 100, 3)  # 100x100 RGB image
     # var resize = Resize(224, 224)
     # var result = resize(image)
@@ -40,7 +39,6 @@ fn test_resize_upscaling():
     Should handle upscaling (interpolation) correctly,
     not just downscaling.
     """
-    # TODO(#39): Implement when Resize exists
     # var image = Tensor.ones(28, 28, 1)  # Small grayscale image
     # var resize = Resize(224, 224)
     # var result = resize(image)
@@ -56,7 +54,6 @@ fn test_resize_aspect_ratio():
     Should allow non-square targets, e.g., 224x320,
     stretching image if needed.
     """
-    # TODO(#39): Implement when Resize exists
     # var image = Tensor.ones(100, 100, 3)
     # var resize = Resize(height=224, width=320)
     # var result = resize(image)
@@ -72,7 +69,6 @@ fn test_resize_interpolation_methods():
     Should support bilinear, nearest-neighbor, and bicubic
     interpolation modes.
     """
-    # TODO(#39): Implement when Resize with interpolation modes exists
     # var image = Tensor.ones(100, 100, 3)
     #
     # var resize_bilinear = Resize(224, 224, mode="bilinear")
@@ -97,7 +93,6 @@ fn test_center_crop():
     Should extract center region of specified size,
     discarding edges equally from all sides.
     """
-    # TODO(#39): Implement when CenterCrop exists
     # var image = Tensor.arange(0, 100*100).reshape(100, 100, 1)
     # var crop = CenterCrop(50, 50)
     # var result = crop(image)
@@ -117,7 +112,6 @@ fn test_random_crop():
     Should crop random region of specified size,
     deterministic with fixed seed.
     """
-    # TODO(#39): Implement when RandomCrop exists
     # var image = Tensor.ones(100, 100, 3)
     #
     # TestFixtures.set_seed()
@@ -139,7 +133,6 @@ fn test_random_crop_padding():
     If crop size > image size, should pad image first
     before cropping.
     """
-    # TODO(#39): Implement when RandomCrop with padding exists
     # var image = Tensor.ones(28, 28, 1)
     # var crop = RandomCrop(32, 32, padding=4)  # Pad by 4 pixels
     # var result = crop(image)
@@ -160,7 +153,6 @@ fn test_normalize_basic():
     Should apply (x - mean) / std normalization,
     standard preprocessing for neural networks.
     """
-    # TODO(#39): Implement when Normalize exists
     # var image = Tensor.ones(28, 28, 1) * 2.0  # All values = 2.0
     # var normalize = Normalize(mean=1.0, std=0.5)
     # var result = normalize(image)
@@ -176,7 +168,6 @@ fn test_normalize_per_channel():
     Should support different mean/std for each channel,
     common for ImageNet preprocessing.
     """
-    # TODO(#39): Implement when Normalize with per-channel exists
     # var image = Tensor.ones(28, 28, 3)
     # var normalize = Normalize(
     #     mean=[0.485, 0.456, 0.406],
@@ -195,7 +186,6 @@ fn test_normalize_range():
     Common patterns: [0, 1] → [-1, 1] for tanh,
     or [0, 255] → [0, 1] for uint8 images.
     """
-    # TODO(#39): Implement when Normalize exists
     # # Scale [0, 255] to [0, 1]
     # var image = Tensor.ones(28, 28, 1) * 255.0
     # var normalize = Normalize(mean=0.0, std=255.0)
@@ -216,7 +206,6 @@ fn test_color_jitter_brightness():
     Should randomly adjust image brightness within specified range,
     deterministic with fixed seed.
     """
-    # TODO(#39): Implement when ColorJitter exists
     # var image = Tensor.ones(28, 28, 3) * 0.5
     #
     # TestFixtures.set_seed()
@@ -236,7 +225,6 @@ fn test_color_jitter_all_params():
     Should apply all adjustments when specified,
     in consistent order.
     """
-    # TODO(#39): Implement when ColorJitter exists
     # var image = Tensor.ones(28, 28, 3)
     # var jitter = ColorJitter(
     #     brightness=0.2,
@@ -260,7 +248,6 @@ fn test_horizontal_flip():
     Should mirror image along vertical axis,
     preserving height and channels.
     """
-    # TODO(#39): Implement when HorizontalFlip exists
     # var image = Tensor([[1.0, 2.0], [3.0, 4.0]])
     # var flip = HorizontalFlip()
     # var result = flip(image)
@@ -277,7 +264,6 @@ fn test_vertical_flip():
     Should mirror image along horizontal axis,
     preserving width and channels.
     """
-    # TODO(#39): Implement when VerticalFlip exists
     # var image = Tensor([[1.0, 2.0], [3.0, 4.0]])
     # var flip = VerticalFlip()
     # var result = flip(image)
@@ -294,7 +280,6 @@ fn test_random_flip():
     Should flip with 50% probability (deterministic with seed),
     common augmentation for training.
     """
-    # TODO(#39): Implement when RandomHorizontalFlip exists
     # var image = Tensor.ones(28, 28, 3)
     #
     # TestFixtures.set_seed()

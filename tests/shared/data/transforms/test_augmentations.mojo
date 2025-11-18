@@ -18,7 +18,6 @@ fn test_random_augmentation_deterministic():
     Setting random seed should produce identical augmentations,
     critical for debugging and reproducible experiments.
     """
-    # TODO(#39): Implement when random augmentations exist
     # var data = Tensor.ones(28, 28, 3)
     #
     # # First run
@@ -41,7 +40,6 @@ fn test_random_augmentation_varies():
     Multiple calls should produce different augmentations,
     not always the same transformation.
     """
-    # TODO(#39): Implement when random augmentations exist
     # var data = Tensor.ones(28, 28, 3)
     # var aug = RandomRotation(degrees=15)
     #
@@ -71,7 +69,6 @@ fn test_random_rotation_range():
     Should rotate image by random angle in [-degrees, +degrees],
     with proper handling of borders.
     """
-    # TODO(#39): Implement when RandomRotation exists
     # var data = Tensor.ones(28, 28, 3)
     # var rotate = RandomRotation(degrees=30)  # ±30 degrees
     # var result = rotate(data)
@@ -86,7 +83,6 @@ fn test_random_rotation_no_change():
     Edge case where rotation range is zero should return
     unchanged image.
     """
-    # TODO(#39): Implement when RandomRotation exists
     # var data = Tensor.ones(28, 28, 3)
     # var rotate = RandomRotation(degrees=0)
     # var result = rotate(data)
@@ -101,7 +97,6 @@ fn test_random_rotation_fill_value():
     Rotating creates empty corners; should fill with specified value
     (default 0, but configurable).
     """
-    # TODO(#39): Implement when RandomRotation with fill exists
     # var data = Tensor.ones(28, 28, 3)
     # var rotate = RandomRotation(degrees=45, fill=0.5)
     # var result = rotate(data)
@@ -122,7 +117,6 @@ fn test_random_crop_varies_location():
     Multiple crops should not all be from same location,
     unless image is smaller than crop size.
     """
-    # TODO(#39): Implement when RandomCrop exists
     # var data = Tensor.arange(0, 100*100).reshape(100, 100, 1)
     # var crop = RandomCrop(50, 50)
     #
@@ -147,7 +141,6 @@ fn test_random_crop_with_padding():
     Padding allows crops that extend beyond image boundaries,
     useful for maintaining crop size with small images.
     """
-    # TODO(#39): Implement when RandomCrop with padding exists
     # var data = Tensor.ones(28, 28, 1)
     # var crop = RandomCrop(32, 32, padding=4)
     # var result = crop(data)
@@ -168,7 +161,6 @@ fn test_random_horizontal_flip_probability():
     With p=0.5, should flip approximately 50% of the time
     over many samples.
     """
-    # TODO(#39): Implement when RandomHorizontalFlip exists
     # var data = Tensor([[1.0, 2.0], [3.0, 4.0]])
     # var flip = RandomHorizontalFlip(p=0.5)
     #
@@ -191,7 +183,6 @@ fn test_random_flip_always():
     Should flip every time when probability is 1.0,
     useful for testing.
     """
-    # TODO(#39): Implement when RandomHorizontalFlip exists
     # var data = Tensor([[1.0, 2.0], [3.0, 4.0]])
     # var flip = RandomHorizontalFlip(p=1.0)
     #
@@ -208,7 +199,6 @@ fn test_random_flip_never():
     Should never flip when probability is 0.0,
     degenerating to identity transform.
     """
-    # TODO(#39): Implement when RandomHorizontalFlip exists
     # var data = Tensor([[1.0, 2.0], [3.0, 4.0]])
     # var flip = RandomHorizontalFlip(p=0.0)
     #
@@ -230,7 +220,6 @@ fn test_random_erasing_basic():
     Should randomly mask rectangular region with zeros or random noise,
     common augmentation for improving robustness.
     """
-    # TODO(#39): Implement when RandomErasing exists
     # var data = Tensor.ones(28, 28, 3)
     # var erase = RandomErasing(p=1.0, scale=(0.02, 0.33))
     # var result = erase(data)
@@ -253,7 +242,6 @@ fn test_random_erasing_scale():
     Scale controls size of erased region as fraction of image,
     should respect min/max bounds.
     """
-    # TODO(#39): Implement when RandomErasing exists
     # var data = Tensor.ones(100, 100, 3)
     # var erase = RandomErasing(p=1.0, scale=(0.1, 0.2))  # 10-20% of image
     # var result = erase(data)
@@ -281,7 +269,6 @@ fn test_compose_random_augmentations():
     Should apply all augmentations in sequence,
     each with their own randomness.
     """
-    # TODO(#39): Implement when composition works
     # var data = Tensor.ones(28, 28, 3)
     # var augmentations = Pipeline([
     #     RandomRotation(degrees=15),
@@ -303,7 +290,6 @@ fn test_augmentation_determinism_in_pipeline():
     Entire pipeline should produce same result with same seed,
     even with multiple random augmentations.
     """
-    # TODO(#39): Implement when pipeline exists
     # var data = Tensor.ones(28, 28, 3)
     # var pipeline = Pipeline([
     #     RandomRotation(degrees=15),

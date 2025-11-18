@@ -23,7 +23,6 @@ fn test_parallel_loader_creation():
     Should accept num_workers parameter and create worker threads
     to load data in parallel.
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=100)
     # var loader = ParallelLoader(dataset, batch_size=32, num_workers=4)
     # assert_equal(len(loader), 4)
@@ -36,7 +35,6 @@ fn test_parallel_loader_num_workers_validation():
     num_workers=0 should fall back to single-threaded mode,
     negative values should raise ValueError.
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=100)
     #
     # # Zero workers should be valid (sequential mode)
@@ -58,7 +56,6 @@ fn test_parallel_loader_with_file_dataset():
     This is the primary use case: parallel workers loading files
     from disk while GPU processes previous batch.
     """
-    # TODO(#39): Implement when ParallelLoader and FileDataset exist
     # var dataset = FileDataset(path="/path/to/images")
     # var loader = ParallelLoader(dataset, batch_size=32, num_workers=4)
     #
@@ -81,7 +78,6 @@ fn test_parallel_loader_all_samples():
     Despite parallel execution, should not lose, duplicate,
     or reorder samples (unless shuffle=True).
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # var dataset = TestFixtures.sequential_dataset(n_samples=100)
     # var loader = ParallelLoader(
     #     dataset, batch_size=32, num_workers=4, shuffle=False
@@ -102,7 +98,6 @@ fn test_parallel_loader_deterministic_order():
     Even with parallel workers, same input should produce
     same output batches in same order.
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # var dataset = TestFixtures.sequential_dataset(n_samples=100)
     #
     # # First run
@@ -134,7 +129,6 @@ fn test_parallel_loader_with_shuffle():
     Shuffling should work correctly even with multiple workers,
     maintaining determinism with fixed seed.
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # TestFixtures.set_seed()
     # var dataset = TestFixtures.synthetic_dataset(n_samples=100)
     #
@@ -165,7 +159,6 @@ fn test_parallel_loader_faster_than_sequential():
     With multiple workers, should load data faster than sequential loader,
     especially for datasets with slow I/O (files, network).
     """
-    # TODO(#39): Implement when ParallelLoader and timing exist
     # var dataset = FileDataset(path="/path/to/images")
     #
     # # Sequential loading
@@ -193,7 +186,6 @@ fn test_parallel_loader_prefetching():
     Workers should load next batch while GPU processes current batch,
     minimizing idle time.
     """
-    # TODO(#39): Implement when ParallelLoader with prefetch exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=1000)
     # var loader = ParallelLoader(
     #     dataset, batch_size=32, num_workers=4, prefetch_factor=2
@@ -216,7 +208,6 @@ fn test_parallel_loader_worker_utilization():
     With 4 workers and sufficient batch queue, all 4 should be
     actively loading data, not just one.
     """
-    # TODO(#39): Implement when ParallelLoader with metrics exists
     # var dataset = FileDataset(path="/path/to/images")
     # var loader = ParallelLoader(dataset, batch_size=32, num_workers=4)
     #
@@ -241,7 +232,6 @@ fn test_parallel_loader_cleanup():
     Worker threads should be terminated when loader is done,
     not left running indefinitely.
     """
-    # TODO(#39): Implement when ParallelLoader with resource tracking exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=100)
     # var loader = ParallelLoader(dataset, batch_size=32, num_workers=4)
     #
@@ -260,7 +250,6 @@ fn test_parallel_loader_early_stop():
     If training loop breaks early, workers should still be cleaned up
     properly without hanging or resource leaks.
     """
-    # TODO(#39): Implement when ParallelLoader exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=1000)
     # var loader = ParallelLoader(dataset, batch_size=32, num_workers=4)
     #
@@ -282,7 +271,6 @@ fn test_parallel_loader_memory_limit():
     With prefetch_factor=2 and 4 workers, should not prefetch
     more than ~8 batches at once.
     """
-    # TODO(#39): Implement when ParallelLoader with memory tracking exists
     # var dataset = TestFixtures.synthetic_dataset(n_samples=10000)
     # var loader = ParallelLoader(
     #     dataset, batch_size=32, num_workers=4, prefetch_factor=2
