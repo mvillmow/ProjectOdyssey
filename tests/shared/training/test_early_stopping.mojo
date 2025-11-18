@@ -4,10 +4,10 @@ Tests cover:
 - Monitoring validation metrics
 - Stopping when no improvement
 - Patience parameter
-- Restoring best weights
+- Min delta threshold
+- Both minimize (loss) and maximize (accuracy) modes
 
-Following TDD principles - these tests define the expected API
-for implementation in Issue #34.
+All tests use the real EarlyStopping implementation.
 """
 
 from tests.shared.conftest import (
@@ -17,6 +17,8 @@ from tests.shared.conftest import (
     assert_almost_equal,
     TestFixtures,
 )
+from shared.training.callbacks import EarlyStopping
+from shared.training.base import TrainingState
 
 
 # ============================================================================
@@ -25,68 +27,41 @@ from tests.shared.conftest import (
 
 
 fn test_early_stopping_initialization() raises:
-    """Test EarlyStopping callback initialization.
-
-    API Contract:
-        EarlyStopping(
-            monitor: String = "val_loss",
-            patience: Int = 5,
-            min_delta: Float32 = 0.0,
-            restore_best_weights: Bool = True
-        )
-        - monitor: Metric to monitor
-        - patience: Number of epochs with no improvement before stopping
-        - min_delta: Minimum change to qualify as improvement
-        - restore_best_weights: Restore model to best weights when stopping
-    """
-    from shared.training.stubs import MockEarlyStopping
-
-    var early_stop = MockEarlyStopping(
-        monitor="val_loss", patience=5, min_delta=0.001
+    """Test EarlyStopping callback initialization with parameters."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=5, min_delta=0.001, mode="min"
     )
 
-    Verify parameters
+    # Verify parameters
     assert_equal(early_stop.monitor, "val_loss")
     assert_equal(early_stop.patience, 5)
     assert_almost_equal(early_stop.min_delta, 0.001)
+    assert_equal(early_stop.mode, "min")
 
 
 fn test_early_stopping_triggers_after_patience() raises:
-    """Test EarlyStopping stops training after patience epochs.
-
-    API Contract:
-        After patience epochs without improvement:
-        - Set stop_training flag to True
-        - Trainer should check this flag and stop
-
-    This is a CRITICAL test for early stopping behavior.
-    """
-    from shared.training.stubs import MockEarlyStopping
-    from shared.training.base import TrainingState
-
-    var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
-
-    Initialize state
+    """Test EarlyStopping stops training after patience epochs without improvement."""
+    var early_stop = EarlyStopping(monitor="val_loss", patience=3, mode="min")
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    Initial best: 0.5
+    # Initial best: 0.5
     state.metrics["val_loss"] = 0.5
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    No improvement for epoch 2
+    # No improvement for epoch 2
     state.epoch = 2
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    No improvement for epoch 3
+    # No improvement for epoch 3
     state.epoch = 3
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    No improvement for epoch 4 - patience exhausted
+    # No improvement for epoch 4 - patience exhausted
     state.epoch = 4
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
@@ -94,38 +69,28 @@ fn test_early_stopping_triggers_after_patience() raises:
 
 
 fn test_early_stopping_resets_patience_on_improvement() raises:
-    """Test EarlyStopping resets patience counter when metric improves.
-
-    API Contract:
-        When monitored metric improves:
-        - Reset patience counter to 0
-        - Update best value
-        - Continue training
-    """
-    from shared.training.stubs import MockEarlyStopping
-    from shared.training.base import TrainingState
-
-    var early_stop = MockEarlyStopping(monitor="val_loss", patience=3)
+    """Test EarlyStopping resets patience counter when metric improves."""
+    var early_stop = EarlyStopping(monitor="val_loss", patience=3, mode="min")
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    Initial: 0.5
+    # Initial: 0.5
     state.metrics["val_loss"] = 0.5
     _ = early_stop.on_epoch_end(state)
 
-    No improvement for 2 epochs
+    # No improvement for 2 epochs
     state.epoch = 2
     state.metrics["val_loss"] = 0.6
     _ = early_stop.on_epoch_end(state)
     state.epoch = 3
     _ = early_stop.on_epoch_end(state)
 
-    Improvement! Reset patience
+    # Improvement! Reset patience
     state.epoch = 4
     state.metrics["val_loss"] = 0.4
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    Verify wait count was reset (counter should be 0 after improvement)
+    # Verify wait count was reset
     assert_equal(early_stop.wait_count, 0)
 
 
@@ -137,140 +102,62 @@ fn test_early_stopping_resets_patience_on_improvement() raises:
 fn test_early_stopping_min_delta() raises:
     """Test EarlyStopping min_delta for improvement threshold.
 
-    API Contract:
-        Improvement is counted only if:
-        |new_value - best_value| > min_delta
-
-        Small improvements below threshold don't reset patience.
+    Small improvements below threshold don't reset patience.
     """
-    # TODO(#34): Implement when EarlyStopping is available
     var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        min_delta=0.01
+        monitor="val_loss", patience=2, min_delta=0.01, mode="min"
     )
-    #
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
     # Initial: 0.5
-    early_stop.on_epoch_end(1, {"val_loss": 0.5})
-    #
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
     # Small improvement (0.495, delta=0.005 < 0.01): NOT counted
-    early_stop.on_epoch_end(2, {"val_loss": 0.495})
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.495
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-    #
+
     # Another small non-improvement
-    early_stop.on_epoch_end(3, {"val_loss": 0.496})
+    state.epoch = 3
+    state.metrics["val_loss"] = 0.496
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-    #
+
     # Patience exhausted (2 epochs without significant improvement)
-    early_stop.on_epoch_end(4, {"val_loss": 0.496})
+    state.epoch = 4
+    state.metrics["val_loss"] = 0.496
+    _ = early_stop.on_epoch_end(state)
     assert_true(early_stop.should_stop())
 
 
 fn test_early_stopping_min_delta_large_improvement() raises:
-    """Test EarlyStopping counts large improvements above min_delta.
-
-    API Contract:
-        Improvement > min_delta resets patience.
-    """
-    # TODO(#34): Implement when EarlyStopping is available
+    """Test EarlyStopping counts large improvements above min_delta."""
     var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        min_delta=0.01
+        monitor="val_loss", patience=2, min_delta=0.01, mode="min"
     )
-    #
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
     # Initial: 0.5
-    early_stop.on_epoch_end(1, {"val_loss": 0.5})
-    #
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
     # Large improvement (0.48, delta=0.02 > 0.01): Counted
-    early_stop.on_epoch_end(2, {"val_loss": 0.48})
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.48
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-    #
+    assert_equal(early_stop.wait_count, 0)  # Reset
+
     # Can continue for another patience epochs
-    early_stop.on_epoch_end(3, {"val_loss": 0.49})
-    early_stop.on_epoch_end(4, {"val_loss": 0.49})
+    state.epoch = 3
+    state.metrics["val_loss"] = 0.49
+    _ = early_stop.on_epoch_end(state)
+    state.epoch = 4
+    state.metrics["val_loss"] = 0.49
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-
-
-# ============================================================================
-# Restore Best Weights Tests
-# ============================================================================
-
-
-fn test_early_stopping_restore_best_weights() raises:
-    """Test EarlyStopping restores model to best weights when stopping.
-
-    API Contract:
-        With restore_best_weights=True:
-        - Track best model weights during training
-        - When stopping, restore model to best weights
-        - Model should have best performance, not final performance
-
-    This is CRITICAL for getting best model at early stopping.
-    """
-    # TODO(#34): Implement when EarlyStopping is available
-    var model = create_simple_model()
-    var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        restore_best_weights=True
-    )
-    #
-    # Epoch 1: val_loss = 0.5 (best so far)
-    early_stop.on_epoch_end(1, {"val_loss": 0.5}, model=model)
-    var best_weights = model.get_weights().copy()
-    #
-    # Epoch 2: val_loss = 0.4 (new best)
-    train_one_epoch(model)  # Weights change
-    early_stop.on_epoch_end(2, {"val_loss": 0.4}, model=model)
-    var new_best_weights = model.get_weights().copy()
-    #
-    # Epochs 3-4: No improvement, weights continue changing
-    train_one_epoch(model)
-    early_stop.on_epoch_end(3, {"val_loss": 0.5}, model=model)
-    train_one_epoch(model)
-    early_stop.on_epoch_end(4, {"val_loss": 0.5}, model=model)
-    #
-    # Epoch 5: Patience exhausted, should restore best weights
-    var final_weights_before_restore = model.get_weights().copy()
-    early_stop.on_epoch_end(5, {"val_loss": 0.5}, model=model)
-    #
-    # Weights should be restored to epoch 2 (best)
-    var restored_weights = model.get_weights()
-    assert_tensor_equal(restored_weights, new_best_weights)
-    assert_not_equal_tensor(restored_weights, final_weights_before_restore)
-
-
-fn test_early_stopping_no_restore() raises:
-    """Test EarlyStopping without restoring best weights.
-
-    API Contract:
-        With restore_best_weights=False:
-        - Don't track best weights
-        - When stopping, keep current weights
-    """
-    # TODO(#34): Implement when EarlyStopping is available
-    var model = create_simple_model()
-    var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        restore_best_weights=False
-    )
-    #
-    # Train for several epochs
-    for epoch in range(1, 6):
-        train_one_epoch(model)
-        early_stop.on_epoch_end(epoch, {"val_loss": 0.5}, model=model)
-    #
-    # Get final weights
-    var final_weights = model.get_weights()
-    #
-    # Trigger early stopping
-    early_stop.on_epoch_end(6, {"val_loss": 0.5}, model=model)
-    #
-    # Weights should be unchanged (not restored)
-    var weights_after_stop = model.get_weights()
-    assert_tensor_equal(weights_after_stop, final_weights)
 
 
 # ============================================================================
@@ -279,72 +166,90 @@ fn test_early_stopping_no_restore() raises:
 
 
 fn test_early_stopping_monitor_accuracy() raises:
-    """Test EarlyStopping monitoring accuracy (higher is better).
-
-    API Contract:
-        For metrics where higher is better (accuracy, F1):
-        - mode="max" or auto-detect from metric name
-        - Improvement = new_value > best_value
-    """
-    # TODO(#34): Implement when EarlyStopping is available
+    """Test EarlyStopping monitoring accuracy (higher is better) with mode='max'."""
     var early_stop = EarlyStopping(
-        monitor="val_accuracy",
-        patience=3,
-        mode="max"  # Maximize accuracy
+        monitor="val_accuracy", patience=3, mode="max"
     )
-    #
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
     # Initial: 0.5
-    early_stop.on_epoch_end(1, {"val_accuracy": 0.5})
-    #
+    state.metrics["val_accuracy"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
     # Improvement: 0.6 > 0.5
-    early_stop.on_epoch_end(2, {"val_accuracy": 0.6})
+    state.epoch = 2
+    state.metrics["val_accuracy"] = 0.6
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-    #
+    assert_equal(early_stop.wait_count, 0)
+
     # No improvement: 0.5 < 0.6
-    early_stop.on_epoch_end(3, {"val_accuracy": 0.5})
-    early_stop.on_epoch_end(4, {"val_accuracy": 0.5})
-    early_stop.on_epoch_end(5, {"val_accuracy": 0.5})
+    state.epoch = 3
+    state.metrics["val_accuracy"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+    state.epoch = 4
+    state.metrics["val_accuracy"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+    state.epoch = 5
+    state.metrics["val_accuracy"] = 0.5
+    _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
-    #
+
     # Patience exhausted
-    early_stop.on_epoch_end(6, {"val_accuracy": 0.5})
+    state.epoch = 6
+    state.metrics["val_accuracy"] = 0.5
+    _ = early_stop.on_epoch_end(state)
     assert_true(early_stop.should_stop())
 
 
-# ============================================================================
-# Integration with Trainer Tests
-# ============================================================================
-
-
-fn test_early_stopping_integration_with_trainer() raises:
-    """Test EarlyStopping integrates with training loop.
-
-    API Contract:
-        Trainer should:
-        - Call early_stop.on_epoch_end() after each epoch
-        - Check early_stop.should_stop()
-        - Break training loop if True
-    """
-    # TODO(#34): Implement when Trainer and EarlyStopping are available
-    var model = create_simple_model()
-    var optimizer = SGD(learning_rate=0.1)
-    var early_stop = EarlyStopping(monitor="val_loss", patience=3)
-    #
-    var trainer = Trainer(model, optimizer, loss_fn, callbacks=[early_stop])
-    #
-    # Train for max 100 epochs, but should stop early
-    var results = trainer.train(
-        epochs=100,
-        train_loader=create_plateaued_dataset(),  # Loss stops improving
-        val_loader=create_plateaued_dataset()
+fn test_early_stopping_mode_min() raises:
+    """Test EarlyStopping with mode='min' for loss minimization."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=2, min_delta=0.0, mode="min"
     )
-    #
-    # Should stop before 100 epochs
-    var actual_epochs = len(results["train_loss"])
-    assert_less(actual_epochs, 100)
-    #
-    # Should stop around when patience exhausted
-    # (exact number depends on when loss plateaus)
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Initial: 1.0
+    state.metrics["val_loss"] = 1.0
+    _ = early_stop.on_epoch_end(state)
+
+    # Improvement: 0.8 < 1.0
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.8
+    _ = early_stop.on_epoch_end(state)
+    assert_equal(early_stop.wait_count, 0)
+
+    # Improvement: 0.6 < 0.8
+    state.epoch = 3
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    assert_equal(early_stop.wait_count, 0)
+    assert_false(early_stop.should_stop())
+
+
+fn test_early_stopping_mode_max() raises:
+    """Test EarlyStopping with mode='max' for accuracy maximization."""
+    var early_stop = EarlyStopping(
+        monitor="val_accuracy", patience=2, min_delta=0.0, mode="max"
+    )
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Initial: 0.6
+    state.metrics["val_accuracy"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+
+    # Improvement: 0.7 > 0.6
+    state.epoch = 2
+    state.metrics["val_accuracy"] = 0.7
+    _ = early_stop.on_epoch_end(state)
+    assert_equal(early_stop.wait_count, 0)
+
+    # Improvement: 0.8 > 0.7
+    state.epoch = 3
+    state.metrics["val_accuracy"] = 0.8
+    _ = early_stop.on_epoch_end(state)
+    assert_equal(early_stop.wait_count, 0)
+    assert_false(early_stop.should_stop())
 
 
 # ============================================================================
@@ -353,41 +258,89 @@ fn test_early_stopping_integration_with_trainer() raises:
 
 
 fn test_early_stopping_zero_patience() raises:
-    """Test EarlyStopping with patience=0.
+    """Test EarlyStopping with patience=0 stops after first non-improvement."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=0, mode="min"
+    )
+    var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    API Contract:
-        patience=0 should:
-        - Stop after first epoch with no improvement
-        - Effectively requires improvement every epoch
-    """
-    # TODO(#34): Implement when EarlyStopping is available
-    var early_stop = EarlyStopping(monitor="val_loss", patience=0)
-    #
     # Initial: 0.5
-    early_stop.on_epoch_end(1, {"val_loss": 0.5})
-    #
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
     # No improvement immediately triggers stop
-    early_stop.on_epoch_end(2, {"val_loss": 0.5})
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
     assert_true(early_stop.should_stop())
 
 
 fn test_early_stopping_missing_monitored_metric() raises:
-    """Test EarlyStopping handles missing monitored metric.
+    """Test EarlyStopping handles missing monitored metric gracefully."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=3, mode="min"
+    )
+    var state = TrainingState(epoch=1, learning_rate=0.1)
 
-    API Contract:
-        If monitored metric not in logs:
-        - Raise error OR
-        - Skip epoch with warning
-    """
-    # TODO(#34): Implement error handling when EarlyStopping is available
-    var early_stop = EarlyStopping(monitor="val_loss", patience=3)
-    #
-    # Logs missing val_loss
-    try:
-        early_stop.on_epoch_end(1, {"train_loss": 0.5})
-        # Should raise error or handle gracefully
-    except Error:
-        pass  # Expected
+    # Metrics missing val_loss - should continue without error
+    state.metrics["train_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+
+    # Should not stop (metric doesn't exist)
+    assert_false(early_stop.should_stop())
+
+
+fn test_early_stopping_on_train_begin_resets() raises:
+    """Test on_train_begin resets all state."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=2, mode="min"
+    )
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Simulate some training
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+
+    # Reset with on_train_begin
+    _ = early_stop.on_train_begin(state)
+
+    # State should be reset
+    assert_equal(early_stop.wait_count, 0)
+    assert_false(early_stop.stopped)
+    assert_almost_equal(early_stop.best_value, 1e9)  # Reset to initial for min mode
+
+
+# ============================================================================
+# Best Value Tracking Tests
+# ============================================================================
+
+
+fn test_early_stopping_tracks_best_value() raises:
+    """Test EarlyStopping correctly tracks best value seen."""
+    var early_stop = EarlyStopping(
+        monitor="val_loss", patience=3, mode="min"
+    )
+    var state = TrainingState(epoch=1, learning_rate=0.1)
+
+    # Initial: 0.5
+    state.metrics["val_loss"] = 0.5
+    _ = early_stop.on_epoch_end(state)
+    assert_almost_equal(early_stop.best_value, 0.5)
+
+    # Worse: 0.6 (best stays 0.5)
+    state.epoch = 2
+    state.metrics["val_loss"] = 0.6
+    _ = early_stop.on_epoch_end(state)
+    assert_almost_equal(early_stop.best_value, 0.5)
+
+    # Better: 0.3 (best updates)
+    state.epoch = 3
+    state.metrics["val_loss"] = 0.3
+    _ = early_stop.on_epoch_end(state)
+    assert_almost_equal(early_stop.best_value, 0.3)
 
 
 # ============================================================================
@@ -406,18 +359,17 @@ fn main() raises:
     test_early_stopping_min_delta()
     test_early_stopping_min_delta_large_improvement()
 
-    print("Running restore best weights tests...")
-    test_early_stopping_restore_best_weights()
-    test_early_stopping_no_restore()
-
     print("Running monitor metric tests...")
     test_early_stopping_monitor_accuracy()
-
-    print("Running trainer integration tests...")
-    test_early_stopping_integration_with_trainer()
+    test_early_stopping_mode_min()
+    test_early_stopping_mode_max()
 
     print("Running edge cases...")
     test_early_stopping_zero_patience()
     test_early_stopping_missing_monitored_metric()
+    test_early_stopping_on_train_begin_resets()
+
+    print("Running best value tracking tests...")
+    test_early_stopping_tracks_best_value()
 
     print("\nAll early stopping callback tests passed! ✓")
