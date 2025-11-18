@@ -9,6 +9,10 @@ Reference implementations follow PyTorch and TensorFlow conventions:
 - Softmax: Log-sum-exp trick for numerical stability
 - GELU: Both exact (erf) and approximate (tanh) implementations
 
+Type support:
+- ReLU family: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64
+- Sigmoid/Tanh/Softmax/GELU: float16, float32, float64
+
 Issues covered:
 - #238-242: ReLU Family (ReLU, Leaky ReLU, PReLU)
 - #243-247: Sigmoid and Tanh
@@ -34,6 +38,9 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
     This is the most common activation function in deep learning, promoting
     sparse activation patterns.
 
+    Supported dtypes: float16, float32, float64, int8, int16, int32, int64,
+                      uint8, uint16, uint32, uint64
+
     Args:
         tensor: Input tensor of any shape
 
@@ -46,7 +53,11 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = max(Float16(0.0), val)
+    elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float32]()[i]
             result._data.bitcast[Float32]()[i] = max(0.0, val)
@@ -54,8 +65,37 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float64]()[i]
             result._data.bitcast[Float64]()[i] = max(0.0, val)
+    elif tensor._dtype == DType.int8:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int8]()[i]
+            result._data.bitcast[Int8]()[i] = max(Int8(0), val)
+    elif tensor._dtype == DType.int16:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int16]()[i]
+            result._data.bitcast[Int16]()[i] = max(Int16(0), val)
+    elif tensor._dtype == DType.int32:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int32]()[i]
+            result._data.bitcast[Int32]()[i] = max(0, val)
+    elif tensor._dtype == DType.int64:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int64]()[i]
+            result._data.bitcast[Int64]()[i] = max(0, val)
+    elif tensor._dtype == DType.uint8:
+        # Unsigned types are already >= 0, just copy
+        for i in range(tensor._numel):
+            result._data.bitcast[UInt8]()[i] = tensor._data.bitcast[UInt8]()[i]
+    elif tensor._dtype == DType.uint16:
+        for i in range(tensor._numel):
+            result._data.bitcast[UInt16]()[i] = tensor._data.bitcast[UInt16]()[i]
+    elif tensor._dtype == DType.uint32:
+        for i in range(tensor._numel):
+            result._data.bitcast[UInt32]()[i] = tensor._data.bitcast[UInt32]()[i]
+    elif tensor._dtype == DType.uint64:
+        for i in range(tensor._numel):
+            result._data.bitcast[UInt64]()[i] = tensor._data.bitcast[UInt64]()[i]
     else:
-        raise Error("relu: only float32 and float64 dtypes supported")
+        raise Error("relu: unsupported dtype")
 
     return result
 
@@ -65,6 +105,8 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
 
     Leaky ReLU introduces a small slope for negative values to prevent
     "dying ReLU" problem where neurons can become permanently inactive.
+
+    Supported dtypes: float16, float32, float64, int8, int16, int32, int64
 
     Args:
         tensor: Input tensor of any shape
@@ -79,7 +121,12 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        var alpha16 = Float16(alpha)
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = max(alpha16 * val, val)
+    elif tensor._dtype == DType.float32:
         var alpha32 = Float32(alpha)
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float32]()[i]
@@ -88,8 +135,31 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float64]()[i]
             result._data.bitcast[Float64]()[i] = max(alpha * val, val)
+    elif tensor._dtype == DType.int8:
+        var alpha_scaled = Int8(alpha * 128)  # Scale for fixed-point
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int8]()[i]
+            var scaled = (alpha_scaled * val) >> 7  # Divide by 128
+            result._data.bitcast[Int8]()[i] = max(scaled, val)
+    elif tensor._dtype == DType.int16:
+        var alpha_scaled = Int16(alpha * 32768)
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int16]()[i]
+            var scaled = (alpha_scaled * val) >> 15
+            result._data.bitcast[Int16]()[i] = max(scaled, val)
+    elif tensor._dtype == DType.int32:
+        var alpha32 = Float32(alpha)
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int32]()[i]
+            var scaled = Int32(alpha32 * Float32(val))
+            result._data.bitcast[Int32]()[i] = max(scaled, val)
+    elif tensor._dtype == DType.int64:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Int64]()[i]
+            var scaled = Int64(alpha * Float64(val))
+            result._data.bitcast[Int64]()[i] = max(scaled, val)
     else:
-        raise Error("leaky_relu: only float32 and float64 dtypes supported")
+        raise Error("leaky_relu: unsupported dtype (use float16/32/64 or int8/16/32/64)")
 
     return result
 
@@ -100,6 +170,8 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     PReLU is similar to Leaky ReLU but uses learnable parameters for the
     negative slope. Alpha can be a scalar or have the same shape as tensor
     for per-element or per-channel learned slopes.
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         tensor: Input tensor of any shape
@@ -126,7 +198,12 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     var result = ExTensor(tensor._shape, tensor._dtype)
     var is_scalar = alpha._numel == 1
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var val = tensor._data.bitcast[Float16]()[i]
+            var a = alpha._data.bitcast[Float16]()[0] if is_scalar else alpha._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = max(a * val, val)
+    elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float32]()[i]
             var a = alpha._data.bitcast[Float32]()[0] if is_scalar else alpha._data.bitcast[Float32]()[i]
@@ -137,7 +214,7 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
             var a = alpha._data.bitcast[Float64]()[0] if is_scalar else alpha._data.bitcast[Float64]()[i]
             result._data.bitcast[Float64]()[i] = max(a * val, val)
     else:
-        raise Error("prelu: only float32 and float64 dtypes supported")
+        raise Error("prelu: only float16, float32, and float64 dtypes supported")
 
     return result
 
@@ -157,6 +234,8 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     - x > 20: sigmoid(x) ≈ 1.0
     - x < -20: sigmoid(x) ≈ 0.0
 
+    Supported dtypes: float16, float32, float64
+
     Args:
         tensor: Input tensor of any shape
 
@@ -169,7 +248,21 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float16]()[i]
+            var sig: Float16
+
+            # Numerically stable sigmoid with clipping
+            if x > Float16(20.0):
+                sig = Float16(1.0)
+            elif x < Float16(-20.0):
+                sig = Float16(0.0)
+            else:
+                sig = Float16(1.0) / (Float16(1.0) + exp(-Float32(x)))
+
+            result._data.bitcast[Float16]()[i] = sig
+    elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var x = tensor._data.bitcast[Float32]()[i]
             var sig: Float32
@@ -198,7 +291,7 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
 
             result._data.bitcast[Float64]()[i] = sig
     else:
-        raise Error("sigmoid: only float32 and float64 dtypes supported")
+        raise Error("sigmoid: only float16, float32, and float64 dtypes supported")
 
     return result
 
@@ -207,7 +300,9 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
     """Apply tanh (hyperbolic tangent) activation.
 
     Tanh maps inputs to (-1, 1) range. This is a numerically stable
-    implementation that leverages the relationship: tanh(x) = 2*sigmoid(2x) - 1.
+    implementation that leverages the math library tanh function.
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         tensor: Input tensor of any shape
@@ -221,7 +316,11 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = Float16(math_tanh(Float32(x)))
+    elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var x = tensor._data.bitcast[Float32]()[i]
             result._data.bitcast[Float32]()[i] = math_tanh(x)
@@ -230,7 +329,7 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
             var x = tensor._data.bitcast[Float64]()[i]
             result._data.bitcast[Float64]()[i] = math_tanh(x)
     else:
-        raise Error("tanh: only float32 and float64 dtypes supported")
+        raise Error("tanh: only float16, float32, and float64 dtypes supported")
 
     return result
 
@@ -247,6 +346,8 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     for numerical stability by subtracting max value before exponentiation.
 
     Outputs sum to 1.0 along the specified axis.
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         tensor: Input tensor (logits)
@@ -283,7 +384,31 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
         outer_size *= tensor._shape[i]
     var inner_size = tensor._shape[norm_axis]
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        for outer_idx in range(outer_size):
+            var base_idx = outer_idx * inner_size
+
+            # Find max value for numerical stability
+            var max_val: Float16 = tensor._data.bitcast[Float16]()[base_idx]
+            for i in range(1, inner_size):
+                var val = tensor._data.bitcast[Float16]()[base_idx + i]
+                if val > max_val:
+                    max_val = val
+
+            # Compute exp(x - max) and sum
+            var sum_exp: Float32 = 0.0
+            for i in range(inner_size):
+                var val = tensor._data.bitcast[Float16]()[base_idx + i]
+                var exp_val = exp(Float32(val - max_val))
+                result._data.bitcast[Float16]()[base_idx + i] = Float16(exp_val)
+                sum_exp += exp_val
+
+            # Normalize by sum
+            for i in range(inner_size):
+                var current = Float32(result._data.bitcast[Float16]()[base_idx + i])
+                result._data.bitcast[Float16]()[base_idx + i] = Float16(current / sum_exp)
+
+    elif tensor._dtype == DType.float32:
         for outer_idx in range(outer_size):
             var base_idx = outer_idx * inner_size
 
@@ -329,7 +454,7 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
             for i in range(inner_size):
                 result._data.bitcast[Float64]()[base_idx + i] /= sum_exp
     else:
-        raise Error("softmax: only float32 and float64 dtypes supported")
+        raise Error("softmax: only float16, float32, and float64 dtypes supported")
 
     return result
 
@@ -343,6 +468,8 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     Approximate formula: GELU(x) ≈ 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))
 
     The approximate version is faster and was used in the original BERT implementation.
+
+    Supported dtypes: float16, float32, float64
 
     Args:
         tensor: Input tensor of any shape
@@ -361,8 +488,25 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     # Constants for approximate GELU
     alias SQRT_2_OVER_PI = 0.7978845608028654  # sqrt(2/π)
     alias GELU_COEFF = 0.044715
+    alias SQRT_2 = 1.4142135623730951
 
-    if tensor._dtype == DType.float32:
+    if tensor._dtype == DType.float16:
+        if approximate:
+            # Approximate: 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))
+            for i in range(tensor._numel):
+                var x = Float32(tensor._data.bitcast[Float16]()[i])
+                var x_cubed = x * x * x
+                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var tanh_val = math_tanh(inner)
+                result._data.bitcast[Float16]()[i] = Float16(0.5 * x * (1.0 + tanh_val))
+        else:
+            # Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
+            for i in range(tensor._numel):
+                var x = Float32(tensor._data.bitcast[Float16]()[i])
+                var erf_val = erf(x / Float32(SQRT_2))
+                result._data.bitcast[Float16]()[i] = Float16(x * 0.5 * (1.0 + erf_val))
+
+    elif tensor._dtype == DType.float32:
         if approximate:
             # Approximate: 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))
             for i in range(tensor._numel):
@@ -373,7 +517,6 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
                 result._data.bitcast[Float32]()[i] = 0.5 * x * (1.0 + tanh_val)
         else:
             # Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
-            alias SQRT_2 = 1.4142135623730951
             for i in range(tensor._numel):
                 var x = tensor._data.bitcast[Float32]()[i]
                 var erf_val = erf(x / Float32(SQRT_2))
@@ -390,12 +533,11 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
                 result._data.bitcast[Float64]()[i] = 0.5 * x * (1.0 + tanh_val)
         else:
             # Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
-            alias SQRT_2 = 1.4142135623730951
             for i in range(tensor._numel):
                 var x = tensor._data.bitcast[Float64]()[i]
                 var erf_val = erf(x / SQRT_2)
                 result._data.bitcast[Float64]()[i] = x * 0.5 * (1.0 + erf_val)
     else:
-        raise Error("gelu: only float32 and float64 dtypes supported")
+        raise Error("gelu: only float16, float32, and float64 dtypes supported")
 
     return result
