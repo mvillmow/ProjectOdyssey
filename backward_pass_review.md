@@ -1,7 +1,7 @@
 # ExTensor Backward Pass Review
 
-**Date**: 2025-11-18  
-**Reviewer**: Code Analysis  
+**Date**: 2025-11-18
+**Reviewer**: Code Analysis
 **Scope**: Gradient computation (backward passes) for neural network training
 
 ## Executive Summary
@@ -38,7 +38,7 @@ grad_a, grad_b = add_backward(grad_c, a.shape(), b.shape())
 # Missing sum over broadcast dimension!
 ```
 
-**Impact**: 
+**Impact**:
 - Any network using bias terms (broadcasting) will fail
 - Batch normalization won't work
 - Element-wise operations with different shapes fail
@@ -114,7 +114,7 @@ var b_squared_safe = add(b_squared, epsilon_tensor)
 9. `ceil`, `floor`, `round`, `trunc` - Need: `0` (non-differentiable)
 10. `log10`, `log2` - Need: `grad / (x * ln(base))`
 
-**Impact**: 
+**Impact**:
 - Can't use exponential layers
 - Can't use trigonometric activations
 - Can't use logarithmic loss functions
@@ -128,7 +128,7 @@ var b_squared_safe = add(b_squared, epsilon_tensor)
 1. `dot` (1D · 1D) - Need: gradient for dot product
 2. `outer` (1D ⊗ 1D) - Need: gradient for outer product
 
-**Impact**: 
+**Impact**:
 - Limits custom layer implementations
 - Blocks some optimization techniques
 
@@ -293,7 +293,7 @@ if norm_axis != ndim - 1:
 **Coverage**:
 - ✅ Activations: 7 backward pass tests (relu, leaky_relu, prelu, sigmoid, tanh, softmax, gelu)
 - ❌ Matrix: 0 backward pass tests
-- ❌ Arithmetic: 0 backward pass tests  
+- ❌ Arithmetic: 0 backward pass tests
 - ❌ Reduction: 0 backward pass tests
 - ❌ Elementwise Math: 0 backward passes implemented, so 0 tests
 
@@ -437,21 +437,21 @@ def reduce_gradient_to_shape(grad, original_shape, output_shape):
     """
     # Align dimensions (prepend 1s if needed)
     aligned_shape = align_shapes(original_shape, output_shape)
-    
+
     # Find broadcast dimensions (where original=1 and output>1)
     broadcast_dims = []
     for i, (orig, out) in enumerate(zip(aligned_shape, output_shape)):
         if orig == 1 and out > 1:
             broadcast_dims.append(i)
-    
+
     # Sum over broadcast dimensions
     result = grad
     for dim in reversed(broadcast_dims):
         result = sum(result, axis=dim, keepdims=True)
-    
+
     # Reshape to original shape (remove prepended dimensions)
     result = reshape(result, original_shape)
-    
+
     return result
 ```
 
@@ -464,12 +464,12 @@ Forward:
 
 Backward:
   grad_c.shape = [3, 4, 5]
-  
+
   For grad_a:
     - Dimension 1 was broadcast (1 -> 4)
     - Sum grad_c over axis 1: [3, 4, 5] -> [3, 1, 5]
     - Result: grad_a.shape = [3, 1, 5] ✓
-  
+
   For grad_b:
     - No broadcasting needed
     - grad_b = grad_c
@@ -516,14 +516,14 @@ fn check_gradient(
     rtol: Float64 = 1e-4
 ) raises -> Bool:
     """Verify backward pass using numerical gradients.
-    
+
     Args:
         forward_fn: Forward pass function
         backward_fn: Backward pass function
         x: Input tensor
         eps: Finite difference epsilon
         rtol: Relative tolerance for comparison
-    
+
     Returns:
         True if gradients match within tolerance
     """
@@ -531,7 +531,7 @@ fn check_gradient(
     var y = forward_fn(x)
     var grad_output = ones_like(y)
     var grad_analytical = backward_fn(grad_output, x)
-    
+
     # Compute numerical gradient
     var grad_numerical = zeros_like(x)
     for i in range(x.numel()):
@@ -539,15 +539,15 @@ fn check_gradient(
         var x_plus = x.copy()
         x_plus._data[i] += eps
         var y_plus = forward_fn(x_plus)
-        
+
         # f(x - eps)
         var x_minus = x.copy()
         x_minus._data[i] -= eps
         var y_minus = forward_fn(x_minus)
-        
+
         # Numerical derivative: (f(x+eps) - f(x-eps)) / (2*eps)
         grad_numerical._data[i] = (y_plus._data[0] - y_minus._data[0]) / (2 * eps)
-    
+
     # Compare gradients
     return allclose(grad_analytical, grad_numerical, rtol=rtol)
 ```
@@ -624,15 +624,15 @@ The ExTensor backward pass implementation is **approximately 40% complete** with
 
 **Risk Level**: **HIGH** - Current state will cause training failures and silent bugs
 
-**Next Steps**: 
+**Next Steps**:
 1. Prioritize Phase 1 fixes (broadcasting, stability, validation)
 2. Implement Phase 2 (critical missing backward passes)
 3. Add comprehensive test suite with numerical gradient checking
 
 ---
 
-**Report Generated**: 2025-11-18  
-**Files Analyzed**: 
+**Report Generated**: 2025-11-18
+**Files Analyzed**:
 - `src/extensor/activations.mojo` (1052 lines)
 - `src/extensor/matrix.mojo` (457 lines)
 - `src/extensor/arithmetic.mojo` (676 lines)
