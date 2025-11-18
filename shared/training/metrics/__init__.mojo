@@ -15,9 +15,9 @@ All metrics implement the Metric trait for consistent interface.
 
 # Export metric implementations
 from .accuracy import top1_accuracy, topk_accuracy, per_class_accuracy, AccuracyMetric
+from .loss_tracker import LossTracker, Statistics, ComponentTracker
 
 # Future exports (to be implemented):
-# from .loss_tracker import LossTracker
 # from .confusion import ConfusionMatrix
 # from .precision import Precision
 # from .recall import Recall
