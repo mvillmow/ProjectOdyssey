@@ -485,3 +485,269 @@ fn mean_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: I
         grad_sum._set_float64(i, val * scale)
 
     return grad_sum
+
+
+fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+    """Compute gradient for max reduction.
+
+    For Y = max_reduce(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X - Gradient flows only to maximum element(s)
+
+    If multiple elements are maximum, gradient is split equally among them.
+    This is the standard behavior for max pooling backward pass.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
+        x: Input from forward pass (before reduction)
+        axis: Axis along which max was computed (-1 for all axes)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        # Max over all elements
+        var x = tensor([1.0, 3.0, 2.0, 3.0])  # Two max values at indices 1, 3
+        var y = max_reduce(x, axis=-1)  # Scalar: 3.0
+        var grad_y = ones([])  # Gradient: 1.0
+        var grad_x = max_reduce_backward(grad_y, x, axis=-1)
+        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 3.0s
+
+        # Max along axis
+        var x2 = tensor([[1.0, 3.0], [2.0, 1.0]])
+        var y2 = max_reduce(x2, axis=1)  # [3.0, 2.0]
+        var grad_y2 = ones([2])
+        var grad_x2 = max_reduce_backward(grad_y2, x2, axis=1)
+        # grad_x2 = [[0.0, 1.0], [1.0, 0.0]]
+    """
+    var result = ExTensor(x.shape(), x.dtype())
+    # Initialize to zero
+    for i in range(result.numel()):
+        result._set_float64(i, 0.0)
+
+    if axis == -1:
+        # Max over all elements - find all elements equal to max
+        var max_val: Float64 = x._get_float64(0)
+        for i in range(1, x.numel()):
+            let val = x._get_float64(i)
+            if val > max_val:
+                max_val = val
+
+        # Count how many elements are maximum
+        var count: Int = 0
+        for i in range(x.numel()):
+            let val = x._get_float64(i)
+            if val == max_val:
+                count += 1
+
+        # Split gradient equally among max elements
+        let grad_val = grad_output._get_float64(0)
+        let grad_per_max = grad_val / Float64(count)
+
+        for i in range(x.numel()):
+            let val = x._get_float64(i)
+            if val == max_val:
+                result._set_float64(i, grad_per_max)
+
+    else:
+        # Max along specific axis
+        let input_shape = x.shape()
+        let ndim = len(input_shape)
+
+        # Normalize axis
+        let normalized_axis = axis if axis >= 0 else ndim + axis
+
+        # Compute strides
+        var strides = DynamicVector[Int](ndim)
+        var stride = 1
+        for i in range(ndim - 1, -1, -1):
+            strides[i] = stride
+            stride *= input_shape[i]
+
+        let axis_size = input_shape[normalized_axis]
+
+        # For each position in grad_output
+        for result_idx in range(x.numel()):
+            # Convert to coordinates
+            var coords = DynamicVector[Int](ndim)
+            var temp_idx = result_idx
+            for i in range(ndim - 1, -1, -1):
+                coords[i] = temp_idx % input_shape[i]
+                temp_idx //= input_shape[i]
+
+            # Map to grad_output coordinates (remove axis dimension)
+            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var coord_idx = 0
+            for i in range(ndim):
+                if i != normalized_axis:
+                    grad_coords[coord_idx] = coords[i]
+                    coord_idx += 1
+
+            # Convert to linear index in grad_output
+            var grad_idx = 0
+            var grad_stride = 1
+            for i in range(grad_output.dim() - 1, -1, -1):
+                grad_idx += grad_coords[i] * grad_stride
+                grad_stride *= grad_output.shape()[i]
+
+            # Find max value along this slice
+            var max_val: Float64 = x._get_float64(0)  # Placeholder
+            var count = 0
+
+            # First pass: find max
+            for k in range(axis_size):
+                var test_coords = coords
+                test_coords[normalized_axis] = k
+                var test_idx = 0
+                for i in range(ndim):
+                    test_idx += test_coords[i] * strides[i]
+                let val = x._get_float64(test_idx)
+                if k == 0 or val > max_val:
+                    max_val = val
+
+            # Second pass: count max elements
+            for k in range(axis_size):
+                var test_coords = coords
+                test_coords[normalized_axis] = k
+                var test_idx = 0
+                for i in range(ndim):
+                    test_idx += test_coords[i] * strides[i]
+                let val = x._get_float64(test_idx)
+                if val == max_val:
+                    count += 1
+
+            # Third pass: set gradients for max elements
+            let current_val = x._get_float64(result_idx)
+            if current_val == max_val:
+                let grad_val = grad_output._get_float64(grad_idx)
+                result._set_float64(result_idx, grad_val / Float64(count))
+
+    return result
+
+
+fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+    """Compute gradient for min reduction.
+
+    For Y = min_reduce(X, axis), given ∂L/∂Y, computes:
+        ∂L/∂X - Gradient flows only to minimum element(s)
+
+    If multiple elements are minimum, gradient is split equally among them.
+    This is analogous to max pooling but for minimum values.
+
+    Args:
+        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
+        x: Input from forward pass (before reduction)
+        axis: Axis along which min was computed (-1 for all axes)
+
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
+
+    Examples:
+        var x = tensor([3.0, 1.0, 2.0, 1.0])  # Two min values at indices 1, 3
+        var y = min_reduce(x, axis=-1)  # Scalar: 1.0
+        var grad_y = ones([])  # Gradient: 1.0
+        var grad_x = min_reduce_backward(grad_y, x, axis=-1)
+        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s
+    """
+    var result = ExTensor(x.shape(), x.dtype())
+    # Initialize to zero
+    for i in range(result.numel()):
+        result._set_float64(i, 0.0)
+
+    if axis == -1:
+        # Min over all elements - find all elements equal to min
+        var min_val: Float64 = x._get_float64(0)
+        for i in range(1, x.numel()):
+            let val = x._get_float64(i)
+            if val < min_val:
+                min_val = val
+
+        # Count how many elements are minimum
+        var count: Int = 0
+        for i in range(x.numel()):
+            let val = x._get_float64(i)
+            if val == min_val:
+                count += 1
+
+        # Split gradient equally among min elements
+        let grad_val = grad_output._get_float64(0)
+        let grad_per_min = grad_val / Float64(count)
+
+        for i in range(x.numel()):
+            let val = x._get_float64(i)
+            if val == min_val:
+                result._set_float64(i, grad_per_min)
+
+    else:
+        # Min along specific axis (similar logic to max_reduce_backward)
+        let input_shape = x.shape()
+        let ndim = len(input_shape)
+
+        # Normalize axis
+        let normalized_axis = axis if axis >= 0 else ndim + axis
+
+        # Compute strides
+        var strides = DynamicVector[Int](ndim)
+        var stride = 1
+        for i in range(ndim - 1, -1, -1):
+            strides[i] = stride
+            stride *= input_shape[i]
+
+        let axis_size = input_shape[normalized_axis]
+
+        # For each position in result
+        for result_idx in range(x.numel()):
+            # Convert to coordinates
+            var coords = DynamicVector[Int](ndim)
+            var temp_idx = result_idx
+            for i in range(ndim - 1, -1, -1):
+                coords[i] = temp_idx % input_shape[i]
+                temp_idx //= input_shape[i]
+
+            # Map to grad_output coordinates
+            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var coord_idx = 0
+            for i in range(ndim):
+                if i != normalized_axis:
+                    grad_coords[coord_idx] = coords[i]
+                    coord_idx += 1
+
+            # Convert to linear index in grad_output
+            var grad_idx = 0
+            var grad_stride = 1
+            for i in range(grad_output.dim() - 1, -1, -1):
+                grad_idx += grad_coords[i] * grad_stride
+                grad_stride *= grad_output.shape()[i]
+
+            # Find min value along this slice
+            var min_val: Float64 = x._get_float64(0)  # Placeholder
+            var count = 0
+
+            # First pass: find min
+            for k in range(axis_size):
+                var test_coords = coords
+                test_coords[normalized_axis] = k
+                var test_idx = 0
+                for i in range(ndim):
+                    test_idx += test_coords[i] * strides[i]
+                let val = x._get_float64(test_idx)
+                if k == 0 or val < min_val:
+                    min_val = val
+
+            # Second pass: count min elements
+            for k in range(axis_size):
+                var test_coords = coords
+                test_coords[normalized_axis] = k
+                var test_idx = 0
+                for i in range(ndim):
+                    test_idx += test_coords[i] * strides[i]
+                let val = x._get_float64(test_idx)
+                if val == min_val:
+                    count += 1
+
+            # Third pass: set gradients for min elements
+            let current_val = x._get_float64(result_idx)
+            if current_val == min_val:
+                let grad_val = grad_output._get_float64(grad_idx)
+                result._set_float64(result_idx, grad_val / Float64(count))
+
+    return result

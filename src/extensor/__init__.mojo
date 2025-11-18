@@ -71,7 +71,7 @@ from .matrix import matmul_backward, transpose_backward
 from .reduction import sum, mean, max_reduce, min_reduce
 
 # Reduction gradients (backward pass)
-from .reduction import sum_backward, mean_backward
+from .reduction import sum_backward, mean_backward, max_reduce_backward, min_reduce_backward
 
 # Element-wise mathematical operations (forward pass)
 from .elementwise_math import (
