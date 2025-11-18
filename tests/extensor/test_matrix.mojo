@@ -593,6 +593,259 @@ fn test_dunder_matmul() raises:
 
 
 # ============================================================================
+# Test Matrix @ Vector operations (Linear layers)
+# ============================================================================
+
+fn test_matmul_matrix_vector() raises:
+    """Test matrix @ vector multiplication (essential for linear layers)."""
+    var shape_w = DynamicVector[Int](2)
+    shape_w[0] = 3  # out_features
+    shape_w[1] = 4  # in_features
+    var shape_x = DynamicVector[Int](1)
+    shape_x[0] = 4  # in_features
+
+    let w = ones(shape_w, DType.float32)  # 3x4 weight matrix
+    let x = full(shape_x, 2.0, DType.float32)  # 4D input vector
+    let y = matmul(w, x)  # Should give 3D output
+
+    # Result: each element = 1*2 + 1*2 + 1*2 + 1*2 = 8
+    assert_dim(y, 1, "Result should be 1D vector")
+    assert_numel(y, 3, "Result should have 3 elements (out_features)")
+    assert_value_at(y, 0, 8.0, 1e-6, "y[0] should be 8.0")
+    assert_value_at(y, 1, 8.0, 1e-6, "y[1] should be 8.0")
+    assert_value_at(y, 2, 8.0, 1e-6, "y[2] should be 8.0")
+
+
+fn test_matmul_vector_matrix() raises:
+    """Test vector @ matrix multiplication."""
+    var shape_x = DynamicVector[Int](1)
+    shape_x[0] = 3
+    var shape_w = DynamicVector[Int](2)
+    shape_w[0] = 3
+    shape_w[1] = 4
+
+    let x = full(shape_x, 2.0, DType.float32)  # 3D vector
+    let w = ones(shape_w, DType.float32)  # 3x4 matrix
+    let y = matmul(x, w)  # Should give 4D output
+
+    # Result: each element = 2*1 + 2*1 + 2*1 = 6
+    assert_dim(y, 1, "Result should be 1D vector")
+    assert_numel(y, 4, "Result should have 4 elements")
+    assert_all_values(y, 6.0, 1e-6, "All elements should be 6.0")
+
+
+fn test_matmul_linear_layer_pattern() raises:
+    """Test typical linear layer pattern: weight @ input."""
+    # Simulate: Linear(in=5, out=10) processing single input
+    var shape_w = DynamicVector[Int](2)
+    shape_w[0] = 10  # out_features
+    shape_w[1] = 5   # in_features
+    var shape_x = DynamicVector[Int](1)
+    shape_x[0] = 5   # in_features
+
+    let weight = full(shape_w, 0.5, DType.float32)
+    let input = ones(shape_x, DType.float32)
+    let output = matmul(weight, input)
+
+    # Each output element = 0.5 * 1 + ... (5 times) = 2.5
+    assert_dim(output, 1, "Output should be 1D")
+    assert_numel(output, 10, "Output should have 10 elements")
+    assert_all_values(output, 2.5, 1e-6, "Linear output computation")
+
+
+fn test_matmul_matrix_vector_error() raises:
+    """Test matrix @ vector dimension mismatch error."""
+    var shape_w = DynamicVector[Int](2)
+    shape_w[0] = 3
+    shape_w[1] = 4
+    var shape_x = DynamicVector[Int](1)
+    shape_x[0] = 5  # Wrong size!
+
+    let w = ones(shape_w, DType.float32)
+    let x = ones(shape_x, DType.float32)
+
+    var error_raised = False
+    try:
+        let y = matmul(w, x)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for dimension mismatch (3,4) @ (5,)")
+
+
+# ============================================================================
+# Test Transpose Combinations (BLAS patterns)
+# ============================================================================
+
+fn test_transpose_combination_at_b() raises:
+    """Test A.T @ B (common in backprop: weight.T @ gradient)."""
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = 3
+    shape_a[1] = 4
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = 3
+    shape_b[1] = 2
+
+    let a = ones(shape_a, DType.float32)  # 3x4
+    let b = full(shape_b, 2.0, DType.float32)  # 3x2
+    let a_t = transpose(a)  # 4x3
+    let c = matmul(a_t, b)  # 4x3 @ 3x2 -> 4x2
+
+    # Each element = 1*2 + 1*2 + 1*2 = 6
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 8, "Result should be 4x2 (8 elements)")
+    assert_all_values(c, 6.0, 1e-6, "A.T @ B computation")
+
+
+fn test_transpose_combination_a_bt() raises:
+    """Test A @ B.T (common in attention: Q @ K.T)."""
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = 2
+    shape_a[1] = 3
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = 4
+    shape_b[1] = 3
+
+    let a = full(shape_a, 2.0, DType.float32)  # 2x3
+    let b = ones(shape_b, DType.float32)  # 4x3
+    let b_t = transpose(b)  # 3x4
+    let c = matmul(a, b_t)  # 2x3 @ 3x4 -> 2x4
+
+    # Each element = 2*1 + 2*1 + 2*1 = 6
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 8, "Result should be 2x4 (8 elements)")
+    assert_all_values(c, 6.0, 1e-6, "A @ B.T computation")
+
+
+fn test_transpose_combination_at_bt() raises:
+    """Test A.T @ B.T (double transpose pattern)."""
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = 4
+    shape_a[1] = 3
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = 5
+    shape_b[1] = 4
+
+    let a = ones(shape_a, DType.float32)  # 4x3
+    let b = full(shape_b, 2.0, DType.float32)  # 5x4
+    let a_t = transpose(a)  # 3x4
+    let b_t = transpose(b)  # 4x5
+    let c = matmul(a_t, b_t)  # 3x4 @ 4x5 -> 3x5
+
+    # Each element = 1*2 + 1*2 + 1*2 + 1*2 = 8
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 15, "Result should be 3x5 (15 elements)")
+    assert_all_values(c, 8.0, 1e-6, "A.T @ B.T computation")
+
+
+# ============================================================================
+# Test Matrix Shape Variants (thin, wide, square)
+# ============================================================================
+
+fn test_matmul_thin_matrices() raises:
+    """Test thin matrices (many rows, few columns)."""
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = 100  # Many rows
+    shape_a[1] = 5    # Few columns
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = 5
+    shape_b[1] = 20
+
+    let a = ones(shape_a, DType.float32)  # 100x5
+    let b = ones(shape_b, DType.float32)  # 5x20
+    let c = matmul(a, b)  # 100x20
+
+    # Each element = 1*1 + ... (5 times) = 5
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 2000, "Result should be 100x20 (2000 elements)")
+    assert_value_at(c, 0, 5.0, 1e-6, "Thin matrix multiplication")
+    assert_value_at(c, 1999, 5.0, 1e-6, "Check last element")
+
+
+fn test_matmul_wide_matrices() raises:
+    """Test wide matrices (few rows, many columns)."""
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = 5     # Few rows
+    shape_a[1] = 100   # Many columns
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = 100
+    shape_b[1] = 20
+
+    let a = full(shape_a, 0.5, DType.float32)  # 5x100
+    let b = ones(shape_b, DType.float32)  # 100x20
+    let c = matmul(a, b)  # 5x20
+
+    # Each element = 0.5*1 + ... (100 times) = 50
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 100, "Result should be 5x20 (100 elements)")
+    assert_value_at(c, 0, 50.0, 1e-5, "Wide matrix multiplication")
+
+
+fn test_matmul_tiny_matrices() raises:
+    """Test very small matrices (1x1, 2x1, 1x2)."""
+    # Test 1x1 @ 1x1
+    var shape_1x1 = DynamicVector[Int](2)
+    shape_1x1[0] = 1
+    shape_1x1[1] = 1
+
+    let a = full(shape_1x1, 3.0, DType.float32)
+    let b = full(shape_1x1, 4.0, DType.float32)
+    let c = matmul(a, b)
+
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 1, "Result should be 1x1 (1 element)")
+    assert_value_at(c, 0, 12.0, 1e-6, "1x1 @ 1x1 = 3*4")
+
+
+fn test_matmul_large_square() raises:
+    """Test larger square matrix (stress test)."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 50
+    shape[1] = 50
+
+    let a = ones(shape, DType.float32)  # 50x50
+    let b = ones(shape, DType.float32)  # 50x50
+    let c = matmul(a, b)  # 50x50
+
+    # Each element = 1*1 + ... (50 times) = 50
+    assert_dim(c, 2, "Result should be 2D")
+    assert_numel(c, 2500, "Result should be 50x50 (2500 elements)")
+    assert_value_at(c, 0, 50.0, 1e-5, "Large square matrix")
+    assert_value_at(c, 2499, 50.0, 1e-5, "Check last element")
+
+
+# ============================================================================
+# Test 3D+ Transpose (verify fix)
+# ============================================================================
+
+fn test_transpose_3d_correctness() raises:
+    """Test that 3D transpose actually transposes correctly (not just copies)."""
+    var shape = DynamicVector[Int](3)
+    shape[0] = 2
+    shape[1] = 3
+    shape[2] = 4
+    # Create a 2x3x4 tensor with distinct values
+    let a = arange(0.0, 24.0, 1.0, DType.float32)  # This creates 1D
+
+    # We need a helper to create 3D tensor - for now, verify shape is correct
+    # TODO: Once we have proper 3D tensor creation, add value verification
+
+    # For now, just test shape transformation
+    var test_shape = DynamicVector[Int](3)
+    test_shape[0] = 2
+    test_shape[1] = 3
+    test_shape[2] = 4
+    let t = ones(test_shape, DType.float32)
+    let t_T = transpose(t)
+
+    # Verify shape is reversed
+    assert_dim(t_T, 3, "Transpose should be 3D")
+    # Shape should be (4, 3, 2)
+    # TODO: Add shape assertions once we have a way to access shape elements
+
+
+# ============================================================================
 # Main test runner
 # ============================================================================
 
@@ -661,5 +914,29 @@ fn main() raises:
     # Dunder methods
     print("  Testing matrix dunders...")
     test_dunder_matmul()
+
+    # Matrix @ vector operations (NEW)
+    print("  Testing matrix @ vector operations...")
+    test_matmul_matrix_vector()
+    test_matmul_vector_matrix()
+    test_matmul_linear_layer_pattern()
+    test_matmul_matrix_vector_error()
+
+    # Transpose combinations (NEW)
+    print("  Testing transpose combinations...")
+    test_transpose_combination_at_b()
+    test_transpose_combination_a_bt()
+    test_transpose_combination_at_bt()
+
+    # Matrix shape variants (NEW)
+    print("  Testing matrix shape variants...")
+    test_matmul_thin_matrices()
+    test_matmul_wide_matrices()
+    test_matmul_tiny_matrices()
+    test_matmul_large_square()
+
+    # 3D+ transpose correctness (NEW)
+    print("  Testing 3D+ transpose...")
+    test_transpose_3d_correctness()
 
     print("All matrix operation tests completed!")

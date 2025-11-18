@@ -10,8 +10,8 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
     Args:
-        a: First tensor (matrix)
-        b: Second tensor (matrix)
+        a: First tensor (matrix or vector)
+        b: Second tensor (matrix or vector)
 
     Returns:
         A new tensor containing the matrix product a @ b
@@ -20,13 +20,19 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if dimensions are incompatible
 
     Requirements:
-        - 2D tensors: a.shape = (m, k), b.shape = (k, n) -> result.shape = (m, n)
+        - 2D @ 2D: a.shape = (m, k), b.shape = (k, n) -> result.shape = (m, n)
+        - 2D @ 1D: a.shape = (m, k), b.shape = (k,) -> result.shape = (m,)
+        - 1D @ 2D: a.shape = (k,), b.shape = (k, n) -> result.shape = (n,)
         - ND tensors: batched matrix multiplication
 
     Examples:
         var a = zeros(DynamicVector[Int](3, 4), DType.float32)
         var b = zeros(DynamicVector[Int](4, 5), DType.float32)
         var c = matmul(a, b)  # Shape (3, 5)
+
+        var W = zeros(DynamicVector[Int](10, 5), DType.float32)
+        var x = zeros(DynamicVector[Int](5), DType.float32)
+        var y = matmul(W, x)  # Shape (10,) - matrix @ vector
     """
     # Check dtype compatibility
     if a.dtype() != b.dtype():
@@ -35,9 +41,62 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     # Check dimension compatibility
     let a_shape = a.shape()
     let b_shape = b.shape()
+    let a_ndim = len(a_shape)
+    let b_ndim = len(b_shape)
 
-    if len(a_shape) < 2 or len(b_shape) < 2:
-        raise Error("matmul requires at least 2D tensors")
+    # Handle matrix @ vector (2D @ 1D)
+    if a_ndim == 2 and b_ndim == 1:
+        let m = a_shape[0]
+        let k = a_shape[1]
+        let n = b_shape[0]
+
+        if k != n:
+            raise Error("Incompatible dimensions for matmul: matrix (" + str(m) + ", " + str(k) + ") @ vector (" + str(n) + ")")
+
+        # Result is a vector of shape (m,)
+        var result_shape = DynamicVector[Int](1)
+        result_shape[0] = m
+        var result = ExTensor(result_shape, a.dtype())
+
+        # Compute: result[i] = sum(a[i, j] * b[j] for j in range(k))
+        for i in range(m):
+            var sum_val: Float64 = 0.0
+            for j in range(k):
+                let a_val = a._get_float64(i * k + j)
+                let b_val = b._get_float64(j)
+                sum_val += a_val * b_val
+            result._set_float64(i, sum_val)
+
+        return result^
+
+    # Handle vector @ matrix (1D @ 2D)
+    if a_ndim == 1 and b_ndim == 2:
+        let m = a_shape[0]
+        let k = b_shape[0]
+        let n = b_shape[1]
+
+        if m != k:
+            raise Error("Incompatible dimensions for matmul: vector (" + str(m) + ") @ matrix (" + str(k) + ", " + str(n) + ")")
+
+        # Result is a vector of shape (n,)
+        var result_shape = DynamicVector[Int](1)
+        result_shape[0] = n
+        var result = ExTensor(result_shape, a.dtype())
+
+        # Compute: result[j] = sum(a[i] * b[i, j] for i in range(m))
+        for j in range(n):
+            var sum_val: Float64 = 0.0
+            for i in range(m):
+                let a_val = a._get_float64(i)
+                let b_val = b._get_float64(i * n + j)
+                sum_val += a_val * b_val
+            result._set_float64(j, sum_val)
+
+        return result^
+
+    # For 2D and higher, require at least 2D tensors
+    if a_ndim < 2 or b_ndim < 2:
+        raise Error("matmul requires at least 2D tensors for non-vector inputs (use dot() for 1D @ 1D)")
 
     let a_rows = a_shape[len(a_shape) - 2]
     let a_cols = a_shape[len(a_shape) - 1]
@@ -115,47 +174,58 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
         tensor: Input tensor
 
     Returns:
-        A new tensor (view) with transposed dimensions (reverses all axes)
+        A new tensor with transposed dimensions (reverses all axes)
 
     Examples:
-        var t = zeros(DynamicVector[Int](3, 4, 5), DType.float32)
-        var t_T = transpose(t)  # Shape (5, 4, 3) - reverse all axes
+        var t = zeros(DynamicVector[Int](3, 4), DType.float32)
+        var t_T = transpose(t)  # Shape (4, 3)
+
+        var t3d = zeros(DynamicVector[Int](2, 3, 4), DType.float32)
+        var t3d_T = transpose(t3d)  # Shape (4, 3, 2) - reverse all axes
 
     Note:
-        LIMITATION: Currently only supports reversing all axes.
+        Currently supports reversing all axes for any dimensionality.
         TODO: Add support for custom axis permutation via axes parameter.
     """
-    # Implement transpose
-    # For now, copy data in transposed order (TODO: zero-copy view with strides)
+    let ndim = tensor.dim()
+    let input_shape = tensor.shape()
 
+    # Build result shape (reverse all dimensions)
     var result_shape = DynamicVector[Int]()
-
-    # Reverse all dimensions
-    for i in range(tensor.dim() - 1, -1, -1):
-        result_shape.push_back(tensor.shape()[i])
+    for i in range(ndim - 1, -1, -1):
+        result_shape.push_back(input_shape[i])
 
     var result = ExTensor(result_shape, tensor.dtype())
 
-    # Implement for 2D case (most common)
-    if tensor.dim() == 2:
-        let rows = tensor.shape()[0]
-        let cols = tensor.shape()[1]
+    # Compute strides for input tensor (row-major order)
+    var input_strides = DynamicVector[Int](ndim)
+    var stride = 1
+    for i in range(ndim - 1, -1, -1):
+        input_strides[i] = stride
+        stride *= input_shape[i]
 
-        # result[i, j] = tensor[j, i]
-        for i in range(cols):  # New rows (was cols)
-            for j in range(rows):  # New cols (was rows)
-                let src_idx = j * cols + i  # tensor[j, i]
-                let dst_idx = i * rows + j  # result[i, j]
-                let val = tensor._get_float64(src_idx)
-                result._set_float64(dst_idx, val)
-    else:
-        # For 3D+, implement simple reversal of axes
-        # This is a simplified implementation - full permutation would require more complex indexing
-        # For now, just copy all values in the same order (placeholder)
-        # TODO: Implement proper multi-dimensional transpose
-        for i in range(tensor.numel()):
-            let val = tensor._get_float64(i)
-            result._set_float64(i, val)
+    # For each element in result, map to input position
+    for result_idx in range(result.numel()):
+        # Convert linear result index to coordinates
+        var result_coords = DynamicVector[Int](ndim)
+        var temp_idx = result_idx
+        for i in range(ndim - 1, -1, -1):
+            result_coords[i] = temp_idx % result.shape()[i]
+            temp_idx //= result.shape()[i]
+
+        # Map result coordinates to input coordinates (reverse order)
+        var input_coords = DynamicVector[Int](ndim)
+        for i in range(ndim):
+            input_coords[i] = result_coords[ndim - 1 - i]
+
+        # Convert input coordinates to linear index
+        var input_idx = 0
+        for i in range(ndim):
+            input_idx += input_coords[i] * input_strides[i]
+
+        # Copy value
+        let val = tensor._get_float64(input_idx)
+        result._set_float64(result_idx, val)
 
     return result^
 
