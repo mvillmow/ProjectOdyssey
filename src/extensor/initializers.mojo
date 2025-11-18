@@ -250,6 +250,240 @@ fn sin(x: Float64) -> Float64:
 
 
 # ============================================================================
+# Kaiming/He Initialization (#263-267)
+# ============================================================================
+
+
+fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+    """Initialize weights using Kaiming/He uniform distribution.
+
+    Draws samples from uniform distribution U(-a, a) where:
+        a = sqrt(6 / fan)  (fan depends on fan_mode)
+
+    This initialization is designed for networks with ReLU activations, which
+    kill half the activations (output 0 for negative inputs). The gain factor
+    accounts for this to maintain variance.
+
+    Mathematical derivation:
+    - For uniform U(-a, a), variance is a²/3
+    - Target variance for ReLU: 2/fan (not 2/(fan_in + fan_out) like Xavier)
+    - Therefore: a²/3 = 2/fan
+    - Solving: a = sqrt(6/fan)
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        fan_in: Number of input units to the layer
+        fan_out: Number of output units from the layer
+        shape: Shape of weight tensor to initialize
+        fan_mode: "fan_in" (default) or "fan_out" for fan calculation
+        dtype: Data type (default: float32)
+        seed_val: Random seed for reproducibility (-1 for random seed)
+
+    Returns:
+        Initialized weight tensor with Kaiming uniform distribution
+
+    Raises:
+        Error: If fan_in or fan_out are not positive
+        Error: If fan_mode is not "fan_in" or "fan_out"
+
+    Examples:
+        # Fully connected layer: 784 inputs -> 128 outputs (using fan_in)
+        var weights = kaiming_uniform(784, 128, DynamicVector[Int](784, 128))
+
+        # Using fan_out mode
+        var w = kaiming_uniform(784, 128, DynamicVector[Int](784, 128), fan_mode="fan_out")
+
+        # With fixed seed for reproducibility
+        var w_repro = kaiming_uniform(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+
+    References:
+        He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
+        Performance on ImageNet Classification"
+
+    Issue: #263-267 - Kaiming/He initialization
+    """
+    if fan_in <= 0 or fan_out <= 0:
+        raise Error("kaiming_uniform: fan_in and fan_out must be positive")
+
+    # Determine which fan to use
+    var fan: Int
+    if fan_mode == "fan_in":
+        fan = fan_in
+    elif fan_mode == "fan_out":
+        fan = fan_out
+    else:
+        raise Error("kaiming_uniform: fan_mode must be 'fan_in' or 'fan_out'")
+
+    # Set random seed if provided
+    if seed_val >= 0:
+        random_seed(seed_val)
+
+    # Calculate bound: sqrt(6 / fan)
+    var bound = sqrt(6.0 / Float64(fan))
+
+    # Create tensor
+    var result = ExTensor(shape, dtype)
+
+    # Fill with uniform random values in [-bound, bound]
+    if dtype == DType.float16:
+        for i in range(result._numel):
+            var rand_val = random_float64()
+            var scaled_val = Float16((2.0 * rand_val - 1.0) * bound)
+            result._data.bitcast[Float16]()[i] = scaled_val
+    elif dtype == DType.float32:
+        for i in range(result._numel):
+            var rand_val = random_float64()
+            var scaled_val = Float32((2.0 * rand_val - 1.0) * bound)
+            result._data.bitcast[Float32]()[i] = scaled_val
+    elif dtype == DType.float64:
+        for i in range(result._numel):
+            var rand_val = random_float64()
+            var scaled_val = (2.0 * rand_val - 1.0) * bound
+            result._data.bitcast[Float64]()[i] = scaled_val
+    else:
+        raise Error("kaiming_uniform: only float16, float32, and float64 dtypes supported")
+
+    return result
+
+
+fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+    """Initialize weights using Kaiming/He normal distribution.
+
+    Draws samples from normal distribution N(0, std²) where:
+        std = sqrt(2 / fan)  (fan depends on fan_mode)
+
+    This initialization is designed for networks with ReLU activations, which
+    kill half the activations. The variance scaling accounts for this effect.
+
+    Mathematical derivation:
+    - For normal N(0, σ²), variance is σ²
+    - Target variance for ReLU: 2/fan
+    - Therefore: σ² = 2/fan
+    - Standard deviation: σ = sqrt(2/fan)
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        fan_in: Number of input units to the layer
+        fan_out: Number of output units from the layer
+        shape: Shape of weight tensor to initialize
+        fan_mode: "fan_in" (default) or "fan_out" for fan calculation
+        dtype: Data type (default: float32)
+        seed_val: Random seed for reproducibility (-1 for random seed)
+
+    Returns:
+        Initialized weight tensor with Kaiming normal distribution
+
+    Raises:
+        Error: If fan_in or fan_out are not positive
+        Error: If fan_mode is not "fan_in" or "fan_out"
+
+    Examples:
+        # Fully connected layer: 784 inputs -> 128 outputs
+        var weights = kaiming_normal(784, 128, DynamicVector[Int](784, 128))
+
+        # Using fan_out mode
+        var w = kaiming_normal(784, 128, DynamicVector[Int](784, 128), fan_mode="fan_out")
+
+        # With fixed seed for reproducibility
+        var w_repro = kaiming_normal(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+
+    References:
+        He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
+        Performance on ImageNet Classification"
+
+    Issue: #263-267 - Kaiming/He initialization
+    """
+    if fan_in <= 0 or fan_out <= 0:
+        raise Error("kaiming_normal: fan_in and fan_out must be positive")
+
+    # Determine which fan to use
+    var fan: Int
+    if fan_mode == "fan_in":
+        fan = fan_in
+    elif fan_mode == "fan_out":
+        fan = fan_out
+    else:
+        raise Error("kaiming_normal: fan_mode must be 'fan_in' or 'fan_out'")
+
+    # Set random seed if provided
+    if seed_val >= 0:
+        random_seed(seed_val)
+
+    # Calculate standard deviation: sqrt(2 / fan)
+    var std = sqrt(2.0 / Float64(fan))
+
+    # Create tensor
+    var result = ExTensor(shape, dtype)
+
+    # Fill with normal random values using Box-Muller transform
+    if dtype == DType.float16:
+        var i = 0
+        while i < result._numel:
+            var u1 = random_float64()
+            var u2 = random_float64()
+
+            if u1 < 1e-10:
+                u1 = 1e-10
+
+            var mag = std * sqrt(-2.0 * log(u1))
+            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
+            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
+
+            result._data.bitcast[Float16]()[i] = Float16(z0)
+            i += 1
+
+            if i < result._numel:
+                result._data.bitcast[Float16]()[i] = Float16(z1)
+                i += 1
+
+    elif dtype == DType.float32:
+        var i = 0
+        while i < result._numel:
+            var u1 = random_float64()
+            var u2 = random_float64()
+
+            if u1 < 1e-10:
+                u1 = 1e-10
+
+            var mag = std * sqrt(-2.0 * log(u1))
+            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
+            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
+
+            result._data.bitcast[Float32]()[i] = Float32(z0)
+            i += 1
+
+            if i < result._numel:
+                result._data.bitcast[Float32]()[i] = Float32(z1)
+                i += 1
+
+    elif dtype == DType.float64:
+        var i = 0
+        while i < result._numel:
+            var u1 = random_float64()
+            var u2 = random_float64()
+
+            if u1 < 1e-10:
+                u1 = 1e-10
+
+            var mag = std * sqrt(-2.0 * log(u1))
+            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
+            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
+
+            result._data.bitcast[Float64]()[i] = z0
+            i += 1
+
+            if i < result._numel:
+                result._data.bitcast[Float64]()[i] = z1
+                i += 1
+    else:
+        raise Error("kaiming_normal: only float16, float32, and float64 dtypes supported")
+
+    return result
+
+
+# ============================================================================
 # Uniform/Normal Initialization (#268-272)
 # ============================================================================
 

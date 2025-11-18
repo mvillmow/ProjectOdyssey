@@ -5,6 +5,7 @@ weight initialization strategies.
 
 Test coverage:
 - #259: Xavier/Glorot tests (uniform and normal variants)
+- #264: Kaiming/He tests (uniform and normal variants)
 - #269: Uniform/Normal basic distribution tests
 
 Testing strategy:
@@ -17,7 +18,7 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from collections.vector import DynamicVector
 from math import abs, sqrt
-from extensor import ExTensor, xavier_uniform, xavier_normal, uniform, normal, constant
+from extensor import ExTensor, xavier_uniform, xavier_normal, kaiming_uniform, kaiming_normal, uniform, normal, constant
 
 
 fn compute_variance(tensor: ExTensor) raises -> Float64:
@@ -321,6 +322,206 @@ fn test_xavier_float16() raises:
     print("  ✓ Xavier float16 test passed")
 
 
+fn test_kaiming_uniform_variance_fan_in() raises:
+    """Test Kaiming uniform produces correct variance with fan_in mode."""
+    print("Testing Kaiming uniform variance (fan_in)...")
+
+    # Test configuration: fan_in=100, fan_out=50
+    var fan_in = 100
+    var fan_out = 50
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=42)
+
+    # Expected variance: 2/fan_in = 2/100 = 0.02
+    var expected_var = 2.0 / Float64(fan_in)
+    var actual_var = compute_variance(weights)
+
+    # Allow 10% tolerance for statistical variation
+    var tolerance = expected_var * 0.1
+    var diff = abs(actual_var - expected_var)
+
+    print("  Expected variance:", expected_var)
+    print("  Actual variance:  ", actual_var)
+    print("  Difference:       ", diff)
+    print("  Tolerance:        ", tolerance)
+
+    assert_true(diff < tolerance, "Kaiming uniform variance should match theoretical value")
+
+    print("  ✓ Kaiming uniform variance (fan_in) test passed")
+
+
+fn test_kaiming_uniform_variance_fan_out() raises:
+    """Test Kaiming uniform produces correct variance with fan_out mode."""
+    print("Testing Kaiming uniform variance (fan_out)...")
+
+    var fan_in = 100
+    var fan_out = 50
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_out", seed_val=42)
+
+    # Expected variance: 2/fan_out = 2/50 = 0.04
+    var expected_var = 2.0 / Float64(fan_out)
+    var actual_var = compute_variance(weights)
+
+    var tolerance = expected_var * 0.1
+    var diff = abs(actual_var - expected_var)
+
+    print("  Expected variance:", expected_var)
+    print("  Actual variance:  ", actual_var)
+
+    assert_true(diff < tolerance, "Kaiming uniform variance should match (fan_out)")
+
+    print("  ✓ Kaiming uniform variance (fan_out) test passed")
+
+
+fn test_kaiming_uniform_bounds() raises:
+    """Test Kaiming uniform values are within expected bounds."""
+    print("Testing Kaiming uniform bounds...")
+
+    var fan_in = 100
+    var fan_out = 50
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=123)
+
+    # Expected bound: sqrt(6/fan_in) = sqrt(6/100) ≈ 0.245
+    var bound = sqrt(6.0 / Float64(fan_in))
+
+    # Check all values are within [-bound, bound]
+    for i in range(weights._numel):
+        var val = Float64(weights._data.bitcast[Float32]()[i])
+        assert_true(val >= -bound and val <= bound, "Kaiming uniform values should be in bounds")
+
+    print("  Expected bound: ±", bound)
+    print("  ✓ Kaiming uniform bounds test passed")
+
+
+fn test_kaiming_uniform_reproducibility() raises:
+    """Test Kaiming uniform with fixed seed is reproducible."""
+    print("Testing Kaiming uniform reproducibility...")
+
+    var fan_in = 50
+    var fan_out = 100
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=999)
+    var w2 = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=999)
+
+    # Should be identical
+    for i in range(w1._numel):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2, "Same seed should produce identical values")
+
+    print("  ✓ Kaiming uniform reproducibility test passed")
+
+
+fn test_kaiming_normal_variance_fan_in() raises:
+    """Test Kaiming normal produces correct variance with fan_in mode."""
+    print("Testing Kaiming normal variance (fan_in)...")
+
+    # Test configuration: fan_in=200, fan_out=100
+    var fan_in = 200
+    var fan_out = 100
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    var weights = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=42)
+
+    # Expected variance: 2/fan_in = 2/200 = 0.01
+    var expected_var = 2.0 / Float64(fan_in)
+    var actual_var = compute_variance(weights)
+
+    # Allow 15% tolerance for statistical variation (normal has more variance)
+    var tolerance = expected_var * 0.15
+    var diff = abs(actual_var - expected_var)
+
+    print("  Expected variance:", expected_var)
+    print("  Actual variance:  ", actual_var)
+    print("  Difference:       ", diff)
+    print("  Tolerance:        ", tolerance)
+
+    assert_true(diff < tolerance, "Kaiming normal variance should match theoretical value")
+
+    print("  ✓ Kaiming normal variance (fan_in) test passed")
+
+
+fn test_kaiming_normal_mean_zero() raises:
+    """Test Kaiming normal has mean close to zero."""
+    print("Testing Kaiming normal mean...")
+
+    var fan_in = 100
+    var fan_out = 100
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    var weights = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=789)
+
+    # Compute mean
+    var sum: Float64 = 0.0
+    for i in range(weights._numel):
+        sum += Float64(weights._data.bitcast[Float32]()[i])
+
+    var mean = sum / Float64(weights._numel)
+
+    print("  Mean: ", mean)
+
+    # Mean should be close to 0 (within 1% of std for large sample)
+    var std = sqrt(2.0 / Float64(fan_in))
+    var tolerance = std * 0.01
+
+    assert_true(abs(mean) < tolerance, "Kaiming normal should have mean ≈ 0")
+
+    print("  ✓ Kaiming normal mean test passed")
+
+
+fn test_kaiming_normal_reproducibility() raises:
+    """Test Kaiming normal with fixed seed is reproducible."""
+    print("Testing Kaiming normal reproducibility...")
+
+    var fan_in = 50
+    var fan_out = 100
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=555)
+    var w2 = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=555)
+
+    # Should be identical
+    for i in range(w1._numel):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2, "Same seed should produce identical values")
+
+    print("  ✓ Kaiming normal reproducibility test passed")
+
+
+fn test_kaiming_float64() raises:
+    """Test Kaiming initialization with float64 dtype."""
+    print("Testing Kaiming with float64...")
+
+    var fan_in = 100
+    var fan_out = 50
+    var shape = DynamicVector[Int](fan_in, fan_out)
+
+    # Test uniform with float64
+    var w_uniform = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", dtype=DType.float64, seed_val=42)
+    assert_equal(w_uniform._dtype, DType.float64, "Should use float64 dtype")
+
+    # Test normal with float64
+    var w_normal = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", dtype=DType.float64, seed_val=42)
+    assert_equal(w_normal._dtype, DType.float64, "Should use float64 dtype")
+
+    # Check variance for uniform
+    var expected_var = 2.0 / Float64(fan_in)
+    var actual_var_uniform = compute_variance(w_uniform)
+    var tolerance = expected_var * 0.1
+    assert_true(abs(actual_var_uniform - expected_var) < tolerance, "Float64 variance should match")
+
+    print("  ✓ Kaiming float64 test passed")
+
+
 fn test_uniform_bounds() raises:
     """Test uniform distribution stays within bounds."""
     print("Testing uniform bounds...")
@@ -556,6 +757,20 @@ fn main() raises:
     test_xavier_configurations()
     test_xavier_float64()
     test_xavier_float16()
+
+    print("\nKaiming Uniform Tests (#264)")
+    print("-" * 70)
+    test_kaiming_uniform_variance_fan_in()
+    test_kaiming_uniform_variance_fan_out()
+    test_kaiming_uniform_bounds()
+    test_kaiming_uniform_reproducibility()
+
+    print("\nKaiming Normal Tests (#264)")
+    print("-" * 70)
+    test_kaiming_normal_variance_fan_in()
+    test_kaiming_normal_mean_zero()
+    test_kaiming_normal_reproducibility()
+    test_kaiming_float64()
 
     print("\nUniform Distribution Tests (#269)")
     print("-" * 70)
