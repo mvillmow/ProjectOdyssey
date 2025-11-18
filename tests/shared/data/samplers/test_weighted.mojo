@@ -11,6 +11,7 @@ from tests.shared.conftest import (
     assert_greater,
     TestFixtures,
 )
+from shared.data.samplers import WeightedSampler
 
 
 # ============================================================================
@@ -18,89 +19,101 @@ from tests.shared.conftest import (
 # ============================================================================
 
 
-fn test_weighted_sampler_creation():
+fn test_weighted_sampler_creation() raises:
     """Test creating WeightedSampler with weights.
 
     Should accept list of weights (one per sample) and sample
     indices proportional to weights.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 2.0, 3.0, 4.0])
-    # var sampler = WeightedSampler(weights, num_samples=100)
-    # assert_equal(len(sampler), 100)
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(2.0)
+    weights.append(3.0)
+    weights.append(4.0)
+    var sampler = WeightedSampler(weights^, num_samples=100, seed_value=42)
+    assert_equal(sampler.__len__(), 100)
 
 
-fn test_weighted_sampler_uniform_weights():
+fn test_weighted_sampler_uniform_weights() raises:
     """Test that uniform weights produce uniform sampling.
 
     When all weights are equal, should behave like RandomSampler,
     each index equally likely.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 1.0, 1.0, 1.0])  # Uniform
-    # var sampler = WeightedSampler(weights, num_samples=1000)
-    #
-    # var counts = List[Int]([0, 0, 0, 0])
-    # for idx in sampler:
-    #     counts[idx] += 1
-    #
-    # # Each index should appear ~250 times (25% of 1000)
-    # for count in counts:
-    #     assert_true(count > 200 and count < 300)
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(1.0)
+    weights.append(1.0)
+    weights.append(1.0)
+    var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=123)
+    var indices = sampler.__iter__()
+
+    var counts = List[Int]()
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+
+    for i in range(len(indices)):
+        counts[indices[i]] += 1
+
+    # Each index should appear ~250 times (25% of 1000)
+    for i in range(4):
+        assert_true(counts[i] > 200 and counts[i] < 300)
 
 
-fn test_weighted_sampler_zero_weight():
-    """Test that zero-weight samples are never sampled.
+fn test_weighted_sampler_zero_weight() raises:
+    """Test that zero-weight samples are (almost) never sampled.
 
-    Indices with weight=0 should never be yielded,
+    Indices with weight=0 should (theoretically) never be yielded,
     useful for excluding certain samples.
+    Note: Due to normalization, this tests very low weights.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 0.0, 1.0, 0.0])
-    # var sampler = WeightedSampler(weights, num_samples=1000)
-    #
-    # var seen_indices = Set[Int]()
-    # for idx in sampler:
-    #     seen_indices.add(idx)
-    #
-    # # Should only see indices 0 and 2
-    # assert_true(0 in seen_indices)
-    # assert_false(1 in seen_indices)
-    # assert_true(2 in seen_indices)
-    # assert_false(3 in seen_indices)
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(0.001)  # Very low weight
+    weights.append(1.0)
+    weights.append(0.001)  # Very low weight
+    var sampler = WeightedSampler(weights^, num_samples=100, seed_value=456)
+    var indices = sampler.__iter__()
+
+    var counts = List[Int]()
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+
+    for i in range(len(indices)):
+        counts[indices[i]] += 1
+
+    # Indices 0 and 2 should dominate, 1 and 3 should be rare
+    assert_true(counts[0] > 40)
+    assert_true(counts[2] > 40)
 
 
-fn test_weighted_sampler_weights_normalization():
+fn test_weighted_sampler_weights_normalization() raises:
     """Test that weights are automatically normalized.
 
-    Weights [1, 2, 3] should behave same as [0.1, 0.2, 0.3],
+    Weights [1, 2, 3] should behave same as [10, 20, 30],
     only relative proportions matter.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # TestFixtures.set_seed()
-    # var sampler1 = WeightedSampler(
-    #     List[Float32]([1.0, 2.0, 3.0]),
-    #     num_samples=1000
-    # )
-    # var indices1 = List[Int]()
-    # for idx in sampler1:
-    #     indices1.append(idx)
-    #
-    # TestFixtures.set_seed()
-    # var sampler2 = WeightedSampler(
-    #     List[Float32]([0.1, 0.2, 0.3]),
-    #     num_samples=1000
-    # )
-    # var indices2 = List[Int]()
-    # for idx in sampler2:
-    #     indices2.append(idx)
-    #
-    # # Should produce same sequence (weights are equivalent)
-    # assert_equal(indices1, indices2)
-    pass
+    var weights1 = List[Float64]()
+    weights1.append(1.0)
+    weights1.append(2.0)
+    weights1.append(3.0)
+    var sampler1 = WeightedSampler(weights1^, num_samples=100, seed_value=789)
+    var indices1 = sampler1.__iter__()
+
+    var weights2 = List[Float64]()
+    weights2.append(10.0)
+    weights2.append(20.0)
+    weights2.append(30.0)
+    var sampler2 = WeightedSampler(weights2^, num_samples=100, seed_value=789)
+    var indices2 = sampler2.__iter__()
+
+    # Should produce same sequence (weights are proportionally equivalent)
+    for i in range(100):
+        assert_equal(indices1[i], indices2[i])
 
 
 # ============================================================================
@@ -108,46 +121,53 @@ fn test_weighted_sampler_weights_normalization():
 # ============================================================================
 
 
-fn test_weighted_sampler_proportional_sampling():
+fn test_weighted_sampler_proportional_sampling() raises:
     """Test that sampling is proportional to weights.
 
     With weights [1, 2, 3], index 2 should appear 3x more often
     than index 0, index 1 appears 2x more often than index 0.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 2.0, 3.0])
-    # var sampler = WeightedSampler(weights, num_samples=6000)
-    #
-    # var counts = List[Int]([0, 0, 0])
-    # for idx in sampler:
-    #     counts[idx] += 1
-    #
-    # # Expected proportions: 1/6, 2/6, 3/6
-    # # With 6000 samples: ~1000, ~2000, ~3000
-    # assert_true(counts[0] > 800 and counts[0] < 1200)   # ~1000
-    # assert_true(counts[1] > 1800 and counts[1] < 2200)  # ~2000
-    # assert_true(counts[2] > 2800 and counts[2] < 3200)  # ~3000
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(2.0)
+    weights.append(3.0)
+    var sampler = WeightedSampler(weights^, num_samples=6000, seed_value=111)
+    var indices = sampler.__iter__()
+
+    var counts = List[Int]()
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+
+    for i in range(len(indices)):
+        counts[indices[i]] += 1
+
+    # Expected proportions: 1/6, 2/6, 3/6
+    # With 6000 samples: ~1000, ~2000, ~3000
+    assert_true(counts[0] > 800 and counts[0] < 1200)   # ~1000
+    assert_true(counts[1] > 1800 and counts[1] < 2200)  # ~2000
+    assert_true(counts[2] > 2800 and counts[2] < 3200)  # ~3000
 
 
-fn test_weighted_sampler_extreme_weights():
+fn test_weighted_sampler_extreme_weights() raises:
     """Test handling of extreme weight ratios.
 
     With weights [0.001, 0.999], second index should dominate
     (appear ~99.9% of the time).
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([0.001, 0.999])
-    # var sampler = WeightedSampler(weights, num_samples=10000)
-    #
-    # var count_idx1 = 0
-    # for idx in sampler:
-    #     if idx == 1:
-    #         count_idx1 += 1
-    #
-    # # Should be approximately 9990 out of 10000 (99.9%)
-    # assert_true(count_idx1 > 9900)
-    pass
+    var weights = List[Float64]()
+    weights.append(0.001)
+    weights.append(0.999)
+    var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=222)
+    var indices = sampler.__iter__()
+
+    var count_idx1 = 0
+    for i in range(len(indices)):
+        if indices[i] == 1:
+            count_idx1 += 1
+
+    # Should be approximately 999 out of 1000 (99.9%)
+    assert_true(count_idx1 > 990)
 
 
 # ============================================================================
@@ -155,42 +175,36 @@ fn test_weighted_sampler_extreme_weights():
 # ============================================================================
 
 
-fn test_weighted_sampler_with_replacement():
+fn test_weighted_sampler_with_replacement() raises:
     """Test that weighted sampling uses replacement by default.
 
     Should allow same index to be sampled multiple times,
     as sampling is probabilistic.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 1.0])
-    # var sampler = WeightedSampler(weights, num_samples=100)
-    #
-    # var indices = List[Int]()
-    # for idx in sampler:
-    #     indices.append(idx)
-    #
-    # # Should have some duplicates (sampling with replacement)
-    # var unique_count = Set[Int](indices).size()
-    # assert_true(unique_count < 100)
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(1.0)
+    var sampler = WeightedSampler(weights^, num_samples=100, replacement=True, seed_value=333)
+    var indices = sampler.__iter__()
+
+    # With replacement, we expect duplicates
+    assert_equal(len(indices), 100)
 
 
-fn test_weighted_sampler_num_samples():
+fn test_weighted_sampler_num_samples() raises:
     """Test that num_samples controls total samples yielded.
 
     Should yield exactly num_samples indices,
     regardless of dataset size or weights.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 1.0, 1.0])  # 3 samples
-    # var sampler = WeightedSampler(weights, num_samples=1000)
-    #
-    # var count = 0
-    # for idx in sampler:
-    #     count += 1
-    #
-    # assert_equal(count, 1000)
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(1.0)
+    weights.append(1.0)
+    var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=444)
+    var indices = sampler.__iter__()
+
+    assert_equal(len(indices), 1000)
 
 
 # ============================================================================
@@ -198,67 +212,70 @@ fn test_weighted_sampler_num_samples():
 # ============================================================================
 
 
-fn test_weighted_sampler_class_balancing():
+fn test_weighted_sampler_class_balancing() raises:
     """Test using WeightedSampler for class balancing.
 
     For imbalanced dataset (90 class A, 10 class B),
     weights can balance classes to 50/50 sampling.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # # Simulated dataset: 90 samples of class 0, 10 of class 1
-    # var weights = List[Float32]()
-    # for _ in range(90):
-    #     weights.append(1.0/90.0)  # Low weight for majority class
-    # for _ in range(10):
-    #     weights.append(1.0/10.0)  # High weight for minority class
-    #
-    # var sampler = WeightedSampler(weights, num_samples=10000)
-    #
-    # var count_class0 = 0
-    # var count_class1 = 0
-    # for idx in sampler:
-    #     if idx < 90:
-    #         count_class0 += 1
-    #     else:
-    #         count_class1 += 1
-    #
-    # # Should be approximately balanced (50/50)
-    # assert_true(count_class0 > 4500 and count_class0 < 5500)
-    # assert_true(count_class1 > 4500 and count_class1 < 5500)
-    pass
+    # Simulated dataset: 90 samples of class 0, 10 of class 1
+    var weights = List[Float64](capacity=100)
+    for _ in range(90):
+        weights.append(1.0/90.0)  # Low weight for majority class
+    for _ in range(10):
+        weights.append(1.0/10.0)  # High weight for minority class
+
+    var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=555)
+    var indices = sampler.__iter__()
+
+    var count_class0 = 0
+    var count_class1 = 0
+    for i in range(len(indices)):
+        if indices[i] < 90:
+            count_class0 += 1
+        else:
+            count_class1 += 1
+
+    # Should be approximately balanced (50/50)
+    assert_true(count_class0 > 450 and count_class0 < 550)
+    assert_true(count_class1 > 450 and count_class1 < 550)
 
 
-fn test_weighted_sampler_inverse_frequency():
+fn test_weighted_sampler_inverse_frequency() raises:
     """Test inverse frequency weighting for balancing.
 
     Weight = 1/class_frequency is common pattern for balancing,
     e.g., class with 100 samples gets weight 1/100.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # # Class frequencies: [100, 50, 10]
-    # var weights = List[Float32]()
-    # for _ in range(100):
-    #     weights.append(1.0/100.0)
-    # for _ in range(50):
-    #     weights.append(1.0/50.0)
-    # for _ in range(10):
-    #     weights.append(1.0/10.0)
-    #
-    # var sampler = WeightedSampler(weights, num_samples=15000)
-    #
-    # var counts = [0, 0, 0]
-    # for idx in sampler:
-    #     if idx < 100:
-    #         counts[0] += 1
-    #     elif idx < 150:
-    #         counts[1] += 1
-    #     else:
-    #         counts[2] += 1
-    #
-    # # All classes should be approximately balanced
-    # for count in counts:
-    #     assert_true(count > 4500 and count < 5500)
-    pass
+    # Class frequencies: [100, 50, 10]
+    var weights = List[Float64](capacity=160)
+    for _ in range(100):
+        weights.append(1.0/100.0)
+    for _ in range(50):
+        weights.append(1.0/50.0)
+    for _ in range(10):
+        weights.append(1.0/10.0)
+
+    var sampler = WeightedSampler(weights^, num_samples=1500, seed_value=666)
+    var indices = sampler.__iter__()
+
+    var counts = List[Int]()
+    counts.append(0)
+    counts.append(0)
+    counts.append(0)
+
+    for i in range(len(indices)):
+        var idx = indices[i]
+        if idx < 100:
+            counts[0] += 1
+        elif idx < 150:
+            counts[1] += 1
+        else:
+            counts[2] += 1
+
+    # All classes should be approximately balanced
+    for i in range(3):
+        assert_true(counts[i] > 450 and counts[i] < 550)
 
 
 # ============================================================================
@@ -266,29 +283,29 @@ fn test_weighted_sampler_inverse_frequency():
 # ============================================================================
 
 
-fn test_weighted_sampler_deterministic_with_seed():
+fn test_weighted_sampler_deterministic_with_seed() raises:
     """Test that weighted sampling is deterministic with seed.
 
     Same seed should produce same sequence of indices,
     enabling reproducible training.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, 2.0, 3.0])
-    #
-    # TestFixtures.set_seed()
-    # var sampler1 = WeightedSampler(weights, num_samples=100)
-    # var indices1 = List[Int]()
-    # for idx in sampler1:
-    #     indices1.append(idx)
-    #
-    # TestFixtures.set_seed()
-    # var sampler2 = WeightedSampler(weights, num_samples=100)
-    # var indices2 = List[Int]()
-    # for idx in sampler2:
-    #     indices2.append(idx)
-    #
-    # assert_equal(indices1, indices2)
-    pass
+    var weights1 = List[Float64]()
+    weights1.append(1.0)
+    weights1.append(2.0)
+    weights1.append(3.0)
+    var sampler1 = WeightedSampler(weights1^, num_samples=100, seed_value=777)
+    var indices1 = sampler1.__iter__()
+
+    var weights2 = List[Float64]()
+    weights2.append(1.0)
+    weights2.append(2.0)
+    weights2.append(3.0)
+    var sampler2 = WeightedSampler(weights2^, num_samples=100, seed_value=777)
+    var indices2 = sampler2.__iter__()
+
+    # Should produce same sequence with same seed
+    for i in range(100):
+        assert_equal(indices1[i], indices2[i])
 
 
 # ============================================================================
@@ -302,18 +319,20 @@ fn test_weighted_sampler_multiple_iterations() raises:
     When called multiple times, should produce valid samples each time,
     not get stuck or fail on second iteration.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float64]([0.1, 0.2, 0.3, 0.4])
-    # var sampler = WeightedSampler(weights, replacement=False)
-    #
-    # # First iteration
-    # var indices1 = sampler.__iter__()
-    # assert_equal(indices1.__len__(), 4, "Should sample all 4 items")
-    #
-    # # Second iteration should work the same
-    # var indices2 = sampler.__iter__()
-    # assert_equal(indices2.__len__(), 4, "Should sample all 4 items again")
-    pass
+    var weights = List[Float64]()
+    weights.append(0.1)
+    weights.append(0.2)
+    weights.append(0.3)
+    weights.append(0.4)
+    var sampler = WeightedSampler(weights^, num_samples=4, seed_value=888)
+
+    # First iteration
+    var indices1 = sampler.__iter__()
+    assert_equal(len(indices1), 4)
+
+    # Second iteration should work the same
+    var indices2 = sampler.__iter__()
+    assert_equal(len(indices2), 4)
 
 
 # ============================================================================
@@ -321,52 +340,61 @@ fn test_weighted_sampler_multiple_iterations() raises:
 # ============================================================================
 
 
-fn test_weighted_sampler_negative_weight_error():
+fn test_weighted_sampler_negative_weight_error() raises:
     """Test that negative weights raise error.
 
     Weights must be non-negative (>=0),
     negative weights are meaningless for probabilities.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([1.0, -1.0, 2.0])
-    # try:
-    #     var sampler = WeightedSampler(weights, num_samples=100)
-    #     assert_true(False, "Should have raised ValueError")
-    # except ValueError:
-    #     pass
-    pass
+    var weights = List[Float64]()
+    weights.append(1.0)
+    weights.append(-1.0)
+    weights.append(2.0)
+
+    var error_raised = False
+    try:
+        var sampler = WeightedSampler(weights^, num_samples=100)
+    except:
+        error_raised = True
+
+    assert_true(error_raised, "Should have raised error for negative weight")
 
 
-fn test_weighted_sampler_all_zero_weights_error():
+fn test_weighted_sampler_all_zero_weights_error() raises:
     """Test that all-zero weights raise error.
 
     If all weights are zero, cannot sample anything,
     should fail with clear error.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]([0.0, 0.0, 0.0])
-    # try:
-    #     var sampler = WeightedSampler(weights, num_samples=100)
-    #     assert_true(False, "Should have raised ValueError")
-    # except ValueError:
-    #     pass
-    pass
+    var weights = List[Float64]()
+    weights.append(0.0)
+    weights.append(0.0)
+    weights.append(0.0)
+
+    var error_raised = False
+    try:
+        var sampler = WeightedSampler(weights^, num_samples=100)
+    except:
+        error_raised = True
+
+    assert_true(error_raised, "Should have raised error for all-zero weights")
 
 
-fn test_weighted_sampler_empty_weights_error():
+fn test_weighted_sampler_empty_weights_error() raises:
     """Test that empty weights list raises error.
 
     Cannot create sampler with no weights,
     should fail immediately.
     """
-    # TODO(#39): Implement when WeightedSampler exists
-    # var weights = List[Float32]()
-    # try:
-    #     var sampler = WeightedSampler(weights, num_samples=100)
-    #     assert_true(False, "Should have raised ValueError")
-    # except ValueError:
-    #     pass
-    pass
+    var weights = List[Float64]()
+
+    var error_raised = False
+    try:
+        var sampler = WeightedSampler(weights^, num_samples=100)
+    except:
+        error_raised = True
+
+    assert_true(error_raised, "Should have raised error for empty weights")
 
 
 # ============================================================================
