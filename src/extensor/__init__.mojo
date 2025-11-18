@@ -73,6 +73,16 @@ from .elementwise_math import (
 # Shape manipulation operations
 from .shape import reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
 
+# Activation functions
+from .activations import (
+    relu, leaky_relu, prelu,
+    sigmoid, tanh,
+    softmax, gelu
+)
+
+# Weight initializers
+from .initializers import xavier_uniform, xavier_normal
+
 # TODO: Export remaining operation categories
 # from .indexing import getitem, setitem, take, gather
 # etc.
