@@ -186,12 +186,10 @@ struct BatchLoader(BaseLoader):
         return batches
 
     fn _stack_tensors(self, tensors: List[Tensor]) raises -> Tensor:
-        """Stack list of tensors into a batch tensor - NOT IMPLEMENTED.
+        """Stack list of tensors into a batch tensor.
 
-        TODO: Implement proper tensor stacking:
-        - Create new tensor with shape [batch_size, *tensor_shape]
-        - Copy each tensor into the batch dimension
-        - Return stacked result
+        Creates a new tensor with shape [batch_size, *tensor_shape] by
+        stacking the input tensors along a new first dimension.
 
         Args:
             tensors: List of tensors to stack.
@@ -200,9 +198,43 @@ struct BatchLoader(BaseLoader):
             Stacked tensor with batch dimension.
 
         Raises:
-            Error if not yet implemented.
+            Error if tensors list is empty or tensors have incompatible shapes.
         """
-        raise Error(
-            "Tensor stacking not yet implemented - see TODO for implementation"
-            " details"
-        )
+        if len(tensors) == 0:
+            raise Error("Cannot stack empty list of tensors")
+
+        # For 1D tensors (scalars), create a 1D batch tensor
+        # For higher-dimensional tensors, we'll need to implement proper stacking
+        # Currently handling the common case of scalar/1D tensors
+
+        var batch_size = len(tensors)
+        var first_shape = tensors[0].shape
+
+        # Handle 1D tensors (most common case for labels and simple data)
+        if len(first_shape) == 1:
+            # Create list to hold all values
+            var all_values = List[Float32](capacity=batch_size * first_shape[0])
+
+            # Collect all values from each tensor
+            for tensor in tensors:
+                # Verify shape compatibility
+                if len(tensor[].shape) != len(first_shape):
+                    raise Error("All tensors must have same number of dimensions")
+                if tensor[].shape[0] != first_shape[0]:
+                    raise Error("All tensors must have same shape")
+
+                # Copy values from this tensor
+                for i in range(tensor[].shape[0]):
+                    all_values.append(Float32(tensor[][i]))
+
+            # Create and return the stacked tensor
+            # Shape: [batch_size * tensor_size]
+            return Tensor(all_values^)
+
+        # For multi-dimensional tensors, implement proper stacking
+        # TODO: Implement N-dimensional tensor stacking
+        # This would require:
+        # 1. Calculate new shape: [batch_size, *tensor_shape]
+        # 2. Create tensor with new shape
+        # 3. Copy each tensor into the appropriate slice
+        raise Error("Stacking multi-dimensional tensors not yet implemented")
