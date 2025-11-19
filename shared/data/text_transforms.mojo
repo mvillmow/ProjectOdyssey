@@ -16,6 +16,22 @@ from random import random_si64
 
 
 # ============================================================================
+# Helper Functions
+# ============================================================================
+
+
+fn random_float() -> Float64:
+    """Generate random float in [0, 1) with high precision.
+
+    Uses 1 billion possible values for better probability distribution.
+
+    Returns:
+        Random float in range [0.0, 1.0).
+    """
+    return float(random_si64(0, 1000000000)) / 1000000000.0
+
+
+# ============================================================================
 # TextTransform Trait
 # ============================================================================
 
@@ -141,7 +157,7 @@ struct RandomSwap(TextTransform):
         # Perform n swap operations
         for _ in range(self.n):
             # Check probability
-            var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+            var rand_val = random_float()
             if rand_val >= self.p:
                 continue
 
@@ -209,7 +225,7 @@ struct RandomDeletion(TextTransform):
         # Decide which words to keep
         var kept_words = List[String]()
         for i in range(len(words)):
-            var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+            var rand_val = random_float()
             if rand_val >= self.p:
                 # Keep this word
                 kept_words.append(words[i])
@@ -273,7 +289,7 @@ struct RandomInsertion(TextTransform):
         # Perform n insertion operations
         for _ in range(self.n):
             # Check probability
-            var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+            var rand_val = random_float()
             if rand_val >= self.p:
                 continue
 
@@ -350,7 +366,7 @@ struct RandomSynonymReplacement(TextTransform):
             var word = words[i]
 
             # Check if should replace
-            var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+            var rand_val = random_float()
             if rand_val < self.p and word in self.synonyms:
                 # Get synonyms for this word
                 var syns = self.synonyms[word]
@@ -405,7 +421,7 @@ struct TextCompose(TextTransform):
         """
         var result = text
         for t in self.transforms:
-            result = t[](result)
+            result = t(result)
         return result
 
     fn __len__(self) -> Int:
