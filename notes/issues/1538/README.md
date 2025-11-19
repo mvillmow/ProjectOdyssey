@@ -120,6 +120,10 @@ The test stubs are now ready and will remain commented out until the shared libr
 
 ### Technical Notes
 
-- The shared library uses functional APIs (e.g., `sgd_step()`) while tests expect class-based APIs (e.g., `SGD()`)
+- The shared library uses **functional APIs** (e.g., `sgd_step()`) while tests expect **class-based APIs** (e.g., `SGD()`)
+- The actual Tensor implementation is **ExTensor** in `src/extensor/`, not in `shared/core/types/`
+- Activation functions exist as **functions** in ExTensor (e.g., `relu()`), not as layer classes
 - Adapters or class wrappers will need to be implemented to match the test API expectations
 - The test stubs define the desired API contract following TDD principles
+
+See [implementation-status-report.md](implementation-status-report.md) for a comprehensive analysis of what's implemented vs. what's expected.
