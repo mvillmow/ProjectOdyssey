@@ -1,11 +1,62 @@
 """Data transformation and augmentation utilities.
 
 This module provides transformations for preprocessing and augmenting data.
+
+IMPORTANT LIMITATIONS:
+- Image transforms assume square images (H = W)
+- Default assumption: 3 channels (RGB)
+- Tensor layout: Flattened (H, W, C) with channels-last
+- For non-square or grayscale images, dimensions must be manually validated
+
+These limitations are due to Mojo's current Tensor API not exposing shape metadata.
+Future versions may support arbitrary image dimensions.
 """
 
 from tensor import Tensor
 from math import sqrt, floor, ceil, sin, cos
 from random import random_si64
+
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
+
+fn random_float() -> Float64:
+    """Generate random float in [0, 1) with high precision.
+
+    Uses 1 billion possible values for better probability distribution.
+
+    Returns:
+        Random float in range [0.0, 1.0).
+    """
+    return float(random_si64(0, 1000000000)) / 1000000000.0
+
+
+fn infer_image_dimensions(data: Tensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
+    """Infer image dimensions from flattened tensor.
+
+    Assumes square images: H = W = sqrt(num_elements / channels).
+
+    Args:
+        data: Flattened image tensor.
+        channels: Number of channels (default: 3 for RGB).
+
+    Returns:
+        Tuple of (height, width, channels).
+
+    Raises:
+        Error if dimensions don't work out to square image.
+    """
+    var total_elements = data.num_elements()
+    var pixels = total_elements // channels
+    var size = int(sqrt(float(pixels)))
+
+    # Validate it's actually a square image
+    if size * size * channels != total_elements:
+        raise Error("Tensor size doesn't match square image assumption")
+
+    return (size, size, channels)
 
 
 # ============================================================================
@@ -70,14 +121,14 @@ struct Compose(Transform):
         """
         var result = data
         for t in self.transforms:
-            result = t[](result)
+            result = t(result)
         return result
 
     fn __len__(self) -> Int:
         """Return number of transforms."""
         return len(self.transforms)
 
-    fn append(inoutself, transform: Transform):
+    fn append(inout self, transform: Transform):
         """Add a transform to the pipeline.
 
         Args:
@@ -322,13 +373,10 @@ struct CenterCrop(Transform):
             Error if crop size exceeds image size.
         """
         # Determine image dimensions
-        # Assume square images: H = W = sqrt(num_elements / channels)
-        # Default to 3 channels (RGB)
-        var total_elements = data.num_elements()
-        var channels = 3
-        var pixels = total_elements // channels  # H * W
-        var width = int(sqrt(float(pixels)))  # Assume H = W
-        var height = width
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
 
         var crop_h = self.size[0]
         var crop_w = self.size[1]
@@ -392,13 +440,10 @@ struct RandomCrop(Transform):
             Error if crop size exceeds padded image size.
         """
         # Determine image dimensions
-        # Assume square images: H = W = sqrt(num_elements / channels)
-        # Default to 3 channels (RGB)
-        var total_elements = data.num_elements()
-        var channels = 3
-        var pixels = total_elements // channels  # H * W
-        var width = int(sqrt(float(pixels)))  # Assume H = W
-        var height = width
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
 
         # Apply padding if specified (conceptually increase image size)
         var padded_height = height
@@ -487,20 +532,18 @@ struct RandomHorizontalFlip(Transform):
             Error if operation fails.
         """
         # Generate random number in [0, 1)
-        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+        var rand_val = random_float()
 
         # Don't flip if random value >= probability
         if rand_val >= self.p:
             return data
 
         # Determine image dimensions
-        # Assume square images: H = W = sqrt(num_elements / channels)
-        # Default to 3 channels (RGB)
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
         var total_elements = data.num_elements()
-        var channels = 3
-        var pixels = total_elements // channels  # H * W
-        var width = int(sqrt(float(pixels)))  # Assume H = W
-        var height = width
 
         # Create flipped tensor
         var flipped = List[Float32](capacity=total_elements)
@@ -553,20 +596,18 @@ struct RandomVerticalFlip(Transform):
             Error if operation fails.
         """
         # Generate random number in [0, 1)
-        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+        var rand_val = random_float()
 
         # Don't flip if random value >= probability
         if rand_val >= self.p:
             return data
 
         # Determine image dimensions
-        # Assume square images: H = W = sqrt(num_elements / channels)
-        # Default to 3 channels (RGB)
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
         var total_elements = data.num_elements()
-        var channels = 3
-        var pixels = total_elements // channels  # H * W
-        var width = int(sqrt(float(pixels)))  # Assume H = W
-        var height = width
 
         # Create flipped tensor
         var flipped = List[Float32](capacity=total_elements)
@@ -625,7 +666,7 @@ struct RandomRotation(Transform):
         """
         # Generate random rotation angle in degrees range
         var angle_range = self.degrees[1] - self.degrees[0]
-        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+        var rand_val = random_float()
         var angle_deg = self.degrees[0] + (rand_val * angle_range)
 
         # Convert angle to radians
@@ -633,13 +674,11 @@ struct RandomRotation(Transform):
         var angle_rad = angle_deg * (pi / 180.0)
 
         # Determine image dimensions
-        # Assume square images: H = W = sqrt(num_elements / channels)
-        # Default to 3 channels (RGB)
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
         var total_elements = data.num_elements()
-        var channels = 3
-        var pixels = total_elements // channels  # H * W
-        var width = int(sqrt(float(pixels)))  # Assume H = W
-        var height = width
 
         # Compute rotation matrix values
         var cos_angle = cos(angle_rad)
@@ -744,28 +783,29 @@ struct RandomErasing(Transform):
             Error if operation fails.
         """
         # Step 1: Check probability - randomly decide whether to apply erasing
-        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+        var rand_val = random_float()
         if rand_val >= self.p:
             return data  # Don't erase
 
         # Step 2: Infer image dimensions
-        # Assume square RGB image: total_pixels = H * W, num_elements = H * W * C
+        var dims = infer_image_dimensions(data, 3)
+        var height = dims[0]
+        var width = dims[1]
+        var channels = dims[2]
         var total_elements = data.num_elements()
-        var channels = 3
-        var total_pixels = total_elements // channels
-        var image_size = int(sqrt(float(total_pixels)))
+        var image_size = height  # Height = width for square image
         var area = image_size * image_size
 
         # Step 3: Randomly select erased region size
         # Target area as fraction of image
         var scale_range = self.scale[1] - self.scale[0]
-        var scale_rand = float(random_si64(0, 1000000)) / 1000000.0
+        var scale_rand = random_float()
         var target_area_fraction = self.scale[0] + (scale_rand * scale_range)
         var target_area = float(area) * target_area_fraction
 
         # Aspect ratio (width/height)
         var ratio_range = self.ratio[1] - self.ratio[0]
-        var ratio_rand = float(random_si64(0, 1000000)) / 1000000.0
+        var ratio_rand = random_float()
         var aspect_ratio = self.ratio[0] + (ratio_rand * ratio_range)
 
         # Calculate width and height from area and aspect ratio

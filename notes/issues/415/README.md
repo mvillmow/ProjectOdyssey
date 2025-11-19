@@ -163,6 +163,42 @@ Created separate `TextTransform` trait (parallel to `Transform` for Tensor):
 - ✅ Pipeline composition
 - ✅ Integration tests
 
+### Code Review Findings and Fixes
+
+**Critical Fixes Applied** (2025-11-19):
+
+1. **Trait Object Dereferencing** (text_transforms.mojo, line 408)
+   - **Issue**: `result = t[](result)` - incorrect syntax for calling trait object
+   - **Fix**: Changed to `result = t(result)`
+   - **Impact**: This prevented the TextCompose pipeline from functioning correctly
+
+2. **Low-Precision Random Number Generation**
+   - **Issue**: Using `float(random_si64(0, 1000000)) / 1000000.0` gives only ~1 million possible values
+   - **Fix**: Created `random_float()` helper using 1 billion possible values: `float(random_si64(0, 1000000000)) / 1000000000.0`
+   - **Replaced**: 10 instances across both files:
+     - text_transforms.mojo: RandomSwap, RandomDeletion, RandomInsertion, RandomSynonymReplacement (4 instances)
+     - transforms.mojo: RandomHorizontalFlip, RandomVerticalFlip, RandomRotation, RandomErasing (6 instances)
+   - **Impact**: Better probability distribution for augmentation thresholds
+
+3. **Image Dimension Inference**
+   - **Issue**: Repeated dimension calculation code in multiple image transforms
+   - **Solution**: Created `infer_image_dimensions()` helper in transforms.mojo
+   - **Simplified**: CenterCrop, RandomCrop, RandomHorizontalFlip, RandomVerticalFlip, RandomRotation, RandomErasing (6 transforms)
+   - **Impact**: Reduced code duplication, improved maintainability
+
+4. **Module Documentation**
+   - **Added**: Important limitations section to transforms.mojo docstring:
+     - Square image assumption (H = W)
+     - RGB default (3 channels)
+     - Flattened tensor layout
+     - Future enhancement path
+
+**Verification Results**:
+- ✅ 0 low-precision random calls remaining
+- ✅ 0 trait object dereferencing errors
+- ✅ 12 uses of `random_float()` helper (2 definitions + 10 calls)
+- ✅ 7 uses of `infer_image_dimensions()` helper (1 definition + 6 calls)
+
 ### Status
 
 **Implementation Phase**: ✅ Complete
@@ -171,9 +207,15 @@ Created separate `TextTransform` trait (parallel to `Transform` for Tensor):
 - Documentation updated
 - Code follows established patterns
 
+**Code Review Phase**: ✅ Complete
+- Critical trait object dereferencing fixed
+- Low-precision randomness improved
+- Code duplication reduced with helpers
+- Module limitations documented
+
 **Next Steps**:
 1. Run tests to verify compilation
 2. Format code with `mojo format`
-3. Fix any compilation errors
+3. Fix any remaining compilation errors
 4. Create PR for review
 
