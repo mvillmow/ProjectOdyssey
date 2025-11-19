@@ -4,7 +4,7 @@ This module provides transformations for preprocessing and augmenting data.
 """
 
 from tensor import Tensor
-from math import sqrt, floor, ceil
+from math import sqrt, floor, ceil, sin, cos
 from random import random_si64
 
 
@@ -84,6 +84,10 @@ struct Compose(Transform):
             transform: Transform to add.
         """
         self.transforms.append(transform)
+
+
+# Type alias for backward compatibility and more intuitive naming
+alias Pipeline = Compose
 
 
 # ============================================================================
@@ -304,34 +308,49 @@ struct CenterCrop(Transform):
     fn __call__(self, data: Tensor) raises -> Tensor:
         """Center crop image to target size.
 
-        For 1D tensors, crops the center portion of specified size.
-        For multi-dimensional image tensors, proper 2D cropping is needed.
+        Extracts a center rectangle from a 2D image tensor.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
             data: Input image tensor.
 
         Returns:
-            Cropped image tensor.
+            Center-cropped image tensor.
 
         Raises:
-            Error if crop size exceeds tensor size.
+            Error if crop size exceeds image size.
         """
-        var num_elements = data.num_elements()
-        var crop_size = self.size[0] * self.size[1]  # Total elements to keep
+        # Determine image dimensions
+        # Assume square images: H = W = sqrt(num_elements / channels)
+        # Default to 3 channels (RGB)
+        var total_elements = data.num_elements()
+        var channels = 3
+        var pixels = total_elements // channels  # H * W
+        var width = int(sqrt(float(pixels)))  # Assume H = W
+        var height = width
 
-        if crop_size > num_elements:
-            raise Error("Crop size exceeds tensor size")
+        var crop_h = self.size[0]
+        var crop_w = self.size[1]
 
-        # For 1D tensor, crop center portion
-        var offset = (num_elements - crop_size) // 2
-        var cropped = List[Float32](capacity=crop_size)
+        # Validate crop size doesn't exceed image size
+        if crop_h > height or crop_w > width:
+            raise Error("Crop size exceeds image size")
 
-        for i in range(offset, offset + crop_size):
-            cropped.append(Float32(data[i]))
+        # Calculate center position
+        var offset_h = (height - crop_h) // 2
+        var offset_w = (width - crop_w) // 2
 
-        # TODO: Implement proper 2D center cropping for image tensors
-        # This requires understanding tensor layout (H, W, C) and
-        # extracting the center rectangle
+        # Create cropped tensor
+        var cropped = List[Float32](capacity=crop_h * crop_w * channels)
+
+        # Extract center rectangle
+        for h in range(crop_h):
+            for w in range(crop_w):
+                for c in range(channels):
+                    var src_idx = ((offset_h + h) * width + (offset_w + w)) * channels + c
+                    cropped.append(Float32(data[src_idx]))
+
         return Tensor(cropped^)
 
 
@@ -358,8 +377,10 @@ struct RandomCrop(Transform):
     fn __call__(self, data: Tensor) raises -> Tensor:
         """Random crop image to target size.
 
-        For 1D tensors, crops a random portion of specified size.
-        For multi-dimensional image tensors, proper 2D random cropping is needed.
+        Extracts a random rectangle from a 2D image tensor.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
+        Supports optional padding for edge handling.
 
         Args:
             data: Input image tensor.
@@ -368,25 +389,67 @@ struct RandomCrop(Transform):
             Randomly cropped image tensor.
 
         Raises:
-            Error if crop size exceeds tensor size.
+            Error if crop size exceeds padded image size.
         """
-        var num_elements = data.num_elements()
-        var crop_size = self.size[0] * self.size[1]  # Total elements to keep
+        # Determine image dimensions
+        # Assume square images: H = W = sqrt(num_elements / channels)
+        # Default to 3 channels (RGB)
+        var total_elements = data.num_elements()
+        var channels = 3
+        var pixels = total_elements // channels  # H * W
+        var width = int(sqrt(float(pixels)))  # Assume H = W
+        var height = width
 
-        if crop_size > num_elements:
-            raise Error("Crop size exceeds tensor size")
+        # Apply padding if specified (conceptually increase image size)
+        var padded_height = height
+        var padded_width = width
+        if self.padding:
+            var pad = self.padding.value()[]
+            padded_height = height + 2 * pad
+            padded_width = width + 2 * pad
 
-        # For 1D tensor, crop random portion
-        var max_offset = num_elements - crop_size
-        var offset = int(random_si64(0, max_offset + 1))
+        var crop_h = self.size[0]
+        var crop_w = self.size[1]
 
-        var cropped = List[Float32](capacity=crop_size)
-        for i in range(offset, offset + crop_size):
-            cropped.append(Float32(data[i]))
+        # Validate crop size
+        if crop_h > padded_height or crop_w > padded_width:
+            raise Error("Crop size exceeds padded image size")
 
-        # TODO: Implement proper 2D random cropping for image tensors
-        # This requires understanding tensor layout (H, W, C) and
-        # extracting a random rectangle with optional padding
+        # Random top-left position within valid range
+        var max_h = padded_height - crop_h
+        var max_w = padded_width - crop_w
+        var top = int(random_si64(0, max_h + 1))
+        var left = int(random_si64(0, max_w + 1))
+
+        # Adjust for padding offset
+        var actual_top = top
+        var actual_left = left
+        if self.padding:
+            var pad = self.padding.value()[]
+            actual_top = top - pad
+            actual_left = left - pad
+
+        # Create cropped tensor
+        var cropped = List[Float32](capacity=crop_h * crop_w * channels)
+
+        # Extract random rectangle
+        for h in range(crop_h):
+            for w in range(crop_w):
+                # Calculate source pixel position
+                var src_h = actual_top + h
+                var src_w = actual_left + w
+
+                # For each channel
+                for c in range(channels):
+                    # Check if source pixel is within original image bounds
+                    if src_h >= 0 and src_h < height and src_w >= 0 and src_w < width:
+                        # Sample from source pixel
+                        var src_idx = (src_h * width + src_w) * channels + c
+                        cropped.append(Float32(data[src_idx]))
+                    else:
+                        # Out of bounds (in padding region), fill with 0
+                        cropped.append(Float32(0.0))
+
         return Tensor(cropped^)
 
 
@@ -410,8 +473,9 @@ struct RandomHorizontalFlip(Transform):
     fn __call__(self, data: Tensor) raises -> Tensor:
         """Randomly flip image horizontally with probability p.
 
-        For 1D tensors, reverses the order of elements with probability p.
-        For multi-dimensional tensors, this is a simplified implementation.
+        Flips the image along the width dimension (reverses each row).
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
             data: Input image tensor.
@@ -429,13 +493,95 @@ struct RandomHorizontalFlip(Transform):
         if rand_val >= self.p:
             return data
 
-        # Flip the tensor by reversing element order
-        var flipped = List[Float32](capacity=data.num_elements())
-        for i in range(data.num_elements() - 1, -1, -1):
-            flipped.append(Float32(data[i]))
+        # Determine image dimensions
+        # Assume square images: H = W = sqrt(num_elements / channels)
+        # Default to 3 channels (RGB)
+        var total_elements = data.num_elements()
+        var channels = 3
+        var pixels = total_elements // channels  # H * W
+        var width = int(sqrt(float(pixels)))  # Assume H = W
+        var height = width
 
-        # TODO: For proper image flipping, need to reverse only width dimension
-        # This simplified implementation reverses all elements
+        # Create flipped tensor
+        var flipped = List[Float32](capacity=total_elements)
+
+        # For each row
+        for h in range(height):
+            # For each column (in reverse for flip)
+            for w_idx in range(width):
+                # Original column index (from right to left)
+                var w_orig = width - 1 - w_idx
+                # Copy all channels for this pixel
+                for c in range(channels):
+                    var src_idx = (h * width + w_orig) * channels + c
+                    flipped.append(Float32(data[src_idx]))
+
+        return Tensor(flipped^)
+
+
+@value
+struct RandomVerticalFlip(Transform):
+    """Randomly flip image vertically.
+
+    Flips with specified probability.
+    """
+
+    var p: Float64
+
+    fn __init__(out self, p: Float64 = 0.5):
+        """Create random vertical flip transform.
+
+        Args:
+            p: Probability of flipping.
+        """
+        self.p = p
+
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Randomly flip image vertically with probability p.
+
+        Flips the image along the height dimension (reverses rows).
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
+
+        Args:
+            data: Input image tensor.
+
+        Returns:
+            Possibly flipped image tensor.
+
+        Raises:
+            Error if operation fails.
+        """
+        # Generate random number in [0, 1)
+        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+
+        # Don't flip if random value >= probability
+        if rand_val >= self.p:
+            return data
+
+        # Determine image dimensions
+        # Assume square images: H = W = sqrt(num_elements / channels)
+        # Default to 3 channels (RGB)
+        var total_elements = data.num_elements()
+        var channels = 3
+        var pixels = total_elements // channels  # H * W
+        var width = int(sqrt(float(pixels)))  # Assume H = W
+        var height = width
+
+        # Create flipped tensor
+        var flipped = List[Float32](capacity=total_elements)
+
+        # For each row (in reverse for vertical flip)
+        for h_idx in range(height):
+            # Original row index (from bottom to top)
+            var h_orig = height - 1 - h_idx
+            # For each column
+            for w in range(width):
+                # Copy all channels for this pixel
+                for c in range(channels):
+                    var src_idx = (h_orig * width + w) * channels + c
+                    flipped.append(Float32(data[src_idx]))
+
         return Tensor(flipped^)
 
 
@@ -464,14 +610,15 @@ struct RandomRotation(Transform):
     fn __call__(self, data: Tensor) raises -> Tensor:
         """Randomly rotate image within specified degree range.
 
-        This is a placeholder implementation that returns the original tensor.
-        Proper rotation requires affine transformations and interpolation.
+        Performs rotation around image center using nearest-neighbor sampling.
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
 
         Args:
             data: Input image tensor.
 
         Returns:
-            Image tensor (currently unrotated - TODO).
+            Rotated image tensor.
 
         Raises:
             Error if operation fails.
@@ -479,16 +626,188 @@ struct RandomRotation(Transform):
         # Generate random rotation angle in degrees range
         var angle_range = self.degrees[1] - self.degrees[0]
         var rand_val = float(random_si64(0, 1000000)) / 1000000.0
-        var angle = self.degrees[0] + (rand_val * angle_range)
+        var angle_deg = self.degrees[0] + (rand_val * angle_range)
 
-        # TODO: Implement proper image rotation
-        # This requires:
-        # 1. Convert angle to radians
-        # 2. Create rotation matrix [cos(θ), -sin(θ); sin(θ), cos(θ)]
-        # 3. Apply affine transformation to each pixel coordinate
-        # 4. Use interpolation to sample rotated pixels
-        # 5. Fill empty regions with fill_value
-        #
-        # For now, return original tensor unchanged
-        # This allows tests to run even though rotation isn't fully implemented
-        return data
+        # Convert angle to radians
+        var pi = 3.14159265359
+        var angle_rad = angle_deg * (pi / 180.0)
+
+        # Determine image dimensions
+        # Assume square images: H = W = sqrt(num_elements / channels)
+        # Default to 3 channels (RGB)
+        var total_elements = data.num_elements()
+        var channels = 3
+        var pixels = total_elements // channels  # H * W
+        var width = int(sqrt(float(pixels)))  # Assume H = W
+        var height = width
+
+        # Compute rotation matrix values
+        var cos_angle = cos(angle_rad)
+        var sin_angle = sin(angle_rad)
+
+        # Image center
+        var cx = float(width) / 2.0
+        var cy = float(height) / 2.0
+
+        # Create rotated tensor with fill_value for empty regions
+        var rotated = List[Float32](capacity=total_elements)
+
+        # For each output pixel
+        for y in range(height):
+            for x in range(width):
+                # Convert to floating point for rotation calculation
+                var x_f = float(x)
+                var y_f = float(y)
+
+                # Apply inverse rotation to find source pixel
+                # x_src = (x - cx) * cos(θ) - (y - cy) * sin(θ) + cx
+                # y_src = (x - cx) * sin(θ) + (y - cy) * cos(θ) + cy
+                var x_src = (x_f - cx) * cos_angle - (y_f - cy) * sin_angle + cx
+                var y_src = (x_f - cx) * sin_angle + (y_f - cy) * cos_angle + cy
+
+                # Round to nearest integer for nearest-neighbor sampling
+                var x_src_int = int(x_src + 0.5)
+                var y_src_int = int(y_src + 0.5)
+
+                # For each channel
+                for c in range(channels):
+                    # Check if source pixel is within bounds
+                    if (x_src_int >= 0
+                        and x_src_int < width
+                        and y_src_int >= 0
+                        and y_src_int < height):
+                        # Sample from source pixel
+                        var src_idx = (y_src_int * width + x_src_int) * channels + c
+                        rotated.append(Float32(data[src_idx]))
+                    else:
+                        # Fill with fill_value for out-of-bounds pixels
+                        rotated.append(Float32(self.fill_value))
+
+        return Tensor(rotated^)
+
+
+@value
+struct RandomErasing(Transform):
+    """Randomly erase rectangular regions in images (Cutout augmentation).
+
+    Randomly selects a rectangle region and erases it by setting pixels to a fill value.
+    Helps improve model robustness to occlusion.
+
+    Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017)
+    """
+
+    var p: Float64  # Probability of applying erasing
+    var scale: Tuple[Float64, Float64]  # Min/max area fraction to erase
+    var ratio: Tuple[Float64, Float64]  # Min/max aspect ratio of erased region
+    var value: Float64  # Fill value (0 for black, can be random)
+
+    fn __init__(
+        out self,
+        p: Float64 = 0.5,
+        scale: Tuple[Float64, Float64] = (0.02, 0.33),
+        ratio: Tuple[Float64, Float64] = (0.3, 3.3),
+        value: Float64 = 0.0
+    ):
+        """Create random erasing transform.
+
+        Args:
+            p: Probability of applying erasing.
+            scale: Range of proportion of erased area (min, max).
+            ratio: Range of aspect ratio of erased area (min, max).
+            value: Pixel value to fill erased region with.
+        """
+        self.p = p
+        self.scale = scale
+        self.ratio = ratio
+        self.value = value
+
+    fn __call__(self, data: Tensor) raises -> Tensor:
+        """Apply random erasing with probability p.
+
+        Randomly erases a rectangular region from the image by:
+        1. Checking probability to decide if erasing should occur
+        2. Calculating target erased area based on scale parameter
+        3. Determining rectangle dimensions based on aspect ratio
+        4. Randomly positioning the rectangle within image bounds
+        5. Setting all pixels in rectangle to fill value
+
+        Assumes flattened tensor with shape (H, W, C) where H = W.
+        Default assumption: C = 3 (RGB); adjust for grayscale.
+
+        Args:
+            data: Input image tensor.
+
+        Returns:
+            Image with randomly erased rectangular region (or original if not applied).
+
+        Raises:
+            Error if operation fails.
+        """
+        # Step 1: Check probability - randomly decide whether to apply erasing
+        var rand_val = float(random_si64(0, 1000000)) / 1000000.0
+        if rand_val >= self.p:
+            return data  # Don't erase
+
+        # Step 2: Infer image dimensions
+        # Assume square RGB image: total_pixels = H * W, num_elements = H * W * C
+        var total_elements = data.num_elements()
+        var channels = 3
+        var total_pixels = total_elements // channels
+        var image_size = int(sqrt(float(total_pixels)))
+        var area = image_size * image_size
+
+        # Step 3: Randomly select erased region size
+        # Target area as fraction of image
+        var scale_range = self.scale[1] - self.scale[0]
+        var scale_rand = float(random_si64(0, 1000000)) / 1000000.0
+        var target_area_fraction = self.scale[0] + (scale_rand * scale_range)
+        var target_area = float(area) * target_area_fraction
+
+        # Aspect ratio (width/height)
+        var ratio_range = self.ratio[1] - self.ratio[0]
+        var ratio_rand = float(random_si64(0, 1000000)) / 1000000.0
+        var aspect_ratio = self.ratio[0] + (ratio_rand * ratio_range)
+
+        # Calculate width and height from area and aspect ratio
+        # area = h * w, ratio = w / h
+        # => area = h * (h * ratio) = h^2 * ratio
+        # => h = sqrt(area / ratio)
+        # => w = sqrt(area * ratio)
+        var erase_h = int(sqrt(target_area / aspect_ratio))
+        var erase_w = int(sqrt(target_area * aspect_ratio))
+
+        # Ensure within image bounds
+        erase_h = min(erase_h, image_size)
+        erase_w = min(erase_w, image_size)
+
+        # Skip if region is too small
+        if erase_h <= 0 or erase_w <= 0:
+            return data
+
+        # Step 4: Randomly select top-left position
+        var max_top = image_size - erase_h
+        var max_left = image_size - erase_w
+
+        # Handle edge case where erased region equals image size
+        if max_top < 0 or max_left < 0:
+            return data
+
+        var top = int(random_si64(0, max_top + 1))
+        var left = int(random_si64(0, max_left + 1))
+
+        # Step 5: Erase the rectangle
+        # Copy original data
+        var result = List[Float32](capacity=total_elements)
+        for i in range(total_elements):
+            result.append(Float32(data[i]))
+
+        # Erase rectangle by setting to fill value
+        # For each pixel in the erased rectangle
+        for row in range(top, top + erase_h):
+            for col in range(left, left + erase_w):
+                # Set all channels to fill value
+                for c in range(channels):
+                    var index = (row * image_size + col) * channels + c
+                    result[index] = Float32(self.value)
+
+        return Tensor(result^)
