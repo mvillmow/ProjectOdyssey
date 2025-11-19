@@ -40,7 +40,7 @@ trait TextTransform:
     """Base interface for text transforms.
 
     Text transforms modify string data and return transformed copies.
-    Unlike the Transform trait which works with Tensor, this works with String.
+    Unlike the Transform trait which works with ExTensor, this works with String.
     """
 
     fn __call__(self, text: String) raises -> String:

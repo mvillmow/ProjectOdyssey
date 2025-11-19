@@ -4,7 +4,7 @@ This module provides the main DataLoader class and related utilities
 for efficient batch loading during training.
 """
 
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 from .datasets import Dataset
 from .samplers import Sampler, SequentialSampler, RandomSampler
 
@@ -21,15 +21,15 @@ struct Batch:
     Holds data and labels for a batch, along with batch metadata.
     """
 
-    var data: Tensor
-    var labels: Tensor
+    var data: ExTensor
+    var labels: ExTensor
     var batch_size: Int
     var indices: List[Int]
 
     fn __init__(
         out self,
-        owned data: Tensor,
-        owned labels: Tensor,
+        owned data: ExTensor,
+        owned labels: ExTensor,
         owned indices: List[Int],
     ):
         """Create a batch.
@@ -168,8 +168,8 @@ struct BatchLoader(BaseLoader):
                 break
 
             # Load batch data
-            var batch_data = List[Tensor](capacity=len(batch_indices))
-            var batch_labels = List[Tensor](capacity=len(batch_indices))
+            var batch_data = List[ExTensor](capacity=len(batch_indices))
+            var batch_labels = List[ExTensor](capacity=len(batch_indices))
 
             for idx in batch_indices:
                 var sample = self.dataset.__getitem__(idx[])
@@ -185,7 +185,7 @@ struct BatchLoader(BaseLoader):
 
         return batches
 
-    fn _stack_tensors(self, tensors: List[Tensor]) raises -> Tensor:
+    fn _stack_tensors(self, tensors: List[ExTensor]) raises -> ExTensor:
         """Stack list of tensors into a batch tensor.
 
         Creates a new tensor with shape [batch_size, *tensor_shape] by
@@ -229,7 +229,7 @@ struct BatchLoader(BaseLoader):
 
             # Create and return the stacked tensor
             # Shape: [batch_size * tensor_size]
-            return Tensor(all_values^)
+            return ExTensor(all_values^)
 
         # For multi-dimensional tensors, implement proper stacking
         # TODO: Implement N-dimensional tensor stacking

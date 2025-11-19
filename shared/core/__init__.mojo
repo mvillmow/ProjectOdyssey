@@ -1,65 +1,331 @@
 """
-Core Library - Fundamental building blocks for ML Odyssey.
+Core Library - Pure functional operations for ML Odyssey.
 
-This package contains reusable neural network components, mathematical operations,
-custom types, and utilities used across all paper implementations.
+This package provides pure functional operations for neural networks and mathematical
+operations. All functions are stateless - they process inputs to produce outputs
+without maintaining internal state.
+
+Architecture:
+    - Pure functional design - no classes, no internal state
+    - All functions work with ExTensor (no Tensor alias)
+    - Caller manages all state (weights, biases, momentum, etc.)
+    - Functions return new values, never mutate inputs
 
 Modules:
-    layers: Neural network layer implementations (Linear, Conv2D, ReLU, etc.)
-    ops: Low-level mathematical operations (matmul, elementwise, reduction)
-    types: Custom types and data structures (Tensor, Shape, DType)
-    utils: Utility functions (initialization, memory management, debugging)
+    extensor: Core tensor type and creation functions
+    arithmetic: Element-wise arithmetic operations (add, subtract, multiply, divide)
+    matrix: Matrix operations (matmul, transpose, dot, outer)
+    activation: Activation functions (relu, sigmoid, tanh, softmax, gelu)
+    linear: Linear transformations
+    conv: Convolutional operations
+    pooling: Pooling operations
+    elementwise: Element-wise math functions (exp, log, sqrt, abs, clip)
+    comparison: Comparison operations (equal, less, greater)
+    broadcasting: Broadcasting utilities
+    initializers: Weight initialization functions
+    loss: Loss functions
 
 Example:
-    from shared.core.layers import Linear, ReLU
-    from shared.core.ops import matmul
-    from shared.core.types import Tensor
+    from shared.core.extensor import ExTensor, zeros
+    from shared.core.linear import linear
+    from shared.core.activation import relu
+    from shared.core.matrix import matmul, transpose
 
-    # Build a simple model using core components
-    struct SimpleModel:
-        var fc1: Linear
-        var fc2: Linear
+    # Create tensors
+    var x = zeros([32, 784])
+    var weights = zeros([128, 784])
+    var bias = zeros([128])
 
-        fn __init__(inout self):
-            self.fc1 = Linear(784, 128)
-            self.fc2 = Linear(128, 10)
+    # Forward pass (pure functional)
+    var h1 = linear(x, weights, bias)
+    var a1 = relu(h1)
 """
 
 # Package version
 alias VERSION = "0.1.0"
 
 # ============================================================================
-# Exports - Will be populated during implementation phase
+# Core Tensor Type and Creation Functions
 # ============================================================================
-# NOTE: These imports are commented out until implementation phase completes.
 
-# Core exports will be added here as components are implemented
-# from .layers import Linear, Conv2D, ReLU, Sigmoid, Tanh
-# from .ops import matmul, transpose, sum, mean
-# from .types import Tensor, Shape, DType
-# from .utils import xavier_init, he_init
+from .extensor import (
+    ExTensor,
+    zeros,
+    ones,
+    full,
+    empty,
+    arange,
+    eye,
+    linspace,
+    ones_like,
+    zeros_like,
+    full_like,
+)
+
+# ============================================================================
+# Arithmetic Operations
+# ============================================================================
+
+from .arithmetic import (
+    add,
+    subtract,
+    multiply,
+    divide,
+    floor_divide,
+    modulo,
+    power,
+    add_backward,
+    subtract_backward,
+    multiply_backward,
+    divide_backward,
+)
+
+# ============================================================================
+# Matrix Operations
+# ============================================================================
+
+from .matrix import (
+    matmul,
+    transpose,
+    dot,
+    outer,
+    matmul_backward,
+    transpose_backward,
+)
+
+# ============================================================================
+# Activation Functions
+# ============================================================================
+
+from .activation import (
+    relu,
+    leaky_relu,
+    prelu,
+    sigmoid,
+    tanh,
+    softmax,
+    gelu,
+    relu_backward,
+    leaky_relu_backward,
+    prelu_backward,
+    sigmoid_backward,
+    tanh_backward,
+    gelu_backward,
+    softmax_backward,
+)
+
+# ============================================================================
+# Neural Network Operations
+# ============================================================================
+
+from .linear import (
+    linear,
+    linear_no_bias,
+)
+
+from .conv import (
+    conv2d,
+    conv2d_no_bias,
+)
+
+from .pooling import (
+    maxpool2d,
+    avgpool2d,
+    global_avgpool2d,
+)
+
+# ============================================================================
+# Element-wise Operations
+# ============================================================================
+
+from .elementwise import (
+    abs,
+    sign,
+    exp,
+    log,
+    sqrt,
+    sin,
+    cos,
+    clip,
+    ceil,
+    floor,
+    round,
+    trunc,
+    logical_and,
+    logical_or,
+    logical_not,
+    logical_xor,
+    log10,
+    log2,
+    exp_backward,
+    log_backward,
+    sqrt_backward,
+    abs_backward,
+    clip_backward,
+    log10_backward,
+    log2_backward,
+)
+
+# ============================================================================
+# Comparison Operations
+# ============================================================================
+
+from .comparison import (
+    equal,
+    not_equal,
+    less,
+    less_equal,
+    greater,
+    greater_equal,
+)
+
+# ============================================================================
+# Broadcasting Utilities
+# ============================================================================
+
+from .broadcasting import (
+    broadcast_shapes,
+    are_shapes_broadcastable,
+    compute_broadcast_strides,
+)
+
+# ============================================================================
+# Initialization Functions
+# ============================================================================
+
+from .initializers import (
+    xavier_uniform,
+    xavier_normal,
+    kaiming_uniform,
+    kaiming_normal,
+    uniform,
+    normal,
+    constant,
+)
+
+# ============================================================================
+# Loss Functions
+# ============================================================================
+
+from .loss import (
+    binary_cross_entropy,
+    mean_squared_error,
+    cross_entropy,
+    binary_cross_entropy_backward,
+    mean_squared_error_backward,
+    cross_entropy_backward,
+)
 
 # ============================================================================
 # Public API
 # ============================================================================
 
 __all__ = [
-    # Layers
-    # "Linear",
-    # "Conv2D",
-    # "ReLU",
-    # "Sigmoid",
-    # "Tanh",
-    # Operations
-    # "matmul",
-    # "transpose",
-    # "sum",
-    # "mean",
-    # Types
-    # "Tensor",
-    # "Shape",
-    # "DType",
-    # Utils
-    # "xavier_init",
-    # "he_init",
+    # Core tensor type
+    "ExTensor",
+    # Tensor creation
+    "zeros",
+    "ones",
+    "full",
+    "empty",
+    "arange",
+    "eye",
+    "linspace",
+    "ones_like",
+    "zeros_like",
+    "full_like",
+    # Arithmetic
+    "add",
+    "subtract",
+    "multiply",
+    "divide",
+    "floor_divide",
+    "modulo",
+    "power",
+    "add_backward",
+    "subtract_backward",
+    "multiply_backward",
+    "divide_backward",
+    # Matrix operations
+    "matmul",
+    "transpose",
+    "dot",
+    "outer",
+    "matmul_backward",
+    "transpose_backward",
+    # Activations
+    "relu",
+    "leaky_relu",
+    "prelu",
+    "sigmoid",
+    "tanh",
+    "softmax",
+    "gelu",
+    "relu_backward",
+    "leaky_relu_backward",
+    "prelu_backward",
+    "sigmoid_backward",
+    "tanh_backward",
+    "gelu_backward",
+    "softmax_backward",
+    # Neural network operations
+    "linear",
+    "linear_no_bias",
+    "conv2d",
+    "conv2d_no_bias",
+    "maxpool2d",
+    "avgpool2d",
+    "global_avgpool2d",
+    # Element-wise
+    "abs",
+    "sign",
+    "exp",
+    "log",
+    "sqrt",
+    "sin",
+    "cos",
+    "clip",
+    "ceil",
+    "floor",
+    "round",
+    "trunc",
+    "logical_and",
+    "logical_or",
+    "logical_not",
+    "logical_xor",
+    "log10",
+    "log2",
+    "exp_backward",
+    "log_backward",
+    "sqrt_backward",
+    "abs_backward",
+    "clip_backward",
+    "log10_backward",
+    "log2_backward",
+    # Comparison
+    "equal",
+    "not_equal",
+    "less",
+    "less_equal",
+    "greater",
+    "greater_equal",
+    # Broadcasting
+    "broadcast_shapes",
+    "are_shapes_broadcastable",
+    "compute_broadcast_strides",
+    # Initializers
+    "xavier_uniform",
+    "xavier_normal",
+    "kaiming_uniform",
+    "kaiming_normal",
+    "uniform",
+    "normal",
+    "constant",
+    # Loss functions
+    "binary_cross_entropy",
+    "mean_squared_error",
+    "cross_entropy",
+    "binary_cross_entropy_backward",
+    "mean_squared_error_backward",
+    "cross_entropy_backward",
 ]

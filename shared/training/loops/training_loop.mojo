@@ -16,7 +16,7 @@ Design principles:
 """
 
 from collections.vector import DynamicVector
-from extensor import ExTensor
+from shared.core.extensor import ExTensor
 from shared.training.metrics import AccuracyMetric, LossTracker
 from shared.training.trainer_interface import DataLoader, DataBatch, TrainingMetrics
 

@@ -1,18 +1,17 @@
-# Prompt: Fix ML Odyssey Architecture - Two-Level Functional + Class API
+# Prompt: Fix ML Odyssey Architecture - Pure Functional Design
 
 ## Context
 
 The ML Odyssey repository has a design mismatch:
-- Tests expect class-based APIs (`Linear()`, `SGD()`, `Tensor()`)
-- Implementation provides functional APIs (`relu()`, `sgd_step()`)
+- Implementation provides functional APIs (`relu()`, `sgd_step()`) - this is CORRECT
 - Tensor implementation (`ExTensor`) is in wrong location (`src/extensor/` instead of `shared/core/`)
+- Tests expect class-based APIs, but we'll fix tests later - keep everything functional
 
 ## Objective
 
-Redesign the `shared/` directory to implement a clean two-level architecture:
+Redesign the `shared/` directory to implement a **pure functional architecture**:
 
-**Level 1: Functional Layer** - Pure functions taking only ExTensors
-**Level 2: Class Layer** - Stateful wrappers composing functional operations
+**Everything is a pure function** - No classes, no internal state, caller manages all state
 
 ## Requirements
 
@@ -26,54 +25,56 @@ Redesign the `shared/` directory to implement a clean two-level architecture:
 ```
 shared/
 ├── core/
-│   ├── types/          # ExTensor, shape utilities (from src/extensor/)
-│   ├── ops/            # Pure functions (from src/extensor/)
-│   └── layers/         # Layer classes (NEW - compose ops)
+│   ├── extensor.mojo       # ExTensor type + creation (from src/extensor/)
+│   ├── arithmetic.mojo     # add, subtract, multiply, divide
+│   ├── matrix.mojo         # matmul, transpose, dot
+│   ├── reduction.mojo      # sum, mean, max, min
+│   ├── activation.mojo     # relu, sigmoid, tanh, softmax
+│   ├── linear.mojo         # linear(x, w, b) function
+│   ├── conv.mojo           # conv2d(x, kernel, ...) function
+│   ├── pooling.mojo        # maxpool2d, avgpool2d functions
+│   ├── loss.mojo           # mse_loss, cross_entropy
+│   └── initializers.mojo   # xavier_uniform, he_uniform
 ├── training/
-│   └── optimizers/     # Optimizer classes (NEW - wrap functional APIs)
+│   └── optimizers.mojo     # sgd_step, adam_step (return new state)
 ├── data/               # Fix imports: tensor.Tensor → ExTensor
 └── ...
 ```
 
-### 3. Two-Level Hierarchy
+### 3. Pure Functional Design
 
-**Level 1 (Functional)** - `shared/core/ops/`:
+**Everything is a function**:
 - Pure functions: `fn relu(x: ExTensor) -> ExTensor`
 - Stateless, composable, type-generic
-- Examples: `matmul()`, `relu()`, `sigmoid()`, `sgd_step()`
-
-**Level 2 (Classes)** - `shared/core/layers/` and `shared/training/optimizers/`:
-- Stateful wrappers with initialization
-- Examples: `Linear`, `Conv2D`, `ReLU`, `SGD`, `Adam`
-- Compose functional operations
+- Caller manages ALL state (weights, momentum buffers, etc.)
+- Functions return new state, never mutate
 
 ### 4. Migration Tasks
 
 **Move from `src/extensor/` to `shared/core/`:**
 
-| Source File | Destination | Category |
-|------------|-------------|----------|
-| `extensor.mojo` | `shared/core/types/extensor.mojo` | Core type |
-| `shape.mojo` | `shared/core/types/shape.mojo` | Type utils |
-| `arithmetic.mojo` | `shared/core/ops/arithmetic.mojo` | Operations |
-| `matrix.mojo` | `shared/core/ops/matrix.mojo` | Operations |
-| `reduction.mojo` | `shared/core/ops/reduction.mojo` | Operations |
-| `elementwise_math.mojo` | `shared/core/ops/elementwise.mojo` | Operations |
-| `activations.mojo` | `shared/core/ops/activations.mojo` | Operations |
-| `losses.mojo` | `shared/core/ops/losses.mojo` | Operations |
-| `initializers.mojo` | `shared/core/ops/initializers.mojo` | Operations |
-| `comparison.mojo` | `shared/core/ops/comparison.mojo` | Operations |
-| `broadcasting.mojo` | `shared/core/ops/broadcasting.mojo` | Operations |
+| Source File | Destination | Notes |
+|------------|-------------|-------|
+| `extensor.mojo` | `shared/core/extensor.mojo` | Core type + creation functions |
+| `shape.mojo` | Merge into `extensor.mojo` | Shape utilities |
+| `arithmetic.mojo` | `shared/core/arithmetic.mojo` | Pure functions |
+| `matrix.mojo` | `shared/core/matrix.mojo` | Pure functions |
+| `reduction.mojo` | `shared/core/reduction.mojo` | Pure functions |
+| `elementwise_math.mojo` | `shared/core/elementwise.mojo` | Pure functions |
+| `activations.mojo` | `shared/core/activation.mojo` | Pure functions |
+| `losses.mojo` | `shared/core/loss.mojo` | Pure functions |
+| `initializers.mojo` | `shared/core/initializers.mojo` | Pure functions |
+| `comparison.mojo` | `shared/core/comparison.mojo` | Pure functions |
+| `broadcasting.mojo` | `shared/core/broadcasting.mojo` | Pure functions |
 
-**Create new class-based wrappers:**
+**Create new functional operations:**
 
-| File | Purpose | Wraps |
-|------|---------|-------|
-| `shared/core/layers/linear.mojo` | Linear layer | `matmul()`, `add()` |
-| `shared/core/layers/conv.mojo` | Conv2D layer | Convolution ops |
-| `shared/core/layers/activation.mojo` | ReLU/Sigmoid/Tanh | `relu()`, `sigmoid()`, `tanh()` |
-| `shared/training/optimizers/sgd.mojo` | SGD class | `sgd_step()` function |
-| `shared/training/optimizers/adam.mojo` | Adam class | Adam functional ops |
+| File | Purpose | Signature |
+|------|---------|-----------|
+| `shared/core/linear.mojo` | Linear transform | `fn linear(x, w, b) -> ExTensor` |
+| `shared/core/conv.mojo` | 2D convolution | `fn conv2d(x, kernel, ...) -> ExTensor` |
+| `shared/core/pooling.mojo` | Pooling ops | `fn maxpool2d(x, ...) -> ExTensor` |
+| `shared/training/optimizers.mojo` | Update SGD | `fn sgd_step(...) -> (params, velocity)` |
 
 **Fix imports in:**
 - `shared/data/datasets.mojo` - Change `from tensor import Tensor` → `from shared.core.types import ExTensor`
@@ -81,121 +82,178 @@ shared/
 - `shared/data/loaders.mojo` - Same
 - `shared/data/generic_transforms.mojo` - Same
 
-## Implementation Example
+## Implementation Examples
 
-### Layer Class Template
+### Linear Function (Pure Functional)
 
 ```mojo
-# shared/core/layers/linear.mojo
-from shared.core.types import ExTensor, zeros
-from shared.core.ops import matmul, add, transpose, xavier_uniform
+# shared/core/linear.mojo
+from shared.core.extensor import ExTensor
+from shared.core.matrix import matmul, transpose
+from shared.core.arithmetic import add
 
-struct Linear:
-    var in_features: Int
-    var out_features: Int
-    var weights: ExTensor
-    var bias: Optional[ExTensor]
+fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
+    """Functional linear transformation: x @ W.T + b
 
-    fn __init__(inout self, in_features: Int, out_features: Int, use_bias: Bool = True):
-        self.in_features = in_features
-        self.out_features = out_features
-        self.weights = xavier_uniform(out_features, in_features, DType.float32)
-        self.bias = zeros(out_features, DType.float32) if use_bias else None
+    Caller manages weights and bias - function is stateless.
 
-    fn forward(self, x: ExTensor) raises -> ExTensor:
-        var output = matmul(x, transpose(self.weights))  # Functional composition
-        if self.bias:
-            output = add(output, self.bias.value())
-        return output
+    Args:
+        x: Input (batch_size, in_features)
+        weights: Weight matrix (out_features, in_features)
+        bias: Bias vector (out_features)
+
+    Returns:
+        Output (batch_size, out_features)
+    """
+    var out = matmul(x, transpose(weights))
+    return add(out, bias)
 ```
 
-### Optimizer Class Template
+### SGD Function (Pure Functional)
 
 ```mojo
-# shared/training/optimizers/sgd.mojo
-from shared.core.types import ExTensor, zeros_like
-from shared.training.optimizers.functional import sgd_step  # Functional API
+# shared/training/optimizers.mojo
+from shared.core.extensor import ExTensor, full_like
+from shared.core.arithmetic import add, subtract, multiply
 
-struct SGD:
-    var learning_rate: Float64
-    var momentum: Float64
-    var velocity_buffers: Dict[Int, ExTensor]
+fn sgd_step(
+    params: ExTensor,
+    grads: ExTensor,
+    velocity: ExTensor,
+    lr: Float64,
+    momentum: Float64
+) raises -> Tuple[ExTensor, ExTensor]:
+    """Functional SGD update - returns new state.
 
-    fn __init__(inout self, learning_rate: Float64 = 0.01, momentum: Float64 = 0.0):
-        self.learning_rate = learning_rate
-        self.momentum = momentum
-        self.velocity_buffers = Dict[Int, ExTensor]()
+    Caller manages velocity buffer - function is stateless.
 
-    fn step(inout self, inout params: ExTensor, grads: ExTensor, param_id: Int = 0) raises:
-        var velocity = self.velocity_buffers.get(param_id, zeros_like(params))
-        params = sgd_step(params, grads, self.learning_rate, self.momentum, 0.0, velocity)
-        if self.momentum > 0.0:
-            self.velocity_buffers[param_id] = velocity
+    Args:
+        params: Current parameters
+        grads: Gradients
+        velocity: Momentum buffer
+        lr: Learning rate
+        momentum: Momentum coefficient
+
+    Returns:
+        (new_params, new_velocity)
+    """
+    # Update velocity: v = momentum * v + grad
+    var new_velocity = add(
+        multiply(full_like(velocity, momentum), velocity),
+        grads
+    )
+
+    # Update params: p = p - lr * v
+    var new_params = subtract(
+        params,
+        multiply(full_like(new_velocity, lr), new_velocity)
+    )
+
+    return (new_params, new_velocity)
+```
+
+### Usage Example (Caller Manages State)
+
+```mojo
+from shared.core import ExTensor, zeros, xavier_uniform, linear, relu
+from shared.training.optimizers import sgd_step
+
+# Caller initializes and manages ALL state
+var w1 = xavier_uniform(128, 784, DType.float32)
+var b1 = zeros(128, DType.float32)
+var w2 = xavier_uniform(10, 128, DType.float32)
+var b2 = zeros(10, DType.float32)
+
+# Optimizer state (caller manages)
+var w1_vel = zeros_like(w1)
+var b1_vel = zeros_like(b1)
+var w2_vel = zeros_like(w2)
+var b2_vel = zeros_like(b2)
+
+# Training loop
+for epoch in range(100):
+    # Forward pass - pure functions
+    var h = linear(x_train, w1, b1)
+    h = relu(h)
+    var y_pred = linear(h, w2, b2)
+
+    # Backward pass (compute gradients)
+    var grad_w1, grad_b1, grad_w2, grad_b2 = compute_grads(...)
+
+    # Optimizer step - returns new state
+    (w1, w1_vel) = sgd_step(w1, grad_w1, w1_vel, lr=0.01, momentum=0.9)
+    (b1, b1_vel) = sgd_step(b1, grad_b1, b1_vel, lr=0.01, momentum=0.9)
+    (w2, w2_vel) = sgd_step(w2, grad_w2, w2_vel, lr=0.01, momentum=0.9)
+    (b2, b2_vel) = sgd_step(b2, grad_b2, b2_vel, lr=0.01, momentum=0.9)
 ```
 
 ## Execution Steps
 
-1. **Migrate ExTensor** (Phase 1):
-   - Move `src/extensor/extensor.mojo` → `shared/core/types/`
-   - Move `src/extensor/shape.mojo` → `shared/core/types/`
-   - Update `shared/core/types/__init__.mojo` exports
+1. **Migrate Core Type** (Phase 1):
+   - Move `src/extensor/extensor.mojo` → `shared/core/extensor.mojo`
+   - Merge `src/extensor/shape.mojo` into `extensor.mojo` (or keep separate)
 
 2. **Migrate Operations** (Phase 2):
-   - Move all `src/extensor/*.mojo` → `shared/core/ops/`
-   - Update `shared/core/ops/__init__.mojo` exports
+   - Move `src/extensor/arithmetic.mojo` → `shared/core/arithmetic.mojo`
+   - Move `src/extensor/matrix.mojo` → `shared/core/matrix.mojo`
+   - Move `src/extensor/reduction.mojo` → `shared/core/reduction.mojo`
+   - Move `src/extensor/elementwise_math.mojo` → `shared/core/elementwise.mojo`
+   - Move `src/extensor/activations.mojo` → `shared/core/activation.mojo`
+   - Move `src/extensor/losses.mojo` → `shared/core/loss.mojo`
+   - Move `src/extensor/initializers.mojo` → `shared/core/initializers.mojo`
+   - Move `src/extensor/comparison.mojo` → `shared/core/comparison.mojo`
+   - Move `src/extensor/broadcasting.mojo` → `shared/core/broadcasting.mojo`
 
-3. **Create Layer Classes** (Phase 3):
-   - Implement `Linear`, `Conv2D`, `ReLU`, `Sigmoid`, `Tanh` in `shared/core/layers/`
-   - Update `shared/core/layers/__init__.mojo`
+3. **Create New Functional Operations** (Phase 3):
+   - Create `shared/core/linear.mojo` with `fn linear(x, w, b) -> ExTensor`
+   - Create `shared/core/conv.mojo` with `fn conv2d(x, kernel, ...) -> ExTensor` (stub for now)
+   - Create `shared/core/pooling.mojo` with `fn maxpool2d(x, ...)` and `fn avgpool2d(x, ...)`
 
-4. **Create Optimizer Classes** (Phase 4):
-   - Keep functional `sgd_step()` in `sgd.mojo`
-   - Add `SGD` class to same file
-   - Implement `Adam`, `AdamW`, `RMSprop` classes
-   - Update `shared/training/optimizers/__init__.mojo`
+4. **Update Optimizers to Functional** (Phase 4):
+   - Update `shared/training/optimizers/sgd.mojo` signature to return `(params, velocity)`
+   - Create `shared/training/optimizers/__init__.mojo` exporting `sgd_step`, `adam_step`, etc.
 
 5. **Fix Imports** (Phase 5):
-   - Replace `from tensor import Tensor` with `from shared.core.types import ExTensor` in:
+   - Replace `from tensor import Tensor` → `from shared.core.extensor import ExTensor`:
      - `shared/data/datasets.mojo`
      - `shared/data/transforms.mojo`
      - `shared/data/loaders.mojo`
      - `shared/data/generic_transforms.mojo`
+   - Update `from extensor import ExTensor` → `from shared.core.extensor import ExTensor`:
+     - `shared/training/loops/training_loop.mojo`
+     - `shared/training/loops/validation_loop.mojo`
 
-6. **Update Tests** (Phase 6):
-   - Uncomment test code in `tests/shared/core/test_layers.mojo`
-   - Uncomment test code in `tests/shared/training/test_optimizers.mojo`
-   - Update test imports to use `ExTensor`, layer classes, optimizer classes
+6. **Update Module Exports** (Phase 6):
+   - Create `shared/core/__init__.mojo` exporting all functions
+   - Create `shared/training/__init__.mojo` exporting optimizer functions
+   - Verify all imports work
 
 7. **Clean Up** (Phase 7):
-   - Delete `src/extensor/` directory
-   - Update `shared/core/__init__.mojo` to export everything
-   - Verify all imports work
+   - Delete `src/extensor/` directory entirely
+   - Update documentation to reflect pure functional architecture
+   - Tests will be updated later - keep them commented for now
 
 ## Success Criteria
 
 After completion:
 - [ ] `src/extensor/` deleted (all code moved to `shared/core/`)
 - [ ] No `Tensor` aliases anywhere (everything uses `ExTensor`)
-- [ ] Functional layer in `shared/core/ops/` (pure functions)
-- [ ] Class layer in `shared/core/layers/` and `shared/training/optimizers/`
-- [ ] All imports fixed (no broken `from tensor import Tensor`)
-- [ ] Layer classes implemented: `Linear`, `Conv2D`, `ReLU`, `Sigmoid`, `Tanh`
-- [ ] Optimizer classes implemented: `SGD`, `Adam`, `AdamW`, `RMSprop`
-- [ ] Test stubs can be uncommented and compile
-- [ ] Clear two-level hierarchy: functions → classes
+- [ ] All operations in `shared/core/` as pure functions
+- [ ] NO classes - everything is functional
+- [ ] All imports fixed (no broken `from tensor import Tensor` or `from extensor import`)
+- [ ] Functional operations created: `linear()`, `conv2d()`, `maxpool2d()`, `avgpool2d()`
+- [ ] Optimizers return new state: `fn sgd_step(...) -> (params, velocity)`
+- [ ] All code compiles
+- [ ] Pure functional architecture throughout
 
 ## Design Principles to Follow
 
-1. **Composability**: Functions work with any ExTensor dtype
-2. **Separation**: Functional (ops/) separate from classes (layers/, optimizers/)
-3. **No Duplication**: Classes delegate to functions, don't reimplement
-4. **State Management**: Only classes hold state (weights, momentum buffers)
-5. **Pure Functions**: Operations in ops/ are stateless and side-effect free
-
-## Reference
-
-See `notes/issues/1538/architecture-redesign-prompt.md` for detailed examples, code templates, and complete migration plan.
+1. **Pure Functions**: All operations are stateless, return new values
+2. **Composability**: Functions work with any ExTensor dtype
+3. **Caller Manages State**: Functions don't hold weights, momentum, etc.
+4. **Explicit Data Flow**: All state passed in, all changes returned
+5. **No Side Effects**: Functions don't mutate inputs (except where explicitly documented)
 
 ## Focus
 
-**Only work in `shared/` directory** - migrate from `src/extensor/` and implement missing classes. Do NOT modify test files until the shared library is complete.
+**Only work in `shared/` directory** - migrate from `src/extensor/` and implement missing functional operations. Do NOT modify test files until the shared library is complete - tests will be updated later to use functional API.

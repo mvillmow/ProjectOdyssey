@@ -26,7 +26,7 @@ Example:
     >>> var result = pipeline(data)
 """
 
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 from shared.data.transforms import Transform
 
 
@@ -50,7 +50,7 @@ struct IdentityTransform(Transform):
         >>> var result = identity(data)  # result == data
     """
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply identity transform (passthrough).
 
         Args:
@@ -96,7 +96,7 @@ struct LambdaTransform(Transform):
         """
         self.func = func
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply function to each element.
 
         Args:
@@ -112,7 +112,7 @@ struct LambdaTransform(Transform):
             var transformed = self.func(value)
             result_values.append(transformed)
 
-        return Tensor(result_values^)
+        return ExTensor(result_values^)
 
 
 # ============================================================================
@@ -131,19 +131,19 @@ struct ConditionalTransform(Transform):
     Space Complexity: O(n) if transform applied, O(1) otherwise.
 
     Example:
-        >>> fn is_large(tensor: Tensor) -> Bool:
+        >>> fn is_large(tensor: ExTensor) -> Bool:
         ...     return tensor.num_elements() > 100
         >>>
         >>> var transform = ConditionalTransform(is_large, augment)
         >>> var result = transform(data)  # Only augments large tensors
     """
 
-    var predicate: fn (Tensor) -> Bool
+    var predicate: fn (ExTensor) -> Bool
     var transform: Transform
 
     fn __init__(
         out self,
-        predicate: fn (Tensor) -> Bool,
+        predicate: fn (ExTensor) -> Bool,
         owned transform: Transform,
     ):
         """Create conditional transform.
@@ -155,7 +155,7 @@ struct ConditionalTransform(Transform):
         self.predicate = predicate
         self.transform = transform^
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply transform if predicate is true.
 
         Args:
@@ -209,14 +209,14 @@ struct ClampTransform(Transform):
         self.min_val = min_val
         self.max_val = max_val
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Clamp all values to [min_val, max_val].
 
         Args:
             data: Input tensor.
 
         Returns:
-            Tensor with all values clamped to range.
+            ExTensor with all values clamped to range.
         """
         var result_values = List[Float32](capacity=data.num_elements())
 
@@ -231,7 +231,7 @@ struct ClampTransform(Transform):
             else:
                 result_values.append(value)
 
-        return Tensor(result_values^)
+        return ExTensor(result_values^)
 
 
 # ============================================================================
@@ -265,7 +265,7 @@ struct DebugTransform(Transform):
         """
         self.name = name
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Print tensor info and return unchanged.
 
         Args:
@@ -334,14 +334,14 @@ struct SequentialTransform(Transform):
         """
         self.transforms = transforms^
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
 
         Args:
             data: Input tensor.
 
         Returns:
-            Tensor after all transforms applied.
+            ExTensor after all transforms applied.
         """
         var result = data
 
@@ -368,7 +368,7 @@ struct BatchTransform:
     Space Complexity: O(b * n) for output batch.
 
     Example:
-        >>> var batch = List[Tensor]()
+        >>> var batch = List[ExTensor]()
         >>> # ... fill batch ...
         >>>
         >>> var transform = BatchTransform(normalize)
@@ -385,7 +385,7 @@ struct BatchTransform:
         """
         self.transform = transform^
 
-    fn __call__(self, batch: List[Tensor]) raises -> List[Tensor]:
+    fn __call__(self, batch: List[ExTensor]) raises -> List[ExTensor]:
         """Apply transform to each tensor in batch.
 
         Args:
@@ -394,7 +394,7 @@ struct BatchTransform:
         Returns:
             List of transformed tensors (same order as input).
         """
-        var results = List[Tensor](capacity=len(batch))
+        var results = List[ExTensor](capacity=len(batch))
 
         for i in range(len(batch)):
             var transformed = self.transform(batch[i])
@@ -423,23 +423,23 @@ struct ToFloat32(Transform):
         >>> var result = converter(int_tensor)
     """
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Float32.
 
         Args:
             data: Input tensor.
 
         Returns:
-            Tensor with all values as Float32.
+            ExTensor with all values as Float32.
         """
-        # Tensor is already Float32 in current implementation
+        # ExTensor is already Float32 in current implementation
         # Just create a copy with Float32 values
         var result_values = List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
             result_values.append(Float32(data[i]))
 
-        return Tensor(result_values^)
+        return ExTensor(result_values^)
 
 
 @value
@@ -458,14 +458,14 @@ struct ToInt32(Transform):
         >>> var result = converter(float_tensor)  # Truncates decimals
     """
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Int32 (truncate).
 
         Args:
             data: Input tensor.
 
         Returns:
-            Tensor with all values truncated to Int32.
+            ExTensor with all values truncated to Int32.
 
         Note:
             Truncates toward zero: 2.9 -> 2, -2.9 -> -2.
@@ -478,7 +478,7 @@ struct ToInt32(Transform):
             var int_value = int(value)
             result_values.append(Float32(int_value))
 
-        return Tensor(result_values^)
+        return ExTensor(result_values^)
 
 
 # ============================================================================
@@ -487,8 +487,8 @@ struct ToInt32(Transform):
 
 
 fn apply_to_tensor(
-    data: Tensor, func: fn (Float32) -> Float32
-) raises -> Tensor:
+    data: ExTensor, func: fn (Float32) -> Float32
+) raises -> ExTensor:
     """Apply function element-wise to tensor.
 
     Helper function for creating ad-hoc transforms without

@@ -4,7 +4,7 @@ This module provides the core dataset abstractions and common implementations
 for loading and accessing data in ML workflows.
 """
 
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 from utils.index import Index
 
 
@@ -28,7 +28,7 @@ trait Dataset:
         """
         ...
 
-    fn __getitem__(self, index: Int) raises -> Tuple[Tensor, Tensor]:
+    fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get a sample from the dataset.
 
         Args:
@@ -44,23 +44,23 @@ trait Dataset:
 
 
 # ============================================================================
-# TensorDataset Implementation
+# ExTensorDataset Implementation
 # ============================================================================
 
 
 @value
-struct TensorDataset(Dataset):
+struct ExTensorDataset(Dataset):
     """Dataset wrapping tensors for in-memory data.
 
     Stores data and labels as tensors and provides indexed access.
     Suitable for small to medium datasets that fit in memory.
     """
 
-    var data: Tensor
-    var labels: Tensor
+    var data: ExTensor
+    var labels: ExTensor
     var _len: Int
 
-    fn __init__(out self, owned data: Tensor, owned labels: Tensor) raises:
+    fn __init__(out self, owned data: ExTensor, owned labels: ExTensor) raises:
         """Create dataset from tensors.
 
         Args:
@@ -81,7 +81,7 @@ struct TensorDataset(Dataset):
         """Return number of samples."""
         return self._len
 
-    fn __getitem__(self, index: Int) raises -> Tuple[Tensor, Tensor]:
+    fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get sample at index.
 
         Args:
@@ -126,7 +126,7 @@ struct FileDataset(Dataset):
     var labels: List[Int]
     var _len: Int
     var cache_enabled: Bool
-    var _cache: Dict[Int, Tuple[Tensor, Tensor]]
+    var _cache: Dict[Int, Tuple[ExTensor, ExTensor]]
 
     fn __init__(
         out self,
@@ -151,13 +151,13 @@ struct FileDataset(Dataset):
         self.labels = labels^
         self._len = len(self.file_paths)
         self.cache_enabled = cache
-        self._cache = Dict[Int, Tuple[Tensor, Tensor]]()
+        self._cache = Dict[Int, Tuple[ExTensor, ExTensor]]()
 
     fn __len__(self) -> Int:
         """Return number of samples."""
         return self._len
 
-    fn __getitem__(self, index: Int) raises -> Tuple[Tensor, Tensor]:
+    fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Load and return sample at index.
 
         Args:
@@ -188,7 +188,7 @@ struct FileDataset(Dataset):
 
         # Load data from file
         var data = self._load_file(self.file_paths[idx])
-        var label = Tensor([self.labels[idx]])
+        var label = ExTensor([self.labels[idx]])
 
         var result = (data, label)
 
@@ -198,7 +198,7 @@ struct FileDataset(Dataset):
 
         return result
 
-    fn _load_file(self, path: String) raises -> Tensor:
+    fn _load_file(self, path: String) raises -> ExTensor:
         """Load data from file.
 
         This is a placeholder implementation that creates a dummy tensor.
@@ -223,7 +223,7 @@ struct FileDataset(Dataset):
         # For numpy files (.npy, .npz):
         #   - Parse numpy binary format
         #   - Extract array data and metadata
-        #   - Convert to Mojo Tensor
+        #   - Convert to Mojo ExTensor
         #
         # For CSV files (.csv):
         #   - Parse CSV rows and columns
@@ -239,4 +239,4 @@ struct FileDataset(Dataset):
         var dummy_data = List[Float32]()
         dummy_data.append(Float32(0.0))
 
-        return Tensor(dummy_data^)
+        return ExTensor(dummy_data^)

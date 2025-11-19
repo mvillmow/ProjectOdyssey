@@ -14,55 +14,62 @@ With weight decay (L2 regularization):
     params = params - learning_rate * (gradients + weight_decay * params)
 """
 
-from extensor import ExTensor, subtract, multiply, add, full_like
+from shared.core.extensor import ExTensor
+from shared.core.arithmetic import subtract, multiply, add
+from shared.core.extensor import full_like
 
 
 fn sgd_step(
     params: ExTensor,
     gradients: ExTensor,
+    velocity: ExTensor,
     learning_rate: Float64,
     momentum: Float64 = 0.0,
-    weight_decay: Float64 = 0.0,
-    velocity: ExTensor = ExTensor()
-) raises -> ExTensor:
-    """Perform a single SGD optimization step.
+    weight_decay: Float64 = 0.0
+) raises -> (ExTensor, ExTensor):
+    """Perform a single SGD optimization step - pure functional.
 
-    Updates parameters using stochastic gradient descent with optional
-    momentum and weight decay.
+    Returns new parameters and new velocity. Caller manages all state.
 
     Args:
         params: Model parameters to update
         gradients: Gradients of loss with respect to params
+        velocity: Momentum buffer (use zeros_like(params) if no momentum)
         learning_rate: Step size for parameter updates
         momentum: Momentum factor (default: 0.0, no momentum)
         weight_decay: L2 regularization factor (default: 0.0, no regularization)
-        velocity: Momentum buffer (required if momentum > 0)
 
     Returns:
-        Updated parameters
+        Tuple of (new_params, new_velocity)
 
-    Example (basic SGD):
-        var W = xavier_uniform(784, 128, shape, DType.float32)
-        var grad_W = ... # Computed via backpropagation
-        W = sgd_step(W, grad_W, learning_rate=0.01)
+    Example (basic SGD without momentum):
+        ```mojo
+        from shared.core import ExTensor, zeros_like
+        from shared.training.optimizers import sgd_step
+
+        var W = xavier_uniform(784, 128, DType.float32)
+        var W_vel = zeros_like(W)  # Not used, but required
+        var grad_W = ...  # Computed via backpropagation
+
+        # Returns new state
+        (W, W_vel) = sgd_step(W, grad_W, W_vel, learning_rate=0.01)
+        ```
 
     Example (SGD with momentum):
-        # Initialize velocity buffer
-        var velocity = zeros_like(W)
+        ```mojo
+        var W = xavier_uniform(784, 128, DType.float32)
+        var W_vel = zeros_like(W)
 
         # Training loop
         for epoch in range(100):
-            var grad_W = ... # Compute gradients
-            W = sgd_step(W, grad_W, learning_rate=0.01, momentum=0.9, velocity=velocity)
-
-    Example (SGD with weight decay):
-        var W = ... # Parameters
-        var grad_W = ... # Gradients
-        W = sgd_step(W, grad_W, learning_rate=0.01, weight_decay=0.0001)
+            var grad_W = ...  # Compute gradients
+            # Returns updated params AND updated velocity
+            (W, W_vel) = sgd_step(W, grad_W, W_vel, lr=0.01, momentum=0.9)
+        ```
 
     Note:
-        This is a simplified implementation. For production use with momentum,
-        consider creating a struct to manage optimizer state.
+        This is a pure function - it returns new state rather than mutating.
+        Caller must capture both return values and update their variables.
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -79,15 +86,17 @@ fn sgd_step(
         var decay_term = multiply(wd_tensor, params)
         effective_gradients = add(gradients, decay_term)
 
+    var new_velocity = velocity  # Default: no change to velocity
+
     # Apply momentum if specified
     if momentum > 0.0:
         if velocity.numel() == 0:
-            raise Error("Velocity buffer required when using momentum")
+            raise Error("Velocity buffer required when using momentum (use zeros_like(params))")
 
         # velocity = momentum * velocity + gradients
         var momentum_tensor = full_like(velocity, momentum)
         var scaled_velocity = multiply(momentum_tensor, velocity)
-        var new_velocity = add(scaled_velocity, effective_gradients)
+        new_velocity = add(scaled_velocity, effective_gradients)
 
         # Use velocity for update
         effective_gradients = new_velocity
@@ -95,8 +104,10 @@ fn sgd_step(
     # Standard SGD update: params = params - lr * gradients
     var lr_tensor = full_like(params, learning_rate)
     var update = multiply(lr_tensor, effective_gradients)
+    var new_params = subtract(params, update)
 
-    return subtract(params, update)
+    # Return both new params and new velocity (pure functional)
+    return (new_params, new_velocity)
 
 
 fn sgd_step_simple(

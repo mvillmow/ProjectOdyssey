@@ -5,14 +5,14 @@ This module provides transformations for preprocessing and augmenting data.
 IMPORTANT LIMITATIONS:
 - Image transforms assume square images (H = W)
 - Default assumption: 3 channels (RGB)
-- Tensor layout: Flattened (H, W, C) with channels-last
+- ExTensor layout: Flattened (H, W, C) with channels-last
 - For non-square or grayscale images, dimensions must be manually validated
 
-These limitations are due to Mojo's current Tensor API not exposing shape metadata.
+These limitations are due to Mojo's current ExTensor API not exposing shape metadata.
 Future versions may support arbitrary image dimensions.
 """
 
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 from math import sqrt, floor, ceil, sin, cos
 from random import random_si64
 
@@ -33,7 +33,7 @@ fn random_float() -> Float64:
     return float(random_si64(0, 1000000000)) / 1000000000.0
 
 
-fn infer_image_dimensions(data: Tensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
+fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
     """Infer image dimensions from flattened tensor.
 
     Assumes square images: H = W = sqrt(num_elements / channels).
@@ -54,7 +54,7 @@ fn infer_image_dimensions(data: Tensor, channels: Int = 3) raises -> Tuple[Int, 
 
     # Validate it's actually a square image
     if size * size * channels != total_elements:
-        raise Error("Tensor size doesn't match square image assumption")
+        raise Error("ExTensor size doesn't match square image assumption")
 
     return (size, size, channels)
 
@@ -70,7 +70,7 @@ trait Transform:
     Transforms modify data in-place or return transformed copies.
     """
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the transform to data.
 
         Args:
@@ -107,7 +107,7 @@ struct Compose(Transform):
         """
         self.transforms = transforms^
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
 
         Args:
@@ -142,18 +142,18 @@ alias Pipeline = Compose
 
 
 # ============================================================================
-# Tensor Transforms
+# ExTensor Transforms
 # ============================================================================
 
 
 @value
-struct ToTensor(Transform):
+struct ToExTensor(Transform):
     """Convert data to tensor format.
 
     Ensures data is in tensor format with appropriate dtype.
     """
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to tensor.
 
         Args:
@@ -189,7 +189,7 @@ struct Normalize(Transform):
         self.mean = mean
         self.std = std
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Normalize tensor by subtracting mean and dividing by std.
 
         Applies the formula: (data - mean) / std to all elements.
@@ -216,7 +216,7 @@ struct Normalize(Transform):
             normalized.append(Float32(norm_value))
 
         # Create tensor from normalized values
-        return Tensor(normalized^)
+        return ExTensor(normalized^)
 
 
 @value
@@ -236,7 +236,7 @@ struct Reshape(Transform):
         """
         self.target_shape = target_shape^
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Reshape tensor to target shape.
 
         Validates that the total number of elements remains the same.
@@ -271,8 +271,8 @@ struct Reshape(Transform):
             values.append(Float32(data[i]))
 
         # TODO: Properly set shape metadata on returned tensor
-        # For now, return flattened tensor (Mojo's Tensor API limitation)
-        return Tensor(values^)
+        # For now, return flattened tensor (Mojo's ExTensor API limitation)
+        return ExTensor(values^)
 
 
 # ============================================================================
@@ -302,7 +302,7 @@ struct Resize(Transform):
         self.size = size
         self.interpolation = interpolation
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Resize image tensor using nearest-neighbor sampling.
 
         This is a simplified implementation for 1D tensors.
@@ -336,7 +336,7 @@ struct Resize(Transform):
         # 1. Understanding tensor layout (H, W, C) vs (C, H, W)
         # 2. Bilinear or bicubic interpolation for quality
         # 3. Handling edge cases and aspect ratio
-        return Tensor(resized^)
+        return ExTensor(resized^)
 
 
 @value
@@ -356,7 +356,7 @@ struct CenterCrop(Transform):
         """
         self.size = size
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Center crop image to target size.
 
         Extracts a center rectangle from a 2D image tensor.
@@ -399,7 +399,7 @@ struct CenterCrop(Transform):
                     var src_idx = ((offset_h + h) * width + (offset_w + w)) * channels + c
                     cropped.append(Float32(data[src_idx]))
 
-        return Tensor(cropped^)
+        return ExTensor(cropped^)
 
 
 @value
@@ -422,7 +422,7 @@ struct RandomCrop(Transform):
         self.size = size
         self.padding = padding
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Random crop image to target size.
 
         Extracts a random rectangle from a 2D image tensor.
@@ -495,7 +495,7 @@ struct RandomCrop(Transform):
                         # Out of bounds (in padding region), fill with 0
                         cropped.append(Float32(0.0))
 
-        return Tensor(cropped^)
+        return ExTensor(cropped^)
 
 
 @value
@@ -515,7 +515,7 @@ struct RandomHorizontalFlip(Transform):
         """
         self.p = p
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image horizontally with probability p.
 
         Flips the image along the width dimension (reverses each row).
@@ -559,7 +559,7 @@ struct RandomHorizontalFlip(Transform):
                     var src_idx = (h * width + w_orig) * channels + c
                     flipped.append(Float32(data[src_idx]))
 
-        return Tensor(flipped^)
+        return ExTensor(flipped^)
 
 
 @value
@@ -579,7 +579,7 @@ struct RandomVerticalFlip(Transform):
         """
         self.p = p
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image vertically with probability p.
 
         Flips the image along the height dimension (reverses rows).
@@ -623,7 +623,7 @@ struct RandomVerticalFlip(Transform):
                     var src_idx = (h_orig * width + w) * channels + c
                     flipped.append(Float32(data[src_idx]))
 
-        return Tensor(flipped^)
+        return ExTensor(flipped^)
 
 
 @value
@@ -648,7 +648,7 @@ struct RandomRotation(Transform):
         self.degrees = degrees
         self.fill_value = fill_value
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly rotate image within specified degree range.
 
         Performs rotation around image center using nearest-neighbor sampling.
@@ -722,7 +722,7 @@ struct RandomRotation(Transform):
                         # Fill with fill_value for out-of-bounds pixels
                         rotated.append(Float32(self.fill_value))
 
-        return Tensor(rotated^)
+        return ExTensor(rotated^)
 
 
 @value
@@ -760,7 +760,7 @@ struct RandomErasing(Transform):
         self.ratio = ratio
         self.value = value
 
-    fn __call__(self, data: Tensor) raises -> Tensor:
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply random erasing with probability p.
 
         Randomly erases a rectangular region from the image by:
@@ -850,4 +850,4 @@ struct RandomErasing(Transform):
                     var index = (row * image_size + col) * channels + c
                     result[index] = Float32(self.value)
 
-        return Tensor(result^)
+        return ExTensor(result^)

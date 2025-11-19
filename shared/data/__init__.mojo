@@ -10,16 +10,16 @@ Modules:
     samplers: Sampling strategies for data iteration
 
 Example:
-    from shared.data import TensorDataset, BatchLoader, Normalize, ToTensor, Compose
+    from shared.data import ExTensorDataset, BatchLoader, Normalize, ToExTensor, Compose
 
     # Create transforms pipeline
     transform = Compose([
-        ToTensor(),
+        ToExTensor(),
         Normalize(mean=0.5, std=0.5),
     ])
 
     # Create dataset and loader
-    dataset = TensorDataset(data, labels)
+    dataset = ExTensorDataset(data, labels)
     loader = BatchLoader(dataset, batch_size=32, shuffle=True)
 
     # Iterate over batches
@@ -39,7 +39,7 @@ alias VERSION = "0.1.0"
 # Dataset abstractions and implementations
 from .datasets import (
     Dataset,  # Base trait
-    TensorDataset,  # In-memory tensor dataset
+    ExTensorDataset,  # In-memory tensor dataset
     FileDataset,  # File-based dataset
 )
 
@@ -62,7 +62,7 @@ from .samplers import (
 from .transforms import (
     Transform,  # Base transform trait
     Compose,  # Compose multiple transforms
-    ToTensor,  # Convert to tensor
+    ToExTensor,  # Convert to tensor
     Normalize,  # Normalize data
     Reshape,  # Reshape tensor
     Resize,  # Resize images
@@ -79,7 +79,7 @@ from .transforms import (
 __all__ = [
     # Datasets
     "Dataset",
-    "TensorDataset",
+    "ExTensorDataset",
     "FileDataset",
     # Loaders
     "Batch",
@@ -93,7 +93,7 @@ __all__ = [
     # Transforms
     "Transform",
     "Compose",
-    "ToTensor",
+    "ToExTensor",
     "Normalize",
     "Reshape",
     "Resize",
