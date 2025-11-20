@@ -24,6 +24,7 @@ from sys import DType
 # ============================================================================
 
 
+@always_inline
 fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Absolute value operation."""
     @parameter
@@ -49,6 +50,7 @@ fn abs(tensor: ExTensor) raises -> ExTensor:
     return dispatch_unary[_abs_op](tensor)
 
 
+@always_inline
 fn _sign_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Sign operation: -1, 0, or 1."""
     if x > Scalar[T](0):
@@ -75,6 +77,7 @@ fn sign(tensor: ExTensor) raises -> ExTensor:
     return dispatch_unary[_sign_op](tensor)
 
 
+@always_inline
 fn _exp_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Exponential operation."""
     @parameter
@@ -100,6 +103,7 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_exp_op](tensor)
 
 
+@always_inline
 fn _log_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Natural logarithm operation."""
     @parameter
@@ -128,6 +132,7 @@ fn log(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_log_op](tensor)
 
 
+@always_inline
 fn _sqrt_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Square root operation."""
     @parameter
@@ -156,6 +161,7 @@ fn sqrt(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_sqrt_op](tensor)
 
 
+@always_inline
 fn _sin_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Sine operation."""
     @parameter
@@ -181,6 +187,7 @@ fn sin(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_sin_op](tensor)
 
 
+@always_inline
 fn _cos_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Cosine operation."""
     @parameter
@@ -206,6 +213,7 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_cos_op](tensor)
 
 
+@always_inline
 fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Hyperbolic tangent operation."""
     @parameter
@@ -271,6 +279,7 @@ fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor
 # ============================================================================
 
 
+@always_inline
 fn _ceil_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Ceiling operation."""
     @parameter
@@ -296,6 +305,7 @@ fn ceil(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_ceil_op](tensor)
 
 
+@always_inline
 fn _floor_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Floor operation."""
     @parameter
@@ -321,6 +331,7 @@ fn floor(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_floor_op](tensor)
 
 
+@always_inline
 fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Round operation."""
     @parameter
@@ -346,6 +357,7 @@ fn round(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_round_op](tensor)
 
 
+@always_inline
 fn _trunc_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Truncate operation."""
     @parameter

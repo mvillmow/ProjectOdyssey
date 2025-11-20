@@ -32,6 +32,7 @@ from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unar
 # ============================================================================
 
 
+@always_inline
 fn _relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """ReLU operation: max(0, x)."""
     return max(Scalar[T](0), x)
@@ -184,6 +185,7 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
+@always_inline
 fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Sigmoid operation with numerical stability: 1 / (1 + exp(-x))."""
     # Numerically stable sigmoid with clipping
@@ -224,6 +226,7 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     return dispatch_float_unary[_sigmoid_op](tensor)
 
 
+@always_inline
 fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Tanh operation for float dtypes."""
     @parameter
@@ -470,6 +473,7 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
 # ============================================================================
 
 
+@always_inline
 fn _relu_backward_op[T: DType](grad: Scalar[T], x: Scalar[T]) -> Scalar[T]:
     """ReLU backward: grad * (x > 0)."""
     return grad if x > Scalar[T](0) else Scalar[T](0)
@@ -501,6 +505,7 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     return dispatch_binary[_relu_backward_op](grad_output, x)
 
 
+@always_inline
 fn _leaky_relu_backward_impl[dtype: DType](
     result: ExTensor, grad_output: ExTensor, x: ExTensor, alpha: Float64
 ) raises:
@@ -552,6 +557,7 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
     return result
 
 
+@always_inline
 fn _prelu_backward_impl[dtype: DType](
     grad_input: ExTensor,
     grad_alpha: ExTensor,
@@ -626,6 +632,7 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
     return (grad_input, grad_alpha)
 
 
+@always_inline
 fn _sigmoid_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     """Sigmoid backward: grad * y * (1 - y)."""
     return grad * y * (Scalar[T](1.0) - y)
@@ -655,6 +662,7 @@ fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     return dispatch_float_binary[_sigmoid_backward_op](grad_output, output)
 
 
+@always_inline
 fn _tanh_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     """Tanh backward: grad * (1 - y²)."""
     return grad * (Scalar[T](1.0) - y * y)

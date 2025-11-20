@@ -28,6 +28,7 @@ from .extensor import ExTensor
 # ============================================================================
 
 
+@always_inline
 fn _fill_uniform_scaled[dtype: DType](result: ExTensor, scale: Float64, offset: Float64) raises:
     """Fill tensor with scaled uniform random values: offset + random() * scale.
 
@@ -45,6 +46,7 @@ fn _fill_uniform_scaled[dtype: DType](result: ExTensor, scale: Float64, offset: 
         ptr[i] = Scalar[dtype](offset + rand_val * scale)
 
 
+@always_inline
 fn _fill_normal_boxmuller[dtype: DType](result: ExTensor, mean: Float64, std: Float64) raises:
     """Fill tensor with normal random values using Box-Muller transform.
 
@@ -81,6 +83,7 @@ fn _fill_normal_boxmuller[dtype: DType](result: ExTensor, mean: Float64, std: Fl
             i += 1
 
 
+@always_inline
 fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
     """Fill tensor with constant value.
 
