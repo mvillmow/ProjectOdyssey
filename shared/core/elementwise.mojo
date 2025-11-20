@@ -4,6 +4,7 @@ Implements mathematical functions like exp, log, sqrt, trigonometric functions, 
 """
 
 from .extensor import ExTensor
+from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary
 from math import sqrt as math_sqrt
 from math import exp as math_exp
 from math import log as math_log
@@ -16,6 +17,20 @@ from math import floor as math_floor
 from math import round as math_round
 from math import trunc as math_trunc
 from sys import DType
+
+
+# ============================================================================
+# Unary Operations (Element-wise)
+# ============================================================================
+
+
+fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Absolute value operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_abs(Float32(x)))
+    else:
+        return Scalar[T](math_abs(Float64(x)))
 
 
 fn abs(tensor: ExTensor) raises -> ExTensor:
@@ -31,14 +46,17 @@ fn abs(tensor: ExTensor) raises -> ExTensor:
         var a = full(shape, -3.0, DType.float32)
         var b = abs(a)  # All values become 3.0
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_unary[_abs_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_abs(val))
 
-    return result^
+fn _sign_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Sign operation: -1, 0, or 1."""
+    if x > Scalar[T](0):
+        return Scalar[T](1)
+    elif x < Scalar[T](0):
+        return Scalar[T](-1)
+    else:
+        return Scalar[T](0)
 
 
 fn sign(tensor: ExTensor) raises -> ExTensor:
@@ -54,21 +72,16 @@ fn sign(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([-2.0, 0.0, 3.0])
         var b = sign(a)  # [-1.0, 0.0, 1.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_unary[_sign_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        var sign_val: Float64
-        if val > 0.0:
-            sign_val = 1.0
-        elif val < 0.0:
-            sign_val = -1.0
-        else:
-            sign_val = 0.0
-        result._set_float64(i, sign_val)
 
-    return result^
+fn _exp_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Exponential operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_exp(Float32(x)))
+    else:
+        return Scalar[T](math_exp(Float64(x)))
 
 
 fn exp(tensor: ExTensor) raises -> ExTensor:
@@ -84,14 +97,16 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
         var a = zeros(shape, DType.float32)
         var b = exp(a)  # All values become 1.0 (e^0)
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_exp_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_exp(val))
 
-    return result^
+fn _log_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Natural logarithm operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_log(Float32(x)))
+    else:
+        return Scalar[T](math_log(Float64(x)))
 
 
 fn log(tensor: ExTensor) raises -> ExTensor:
@@ -110,16 +125,16 @@ fn log(tensor: ExTensor) raises -> ExTensor:
         var a = ones(shape, DType.float32)
         var b = log(a)  # All values become 0.0 (ln(1))
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_log_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        if val <= 0.0:
-            raise Error("log requires positive values, got " + str(val))
-        result._set_float64(i, math_log(val))
 
-    return result^
+fn _sqrt_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Square root operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_sqrt(Float32(x)))
+    else:
+        return Scalar[T](math_sqrt(Float64(x)))
 
 
 fn sqrt(tensor: ExTensor) raises -> ExTensor:
@@ -138,16 +153,16 @@ fn sqrt(tensor: ExTensor) raises -> ExTensor:
         var a = full(shape, 4.0, DType.float32)
         var b = sqrt(a)  # All values become 2.0
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_sqrt_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        if val < 0.0:
-            raise Error("sqrt requires non-negative values, got " + str(val))
-        result._set_float64(i, math_sqrt(val))
 
-    return result^
+fn _sin_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Sine operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_sin(Float32(x)))
+    else:
+        return Scalar[T](math_sin(Float64(x)))
 
 
 fn sin(tensor: ExTensor) raises -> ExTensor:
@@ -163,14 +178,16 @@ fn sin(tensor: ExTensor) raises -> ExTensor:
         var a = zeros(shape, DType.float32)
         var b = sin(a)  # All values become 0.0 (sin(0))
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_sin_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_sin(val))
 
-    return result^
+fn _cos_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Cosine operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_cos(Float32(x)))
+    else:
+        return Scalar[T](math_cos(Float64(x)))
 
 
 fn cos(tensor: ExTensor) raises -> ExTensor:
@@ -186,14 +203,16 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
         var a = zeros(shape, DType.float32)
         var b = cos(a)  # All values become 1.0 (cos(0))
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_cos_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_cos(val))
 
-    return result^
+fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Hyperbolic tangent operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_tanh(Float32(x)))
+    else:
+        return Scalar[T](math_tanh(Float64(x)))
 
 
 fn tanh(tensor: ExTensor) raises -> ExTensor:
@@ -209,14 +228,7 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
         var a = zeros(shape, DType.float32)
         var b = tanh(a)  # All values become 0.0 (tanh(0))
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
-
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_tanh(val))
-
-    return result^
+    return dispatch_float_unary[_tanh_op](tensor)
 
 
 fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor:
@@ -258,6 +270,16 @@ fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor
 # Rounding operations
 # ============================================================================
 
+
+fn _ceil_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Ceiling operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_ceil(Float32(x)))
+    else:
+        return Scalar[T](math_ceil(Float64(x)))
+
+
 fn ceil(tensor: ExTensor) raises -> ExTensor:
     """Ceiling function element-wise (round up to nearest integer).
 
@@ -271,14 +293,16 @@ fn ceil(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.2, 2.5, 3.9])
         var b = ceil(a)  # [2.0, 3.0, 4.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_ceil_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_ceil(val))
 
-    return result^
+fn _floor_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Floor operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_floor(Float32(x)))
+    else:
+        return Scalar[T](math_floor(Float64(x)))
 
 
 fn floor(tensor: ExTensor) raises -> ExTensor:
@@ -294,14 +318,16 @@ fn floor(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.2, 2.5, 3.9])
         var b = floor(a)  # [1.0, 2.0, 3.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_floor_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_floor(val))
 
-    return result^
+fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Round operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_round(Float32(x)))
+    else:
+        return Scalar[T](math_round(Float64(x)))
 
 
 fn round(tensor: ExTensor) raises -> ExTensor:
@@ -317,14 +343,16 @@ fn round(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.2, 2.5, 3.9])
         var b = round(a)  # [1.0, 2.0, 4.0] (or [1.0, 3.0, 4.0] depending on rounding mode)
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    return dispatch_float_unary[_round_op](tensor)
 
-    let numel = tensor.numel()
-    for i in range(numel):
-        let val = tensor._get_float64(i)
-        result._set_float64(i, math_round(val))
 
-    return result^
+fn _trunc_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Truncate operation."""
+    @parameter
+    if T == DType.float16 or T == DType.float32:
+        return Scalar[T](math_trunc(Float32(x)))
+    else:
+        return Scalar[T](math_trunc(Float64(x)))
 
 
 fn trunc(tensor: ExTensor) raises -> ExTensor:
