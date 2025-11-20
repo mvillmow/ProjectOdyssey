@@ -17,9 +17,6 @@ agents/templates/.*
 # Specific placeholder URLs in templates
 https://github.com/org/repo/issues/XX
 
-# Ignore Modular CDN (unreachable in CI environment)
-https://downloads\.modular\.com/
-
 # Add additional patterns below as needed
 # Examples:
 # localhost

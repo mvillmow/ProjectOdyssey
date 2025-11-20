@@ -163,7 +163,7 @@ def construct_download_url(
 
     Examples:
         >>> construct_download_url('linux', 'x86_64', '0.25.1')
-        'https://downloads.modular.com/mojo/0.25.1/mojo-linux-x86_64.tar.gz'
+        'https://docs.modular.com/max/get-started/mojo/0.25.1/mojo-linux-x86_64.tar.gz'
     """
 ```text
 
@@ -478,7 +478,7 @@ pytest tests/test_mojo_downloader.py -v --cov=scripts.mojo_downloader
   - #855-859 [Detect Platform] - provides platform information
 - **Python Coding Standards**: `/CLAUDE.md#python-coding-standards`
 - **5-Phase Workflow**: `/notes/review/README.md`
-- **Modular Downloads**: https://downloads.modular.com/
+- **Modular Get Started**: https://docs.modular.com/max/get-started/
 - **Magic Package Manager**: https://docs.modular.com/magic/
 
 ## Implementation Notes
