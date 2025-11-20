@@ -24,6 +24,7 @@ Modules:
     broadcasting: Broadcasting utilities
     initializers: Weight initialization functions
     loss: Loss functions
+    numerical_safety: NaN/Inf detection, gradient monitoring, numerical stability checks
 
 Example:
     from shared.core.extensor import ExTensor, zeros
@@ -241,6 +242,21 @@ from .loss import (
     cross_entropy_backward,
 )
 
+from .numerical_safety import (
+    has_nan,
+    has_inf,
+    count_nan,
+    count_inf,
+    check_tensor_safety,
+    tensor_min,
+    tensor_max,
+    check_tensor_range,
+    compute_tensor_l2_norm,
+    check_gradient_norm,
+    check_gradient_vanishing,
+    check_gradient_safety,
+)
+
 # ============================================================================
 # Public API
 # ============================================================================
@@ -372,4 +388,17 @@ __all__ = [
     "binary_cross_entropy_backward",
     "mean_squared_error_backward",
     "cross_entropy_backward",
+    # Numerical safety
+    "has_nan",
+    "has_inf",
+    "count_nan",
+    "count_inf",
+    "check_tensor_safety",
+    "tensor_min",
+    "tensor_max",
+    "check_tensor_range",
+    "compute_tensor_l2_norm",
+    "check_gradient_norm",
+    "check_gradient_vanishing",
+    "check_gradient_safety",
 ]
