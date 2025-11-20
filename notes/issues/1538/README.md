@@ -106,14 +106,31 @@ Work Completed:
    - `test_sgd_momentum_accumulation()` - Tests momentum over multiple steps using `sgd_step()`
    - `test_sgd_weight_decay()` - Tests L2 regularization using `sgd_step()`
 
-3. **Marked Non-Applicable Tests** (2 tests deferred):
+3. **Implemented Linear Layer Tests** (3 tests adapted to functional API):
+   - `test_linear_initialization()` - Verifies weight/bias parameter creation with correct shapes
+   - `test_linear_forward()` - Tests forward pass: `output = x @ weights.T + bias`
+   - `test_linear_no_bias()` - Tests forward pass without bias: `output = x @ weights.T`
+
+4. **Implemented Activation Function Tests** (3 tests adapted to functional API):
+   - `test_relu_activation()` - Tests ReLU zeros negatives, preserves positives
+   - `test_sigmoid_range()` - Tests sigmoid outputs in (0, 1), sigmoid(0) = 0.5
+   - `test_tanh_range()` - Tests tanh outputs in (-1, 1), tanh(0) = 0.0
+
+5. **Marked Non-Applicable Tests** (4 tests deferred/not applicable):
    - `test_sgd_nesterov_momentum()` - Deferred (requires gradient at lookahead position)
    - `test_sgd_zero_grad()` - Not applicable (no internal state in functional design)
+   - `test_linear_backward()` - Deferred (backward pass not yet implemented)
+   - `test_relu_in_place()` - Not applicable (pure functional - no mutation)
+
+**Test Implementation Summary**:
+- **10 tests implemented** (4 SGD + 3 linear + 3 activation)
+- **4 tests deferred/not applicable** (Nesterov, zero_grad, backward, in_place)
+- All implemented tests adapted from class-based to pure functional API
+- Tests validate numerical correctness with known expected values
 
 **Test Adaptation Notes**:
-
-- Original TDD stubs expected: `SGD(lr=0.01).step(params, grads)` (class-based, in-place)
-- Functional API provides: `sgd_step(params, grads, velocity, lr, momentum, wd)` → `(new_params, new_velocity)`
+- Original TDD stubs expected: `Layer().forward(x)` (class-based, stateful)
+- Functional API provides: `operation(x, params...)` → `output` (stateless)
 - Tests adapted to use functional API while preserving original intent and numerical expectations
 - All tests document both the original API contract and the functional equivalent
 

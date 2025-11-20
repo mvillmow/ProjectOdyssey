@@ -8,6 +8,9 @@ Tests cover:
 
 Following TDD principles - these tests define the expected API
 for implementation in Issue #49.
+
+Note: Tests have been adapted from class-based API to pure functional API
+as per architecture decision to use functional design throughout shared library.
 """
 
 from tests.shared.conftest import (
@@ -17,6 +20,10 @@ from tests.shared.conftest import (
     assert_shape_equal,
     TestFixtures,
 )
+from shared.core.extensor import ExTensor, zeros, ones
+from shared.core.linear import linear, linear_no_bias
+from shared.core.activation import relu, sigmoid, tanh, softmax
+from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -25,78 +32,132 @@ from tests.shared.conftest import (
 
 
 fn test_linear_initialization() raises:
-    """Test Linear layer initialization with specified dimensions.
+    """Test Linear layer parameter creation.
 
-    API Contract:
-        Linear(in_features: Int, out_features: Int, bias: Bool = True)
-        - Creates layer with weight matrix (out_features, in_features)
-        - Creates bias vector (out_features) if bias=True
-        - Initializes weights (implementation-dependent)
+    Functional API Note:
+        Pure functional design - no layer class initialization.
+        Caller creates weight matrix (out_features, in_features) and bias vector.
+        This test verifies parameters can be created with correct shapes.
     """
-    # TODO(#1538): Implement when Linear layer is available
-    # var layer = Linear(in_features=10, out_features=5, bias=True)
-    # assert_equal(layer.in_features, 10)
-    # assert_equal(layer.out_features, 5)
-    # assert_shape_equal(layer.weights, Shape(5, 10))
-    # assert_shape_equal(layer.bias, Shape(5))
-    pass
+    # Create parameters for a linear transformation: in=10, out=5
+    var in_features = 10
+    var out_features = 5
+
+    # Weights shape: (out_features, in_features) = (5, 10)
+    var weight_shape = DynamicVector[Int](2)
+    weight_shape[0] = out_features
+    weight_shape[1] = in_features
+    var weights = ones(weight_shape, DType.float32)
+
+    # Bias shape: (out_features,) = (5,)
+    var bias_shape = DynamicVector[Int](1)
+    bias_shape[0] = out_features
+    var bias = zeros(bias_shape, DType.float32)
+
+    # Verify shapes
+    var w_shape = weights.shape()
+    var b_shape = bias.shape()
+    assert_equal(w_shape[0], out_features)
+    assert_equal(w_shape[1], in_features)
+    assert_equal(b_shape[0], out_features)
 
 
 fn test_linear_forward() raises:
     """Test Linear layer forward pass computation.
 
-    API Contract:
-        layer.forward(input: Tensor) -> Tensor
+    Functional API:
+        linear(x, weights, bias) -> output
         - Input shape: (batch_size, in_features)
+        - Weights shape: (out_features, in_features)
+        - Bias shape: (out_features,)
         - Output shape: (batch_size, out_features)
-        - Computation: output = input @ weights.T + bias
+        - Computation: output = x @ weights.T + bias
     """
-    # TODO(#1538): Implement when Linear layer is available
-    # # Create layer: in=10, out=5
-    # var layer = Linear(in_features=10, out_features=5)
-    # layer.weights.fill(0.1)  # Known weights for testing
-    # layer.bias.fill(0.0)
-    #
-    # # Create input: batch_size=2
-    # var input = Tensor.ones(2, 10)
-    #
-    # # Forward pass
-    # var output = layer.forward(input)
-    #
-    # # Check output shape
-    # assert_shape_equal(output, Shape(2, 5))
-    #
-    # # Check output values (known computation)
-    # let expected_value = 10 * 0.1  # sum of weights
-    # assert_almost_equal(output[0, 0], expected_value)
-    pass
+    # Create parameters: in=10, out=5
+    var in_features = 10
+    var out_features = 5
+    var batch_size = 2
+
+    # Weights: (5, 10) filled with 0.1
+    var weight_shape = DynamicVector[Int](2)
+    weight_shape[0] = out_features
+    weight_shape[1] = in_features
+    var weights = ones(weight_shape, DType.float32)
+    # Fill with 0.1
+    for i in range(out_features):
+        for j in range(in_features):
+            weights._data.bitcast[Float32]()[i * in_features + j] = 0.1
+
+    # Bias: (5,) filled with 0.0
+    var bias_shape = DynamicVector[Int](1)
+    bias_shape[0] = out_features
+    var bias = zeros(bias_shape, DType.float32)
+
+    # Input: (2, 10) filled with 1.0
+    var input_shape = DynamicVector[Int](2)
+    input_shape[0] = batch_size
+    input_shape[1] = in_features
+    var input = ones(input_shape, DType.float32)
+
+    # Forward pass
+    var output = linear(input, weights, bias)
+
+    # Check output shape
+    var out_shape = output.shape()
+    assert_equal(out_shape[0], batch_size)
+    assert_equal(out_shape[1], out_features)
+
+    # Check output values: sum of weights = 10 * 0.1 = 1.0
+    var expected_value = Float32(10.0 * 0.1)
+    assert_almost_equal(output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5)
 
 
 fn test_linear_no_bias() raises:
     """Test Linear layer without bias term.
 
-    API Contract:
-        Linear(in_features, out_features, bias=False)
-        - No bias vector created
-        - Forward computes: output = input @ weights.T
+    Functional API:
+        linear_no_bias(x, weights) -> output
+        - No bias parameter required
+        - Computation: output = x @ weights.T
     """
-    # TODO(#1538): Implement when Linear layer is available
-    # var layer = Linear(in_features=10, out_features=5, bias=False)
-    # assert_equal(layer.bias, None)  # Or appropriate null check
-    pass
+    # Create parameters: in=10, out=5
+    var in_features = 10
+    var out_features = 5
+
+    # Weights: (5, 10) filled with 0.5
+    var weight_shape = DynamicVector[Int](2)
+    weight_shape[0] = out_features
+    weight_shape[1] = in_features
+    var weights = ones(weight_shape, DType.float32)
+    for i in range(out_features * in_features):
+        weights._data.bitcast[Float32]()[i] = 0.5
+
+    # Input: (1, 10) filled with 1.0
+    var input_shape = DynamicVector[Int](2)
+    input_shape[0] = 1
+    input_shape[1] = in_features
+    var input = ones(input_shape, DType.float32)
+
+    # Forward pass without bias
+    var output = linear_no_bias(input, weights)
+
+    # Check output shape
+    var out_shape = output.shape()
+    assert_equal(out_shape[0], 1)
+    assert_equal(out_shape[1], out_features)
+
+    # Check output values: sum = 10 * 0.5 = 5.0 (no bias added)
+    var expected_value = Float32(10.0 * 0.5)
+    assert_almost_equal(output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5)
 
 
 fn test_linear_backward() raises:
     """Test Linear layer backward pass (gradient computation).
 
-    API Contract:
-        layer.backward(grad_output: Tensor) -> Tensor
-        - Returns gradient w.r.t. input
-        - Computes gradients w.r.t. weights and bias
+    Deferred - backward pass implementations are not yet available.
+    Will be implemented when autograd/backpropagation system is added.
     """
-    # TODO(#1538): Implement when backward pass is available
-    # This is important but may be deferred to Issue #49
-    pass
+    pass  # Deferred - backward pass not yet implemented
 
 
 # ============================================================================
@@ -197,86 +258,100 @@ fn test_conv2d_valid_padding() raises:
 fn test_relu_activation() raises:
     """Test ReLU zeros negative values and preserves positive values.
 
-    API Contract:
-        ReLU().forward(x: Tensor) -> Tensor
+    Functional API:
+        relu(x) -> output
         - For each element: output = max(0, input)
     """
-    # TODO(#1538): Implement when ReLU is available
-    # var relu = ReLU()
-    #
-    # # Test with known values
-    # var input = Tensor(List[Float32](-2.0, -1.0, 0.0, 1.0, 2.0), Shape(5))
-    # var output = relu.forward(input)
-    #
-    # # Expected: [0.0, 0.0, 0.0, 1.0, 2.0]
-    # assert_almost_equal(output[0], 0.0)
-    # assert_almost_equal(output[1], 0.0)
-    # assert_almost_equal(output[2], 0.0)
-    # assert_almost_equal(output[3], 1.0)
-    # assert_almost_equal(output[4], 2.0)
-    pass
+    # Test with known values: [-2.0, -1.0, 0.0, 1.0, 2.0]
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    var input = zeros(shape, DType.float32)
+    input._data.bitcast[Float32]()[0] = -2.0
+    input._data.bitcast[Float32]()[1] = -1.0
+    input._data.bitcast[Float32]()[2] = 0.0
+    input._data.bitcast[Float32]()[3] = 1.0
+    input._data.bitcast[Float32]()[4] = 2.0
+
+    # Apply ReLU
+    var output = relu(input)
+
+    # Expected: [0.0, 0.0, 0.0, 1.0, 2.0]
+    assert_almost_equal(output._data.bitcast[Float32]()[0], 0.0, tolerance=1e-6)
+    assert_almost_equal(output._data.bitcast[Float32]()[1], 0.0, tolerance=1e-6)
+    assert_almost_equal(output._data.bitcast[Float32]()[2], 0.0, tolerance=1e-6)
+    assert_almost_equal(output._data.bitcast[Float32]()[3], 1.0, tolerance=1e-6)
+    assert_almost_equal(output._data.bitcast[Float32]()[4], 2.0, tolerance=1e-6)
 
 
 fn test_relu_in_place() raises:
     """Test ReLU can modify input in-place for memory efficiency.
 
-    API Contract (optional):
-        ReLU(inplace: Bool = False)
-        - If inplace=True, modifies input tensor directly
+    Not applicable to pure functional design - functional operations
+    always return new tensors and never mutate inputs.
     """
-    # TODO(#1538): Implement when ReLU supports inplace
-    # This is an optimization, may be deferred
-    pass
+    pass  # Not applicable - pure functional design
 
 
 fn test_sigmoid_range() raises:
     """Test Sigmoid outputs values in range [0, 1].
 
-    API Contract:
-        Sigmoid().forward(x: Tensor) -> Tensor
+    Functional API:
+        sigmoid(x) -> output
         - For each element: output = 1 / (1 + exp(-input))
         - Output range: (0, 1)
     """
-    # TODO(#1538): Implement when Sigmoid is available
-    # var sigmoid = Sigmoid()
-    #
-    # # Test with various inputs
-    # var input = Tensor(List[Float32](-10.0, -1.0, 0.0, 1.0, 10.0), Shape(5))
-    # var output = sigmoid.forward(input)
-    #
-    # # All outputs should be in (0, 1)
-    # for i in range(5):
-    #     assert_greater(output[i], 0.0)
-    #     assert_less(output[i], 1.0)
-    #
-    # # Check specific values
-    # assert_almost_equal(output[2], 0.5)  # sigmoid(0) = 0.5
-    pass
+    # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    var input = zeros(shape, DType.float32)
+    input._data.bitcast[Float32]()[0] = -10.0
+    input._data.bitcast[Float32]()[1] = -1.0
+    input._data.bitcast[Float32]()[2] = 0.0
+    input._data.bitcast[Float32]()[3] = 1.0
+    input._data.bitcast[Float32]()[4] = 10.0
+
+    # Apply sigmoid
+    var output = sigmoid(input)
+
+    # All outputs should be in (0, 1)
+    for i in range(5):
+        var val = output._data.bitcast[Float32]()[i]
+        assert_less(0.0, val)  # Greater than 0
+        assert_less(val, 1.0)  # Less than 1
+
+    # Check sigmoid(0) = 0.5
+    assert_almost_equal(output._data.bitcast[Float32]()[2], 0.5, tolerance=1e-6)
 
 
 fn test_tanh_range() raises:
     """Test Tanh outputs values in range [-1, 1].
 
-    API Contract:
-        Tanh().forward(x: Tensor) -> Tensor
+    Functional API:
+        tanh(x) -> output
         - For each element: output = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
         - Output range: (-1, 1)
     """
-    # TODO(#1538): Implement when Tanh is available
-    # var tanh = Tanh()
-    #
-    # # Test with various inputs
-    # var input = Tensor(List[Float32](-10.0, -1.0, 0.0, 1.0, 10.0), Shape(5))
-    # var output = tanh.forward(input)
-    #
-    # # All outputs should be in (-1, 1)
-    # for i in range(5):
-    #     assert_greater(output[i], -1.0)
-    #     assert_less(output[i], 1.0)
-    #
-    # # Check specific values
-    # assert_almost_equal(output[2], 0.0)  # tanh(0) = 0
-    pass
+    # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    var input = zeros(shape, DType.float32)
+    input._data.bitcast[Float32]()[0] = -10.0
+    input._data.bitcast[Float32]()[1] = -1.0
+    input._data.bitcast[Float32]()[2] = 0.0
+    input._data.bitcast[Float32]()[3] = 1.0
+    input._data.bitcast[Float32]()[4] = 10.0
+
+    # Apply tanh
+    var output = tanh(input)
+
+    # All outputs should be in (-1, 1)
+    for i in range(5):
+        var val = output._data.bitcast[Float32]()[i]
+        assert_less(-1.0, val)  # Greater than -1
+        assert_less(val, 1.0)  # Less than 1
+
+    # Check tanh(0) = 0.0
+    assert_almost_equal(output._data.bitcast[Float32]()[2], 0.0, tolerance=1e-6)
 
 
 # ============================================================================
