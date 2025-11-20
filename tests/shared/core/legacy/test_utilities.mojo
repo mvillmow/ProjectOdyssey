@@ -7,7 +7,7 @@ This module tests the utility functions:
 """
 
 from collections.vector import DynamicVector
-from extensor import (
+from shared.core import (
     ExTensor, DType,
     zeros, ones, full,
     ones_like, zeros_like, full_like

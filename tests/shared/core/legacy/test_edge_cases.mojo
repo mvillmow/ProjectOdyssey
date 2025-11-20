@@ -8,7 +8,7 @@ from sys import DType
 from math import isnan, isinf
 
 # Import ExTensor and operations
-from extensor import (
+from shared.core import (
     ExTensor, zeros, ones, full, arange,
     add, subtract, multiply, divide, floor_divide, modulo, power,
     equal, not_equal, less, less_equal, greater, greater_equal

@@ -7,7 +7,7 @@ and helper methods like numel, dim, size, stride, is_contiguous.
 from sys import DType
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange
+from shared.core import ExTensor, zeros, ones, full, arange
 
 # Import test helpers
 from ..helpers.assertions import (

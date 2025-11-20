@@ -6,7 +6,7 @@ This module tests the loss functions and their backward passes:
 """
 
 from collections.vector import DynamicVector
-from extensor import (
+from shared.core import (
     ExTensor, DType,
     zeros, ones, full,
     binary_cross_entropy, binary_cross_entropy_backward,

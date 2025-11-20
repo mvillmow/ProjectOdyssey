@@ -7,7 +7,7 @@ and end-to-end workflows using currently implemented functionality.
 from sys import DType
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange, eye, linspace, add, subtract, multiply
+from shared.core import ExTensor, zeros, ones, full, arange, eye, linspace, add, subtract, multiply
 
 # Import test helpers
 from ..helpers.assertions import (

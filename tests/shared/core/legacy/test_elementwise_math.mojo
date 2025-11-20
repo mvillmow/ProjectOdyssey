@@ -8,7 +8,7 @@ from sys import DType
 from math import abs as math_abs
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
+from shared.core import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
 
 # Import test helpers
 from ..helpers.assertions import (

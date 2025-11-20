@@ -7,7 +7,7 @@ from_array, eye, linspace, and empty with various shapes and dtypes.
 from sys import DType
 
 # Import ExTensor and creation operations
-from extensor import ExTensor, zeros, ones, full, empty, arange, eye, linspace
+from shared.core import ExTensor, zeros, ones, full, empty, arange, eye, linspace
 
 # Import test helpers
 from ..helpers.assertions import (

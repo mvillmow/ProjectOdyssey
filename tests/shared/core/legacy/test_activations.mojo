@@ -19,7 +19,7 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from collections.vector import DynamicVector
 from math import abs, exp, sqrt, tanh as math_tanh
-from extensor import (
+from shared.core import (
     ExTensor, zeros, ones, full, arange,
     relu, leaky_relu, prelu,
     sigmoid, tanh,

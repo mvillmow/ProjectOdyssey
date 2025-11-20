@@ -7,7 +7,7 @@ sum, mean, max_reduce, min_reduce with all-elements reduction (axis=-1).
 from sys import DType
 
 # Import ExTensor and reduction operations
-from extensor import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
+from shared.core import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
 
 # Import test helpers
 from ..helpers.assertions import (

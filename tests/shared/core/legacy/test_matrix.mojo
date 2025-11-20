@@ -7,8 +7,8 @@ and tensordot with various shapes and dimensions.
 from sys import DType
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange, eye
-from extensor import matmul, transpose, dot, outer
+from shared.core import ExTensor, zeros, ones, full, arange, eye
+from shared.core import matmul, transpose, dot, outer
 
 # Import test helpers
 from ..helpers.assertions import (

@@ -7,7 +7,7 @@ modulo, power, and matmul with same-shape tensors, broadcasting, and edge cases.
 from sys import DType
 
 # Import ExTensor and arithmetic operations
-from extensor import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
+from shared.core import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
 
 # Import test helpers
 from ..helpers.assertions import (

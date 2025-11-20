@@ -18,7 +18,7 @@ Validation strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from collections.vector import DynamicVector
 from math import abs, sqrt
-from extensor import (
+from shared.core import (
     ExTensor,
     xavier_uniform, xavier_normal,
     kaiming_uniform, kaiming_normal,

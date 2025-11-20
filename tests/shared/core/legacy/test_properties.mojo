@@ -7,7 +7,7 @@ contiguity, and basic tensor operations that should work with current implementa
 from sys import DType
 
 # Import ExTensor and operations
-from extensor import ExTensor, zeros, ones, full, arange, eye
+from shared.core import ExTensor, zeros, ones, full, arange, eye
 
 # Import test helpers
 from ..helpers.assertions import (

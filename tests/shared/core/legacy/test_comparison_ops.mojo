@@ -8,7 +8,7 @@ All operations return boolean tensors (DType.bool).
 from sys import DType
 
 # Import ExTensor and comparison operations
-from extensor import ExTensor, full, ones, zeros, equal, not_equal, less, less_equal, greater, greater_equal
+from shared.core import ExTensor, full, ones, zeros, equal, not_equal, less, less_equal, greater, greater_equal
 
 # Import test helpers
 from ..helpers.assertions import (
