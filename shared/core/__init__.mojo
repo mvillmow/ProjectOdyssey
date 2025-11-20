@@ -25,6 +25,7 @@ Modules:
     initializers: Weight initialization functions
     loss: Loss functions
     numerical_safety: NaN/Inf detection, gradient monitoring, numerical stability checks
+    dtype_dispatch: Generic dtype dispatch helpers for eliminating dtype branching
 
 Example:
     from shared.core.extensor import ExTensor, zeros
@@ -258,6 +259,19 @@ from .numerical_safety import (
 )
 
 # ============================================================================
+# Dtype Dispatch Helpers
+# ============================================================================
+
+from .dtype_dispatch import (
+    dispatch_unary,
+    dispatch_binary,
+    dispatch_scalar,
+    dispatch_float_unary,
+    dispatch_float_binary,
+    dispatch_float_scalar,
+)
+
+# ============================================================================
 # Public API
 # ============================================================================
 
@@ -401,4 +415,11 @@ __all__ = [
     "check_gradient_norm",
     "check_gradient_vanishing",
     "check_gradient_safety",
+    # Dtype dispatch helpers
+    "dispatch_unary",
+    "dispatch_binary",
+    "dispatch_scalar",
+    "dispatch_float_unary",
+    "dispatch_float_binary",
+    "dispatch_float_scalar",
 ]
