@@ -15,7 +15,7 @@ Issues covered:
 - #278-282: Accuracy metrics implementation
 """
 
-from extensor import ExTensor
+from shared.core import ExTensor
 from collections.vector import DynamicVector
 
 

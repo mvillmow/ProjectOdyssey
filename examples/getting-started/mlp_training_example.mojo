@@ -14,7 +14,7 @@ pipeline is fully functional.
 """
 
 from collections.vector import DynamicVector
-from extensor import (
+from shared.core import (
     ExTensor, DType,
     # Creation
     zeros, ones, full, ones_like,

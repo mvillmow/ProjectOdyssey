@@ -13,7 +13,7 @@ Issues covered:
 - #288-292: Confusion matrix implementation
 """
 
-from extensor import ExTensor
+from shared.core import ExTensor
 from collections.vector import DynamicVector
 from math import sqrt
 

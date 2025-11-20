@@ -16,7 +16,7 @@ Design principles:
 """
 
 from collections.vector import DynamicVector
-from extensor import ExTensor
+from shared.core import ExTensor
 
 
 struct TrainerConfig:

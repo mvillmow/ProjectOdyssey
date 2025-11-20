@@ -19,7 +19,7 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from collections.vector import DynamicVector
 from math import abs
-from extensor import ExTensor
+from shared.core import ExTensor
 from shared.training.metrics import (
     Metric, MetricResult, MetricCollection, MetricLogger,
     create_metric_summary,

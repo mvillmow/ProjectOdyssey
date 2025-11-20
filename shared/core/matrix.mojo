@@ -4,7 +4,7 @@ Implements linear algebra operations like matrix multiplication and transpose.
 """
 
 from collections.vector import DynamicVector
-from extensor.extensor import ExTensor
+from shared.core.extensor import ExTensor
 
 
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:

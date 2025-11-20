@@ -13,7 +13,7 @@ Example usage:
     assert_gradients_close(analytical_grad, numerical_grad)
 """
 
-from extensor.extensor import ExTensor, zeros_like, ones_like
+from shared.core.extensor import ExTensor, zeros_like, ones_like
 from math import abs as math_abs
 from collections.vector import DynamicVector
 

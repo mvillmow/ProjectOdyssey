@@ -6,7 +6,7 @@ This module tests the SGD optimizer implementations:
 """
 
 from collections.vector import DynamicVector
-from extensor import (
+from shared.core import (
     ExTensor, DType,
     zeros, ones, full, subtract, multiply
 )
