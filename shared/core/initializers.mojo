@@ -24,6 +24,79 @@ from .extensor import ExTensor
 
 
 # ============================================================================
+# Internal Helper Functions (Dtype-Generic)
+# ============================================================================
+
+
+fn _fill_uniform_scaled[dtype: DType](result: ExTensor, scale: Float64, offset: Float64) raises:
+    """Fill tensor with scaled uniform random values: offset + random() * scale.
+
+    This is a dtype-generic helper that eliminates dtype branching.
+    random_float64() returns [0, 1), which is transformed to [offset, offset+scale).
+
+    Args:
+        result: Tensor to fill (must be pre-allocated)
+        scale: Scale factor for random values
+        offset: Offset to add to scaled values
+    """
+    var ptr = result._data.bitcast[Scalar[dtype]]()
+    for i in range(result._numel):
+        var rand_val = random_float64()
+        ptr[i] = Scalar[dtype](offset + rand_val * scale)
+
+
+fn _fill_normal_boxmuller[dtype: DType](result: ExTensor, mean: Float64, std: Float64) raises:
+    """Fill tensor with normal random values using Box-Muller transform.
+
+    This is a dtype-generic helper that eliminates dtype branching.
+    Generates pairs of normal random values using Box-Muller transform.
+
+    Args:
+        result: Tensor to fill (must be pre-allocated)
+        mean: Mean of normal distribution
+        std: Standard deviation of normal distribution
+    """
+    var ptr = result._data.bitcast[Scalar[dtype]]()
+    var i = 0
+    alias PI = 3.14159265359
+
+    while i < result._numel:
+        # Box-Muller transform to generate normal distribution
+        var u1 = random_float64()
+        var u2 = random_float64()
+
+        # Avoid log(0)
+        if u1 < 1e-10:
+            u1 = 1e-10
+
+        var mag = std * sqrt(-2.0 * log(u1))
+        var z0 = mean + mag * cos(2.0 * PI * u2)
+        var z1 = mean + mag * sin(2.0 * PI * u2)
+
+        ptr[i] = Scalar[dtype](z0)
+        i += 1
+
+        if i < result._numel:
+            ptr[i] = Scalar[dtype](z1)
+            i += 1
+
+
+fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
+    """Fill tensor with constant value.
+
+    This is a dtype-generic helper that eliminates dtype branching.
+
+    Args:
+        result: Tensor to fill (must be pre-allocated)
+        value: Constant value to fill with
+    """
+    var ptr = result._data.bitcast[Scalar[dtype]]()
+    var val = Scalar[dtype](value)
+    for i in range(result._numel):
+        ptr[i] = val
+
+
+# ============================================================================
 # Xavier/Glorot Initialization (#258-260)
 # ============================================================================
 
@@ -83,22 +156,13 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [-bound, bound]
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        for i in range(result._numel):
-            # random_float64() returns [0, 1), transform to [-bound, bound]
-            var rand_val = random_float64()
-            var scaled_val = Float16((2.0 * rand_val - 1.0) * bound)
-            result._data.bitcast[Float16]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float16](result, 2.0 * bound, -bound)
     elif dtype == DType.float32:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = Float32((2.0 * rand_val - 1.0) * bound)
-            result._data.bitcast[Float32]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float32](result, 2.0 * bound, -bound)
     elif dtype == DType.float64:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = (2.0 * rand_val - 1.0) * bound
-            result._data.bitcast[Float64]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
     else:
         raise Error("xavier_uniform: only float16, float32, and float64 dtypes supported")
 
@@ -160,70 +224,13 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform to generate normal distribution
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            # Avoid log(0)
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float16]()[i] = Float16(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float16]()[i] = Float16(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float16](result, 0.0, std)
     elif dtype == DType.float32:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform to generate normal distribution
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            # Avoid log(0)
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float32]()[i] = Float32(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float32]()[i] = Float32(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float32](result, 0.0, std)
     elif dtype == DType.float64:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float64]()[i] = z0
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float64]()[i] = z1
-                i += 1
+        _fill_normal_boxmuller[DType.float64](result, 0.0, std)
     else:
         raise Error("xavier_normal: only float16, float32, and float64 dtypes supported")
 
@@ -326,21 +333,13 @@ fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mod
     var result = ExTensor(shape, dtype)
 
     # Fill with uniform random values in [-bound, bound]
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = Float16((2.0 * rand_val - 1.0) * bound)
-            result._data.bitcast[Float16]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float16](result, 2.0 * bound, -bound)
     elif dtype == DType.float32:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = Float32((2.0 * rand_val - 1.0) * bound)
-            result._data.bitcast[Float32]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float32](result, 2.0 * bound, -bound)
     elif dtype == DType.float64:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = (2.0 * rand_val - 1.0) * bound
-            result._data.bitcast[Float64]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
     else:
         raise Error("kaiming_uniform: only float16, float32, and float64 dtypes supported")
 
@@ -418,65 +417,13 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        var i = 0
-        while i < result._numel:
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float16]()[i] = Float16(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float16]()[i] = Float16(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float16](result, 0.0, std)
     elif dtype == DType.float32:
-        var i = 0
-        while i < result._numel:
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float32]()[i] = Float32(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float32]()[i] = Float32(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float32](result, 0.0, std)
     elif dtype == DType.float64:
-        var i = 0
-        while i < result._numel:
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float64]()[i] = z0
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float64]()[i] = z1
-                i += 1
+        _fill_normal_boxmuller[DType.float64](result, 0.0, std)
     else:
         raise Error("kaiming_normal: only float16, float32, and float64 dtypes supported")
 
@@ -529,26 +476,15 @@ fn uniform(shape: DynamicVector[Int], low: Float64 = -0.1, high: Float64 = 0.1, 
     # Create tensor
     var result = ExTensor(shape, dtype)
 
-    # Calculate range
-    var range_val = high - low
-
     # Fill with uniform random values in [low, high]
+    # Use dtype dispatch pattern to eliminate branching
+    var range_val = high - low
     if dtype == DType.float16:
-        for i in range(result._numel):
-            # random_float64() returns [0, 1), transform to [low, high]
-            var rand_val = random_float64()
-            var scaled_val = Float16(low + rand_val * range_val)
-            result._data.bitcast[Float16]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float16](result, range_val, low)
     elif dtype == DType.float32:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = Float32(low + rand_val * range_val)
-            result._data.bitcast[Float32]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float32](result, range_val, low)
     elif dtype == DType.float64:
-        for i in range(result._numel):
-            var rand_val = random_float64()
-            var scaled_val = low + rand_val * range_val
-            result._data.bitcast[Float64]()[i] = scaled_val
+        _fill_uniform_scaled[DType.float64](result, range_val, low)
     else:
         raise Error("uniform: only float16, float32, and float64 dtypes supported")
 
@@ -599,69 +535,13 @@ fn normal(shape: DynamicVector[Int], mean: Float64 = 0.0, std: Float64 = 0.01, d
     var result = ExTensor(shape, dtype)
 
     # Fill with normal random values using Box-Muller transform
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform to generate normal distribution
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            # Avoid log(0)
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mean + mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mean + mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float16]()[i] = Float16(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float16]()[i] = Float16(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float16](result, mean, std)
     elif dtype == DType.float32:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mean + mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mean + mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float32]()[i] = Float32(z0)
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float32]()[i] = Float32(z1)
-                i += 1
-
+        _fill_normal_boxmuller[DType.float32](result, mean, std)
     elif dtype == DType.float64:
-        var i = 0
-        while i < result._numel:
-            # Box-Muller transform
-            var u1 = random_float64()
-            var u2 = random_float64()
-
-            if u1 < 1e-10:
-                u1 = 1e-10
-
-            var mag = std * sqrt(-2.0 * log(u1))
-            var z0 = mean + mag * cos(2.0 * 3.14159265359 * u2)
-            var z1 = mean + mag * sin(2.0 * 3.14159265359 * u2)
-
-            result._data.bitcast[Float64]()[i] = z0
-            i += 1
-
-            if i < result._numel:
-                result._data.bitcast[Float64]()[i] = z1
-                i += 1
+        _fill_normal_boxmuller[DType.float64](result, mean, std)
     else:
         raise Error("normal: only float16, float32, and float64 dtypes supported")
 
@@ -696,17 +576,13 @@ fn constant(shape: DynamicVector[Int], value: Float64, dtype: DType = DType.floa
     """
     var result = ExTensor(shape, dtype)
 
+    # Use dtype dispatch pattern to eliminate branching
     if dtype == DType.float16:
-        var val = Float16(value)
-        for i in range(result._numel):
-            result._data.bitcast[Float16]()[i] = val
+        _fill_constant[DType.float16](result, value)
     elif dtype == DType.float32:
-        var val = Float32(value)
-        for i in range(result._numel):
-            result._data.bitcast[Float32]()[i] = val
+        _fill_constant[DType.float32](result, value)
     elif dtype == DType.float64:
-        for i in range(result._numel):
-            result._data.bitcast[Float64]()[i] = value
+        _fill_constant[DType.float64](result, value)
     else:
         raise Error("constant: only float16, float32, and float64 dtypes supported")
 

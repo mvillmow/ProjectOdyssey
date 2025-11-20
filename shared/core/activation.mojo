@@ -501,6 +501,24 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     return dispatch_binary[_relu_backward_op](grad_output, x)
 
 
+fn _leaky_relu_backward_impl[dtype: DType](
+    result: ExTensor, grad_output: ExTensor, x: ExTensor, alpha: Float64
+) raises:
+    """Dtype-generic implementation of leaky ReLU backward pass.
+
+    Eliminates dtype branching by using compile-time dtype specialization.
+    """
+    var alpha_typed = Scalar[dtype](alpha)
+    var result_ptr = result._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+
+    for i in range(x._numel):
+        var x_val = x_ptr[i]
+        var grad = grad_ptr[i]
+        result_ptr[i] = grad if x_val > Scalar[dtype](0) else grad * alpha_typed
+
+
 fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
     """Compute gradient of Leaky ReLU activation.
 
@@ -521,27 +539,54 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
 
     var result = ExTensor(x._shape, x._dtype)
 
+    # Use dtype dispatch pattern to eliminate branching
     if x._dtype == DType.float16:
-        var alpha16 = Float16(alpha)
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float16]()[i]
-            var grad = grad_output._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = grad if x_val > Float16(0) else grad * alpha16
+        _leaky_relu_backward_impl[DType.float16](result, grad_output, x, alpha)
     elif x._dtype == DType.float32:
-        var alpha32 = Float32(alpha)
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float32]()[i]
-            var grad = grad_output._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = grad if x_val > 0.0 else grad * alpha32
+        _leaky_relu_backward_impl[DType.float32](result, grad_output, x, alpha)
     elif x._dtype == DType.float64:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float64]()[i]
-            var grad = grad_output._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = grad if x_val > 0.0 else grad * alpha
+        _leaky_relu_backward_impl[DType.float64](result, grad_output, x, alpha)
     else:
         raise Error("leaky_relu_backward: only float16/32/64 dtypes supported")
 
     return result
+
+
+fn _prelu_backward_impl[dtype: DType](
+    grad_input: ExTensor,
+    grad_alpha: ExTensor,
+    grad_output: ExTensor,
+    x: ExTensor,
+    alpha: ExTensor,
+    is_scalar: Bool
+) raises:
+    """Dtype-generic implementation of PReLU backward pass.
+
+    Eliminates dtype branching by using compile-time dtype specialization.
+    """
+    var grad_input_ptr = grad_input._data.bitcast[Scalar[dtype]]()
+    var grad_alpha_ptr = grad_alpha._data.bitcast[Scalar[dtype]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[dtype]]()
+    var x_ptr = x._data.bitcast[Scalar[dtype]]()
+    var alpha_ptr = alpha._data.bitcast[Scalar[dtype]]()
+    var zero = Scalar[dtype](0)
+
+    # Initialize grad_alpha to zero
+    for i in range(grad_alpha._numel):
+        grad_alpha_ptr[i] = zero
+
+    # Compute gradients
+    for i in range(x._numel):
+        var x_val = x_ptr[i]
+        var grad = grad_ptr[i]
+        var a = alpha_ptr[0] if is_scalar else alpha_ptr[i]
+
+        if x_val > zero:
+            grad_input_ptr[i] = grad
+        else:
+            grad_input_ptr[i] = grad * a
+            var alpha_idx = 0 if is_scalar else i
+            grad_alpha_ptr[alpha_idx] += grad * x_val
 
 
 fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises -> (ExTensor, ExTensor):
@@ -568,54 +613,13 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
     var grad_alpha = ExTensor(alpha._shape, alpha._dtype)
     var is_scalar = alpha._numel == 1
 
-    # Initialize grad_alpha to zero
-    for i in range(grad_alpha._numel):
-        if grad_alpha._dtype == DType.float16:
-            grad_alpha._data.bitcast[Float16]()[i] = Float16(0)
-        elif grad_alpha._dtype == DType.float32:
-            grad_alpha._data.bitcast[Float32]()[i] = 0.0
-        elif grad_alpha._dtype == DType.float64:
-            grad_alpha._data.bitcast[Float64]()[i] = 0.0
-
+    # Use dtype dispatch pattern to eliminate branching
     if x._dtype == DType.float16:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float16]()[i]
-            var grad = grad_output._data.bitcast[Float16]()[i]
-            var a = alpha._data.bitcast[Float16]()[0] if is_scalar else alpha._data.bitcast[Float16]()[i]
-
-            if x_val > Float16(0):
-                grad_input._data.bitcast[Float16]()[i] = grad
-            else:
-                grad_input._data.bitcast[Float16]()[i] = grad * a
-                # Accumulate gradient for alpha
-                var alpha_idx = 0 if is_scalar else i
-                grad_alpha._data.bitcast[Float16]()[alpha_idx] += grad * x_val
-
+        _prelu_backward_impl[DType.float16](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
     elif x._dtype == DType.float32:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float32]()[i]
-            var grad = grad_output._data.bitcast[Float32]()[i]
-            var a = alpha._data.bitcast[Float32]()[0] if is_scalar else alpha._data.bitcast[Float32]()[i]
-
-            if x_val > 0.0:
-                grad_input._data.bitcast[Float32]()[i] = grad
-            else:
-                grad_input._data.bitcast[Float32]()[i] = grad * a
-                var alpha_idx = 0 if is_scalar else i
-                grad_alpha._data.bitcast[Float32]()[alpha_idx] += grad * x_val
-
+        _prelu_backward_impl[DType.float32](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
     elif x._dtype == DType.float64:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float64]()[i]
-            var grad = grad_output._data.bitcast[Float64]()[i]
-            var a = alpha._data.bitcast[Float64]()[0] if is_scalar else alpha._data.bitcast[Float64]()[i]
-
-            if x_val > 0.0:
-                grad_input._data.bitcast[Float64]()[i] = grad
-            else:
-                grad_input._data.bitcast[Float64]()[i] = grad * a
-                var alpha_idx = 0 if is_scalar else i
-                grad_alpha._data.bitcast[Float64]()[alpha_idx] += grad * x_val
+        _prelu_backward_impl[DType.float64](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
     else:
         raise Error("prelu_backward: only float16/32/64 dtypes supported")
 
