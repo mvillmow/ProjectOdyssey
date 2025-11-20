@@ -16,8 +16,9 @@ All loss functions include:
 
 from .extensor import ExTensor
 from .arithmetic import add, subtract, multiply, divide
-from .elementwise_math import log, clip
-from .reduction import mean, sum
+from .elementwise import log, clip, exp
+from .reduction import mean, sum, max_reduce
+from .activation import softmax
 
 
 fn binary_cross_entropy(
@@ -248,16 +249,39 @@ fn cross_entropy(
     if logits.shape() != targets.shape():
         raise Error("Logits and targets must have the same shape")
 
-    # TODO: Implement cross-entropy with log-sum-exp trick
-    # This requires:
-    # 1. max_reduce along axis
-    # 2. subtract max from logits
-    # 3. exp
-    # 4. sum along axis
-    # 5. log
-    # 6. Compute: -sum(targets * (logits - log_sum_exp))
+    # Implement cross-entropy with log-sum-exp trick for numerical stability
+    # CE = -sum(targets * (logits - log_sum_exp(logits)))
+    # where log_sum_exp(x) = max(x) + log(sum(exp(x - max(x))))
 
-    raise Error("cross_entropy not yet implemented - use binary_cross_entropy for binary classification or implement manually")
+    # Assume last axis is the class dimension
+    var shape = logits.shape()
+    var axis = shape.size - 1
+
+    # Step 1: Find max along class axis for numerical stability
+    var max_logits = max_reduce(logits, axis=axis, keepdims=True)
+
+    # Step 2: Subtract max from logits: x_stable = x - max(x)
+    var logits_stable = subtract(logits, max_logits)
+
+    # Step 3: Compute exp(x_stable)
+    var exp_logits = exp(logits_stable)
+
+    # Step 4: Sum exp values along class axis
+    var sum_exp = sum(exp_logits, axis=axis, keepdims=True)
+
+    # Step 5: Compute log_sum_exp = max + log(sum_exp)
+    var log_sum_exp = add(max_logits, log(sum_exp))
+
+    # Step 6: Compute log probabilities: log(p) = logits - log_sum_exp
+    var log_probs = subtract(logits, log_sum_exp)
+
+    # Step 7: Compute cross-entropy: CE = -sum(targets * log_probs)
+    var ce_per_sample = multiply(targets, log_probs)
+    var ce_sum = sum(ce_per_sample, axis=axis, keepdims=False)  # Sum over classes
+    var ce = multiply(ce_sum, ExTensor.from_scalar(-1.0, logits.dtype()))  # Negate
+
+    # Return mean over batch (first dimension)
+    return mean(ce, axis=0, keepdims=False)
 
 
 fn cross_entropy_backward(
@@ -268,15 +292,45 @@ fn cross_entropy_backward(
     For cross-entropy with softmax, the gradient simplifies to:
         ∂CE/∂logits = softmax(logits) - targets
 
+    This beautiful result comes from the chain rule and the properties
+    of the softmax function.
+
     Args:
-        grad_output: Gradient from upstream
-        logits: Original logits passed to forward pass
-        targets: Original one-hot targets
+        grad_output: Gradient from upstream (scalar for mean reduction)
+        logits: Original logits passed to forward pass, shape (batch, num_classes)
+        targets: Original one-hot targets, shape (batch, num_classes)
 
     Returns:
-        Gradient with respect to logits
+        Gradient with respect to logits, shape (batch, num_classes)
+
+    Example:
+        ```mojo
+        from shared.core import cross_entropy, cross_entropy_backward
+
+        # Forward pass
+        var loss = cross_entropy(logits, targets)
+        # Backward pass (grad_output is usually 1.0 for scalar loss)
+        var grad_logits = cross_entropy_backward(grad_output, logits, targets)
+        ```
 
     Note:
-        Requires softmax to be implemented. Not yet available.
+        The gradient is already averaged over the batch if the forward pass
+        used mean reduction.
     """
-    raise Error("cross_entropy_backward not yet implemented")
+    # Compute softmax probabilities
+    var axis = logits.shape().size - 1  # Last axis is classes
+    var probs = softmax(logits, axis=axis)
+
+    # Gradient: softmax(logits) - targets
+    var grad = subtract(probs, targets)
+
+    # Scale by upstream gradient (usually 1.0 for mean reduction)
+    # If grad_output is scalar, we need to broadcast it
+    # For now, assume grad_output is already properly shaped or is 1.0
+    # TODO: Handle proper broadcasting of grad_output
+
+    # Average over batch (matching forward pass mean reduction)
+    var batch_size = Float32(logits.shape()[0])
+    var grad_scaled = multiply(grad, ExTensor.from_scalar(1.0 / batch_size, grad.dtype()))
+
+    return multiply(grad_scaled, grad_output)

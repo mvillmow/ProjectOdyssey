@@ -7,6 +7,7 @@ following the pattern y = xW^T + b. The caller manages all state (weights, bias)
 from .extensor import ExTensor
 from .matrix import matmul, transpose
 from .arithmetic import add
+from .reduction import sum
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
@@ -60,3 +61,92 @@ fn linear_no_bias(x: ExTensor, weights: ExTensor) raises -> ExTensor:
         Error if shapes are incompatible for matrix multiplication.
     """
     return matmul(x, transpose(weights))
+
+
+fn linear_backward(
+    grad_output: ExTensor,
+    x: ExTensor,
+    weights: ExTensor
+) raises -> (ExTensor, ExTensor, ExTensor):
+    """Backward pass for linear transformation.
+
+    Computes gradients with respect to input, weights, and bias.
+
+    Math:
+        Given: y = xW^T + b
+        grad_input = grad_output @ W
+        grad_weights = grad_output^T @ x
+        grad_bias = sum(grad_output, axis=0)
+
+    Args:
+        grad_output: Gradient of loss w.r.t. output, shape (batch_size, out_features)
+        x: Input tensor from forward pass, shape (batch_size, in_features)
+        weights: Weight matrix from forward pass, shape (out_features, in_features)
+
+    Returns:
+        Tuple of (grad_input, grad_weights, grad_bias):
+            - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
+            - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
+            - grad_bias: Gradient w.r.t. bias, shape (out_features,)
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, linear, linear_backward
+
+        # Forward pass
+        var output = linear(x, weights, bias)
+        # ... compute loss and grad_output ...
+
+        # Backward pass
+        var (grad_x, grad_w, grad_b) = linear_backward(grad_output, x, weights)
+        ```
+
+    Raises:
+        Error if tensor shapes are incompatible.
+    """
+    # grad_input = grad_output @ W
+    # weights is (out_features, in_features), so we use it directly
+    var grad_input = matmul(grad_output, weights)
+
+    # grad_weights = grad_output^T @ x
+    # grad_output: (batch, out_features) -> transpose -> (out_features, batch)
+    # x: (batch, in_features)
+    # result: (out_features, in_features)
+    var grad_weights = matmul(transpose(grad_output), x)
+
+    # grad_bias = sum(grad_output, axis=0)
+    # Sum over batch dimension to get (out_features,)
+    var grad_bias = sum(grad_output, axis=0)
+
+    return (grad_input, grad_weights, grad_bias)
+
+
+fn linear_no_bias_backward(
+    grad_output: ExTensor,
+    x: ExTensor,
+    weights: ExTensor
+) raises -> (ExTensor, ExTensor):
+    """Backward pass for linear transformation without bias.
+
+    Computes gradients with respect to input and weights only.
+
+    Args:
+        grad_output: Gradient of loss w.r.t. output, shape (batch_size, out_features)
+        x: Input tensor from forward pass, shape (batch_size, in_features)
+        weights: Weight matrix from forward pass, shape (out_features, in_features)
+
+    Returns:
+        Tuple of (grad_input, grad_weights):
+            - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
+            - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
+
+    Raises:
+        Error if tensor shapes are incompatible.
+    """
+    # grad_input = grad_output @ W
+    var grad_input = matmul(grad_output, weights)
+
+    # grad_weights = grad_output^T @ x
+    var grad_weights = matmul(transpose(grad_output), x)
+
+    return (grad_input, grad_weights)

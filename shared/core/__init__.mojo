@@ -121,17 +121,24 @@ from .activation import (
 from .linear import (
     linear,
     linear_no_bias,
+    linear_backward,
+    linear_no_bias_backward,
 )
 
 from .conv import (
     conv2d,
     conv2d_no_bias,
+    conv2d_backward,
+    conv2d_no_bias_backward,
 )
 
 from .pooling import (
     maxpool2d,
     avgpool2d,
     global_avgpool2d,
+    maxpool2d_backward,
+    avgpool2d_backward,
+    global_avgpool2d_backward,
 )
 
 # ============================================================================
@@ -271,11 +278,18 @@ __all__ = [
     # Neural network operations
     "linear",
     "linear_no_bias",
+    "linear_backward",
+    "linear_no_bias_backward",
     "conv2d",
     "conv2d_no_bias",
+    "conv2d_backward",
+    "conv2d_no_bias_backward",
     "maxpool2d",
     "avgpool2d",
     "global_avgpool2d",
+    "maxpool2d_backward",
+    "avgpool2d_backward",
+    "global_avgpool2d_backward",
     # Element-wise
     "abs",
     "sign",
