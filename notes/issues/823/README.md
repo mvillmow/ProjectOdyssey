@@ -30,7 +30,7 @@ Complete cleanup and finalization of the paper-specific test runner tool. This c
 
 ## References
 
-- **GitHub Issue**: [#823](https://github.com/yourusername/ml-odyssey-manual/issues/823)
+- **GitHub Issue**: [#823](https://github.com/mvillmow/ml-odyssey/issues/823)
 - **Issue Type**: Cleanup phase
 - **Related Issues**:
   - Planning phase (earlier issue)
