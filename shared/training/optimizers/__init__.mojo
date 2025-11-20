@@ -20,6 +20,8 @@ from .sgd import sgd_step, sgd_step_simple
 # Adam optimizer (functional implementation)
 from .adam import adam_step, adam_step_simple
 
+# RMSprop optimizer (functional implementation)
+from .rmsprop import rmsprop_step, rmsprop_step_simple
+
 # TODO: Implement remaining optimizers
 # from .adamw import adamw_step
-# from .rmsprop import rmsprop_step
