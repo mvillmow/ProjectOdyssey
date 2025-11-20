@@ -24,7 +24,7 @@ from math import exp, erf, sqrt, tanh as math_tanh
 from collections.vector import DynamicVector
 from .extensor import ExTensor
 from .reduction import sum as tensor_sum, max as tensor_max
-from .dtype_dispatch import dispatch_unary, dispatch_float_unary, dispatch_scalar
+from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
 
 
 # ============================================================================
@@ -470,6 +470,11 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
 # ============================================================================
 
 
+fn _relu_backward_op[T: DType](grad: Scalar[T], x: Scalar[T]) -> Scalar[T]:
+    """ReLU backward: grad * (x > 0)."""
+    return grad if x > Scalar[T](0) else Scalar[T](0)
+
+
 fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient of ReLU activation.
 
@@ -493,37 +498,7 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     if grad_output._numel != x._numel:
         raise Error("relu_backward: grad_output and x must have same shape")
 
-    var result = ExTensor(x._shape, x._dtype)
-
-    if x._dtype == DType.float16:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float16]()[i]
-            var grad = grad_output._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = grad if x_val > Float16(0) else Float16(0)
-    elif x._dtype == DType.float32:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float32]()[i]
-            var grad = grad_output._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = grad if x_val > 0.0 else 0.0
-    elif x._dtype == DType.float64:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Float64]()[i]
-            var grad = grad_output._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = grad if x_val > 0.0 else 0.0
-    elif x._dtype == DType.int32:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Int32]()[i]
-            var grad = grad_output._data.bitcast[Int32]()[i]
-            result._data.bitcast[Int32]()[i] = grad if x_val > 0 else 0
-    elif x._dtype == DType.int64:
-        for i in range(x._numel):
-            var x_val = x._data.bitcast[Int64]()[i]
-            var grad = grad_output._data.bitcast[Int64]()[i]
-            result._data.bitcast[Int64]()[i] = grad if x_val > 0 else 0
-    else:
-        raise Error("relu_backward: only float16/32/64 and int32/64 supported for gradients")
-
-    return result
+    return dispatch_binary[_relu_backward_op](grad_output, x)
 
 
 fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
@@ -647,6 +622,11 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
     return (grad_input, grad_alpha)
 
 
+fn _sigmoid_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    """Sigmoid backward: grad * y * (1 - y)."""
+    return grad * y * (Scalar[T](1.0) - y)
+
+
 fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     """Compute gradient of sigmoid activation.
 
@@ -668,27 +648,12 @@ fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     if grad_output._numel != output._numel:
         raise Error("sigmoid_backward: grad_output and output must have same shape")
 
-    var result = ExTensor(output._shape, output._dtype)
+    return dispatch_float_binary[_sigmoid_backward_op](grad_output, output)
 
-    if output._dtype == DType.float16:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float16]()[i]
-            var grad = grad_output._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = grad * y * (Float16(1.0) - y)
-    elif output._dtype == DType.float32:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float32]()[i]
-            var grad = grad_output._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = grad * y * (1.0 - y)
-    elif output._dtype == DType.float64:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float64]()[i]
-            var grad = grad_output._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = grad * y * (1.0 - y)
-    else:
-        raise Error("sigmoid_backward: only float16/32/64 dtypes supported")
 
-    return result
+fn _tanh_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    """Tanh backward: grad * (1 - y²)."""
+    return grad * (Scalar[T](1.0) - y * y)
 
 
 fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
@@ -712,27 +677,7 @@ fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     if grad_output._numel != output._numel:
         raise Error("tanh_backward: grad_output and output must have same shape")
 
-    var result = ExTensor(output._shape, output._dtype)
-
-    if output._dtype == DType.float16:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float16]()[i]
-            var grad = grad_output._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = grad * (Float16(1.0) - y * y)
-    elif output._dtype == DType.float32:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float32]()[i]
-            var grad = grad_output._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = grad * (1.0 - y * y)
-    elif output._dtype == DType.float64:
-        for i in range(output._numel):
-            var y = output._data.bitcast[Float64]()[i]
-            var grad = grad_output._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = grad * (1.0 - y * y)
-    else:
-        raise Error("tanh_backward: only float16/32/64 dtypes supported")
-
-    return result
+    return dispatch_float_binary[_tanh_backward_op](grad_output, output)
 
 
 fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) raises -> ExTensor:
