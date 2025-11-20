@@ -9,16 +9,17 @@ Includes:
 - AdamW (Adam with Weight Decay)
 - RMSprop (Root Mean Square Propagation)
 
-All optimizers implement the Optimizer trait for consistent interface.
+All optimizers follow pure functional design - caller manages state.
 """
 
 # Export optimizer implementations
 
-# SGD optimizer (basic implementation)
+# SGD optimizer (functional implementation)
 from .sgd import sgd_step, sgd_step_simple
 
+# Adam optimizer (functional implementation)
+from .adam import adam_step, adam_step_simple
+
 # TODO: Implement remaining optimizers
-# from .base import Optimizer
-# from .adam import Adam
-# from .adamw import AdamW
-# from .rmsprop import RMSprop
+# from .adamw import adamw_step
+# from .rmsprop import rmsprop_step

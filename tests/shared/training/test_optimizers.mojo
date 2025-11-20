@@ -23,6 +23,7 @@ from tests.shared.conftest import (
 )
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like
 from shared.training.optimizers.sgd import sgd_step, sgd_step_simple
+from shared.training.optimizers.adam import adam_step, adam_step_simple
 from collections.vector import DynamicVector
 
 
@@ -196,31 +197,36 @@ fn test_sgd_zero_grad() raises:
 fn test_adam_initialization() raises:
     """Test Adam optimizer initialization.
 
-    API Contract:
-        Adam(
-            learning_rate: Float32 = 0.001,
-            beta1: Float32 = 0.9,
-            beta2: Float32 = 0.999,
-            epsilon: Float32 = 1e-8
-        )
+    Functional API Note:
+        Pure functional design - no class initialization.
+        Hyperparameters are passed as function arguments to adam_step().
+        This test verifies that the function accepts all expected parameters.
     """
-    # TODO(#1538): Implement when Adam is available
-    # var optimizer = Adam(
-    #     learning_rate=0.001,
-    #     beta1=0.9,
-    #     beta2=0.999,
-    #     epsilon=1e-8
-    # )
-    # assert_almost_equal(optimizer.learning_rate, 0.001)
-    # assert_almost_equal(optimizer.beta1, 0.9)
-    # assert_almost_equal(optimizer.beta2, 0.999)
-    pass
+    # Test that adam_step accepts all hyperparameters
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var params = ones(shape, DType.float32)
+    var grads = zeros(shape, DType.float32)
+    var m = zeros(shape, DType.float32)
+    var v = zeros(shape, DType.float32)
+
+    # Should accept all hyperparameters without error
+    var result = adam_step(
+        params, grads, m, v, t=1,
+        learning_rate=0.001,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8
+    )
+
+    # If we got here without error, the API contract is satisfied
+    assert_true(True)  # Placeholder to mark test as passing
 
 
 fn test_adam_parameter_update() raises:
     """Test Adam performs correct parameter update.
 
-    API Contract:
+    Functional API:
         Adam maintains two moments:
         - m (first moment, momentum)
         - v (second moment, RMSprop)
@@ -234,29 +240,38 @@ fn test_adam_parameter_update() raises:
 
     This is a CRITICAL test for Adam correctness.
     """
-    # TODO(#1538): Implement when Adam is available
-    # var params = Tensor(List[Float32](1.0), Shape(1))
-    # var grads = Tensor(List[Float32](0.1), Shape(1))
-    # #
-    # var optimizer = Adam(learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
-    # #
-    # # First step (t=1):
-    # # m = 0.9 * 0 + 0.1 * 0.1 = 0.01
-    # # v = 0.999 * 0 + 0.001 * 0.01 = 0.00001
-    # # m_hat = 0.01 / (1 - 0.9) = 0.1
-    # # v_hat = 0.00001 / (1 - 0.999) = 0.01
-    # # update = 0.001 * 0.1 / (sqrt(0.01) + 1e-8) ≈ 0.001
-    # optimizer.step(params, grads)
-    # #
-    # # Check approximate result (exact calculation complex)
-    # assert_less(params[0], 1.0)  # Parameter should decrease
-    pass
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+
+    var m = zeros(shape, DType.float32)
+    var v = zeros(shape, DType.float32)
+
+    # First step (t=1):
+    # m = 0.9 * 0 + 0.1 * 0.1 = 0.01
+    # v = 0.999 * 0 + 0.001 * 0.01 = 0.00001
+    # m_hat = 0.01 / (1 - 0.9) = 0.1
+    # v_hat = 0.00001 / (1 - 0.999) = 0.01
+    # update = 0.001 * 0.1 / (sqrt(0.01) + 1e-8) ≈ 0.001
+    var result = adam_step(params, grads, m, v, t=1, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    params = result[0]
+    m = result[1]
+    v = result[2]
+
+    # Parameter should decrease from 1.0
+    # Exact value ≈ 0.999 (1.0 - 0.001)
+    assert_less(params._data.bitcast[Float32]()[0], 1.0)
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.999, tolerance=1e-3)
 
 
 fn test_adam_bias_correction() raises:
     """Test Adam applies bias correction in early steps.
 
-    API Contract:
+    Functional API:
         Bias correction factors:
         - m_hat = m / (1 - beta1^t)
         - v_hat = v / (1 - beta2^t)
@@ -264,23 +279,31 @@ fn test_adam_bias_correction() raises:
 
     This is CRITICAL for Adam's fast convergence in early training.
     """
-    # TODO(#1538): Implement when Adam is available
-    # var params = Tensor(List[Float32](1.0), Shape(1))
-    # var grads = Tensor(List[Float32](0.1), Shape(1))
-    # #
-    # var optimizer = Adam(learning_rate=0.001)
-    # #
-    # # First few steps should have larger effective learning rate
-    # # due to bias correction
-    # var params_history = List[Float32]()
-    # for _ in range(5):
-    #     optimizer.step(params, grads)
-    #     params_history.append(params[0])
-    # #
-    # # Each step should decrease parameters
-    # for i in range(len(params_history) - 1):
-    #     assert_less(params_history[i+1], params_history[i])
-    pass
+    var shape = DynamicVector[Int](1)
+    shape[0] = 1
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+
+    var m = zeros(shape, DType.float32)
+    var v = zeros(shape, DType.float32)
+
+    # First few steps should have larger effective learning rate
+    # due to bias correction
+    var prev_param = Float32(1.0)
+
+    # Run 5 steps
+    for t in range(1, 6):
+        var result = adam_step(params, grads, m, v, t=t, learning_rate=0.001)
+        params = result[0]
+        m = result[1]
+        v = result[2]
+
+        # Each step should decrease parameters
+        assert_less(params._data.bitcast[Float32]()[0], prev_param)
+        prev_param = params._data.bitcast[Float32]()[0]
 
 
 # ============================================================================
@@ -503,9 +526,72 @@ fn test_adam_matches_pytorch() raises:
     """Test Adam matches PyTorch implementation exactly.
 
     This CRITICAL test validates Adam's complex update rules.
+
+    PyTorch reference code:
+        ```python
+        import torch
+        import torch.optim as optim
+
+        # Initial parameters
+        params = torch.tensor([1.0, 2.0, 3.0], dtype=torch.float32, requires_grad=True)
+
+        # Gradients
+        params.grad = torch.tensor([0.1, 0.2, 0.3], dtype=torch.float32)
+
+        # Adam optimizer
+        optimizer = optim.Adam([params], lr=0.001, betas=(0.9, 0.999), eps=1e-8)
+
+        # First step
+        optimizer.step()
+        print("After step 1:", params)
+        # tensor([0.9990, 1.9990, 2.9990])
+
+        # Second step (same gradients)
+        params.grad = torch.tensor([0.1, 0.2, 0.3], dtype=torch.float32)
+        optimizer.step()
+        print("After step 2:", params)
+        # tensor([0.9980, 1.9980, 2.9980])
+        ```
     """
-    # TODO(#1538): Implement when Adam is available
-    Similar to test_sgd_matches_pytorch but for Adam
+    # Initial parameters
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+    params._data.bitcast[Float32]()[1] = 2.0
+    params._data.bitcast[Float32]()[2] = 3.0
+
+    # Gradients
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+    grads._data.bitcast[Float32]()[1] = 0.2
+    grads._data.bitcast[Float32]()[2] = 0.3
+
+    # Moment buffers
+    var m = zeros(shape, DType.float32)
+    var v = zeros(shape, DType.float32)
+
+    # First step (t=1)
+    var result = adam_step(params, grads, m, v, t=1, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    params = result[0]
+    m = result[1]
+    v = result[2]
+
+    # Validate against PyTorch (step 1)
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9990, tolerance=1e-4)
+    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9990, tolerance=1e-4)
+    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9990, tolerance=1e-4)
+
+    # Second step (t=2, same gradients)
+    result = adam_step(params, grads, m, v, t=2, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    params = result[0]
+    m = result[1]
+    v = result[2]
+
+    # Validate against PyTorch (step 2)
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9980, tolerance=1e-4)
+    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9980, tolerance=1e-4)
+    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9980, tolerance=1e-4)
 
 
 # ============================================================================
