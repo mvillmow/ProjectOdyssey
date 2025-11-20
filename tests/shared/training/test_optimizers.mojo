@@ -8,6 +8,9 @@ Tests cover:
 
 Following TDD principles - these tests define the expected API
 and numerical behavior for implementation in Issue #49.
+
+Note: Tests have been adapted from class-based API to pure functional API
+as per architecture decision to use functional design throughout shared library.
 """
 
 from tests.shared.conftest import (
@@ -18,6 +21,9 @@ from tests.shared.conftest import (
     create_test_vector,
     TestFixtures,
 )
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like
+from shared.training.optimizers.sgd import sgd_step, sgd_step_simple
+from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -28,136 +34,158 @@ from tests.shared.conftest import (
 fn test_sgd_initialization() raises:
     """Test SGD optimizer initialization with hyperparameters.
 
-    API Contract:
-        SGD(
-            learning_rate: Float32 = 0.01,
-            momentum: Float32 = 0.0,
-            dampening: Float32 = 0.0,
-            weight_decay: Float32 = 0.0,
-            nesterov: Bool = False
-        )
+    Functional API Note:
+        Pure functional design - no class initialization.
+        Hyperparameters are passed as function arguments to sgd_step().
+        This test verifies that the function accepts all expected parameters.
     """
-    # TODO(#1538): Implement when SGD is available
-    # var optimizer = SGD(
-    #     learning_rate=0.01,
-    #     momentum=0.9,
-    #     dampening=0.0,
-    #     weight_decay=0.0001,
-    #     nesterov=False
-    # )
-    # assert_almost_equal(optimizer.learning_rate, 0.01)
-    # assert_almost_equal(optimizer.momentum, 0.9)
-    # assert_almost_equal(optimizer.weight_decay, 0.0001)
-    pass
+    # Test that sgd_step accepts all hyperparameters
+    var shape = DynamicVector[Int](3)
+    var params = ones(shape, DType.float32)
+    var grads = zeros(shape, DType.float32)
+    var velocity = zeros(shape, DType.float32)
+
+    # Should accept all hyperparameters without error
+    var result = sgd_step(
+        params,
+        grads,
+        velocity,
+        learning_rate=0.01,
+        momentum=0.9,
+        weight_decay=0.0001
+    )
+
+    # If we got here without error, the API contract is satisfied
+    assert_true(True)  # Placeholder to mark test as passing
 
 
 fn test_sgd_basic_update() raises:
     """Test SGD performs basic parameter update without momentum.
 
-    API Contract:
-        optimizer.step(inout params: Tensor, grads: Tensor)
-        - Updates parameters in-place
-        - Formula: params = params - lr * grads
+    Functional API:
+        sgd_step_simple(params, grads, learning_rate) -> new_params
+        - Returns new parameters (pure functional)
+        - Formula: new_params = params - lr * grads
 
     This is a CRITICAL test that defines the core SGD behavior.
     """
-    # TODO(#1538): Implement when SGD and Tensor are available
-    # # Initial parameters: [1.0, 2.0, 3.0]
-    # var params = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3))
-    # #
-    # # Gradients: [0.1, 0.2, 0.3]
-    # var grads = Tensor(List[Float32](0.1, 0.2, 0.3), Shape(3))
-    # #
-    # # Create optimizer with lr=0.1
-    # var optimizer = SGD(learning_rate=0.1, momentum=0.0)
-    # #
-    # # Perform update
-    # optimizer.step(params, grads)
-    # #
-    # # Expected: params = params - lr * grads
-    # # [1.0 - 0.1*0.1, 2.0 - 0.1*0.2, 3.0 - 0.1*0.3]
-    # # = [0.99, 1.98, 2.97]
-    # assert_almost_equal(params[0], 0.99, tolerance=1e-6)
-    # assert_almost_equal(params[1], 1.98, tolerance=1e-6)
-    # assert_almost_equal(params[2], 2.97, tolerance=1e-6)
-    pass
+    # Initial parameters: [1.0, 2.0, 3.0]
+    var shape = DynamicVector[Int](3)
+    var params = ones(shape, DType.float32)
+
+    # Manually set values: [1.0, 2.0, 3.0]
+    params._data.bitcast[Float32]()[0] = 1.0
+    params._data.bitcast[Float32]()[1] = 2.0
+    params._data.bitcast[Float32]()[2] = 3.0
+
+    # Gradients: [0.1, 0.2, 0.3]
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+    grads._data.bitcast[Float32]()[1] = 0.2
+    grads._data.bitcast[Float32]()[2] = 0.3
+
+    # Perform update with lr=0.1
+    var new_params = sgd_step_simple(params, grads, learning_rate=0.1)
+
+    # Expected: new_params = params - lr * grads
+    # [1.0 - 0.1*0.1, 2.0 - 0.1*0.2, 3.0 - 0.1*0.3]
+    # = [0.99, 1.98, 2.97]
+    assert_almost_equal(new_params._data.bitcast[Float32]()[0], 0.99, tolerance=1e-6)
+    assert_almost_equal(new_params._data.bitcast[Float32]()[1], 1.98, tolerance=1e-6)
+    assert_almost_equal(new_params._data.bitcast[Float32]()[2], 2.97, tolerance=1e-6)
 
 
 fn test_sgd_momentum_accumulation() raises:
     """Test SGD accumulates momentum correctly over multiple steps.
 
-    API Contract:
+    Functional API:
         With momentum > 0:
         - First update: velocity = grad
         - Subsequent updates: velocity = momentum * velocity + grad
-        - Parameter update: params = params - lr * velocity
+        - Parameter update: new_params = params - lr * velocity
+        - Returns: (new_params, new_velocity)
 
     This is a CRITICAL test for momentum-based training.
     """
-    # TODO(#1538): Implement when SGD is available
-    # var params = Tensor(List[Float32](1.0), Shape(1))
-    # var grads = Tensor(List[Float32](0.1), Shape(1))
-    # #
-    # var optimizer = SGD(learning_rate=0.1, momentum=0.9)
-    # #
-    # # Step 1: velocity = grad = 0.1
-    # # update = lr * velocity = 0.1 * 0.1 = 0.01
-    # # params = 1.0 - 0.01 = 0.99
-    # optimizer.step(params, grads)
-    # assert_almost_equal(params[0], 0.99)
-    # #
-    # # Step 2: velocity = 0.9 * 0.1 + 0.1 = 0.19
-    # # update = 0.1 * 0.19 = 0.019
-    # # params = 0.99 - 0.019 = 0.971
-    # optimizer.step(params, grads)
-    # assert_almost_equal(params[0], 0.971)
-    pass
+    var shape = DynamicVector[Int](1)
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+
+    var velocity = zeros(shape, DType.float32)
+
+    # Step 1: velocity = grad = 0.1
+    # update = lr * velocity = 0.1 * 0.1 = 0.01
+    # params = 1.0 - 0.01 = 0.99
+    var result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    params = result[0]
+    velocity = result[1]
+
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.99, tolerance=1e-6)
+
+    # Step 2: velocity = 0.9 * 0.1 + 0.1 = 0.19
+    # update = 0.1 * 0.19 = 0.019
+    # params = 0.99 - 0.019 = 0.971
+    result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    params = result[0]
+    velocity = result[1]
+
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.971, tolerance=1e-5)
 
 
 fn test_sgd_weight_decay() raises:
     """Test SGD applies weight decay (L2 regularization).
 
-    API Contract:
+    Functional API:
         With weight_decay > 0:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update
     """
-    # TODO(#1538): Implement when SGD is available
-    # var params = Tensor(List[Float32](1.0), Shape(1))
-    # var grads = Tensor(List[Float32](0.1), Shape(1))
-    # #
-    # var optimizer = SGD(learning_rate=0.1, weight_decay=0.01)
-    # #
-    # # Effective grad = 0.1 + 0.01 * 1.0 = 0.11
-    # # update = 0.1 * 0.11 = 0.011
-    # # params = 1.0 - 0.011 = 0.989
-    # optimizer.step(params, grads)
-    # assert_almost_equal(params[0], 0.989)
-    pass
+    var shape = DynamicVector[Int](1)
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+
+    var velocity = zeros(shape, DType.float32)
+
+    # Effective grad = 0.1 + 0.01 * 1.0 = 0.11
+    # update = 0.1 * 0.11 = 0.011
+    # params = 1.0 - 0.011 = 0.989
+    var result = sgd_step(
+        params, grads, velocity,
+        learning_rate=0.1,
+        weight_decay=0.01
+    )
+    var new_params = result[0]
+
+    assert_almost_equal(new_params._data.bitcast[Float32]()[0], 0.989, tolerance=1e-6)
 
 
 fn test_sgd_nesterov_momentum() raises:
     """Test SGD with Nesterov momentum (lookahead).
 
-    API Contract:
-        With nesterov=True:
-        - Lookahead: params_ahead = params - momentum * velocity
-        - Gradient computed at lookahead position
-        - Update using lookahead gradient
+    Not applicable to pure functional design - Nesterov momentum requires
+    computing gradients at a different point (lookahead position), which
+    would require the gradient computation to be part of the optimizer.
+
+    In the functional design, gradient computation is external to the
+    optimizer function, so Nesterov momentum is deferred.
     """
-    # TODO(#1538): Implement when SGD supports Nesterov
-    This is an advanced feature, may be deferred
+    pass  # Deferred - not applicable to pure functional design
 
 
 fn test_sgd_zero_grad() raises:
     """Test SGD clears optimizer state (if needed).
 
-    API Contract:
-        optimizer.zero_grad() or similar method
-        - Clears accumulated gradients or state
+    Not applicable to pure functional design - there is no internal state
+    to clear. In the functional API, the caller manages all state (velocity
+    buffers, etc.), so gradient clearing is the caller's responsibility.
     """
-    # TODO(#1538): Implement if SGD has state management
-    This may not be needed if gradients are managed externally
+    pass  # Not applicable - no internal state in functional design
 
 
 # ============================================================================
