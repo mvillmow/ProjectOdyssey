@@ -105,6 +105,9 @@ from .activation import (
     tanh,
     softmax,
     gelu,
+    swish,
+    mish,
+    elu,
     relu_backward,
     leaky_relu_backward,
     prelu_backward,
@@ -112,6 +115,9 @@ from .activation import (
     tanh_backward,
     gelu_backward,
     softmax_backward,
+    swish_backward,
+    mish_backward,
+    elu_backward,
 )
 
 # ============================================================================
@@ -139,6 +145,13 @@ from .pooling import (
     maxpool2d_backward,
     avgpool2d_backward,
     global_avgpool2d_backward,
+)
+
+from .dropout import (
+    dropout,
+    dropout2d,
+    dropout_backward,
+    dropout2d_backward,
 )
 
 # ============================================================================
@@ -268,6 +281,9 @@ __all__ = [
     "tanh",
     "softmax",
     "gelu",
+    "swish",
+    "mish",
+    "elu",
     "relu_backward",
     "leaky_relu_backward",
     "prelu_backward",
@@ -275,6 +291,9 @@ __all__ = [
     "tanh_backward",
     "gelu_backward",
     "softmax_backward",
+    "swish_backward",
+    "mish_backward",
+    "elu_backward",
     # Neural network operations
     "linear",
     "linear_no_bias",
@@ -290,6 +309,10 @@ __all__ = [
     "maxpool2d_backward",
     "avgpool2d_backward",
     "global_avgpool2d_backward",
+    "dropout",
+    "dropout2d",
+    "dropout_backward",
+    "dropout2d_backward",
     # Element-wise
     "abs",
     "sign",
