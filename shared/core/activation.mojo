@@ -25,6 +25,7 @@ from collections.vector import DynamicVector
 from .extensor import ExTensor
 from .reduction import sum as tensor_sum, max as tensor_max
 from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
+from .gradient_types import GradientPair
 
 
 # ============================================================================
@@ -595,7 +596,7 @@ fn _prelu_backward_impl[dtype: DType](
             grad_alpha_ptr[alpha_idx] += grad * x_val
 
 
-fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises -> (ExTensor, ExTensor):
+fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises -> GradientPair:
     """Compute gradients of PReLU activation.
 
     PReLU gradients:
@@ -608,7 +609,7 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
         alpha: Learnable slope parameter
 
     Returns:
-        Tuple of (grad_input, grad_alpha)
+        GradientPair containing (grad_input, grad_alpha)
     """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
@@ -629,7 +630,7 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
     else:
         raise Error("prelu_backward: only float16/32/64 dtypes supported")
 
-    return (grad_input, grad_alpha)
+    return GradientPair(grad_input, grad_alpha)
 
 
 @always_inline

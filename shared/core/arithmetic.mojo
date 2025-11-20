@@ -6,6 +6,7 @@ Implements element-wise arithmetic operations following NumPy-style broadcasting
 from collections.vector import DynamicVector
 from .extensor import ExTensor
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
+from .gradient_types import GradientPair
 
 
 fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -545,7 +546,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: DynamicVector[Int]) ra
     return result
 
 
-fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> (ExTensor, ExTensor):
+fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:
     """Compute gradients for element-wise addition.
 
     For C = A + B, given ∂L/∂C, computes:
@@ -561,7 +562,7 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
         b_shape: Original shape of second input (B)
 
     Returns:
-        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
         # No broadcasting
@@ -570,6 +571,8 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
         var c = add(a, b)
         var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
         var grads = add_backward(grad_c, a.shape(), b.shape())
+        var grad_a = grads.grad_a
+        var grad_b = grads.grad_b
 
         # With broadcasting
         var x = ones(DynamicVector[Int](3, 1), DType.float32)
@@ -577,16 +580,16 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
         var z = add(x, y)  # Shape (3, 4)
         var grad_z = ones(DynamicVector[Int](3, 4), DType.float32)
         var grads = add_backward(grad_z, x.shape(), y.shape())
-        # grad_x will be shape (3, 1) - summed over broadcast dimension
+        # grads.grad_a will be shape (3, 1) - summed over broadcast dimension
     """
     # For addition, gradient passes through but must be reduced for broadcasting
     var grad_a = _reduce_broadcast_dims(grad_output, a_shape)
     var grad_b = _reduce_broadcast_dims(grad_output, b_shape)
 
-    return (grad_a, grad_b)
+    return GradientPair(grad_a, grad_b)
 
 
-fn subtract_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> (ExTensor, ExTensor):
+fn subtract_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:
     """Compute gradients for element-wise subtraction.
 
     For C = A - B, given ∂L/∂C, computes:
@@ -601,7 +604,7 @@ fn subtract_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape
         b_shape: Original shape of second input (B)
 
     Returns:
-        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a_shape)
@@ -615,10 +618,10 @@ fn subtract_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(neg_grad, b_shape)
 
-    return (grad_a, grad_b)
+    return GradientPair(grad_a, grad_b)
 
 
-fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (ExTensor, ExTensor):
+fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
     """Compute gradients for element-wise multiplication.
 
     For C = A * B, given ∂L/∂C, computes:
@@ -631,7 +634,7 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         b: Second input from forward pass (B)
 
     Returns:
-        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
         var a = ones(DynamicVector[Int](3, 4), DType.float32)
@@ -639,6 +642,8 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         var c = multiply(a, b)
         var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
         var grads = multiply_backward(grad_c, a, b)
+        var grad_a = grads.grad_a
+        var grad_b = grads.grad_b
     """
     # grad_a = grad_output * b (then reduce for broadcasting)
     var grad_a_unreduced = multiply(grad_output, b)
@@ -648,10 +653,10 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
     var grad_b_unreduced = multiply(grad_output, a)
     var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())
 
-    return (grad_a, grad_b)
+    return GradientPair(grad_a, grad_b)
 
 
-fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (ExTensor, ExTensor):
+fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
     """Compute gradients for element-wise division.
 
     For C = A / B, given ∂L/∂C, computes:
@@ -666,7 +671,7 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
         b: Second input from forward pass (B)
 
     Returns:
-        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
         var a = ones(DynamicVector[Int](3, 4), DType.float32)
@@ -674,6 +679,8 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
         var c = divide(a, b)
         var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
         var grads = divide_backward(grad_c, a, b)
+        var grad_a = grads.grad_a
+        var grad_b = grads.grad_b
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero in b².
@@ -706,7 +713,7 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())
 
-    return (grad_a, grad_b)
+    return GradientPair(grad_a, grad_b)
 
 
 # ==============================================================================

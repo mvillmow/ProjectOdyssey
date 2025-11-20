@@ -52,18 +52,18 @@ fn test_linear_backward_shapes() raises:
     var grad_output = ones(grad_out_shape, DType.float32)
 
     # Backward pass
-    var (grad_input, grad_weights, grad_bias) = linear_backward(grad_output, x, weights)
+    var grads = linear_backward(grad_output, x, weights)
 
     # Check shapes
-    var gi_shape = grad_input.shape()
+    var gi_shape = grads.grad_input.shape()
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], in_features)
 
-    var gw_shape = grad_weights.shape()
+    var gw_shape = grads.grad_weights.shape()
     assert_equal(gw_shape[0], out_features)
     assert_equal(gw_shape[1], in_features)
 
-    var gb_shape = grad_bias.shape()
+    var gb_shape = grads.grad_bias.shape()
     assert_equal(gb_shape[0], out_features)
 
 
@@ -96,18 +96,18 @@ fn test_linear_backward_numerical() raises:
     var grad_output = ones(grad_out_shape, DType.float32)
 
     # Backward pass
-    var (grad_input, grad_weights, grad_bias) = linear_backward(grad_output, x, weights)
+    var grads = linear_backward(grad_output, x, weights)
 
     # Check grad_input shape
-    var gi_shape = grad_input.shape()
+    var gi_shape = grads.grad_input.shape()
     assert_equal(gi_shape[0], 1)
     assert_equal(gi_shape[1], 2)
 
     # grad_input = grad_output @ weights
     # grad_output = [1, 1], weights = [[0.5, 0.3], [0.2, 0.4]]
     # result should be [1*0.5 + 1*0.2, 1*0.3 + 1*0.4] = [0.7, 0.7]
-    assert_almost_equal(grad_input._data.bitcast[Float32]()[0], Float32(0.7), tolerance=1e-5)
-    assert_almost_equal(grad_input._data.bitcast[Float32]()[1], Float32(0.7), tolerance=1e-5)
+    assert_almost_equal(grads.grad_input._data.bitcast[Float32]()[0], Float32(0.7), tolerance=1e-5)
+    assert_almost_equal(grads.grad_input._data.bitcast[Float32]()[1], Float32(0.7), tolerance=1e-5)
 
 
 fn test_linear_backward_batch() raises:
@@ -132,12 +132,12 @@ fn test_linear_backward_batch() raises:
     var grad_output = ones(grad_out_shape, DType.float32)
 
     # Backward pass
-    var (grad_input, grad_weights, grad_bias) = linear_backward(grad_output, x, weights)
+    var grads = linear_backward(grad_output, x, weights)
 
     # Verify shapes
-    assert_equal(grad_input.shape()[0], batch)
-    assert_equal(grad_weights.shape()[0], out_features)
-    assert_equal(grad_bias.shape()[0], out_features)
+    assert_equal(grads.grad_input.shape()[0], batch)
+    assert_equal(grads.grad_weights.shape()[0], out_features)
+    assert_equal(grads.grad_bias.shape()[0], out_features)
 
 
 # ============================================================================
@@ -184,22 +184,22 @@ fn test_conv2d_backward_shapes() raises:
     var grad_output = ones_like(output)
 
     # Backward pass
-    var (grad_input, grad_kernel, grad_bias) = conv2d_backward(grad_output, x, kernel, stride=1, padding=0)
+    var grads = conv2d_backward(grad_output, x, kernel, stride=1, padding=0)
 
     # Check shapes match original inputs
-    var gi_shape = grad_input.shape()
+    var gi_shape = grads.grad_input.shape()
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], in_channels)
     assert_equal(gi_shape[2], in_h)
     assert_equal(gi_shape[3], in_w)
 
-    var gk_shape = grad_kernel.shape()
+    var gk_shape = grads.grad_weights.shape()
     assert_equal(gk_shape[0], out_channels)
     assert_equal(gk_shape[1], in_channels)
     assert_equal(gk_shape[2], kh)
     assert_equal(gk_shape[3], kw)
 
-    var gb_shape = grad_bias.shape()
+    var gb_shape = grads.grad_bias.shape()
     assert_equal(gb_shape[0], out_channels)
 
 
@@ -232,10 +232,10 @@ fn test_conv2d_backward_with_stride() raises:
     var grad_output = ones_like(output)
 
     # Backward pass
-    var (grad_input, grad_kernel, grad_bias) = conv2d_backward(grad_output, x, kernel, stride=2, padding=0)
+    var grads = conv2d_backward(grad_output, x, kernel, stride=2, padding=0)
 
     # Check grad_input shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grads.grad_input.shape()
     assert_equal(gi_shape[0], 1)
     assert_equal(gi_shape[1], 1)
     assert_equal(gi_shape[2], 8)

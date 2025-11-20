@@ -5,6 +5,7 @@ Implements linear algebra operations like matrix multiplication and transpose.
 
 from collections.vector import DynamicVector
 from shared.core.extensor import ExTensor
+from shared.core.gradient_types import GradientPair
 
 
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -323,7 +324,7 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
-fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (ExTensor, ExTensor):
+fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
     """Compute gradients for matrix multiplication.
 
     For C = A @ B, given ∂L/∂C, computes:
@@ -342,7 +343,7 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
         b: Second input from forward pass (B)
 
     Returns:
-        Tuple of (grad_a, grad_b) - gradients w.r.t. inputs
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
         # Forward pass
@@ -353,8 +354,8 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
         # Backward pass
         var grad_c = ones(DynamicVector[Int](3, 5), DType.float32)
         var grads = matmul_backward(grad_c, a, b)
-        var grad_a = grads[0]  # Shape (3, 4)
-        var grad_b = grads[1]  # Shape (4, 5)
+        var grad_a = grads.grad_a  # Shape (3, 4)
+        var grad_b = grads.grad_b  # Shape (4, 5)
 
     Mathematical Derivation:
         For element-wise: C[i,j] = Σ_k A[i,k] * B[k,j]
@@ -392,7 +393,7 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
         var b_t = transpose(a)  # Transpose A to get (k, m)
         var grad_b = matmul(b_t, grad_output)  # (k, m) @ (m,) -> (k,)
 
-        return (grad_a, grad_b)
+        return GradientPair(grad_a, grad_b)
 
     # Handle 1D @ 2D case
     if a_ndim == 1 and b_ndim == 2:
@@ -419,7 +420,7 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
                 let grad_val = grad_output._get_float64(j)
                 grad_b._set_float64(i * n + j, a_val * grad_val)
 
-        return (grad_a, grad_b)
+        return GradientPair(grad_a, grad_b)
 
     # Handle 2D @ 2D and batched cases
     # Standard: grad_a = grad_output @ B^T, grad_b = A^T @ grad_output
@@ -429,7 +430,7 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> (E
     var grad_a = matmul(grad_output, b_t)
     var grad_b = matmul(a_t, grad_output)
 
-    return (grad_a, grad_b)
+    return GradientPair(grad_a, grad_b)
 
 
 fn transpose_backward(grad_output: ExTensor) raises -> ExTensor:

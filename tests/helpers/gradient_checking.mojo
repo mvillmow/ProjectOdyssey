@@ -14,7 +14,6 @@ Example usage:
 """
 
 from shared.core.extensor import ExTensor, zeros_like, ones_like
-from math import abs as math_abs
 from collections.vector import DynamicVector
 
 
@@ -98,7 +97,7 @@ fn compute_numerical_gradient(
 
         grad._set_float64(i, grad_val)
 
-    return grad
+    return grad^
 
 
 fn assert_gradients_close(
@@ -135,9 +134,7 @@ fn assert_gradients_close(
     """
     # Check shapes match
     if analytical._numel != numerical._numel:
-        raise Error(message + ": shape mismatch - analytical has " +
-                   str(analytical._numel) + " elements, numerical has " +
-                   str(numerical._numel) + " elements")
+        raise Error(message + ": shape mismatch")
 
     # Check dtypes match
     if analytical._dtype != numerical._dtype:
@@ -151,27 +148,32 @@ fn assert_gradients_close(
     for i in range(analytical._numel):
         var a = analytical._get_float64(i)
         var n = numerical._get_float64(i)
-        var abs_diff = math_abs(a - n)
-        var tolerance = atol + rtol * math_abs(n)
+        var abs_diff: Float64
+        if a - n < 0:
+            abs_diff = -(a - n)
+        else:
+            abs_diff = a - n
+        var tolerance = atol + rtol * (n if n >= 0.0 else -n)
 
         if abs_diff > max_diff:
             max_diff = abs_diff
             worst_idx = i
 
         # Compute relative difference for reporting
-        if math_abs(n) > 1e-10:
-            var rel_diff = abs_diff / math_abs(n)
+        var abs_n: Float64
+        if n < 0:
+            abs_n = -n
+        else:
+            abs_n = n
+
+        if abs_n > 1e-10:
+            var rel_diff = abs_diff / abs_n
             if rel_diff > max_rel_diff:
                 max_rel_diff = rel_diff
 
         if abs_diff > tolerance:
-            raise Error(message + ":\n" +
-                       "  Index: " + str(i) + "\n" +
-                       "  Analytical: " + str(a) + "\n" +
-                       "  Numerical: " + str(n) + "\n" +
-                       "  Absolute difference: " + str(abs_diff) + "\n" +
-                       "  Tolerance: " + str(tolerance) + "\n" +
-                       "  (atol=" + str(atol) + ", rtol=" + str(rtol) + ")")
+            # Build error message without str() function
+            raise Error(message + ": gradient mismatch at index " + String(i))
 
 
 fn check_gradient(

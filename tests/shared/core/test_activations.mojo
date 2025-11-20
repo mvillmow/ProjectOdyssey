@@ -22,7 +22,7 @@ from tests.shared.conftest import (
     assert_shape_equal,
     TestFixtures,
 )
-from shared.core.extensor import ExTensor, zeros, ones
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.activation import (
     relu,
     leaky_relu,
@@ -45,6 +45,7 @@ from shared.core.activation import (
     mish_backward,
     elu_backward,
 )
+from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
 from collections.vector import DynamicVector
 from math import tanh as math_tanh, exp as math_exp
 
@@ -78,7 +79,7 @@ fn test_relu_basic() raises:
 
 
 fn test_relu_backward() raises:
-    """Test ReLU gradient."""
+    """Test ReLU gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
     shape[0] = 4
     var x = zeros(shape, DType.float32)
@@ -89,14 +90,15 @@ fn test_relu_backward() raises:
     x._data.bitcast[Float32]()[2] = 0.5
     x._data.bitcast[Float32]()[3] = 2.0
 
-    var grad_out = ones(shape, DType.float32)
-    var grad_in = relu_backward(grad_out, x)
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return relu(inp)
 
-    # Gradient is 0 for x < 0, 1 for x > 0, 0 for x == 0
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5)
+    var y = relu(x)
+    var grad_out = ones_like(y)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, relu_backward, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 fn test_relu_shape() raises:
@@ -138,7 +140,7 @@ fn test_leaky_relu_basic() raises:
 
 
 fn test_leaky_relu_backward() raises:
-    """Test Leaky ReLU gradient."""
+    """Test Leaky ReLU gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
     shape[0] = 2
     var x = zeros(shape, DType.float32)
@@ -146,12 +148,18 @@ fn test_leaky_relu_backward() raises:
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = 1.0
 
-    var grad_out = ones(shape, DType.float32)
-    var grad_in = leaky_relu_backward(grad_out, x, alpha=0.1)
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return leaky_relu(inp, alpha=0.1)
 
-    # Gradient is 0.1 for x < 0, 1.0 for x > 0
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(0.1), tolerance=1e-5)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-5)
+    var y = leaky_relu(x, alpha=0.1)
+    var grad_out = ones_like(y)
+
+    # Use numerical gradient checking (gold standard)
+    fn backward_wrapper(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return leaky_relu_backward(grad, inp, alpha=0.1)
+
+    check_gradient(forward, backward_wrapper, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 # ============================================================================
@@ -183,7 +191,7 @@ fn test_prelu_basic() raises:
 
 
 fn test_prelu_backward() raises:
-    """Test PReLU gradient."""
+    """Test PReLU gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
     shape[0] = 2
     var x = zeros(shape, DType.float32)
@@ -195,12 +203,19 @@ fn test_prelu_backward() raises:
     alpha._data.bitcast[Float32]()[0] = 0.5
     alpha._data.bitcast[Float32]()[1] = 0.5
 
-    var grad_out = ones(shape, DType.float32)
-    var (grad_in, grad_alpha) = prelu_backward(grad_out, x, alpha)
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return prelu(inp, alpha)
 
-    # Gradient w.r.t. input: alpha for x < 0, 1.0 for x > 0
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-5)
+    var y = prelu(x, alpha)
+    var grad_out = ones_like(y)
+
+    # Validate gradient w.r.t. input using numerical checking
+    fn backward_input(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var result = prelu_backward(grad, inp, alpha)
+        return result[0]
+
+    check_gradient(forward, backward_input, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 # ============================================================================
@@ -226,19 +241,29 @@ fn test_sigmoid_basic() raises:
 
 
 fn test_sigmoid_backward() raises:
-    """Test sigmoid gradient."""
+    """Test sigmoid gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
-    shape[0] = 1
+    shape[0] = 3
     var x = zeros(shape, DType.float32)
 
-    x._data.bitcast[Float32]()[0] = 0.0
+    # Use multiple test points for better coverage
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return sigmoid(inp)
 
     var y = sigmoid(x)
-    var grad_out = ones(shape, DType.float32)
-    var grad_in = sigmoid_backward(grad_out, y)
+    var grad_out = ones_like(y)
 
-    # At x=0, sigmoid(0) = 0.5, gradient = 0.5 * (1 - 0.5) = 0.25
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(0.25), tolerance=1e-5)
+    # Note: sigmoid_backward takes output y, not input x
+    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
+        return sigmoid_backward(grad, y)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 fn test_sigmoid_range() raises:
@@ -285,19 +310,29 @@ fn test_tanh_basic() raises:
 
 
 fn test_tanh_backward() raises:
-    """Test tanh gradient."""
+    """Test tanh gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
-    shape[0] = 1
+    shape[0] = 3
     var x = zeros(shape, DType.float32)
 
-    x._data.bitcast[Float32]()[0] = 0.0
+    # Use multiple test points for better coverage
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return tanh(inp)
 
     var y = tanh(x)
-    var grad_out = ones(shape, DType.float32)
-    var grad_in = tanh_backward(grad_out, y)
+    var grad_out = ones_like(y)
 
-    # At x=0, tanh(0) = 0, gradient = 1 - 0^2 = 1.0
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5)
+    # Note: tanh_backward takes output y, not input x
+    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
+        return tanh_backward(grad, y)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 fn test_tanh_range() raises:
@@ -387,6 +422,36 @@ fn test_softmax_sum_to_one() raises:
 
     assert_almost_equal(sum_row0, Float32(1.0), tolerance=1e-5)
     assert_almost_equal(sum_row1, Float32(1.0), tolerance=1e-5)
+
+
+fn test_softmax_backward() raises:
+    """Test softmax gradient with numerical validation."""
+    var shape = DynamicVector[Int](2)
+    shape[0] = 2
+    shape[1] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set test values
+    x._data.bitcast[Float32]()[0] = -1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+    x._data.bitcast[Float32]()[3] = -0.5
+    x._data.bitcast[Float32]()[4] = 0.5
+    x._data.bitcast[Float32]()[5] = 1.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return softmax(inp, axis=1)
+
+    var y = softmax(x, axis=1)
+    var grad_out = ones_like(y)
+
+    # Note: softmax_backward takes output y, not input x
+    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
+        return softmax_backward(grad, y, axis=1)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 # ============================================================================
@@ -533,23 +598,28 @@ fn test_elu_basic() raises:
 
 
 fn test_elu_backward() raises:
-    """Test ELU gradient."""
+    """Test ELU gradient with numerical validation."""
     var shape = DynamicVector[Int](1)
-    shape[0] = 2
+    shape[0] = 3
     var x = zeros(shape, DType.float32)
 
     x._data.bitcast[Float32]()[0] = -1.0
-    x._data.bitcast[Float32]()[1] = 1.0
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 1.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return elu(inp, alpha=1.0)
 
     var y = elu(x, alpha=1.0)
-    var grad_out = ones(shape, DType.float32)
-    var grad_in = elu_backward(grad_out, x, y, alpha=1.0)
+    var grad_out = ones_like(y)
 
-    # For x < 0: gradient = y + alpha
-    # For x > 0: gradient = 1.0
-    # ELU(-1) H -0.632, so gradient H -0.632 + 1.0 = 0.368
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[0], Float32(0.368), tolerance=0.01)
-    assert_almost_equal(grad_in._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-5)
+    # Note: elu_backward takes x, y, and alpha
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return elu_backward(grad, inp, y, alpha=1.0)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 # ============================================================================
