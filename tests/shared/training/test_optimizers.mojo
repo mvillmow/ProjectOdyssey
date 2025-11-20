@@ -436,25 +436,67 @@ fn test_sgd_matches_pytorch() raises:
     """Test SGD matches PyTorch implementation exactly.
 
     This CRITICAL test validates numerical correctness against PyTorch.
-    We load reference outputs from PyTorch and compare.
+
+    PyTorch reference code:
+        ```python
+        import torch
+        import torch.optim as optim
+
+        # Initial parameters
+        params = torch.tensor([1.0, 2.0, 3.0], dtype=torch.float32, requires_grad=True)
+
+        # Gradients
+        params.grad = torch.tensor([0.1, 0.2, 0.3], dtype=torch.float32)
+
+        # SGD optimizer with momentum
+        optimizer = optim.SGD([params], lr=0.1, momentum=0.9, weight_decay=0.0)
+
+        # First step
+        optimizer.step()
+        print("After step 1:", params)  # tensor([0.9900, 1.9800, 2.9700])
+
+        # Second step (same gradients)
+        params.grad = torch.tensor([0.1, 0.2, 0.3], dtype=torch.float32)
+        optimizer.step()
+        print("After step 2:", params)  # tensor([0.9710, 1.9420, 2.9130])
+        ```
     """
-    # TODO(#1538): Implement when SGD is available
-    # # Load PyTorch reference data
-    # let reference = load_pytorch_reference("sgd_update.json")
-    # #
-    # var params = Tensor(reference.initial_params)
-    # var grads = Tensor(reference.grads)
-    # #
-    # var optimizer = SGD(
-    #     learning_rate=reference.lr,
-    #     momentum=reference.momentum
-    # )
-    # #
-    # optimizer.step(params, grads)
-    # #
-    # # Should match PyTorch exactly (tolerance 1e-6)
-    # assert_tensor_equal(params, reference.expected_params, tolerance=1e-6)
-    pass
+    # Initial parameters
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var params = ones(shape, DType.float32)
+    params._data.bitcast[Float32]()[0] = 1.0
+    params._data.bitcast[Float32]()[1] = 2.0
+    params._data.bitcast[Float32]()[2] = 3.0
+
+    # Gradients
+    var grads = zeros(shape, DType.float32)
+    grads._data.bitcast[Float32]()[0] = 0.1
+    grads._data.bitcast[Float32]()[1] = 0.2
+    grads._data.bitcast[Float32]()[2] = 0.3
+
+    # Velocity buffer
+    var velocity = zeros(shape, DType.float32)
+
+    # First step
+    var result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    params = result[0]
+    velocity = result[1]
+
+    # Validate against PyTorch (step 1)
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9900, tolerance=1e-6)
+    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9800, tolerance=1e-6)
+    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9700, tolerance=1e-6)
+
+    # Second step (same gradients)
+    result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    params = result[0]
+    velocity = result[1]
+
+    # Validate against PyTorch (step 2)
+    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9710, tolerance=1e-6)
+    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9420, tolerance=1e-6)
+    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9130, tolerance=1e-6)
 
 
 fn test_adam_matches_pytorch() raises:

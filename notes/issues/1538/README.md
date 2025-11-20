@@ -122,11 +122,22 @@ Work Completed:
    - `test_linear_backward()` - Deferred (backward pass not yet implemented)
    - `test_relu_in_place()` - Not applicable (pure functional - no mutation)
 
+6. **Implemented Property-Based Tests** (2 tests for functional API):
+   - `test_layer_property_batch_independence()` - Tests batch processing equals individual processing
+   - `test_layer_property_deterministic()` - Tests pure functional operations are deterministic
+
+7. **Implemented PyTorch Validation Tests** (4 tests with reference values):
+   - `test_linear_matches_pytorch()` - Validates linear against PyTorch F.linear
+   - `test_relu_matches_pytorch()` - Validates ReLU against PyTorch F.relu
+   - `test_sigmoid_matches_pytorch()` - Validates sigmoid against PyTorch sigmoid
+   - `test_sgd_matches_pytorch()` - Validates SGD with momentum against PyTorch optim.SGD
+
 **Test Implementation Summary**:
-- **10 tests implemented** (4 SGD + 3 linear + 3 activation)
+- **16 tests implemented** (4 SGD + 3 linear + 3 activation + 2 property + 4 PyTorch validation)
 - **4 tests deferred/not applicable** (Nesterov, zero_grad, backward, in_place)
 - All implemented tests adapted from class-based to pure functional API
 - Tests validate numerical correctness with known expected values
+- PyTorch validation tests include reference Python code and expected outputs
 
 **Test Adaptation Notes**:
 - Original TDD stubs expected: `Layer().forward(x)` (class-based, stateful)
