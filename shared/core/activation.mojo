@@ -1049,3 +1049,329 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
         raise Error("softmax_backward: only float16/32/64 dtypes supported")
 
     return result
+
+
+# ============================================================================
+# Advanced Activation Functions
+# ============================================================================
+
+
+fn swish(tensor: ExTensor) raises -> ExTensor:
+    """Swish activation function (also known as SiLU - Sigmoid Linear Unit).
+
+    Swish is a smooth, non-monotonic activation function that performs better
+    than ReLU in deep networks.
+
+    Formula:
+        swish(x) = x * sigmoid(x)
+
+    Properties:
+        - Smooth and continuously differentiable
+        - Non-monotonic (has a slight dip for negative values)
+        - Self-gated (uses its own value as gate)
+        - Bounded below, unbounded above
+
+    Args:
+        tensor: Input tensor of any shape
+
+    Returns:
+        Output tensor with swish applied element-wise
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, swish
+
+        var x = ExTensor.from_list([...])
+        var activated = swish(x)
+        ```
+
+    Reference:
+        Ramachandran et al., "Searching for Activation Functions" (2017)
+    """
+    # swish(x) = x * sigmoid(x)
+    var sig = sigmoid(tensor)
+    return multiply(tensor, sig)
+
+
+fn mish(tensor: ExTensor) raises -> ExTensor:
+    """Mish activation function.
+
+    Mish is a smooth, self-regularized non-monotonic activation function
+    that has shown improvements over ReLU and Swish in some tasks.
+
+    Formula:
+        mish(x) = x * tanh(softplus(x))
+        where softplus(x) = log(1 + exp(x))
+
+    Properties:
+        - Smooth and continuously differentiable
+        - Non-monotonic (has a slight dip for negative values)
+        - Self-regularized (bounded below)
+        - Unbounded above
+
+    Args:
+        tensor: Input tensor of any shape
+
+    Returns:
+        Output tensor with mish applied element-wise
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, mish
+
+        var x = ExTensor.from_list([...])
+        var activated = mish(x)
+        ```
+
+    Reference:
+        Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019)
+    """
+    # mish(x) = x * tanh(softplus(x))
+    # softplus(x) = log(1 + exp(x))
+
+    # Compute softplus with numerical stability
+    var exp_x = exp(tensor)
+    var one_plus_exp = add(exp_x, ExTensor.from_scalar(1.0, tensor.dtype()))
+    var softplus = log(one_plus_exp)
+
+    var tanh_softplus = tanh(softplus)
+    return multiply(tensor, tanh_softplus)
+
+
+fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
+    """Exponential Linear Unit (ELU) activation function.
+
+    ELU has negative values which pushes mean unit activations closer to zero,
+    reducing bias shift and improving learning.
+
+    Formula:
+        elu(x) = x if x > 0
+        elu(x) = alpha * (exp(x) - 1) if x <= 0
+
+    Properties:
+        - Smooth and continuously differentiable
+        - Has negative values (unlike ReLU)
+        - Saturates for large negative values
+        - Reduces bias shift
+
+    Args:
+        tensor: Input tensor of any shape
+        alpha: Scale for negative values (default: 1.0)
+
+    Returns:
+        Output tensor with ELU applied element-wise
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, elu
+
+        var x = ExTensor.from_list([...])
+        var activated = elu(x, alpha=1.0)
+        ```
+
+    Reference:
+        Clevert et al., "Fast and Accurate Deep Network Learning by
+        Exponential Linear Units (ELUs)" (2015)
+    """
+    var result = zeros_like(tensor)
+    var data_ptr = tensor._data
+    var result_ptr = result._data
+    var size = tensor.numel()
+
+    if tensor.dtype() == DType.float32:
+        for i in range(size):
+            var val = data_ptr.bitcast[Float32]()[i]
+            if val > 0:
+                result_ptr.bitcast[Float32]()[i] = val
+            else:
+                # alpha * (exp(val) - 1)
+                var exp_val = exp_scalar_f32(val)
+                result_ptr.bitcast[Float32]()[i] = Float32(alpha) * (exp_val - 1.0)
+    elif tensor.dtype() == DType.float64:
+        for i in range(size):
+            var val = data_ptr.bitcast[Float64]()[i]
+            if val > 0:
+                result_ptr.bitcast[Float64]()[i] = val
+            else:
+                var exp_val = exp_scalar_f64(val)
+                result_ptr.bitcast[Float64]()[i] = alpha * (exp_val - 1.0)
+    elif tensor.dtype() == DType.float16:
+        for i in range(size):
+            var val = Float32(data_ptr.bitcast[Float16]()[i])
+            if val > 0:
+                result_ptr.bitcast[Float16]()[i] = Float16(val)
+            else:
+                var exp_val = exp_scalar_f32(val)
+                result_ptr.bitcast[Float16]()[i] = Float16(Float32(alpha) * (exp_val - 1.0))
+    else:
+        raise Error("elu: only float16/32/64 dtypes supported")
+
+    return result
+
+
+# Helper functions for scalar exp (used in ELU)
+fn exp_scalar_f32(x: Float32) -> Float32:
+    """Compute exp of a scalar float32."""
+    # Using power operator for exponential
+    return Float32(2.718281828459045) ** x
+
+
+fn exp_scalar_f64(x: Float64) -> Float64:
+    """Compute exp of a scalar float64."""
+    return 2.718281828459045 ** x
+
+
+# ============================================================================
+# Backward Passes for Advanced Activations
+# ============================================================================
+
+
+fn swish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Backward pass for Swish activation.
+
+    The derivative of swish is:
+        d/dx[swish(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
+                       = sigmoid(x) * (1 + x * (1 - sigmoid(x)))
+
+    Args:
+        grad_output: Gradient from upstream
+        x: Input from forward pass
+
+    Returns:
+        Gradient with respect to input
+
+    Example:
+        ```mojo
+        from shared.core import swish, swish_backward
+
+        # Forward
+        var output = swish(x)
+        # Backward
+        var grad_x = swish_backward(grad_output, x)
+        ```
+    """
+    # Compute sigmoid(x)
+    var sig = sigmoid(x)
+
+    # Derivative: sigmoid(x) * (1 + x * (1 - sigmoid(x)))
+    var one_minus_sig = subtract(ExTensor.from_scalar(1.0, sig.dtype()), sig)
+    var x_term = multiply(x, one_minus_sig)
+    var one_plus_x_term = add(ExTensor.from_scalar(1.0, x_term.dtype()), x_term)
+    var derivative = multiply(sig, one_plus_x_term)
+
+    # Apply chain rule
+    return multiply(grad_output, derivative)
+
+
+fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+    """Backward pass for Mish activation.
+
+    The derivative involves the derivative of tanh(softplus(x)).
+
+    Args:
+        grad_output: Gradient from upstream
+        x: Input from forward pass
+
+    Returns:
+        Gradient with respect to input
+
+    Example:
+        ```mojo
+        from shared.core import mish, mish_backward
+
+        # Forward
+        var output = mish(x)
+        # Backward
+        var grad_x = mish_backward(grad_output, x)
+        ```
+    """
+    # Compute softplus(x) = log(1 + exp(x))
+    var exp_x = exp(x)
+    var one_plus_exp = add(exp_x, ExTensor.from_scalar(1.0, x.dtype()))
+    var softplus = log(one_plus_exp)
+
+    # Compute tanh(softplus(x))
+    var tanh_sp = tanh(softplus)
+
+    # Compute sigmoid(x) for derivative
+    var sig = sigmoid(x)
+
+    # Derivative of mish:
+    # = tanh(softplus(x)) + x * sech²(softplus(x)) * sigmoid(x)
+    # where sech²(y) = 1 - tanh²(y)
+
+    var tanh_sq = multiply(tanh_sp, tanh_sp)
+    var sech_sq = subtract(ExTensor.from_scalar(1.0, tanh_sq.dtype()), tanh_sq)
+    var x_sech_sig = multiply(multiply(x, sech_sq), sig)
+    var derivative = add(tanh_sp, x_sech_sig)
+
+    # Apply chain rule
+    return multiply(grad_output, derivative)
+
+
+fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
+    """Backward pass for ELU activation.
+
+    The derivative is:
+        d/dx[elu(x)] = 1 if x > 0
+        d/dx[elu(x)] = alpha * exp(x) if x <= 0
+
+    Args:
+        grad_output: Gradient from upstream
+        x: Input from forward pass
+        alpha: Scale for negative values (must match forward pass)
+
+    Returns:
+        Gradient with respect to input
+
+    Example:
+        ```mojo
+        from shared.core import elu, elu_backward
+
+        # Forward
+        var output = elu(x, alpha=1.0)
+        # Backward
+        var grad_x = elu_backward(grad_output, x, alpha=1.0)
+        ```
+    """
+    var result = zeros_like(x)
+    var x_ptr = x._data
+    var grad_ptr = grad_output._data
+    var result_ptr = result._data
+    var size = x.numel()
+
+    if x.dtype() == DType.float32:
+        for i in range(size):
+            var val = x_ptr.bitcast[Float32]()[i]
+            var grad_val = grad_ptr.bitcast[Float32]()[i]
+
+            if val > 0:
+                result_ptr.bitcast[Float32]()[i] = grad_val
+            else:
+                # alpha * exp(val)
+                var exp_val = exp_scalar_f32(val)
+                result_ptr.bitcast[Float32]()[i] = grad_val * Float32(alpha) * exp_val
+    elif x.dtype() == DType.float64:
+        for i in range(size):
+            var val = x_ptr.bitcast[Float64]()[i]
+            var grad_val = grad_ptr.bitcast[Float64]()[i]
+
+            if val > 0:
+                result_ptr.bitcast[Float64]()[i] = grad_val
+            else:
+                var exp_val = exp_scalar_f64(val)
+                result_ptr.bitcast[Float64]()[i] = grad_val * alpha * exp_val
+    elif x.dtype() == DType.float16:
+        for i in range(size):
+            var val = Float32(x_ptr.bitcast[Float16]()[i])
+            var grad_val = Float32(grad_ptr.bitcast[Float16]()[i])
+
+            if val > 0:
+                result_ptr.bitcast[Float16]()[i] = Float16(grad_val)
+            else:
+                var exp_val = exp_scalar_f32(val)
+                result_ptr.bitcast[Float16]()[i] = Float16(grad_val * Float32(alpha) * exp_val)
+    else:
+        raise Error("elu_backward: only float16/32/64 dtypes supported")
+
+    return result
