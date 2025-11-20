@@ -161,9 +161,9 @@ def construct_download_url(
     Raises:
         ValueError: If platform/arch combination unsupported
 
-    Examples:
-        >>> construct_download_url('linux', 'x86_64', '0.25.1')
-        'https://docs.modular.com/max/get-started/mojo/0.25.1/mojo-linux-x86_64.tar.gz'
+    Note:
+        As of Mojo 24.5+, installation is done via Magic package manager.
+        See https://docs.modular.com/mojo/manual/install for current instructions.
     """
 ```text
 
@@ -478,7 +478,7 @@ pytest tests/test_mojo_downloader.py -v --cov=scripts.mojo_downloader
   - #855-859 [Detect Platform] - provides platform information
 - **Python Coding Standards**: `/CLAUDE.md#python-coding-standards`
 - **5-Phase Workflow**: `/notes/review/README.md`
-- **Modular Get Started**: https://docs.modular.com/max/get-started/
+- **Mojo Installation**: https://docs.modular.com/mojo/manual/install
 - **Magic Package Manager**: https://docs.modular.com/magic/
 
 ## Implementation Notes
