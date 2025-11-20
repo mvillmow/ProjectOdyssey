@@ -1,10 +1,14 @@
 # ExTensor: Extensible Tensor Library for Mojo
 
-**Version**: 0.1.0
+**Version**: 0.2.0
 **License**: BSD-3-Clause
+**Location**: `shared/core/` (formerly `src/extensor/`)
 
 ExTensor is a high-performance tensor library for Mojo with NumPy-style broadcasting, designed for machine
 learning and scientific computing applications.
+
+**Note**: This library has been consolidated into `shared/core/` as part of the ML Odyssey repository
+reorganization. All references to `from extensor` should now use `from shared.core`.
 
 ## Features
 
@@ -66,13 +70,13 @@ git clone https://github.com/mvillmow/ml-odyssey.git
 cd ml-odyssey
 
 # Build the package (when Mojo package manager is available)
-mojo package src/extensor -o extensor.mojopkg
+mojo package shared/core -o shared_core.mojopkg
 ```
 
 ### Using in Your Project
 
 ```mojo
-from extensor import ExTensor, zeros, ones, add, multiply
+from shared.core import ExTensor, zeros, ones, add, multiply
 
 fn main():
     # Create tensors
@@ -92,7 +96,7 @@ fn main():
 ### Creating Tensors
 
 ```mojo
-from extensor import zeros, ones, full, arange, eye
+from shared.core import zeros, ones, full, arange, eye
 from sys import DType
 
 fn example_creation():
@@ -120,7 +124,7 @@ fn example_creation():
 Broadcasting allows operations on tensors with different shapes, following NumPy rules:
 
 ```mojo
-from extensor import ones, full, add, multiply
+from shared.core import ones, full, add, multiply
 from sys import DType
 
 fn example_broadcasting():
@@ -148,7 +152,7 @@ fn example_broadcasting():
 ### Shape Manipulation
 
 ```mojo
-from extensor import arange, reshape, flatten, concatenate
+from shared.core import arange, reshape, flatten, concatenate
 from sys import DType
 
 fn example_shapes():
@@ -172,7 +176,7 @@ fn example_shapes():
 ### Matrix Operations
 
 ```mojo
-from extensor import zeros, matmul, transpose
+from shared.core import zeros, matmul, transpose
 from sys import DType
 
 fn example_matrix():
