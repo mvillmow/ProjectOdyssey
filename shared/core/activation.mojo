@@ -24,11 +24,17 @@ from math import exp, erf, sqrt, tanh as math_tanh
 from collections.vector import DynamicVector
 from .extensor import ExTensor
 from .reduction import sum as tensor_sum, max as tensor_max
+from .dtype_dispatch import dispatch_unary, dispatch_float_unary, dispatch_scalar
 
 
 # ============================================================================
 # ReLU Family (#238-242)
 # ============================================================================
+
+
+fn _relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """ReLU operation: max(0, x)."""
+    return max(Scalar[T](0), x)
 
 
 fn relu(tensor: ExTensor) raises -> ExTensor:
@@ -51,53 +57,7 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
         var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
         var y = relu(x)        # [0, 0, 0, 1, 2]
     """
-    var result = ExTensor(tensor._shape, tensor._dtype)
-
-    if tensor._dtype == DType.float16:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = max(Float16(0.0), val)
-    elif tensor._dtype == DType.float32:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = max(0.0, val)
-    elif tensor._dtype == DType.float64:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = max(0.0, val)
-    elif tensor._dtype == DType.int8:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Int8]()[i]
-            result._data.bitcast[Int8]()[i] = max(Int8(0), val)
-    elif tensor._dtype == DType.int16:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Int16]()[i]
-            result._data.bitcast[Int16]()[i] = max(Int16(0), val)
-    elif tensor._dtype == DType.int32:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Int32]()[i]
-            result._data.bitcast[Int32]()[i] = max(0, val)
-    elif tensor._dtype == DType.int64:
-        for i in range(tensor._numel):
-            var val = tensor._data.bitcast[Int64]()[i]
-            result._data.bitcast[Int64]()[i] = max(0, val)
-    elif tensor._dtype == DType.uint8:
-        # Unsigned types are already >= 0, just copy
-        for i in range(tensor._numel):
-            result._data.bitcast[UInt8]()[i] = tensor._data.bitcast[UInt8]()[i]
-    elif tensor._dtype == DType.uint16:
-        for i in range(tensor._numel):
-            result._data.bitcast[UInt16]()[i] = tensor._data.bitcast[UInt16]()[i]
-    elif tensor._dtype == DType.uint32:
-        for i in range(tensor._numel):
-            result._data.bitcast[UInt32]()[i] = tensor._data.bitcast[UInt32]()[i]
-    elif tensor._dtype == DType.uint64:
-        for i in range(tensor._numel):
-            result._data.bitcast[UInt64]()[i] = tensor._data.bitcast[UInt64]()[i]
-    else:
-        raise Error("relu: unsupported dtype")
-
-    return result
+    return dispatch_unary[_relu_op](tensor)
 
 
 fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
@@ -224,6 +184,21 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
+fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Sigmoid operation with numerical stability: 1 / (1 + exp(-x))."""
+    # Numerically stable sigmoid with clipping
+    if x > Scalar[T](20.0):
+        return Scalar[T](1.0)
+    elif x < Scalar[T](-20.0):
+        return Scalar[T](0.0)
+    else:
+        @parameter
+        if T == DType.float16:
+            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-Float32(x)))
+        else:
+            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
+
+
 fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     """Apply sigmoid activation: 1 / (1 + exp(-x)).
 
@@ -246,54 +221,18 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
         var x = ExTensor(...)  # [-2, 0, 2]
         var y = sigmoid(x)     # [0.119, 0.5, 0.881]
     """
-    var result = ExTensor(tensor._shape, tensor._dtype)
+    return dispatch_float_unary[_sigmoid_op](tensor)
 
-    if tensor._dtype == DType.float16:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float16]()[i]
-            var sig: Float16
 
-            # Numerically stable sigmoid with clipping
-            if x > Float16(20.0):
-                sig = Float16(1.0)
-            elif x < Float16(-20.0):
-                sig = Float16(0.0)
-            else:
-                sig = Float16(1.0) / (Float16(1.0) + exp(-Float32(x)))
-
-            result._data.bitcast[Float16]()[i] = sig
-    elif tensor._dtype == DType.float32:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float32]()[i]
-            var sig: Float32
-
-            # Numerically stable sigmoid with clipping
-            if x > 20.0:
-                sig = 1.0
-            elif x < -20.0:
-                sig = 0.0
-            else:
-                sig = 1.0 / (1.0 + exp(-x))
-
-            result._data.bitcast[Float32]()[i] = sig
-    elif tensor._dtype == DType.float64:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float64]()[i]
-            var sig: Float64
-
-            # Numerically stable sigmoid with clipping
-            if x > 20.0:
-                sig = 1.0
-            elif x < -20.0:
-                sig = 0.0
-            else:
-                sig = 1.0 / (1.0 + exp(-x))
-
-            result._data.bitcast[Float64]()[i] = sig
-    else:
-        raise Error("sigmoid: only float16, float32, and float64 dtypes supported")
-
-    return result
+fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Tanh operation for float dtypes."""
+    @parameter
+    if T == DType.float16:
+        return Scalar[T](math_tanh(Float32(x)))
+    elif T == DType.float32:
+        return Scalar[T](math_tanh(Float32(x)))
+    else:  # float64
+        return Scalar[T](math_tanh(Float64(x)))
 
 
 fn tanh(tensor: ExTensor) raises -> ExTensor:
@@ -314,24 +253,7 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
         var x = ExTensor(...)  # [-2, 0, 2]
         var y = tanh(x)        # [-0.964, 0, 0.964]
     """
-    var result = ExTensor(tensor._shape, tensor._dtype)
-
-    if tensor._dtype == DType.float16:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float16]()[i]
-            result._data.bitcast[Float16]()[i] = Float16(math_tanh(Float32(x)))
-    elif tensor._dtype == DType.float32:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float32]()[i]
-            result._data.bitcast[Float32]()[i] = math_tanh(x)
-    elif tensor._dtype == DType.float64:
-        for i in range(tensor._numel):
-            var x = tensor._data.bitcast[Float64]()[i]
-            result._data.bitcast[Float64]()[i] = math_tanh(x)
-    else:
-        raise Error("tanh: only float16, float32, and float64 dtypes supported")
-
-    return result
+    return dispatch_float_unary[_tanh_op](tensor)
 
 
 # ============================================================================
