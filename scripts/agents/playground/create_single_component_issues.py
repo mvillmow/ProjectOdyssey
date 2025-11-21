@@ -66,7 +66,7 @@ def get_repo_name():
             check=True
         )
         return result.stdout.strip()
-    except:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return 'mvillmow/ml-odyssey'  # Fallback
 
 

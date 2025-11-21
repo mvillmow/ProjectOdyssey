@@ -272,7 +272,7 @@ class ConfigLinter:
             if '.' in value:
                 return float(value)
             return int(value)
-        except:
+        except ValueError:
             pass
 
         # String (remove quotes if present)

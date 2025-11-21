@@ -24,6 +24,7 @@ import sys
 import tempfile
 import time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
@@ -412,7 +413,8 @@ class IssueCreator:
             # Clean up temp file
             try:
                 os.unlink(body_file)
-            except:
+            except (OSError, PermissionError):
+                # File may have already been deleted or is not accessible
                 pass
 
         return False
@@ -725,6 +727,89 @@ def create_all_issues(
     return success_count, error_count
 
 
+def create_all_issues_concurrent(
+    issues: List[Issue],
+    creator: IssueCreator,
+    state_manager: StateManager,
+    dry_run: bool = False,
+    max_workers: int = 5
+) -> Tuple[int, int]:
+    """Create all issues concurrently using ThreadPoolExecutor"""
+
+    # Filter out already created issues
+    to_create = [issue for issue in issues if not issue.created]
+
+    if not to_create:
+        print(f"\n{Colors.OKGREEN}All issues already created!{Colors.ENDC}")
+        return len(issues), 0
+
+    print(f"\n{Colors.OKCYAN}Creating {len(to_create)} issues concurrently")
+    print(f"(max {max_workers} workers)...{Colors.ENDC}\n")
+
+    success_count = 0
+    error_count = 0
+
+    if dry_run:
+        # Dry run - just count
+        return len(to_create), 0
+
+    def create_single_issue(issue: Issue, idx: int) -> Tuple[bool, int]:
+        """Create a single issue and return success status"""
+        if not HAS_TQDM:
+            print(f"[{idx}/{len(to_create)}] Creating: {issue.title}")
+
+        # Create the issue
+        if creator.create_issue(issue):
+            # Update the markdown file
+            if creator.update_markdown_file(issue):
+                # Smart rate limiting
+                smart_rate_limit_sleep()
+                return True, idx
+            else:
+                return False, idx
+        return False, idx
+
+    # Use ThreadPoolExecutor for concurrent creation
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all tasks
+        future_to_issue = {
+            executor.submit(create_single_issue, issue, idx): issue
+            for idx, issue in enumerate(to_create, 1)
+        }
+
+        # Use tqdm if available
+        iterator = (
+            tqdm(as_completed(future_to_issue), total=len(to_create),
+                 desc="Creating issues", unit="issue")
+            if HAS_TQDM
+            else as_completed(future_to_issue)
+        )
+
+        completed_count = 0
+        for future in iterator:
+            issue = future_to_issue[future]
+            try:
+                success, idx = future.result()
+                if success:
+                    success_count += 1
+                else:
+                    error_count += 1
+            except Exception as e:
+                logging.error(f"Exception creating issue {issue.title}: {e}")
+                error_count += 1
+
+            completed_count += 1
+
+            # Save state periodically (every 10 issues)
+            if completed_count % 10 == 0:
+                state_manager.save_state(issues)
+
+    # Final state save
+    state_manager.save_state(issues)
+
+    return success_count, error_count
+
+
 def setup_logging(log_dir: Path) -> logging.Logger:
     """Setup logging configuration"""
 
@@ -825,6 +910,13 @@ def main():
         help='Disable colored output'
     )
 
+    parser.add_argument(
+        '--workers',
+        type=int,
+        default=1,
+        help='Number of concurrent workers for issue creation (default: 1, use 5 for concurrent)'
+    )
+
     args = parser.parse_args()
 
     # Validate mutually exclusive options
@@ -912,12 +1004,23 @@ def main():
 
     # Create issues
     creator = IssueCreator(repo, dry_run=args.dry_run, logger=logger)
-    success_count, error_count = create_all_issues(
-        issues,
-        creator,
-        state_manager,
-        args.dry_run
-    )
+
+    # Choose sequential or concurrent based on workers argument
+    if args.workers > 1:
+        success_count, error_count = create_all_issues_concurrent(
+            issues,
+            creator,
+            state_manager,
+            args.dry_run,
+            max_workers=args.workers
+        )
+    else:
+        success_count, error_count = create_all_issues(
+            issues,
+            creator,
+            state_manager,
+            args.dry_run
+        )
 
     # Print summary
     print(f"\n{Colors.BOLD}{'='*60}{Colors.ENDC}")

@@ -65,7 +65,7 @@ def is_url(link: str) -> bool:
     try:
         result = urlparse(link)
         return result.scheme in ["http", "https"]
-    except:
+    except (ValueError, TypeError):
         return False
 
 
