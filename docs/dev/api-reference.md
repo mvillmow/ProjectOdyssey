@@ -12,7 +12,6 @@ documentation.
 ### Tensor Operations
 
 ```mojo
-```mojo
 
 # Creating tensors
 
@@ -46,7 +45,7 @@ tensor.reshape(shape: Tuple[Int, ...]) -> Tensor
 tensor.view(shape: Tuple[Int, ...]) -> Tensor
 tensor.flatten() -> Tensor
 
-```text
+```
 
 ### Neural Network Layers
 
@@ -80,11 +79,10 @@ struct AvgPool2D:
     fn __init__(inout self, kernel_size: Int, stride: Optional[Int] = None)
     fn forward(self, borrowed input: Tensor) -> Tensor
 
-```text
+```
 
 ### Activation Functions
 
-```mojo
 ```mojo
 
 # Activation function signatures
@@ -107,7 +105,7 @@ struct Softmax:
     fn __init__(inout self, dim: Int = -1)
     fn forward(self, x: Tensor) -> Tensor
 
-```text
+```
 
 ### Loss Functions
 
@@ -120,13 +118,12 @@ fn cross_entropy_loss(predictions: Tensor, targets: Tensor) -> Float64
 fn binary_cross_entropy(predictions: Tensor, targets: Tensor) -> Float64
 fn l1_loss(predictions: Tensor, targets: Tensor) -> Float64
 
-```text
+```
 
 ## Training APIs
 
 ### Optimizers
 
-```mojo
 ```mojo
 
 # Stochastic Gradient Descent
@@ -146,7 +143,7 @@ struct Adam:
                 epsilon: Float64 = 1e-8)
     fn step(inout self, inout parameters: List[Tensor])
 
-```text
+```
 
 ### Learning Rate Schedulers
 
@@ -164,11 +161,10 @@ struct CosineAnnealingLR:
     fn __init__(inout self, base_lr: Float64, total_epochs: Int, min_lr: Float64 = 0.0)
     fn get_lr(self, epoch: Int) -> Float64
 
-```text
+```
 
 ### Callbacks
 
-```mojo
 ```mojo
 
 # Base callback interface
@@ -192,7 +188,7 @@ struct EarlyStopping(Callback):
 struct LoggingCallback(Callback):
     fn __init__(inout self, log_file: String)
 
-```text
+```
 
 ## Data APIs
 
@@ -213,11 +209,10 @@ struct MNISTDataset(Dataset):
     fn __len__(self) -> Int
     fn __getitem__(self, idx: Int) -> (Tensor, Tensor)
 
-```text
+```
 
 ### Data Loaders
 
-```mojo
 ```mojo
 
 struct DataLoader:
@@ -234,7 +229,7 @@ for batch in data_loader:
     var inputs = batch.data
     var targets = batch.targets
 
-```text
+```
 
 ### Transforms
 
@@ -255,13 +250,12 @@ struct Compose:
     fn __init__(inout self, transforms: List[Transform])
     fn apply(self, image: Tensor) -> Tensor
 
-```text
+```
 
 ## Utility APIs
 
 ### Initialization
 
-```mojo
 ```mojo
 
 fn xavier_init(tensor: Tensor, gain: Float64 = 1.0)
@@ -270,7 +264,7 @@ fn zeros_init(tensor: Tensor)
 fn ones_init(tensor: Tensor)
 fn normal_init(tensor: Tensor, mean: Float64 = 0.0, std: Float64 = 0.01)
 
-```text
+```
 
 ### Metrics
 
@@ -283,20 +277,17 @@ fn precision(predictions: Tensor, targets: Tensor) -> Float64
 fn recall(predictions: Tensor, targets: Tensor) -> Float64
 fn f1_score(predictions: Tensor, targets: Tensor) -> Float64
 
-```text
+```
 
 ### Configuration
 
 ```mojo
-```mojo
-
 struct Config:
     fn load(filepath: String) -> Config
     fn save(self, filepath: String)
     fn get[T](self, key: String, default: T) -> T
     fn set[T](inout self, key: String, value: T)
-
-```text
+```
 
 ## Complete API Documentation
 
@@ -348,13 +339,12 @@ fn train():
             optimizer.step(model.parameters())
             optimizer.zero_grad(model.parameters())
 
-```text
+```
 
 ## Python Interop
 
 For using Python libraries from Mojo:
 
-```mojo
 ```mojo
 
 from python import Python
@@ -364,7 +354,7 @@ fn use_numpy():
     var array = np.array([1, 2, 3, 4, 5])
     print(array.mean())
 
-```text
+```
 
 ## Related Documentation
 
