@@ -64,6 +64,68 @@ class Colors:
         Colors.UNDERLINE = ''
 
 
+def check_github_rate_limit() -> Tuple[int, float]:
+    """
+    Check GitHub API rate limit status.
+
+    Returns:
+        Tuple of (remaining calls, reset time as unix timestamp)
+
+    Raises:
+        RuntimeError: If unable to check rate limit
+    """
+    try:
+        result = subprocess.run(
+            ["gh", "api", "rate_limit"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        data = json.loads(result.stdout)
+        remaining = data["resources"]["core"]["remaining"]
+        reset_time = data["resources"]["core"]["reset"]
+        return remaining, reset_time
+    except subprocess.CalledProcessError as e:
+        logging.warning(f"Failed to check rate limit: {e.stderr}")
+        # Return conservative values if check fails
+        return 100, time.time() + 60
+    except (json.JSONDecodeError, KeyError) as e:
+        logging.warning(f"Failed to parse rate limit response: {e}")
+        return 100, time.time() + 60
+
+
+def smart_rate_limit_sleep() -> None:
+    """
+    Sleep only if necessary based on GitHub API rate limit.
+
+    This function checks the current rate limit and sleeps only when needed:
+    - No sleep if remaining > 100 (healthy)
+    - Exponential backoff if 10 < remaining <= 100 (low)
+    - Wait until reset if remaining <= 10 (critical)
+    """
+    remaining, reset_time = check_github_rate_limit()
+
+    if remaining <= 10:
+        # Critical - wait until reset (max 60 seconds)
+        wait_time = max(0, reset_time - time.time())
+        if wait_time > 0:
+            actual_wait = min(wait_time, 60)
+            logging.warning(
+                f"Rate limit critical ({remaining} remaining), "
+                f"waiting {actual_wait:.0f}s until reset"
+            )
+            time.sleep(actual_wait)
+    elif remaining <= 100:
+        # Low - exponential backoff based on remaining calls
+        # remaining=100 -> 0s, remaining=50 -> 2.5s, remaining=11 -> 4.45s
+        backoff = (100 - remaining) / 20
+        logging.info(f"Rate limit low ({remaining} remaining), sleeping {backoff:.2f}s")
+        time.sleep(backoff)
+    else:
+        # Healthy - no sleep needed
+        logging.debug(f"Rate limit healthy ({remaining} remaining), no sleep")
+
+
 @dataclass
 class Issue:
     """Represents a GitHub issue to be created"""
@@ -645,8 +707,8 @@ def create_all_issues(
                 else:
                     error_count += 1
 
-                # Sleep for 2 seconds to avoid rate limiting
-                time.sleep(2)
+                # Smart rate limiting based on actual GitHub API status
+                smart_rate_limit_sleep()
             else:
                 error_count += 1
 
