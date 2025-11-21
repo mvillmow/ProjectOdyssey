@@ -5,14 +5,17 @@ This module tests the loss functions and their backward passes:
 - Mean Squared Error (MSE)
 """
 
-from collections.vector import DynamicVector
-from shared.core import (
-    ExTensor, DType,
-    zeros, ones, full,
-    binary_cross_entropy, binary_cross_entropy_backward,
-    mean_squared_error, mean_squared_error_backward,
-    mean
+from tests.shared.conftest import (
+    assert_true,
+    assert_equal,
+    assert_almost_equal,
 )
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
+from shared.core.loss import binary_cross_entropy, binary_cross_entropy_backward
+from shared.core.loss import mean_squared_error, mean_squared_error_backward
+from shared.core.extensor import mean
+from tests.helpers.gradient_checking import check_gradient
+from collections.vector import DynamicVector
 
 
 fn test_binary_cross_entropy_perfect_prediction() raises:
@@ -235,6 +238,80 @@ fn test_loss_numerical_stability() raises:
     print("  ✓ Numerical stability test passed")
 
 
+fn test_binary_cross_entropy_backward_gradient() raises:
+    """Test BCE backward with numerical gradient checking."""
+    print("Testing BCE backward gradient checking...")
+
+    var shape = DynamicVector[Int](4)
+    var predictions = zeros(shape, DType.float32)
+    var targets = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    predictions._set_float64(0, 0.7)
+    predictions._set_float64(1, 0.3)
+    predictions._set_float64(2, 0.5)
+    predictions._set_float64(3, 0.2)
+
+    targets._set_float64(0, 1.0)
+    targets._set_float64(1, 0.0)
+    targets._set_float64(2, 1.0)
+    targets._set_float64(3, 0.0)
+
+    # Forward function wrapper
+    fn forward(pred: ExTensor) raises -> ExTensor:
+        return binary_cross_entropy(pred, targets)
+
+    # Backward function wrapper
+    fn backward(grad_out: ExTensor, pred: ExTensor) raises -> ExTensor:
+        return binary_cross_entropy_backward(grad_out, pred, targets)
+
+    var loss = forward(predictions)
+    var grad_output = ones(shape, DType.float32)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+
+    print("  ✓ BCE backward gradient check passed")
+
+
+fn test_mean_squared_error_backward_gradient() raises:
+    """Test MSE backward with numerical gradient checking."""
+    print("Testing MSE backward gradient checking...")
+
+    var shape = DynamicVector[Int](5)
+    var predictions = zeros(shape, DType.float32)
+    var targets = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    predictions._set_float64(0, 2.1)
+    predictions._set_float64(1, 3.5)
+    predictions._set_float64(2, 1.2)
+    predictions._set_float64(3, 4.8)
+    predictions._set_float64(4, 0.5)
+
+    targets._set_float64(0, 2.0)
+    targets._set_float64(1, 3.0)
+    targets._set_float64(2, 1.5)
+    targets._set_float64(3, 4.5)
+    targets._set_float64(4, 0.8)
+
+    # Forward function wrapper
+    fn forward(pred: ExTensor) raises -> ExTensor:
+        return mean_squared_error(pred, targets)
+
+    # Backward function wrapper
+    fn backward(grad_out: ExTensor, pred: ExTensor) raises -> ExTensor:
+        return mean_squared_error_backward(grad_out, pred, targets)
+
+    var loss = forward(predictions)
+    var grad_output = ones(shape, DType.float32)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+
+    print("  ✓ MSE backward gradient check passed")
+
+
 fn run_all_tests() raises:
     """Run all loss function tests."""
     print("=" * 60)
@@ -244,9 +321,11 @@ fn run_all_tests() raises:
     test_binary_cross_entropy_perfect_prediction()
     test_binary_cross_entropy_worst_prediction()
     test_binary_cross_entropy_gradient_shape()
+    test_binary_cross_entropy_backward_gradient()
     test_mean_squared_error_zero_loss()
     test_mean_squared_error_known_values()
     test_mean_squared_error_gradient()
+    test_mean_squared_error_backward_gradient()
     test_loss_numerical_stability()
 
     print("=" * 60)
