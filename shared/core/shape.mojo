@@ -186,6 +186,7 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     return reshape(tensor, new_shape)
 
 
+@always_inline
 fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
     """Alias for unsqueeze(). Add a size-1 dimension at specified position.
 
@@ -219,6 +220,7 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
     return reshape(tensor, shape_1d)
 
 
+@always_inline
 fn ravel(tensor: ExTensor) raises -> ExTensor:
     """Flatten tensor to 1D (alias for flatten).
 
