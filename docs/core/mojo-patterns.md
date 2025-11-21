@@ -39,7 +39,7 @@ fn matrix_multiply[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[d
         raise Error("Incompatible shapes")
     return result
 
-```text
+```
 
 Benefits:
 
@@ -73,7 +73,7 @@ fn vectorized_relu(inout tensor: Tensor):
 
     vectorize[simd_width, relu_kernel](tensor.size())
 
-```text
+```
 
 Benefits:
 
@@ -125,7 +125,7 @@ fn forward_pass[dtype: DType](
     output += bias
     return output
 
-```text
+```
 
 ### Benefits
 
@@ -160,7 +160,7 @@ def load_dataset(path: String) -> PythonObject:
     var data = np.load(path)
     return data
 
-```text
+```
 
 ### Benefits
 
@@ -172,14 +172,13 @@ def load_dataset(path: String) -> PythonObject:
 #### Decision Guide
 
 ```text
-
 Need performance? ──────────────────────> Use `fn`
     │
     └─> Need Python interop? ──────────> Use `def`
          │
          └─> Prototype? ────────────────> Use `def` (convert to `fn` later)
 
-```text
+```
 
 ### Type Definitions: `struct` vs `class`
 
@@ -229,7 +228,7 @@ struct Layer:
         self.bias = other.bias
         self.activation = other.activation
 
-```text
+```
 
 ### Benefits
 
@@ -277,7 +276,7 @@ class Model:
             output = self.layers[i].forward(output)
         return output
 
-```text
+```
 
 ### Benefits
 
@@ -289,7 +288,6 @@ class Model:
 #### Decision Guide
 
 ```text
-
 Need value semantics? ───────────────────> Use `struct`
     │
     ├─> Need high performance? ──────────> Use `struct`
@@ -298,7 +296,7 @@ Need value semantics? ───────────────────>
     │
     └─> Need shared state? ──────────────> Use `class`
 
-```text
+```
 
 ### Ownership Patterns
 
@@ -319,7 +317,7 @@ fn compute_loss(borrowed predictions: Tensor, borrowed targets: Tensor) -> Float
     var diff = predictions - targets
     return (diff * diff).mean()
 
-```text
+```
 
 ### Characteristics
 
@@ -344,7 +342,7 @@ fn consume_tensor(owned tensor: Tensor) -> Float64:
     # tensor is destroyed here automatically
     return result
 
-```text
+```
 
 ### Characteristics
 
@@ -371,7 +369,7 @@ fn update_weights(
     """Update weights in place."""
     weights -= lr * gradients  # Modifies original
 
-```text
+```
 
 ### Characteristics
 
@@ -383,14 +381,13 @@ fn update_weights(
 #### Ownership Decision Guide
 
 ```text
-
 Need to read? ──────────────────────────> Use `borrowed`
     │
     └─> Need to modify in place? ───────> Use `inout`
          │
          └─> Need to consume? ───────────> Use `owned`
 
-```text
+```
 
 ## ML-Specific Patterns
 
@@ -413,7 +410,7 @@ fn relu_simd(inout tensor: Tensor):
 
     vectorize[simd_width, vectorized_relu](tensor.size())
 
-```text
+```
 
 ### Key points
 
@@ -438,7 +435,7 @@ fn sum_simd(borrowed tensor: Tensor) -> Float32:
     vectorize\[simd_width, vectorized_sum\](tensor.size())
     return accumulator.reduce_add()
 
-```text
+```
 
 ### Key points
 
@@ -474,7 +471,7 @@ fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
 
     return result
 
-```text
+```
 
 ### Key points
 
@@ -512,7 +509,7 @@ fn best_update(inout weights: Tensor, borrowed grad: Tensor, lr: Float64):
 
     vectorize[width, fused_update](weights.size())
 
-```text
+```
 
 ### Benefits
 
@@ -545,7 +542,7 @@ struct EfficientConv2D:
         im2col_inplace(input, self.im2col_buffer)
         return self.im2col_buffer @ self.weight.reshape(-1)
 
-```text
+```
 
 ### Benefits
 
@@ -578,7 +575,7 @@ struct FixedShape[rows: Int, cols: Int]:
         # ...matrix multiplication logic...
         return result
 
-```text
+```
 
 ### Benefits
 
@@ -604,7 +601,7 @@ struct Variable[dtype: DType]:
         # Type system ensures gradient has same dtype as value
         self.grad = Some(Tensor[dtype].ones_like(self.value))
 
-```text
+```
 
 ### Benefits
 
@@ -640,7 +637,7 @@ struct Linear:
         """Return trainable parameters."""
         return [self.weight, self.bias]
 
-```text
+```
 
 ### Pattern 2: Optimizer Implementation
 
@@ -679,7 +676,7 @@ struct SGD:
         for i in range(len(parameters)):
             parameters[i].grad.zero_()
 
-```text
+```
 
 ### Pattern 3: Training Loop
 
@@ -715,7 +712,7 @@ fn train_epoch(
 
     return total_loss / num_batches
 
-```text
+```
 
 ### Pattern 4: Trait-Based Abstraction
 
@@ -753,7 +750,7 @@ struct Adam(Optimizer):
     """Adam optimizer implementing Optimizer trait."""
     # ... implementation ...
 
-```text
+```
 
 ### Benefits
 
@@ -792,7 +789,7 @@ fn good_forward(
     sigmoid_inplace(buffer1)
     return buffer1
 
-```text
+```
 
 ### Anti-Pattern 2: Missing Ownership Annotations
 
@@ -816,7 +813,7 @@ fn clear_consume(owned x: Tensor) -> Tensor:
     # Clearly takes ownership and consumes x
     return transform(x)
 
-```text
+```
 
 ### Anti-Pattern 3: Ignoring SIMD Opportunities
 
@@ -839,7 +836,7 @@ fn good_relu(inout tensor: Tensor):
 
     vectorize[width, vectorized](tensor.size())
 
-```text
+```
 
 ### Anti-Pattern 4: Using `class` When `struct` Suffices
 
@@ -859,7 +856,7 @@ struct GoodLayer:
 
     # Value semantics are more efficient
 
-```text
+```
 
 ### Anti-Pattern 5: Missing Type Annotations with `fn`
 
@@ -877,7 +874,7 @@ fn good_function(x: Float32, y: Float32) -> Float32:
 fn generic_function[dtype: DType](x: SIMD[dtype, 1], y: SIMD[dtype, 1]) -> SIMD[dtype, 1]:
     return x + y
 
-```text
+```
 
 ### Anti-Pattern 6: Not Leveraging Compile-Time Features
 
@@ -895,7 +892,7 @@ fn good_alloc[size: Int]() -> FixedTensor[size, size]:
     # Compiler can optimize aggressively
     return tensor
 
-```text
+```
 
 ## Examples
 
@@ -914,7 +911,7 @@ Run any example with:
 
 pixi run mojo run examples/path/to/example.mojo
 
-```text
+```
 
 ## Best Practices Summary
 
