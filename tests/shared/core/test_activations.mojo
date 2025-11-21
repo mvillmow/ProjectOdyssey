@@ -84,9 +84,9 @@ fn test_relu_backward() raises:
     shape[0] = 4
     var x = zeros(shape, DType.float32)
 
-    # Set test values: [-1, 0, 0.5, 2]
+    # Set test values: [-1, 1e-4, 0.5, 2]
     x._data.bitcast[Float32]()[0] = -1.0
-    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[1] = 1e-4
     x._data.bitcast[Float32]()[2] = 0.5
     x._data.bitcast[Float32]()[3] = 2.0
 
@@ -259,8 +259,9 @@ fn test_sigmoid_backward() raises:
     var grad_out = ones_like(y)
 
     # Note: sigmoid_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
-        return sigmoid_backward(grad, y)
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var out = sigmoid(inp)  # Recompute output inside wrapper
+        return sigmoid_backward(grad, out)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
@@ -328,8 +329,9 @@ fn test_tanh_backward() raises:
     var grad_out = ones_like(y)
 
     # Note: tanh_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
-        return tanh_backward(grad, y)
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var out = tanh(inp)  # Recompute output inside wrapper
+        return tanh_backward(grad, out)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
@@ -447,8 +449,9 @@ fn test_softmax_backward() raises:
     var grad_out = ones_like(y)
 
     # Note: softmax_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, `_`: ExTensor) raises -> ExTensor:
-        return softmax_backward(grad, y, axis=1)
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var out = softmax(inp, axis=1)  # Recompute output inside wrapper
+        return softmax_backward(grad, out, axis=1)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)
@@ -694,7 +697,8 @@ fn test_elu_backward() raises:
 
     # Note: elu_backward takes x, y, and alpha
     fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return elu_backward(grad, inp, y, alpha=1.0)
+        var out = elu(inp, alpha=1.0)  # Recompute output inside wrapper
+        return elu_backward(grad, inp, out, alpha=1.0)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)

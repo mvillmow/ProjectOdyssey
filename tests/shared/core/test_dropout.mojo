@@ -214,10 +214,10 @@ fn test_dropout_backward_gradient() raises:
         var (out, _) = dropout(inp, p=0.3, training=True, seed=42)
         return out
 
-    # Backward function wrapper
+    # Backward function wrapper - use stored mask instead of regenerating
     fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var (_,  generated_mask) = dropout(inp, p=0.3, training=True, seed=42)
-        return dropout_backward(grad, generated_mask, p=0.3)
+        # Use the mask from forward pass to ensure consistency
+        return dropout_backward(grad, mask, p=0.3)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -344,10 +344,10 @@ fn test_dropout2d_backward_gradient() raises:
         var (out, _) = dropout2d(inp, p=0.2, training=True, seed=42)
         return out
 
-    # Backward function wrapper
+    # Backward function wrapper - use stored mask instead of regenerating
     fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var (_,  generated_mask) = dropout2d(inp, p=0.2, training=True, seed=42)
-        return dropout2d_backward(grad, generated_mask, p=0.2)
+        # Use the mask from forward pass to ensure consistency
+        return dropout2d_backward(grad, mask, p=0.2)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)

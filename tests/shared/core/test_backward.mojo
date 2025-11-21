@@ -171,11 +171,13 @@ fn test_linear_backward_gradient() raises:
     weights._data.bitcast[Float32]()[4] = -0.2
     weights._data.bitcast[Float32]()[5] = 0.5
 
-    # Forward function wrapper (linear without bias for simplicity)
+    # Forward function wrapper (linear with non-zero bias to test bias gradient)
     fn forward(inp: ExTensor) raises -> ExTensor:
         var bias_shape = DynamicVector[Int](1)
         bias_shape[0] = out_features
         var bias = zeros(bias_shape, DType.float32)
+        bias._data.bitcast[Float32]()[0] = 0.3
+        bias._data.bitcast[Float32]()[1] = -0.2
         return linear(inp, weights, bias)
 
     # Backward function wrapper (only return grad_input)
@@ -343,8 +345,10 @@ fn test_conv2d_backward_gradient() raises:
     var output = forward(x)
     var grad_output = ones_like(output)
 
-    # Numerical gradient checking (looser tolerance for conv2d due to accumulation)
-    check_gradient(forward, backward, x, grad_output, rtol=1e-2, atol=1e-5)
+    # Numerical gradient checking - trying standard tolerance
+    # Conv2D tolerance investigation: testing if rtol=1e-3, atol=1e-6 works
+    # Standard tolerance used for linear, pooling, and cross-entropy backward tests
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================

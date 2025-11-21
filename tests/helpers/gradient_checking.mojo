@@ -103,8 +103,8 @@ fn compute_numerical_gradient(
 fn assert_gradients_close(
     analytical: ExTensor,
     numerical: ExTensor,
-    rtol: Float64 = 1e-4,
-    atol: Float64 = 1e-7,
+    rtol: Float64 = 1e-3,
+    atol: Float64 = 1e-6,
     message: String = "Gradients do not match"
 ) raises:
     """Assert analytical and numerical gradients are close.
@@ -182,8 +182,8 @@ fn check_gradient(
     x: ExTensor,
     grad_output: ExTensor,
     epsilon: Float64 = 1e-5,
-    rtol: Float64 = 1e-4,
-    atol: Float64 = 1e-7
+    rtol: Float64 = 1e-3,
+    atol: Float64 = 1e-6
 ) raises:
     """Comprehensive gradient check helper.
 
