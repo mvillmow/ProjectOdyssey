@@ -1,0 +1,1 @@
+../resnet18-cifar10/download_cifar10.py
