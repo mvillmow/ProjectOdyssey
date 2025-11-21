@@ -17,8 +17,9 @@ from tests.shared.conftest import (
     assert_shape_equal,
     TestFixtures,
 )
-from shared.core.extensor import ExTensor, zeros, ones
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.dropout import dropout, dropout2d, dropout_backward, dropout2d_backward
+from tests.helpers.gradient_checking import check_gradient
 from collections.vector import DynamicVector
 
 
@@ -191,6 +192,37 @@ fn test_dropout_backward_gradient_flow() raises:
             assert_almost_equal(grad_val, Float32(0.0), tolerance=1e-5)
 
 
+fn test_dropout_backward_gradient() raises:
+    """Test dropout_backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 5
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.2
+    x._data.bitcast[Float32]()[3] = 0.5
+    x._data.bitcast[Float32]()[4] = 1.0
+
+    # Forward pass to create mask
+    var (output, mask) = dropout(x, p=0.3, training=True, seed=42)
+    var grad_out = ones_like(output)
+
+    # Forward function wrapper - dropout doesn't need input after forward pass
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        var (out, _) = dropout(inp, p=0.3, training=True, seed=42)
+        return out
+
+    # Backward function wrapper
+    fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var (_,  generated_mask) = dropout(inp, p=0.3, training=True, seed=42)
+        return dropout_backward(grad, generated_mask, p=0.3)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Spatial Dropout (Dropout2D) Tests
 # ============================================================================
@@ -290,6 +322,37 @@ fn test_dropout2d_backward_shapes() raises:
     assert_equal(grad_input.shape()[3], 8)
 
 
+fn test_dropout2d_backward_gradient() raises:
+    """Test dropout2d_backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](4)
+    shape[0] = 1
+    shape[1] = 2
+    shape[2] = 4
+    shape[3] = 4
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    for i in range(x.numel()):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 0.8
+
+    # Forward pass to create mask
+    var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+    var grad_out = ones_like(output)
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        var (out, _) = dropout2d(inp, p=0.2, training=True, seed=42)
+        return out
+
+    # Backward function wrapper
+    fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var (_,  generated_mask) = dropout2d(inp, p=0.2, training=True, seed=42)
+        return dropout2d_backward(grad, generated_mask, p=0.2)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Main Test Runner
 # ============================================================================
@@ -321,6 +384,9 @@ fn main() raises:
     test_dropout_backward_gradient_flow()
     print("✓ test_dropout_backward_gradient_flow")
 
+    test_dropout_backward_gradient()
+    print("✓ test_dropout_backward_gradient")
+
     # Spatial dropout (dropout2d) tests
     test_dropout2d_shapes()
     print("✓ test_dropout2d_shapes")
@@ -333,5 +399,8 @@ fn main() raises:
 
     test_dropout2d_backward_shapes()
     print("✓ test_dropout2d_backward_shapes")
+
+    test_dropout2d_backward_gradient()
+    print("✓ test_dropout2d_backward_gradient")
 
     print("\nAll dropout tests passed!")
