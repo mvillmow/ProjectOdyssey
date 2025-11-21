@@ -182,15 +182,15 @@ mojo run examples/alexnet-cifar10/inference.mojo \
 - [x] Dropout forward and backward passes
 - [x] Hex-based weight serialization (13 parameter files)
 - [x] Training loop with SGD+Momentum optimizer
+- [x] **Learning rate decay scheduling** (step decay every 30 epochs by 0.1x)
 - [x] Inference script with weight loading
 - [x] Comprehensive documentation
 
-### 🔄 Optimizations Needed
+### 🔄 Optional Enhancements
 
+- [ ] **Data augmentation** (RandomCrop and RandomHorizontalFlip available in `shared.data`)
 - [ ] SIMD vectorization for large kernel convolutions (11×11)
 - [ ] Multi-threading for data loading
-- [ ] Learning rate decay scheduling
-- [ ] Data augmentation (random crops, horizontal flips)
 - [ ] Mixed precision training (float16 for speed)
 
 ### Current Limitations
@@ -210,7 +210,47 @@ Based on the reference implementation and similar experiments:
 
 - **Training Time**: ~8-12 hours on CPU for 100 epochs (batch_size=128)
 - **Expected Accuracy**: 80-85% on CIFAR-10 after 100 epochs
-- **Peak Accuracy**: 90%+ with data augmentation and learning rate decay
+- **Peak Accuracy**: 90%+ with data augmentation (see optional enhancement below)
+
+## Advanced Features
+
+### Learning Rate Decay
+
+The training script includes automatic learning rate decay using a step schedule:
+
+- **Schedule**: Decay by 0.1x every 30 epochs
+- **Formula**: `lr = initial_lr * (0.1 ** (epoch // 30))`
+- **Example**:
+  - Epochs 0-29: lr = 0.01
+  - Epochs 30-59: lr = 0.001
+  - Epochs 60-89: lr = 0.0001
+  - Epochs 90+: lr = 0.00001
+
+This matches the learning rate schedule used in the original AlexNet paper.
+
+### Data Augmentation (Optional)
+
+ML Odyssey provides data augmentation transforms in `shared.data`:
+
+```mojo
+from shared.data import RandomCrop, RandomHorizontalFlip, Compose
+
+# Create augmentation pipeline
+var transforms = Compose([
+    RandomCrop(size=(32, 32), padding=4),  # Random crop with padding
+    RandomHorizontalFlip(p=0.5),           # 50% chance of horizontal flip
+])
+
+# Apply to training images
+var augmented = transforms(images)
+```
+
+**Benefits**:
+- Improves generalization by ~3-5% accuracy
+- Reduces overfitting on training set
+- Standard practice for CIFAR-10 training
+
+**Note**: Data augmentation not included in basic example to maintain simplicity. Add to training loop if desired.
 
 ## Design Principles (KISS)
 
@@ -259,11 +299,11 @@ This example follows **Keep It Simple, Stupid** principles:
 
 This example is part of ML Odyssey. Contributions welcome!
 
-1. Add learning rate decay scheduling
-2. Implement data augmentation
-3. Add mixed precision training
-4. Optimize SIMD performance for large kernels
-5. Add visualization tools (confusion matrix, accuracy curves)
+1. Integrate data augmentation into training loop (infrastructure ready)
+2. Add mixed precision training (float16 for speed)
+3. Optimize SIMD performance for large kernels (11×11 convolutions)
+4. Add visualization tools (confusion matrix, accuracy curves)
+5. Implement cosine annealing learning rate schedule
 
 See [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
 
