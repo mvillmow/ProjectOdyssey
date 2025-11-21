@@ -209,16 +209,13 @@ mojo run examples/vgg16-cifar10/inference.mojo \
 - [x] **Full parameter updates** with SGD+Momentum optimizer
   - ✅ 32 velocity tensors initialized (one per parameter)
   - ✅ Momentum updates applied to all parameters
+- [x] **Batch slicing** for mini-batch training
+  - ✅ Efficient batch extraction using shared library utilities
+  - ✅ Proper handling of partial batches at epoch end
+  - ✅ Memory-efficient mini-batch processing
 - [x] Learning rate decay scheduling (step decay every 60 epochs by 0.2x)
 - [x] Inference script with weight loading
 - [x] Comprehensive documentation
-
-### 🚧 Minor Limitations
-
-- [ ] **Batch slicing** for mini-batch training
-  - Current implementation processes entire dataset at once
-  - Need proper batch extraction from training data
-  - Note: This doesn't prevent training, just makes it less memory efficient
 
 ### 🔄 Optional Enhancements
 

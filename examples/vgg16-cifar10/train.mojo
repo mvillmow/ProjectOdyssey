@@ -26,6 +26,7 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
 from shared.training.schedulers import step_lr
+from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices
 from sys import argv
 from collections.vector import DynamicVector
 
@@ -416,32 +417,31 @@ fn train_epoch(
         Average loss for the epoch
     """
     var num_samples = train_images.shape()[0]
-    var num_batches = (num_samples + batch_size - 1) // batch_size
+    var num_batches = compute_num_batches(num_samples, batch_size)
 
     var total_loss = Float32(0.0)
 
     print("Epoch [", epoch, "/", total_epochs, "]")
 
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size
-        var end_idx = min(start_idx + batch_size, num_samples)
-        var actual_batch_size = end_idx - start_idx
+        # Get batch indices
+        var indices = get_batch_indices(batch_idx, batch_size, num_samples)
+        var start_idx = indices.get[0, Int]()
+        var actual_batch_size = indices.get[2, Int]()
 
-        # TODO: Extract batch slice when slicing is fully supported
-        # For now, we'll process the entire dataset (inefficient but demonstrates structure)
+        # Extract batch using shared library utility
+        var batch_pair = extract_batch_pair(train_images, train_labels, start_idx, batch_size)
+        var batch_images = batch_pair[0]
+        var batch_labels = batch_pair[1]
 
         # Compute gradients and update parameters
-        var batch_loss = compute_gradients(model, train_images, train_labels, learning_rate, momentum, velocities)
+        var batch_loss = compute_gradients(model, batch_images, batch_labels, learning_rate, momentum, velocities)
         total_loss += batch_loss
 
         # Print progress every 100 batches
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
             print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss)
-
-        # Break after first batch for demonstration
-        # Remove this when batch slicing is implemented
-        break
 
     var avg_loss = total_loss / Float32(num_batches)
     print("  Average Loss: ", avg_loss)
@@ -467,23 +467,28 @@ fn evaluate(
     var num_samples = test_images.shape()[0]
     var correct = 0
 
-    print("Evaluating...")
+    print("Evaluating on ", num_samples, " samples...")
 
-    # TODO: Process in batches when slicing is implemented
-    # For now, evaluate on first 100 samples
-    var eval_samples = min(100, num_samples)
+    # Evaluate all test samples
+    for i in range(num_samples):
+        # Extract single sample using batch utilities
+        var batch_pair = extract_batch_pair(test_images, test_labels, i, 1)
+        var sample_image = batch_pair[0]
+        var sample_label = batch_pair[1]
 
-    for i in range(eval_samples):
-        # TODO: Extract single sample when slicing works
-        # For demonstration, we'll use the first image repeatedly
-        var pred_class = model.predict(test_images)
-        var true_label = Int(test_labels[i])
+        # Forward pass (inference mode)
+        var pred_class = model.predict(sample_image)
+        var true_label = Int(sample_label[0])
 
         if pred_class == true_label:
             correct += 1
 
-    var accuracy = Float32(correct) / Float32(eval_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", eval_samples, ")")
+        # Print progress every 1000 samples
+        if (i + 1) % 1000 == 0:
+            print("  Processed ", i + 1, "/", num_samples)
+
+    var accuracy = Float32(correct) / Float32(num_samples)
+    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", num_samples, ")")
 
     return accuracy
 

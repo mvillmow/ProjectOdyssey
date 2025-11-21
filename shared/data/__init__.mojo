@@ -72,6 +72,14 @@ from .transforms import (
     RandomRotation,  # Random rotation augmentation
 )
 
+# Batch utilities
+from .batch_utils import (
+    extract_batch,  # Extract mini-batch from dataset
+    extract_batch_pair,  # Extract batch of data and labels
+    compute_num_batches,  # Compute number of batches needed
+    get_batch_indices,  # Get start/end indices for a batch
+)
+
 # ============================================================================
 # Public API
 # ============================================================================
@@ -101,4 +109,9 @@ __all__ = [
     "RandomCrop",
     "RandomHorizontalFlip",
     "RandomRotation",
+    # Batch utilities
+    "extract_batch",
+    "extract_batch_pair",
+    "compute_num_batches",
+    "get_batch_indices",
 ]
