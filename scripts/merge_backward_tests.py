@@ -38,7 +38,14 @@ def run_command(cmd: list, cwd: Path = None, check: bool = True, capture_output:
 
 def main():
     """Main merge workflow."""
-    repo_root = Path("/home/mvillmow/ml-odyssey")
+    # Get repository root dynamically (secure - no hardcoded paths)
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    repo_root = Path(result.stdout.strip())
     worktree_path = repo_root / "worktrees" / "backward-tests"
 
     print("=" * 80)

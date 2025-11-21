@@ -6,7 +6,8 @@
 
 set -e  # Exit on error
 
-REPO_ROOT="/home/mvillmow/ml-odyssey"
+# Get repository root dynamically (secure - no hardcoded paths)
+REPO_ROOT="$(git rev-parse --show-toplevel)"
 WORKTREE_PATH="$REPO_ROOT/worktrees/backward-tests"
 
 echo "================================================================================"

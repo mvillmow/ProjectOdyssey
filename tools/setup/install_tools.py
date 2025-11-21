@@ -55,12 +55,12 @@ def print_error(msg: str):
     print(f"{Color.RED}✗{Color.RESET} {msg}")
 
 
-def run_command(cmd: str, check: bool = False) -> Tuple[int, str, str]:
+def run_command(cmd: list, check: bool = False) -> Tuple[int, str, str]:
     """
     Run shell command and return exit code, stdout, stderr
 
     Args:
-        cmd: Command to run
+        cmd: Command to run as list of arguments (secure from injection)
         check: Raise exception on non-zero exit
 
     Returns:
@@ -69,7 +69,6 @@ def run_command(cmd: str, check: bool = False) -> Tuple[int, str, str]:
     try:
         result = subprocess.run(
             cmd,
-            shell=True,
             capture_output=True,
             text=True,
             timeout=30
@@ -83,7 +82,7 @@ def run_command(cmd: str, check: bool = False) -> Tuple[int, str, str]:
 
 def get_repo_root() -> Optional[Path]:
     """Get repository root directory"""
-    code, stdout, _ = run_command("git rev-parse --show-toplevel")
+    code, stdout, _ = run_command(["git", "rev-parse", "--show-toplevel"])
     if code == 0:
         return Path(stdout)
     return None
@@ -102,7 +101,7 @@ def check_python_version() -> bool:
 
 def check_mojo() -> bool:
     """Check if Mojo is installed"""
-    code, stdout, _ = run_command("mojo --version")
+    code, stdout, _ = run_command(["mojo", "--version"])
     if code == 0:
         print_success(f"Mojo {stdout}")
         return True
@@ -114,7 +113,7 @@ def check_mojo() -> bool:
 
 def check_git() -> bool:
     """Check if Git is installed"""
-    code, stdout, _ = run_command("git --version")
+    code, stdout, _ = run_command(["git", "--version"])
     if code == 0:
         print_success(f"Git {stdout.split()[2]}")
         return True
@@ -160,7 +159,7 @@ def install_python_dependencies(repo_root: Path) -> bool:
         print_success(f"Created {req_file}")
 
     print(f"\nInstalling Python dependencies from {req_file}...")
-    code, stdout, stderr = run_command(f"pip install -r {req_file}")
+    code, stdout, stderr = run_command(["pip", "install", "-r", str(req_file)])
 
     if code == 0:
         print_success("Python dependencies installed")

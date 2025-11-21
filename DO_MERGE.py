@@ -4,10 +4,18 @@
 import subprocess
 import sys
 
-def run(cmd):
-    """Run command and print output."""
-    print(f"$ {cmd}")
-    result = subprocess.run(cmd, shell=True, capture_output=False, text=True)
+def run(cmd_list, display_cmd=None):
+    """Run command and print output.
+
+    Args:
+        cmd_list: List of command arguments (safe from injection)
+        display_cmd: Optional string to display (for logging only)
+    """
+    if display_cmd:
+        print(f"$ {display_cmd}")
+    else:
+        print(f"$ {' '.join(cmd_list)}")
+    result = subprocess.run(cmd_list, capture_output=False, text=True)
     if result.returncode != 0:
         print(f"ERROR: Command failed with code {result.returncode}")
         sys.exit(1)
@@ -17,7 +25,10 @@ print("Executing backward-tests merge into main...")
 print()
 
 # Switch to main
-run("cd /home/mvillmow/ml-odyssey && git checkout main")
+import os
+repo_root = os.path.dirname(os.path.abspath(__file__))
+os.chdir(repo_root)
+run(["git", "checkout", "main"], "git checkout main")
 
 # Perform merge with detailed commit message
 commit_msg = """feat(tests): add comprehensive backward tests for arithmetic, loss, matrix, and reduction ops
@@ -57,7 +68,7 @@ with open("/tmp/merge_commit_msg.txt", "w") as f:
     f.write(commit_msg)
 
 # Execute merge
-run("cd /home/mvillmow/ml-odyssey && git merge --no-ff backward-tests -F /tmp/merge_commit_msg.txt")
+run(["git", "merge", "--no-ff", "backward-tests", "-F", "/tmp/merge_commit_msg.txt"], "git merge --no-ff backward-tests -F /tmp/merge_commit_msg.txt")
 
 print()
 print("=" * 80)
@@ -66,6 +77,6 @@ print("=" * 80)
 print()
 
 # Show result
-run("cd /home/mvillmow/ml-odyssey && git log --oneline -1")
+run(["git", "log", "--oneline", "-1"], "git log --oneline -1")
 print()
-run("cd /home/mvillmow/ml-odyssey && git show --stat HEAD")
+run(["git", "show", "--stat", "HEAD"], "git show --stat HEAD")

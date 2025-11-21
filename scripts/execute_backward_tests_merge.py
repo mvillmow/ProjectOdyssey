@@ -23,7 +23,18 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-REPO_ROOT = Path("/home/mvillmow/ml-odyssey")
+# Get repository root dynamically (secure - no hardcoded paths)
+def get_repo_root() -> Path:
+    """Get the git repository root directory."""
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    return Path(result.stdout.strip())
+
+REPO_ROOT = get_repo_root()
 WORKTREE_PATH = REPO_ROOT / "worktrees" / "backward-tests"
 
 TEST_FILES = [

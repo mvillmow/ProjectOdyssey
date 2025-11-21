@@ -31,12 +31,18 @@ class Color:
     BOLD = '\033[1m'
 
 
-def run_command(cmd: str) -> Tuple[int, str, str]:
-    """Run command and return exit code, stdout, stderr"""
+def run_command(cmd: list) -> Tuple[int, str, str]:
+    """Run command and return exit code, stdout, stderr
+
+    Args:
+        cmd: Command to run as list of arguments (secure from injection)
+
+    Returns:
+        Tuple of (exit_code, stdout, stderr)
+    """
     try:
         result = subprocess.run(
             cmd,
-            shell=True,
             capture_output=True,
             text=True,
             timeout=10
@@ -62,7 +68,7 @@ def check_item(name: str, passed: bool, details: str = "", verbose: bool = False
 
 def get_repo_root() -> Optional[Path]:
     """Get git repository root"""
-    code, stdout, _ = run_command("git rev-parse --show-toplevel")
+    code, stdout, _ = run_command(["git", "rev-parse", "--show-toplevel"])
     if code == 0:
         return Path(stdout)
     return None
@@ -87,14 +93,14 @@ def check_prerequisites(verbose: bool = False) -> int:
         errors += 1
 
     # Mojo
-    code, stdout, _ = run_command("mojo --version")
+    code, stdout, _ = run_command(["mojo", "--version"])
     mojo_ok = code == 0
     check_item("Mojo", mojo_ok, stdout if mojo_ok else "Not found", verbose)
     if not mojo_ok:
         errors += 1
 
     # Git
-    code, stdout, _ = run_command("git --version")
+    code, stdout, _ = run_command(["git", "--version"])
     git_ok = code == 0
     check_item("Git", git_ok, stdout.split()[2] if git_ok else "Not found", verbose)
     if not git_ok:
@@ -114,6 +120,9 @@ def check_python_dependencies(verbose: bool = False) -> int:
     """Check Python package dependencies"""
     print(f"\n{Color.BOLD}Python Dependencies{Color.RESET}")
 
+    # Whitelist of allowed package names (prevents any injection attempts)
+    ALLOWED_PACKAGES = {"jinja2", "yaml", "click"}
+
     packages = [
         ("jinja2", "Template engine"),
         ("yaml", "YAML parser"),
@@ -122,6 +131,12 @@ def check_python_dependencies(verbose: bool = False) -> int:
 
     errors = 0
     for package, description in packages:
+        # Validate package name against whitelist
+        if package not in ALLOWED_PACKAGES:
+            check_item(package, False, f"Invalid package name - {description}", verbose)
+            errors += 1
+            continue
+
         try:
             mod = __import__(package)
             version = getattr(mod, '__version__', 'unknown')

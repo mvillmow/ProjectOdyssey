@@ -15,6 +15,17 @@ repos:
   #       files: \.(mojo|🔥)$
   #       pass_filenames: true
 
+  # Security checks
+  - repo: local
+    hooks:
+      - id: check-shell-injection
+        name: Check for shell=True (Security)
+        description: Prevent command injection vulnerabilities via shell=True
+        entry: 'shell=True'
+        language: pygrep
+        files: \.py$
+        types: [python]
+
   # Markdown linting
   - repo: https://github.com/DavidAnson/markdownlint-cli2
     rev: v0.12.1

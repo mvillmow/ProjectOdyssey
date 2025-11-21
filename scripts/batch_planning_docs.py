@@ -76,8 +76,16 @@ def create_planning_doc(issue_number: int, issue_data: Dict) -> bool:
     }
     primary_label = phase_labels.get(phase, 'unknown')
 
-    # Create directory
-    issue_dir = Path(f'/home/mvillmow/ml-odyssey-manual/notes/issues/{issue_number}')
+    # Create directory (dynamic path resolution)
+    import subprocess
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    repo_root = Path(result.stdout.strip())
+    issue_dir = repo_root / 'notes' / 'issues' / str(issue_number)
     issue_dir.mkdir(parents=True, exist_ok=True)
 
     # Create README.md
