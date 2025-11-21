@@ -9,6 +9,7 @@ Tests cover:
 - Broadcasting behavior with different tensor shapes
 - Numerical stability (epsilon handling in division)
 - Edge cases: negative values, zero, large values
+- Numerical gradient checking using finite differences
 
 Gradient checking formula:
     numerical_grad ≈ (f(x + ε) - f(x - ε)) / (2ε)
@@ -33,6 +34,7 @@ from shared.core.arithmetic import (
     multiply_backward,
     divide_backward,
 )
+from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient
 from collections.vector import DynamicVector
 
 
@@ -492,3 +494,371 @@ fn test_divide_broadcast() raises:
     #           = 2 * (-0.5) = -1.0
     for i in range(3):
         assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-4)
+
+
+# ============================================================================
+# Test 13: Addition Backward with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_add_backward_gradient() raises:
+    """Test add_backward with numerical gradient checking.
+
+    Validates that analytical gradients match numerical gradients computed
+    via central differences, confirming correct implementation of the
+    backward pass for addition.
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.2
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.15 - 0.8
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return add(inp, b)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = add_backward(grad_out, inp.shape(), b.shape())
+        return grads.grad_a
+
+    var output = forward(a)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 14: Subtraction Backward with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_subtract_backward_gradient() raises:
+    """Test subtract_backward with numerical gradient checking.
+
+    Validates analytical vs numerical gradients for subtraction operation.
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 0.5
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 - 1.5
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return subtract(inp, b)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = subtract_backward(grad_out, inp.shape(), b.shape())
+        return grads.grad_a
+
+    var output = forward(a)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 15: Multiplication Backward with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_multiply_backward_gradient() raises:
+    """Test multiply_backward with numerical gradient checking.
+
+    Validates analytical vs numerical gradients for multiplication operation.
+    Tests product rule: ∂(A*B)/∂A = B
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values (avoid zero to test product properly)
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 0.1
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.15 + 0.2
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return multiply(inp, b)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = multiply_backward(grad_out, inp, b)
+        return grads.grad_a
+
+    var output = forward(a)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 16: Division Backward with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_divide_backward_gradient() raises:
+    """Test divide_backward with numerical gradient checking.
+
+    Validates analytical vs numerical gradients for division operation.
+    Tests quotient rule: ∂(A/B)/∂A = 1/B
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values (avoid zero denominator)
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.2 + 0.5
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 1.0  # Ensure b > 0
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return divide(inp, b)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = divide_backward(grad_out, inp, b)
+        return grads.grad_a
+
+    var output = forward(a)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 17: Add Backward (B operand) with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_add_backward_b_gradient() raises:
+    """Test add_backward gradient w.r.t. second operand (B).
+
+    Validates gradient computation for the second input of addition.
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 0.5
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.12 + 0.3
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return add(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = add_backward(grad_out, a.shape(), inp.shape())
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 18: Subtract Backward (B operand) with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_subtract_backward_b_gradient() raises:
+    """Test subtract_backward gradient w.r.t. second operand (B).
+
+    Validates that gradient for B is negated: ∂(A-B)/∂B = -1
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.15 + 0.2
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.0
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return subtract(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = subtract_backward(grad_out, a.shape(), inp.shape())
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 19: Multiply Backward (B operand) with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_multiply_backward_b_gradient() raises:
+    """Test multiply_backward gradient w.r.t. second operand (B).
+
+    Validates product rule for second operand: ∂(A*B)/∂B = A
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values (avoid zero for product)
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.2 + 0.1
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.15 + 0.15
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return multiply(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = multiply_backward(grad_out, a, inp)
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 20: Divide Backward (B operand) with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_divide_backward_b_gradient() raises:
+    """Test divide_backward gradient w.r.t. second operand (B).
+
+    Validates quotient rule for denominator: ∂(A/B)/∂B = -A/B²
+    """
+    var shape = create_shape_vec(3, 4)
+    var a = zeros(shape, DType.float32)
+    var b = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values (ensure b > 0 to avoid division by zero)
+    for i in range(12):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.2 + 0.5
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 1.5  # b > 0
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return divide(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = divide_backward(grad_out, a, inp)
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 21: Add Backward Broadcast with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_add_backward_broadcast_gradient() raises:
+    """Test add_backward with broadcasting and numerical gradient checking.
+
+    Validates gradient computation when one operand broadcasts.
+    Broadcasting case: [3] broadcast to [2, 3]
+    """
+    var a_shape = create_shape_vec(2, 3)
+    var b_shape = create_shape_vec(3)
+
+    var a = zeros(a_shape, DType.float32)
+    var b = zeros(b_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(6):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 0.2
+    for i in range(3):
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.15 - 0.3
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return add(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = add_backward(grad_out, a_shape, inp.shape())
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 22: Multiply Backward Broadcast with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_multiply_backward_broadcast_gradient() raises:
+    """Test multiply_backward with broadcasting and numerical gradient checking.
+
+    Validates product rule when one operand broadcasts.
+    Broadcasting case: [3] broadcast to [2, 3]
+    """
+    var a_shape = create_shape_vec(2, 3)
+    var b_shape = create_shape_vec(3)
+
+    var a = zeros(a_shape, DType.float32)
+    var b = zeros(b_shape, DType.float32)
+
+    # Initialize with non-uniform values (avoid zero for product)
+    for i in range(6):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 0.1
+    for i in range(3):
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 + 0.2
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return multiply(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = multiply_backward(grad_out, a, inp)
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
+# ============================================================================
+# Test 23: Divide Backward Broadcast with Numerical Gradient Checking
+# ============================================================================
+
+
+fn test_divide_backward_broadcast_gradient() raises:
+    """Test divide_backward with broadcasting and numerical gradient checking.
+
+    Validates quotient rule when denominator broadcasts.
+    Broadcasting case: [3] broadcast to [2, 3]
+    """
+    var a_shape = create_shape_vec(2, 3)
+    var b_shape = create_shape_vec(3)
+
+    var a = zeros(a_shape, DType.float32)
+    var b = zeros(b_shape, DType.float32)
+
+    # Initialize with non-uniform values (ensure b > 0)
+    for i in range(6):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.2 + 0.5
+    for i in range(3):
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.1 + 1.0  # b > 0
+
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return divide(a, inp)
+
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = divide_backward(grad_out, a, inp)
+        return grads.grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
