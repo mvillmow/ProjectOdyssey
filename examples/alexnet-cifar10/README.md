@@ -246,6 +246,7 @@ var augmented = transforms(images)
 ```
 
 **Benefits**:
+
 - Improves generalization by ~3-5% accuracy
 - Reduces overfitting on training set
 - Standard practice for CIFAR-10 training
