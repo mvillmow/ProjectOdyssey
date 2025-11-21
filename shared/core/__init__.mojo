@@ -158,6 +158,7 @@ from .dropout import (
 
 from .normalization import (
     batch_norm2d,
+    batch_norm2d_backward,
     layer_norm,
 )
 
@@ -349,6 +350,7 @@ __all__ = [
     "dropout_backward",
     "dropout2d_backward",
     "batch_norm2d",
+    "batch_norm2d_backward",
     "layer_norm",
     # Element-wise
     "abs",
