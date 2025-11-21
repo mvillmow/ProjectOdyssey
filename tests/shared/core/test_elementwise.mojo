@@ -17,7 +17,7 @@ from tests.shared.conftest import (
     assert_shape_equal,
     TestFixtures,
 )
-from shared.core.extensor import ExTensor, zeros, ones
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.elementwise import (
     abs,
     sign,
@@ -45,6 +45,7 @@ from shared.core.elementwise import (
     log10_backward,
     log2_backward,
 )
+from tests.helpers.gradient_checking import check_gradient
 from collections.vector import DynamicVector
 from math import sqrt as math_sqrt, pi
 
@@ -105,6 +106,32 @@ fn test_abs_backward() raises:
     assert_almost_equal(grad_input._data.bitcast[Float32]()[0], Float32(-1.0), tolerance=1e-5)
     assert_almost_equal(grad_input._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
     assert_almost_equal(grad_input._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5)
+
+
+fn test_abs_backward_gradient() raises:
+    """Test abs backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Use non-zero values to avoid discontinuity at x=0
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.2
+    x._data.bitcast[Float32]()[2] = 1.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return abs(inp)
+
+    var y = abs(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return abs_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
@@ -186,6 +213,32 @@ fn test_exp_backward() raises:
     assert_almost_equal(grad_input._data.bitcast[Float32]()[1], Float32(2.718), tolerance=0.01)
 
 
+fn test_exp_backward_gradient() raises:
+    """Test exp backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return exp(inp)
+
+    var y = exp(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return exp_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Logarithm Tests
 # ============================================================================
@@ -239,6 +292,32 @@ fn test_log_backward() raises:
     assert_almost_equal(grad_input._data.bitcast[Float32]()[1], Float32(0.5), tolerance=1e-5)
 
 
+fn test_log_backward_gradient() raises:
+    """Test log backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set positive non-uniform values
+    x._data.bitcast[Float32]()[0] = 0.5
+    x._data.bitcast[Float32]()[1] = 1.0
+    x._data.bitcast[Float32]()[2] = 2.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return log(inp)
+
+    var y = log(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return log_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 fn test_log10_values() raises:
     """Test that log10 computes correct values."""
     var shape = DynamicVector[Int](1)
@@ -257,6 +336,32 @@ fn test_log10_values() raises:
     assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
 
 
+fn test_log10_backward_gradient() raises:
+    """Test log10 backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set positive non-uniform values
+    x._data.bitcast[Float32]()[0] = 0.5
+    x._data.bitcast[Float32]()[1] = 1.0
+    x._data.bitcast[Float32]()[2] = 2.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return log10(inp)
+
+    var y = log10(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return log10_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 fn test_log2_values() raises:
     """Test that log2 computes correct values."""
     var shape = DynamicVector[Int](1)
@@ -273,6 +378,32 @@ fn test_log2_values() raises:
     assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
     assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-5)
     assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(3.0), tolerance=1e-5)
+
+
+fn test_log2_backward_gradient() raises:
+    """Test log2 backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set positive non-uniform values
+    x._data.bitcast[Float32]()[0] = 0.5
+    x._data.bitcast[Float32]()[1] = 1.0
+    x._data.bitcast[Float32]()[2] = 2.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return log2(inp)
+
+    var y = log2(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return log2_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
@@ -329,6 +460,32 @@ fn test_sqrt_backward() raises:
     # x=4: 1/(2*2) = 0.25
     assert_almost_equal(grad_input._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5)
     assert_almost_equal(grad_input._data.bitcast[Float32]()[1], Float32(0.25), tolerance=1e-5)
+
+
+fn test_sqrt_backward_gradient() raises:
+    """Test sqrt backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set positive non-uniform values
+    x._data.bitcast[Float32]()[0] = 0.5
+    x._data.bitcast[Float32]()[1] = 1.0
+    x._data.bitcast[Float32]()[2] = 2.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return sqrt(inp)
+
+    var y = sqrt(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return sqrt_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
@@ -433,6 +590,32 @@ fn test_clip_backward() raises:
     assert_almost_equal(grad_input._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5)
     assert_almost_equal(grad_input._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5)
     assert_almost_equal(grad_input._data.bitcast[Float32]()[4], Float32(0.0), tolerance=1e-5)
+
+
+fn test_clip_backward_gradient() raises:
+    """Test clip backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values within the clipping range
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return clip(inp, min_val=-1.0, max_val=1.0)
+
+    var y = clip(x, min_val=-1.0, max_val=1.0)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return clip_backward(grad, inp, min_val=-1.0, max_val=1.0)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================

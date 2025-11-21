@@ -505,6 +505,32 @@ fn test_gelu_shape() raises:
     assert_equal(y.shape()[1], 4)
 
 
+fn test_gelu_backward_gradient() raises:
+    """Test GELU backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return gelu(inp, approximate=False)
+
+    var y = gelu(x, approximate=False)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return gelu_backward(grad, inp, approximate=False)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Swish Tests
 # ============================================================================
@@ -536,6 +562,32 @@ fn test_swish_positive() raises:
 
     # swish(10) H 10 * sigmoid(10) H 10 * 1 H 10
     assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(10.0), tolerance=0.01)
+
+
+fn test_swish_backward_gradient() raises:
+    """Test Swish backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return swish(inp)
+
+    var y = swish(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return swish_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
@@ -570,6 +622,32 @@ fn test_mish_shape() raises:
     assert_equal(y.shape()[0], 2)
     assert_equal(y.shape()[1], 3)
     assert_equal(y.shape()[2], 4)
+
+
+fn test_mish_backward_gradient() raises:
+    """Test Mish backward with numerical gradient checking."""
+    var shape = DynamicVector[Int](1)
+    shape[0] = 3
+    var x = zeros(shape, DType.float32)
+
+    # Set non-uniform values
+    x._data.bitcast[Float32]()[0] = -0.5
+    x._data.bitcast[Float32]()[1] = 0.0
+    x._data.bitcast[Float32]()[2] = 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return mish(inp)
+
+    var y = mish(x)
+    var grad_out = ones_like(y)
+
+    # Backward function wrapper
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return mish_backward(grad, inp)
+
+    # Use numerical gradient checking (gold standard)
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
