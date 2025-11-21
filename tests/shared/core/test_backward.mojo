@@ -469,6 +469,64 @@ fn test_avgpool2d_backward_gradient_distribution() raises:
     assert_almost_equal(grad_input._data.bitcast[Float32]()[3], Float32(0.25), tolerance=1e-5)
 
 
+fn test_maxpool2d_backward_gradient() raises:
+    """Test maxpool2d backward with numerical gradient checking."""
+    # Create input with non-uniform values
+    var input_shape = DynamicVector[Int](4)
+    input_shape[0] = 1  # batch
+    input_shape[1] = 2  # channels
+    input_shape[2] = 4  # height
+    input_shape[3] = 4  # width
+    var x = zeros(input_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(1 * 2 * 4 * 4):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.6
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return maxpool2d(inp, kernel_size=2, stride=2, padding=0)
+
+    # Backward function wrapper (only return grad_input)
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return maxpool2d_backward(grad_out, inp, kernel_size=2, stride=2, padding=0)
+
+    var output = forward(x)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+
+
+fn test_avgpool2d_backward_gradient() raises:
+    """Test avgpool2d backward with numerical gradient checking."""
+    # Create input with non-uniform values
+    var input_shape = DynamicVector[Int](4)
+    input_shape[0] = 1  # batch
+    input_shape[1] = 2  # channels
+    input_shape[2] = 4  # height
+    input_shape[3] = 4  # width
+    var x = zeros(input_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(1 * 2 * 4 * 4):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.6
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return avgpool2d(inp, kernel_size=2, stride=2, padding=0)
+
+    # Backward function wrapper (only return grad_input)
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return avgpool2d_backward(grad_out, inp, kernel_size=2, stride=2, padding=0)
+
+    var output = forward(x)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Cross-Entropy Backward Tests
 # ============================================================================
@@ -586,12 +644,18 @@ fn main() raises:
     test_maxpool2d_backward_gradient_routing()
     print("✓ test_maxpool2d_backward_gradient_routing")
 
+    test_maxpool2d_backward_gradient()
+    print("✓ test_maxpool2d_backward_gradient")
+
     # AvgPool2D backward tests
     test_avgpool2d_backward_shapes()
     print("✓ test_avgpool2d_backward_shapes")
 
     test_avgpool2d_backward_gradient_distribution()
     print("✓ test_avgpool2d_backward_gradient_distribution")
+
+    test_avgpool2d_backward_gradient()
+    print("✓ test_avgpool2d_backward_gradient")
 
     # Cross-entropy backward tests
     test_cross_entropy_backward_shapes()
