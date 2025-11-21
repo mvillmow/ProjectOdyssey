@@ -225,15 +225,18 @@ After completing P0 fixes and reassessment, implemented comprehensive **numerica
 #### Implementation Details
 
 **Method**: Central difference approximation (O(ε²) error)
+
 ```
 numerical_gradient = (f(x + ε) - f(x - ε)) / (2ε)
 ```
 
 **Tolerances**:
+
 - Standard: rtol=1e-3, atol=1e-6 (appropriate for Float32)
 - Accumulation ops: rtol=1e-2, atol=1e-5 (conv2d, matmul)
 
 **Test Data**:
+
 - Non-uniform initialization (critical for catching bugs)
 - Realistic value ranges (-5.0 to 5.0 typical)
 - Both operands tested for binary operations
@@ -385,19 +388,23 @@ Files changed: 2 files, 372 insertions(+)
 ### Improvement Breakdown
 
 **+2 Code Quality** (P0 Fixes):
+
 - Better documentation (destructor, stride logic, aliasing)
 - @always_inline optimizations
 
 **+2 Numerical Correctness** (P0 Fixes):
+
 - Cross-entropy epsilon protection
 - Verified stride handling correctness
 
 **+8 Numerical Correctness** (Gradient Checking):
+
 - 100% backward pass coverage with numerical validation
 - Gold-standard finite difference testing
 - Catches gradient bugs before training
 
 **+8 Test Coverage** (Gradient Checking):
+
 - 37 new gradient checking tests
 - 1,533 lines of test code
 - All backward passes numerically validated
