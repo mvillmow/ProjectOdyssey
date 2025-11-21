@@ -1,0 +1,425 @@
+"""MobileNetV1 Model for CIFAR-10
+
+This module implements the MobileNetV1 architecture adapted for CIFAR-10.
+
+Architecture:
+    - 28 layers deep (13 depthwise separable blocks + initial + classifier)
+    - Input: 32×32×3 RGB images
+    - Output: 10 classes
+    - ~4.2M parameters
+
+Key Innovation:
+    - Depthwise separable convolutions: 8-9× fewer operations
+    - Depthwise: Spatial filtering per channel (no cross-channel mixing)
+    - Pointwise: Channel mixing with 1×1 convolutions
+    - Much more efficient than standard convolutions
+
+References:
+    Howard et al. (2017) - MobileNets: Efficient Convolutional Neural Networks
+    https://arxiv.org/abs/1704.04861
+"""
+
+from shared.core import (
+    ExTensor,
+    zeros,
+    conv2d,
+    batch_norm2d,
+    relu,
+    linear,
+    global_avgpool2d,
+    kaiming_normal,
+    xavier_normal,
+    constant,
+)
+from collections.vector import DynamicVector
+
+
+fn depthwise_conv2d(
+    x: ExTensor,
+    weights: ExTensor,
+    bias: ExTensor,
+    stride: Int = 1,
+    padding: Int = 1,
+) raises -> ExTensor:
+    """Depthwise convolution: Apply one filter per input channel.
+
+    Unlike standard convolution that mixes all input channels, depthwise
+    convolution applies a separate filter to each input channel independently.
+
+    Args:
+        x: Input tensor (batch, channels, height, width)
+        weights: Depthwise filters (channels, 1, kernel_h, kernel_w)
+        bias: Bias per channel (channels,)
+        stride: Convolution stride
+        padding: Padding size
+
+    Returns:
+        Output tensor (batch, channels, out_h, out_w)
+
+    Note:
+        This is a naive implementation. For production, this should be
+        implemented in the shared library with SIMD optimizations.
+    """
+    var batch_size = x.shape()[0]
+    var channels = x.shape()[1]
+    var height = x.shape()[2]
+    var width = x.shape()[3]
+    var kernel_h = weights.shape()[2]
+    var kernel_w = weights.shape()[3]
+
+    # Calculate output dimensions
+    var out_h = (height + 2 * padding - kernel_h) // stride + 1
+    var out_w = (width + 2 * padding - kernel_w) // stride + 1
+
+    # Create output tensor
+    var output = zeros(
+        DynamicVector[Int](4)
+        .push_back(batch_size)
+        .push_back(channels)
+        .push_back(out_h)
+        .push_back(out_w),
+        x.dtype(),
+    )
+
+    # Process each channel independently
+    var x_data = x._data.bitcast[Float32]()
+    var weights_data = weights._data.bitcast[Float32]()
+    var bias_data = bias._data.bitcast[Float32]()
+    var output_data = output._data.bitcast[Float32]()
+
+    # For each batch and channel, apply the depthwise filter
+    for b in range(batch_size):
+        for c in range(channels):
+            # Extract single channel
+            var channel_input = zeros(
+                DynamicVector[Int](4).push_back(1).push_back(1).push_back(height).push_back(width),
+                x.dtype(),
+            )
+            var channel_input_data = channel_input._data.bitcast[Float32]()
+
+            # Copy channel data
+            for h in range(height):
+                for w in range(width):
+                    var src_idx = ((b * channels + c) * height + h) * width + w
+                    var dst_idx = h * width + w
+                    channel_input_data[dst_idx] = x_data[src_idx]
+
+            # Extract single filter for this channel
+            var channel_filter = zeros(
+                DynamicVector[Int](4).push_back(1).push_back(1).push_back(kernel_h).push_back(kernel_w),
+                weights.dtype(),
+            )
+            var channel_filter_data = channel_filter._data.bitcast[Float32]()
+
+            for kh in range(kernel_h):
+                for kw in range(kernel_w):
+                    var filter_idx = ((c * 1 + 0) * kernel_h + kh) * kernel_w + kw
+                    var dst_idx = kh * kernel_w + kw
+                    channel_filter_data[dst_idx] = weights_data[filter_idx]
+
+            # Create single-element bias
+            var channel_bias = zeros(DynamicVector[Int](1).push_back(1), bias.dtype())
+            var channel_bias_data = channel_bias._data.bitcast[Float32]()
+            channel_bias_data[0] = bias_data[c]
+
+            # Apply 2D convolution for this channel
+            var channel_output = conv2d(
+                channel_input, channel_filter, channel_bias, stride, padding
+            )
+
+            # Copy result back to output
+            var channel_output_data = channel_output._data.bitcast[Float32]()
+            for h in range(out_h):
+                for w in range(out_w):
+                    var src_idx = h * out_w + w
+                    var dst_idx = ((b * channels + c) * out_h + h) * out_w + w
+                    output_data[dst_idx] = channel_output_data[src_idx]
+
+    return output
+
+
+struct DepthwiseSeparableBlock:
+    """Depthwise separable convolution block.
+
+    Architecture:
+        1. Depthwise conv (3×3, per-channel filtering)
+        2. Batch norm + ReLU
+        3. Pointwise conv (1×1, channel mixing)
+        4. Batch norm + ReLU
+
+    Parameters:
+        - Depthwise: weights (in_channels, 1, 3, 3), bias (in_channels,), BN params
+        - Pointwise: weights (out_channels, in_channels, 1, 1), bias (out_channels,), BN params
+    """
+
+    # Depthwise convolution (3×3, per-channel)
+    var dw_weights: ExTensor  # (in_channels, 1, 3, 3)
+    var dw_bias: ExTensor  # (in_channels,)
+    var dw_bn_gamma: ExTensor
+    var dw_bn_beta: ExTensor
+    var dw_bn_running_mean: ExTensor
+    var dw_bn_running_var: ExTensor
+
+    # Pointwise convolution (1×1, channel mixing)
+    var pw_weights: ExTensor  # (out_channels, in_channels, 1, 1)
+    var pw_bias: ExTensor  # (out_channels,)
+    var pw_bn_gamma: ExTensor
+    var pw_bn_beta: ExTensor
+    var pw_bn_running_mean: ExTensor
+    var pw_bn_running_var: ExTensor
+
+    fn __init__(
+        inout self, in_channels: Int, out_channels: Int, stride: Int = 1
+    ) raises:
+        """Initialize depthwise separable block.
+
+        Args:
+            in_channels: Number of input channels
+            out_channels: Number of output channels
+            stride: Stride for depthwise convolution (1 or 2)
+        """
+        # Depthwise convolution weights (one 3×3 filter per channel)
+        self.dw_weights = kaiming_normal(
+            DynamicVector[Int](4).push_back(in_channels).push_back(1).push_back(3).push_back(3),
+            fan_in=9,  # 3×3 kernel
+        )
+        self.dw_bias = zeros(DynamicVector[Int](1).push_back(in_channels))
+        self.dw_bn_gamma = constant(DynamicVector[Int](1).push_back(in_channels), 1.0)
+        self.dw_bn_beta = zeros(DynamicVector[Int](1).push_back(in_channels))
+        self.dw_bn_running_mean = zeros(DynamicVector[Int](1).push_back(in_channels))
+        self.dw_bn_running_var = constant(DynamicVector[Int](1).push_back(in_channels), 1.0)
+
+        # Pointwise convolution weights (1×1, channel mixing)
+        self.pw_weights = xavier_normal(
+            DynamicVector[Int](4)
+            .push_back(out_channels)
+            .push_back(in_channels)
+            .push_back(1)
+            .push_back(1),
+            fan_in=in_channels,
+            fan_out=out_channels,
+        )
+        self.pw_bias = zeros(DynamicVector[Int](1).push_back(out_channels))
+        self.pw_bn_gamma = constant(DynamicVector[Int](1).push_back(out_channels), 1.0)
+        self.pw_bn_beta = zeros(DynamicVector[Int](1).push_back(out_channels))
+        self.pw_bn_running_mean = zeros(DynamicVector[Int](1).push_back(out_channels))
+        self.pw_bn_running_var = constant(DynamicVector[Int](1).push_back(out_channels), 1.0)
+
+    fn forward(
+        inout self, x: ExTensor, stride: Int, training: Bool
+    ) raises -> ExTensor:
+        """Forward pass through depthwise separable block.
+
+        Args:
+            x: Input tensor (batch, in_channels, H, W)
+            stride: Stride for depthwise convolution
+            training: Training mode flag (affects batch norm)
+
+        Returns:
+            Output tensor (batch, out_channels, H/stride, W/stride)
+        """
+        # Depthwise convolution (spatial filtering, per-channel)
+        var out = depthwise_conv2d(x, self.dw_weights, self.dw_bias, stride=stride, padding=1)
+        out = batch_norm2d(
+            out,
+            self.dw_bn_gamma,
+            self.dw_bn_beta,
+            self.dw_bn_running_mean,
+            self.dw_bn_running_var,
+            training,
+        )
+        out = relu(out)
+
+        # Pointwise convolution (channel mixing, 1×1)
+        out = conv2d(out, self.pw_weights, self.pw_bias, stride=1, padding=0)
+        out = batch_norm2d(
+            out,
+            self.pw_bn_gamma,
+            self.pw_bn_beta,
+            self.pw_bn_running_mean,
+            self.pw_bn_running_var,
+            training,
+        )
+        out = relu(out)
+
+        return out
+
+
+struct MobileNetV1:
+    """MobileNetV1 for CIFAR-10.
+
+    Architecture:
+        - Input: 32×32×3
+        - Initial standard conv (32 filters, stride=2)
+        - 13 depthwise separable blocks
+        - Global average pooling
+        - FC layer
+        - Output: 10 classes
+
+    Total parameters: ~4.2M
+    """
+
+    # Initial standard convolution
+    var initial_conv_weights: ExTensor
+    var initial_conv_bias: ExTensor
+    var initial_bn_gamma: ExTensor
+    var initial_bn_beta: ExTensor
+    var initial_bn_running_mean: ExTensor
+    var initial_bn_running_var: ExTensor
+
+    # Depthwise separable blocks (13 total)
+    var ds_block_1: DepthwiseSeparableBlock  # 32 → 64, stride=1
+    var ds_block_2: DepthwiseSeparableBlock  # 64 → 128, stride=2
+    var ds_block_3: DepthwiseSeparableBlock  # 128 → 128, stride=1
+    var ds_block_4: DepthwiseSeparableBlock  # 128 → 256, stride=2
+    var ds_block_5: DepthwiseSeparableBlock  # 256 → 256, stride=1
+    var ds_block_6: DepthwiseSeparableBlock  # 256 → 512, stride=2
+    var ds_block_7: DepthwiseSeparableBlock  # 512 → 512, stride=1
+    var ds_block_8: DepthwiseSeparableBlock  # 512 → 512, stride=1
+    var ds_block_9: DepthwiseSeparableBlock  # 512 → 512, stride=1
+    var ds_block_10: DepthwiseSeparableBlock  # 512 → 512, stride=1
+    var ds_block_11: DepthwiseSeparableBlock  # 512 → 512, stride=1
+    var ds_block_12: DepthwiseSeparableBlock  # 512 → 1024, stride=2
+    var ds_block_13: DepthwiseSeparableBlock  # 1024 → 1024, stride=1
+
+    # Final classifier
+    var fc_weights: ExTensor
+    var fc_bias: ExTensor
+
+    fn __init__(inout self, num_classes: Int = 10) raises:
+        """Initialize MobileNetV1 model.
+
+        Args:
+            num_classes: Number of output classes (default: 10 for CIFAR-10)
+        """
+        # Initial standard convolution: 3×3, 32 filters, stride=2
+        self.initial_conv_weights = kaiming_normal(
+            DynamicVector[Int](4).push_back(32).push_back(3).push_back(3).push_back(3),
+            fan_in=3 * 9,
+        )
+        self.initial_conv_bias = zeros(DynamicVector[Int](1).push_back(32))
+        self.initial_bn_gamma = constant(DynamicVector[Int](1).push_back(32), 1.0)
+        self.initial_bn_beta = zeros(DynamicVector[Int](1).push_back(32))
+        self.initial_bn_running_mean = zeros(DynamicVector[Int](1).push_back(32))
+        self.initial_bn_running_var = constant(DynamicVector[Int](1).push_back(32), 1.0)
+
+        # Depthwise separable blocks
+        # Channel progression: 32 → 64 → 128 → 256 → 512 → 1024
+        self.ds_block_1 = DepthwiseSeparableBlock(32, 64, stride=1)
+        self.ds_block_2 = DepthwiseSeparableBlock(64, 128, stride=2)
+        self.ds_block_3 = DepthwiseSeparableBlock(128, 128, stride=1)
+        self.ds_block_4 = DepthwiseSeparableBlock(128, 256, stride=2)
+        self.ds_block_5 = DepthwiseSeparableBlock(256, 256, stride=1)
+        self.ds_block_6 = DepthwiseSeparableBlock(256, 512, stride=2)
+        self.ds_block_7 = DepthwiseSeparableBlock(512, 512, stride=1)
+        self.ds_block_8 = DepthwiseSeparableBlock(512, 512, stride=1)
+        self.ds_block_9 = DepthwiseSeparableBlock(512, 512, stride=1)
+        self.ds_block_10 = DepthwiseSeparableBlock(512, 512, stride=1)
+        self.ds_block_11 = DepthwiseSeparableBlock(512, 512, stride=1)
+        self.ds_block_12 = DepthwiseSeparableBlock(512, 1024, stride=2)
+        self.ds_block_13 = DepthwiseSeparableBlock(1024, 1024, stride=1)
+
+        # Final FC layer: 1024 → num_classes
+        self.fc_weights = xavier_normal(
+            DynamicVector[Int](2).push_back(num_classes).push_back(1024),
+            fan_in=1024,
+            fan_out=num_classes,
+        )
+        self.fc_bias = zeros(DynamicVector[Int](1).push_back(num_classes))
+
+    fn forward(inout self, x: ExTensor, training: Bool = True) raises -> ExTensor:
+        """Forward pass through MobileNetV1.
+
+        Args:
+            x: Input tensor (batch, 3, 32, 32)
+            training: Training mode flag (affects batch norm)
+
+        Returns:
+            Logits tensor (batch, num_classes)
+        """
+        # Initial standard convolution
+        var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=2, padding=1)
+        out = batch_norm2d(
+            out,
+            self.initial_bn_gamma,
+            self.initial_bn_beta,
+            self.initial_bn_running_mean,
+            self.initial_bn_running_var,
+            training,
+        )
+        out = relu(out)
+        # Shape: (batch, 32, 16, 16)
+
+        # Depthwise separable blocks
+        out = self.ds_block_1.forward(out, stride=1, training=training)
+        # Shape: (batch, 64, 16, 16)
+
+        out = self.ds_block_2.forward(out, stride=2, training=training)
+        # Shape: (batch, 128, 8, 8)
+
+        out = self.ds_block_3.forward(out, stride=1, training=training)
+        # Shape: (batch, 128, 8, 8)
+
+        out = self.ds_block_4.forward(out, stride=2, training=training)
+        # Shape: (batch, 256, 4, 4)
+
+        out = self.ds_block_5.forward(out, stride=1, training=training)
+        # Shape: (batch, 256, 4, 4)
+
+        out = self.ds_block_6.forward(out, stride=2, training=training)
+        # Shape: (batch, 512, 2, 2)
+
+        out = self.ds_block_7.forward(out, stride=1, training=training)
+        out = self.ds_block_8.forward(out, stride=1, training=training)
+        out = self.ds_block_9.forward(out, stride=1, training=training)
+        out = self.ds_block_10.forward(out, stride=1, training=training)
+        out = self.ds_block_11.forward(out, stride=1, training=training)
+        # Shape: (batch, 512, 2, 2)
+
+        out = self.ds_block_12.forward(out, stride=2, training=training)
+        # Shape: (batch, 1024, 1, 1)
+
+        out = self.ds_block_13.forward(out, stride=1, training=training)
+        # Shape: (batch, 1024, 1, 1)
+
+        # Global average pooling
+        out = global_avgpool2d(out)
+        # Shape: (batch, 1024, 1, 1)
+
+        # Flatten
+        var batch_size = out.shape()[0]
+        var channels = out.shape()[1]
+        var flattened = zeros(
+            DynamicVector[Int](2).push_back(batch_size).push_back(channels),
+            out.dtype(),
+        )
+        var flattened_data = flattened._data.bitcast[Float32]()
+        var out_data = out._data.bitcast[Float32]()
+
+        for b in range(batch_size):
+            for c in range(channels):
+                flattened_data[b * channels + c] = out_data[((b * channels + c) * 1) + 0]
+
+        # Final FC layer
+        var logits = linear(flattened, self.fc_weights, self.fc_bias)
+        # Shape: (batch, num_classes)
+
+        return logits
+
+    fn load_weights(inout self, weights_dir: String) raises:
+        """Load model weights from directory.
+
+        Args:
+            weights_dir: Directory containing saved weight files
+        """
+        # TODO: Implement weight loading
+        raise Error("Weight loading not yet implemented")
+
+    fn save_weights(self, weights_dir: String) raises:
+        """Save model weights to directory.
+
+        Args:
+            weights_dir: Directory to save weight files
+        """
+        # TODO: Implement weight saving
+        raise Error("Weight saving not yet implemented")
