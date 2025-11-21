@@ -14,8 +14,8 @@ All optimizers follow pure functional design - caller manages state.
 
 # Export optimizer implementations
 
-# SGD optimizer (functional implementation)
-from .sgd import sgd_step, sgd_step_simple
+# SGD optimizer (functional implementation and in-place mutation)
+from .sgd import sgd_step, sgd_step_simple, sgd_momentum_update_inplace
 
 # Adam optimizer (functional implementation)
 from .adam import adam_step, adam_step_simple

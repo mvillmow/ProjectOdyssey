@@ -28,6 +28,7 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform, xavier_uniform
+from shared.training.optimizers import sgd_momentum_update_inplace
 from collections.vector import DynamicVector
 from weights import save_tensor, load_tensor
 
@@ -373,31 +374,20 @@ struct AlexNet:
             velocity_*: Velocity (momentum) for each parameter
         """
         # SGD with momentum update: v = momentum * v - lr * grad; param = param + v
-        _sgd_momentum_update(self.conv1_kernel, grad_conv1_kernel, velocity_conv1_kernel, learning_rate, momentum)
-        _sgd_momentum_update(self.conv1_bias, grad_conv1_bias, velocity_conv1_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.conv2_kernel, grad_conv2_kernel, velocity_conv2_kernel, learning_rate, momentum)
-        _sgd_momentum_update(self.conv2_bias, grad_conv2_bias, velocity_conv2_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.conv3_kernel, grad_conv3_kernel, velocity_conv3_kernel, learning_rate, momentum)
-        _sgd_momentum_update(self.conv3_bias, grad_conv3_bias, velocity_conv3_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.conv4_kernel, grad_conv4_kernel, velocity_conv4_kernel, learning_rate, momentum)
-        _sgd_momentum_update(self.conv4_bias, grad_conv4_bias, velocity_conv4_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.conv5_kernel, grad_conv5_kernel, velocity_conv5_kernel, learning_rate, momentum)
-        _sgd_momentum_update(self.conv5_bias, grad_conv5_bias, velocity_conv5_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.fc1_weights, grad_fc1_weights, velocity_fc1_weights, learning_rate, momentum)
-        _sgd_momentum_update(self.fc1_bias, grad_fc1_bias, velocity_fc1_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.fc2_weights, grad_fc2_weights, velocity_fc2_weights, learning_rate, momentum)
-        _sgd_momentum_update(self.fc2_bias, grad_fc2_bias, velocity_fc2_bias, learning_rate, momentum)
-        _sgd_momentum_update(self.fc3_weights, grad_fc3_weights, velocity_fc3_weights, learning_rate, momentum)
-        _sgd_momentum_update(self.fc3_bias, grad_fc3_bias, velocity_fc3_bias, learning_rate, momentum)
-
-
-fn _sgd_momentum_update(inout param: ExTensor, grad: ExTensor, inout velocity: ExTensor, lr: Float32, momentum: Float32) raises:
-    """SGD with momentum parameter update: v = momentum * v - lr * grad; param = param + v"""
-    var numel = param.numel()
-    var param_data = param._data.bitcast[Float32]()
-    var grad_data = grad._data.bitcast[Float32]()
-    var velocity_data = velocity._data.bitcast[Float32]()
-
-    for i in range(numel):
-        velocity_data[i] = momentum * velocity_data[i] - lr * grad_data[i]
-        param_data[i] += velocity_data[i]
+        # Now uses shared library implementation
+        sgd_momentum_update_inplace(self.conv1_kernel, grad_conv1_kernel, velocity_conv1_kernel, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv1_bias, grad_conv1_bias, velocity_conv1_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv2_kernel, grad_conv2_kernel, velocity_conv2_kernel, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv2_bias, grad_conv2_bias, velocity_conv2_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv3_kernel, grad_conv3_kernel, velocity_conv3_kernel, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv3_bias, grad_conv3_bias, velocity_conv3_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv4_kernel, grad_conv4_kernel, velocity_conv4_kernel, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv4_bias, grad_conv4_bias, velocity_conv4_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv5_kernel, grad_conv5_kernel, velocity_conv5_kernel, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.conv5_bias, grad_conv5_bias, velocity_conv5_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc1_weights, grad_fc1_weights, velocity_fc1_weights, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc1_bias, grad_fc1_bias, velocity_fc1_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc2_weights, grad_fc2_weights, velocity_fc2_weights, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc2_bias, grad_fc2_bias, velocity_fc2_bias, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc3_weights, grad_fc3_weights, velocity_fc3_weights, learning_rate, momentum)
+        sgd_momentum_update_inplace(self.fc3_bias, grad_fc3_bias, velocity_fc3_bias, learning_rate, momentum)

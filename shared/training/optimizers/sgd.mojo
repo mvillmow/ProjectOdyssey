@@ -146,3 +146,69 @@ fn sgd_step_simple(
     var update = multiply(lr_tensor, gradients)
 
     return subtract(params, update)
+
+
+fn sgd_momentum_update_inplace(
+    inout param: ExTensor,
+    grad: ExTensor,
+    inout velocity: ExTensor,
+    lr: Float32,
+    momentum: Float32
+) raises:
+    """SGD parameter update with momentum (in-place mutation).
+
+    This function performs in-place updates for efficiency in training loops.
+    Mutates both param and velocity tensors directly.
+
+    Formula:
+        velocity = momentum * velocity - lr * grad
+        param = param + velocity
+
+    Args:
+        param: Parameter tensor to update (modified in-place)
+        grad: Gradient tensor
+        velocity: Momentum velocity tensor (modified in-place)
+        lr: Learning rate
+        momentum: Momentum coefficient (typically 0.9)
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, zeros_like
+        from shared.training.optimizers import sgd_momentum_update_inplace
+
+        var W = xavier_uniform([784, 128], DType.float32)
+        var W_vel = zeros_like(W)
+
+        # Training loop
+        for epoch in range(100):
+            var grad_W = ...  # Compute gradients
+            sgd_momentum_update_inplace(W, grad_W, W_vel, lr=0.01, momentum=0.9)
+        ```
+
+    Note:
+        - In-place mutation for efficiency
+        - Velocity tensor must be pre-allocated (use zeros_like)
+        - Both param and velocity are modified directly
+        - This is the AlexNet/ResNet standard momentum formulation
+    """
+    var numel = param.numel()
+
+    if param.shape() != grad.shape():
+        raise Error("Parameter and gradient must have the same shape")
+
+    if param.shape() != velocity.shape():
+        raise Error("Parameter and velocity must have the same shape")
+
+    if param.dtype() != DType.float32:
+        raise Error("sgd_momentum_update_inplace only supports float32")
+
+    var param_data = param._data.bitcast[Float32]()
+    var grad_data = grad._data.bitcast[Float32]()
+    var velocity_data = velocity._data.bitcast[Float32]()
+
+    # Update velocity and parameters in-place
+    for i in range(numel):
+        # velocity = momentum * velocity - lr * grad
+        velocity_data[i] = momentum * velocity_data[i] - lr * grad_data[i]
+        # param = param + velocity
+        param_data[i] += velocity_data[i]

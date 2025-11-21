@@ -20,7 +20,7 @@ References:
 """
 
 from shared.core import ExTensor, zeros
-from shared.core.normalization import normalize_rgb
+from shared.core.normalization import normalize_rgb as normalize_rgb_shared
 from collections.vector import DynamicVector
 from memory import UnsafePointer
 
@@ -164,33 +164,15 @@ fn normalize_images_rgb(inout images: ExTensor) raises -> ExTensor:
         - mean=[0.485, 0.456, 0.406] for RGB channels
         - std=[0.229, 0.224, 0.225] for RGB channels
         - Converts pixel values from [0, 255] to normalized float
+
+        Now uses shared library implementation.
     """
-    var shape = images.shape()
-    var normalized = zeros(shape, DType.float32)
-
-    var num_images = shape[0]
-    var num_channels = shape[1]
-    var num_rows = shape[2]
-    var num_cols = shape[3]
-
     # ImageNet normalization parameters (R, G, B)
-    var means = [Float32(0.485), Float32(0.456), Float32(0.406)]
-    var stds = [Float32(0.229), Float32(0.224), Float32(0.225)]
+    var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
+    var std = (Float32(0.229), Float32(0.224), Float32(0.225))
 
-    var src_data = images._data
-    var dst_data = normalized._data.bitcast[Float32]()
-
-    # Normalize each image
-    for n in range(num_images):
-        for c in range(num_channels):
-            for h in range(num_rows):
-                for w in range(num_cols):
-                    var idx = n * (num_channels * num_rows * num_cols) + c * (num_rows * num_cols) + h * num_cols + w
-                    # Normalize: (pixel / 255.0 - mean) / std
-                    var pixel_norm = (Float32(src_data[idx]) / 255.0 - means[c]) / stds[c]
-                    dst_data[idx] = pixel_norm
-
-    return normalized^
+    # Use shared library normalize_rgb function
+    return normalize_rgb_shared(images, mean, std)
 
 
 fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> (ExTensor, ExTensor):
