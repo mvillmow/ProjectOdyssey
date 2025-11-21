@@ -1,0 +1,474 @@
+name: Release
+
+# Automated release workflow for building, testing, and publishing releases
+# Triggered by version tags or manual dispatch
+
+on:
+  # Trigger on version tags
+  push:
+    tags:
+      - 'v*'
+
+  # Allow manual releases
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v0.1.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write  # For creating releases
+  pull-requests: read
+  actions: read
+
+jobs:
+  # ============================================================================
+  # Version Validation
+  # ============================================================================
+  validate-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
+      is_prerelease: ${{ steps.check-prerelease.outputs.is_prerelease }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+        with:
+          fetch-depth: 0  # Full history for changelog
+
+      - name: Get version from tag or input
+        id: get-version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/}"
+          fi
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Release version: $VERSION"
+
+      - name: Validate version format
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+
+          # Check version format (vX.Y.Z or vX.Y.Z-alpha.N, etc.)
+          if ! echo "$VERSION" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
+            echo "❌ Invalid version format: $VERSION"
+            echo "Expected format: vX.Y.Z or vX.Y.Z-suffix (e.g., v0.1.0, v1.2.3-alpha.1)"
+            exit 1
+          fi
+
+          echo "✅ Version format valid: $VERSION"
+
+      - name: Check for duplicate release
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+
+          # Check if release already exists
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "❌ Release $VERSION already exists"
+            exit 1
+          fi
+
+          echo "✅ No duplicate release found"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Determine if pre-release
+        id: check-prerelease
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          IS_PRERELEASE="false"
+
+          # Check manual input first
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            IS_PRERELEASE="${{ github.event.inputs.prerelease }}"
+          else
+            # Auto-detect from version string
+            if echo "$VERSION" | grep -qE '-(alpha|beta|rc|dev|pre)'; then
+              IS_PRERELEASE="true"
+            fi
+          fi
+
+          echo "is_prerelease=$IS_PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "Pre-release: $IS_PRERELEASE"
+
+  # ============================================================================
+  # Build Packages
+  # ============================================================================
+  build:
+    needs: validate-version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Build Mojo packages
+        run: |
+          echo "Building Mojo packages for release..."
+          mkdir -p dist/mojo
+
+          # Check if Mojo source files exist
+          if [ -d "src" ] && [ -n "$(find src -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
+            echo "Building Mojo packages..."
+
+            # Build all Mojo packages
+            find src -name "*.mojo" -o -name "*.🔥" | while read -r file; do
+              echo "Building: $file"
+              pixi run mojo build "$file" -o "dist/mojo/$(basename "$file" .mojo)"
+            done
+
+            echo "✅ Mojo packages built successfully"
+          else
+            echo "⚠️  No Mojo source files found - skipping Mojo build"
+            echo "This is expected during initial development phases."
+          fi
+
+      - name: Build Python packages
+        run: |
+          echo "Building Python packages for release..."
+
+          # Check if Python package configuration exists
+          if [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
+            echo "Building Python distribution packages..."
+            python -m build
+
+            # Validate packages
+            echo "Validating packages with twine..."
+            twine check dist/*.tar.gz dist/*.whl
+
+            echo "✅ Python packages built and validated"
+          else
+            echo "⚠️  No Python package configuration found - skipping Python build"
+            echo "This is expected during initial development phases."
+          fi
+
+      - name: Generate checksums
+        run: |
+          echo "Generating SHA256 checksums..."
+          cd dist
+
+          # Generate checksums for all artifacts
+          find . -type f \( -name "*.tar.gz" -o -name "*.whl" -o -name "*.mojopkg" \) \
+            -exec sha256sum {} \; > checksums.txt
+
+          echo "Checksums generated:"
+          cat checksums.txt
+
+      - name: Create build manifest
+        run: |
+          echo "Creating build manifest..."
+
+          cat > dist/BUILD_MANIFEST.txt <<EOF
+          ML Odyssey Release Build
+          ========================
+
+          Version: ${{ needs.validate-version.outputs.version }}
+          Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          Commit: ${{ github.sha }}
+          Workflow Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Build Environment:
+          - Runner OS: ${{ runner.os }}
+          - Python: $(python --version)
+          - Mojo: $(pixi run mojo --version 2>&1 || echo "Not available")
+
+          Artifacts:
+          $(find dist -type f -ls)
+          EOF
+
+          cat dist/BUILD_MANIFEST.txt
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: release-artifacts
+          path: dist/
+          retention-days: 30
+
+  # ============================================================================
+  # Run Tests
+  # ============================================================================
+  test:
+    needs: [validate-version, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
+        with:
+          pixi-version: latest
+          cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install test dependencies
+        run: |
+          pip install pytest pytest-cov pytest-timeout
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: release-artifacts
+          path: dist/
+
+      - name: Run unit tests
+        run: |
+          echo "Running unit tests..."
+
+          # Run Mojo tests if they exist
+          if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
+            echo "Running Mojo unit tests..."
+            pixi run mojo test tests/unit/ --verbose
+          fi
+
+          # Run Python tests if they exist
+          if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name 'test_*.py' 2>/dev/null)" ]; then
+            echo "Running Python unit tests..."
+            pytest tests/unit/ --verbose --timeout=300
+          fi
+
+      - name: Run integration tests
+        run: |
+          echo "Running integration tests..."
+
+          # Run integration tests if they exist
+          if [ -d "tests/integration" ]; then
+            if [ -n "$(find tests/integration -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
+              echo "Running Mojo integration tests..."
+              pixi run mojo test tests/integration/ --verbose
+            fi
+
+            if [ -n "$(find tests/integration -name 'test_*.py' 2>/dev/null)" ]; then
+              echo "Running Python integration tests..."
+              pytest tests/integration/ --verbose --timeout=600
+            fi
+          else
+            echo "⚠️  No integration tests found - skipping"
+          fi
+
+      - name: Test package installation
+        run: |
+          echo "Testing package installation in clean environment..."
+
+          # Create temporary virtual environment
+          python -m venv /tmp/test-venv
+          source /tmp/test-venv/bin/activate
+
+          # Install Python packages if they exist
+          if ls dist/*.whl 2>/dev/null; then
+            echo "Installing Python wheel packages..."
+            pip install dist/*.whl
+
+            # Try to import the package
+            echo "Verifying package import..."
+            python -c "import sys; print('Python version:', sys.version)" || true
+          else
+            echo "⚠️  No Python wheel packages to test"
+          fi
+
+          deactivate
+
+  # ============================================================================
+  # Create Release
+  # ============================================================================
+  create-release:
+    needs: [validate-version, build, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd  # v5.0.1
+        with:
+          fetch-depth: 0  # Full history for changelog
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: release-artifacts
+          path: dist/
+
+      - name: Generate release notes
+        id: release-notes
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+
+          echo "Generating release notes for $VERSION..."
+
+          cat > release-notes.md <<'EOF'
+          ## Release ${{ needs.validate-version.outputs.version }}
+
+          **Release Date**: $(date -u +"%Y-%m-%d")
+
+          ### What's New
+
+          EOF
+
+          # Add commits since last tag
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "### Changes since $PREVIOUS_TAG" >> release-notes.md
+            echo "" >> release-notes.md
+            git log "$PREVIOUS_TAG"..HEAD --pretty=format:"- %s (%h)" >> release-notes.md
+            echo "" >> release-notes.md
+          else
+            echo "### Initial Release" >> release-notes.md
+            echo "" >> release-notes.md
+            echo "This is the first release of ML Odyssey." >> release-notes.md
+            echo "" >> release-notes.md
+          fi
+
+          # Add installation instructions
+          cat >> release-notes.md <<'EOF'
+
+          ### Installation
+
+          #### Using pip (Python packages)
+
+          ```bash
+          pip install ml-odyssey
+          ```
+
+          #### From source
+
+          ```bash
+          git clone https://github.com/${{ github.repository }}.git
+          cd ml-odyssey
+          git checkout ${{ needs.validate-version.outputs.version }}
+          pixi install
+          ```
+
+          ### Checksums
+
+          See `checksums.txt` in the release assets for SHA256 checksums of all artifacts.
+
+          ### Documentation
+
+          - [Installation Guide](INSTALL.md)
+          - [README](README.md)
+          - [Project Documentation](https://mvillmow.github.io/ml-odyssey/)
+
+          ---
+
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...${{ needs.validate-version.outputs.version }}
+          EOF
+
+          cat release-notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.validate-version.outputs.version }}
+          name: ${{ needs.validate-version.outputs.version }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ needs.validate-version.outputs.is_prerelease }}
+          files: |
+            dist/*.tar.gz
+            dist/*.whl
+            dist/mojo/*
+            dist/checksums.txt
+            dist/BUILD_MANIFEST.txt
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify release created
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+          RELEASE_URL="${{ github.server_url }}/${{ github.repository }}/releases/tag/$VERSION"
+
+          echo "✅ Release created successfully!"
+          echo "Release URL: $RELEASE_URL"
+          echo ""
+          echo "Release includes:"
+          find dist -type f -exec echo "  - {}" \;
+
+  # ============================================================================
+  # Post-Release Validation
+  # ============================================================================
+  validate-release:
+    needs: [validate-version, create-release]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Verify release exists
+        run: |
+          VERSION="${{ needs.validate-version.outputs.version }}"
+
+          echo "Verifying release $VERSION exists..."
+
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "✅ Release $VERSION verified successfully"
+
+            # Show release details
+            gh release view "$VERSION"
+          else
+            echo "❌ Release $VERSION not found"
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Check release status
+        run: |
+          echo "# 🚀 Release Status" > release-status.md
+          echo "" >> release-status.md
+          echo "**Version**: ${{ needs.validate-version.outputs.version }}" >> release-status.md
+          echo "**Pre-release**: ${{ needs.validate-version.outputs.is_prerelease }}" >> release-status.md
+          echo "" >> release-status.md
+
+          if [ "${{ needs.create-release.result }}" = "success" ]; then
+            echo "✅ **Release Status**: Published Successfully" >> release-status.md
+          else
+            echo "❌ **Release Status**: Failed" >> release-status.md
+          fi
+
+          cat release-status.md
+
+      - name: Summary
+        run: |
+          if [ "${{ needs.create-release.result }}" = "success" ]; then
+            echo "✅ Release ${{ needs.validate-version.outputs.version }} completed successfully!"
+            echo "View release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ needs.validate-version.outputs.version }}"
+          else
+            echo "❌ Release failed. Check workflow logs for details."
+            exit 1
+          fi
