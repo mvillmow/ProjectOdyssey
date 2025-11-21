@@ -141,6 +141,58 @@ fn test_linear_backward_batch() raises:
     assert_equal(grads.grad_bias.shape()[0], out_features)
 
 
+fn test_linear_backward_gradient() raises:
+    """Test linear backward with numerical gradient checking."""
+    var batch = 2
+    var in_features = 3
+    var out_features = 2
+
+    var input_shape = DynamicVector[Int](2)
+    input_shape[0] = batch
+    input_shape[1] = in_features
+    var x = zeros(input_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    x._data.bitcast[Float32]()[0] = 0.5
+    x._data.bitcast[Float32]()[1] = -0.3
+    x._data.bitcast[Float32]()[2] = 1.2
+    x._data.bitcast[Float32]()[3] = -0.8
+    x._data.bitcast[Float32]()[4] = 0.1
+    x._data.bitcast[Float32]()[5] = 0.7
+
+    var weight_shape = DynamicVector[Int](2)
+    weight_shape[0] = out_features
+    weight_shape[1] = in_features
+    var weights = zeros(weight_shape, DType.float32)
+    weights._data.bitcast[Float32]()[0] = 0.4
+    weights._data.bitcast[Float32]()[1] = 0.2
+    weights._data.bitcast[Float32]()[2] = -0.3
+    weights._data.bitcast[Float32]()[3] = 0.6
+    weights._data.bitcast[Float32]()[4] = -0.2
+    weights._data.bitcast[Float32]()[5] = 0.5
+
+    # Forward function wrapper (linear without bias for simplicity)
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        var bias_shape = DynamicVector[Int](1)
+        bias_shape[0] = out_features
+        var bias = zeros(bias_shape, DType.float32)
+        return linear(inp, weights, bias)
+
+    # Backward function wrapper (only return grad_input)
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var bias_shape = DynamicVector[Int](1)
+        bias_shape[0] = out_features
+        var bias = zeros(bias_shape, DType.float32)
+        var grads = linear_backward(grad_out, inp, weights)
+        return grads.grad_input
+
+    var output = forward(x)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Conv2D Backward Tests
 # ============================================================================
@@ -241,6 +293,58 @@ fn test_conv2d_backward_with_stride() raises:
     assert_equal(gi_shape[1], 1)
     assert_equal(gi_shape[2], 8)
     assert_equal(gi_shape[3], 8)
+
+
+fn test_conv2d_backward_gradient() raises:
+    """Test conv2d backward with numerical gradient checking."""
+    var batch = 1
+    var in_channels = 2
+    var out_channels = 2
+    var in_h = 5
+    var in_w = 5
+    var kh = 3
+    var kw = 3
+
+    var input_shape = DynamicVector[Int](4)
+    input_shape[0] = batch
+    input_shape[1] = in_channels
+    input_shape[2] = in_h
+    input_shape[3] = in_w
+    var x = zeros(input_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(batch * in_channels * in_h * in_w):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 2.5
+
+    var kernel_shape = DynamicVector[Int](4)
+    kernel_shape[0] = out_channels
+    kernel_shape[1] = in_channels
+    kernel_shape[2] = kh
+    kernel_shape[3] = kw
+    var kernel = zeros(kernel_shape, DType.float32)
+
+    # Initialize kernel with non-uniform values
+    for i in range(out_channels * in_channels * kh * kw):
+        kernel._data.bitcast[Float32]()[i] = Float32(i) * 0.05 - 0.5
+
+    var bias_shape = DynamicVector[Int](1)
+    bias_shape[0] = out_channels
+    var bias = zeros(bias_shape, DType.float32)
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return conv2d(inp, kernel, bias, stride=1, padding=0)
+
+    # Backward function wrapper (only return grad_input)
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var grads = conv2d_backward(grad_out, inp, kernel, stride=1, padding=0)
+        return grads.grad_input
+
+    var output = forward(x)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking (looser tolerance for conv2d due to accumulation)
+    check_gradient(forward, backward, x, grad_output, rtol=1e-2, atol=1e-5)
 
 
 # ============================================================================
@@ -462,12 +566,18 @@ fn main() raises:
     test_linear_backward_batch()
     print("✓ test_linear_backward_batch")
 
+    test_linear_backward_gradient()
+    print("✓ test_linear_backward_gradient")
+
     # Conv2D backward tests
     test_conv2d_backward_shapes()
     print("✓ test_conv2d_backward_shapes")
 
     test_conv2d_backward_with_stride()
     print("✓ test_conv2d_backward_with_stride")
+
+    test_conv2d_backward_gradient()
+    print("✓ test_conv2d_backward_gradient")
 
     # MaxPool2D backward tests
     test_maxpool2d_backward_shapes()
