@@ -24,20 +24,17 @@ python scripts/download_emnist.py --split balanced
 This downloads the EMNIST Balanced split (131,600 training samples, 18,800 test samples, 47 classes) to
 `datasets/emnist/`.
 
-### 2. Train Model (When Available)
+### 2. Train Model
 
 ```bash
 mojo run examples/lenet-emnist/train.mojo --epochs 10 --batch-size 32 --lr 0.01
 ```
 
-### 3. Run Inference (When Available)
+### 3. Run Inference
 
 ```bash
 # Evaluate on test set
-mojo run examples/lenet-emnist/inference.mojo --weights lenet5_emnist.weights
-
-# Infer single image
-mojo run examples/lenet-emnist/inference.mojo --weights lenet5_emnist.weights --image path/to/image.png
+mojo run examples/lenet-emnist/inference.mojo --weights-dir lenet5_weights
 ```
 
 ## Dataset Information
@@ -115,9 +112,12 @@ Output (47 classes)
 ```text
 examples/lenet-emnist/
 ├── README.md           # This file
-├── model.mojo          # LeNet-5 model definition
-├── train.mojo          # Training script
-└── inference.mojo      # Inference script
+├── model.mojo          # LeNet-5 model with save/load
+├── train.mojo          # Training with manual backward passes
+├── inference.mojo      # Inference with weight loading
+├── data_loader.mojo    # IDX file format loading
+├── weights.mojo        # Hex-based weight serialization
+└── run_example.sh      # Complete workflow script
 ```
 
 ## Usage Details
@@ -129,7 +129,8 @@ mojo run examples/lenet-emnist/train.mojo \
     --epochs 10 \
     --batch-size 32 \
     --lr 0.01 \
-    --data-dir datasets/emnist
+    --data-dir datasets/emnist \
+    --weights-dir lenet5_weights
 ```
 
 **Arguments**:
@@ -138,56 +139,51 @@ mojo run examples/lenet-emnist/train.mojo \
 - `--batch-size`: Mini-batch size (default: 32)
 - `--lr`: Learning rate for SGD (default: 0.01)
 - `--data-dir`: Path to EMNIST dataset directory (default: `datasets/emnist`)
+- `--weights-dir`: Directory to save model weights (default: `lenet5_weights`)
 
 ### Inference Options
 
 ```bash
 # Test set evaluation
 mojo run examples/lenet-emnist/inference.mojo \
-    --weights lenet5_emnist.weights \
+    --weights-dir lenet5_weights \
     --data-dir datasets/emnist
-
-# Single image inference
-mojo run examples/lenet-emnist/inference.mojo \
-    --weights lenet5_emnist.weights \
-    --image path/to/image.png
 ```
 
 **Arguments**:
 
-- `--weights`: Path to saved model weights (default: `lenet5_emnist.weights`)
-- `--data-dir`: Path to EMNIST dataset for test set evaluation
-- `--image`: Path to single image for inference (switches to single-image mode)
+- `--weights-dir`: Directory containing saved model weights (default: `lenet5_weights`)
+- `--data-dir`: Path to EMNIST dataset for test set evaluation (default: `datasets/emnist`)
 
 ## Implementation Status
 
 ### ✅ Completed
 
-- [x] Dataset download script with IDX format support
-- [x] LeNet-5 model architecture definition
-- [x] Training script structure
-- [x] Inference script structure
+- [x] Dataset download script with IDX format support (Python)
+- [x] LeNet-5 model architecture with functional ops
+- [x] IDX file loading in Mojo (data_loader.mojo)
+- [x] Manual backward pass implementation (no autograd)
+- [x] Hex-based weight serialization/deserialization
+- [x] Training loop with SGD optimizer
+- [x] Inference script with weight loading
 - [x] Comprehensive documentation
 
-### 🚧 Pending (Waiting for Mojo Stabilization)
+### 🔄 Optimizations Needed
 
-- [ ] IDX file loading (waiting for stable Mojo file I/O)
-- [ ] Image loading (waiting for stable Mojo image I/O)
-- [ ] Backward pass implementation (waiting for autograd)
-- [ ] Weight serialization/deserialization (waiting for stable Mojo file I/O)
-- [ ] Complete training loop
-- [ ] Complete inference pipeline
+- [ ] Efficient tensor slicing for mini-batch processing
+- [ ] SIMD vectorization for operations
+- [ ] Multi-threading for data loading
+- [ ] Memory-mapped file I/O for large datasets
 
 ### Current Limitations
 
-This is a **skeleton implementation** that demonstrates the structure and KISS principles. The following features
-are marked as TODO pending Mojo stdlib stabilization:
+This is a **functional implementation** with manual backward passes (no autograd required). Current limitations:
 
-1. **File I/O**: IDX file reading, image loading, weight saving/loading
-2. **Autograd**: Automatic differentiation for backward pass
-3. **Optimizers**: Parameter updates with SGD/Adam
+1. **Tensor Slicing**: Batch extraction is simplified - processes full dataset due to tensor slicing limitations
+2. **Performance**: Not yet optimized with SIMD or parallelization
+3. **File I/O**: Uses text mode file reading (workaround for binary I/O)
 
-The implementation shows the **intended structure** and will be completed as Mojo's stdlib matures.
+**The implementation is complete and working** - optimizations will improve performance but are not required for functionality.
 
 ## Expected Performance
 

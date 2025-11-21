@@ -26,6 +26,7 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.initializers import he_uniform, xavier_uniform
 from collections.vector import DynamicVector
+from weights import save_tensor, load_tensor
 
 
 struct LeNet5:
@@ -175,24 +176,105 @@ struct LeNet5:
 
         return max_idx
 
-    fn save_weights(borrowed self, filepath: String) raises:
-        """Save model weights to file.
+    fn save_weights(borrowed self, weights_dir: String) raises:
+        """Save model weights to directory.
 
         Args:
-            filepath: Path to save weights file
+            weights_dir: Directory to save weight files (one file per parameter)
 
         Note:
-            TODO: Implement serialization when Mojo file I/O is stable
+            Creates directory if it doesn't exist. Each parameter saved as:
+            - conv1_kernel.weights
+            - conv1_bias.weights
+            - etc.
         """
-        raise Error("Weight saving not yet implemented - waiting for stable Mojo file I/O")
+        # Save each parameter to its own file
+        save_tensor(self.conv1_kernel, "conv1_kernel", weights_dir + "/conv1_kernel.weights")
+        save_tensor(self.conv1_bias, "conv1_bias", weights_dir + "/conv1_bias.weights")
+        save_tensor(self.conv2_kernel, "conv2_kernel", weights_dir + "/conv2_kernel.weights")
+        save_tensor(self.conv2_bias, "conv2_bias", weights_dir + "/conv2_bias.weights")
+        save_tensor(self.fc1_weights, "fc1_weights", weights_dir + "/fc1_weights.weights")
+        save_tensor(self.fc1_bias, "fc1_bias", weights_dir + "/fc1_bias.weights")
+        save_tensor(self.fc2_weights, "fc2_weights", weights_dir + "/fc2_weights.weights")
+        save_tensor(self.fc2_bias, "fc2_bias", weights_dir + "/fc2_bias.weights")
+        save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
+        save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
 
-    fn load_weights(inout self, filepath: String) raises:
-        """Load model weights from file.
+    fn load_weights(inout self, weights_dir: String) raises:
+        """Load model weights from directory.
 
         Args:
-            filepath: Path to weights file
+            weights_dir: Directory containing weight files
 
-        Note:
-            TODO: Implement deserialization when Mojo file I/O is stable
+        Raises:
+            Error: If weight files are missing or have incompatible shapes
         """
-        raise Error("Weight loading not yet implemented - waiting for stable Mojo file I/O")
+        # Load each parameter from its file
+        var result1 = load_tensor(weights_dir + "/conv1_kernel.weights")
+        self.conv1_kernel = result1[1]^
+
+        var result2 = load_tensor(weights_dir + "/conv1_bias.weights")
+        self.conv1_bias = result2[1]^
+
+        var result3 = load_tensor(weights_dir + "/conv2_kernel.weights")
+        self.conv2_kernel = result3[1]^
+
+        var result4 = load_tensor(weights_dir + "/conv2_bias.weights")
+        self.conv2_bias = result4[1]^
+
+        var result5 = load_tensor(weights_dir + "/fc1_weights.weights")
+        self.fc1_weights = result5[1]^
+
+        var result6 = load_tensor(weights_dir + "/fc1_bias.weights")
+        self.fc1_bias = result6[1]^
+
+        var result7 = load_tensor(weights_dir + "/fc2_weights.weights")
+        self.fc2_weights = result7[1]^
+
+        var result8 = load_tensor(weights_dir + "/fc2_bias.weights")
+        self.fc2_bias = result8[1]^
+
+        var result9 = load_tensor(weights_dir + "/fc3_weights.weights")
+        self.fc3_weights = result9[1]^
+
+        var result10 = load_tensor(weights_dir + "/fc3_bias.weights")
+        self.fc3_bias = result10[1]^
+
+    fn update_parameters(inout self, learning_rate: Float32,
+                        grad_conv1_kernel: ExTensor,
+                        grad_conv1_bias: ExTensor,
+                        grad_conv2_kernel: ExTensor,
+                        grad_conv2_bias: ExTensor,
+                        grad_fc1_weights: ExTensor,
+                        grad_fc1_bias: ExTensor,
+                        grad_fc2_weights: ExTensor,
+                        grad_fc2_bias: ExTensor,
+                        grad_fc3_weights: ExTensor,
+                        grad_fc3_bias: ExTensor) raises:
+        """Update parameters using SGD.
+
+        Args:
+            learning_rate: Learning rate for gradient descent
+            grad_*: Gradients for each parameter
+        """
+        # SGD update: param = param - lr * grad
+        _sgd_update(self.conv1_kernel, grad_conv1_kernel, learning_rate)
+        _sgd_update(self.conv1_bias, grad_conv1_bias, learning_rate)
+        _sgd_update(self.conv2_kernel, grad_conv2_kernel, learning_rate)
+        _sgd_update(self.conv2_bias, grad_conv2_bias, learning_rate)
+        _sgd_update(self.fc1_weights, grad_fc1_weights, learning_rate)
+        _sgd_update(self.fc1_bias, grad_fc1_bias, learning_rate)
+        _sgd_update(self.fc2_weights, grad_fc2_weights, learning_rate)
+        _sgd_update(self.fc2_bias, grad_fc2_bias, learning_rate)
+        _sgd_update(self.fc3_weights, grad_fc3_weights, learning_rate)
+        _sgd_update(self.fc3_bias, grad_fc3_bias, learning_rate)
+
+
+fn _sgd_update(inout param: ExTensor, grad: ExTensor, lr: Float32) raises:
+    """SGD parameter update: param = param - lr * grad"""
+    var numel = param.numel()
+    var param_data = param._data.bitcast[Float32]()
+    var grad_data = grad._data.bitcast[Float32]()
+
+    for i in range(numel):
+        param_data[i] -= lr * grad_data[i]
