@@ -161,7 +161,7 @@ For detailed information, see:
 - **[/agents/README.md](../../../../../../agents/README.md)** - Complete agent system overview
 - **[/agents/hierarchy.md](../../../../../../agents/hierarchy.md)** - Visual hierarchy diagram
 - **[/agents/delegation-rules.md](../../../../../../agents/delegation-rules.md)** - How agents coordinate
-- **[/notes/review/](../../../../../../notes/review/)** - Architectural decisions and detailed specs
+- **[/notes/review/README.md](../../../../../../notes/review/README.md)** - Architectural decisions and detailed specs
 
 ## Key Principles
 
