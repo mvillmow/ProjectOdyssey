@@ -25,6 +25,7 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
+from shared.training.schedulers import step_lr
 from sys import argv
 from collections.vector import DynamicVector
 
@@ -453,10 +454,19 @@ fn main() raises:
     print("  Test samples: ", test_images.shape()[0])
     print()
 
-    # Training loop
+    # Training loop with learning rate decay
     print("Starting training...")
+    print("Learning rate schedule: step decay every 30 epochs by 0.1x")
+    print()
+
     for epoch in range(1, epochs + 1):
-        var train_loss = train_epoch(model, train_images, train_labels, batch_size, learning_rate, momentum, epoch, epochs, velocities)
+        # Apply learning rate decay (step every 30 epochs, gamma=0.1)
+        var current_lr = step_lr(learning_rate, epoch - 1, step_size=30, gamma=Float32(0.1))
+
+        if epoch == 1 or epoch % 30 == 1:
+            print("Epoch", epoch, "- Learning rate:", current_lr)
+
+        var train_loss = train_epoch(model, train_images, train_labels, batch_size, current_lr, momentum, epoch, epochs, velocities)
 
         # Evaluate every epoch
         var test_acc = evaluate(model, test_images, test_labels)
