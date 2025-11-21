@@ -241,7 +241,7 @@ var pipeline = Normalize() | when(is_image, ToRGB()) | Standardize()
 ### Architecture Documentation
 
 - [Mojo Language Review Patterns](.claude/agents/mojo-language-review-specialist.md)
-- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

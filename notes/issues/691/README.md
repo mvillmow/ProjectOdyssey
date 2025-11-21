@@ -222,7 +222,7 @@ Each step includes practical examples and links to tool configurations.
 
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Current contributing guidelines (target file)
 - [CLAUDE.md](CLAUDE.md) - Project conventions and standards
-- [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) - Language selection strategy
+- [ADR-001](../../review/adr/ADR-001-language-selection-tooling.md) - Language selection strategy
 - [.pre-commit-config.yaml](.pre-commit-config.yaml) - Pre-commit hook configuration
 - [.markdownlint.yaml](.markdownlint.yaml) - Markdown linting rules
 

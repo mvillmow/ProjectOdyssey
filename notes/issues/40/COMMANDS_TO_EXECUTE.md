@@ -51,7 +51,6 @@ chmod +x scripts/install_verify_data.sh
 git status
 
 # Stage files
-git add dist/.gitkeep
 git add scripts/build_data_package.sh
 git add scripts/install_verify_data.sh
 git add notes/issues/40/
@@ -84,7 +83,7 @@ cd /home/mvillmow/ml-odyssey/worktrees/40-pkg-data && \
 chmod +x scripts/build_data_package.sh scripts/install_verify_data.sh && \
 ./scripts/build_data_package.sh && \
 ./scripts/install_verify_data.sh && \
-git add dist/.gitkeep scripts/ notes/issues/40/ && \
+git add scripts/ notes/issues/40/ && \
 git commit -m "feat(data): create distributable package with installation testing
 
 - Built dist/data-0.1.0.mojopkg binary package
@@ -111,7 +110,6 @@ Before creating the PR, verify:
 ## Files to Be Committed
 
 ```text
-A  dist/.gitkeep
 A  scripts/build_data_package.sh
 A  scripts/install_verify_data.sh
 M  notes/issues/40/README.md

@@ -232,7 +232,7 @@ fn discover_tests(
   - #792 - [Packaging] Discover Tests
   - #793 - [Cleanup] Discover Tests
 - **Architecture Documentation**: [/agents/hierarchy.md](agents/hierarchy.md)
-- **Language Guidelines**: [/notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Language Guidelines**: [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

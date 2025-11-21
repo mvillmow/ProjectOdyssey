@@ -332,7 +332,7 @@ Potential future improvements (not in scope for this issue):
 
 ### Related Documentation
 
-- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md) - Justification for Python choice
+- [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md) - Justification for Python choice
 - [Python argparse Documentation](https://docs.python.org/3/library/argparse.html) - Standard library reference
 - [CLAUDE.md](CLAUDE.md) - Project conventions and language guidelines
 

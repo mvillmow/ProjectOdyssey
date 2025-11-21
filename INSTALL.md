@@ -1,278 +1,341 @@
-# Benchmark Tooling Installation Guide
+# ML Odyssey Installation Guide
 
 ## Overview
 
-This guide explains how to install and use the ML Odyssey benchmarking infrastructure.
+This guide explains how to install and set up the ML Odyssey development environment. ML Odyssey is a Mojo-based AI
+research platform for reproducing classic research papers.
 
-## Distribution Package
+## Installation Options
 
-**Version**: 0.1.0
+### Option 1: Docker (Recommended)
 
-**Package**: `benchmarks-0.1.0.tar.gz`
+The easiest and most consistent way to get started:
 
-### Contents
+**Requirements**:
 
-- Benchmark execution scripts (Mojo)
-- Baseline comparison tools
-- Sample baseline results
-- Documentation
-- License
+- Docker 20.10 or later
+- Docker Compose 1.29 or later
+- 8GB RAM minimum, 16GB recommended
+- 10GB free disk space
 
-## Installation
+**Installation Steps**:
 
-### From Distribution Archive
-
-1. Extract the archive:
+1. Clone the repository:
 
 ```bash
-tar -xzf benchmarks-0.1.0.tar.gz
-```text
+git clone https://github.com/mvillmow/ml-odyssey.git
+cd ml-odyssey
+```
 
-This will create a `benchmarks/` directory with the following structure:
+1. Build and start the development environment:
 
-```text
-benchmarks/
-├── README.md                      # Comprehensive documentation
-├── baselines/                     # Baseline results
-│   └── baseline_results.json      # Reference baseline
-├── scripts/                       # Benchmark execution scripts
-│   ├── run_benchmarks.mojo        # Main benchmark runner
-│   └── compare_results.mojo       # Baseline comparison tool
-└── results/                       # Results directory (initially empty)
-```text
+```bash
+docker-compose up -d ml-odyssey-dev
+```
+
+1. Enter the development container:
+
+```bash
+docker-compose exec ml-odyssey-dev bash
+```
 
 1. Verify installation:
 
 ```bash
-cd benchmarks
-ls -la scripts/
-```text
+# Check Mojo version
+mojo --version
 
-### System Requirements
+# Run tests
+pixi run pytest tests/
 
-- **OS**: Linux, macOS (Intel/Apple Silicon), Windows (WSL2)
-- **Memory**: 4GB minimum, 8GB recommended
-- **Disk Space**: 500MB for installation + space for results
-- **Bash**: Version 4.0+ required
+# Run pre-commit hooks
+pixi run pre-commit run --all-files
+```
 
-### Prerequisites
+**Docker Services**:
 
-- Mojo compiler (v0.25.7 or later)
-- Python 3.7+ (for JSON result processing)
-- Sufficient disk space for results storage
+- `ml-odyssey-dev` - Development environment with full tooling
+- `ml-odyssey-ci` - CI/Testing environment (optimized for automated tests)
+- `ml-odyssey-prod` - Production environment (read-only volumes)
 
-## Usage
-
-### Running Benchmarks
-
-Execute all benchmarks:
+**Common Docker Commands**:
 
 ```bash
-mojo benchmarks/scripts/run_benchmarks.mojo
-```text
+# Build all services
+docker-compose build
 
-Output will be written to:
+# Start development environment
+docker-compose up -d ml-odyssey-dev
 
-```text
-benchmarks/results/{timestamp}_results.json
-```text
+# Run tests in CI environment
+docker-compose run --rm ml-odyssey-ci
 
-### Comparing Results to Baseline
+# Stop all services
+docker-compose down
 
-Compare your results against the baseline:
+# Clean up volumes (removes caches)
+docker-compose down -v
+```
 
-```bash
-mojo benchmarks/scripts/compare_results.mojo \
-  --baseline benchmarks/baselines/baseline_results.json \
-  --current benchmarks/results/{timestamp}_results.json
-```text
+### Option 2: Local Installation with Pixi
 
-### Exit codes
+For native development without Docker:
 
-- `0` - No performance regressions detected
-- `1` - Performance regressions detected (>10% slowdown)
+**Requirements**:
 
-### Regression severity levels
+- Python 3.11 or later
+- Git
+- Linux, macOS (Intel/Apple Silicon), or Windows (WSL2)
+- 8GB RAM minimum, 16GB recommended
+- 5GB free disk space
 
-- **Minor**: 10-20% slowdown (warning)
-- **Moderate**: 20-50% slowdown (requires investigation)
-- **Severe**: >50% slowdown (critical issue)
+**Installation Steps**:
 
-## CI/CD Integration
-
-The distribution includes automated benchmark execution via GitHub Actions.
-
-### Workflow File
-
-Location: `.github/workflows/benchmark.yml`
-
-### Triggers
-
-- Manual dispatch (`workflow_dispatch`)
-- Scheduled nightly runs (2 AM UTC)
-- Pull requests with `benchmark` label
-
-### Features
-
-- Matrix strategy for parallel execution
-- Baseline comparison
-- Regression detection
-- PR comments with results
-- Artifact retention (90 days)
-
-### Manual Trigger
+1. Clone the repository:
 
 ```bash
-# Using GitHub CLI
-gh workflow run benchmark.yml
+git clone https://github.com/mvillmow/ml-odyssey.git
+cd ml-odyssey
+```
 
-# Or via GitHub web interface
-# Actions → Performance Benchmarks → Run workflow
-```text
-
-### PR Integration
-
-Add the `benchmark` label to any PR to trigger benchmarks:
+1. Install Pixi:
 
 ```bash
-gh pr edit <PR_NUMBER> --add-label benchmark
-```text
+curl -fsSL https://pixi.sh/install.sh | bash
+```
 
-## Benchmark Suites
-
-The workflow supports three benchmark suites:
-
-1. **tensor-ops** - Tensor operation benchmarks
-1. **model-training** - Training loop benchmarks
-1. **data-loading** - Data pipeline benchmarks
-
-Run specific suite:
+1. Install project dependencies:
 
 ```bash
-gh workflow run benchmark.yml -f suite=tensor-ops
-```text
+pixi install
+```
 
-## Verification
-
-### Test Benchmark Execution
+1. Activate the Pixi environment:
 
 ```bash
-cd benchmarks
-mojo scripts/run_benchmarks.mojo
-```text
+pixi shell
+```
 
-Expected output:
-
-```text
-Running benchmarks...
-- tensor_add_small: XX.X ms
-- tensor_add_large: XX.X ms
-- matmul_small: XX.X ms
-- matmul_large: XX.X ms
-
-Results written to: results/{timestamp}_results.json
-```text
-
-### Test Baseline Comparison
+1. Install pre-commit hooks:
 
 ```bash
-mojo scripts/compare_results.mojo \
-  --baseline baselines/baseline_results.json \
-  --current results/{latest_timestamp}_results.json
-```text
+pre-commit install
+```
 
-Expected output:
+1. Verify installation:
 
-```text
-Comparing results...
-✓ tensor_add_small: 0.5% faster
-✓ tensor_add_large: 1.2% slower
-✓ matmul_small: 0.8% faster
-✓ matmul_large: 2.1% slower
+```bash
+# Check Mojo version
+mojo --version
 
-No regressions detected
-```text
+# Run tests
+pytest tests/
+
+# Run pre-commit hooks
+pre-commit run --all-files
+```
+
+## Development Workflow
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest tests/
+
+# Run specific test file
+pytest tests/test_example.py
+
+# Run tests with coverage
+pytest --cov=src tests/
+```
+
+### Code Quality Checks
+
+```bash
+# Run all pre-commit hooks
+pre-commit run --all-files
+
+# Run specific hook
+pre-commit run mojo-format --all-files
+
+# Format Mojo code
+mojo format src/**/*.mojo
+```
+
+### Working with GitHub Issues
+
+The project uses a hierarchical planning structure with automated GitHub issue creation:
+
+```bash
+# Create issues from plan files
+python3 scripts/create_issues.py
+
+# Create issues for a specific section
+python3 scripts/create_issues.py --section 01-foundation
+
+# Resume interrupted issue creation
+python3 scripts/create_issues.py --resume
+```
 
 ## Troubleshooting
 
-### Issue: Benchmark fails to run
+### Docker Issues
 
-### Solution
+**Issue**: Docker container fails to start
 
-1. Verify Mojo compiler is installed: `mojo --version`
-1. Check file permissions: `chmod +x scripts/*.mojo`
-1. Ensure all dependencies are available
+**Solution**:
 
-### Issue: Comparison fails
+1. Verify Docker is running: `docker ps`
+2. Check Docker version: `docker --version` (requires 20.10+)
+3. Rebuild containers: `docker-compose build --no-cache`
+4. Check logs: `docker-compose logs ml-odyssey-dev`
 
-### Solution
+**Issue**: Permission denied errors
 
-1. Verify baseline file exists: `ls baselines/baseline_results.json`
-1. Check result file exists: `ls results/*.json`
-1. Validate JSON syntax: `python3 -m json.tool < results/file.json`
+**Solution**:
 
-### Issue: CI workflow doesn't run
+1. Ensure your user is in the docker group: `sudo usermod -aG docker $USER`
+2. Log out and log back in for group changes to take effect
+3. Or run with sudo: `sudo docker-compose up -d`
 
-### Solution
+### Pixi Issues
 
-1. Verify workflow file is in `.github/workflows/`
-1. Check workflow triggers are configured correctly
-1. Ensure GitHub Actions are enabled for repository
-1. Verify `benchmark` label is applied to PR
+**Issue**: Pixi installation fails
 
-## Updating Baselines
+**Solution**:
 
-Baseline results should only be updated after verification:
+1. Verify shell profile was updated: Check `~/.bashrc` or `~/.zshrc`
+2. Restart shell: `exec $SHELL`
+3. Verify Pixi is in PATH: `which pixi`
 
-1. Run benchmarks and verify results are expected
-1. Copy new results to baselines:
+**Issue**: Dependencies fail to install
+
+**Solution**:
+
+1. Update Pixi: `pixi self-update`
+2. Clear cache: `rm -rf ~/.pixi/cache`
+3. Retry installation: `pixi install`
+
+### Mojo Issues
+
+**Issue**: Mojo command not found
+
+**Solution**:
+
+1. Verify Pixi environment is active: `pixi shell`
+2. Check Mojo installation: `pixi list | grep mojo`
+3. Reinstall dependencies: `pixi install`
+
+**Issue**: Mojo compilation errors
+
+**Solution**:
+
+1. Check Mojo version: `mojo --version` (requires 0.25.7+)
+2. Clean build artifacts: `find . -name "*.mojopkg" -delete`
+3. Update Mojo: Pixi will handle this automatically
+
+### Pre-commit Hook Issues
+
+**Issue**: Pre-commit hooks fail
+
+**Solution**:
+
+1. Verify pre-commit is installed: `pre-commit --version`
+2. Reinstall hooks: `pre-commit install --install-hooks`
+3. Update hooks: `pre-commit autoupdate`
+4. Run with verbose output: `pre-commit run --all-files --verbose`
+
+### Test Failures
+
+**Issue**: Tests fail to run
+
+**Solution**:
+
+1. Verify pytest is installed: `pytest --version`
+2. Install test dependencies: `pixi install`
+3. Check Python version: `python --version` (requires 3.11+)
+
+## Environment Variables
+
+The project uses these environment variables:
+
+- `GITHUB_TOKEN` - Required for GitHub API access (issue creation, PR management)
+- `PIXI_ENVIRONMENT` - Managed by Pixi, do not modify manually
+
+Set environment variables in your shell profile or `.env` file (not tracked by git).
+
+## Upgrading
+
+### Docker Upgrade
 
 ```bash
-cp results/{timestamp}_results.json baselines/baseline_results.json
-```text
+# Pull latest changes
+git pull
 
-1. Commit updated baseline:
+# Rebuild containers
+docker-compose build --no-cache
+
+# Restart services
+docker-compose down && docker-compose up -d
+```
+
+### Local Upgrade
 
 ```bash
-git add baselines/baseline_results.json
-git commit -m "chore(benchmarks): update baseline results"
-```text
+# Pull latest changes
+git pull
 
-1. Document reason for baseline update in commit message
+# Update dependencies
+pixi install
+
+# Update pre-commit hooks
+pre-commit autoupdate
+```
 
 ## Uninstallation
 
-To remove the benchmark tooling:
+### Docker Uninstallation
 
 ```bash
-rm -rf benchmarks/
-```text
+# Stop and remove containers
+docker-compose down
 
-To remove CI/CD integration:
+# Remove volumes (optional - deletes caches)
+docker-compose down -v
+
+# Remove images (optional)
+docker rmi ml-odyssey:dev ml-odyssey:ci ml-odyssey:prod
+```
+
+### Local Uninstallation
 
 ```bash
-rm .github/workflows/benchmark.yml
-```text
+# Remove Pixi environment
+pixi clean
+
+# Remove pre-commit hooks
+pre-commit uninstall
+
+# Remove repository (optional)
+cd .. && rm -rf ml-odyssey
+```
+
+## Additional Resources
+
+- **Documentation**: See [README.md](README.md) for project overview
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
+- **Agent System**: See [agents/README.md](agents/README.md) for agent documentation
+- **Language Strategy**: See [notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Issue Tracking**: [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues)
 
 ## Support
 
 For issues, questions, or contributions:
 
-- **Documentation**: See `benchmarks/README.md`
-- **Issue Tracking**: GitHub Issues
-- **Planning**: Issue #52 ([Plan] Benchmarks)
-- **Testing**: Issue #53 ([Test] Benchmarks)
-- **Implementation**: Issue #54 ([Impl] Benchmarks)
-- **Packaging**: Issue #55 ([Package] Benchmarks)
+- **GitHub Issues**: [https://github.com/mvillmow/ml-odyssey/issues](https://github.com/mvillmow/ml-odyssey/issues)
+- **Documentation**: Check the `/notes/review/` directory for comprehensive guides
 
 ## License
 
-BSD 3-Clause License - See LICENSE file for details
-
-## Version History
-
-- **0.1.0** (2025-01-14): Initial distribution release
-  - Benchmark runner implementation
-  - Baseline comparison tool
-  - CI/CD workflow integration
-  - Placeholder baseline values (to be updated with real benchmarks)
+BSD 3-Clause License - See [LICENSE](LICENSE) file for details

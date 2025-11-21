@@ -601,7 +601,7 @@ class PaperScaffoldCLI:
   - [Template System](notes/plan/03-tooling/01-paper-scaffolding/01-template-system/plan.md)
   - [Directory Generator](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
   - [CLI Interface](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
-- **Language Selection**: [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Language Selection**: [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 - **Related Issues**:
   - Issue #785: [Test] Paper Scaffolding
   - Issue #786: [Implementation] Paper Scaffolding

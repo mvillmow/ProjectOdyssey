@@ -328,7 +328,7 @@ class ValidationResult:
 
 ### Related Documentation
 
-- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 - [5-Phase Development Workflow](notes/review/README.md)
 - [Repository Architecture](CLAUDE.md#repository-architecture)
 

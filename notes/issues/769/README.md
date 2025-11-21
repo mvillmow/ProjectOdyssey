@@ -201,7 +201,7 @@ def collect_missing_metadata(
 
 - **Source Plan**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md)
 - **Parent Component**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
-- **Language Guidance**: [/notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Language Guidance**: [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 
 ### Related Issues
 

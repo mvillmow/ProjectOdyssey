@@ -165,8 +165,7 @@ Relevant links:
 - Regex support not production-ready (mojo-regex is alpha stage)
 - Python is the right tool for automation - not a temporary workaround
 
-**See**: [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) for complete language selection strategy,
-technical evidence (test results), and justification requirements
+**See**: [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md) for complete language selection strategy, technical evidence (test results), and justification requirements
 
 See `/agents/README.md` for complete agent documentation and `/agents/hierarchy.md` for visual hierarchy.
 

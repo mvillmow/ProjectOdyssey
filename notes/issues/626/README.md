@@ -190,7 +190,7 @@ When adding new dependencies:
 
 ### Comprehensive Documentation
 
-- [ADR-001: Language Selection Strategy](notes/review/adr/ADR-001-language-selection-tooling.md) - Mojo-first approach for ML/AI, Python for automation
+- [ADR-001: Language Selection Strategy](../../review/adr/ADR-001-language-selection-tooling.md) - Mojo-first approach for ML/AI, Python for automation
 - [Development Principles (CLAUDE.md)](CLAUDE.md) - KISS, YAGNI, DRY, SOLID principles
 
 ### Current State

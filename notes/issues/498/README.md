@@ -201,7 +201,7 @@ Build a comprehensive shared library of reusable components for machine learning
 - [Documentation Specialist Role](.claude/agents/documentation-specialist.md)
 - [5-Phase Development Workflow](CLAUDE.md#5-phase-development-workflow)
 - [Mojo Language Guidelines](.claude/agents/mojo-language-review-specialist.md)
-- [ADR-001: Language Selection](notes/review/adr/ADR-001-language-selection-tooling.md)
+- [ADR-001: Language Selection](../../review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

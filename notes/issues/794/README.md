@@ -250,7 +250,7 @@ class ExecutionResults:
   - Issue #796: [Impl] Run Tests - Implementation
   - Issue #797: [Package] Run Tests - Integration and Packaging
   - Issue #798: [Cleanup] Run Tests - Refactor and Finalize
-- **Language Selection**: [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Language Selection**: [ADR-001: Language Selection for Tooling](../../review/adr/ADR-001-language-selection-tooling.md)
 - **Agent Hierarchy**: [agents/hierarchy.md](agents/hierarchy.md)
 
 ## Implementation Notes

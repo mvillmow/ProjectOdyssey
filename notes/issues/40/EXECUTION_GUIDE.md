@@ -112,7 +112,6 @@ After successful build and verification:
 git status
 
 # Stage files
-git add dist/.gitkeep
 git add scripts/build_data_package.sh
 git add scripts/install_verify_data.sh
 git add notes/issues/40/README.md
@@ -222,7 +221,6 @@ Before creating PR, verify:
 Files created/modified for this issue:
 
 ```text
-dist/.gitkeep                           # NEW - Track dist/ directory
 scripts/build_data_package.sh           # NEW - Build automation
 scripts/install_verify_data.sh          # NEW - Installation verification
 notes/issues/40/README.md               # MODIFIED - Package documentation
