@@ -18,7 +18,7 @@ from tests.shared.conftest import (
     assert_shape_equal,
     TestFixtures,
 )
-from shared.core.extensor import ExTensor, zeros, ones
+from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.matrix import (
     matmul,
     transpose,
@@ -27,6 +27,7 @@ from shared.core.matrix import (
     matmul_backward,
     transpose_backward,
 )
+from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
 from collections.vector import DynamicVector
 
 
@@ -150,6 +151,97 @@ fn test_matmul_backward_shapes() raises:
     assert_equal(grad_b.shape()[1], 5)
 
 
+fn test_matmul_backward_gradient_a() raises:
+    """Test matmul_backward gradient w.r.t. input A with numerical checking.
+
+    Validates that gradient w.r.t. A matches finite differences.
+    """
+    var batch = 2
+    var m = 3
+    var k = 4
+    var n = 2
+
+    # Create input A with shape (batch*m, k)
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = batch * m
+    shape_a[1] = k
+    var a = zeros(shape_a, DType.float32)
+
+    # Initialize A with non-uniform values
+    for i in range(batch * m * k):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.0
+
+    # Create input B with shape (k, n)
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = k
+    shape_b[1] = n
+    var b = zeros(shape_b, DType.float32)
+
+    # Initialize B with non-uniform values
+    for i in range(k * n):
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 - 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return matmul(inp, b)
+
+    # Backward function wrapper for grad_a
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var (grad_a, _) = matmul_backward(grad_out, inp, b)
+        return grad_a
+
+    var output = forward(a)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+
+
+fn test_matmul_backward_gradient_b() raises:
+    """Test matmul_backward gradient w.r.t. input B with numerical checking.
+
+    Validates that gradient w.r.t. B matches finite differences.
+    """
+    var m = 3
+    var k = 4
+    var n = 2
+
+    # Create input A with shape (m, k)
+    var shape_a = DynamicVector[Int](2)
+    shape_a[0] = m
+    shape_a[1] = k
+    var a = zeros(shape_a, DType.float32)
+
+    # Initialize A with non-uniform values
+    for i in range(m * k):
+        a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.0
+
+    # Create input B with shape (k, n)
+    var shape_b = DynamicVector[Int](2)
+    shape_b[0] = k
+    shape_b[1] = n
+    var b = zeros(shape_b, DType.float32)
+
+    # Initialize B with non-uniform values
+    for i in range(k * n):
+        b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 - 0.5
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return matmul(a, inp)
+
+    # Backward function wrapper for grad_b
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        var (_, grad_b) = matmul_backward(grad_out, a, inp)
+        return grad_b
+
+    var output = forward(b)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+
+
 # ============================================================================
 # Transpose Tests
 # ============================================================================
@@ -238,6 +330,40 @@ fn test_transpose_backward_shapes() raises:
     # Gradient should have same shape as input
     assert_equal(grad_input.shape()[0], 4)
     assert_equal(grad_input.shape()[1], 10)
+
+
+fn test_transpose_backward_gradient() raises:
+    """Test transpose_backward with numerical gradient checking.
+
+    Validates that gradient matches finite differences. Since transpose is
+    its own inverse, the gradient should simply be the transposed gradient.
+    """
+    var m = 3
+    var n = 4
+
+    # Create input with shape (m, n)
+    var shape = DynamicVector[Int](2)
+    shape[0] = m
+    shape[1] = n
+    var x = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(m * n):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.15 - 2.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return transpose(inp)
+
+    # Backward function wrapper
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return transpose_backward(grad_out)
+
+    var output = forward(x)
+    var grad_output = ones_like(output)
+
+    # Numerical gradient checking
+    check_gradient(forward, backward, x, grad_output, rtol=1e-3, atol=1e-6)
 
 
 # ============================================================================
@@ -379,6 +505,12 @@ fn main() raises:
     test_matmul_backward_shapes()
     print("✓ test_matmul_backward_shapes")
 
+    test_matmul_backward_gradient_a()
+    print("✓ test_matmul_backward_gradient_a")
+
+    test_matmul_backward_gradient_b()
+    print("✓ test_matmul_backward_gradient_b")
+
     # Transpose tests
     test_transpose_shapes()
     print("✓ test_transpose_shapes")
@@ -391,6 +523,9 @@ fn main() raises:
 
     test_transpose_backward_shapes()
     print("✓ test_transpose_backward_shapes")
+
+    test_transpose_backward_gradient()
+    print("✓ test_transpose_backward_gradient")
 
     # Dot product tests
     test_dot_shapes()
