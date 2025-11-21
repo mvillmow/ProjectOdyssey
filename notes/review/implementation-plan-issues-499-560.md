@@ -534,10 +534,10 @@ FOUNDATION (01-foundation)
 
 ### Related Documentation
 
-- [5-Phase Workflow](/home/user/ml-odyssey/CLAUDE.md#5-phase-development-workflow)
-- [Agent Hierarchy](/home/user/ml-odyssey/agents/hierarchy.md)
-- [Skills Documentation](/home/user/ml-odyssey/.claude/skills/README.md)
-- [Plan Files Structure](/home/user/ml-odyssey/notes/plan/)
+- [5-Phase Workflow](../../../../../../home/user/ml-odyssey/CLAUDE.md#5-phase-development-workflow)
+- [Agent Hierarchy](../../../../../../home/user/ml-odyssey/agents/hierarchy.md)
+- [Skills Documentation](../../../../../../home/user/ml-odyssey/.claude/skills/README.md)
+- [Plan Files Structure](../../../../../../home/user/ml-odyssey/notes/plan/)
 
 ### Contacts and Resources
 

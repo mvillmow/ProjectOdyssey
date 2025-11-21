@@ -407,10 +407,10 @@ output_format = "json"
 
 ## References
 
-- [Testing Architecture Review](/notes/review/testing-architecture.md) - Comprehensive design
-- [5-Phase Workflow](/notes/review/README.md) - Development process overview
-- [Test Specialist Guide](/agents/roles/test-specialist.md) - Testing team documentation
-- [Mojo Testing Guide](/CLAUDE.md#language-preference) - Mojo testing patterns
+- [Testing Architecture Review](../../../../../../../notes/review/testing-architecture.md) - Comprehensive design
+- [5-Phase Workflow](../../../../../../../notes/review/README.md) - Development process overview
+- [Test Specialist Guide](../../../../../../../agents/roles/test-specialist.md) - Testing team documentation
+- [Mojo Testing Guide](../../../../../../../CLAUDE.md#language-preference) - Mojo testing patterns
 
 ## Related Issues
 

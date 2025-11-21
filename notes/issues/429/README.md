@@ -282,7 +282,7 @@ fn test_data_pipeline_with_augmentation():
 
 ### Source Plan
 
-- [Data Utils Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/plan.md)
+- [Data Utils Plan](../../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/plan.md)
 
 ### Related Issues
 

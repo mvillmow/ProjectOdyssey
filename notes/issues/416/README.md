@@ -630,7 +630,7 @@ Running text augmentation tests...
 - [Issue #414: [Test] Text Augmentations](../414/README.md)
 - [Issue #415: [Impl] Text Augmentations](../415/README.md)
 - [Issue #417: [Cleanup] Text Augmentations](../417/README.md)
-- [Generic Transforms Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
+- [Generic Transforms Plan](../../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
 
 ### External Resources
 

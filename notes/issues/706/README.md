@@ -98,8 +98,8 @@ The Contributor Covenant is the industry-standard code of conduct template and i
 
 ### Source Plan
 
-- [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md)
-- Parent: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
+- [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md)
+- Parent: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
 
 ### Related Issues
 
@@ -117,8 +117,8 @@ The Contributor Covenant is the industry-standard code of conduct template and i
 
 ### Project Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md) - Team structure and delegation patterns
-- [Documentation Specialist Role](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md) - Current agent role
+- [Agent Hierarchy](agents/hierarchy.md) - Team structure and delegation patterns
+- [Documentation Specialist Role](.claude/agents/documentation-specialist.md) - Current agent role
 
 ## Implementation Notes
 

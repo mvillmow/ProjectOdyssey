@@ -26,10 +26,10 @@ implementing AI research papers in the ML Odyssey repository.
 
 ## References
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project guidance and markdown standards
-- [Agent Documentation](/home/mvillmow/ml-odyssey-manual/agents/README.md) - Team documentation patterns
-- [Repository Structure](/home/mvillmow/ml-odyssey-manual/README.md) - Overall repository organization
-- [Issue #1 Documentation](/home/mvillmow/ml-odyssey-manual/notes/issues/1/README.md) - Planning patterns
+- [CLAUDE.md](CLAUDE.md) - Project guidance and markdown standards
+- [Agent Documentation](agents/README.md) - Team documentation patterns
+- [Repository Structure](README.md) - Overall repository organization
+- [Issue #1 Documentation](notes/issues/1/README.md) - Planning patterns
 
 ## Implementation Notes
 

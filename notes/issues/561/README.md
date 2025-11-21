@@ -97,11 +97,11 @@ Benchmark execution scripts use Mojo (not Python) because:
 
 ### Source Plan
 
-- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/01-benchmarks/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/01-benchmarks/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/01-benchmarks/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/01-benchmarks/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
 
 ### Related Issues (5-Phase Workflow)
 
@@ -113,13 +113,13 @@ Benchmark execution scripts use Mojo (not Python) because:
 
 ### Related Components
 
-- Benchmark Validator Tool: [notes/plan/03-tooling/04-validation/02-benchmark-validator/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/04-validation/02-benchmark-validator/plan.md)
-- CI/CD Benchmark Workflow: [notes/plan/05-ci-cd/01-github-actions/03-benchmark-workflow/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/05-ci-cd/01-github-actions/03-benchmark-workflow/plan.md)
+- Benchmark Validator Tool: [notes/plan/03-tooling/04-validation/02-benchmark-validator/plan.md](notes/plan/03-tooling/04-validation/02-benchmark-validator/plan.md)
+- CI/CD Benchmark Workflow: [notes/plan/05-ci-cd/01-github-actions/03-benchmark-workflow/plan.md](notes/plan/05-ci-cd/01-github-actions/03-benchmark-workflow/plan.md)
 
 ### Comprehensive Documentation
 
-- Agent Hierarchy: [agents/hierarchy.md](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- 5-Phase Workflow: [notes/review/README.md](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
+- Agent Hierarchy: [agents/hierarchy.md](agents/hierarchy.md)
+- 5-Phase Workflow: [notes/review/README.md](notes/review/README.md)
 
 ## Implementation Notes
 

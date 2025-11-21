@@ -135,11 +135,11 @@ The method assumes activations are roughly linear around zero, which is true for
 
 ### Source Plan
 
-- [notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md)
+- [notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md](notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md)
 
 ### Parent Context
 
-- [Initializers Overview](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
+- [Initializers Overview](notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
 
 ### Related Issues
 

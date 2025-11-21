@@ -257,11 +257,11 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 ### Source Plan
 
-- [ExTensors Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/01-core-operations/01-tensor-ops/plan.md)
+- [ExTensors Plan](../../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/01-core-operations/01-tensor-ops/plan.md)
 
 ### Implementation Prompt
 
-- [ExTensors Implementation Prompt](/home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md) - Comprehensive design specification following Anthropic's prompting best practices
+- [ExTensors Implementation Prompt](../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md) - Comprehensive design specification following Anthropic's prompting best practices
 
 ### Related Issues (5-Phase Workflow)
 
@@ -279,9 +279,9 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 
 ### ML Odyssey Documentation
 
-- [Agent Hierarchy](/home/user/ml-odyssey/agents/agent-hierarchy.md)
-- [5-Phase Workflow](/home/user/ml-odyssey/notes/review/README.md)
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Project guidelines
+- [Agent Hierarchy](../../../../../../../home/user/ml-odyssey/agents/agent-hierarchy.md)
+- [5-Phase Workflow](../../../../../../../home/user/ml-odyssey/notes/review/README.md)
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Project guidelines
 
 ## Key Questions to Address in Design
 

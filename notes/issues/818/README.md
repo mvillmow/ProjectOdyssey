@@ -30,9 +30,9 @@ directory structure validation and addresses technical debt while ensuring all c
 
 ## References
 
-- [Paper Structure Specification](/notes/review/) - Detailed requirements for paper directory layout
-- [Testing Strategy](/notes/review/) - TDD approach and testing patterns
-- [Validation Patterns](/notes/review/) - Common validation design patterns
+- [Paper Structure Specification](../../../../../../../notes/review/) - Detailed requirements for paper directory layout
+- [Testing Strategy](../../../../../../../notes/review/) - TDD approach and testing patterns
+- [Validation Patterns](../../../../../../../notes/review/) - Common validation design patterns
 - Related Issues:
   - [Issue #817 - Plan] - Initial validation planning
   - [Previous Phase Issues] - Implementation and testing work

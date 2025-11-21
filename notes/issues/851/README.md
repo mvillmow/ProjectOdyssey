@@ -29,7 +29,7 @@ Build comprehensive testing infrastructure including test runners, paper-specifi
 
 ### Related Issues
 
-- **Parent Plan**: [Testing Tools Planning](/notes/issues/850/README.md)
+- **Parent Plan**: [Testing Tools Planning](../../../../../../../notes/issues/850/README.md)
 - **Related Testing Phases**:
   - Issue #850 - [Plan] Testing Tools - Design and Documentation
   - Issue #852 - [Implementation] Testing Tools - Implementation

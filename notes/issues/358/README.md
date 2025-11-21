@@ -102,15 +102,15 @@ Key design decisions:
 
 ## References
 
-**Source Plan**: [notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
+**Source Plan**: [notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
 
-**Parent Plan**: [notes/plan/02-shared-library/02-training-utils/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/plan.md)
+**Parent Plan**: [notes/plan/02-shared-library/02-training-utils/plan.md](notes/plan/02-shared-library/02-training-utils/plan.md)
 
 ### Child Plans
 
-- [Checkpointing](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/01-checkpointing/plan.md)
-- [Early Stopping](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md)
-- [Logging Callback](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md)
+- [Checkpointing](notes/plan/02-shared-library/02-training-utils/03-callbacks/01-checkpointing/plan.md)
+- [Early Stopping](notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md)
+- [Logging Callback](notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md)
 
 ### Related Issues
 

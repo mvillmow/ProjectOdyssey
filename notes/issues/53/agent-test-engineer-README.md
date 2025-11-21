@@ -409,10 +409,10 @@ baseline_list.append("bench_2")  # CORRECT
 
 ## References
 
-- [Benchmark Infrastructure Design](/notes/review/) - Comprehensive architecture
-- [Test Fixtures in conftest.mojo](/tests/shared/conftest.mojo) - Assertion API and BenchmarkResult
-- [TDD Philosophy](/agents/) - Test-driven development approach
-- [CI/CD Integration](/agents/) - Benchmark automation strategy
+- [Benchmark Infrastructure Design](../../../../../../../notes/review/) - Comprehensive architecture
+- [Test Fixtures in conftest.mojo](../../../../../../../tests/shared/conftest.mojo) - Assertion API and BenchmarkResult
+- [TDD Philosophy](../../../../../../../agents/) - Test-driven development approach
+- [CI/CD Integration](../../../../../../../agents/) - Benchmark automation strategy
 
 ## Notes
 

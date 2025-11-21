@@ -199,9 +199,9 @@ def collect_missing_metadata(
 
 ## References
 
-- **Source Plan**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md)
-- **Parent Component**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
-- **Language Guidance**: [/notes/review/adr/ADR-001-language-selection-tooling.md](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Source Plan**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md)
+- **Parent Component**: [/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
+- **Language Guidance**: [/notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ### Related Issues
 

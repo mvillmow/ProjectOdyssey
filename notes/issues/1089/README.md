@@ -16,9 +16,9 @@ Test Training - Integration and Packaging
 
 ## References
 
-- [Agent Hierarchy](/agents/agent-hierarchy.md)
-- [Delegation Rules](/agents/delegation-rules.md)
-- [5-Phase Workflow](/notes/review/README.md)
+- [Agent Hierarchy](../../../../../../../agents/agent-hierarchy.md)
+- [Delegation Rules](../../../../../../../agents/delegation-rules.md)
+- [5-Phase Workflow](../../../../../../../notes/review/README.md)
 
 ## Implementation Notes
 

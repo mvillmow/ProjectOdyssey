@@ -35,8 +35,8 @@ Package coverage reporting functionality with comprehensive documentation, usage
 
 ### Comprehensive Documentation
 
-- [5-Phase Workflow](/home/user/ml-odyssey/notes/review/README.md)
-- [Agent Hierarchy](/home/user/ml-odyssey/agents/hierarchy.md)
+- [5-Phase Workflow](../../../../../../../home/user/ml-odyssey/notes/review/README.md)
+- [Agent Hierarchy](../../../../../../../home/user/ml-odyssey/agents/hierarchy.md)
 
 ## Implementation Notes
 

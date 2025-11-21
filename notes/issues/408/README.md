@@ -294,11 +294,11 @@ fn create_augmentation_pipeline(transforms: List[Transform], seed: Int = 42) -> 
 
 ### Source Plan
 
-- [Image Augmentations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/01-image-augmentations/plan.md)
+- [Image Augmentations Plan](notes/plan/02-shared-library/03-data-utils/03-augmentations/01-image-augmentations/plan.md)
 
 ### Parent Context
 
-- [Augmentations Overview](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+- [Augmentations Overview](notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
 
 ### Related Issues
 

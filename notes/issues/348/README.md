@@ -211,9 +211,9 @@ struct EarlyStoppingCallback(Callback):
 
 ### Source Plans
 
-- **Component Plan**: [/notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md](/notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md)
-- **Parent Plan (Callbacks)**: [/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
-- **Grandparent Plan (Training Utils)**: [/notes/plan/02-shared-library/02-training-utils/plan.md](/notes/plan/02-shared-library/02-training-utils/plan.md)
+- **Component Plan**: [/notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md](../../../../../../../notes/plan/02-shared-library/02-training-utils/03-callbacks/02-early-stopping/plan.md)
+- **Parent Plan (Callbacks)**: [/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](../../../../../../../notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
+- **Grandparent Plan (Training Utils)**: [/notes/plan/02-shared-library/02-training-utils/plan.md](../../../../../../../notes/plan/02-shared-library/02-training-utils/plan.md)
 
 ### Related Issues
 
@@ -231,9 +231,9 @@ struct EarlyStoppingCallback(Callback):
 
 ### Documentation
 
-- **Agent Guidelines**: [/agents/README.md](/agents/README.md)
-- **Delegation Rules**: [/agents/delegation-rules.md](/agents/delegation-rules.md)
-- **Mojo Language Patterns**: [/.claude/agents/mojo-language-review-specialist.md](/.claude/agents/mojo-language-review-specialist.md)
+- **Agent Guidelines**: [/agents/README.md](../../../../../../../agents/README.md)
+- **Delegation Rules**: [/agents/delegation-rules.md](../../../../../../../agents/delegation-rules.md)
+- **Mojo Language Patterns**: [/.claude/agents/mojo-language-review-specialist.md](../../../../../../../.claude/agents/mojo-language-review-specialist.md)
 
 ## Implementation Notes
 

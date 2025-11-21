@@ -35,8 +35,8 @@ Test
 
 ## References
 
-- Related planning: [Issue #413](/home/user/ml-odyssey/notes/issues/413/README.md)
-- Related implementation: [Issue #415](/home/user/ml-odyssey/notes/issues/415/README.md)
+- Related planning: [Issue #413](../../../../../../../home/user/ml-odyssey/notes/issues/413/README.md)
+- Related implementation: [Issue #415](../../../../../../../home/user/ml-odyssey/notes/issues/415/README.md)
 - Transform infrastructure: `/home/user/ml-odyssey/shared/data/transforms.mojo`
 - Test pattern reference: `/home/user/ml-odyssey/tests/shared/data/transforms/test_augmentations.mojo`
 

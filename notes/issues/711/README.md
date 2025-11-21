@@ -164,8 +164,8 @@ Escalation Path:
 
 ### Source Documentation
 
-- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md)
-- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
+- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md)
+- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
 
 ### Related Issues
 
@@ -183,9 +183,9 @@ Escalation Path:
 
 ### Project Documentation
 
-- Agent Hierarchy: [/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- Documentation Standards: [/home/mvillmow/ml-odyssey-manual/CLAUDE.md#markdown-standards](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#markdown-standards)
-- Git Workflow: [/home/mvillmow/ml-odyssey-manual/CLAUDE.md#git-workflow](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#git-workflow)
+- Agent Hierarchy: [/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md](agents/hierarchy.md)
+- Documentation Standards: [/home/mvillmow/ml-odyssey-manual/CLAUDE.md#markdown-standards](CLAUDE.md#markdown-standards)
+- Git Workflow: [/home/mvillmow/ml-odyssey-manual/CLAUDE.md#git-workflow](CLAUDE.md#git-workflow)
 
 ## Implementation Notes
 

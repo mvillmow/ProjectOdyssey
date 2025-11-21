@@ -193,11 +193,11 @@ for batch in data_loader:
 
 ### Source Plan
 
-- [Training Loop Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/01-base-trainer/02-training-loop/plan.md)
+- [Training Loop Plan](notes/plan/02-shared-library/02-training-utils/01-base-trainer/02-training-loop/plan.md)
 
 ### Parent Plan
 
-- [Base Trainer Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/01-base-trainer/plan.md)
+- [Base Trainer Plan](notes/plan/02-shared-library/02-training-utils/01-base-trainer/plan.md)
 
 ### Related Issues (5-Phase Workflow)
 
@@ -214,8 +214,8 @@ for batch in data_loader:
 
 ### Architecture Documentation
 
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/agent-hierarchy.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Agent Hierarchy](agents/agent-hierarchy.md)
 
 ## Implementation Notes
 

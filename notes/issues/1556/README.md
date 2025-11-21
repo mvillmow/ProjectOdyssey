@@ -26,9 +26,9 @@ Create comprehensive shared test utilities and fixtures for the ML Odyssey test 
 ## References
 
 - [Test Architecture](../48/test-architecture.md) - Overall test design
-- [Shared Library Tests README](/tests/shared/README.md) - Test suite organization
-- [Conftest.mojo](/tests/shared/conftest.mojo) - Existing test utilities
-- [CLAUDE.md](/CLAUDE.md) - Mojo language guidelines
+- [Shared Library Tests README](../../../../../../../tests/shared/README.md) - Test suite organization
+- [Conftest.mojo](../../../../../../../tests/shared/conftest.mojo) - Existing test utilities
+- [CLAUDE.md](../../../../../../../CLAUDE.md) - Mojo language guidelines
 
 ## Implementation Notes
 

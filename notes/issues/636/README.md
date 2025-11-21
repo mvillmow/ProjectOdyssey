@@ -167,10 +167,10 @@ The current configuration supports:
 
 ### Source Plans
 
-- **Component Plan**: [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
-- **Child Plan 1**: [01-create-base-config/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md)
-- **Child Plan 2**: [02-add-python-deps/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md)
-- **Child Plan 3**: [03-configure-tools/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md)
+- **Component Plan**: [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
+- **Child Plan 1**: [01-create-base-config/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md)
+- **Child Plan 2**: [02-add-python-deps/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md)
+- **Child Plan 3**: [03-configure-tools/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md)
 
 ### Related Issues
 
@@ -181,7 +181,7 @@ The current configuration supports:
 
 ### Comprehensive Documentation
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project conventions and development principles
+- [CLAUDE.md](CLAUDE.md) - Project conventions and development principles
 - [PEP 621](https://peps.python.org/pep-0621/) - Storing project metadata in pyproject.toml
 - [PEP 518](https://peps.python.org/pep-0518/) - Specifying minimum build system requirements
 

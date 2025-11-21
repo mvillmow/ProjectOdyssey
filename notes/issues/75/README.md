@@ -62,7 +62,7 @@ Create the integration layer that connects the configs/ system with the existing
 - [Issue #72 Planning](../72/README.md)
 - [Configs Architecture](../../review/configs-architecture.md)
 - [Downstream Specifications](../72/downstream-specifications.md)
-- [Existing Config Utility](/shared/utils/config.mojo)
+- [Existing Config Utility](../../../../../../../shared/utils/config.mojo)
 
 ## Implementation Notes
 

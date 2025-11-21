@@ -138,7 +138,7 @@ Create the `.claude/skills/` directory structure to house Claude Code Skills - r
 
 ### Source Plan
 
-- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md)
 
 ### Related Issues
 
@@ -149,9 +149,9 @@ Create the `.claude/skills/` directory structure to house Claude Code Skills - r
 
 ### Related Documentation
 
-- [CLAUDE.md - Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#working-with-agents)
-- [agents/README.md - Agent Quick Start](/home/mvillmow/ml-odyssey-manual/agents/README.md)
-- [agents/hierarchy.md - Visual Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
+- [CLAUDE.md - Agent Hierarchy](CLAUDE.md#working-with-agents)
+- [agents/README.md - Agent Quick Start](agents/README.md)
+- [agents/hierarchy.md - Visual Agent Hierarchy](agents/hierarchy.md)
 
 ## Implementation Notes
 

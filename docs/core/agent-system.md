@@ -158,10 +158,10 @@ Each GitHub issue focuses on one phase for a specific component.
 
 For detailed information, see:
 
-- **[/agents/README.md](/agents/README.md)** - Complete agent system overview
-- **[/agents/hierarchy.md](/agents/hierarchy.md)** - Visual hierarchy diagram
-- **[/agents/delegation-rules.md](/agents/delegation-rules.md)** - How agents coordinate
-- **[/notes/review/](/notes/review/)** - Architectural decisions and detailed specs
+- **[/agents/README.md](../../../../../../agents/README.md)** - Complete agent system overview
+- **[/agents/hierarchy.md](../../../../../../agents/hierarchy.md)** - Visual hierarchy diagram
+- **[/agents/delegation-rules.md](../../../../../../agents/delegation-rules.md)** - How agents coordinate
+- **[/notes/review/](../../../../../../notes/review/)** - Architectural decisions and detailed specs
 
 ## Key Principles
 

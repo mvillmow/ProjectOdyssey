@@ -158,8 +158,8 @@ def __getitem__(self, index):
 
 ### Source Plan
 
-- [Dataset Getitem Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/03-dataset-getitem/plan.md)
-- [Base Dataset Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
+- [Dataset Getitem Plan](notes/plan/02-shared-library/03-data-utils/01-base-dataset/03-dataset-getitem/plan.md)
+- [Base Dataset Plan](notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
 
 ### Related Issues
 
@@ -172,9 +172,9 @@ def __getitem__(self, index):
 
 ### Documentation
 
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Documentation Specialist Role](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Documentation Specialist Role](.claude/agents/documentation-specialist.md)
 
 ## Implementation Notes
 

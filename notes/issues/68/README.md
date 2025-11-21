@@ -380,9 +380,9 @@ tests/tooling/tools/test_category_organization.py::test_paper_scaffold_structure
 - [Issue #67](https://github.com/mvillmow/ml-odyssey/issues/67): Planning phase for tools directory
 - [Issue #69](https://github.com/mvillmow/ml-odyssey/issues/69): Implementation phase (parallel)
 - [Issue #70](https://github.com/mvillmow/ml-odyssey/issues/70): Package phase (parallel)
-- [ADR-001](/home/user/ml-odyssey/notes/review/adr/ADR-001-language-selection-tooling.md): Language selection strategy
-- [Test Specialist Guidelines](/home/user/ml-odyssey/.claude/agents/test-specialist.md): Testing approach
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md): Project conventions
+- [ADR-001](../../../../../../../home/user/ml-odyssey/notes/review/adr/ADR-001-language-selection-tooling.md): Language selection strategy
+- [Test Specialist Guidelines](../../../../../../../home/user/ml-odyssey/.claude/agents/test-specialist.md): Testing approach
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md): Project conventions
 
 ## Implementation Notes
 

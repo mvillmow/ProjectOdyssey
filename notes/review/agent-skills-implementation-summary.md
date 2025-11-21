@@ -437,8 +437,8 @@ with full implementation in Issue 64.
 - [Skills Design](./skills-design.md)
 - [Orchestration Patterns](./orchestration-patterns.md)
 - [Worktree Strategy](./worktree-strategy.md)
-- [Architecture Review](/notes/review/agent-architecture-review.md)
-- [Agents Documentation](/agents/README.md)
+- [Architecture Review](../../../../../../notes/review/agent-architecture-review.md)
+- [Agents Documentation](../../../../../../agents/README.md)
 - Claude Code Sub-Agents: <https://code.claude.com/docs/en/sub-agents>
 - Claude Code Skills: <https://code.claude.com/docs/en/skills>
 - Mojo Manual: <https://docs.modular.com/mojo/manual/>

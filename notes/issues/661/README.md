@@ -163,14 +163,14 @@ ml-odyssey/
 
 ## References
 
-- **Source Plan**: [notes/plan/01-foundation/02-configuration-files/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/plan.md)
-- **Parent Plan**: [notes/plan/01-foundation/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/plan.md)
+- **Source Plan**: [notes/plan/01-foundation/02-configuration-files/plan.md](notes/plan/01-foundation/02-configuration-files/plan.md)
+- **Parent Plan**: [notes/plan/01-foundation/plan.md](notes/plan/01-foundation/plan.md)
 
 ### Child Plans
 
-- [Magic TOML Configuration](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md)
-- [Pyproject TOML Configuration](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
-- [Git Configuration](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
+- [Magic TOML Configuration](notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md)
+- [Pyproject TOML Configuration](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
+- [Git Configuration](notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
 
 ### Related Issues
 
@@ -181,9 +181,9 @@ ml-odyssey/
 
 ### Related Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Repository Architecture](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#repository-architecture)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Repository Architecture](CLAUDE.md#repository-architecture)
 
 ## Implementation Notes
 

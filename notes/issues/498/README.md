@@ -179,14 +179,14 @@ Build a comprehensive shared library of reusable components for machine learning
 
 ### Source Plan
 
-- [Shared Library Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/plan.md)
+- [Shared Library Plan](notes/plan/02-shared-library/plan.md)
 
 ### Child Plans
 
-- [Core Operations](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/plan.md)
-- [Training Utils](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/plan.md)
-- [Data Utils](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/plan.md)
-- [Testing](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/plan.md)
+- [Core Operations](notes/plan/02-shared-library/01-core-operations/plan.md)
+- [Training Utils](notes/plan/02-shared-library/02-training-utils/plan.md)
+- [Data Utils](notes/plan/02-shared-library/03-data-utils/plan.md)
+- [Testing](notes/plan/02-shared-library/04-testing/plan.md)
 
 ### Related Issues
 
@@ -197,11 +197,11 @@ Build a comprehensive shared library of reusable components for machine learning
 
 ### Relevant Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Documentation Specialist Role](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#5-phase-development-workflow)
-- [Mojo Language Guidelines](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
-- [ADR-001: Language Selection](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Documentation Specialist Role](.claude/agents/documentation-specialist.md)
+- [5-Phase Development Workflow](CLAUDE.md#5-phase-development-workflow)
+- [Mojo Language Guidelines](.claude/agents/mojo-language-review-specialist.md)
+- [ADR-001: Language Selection](notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

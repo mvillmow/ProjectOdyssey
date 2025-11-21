@@ -339,19 +339,19 @@ def format_summary(created_files: List[str], paper_dir: str) -> None:
 
 ### Source Plan
 
-- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
+- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/03-tooling/01-paper-scaffolding/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/plan.md) - Paper Scaffolding Tool
+- [notes/plan/03-tooling/01-paper-scaffolding/plan.md](notes/plan/03-tooling/01-paper-scaffolding/plan.md) - Paper Scaffolding Tool
 
 ### Child Components
 
 This planning issue covers design for three implementation components:
 
-1. **Argument Parsing** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md)
-1. **User Prompts** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md)
-1. **Output Formatting** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/03-output-formatting/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/03-output-formatting/plan.md)
+1. **Argument Parsing** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md)
+1. **User Prompts** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/02-user-prompts/plan.md)
+1. **Output Formatting** - [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/03-output-formatting/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/03-output-formatting/plan.md)
 
 ### Related Issues
 
@@ -362,9 +362,9 @@ This planning issue covers design for three implementation components:
 
 ### Related Documentation
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project conventions and workflow
-- [agents/README.md](/home/mvillmow/ml-odyssey-manual/agents/README.md) - Agent system documentation
-- [agents/delegation-rules.md](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md) - Coordination patterns
+- [CLAUDE.md](CLAUDE.md) - Project conventions and workflow
+- [agents/README.md](agents/README.md) - Agent system documentation
+- [agents/delegation-rules.md](agents/delegation-rules.md) - Coordination patterns
 
 ## Implementation Notes
 

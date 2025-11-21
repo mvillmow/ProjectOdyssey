@@ -458,8 +458,8 @@ For each significant issue found:
 ## References
 
 - [Test Plan](test-plan.md) - Comprehensive test plan
-- [Agent Hierarchy](/agents/agent-hierarchy.md) - Complete specifications
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Delegation details
+- [Agent Hierarchy](../../../../../../../agents/agent-hierarchy.md) - Complete specifications
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Delegation details
 - Test Scripts: `/tests/agents/`
 
 ---

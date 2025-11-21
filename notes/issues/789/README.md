@@ -223,16 +223,16 @@ fn discover_tests(
 
 ## References
 
-- **Source Plan**: [/notes/plan/03-tooling/02-testing-tools/01-test-runner/01-discover-tests/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/02-testing-tools/01-test-runner/01-discover-tests/plan.md)
-- **Parent Plan**: [/notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md)
-- **Testing Tools Plan**: [/notes/plan/03-tooling/02-testing-tools/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/02-testing-tools/plan.md)
+- **Source Plan**: [/notes/plan/03-tooling/02-testing-tools/01-test-runner/01-discover-tests/plan.md](notes/plan/03-tooling/02-testing-tools/01-test-runner/01-discover-tests/plan.md)
+- **Parent Plan**: [/notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md](notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md)
+- **Testing Tools Plan**: [/notes/plan/03-tooling/02-testing-tools/plan.md](notes/plan/03-tooling/02-testing-tools/plan.md)
 - **Related Issues**:
   - #790 - [Test] Discover Tests
   - #791 - [Implementation] Discover Tests
   - #792 - [Packaging] Discover Tests
   - #793 - [Cleanup] Discover Tests
-- **Architecture Documentation**: [/agents/hierarchy.md](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- **Language Guidelines**: [/notes/review/adr/ADR-001-language-selection-tooling.md](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Architecture Documentation**: [/agents/hierarchy.md](agents/hierarchy.md)
+- **Language Guidelines**: [/notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

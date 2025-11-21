@@ -293,7 +293,7 @@ if crop_size > image_size:
 
 ### Source Plan
 
-- [Augmentations Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+- [Augmentations Plan](../../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
 
 ### Related Issues
 

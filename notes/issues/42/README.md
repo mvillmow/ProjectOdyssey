@@ -80,7 +80,7 @@ shared/utils/
 
 - **Plan files**: `notes/plan/02-shared-library/` (utils components)
 - **Related issues**: #43, #44, #45, #46
-- **Orchestrator**: [shared-library-orchestrator](/.claude/agents/shared-library-orchestrator.md)
+- **Orchestrator**: [shared-library-orchestrator](../../../../../../../.claude/agents/shared-library-orchestrator.md)
 - **PR**: #1545
 
 Closes #42

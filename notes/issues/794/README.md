@@ -243,15 +243,15 @@ class ExecutionResults:
 
 ## References
 
-- **Source Plan**: [notes/plan/03-tooling/02-testing-tools/01-test-runner/02-run-tests/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/02-testing-tools/01-test-runner/02-run-tests/plan.md)
-- **Parent Component**: Test Runner ([notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md))
+- **Source Plan**: [notes/plan/03-tooling/02-testing-tools/01-test-runner/02-run-tests/plan.md](notes/plan/03-tooling/02-testing-tools/01-test-runner/02-run-tests/plan.md)
+- **Parent Component**: Test Runner ([notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md](notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md))
 - **Related Issues**:
   - Issue #795: [Test] Run Tests - Write Tests
   - Issue #796: [Impl] Run Tests - Implementation
   - Issue #797: [Package] Run Tests - Integration and Packaging
   - Issue #798: [Cleanup] Run Tests - Refactor and Finalize
-- **Language Selection**: [ADR-001: Language Selection for Tooling](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
-- **Agent Hierarchy**: [agents/hierarchy.md](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
+- **Language Selection**: [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Agent Hierarchy**: [agents/hierarchy.md](agents/hierarchy.md)
 
 ## Implementation Notes
 

@@ -174,7 +174,7 @@ allowed-tools: Read,Write,Bash
 
 ### Source Plan
 
-- [Skills Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md) - Source plan.md file
+- [Skills Plan](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/06-skills/plan.md) - Source plan.md file
 
 ### Related Issues
 
@@ -201,7 +201,7 @@ allowed-tools: Read,Write,Bash
 
 - [Claude Code Skills Documentation](https://code.claude.com/docs/en/skills) - Official skills documentation
 - [Mojo Manual](https://docs.modular.com/mojo/manual/) - Mojo language reference
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project development guidelines
+- [CLAUDE.md](CLAUDE.md) - Project development guidelines
 
 ## Implementation Notes
 

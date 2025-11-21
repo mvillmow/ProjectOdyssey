@@ -595,20 +595,20 @@ class PaperScaffoldCLI:
 
 ## References
 
-- **Source Plan**: [/notes/plan/03-tooling/01-paper-scaffolding/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/plan.md)
-- **Parent Plan**: [/notes/plan/03-tooling/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/plan.md)
+- **Source Plan**: [/notes/plan/03-tooling/01-paper-scaffolding/plan.md](notes/plan/03-tooling/01-paper-scaffolding/plan.md)
+- **Parent Plan**: [/notes/plan/03-tooling/plan.md](notes/plan/03-tooling/plan.md)
 - **Child Plans**:
-  - [Template System](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/01-template-system/plan.md)
-  - [Directory Generator](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
-  - [CLI Interface](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
-- **Language Selection**: [ADR-001: Language Selection for Tooling](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
+  - [Template System](notes/plan/03-tooling/01-paper-scaffolding/01-template-system/plan.md)
+  - [Directory Generator](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
+  - [CLI Interface](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
+- **Language Selection**: [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
 - **Related Issues**:
   - Issue #785: [Test] Paper Scaffolding
   - Issue #786: [Implementation] Paper Scaffolding
   - Issue #787: [Packaging] Paper Scaffolding
   - Issue #788: [Cleanup] Paper Scaffolding
-- **Development Principles**: [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md)
-- **5-Phase Workflow**: [/notes/review/README.md](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
+- **Development Principles**: [CLAUDE.md](CLAUDE.md)
+- **5-Phase Workflow**: [/notes/review/README.md](notes/review/README.md)
 
 ## Implementation Notes
 

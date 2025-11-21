@@ -991,9 +991,9 @@ Each supporting directory needs:
 
 ## References
 
-- [Issue #82: Directory Structure Plan](/home/user/ml-odyssey/notes/issues/82/README.md)
-- [Agent Architecture Review](/home/user/ml-odyssey/notes/review/agent-architecture-review.md)
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Project conventions
+- [Issue #82: Directory Structure Plan](../../../../../../../home/user/ml-odyssey/notes/issues/82/README.md)
+- [Agent Architecture Review](../../../../../../../home/user/ml-odyssey/notes/review/agent-architecture-review.md)
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Project conventions
 
 ---
 

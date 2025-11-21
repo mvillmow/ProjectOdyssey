@@ -86,10 +86,10 @@ Write comprehensive TDD tests for all core operations including tensor ops, acti
 
 ## References
 
-- **Plan**: [Issue #453](/home/user/ml-odyssey/notes/issues/453/README.md)
-- **Source Plan**: [notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md](/home/user/ml-odyssey/notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md)
+- **Plan**: [Issue #453](../../../../../../home/user/ml-odyssey/notes/issues/453/README.md)
+- **Source Plan**: [notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md](../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md)
 - **Test Files**: `/home/user/ml-odyssey/tests/shared/core/`
-- **Reference**: [Data Test Runner](/home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo) - Example of well-implemented tests
+- **Reference**: [Data Test Runner](../../../../../../home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo) - Example of well-implemented tests
 
 ## Implementation Notes
 
@@ -166,9 +166,9 @@ Use appropriate Mojo patterns:
 
 ## References
 
-- **Test Issue**: [Issue #454](/home/user/ml-odyssey/notes/issues/454/README.md)
-- **Plan**: [Issue #453](/home/user/ml-odyssey/notes/issues/453/README.md)
-- **Mojo Patterns**: [Mojo Language Review](/home/user/ml-odyssey/agents/mojo-language-review-specialist.md)
+- **Test Issue**: [Issue #454](../../../../../../home/user/ml-odyssey/notes/issues/454/README.md)
+- **Plan**: [Issue #453](../../../../../../home/user/ml-odyssey/notes/issues/453/README.md)
+- **Mojo Patterns**: [Mojo Language Review](../../../../../../home/user/ml-odyssey/agents/mojo-language-review-specialist.md)
 
 ## Implementation Notes
 
@@ -231,7 +231,7 @@ Package core tests for distribution and CI/CD integration. Create test runner si
 
 ## References
 
-- **Impl Issue**: [Issue #455](/home/user/ml-odyssey/notes/issues/455/README.md)
+- **Impl Issue**: [Issue #455](../../../../../../home/user/ml-odyssey/notes/issues/455/README.md)
 - **Reference Runner**: `/home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo`
 
 ## Implementation Notes
@@ -298,7 +298,7 @@ Refactor and finalize core tests. Clean up code, improve documentation, verify f
 
 ## References
 
-- **Package Issue**: [Issue #456](/home/user/ml-odyssey/notes/issues/456/README.md)
+- **Package Issue**: [Issue #456](../../../../../../home/user/ml-odyssey/notes/issues/456/README.md)
 
 ## Implementation Notes
 
@@ -405,8 +405,8 @@ Pre-compute expected values for first 20 steps, verify within tolerance (1e-6).
 
 ## References
 
-- **Plan**: [Issue #458](/home/user/ml-odyssey/notes/issues/458/README.md)
-- **Source Plan**: [notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md](/home/user/ml-odyssey/notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md)
+- **Plan**: [Issue #458](../../../../../../home/user/ml-odyssey/notes/issues/458/README.md)
+- **Source Plan**: [notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md](../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md)
 - **Test Files**: `/home/user/ml-odyssey/tests/shared/training/`
 
 ## Implementation Notes
@@ -464,8 +464,8 @@ Implement training utilities to make the tests pass. Implement schedulers, train
 
 ## References
 
-- **Test Issue**: [Issue #459](/home/user/ml-odyssey/notes/issues/459/README.md)
-- **Mojo Patterns**: [Mojo Language Review](/home/user/ml-odyssey/agents/mojo-language-review-specialist.md)
+- **Test Issue**: [Issue #459](../../../../../../home/user/ml-odyssey/notes/issues/459/README.md)
+- **Mojo Patterns**: [Mojo Language Review](../../../../../../home/user/ml-odyssey/agents/mojo-language-review-specialist.md)
 
 ## Implementation Notes
 
@@ -503,7 +503,7 @@ Similar to Issue #456 but for training tests.
 
 ## References
 
-- **Impl Issue**: [Issue #460](/home/user/ml-odyssey/notes/issues/460/README.md)
+- **Impl Issue**: [Issue #460](../../../../../../home/user/ml-odyssey/notes/issues/460/README.md)
 - **Reference Runner**: `/home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo`
 
 ## Implementation Notes
@@ -537,7 +537,7 @@ Refactor and finalize training tests.
 
 ## References
 
-- **Package Issue**: [Issue #461](/home/user/ml-odyssey/notes/issues/461/README.md)
+- **Package Issue**: [Issue #461](../../../../../../home/user/ml-odyssey/notes/issues/461/README.md)
 
 ## Implementation Notes
 
@@ -613,7 +613,7 @@ Complete remaining data utility tests. Data tests are already 80% complete with 
 
 ## References
 
-- **Plan**: [Issue #463](/home/user/ml-odyssey/notes/issues/463/README.md)
+- **Plan**: [Issue #463](../../../../../../home/user/ml-odyssey/notes/issues/463/README.md)
 - **Test Files**: `/home/user/ml-odyssey/tests/shared/data/`
 - **Test Runner**: `/home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo`
 
@@ -654,7 +654,7 @@ Complete any missing data utility implementations. Most are likely complete, but
 
 ## References
 
-- **Test Issue**: [Issue #464](/home/user/ml-odyssey/notes/issues/464/README.md)
+- **Test Issue**: [Issue #464](../../../../../../home/user/ml-odyssey/notes/issues/464/README.md)
 
 ## Implementation Notes
 
@@ -696,7 +696,7 @@ Finalize data test packaging. Enhance existing test runner, verify CI/CD integra
 
 ## References
 
-- **Impl Issue**: [Issue #465](/home/user/ml-odyssey/notes/issues/465/README.md)
+- **Impl Issue**: [Issue #465](../../../../../../home/user/ml-odyssey/notes/issues/465/README.md)
 - **Existing Runner**: `/home/user/ml-odyssey/tests/shared/data/run_all_tests.mojo`
 
 ## Implementation Notes
@@ -730,7 +730,7 @@ Finalize data tests with cleanup and documentation.
 
 ## References
 
-- **Package Issue**: [Issue #466](/home/user/ml-odyssey/notes/issues/466/README.md)
+- **Package Issue**: [Issue #466](../../../../../../home/user/ml-odyssey/notes/issues/466/README.md)
 
 ## Implementation Notes
 
@@ -777,8 +777,8 @@ Coordinate all unit test implementation across components. Ensure integration be
 
 ## References
 
-- **Plan**: [Issue #468](/home/user/ml-odyssey/notes/issues/468/README.md)
-- **Summary**: [Test Components Summary](/home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
+- **Plan**: [Issue #468](../../../../../../home/user/ml-odyssey/notes/issues/468/README.md)
+- **Summary**: [Test Components Summary](../../../../../../home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
 
 ## Implementation Notes
 
@@ -816,7 +816,7 @@ Coordinate all implementation work across components. Verify cross-component fun
 
 ## References
 
-- **Test Issue**: [Issue #469](/home/user/ml-odyssey/notes/issues/469/README.md)
+- **Test Issue**: [Issue #469](../../../../../../home/user/ml-odyssey/notes/issues/469/README.md)
 
 ## Implementation Notes
 
@@ -882,7 +882,7 @@ Create unified test infrastructure for all components. Create master test runner
 
 ## References
 
-- **Impl Issue**: [Issue #470](/home/user/ml-odyssey/notes/issues/470/README.md)
+- **Impl Issue**: [Issue #470](../../../../../../home/user/ml-odyssey/notes/issues/470/README.md)
 - **Component Runners**:
   - `/home/user/ml-odyssey/tests/shared/core/run_all_tests.mojo`
   - `/home/user/ml-odyssey/tests/shared/training/run_all_tests.mojo`
@@ -952,8 +952,8 @@ Final cleanup and documentation for entire unit test suite. Create comprehensive
 
 ## References
 
-- **Package Issue**: [Issue #471](/home/user/ml-odyssey/notes/issues/471/README.md)
-- **Summary**: [Test Components Summary](/home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
+- **Package Issue**: [Issue #471](../../../../../../home/user/ml-odyssey/notes/issues/471/README.md)
+- **Summary**: [Test Components Summary](../../../../../../home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
 
 ## Implementation Notes
 
@@ -985,4 +985,4 @@ Each template can be customized with:
 
 **Document Owner**: Documentation Specialist
 **Last Updated**: 2025-11-19
-**Related**: [Test Components Summary](/home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
+**Related**: [Test Components Summary](../../../../../../home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)

@@ -25,11 +25,11 @@ validation tools, and develop team onboarding materials for seamless adoption.
 
 ## References
 
-- [Agent Hierarchy](/agents/hierarchy.md) - All agent specs
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Coordination rules
-- [Worktree Strategy](/notes/review/worktree-strategy.md) - Git workflow
-- [Skills Design](/notes/review/skills-design.md) - Skills integration
-- [Issue #64](/notes/issues/64/README.md) - What's being packaged
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - All agent specs
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Coordination rules
+- [Worktree Strategy](../../../../../../../notes/review/worktree-strategy.md) - Git workflow
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Skills integration
+- [Issue #64](../../../../../../../notes/issues/64/README.md) - What's being packaged
 
 ## Implementation Notes
 

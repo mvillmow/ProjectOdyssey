@@ -260,11 +260,11 @@ docs/
 
 ## References
 
-- [ExTensors Implementation Prompt](/home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md)
-- [Issue #219: Test Specification](/home/user/ml-odyssey/notes/issues/219/README.md)
-- [Issue #220: Implementation](/home/user/ml-odyssey/notes/issues/220/README.md)
-- [Issue #221: Package](/home/user/ml-odyssey/notes/issues/221/README.md)
-- [ML Odyssey Code Quality Standards](/home/user/ml-odyssey/CLAUDE.md)
+- [ExTensors Implementation Prompt](../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md)
+- [Issue #219: Test Specification](../../../../../../../home/user/ml-odyssey/notes/issues/219/README.md)
+- [Issue #220: Implementation](../../../../../../../home/user/ml-odyssey/notes/issues/220/README.md)
+- [Issue #221: Package](../../../../../../../home/user/ml-odyssey/notes/issues/221/README.md)
+- [ML Odyssey Code Quality Standards](../../../../../../../home/user/ml-odyssey/CLAUDE.md)
 
 ## Cleanup Notes
 

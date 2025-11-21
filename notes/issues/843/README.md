@@ -64,9 +64,9 @@ feature meets all quality standards before release.
 ### Project Documentation
 
 - [Project Overview](../../README.md) - Main ML Odyssey documentation
-- [5-Phase Development Workflow](/notes/review/README.md) - Explanation of Plan/Test/Implementation/Package/Cleanup phases
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Coordination patterns for agent system
-- [CLAUDE.md](/CLAUDE.md) - Project conventions and guidelines
+- [5-Phase Development Workflow](../../../../../../../notes/review/README.md) - Explanation of Plan/Test/Implementation/Package/Cleanup phases
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Coordination patterns for agent system
+- [CLAUDE.md](../../../../../../../CLAUDE.md) - Project conventions and guidelines
 
 ## Implementation Notes
 

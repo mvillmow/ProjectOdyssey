@@ -104,7 +104,7 @@ trait Trainer:
 
 - **Plan files**: `notes/plan/02-shared-library/02-training-utils/`
 - **Related issues**: #33, #34, #35, #36
-- **Orchestrator**: [shared-library-orchestrator](/.claude/agents/shared-library-orchestrator.md)
+- **Orchestrator**: [shared-library-orchestrator](../../../../../../../.claude/agents/shared-library-orchestrator.md)
 - **PR**: #1543
 
 Closes #32

@@ -187,11 +187,11 @@ goals, and unique value proposition.
 
 ### Source Plan
 
-- [notes/plan/01-foundation/03-initial-documentation/01-readme/01-write-overview/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/01-write-overview/plan.md)
+- [notes/plan/01-foundation/03-initial-documentation/01-readme/01-write-overview/plan.md](notes/plan/01-foundation/03-initial-documentation/01-readme/01-write-overview/plan.md)
 
 ### Parent Context
 
-- [notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
+- [notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md](notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
 
 ### Related Issues
 
@@ -202,8 +202,8 @@ goals, and unique value proposition.
 
 ### Project Documentation
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project conventions and guidelines
-- [README.md](/home/mvillmow/ml-odyssey-manual/README.md) - Current README state
+- [CLAUDE.md](CLAUDE.md) - Project conventions and guidelines
+- [README.md](README.md) - Current README state
 
 ## Implementation Notes
 

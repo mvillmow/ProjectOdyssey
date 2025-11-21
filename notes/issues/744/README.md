@@ -316,8 +316,8 @@ class ValidationResult:
 
 ### Source Plans
 
-- [Create Structure Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/01-create-structure/plan.md)
-- [Parent: Directory Generator Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
+- [Create Structure Plan](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/01-create-structure/plan.md)
+- [Parent: Directory Generator Plan](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
 
 ### Related Issues
 
@@ -328,14 +328,14 @@ class ValidationResult:
 
 ### Related Documentation
 
-- [ADR-001: Language Selection for Tooling](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Repository Architecture](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#repository-architecture)
+- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Repository Architecture](CLAUDE.md#repository-architecture)
 
 ### Team Resources
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Delegation Rules](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Delegation Rules](agents/delegation-rules.md)
 
 ## Implementation Notes
 

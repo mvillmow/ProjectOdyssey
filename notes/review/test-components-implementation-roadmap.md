@@ -571,5 +571,5 @@ This roadmap provides a clear path to completing all 20 test-related issues. By 
 
 ### Related Documents
 
-- [Test Components Summary](/home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
-- [Issue Templates](/home/user/ml-odyssey/notes/review/test-components-issue-templates.md)
+- [Test Components Summary](../../../../../../home/user/ml-odyssey/notes/review/test-components-issues-453-472-summary.md)
+- [Issue Templates](../../../../../../home/user/ml-odyssey/notes/review/test-components-issue-templates.md)

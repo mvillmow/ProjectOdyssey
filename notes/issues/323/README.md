@@ -171,8 +171,8 @@ for epoch in range(num_epochs):
 
 ### Source Plan
 
-- [Step Scheduler Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/01-step-scheduler/plan.md)
-- [Parent LR Schedulers Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/plan.md)
+- [Step Scheduler Plan](notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/01-step-scheduler/plan.md)
+- [Parent LR Schedulers Plan](notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/plan.md)
 
 ### Related Issues
 

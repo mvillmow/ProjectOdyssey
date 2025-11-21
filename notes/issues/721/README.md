@@ -174,13 +174,13 @@ integration.
 
 ### Source Plan
 
-- [/notes/plan/01-foundation/03-initial-documentation/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/plan.md)
+- [/notes/plan/01-foundation/03-initial-documentation/plan.md](notes/plan/01-foundation/03-initial-documentation/plan.md)
 
 ### Child Plans
 
-- [README Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
-- [CONTRIBUTING Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md)
-- [CODE_OF_CONDUCT Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
+- [README Plan](notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
+- [CONTRIBUTING Plan](notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md)
+- [CODE_OF_CONDUCT Plan](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
 
 ### Related Issues
 
@@ -191,9 +191,9 @@ integration.
 
 ### Project Documentation
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project instructions and conventions
-- [/agents/README.md](/home/mvillmow/ml-odyssey-manual/agents/README.md) - Agent hierarchy documentation
-- [/notes/review/](/home/mvillmow/ml-odyssey-manual/notes/review/) - Comprehensive specifications
+- [CLAUDE.md](CLAUDE.md) - Project instructions and conventions
+- [/agents/README.md](agents/README.md) - Agent hierarchy documentation
+- [/notes/review/](notes/review/) - Comprehensive specifications
 
 ## Implementation Notes
 

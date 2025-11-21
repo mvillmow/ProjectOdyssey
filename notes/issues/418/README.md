@@ -228,8 +228,8 @@ var pipeline = Normalize() | when(is_image, ToRGB()) | Standardize()
 
 ### Source Plan
 
-- [Generic Transforms Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
-- [Parent: Augmentations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+- [Generic Transforms Plan](notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
+- [Parent: Augmentations Plan](notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
 
 ### Related Issues
 
@@ -240,8 +240,8 @@ var pipeline = Normalize() | when(is_image, ToRGB()) | Standardize()
 
 ### Architecture Documentation
 
-- [Mojo Language Review Patterns](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
-- [ADR-001: Language Selection for Tooling](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md)
+- [Mojo Language Review Patterns](.claude/agents/mojo-language-review-specialist.md)
+- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md)
 
 ## Implementation Notes
 

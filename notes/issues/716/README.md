@@ -155,9 +155,9 @@ While CODE_OF_CONDUCT.md is a documentation file, it establishes these "contract
 
 ### Source Plans
 
-- [Main Plan: Code of Conduct](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
-- [Sub-plan: Choose Template](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md)
-- [Sub-plan: Customize Document](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md)
+- [Main Plan: Code of Conduct](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/plan.md)
+- [Sub-plan: Choose Template](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/01-choose-template/plan.md)
+- [Sub-plan: Customize Document](notes/plan/01-foundation/03-initial-documentation/03-code-of-conduct/02-customize-document/plan.md)
 
 ### Related Issues
 
@@ -174,9 +174,9 @@ While CODE_OF_CONDUCT.md is a documentation file, it establishes these "contract
 
 ### Team Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Documentation Specialist Role](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md)
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#5-phase-development-workflow)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Documentation Specialist Role](.claude/agents/documentation-specialist.md)
+- [5-Phase Workflow](CLAUDE.md#5-phase-development-workflow)
 
 ## Implementation Notes
 

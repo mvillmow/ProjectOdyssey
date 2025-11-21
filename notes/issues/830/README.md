@@ -229,13 +229,13 @@ Based on the planning phase:
 
 - [coverage.py Documentation](https://coverage.readthedocs.io/) - Standard Python coverage tool
 - [Code Coverage Best Practices](https://en.wikipedia.org/wiki/Code_coverage) - General concepts
-- [TDD Principles](/CLAUDE.md#key-development-principles) - Test-driven development approach
+- [TDD Principles](../../../../../../../CLAUDE.md#key-development-principles) - Test-driven development approach
 
 ### Shared Documentation
 
-- [5-Phase Workflow](/CLAUDE.md#5-phase-development-workflow) - Development lifecycle
-- [Testing Standards](/CLAUDE.md#testing-standards) - Quality standards
-- [Python Coding Standards](/CLAUDE.md#python-coding-standards) - Code style guidelines
+- [5-Phase Workflow](../../../../../../../CLAUDE.md#5-phase-development-workflow) - Development lifecycle
+- [Testing Standards](../../../../../../../CLAUDE.md#testing-standards) - Quality standards
+- [Python Coding Standards](../../../../../../../CLAUDE.md#python-coding-standards) - Code style guidelines
 
 ## Workflow Integration
 

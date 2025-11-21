@@ -28,10 +28,10 @@ function as expected when invoked by agents or directly.
 
 ## References
 
-- [Skills Design](/notes/review/skills-design.md) - Complete skill specifications
-- [Agent Hierarchy](/agents/hierarchy.md) - How agents use skills
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Skills in workflows
-- [Issue #510](/notes/issues/510/README.md) - Planning specifications
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Complete skill specifications
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - How agents use skills
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Skills in workflows
+- [Issue #510](../../../../../../../notes/issues/510/README.md) - Planning specifications
 
 ## Implementation Notes
 

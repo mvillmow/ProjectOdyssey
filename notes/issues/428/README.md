@@ -222,13 +222,13 @@ data-utils/
 
 ### Source Plan
 
-- [Data Utils Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/plan.md)
+- [Data Utils Plan](notes/plan/02-shared-library/03-data-utils/plan.md)
 
 ### Child Plans
 
-- [Base Dataset](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
-- [Data Loader](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
-- [Augmentations](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+- [Base Dataset](notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
+- [Data Loader](notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
+- [Augmentations](notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
 
 ### Related Issues
 
@@ -240,9 +240,9 @@ data-utils/
 
 ### Project Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Documentation Specialist Role](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md)
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#5-phase-development-workflow)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Documentation Specialist Role](.claude/agents/documentation-specialist.md)
+- [5-Phase Workflow](CLAUDE.md#5-phase-development-workflow)
 
 ## Implementation Notes
 

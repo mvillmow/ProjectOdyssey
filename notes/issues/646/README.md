@@ -137,11 +137,11 @@ pixi.lock merge=binary linguist-language=YAML linguist-generated=true
 
 ### Source Plan
 
-[notes/plan/01-foundation/02-configuration-files/03-git-config/02-configure-gitattributes/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/03-git-config/02-configure-gitattributes/plan.md)
+[notes/plan/01-foundation/02-configuration-files/03-git-config/02-configure-gitattributes/plan.md](notes/plan/01-foundation/02-configuration-files/03-git-config/02-configure-gitattributes/plan.md)
 
 ### Parent Plan
 
-[notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
+[notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md](notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
 
 ### Related Issues
 

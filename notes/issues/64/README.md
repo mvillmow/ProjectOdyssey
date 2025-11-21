@@ -33,12 +33,12 @@ complete 6-level agent hierarchy designed for Mojo-based AI research paper devel
 
 ## References
 
-- [Agent Hierarchy](/agents/hierarchy.md) - Complete agent specifications
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Delegation rules
-- [Skills Design](/notes/review/skills-design.md) - Skills integration patterns
-- [Level 4 Template](/agents/templates/level-4-implementation-engineer.md) - Example template
-- [Issue #62](/notes/issues/62/README.md) - Planning specifications
-- [Issue #63](/notes/issues/63/README.md) - Test insights
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - Complete agent specifications
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Delegation rules
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Skills integration patterns
+- [Level 4 Template](../../../../../../../agents/templates/level-4-implementation-engineer.md) - Example template
+- [Issue #62](../../../../../../../notes/issues/62/README.md) - Planning specifications
+- [Issue #63](../../../../../../../notes/issues/63/README.md) - Test insights
 
 ## Implementation Notes
 

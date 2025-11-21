@@ -113,13 +113,13 @@ Design and document a comprehensive data augmentation framework that increases t
 
 ### Source Plan
 
-[/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+[/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md](notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
 
 ### Child Plans
 
-- [Image Augmentations](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/01-image-augmentations/plan.md)
-- [Text Augmentations](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md)
-- [Generic Transforms](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
+- [Image Augmentations](notes/plan/02-shared-library/03-data-utils/03-augmentations/01-image-augmentations/plan.md)
+- [Text Augmentations](notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md)
+- [Generic Transforms](notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
 
 ### Related Issues
 
@@ -130,8 +130,8 @@ Design and document a comprehensive data augmentation framework that increases t
 
 ### Related Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md) - Team structure and delegation patterns
-- [Mojo Language Review Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md) - Language patterns for implementation
+- [Agent Hierarchy](agents/hierarchy.md) - Team structure and delegation patterns
+- [Mojo Language Review Specialist](.claude/agents/mojo-language-review-specialist.md) - Language patterns for implementation
 
 ## Implementation Notes
 

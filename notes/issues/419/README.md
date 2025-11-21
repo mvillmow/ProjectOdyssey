@@ -561,7 +561,7 @@ mojo test tests/shared/data/transforms/test_generic_transforms.mojo
 
 ### Source Plan
 
-- [Generic Transforms Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
+- [Generic Transforms Plan](../../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/03-generic-transforms/plan.md)
 
 ### Related Issues
 

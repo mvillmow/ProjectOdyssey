@@ -213,10 +213,10 @@ The testing phase (Issue #274) should verify:
 
 ### Source Plan
 
-- [Initializers Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
-- [Xavier/Glorot Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md)
-- [Kaiming/He Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/02-kaiming-he/plan.md)
-- [Uniform/Normal Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md)
+- [Initializers Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
+- [Xavier/Glorot Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/01-xavier-glorot/plan.md)
+- [Kaiming/He Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/02-kaiming-he/plan.md)
+- [Uniform/Normal Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md)
 
 ### Related Issues
 
@@ -241,7 +241,7 @@ The testing phase (Issue #274) should verify:
 
 ### Mojo Language Guidelines
 
-Follow patterns from [mojo-language-review-specialist.md](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md):
+Follow patterns from [mojo-language-review-specialist.md](.claude/agents/mojo-language-review-specialist.md):
 
 - Prefer `fn` over `def` for compile-time guarantees
 - Use `owned`/`borrowed` for memory safety

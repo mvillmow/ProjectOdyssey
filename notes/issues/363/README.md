@@ -162,15 +162,15 @@ The Training Utils subsystem is organized into three main components:
 
 ## References
 
-**Source Plan**: [/notes/plan/02-shared-library/02-training-utils/plan.md](/notes/plan/02-shared-library/02-training-utils/plan.md)
+**Source Plan**: [/notes/plan/02-shared-library/02-training-utils/plan.md](../../../../../../../notes/plan/02-shared-library/02-training-utils/plan.md)
 
-**Parent Plan**: [/notes/plan/02-shared-library/plan.md](/notes/plan/02-shared-library/plan.md)
+**Parent Plan**: [/notes/plan/02-shared-library/plan.md](../../../../../../../notes/plan/02-shared-library/plan.md)
 
 ### Child Plans
 
-- [Base Trainer Plan](/notes/plan/02-shared-library/02-training-utils/01-base-trainer/plan.md)
-- [LR Schedulers Plan](/notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/plan.md)
-- [Callbacks Plan](/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
+- [Base Trainer Plan](../../../../../../../notes/plan/02-shared-library/02-training-utils/01-base-trainer/plan.md)
+- [LR Schedulers Plan](../../../../../../../notes/plan/02-shared-library/02-training-utils/02-lr-schedulers/plan.md)
+- [Callbacks Plan](../../../../../../../notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
 
 ### Related Issues
 
@@ -181,9 +181,9 @@ The Training Utils subsystem is organized into three main components:
 
 ### Comprehensive Specifications
 
-- [Agent Hierarchy](/agents/agent-hierarchy.md) - Team structure and coordination
-- [5-Phase Workflow](/notes/review/README.md) - Development workflow explanation
-- [Mojo Language Patterns](/agents/mojo-language-review-specialist.md) - Mojo coding standards
+- [Agent Hierarchy](../../../../../../../agents/agent-hierarchy.md) - Team structure and coordination
+- [5-Phase Workflow](../../../../../../../notes/review/README.md) - Development workflow explanation
+- [Mojo Language Patterns](../../../../../../../agents/mojo-language-review-specialist.md) - Mojo coding standards
 
 ## Implementation Notes
 

@@ -209,11 +209,11 @@ subsequent issues. This doesn't violate the plan but represents early implementa
 
 ### Source Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/01-create-base-config/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
 
 ### Related Issues
 

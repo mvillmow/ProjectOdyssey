@@ -354,13 +354,13 @@ All documentation follows consistent patterns:
 
 ### Issue Links
 
-- [Issue #416: [Package] Text Augmentations](/home/user/ml-odyssey/notes/issues/416/README.md)
-- [Issue #417: [Cleanup] Text Augmentations](/home/user/ml-odyssey/notes/issues/417/README.md)
-- [Issue #418: [Plan] Generic Transforms](/home/user/ml-odyssey/notes/issues/418/README.md)
-- [Issue #419: [Test] Generic Transforms](/home/user/ml-odyssey/notes/issues/419/README.md)
-- [Issue #420: [Impl] Generic Transforms](/home/user/ml-odyssey/notes/issues/420/README.md)
-- [Issue #421: [Package] Generic Transforms](/home/user/ml-odyssey/notes/issues/421/README.md)
-- [Issue #422: [Cleanup] Generic Transforms](/home/user/ml-odyssey/notes/issues/422/README.md)
+- [Issue #416: [Package] Text Augmentations](../../../../../../home/user/ml-odyssey/notes/issues/416/README.md)
+- [Issue #417: [Cleanup] Text Augmentations](../../../../../../home/user/ml-odyssey/notes/issues/417/README.md)
+- [Issue #418: [Plan] Generic Transforms](../../../../../../home/user/ml-odyssey/notes/issues/418/README.md)
+- [Issue #419: [Test] Generic Transforms](../../../../../../home/user/ml-odyssey/notes/issues/419/README.md)
+- [Issue #420: [Impl] Generic Transforms](../../../../../../home/user/ml-odyssey/notes/issues/420/README.md)
+- [Issue #421: [Package] Generic Transforms](../../../../../../home/user/ml-odyssey/notes/issues/421/README.md)
+- [Issue #422: [Cleanup] Generic Transforms](../../../../../../home/user/ml-odyssey/notes/issues/422/README.md)
 
 ### Source Code
 

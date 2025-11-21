@@ -148,14 +148,14 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### Source Plan
 
-- [Core Operations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/plan.md)
+- [Core Operations Plan](notes/plan/02-shared-library/01-core-operations/plan.md)
 
 ### Child Component Plans
 
-- [Tensor Operations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/01-tensor-ops/plan.md)
-- [Activations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
-- [Initializers Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
-- [Metrics Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md)
+- [Tensor Operations Plan](notes/plan/02-shared-library/01-core-operations/01-tensor-ops/plan.md)
+- [Activations Plan](notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
+- [Initializers Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
+- [Metrics Plan](notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md)
 
 ### Related Issues
 
@@ -166,9 +166,9 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### Comprehensive Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Mojo Language Review Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Mojo Language Review Specialist](.claude/agents/mojo-language-review-specialist.md)
+- [5-Phase Development Workflow](notes/review/README.md)
 
 ## Implementation Notes
 

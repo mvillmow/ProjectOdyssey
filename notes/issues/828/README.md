@@ -176,22 +176,22 @@ The cleanup phase produces the following deliverables:
 
 ### Planning Documentation
 
-- [Paper Test Script Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md) - Master plan
-- [Test Specific Paper Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/01-test-specific-paper/plan.md)
-- [Validate Structure Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/02-validate-structure/plan.md)
-- [Run Paper Tests Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/03-run-paper-tests/plan.md)
+- [Paper Test Script Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md) - Master plan
+- [Test Specific Paper Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/01-test-specific-paper/plan.md)
+- [Validate Structure Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/02-validate-structure/plan.md)
+- [Run Paper Tests Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/03-run-paper-tests/plan.md)
 
 ### Architectural Documentation
 
-- [Tooling Architecture](/notes/review/tooling-architecture.md) - Overall tooling design
-- [Testing Strategy](/notes/review/testing-strategy.md) - Project-wide testing approach
-- [CI/CD Workflow](/notes/review/ci-cd-workflow.md) - Integration pipeline design
+- [Tooling Architecture](../../../../../../../notes/review/tooling-architecture.md) - Overall tooling design
+- [Testing Strategy](../../../../../../../notes/review/testing-strategy.md) - Project-wide testing approach
+- [CI/CD Workflow](../../../../../../../notes/review/ci-cd-workflow.md) - Integration pipeline design
 
 ### Project Standards
 
 - [CLAUDE.md](../../../CLAUDE.md) - Project conventions and workflow
 - [Code Style Guidelines](../../../CONTRIBUTING.md) - Language-specific guidelines
-- [Markdown Standards](/CLAUDE.md#markdown-standards) - Documentation format
+- [Markdown Standards](../../../../../../../CLAUDE.md#markdown-standards) - Documentation format
 
 ## Implementation Notes
 

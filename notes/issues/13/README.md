@@ -25,9 +25,9 @@ implementation, providing a standardized foundation with all necessary subdirect
 
 ## References
 
-- Parent directory: [papers/README.md](/home/mvillmow/ml-odyssey-manual/worktrees/issue-13-plan/papers/README.md)
+- Parent directory: [papers/README.md](worktrees/issue-13-plan/papers/README.md)
 - Related issues: Part of foundation setup (01-directory-structure)
-- Project conventions: [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/worktrees/issue-13-plan/CLAUDE.md)
+- Project conventions: [CLAUDE.md](worktrees/issue-13-plan/CLAUDE.md)
 
 ## Design Decisions
 

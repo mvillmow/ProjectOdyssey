@@ -126,7 +126,7 @@ This configuration is part of the foundation layer, establishing the package man
 
 ## References
 
-- Source Plan: [notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md)
+- Source Plan: [notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md](notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md)
 - Parent Component: Magic.toml Configuration
 - Related Issues:
   - #612: [Test] Configure Channels

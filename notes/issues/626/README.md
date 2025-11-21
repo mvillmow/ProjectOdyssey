@@ -175,11 +175,11 @@ When adding new dependencies:
 
 ### Source Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/02-add-python-deps/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
 
 ### Related Issues
 
@@ -190,8 +190,8 @@ When adding new dependencies:
 
 ### Comprehensive Documentation
 
-- [ADR-001: Language Selection Strategy](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md) - Mojo-first approach for ML/AI, Python for automation
-- [Development Principles (CLAUDE.md)](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - KISS, YAGNI, DRY, SOLID principles
+- [ADR-001: Language Selection Strategy](notes/review/adr/ADR-001-language-selection-tooling.md) - Mojo-first approach for ML/AI, Python for automation
+- [Development Principles (CLAUDE.md)](CLAUDE.md) - KISS, YAGNI, DRY, SOLID principles
 
 ### Current State
 

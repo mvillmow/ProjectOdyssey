@@ -297,8 +297,8 @@ The implementation is complete and high-quality. No modifications are needed.
 - [Issue #78](https://github.com/mvillmow/ml-odyssey/issues/78) - Test phase
 - [Issue #80](https://github.com/mvillmow/ml-odyssey/issues/80) - Package phase
 - [Issue #82](../82/README.md) - Overall directory structure plan
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Project conventions
-- [Markdown Standards](/home/user/ml-odyssey/CLAUDE.md#markdown-standards) - Documentation guidelines
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Project conventions
+- [Markdown Standards](../../../../../../../home/user/ml-odyssey/CLAUDE.md#markdown-standards) - Documentation guidelines
 
 ## Files Modified
 

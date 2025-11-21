@@ -26,10 +26,10 @@ Design and document the `shared/` directory structure for reusable ML/AI compone
 
 ## References
 
-- [Project Structure](/CLAUDE.md#repository-architecture)
-- [Papers Directory](/papers/README.md)
-- [Agent Hierarchy](/agents/hierarchy.md)
-- [5-Phase Workflow](/notes/review/README.md)
+- [Project Structure](../../../../../../../CLAUDE.md#repository-architecture)
+- [Papers Directory](../../../../../../../papers/README.md)
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md)
+- [5-Phase Workflow](../../../../../../../notes/review/README.md)
 
 ## Implementation Notes
 

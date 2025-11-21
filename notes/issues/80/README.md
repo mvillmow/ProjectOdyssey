@@ -530,18 +530,18 @@ python scripts/check_readmes.py
 
 ### Related Documentation
 
-- **Planning**: [Issue #77 README](/home/user/ml-odyssey/notes/issues/77/README.md)
+- **Planning**: [Issue #77 README](../../../../../../../home/user/ml-odyssey/notes/issues/77/README.md)
 - **CLAUDE.md**: Project conventions and guidelines
 - **ADR-001**: Language selection strategy
 - **Agent Hierarchy**: Complete agent system documentation
 
 ### Supporting Directory READMEs
 
-- [benchmarks/README.md](/home/user/ml-odyssey/benchmarks/README.md)
-- [docs/README.md](/home/user/ml-odyssey/docs/README.md)
-- [agents/README.md](/home/user/ml-odyssey/agents/README.md)
-- [tools/README.md](/home/user/ml-odyssey/tools/README.md)
-- [configs/README.md](/home/user/ml-odyssey/configs/README.md)
+- [benchmarks/README.md](../../../../../../../home/user/ml-odyssey/benchmarks/README.md)
+- [docs/README.md](../../../../../../../home/user/ml-odyssey/docs/README.md)
+- [agents/README.md](../../../../../../../home/user/ml-odyssey/agents/README.md)
+- [tools/README.md](../../../../../../../home/user/ml-odyssey/tools/README.md)
+- [configs/README.md](../../../../../../../home/user/ml-odyssey/configs/README.md)
 
 ## Implementation Notes
 

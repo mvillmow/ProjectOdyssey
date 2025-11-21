@@ -31,12 +31,12 @@ address discovered issues, and deliver a polished, team-ready skills system.
 
 ## References
 
-- [Skills Design](/notes/review/skills-design.md) - Reference specification
-- [Agent Hierarchy](/agents/hierarchy.md) - How agents use skills
-- [Architecture Review](/notes/review/agent-architecture-review.md) - Design decisions
-- [Issue #511](/notes/issues/511/README.md) - Test results and issues
-- [Issue #512](/notes/issues/512/README.md) - Implementation work
-- [Issue #513](/notes/issues/513/README.md) - Packaging work
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Reference specification
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - How agents use skills
+- [Architecture Review](../../../../../../../notes/review/agent-architecture-review.md) - Design decisions
+- [Issue #511](../../../../../../../notes/issues/511/README.md) - Test results and issues
+- [Issue #512](../../../../../../../notes/issues/512/README.md) - Implementation work
+- [Issue #513](../../../../../../../notes/issues/513/README.md) - Packaging work
 
 ## Implementation Notes
 

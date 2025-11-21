@@ -392,8 +392,8 @@ tests/shared/data/
 
 ### Plan Files
 
-- [Augmentations Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
-- [Data Utils Plan](/home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/plan.md)
+- [Augmentations Plan](../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/03-augmentations/plan.md)
+- [Data Utils Plan](../../../../../../home/user/ml-odyssey/notes/plan/02-shared-library/03-data-utils/plan.md)
 
 ### Issue Documentation
 

@@ -121,8 +121,8 @@ scope. This prevents documentation duplication and makes maintenance easier.
 
 ### Source Plans
 
-- **Primary Plan**: [notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/02-create-readme/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/02-create-readme/plan.md)
-- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/plan.md)
+- **Primary Plan**: [notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/02-create-readme/plan.md](notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/02-create-readme/plan.md)
+- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/plan.md](notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/plan.md)
 
 ### Related Issues
 
@@ -133,9 +133,9 @@ scope. This prevents documentation duplication and makes maintenance easier.
 
 ### Project Documentation
 
-- Project markdown standards: [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#markdown-standards)
-- 5-phase workflow: [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#5-phase-development-workflow)
-- Documentation organization: [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#documentation-organization)
+- Project markdown standards: [CLAUDE.md](CLAUDE.md#markdown-standards)
+- 5-phase workflow: [CLAUDE.md](CLAUDE.md#5-phase-development-workflow)
+- Documentation organization: [CLAUDE.md](CLAUDE.md#documentation-organization)
 
 ## Implementation Notes
 

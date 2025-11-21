@@ -353,9 +353,9 @@ building a sustainable, maintainable codebase for future expansion.
 
 ## References
 
-- [Agent Hierarchy Specification](/agents/agent-hierarchy.md)
-- [Skills Design Document](/notes/review/skills-design.md)
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md)
-- [Architecture Review](/notes/review/agent-architecture-review.md)
-- [Worktree Strategy](/notes/review/worktree-strategy.md)
-- [Implementation Summary](/notes/review/agent-skills-implementation-summary.md)
+- [Agent Hierarchy Specification](../../../../../../agents/agent-hierarchy.md)
+- [Skills Design Document](../../../../../../notes/review/skills-design.md)
+- [Orchestration Patterns](../../../../../../notes/review/orchestration-patterns.md)
+- [Architecture Review](../../../../../../notes/review/agent-architecture-review.md)
+- [Worktree Strategy](../../../../../../notes/review/worktree-strategy.md)
+- [Implementation Summary](../../../../../../notes/review/agent-skills-implementation-summary.md)

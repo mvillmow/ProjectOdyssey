@@ -232,8 +232,8 @@ Refer to issue #750 for comprehensive test plan. Key test scenarios:
 
 ### Source Plans
 
-- **Component Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/02-generate-files/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/02-generate-files/plan.md)
-- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
+- **Component Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/02-generate-files/plan.md](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/02-generate-files/plan.md)
+- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/plan.md)
 
 ### Related Issues
 
@@ -253,9 +253,9 @@ Refer to issue #750 for comprehensive test plan. Key test scenarios:
 
 ### Architecture Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Paper Scaffolding Overview](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/plan.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Workflow](notes/review/README.md)
+- [Paper Scaffolding Overview](notes/plan/03-tooling/01-paper-scaffolding/plan.md)
 
 ## Implementation Notes
 

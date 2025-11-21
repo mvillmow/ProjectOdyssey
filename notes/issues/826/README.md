@@ -109,11 +109,11 @@ Related implementation issues that feed into this work:
 
 ### Planning Documentation
 
-- [Parent Plan: Testing Tools](/notes/plan/03-tooling/02-testing-tools/plan.md)
-- [Paper Test Script Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md)
-- [Test Specific Paper Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/01-test-specific-paper/plan.md)
-- [Validate Structure Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/02-validate-structure/plan.md)
-- [Run Paper Tests Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/03-run-paper-tests/plan.md)
+- [Parent Plan: Testing Tools](../../../../../../../notes/plan/03-tooling/02-testing-tools/plan.md)
+- [Paper Test Script Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md)
+- [Test Specific Paper Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/01-test-specific-paper/plan.md)
+- [Validate Structure Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/02-validate-structure/plan.md)
+- [Run Paper Tests Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/03-run-paper-tests/plan.md)
 
 ### Related Issues
 
@@ -124,9 +124,9 @@ Related implementation issues that feed into this work:
 
 ### Documentation References
 
-- [5-Phase Development Workflow](/notes/review/README.md) - Implementation workflow
-- [Test-Driven Development Guidelines](/agents/templates/level-4-implementation-engineer.md) - TDD patterns
-- [Mojo Implementation Standards](/CLAUDE.md#language-preference) - Mojo best practices
+- [5-Phase Development Workflow](../../../../../../../notes/review/README.md) - Implementation workflow
+- [Test-Driven Development Guidelines](../../../../../../../agents/templates/level-4-implementation-engineer.md) - TDD patterns
+- [Mojo Implementation Standards](../../../../../../../CLAUDE.md#language-preference) - Mojo best practices
 
 ## Implementation Requirements
 

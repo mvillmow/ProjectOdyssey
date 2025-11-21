@@ -155,8 +155,8 @@ fn random_tensor(shape: TensorShape, seed: Int) -> Tensor^:
 
 ### Source Plan
 
-- [Test Utilities Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/01-test-framework/02-test-utilities/plan.md)
-- [Test Framework Parent Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
+- [Test Utilities Plan](notes/plan/02-shared-library/04-testing/01-test-framework/02-test-utilities/plan.md)
+- [Test Framework Parent Plan](notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
 
 ### Related Issues
 
@@ -167,8 +167,8 @@ fn random_tensor(shape: TensorShape, seed: Int) -> Tensor^:
 
 ### Architecture Documentation
 
-- [Mojo Language Review Patterns](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
-- [Testing Strategy](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/plan.md)
+- [Mojo Language Review Patterns](.claude/agents/mojo-language-review-specialist.md)
+- [Testing Strategy](notes/plan/02-shared-library/04-testing/plan.md)
 
 ## Implementation Notes
 

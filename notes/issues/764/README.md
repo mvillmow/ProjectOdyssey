@@ -317,11 +317,11 @@ Potential future improvements (not in scope for this issue):
 
 ### Source Plan
 
-- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md)
+- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/01-argument-parsing/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
+- [notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md](notes/plan/03-tooling/01-paper-scaffolding/03-cli-interface/plan.md)
 
 ### Related Issues
 
@@ -332,13 +332,13 @@ Potential future improvements (not in scope for this issue):
 
 ### Related Documentation
 
-- [ADR-001: Language Selection for Tooling](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md) - Justification for Python choice
+- [ADR-001: Language Selection for Tooling](notes/review/adr/ADR-001-language-selection-tooling.md) - Justification for Python choice
 - [Python argparse Documentation](https://docs.python.org/3/library/argparse.html) - Standard library reference
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project conventions and language guidelines
+- [CLAUDE.md](CLAUDE.md) - Project conventions and language guidelines
 
 ### Existing Examples
 
-- [scripts/create_single_component_issues.py](/home/mvillmow/ml-odyssey-manual/scripts/create_single_component_issues.py) - Example of Python argparse usage in project
+- [scripts/create_single_component_issues.py](scripts/create_single_component_issues.py) - Example of Python argparse usage in project
 
 ## Implementation Notes
 

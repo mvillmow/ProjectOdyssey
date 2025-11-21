@@ -238,9 +238,9 @@ batch2 = next(iterator)
 
 ### Source Plan
 
-- [Iteration Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/02-data-loader/03-iteration/plan.md)
+- [Iteration Plan](notes/plan/02-shared-library/03-data-utils/02-data-loader/03-iteration/plan.md)
   - Component specification
-- [Data Loader Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
+- [Data Loader Plan](notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
   - Parent component context
 
 ### Related Issues

@@ -241,11 +241,11 @@ mojo test tests/tooling/test_coverage_pipeline.mojo
 
 ### Related Documentation
 
-- [Coverage Tool Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Overall coverage tool design
-- [Collect Coverage Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) - Coverage collection phase
-- [Generate Report Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/02-generate-report/plan.md) - Report generation phase
-- [Testing Framework Specs](/notes/review/) - Comprehensive testing architecture
-- [Language Selection](/notes/review/adr/ADR-001-language-selection-tooling.md) - Why Mojo for this component
+- [Coverage Tool Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Overall coverage tool design
+- [Collect Coverage Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) - Coverage collection phase
+- [Generate Report Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/02-generate-report/plan.md) - Report generation phase
+- [Testing Framework Specs](../../../../../../../notes/review/) - Comprehensive testing architecture
+- [Language Selection](../../../../../../../notes/review/adr/ADR-001-language-selection-tooling.md) - Why Mojo for this component
 
 ### Related GitHub Issues
 

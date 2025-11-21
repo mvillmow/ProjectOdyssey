@@ -203,10 +203,10 @@ Suggestions:
 
 ## References
 
-- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/03-validate-output/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/03-validate-output/plan.md)
+- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/03-validate-output/plan.md](notes/plan/03-tooling/01-paper-scaffolding/02-directory-generator/03-validate-output/plan.md)
 - **Parent Component**: Directory Generator
-- **5-Phase Workflow**: [/home/mvillmow/ml-odyssey-manual/notes/review/README.md](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- **Mojo Language Guidelines**: [/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
+- **5-Phase Workflow**: [/home/mvillmow/ml-odyssey-manual/notes/review/README.md](notes/review/README.md)
+- **Mojo Language Guidelines**: [/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md](.claude/agents/mojo-language-review-specialist.md)
 
 ### Related Issues
 

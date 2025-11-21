@@ -61,15 +61,15 @@ contracts, and integration patterns that will guide implementation and testing w
 
 ### Team Documentation
 
-- [Agent Hierarchy](/agents/agent-hierarchy.md) - Understanding agent roles
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Workflow coordination
-- [Delegation Rules](/agents/delegation-rules.md) - Task delegation patterns
+- [Agent Hierarchy](../../../../../../../agents/agent-hierarchy.md) - Understanding agent roles
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Workflow coordination
+- [Delegation Rules](../../../../../../../agents/delegation-rules.md) - Task delegation patterns
 
 ### Project Standards
 
-- [CLAUDE.md](/CLAUDE.md) - Development and documentation standards
-- [Markdown Standards](/CLAUDE.md#markdown-standards) - Documentation requirements
-- [5-Phase Workflow](/notes/review/README.md) - Development workflow explanation
+- [CLAUDE.md](../../../../../../../CLAUDE.md) - Development and documentation standards
+- [Markdown Standards](../../../../../../../CLAUDE.md#markdown-standards) - Documentation requirements
+- [5-Phase Workflow](../../../../../../../notes/review/README.md) - Development workflow explanation
 
 ### Related Issues
 

@@ -168,6 +168,6 @@ The verification script tests package installation by:
 
 ## References
 
-- [Package Phase Guide](/home/mvillmow/ml-odyssey/worktrees/40-pkg-data/agents/guides/package-phase-guide.md)
+- [Package Phase Guide](../../../../../../../home/mvillmow/ml-odyssey/worktrees/40-pkg-data/agents/guides/package-phase-guide.md)
 - [Data Module Implementation (Issue #39)](https://github.com/mvillmow/ml-odyssey/issues/39)
 - [Mojo Packaging Documentation](https://docs.modular.com/mojo/manual/packages/)

@@ -513,10 +513,10 @@ After cleanup phase completion:
 
 ## Related Documentation
 
-- [Project Documentation Standards](/agents/README.md)
-- [Testing Strategy](/notes/review/testing-strategy.md)
-- [5-Phase Development Workflow](/notes/review/README.md)
-- [Mojo Coding Patterns](/CLAUDE.md#language-preference)
+- [Project Documentation Standards](../../../../../../../agents/README.md)
+- [Testing Strategy](../../../../../../../notes/review/testing-strategy.md)
+- [5-Phase Development Workflow](../../../../../../../notes/review/README.md)
+- [Mojo Coding Patterns](../../../../../../../CLAUDE.md#language-preference)
 
 ## Timeline Estimate
 

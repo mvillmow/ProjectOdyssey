@@ -30,10 +30,10 @@ providing reusable capabilities for the agent system.
 
 ## References
 
-- [Skills Design](/notes/review/skills-design.md) - Complete skill specifications
-- [Agent Hierarchy](/agents/hierarchy.md) - How agents use skills
-- [Issue #510](/notes/issues/510/README.md) - Planning specifications
-- [Issue #511](/notes/issues/511/README.md) - Test insights
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Complete skill specifications
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - How agents use skills
+- [Issue #510](../../../../../../../notes/issues/510/README.md) - Planning specifications
+- [Issue #511](../../../../../../../notes/issues/511/README.md) - Test insights
 
 ## Implementation Notes
 

@@ -65,8 +65,8 @@ The `__init__.py` will:
 
 ## References
 
-- **Source Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/01-create-core/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/01-create-core/plan.md)
-- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md)
+- **Source Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/01-create-core/plan.md](notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/01-create-core/plan.md)
+- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md](notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md)
 - **Related Issues**:
   - [#537 - [Test] Create Core - Write Tests](https://github.com/mvillmow/ml-odyssey/issues/537)
   - [#538 - [Impl] Create Core - Implementation](https://github.com/mvillmow/ml-odyssey/issues/538)

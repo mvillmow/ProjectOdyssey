@@ -118,11 +118,11 @@ Implement logging callback for tracking and reporting training progress. This in
 
 ### Source Plan
 
-[/notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md)
+[/notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md](notes/plan/02-shared-library/02-training-utils/03-callbacks/03-logging-callback/plan.md)
 
 ### Parent Plan
 
-[/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
+[/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md](notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
 
 ### Related Issues
 
@@ -133,9 +133,9 @@ Implement logging callback for tracking and reporting training progress. This in
 
 ### Comprehensive Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Delegation Rules](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Delegation Rules](agents/delegation-rules.md)
+- [5-Phase Development Workflow](notes/review/README.md)
 
 ## Implementation Notes
 

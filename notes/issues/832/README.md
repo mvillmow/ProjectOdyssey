@@ -76,10 +76,10 @@ ensure all dependencies are properly configured for seamless deployment across t
 
 ### Planning and Architecture
 
-- [Collect Coverage Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) -
+- [Collect Coverage Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) -
   Detailed plan specifications
-- [Coverage Tool Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Parent level planning
-- [Testing Tools Plan](/notes/plan/03-tooling/02-testing-tools/plan.md) - Section context
+- [Coverage Tool Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Parent level planning
+- [Testing Tools Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/plan.md) - Section context
 
 ### Related Issues
 
@@ -90,9 +90,9 @@ ensure all dependencies are properly configured for seamless deployment across t
 
 ### Shared Documentation
 
-- [5-Phase Workflow](/notes/review/README.md#5-phase-development-workflow) - Workflow phases and dependencies
-- [Packaging Guidelines](/notes/review/) - Packaging best practices
-- [Testing Infrastructure](/notes/review/) - Testing framework architecture
+- [5-Phase Workflow](../../../../../../../notes/review/README.md#5-phase-development-workflow) - Workflow phases and dependencies
+- [Packaging Guidelines](../../../../../../../notes/review/) - Packaging best practices
+- [Testing Infrastructure](../../../../../../../notes/review/) - Testing framework architecture
 
 ## Implementation Notes
 

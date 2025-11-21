@@ -227,10 +227,10 @@ struct MetricName:
 
 ### Source Plans
 
-- [Metrics Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md)
-- [Accuracy Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md)
-- [Loss Tracking Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md)
-- [Confusion Matrix Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/03-confusion-matrix/plan.md)
+- [Metrics Plan](notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md)
+- [Accuracy Plan](notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md)
+- [Loss Tracking Plan](notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md)
+- [Confusion Matrix Plan](notes/plan/02-shared-library/01-core-operations/04-metrics/03-confusion-matrix/plan.md)
 
 ### Related Issues
 
@@ -241,8 +241,8 @@ struct MetricName:
 
 ### Parent Context
 
-- [Core Operations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/plan.md)
-- [Shared Library Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/plan.md)
+- [Core Operations Plan](notes/plan/02-shared-library/01-core-operations/plan.md)
+- [Shared Library Plan](notes/plan/02-shared-library/plan.md)
 
 ## Implementation Notes
 

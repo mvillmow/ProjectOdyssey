@@ -105,8 +105,8 @@ This creates a clean dependency hierarchy: `papers → training/data/core → ut
 
 ## References
 
-- **Source Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/04-create-utils/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/04-create-utils/plan.md)
-- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md)
+- **Source Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/04-create-utils/plan.md](notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/04-create-utils/plan.md)
+- **Parent Plan**: [notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md](notes/plan/01-foundation/01-directory-structure/02-create-shared-dir/plan.md)
 - **Related Issues**:
   - Issue #552: [Test] Create Utils - Test Development
   - Issue #553: [Impl] Create Utils - Implementation

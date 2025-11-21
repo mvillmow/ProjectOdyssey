@@ -70,7 +70,7 @@ benchmarks/
 
 - **Plan files**: `notes/plan/03-tooling/` (benchmark components)
 - **Related issues**: #53, #54, #55, #56
-- **Orchestrator**: [tooling-orchestrator](/.claude/agents/tooling-orchestrator.md)
+- **Orchestrator**: [tooling-orchestrator](../../../../../../../.claude/agents/tooling-orchestrator.md)
 - **PR**: #1546
 
 Closes #52

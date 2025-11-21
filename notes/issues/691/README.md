@@ -205,11 +205,11 @@ Each step includes practical examples and links to tool configurations.
 
 ### Source Plan
 
-- [notes/plan/01-foundation/03-initial-documentation/02-contributing/02-write-standards/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/02-write-standards/plan.md)
+- [notes/plan/01-foundation/03-initial-documentation/02-contributing/02-write-standards/plan.md](notes/plan/01-foundation/03-initial-documentation/02-contributing/02-write-standards/plan.md)
 
 ### Parent Context
 
-- [notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md) - CONTRIBUTING.md component plan
+- [notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md](notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md) - CONTRIBUTING.md component plan
 
 ### Related Issues
 
@@ -220,11 +220,11 @@ Each step includes practical examples and links to tool configurations.
 
 ### Related Documentation
 
-- [CONTRIBUTING.md](/home/mvillmow/ml-odyssey-manual/CONTRIBUTING.md) - Current contributing guidelines (target file)
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project conventions and standards
-- [ADR-001](/home/mvillmow/ml-odyssey-manual/notes/review/adr/ADR-001-language-selection-tooling.md) - Language selection strategy
-- [.pre-commit-config.yaml](/home/mvillmow/ml-odyssey-manual/.pre-commit-config.yaml) - Pre-commit hook configuration
-- [.markdownlint.yaml](/home/mvillmow/ml-odyssey-manual/.markdownlint.yaml) - Markdown linting rules
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Current contributing guidelines (target file)
+- [CLAUDE.md](CLAUDE.md) - Project conventions and standards
+- [ADR-001](notes/review/adr/ADR-001-language-selection-tooling.md) - Language selection strategy
+- [.pre-commit-config.yaml](.pre-commit-config.yaml) - Pre-commit hook configuration
+- [.markdownlint.yaml](.markdownlint.yaml) - Markdown linting rules
 
 ### Development Principles
 

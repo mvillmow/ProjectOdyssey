@@ -317,10 +317,10 @@ Following Test Specialist guidelines:
 
 ## References
 
-- [Issue #77: Planning Phase](/home/user/ml-odyssey/notes/issues/77/README.md) - Specifications
-- [tests/foundation/test_papers_directory.py](/home/user/ml-odyssey/tests/foundation/test_papers_directory.py) - Test pattern
-- [tests/foundation/docs/test_doc_structure.py](/home/user/ml-odyssey/tests/foundation/docs/test_doc_structure.py) - Docs validation
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Testing guidelines
+- [Issue #77: Planning Phase](../../../../../../../home/user/ml-odyssey/notes/issues/77/README.md) - Specifications
+- [tests/foundation/test_papers_directory.py](../../../../../../../home/user/ml-odyssey/tests/foundation/test_papers_directory.py) - Test pattern
+- [tests/foundation/docs/test_doc_structure.py](../../../../../../../home/user/ml-odyssey/tests/foundation/docs/test_doc_structure.py) - Docs validation
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Testing guidelines
 
 ---
 

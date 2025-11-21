@@ -215,8 +215,8 @@ The dataset interface is part of the broader data pipeline:
 
 ### Source Plan
 
-- [Dataset Interface Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/01-dataset-interface/plan.md)
-- [Base Dataset Parent Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
+- [Dataset Interface Plan](notes/plan/02-shared-library/03-data-utils/01-base-dataset/01-dataset-interface/plan.md)
+- [Base Dataset Parent Plan](notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
 
 ### Related Issues
 
@@ -234,9 +234,9 @@ The dataset interface is part of the broader data pipeline:
 
 ### Comprehensive Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Mojo Language Guidelines](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Workflow](notes/review/README.md)
+- [Mojo Language Guidelines](.claude/agents/mojo-language-review-specialist.md)
 
 ## Implementation Notes
 

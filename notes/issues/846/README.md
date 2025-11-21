@@ -216,12 +216,12 @@ coverage:
 
 ### Related Documentation
 
-- [Coverage Tool Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Parent plan
-- [Collect Coverage Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) - Collection requirements
-- [Generate Report Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/02-generate-report/plan.md) - Report generation requirements
-- [Check Thresholds Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/03-check-thresholds/plan.md) - Threshold validation requirements
-- [Testing Tools Plan](/notes/plan/03-tooling/02-testing-tools/plan.md) - Parent testing tools section
-- [Mojo Language Guidelines](/CLAUDE.md#language-preference) - Mojo-first principles
+- [Coverage Tool Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Parent plan
+- [Collect Coverage Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/01-collect-coverage/plan.md) - Collection requirements
+- [Generate Report Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/02-generate-report/plan.md) - Report generation requirements
+- [Check Thresholds Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/03-check-thresholds/plan.md) - Threshold validation requirements
+- [Testing Tools Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/plan.md) - Parent testing tools section
+- [Mojo Language Guidelines](../../../../../../../CLAUDE.md#language-preference) - Mojo-first principles
 
 ### Related Issues
 

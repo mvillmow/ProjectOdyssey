@@ -91,13 +91,13 @@ tests/
 
 ## References
 
-- [Coverage Tool Planning](/notes/issues/844/README.md) - Detailed specifications
-- [Coverage Tool Architecture](/notes/review/) - (To be created during planning phase)
+- [Coverage Tool Planning](../../../../../../../notes/issues/844/README.md) - Detailed specifications
+- [Coverage Tool Architecture](../../../../../../../notes/review/) - (To be created during planning phase)
 - Issue #844: [Plan] Coverage Tool - Design and Documentation
 - Issue #846: [Impl] Coverage Tool - Implementation
 - Issue #847: [Package] Coverage Tool - Integration and Packaging
 - Issue #848: [Cleanup] Coverage Tool - Refactor and Finalize
-- [TDD Best Practices](/agents/) - Team guidelines
+- [TDD Best Practices](../../../../../../../agents/) - Team guidelines
 
 ## Implementation Notes
 

@@ -195,7 +195,7 @@ Design and document the comprehensive README.md that will serve as the main entr
 
 ### Source Plan
 
-- [notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
+- [notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md](notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
 
 ### Child Plans (Component Details)
 

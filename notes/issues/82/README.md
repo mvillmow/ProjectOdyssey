@@ -47,11 +47,11 @@ This planning phase defines the complete directory structure and organization fo
 
 ## References
 
-- [Shared Library README](/home/user/ml-odyssey/shared/README.md)
-- [Papers Template README](/home/user/ml-odyssey/papers/_template/README.md)
-- [Core Library Documentation](/home/user/ml-odyssey/shared/core/README.md)
-- [Training Library Documentation](/home/user/ml-odyssey/shared/training/README.md)
-- [Data Library Documentation](/home/user/ml-odyssey/shared/data/README.md)
+- [Shared Library README](../../../../../../../home/user/ml-odyssey/shared/README.md)
+- [Papers Template README](../../../../../../../home/user/ml-odyssey/papers/_template/README.md)
+- [Core Library Documentation](../../../../../../../home/user/ml-odyssey/shared/core/README.md)
+- [Training Library Documentation](../../../../../../../home/user/ml-odyssey/shared/training/README.md)
+- [Data Library Documentation](../../../../../../../home/user/ml-odyssey/shared/data/README.md)
 
 ## Implementation Notes
 

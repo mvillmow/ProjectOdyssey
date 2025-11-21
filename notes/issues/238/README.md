@@ -173,7 +173,7 @@ struct PReLU:
 
 ### Source Plan
 
-- [ReLU Family Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/01-relu-family/plan.md)
+- [ReLU Family Plan](notes/plan/02-shared-library/01-core-operations/02-activations/01-relu-family/plan.md)
 
 ### Related Issues
 
@@ -184,13 +184,13 @@ struct PReLU:
 
 ### Parent Plan
 
-- [Activations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
+- [Activations Plan](notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
 
 ### Related Documentation
 
-- [Mojo Language Review Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md) - Mojo coding patterns
-- [Implementation Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/implementation-specialist.md) - Implementation guidelines
-- [Test Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/test-specialist.md) - Testing approach
+- [Mojo Language Review Specialist](.claude/agents/mojo-language-review-specialist.md) - Mojo coding patterns
+- [Implementation Specialist](.claude/agents/implementation-specialist.md) - Implementation guidelines
+- [Test Specialist](.claude/agents/test-specialist.md) - Testing approach
 
 ## Implementation Notes
 

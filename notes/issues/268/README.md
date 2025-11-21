@@ -141,11 +141,11 @@ fn constant(shape: TensorShape, value: Float64) -> Tensor
 
 ### Source Plan
 
-[notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md)
+[notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md](notes/plan/02-shared-library/01-core-operations/03-initializers/03-uniform-normal/plan.md)
 
 ### Parent Component
 
-[notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
+[notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md](notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
 
 ### Related Issues
 

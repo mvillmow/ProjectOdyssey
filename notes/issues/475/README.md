@@ -35,9 +35,9 @@ Implement coverage tool setup based on the design from Issue #473 and validated 
 
 ### Comprehensive Documentation
 
-- [5-Phase Workflow](/home/user/ml-odyssey/notes/review/README.md)
-- [Agent Hierarchy](/home/user/ml-odyssey/agents/hierarchy.md)
-- [Testing Infrastructure Summary](/home/user/ml-odyssey/notes/issues/TESTING-INFRASTRUCTURE-SUMMARY.md)
+- [5-Phase Workflow](../../../../../../../home/user/ml-odyssey/notes/review/README.md)
+- [Agent Hierarchy](../../../../../../../home/user/ml-odyssey/agents/hierarchy.md)
+- [Testing Infrastructure Summary](../../../../../../../home/user/ml-odyssey/notes/issues/TESTING-INFRASTRUCTURE-SUMMARY.md)
 
 ## Implementation Notes
 

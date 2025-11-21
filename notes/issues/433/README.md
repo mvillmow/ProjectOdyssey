@@ -135,8 +135,8 @@ Based on the source plan, the implementation will follow these steps:
 
 ## References
 
-- **Source Plan**: [notes/plan/02-shared-library/04-testing/01-test-framework/01-setup-testing/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/01-test-framework/01-setup-testing/plan.md)
-- **Parent Plan**: [notes/plan/02-shared-library/04-testing/01-test-framework/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
+- **Source Plan**: [notes/plan/02-shared-library/04-testing/01-test-framework/01-setup-testing/plan.md](notes/plan/02-shared-library/04-testing/01-test-framework/01-setup-testing/plan.md)
+- **Parent Plan**: [notes/plan/02-shared-library/04-testing/01-test-framework/plan.md](notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
 - **Related Issues**:
   - Issue #434: [Test] Setup Testing
   - Issue #435: [Implementation] Setup Testing

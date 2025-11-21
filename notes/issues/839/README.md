@@ -49,10 +49,10 @@ Design and document a comprehensive threshold validation system that checks test
 
 ## References
 
-- [Issue #74: Configuration System](/notes/issues/74/README.md) - Configuration management foundation
-- [Config Architecture](/notes/review/configs-architecture.md) - Comprehensive configuration system design
-- [CI/CD Integration Patterns](/notes/review/orchestration-patterns.md) - Workflow integration guidelines
-- [Skills Design](/notes/review/skills-design.md) - Agent skills for coverage analysis
+- [Issue #74: Configuration System](../../../../../../../notes/issues/74/README.md) - Configuration management foundation
+- [Config Architecture](../../../../../../../notes/review/configs-architecture.md) - Comprehensive configuration system design
+- [CI/CD Integration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Workflow integration guidelines
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Agent skills for coverage analysis
 
 ## High-Level Design
 
@@ -566,7 +566,7 @@ New files (created within configurable period, e.g., 7 days) receive:
 
 ## Related Issues
 
-- [Issue #74: Configuration System](/notes/issues/74/README.md) - Foundation for threshold configuration
+- [Issue #74: Configuration System](../../../../../../../notes/issues/74/README.md) - Foundation for threshold configuration
 - Future testing phase issue (TBD)
 - Future implementation phase issue (TBD)
 - Future packaging phase issue (TBD)

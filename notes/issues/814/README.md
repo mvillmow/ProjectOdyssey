@@ -58,11 +58,11 @@ Design and document a comprehensive specification for a structure validation sys
 
 ## References
 
-- [Paper Directory Structure Design](/notes/review/paper-directory-structure.md)
-- [CI/CD Integration Strategy](/notes/review/ci-cd-strategy.md)
-- [Validation Architecture Review](/notes/review/validation-architecture.md)
-- [Downstream Specifications (Validation Rules)](/notes/issues/814/validation-rules.md)
-- [Example Validation Reports](/notes/issues/814/example-reports.md)
+- [Paper Directory Structure Design](../../../../../../../notes/review/paper-directory-structure.md)
+- [CI/CD Integration Strategy](../../../../../../../notes/review/ci-cd-strategy.md)
+- [Validation Architecture Review](../../../../../../../notes/review/validation-architecture.md)
+- [Downstream Specifications (Validation Rules)](../../../../../../../notes/issues/814/validation-rules.md)
+- [Example Validation Reports](../../../../../../../notes/issues/814/example-reports.md)
 
 ## Implementation Notes
 

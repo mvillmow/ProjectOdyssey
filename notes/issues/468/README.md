@@ -185,13 +185,13 @@ def test_shuffle_reproducible():
 
 ### Source Plan
 
-- [Unit Tests Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/02-unit-tests/plan.md)
+- [Unit Tests Plan](notes/plan/02-shared-library/04-testing/02-unit-tests/plan.md)
 
 ### Child Plans
 
-- [Test Core Operations](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md)
-- [Test Training Utilities](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md)
-- [Test Data Utilities](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/02-unit-tests/03-test-data/plan.md)
+- [Test Core Operations](notes/plan/02-shared-library/04-testing/02-unit-tests/01-test-core/plan.md)
+- [Test Training Utilities](notes/plan/02-shared-library/04-testing/02-unit-tests/02-test-training/plan.md)
+- [Test Data Utilities](notes/plan/02-shared-library/04-testing/02-unit-tests/03-test-data/plan.md)
 
 ### Related Issues
 
@@ -202,9 +202,9 @@ def test_shuffle_reproducible():
 
 ### Project Documentation
 
-- [Testing Framework](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [Test Specialist Agent](/home/mvillmow/ml-odyssey-manual/.claude/agents/test-specialist.md)
+- [Testing Framework](notes/plan/02-shared-library/04-testing/01-test-framework/plan.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [Test Specialist Agent](.claude/agents/test-specialist.md)
 
 ## Implementation Notes
 

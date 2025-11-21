@@ -194,8 +194,8 @@ To maintain API consistency across initializers:
 
 ### Source Plan:
 
-- [Kaiming He Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/02-kaiming-he/plan.md)
-- [Initializers Parent Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
+- [Kaiming He Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/02-kaiming-he/plan.md)
+- [Initializers Parent Plan](notes/plan/02-shared-library/01-core-operations/03-initializers/plan.md)
 
 ### Related Issues:
 

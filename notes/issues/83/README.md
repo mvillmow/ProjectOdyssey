@@ -75,11 +75,11 @@ This TEST phase implements comprehensive tests for the Directory Structure compo
 
 ## References
 
-- [Issue #82: Planning](/home/user/ml-odyssey/notes/issues/82/README.md) - Directory structure planning
-- [Papers README](/home/user/ml-odyssey/papers/README.md) - Papers directory documentation
-- [Template README](/home/user/ml-odyssey/papers/_template/README.md) - Template documentation
-- [Shared README](/home/user/ml-odyssey/shared/README.md) - Shared library documentation
-- [Existing Tests](/home/user/ml-odyssey/tests/foundation/test_papers_directory.py) - Basic directory tests
+- [Issue #82: Planning](../../../../../../../home/user/ml-odyssey/notes/issues/82/README.md) - Directory structure planning
+- [Papers README](../../../../../../../home/user/ml-odyssey/papers/README.md) - Papers directory documentation
+- [Template README](../../../../../../../home/user/ml-odyssey/papers/_template/README.md) - Template documentation
+- [Shared README](../../../../../../../home/user/ml-odyssey/shared/README.md) - Shared library documentation
+- [Existing Tests](../../../../../../../home/user/ml-odyssey/tests/foundation/test_papers_directory.py) - Basic directory tests
 
 ## Test Plan
 

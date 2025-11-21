@@ -131,8 +131,8 @@ pattern2
 
 ## References
 
-- **Source Plan**: [notes/plan/01-foundation/02-configuration-files/03-git-config/01-update-gitignore/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/03-git-config/01-update-gitignore/plan.md)
-- **Parent Context**: [notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
+- **Source Plan**: [notes/plan/01-foundation/02-configuration-files/03-git-config/01-update-gitignore/plan.md](notes/plan/01-foundation/02-configuration-files/03-git-config/01-update-gitignore/plan.md)
+- **Parent Context**: [notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md](notes/plan/01-foundation/02-configuration-files/03-git-config/plan.md)
 - **Related Issues**:
   - Issue #642: [Test] Update Gitignore
   - Issue #643: [Implementation] Update Gitignore

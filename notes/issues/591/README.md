@@ -178,7 +178,7 @@ Create additional supporting directories that provide infrastructure for the rep
 
 ### Source Plan
 
-[notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
+[notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
 
 ### Child Plans
 
@@ -198,10 +198,10 @@ Create additional supporting directories that provide infrastructure for the rep
 
 ### Comprehensive Documentation
 
-- [Agent Architecture Review](/home/mvillmow/ml-odyssey-manual/notes/review/agent-architecture-review.md)
-- [Skills Design](/home/mvillmow/ml-odyssey-manual/notes/review/skills-design.md)
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/agent-hierarchy.md)
-- [Delegation Rules](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md)
+- [Agent Architecture Review](notes/review/agent-architecture-review.md)
+- [Skills Design](notes/review/skills-design.md)
+- [Agent Hierarchy](agents/agent-hierarchy.md)
+- [Delegation Rules](agents/delegation-rules.md)
 
 ## Implementation Notes
 

@@ -282,11 +282,11 @@ Output: Shuffled indices
 
 ### Source Plan
 
-[notes/plan/02-shared-library/03-data-utils/02-data-loader/02-shuffling/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/02-data-loader/02-shuffling/plan.md)
+[notes/plan/02-shared-library/03-data-utils/02-data-loader/02-shuffling/plan.md](notes/plan/02-shared-library/03-data-utils/02-data-loader/02-shuffling/plan.md)
 
 ### Parent Component
 
-[notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
+[notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md](notes/plan/02-shared-library/03-data-utils/02-data-loader/plan.md)
 
 ### Related Issues
 
@@ -298,9 +298,9 @@ Output: Shuffled indices
 
 ### Comprehensive Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/agent-hierarchy.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Delegation Rules](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md)
+- [Agent Hierarchy](agents/agent-hierarchy.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Delegation Rules](agents/delegation-rules.md)
 
 ## Implementation Notes
 

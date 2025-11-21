@@ -239,14 +239,14 @@ CONTRIBUTING.md
 
 ### Source Documentation
 
-- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/01-write-workflow/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/01-write-workflow/plan.md)
-- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md)
+- **Source Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/01-write-workflow/plan.md](notes/plan/01-foundation/03-initial-documentation/02-contributing/01-write-workflow/plan.md)
+- **Parent Plan**: [/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md](notes/plan/01-foundation/03-initial-documentation/02-contributing/plan.md)
 
 ### Related Documentation
 
-- [CLAUDE.md - Development Principles](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#key-development-principles)
-- [CONTRIBUTING.md - Current State](/home/mvillmow/ml-odyssey-manual/CONTRIBUTING.md)
-- [Agent Hierarchy - Documentation Specialist](/home/mvillmow/ml-odyssey-manual/.claude/agents/documentation-specialist.md)
+- [CLAUDE.md - Development Principles](CLAUDE.md#key-development-principles)
+- [CONTRIBUTING.md - Current State](CONTRIBUTING.md)
+- [Agent Hierarchy - Documentation Specialist](.claude/agents/documentation-specialist.md)
 
 ### Related Issues
 

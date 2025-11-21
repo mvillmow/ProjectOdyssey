@@ -171,13 +171,13 @@ Define the foundational dataset interface for consistent data access across all 
 
 ### Source Plan
 
-[/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
+[/notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md](notes/plan/02-shared-library/03-data-utils/01-base-dataset/plan.md)
 
 ### Child Plans
 
-- [Dataset Interface](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/01-dataset-interface/plan.md)
-- [Dataset Length](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/02-dataset-length/plan.md)
-- [Dataset Getitem](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/01-base-dataset/03-dataset-getitem/plan.md)
+- [Dataset Interface](notes/plan/02-shared-library/03-data-utils/01-base-dataset/01-dataset-interface/plan.md)
+- [Dataset Length](notes/plan/02-shared-library/03-data-utils/01-base-dataset/02-dataset-length/plan.md)
+- [Dataset Getitem](notes/plan/02-shared-library/03-data-utils/01-base-dataset/03-dataset-getitem/plan.md)
 
 ### Related Issues
 
@@ -189,9 +189,9 @@ Define the foundational dataset interface for consistent data access across all 
 
 ### Shared Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Delegation Rules](/home/mvillmow/ml-odyssey-manual/agents/delegation-rules.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Delegation Rules](agents/delegation-rules.md)
 
 ## Implementation Notes
 

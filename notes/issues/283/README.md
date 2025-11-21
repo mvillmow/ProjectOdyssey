@@ -206,16 +206,16 @@ struct Statistics:
 
 ### Source Plan
 
-[/notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md)
+[/notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md](notes/plan/02-shared-library/01-core-operations/04-metrics/02-loss-tracking/plan.md)
 
 ### Parent Context
 
-[Metrics](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md) - Loss tracking is part of the broader metrics system for model evaluation.
+[Metrics](notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md) - Loss tracking is part of the broader metrics system for model evaluation.
 
 ### Related Components
 
-- [Accuracy Metrics](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md) - Complementary evaluation metrics
-- [Confusion Matrix](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/03-confusion-matrix/plan.md) - Detailed classification analysis
+- [Accuracy Metrics](notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md) - Complementary evaluation metrics
+- [Confusion Matrix](notes/plan/02-shared-library/01-core-operations/04-metrics/03-confusion-matrix/plan.md) - Detailed classification analysis
 
 ### Related Issues
 

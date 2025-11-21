@@ -58,9 +58,9 @@ feedback on individual paper implementations without running the entire test sui
 
 ### Shared Documentation
 
-- [5-Phase Workflow](/notes/review/README.md) - Phase overview and structure
-- [Testing Best Practices](/agents/README.md#testing) - Team testing standards
-- [Delegation Rules](/agents/delegation-rules.md) - Testing phase coordination
+- [5-Phase Workflow](../../../../../../../notes/review/README.md) - Phase overview and structure
+- [Testing Best Practices](../../../../../../../agents/README.md#testing) - Team testing standards
+- [Delegation Rules](../../../../../../../agents/delegation-rules.md) - Testing phase coordination
 
 ### Related Issues
 
@@ -71,8 +71,8 @@ feedback on individual paper implementations without running the entire test sui
 
 ### Project Documentation
 
-- [ML Odyssey README](/README.md) - Project overview
-- [Test Directory Structure](/notes/plan/) - Planning documents
+- [ML Odyssey README](../../../../../../../README.md) - Project overview
+- [Test Directory Structure](../../../../../../../notes/plan/) - Planning documents
 
 ## Implementation Notes
 

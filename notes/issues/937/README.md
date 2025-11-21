@@ -20,9 +20,9 @@ Design and document the Paper Validator component
 
 ## References
 
-- [Agent Hierarchy](/agents/hierarchy.md)
-- [Development Principles](/CLAUDE.md#key-development-principles)
-- [5-Phase Workflow](/notes/review/README.md)
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md)
+- [Development Principles](../../../../../../../CLAUDE.md#key-development-principles)
+- [5-Phase Workflow](../../../../../../../notes/review/README.md)
 
 ## Implementation Notes
 

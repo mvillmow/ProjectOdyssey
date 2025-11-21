@@ -34,8 +34,8 @@ Implementation
 
 ## References
 
-- Related planning: [Issue #413](/home/user/ml-odyssey/notes/issues/413/README.md)
-- Related tests: [Issue #414](/home/user/ml-odyssey/notes/issues/414/README.md)
+- Related planning: [Issue #413](../../../../../../../home/user/ml-odyssey/notes/issues/413/README.md)
+- Related tests: [Issue #414](../../../../../../../home/user/ml-odyssey/notes/issues/414/README.md)
 - Transform infrastructure: `/home/user/ml-odyssey/shared/data/transforms.mojo`
 - Image augmentation pattern: `/home/user/ml-odyssey/shared/data/transforms.mojo` (lines 456-814)
 

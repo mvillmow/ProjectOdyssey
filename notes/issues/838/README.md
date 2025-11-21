@@ -35,9 +35,9 @@ Refactor the test coverage report generation system for optimal quality and main
 ## References
 
 - **Related Issues**:
-  - [Issue #835](/notes/issues/835/README.md) - [Plan] Generate Report
-  - [Issue #836](/notes/issues/836/README.md) - [Test] Generate Report
-  - [Issue #837](/notes/issues/837/README.md) - [Implementation] Generate Report
+  - [Issue #835](../../../../../../../notes/issues/835/README.md) - [Plan] Generate Report
+  - [Issue #836](../../../../../../../notes/issues/836/README.md) - [Test] Generate Report
+  - [Issue #837](../../../../../../../notes/issues/837/README.md) - [Implementation] Generate Report
 - **Documentation**: `/notes/review/` - Testing and reporting architecture
 - **Agent Documentation**: `/agents/` - Team coordination patterns
 

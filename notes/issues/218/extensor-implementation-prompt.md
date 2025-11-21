@@ -646,9 +646,9 @@ Please provide your deliverables in this structure:
 
 ### ML Odyssey Documentation
 
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Project guidelines
-- [Agent Hierarchy](/home/user/ml-odyssey/agents/agent-hierarchy.md)
-- [5-Phase Workflow](/home/user/ml-odyssey/notes/review/README.md)
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Project guidelines
+- [Agent Hierarchy](../../../../../../../home/user/ml-odyssey/agents/agent-hierarchy.md)
+- [5-Phase Workflow](../../../../../../../home/user/ml-odyssey/notes/review/README.md)
 
 ## Questions to Address in Your Design
 

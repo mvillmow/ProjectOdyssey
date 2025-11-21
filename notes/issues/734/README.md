@@ -138,8 +138,8 @@ Available variables: paper_title, creation_date, ...
 
 ### Source Plan
 
-- [Template Rendering Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/01-template-system/03-template-rendering/plan.md)
-- [Parent: Template System Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/03-tooling/01-paper-scaffolding/01-template-system/plan.md)
+- [Template Rendering Plan](notes/plan/03-tooling/01-paper-scaffolding/01-template-system/03-template-rendering/plan.md)
+- [Parent: Template System Plan](notes/plan/03-tooling/01-paper-scaffolding/01-template-system/plan.md)
 
 ### Related Issues
 
@@ -157,9 +157,9 @@ Available variables: paper_title, creation_date, ...
 
 ### Reference Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Mojo Language Guidelines](/home/mvillmow/ml-odyssey-manual/.claude/agents/mojo-language-review-specialist.md)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Workflow](notes/review/README.md)
+- [Mojo Language Guidelines](.claude/agents/mojo-language-review-specialist.md)
 
 ## Implementation Notes
 

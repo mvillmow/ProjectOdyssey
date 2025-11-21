@@ -220,11 +220,11 @@ known-first-party = ["src"]    # Local package for import sorting
 
 ### Source Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/03-configure-tools/plan.md)
 
 ### Parent Plan
 
-- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
+- [notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md](notes/plan/01-foundation/02-configuration-files/02-pyproject-toml/plan.md)
 
 ### Related Issues
 
@@ -235,9 +235,9 @@ known-first-party = ["src"]    # Local package for import sorting
 
 ### Project Documentation
 
-- [CLAUDE.md](/home/mvillmow/ml-odyssey-manual/CLAUDE.md) - Project coding standards and principles
-- [Python Coding Standards](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#python-coding-standards)
-- [Pre-commit Hooks](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#pre-commit-hooks)
+- [CLAUDE.md](CLAUDE.md) - Project coding standards and principles
+- [Python Coding Standards](CLAUDE.md#python-coding-standards)
+- [Pre-commit Hooks](CLAUDE.md#pre-commit-hooks)
 
 ### Tool Documentation
 
@@ -250,8 +250,8 @@ known-first-party = ["src"]    # Local package for import sorting
 
 ### Current State
 
-- [pyproject.toml](/home/mvillmow/ml-odyssey-manual/pyproject.toml) - Existing configuration file
-- [.pre-commit-config.yaml](/home/mvillmow/ml-odyssey-manual/.pre-commit-config.yaml) - Pre-commit hook configuration
+- [pyproject.toml](pyproject.toml) - Existing configuration file
+- [.pre-commit-config.yaml](.pre-commit-config.yaml) - Pre-commit hook configuration
 
 ## Implementation Notes
 

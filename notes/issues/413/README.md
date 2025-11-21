@@ -238,7 +238,7 @@ Recommended default values:
 
 ## References
 
-- **Source Plan**: [/notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md)
+- **Source Plan**: [/notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md](notes/plan/02-shared-library/03-data-utils/03-augmentations/02-text-augmentations/plan.md)
 - **Related Issues**:
   - #414: [Test] Text Augmentations - Write Tests
   - #415: [Impl] Text Augmentations - Implementation

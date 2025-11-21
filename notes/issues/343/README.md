@@ -170,8 +170,8 @@ advanced scenarios.
 
 ### Source Plan
 
-- [Checkpointing Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/01-checkpointing/plan.md)
-- [Callbacks System Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
+- [Checkpointing Plan](notes/plan/02-shared-library/02-training-utils/03-callbacks/01-checkpointing/plan.md)
+- [Callbacks System Plan](notes/plan/02-shared-library/02-training-utils/03-callbacks/plan.md)
 
 ### Related Issues
 

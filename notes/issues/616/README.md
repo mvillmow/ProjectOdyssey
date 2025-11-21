@@ -256,12 +256,12 @@ Testing will be handled by issue #617. Key test scenarios:
 
 ### Source Plans
 
-- Parent Plan: [/notes/plan/01-foundation/02-configuration-files/plan.md](/notes/plan/01-foundation/02-configuration-files/plan.md)
-- Component Plan: [/notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md](/notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md)
+- Parent Plan: [/notes/plan/01-foundation/02-configuration-files/plan.md](../../../../../../../notes/plan/01-foundation/02-configuration-files/plan.md)
+- Component Plan: [/notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md](../../../../../../../notes/plan/01-foundation/02-configuration-files/01-magic-toml/plan.md)
 - Subcomponent Plans:
-  - [Base Config](/notes/plan/01-foundation/02-configuration-files/01-magic-toml/01-create-base-config/plan.md)
-  - [Dependencies](/notes/plan/01-foundation/02-configuration-files/01-magic-toml/02-add-dependencies/plan.md)
-  - [Channels](/notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md)
+  - [Base Config](../../../../../../../notes/plan/01-foundation/02-configuration-files/01-magic-toml/01-create-base-config/plan.md)
+  - [Dependencies](../../../../../../../notes/plan/01-foundation/02-configuration-files/01-magic-toml/02-add-dependencies/plan.md)
+  - [Channels](../../../../../../../notes/plan/01-foundation/02-configuration-files/01-magic-toml/03-configure-channels/plan.md)
 
 ### Related Issues
 
@@ -279,8 +279,8 @@ Testing will be handled by issue #617. Key test scenarios:
 
 ### Architectural Reviews
 
-- See [/notes/review/](/notes/review/) for comprehensive architectural documentation
-- See [/agents/](/agents/) for agent hierarchy and delegation patterns
+- See [/notes/review/](../../../../../../../notes/review/) for comprehensive architectural documentation
+- See [/agents/](../../../../../../../agents/) for agent hierarchy and delegation patterns
 
 ## Implementation Notes
 

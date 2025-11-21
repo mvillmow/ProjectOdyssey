@@ -27,11 +27,11 @@ comprehensive team documentation for effective skill adoption.
 
 ## References
 
-- [Skills Design](/notes/review/skills-design.md) - Complete skill specifications
-- [Agent Hierarchy](/agents/hierarchy.md) - How agents work
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Coordination
-- [Issue #512](/notes/issues/512/README.md) - What's being packaged
-- [Issue #64](/notes/issues/64/README.md) - Agents that use skills
+- [Skills Design](../../../../../../../notes/review/skills-design.md) - Complete skill specifications
+- [Agent Hierarchy](../../../../../../../agents/hierarchy.md) - How agents work
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Coordination
+- [Issue #512](../../../../../../../notes/issues/512/README.md) - What's being packaged
+- [Issue #64](../../../../../../../notes/issues/64/README.md) - Agents that use skills
 
 ## Implementation Notes
 

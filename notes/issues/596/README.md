@@ -216,7 +216,7 @@ ml-odyssey/
 
 ### Source Plan
 
-- [notes/plan/01-foundation/01-directory-structure/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/plan.md](notes/plan/01-foundation/01-directory-structure/plan.md)
 
 ### Child Plans
 

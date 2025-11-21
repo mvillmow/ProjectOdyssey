@@ -76,9 +76,9 @@ for deployment/distribution.
 
 ### Documentation Standards
 
-- Follow ML Odyssey documentation standards from [CLAUDE.md](/CLAUDE.md#documentation-rules)
-- Use packaging patterns from [Issue #75: Package Configs](/notes/issues/75/README.md)
-- Reference [CLAUDE.md Pull Request Guide](/CLAUDE.md#git-workflow) for PR submission
+- Follow ML Odyssey documentation standards from [CLAUDE.md](../../../../../../../CLAUDE.md#documentation-rules)
+- Use packaging patterns from [Issue #75: Package Configs](../../../../../../../notes/issues/75/README.md)
+- Reference [CLAUDE.md Pull Request Guide](../../../../../../../CLAUDE.md#git-workflow) for PR submission
 
 ### Markdown Standards
 
@@ -86,7 +86,7 @@ for deployment/distribution.
 - Lists must have blank lines before and after
 - Headings must have blank lines before and after
 - Line length should not exceed 120 characters
-- See [Markdown Standards](/CLAUDE.md#markdown-standards) for complete guidelines
+- See [Markdown Standards](../../../../../../../CLAUDE.md#markdown-standards) for complete guidelines
 
 ## Implementation Notes
 

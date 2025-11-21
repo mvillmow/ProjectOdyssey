@@ -89,8 +89,8 @@ provide significant performance improvements for large tensors.
 
 ### Source Plan
 
-- [Sigmoid Tanh Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/02-sigmoid-tanh/plan.md)
-- [Parent: Activations Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
+- [Sigmoid Tanh Plan](notes/plan/02-shared-library/01-core-operations/02-activations/02-sigmoid-tanh/plan.md)
+- [Parent: Activations Plan](notes/plan/02-shared-library/01-core-operations/02-activations/plan.md)
 
 ### Related Issues
 
@@ -101,13 +101,13 @@ provide significant performance improvements for large tensors.
 
 ### Related Components
 
-- [ReLU Family](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/01-relu-family/plan.md)
-- [Softmax GELU](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/02-activations/03-softmax-gelu/plan.md)
+- [ReLU Family](notes/plan/02-shared-library/01-core-operations/02-activations/01-relu-family/plan.md)
+- [Softmax GELU](notes/plan/02-shared-library/01-core-operations/02-activations/03-softmax-gelu/plan.md)
 
 ### Comprehensive Documentation
 
-- [Agent Architecture Review](/home/mvillmow/ml-odyssey-manual/notes/review/agent-architecture-review.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
+- [Agent Architecture Review](notes/review/agent-architecture-review.md)
+- [5-Phase Development Workflow](notes/review/README.md)
 
 ## Implementation Notes
 

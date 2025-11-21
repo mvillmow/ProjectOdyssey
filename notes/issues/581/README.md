@@ -158,7 +158,7 @@ optimizer:
 
 ### Source Plan
 
-- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/05-configs/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/05-configs/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/05-configs/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/05-configs/plan.md)
 
 ### Related Issues
 
@@ -169,7 +169,7 @@ optimizer:
 
 ### Parent Component
 
-- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
+- [notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md](notes/plan/01-foundation/01-directory-structure/03-create-supporting-dirs/plan.md)
 
 ## Implementation Notes
 

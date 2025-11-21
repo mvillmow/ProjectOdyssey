@@ -65,7 +65,7 @@ core concepts, advanced topics, and development guides.
 
 - **Plan files**: `notes/plan/01-foundation/` (documentation components)
 - **Related issues**: #58, #59, #60, #61
-- **Orchestrator**: [foundation-orchestrator](/.claude/agents/foundation-orchestrator.md)
+- **Orchestrator**: [foundation-orchestrator](../../../../../../../.claude/agents/foundation-orchestrator.md)
 - **PR**: #1547
 
 Closes #57

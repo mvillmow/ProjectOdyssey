@@ -108,7 +108,7 @@ trait DataLoader:
 
 - **Plan files**: `notes/plan/02-shared-library/03-data-utils/`
 - **Related issues**: #38, #39, #40, #41
-- **Orchestrator**: [shared-library-orchestrator](/.claude/agents/shared-library-orchestrator.md)
+- **Orchestrator**: [shared-library-orchestrator](../../../../../../../.claude/agents/shared-library-orchestrator.md)
 - **PR**: #1544
 
 Closes #37

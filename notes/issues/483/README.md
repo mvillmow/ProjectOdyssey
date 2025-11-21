@@ -223,8 +223,8 @@ coverage_gates:
 
 ### Source Plan
 
-- [Coverage Gates Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/03-coverage/03-coverage-gates/plan.md)
-- [Parent: Coverage Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/04-testing/03-coverage/plan.md)
+- [Coverage Gates Plan](notes/plan/02-shared-library/04-testing/03-coverage/03-coverage-gates/plan.md)
+- [Parent: Coverage Plan](notes/plan/02-shared-library/04-testing/03-coverage/plan.md)
 
 ### Related Issues
 

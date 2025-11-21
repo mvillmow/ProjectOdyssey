@@ -62,11 +62,11 @@ paper implementations, and a code coverage tool for measuring test completeness 
 
 ## References
 
-- [Testing Tools Plan](/notes/plan/03-tooling/02-testing-tools/plan.md) - Complete specification and hierarchy
-- [Test Runner Plan](/notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md) - Test discovery and execution
-- [Paper Test Script Plan](/notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md) - Paper validation
-- [Coverage Tool Plan](/notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Coverage measurement
-- [Tooling Section](/notes/plan/03-tooling/plan.md) - Context in broader tooling roadmap
+- [Testing Tools Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/plan.md) - Complete specification and hierarchy
+- [Test Runner Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/01-test-runner/plan.md) - Test discovery and execution
+- [Paper Test Script Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/02-paper-test-script/plan.md) - Paper validation
+- [Coverage Tool Plan](../../../../../../../notes/plan/03-tooling/02-testing-tools/03-coverage-tool/plan.md) - Coverage measurement
+- [Tooling Section](../../../../../../../notes/plan/03-tooling/plan.md) - Context in broader tooling roadmap
 
 ## Implementation Notes
 

@@ -107,11 +107,11 @@ Design and document the quickstart guide section of the README that helps users 
 
 ### Source Plan
 
-- [Write Quickstart Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/02-write-quickstart/plan.md)
+- [Write Quickstart Plan](notes/plan/01-foundation/03-initial-documentation/01-readme/02-write-quickstart/plan.md)
 
 ### Parent Context
 
-- [README Plan](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
+- [README Plan](notes/plan/01-foundation/03-initial-documentation/01-readme/plan.md)
 
 ### Related Issues
 
@@ -122,8 +122,8 @@ Design and document the quickstart guide section of the README that helps users 
 
 ### Documentation Standards
 
-- [CLAUDE.md - Markdown Standards](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#markdown-standards)
-- [CLAUDE.md - Documentation Rules](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#documentation-rules)
+- [CLAUDE.md - Markdown Standards](CLAUDE.md#markdown-standards)
+- [CLAUDE.md - Documentation Rules](CLAUDE.md#documentation-rules)
 
 ## Implementation Notes
 

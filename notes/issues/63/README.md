@@ -168,9 +168,9 @@ python3 tests/agents/validate_configs.py ../issue-64-impl-agents/.claude/agents/
 
 ### Shared Documentation
 
-- [Agent Hierarchy](/agents/agent-hierarchy.md) - Complete agent specifications
-- [Delegation Rules](/agents/delegation-rules.md) - Delegation patterns
-- [Orchestration Patterns](/notes/review/orchestration-patterns.md) - Detailed orchestration
+- [Agent Hierarchy](../../../../../../../agents/agent-hierarchy.md) - Complete agent specifications
+- [Delegation Rules](../../../../../../../agents/delegation-rules.md) - Delegation patterns
+- [Orchestration Patterns](../../../../../../../notes/review/orchestration-patterns.md) - Detailed orchestration
 
 ### Issue-Specific Documentation
 

@@ -30,7 +30,7 @@ created in Issue #59.
 
 ## References
 
-- **Planning Docs**: [Issue #57](/home/mvillmow/ml-odyssey/notes/issues/57/README.md)
+- **Planning Docs**: [Issue #57](../../../../../../../home/mvillmow/ml-odyssey/notes/issues/57/README.md)
 - **Parent Issue**: #57 (Plan)
 - **Related Issues**: #59 (Implementation), #60 (Packaging), #61 (Cleanup)
 

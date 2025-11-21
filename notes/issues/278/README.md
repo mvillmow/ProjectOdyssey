@@ -178,11 +178,11 @@ struct AccuracyMetric:
 
 ### Source Plan
 
-[/notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md)
+[/notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md](notes/plan/02-shared-library/01-core-operations/04-metrics/01-accuracy/plan.md)
 
 ### Parent Context
 
-[/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md](/home/mvillmow/ml-odyssey-manual/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md) - Metrics subsection
+[/notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md](notes/plan/02-shared-library/01-core-operations/04-metrics/plan.md) - Metrics subsection
 
 ### Related Issues
 
@@ -193,8 +193,8 @@ struct AccuracyMetric:
 
 ### Comprehensive Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/agent-hierarchy.md) - Full agent specifications
-- [5-Phase Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md) - Phase dependencies and workflow
+- [Agent Hierarchy](agents/agent-hierarchy.md) - Full agent specifications
+- [5-Phase Workflow](notes/review/README.md) - Phase dependencies and workflow
 
 ## Implementation Notes
 

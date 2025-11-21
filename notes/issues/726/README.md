@@ -154,10 +154,10 @@ initial contributor documentation.
 
 ### Source Plans
 
-- [Main Plan: Foundation](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/plan.md)
-- [Child Plan: Directory Structure](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/01-directory-structure/plan.md)
-- [Child Plan: Configuration Files](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/02-configuration-files/plan.md)
-- [Child Plan: Initial Documentation](/home/mvillmow/ml-odyssey-manual/notes/plan/01-foundation/03-initial-documentation/plan.md)
+- [Main Plan: Foundation](notes/plan/01-foundation/plan.md)
+- [Child Plan: Directory Structure](notes/plan/01-foundation/01-directory-structure/plan.md)
+- [Child Plan: Configuration Files](notes/plan/01-foundation/02-configuration-files/plan.md)
+- [Child Plan: Initial Documentation](notes/plan/01-foundation/03-initial-documentation/plan.md)
 
 ### Related Issues
 
@@ -168,9 +168,9 @@ initial contributor documentation.
 
 ### Architecture Documentation
 
-- [Agent Hierarchy](/home/mvillmow/ml-odyssey-manual/agents/hierarchy.md)
-- [5-Phase Development Workflow](/home/mvillmow/ml-odyssey-manual/notes/review/README.md)
-- [Project Documentation Organization](/home/mvillmow/ml-odyssey-manual/CLAUDE.md#documentation-organization)
+- [Agent Hierarchy](agents/hierarchy.md)
+- [5-Phase Development Workflow](notes/review/README.md)
+- [Project Documentation Organization](CLAUDE.md#documentation-organization)
 
 ## Implementation Notes
 

@@ -580,9 +580,9 @@ After completing this packaging phase:
 
 ### Project Documentation
 
-- [5-Phase Development Workflow](/notes/review/README.md)
-- [Package Phase Guide](/agents/guides/package-phase-guide.md)
-- [Project Standards](/CLAUDE.md)
+- [5-Phase Development Workflow](../../../../../../../notes/review/README.md)
+- [Package Phase Guide](../../../../../../../agents/guides/package-phase-guide.md)
+- [Project Standards](../../../../../../../CLAUDE.md)
 
 ### Mojo Documentation
 

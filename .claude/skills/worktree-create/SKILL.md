@@ -154,4 +154,4 @@ git worktree list
 - `scripts/list_worktrees.sh` - List all worktrees
 - `scripts/cleanup_worktrees.sh` - Remove merged worktrees
 
-See [worktree-strategy.md](/notes/review/worktree-strategy.md) for comprehensive worktree workflow documentation.
+See [worktree-strategy.md](../../../../../../../notes/review/worktree-strategy.md) for comprehensive worktree workflow documentation.

@@ -309,8 +309,8 @@ All files already existed:
 - [Issue #82: Planning](../82/README.md) - Planning phase for directory structure
 - [Issue #83: Testing](../83/README.md) - Testing phase (parallel)
 - [Issue #85: Packaging](../85/README.md) - Packaging phase (parallel)
-- [CLAUDE.md](/home/user/ml-odyssey/CLAUDE.md) - Project documentation rules
-- [shared/README.md](/home/user/ml-odyssey/shared/README.md) - Shared library overview
+- [CLAUDE.md](../../../../../../../home/user/ml-odyssey/CLAUDE.md) - Project documentation rules
+- [shared/README.md](../../../../../../../home/user/ml-odyssey/shared/README.md) - Shared library overview
 
 ## Completion Date
 
