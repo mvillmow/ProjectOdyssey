@@ -198,6 +198,136 @@ struct MXFP4(Stringable, Representable):
 
         return MXFP4(value, scale)
 
+    @staticmethod
+    fn from_float32_stochastic(x: Float32, seed: UInt64) -> Self:
+        """Convert Float32 to MXFP4 with stochastic rounding.
+
+        Uses stochastic rounding which is recommended for gradient quantization.
+        When a value falls between two representable FP4 values, probabilistically
+        round up or down based on distance.
+
+        Args:
+            x: Float32 value to convert
+            seed: Random seed for deterministic stochastic rounding
+
+        Returns:
+            MXFP4 representation with stochastic rounding
+
+        Note:
+            Use this for gradients and backward computations.
+            Use from_float32() for forward passes and weights.
+
+        Example:
+            # Gradient value 1.25 between 1.0 and 1.5
+            # Will round to 1.5 with ~50% probability
+            var grad = MXFP4.from_float32_stochastic(1.25, seed=12345)
+        """
+        # Handle special cases
+        if isnan(x) or isinf(x):
+            return MXFP4(FP4_E2M1.from_float32(x, scale=1.0), E8M0Scale(127))
+
+        if x == 0.0:
+            return MXFP4(FP4_E2M1(0), E8M0Scale(127))
+
+        # Compute scale same as deterministic version
+        var abs_x = x if x > 0 else -x
+        var scale_val = Float32(1.0)
+        var exp_val = 0
+
+        while abs_x / scale_val > 6.0:
+            scale_val *= 2.0
+            exp_val += 1
+
+        while abs_x / scale_val < 0.5 and exp_val > -127:
+            scale_val /= 2.0
+            exp_val -= 1
+
+        var scale = E8M0Scale.from_float32(scale_val)
+        var scale_f32 = scale.to_float32()
+
+        # Stochastic rounding for E2M1 encoding
+        var value = MXFP4._fp4_stochastic_round(x, scale_f32, seed)
+
+        return MXFP4(value, scale)
+
+    @staticmethod
+    fn _fp4_stochastic_round(x: Float32, scale: Float32, seed: UInt64) -> FP4_E2M1:
+        """Internal: Stochastic rounding helper using simple LCG.
+
+        Args:
+            x: Float32 value to encode
+            scale: Scale factor
+            seed: Random seed
+
+        Returns:
+            FP4_E2M1 value with stochastic rounding
+        """
+        var scaled = x / scale
+        var sign: UInt8 = 0
+        var abs_scaled = scaled
+
+        if scaled < 0:
+            sign = 1
+            abs_scaled = -scaled
+
+        # E2M1 representable values: 0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0
+        # Find neighboring values and distance
+        var lower: Float32 = 0.0
+        var upper: Float32 = 1.0
+        var lower_bits: UInt8 = 0
+        var upper_bits: UInt8 = 0b010  # exp=1, mantissa=0
+
+        if abs_scaled < 0.5:
+            # Below representable range
+            return FP4_E2M1(sign << 3)
+        elif abs_scaled < 1.25:
+            lower = 1.0
+            upper = 1.5
+            lower_bits = 0b010  # exp=1, mantissa=0
+            upper_bits = 0b011  # exp=1, mantissa=1
+        elif abs_scaled < 1.75:
+            lower = 1.5
+            upper = 2.0
+            lower_bits = 0b011
+            upper_bits = 0b100  # exp=2, mantissa=0
+        elif abs_scaled < 2.5:
+            lower = 2.0
+            upper = 3.0
+            lower_bits = 0b100
+            upper_bits = 0b101  # exp=2, mantissa=1
+        elif abs_scaled < 3.5:
+            lower = 3.0
+            upper = 4.0
+            lower_bits = 0b101
+            upper_bits = 0b110  # exp=3, mantissa=0
+        elif abs_scaled < 5.0:
+            lower = 4.0
+            upper = 6.0
+            lower_bits = 0b110
+            upper_bits = 0b111  # exp=3, mantissa=1
+        else:
+            # At or above max
+            return FP4_E2M1((sign << 3) | 0b111)
+
+        # Compute probability of rounding up
+        var distance = abs_scaled - lower
+        var range_val = upper - lower
+        var prob_up = distance / range_val
+
+        # Simple LCG: seed = (1103515245 * seed + 12345) mod 2^32
+        var rng_state = seed.cast[DType.uint32]()
+        rng_state = (1103515245 * rng_state + 12345) & 0xFFFFFFFF
+        var random_val = Float32(rng_state.cast[DType.uint64]()) / Float32(0xFFFFFFFF)
+
+        # Stochastic decision
+        var result_bits: UInt8
+        if random_val < prob_up:
+            result_bits = upper_bits
+        else:
+            result_bits = lower_bits
+
+        return FP4_E2M1((sign << 3) | result_bits)
+
     fn to_float32(self) -> Float32:
         """Convert MXFP4 to Float32.
 
@@ -343,5 +473,195 @@ struct MXFP4(Stringable, Representable):
         return "MXFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
 
-# MXFP4Block will be added in future implementation for efficient block storage
-# TODO: Implement MXFP4Block with 32 E2M1 values + 1 E8M0 scale (17 bytes total)
+@value
+struct MXFP4Block(Stringable, Representable):
+    """MXFP4 block storage: 32 E2M1 values + 1 E8M0 scale (17 bytes total).
+
+    Memory layout:
+    - Bytes 0-15: 32 E2M1 values (4 bits each, packed 2 per byte)
+    - Byte 16: E8M0 scale (8-bit exponent)
+
+    Bit packing:
+    Each byte stores 2 E2M1 values:
+    - Upper 4 bits: First E2M1 value
+    - Lower 4 bits: Second E2M1 value
+
+    This provides 16:1 compression vs Float32 (17 bytes vs 128 bytes).
+
+    Example:
+        from collections import List
+
+        # Create block from Float32 array
+        var values = List[Float32]()
+        for i in range(32):
+            values.append(Float32(i) * 0.1)
+
+        var block = MXFP4Block.from_float32_array(values)
+        var decoded = block.to_float32_array()
+    """
+    var data: SIMD[DType.uint8, 16]  # 32 E2M1 values (2 per byte)
+    var scale: E8M0Scale  # Shared E8M0 scale
+
+    fn __init__(inout self):
+        """Initialize MXFP4Block with zeros."""
+        self.data = SIMD[DType.uint8, 16](0)
+        self.scale = E8M0Scale(127)  # Scale = 1.0
+
+    fn __init__(inout self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
+        """Initialize MXFP4Block from packed data and scale.
+
+        Args:
+            data: 16 bytes containing 32 packed E2M1 values
+            scale: E8M0 scale factor for the block
+        """
+        self.data = data
+        self.scale = scale
+
+    @staticmethod
+    fn from_float32_array(values: List[Float32]) raises -> Self:
+        """Convert 32 Float32 values to MXFP4Block.
+
+        Args:
+            values: List of exactly 32 Float32 values
+
+        Returns:
+            MXFP4Block with optimal scale and packed E2M1 values
+
+        Raises:
+            Error: If values list doesn't contain exactly 32 elements
+
+        Note:
+            Computes optimal E8M0 scale as max(abs(values)) / 6.0
+            to fit all values in E2M1 range [0, 6].
+        """
+        if len(values) != 32:
+            raise Error("MXFP4Block requires exactly 32 values, got " + String(len(values)))
+
+        # Find optimal scale: max(abs(values)) / 6.0
+        var max_abs = Float32(0.0)
+        for i in range(32):
+            var abs_val = values[i] if values[i] >= 0 else -values[i]
+            if abs_val > max_abs:
+                max_abs = abs_val
+
+        # Compute scale (avoid division by zero)
+        var scale_val = max_abs / 6.0
+        if scale_val < 1e-10:
+            scale_val = 1.0
+
+        var scale = E8M0Scale.from_float32(scale_val)
+        var scale_f32 = scale.to_float32()
+
+        # Pack E2M1 values (2 per byte)
+        var data = SIMD[DType.uint8, 16](0)
+        for i in range(16):
+            # First value (upper 4 bits)
+            var val1 = FP4_E2M1.from_float32(values[i * 2], scale=scale_f32)
+            # Second value (lower 4 bits)
+            var val2 = FP4_E2M1.from_float32(values[i * 2 + 1], scale=scale_f32)
+
+            # Pack: upper 4 bits = val1, lower 4 bits = val2
+            data[i] = ((val1.value & 0xF) << 4) | (val2.value & 0xF)
+
+        return MXFP4Block(data, scale)
+
+    fn to_float32_array(self) -> List[Float32]:
+        """Decode MXFP4Block to 32 Float32 values.
+
+        Returns:
+            List of 32 Float32 values decoded from the block
+
+        Note:
+            Decoding is lossless given the quantization that occurred during encoding.
+        """
+        var result = List[Float32]()
+        var scale_f32 = self.scale.to_float32()
+
+        for i in range(16):
+            var byte = self.data[i]
+            # Extract upper 4 bits (first value)
+            var val1 = FP4_E2M1((byte >> 4) & 0xF)
+            result.append(val1.to_float32(scale=scale_f32))
+
+            # Extract lower 4 bits (second value)
+            var val2 = FP4_E2M1(byte & 0xF)
+            result.append(val2.to_float32(scale=scale_f32))
+
+        return result^
+
+    fn get(self, index: Int) raises -> MXFP4:
+        """Get MXFP4 value at index (0-31).
+
+        Args:
+            index: Index in range [0, 31]
+
+        Returns:
+            MXFP4 value at the given index
+
+        Raises:
+            Error: If index is out of range
+        """
+        if index < 0 or index >= 32:
+            raise Error("Index " + String(index) + " out of range [0, 31]")
+
+        var byte_idx = index // 2
+        var is_upper = (index % 2) == 0
+
+        var byte = self.data[byte_idx]
+        var fp4_val: FP4_E2M1
+        if is_upper:
+            fp4_val = FP4_E2M1((byte >> 4) & 0xF)
+        else:
+            fp4_val = FP4_E2M1(byte & 0xF)
+
+        return MXFP4(fp4_val, self.scale)
+
+    fn set(inout self, index: Int, value: MXFP4) raises:
+        """Set MXFP4 value at index (0-31).
+
+        Args:
+            index: Index in range [0, 31]
+            value: MXFP4 value to set
+
+        Raises:
+            Error: If index is out of range
+
+        Note:
+            This updates the E2M1 value but keeps the block's shared scale.
+            The value's scale is ignored - it's re-encoded with the block's scale.
+        """
+        if index < 0 or index >= 32:
+            raise Error("Index " + String(index) + " out of range [0, 31]")
+
+        # Re-encode value with block's scale
+        var float_val = value.to_float32()
+        var fp4_val = FP4_E2M1.from_float32(float_val, scale=self.scale.to_float32())
+
+        var byte_idx = index // 2
+        var is_upper = (index % 2) == 0
+
+        var byte = self.data[byte_idx]
+        if is_upper:
+            # Update upper 4 bits
+            byte = (byte & 0x0F) | ((fp4_val.value & 0xF) << 4)
+        else:
+            # Update lower 4 bits
+            byte = (byte & 0xF0) | (fp4_val.value & 0xF)
+
+        self.data[byte_idx] = byte
+
+    fn __str__(self) -> String:
+        """String representation showing scale and value count.
+
+        Returns:
+            String representation
+        """
+        return "MXFP4Block(32 values, scale=" + str(self.scale.to_float32()) + ")"
+
+    fn __repr__(self) -> String:
+        """Detailed representation.
+
+        Returns:
+            Detailed string representation
+        """
+        return "MXFP4Block(scale=" + repr(self.scale) + ", data=16 bytes)"

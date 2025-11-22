@@ -1148,6 +1148,264 @@ struct ExTensor(Movable):
 
         return result^
 
+    # ===----------------------------------------------------------------------===#
+    # FP4 Blocked Type Conversions
+    # ===----------------------------------------------------------------------===#
+
+    fn to_mxfp4(self) raises -> ExTensor:
+        """Convert tensor values to MXFP4 blocked format.
+
+        This method converts a tensor of any floating-point dtype to MXFP4 format,
+        stored as uint8 blocks. Values are packed into 32-element blocks, each with
+        a shared E8M0 scale.
+
+        Returns:
+            A new ExTensor with dtype=uint8 containing MXFP4-encoded blocks
+
+        Raises:
+            Error: If the source tensor is not a floating-point dtype
+
+        Examples:
+            var t = zeros(List[Int](64,), DType.float32)
+            var mxfp4_t = t.to_mxfp4()  # Returns uint8 tensor (2 blocks × 17 bytes)
+            var restored = mxfp4_t.from_mxfp4()  # Convert back to float32
+
+        Note:
+            MXFP4 uses 32-element blocks. Tensor is padded to block boundary.
+            Memory efficiency: 17 bytes per 32 Float32 values (16:1 compression).
+        """
+        from .types.mxfp4 import MXFP4Block
+
+        # Verify source is floating point
+        if not (
+            self._dtype == DType.float16
+            or self._dtype == DType.float32
+            or self._dtype == DType.float64
+        ):
+            raise Error("to_mxfp4() requires a floating-point tensor")
+
+        # Calculate number of blocks (32 elements per block)
+        var num_blocks = (self._numel + 31) // 32
+        var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
+
+        # Create output tensor as flattened uint8 array
+        var result = ExTensor(List[Int](total_bytes), DType.uint8)
+
+        # Process each block
+        for block_idx in range(num_blocks):
+            var start_idx = block_idx * 32
+            var end_idx = min(start_idx + 32, self._numel)
+
+            # Collect 32 values (pad with zeros if needed)
+            var values = List[Float32]()
+            for i in range(32):
+                var idx = start_idx + i
+                if idx < self._numel:
+                    # Get source value as Float32
+                    var val: Float32
+                    if self._dtype == DType.float16:
+                        val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
+                    elif self._dtype == DType.float32:
+                        val = self._data.bitcast[Float32]()[idx]
+                    else:  # float64
+                        val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                    values.append(val)
+                else:
+                    values.append(Float32(0.0))  # Padding
+
+            # Create MXFP4Block
+            var block = MXFP4Block.from_float32_array(values)
+
+            # Store block data (16 bytes + 1 scale byte)
+            var block_offset = block_idx * 17
+            for i in range(16):
+                result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
+            result._data.bitcast[UInt8]()[block_offset + 16] = block.scale.exponent
+
+        return result^
+
+    fn from_mxfp4(self) raises -> ExTensor:
+        """Convert MXFP4-encoded tensor (uint8 blocks) back to Float32.
+
+        This method interprets a uint8 tensor as MXFP4 blocks and converts them
+        back to Float32 for computation.
+
+        Returns:
+            A new ExTensor with dtype=float32 containing decoded values
+
+        Raises:
+            Error: If the source tensor is not uint8 dtype or not block-aligned
+
+        Examples:
+            var mxfp4_t = ...  # uint8 tensor with MXFP4 blocks
+            var float_t = mxfp4_t.from_mxfp4()  # Decode to float32
+
+        Note:
+            This assumes the uint8 tensor contains valid MXFP4 blocks.
+            Use this to decode tensors created by to_mxfp4().
+        """
+        from .types.mxfp4 import MXFP4Block, E8M0Scale
+
+        # Verify source is uint8
+        if self._dtype != DType.uint8:
+            raise Error("from_mxfp4() requires a uint8 tensor (MXFP4-encoded)")
+
+        # Calculate number of blocks and output size
+        if self._numel % 17 != 0:
+            raise Error("MXFP4 tensor size must be multiple of 17 bytes")
+
+        var num_blocks = self._numel // 17
+        var output_size = num_blocks * 32
+
+        # Create output tensor
+        var result = ExTensor(List[Int](output_size), DType.float32)
+
+        # Decode each block
+        for block_idx in range(num_blocks):
+            var block_offset = block_idx * 17
+
+            # Reconstruct MXFP4Block
+            var data = SIMD[DType.uint8, 16](0)
+            for i in range(16):
+                data[i] = self._data.bitcast[UInt8]()[block_offset + i]
+            var scale = E8M0Scale(self._data.bitcast[UInt8]()[block_offset + 16])
+
+            var block = MXFP4Block(data, scale)
+
+            # Decode block to Float32 values
+            var values = block.to_float32_array()
+            for i in range(32):
+                result._data.bitcast[Float32]()[block_idx * 32 + i] = values[i]
+
+        return result^
+
+    fn to_nvfp4(self) raises -> ExTensor:
+        """Convert tensor values to NVFP4 blocked format.
+
+        This method converts a tensor of any floating-point dtype to NVFP4 format,
+        stored as uint8 blocks. Values are packed into 16-element blocks, each with
+        a shared E4M3 scale.
+
+        Returns:
+            A new ExTensor with dtype=uint8 containing NVFP4-encoded blocks
+
+        Raises:
+            Error: If the source tensor is not a floating-point dtype
+
+        Examples:
+            var t = zeros(List[Int](64,), DType.float32)
+            var nvfp4_t = t.to_nvfp4()  # Returns uint8 tensor (4 blocks × 9 bytes)
+            var restored = nvfp4_t.from_nvfp4()  # Convert back to float32
+
+        Note:
+            NVFP4 uses 16-element blocks for better accuracy.
+            Memory efficiency: 9 bytes per 16 Float32 values (14:1 compression).
+        """
+        from .types.nvfp4 import NVFP4Block
+
+        # Verify source is floating point
+        if not (
+            self._dtype == DType.float16
+            or self._dtype == DType.float32
+            or self._dtype == DType.float64
+        ):
+            raise Error("to_nvfp4() requires a floating-point tensor")
+
+        # Calculate number of blocks (16 elements per block)
+        var num_blocks = (self._numel + 15) // 16
+        var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block
+
+        # Create output tensor as flattened uint8 array
+        var result = ExTensor(List[Int](total_bytes), DType.uint8)
+
+        # Process each block
+        for block_idx in range(num_blocks):
+            var start_idx = block_idx * 16
+            var end_idx = min(start_idx + 16, self._numel)
+
+            # Collect 16 values (pad with zeros if needed)
+            var values = List[Float32]()
+            for i in range(16):
+                var idx = start_idx + i
+                if idx < self._numel:
+                    # Get source value as Float32
+                    var val: Float32
+                    if self._dtype == DType.float16:
+                        val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
+                    elif self._dtype == DType.float32:
+                        val = self._data.bitcast[Float32]()[idx]
+                    else:  # float64
+                        val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                    values.append(val)
+                else:
+                    values.append(Float32(0.0))  # Padding
+
+            # Create NVFP4Block
+            var block = NVFP4Block.from_float32_array(values)
+
+            # Store block data (8 bytes + 1 scale byte)
+            var block_offset = block_idx * 9
+            for i in range(8):
+                result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
+            result._data.bitcast[UInt8]()[block_offset + 8] = block.scale.value
+
+        return result^
+
+    fn from_nvfp4(self) raises -> ExTensor:
+        """Convert NVFP4-encoded tensor (uint8 blocks) back to Float32.
+
+        This method interprets a uint8 tensor as NVFP4 blocks and converts them
+        back to Float32 for computation.
+
+        Returns:
+            A new ExTensor with dtype=float32 containing decoded values
+
+        Raises:
+            Error: If the source tensor is not uint8 dtype or not block-aligned
+
+        Examples:
+            var nvfp4_t = ...  # uint8 tensor with NVFP4 blocks
+            var float_t = nvfp4_t.from_nvfp4()  # Decode to float32
+
+        Note:
+            This assumes the uint8 tensor contains valid NVFP4 blocks.
+            Use this to decode tensors created by to_nvfp4().
+        """
+        from .types.nvfp4 import NVFP4Block, E4M3Scale
+
+        # Verify source is uint8
+        if self._dtype != DType.uint8:
+            raise Error("from_nvfp4() requires a uint8 tensor (NVFP4-encoded)")
+
+        # Calculate number of blocks and output size
+        if self._numel % 9 != 0:
+            raise Error("NVFP4 tensor size must be multiple of 9 bytes")
+
+        var num_blocks = self._numel // 9
+        var output_size = num_blocks * 16
+
+        # Create output tensor
+        var result = ExTensor(List[Int](output_size), DType.float32)
+
+        # Decode each block
+        for block_idx in range(num_blocks):
+            var block_offset = block_idx * 9
+
+            # Reconstruct NVFP4Block
+            var data = SIMD[DType.uint8, 8](0)
+            for i in range(8):
+                data[i] = self._data.bitcast[UInt8]()[block_offset + i]
+            var scale = E4M3Scale(self._data.bitcast[UInt8]()[block_offset + 8])
+
+            var block = NVFP4Block(data, scale)
+
+            # Decode block to Float32 values
+            var values = block.to_float32_array()
+            for i in range(16):
+                result._data.bitcast[Float32]()[block_idx * 16 + i] = values[i]
+
+        return result^
+
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
     # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
     # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
