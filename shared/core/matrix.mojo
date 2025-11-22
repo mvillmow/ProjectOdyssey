@@ -210,25 +210,36 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
     var result = ExTensor(result_shape, tensor.dtype())
 
     # Compute strides for input tensor (row-major order)
-    var input_strides = List[Int](ndim)
+    # BUGFIX: List[Int](ndim) creates a list with wrong initialization
+    # We need to build the list using append() instead of indexing
+    var input_strides = List[Int]()
     var stride = 1
+    # Build strides in reverse order (row-major)
+    var temp_strides = List[Int]()
     for i in range(ndim - 1, -1, -1):
-        input_strides[i] = stride
+        temp_strides.append(stride)
         stride *= input_shape[i]
+    # Reverse to get correct indexing order
+    for i in range(len(temp_strides) - 1, -1, -1):
+        input_strides.append(temp_strides[i])
 
     # For each element in result, map to input position
     for result_idx in range(result.numel()):
         # Convert linear result index to coordinates
-        var result_coords = List[Int](ndim)
+        # BUGFIX: Initialize list properly before indexing
+        var result_coords = List[Int]()
+        for _ in range(ndim):
+            result_coords.append(0)
         var temp_idx = result_idx
         for i in range(ndim - 1, -1, -1):
             result_coords[i] = temp_idx % result.shape()[i]
             temp_idx //= result.shape()[i]
 
         # Map result coordinates to input coordinates (reverse order)
-        var input_coords = List[Int](ndim)
+        # BUGFIX: Initialize list properly before indexing
+        var input_coords = List[Int]()
         for i in range(ndim):
-            input_coords[i] = result_coords[ndim - 1 - i]
+            input_coords.append(result_coords[ndim - 1 - i])
 
         # Convert input coordinates to linear index
         var input_idx = 0
