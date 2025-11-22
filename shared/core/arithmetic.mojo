@@ -216,46 +216,11 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = multiply(x, y)  # Shape (3, 4, 5), all 6.0
     """
-    if a.dtype() != b.dtype():
-        raise Error("Cannot multiply tensors with different dtypes")
+    @always_inline
+    fn _mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        return x * y
 
-    # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
-    var result = ExTensor(result_shape, a.dtype())
-
-    # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
-
-    # Calculate total elements in result
-    var total_elems = 1
-    for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Compute source indices for a and b using broadcast strides
-        for dim in range(len(result_shape) - 1, -1, -1):
-            var stride_prod = 1
-            for d in range(dim + 1, len(result_shape)):
-                stride_prod *= result_shape[d]
-
-            let coord = temp_idx // stride_prod
-            temp_idx = temp_idx % stride_prod
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform multiplication
-        let a_val = a._get_float64(idx_a)
-        let b_val = b._get_float64(idx_b)
-        result._set_float64(result_idx, a_val * b_val)
-
-    return result^
+    return _dispatch_broadcast_binary[_mul_op](a, b)
 
 
 fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -287,46 +252,11 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var y = full([3, 4, 5], 2.0, DType.float32)
         var z = divide(x, y)  # Shape (3, 4, 5), all 3.0
     """
-    if a.dtype() != b.dtype():
-        raise Error("Cannot divide tensors with different dtypes")
+    @always_inline
+    fn _div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        return x / y
 
-    # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
-    var result = ExTensor(result_shape, a.dtype())
-
-    # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
-
-    # Calculate total elements in result
-    var total_elems = 1
-    for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Compute source indices for a and b using broadcast strides
-        for dim in range(len(result_shape) - 1, -1, -1):
-            var stride_prod = 1
-            for d in range(dim + 1, len(result_shape)):
-                stride_prod *= result_shape[d]
-
-            let coord = temp_idx // stride_prod
-            temp_idx = temp_idx % stride_prod
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform division (IEEE 754 semantics apply automatically)
-        let a_val = a._get_float64(idx_a)
-        let b_val = b._get_float64(idx_b)
-        result._set_float64(result_idx, a_val / b_val)
-
-    return result^
+    return _dispatch_broadcast_binary[_div_op](a, b)
 
 
 fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -352,48 +282,16 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var y = full([3, 4, 5], 2.0, DType.float32)
         var z = floor_divide(x, y)  # Shape (3, 4, 5), all 3.0
     """
-    if a.dtype() != b.dtype():
-        raise Error("Cannot floor divide tensors with different dtypes")
+    @always_inline
+    fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        # Floor division: floor(x / y)
+        # For correct negative handling, use: int(div) if div >= 0 else int(div) - 1
+        let div_result = x / y
+        let as_int = Int(div_result)
+        let floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        return floored
 
-    # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
-    var result = ExTensor(result_shape, a.dtype())
-
-    # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
-
-    # Calculate total elements in result
-    var total_elems = 1
-    for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Compute source indices for a and b using broadcast strides
-        for dim in range(len(result_shape) - 1, -1, -1):
-            var stride_prod = 1
-            for d in range(dim + 1, len(result_shape)):
-                stride_prod *= result_shape[d]
-
-            let coord = temp_idx // stride_prod
-            temp_idx = temp_idx % stride_prod
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform floor division
-        let a_val = a._get_float64(idx_a)
-        let b_val = b._get_float64(idx_b)
-        let div_result = a_val / b_val
-        let floored = Float64(int(div_result)) if div_result >= 0.0 else Float64(int(div_result) - 1)
-        result._set_float64(result_idx, floored)
-
-    return result^
+    return _dispatch_broadcast_binary[_floor_div_op](a, b)
 
 
 fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -419,48 +317,15 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = modulo(x, y)  # Shape (3, 4, 5), all 1.0
     """
-    if a.dtype() != b.dtype():
-        raise Error("Cannot compute modulo for tensors with different dtypes")
+    @always_inline
+    fn _mod_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        # Modulo: a % b = a - floor(a/b) * b
+        let div_result = x / y
+        let as_int = Int(div_result)
+        let floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        return x - floored * y
 
-    # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
-    var result = ExTensor(result_shape, a.dtype())
-
-    # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
-
-    # Calculate total elements in result
-    var total_elems = 1
-    for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Compute source indices for a and b using broadcast strides
-        for dim in range(len(result_shape) - 1, -1, -1):
-            var stride_prod = 1
-            for d in range(dim + 1, len(result_shape)):
-                stride_prod *= result_shape[d]
-
-            let coord = temp_idx // stride_prod
-            temp_idx = temp_idx % stride_prod
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform modulo: a % b = a - floor(a/b) * b
-        let a_val = a._get_float64(idx_a)
-        let b_val = b._get_float64(idx_b)
-        let div_result = a_val / b_val
-        let floored = Float64(int(div_result)) if div_result >= 0.0 else Float64(int(div_result) - 1)
-        result._set_float64(result_idx, a_val - floored * b_val)
-
-    return result^
+    return _dispatch_broadcast_binary[_mod_op](a, b)
 
 
 fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -485,64 +350,18 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 2.0, DType.float32)
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = power(x, y)  # Shape (3, 4, 5), all 8.0
+
+    Note:
+        Uses ** operator which delegates to Mojo's built-in power implementation.
+        For integer exponents, this uses efficient repeated squaring.
+        For fractional exponents, this uses exp(b * log(a)).
     """
-    if a.dtype() != b.dtype():
-        raise Error("Cannot compute power for tensors with different dtypes")
+    @always_inline
+    fn _pow_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        # Use Mojo's built-in ** operator (handles all cases correctly)
+        return x ** y
 
-    # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
-    var result = ExTensor(result_shape, a.dtype())
-
-    # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
-
-    # Calculate total elements in result
-    var total_elems = 1
-    for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
-
-    # Iterate over all result elements
-    for result_idx in range(total_elems):
-        var idx_a = 0
-        var idx_b = 0
-        var temp_idx = result_idx
-
-        # Compute source indices for a and b using broadcast strides
-        for dim in range(len(result_shape) - 1, -1, -1):
-            var stride_prod = 1
-            for d in range(dim + 1, len(result_shape)):
-                stride_prod *= result_shape[d]
-
-            let coord = temp_idx // stride_prod
-            temp_idx = temp_idx % stride_prod
-
-            idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
-
-        # Perform power: a ** b
-        let a_val = a._get_float64(idx_a)
-        let b_val = b._get_float64(idx_b)
-
-        # Current implementation: repeated multiplication for small integer exponents
-        # LIMITATION: Only supports integer exponents in range [0, 100)
-        # For general case (fractional/large exponents), proper implementation requires:
-        #   - exp(b * log(a)) for general exponents
-        #   - Special handling for negative bases with fractional exponents
-        #   - Proper handling of edge cases (0^0, inf^0, etc.)
-        var pow_result: Float64 = 1.0
-        let exp_int = int(b_val)
-        if b_val == Float64(exp_int) and exp_int >= 0 and exp_int < 100:
-            # Integer exponent case (naive repeated multiplication)
-            for _ in range(exp_int):
-                pow_result *= a_val
-        else:
-            # LIMITATION: Non-integer and large exponents not yet supported
-            # Returns base value as placeholder (incorrect result)
-            pow_result = a_val
-        result._set_float64(result_idx, pow_result)
-
-    return result^
+    return _dispatch_broadcast_binary[_pow_op](a, b)
 
 
 # ==============================================================================
