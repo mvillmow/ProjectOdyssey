@@ -14,7 +14,7 @@ Issues covered:
 """
 
 from shared.core import ExTensor
-from collections.vector import DynamicVector
+from collections import List
 from math import sqrt
 
 
@@ -52,10 +52,10 @@ struct ConfusionMatrix:
     """
     var num_classes: Int
     var matrix: ExTensor  # Shape: [num_classes, num_classes], dtype=int32
-    var class_names: DynamicVector[String]
+    var class_names: List[String]
     var has_class_names: Bool
 
-    fn __init__(inout self, num_classes: Int, class_names: DynamicVector[String] = DynamicVector[String]()):
+    fn __init__(mut self, num_classes: Int, class_names: List[String] = List[String]()):
         """Initialize NxN confusion matrix.
 
         Args:
@@ -65,7 +65,7 @@ struct ConfusionMatrix:
         self.num_classes = num_classes
 
         # Initialize matrix with zeros
-        var shape = DynamicVector[Int](num_classes, num_classes)
+        var shape = List[Int](num_classes, num_classes)
         self.matrix = ExTensor(shape, DType.int32)
         for i in range(num_classes * num_classes):
             self.matrix._data.bitcast[Int32]()[i] = 0
@@ -73,7 +73,7 @@ struct ConfusionMatrix:
         self.class_names = class_names
         self.has_class_names = len(class_names) > 0
 
-    fn update(inout self, predictions: ExTensor, labels: ExTensor) raises:
+    fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update confusion matrix with new batch of predictions.
 
         Args:
@@ -123,7 +123,7 @@ struct ConfusionMatrix:
             var idx = true_label * self.num_classes + pred
             self.matrix._data.bitcast[Int32]()[idx] += 1
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset all counts to zero."""
         for i in range(self.num_classes * self.num_classes):
             self.matrix._data.bitcast[Int32]()[i] = 0
@@ -144,7 +144,7 @@ struct ConfusionMatrix:
         Raises:
             Error: If mode is invalid
         """
-        var result_shape = DynamicVector[Int](self.num_classes, self.num_classes)
+        var result_shape = List[Int](self.num_classes, self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         if mode == "none":
@@ -220,7 +220,7 @@ struct ConfusionMatrix:
 
         Note: Returns 0.0 for classes with no predictions
         """
-        var result_shape = DynamicVector[Int](self.num_classes)
+        var result_shape = List[Int](self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for col in range(self.num_classes):
@@ -253,7 +253,7 @@ struct ConfusionMatrix:
 
         Note: Returns 0.0 for classes with no samples
         """
-        var result_shape = DynamicVector[Int](self.num_classes)
+        var result_shape = List[Int](self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for row in range(self.num_classes):
@@ -288,7 +288,7 @@ struct ConfusionMatrix:
         var precision = self.get_precision()
         var recall = self.get_recall()
 
-        var result_shape = DynamicVector[Int](self.num_classes)
+        var result_shape = List[Int](self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for i in range(self.num_classes):
@@ -320,7 +320,7 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
-    var result_shape = DynamicVector[Int](batch_size)
+    var result_shape = List[Int](batch_size)
     var result = ExTensor(result_shape, DType.int32)
 
     for b in range(batch_size):

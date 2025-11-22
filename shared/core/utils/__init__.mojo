@@ -17,7 +17,7 @@ Example:
     from shared.core.utils import xavier_init, he_init
     from shared.core.types import Tensor
 
-    fn initialize_weights(inout tensor: Tensor, activation: String):
+    fn initialize_weights(mut tensor: Tensor, activation: String):
         # Choose initialization based on activation function
         if activation == "relu":
             he_init(tensor)

@@ -11,7 +11,8 @@ LeNet-5 architecture on the EMNIST dataset.
 
 **Dataset**: EMNIST Balanced (47 classes: digits 0-9, uppercase A-Z, and select lowercase letters)
 
-**Status**: 🚧 **Skeleton Implementation** - Demonstrates structure while waiting for stable Mojo file I/O and autograd
+**Status**: 🔧 **Mojo 0.25.7 Compatible (Compilation Successful)** - All code updated to Mojo 0.25.7 syntax and
+compiles successfully. Runtime debugging in progress.
 
 ## Quick Start
 
@@ -27,14 +28,17 @@ This downloads the EMNIST Balanced split (131,600 training samples, 18,800 test 
 ### 2. Train Model
 
 ```bash
-mojo run examples/lenet-emnist/train.mojo --epochs 10 --batch-size 32 --lr 0.01
+pixi run mojo run -I . examples/lenet-emnist/train.mojo --epochs 10 --batch-size 32 --lr 0.01
 ```
+
+**Note**: Use `pixi run mojo` (not just `mojo`) since Mojo is installed via pixi. The `-I .` flag includes the
+current directory in the module search path.
 
 ### 3. Run Inference
 
 ```bash
 # Evaluate on test set
-mojo run examples/lenet-emnist/inference.mojo --weights-dir lenet5_weights
+pixi run mojo run -I . examples/lenet-emnist/inference.mojo --weights-dir lenet5_weights
 ```
 
 ## Dataset Information
@@ -125,7 +129,7 @@ examples/lenet-emnist/
 ### Training Options
 
 ```bash
-mojo run examples/lenet-emnist/train.mojo \
+pixi run mojo run -I . examples/lenet-emnist/train.mojo \
     --epochs 10 \
     --batch-size 32 \
     --lr 0.01 \
@@ -145,7 +149,7 @@ mojo run examples/lenet-emnist/train.mojo \
 
 ```bash
 # Test set evaluation
-mojo run examples/lenet-emnist/inference.mojo \
+pixi run mojo run -I . examples/lenet-emnist/inference.mojo \
     --weights-dir lenet5_weights \
     --data-dir datasets/emnist
 ```
@@ -183,7 +187,16 @@ This is a **functional implementation** with manual backward passes (no autograd
 2. **Performance**: Not yet optimized with SIMD or parallelization
 3. **File I/O**: Uses text mode file reading (workaround for binary I/O)
 
-**The implementation is complete and working** - optimizations will improve performance but are not required for functionality.
+**Update (Mojo 0.25.7)**: All code has been migrated to Mojo 0.25.7 syntax and compiles successfully. The program
+loads data and initializes the model but encounters a runtime crash during training that requires further debugging.
+Key accomplishments:
+
+- ✅ All 61 files updated for Mojo 0.25.7 compatibility
+- ✅ Fixed parameter conventions (`inout` → `mut`/`out`)
+- ✅ Updated collections API (`DynamicVector` → `List`)
+- ✅ Fixed memory management (`UnsafePointer`, ownership)
+- ✅ Successful compilation with no errors
+- ⚠️ Runtime crash during training (debugging needed)
 
 ## Expected Performance
 
@@ -222,7 +235,7 @@ This example follows **Keep It Simple, Stupid** principles:
 ### Datasets
 
 - **EMNIST Official Page**: <https://www.nist.gov/itl/products-and-services/emnist-dataset>
-- **Download**: <http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST/gzip.zip>
+- **Download**: <https://biometrics.nist.gov/cs_links/EMNIST/gzip.zip>
 
 ### Reference Implementations
 

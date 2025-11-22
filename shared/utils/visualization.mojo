@@ -23,6 +23,7 @@ Example:
 
 struct PlotData:
     """Data for a single plot."""
+
     var title: String
     var xlabel: String
     var ylabel: String
@@ -30,7 +31,7 @@ struct PlotData:
     var y_data: List[Float32]
     var label: String
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty plot data."""
         self.title = ""
         self.xlabel = ""
@@ -42,32 +43,34 @@ struct PlotData:
 
 struct PlotSeries:
     """Multiple data series for plotting."""
+
     var title: String
     var xlabel: String
     var ylabel: String
     var series_data: List[PlotData]
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty plot with multiple series."""
         self.title = ""
         self.xlabel = ""
         self.ylabel = ""
         self.series_data = List[PlotData]()
 
-    fn add_series(inout self, series: PlotData):
+    fn add_series(mut self, series: PlotData):
         """Add data series to plot."""
         self.series_data.append(series)
 
 
 struct ConfusionMatrixData:
     """Data for confusion matrix visualization."""
+
     var class_names: List[String]
     var matrix: List[List[Int]]
     var accuracy: Float32
     var precision: Float32
     var recall: Float32
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty confusion matrix."""
         self.class_names = List[String]()
         self.matrix = List[List[Int]]()
@@ -86,7 +89,7 @@ fn plot_training_curves(
     val_losses: List[Float32],
     train_accs: List[Float32] = List[Float32](),
     val_accs: List[Float32] = List[Float32](),
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Plot training and validation curves.
 
@@ -126,9 +129,7 @@ fn plot_training_curves(
 
 
 fn plot_loss_only(
-    losses: List[Float32],
-    label: String = "Loss",
-    save_path: String = ""
+    losses: List[Float32], label: String = "Loss", save_path: String = ""
 ) -> Bool:
     """Plot single loss curve.
 
@@ -147,7 +148,7 @@ fn plot_loss_only(
 fn plot_accuracy_only(
     accuracies: List[Float32],
     label: String = "Accuracy",
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Plot single accuracy curve.
 
@@ -169,9 +170,7 @@ fn plot_accuracy_only(
 
 
 fn compute_confusion_matrix(
-    y_true: List[Int],
-    y_pred: List[Int],
-    num_classes: Int = 0
+    y_true: List[Int], y_pred: List[Int], num_classes: Int = 0
 ) -> List[List[Int]]:
     """Compute confusion matrix from predictions.
 
@@ -192,7 +191,7 @@ fn plot_confusion_matrix(
     y_pred: List[Int],
     class_names: List[String] = List[String](),
     normalize: Bool = False,
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Plot confusion matrix heatmap.
 
@@ -245,7 +244,7 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
 
 
 fn compute_matrix_metrics(
-    matrix: List[List[Int]]
+    matrix: List[List[Int]],
 ) -> (Float32, Float32, Float32):
     """Compute accuracy, precision, recall from confusion matrix.
 
@@ -265,9 +264,7 @@ fn compute_matrix_metrics(
 
 
 fn visualize_model_architecture(
-    model_name: String,
-    layer_info: List[String],
-    save_path: String = ""
+    model_name: String, layer_info: List[String], save_path: String = ""
 ) -> Bool:
     """Visualize neural network architecture as diagram.
 
@@ -304,7 +301,7 @@ fn visualize_model_architecture(
 fn visualize_tensor_shapes(
     input_shape: List[Int],
     layer_shapes: List[List[Int]],
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Visualize tensor shapes through layers.
 
@@ -328,7 +325,7 @@ fn visualize_tensor_shapes(
 fn visualize_gradient_flow(
     gradients: List[Float32],
     layer_names: List[String] = List[String](),
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Visualize gradient flow through network.
 
@@ -349,9 +346,7 @@ fn visualize_gradient_flow(
     return True
 
 
-fn detect_gradient_issues(
-    gradients: List[Float32]
-) -> (Bool, Bool):
+fn detect_gradient_issues(gradients: List[Float32]) -> (Bool, Bool):
     """Detect vanishing or exploding gradients.
 
     Args:
@@ -373,7 +368,7 @@ fn show_images(
     images: List[String],
     labels: List[String] = List[String](),
     nrow: Int = 8,
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Display grid of images (useful for dataset visualization).
 
@@ -406,7 +401,7 @@ fn show_augmented_images(
     original: List[String],
     augmented: List[String],
     nrow: Int = 4,
-    save_path: String = ""
+    save_path: String = "",
 ) -> Bool:
     """Show original and augmented versions side by side.
 
@@ -429,9 +424,7 @@ fn show_augmented_images(
 
 
 fn visualize_feature_maps(
-    feature_maps: List[String],
-    layer_name: String = "",
-    save_path: String = ""
+    feature_maps: List[String], layer_name: String = "", save_path: String = ""
 ) -> Bool:
     """Visualize learned feature maps from a layer.
 
@@ -452,10 +445,7 @@ fn visualize_feature_maps(
 # ============================================================================
 
 
-fn save_figure(
-    filepath: String,
-    format: String = "png"
-) -> Bool:
+fn save_figure(filepath: String, format: String = "png") -> Bool:
     """Save current matplotlib figure to file.
 
     Args:

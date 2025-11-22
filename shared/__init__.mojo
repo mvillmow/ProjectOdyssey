@@ -87,62 +87,28 @@ alias LICENSE = "MIT"
 # ============================================================================
 # Public API
 # ============================================================================
-# This list defines what is exported when users do `from shared import *`
-# Keep this minimal - only the most commonly used items
-
-__all__ = [
-    # Version info
-    "VERSION",
-    "AUTHOR",
-    "LICENSE",
-    # Core - Layers (most common)
-    # "Linear",
-    # "Conv2D",
-    # "ReLU",
-    # "MaxPool2D",
-    # "Dropout",
-    # "Flatten",
-    # Core - Activations (function form)
-    # "relu",
-    # "sigmoid",
-    # "tanh",
-    # "softmax",
-    # Core - Module system
-    # "Module",
-    # "Sequential",
-    # Core - Tensors
-    # "Tensor",
-    # "zeros",
-    # "ones",
-    # "randn",
-    # Training - Optimizers
-    # "SGD",
-    # "Adam",
-    # "AdamW",
-    # Training - Schedulers
-    # "StepLR",
-    # "CosineAnnealingLR",
-    # Training - Metrics
-    # "Accuracy",
-    # "LossTracker",
-    # Training - Callbacks
-    # "EarlyStopping",
-    # "ModelCheckpoint",
-    # Training - Loops
-    # "train_epoch",
-    # "validate_epoch",
-    # Data - Datasets
-    # "TensorDataset",
-    # "ImageDataset",
-    # "DataLoader",
-    # Data - Transforms
-    # "Normalize",
-    # "ToTensor",
-    # "Compose",
-    # Utils
-    # "Logger",
-    # "plot_training_curves",
-]
+# NOTE: Mojo does not support __all__ lists like Python does.
+# In Mojo, all public symbols (those not prefixed with _) are automatically
+# exported when the module is imported. Users can import specific items:
+#   from shared import Linear, Conv2D, ReLU
+# Or import the module:
+#   import shared
+#
+# The following components will be available once implementation completes:
+#
+# Version info: VERSION, AUTHOR, LICENSE
+# Core - Layers: Linear, Conv2D, ReLU, MaxPool2D, Dropout, Flatten
+# Core - Activations: relu, sigmoid, tanh, softmax
+# Core - Module system: Module, Sequential
+# Core - Tensors: Tensor, zeros, ones, randn
+# Training - Optimizers: SGD, Adam, AdamW
+# Training - Schedulers: StepLR, CosineAnnealingLR
+# Training - Metrics: Accuracy, LossTracker
+# Training - Callbacks: EarlyStopping, ModelCheckpoint
+# Training - Loops: train_epoch, validate_epoch
+# Data - Datasets: TensorDataset, ImageDataset, DataLoader
+# Data - Transforms: Normalize, ToTensor, Compose
+# Utils: Logger, plot_training_curves
 
 # ============================================================================
 # Convenience: Make subpackages accessible

@@ -30,7 +30,7 @@ fn random_float() -> Float64:
     Returns:
         Random float in range [0.0, 1.0).
     """
-    return float(random_si64(0, 1000000000)) / 1000000000.0
+    return Float64(random_si64(0, 1000000000)) / 1000000000.0
 
 
 fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
@@ -50,7 +50,7 @@ fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int
     """
     var total_elements = data.num_elements()
     var pixels = total_elements // channels
-    var size = int(sqrt(float(pixels)))
+    var size = Int(sqrt(Float64(pixels)))
 
     # Validate it's actually a square image
     if size * size * channels != total_elements:
@@ -128,7 +128,7 @@ struct Compose(Transform):
         """Return number of transforms."""
         return len(self.transforms)
 
-    fn append(inout self, transform: Transform):
+    fn append(mut self, transform: Transform):
         """Add a transform to the pipeline.
 
         Args:
@@ -325,7 +325,7 @@ struct Resize(Transform):
 
         for i in range(new_size):
             # Map new index to old index using nearest-neighbor
-            var old_idx = int((float(i) / float(new_size)) * float(old_size))
+            var old_idx = Int((Float64(i) / Float64(new_size)) * Float64(old_size))
             if old_idx >= old_size:
                 old_idx = old_size - 1
 
@@ -463,8 +463,8 @@ struct RandomCrop(Transform):
         # Random top-left position within valid range
         var max_h = padded_height - crop_h
         var max_w = padded_width - crop_w
-        var top = int(random_si64(0, max_h + 1))
-        var left = int(random_si64(0, max_w + 1))
+        var top = Int(random_si64(0, max_h + 1))
+        var left = Int(random_si64(0, max_w + 1))
 
         # Adjust for padding offset
         var actual_top = top
@@ -685,8 +685,8 @@ struct RandomRotation(Transform):
         var sin_angle = sin(angle_rad)
 
         # Image center
-        var cx = float(width) / 2.0
-        var cy = float(height) / 2.0
+        var cx = Float64(width) / 2.0
+        var cy = Float64(height) / 2.0
 
         # Create rotated tensor with fill_value for empty regions
         var rotated = List[Float32](capacity=total_elements)
@@ -695,8 +695,8 @@ struct RandomRotation(Transform):
         for y in range(height):
             for x in range(width):
                 # Convert to floating point for rotation calculation
-                var x_f = float(x)
-                var y_f = float(y)
+                var x_f = Float64(x)
+                var y_f = Float64(y)
 
                 # Apply inverse rotation to find source pixel
                 # x_src = (x - cx) * cos(θ) - (y - cy) * sin(θ) + cx
@@ -705,8 +705,8 @@ struct RandomRotation(Transform):
                 var y_src = (x_f - cx) * sin_angle + (y_f - cy) * cos_angle + cy
 
                 # Round to nearest integer for nearest-neighbor sampling
-                var x_src_int = int(x_src + 0.5)
-                var y_src_int = int(y_src + 0.5)
+                var x_src_int = Int(x_src + 0.5)
+                var y_src_int = Int(y_src + 0.5)
 
                 # For each channel
                 for c in range(channels):
@@ -801,7 +801,7 @@ struct RandomErasing(Transform):
         var scale_range = self.scale[1] - self.scale[0]
         var scale_rand = random_float()
         var target_area_fraction = self.scale[0] + (scale_rand * scale_range)
-        var target_area = float(area) * target_area_fraction
+        var target_area = Float64(area) * target_area_fraction
 
         # Aspect ratio (width/height)
         var ratio_range = self.ratio[1] - self.ratio[0]
@@ -813,8 +813,8 @@ struct RandomErasing(Transform):
         # => area = h * (h * ratio) = h^2 * ratio
         # => h = sqrt(area / ratio)
         # => w = sqrt(area * ratio)
-        var erase_h = int(sqrt(target_area / aspect_ratio))
-        var erase_w = int(sqrt(target_area * aspect_ratio))
+        var erase_h = Int(sqrt(target_area / aspect_ratio))
+        var erase_w = Int(sqrt(target_area * aspect_ratio))
 
         # Ensure within image bounds
         erase_h = min(erase_h, image_size)
@@ -832,8 +832,8 @@ struct RandomErasing(Transform):
         if max_top < 0 or max_left < 0:
             return data
 
-        var top = int(random_si64(0, max_top + 1))
-        var left = int(random_si64(0, max_left + 1))
+        var top = Int(random_si64(0, max_top + 1))
+        var left = Int(random_si64(0, max_left + 1))
 
         # Step 5: Erase the rectangle
         # Copy original data

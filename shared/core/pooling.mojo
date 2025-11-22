@@ -5,7 +5,7 @@ All operations are stateless - caller provides all inputs.
 """
 
 from .extensor import ExTensor, zeros
-from collections.vector import DynamicVector
+from collections import List
 from math import max as math_max, min as math_min
 
 
@@ -54,7 +54,7 @@ fn maxpool2d(
 
     # Get input dimensions
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("Input must be 4D tensor (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -70,7 +70,7 @@ fn maxpool2d(
     var out_width = (in_width + 2 * padding - kernel_size) // actual_stride + 1
 
     # Create output tensor
-    var out_shape = DynamicVector[Int](4)
+    var out_shape = List[Int](4)
     out_shape[0] = batch
     out_shape[1] = channels
     out_shape[2] = out_height
@@ -107,7 +107,7 @@ fn maxpool2d(
                     var out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
                     output._data.bitcast[Float32]()[out_idx] = max_val
 
-    return output
+    return output^
 
 
 fn avgpool2d(
@@ -151,7 +151,7 @@ fn avgpool2d(
 
     # Get input dimensions
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("Input must be 4D tensor (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -167,7 +167,7 @@ fn avgpool2d(
     var out_width = (in_width + 2 * padding - kernel_size) // actual_stride + 1
 
     # Create output tensor
-    var out_shape = DynamicVector[Int](4)
+    var out_shape = List[Int](4)
     out_shape[0] = batch
     out_shape[1] = channels
     out_shape[2] = out_height
@@ -241,7 +241,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
 
     # Get input dimensions
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("Input must be 4D tensor (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -250,7 +250,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
     var width = x_shape[3]
 
     # Create output tensor (B, C, 1, 1)
-    var out_shape = DynamicVector[Int](4)
+    var out_shape = List[Int](4)
     out_shape[0] = batch
     out_shape[1] = channels
     out_shape[2] = 1
@@ -381,7 +381,7 @@ fn maxpool2d_backward(
                         var grad_in_idx = b * (channels * in_height * in_width) + c * (in_height * in_width) + max_h * in_width + max_w
                         grad_input._data.bitcast[Float32]()[grad_in_idx] += grad_out_val
 
-    return grad_input
+    return grad_input^
 
 
 fn avgpool2d_backward(

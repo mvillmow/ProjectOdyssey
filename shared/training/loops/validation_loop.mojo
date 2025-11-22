@@ -14,7 +14,7 @@ Design principles:
 - Memory efficiency (no gradient storage)
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from shared.core.extensor import ExTensor
 from shared.training.metrics import AccuracyMetric, LossTracker, ConfusionMatrix
 from shared.training.trainer_interface import DataLoader, DataBatch, TrainingMetrics
@@ -154,7 +154,7 @@ struct ValidationLoop:
     var num_classes: Int
 
     fn __init__(
-        inout self,
+        mut self,
         compute_accuracy: Bool = True,
         compute_confusion: Bool = False,
         num_classes: Int = 10
@@ -175,7 +175,7 @@ struct ValidationLoop:
         model_forward: fn(ExTensor) raises -> ExTensor,
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         val_loader: DataLoader,
-        inout metrics: TrainingMetrics
+        mut metrics: TrainingMetrics
     ) raises -> Float64:
         """Run validation loop.
 
@@ -211,7 +211,7 @@ struct ValidationLoop:
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         val_loader: DataLoader,
         max_batches: Int,
-        inout metrics: TrainingMetrics
+        mut metrics: TrainingMetrics
     ) raises -> Float64:
         """Run validation on subset of data.
 

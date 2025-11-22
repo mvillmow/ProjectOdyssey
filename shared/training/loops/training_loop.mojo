@@ -15,7 +15,7 @@ Design principles:
 - Callback integration at all lifecycle points
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from shared.core.extensor import ExTensor
 from shared.training.metrics import AccuracyMetric, LossTracker
 from shared.training.trainer_interface import DataLoader, DataBatch, TrainingMetrics
@@ -72,7 +72,7 @@ fn train_one_epoch(
     optimizer_step: fn() raises -> None,
     zero_gradients: fn() raises -> None,
     train_loader: DataLoader,
-    inout metrics: TrainingMetrics,
+    mut metrics: TrainingMetrics,
     log_interval: Int = 10
 ) raises:
     """Train for one epoch.
@@ -149,7 +149,7 @@ struct TrainingLoop:
     var max_grad_norm: Float64
 
     fn __init__(
-        inout self,
+        mut self,
         log_interval: Int = 10,
         clip_gradients: Bool = False,
         max_grad_norm: Float64 = 1.0

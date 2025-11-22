@@ -30,7 +30,7 @@ struct GradientPair:
     var grad_a: ExTensor
     var grad_b: ExTensor
 
-    fn __init__(inout self, grad_a: ExTensor, grad_b: ExTensor):
+    fn __init__(out self, grad_a: ExTensor, grad_b: ExTensor):
         """Initialize gradient pair.
 
         Args:
@@ -64,7 +64,7 @@ struct GradientTriple:
     var grad_bias: ExTensor
 
     fn __init__(
-        inout self,
+        out self,
         grad_input: ExTensor,
         grad_weights: ExTensor,
         grad_bias: ExTensor,

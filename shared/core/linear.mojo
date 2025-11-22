@@ -10,6 +10,47 @@ from .arithmetic import add
 from .reduction import sum
 
 
+struct LinearBackwardResult(Movable):
+    """Result struct for linear_backward function.
+
+    Holds the three gradient tensors returned by the backward pass.
+    """
+    var grad_input: ExTensor
+    var grad_weights: ExTensor
+    var grad_bias: ExTensor
+
+    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor, var grad_bias: ExTensor):
+        """Initialize the result struct with the three gradients."""
+        self.grad_input = grad_input^
+        self.grad_weights = grad_weights^
+        self.grad_bias = grad_bias^
+
+    fn __moveinit__(out self, owned other: Self):
+        """Move constructor."""
+        self.grad_input = other.grad_input^
+        self.grad_weights = other.grad_weights^
+        self.grad_bias = other.grad_bias^
+
+
+struct LinearNoBiasBackwardResult(Movable):
+    """Result struct for linear_no_bias_backward function.
+
+    Holds the two gradient tensors (input and weights only).
+    """
+    var grad_input: ExTensor
+    var grad_weights: ExTensor
+
+    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor):
+        """Initialize the result struct with the two gradients."""
+        self.grad_input = grad_input^
+        self.grad_weights = grad_weights^
+
+    fn __moveinit__(out self, owned other: Self):
+        """Move constructor."""
+        self.grad_input = other.grad_input^
+        self.grad_weights = other.grad_weights^
+
+
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
     """Functional linear transformation: y = xW^T + b
 
@@ -67,7 +108,7 @@ fn linear_backward(
     grad_output: ExTensor,
     x: ExTensor,
     weights: ExTensor
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> LinearBackwardResult:
     """Backward pass for linear transformation.
 
     Computes gradients with respect to input, weights, and bias.
@@ -84,7 +125,7 @@ fn linear_backward(
         weights: Weight matrix from forward pass, shape (out_features, in_features)
 
     Returns:
-        Tuple of (grad_input, grad_weights, grad_bias):
+        LinearBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
             - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
             - grad_bias: Gradient w.r.t. bias, shape (out_features,)
@@ -98,7 +139,10 @@ fn linear_backward(
         # ... compute loss and grad_output ...
 
         # Backward pass
-        var (grad_x, grad_w, grad_b) = linear_backward(grad_output, x, weights)
+        var result = linear_backward(grad_output, x, weights)
+        var grad_x = result.grad_input
+        var grad_w = result.grad_weights
+        var grad_b = result.grad_bias
         ```
 
     Raises:
@@ -118,14 +162,14 @@ fn linear_backward(
     # Sum over batch dimension to get (out_features,)
     var grad_bias = sum(grad_output, axis=0)
 
-    return (grad_input, grad_weights, grad_bias)
+    return LinearBackwardResult(grad_input^, grad_weights^, grad_bias^)
 
 
 fn linear_no_bias_backward(
     grad_output: ExTensor,
     x: ExTensor,
     weights: ExTensor
-) raises -> (ExTensor, ExTensor):
+) raises -> LinearNoBiasBackwardResult:
     """Backward pass for linear transformation without bias.
 
     Computes gradients with respect to input and weights only.
@@ -136,7 +180,7 @@ fn linear_no_bias_backward(
         weights: Weight matrix from forward pass, shape (out_features, in_features)
 
     Returns:
-        Tuple of (grad_input, grad_weights):
+        LinearNoBiasBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
             - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
 
@@ -149,4 +193,4 @@ fn linear_no_bias_backward(
     # grad_weights = grad_output^T @ x
     var grad_weights = matmul(transpose(grad_output), x)
 
-    return (grad_input, grad_weights)
+    return LinearNoBiasBackwardResult(grad_input^, grad_weights^)

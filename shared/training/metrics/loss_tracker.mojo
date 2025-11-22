@@ -13,7 +13,7 @@ Issues covered:
 - #283-287: Loss tracking implementation
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from math import sqrt, min as math_min, max as math_max
 
 
@@ -35,7 +35,7 @@ struct Statistics:
     var max: Float32
     var count: Int
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize with zero values."""
         self.mean = 0.0
         self.std = 0.0
@@ -43,7 +43,7 @@ struct Statistics:
         self.max = 0.0
         self.count = 0
 
-    fn __init__(inout self, mean: Float32, std: Float32, min_val: Float32, max_val: Float32, count: Int):
+    fn __init__(mut self, mean: Float32, std: Float32, min_val: Float32, max_val: Float32, count: Int):
         """Initialize with specific values."""
         self.mean = mean
         self.std = std
@@ -66,7 +66,7 @@ struct ComponentTracker:
     Issue: #283-287 - Loss tracking
     """
     var window_size: Int
-    var buffer: DynamicVector[Float32]
+    var buffer: List[Float32]
     var buffer_idx: Int
     var buffer_full: Bool
 
@@ -80,16 +80,16 @@ struct ComponentTracker:
     var max_value: Float32
     var last_value: Float32
 
-    fn __init__(inout self, window_size: Int):
+    fn __init__(mut self, window_size: Int):
         """Initialize tracker with specified window size.
 
         Args:
             window_size: Number of values to keep for moving average
         """
         self.window_size = window_size
-        self.buffer = DynamicVector[Float32](window_size)
+        self.buffer = List[Float32]()
         for i in range(window_size):
-            self.buffer.push_back(0.0)
+            self.buffer.append(0.0)
 
         self.buffer_idx = 0
         self.buffer_full = False
@@ -102,7 +102,7 @@ struct ComponentTracker:
         self.max_value = Float32(-1e9)  # Start with small value
         self.last_value = 0.0
 
-    fn update(inout self, value: Float32):
+    fn update(mut self, value: Float32):
         """Add new loss value and update statistics.
 
         Uses Welford's algorithm for numerically stable online variance computation.
@@ -178,7 +178,7 @@ struct ComponentTracker:
 
         return stats
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset all statistics and buffer."""
         for i in range(self.window_size):
             self.buffer[i] = 0.0
@@ -227,20 +227,20 @@ struct LossTracker:
     Issue: #283-287 - Loss tracking
     """
     var window_size: Int
-    var components: DynamicVector[String]
-    var trackers: DynamicVector[ComponentTracker]
+    var components: List[String]
+    var trackers: List[ComponentTracker]
 
-    fn __init__(inout self, window_size: Int = 100):
+    fn __init__(mut self, window_size: Int = 100):
         """Initialize loss tracker.
 
         Args:
             window_size: Number of values to keep for moving average (default: 100)
         """
         self.window_size = window_size
-        self.components = DynamicVector[String]()
-        self.trackers = DynamicVector[ComponentTracker]()
+        self.components = List[String]()
+        self.trackers = List[ComponentTracker]()
 
-    fn _get_or_create_component(inout self, component: String) -> Int:
+    fn _get_or_create_component(mut self, component: String) -> Int:
         """Get index of component tracker, creating if needed.
 
         Args:
@@ -255,11 +255,11 @@ struct LossTracker:
                 return i
 
         # Create new component
-        self.components.push_back(component)
-        self.trackers.push_back(ComponentTracker(self.window_size))
+        self.components.append(component)
+        self.trackers.append(ComponentTracker(self.window_size))
         return len(self.components) - 1
 
-    fn update(inout self, loss: Float32, component: String = "total") raises:
+    fn update(mut self, loss: Float32, component: String = "total") raises:
         """Add new loss value for specified component.
 
         Args:
@@ -314,7 +314,7 @@ struct LossTracker:
 
         return Statistics()
 
-    fn reset(inout self, component: String = ""):
+    fn reset(mut self, component: String = ""):
         """Reset statistics for component(s).
 
         Args:
@@ -331,7 +331,7 @@ struct LossTracker:
                     self.trackers[i].reset()
                     return
 
-    fn list_components(self) -> DynamicVector[String]:
+    fn list_components(self) -> List[String]:
         """Get list of all tracked components.
 
         Returns:

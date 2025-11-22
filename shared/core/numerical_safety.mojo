@@ -24,7 +24,7 @@ Example:
 
 from .extensor import ExTensor
 from math import isnan, isinf, sqrt
-from collections.vector import DynamicVector
+from collections import List
 
 
 fn has_nan(tensor: ExTensor) -> Bool:

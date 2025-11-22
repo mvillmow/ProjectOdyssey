@@ -12,7 +12,7 @@ Design principles:
 - Type-safe metric collection
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from shared.core import ExTensor
 
 
@@ -27,7 +27,7 @@ trait Metric:
     This ensures consistent API across accuracy, loss, confusion matrix, etc.
     """
 
-    fn update(inout self, predictions: ExTensor, labels: ExTensor) raises:
+    fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric state with a batch of predictions and labels.
 
         Args:
@@ -39,7 +39,7 @@ trait Metric:
         """
         ...
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset metric state for a new epoch or evaluation run.
 
         Clears all accumulated statistics to start fresh.
@@ -58,14 +58,14 @@ struct MetricResult:
     var scalar_value: Float64
     var tensor_value: ExTensor
 
-    fn __init__(inout self, name: String, value: Float64):
+    fn __init__(mut self, name: String, value: Float64):
         """Create scalar metric result."""
         self.name = name
         self.is_scalar = True
         self.scalar_value = value
         self.tensor_value = ExTensor(DynamicVector[Int](1))  # Placeholder
 
-    fn __init__(inout self, name: String, value: ExTensor):
+    fn __init__(mut self, name: String, value: ExTensor):
         """Create tensor metric result."""
         self.name = name
         self.is_scalar = False
@@ -123,15 +123,15 @@ struct MetricCollection:
 
         metrics.reset_all()  # Start new epoch
     """
-    var metric_names: DynamicVector[String]
+    var metric_names: List[String]
     var num_metrics: Int
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize empty metric collection."""
-        self.metric_names = DynamicVector[String]()
+        self.metric_names = List[String]()
         self.num_metrics = 0
 
-    fn add[T: Metric](inout self, name: String, metric: T):
+    fn add[T: Metric](mut self, name: String, metric: T):
         """Add a metric to the collection.
 
         Args:
@@ -144,7 +144,7 @@ struct MetricCollection:
                 print("Warning: Metric '" + name + "' already exists, replacing")
                 return
 
-        self.metric_names.push_back(name)
+        self.metric_names.append(name)
         self.num_metrics += 1
 
     fn size(self) -> Int:
@@ -155,7 +155,7 @@ struct MetricCollection:
         """
         return self.num_metrics
 
-    fn get_names(self) -> DynamicVector[String]:
+    fn get_names(self) -> List[String]:
         """Get names of all metrics.
 
         Returns:
@@ -178,7 +178,7 @@ struct MetricCollection:
         return False
 
 
-fn create_metric_summary(results: DynamicVector[MetricResult]) -> String:
+fn create_metric_summary(results: List[MetricResult]) -> String:
     """Create human-readable summary of metric results.
 
     Args:
@@ -218,19 +218,19 @@ struct MetricLogger:
 
     Stores metric values over time for analysis and visualization.
     """
-    var metric_names: DynamicVector[String]
-    var metric_history: DynamicVector[DynamicVector[Float64]]
+    var metric_names: List[String]
+    var metric_history: List[List[Float64]]
     var num_metrics: Int
     var num_epochs: Int
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize empty metric logger."""
-        self.metric_names = DynamicVector[String]()
-        self.metric_history = DynamicVector[DynamicVector[Float64]]()
+        self.metric_names = List[String]()
+        self.metric_history = List[List[Float64]]()
         self.num_metrics = 0
         self.num_epochs = 0
 
-    fn log_epoch(inout self, epoch: Int, metrics: DynamicVector[MetricResult]):
+    fn log_epoch(mut self, epoch: Int, metrics: List[MetricResult]):
         """Log metrics for an epoch.
 
         Args:
@@ -241,8 +241,8 @@ struct MetricLogger:
         if self.num_epochs == 0:
             for i in range(len(metrics)):
                 if metrics[i].is_scalar:
-                    self.metric_names.push_back(metrics[i].name)
-                    self.metric_history.push_back(DynamicVector[Float64]())
+                    self.metric_names.append(metrics[i].name)
+                    self.metric_history.append(List[Float64]())
                     self.num_metrics += 1
 
         # Append values
@@ -250,12 +250,12 @@ struct MetricLogger:
             var name = self.metric_names[i]
             for j in range(len(metrics)):
                 if metrics[j].name == name and metrics[j].is_scalar:
-                    self.metric_history[i].push_back(metrics[j].scalar_value)
+                    self.metric_history[i].append(metrics[j].scalar_value)
                     break
 
         self.num_epochs += 1
 
-    fn get_history(self, metric_name: String) raises -> DynamicVector[Float64]:
+    fn get_history(self, metric_name: String) raises -> List[Float64]:
         """Get history for a specific metric.
 
         Args:

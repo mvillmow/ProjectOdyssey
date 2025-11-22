@@ -21,7 +21,7 @@ Issues covered:
 """
 
 from math import exp, erf, sqrt, tanh as math_tanh
-from collections.vector import DynamicVector
+from collections import List
 from .extensor import ExTensor
 from .reduction import sum as tensor_sum, max as tensor_max
 from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
@@ -382,7 +382,7 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     else:
         raise Error("softmax: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
 fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:

@@ -8,8 +8,30 @@ The caller manages all state (kernels, biases).
 from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
-from collections.vector import DynamicVector
+from collections import List
 from math import max as math_max
+
+
+struct Conv2dBackwardResult(Movable):
+    """Result struct for conv2d_backward function.
+
+    Holds the three gradient tensors returned by the backward pass.
+    """
+    var grad_input: ExTensor
+    var grad_kernel: ExTensor
+    var grad_bias: ExTensor
+
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
+        """Initialize the result struct with the three gradients."""
+        self.grad_input = grad_input^
+        self.grad_kernel = grad_kernel^
+        self.grad_bias = grad_bias^
+
+    fn __moveinit__(out self, owned other: Self):
+        """Move constructor."""
+        self.grad_input = other.grad_input^
+        self.grad_kernel = other.grad_kernel^
+        self.grad_bias = other.grad_bias^
 
 
 fn conv2d(
@@ -54,7 +76,7 @@ fn conv2d(
     """
     # Get input dimensions
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("Input must be 4D tensor (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -64,7 +86,7 @@ fn conv2d(
 
     # Get kernel dimensions
     var k_shape = kernel.shape()
-    if k_shape.size != 4:
+    if len(k_shape) != 4:
         raise Error("Kernel must be 4D tensor (out_channels, in_channels, kH, kW)")
 
     var out_channels = k_shape[0]
@@ -80,7 +102,7 @@ fn conv2d(
     var out_width = (in_width + 2 * padding - kW) // stride + 1
 
     # Create output tensor
-    var out_shape = DynamicVector[Int](4)
+    var out_shape = List[Int](4)
     out_shape[0] = batch
     out_shape[1] = out_channels
     out_shape[2] = out_height
@@ -128,7 +150,7 @@ fn conv2d(
                     var out_idx = b * (out_channels * out_height * out_width) + oc * (out_height * out_width) + oh * out_width + ow
                     output._data.bitcast[Float32]()[out_idx] = sum_val
 
-    return output
+    return output^
 
 
 fn conv2d_no_bias(
@@ -157,7 +179,7 @@ fn conv2d_no_bias(
     # Create zero bias
     var k_shape = kernel.shape()
     var out_channels = k_shape[0]
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, x.dtype())
 
@@ -170,7 +192,7 @@ fn conv2d_backward(
     kernel: ExTensor,
     stride: Int = 1,
     padding: Int = 0
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Conv2dBackwardResult:
     """Backward pass for 2D convolution.
 
     Computes gradients with respect to input, kernel, and bias.
@@ -190,7 +212,7 @@ fn conv2d_backward(
         padding: Padding used in forward pass
 
     Returns:
-        Tuple of (grad_input, grad_kernel, grad_bias):
+        Conv2dBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch, in_channels, in_H, in_W)
             - grad_kernel: Gradient w.r.t. kernel, shape (out_channels, in_channels, kH, kW)
             - grad_bias: Gradient w.r.t. bias, shape (out_channels,)
@@ -204,7 +226,10 @@ fn conv2d_backward(
         # ... compute loss and grad_output ...
 
         # Backward pass
-        var (grad_x, grad_k, grad_b) = conv2d_backward(grad_output, x, kernel, stride, padding)
+        var result = conv2d_backward(grad_output, x, kernel, stride, padding)
+        var grad_x = result.grad_input
+        var grad_k = result.grad_kernel
+        var grad_b = result.grad_bias
         ```
 
     Raises:
@@ -308,7 +333,7 @@ fn conv2d_backward(
                     grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
 
     # Compute grad_bias: sum over batch, height, width
-    var grad_bias_shape = DynamicVector[Int](1)
+    var grad_bias_shape = List[Int](1)
     grad_bias_shape[0] = out_channels
     var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
 
@@ -324,7 +349,26 @@ fn conv2d_backward(
 
         grad_bias._data.bitcast[Float32]()[oc] = bias_grad_sum
 
-    return (grad_input, grad_kernel, grad_bias)
+    return Conv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
+
+
+struct Conv2dNoBiasBackwardResult(Movable):
+    """Result struct for conv2d_no_bias_backward function.
+
+    Holds the two gradient tensors (input and kernel only).
+    """
+    var grad_input: ExTensor
+    var grad_kernel: ExTensor
+
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
+        """Initialize the result struct with the two gradients."""
+        self.grad_input = grad_input^
+        self.grad_kernel = grad_kernel^
+
+    fn __moveinit__(out self, owned other: Self):
+        """Move constructor."""
+        self.grad_input = other.grad_input^
+        self.grad_kernel = other.grad_kernel^
 
 
 fn conv2d_no_bias_backward(
@@ -333,7 +377,7 @@ fn conv2d_no_bias_backward(
     kernel: ExTensor,
     stride: Int = 1,
     padding: Int = 0
-) raises -> (ExTensor, ExTensor):
+) raises -> Conv2dNoBiasBackwardResult:
     """Backward pass for 2D convolution without bias.
 
     Args:
@@ -344,10 +388,10 @@ fn conv2d_no_bias_backward(
         padding: Padding used in forward pass
 
     Returns:
-        Tuple of (grad_input, grad_kernel)
+        Conv2dNoBiasBackwardResult containing grad_input and grad_kernel
 
     Raises:
         Error if tensor shapes are incompatible.
     """
-    var (grad_input, grad_kernel, _) = conv2d_backward(grad_output, x, kernel, stride, padding)
-    return (grad_input, grad_kernel)
+    var result = conv2d_backward(grad_output, x, kernel, stride, padding)
+    return Conv2dNoBiasBackwardResult(result.grad_input^, result.grad_kernel^)

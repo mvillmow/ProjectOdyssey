@@ -24,11 +24,12 @@ Example:
 
 struct TimingRecord:
     """Record of a single timing measurement."""
+
     var name: String
     var elapsed_ms: Float32
     var call_count: Int
 
-    fn __init__(inout self, name: String, elapsed_ms: Float32):
+    fn __init__(out self, name: String, elapsed_ms: Float32):
         """Create timing record."""
         self.name = name
         self.elapsed_ms = elapsed_ms
@@ -37,6 +38,7 @@ struct TimingRecord:
 
 struct TimingStats:
     """Statistics for multiple timing measurements."""
+
     var name: String
     var total_ms: Float32
     var call_count: Int
@@ -45,7 +47,7 @@ struct TimingStats:
     var max_ms: Float32
     var std_dev: Float32
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty timing stats."""
         self.name = ""
         self.total_ms = 0.0
@@ -63,11 +65,12 @@ struct TimingStats:
 
 struct MemoryStats:
     """Memory usage statistics."""
+
     var allocated_bytes: Int
     var peak_bytes: Int
     var available_bytes: Int
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty memory stats."""
         self.allocated_bytes = 0
         self.peak_bytes = 0
@@ -93,19 +96,20 @@ struct MemoryStats:
 
 struct ProfilingReport:
     """Complete profiling report with timing and memory data."""
+
     var timing_stats: Dict[String, TimingStats]
     var memory_start: MemoryStats
     var memory_end: MemoryStats
     var total_time_ms: Float32
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty profiling report."""
         self.timing_stats = Dict[String, TimingStats]()
         self.memory_start = MemoryStats()
         self.memory_end = MemoryStats()
         self.total_time_ms = 0.0
 
-    fn add_timing(inout self, name: String, stats: TimingStats):
+    fn add_timing(mut self, name: String, stats: TimingStats):
         """Add timing statistics to report."""
         self.timing_stats[name] = stats
 
@@ -141,11 +145,12 @@ struct Timer:
         var timer = Timer("epoch")
         var elapsed = timer.elapsed_ms()
     """
+
     var name: String
     var start_ns: Int
     var end_ns: Int
 
-    fn __init__(inout self, name: String = ""):
+    fn __init__(out self, name: String = ""):
         """Create timer with optional name.
 
         Args:
@@ -155,11 +160,11 @@ struct Timer:
         self.start_ns = 0
         self.end_ns = 0
 
-    fn __enter__(inout self):
+    fn __enter__(mut self):
         """Start timing on entering context."""
         self.start_ns = self._get_time_ns()
 
-    fn __exit__(inout self):
+    fn __exit__(mut self):
         """Stop timing on exiting context and print result."""
         self.end_ns = self._get_time_ns()
         var elapsed_ms = (self.end_ns - self.start_ns) / 1_000_000.0
@@ -186,7 +191,7 @@ struct Timer:
             self.end_ns = self._get_time_ns()
         return (self.end_ns - self.start_ns) / 1_000.0
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset timer for reuse."""
         self.start_ns = 0
         self.end_ns = 0
@@ -242,10 +247,7 @@ fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
 # ============================================================================
 
 
-fn profile_function(
-    name: String,
-    func_ptr: fn() -> None
-) -> TimingStats:
+fn profile_function(name: String, func_ptr: fn () -> None) -> TimingStats:
     """Profile a function for execution time.
 
     Measures function execution time and returns statistics.
@@ -264,9 +266,7 @@ fn profile_function(
 
 
 fn benchmark_function(
-    name: String,
-    func_ptr: fn() -> None,
-    iterations: Int = 10
+    name: String, func_ptr: fn () -> None, iterations: Int = 10
 ) -> TimingStats:
     """Benchmark function over multiple iterations.
 
@@ -294,11 +294,12 @@ fn benchmark_function(
 
 struct CallStackEntry:
     """Entry in call stack for profiling."""
+
     var function_name: String
     var elapsed_ms: Float32
     var memory_delta_bytes: Int
 
-    fn __init__(inout self, name: String):
+    fn __init__(out self, name: String):
         """Create call stack entry."""
         self.function_name = name
         self.elapsed_ms = 0.0
@@ -307,22 +308,23 @@ struct CallStackEntry:
 
 struct CallStack:
     """Profiling information for entire call stack."""
+
     var root: CallStackEntry
     var entries: List[CallStackEntry]
     var depth: Int
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty call stack."""
         self.root = CallStackEntry("root")
         self.entries = List[CallStackEntry]()
         self.depth = 0
 
-    fn push(inout self, name: String):
+    fn push(mut self, name: String):
         """Push function onto call stack."""
         self.depth += 1
         self.entries.append(CallStackEntry(name))
 
-    fn pop(inout self):
+    fn pop(mut self):
         """Pop function from call stack."""
         self.depth -= 1
 
@@ -363,9 +365,7 @@ fn print_timing_report(report: ProfilingReport):
 
 
 fn export_profiling_report(
-    report: ProfilingReport,
-    filepath: String,
-    format: String = "json"
+    report: ProfilingReport, filepath: String, format: String = "json"
 ) -> Bool:
     """Export profiling report to file.
 
@@ -409,12 +409,13 @@ fn measure_profiling_overhead(num_measurements: Int = 100) -> Float32:
 
 struct BaselineMetrics:
     """Baseline metrics for comparing performance."""
+
     var name: String
     var avg_time_ms: Float32
     var peak_memory_mb: Float32
     var threshold_percent: Float32  # Warn if slower than this
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty baseline."""
         self.name = ""
         self.avg_time_ms = 0.0
@@ -423,8 +424,7 @@ struct BaselineMetrics:
 
 
 fn compare_to_baseline(
-    current: TimingStats,
-    baseline: BaselineMetrics
+    current: TimingStats, baseline: BaselineMetrics
 ) -> (Bool, Float32):
     """Check if current performance is within baseline tolerance.
 
@@ -441,7 +441,7 @@ fn compare_to_baseline(
 
 fn detect_performance_regression(
     current_metrics: Dict[String, TimingStats],
-    baseline_metrics: Dict[String, BaselineMetrics]
+    baseline_metrics: Dict[String, BaselineMetrics],
 ) -> List[String]:
     """Detect performance regressions compared to baseline.
 

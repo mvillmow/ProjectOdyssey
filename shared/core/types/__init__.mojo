@@ -15,7 +15,7 @@ Example:
 
     # Create a tensor with specified shape and dtype
     fn create_weights() -> Tensor:
-        let shape = Shape(128, 784)
+        var shape = Shape(128, 784)
         return Tensor(shape, DType.float32)
 """
 

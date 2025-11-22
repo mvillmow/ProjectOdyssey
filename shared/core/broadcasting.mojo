@@ -3,12 +3,12 @@
 Implements NumPy-style broadcasting rules for tensor operations.
 """
 
-from collections.vector import DynamicVector
+from collections import List
 
 
 fn broadcast_shapes(
-    shape1: DynamicVector[Int], shape2: DynamicVector[Int]
-) raises -> DynamicVector[Int]:
+    shape1: List[Int], shape2: List[Int]
+) raises -> List[Int]:
     """Compute the broadcast shape of two tensor shapes.
 
     Args:
@@ -32,42 +32,42 @@ fn broadcast_shapes(
         broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible)
     """
-    let ndim1 = len(shape1)
-    let ndim2 = len(shape2)
-    let max_ndim = max(ndim1, ndim2)
+    var ndim1 = len(shape1)
+    var ndim2 = len(shape2)
+    var max_ndim = max(ndim1, ndim2)
 
-    var result_shape = DynamicVector[Int]()
+    var result_shape = List[Int]()
 
     # Process dimensions from right to left
     for i in range(max_ndim):
         # Get dimension from each shape (1 if dimension doesn't exist)
-        let dim1_idx = ndim1 - 1 - i
-        let dim2_idx = ndim2 - 1 - i
+        var dim1_idx = ndim1 - 1 - i
+        var dim2_idx = ndim2 - 1 - i
 
-        let dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
-        let dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
+        var dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
+        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
 
         # Check compatibility
         if dim1 != dim2 and dim1 != 1 and dim2 != 1:
             raise Error(
-                "Shapes are not broadcast-compatible: dimension " + str(i) + " has sizes "
-                + str(dim1) + " and " + str(dim2)
+                "Shapes are not broadcast-compatible: dimension " + String(i) + " has sizes "
+                + String(dim1) + " and " + String(dim2)
             )
 
         # Result dimension is the maximum
-        let result_dim = max(dim1, dim2)
-        result_shape.push_back(result_dim)
+        var result_dim = max(dim1, dim2)
+        result_shape.append(result_dim)
 
     # Reverse to get correct order (we built it backwards)
-    var final_shape = DynamicVector[Int]()
+    var final_shape = List[Int]()
     for i in range(len(result_shape) - 1, -1, -1):
-        final_shape.push_back(result_shape[i])
+        final_shape.append(result_shape[i])
 
-    return final_shape
+    return final_shape^
 
 
 fn are_shapes_broadcastable(
-    shape1: DynamicVector[Int], shape2: DynamicVector[Int]
+    shape1: List[Int], shape2: List[Int]
 ) -> Bool:
     """Check if two shapes are broadcast-compatible.
 
@@ -82,16 +82,16 @@ fn are_shapes_broadcastable(
         are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
         are_shapes_broadcastable([3, 4], [5, 4]) -> False
     """
-    let ndim1 = len(shape1)
-    let ndim2 = len(shape2)
-    let max_ndim = max(ndim1, ndim2)
+    var ndim1 = len(shape1)
+    var ndim2 = len(shape2)
+    var max_ndim = max(ndim1, ndim2)
 
     for i in range(max_ndim):
-        let dim1_idx = ndim1 - 1 - i
-        let dim2_idx = ndim2 - 1 - i
+        var dim1_idx = ndim1 - 1 - i
+        var dim2_idx = ndim2 - 1 - i
 
-        let dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
-        let dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
+        var dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
+        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
 
         if dim1 != dim2 and dim1 != 1 and dim2 != 1:
             return False
@@ -100,9 +100,9 @@ fn are_shapes_broadcastable(
 
 
 fn compute_broadcast_strides(
-    original_shape: DynamicVector[Int],
-    broadcast_shape: DynamicVector[Int],
-) -> DynamicVector[Int]:
+    original_shape: List[Int],
+    broadcast_shape: List[Int],
+) -> List[Int]:
     """Compute strides for broadcasting a tensor to a new shape.
 
     Args:
@@ -121,35 +121,35 @@ fn compute_broadcast_strides(
         broadcast_shape = [3, 4, 5]
         result = [stride_for_3, 0, stride_for_5]  # Middle dimension has stride 0
     """
-    let ndim_orig = len(original_shape)
-    let ndim_broad = len(broadcast_shape)
+    var ndim_orig = len(original_shape)
+    var ndim_broad = len(broadcast_shape)
 
-    var broadcast_strides = DynamicVector[Int]()
+    var broadcast_strides = List[Int]()
 
     # Calculate original row-major strides
-    var orig_strides = DynamicVector[Int]()
+    var orig_strides = List[Int]()
     var stride = 1
     for i in range(ndim_orig - 1, -1, -1):
-        orig_strides.push_back(0)  # Preallocate
+        orig_strides.append(0)  # Preallocate
     for i in range(ndim_orig - 1, -1, -1):
         orig_strides[i] = stride
         stride *= original_shape[i]
 
     # Compute broadcast strides
     for i in range(ndim_broad):
-        let orig_idx = i - (ndim_broad - ndim_orig)
+        var orig_idx = i - (ndim_broad - ndim_orig)
 
         if orig_idx < 0:
             # Dimension doesn't exist in original -> stride 0
-            broadcast_strides.push_back(0)
+            broadcast_strides.append(0)
         elif original_shape[orig_idx] == 1 and broadcast_shape[i] > 1:
             # Dimension is 1 and being broadcast -> stride 0
-            broadcast_strides.push_back(0)
+            broadcast_strides.append(0)
         else:
             # Normal dimension -> use original stride
-            broadcast_strides.push_back(orig_strides[orig_idx])
+            broadcast_strides.append(orig_strides[orig_idx])
 
-    return broadcast_strides
+    return broadcast_strides^
 
 
 struct BroadcastIterator:
@@ -159,17 +159,17 @@ struct BroadcastIterator:
     without materializing the full broadcast tensor.
     """
 
-    var shape: DynamicVector[Int]
-    var strides1: DynamicVector[Int]
-    var strides2: DynamicVector[Int]
+    var shape: List[Int]
+    var strides1: List[Int]
+    var strides2: List[Int]
     var size: Int
     var position: Int
 
     fn __init__(
-        inout self,
-        shape: DynamicVector[Int],
-        strides1: DynamicVector[Int],
-        strides2: DynamicVector[Int],
+        out self,
+        shape: List[Int],
+        strides1: List[Int],
+        strides2: List[Int],
     ):
         """Initialize broadcast iterator.
 
@@ -192,7 +192,7 @@ struct BroadcastIterator:
         """Return iterator."""
         return self
 
-    fn __next__(inout self) raises -> (Int, Int):
+    fn __next__(mut self) raises -> (Int, Int):
         """Get next pair of indices for the two tensors.
 
         Returns:
@@ -210,8 +210,8 @@ struct BroadcastIterator:
         var idx2 = 0
 
         for i in range(len(self.shape)):
-            let dim_size = self.shape[i]
-            let coord = remaining // self.size  # TODO: Fix this calculation
+            var dim_size = self.shape[i]
+            var coord = remaining // self.size  # TODO: Fix this calculation
             remaining = remaining % dim_size
 
             idx1 += coord * self.strides1[i]

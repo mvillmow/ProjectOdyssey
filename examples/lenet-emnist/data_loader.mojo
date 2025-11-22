@@ -14,7 +14,7 @@ References:
 """
 
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
+from collections import List
 from memory import UnsafePointer
 
 
@@ -59,11 +59,11 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
         raise Error("IDX file too small")
 
     # Parse header (treating String as bytes - this is a simplification)
-    var data_bytes = content._as_ptr()
+    var data_bytes = content.unsafe_ptr()
 
     var magic = read_uint32_be(data_bytes, 0)
     if magic != 2049:  # Label file magic number
-        raise Error("Invalid IDX label file magic number: " + str(magic))
+        raise Error("Invalid IDX label file magic number: " + String(magic))
 
     var num_items = read_uint32_be(data_bytes, 4)
 
@@ -71,8 +71,8 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor
-    var shape = DynamicVector[Int](1)
-    shape[0] = num_items
+    var shape = List[Int]()
+    shape.append(num_items)
     var labels = zeros(shape, DType.uint8)
 
     # Copy label data
@@ -104,12 +104,12 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
     if file_size < 16:
         raise Error("IDX file too small")
 
-    var data_bytes = content._as_ptr()
+    var data_bytes = content.unsafe_ptr()
 
     # Parse header
     var magic = read_uint32_be(data_bytes, 0)
     if magic != 2051:  # Image file magic number
-        raise Error("Invalid IDX image file magic number: " + str(magic))
+        raise Error("Invalid IDX image file magic number: " + String(magic))
 
     var num_images = read_uint32_be(data_bytes, 4)
     var num_rows = read_uint32_be(data_bytes, 8)
@@ -120,11 +120,11 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor (num_images, 1, rows, cols) for CNN input
-    var shape = DynamicVector[Int](4)
-    shape[0] = num_images
-    shape[1] = 1  # Single channel (grayscale)
-    shape[2] = num_rows
-    shape[3] = num_cols
+    var shape = List[Int]()
+    shape.append(num_images)
+    shape.append(1)  # Single channel (grayscale)
+    shape.append(num_rows)
+    shape.append(num_cols)
     var images = zeros(shape, DType.uint8)
 
     # Copy image data
@@ -136,7 +136,7 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
     return images^
 
 
-fn normalize_images(inout images: ExTensor) raises -> ExTensor:
+fn normalize_images(mut images: ExTensor) raises -> ExTensor:
     """Normalize uint8 images to float32 in range [0, 1].
 
     Args:

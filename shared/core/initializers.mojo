@@ -19,7 +19,7 @@ Issues covered:
 
 from random import random_float64, random_si64, seed as random_seed
 from math import sqrt, log, cos, sin
-from collections.vector import DynamicVector
+from collections import List
 from .extensor import ExTensor
 
 
@@ -104,7 +104,7 @@ fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
 # ============================================================================
 
 
-fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn xavier_uniform(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using Xavier/Glorot uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
@@ -136,10 +136,10 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = xavier_uniform(784, 128, DynamicVector[Int](784, 128))
+        var weights = xavier_uniform(784, 128, List[Int](784, 128))
 
         # With fixed seed for reproducibility
-        var w = xavier_uniform(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+        var w = xavier_uniform(100, 50, List[Int](100, 50), seed_val=42)
 
     References:
         Glorot & Bengio (2010): "Understanding the difficulty of training
@@ -169,10 +169,10 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: D
     else:
         raise Error("xavier_uniform: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
-fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn xavier_normal(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using Xavier/Glorot normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
@@ -204,10 +204,10 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = xavier_normal(784, 128, DynamicVector[Int](784, 128))
+        var weights = xavier_normal(784, 128, List[Int](784, 128))
 
         # With fixed seed for reproducibility
-        var w = xavier_normal(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+        var w = xavier_normal(100, 50, List[Int](100, 50), seed_val=42)
 
     References:
         Glorot & Bengio (2010): "Understanding the difficulty of training
@@ -237,26 +237,10 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], dtype: DT
     else:
         raise Error("xavier_normal: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
-# Helper functions for Box-Muller transform
-fn log(x: Float64) -> Float64:
-    """Natural logarithm (wrapper for clarity)."""
-    from math import log as math_log
-    return math_log(x)
-
-
-fn cos(x: Float64) -> Float64:
-    """Cosine function (wrapper for clarity)."""
-    from math import cos as math_cos
-    return math_cos(x)
-
-
-fn sin(x: Float64) -> Float64:
-    """Sine function (wrapper for clarity)."""
-    from math import sin as math_sin
-    return math_sin(x)
+# Helper functions for Box-Muller transform (using math.log, math.cos, math.sin from imports)
 
 
 # ============================================================================
@@ -264,7 +248,7 @@ fn sin(x: Float64) -> Float64:
 # ============================================================================
 
 
-fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using Kaiming/He uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
@@ -299,13 +283,13 @@ fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mod
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs (using fan_in)
-        var weights = kaiming_uniform(784, 128, DynamicVector[Int](784, 128))
+        var weights = kaiming_uniform(784, 128, List[Int](784, 128))
 
         # Using fan_out mode
-        var w = kaiming_uniform(784, 128, DynamicVector[Int](784, 128), fan_mode="fan_out")
+        var w = kaiming_uniform(784, 128, List[Int](784, 128), fan_mode="fan_out")
 
         # With fixed seed for reproducibility
-        var w_repro = kaiming_uniform(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+        var w_repro = kaiming_uniform(100, 50, List[Int](100, 50), seed_val=42)
 
     References:
         He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
@@ -346,10 +330,10 @@ fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mod
     else:
         raise Error("kaiming_uniform: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
-fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn kaiming_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using Kaiming/He normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
@@ -383,13 +367,13 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = kaiming_normal(784, 128, DynamicVector[Int](784, 128))
+        var weights = kaiming_normal(784, 128, List[Int](784, 128))
 
         # Using fan_out mode
-        var w = kaiming_normal(784, 128, DynamicVector[Int](784, 128), fan_mode="fan_out")
+        var w = kaiming_normal(784, 128, List[Int](784, 128), fan_mode="fan_out")
 
         # With fixed seed for reproducibility
-        var w_repro = kaiming_normal(100, 50, DynamicVector[Int](100, 50), seed_val=42)
+        var w_repro = kaiming_normal(100, 50, List[Int](100, 50), seed_val=42)
 
     References:
         He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level
@@ -430,7 +414,7 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode
     else:
         raise Error("kaiming_normal: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
 # ============================================================================
@@ -438,7 +422,7 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: DynamicVector[Int], fan_mode
 # ============================================================================
 
 
-fn uniform(shape: DynamicVector[Int], low: Float64 = -0.1, high: Float64 = 0.1, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn uniform(shape: List[Int], low: Float64 = -0.1, high: Float64 = 0.1, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using uniform distribution.
 
     Draws samples from uniform distribution U(low, high) with configurable bounds.
@@ -459,13 +443,13 @@ fn uniform(shape: DynamicVector[Int], low: Float64 = -0.1, high: Float64 = 0.1, 
 
     Examples:
         # Default range [-0.1, 0.1]
-        var weights = uniform(DynamicVector[Int](100, 50))
+        var weights = uniform(List[Int](100, 50))
 
         # Custom range [0, 1]
-        var w = uniform(DynamicVector[Int](10, 10), low=0.0, high=1.0)
+        var w = uniform(List[Int](10, 10), low=0.0, high=1.0)
 
         # With fixed seed
-        var w_repro = uniform(DynamicVector[Int](50, 50), seed_val=42)
+        var w_repro = uniform(List[Int](50, 50), seed_val=42)
 
     Issue: #268-272 - Uniform/Normal basic distributions
     """
@@ -491,10 +475,10 @@ fn uniform(shape: DynamicVector[Int], low: Float64 = -0.1, high: Float64 = 0.1, 
     else:
         raise Error("uniform: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
-fn normal(shape: DynamicVector[Int], mean: Float64 = 0.0, std: Float64 = 0.01, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn normal(shape: List[Int], mean: Float64 = 0.0, std: Float64 = 0.01, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
     """Initialize weights using normal (Gaussian) distribution.
 
     Draws samples from normal distribution N(mean, std²) with configurable parameters.
@@ -517,13 +501,13 @@ fn normal(shape: DynamicVector[Int], mean: Float64 = 0.0, std: Float64 = 0.01, d
 
     Examples:
         # Default: N(0, 0.01)
-        var weights = normal(DynamicVector[Int](100, 50))
+        var weights = normal(List[Int](100, 50))
 
         # Custom: N(0.5, 0.1)
-        var w = normal(DynamicVector[Int](10, 10), mean=0.5, std=0.1)
+        var w = normal(List[Int](10, 10), mean=0.5, std=0.1)
 
         # With fixed seed
-        var w_repro = normal(DynamicVector[Int](50, 50), seed_val=42)
+        var w_repro = normal(List[Int](50, 50), seed_val=42)
 
     Issue: #268-272 - Uniform/Normal basic distributions
     """
@@ -548,10 +532,10 @@ fn normal(shape: DynamicVector[Int], mean: Float64 = 0.0, std: Float64 = 0.01, d
     else:
         raise Error("normal: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^
 
 
-fn constant(shape: DynamicVector[Int], value: Float64, dtype: DType = DType.float32) raises -> ExTensor:
+fn constant(shape: List[Int], value: Float64, dtype: DType = DType.float32) raises -> ExTensor:
     """Initialize tensor with constant value.
 
     Fills all elements with the specified constant value.
@@ -567,13 +551,13 @@ fn constant(shape: DynamicVector[Int], value: Float64, dtype: DType = DType.floa
 
     Examples:
         # Initialize with ones
-        var ones = constant(DynamicVector[Int](10, 10), 1.0)
+        var ones = constant(List[Int](10, 10), 1.0)
 
         # Initialize with custom value
-        var custom = constant(DynamicVector[Int](5, 5), 0.5)
+        var custom = constant(List[Int](5, 5), 0.5)
 
         # Initialize bias with 0.01
-        var bias = constant(DynamicVector[Int](100), 0.01)
+        var bias = constant(List[Int](100), 0.01)
 
     Issue: #268-272 - Uniform/Normal basic distributions
     """
@@ -589,4 +573,4 @@ fn constant(shape: DynamicVector[Int], value: Float64, dtype: DType = DType.floa
     else:
         raise Error("constant: only float16, float32, and float64 dtypes supported")
 
-    return result
+    return result^

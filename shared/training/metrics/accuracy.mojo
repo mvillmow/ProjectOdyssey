@@ -16,7 +16,7 @@ Issues covered:
 """
 
 from shared.core import ExTensor
-from collections.vector import DynamicVector
+from collections import List
 
 
 # ============================================================================
@@ -115,7 +115,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
         var batch_size = shape_vec[0]
         var num_classes = shape_vec[1]
 
-        var result_shape = DynamicVector[Int](batch_size)
+        var result_shape = List[Int](batch_size)
         var result = ExTensor(result_shape, DType.int32)
 
         # For each sample in batch
@@ -221,7 +221,7 @@ fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> 
     return Float64(correct) / Float64(batch_size)
 
 
-fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> DynamicVector[Int]:
+fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> List[Int]:
     """Get indices of top-k predictions for a single sample.
 
     Uses selection algorithm (not full sort) for efficiency.
@@ -239,19 +239,19 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Dyn
     var offset = batch_idx * num_classes
 
     # Create list of (value, index) pairs
-    var values = DynamicVector[Float64](num_classes)
-    var indices = DynamicVector[Int](num_classes)
+    var values = List[Float64]()
+    var indices = List[Int]()
 
     for c in range(num_classes):
         var idx = offset + c
         if predictions._dtype == DType.float32:
-            values.push_back(Float64(predictions._data.bitcast[Float32]()[idx]))
+            values.append(Float64(predictions._data.bitcast[Float32]()[idx]))
         else:
-            values.push_back(predictions._data.bitcast[Float64]()[idx])
-        indices.push_back(c)
+            values.append(predictions._data.bitcast[Float64]()[idx])
+        indices.append(c)
 
     # Simple selection: repeatedly find max and swap to front
-    var result = DynamicVector[Int](k)
+    var result = List[Int]()
 
     for i in range(k):
         # Find max in remaining elements
@@ -271,7 +271,7 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Dyn
         values[max_idx] = temp_val
         indices[max_idx] = temp_idx
 
-        result.push_back(indices[i])
+        result.append(indices[i])
 
     return result
 
@@ -316,12 +316,12 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
         raise Error("per_class_accuracy: invalid predictions shape")
 
     # Count correct and total per class
-    var correct_counts = DynamicVector[Int](num_classes)
-    var total_counts = DynamicVector[Int](num_classes)
+    var correct_counts = List[Int]()
+    var total_counts = List[Int]()
 
     for c in range(num_classes):
-        correct_counts.push_back(0)
-        total_counts.push_back(0)
+        correct_counts.append(0)
+        total_counts.append(0)
 
     for i in range(labels._numel):
         var pred_val: Int
@@ -345,7 +345,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
             correct_counts[label_val] += 1
 
     # Compute per-class accuracies
-    var result_shape = DynamicVector[Int](num_classes)
+    var result_shape = List[Int](num_classes)
     var result = ExTensor(result_shape, DType.float64)
 
     for c in range(num_classes):
@@ -384,12 +384,12 @@ struct AccuracyMetric:
     var correct_count: Int
     var total_count: Int
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize with zero counts."""
         self.correct_count = 0
         self.total_count = 0
 
-    fn update(inout self, predictions: ExTensor, labels: ExTensor) raises:
+    fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric with a new batch of predictions.
 
         Args:
@@ -438,7 +438,7 @@ struct AccuracyMetric:
             return 0.0
         return Float64(self.correct_count) / Float64(self.total_count)
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset counts to zero for next epoch."""
         self.correct_count = 0
         self.total_count = 0

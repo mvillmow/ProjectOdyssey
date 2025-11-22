@@ -28,7 +28,7 @@ fn random_float() -> Float64:
     Returns:
         Random float in range [0.0, 1.0).
     """
-    return float(random_si64(0, 1000000000)) / 1000000000.0
+    return Float64(random_si64(0, 1000000000)) / 1000000000.0
 
 
 # ============================================================================
@@ -162,8 +162,8 @@ struct RandomSwap(TextTransform):
                 continue
 
             # Pick two random positions
-            var idx1 = int(random_si64(0, len(words)))
-            var idx2 = int(random_si64(0, len(words)))
+            var idx1 = Int(random_si64(0, len(words)))
+            var idx2 = Int(random_si64(0, len(words)))
 
             # Ensure different positions
             if idx1 != idx2:
@@ -233,7 +233,7 @@ struct RandomDeletion(TextTransform):
         # Ensure at least one word remains
         if len(kept_words) == 0:
             # Keep a random word
-            var idx = int(random_si64(0, len(words)))
+            var idx = Int(random_si64(0, len(words)))
             kept_words.append(words[idx])
 
         return join_words(kept_words)
@@ -294,11 +294,11 @@ struct RandomInsertion(TextTransform):
                 continue
 
             # Pick random word from vocabulary
-            var vocab_idx = int(random_si64(0, len(self.vocabulary)))
+            var vocab_idx = Int(random_si64(0, len(self.vocabulary)))
             var word_to_insert = self.vocabulary[vocab_idx]
 
             # Pick random position to insert (0 to len(words) inclusive)
-            var insert_pos = int(random_si64(0, len(words) + 1))
+            var insert_pos = Int(random_si64(0, len(words) + 1))
 
             # Insert word at position
             var new_words = List[String]()
@@ -372,7 +372,7 @@ struct RandomSynonymReplacement(TextTransform):
                 var syns = self.synonyms[word]
                 if len(syns) > 0:
                     # Pick random synonym
-                    var syn_idx = int(random_si64(0, len(syns)))
+                    var syn_idx = Int(random_si64(0, len(syns)))
                     result_words.append(syns[syn_idx])
                 else:
                     # No synonyms available, keep original
@@ -428,7 +428,7 @@ struct TextCompose(TextTransform):
         """Return number of transforms."""
         return len(self.transforms)
 
-    fn append(inout self, transform: TextTransform):
+    fn append(mut self, transform: TextTransform):
         """Add a transform to the pipeline.
 
         Args:

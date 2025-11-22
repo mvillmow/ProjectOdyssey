@@ -124,7 +124,7 @@ trait Callback:
                 return CONTINUE
     """
 
-    fn on_train_begin(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called once at the start of training.
 
         Args:
@@ -135,7 +135,7 @@ trait Callback:
         """
         ...
 
-    fn on_train_end(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called once at the end of training.
 
         Args:
@@ -146,7 +146,7 @@ trait Callback:
         """
         ...
 
-    fn on_epoch_begin(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called at the start of each epoch.
 
         Args:
@@ -157,7 +157,7 @@ trait Callback:
         """
         ...
 
-    fn on_epoch_end(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called at the end of each epoch (after validation).
 
         Args:
@@ -168,7 +168,7 @@ trait Callback:
         """
         ...
 
-    fn on_batch_begin(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called at the start of each batch.
 
         Args:
@@ -179,7 +179,7 @@ trait Callback:
         """
         ...
 
-    fn on_batch_end(inoutself, inoutstate: TrainingState) -> CallbackSignal:
+    fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Called at the end of each batch (after optimizer step).
 
         Args:

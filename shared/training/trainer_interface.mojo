@@ -15,7 +15,7 @@ Design principles:
 - Clear separation of concerns (train, validate, test)
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from shared.core import ExTensor
 
 
@@ -33,7 +33,7 @@ struct TrainerConfig:
     var checkpoint_interval: Int  # Save checkpoint every N epochs
 
     fn __init__(
-        inout self,
+        mut self,
         num_epochs: Int = 10,
         batch_size: Int = 32,
         learning_rate: Float64 = 0.001,
@@ -68,7 +68,7 @@ struct TrainingMetrics:
     var best_val_accuracy: Float64
     var best_epoch: Int
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize training metrics with defaults."""
         self.current_epoch = 0
         self.current_batch = 0
@@ -81,7 +81,7 @@ struct TrainingMetrics:
         self.best_val_accuracy = 0.0
         self.best_epoch = 0
 
-    fn update_train_metrics(inout self, loss: Float64, accuracy: Float64):
+    fn update_train_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update training metrics for current batch.
 
         Args:
@@ -91,7 +91,7 @@ struct TrainingMetrics:
         self.train_loss = loss
         self.train_accuracy = accuracy
 
-    fn update_val_metrics(inout self, loss: Float64, accuracy: Float64):
+    fn update_val_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update validation metrics and track best results.
 
         Args:
@@ -107,7 +107,7 @@ struct TrainingMetrics:
             self.best_val_accuracy = accuracy
             self.best_epoch = self.current_epoch
 
-    fn reset_epoch(inout self):
+    fn reset_epoch(mut self):
         """Reset epoch-level metrics."""
         self.current_batch = 0
         self.train_loss = 0.0
@@ -150,7 +150,7 @@ trait Trainer:
     - on_validation_end()
     """
 
-    fn train(inout self, num_epochs: Int) raises:
+    fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.
 
         Args:
@@ -161,7 +161,7 @@ trait Trainer:
         """
         ...
 
-    fn validate(inout self) raises -> Float64:
+    fn validate(mut self) raises -> Float64:
         """Evaluate model on validation set.
 
         Returns:
@@ -172,7 +172,7 @@ trait Trainer:
         """
         ...
 
-    fn fit(inout self, num_epochs: Int, validate_every: Int = 1) raises:
+    fn fit(mut self, num_epochs: Int, validate_every: Int = 1) raises:
         """Train model with periodic validation.
 
         Args:
@@ -194,7 +194,7 @@ struct DataBatch:
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
 
-    fn __init__(inout self, data: ExTensor, labels: ExTensor):
+    fn __init__(mut self, data: ExTensor, labels: ExTensor):
         """Initialize data batch.
 
         Args:
@@ -220,7 +220,7 @@ struct DataLoader:
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(inout self, data: ExTensor, labels: ExTensor, batch_size: Int):
+    fn __init__(mut self, data: ExTensor, labels: ExTensor, batch_size: Int):
         """Initialize data loader.
 
         Args:
@@ -235,7 +235,7 @@ struct DataLoader:
         self.num_batches = (self.num_samples + batch_size - 1) // batch_size
         self.current_batch = 0
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset loader to beginning."""
         self.current_batch = 0
 
@@ -247,7 +247,7 @@ struct DataLoader:
         """
         return self.current_batch < self.num_batches
 
-    fn next(inout self) raises -> DataBatch:
+    fn next(mut self) raises -> DataBatch:
         """Get next batch.
 
         Returns:
@@ -264,10 +264,10 @@ struct DataLoader:
         var actual_batch_size = end_idx - start_idx
 
         # Extract batch slice
-        var batch_data_shape = DynamicVector[Int](actual_batch_size, self.data.shape[1])
+        var batch_data_shape = List[Int](actual_batch_size, self.data.shape[0])
         var batch_data = ExTensor(batch_data_shape, self.data.dtype)
 
-        var batch_labels_shape = DynamicVector[Int](actual_batch_size)
+        var batch_labels_shape = List[Int](actual_batch_size)
         var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype)
 
         # Copy data (simplified - real implementation would use slicing)

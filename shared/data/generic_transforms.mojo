@@ -291,7 +291,7 @@ struct DebugTransform(Transform):
                     max_val = val
                 sum_val += val
 
-            var mean_val = sum_val / Float32(data.num_elements())
+            var mean_val = sum_val / Float32(Int(data.num_elements()))
 
             print("  Min:", min_val)
             print("  Max:", max_val)
@@ -475,7 +475,7 @@ struct ToInt32(Transform):
         for i in range(data.num_elements()):
             var value = data[i]
             # Truncate to int and convert back to float for storage
-            var int_value = int(value)
+            var int_value = Int(value)
             result_values.append(Float32(int_value))
 
         return ExTensor(result_values^)

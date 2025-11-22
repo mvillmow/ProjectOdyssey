@@ -3,7 +3,7 @@
 Implements element-wise comparison operations following NumPy-style broadcasting.
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from .extensor import ExTensor
 from .broadcasting import broadcast_shapes
 
@@ -22,14 +22,14 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = full(List[Int](3, 4), 2.0, DType.float32)
+        var b = full(List[Int](3, 4), 2.0, DType.float32)
         var c = equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -42,8 +42,8 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val == b_val else 0)
             return result^
 
@@ -66,14 +66,14 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
+        var a = full(List[Int](3, 4), 2.0, DType.float32)
+        var b = full(List[Int](3, 4), 3.0, DType.float32)
         var c = not_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -86,8 +86,8 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val != b_val else 0)
             return result^
 
@@ -110,14 +110,14 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
+        var a = full(List[Int](3, 4), 2.0, DType.float32)
+        var b = full(List[Int](3, 4), 3.0, DType.float32)
         var c = less(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -130,8 +130,8 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val < b_val else 0)
             return result^
 
@@ -154,14 +154,14 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = full(List[Int](3, 4), 2.0, DType.float32)
+        var b = full(List[Int](3, 4), 2.0, DType.float32)
         var c = less_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -174,8 +174,8 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val <= b_val else 0)
             return result^
 
@@ -198,14 +198,14 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = full(List[Int](3, 4), 3.0, DType.float32)
+        var b = full(List[Int](3, 4), 2.0, DType.float32)
         var c = greater(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -218,8 +218,8 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val > b_val else 0)
             return result^
 
@@ -242,14 +242,14 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
+        var a = full(List[Int](3, 4), 3.0, DType.float32)
+        var b = full(List[Int](3, 4), 3.0, DType.float32)
         var c = greater_equal(a, b)  # Shape (3, 4), all True
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
@@ -262,8 +262,8 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         if same_shape:
             for i in range(a.numel()):
-                let a_val = a._get_float64(i)
-                let b_val = b._get_float64(i)
+                var a_val = a._get_float64(i)
+                var b_val = b._get_float64(i)
                 result._set_int64(i, 1 if a_val >= b_val else 0)
             return result^
 

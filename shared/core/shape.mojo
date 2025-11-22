@@ -4,11 +4,11 @@ Implements shape operations like reshape, squeeze, unsqueeze, flatten, concatena
 Following the Python Array API Standard 2023.12.
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from .extensor import ExTensor
 
 
-fn reshape(tensor: ExTensor, new_shape: DynamicVector[Int]) raises -> ExTensor:
+fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
     """Reshape tensor to new shape.
 
     Args:
@@ -32,7 +32,7 @@ fn reshape(tensor: ExTensor, new_shape: DynamicVector[Int]) raises -> ExTensor:
     # Calculate total elements in new shape (handling -1 for inference)
     var inferred_dim = -1
     var known_product: Int = 1
-    let new_len = len(new_shape)
+    var new_len = len(new_shape)
 
     for i in range(new_len):
         if new_shape[i] == -1:
@@ -45,14 +45,14 @@ fn reshape(tensor: ExTensor, new_shape: DynamicVector[Int]) raises -> ExTensor:
             known_product *= new_shape[i]
 
     # If we have -1, infer that dimension
-    var final_shape = DynamicVector[Int](new_len)
-    let total_elements = tensor.numel()
+    var final_shape = List[Int](new_len)
+    var total_elements = tensor.numel()
 
     if inferred_dim != -1:
         # Infer the -1 dimension
         if total_elements % known_product != 0:
             raise Error("reshape: cannot infer dimension, incompatible size")
-        let inferred_size = total_elements // known_product
+        var inferred_size = total_elements // known_product
 
         for i in range(new_len):
             if i == inferred_dim:
@@ -77,7 +77,7 @@ fn reshape(tensor: ExTensor, new_shape: DynamicVector[Int]) raises -> ExTensor:
 
     # Copy data element by element (row-major order preserved)
     for i in range(total_elements):
-        let val = tensor._get_float64(i)
+        var val = tensor._get_float64(i)
         result._set_float64(i, val)
 
     return result^
@@ -104,12 +104,12 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
         # Squeeze specific dim
         var c = squeeze(a, 0)  # Shape (3, 1, 4)
     """
-    let old_shape = tensor.shape()
-    let ndim = len(old_shape)
+    var old_shape = tensor.shape()
+    var ndim = len(old_shape)
 
     if dim != -999:
         # Squeeze specific dimension
-        let actual_dim = dim if dim >= 0 else ndim + dim
+        var actual_dim = dim if dim >= 0 else ndim + dim
 
         if actual_dim < 0 or actual_dim >= ndim:
             raise Error("squeeze: dimension out of range")
@@ -118,7 +118,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             raise Error("squeeze: cannot squeeze dimension that is not size 1")
 
         # Create new shape without this dimension
-        var new_shape = DynamicVector[Int](ndim - 1)
+        var new_shape = List[Int](ndim - 1)
         var j = 0
         for i in range(ndim):
             if i != actual_dim:
@@ -138,7 +138,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             return reshape(tensor, old_shape)
 
         # Build new shape
-        var new_shape = DynamicVector[Int](new_dims)
+        var new_shape = List[Int](new_dims)
         var j = 0
         for i in range(ndim):
             if old_shape[i] != 1:
@@ -163,9 +163,9 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         var b = unsqueeze(a, 0)  # Shape (1, 3, 4)
         var c = unsqueeze(a, -1)  # Shape (3, 4, 1)
     """
-    let old_shape = tensor.shape()
-    let ndim = len(old_shape)
-    let new_ndim = ndim + 1
+    var old_shape = tensor.shape()
+    var ndim = len(old_shape)
+    var new_ndim = ndim + 1
 
     # Handle negative indexing (allow dim in range [-ndim-1, ndim])
     var actual_dim = dim if dim >= 0 else new_ndim + dim
@@ -174,7 +174,7 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         raise Error("unsqueeze: dimension out of range")
 
     # Create new shape with size-1 dimension inserted
-    var new_shape = DynamicVector[Int](new_ndim)
+    var new_shape = List[Int](new_ndim)
     var j = 0
     for i in range(new_ndim):
         if i == actual_dim:
@@ -213,8 +213,8 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
         var b = flatten(a)  # Shape (12,)
     """
-    let numel = tensor.numel()
-    var shape_1d = DynamicVector[Int](1)
+    var numel = tensor.numel()
+    var shape_1d = List[Int](1)
     shape_1d[0] = numel
 
     return reshape(tensor, shape_1d)
@@ -236,7 +236,7 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
     return flatten(tensor)
 
 
-fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTensor:
+fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Concatenate tensors along an existing axis.
 
     Args:
@@ -252,12 +252,12 @@ fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTens
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
         var b = ones([3, 3], DType.float32)  # 3x3
-        var tensors = DynamicVector[ExTensor]()
-        tensors.push_back(a)
-        tensors.push_back(b)
+        var tensors = List[ExTensor]()
+        tensors.append(a)
+        tensors.append(b)
         var c = concatenate(tensors, axis=0)  # Shape (5, 3)
     """
-    let num_tensors = len(tensors)
+    var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("concatenate: need at least one tensor")
 
@@ -266,19 +266,19 @@ fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTens
         return reshape(tensors[0], tensors[0].shape())
 
     # Get reference shape and dtype from first tensor
-    let ref_shape = tensors[0].shape()
-    let ndim = len(ref_shape)
-    let dtype = tensors[0].dtype()
+    var ref_shape = tensors[0].shape()
+    var ndim = len(ref_shape)
+    var dtype = tensors[0].dtype()
 
     # Handle negative axis
-    let actual_axis = axis if axis >= 0 else ndim + axis
+    var actual_axis = axis if axis >= 0 else ndim + axis
     if actual_axis < 0 or actual_axis >= ndim:
         raise Error("concatenate: axis out of range")
 
     # Validate all tensors have same shape except along concat axis
     var concat_size = 0
     for i in range(num_tensors):
-        let shape = tensors[i].shape()
+        var shape = tensors[i].shape()
 
         if len(shape) != ndim:
             raise Error("concatenate: all tensors must have same number of dimensions")
@@ -293,7 +293,7 @@ fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTens
         concat_size += shape[actual_axis]
 
     # Create result shape
-    var result_shape = DynamicVector[Int](ndim)
+    var result_shape = List[Int](ndim)
     for i in range(ndim):
         if i == actual_axis:
             result_shape[i] = concat_size
@@ -309,11 +309,11 @@ fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTens
 
     var offset = 0
     for tensor_idx in range(num_tensors):
-        let t = tensors[tensor_idx]
-        let t_numel = t.numel()
+        var t = tensors[tensor_idx]
+        var t_numel = t.numel()
 
         for i in range(t_numel):
-            let val = t._get_float64(i)
+            var val = t._get_float64(i)
             result._set_float64(offset + i, val)
 
         offset += t_numel
@@ -321,7 +321,7 @@ fn concatenate(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTens
     return result^
 
 
-fn stack(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTensor:
+fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Stack tensors along a new axis.
 
     Args:
@@ -337,22 +337,22 @@ fn stack(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTensor:
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
         var b = ones([2, 3], DType.float32)  # 2x3
-        var tensors = DynamicVector[ExTensor]()
-        tensors.push_back(a)
-        tensors.push_back(b)
+        var tensors = List[ExTensor]()
+        tensors.append(a)
+        tensors.append(b)
         var c = stack(tensors, axis=0)  # Shape (2, 2, 3)
     """
-    let num_tensors = len(tensors)
+    var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("stack: need at least one tensor")
 
     # All tensors must have identical shapes
-    let ref_shape = tensors[0].shape()
-    let ndim = len(ref_shape)
-    let dtype = tensors[0].dtype()
+    var ref_shape = tensors[0].shape()
+    var ndim = len(ref_shape)
+    var dtype = tensors[0].dtype()
 
     for i in range(1, num_tensors):
-        let shape = tensors[i].shape()
+        var shape = tensors[i].shape()
 
         if len(shape) != ndim:
             raise Error("stack: all tensors must have same number of dimensions")
@@ -365,14 +365,14 @@ fn stack(tensors: DynamicVector[ExTensor], axis: Int = 0) raises -> ExTensor:
                 raise Error("stack: all tensors must have identical shapes")
 
     # Add unsqueeze dimension to each tensor
-    let new_ndim = ndim + 1
-    let actual_axis = axis if axis >= 0 else new_ndim + axis
+    var new_ndim = ndim + 1
+    var actual_axis = axis if axis >= 0 else new_ndim + axis
 
     if actual_axis < 0 or actual_axis > ndim:
         raise Error("stack: axis out of range")
 
     # Unsqueeze each tensor and concatenate
-    var unsqueezed = DynamicVector[ExTensor](num_tensors)
+    var unsqueezed = List[ExTensor](num_tensors)
     for i in range(num_tensors):
         unsqueezed[i] = unsqueeze(tensors[i], actual_axis)
 

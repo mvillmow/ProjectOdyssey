@@ -8,7 +8,7 @@ from .extensor import ExTensor, zeros_like, ones_like, full_like
 from .arithmetic import subtract, add, multiply, divide, power
 from .elementwise import sqrt
 from .reduction import mean as reduce_mean, sum as reduce_sum
-from collections.vector import DynamicVector
+from collections import List
 
 
 fn batch_norm2d(
@@ -85,7 +85,7 @@ fn batch_norm2d(
         Running statistics are updated only during training mode.
     """
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("batch_norm2d requires 4D input (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -313,7 +313,7 @@ fn normalize_rgb(
         - Common for CIFAR-10, ImageNet, and other RGB datasets
     """
     var shape = images.shape()
-    if shape.size != 4:
+    if len(shape) != 4:
         raise Error("normalize_rgb requires 4D input (N, 3, H, W)")
 
     var num_images = shape[0]
@@ -811,7 +811,7 @@ fn layer_norm(
     """
     var x_shape = x.shape()
 
-    if x_shape.size == 2:
+    if len(x_shape) == 2:
         # 2D input: (batch, features)
         var batch = x_shape[0]
         var features = x_shape[1]
@@ -877,7 +877,7 @@ fn layer_norm(
 
         return output
 
-    elif x_shape.size == 4:
+    elif len(x_shape) == 4:
         # 4D input: (batch, channels, height, width)
         # Normalize over (channels, height, width) for each sample
         var batch = x_shape[0]

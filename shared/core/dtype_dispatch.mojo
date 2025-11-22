@@ -26,7 +26,7 @@ See notes/issues/dtype-refactoring-plan.md for complete design documentation.
 """
 
 from .extensor import ExTensor
-from collections.vector import DynamicVector
+from collections import List
 
 
 # ============================================================================
@@ -68,7 +68,7 @@ fn elementwise_unary[
     for i in range(size):
         out_ptr[i] = op[dtype](in_ptr[i])
 
-    return result
+    return result^
 
 
 fn dispatch_unary[
@@ -169,7 +169,7 @@ fn elementwise_binary[
     for i in range(size):
         out_ptr[i] = op[dtype](lhs_ptr[i], rhs_ptr[i])
 
-    return result
+    return result^
 
 
 fn dispatch_binary[
@@ -267,7 +267,7 @@ fn elementwise_scalar[
     for i in range(size):
         out_ptr[i] = op[dtype](in_ptr[i], scalar_val)
 
-    return result
+    return result^
 
 
 fn dispatch_scalar[

@@ -35,19 +35,20 @@ struct RandomState:
     Stores the complete state of all RNGs so it can be saved and restored.
     This ensures reproducibility when training is interrupted/resumed.
     """
+
     var state_data: List[UInt64]
     var seed_used: Int
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty random state."""
         self.state_data = List[UInt64]()
         self.seed_used = 0
 
-    fn add_state_value(inout self, value: UInt64):
+    fn add_state_value(mut self, value: UInt64):
         """Add RNG state value."""
         self.state_data.append(value)
 
-    fn set_seed(inout self, seed: Int):
+    fn set_seed(mut self, seed: Int):
         """Record seed used for this state."""
         self.seed_used = seed
 
@@ -202,10 +203,11 @@ struct SeedContext:
 
         # Outside: seed is back to 42
     """
+
     var saved_seed: Int
     var new_seed: Int
 
-    fn __init__(inout self, seed: Int):
+    fn __init__(out self, seed: Int):
         """Create context manager with new seed.
 
         Args:
@@ -272,7 +274,7 @@ fn random_choice[T: Movable](options: List[T]) -> T:
     return options[0]
 
 
-fn shuffle[T: Movable](inout items: List[T]):
+fn shuffle[T: Movable](mut items: List[T]):
     """Shuffle list in-place using Fisher-Yates algorithm.
 
     Args:
@@ -295,13 +297,14 @@ fn shuffle[T: Movable](inout items: List[T]):
 
 struct DistributionStats:
     """Statistics for testing random distribution quality."""
+
     var mean: Float32
     var std_dev: Float32
     var min_val: Float32
     var max_val: Float32
     var sample_count: Int
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create empty statistics."""
         self.mean = 0.0
         self.std_dev = 0.0

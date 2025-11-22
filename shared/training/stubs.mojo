@@ -40,7 +40,7 @@ struct MockTrainer:
         self.should_fail = False
 
     fn train(
-        inout self, epochs: Int, batch_size: Int = 32
+        mut self, epochs: Int, batch_size: Int = 32
     ) raises -> Dict[String, Float64]:
         """Stub train method.
 
@@ -80,7 +80,7 @@ struct MockTrainer:
         """Stub save checkpoint (no-op)."""
         pass
 
-    fn load_checkpoint(inout self, path: String) raises:
+    fn load_checkpoint(mut self, path: String) raises:
         """Stub load checkpoint (no-op)."""
         pass
 
@@ -254,22 +254,22 @@ struct MockEarlyStopping(Callback):
         self.wait_count = 0
         self.stopped = False
 
-    fn on_train_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Reset state at training start."""
         self.best_value = Float64(1e9)
         self.wait_count = 0
         self.stopped = False
         return CONTINUE
 
-    fn on_train_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
         return CONTINUE
 
-    fn on_epoch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
         return CONTINUE
 
-    fn on_epoch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Check for improvement and decide whether to stop.
 
         Args:
@@ -300,11 +300,11 @@ struct MockEarlyStopping(Callback):
 
         return CONTINUE
 
-    fn on_batch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
         return CONTINUE
 
-    fn on_batch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
         return CONTINUE
 
@@ -333,19 +333,19 @@ struct MockCheckpoint(Callback):
         self.save_path = save_path
         self.save_count = 0
 
-    fn on_train_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training start."""
         return CONTINUE
 
-    fn on_train_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
         return CONTINUE
 
-    fn on_epoch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
         return CONTINUE
 
-    fn on_epoch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Save checkpoint at end of epoch (stub).
 
         Args:
@@ -358,11 +358,11 @@ struct MockCheckpoint(Callback):
         self.save_count += 1
         return CONTINUE
 
-    fn on_batch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
         return CONTINUE
 
-    fn on_batch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
         return CONTINUE
 
@@ -383,19 +383,19 @@ struct MockLoggingCallback(Callback):
         self.log_interval = log_interval
         self.log_count = 0
 
-    fn on_train_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training start."""
         return CONTINUE
 
-    fn on_train_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
         return CONTINUE
 
-    fn on_epoch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
         return CONTINUE
 
-    fn on_epoch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log metrics at end of epoch (stub).
 
         Args:
@@ -408,10 +408,10 @@ struct MockLoggingCallback(Callback):
             self.log_count += 1
         return CONTINUE
 
-    fn on_batch_begin(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
         return CONTINUE
 
-    fn on_batch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+    fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
         return CONTINUE

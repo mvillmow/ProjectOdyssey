@@ -23,43 +23,59 @@ from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
 from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
-from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
+from shared.core.loss import cross_entropy, cross_entropy_backward
 from sys import argv
-from collections.vector import DynamicVector
+from collections import List
 
 
-fn parse_args() raises -> (Int, Int, Float32, String, String):
+struct TrainConfig:
+    """Training configuration from command line arguments."""
+    var epochs: Int
+    var batch_size: Int
+    var learning_rate: Float32
+    var data_dir: String
+    var weights_dir: String
+
+    fn __init__(out self, epochs: Int, batch_size: Int, learning_rate: Float32, data_dir: String, weights_dir: String):
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.learning_rate = learning_rate
+        self.data_dir = data_dir
+        self.weights_dir = weights_dir
+
+
+fn parse_args() raises -> TrainConfig:
     """Parse command line arguments.
 
     Returns:
-        Tuple of (epochs, batch_size, learning_rate, data_dir, weights_dir)
+        TrainConfig with parsed arguments
     """
     var epochs = 10
     var batch_size = 32
     var learning_rate = Float32(0.01)
-    var data_dir = "datasets/emnist"
-    var weights_dir = "lenet5_weights"
+    var data_dir = String("datasets/emnist")
+    var weights_dir = String("lenet5_weights")
 
     var args = argv()
     for i in range(len(args)):
         if args[i] == "--epochs" and i + 1 < len(args):
-            epochs = int(args[i + 1])
+            epochs = Int(args[i + 1])
         elif args[i] == "--batch-size" and i + 1 < len(args):
-            batch_size = int(args[i + 1])
+            batch_size = Int(args[i + 1])
         elif args[i] == "--lr" and i + 1 < len(args):
-            learning_rate = Float32(float(args[i + 1]))
+            learning_rate = Float32(Float64(args[i + 1]))
         elif args[i] == "--data-dir" and i + 1 < len(args):
             data_dir = args[i + 1]
         elif args[i] == "--weights-dir" and i + 1 < len(args):
             weights_dir = args[i + 1]
 
-    return (epochs, batch_size, learning_rate, data_dir, weights_dir)
+    return TrainConfig(epochs, batch_size, learning_rate, data_dir, weights_dir)
 
 
 fn compute_gradients(
-    inout model: LeNet5,
-    borrowed input: ExTensor,
-    borrowed labels: ExTensor,
+    mut model: LeNet5,
+    input: ExTensor,
+    labels: ExTensor,
     learning_rate: Float32
 ) raises -> Float32:
     """Compute gradients and update parameters for one batch.
@@ -91,9 +107,9 @@ fn compute_gradients(
     var pool2_shape = pool2_out.shape()
     var batch_size = pool2_shape[0]
     var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
-    var flatten_shape = DynamicVector[Int](2)
-    flatten_shape.push_back(batch_size)
-    flatten_shape.push_back(flattened_size)
+    var flatten_shape = List[Int]()
+    flatten_shape.append(batch_size)
+    flatten_shape.append(flattened_size)
     var flattened = pool2_out.reshape(flatten_shape)
 
     # FC1 + ReLU
@@ -108,86 +124,77 @@ fn compute_gradients(
     var logits = linear(relu4_out, model.fc3_weights, model.fc3_bias)
 
     # Compute loss
-    var loss = cross_entropy_loss(logits, labels)
+    var loss_tensor = cross_entropy(logits, labels)
+    var loss = loss_tensor._data.bitcast[Float32]()[0]
 
     # ========== Backward Pass ==========
 
     # Start with gradient from loss
-    var grad_logits = cross_entropy_loss_backward(logits, labels)
+    # For cross-entropy with mean reduction, the initial gradient is 1.0 / batch_size
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, logits.dtype())
+    grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
+    var grad_logits = cross_entropy_backward(grad_output, logits, labels)
 
     # FC3 backward
     var fc3_grads = linear_backward(grad_logits, relu4_out, model.fc3_weights)
-    var grad_relu4_out = fc3_grads[0]
-    var grad_fc3_weights = fc3_grads[1]
-    var grad_fc3_bias = fc3_grads[2]
 
     # ReLU4 backward
-    var grad_fc2_out = relu_backward(grad_relu4_out, fc2_out)
+    var grad_fc2_out = relu_backward(fc3_grads.grad_input, fc2_out)
 
     # FC2 backward
     var fc2_grads = linear_backward(grad_fc2_out, relu3_out, model.fc2_weights)
-    var grad_relu3_out = fc2_grads[0]
-    var grad_fc2_weights = fc2_grads[1]
-    var grad_fc2_bias = fc2_grads[2]
 
     # ReLU3 backward
-    var grad_fc1_out = relu_backward(grad_relu3_out, fc1_out)
+    var grad_fc1_out = relu_backward(fc2_grads.grad_input, fc1_out)
 
     # FC1 backward
     var fc1_grads = linear_backward(grad_fc1_out, flattened, model.fc1_weights)
-    var grad_flattened = fc1_grads[0]
-    var grad_fc1_weights = fc1_grads[1]
-    var grad_fc1_bias = fc1_grads[2]
 
     # Unflatten gradient
-    var grad_pool2_out = grad_flattened.reshape(pool2_shape)
+    var grad_pool2_out = fc1_grads.grad_input.reshape(pool2_shape)
 
     # MaxPool2 backward
-    var grad_relu2_out = maxpool2d_backward(grad_pool2_out, relu2_out, pool2_out, kernel_size=2, stride=2, padding=0)
+    var grad_relu2_out = maxpool2d_backward(grad_pool2_out, relu2_out, kernel_size=2, stride=2, padding=0)
 
     # ReLU2 backward
     var grad_conv2_out = relu_backward(grad_relu2_out, conv2_out)
 
     # Conv2 backward
     var conv2_grads = conv2d_backward(grad_conv2_out, pool1_out, model.conv2_kernel, stride=1, padding=0)
-    var grad_pool1_out = conv2_grads[0]
-    var grad_conv2_kernel = conv2_grads[1]
-    var grad_conv2_bias = conv2_grads[2]
 
     # MaxPool1 backward
-    var grad_relu1_out = maxpool2d_backward(grad_pool1_out, relu1_out, pool1_out, kernel_size=2, stride=2, padding=0)
+    var grad_relu1_out = maxpool2d_backward(conv2_grads.grad_input, relu1_out, kernel_size=2, stride=2, padding=0)
 
     # ReLU1 backward
     var grad_conv1_out = relu_backward(grad_relu1_out, conv1_out)
 
     # Conv1 backward
     var conv1_grads = conv2d_backward(grad_conv1_out, input, model.conv1_kernel, stride=1, padding=0)
-    var grad_input = conv1_grads[0]  # Not used (no input gradient needed)
-    var grad_conv1_kernel = conv1_grads[1]
-    var grad_conv1_bias = conv1_grads[2]
 
     # ========== Parameter Update (SGD) ==========
     model.update_parameters(
         learning_rate,
-        grad_conv1_kernel^,
-        grad_conv1_bias^,
-        grad_conv2_kernel^,
-        grad_conv2_bias^,
-        grad_fc1_weights^,
-        grad_fc1_bias^,
-        grad_fc2_weights^,
-        grad_fc2_bias^,
-        grad_fc3_weights^,
-        grad_fc3_bias^
+        conv1_grads.grad_kernel^,
+        conv1_grads.grad_bias^,
+        conv2_grads.grad_kernel^,
+        conv2_grads.grad_bias^,
+        fc1_grads.grad_weights^,
+        fc1_grads.grad_bias^,
+        fc2_grads.grad_weights^,
+        fc2_grads.grad_bias^,
+        fc3_grads.grad_weights^,
+        fc3_grads.grad_bias^
     )
 
     return loss
 
 
 fn train_epoch(
-    inout model: LeNet5,
-    borrowed train_images: ExTensor,
-    borrowed train_labels: ExTensor,
+    mut model: LeNet5,
+    train_images: ExTensor,
+    train_labels: ExTensor,
     batch_size: Int,
     learning_rate: Float32,
     epoch: Int,
@@ -242,9 +249,9 @@ fn train_epoch(
 
 
 fn evaluate(
-    inout model: LeNet5,
-    borrowed test_images: ExTensor,
-    borrowed test_labels: ExTensor
+    mut model: LeNet5,
+    test_images: ExTensor,
+    test_labels: ExTensor
 ) raises -> Float32:
     """Evaluate model on test set.
 
@@ -288,11 +295,11 @@ fn main() raises:
 
     # Parse arguments
     var config = parse_args()
-    var epochs = config[0]
-    var batch_size = config[1]
-    var learning_rate = config[2]
-    var data_dir = config[3]
-    var weights_dir = config[4]
+    var epochs = config.epochs
+    var batch_size = config.batch_size
+    var learning_rate = config.learning_rate
+    var data_dir = config.data_dir
+    var weights_dir = config.weights_dir
 
     print("\nConfiguration:")
     print("  Epochs: ", epochs)

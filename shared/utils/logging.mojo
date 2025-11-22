@@ -30,6 +30,7 @@ struct LogLevel:
     Log filtering uses numeric comparison: logger only outputs
     messages with level >= logger's configured level.
     """
+
     alias DEBUG = 10
     alias INFO = 20
     alias WARNING = 30
@@ -48,17 +49,18 @@ struct LogRecord:
     Contains all information needed by handlers to format and output
     a log message including the logger name, level, message, and timestamp.
     """
+
     var logger_name: String
     var level: Int
     var message: String
     var timestamp: String
 
     fn __init__(
-        inout self,
+        out self,
         logger_name: String,
         level: Int,
         message: String,
-        timestamp: String = ""
+        timestamp: String = "",
     ):
         """Initialize a log record.
 
@@ -110,12 +112,17 @@ struct LogRecord:
         # Format as YYYY-MM-DD HH:MM:SS using string concatenation
         # (Mojo may not support all Python string formatting features)
         return (
-            str(year) + "-" +
-            str(month).zfill(2) + "-" +
-            str(day).zfill(2) + " " +
-            str(hours).zfill(2) + ":" +
-            str(minutes).zfill(2) + ":" +
-            str(seconds).zfill(2)
+            str(year)
+            + "-"
+            + str(month).zfill(2)
+            + "-"
+            + str(day).zfill(2)
+            + " "
+            + str(hours).zfill(2)
+            + ":"
+            + str(minutes).zfill(2)
+            + ":"
+            + str(seconds).zfill(2)
         )
 
     fn level_name(self) -> String:
@@ -141,6 +148,7 @@ struct LogRecord:
 
 trait Formatter:
     """Base formatter interface for log messages."""
+
     fn format(self, record: LogRecord) -> String:
         """Format a log record into a string."""
         ...
@@ -148,6 +156,7 @@ trait Formatter:
 
 struct SimpleFormatter(Formatter):
     """Simple formatter: [LEVEL] message"""
+
     fn format(self, record: LogRecord) -> String:
         """Format log record as: [LEVEL] message"""
         return f"[{record.level_name()}] {record.message}"
@@ -155,6 +164,7 @@ struct SimpleFormatter(Formatter):
 
 struct TimestampFormatter(Formatter):
     """Timestamp formatter: YYYY-MM-DD HH:MM:SS [LEVEL] message"""
+
     fn format(self, record: LogRecord) -> String:
         """Format log record with timestamp."""
         return f"{record.timestamp} [{record.level_name()}] {record.message}"
@@ -162,13 +172,17 @@ struct TimestampFormatter(Formatter):
 
 struct DetailedFormatter(Formatter):
     """Detailed formatter: [LEVEL] logger_name - message"""
+
     fn format(self, record: LogRecord) -> String:
         """Format log record with logger name."""
-        return f"[{record.level_name()}] {record.logger_name} - {record.message}"
+        return (
+            f"[{record.level_name()}] {record.logger_name} - {record.message}"
+        )
 
 
 struct ColoredFormatter(Formatter):
     """Colored formatter using ANSI escape codes."""
+
     # ANSI color codes
     alias RED = "\033[91m"
     alias YELLOW = "\033[93m"
@@ -200,6 +214,7 @@ struct ColoredFormatter(Formatter):
 
 trait Handler:
     """Base handler interface for log output."""
+
     fn emit(self, record: LogRecord):
         """Output a log record."""
         ...
@@ -207,9 +222,10 @@ trait Handler:
 
 struct StreamHandler(Handler):
     """Write log messages to stdout/stderr."""
+
     var formatter: SimpleFormatter
 
-    fn __init__(inout self):
+    fn __init__(out self):
         """Create stream handler with default formatter."""
         self.formatter = SimpleFormatter()
 
@@ -221,10 +237,11 @@ struct StreamHandler(Handler):
 
 struct FileHandler(Handler):
     """Write log messages to a file."""
+
     var filepath: String
     var formatter: TimestampFormatter
 
-    fn __init__(inout self, filepath: String):
+    fn __init__(out self, filepath: String):
         """Create file handler that writes to given file.
 
         Args:
@@ -270,11 +287,12 @@ struct Logger:
     formatters for different output formats. Log messages are filtered
     by the configured level threshold.
     """
+
     var name: String
     var level: Int
     var handlers: List[StreamHandler]  # For now just StreamHandler
 
-    fn __init__(inout self, name: String, level: Int = LogLevel.INFO):
+    fn __init__(out self, name: String, level: Int = LogLevel.INFO):
         """Create logger with name and optional level.
 
         Args:
@@ -285,7 +303,7 @@ struct Logger:
         self.level = level
         self.handlers = List[StreamHandler]()
 
-    fn add_handler(inout self, handler: StreamHandler):
+    fn add_handler(mut self, handler: StreamHandler):
         """Add an output handler to this logger.
 
         Handlers receive all log records that pass the level filter.
@@ -351,7 +369,7 @@ struct Logger:
         for handler in self.handlers:
             handler.emit(record)
 
-    fn set_level(inout self, level: Int):
+    fn set_level(mut self, level: Int):
         """Change the log level for this logger.
 
         Args:
@@ -366,6 +384,7 @@ struct Logger:
 
 
 var _default_logger: Logger
+
 
 fn _init_default_logger():
     """Initialize the default logger (module initialization)."""

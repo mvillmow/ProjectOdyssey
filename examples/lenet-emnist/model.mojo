@@ -24,8 +24,8 @@ from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
 from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
-from shared.core.initializers import he_uniform, xavier_uniform
-from collections.vector import DynamicVector
+from shared.core.initializers import kaiming_uniform, xavier_uniform
+from collections import List
 from weights import save_tensor, load_tensor
 
 
@@ -60,7 +60,7 @@ struct LeNet5:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(inout self, num_classes: Int = 47) raises:
+    fn __init__(out self, num_classes: Int = 47) raises:
         """Initialize LeNet-5 model with random weights.
 
         Args:
@@ -69,49 +69,69 @@ struct LeNet5:
         self.num_classes = num_classes
 
         # Conv1: 1 input channel, 6 output channels, 5x5 kernel
-        var conv1_shape = DynamicVector[Int](4)
-        conv1_shape.push_back(6)   # out_channels
-        conv1_shape.push_back(1)   # in_channels
-        conv1_shape.push_back(5)   # kernel_height
-        conv1_shape.push_back(5)   # kernel_width
-        self.conv1_kernel = he_uniform(conv1_shape, DType.float32)
-        self.conv1_bias = zeros(DynamicVector[Int](1).push_back(6), DType.float32)
+        var conv1_shape = List[Int]()
+        conv1_shape.append(6)
+        conv1_shape.append(1)
+        conv1_shape.append(5)
+        conv1_shape.append(5)
+        var conv1_fan_in = 1 * 5 * 5  # in_channels * kernel_h * kernel_w = 25
+        var conv1_fan_out = 6 * 5 * 5  # out_channels * kernel_h * kernel_w = 150
+        self.conv1_kernel = kaiming_uniform(conv1_fan_in, conv1_fan_out, conv1_shape, dtype=DType.float32)
+        var conv1_bias_shape = List[Int]()
+        conv1_bias_shape.append(6)
+        self.conv1_bias = zeros(conv1_bias_shape, DType.float32)
 
         # Conv2: 6 input channels, 16 output channels, 5x5 kernel
-        var conv2_shape = DynamicVector[Int](4)
-        conv2_shape.push_back(16)  # out_channels
-        conv2_shape.push_back(6)   # in_channels
-        conv2_shape.push_back(5)   # kernel_height
-        conv2_shape.push_back(5)   # kernel_width
-        self.conv2_kernel = he_uniform(conv2_shape, DType.float32)
-        self.conv2_bias = zeros(DynamicVector[Int](1).push_back(16), DType.float32)
+        var conv2_shape = List[Int]()
+        conv2_shape.append(16)
+        conv2_shape.append(6)
+        conv2_shape.append(5)
+        conv2_shape.append(5)
+        var conv2_fan_in = 6 * 5 * 5  # in_channels * kernel_h * kernel_w = 150
+        var conv2_fan_out = 16 * 5 * 5  # out_channels * kernel_h * kernel_w = 400
+        self.conv2_kernel = kaiming_uniform(conv2_fan_in, conv2_fan_out, conv2_shape, dtype=DType.float32)
+        var conv2_bias_shape = List[Int]()
+        conv2_bias_shape.append(16)
+        self.conv2_bias = zeros(conv2_bias_shape, DType.float32)
 
         # After conv1 (28x28 -> 24x24) -> pool1 (24x24 -> 12x12)
         # After conv2 (12x12 -> 8x8) -> pool2 (8x8 -> 4x4)
         # Flattened size: 16 * 4 * 4 = 256
 
         # FC1: 256 -> 120
-        var fc1_shape = DynamicVector[Int](2)
-        fc1_shape.push_back(120)  # out_features
-        fc1_shape.push_back(256)  # in_features
-        self.fc1_weights = xavier_uniform(fc1_shape, DType.float32)
-        self.fc1_bias = zeros(DynamicVector[Int](1).push_back(120), DType.float32)
+        var fc1_shape = List[Int]()
+        fc1_shape.append(120)
+        fc1_shape.append(256)
+        var fc1_fan_in = 256
+        var fc1_fan_out = 120
+        self.fc1_weights = xavier_uniform(fc1_fan_in, fc1_fan_out, fc1_shape, dtype=DType.float32)
+        var fc1_bias_shape = List[Int]()
+        fc1_bias_shape.append(120)
+        self.fc1_bias = zeros(fc1_bias_shape, DType.float32)
 
         # FC2: 120 -> 84
-        var fc2_shape = DynamicVector[Int](2)
-        fc2_shape.push_back(84)   # out_features
-        fc2_shape.push_back(120)  # in_features
-        self.fc2_weights = xavier_uniform(fc2_shape, DType.float32)
-        self.fc2_bias = zeros(DynamicVector[Int](1).push_back(84), DType.float32)
+        var fc2_shape = List[Int]()
+        fc2_shape.append(84)
+        fc2_shape.append(120)
+        var fc2_fan_in = 120
+        var fc2_fan_out = 84
+        self.fc2_weights = xavier_uniform(fc2_fan_in, fc2_fan_out, fc2_shape, dtype=DType.float32)
+        var fc2_bias_shape = List[Int]()
+        fc2_bias_shape.append(84)
+        self.fc2_bias = zeros(fc2_bias_shape, DType.float32)
 
         # FC3: 84 -> num_classes
-        var fc3_shape = DynamicVector[Int](2)
-        fc3_shape.push_back(num_classes)  # out_features
-        fc3_shape.push_back(84)           # in_features
-        self.fc3_weights = xavier_uniform(fc3_shape, DType.float32)
-        self.fc3_bias = zeros(DynamicVector[Int](1).push_back(num_classes), DType.float32)
+        var fc3_shape = List[Int]()
+        fc3_shape.append(num_classes)
+        fc3_shape.append(84)
+        var fc3_fan_in = 84
+        var fc3_fan_out = num_classes
+        self.fc3_weights = xavier_uniform(fc3_fan_in, fc3_fan_out, fc3_shape, dtype=DType.float32)
+        var fc3_bias_shape = List[Int]()
+        fc3_bias_shape.append(num_classes)
+        self.fc3_bias = zeros(fc3_bias_shape, DType.float32)
 
-    fn forward(inout self, borrowed input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass through LeNet-5.
 
         Args:
@@ -135,9 +155,9 @@ struct LeNet5:
         var batch_size = pool2_shape[0]
         var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
 
-        var flatten_shape = DynamicVector[Int](2)
-        flatten_shape.push_back(batch_size)
-        flatten_shape.push_back(flattened_size)
+        var flatten_shape = List[Int]()
+        flatten_shape.append(batch_size)
+        flatten_shape.append(flattened_size)
         var flattened = pool2_out.reshape(flatten_shape)
 
         # FC1 + ReLU
@@ -151,9 +171,9 @@ struct LeNet5:
         # FC3 (output logits)
         var output = linear(relu4_out, self.fc3_weights, self.fc3_bias)
 
-        return output
+        return output^
 
-    fn predict(inout self, borrowed input: ExTensor) raises -> Int:
+    fn predict(mut self, input: ExTensor) raises -> Int:
         """Predict class for a single input.
 
         Args:
@@ -176,7 +196,7 @@ struct LeNet5:
 
         return max_idx
 
-    fn save_weights(borrowed self, weights_dir: String) raises:
+    fn save_weights(self, weights_dir: String) raises:
         """Save model weights to directory.
 
         Args:
@@ -200,7 +220,7 @@ struct LeNet5:
         save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
         save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
 
-    fn load_weights(inout self, weights_dir: String) raises:
+    fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:
@@ -211,36 +231,36 @@ struct LeNet5:
         """
         # Load each parameter from its file
         var result1 = load_tensor(weights_dir + "/conv1_kernel.weights")
-        self.conv1_kernel = result1[1]^
+        self.conv1_kernel = result1.tensor^
 
         var result2 = load_tensor(weights_dir + "/conv1_bias.weights")
-        self.conv1_bias = result2[1]^
+        self.conv1_bias = result2.tensor^
 
         var result3 = load_tensor(weights_dir + "/conv2_kernel.weights")
-        self.conv2_kernel = result3[1]^
+        self.conv2_kernel = result3.tensor^
 
         var result4 = load_tensor(weights_dir + "/conv2_bias.weights")
-        self.conv2_bias = result4[1]^
+        self.conv2_bias = result4.tensor^
 
         var result5 = load_tensor(weights_dir + "/fc1_weights.weights")
-        self.fc1_weights = result5[1]^
+        self.fc1_weights = result5.tensor^
 
         var result6 = load_tensor(weights_dir + "/fc1_bias.weights")
-        self.fc1_bias = result6[1]^
+        self.fc1_bias = result6.tensor^
 
         var result7 = load_tensor(weights_dir + "/fc2_weights.weights")
-        self.fc2_weights = result7[1]^
+        self.fc2_weights = result7.tensor^
 
         var result8 = load_tensor(weights_dir + "/fc2_bias.weights")
-        self.fc2_bias = result8[1]^
+        self.fc2_bias = result8.tensor^
 
         var result9 = load_tensor(weights_dir + "/fc3_weights.weights")
-        self.fc3_weights = result9[1]^
+        self.fc3_weights = result9.tensor^
 
         var result10 = load_tensor(weights_dir + "/fc3_bias.weights")
-        self.fc3_bias = result10[1]^
+        self.fc3_bias = result10.tensor^
 
-    fn update_parameters(inout self, learning_rate: Float32,
+    fn update_parameters(mut self, learning_rate: Float32,
                         grad_conv1_kernel: ExTensor,
                         grad_conv1_bias: ExTensor,
                         grad_conv2_kernel: ExTensor,
@@ -270,7 +290,7 @@ struct LeNet5:
         _sgd_update(self.fc3_bias, grad_fc3_bias, learning_rate)
 
 
-fn _sgd_update(inout param: ExTensor, grad: ExTensor, lr: Float32) raises:
+fn _sgd_update(mut param: ExTensor, grad: ExTensor, lr: Float32) raises:
     """SGD parameter update: param = param - lr * grad"""
     var numel = param.numel()
     var param_data = param._data.bitcast[Float32]()

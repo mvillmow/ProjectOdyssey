@@ -19,9 +19,19 @@ Each parameter is saved to its own file:
 """
 
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
+from collections import List
 from memory import UnsafePointer
 from pathlib import Path
+
+
+struct LoadedTensor:
+    """Result from loading a tensor from file."""
+    var name: String
+    var tensor: ExTensor
+
+    fn __init__(out self, name: String, owned tensor: ExTensor):
+        self.name = name
+        self.tensor = tensor^
 
 
 fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
@@ -107,10 +117,10 @@ fn save_tensor(tensor: ExTensor, name: String, filepath: String) raises:
     var numel = tensor.numel()
 
     # Build metadata line
-    var dtype_str = str(dtype)
+    var dtype_str = String(dtype)
     var metadata = dtype_str + " "
     for i in range(len(shape)):
-        metadata += str(shape[i])
+        metadata += String(shape[i])
         if i < len(shape) - 1:
             metadata += " "
 
@@ -126,14 +136,14 @@ fn save_tensor(tensor: ExTensor, name: String, filepath: String) raises:
         _ = f.write(hex_data + "\n")
 
 
-fn load_tensor(filepath: String) raises -> (String, ExTensor):
+fn load_tensor(filepath: String) raises -> LoadedTensor:
     """Load tensor from file.
 
     Args:
         filepath: Input file path
 
     Returns:
-        Tuple of (name, tensor)
+        LoadedTensor with name and tensor
 
     Raises:
         Error: If file format is invalid
@@ -161,9 +171,9 @@ fn load_tensor(filepath: String) raises -> (String, ExTensor):
     var dtype = _parse_dtype(dtype_str)
 
     # Parse shape
-    var shape = DynamicVector[Int]()
+    var shape = List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.push_back(int(meta_parts[i]))
+        shape.append(Int(meta_parts[i]))
 
     # Create tensor
     var tensor = zeros(shape, dtype)
@@ -173,7 +183,7 @@ fn load_tensor(filepath: String) raises -> (String, ExTensor):
     var total_bytes = tensor.numel() * dtype_size
     hex_to_bytes(hex_data, tensor._data)
 
-    return (name, tensor^)
+    return LoadedTensor(name, tensor^)
 
 
 fn _get_dtype_size(dtype: DType) -> Int:

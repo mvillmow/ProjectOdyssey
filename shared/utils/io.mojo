@@ -36,7 +36,7 @@ struct Checkpoint:
     var accuracy: Float32
     var metadata: Dict[String, String]
 
-    fn __init__(inoutself):
+    fn __init__(out self):
         """Create empty checkpoint."""
         self.model_state = Dict[String, String]()
         self.optimizer_state = Dict[String, String]()
@@ -45,19 +45,19 @@ struct Checkpoint:
         self.accuracy = 0.0
         self.metadata = Dict[String, String]()
 
-    fn set_epoch(inoutself, epoch: Int):
+    fn set_epoch(mut self, epoch: Int):
         """Set checkpoint epoch."""
         self.epoch = epoch
 
-    fn set_loss(inoutself, loss: Float32):
+    fn set_loss(mut self, loss: Float32):
         """Set loss value."""
         self.loss = loss
 
-    fn set_accuracy(inoutself, accuracy: Float32):
+    fn set_accuracy(mut self, accuracy: Float32):
         """Set accuracy value."""
         self.accuracy = accuracy
 
-    fn set_metadata(inoutself, key: String, value: String):
+    fn set_metadata(mut self, key: String, value: String):
         """Set arbitrary metadata."""
         self.metadata[key] = value
 
@@ -249,7 +249,7 @@ struct TensorMetadata:
     var shape: List[Int]
     var size_bytes: Int
 
-    fn __init__(inoutself):
+    fn __init__(out self):
         """Create empty metadata."""
         self.dtype = ""
         self.shape = List[Int]()
@@ -262,7 +262,7 @@ struct SerializedTensor:
     var metadata: TensorMetadata
     var data: List[String]  # Simplified: list of string representations
 
-    fn __init__(inoutself):
+    fn __init__(out self):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
         self.data = List[String]()

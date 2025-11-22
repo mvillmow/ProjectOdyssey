@@ -8,7 +8,7 @@ Usage:
 
     fn main():
         print("ML Odyssey version:", VERSION)
-        let v = get_version()
+        var v = get_version()
         print("Version string:", v)
 """
 

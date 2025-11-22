@@ -3,7 +3,7 @@
 Implements operations that reduce tensors along specified axes.
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from .extensor import ExTensor
 
 
@@ -19,16 +19,16 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
         A new tensor with sum along specified axis
 
     Examples:
-        var t = ones(DynamicVector[Int](3, 4), DType.float32)
+        var t = ones(List[Int](3, 4), DType.float32)
         var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
         var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
     """
     if axis == -1:
         # Sum all elements
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         if keepdims:
             for i in range(tensor.dim()):
-                result_shape.push_back(1)
+                result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
         # Compute sum of all elements
@@ -42,44 +42,44 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
     else:
         # Sum along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + str(axis) + " is out of bounds for tensor with " + str(tensor.dim()) + " dimensions")
+            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
 
         # Build result shape
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
-                result_shape.push_back(tensor.shape()[i])
+                result_shape.append(tensor.shape()[i])
             elif keepdims:
-                result_shape.push_back(1)
+                result_shape.append(1)
 
         var result = ExTensor(result_shape, tensor.dtype())
         result._fill_zero()
 
         # Compute strides for indexing
-        let input_shape = tensor.shape()
-        var strides = DynamicVector[Int](tensor.dim())
+        var input_shape = tensor.shape()
+        var strides = List[Int](tensor.dim())
         var stride = 1
         for i in range(tensor.dim() - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
         # Iterate over all elements and accumulate
-        let axis_size = input_shape[axis]
-        let total_elements = tensor.numel()
+        var axis_size = input_shape[axis]
+        var total_elements = tensor.numel()
 
         # For each position in the result
         for result_idx in range(result.numel()):
             var sum_val: Float64 = 0.0
 
             # Convert result index to coordinates
-            var result_coords = DynamicVector[Int](result.dim())
+            var result_coords = List[Int](result.dim())
             var temp_idx = result_idx
             for i in range(result.dim() - 1, -1, -1):
                 result_coords[i] = temp_idx % result.shape()[i]
                 temp_idx //= result.shape()[i]
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = DynamicVector[Int](tensor.dim())
+            var input_coords = List[Int](tensor.dim())
             var result_coord_idx = 0
             for i in range(tensor.dim()):
                 if i != axis:
@@ -116,30 +116,30 @@ fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTe
         A new tensor with mean along specified axis
 
     Examples:
-        var t = ones(DynamicVector[Int](3, 4), DType.float32)
+        var t = ones(List[Int](3, 4), DType.float32)
         var m = mean(t)  # Mean of all elements -> scalar 1.0
     """
     if axis == -1:
         # Mean of all elements
         var sum_result = sum(tensor, axis, keepdims)
-        let count = Float64(tensor.numel())
-        let mean_val = sum_result._get_float64(0) / count
+        var count = Float64(tensor.numel())
+        var mean_val = sum_result._get_float64(0) / count
         sum_result._set_float64(0, mean_val)
         return sum_result^
     else:
         # Mean along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + str(axis) + " is out of bounds for tensor with " + str(tensor.dim()) + " dimensions")
+            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
 
         # Compute sum along axis
         var sum_result = sum(tensor, axis, keepdims)
 
         # Divide by count along the reduction axis
-        let count = Float64(tensor.shape()[axis])
+        var count = Float64(tensor.shape()[axis])
 
         # Divide each element by count
         for i in range(sum_result.numel()):
-            let mean_val = sum_result._get_float64(i) / count
+            var mean_val = sum_result._get_float64(i) / count
             sum_result._set_float64(i, mean_val)
 
         return sum_result^
@@ -162,16 +162,16 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     """
     if axis == -1:
         # Max of all elements
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         if keepdims:
             for i in range(tensor.dim()):
-                result_shape.push_back(1)
+                result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
         # Find maximum value
         var max_val = tensor._get_float64(0)
         for i in range(1, tensor.numel()):
-            let val = tensor._get_float64(i)
+            var val = tensor._get_float64(i)
             if val > max_val:
                 max_val = val
 
@@ -180,40 +180,40 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     else:
         # Max along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + str(axis) + " is out of bounds for tensor with " + str(tensor.dim()) + " dimensions")
+            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
 
         # Build result shape
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
-                result_shape.push_back(tensor.shape()[i])
+                result_shape.append(tensor.shape()[i])
             elif keepdims:
-                result_shape.push_back(1)
+                result_shape.append(1)
 
         var result = ExTensor(result_shape, tensor.dtype())
 
         # Compute strides for indexing
-        let input_shape = tensor.shape()
-        var strides = DynamicVector[Int](tensor.dim())
+        var input_shape = tensor.shape()
+        var strides = List[Int](tensor.dim())
         var stride = 1
         for i in range(tensor.dim() - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
         # Iterate over all elements and find maximum
-        let axis_size = input_shape[axis]
+        var axis_size = input_shape[axis]
 
         # For each position in the result
         for result_idx in range(result.numel()):
             # Convert result index to coordinates
-            var result_coords = DynamicVector[Int](result.dim())
+            var result_coords = List[Int](result.dim())
             var temp_idx = result_idx
             for i in range(result.dim() - 1, -1, -1):
                 result_coords[i] = temp_idx % result.shape()[i]
                 temp_idx //= result.shape()[i]
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = DynamicVector[Int](tensor.dim())
+            var input_coords = List[Int](tensor.dim())
             var result_coord_idx = 0
             for i in range(tensor.dim()):
                 if i != axis:
@@ -239,7 +239,7 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
                 for i in range(tensor.dim()):
                     linear_idx += input_coords[i] * strides[i]
 
-                let val = tensor._get_float64(linear_idx)
+                var val = tensor._get_float64(linear_idx)
                 if val > max_val:
                     max_val = val
 
@@ -265,16 +265,16 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     """
     if axis == -1:
         # Min of all elements
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         if keepdims:
             for i in range(tensor.dim()):
-                result_shape.push_back(1)
+                result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
         # Find minimum value
         var min_val = tensor._get_float64(0)
         for i in range(1, tensor.numel()):
-            let val = tensor._get_float64(i)
+            var val = tensor._get_float64(i)
             if val < min_val:
                 min_val = val
 
@@ -283,40 +283,40 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     else:
         # Min along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + str(axis) + " is out of bounds for tensor with " + str(tensor.dim()) + " dimensions")
+            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
 
         # Build result shape
-        var result_shape = DynamicVector[Int]()
+        var result_shape = List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
-                result_shape.push_back(tensor.shape()[i])
+                result_shape.append(tensor.shape()[i])
             elif keepdims:
-                result_shape.push_back(1)
+                result_shape.append(1)
 
         var result = ExTensor(result_shape, tensor.dtype())
 
         # Compute strides for indexing
-        let input_shape = tensor.shape()
-        var strides = DynamicVector[Int](tensor.dim())
+        var input_shape = tensor.shape()
+        var strides = List[Int](tensor.dim())
         var stride = 1
         for i in range(tensor.dim() - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
         # Iterate over all elements and find minimum
-        let axis_size = input_shape[axis]
+        var axis_size = input_shape[axis]
 
         # For each position in the result
         for result_idx in range(result.numel()):
             # Convert result index to coordinates
-            var result_coords = DynamicVector[Int](result.dim())
+            var result_coords = List[Int](result.dim())
             var temp_idx = result_idx
             for i in range(result.dim() - 1, -1, -1):
                 result_coords[i] = temp_idx % result.shape()[i]
                 temp_idx //= result.shape()[i]
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = DynamicVector[Int](tensor.dim())
+            var input_coords = List[Int](tensor.dim())
             var result_coord_idx = 0
             for i in range(tensor.dim()):
                 if i != axis:
@@ -342,7 +342,7 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
                 for i in range(tensor.dim()):
                     linear_idx += input_coords[i] * strides[i]
 
-                let val = tensor._get_float64(linear_idx)
+                var val = tensor._get_float64(linear_idx)
                 if val < min_val:
                     min_val = val
 
@@ -356,7 +356,7 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
 # ============================================================================
 
 
-fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: Int = -1) raises -> ExTensor:
+fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) raises -> ExTensor:
     """Compute gradient for sum reduction.
 
     For Y = sum(X, axis), given ∂L/∂Y, computes:
@@ -375,15 +375,15 @@ fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: In
 
     Examples:
         # Sum all elements
-        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var x = ones(List[Int](3, 4), DType.float32)
         var y = sum(x, axis=-1)  # Scalar
-        var grad_y = ones(DynamicVector[Int](), DType.float32)  # Scalar gradient
+        var grad_y = ones(List[Int](), DType.float32)  # Scalar gradient
         var grad_x = sum_backward(grad_y, x.shape(), axis=-1)  # Shape (3, 4)
 
         # Sum along specific axis
-        var x2 = ones(DynamicVector[Int](3, 4), DType.float32)
+        var x2 = ones(List[Int](3, 4), DType.float32)
         var y2 = sum(x2, axis=1)  # Shape (3,)
-        var grad_y2 = ones(DynamicVector[Int](3), DType.float32)
+        var grad_y2 = ones(List[Int](3), DType.float32)
         var grad_x2 = sum_backward(grad_y2, x2.shape(), axis=1)  # Shape (3, 4)
     """
     # Create result tensor with input shape
@@ -391,7 +391,7 @@ fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: In
 
     if axis == -1:
         # Sum over all elements - broadcast scalar gradient to all elements
-        let grad_val = grad_output._get_float64(0)
+        var grad_val = grad_output._get_float64(0)
         for i in range(result.numel()):
             result._set_float64(i, grad_val)
     else:
@@ -399,25 +399,25 @@ fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: In
         # The gradient value is replicated axis_size times
 
         # Compute strides for input tensor
-        var strides = DynamicVector[Int](len(input_shape))
+        var strides = List[Int](len(input_shape))
         var stride = 1
         for i in range(len(input_shape) - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
-        let axis_size = input_shape[axis]
+        var axis_size = input_shape[axis]
 
         # For each position in grad_output, broadcast it to all positions along axis
         for result_idx in range(result.numel()):
             # Convert result index to coordinates
-            var coords = DynamicVector[Int](len(input_shape))
+            var coords = List[Int](len(input_shape))
             var temp_idx = result_idx
             for i in range(len(input_shape) - 1, -1, -1):
                 coords[i] = temp_idx % input_shape[i]
                 temp_idx //= input_shape[i]
 
             # Map to grad_output coordinates (remove axis dimension)
-            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var grad_coords = List[Int](grad_output.dim())
             var coord_idx = 0
             for i in range(len(input_shape)):
                 if i != axis:
@@ -432,13 +432,13 @@ fn sum_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: In
                 grad_stride *= grad_output.shape()[i]
 
             # Set result value
-            let grad_val = grad_output._get_float64(grad_idx)
+            var grad_val = grad_output._get_float64(grad_idx)
             result._set_float64(result_idx, grad_val)
 
     return result
 
 
-fn mean_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: Int = -1) raises -> ExTensor:
+fn mean_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) raises -> ExTensor:
     """Compute gradient for mean reduction.
 
     For Y = mean(X, axis), given ∂L/∂Y, computes:
@@ -458,9 +458,9 @@ fn mean_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: I
         Gradient w.r.t. input (∂L/∂X) - broadcast and scaled
 
     Examples:
-        var x = ones(DynamicVector[Int](3, 4), DType.float32)
+        var x = ones(List[Int](3, 4), DType.float32)
         var y = mean(x, axis=-1)  # Scalar mean
-        var grad_y = ones(DynamicVector[Int](), DType.float32)
+        var grad_y = ones(List[Int](), DType.float32)
         var grad_x = mean_backward(grad_y, x.shape(), axis=-1)
         # Each element gets gradient / 12
     """
@@ -479,9 +479,9 @@ fn mean_backward(grad_output: ExTensor, input_shape: DynamicVector[Int], axis: I
         n = input_shape[axis]
 
     # Scale by 1/N
-    let scale = 1.0 / Float64(n)
+    var scale = 1.0 / Float64(n)
     for i in range(grad_sum.numel()):
-        let val = grad_sum._get_float64(i)
+        var val = grad_sum._get_float64(i)
         grad_sum._set_float64(i, val * scale)
 
     return grad_sum
@@ -528,54 +528,54 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
         # Max over all elements - find all elements equal to max
         var max_val: Float64 = x._get_float64(0)
         for i in range(1, x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val > max_val:
                 max_val = val
 
         # Count how many elements are maximum
         var count: Int = 0
         for i in range(x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val == max_val:
                 count += 1
 
         # Split gradient equally among max elements
-        let grad_val = grad_output._get_float64(0)
-        let grad_per_max = grad_val / Float64(count)
+        var grad_val = grad_output._get_float64(0)
+        var grad_per_max = grad_val / Float64(count)
 
         for i in range(x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val == max_val:
                 result._set_float64(i, grad_per_max)
 
     else:
         # Max along specific axis
-        let input_shape = x.shape()
-        let ndim = len(input_shape)
+        var input_shape = x.shape()
+        var ndim = len(input_shape)
 
         # Normalize axis
-        let normalized_axis = axis if axis >= 0 else ndim + axis
+        var normalized_axis = axis if axis >= 0 else ndim + axis
 
         # Compute strides
-        var strides = DynamicVector[Int](ndim)
+        var strides = List[Int](ndim)
         var stride = 1
         for i in range(ndim - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
-        let axis_size = input_shape[normalized_axis]
+        var axis_size = input_shape[normalized_axis]
 
         # For each position in grad_output
         for result_idx in range(x.numel()):
             # Convert to coordinates
-            var coords = DynamicVector[Int](ndim)
+            var coords = List[Int](ndim)
             var temp_idx = result_idx
             for i in range(ndim - 1, -1, -1):
                 coords[i] = temp_idx % input_shape[i]
                 temp_idx //= input_shape[i]
 
             # Map to grad_output coordinates (remove axis dimension)
-            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var grad_coords = List[Int](grad_output.dim())
             var coord_idx = 0
             for i in range(ndim):
                 if i != normalized_axis:
@@ -600,7 +600,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var test_idx = 0
                 for i in range(ndim):
                     test_idx += test_coords[i] * strides[i]
-                let val = x._get_float64(test_idx)
+                var val = x._get_float64(test_idx)
                 if k == 0 or val > max_val:
                     max_val = val
 
@@ -611,14 +611,14 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var test_idx = 0
                 for i in range(ndim):
                     test_idx += test_coords[i] * strides[i]
-                let val = x._get_float64(test_idx)
+                var val = x._get_float64(test_idx)
                 if val == max_val:
                     count += 1
 
             # Third pass: set gradients for max elements
-            let current_val = x._get_float64(result_idx)
+            var current_val = x._get_float64(result_idx)
             if current_val == max_val:
-                let grad_val = grad_output._get_float64(grad_idx)
+                var grad_val = grad_output._get_float64(grad_idx)
                 result._set_float64(result_idx, grad_val / Float64(count))
 
     return result
@@ -657,54 +657,54 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
         # Min over all elements - find all elements equal to min
         var min_val: Float64 = x._get_float64(0)
         for i in range(1, x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val < min_val:
                 min_val = val
 
         # Count how many elements are minimum
         var count: Int = 0
         for i in range(x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val == min_val:
                 count += 1
 
         # Split gradient equally among min elements
-        let grad_val = grad_output._get_float64(0)
-        let grad_per_min = grad_val / Float64(count)
+        var grad_val = grad_output._get_float64(0)
+        var grad_per_min = grad_val / Float64(count)
 
         for i in range(x.numel()):
-            let val = x._get_float64(i)
+            var val = x._get_float64(i)
             if val == min_val:
                 result._set_float64(i, grad_per_min)
 
     else:
         # Min along specific axis (similar logic to max_reduce_backward)
-        let input_shape = x.shape()
-        let ndim = len(input_shape)
+        var input_shape = x.shape()
+        var ndim = len(input_shape)
 
         # Normalize axis
-        let normalized_axis = axis if axis >= 0 else ndim + axis
+        var normalized_axis = axis if axis >= 0 else ndim + axis
 
         # Compute strides
-        var strides = DynamicVector[Int](ndim)
+        var strides = List[Int](ndim)
         var stride = 1
         for i in range(ndim - 1, -1, -1):
             strides[i] = stride
             stride *= input_shape[i]
 
-        let axis_size = input_shape[normalized_axis]
+        var axis_size = input_shape[normalized_axis]
 
         # For each position in result
         for result_idx in range(x.numel()):
             # Convert to coordinates
-            var coords = DynamicVector[Int](ndim)
+            var coords = List[Int](ndim)
             var temp_idx = result_idx
             for i in range(ndim - 1, -1, -1):
                 coords[i] = temp_idx % input_shape[i]
                 temp_idx //= input_shape[i]
 
             # Map to grad_output coordinates
-            var grad_coords = DynamicVector[Int](grad_output.dim())
+            var grad_coords = List[Int](grad_output.dim())
             var coord_idx = 0
             for i in range(ndim):
                 if i != normalized_axis:
@@ -729,7 +729,7 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var test_idx = 0
                 for i in range(ndim):
                     test_idx += test_coords[i] * strides[i]
-                let val = x._get_float64(test_idx)
+                var val = x._get_float64(test_idx)
                 if k == 0 or val < min_val:
                     min_val = val
 
@@ -740,14 +740,14 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var test_idx = 0
                 for i in range(ndim):
                     test_idx += test_coords[i] * strides[i]
-                let val = x._get_float64(test_idx)
+                var val = x._get_float64(test_idx)
                 if val == min_val:
                     count += 1
 
             # Third pass: set gradients for min elements
-            let current_val = x._get_float64(result_idx)
+            var current_val = x._get_float64(result_idx)
             if current_val == min_val:
-                let grad_val = grad_output._get_float64(grad_idx)
+                var grad_val = grad_output._get_float64(grad_idx)
                 result._set_float64(result_idx, grad_val / Float64(count))
 
     return result

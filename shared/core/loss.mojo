@@ -260,10 +260,10 @@ fn cross_entropy(
 
     # Assume last axis is the class dimension
     var shape = logits.shape()
-    var axis = shape.size - 1
+    var class_axis = len(shape) - 1 if axis == -1 else axis
 
     # Step 1: Find max along class axis for numerical stability
-    var max_logits = max_reduce(logits, axis=axis, keepdims=True)
+    var max_logits = max_reduce(logits, axis=class_axis, keepdims=True)
 
     # Step 2: Subtract max from logits: x_stable = x - max(x)
     var logits_stable = subtract(logits, max_logits)
@@ -272,7 +272,7 @@ fn cross_entropy(
     var exp_logits = exp(logits_stable)
 
     # Step 4: Sum exp values along class axis
-    var sum_exp = sum(exp_logits, axis=axis, keepdims=True)
+    var sum_exp = sum(exp_logits, axis=class_axis, keepdims=True)
 
     # Step 5: Compute log_sum_exp = max + log(sum_exp + epsilon)
     # Add epsilon for numerical stability to prevent log(0)
@@ -287,8 +287,13 @@ fn cross_entropy(
 
     # Step 7: Compute cross-entropy: CE = -sum(targets * log_probs)
     var ce_per_sample = multiply(targets, log_probs)
-    var ce_sum = sum(ce_per_sample, axis=axis, keepdims=False)  # Sum over classes
-    var ce = multiply(ce_sum, ExTensor.from_scalar(-1.0, logits.dtype()))  # Negate
+    var ce_sum = sum(ce_per_sample, axis=class_axis, keepdims=False)  # Sum over classes
+
+    # Negate: create -1.0 scalar tensor
+    var neg_one = ExTensor(ce_sum.shape(), logits.dtype())
+    for i in range(neg_one.numel()):
+        neg_one._set_float64(i, -1.0)
+    var ce = multiply(ce_sum, neg_one)
 
     # Return mean over batch (first dimension)
     return mean(ce, axis=0, keepdims=False)
@@ -328,7 +333,7 @@ fn cross_entropy_backward(
         used mean reduction.
     """
     # Compute softmax probabilities
-    var axis = logits.shape().size - 1  # Last axis is classes
+    var axis = len(logits.shape()) - 1  # Last axis is classes
     var probs = softmax(logits, axis=axis)
 
     # Gradient: softmax(logits) - targets
@@ -337,7 +342,14 @@ fn cross_entropy_backward(
     # Scale by upstream gradient and average over batch
     # NOTE: Forward pass already averages via mean(ce, axis=0), so we divide by batch_size here
     var batch_size = Float32(logits.shape()[0])
-    var grad_scaled = multiply(grad, ExTensor.from_scalar(1.0 / batch_size, grad.dtype()))
+    var scale_val = 1.0 / batch_size
+
+    # Create scale tensor with same shape as grad
+    var scale_tensor = ExTensor(grad.shape(), grad.dtype())
+    for i in range(scale_tensor.numel()):
+        scale_tensor._set_float64(i, Float64(scale_val))
+
+    var grad_scaled = multiply(grad, scale_tensor)
 
     # Chain rule: multiply by upstream gradient
     return multiply(grad_scaled, grad_output)

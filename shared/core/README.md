@@ -82,7 +82,7 @@ struct LeNet5:
     var fc2: Linear
     var fc3: Linear
 
-    fn __init__(inout self):
+    fn __init__(out self):
         # Initialize using core components
         self.conv1 = Conv2D(1, 6, kernel_size=5)
         self.conv2 = Conv2D(6, 16, kernel_size=5)
@@ -124,7 +124,7 @@ struct Tensor:
     var shape: Shape
     var dtype: DType
 
-    fn __init__(inout self, shape: Shape):
+    fn __init__(out self, shape: Shape):
         # Initialization
 
 # Use @always_inline for small, frequently-called functions

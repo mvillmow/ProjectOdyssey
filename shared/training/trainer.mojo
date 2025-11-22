@@ -16,7 +16,7 @@ Design principles:
 - Integration with all components
 """
 
-from collections.vector import DynamicVector
+from collections import List
 from shared.core import ExTensor
 from shared.training.trainer_interface import (
     Trainer, TrainerConfig, TrainingMetrics, DataLoader
@@ -56,7 +56,7 @@ struct BaseTrainer(Trainer):
     var validation_loop: ValidationLoop
     var is_training: Bool
 
-    fn __init__(inout self, config: TrainerConfig):
+    fn __init__(mut self, config: TrainerConfig):
         """Initialize base trainer.
 
         Args:
@@ -69,7 +69,7 @@ struct BaseTrainer(Trainer):
         self.validation_loop = ValidationLoop(compute_accuracy=True)
         self.is_training = False
 
-    fn train(inout self, num_epochs: Int) raises:
+    fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.
 
         NOTE: This is a simplified interface. Use fit() for full training
@@ -83,7 +83,7 @@ struct BaseTrainer(Trainer):
         """
         raise Error("Use fit() method instead of train() for complete training workflow")
 
-    fn validate(inout self) raises -> Float64:
+    fn validate(mut self) raises -> Float64:
         """Execute validation loop.
 
         NOTE: This is a simplified interface. Use fit() for integrated
@@ -98,7 +98,7 @@ struct BaseTrainer(Trainer):
         raise Error("Use fit() method for integrated training with validation")
 
     fn fit(
-        inout self,
+        mut self,
         model_forward: fn(ExTensor) raises -> ExTensor,
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         optimizer_step: fn() raises -> None,
@@ -170,9 +170,9 @@ struct BaseTrainer(Trainer):
                 print("-" * 70)
 
             # Log epoch metrics
-            var epoch_metrics = DynamicVector[MetricResult]()
-            epoch_metrics.push_back(MetricResult("train_loss", self.metrics.train_loss))
-            epoch_metrics.push_back(MetricResult("val_loss", self.metrics.val_loss))
+            var epoch_metrics = List[MetricResult]()
+            epoch_metrics.append(MetricResult("train_loss", self.metrics.train_loss))
+            epoch_metrics.append(MetricResult("val_loss", self.metrics.val_loss))
             self.metric_logger.log_epoch(epoch, epoch_metrics)
 
             # Print epoch summary
@@ -236,7 +236,7 @@ struct BaseTrainer(Trainer):
         print("Checkpoint saved: " + path + " (epoch " + String(epoch) + ")")
         # TODO: Implement actual checkpoint saving
 
-    fn load_checkpoint(inout self, path: String) raises:
+    fn load_checkpoint(mut self, path: String) raises:
         """Load checkpoint from path.
 
         NOTE: Simplified implementation - real checkpointing would load
@@ -251,7 +251,7 @@ struct BaseTrainer(Trainer):
         print("Checkpoint loaded: " + path)
         # TODO: Implement actual checkpoint loading
 
-    fn reset(inout self):
+    fn reset(mut self):
         """Reset trainer state for new training run."""
         self.metrics = TrainingMetrics()
         self.metric_logger = MetricLogger()

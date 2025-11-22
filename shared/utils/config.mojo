@@ -35,7 +35,7 @@ struct ConfigValue:
     var bool_val: Bool
     var list_val: List[String]
 
-    fn __init__(inoutself, value: Int):
+    fn __init__(out self, value: Int):
         """Create ConfigValue from Int."""
         self.value_type = "int"
         self.int_val = value
@@ -44,7 +44,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inoutself, value: Float64):
+    fn __init__(out self, value: Float64):
         """Create ConfigValue from Float64."""
         self.value_type = "float"
         self.int_val = 0
@@ -53,7 +53,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inoutself, value: String):
+    fn __init__(out self, value: String):
         """Create ConfigValue from String."""
         self.value_type = "string"
         self.int_val = 0
@@ -62,7 +62,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(inoutself, value: Bool):
+    fn __init__(out self, value: Bool):
         """Create ConfigValue from Bool."""
         self.value_type = "bool"
         self.int_val = 0
@@ -71,7 +71,7 @@ struct ConfigValue:
         self.bool_val = value
         self.list_val = List[String]()
 
-    fn __init__(inoutself, value: List[String]):
+    fn __init__(out self, value: List[String]):
         """Create ConfigValue from List[String]."""
         self.value_type = "list"
         self.int_val = 0
@@ -80,7 +80,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = value
 
-    fn __init__(inoutself, value: List[Int]):
+    fn __init__(out self, value: List[Int]):
         """Create ConfigValue from List[Int]."""
         self.value_type = "list"
         self.int_val = 0
@@ -108,31 +108,31 @@ struct Config:
 
     var data: Dict[String, ConfigValue]
 
-    fn __init__(inoutself):
+    fn __init__(out self):
         """Create empty configuration."""
         self.data = Dict[String, ConfigValue]()
 
-    fn set(inoutself, key: String, value: Int):
+    fn set(mut self, key: String, value: Int):
         """Set integer configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inoutself, key: String, value: Float64):
+    fn set(mut self, key: String, value: Float64):
         """Set float configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inoutself, key: String, value: String):
+    fn set(mut self, key: String, value: String):
         """Set string configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inoutself, key: String, value: Bool):
+    fn set(mut self, key: String, value: Bool):
         """Set boolean configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inoutself, key: String, value: List[Int]):
+    fn set(mut self, key: String, value: List[Int]):
         """Set list of integers configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(inoutself, key: String, value: List[String]):
+    fn set(mut self, key: String, value: List[String]):
         """Set list of strings configuration value."""
         self.data[key] = ConfigValue(value)
 
@@ -868,12 +868,12 @@ struct ConfigValidator:
     var required_keys: List[String]
     var allowed_keys: Dict[String, String]  # key -> type name
 
-    fn __init__(inoutself):
+    fn __init__(out self):
         """Create empty validator."""
         self.required_keys = List[String]()
         self.allowed_keys = Dict[String, String]()
 
-    fn require(inoutself, key: String) -> Self:
+    fn require(mut self, key: String) -> Self:
         """Mark key as required.
 
         Args:
@@ -885,7 +885,7 @@ struct ConfigValidator:
         self.required_keys.append(key)
         return self
 
-    fn allow(inoutself, key: String, type_name: String) -> Self:
+    fn allow(mut self, key: String, type_name: String) -> Self:
         """Mark key as allowed with specific type.
 
         Args:

@@ -20,7 +20,7 @@ from model import LeNet5
 from data_loader import load_idx_labels, load_idx_images, normalize_images
 from shared.core import ExTensor, zeros
 from sys import argv
-from collections.vector import DynamicVector
+from collections import List
 from math import exp
 
 
@@ -35,14 +35,46 @@ var CLASS_NAMES = [
 ]
 
 
-fn parse_args() raises -> (String, String):
+struct InferenceConfig:
+    """Inference configuration from command line arguments."""
+    var weights_dir: String
+    var data_dir: String
+
+    fn __init__(out self, weights_dir: String, data_dir: String):
+        self.weights_dir = weights_dir
+        self.data_dir = data_dir
+
+
+struct PredictionResult:
+    """Result from a single prediction."""
+    var predicted_class: Int
+    var confidence: Float32
+
+    fn __init__(out self, predicted_class: Int, confidence: Float32):
+        self.predicted_class = predicted_class
+        self.confidence = confidence
+
+
+struct EvaluationResult:
+    """Result from evaluating on a dataset."""
+    var accuracy: Float32
+    var num_correct: Int
+    var num_total: Int
+
+    fn __init__(out self, accuracy: Float32, num_correct: Int, num_total: Int):
+        self.accuracy = accuracy
+        self.num_correct = num_correct
+        self.num_total = num_total
+
+
+fn parse_args() raises -> InferenceConfig:
     """Parse command line arguments.
 
     Returns:
-        Tuple of (weights_dir, data_dir)
+        InferenceConfig with parsed arguments
     """
-    var weights_dir = "lenet5_weights"
-    var data_dir = "datasets/emnist"
+    var weights_dir = String("lenet5_weights")
+    var data_dir = String("datasets/emnist")
 
     var args = argv()
     for i in range(len(args)):
@@ -51,10 +83,10 @@ fn parse_args() raises -> (String, String):
         elif args[i] == "--data-dir" and i + 1 < len(args):
             data_dir = args[i + 1]
 
-    return (weights_dir, data_dir)
+    return InferenceConfig(weights_dir, data_dir)
 
 
-fn infer_single(inout model: LeNet5, borrowed image: ExTensor) raises -> (Int, Float32):
+fn infer_single(mut model: LeNet5, image: ExTensor) raises -> PredictionResult:
     """Run inference on a single image.
 
     Args:
@@ -62,7 +94,7 @@ fn infer_single(inout model: LeNet5, borrowed image: ExTensor) raises -> (Int, F
         image: Input image of shape (1, 1, 28, 28)
 
     Returns:
-        Tuple of (predicted_class, confidence)
+        PredictionResult with predicted class and confidence
     """
     var logits = model.forward(image)
 
@@ -85,14 +117,14 @@ fn infer_single(inout model: LeNet5, borrowed image: ExTensor) raises -> (Int, F
 
     var confidence = exp(max_val) / exp_sum
 
-    return (max_idx, confidence)
+    return PredictionResult(max_idx, confidence)
 
 
 fn evaluate_test_set(
-    inout model: LeNet5,
-    borrowed images: ExTensor,
-    borrowed labels: ExTensor
-) raises -> (Float32, Int, Int):
+    mut model: LeNet5,
+    images: ExTensor,
+    labels: ExTensor
+) raises -> EvaluationResult:
     """Evaluate model on entire test set.
 
     Args:
@@ -101,7 +133,7 @@ fn evaluate_test_set(
         labels: Test labels of shape (num_samples,)
 
     Returns:
-        Tuple of (accuracy, num_correct, num_total)
+        EvaluationResult with accuracy and counts
     """
     var num_samples = images.shape()[0]
     var correct = 0
@@ -133,7 +165,7 @@ fn evaluate_test_set(
 
     var accuracy = Float32(correct) / Float32(eval_samples)
 
-    return (accuracy, correct, eval_samples)
+    return EvaluationResult(accuracy, correct, eval_samples)
 
 
 fn main() raises:
@@ -144,8 +176,8 @@ fn main() raises:
 
     # Parse arguments
     var config = parse_args()
-    var weights_dir = config[0]
-    var data_dir = config[1]
+    var weights_dir = config.weights_dir
+    var data_dir = config.data_dir
 
     print("\nConfiguration:")
     print("  Weights Directory: ", weights_dir)
@@ -181,9 +213,9 @@ fn main() raises:
     # Run inference on test set
     print("Running inference on test set...")
     var result = evaluate_test_set(model, test_images, test_labels)
-    var accuracy = result[0]
-    var correct = result[1]
-    var total = result[2]
+    var accuracy = result.accuracy
+    var correct = result.num_correct
+    var total = result.num_total
 
     print()
     print("Results:")

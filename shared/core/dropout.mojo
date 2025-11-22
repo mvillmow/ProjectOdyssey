@@ -10,7 +10,7 @@ This helps prevent overfitting by randomly "dropping out" neurons.
 from .extensor import ExTensor, zeros_like, ones_like
 from .arithmetic import multiply, divide
 from .extensor import full_like
-from collections.vector import DynamicVector
+from collections import List
 import random
 
 
@@ -142,7 +142,7 @@ fn dropout2d(
         raise Error("Dropout probability must be in [0, 1)")
 
     var x_shape = x.shape()
-    if x_shape.size != 4:
+    if len(x_shape) != 4:
         raise Error("dropout2d requires 4D input (batch, channels, height, width)")
 
     var batch = x_shape[0]
@@ -156,7 +156,7 @@ fn dropout2d(
         return (x, ones_mask)
 
     # Training mode: create channel-level mask
-    var mask_shape = DynamicVector[Int](4)
+    var mask_shape = List[Int](4)
     mask_shape[0] = batch
     mask_shape[1] = channels
     mask_shape[2] = 1

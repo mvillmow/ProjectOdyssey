@@ -36,8 +36,7 @@ fn load_default_config(config_type: String) raises -> Config:
 
 
 fn load_paper_config(
-    paper_name: String,
-    config_type: String = "training"
+    paper_name: String, config_type: String = "training"
 ) raises -> Config:
     """Load paper configuration with defaults merged in.
 
@@ -66,7 +65,9 @@ fn load_paper_config(
         pass
 
     # Load paper-specific config
-    var paper_filepath = "configs/papers/" + paper_name + "/" + config_type + ".yaml"
+    var paper_filepath = (
+        "configs/papers/" + paper_name + "/" + config_type + ".yaml"
+    )
     var paper_config = load_config(paper_filepath)
 
     # Merge: defaults → paper
@@ -76,8 +77,7 @@ fn load_paper_config(
 
 
 fn load_experiment_config(
-    paper_name: String,
-    experiment_name: String
+    paper_name: String, experiment_name: String
 ) raises -> Config:
     """Load complete configuration for an experiment.
 
@@ -127,7 +127,9 @@ fn load_experiment_config(
     for i in range(len(default_types)):
         var config_type = default_types[i]
         try:
-            var paper_filepath = "configs/papers/" + paper_name + "/" + config_type + ".yaml"
+            var paper_filepath = (
+                "configs/papers/" + paper_name + "/" + config_type + ".yaml"
+            )
             var paper_config = load_config(paper_filepath)
             config = merge_configs(config, paper_config)
         except:
@@ -135,7 +137,9 @@ fn load_experiment_config(
             pass
 
     # Step 3: Load experiment-specific config
-    var exp_filepath = "configs/experiments/" + paper_name + "/" + experiment_name + ".yaml"
+    var exp_filepath = (
+        "configs/experiments/" + paper_name + "/" + experiment_name + ".yaml"
+    )
     var exp_config = load_config(exp_filepath)
     config = merge_configs(config, exp_config)
 
@@ -146,8 +150,7 @@ fn load_experiment_config(
 
 
 fn load_config_with_validation(
-    filepath: String,
-    required_keys: List[String]
+    filepath: String, required_keys: List[String]
 ) raises -> Config:
     """Load configuration with validation of required keys.
 
@@ -177,9 +180,7 @@ fn load_config_with_validation(
 
 
 fn create_experiment_config(
-    paper_name: String,
-    experiment_name: String,
-    overrides: Config
+    paper_name: String, experiment_name: String, overrides: Config
 ) raises:
     """Create a new experiment configuration with overrides.
 
@@ -206,7 +207,9 @@ fn create_experiment_config(
     var exp_config = merge_configs(paper_config, overrides)
 
     # Save to experiment directory
-    var exp_filepath = "configs/experiments/" + paper_name + "/" + experiment_name + ".yaml"
+    var exp_filepath = (
+        "configs/experiments/" + paper_name + "/" + experiment_name + ".yaml"
+    )
     exp_config.to_yaml(exp_filepath)
 
 
