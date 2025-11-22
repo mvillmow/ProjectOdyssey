@@ -45,7 +45,7 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
             known_product *= new_shape[i]
 
     # If we have -1, infer that dimension
-    var final_shape = List[Int](new_len)
+    var final_shape = List[Int]()
     var total_elements = tensor.numel()
 
     if inferred_dim != -1:
@@ -56,13 +56,13 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
 
         for i in range(new_len):
             if i == inferred_dim:
-                final_shape[i] = inferred_size
+                final_shape.append(inferred_size)
             else:
-                final_shape[i] = new_shape[i]
+                final_shape.append(new_shape[i])
     else:
         # No -1, just copy
         for i in range(new_len):
-            final_shape[i] = new_shape[i]
+            final_shape.append(new_shape[i])
 
     # Verify total elements match
     var new_total: Int = 1
@@ -118,12 +118,10 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             raise Error("squeeze: cannot squeeze dimension that is not size 1")
 
         # Create new shape without this dimension
-        var new_shape = List[Int](ndim - 1)
-        var j = 0
+        var new_shape = List[Int]()
         for i in range(ndim):
             if i != actual_dim:
-                new_shape[j] = old_shape[i]
-                j += 1
+                new_shape.append(old_shape[i])
 
         return reshape(tensor, new_shape)
     else:
@@ -138,12 +136,10 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             return reshape(tensor, old_shape)
 
         # Build new shape
-        var new_shape = List[Int](new_dims)
-        var j = 0
+        var new_shape = List[Int]()
         for i in range(ndim):
             if old_shape[i] != 1:
-                new_shape[j] = old_shape[i]
-                j += 1
+                new_shape.append(old_shape[i])
 
         return reshape(tensor, new_shape)
 
@@ -174,13 +170,13 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         raise Error("unsqueeze: dimension out of range")
 
     # Create new shape with size-1 dimension inserted
-    var new_shape = List[Int](new_ndim)
+    var new_shape = List[Int]()
     var j = 0
     for i in range(new_ndim):
         if i == actual_dim:
-            new_shape[i] = 1
+            new_shape.append(1)
         else:
-            new_shape[i] = old_shape[j]
+            new_shape.append(old_shape[j])
             j += 1
 
     return reshape(tensor, new_shape)
@@ -293,12 +289,12 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         concat_size += shape[actual_axis]
 
     # Create result shape
-    var result_shape = List[Int](ndim)
+    var result_shape = List[Int]()
     for i in range(ndim):
         if i == actual_axis:
-            result_shape[i] = concat_size
+            result_shape.append(concat_size)
         else:
-            result_shape[i] = ref_shape[i]
+            result_shape.append(ref_shape[i])
 
     # Create result tensor
     var result = ExTensor(result_shape, dtype)

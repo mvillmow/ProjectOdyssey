@@ -320,7 +320,8 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
-    var result_shape = List[Int](batch_size)
+    var result_shape = List[Int]()
+    result_shape.append(batch_size)
     var result = ExTensor(result_shape, DType.int32)
 
     for b in range(batch_size):
