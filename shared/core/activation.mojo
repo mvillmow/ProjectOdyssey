@@ -1010,9 +1010,23 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
     # softplus(x) = log(1 + exp(x))
 
     # Compute softplus with numerical stability
-    var exp_x = exp(tensor)
-    var one_plus_exp = add(exp_x, ExTensor.from_scalar(1.0, tensor.dtype()))
-    var softplus = log(one_plus_exp)
+    # For large x: softplus(x) ≈ x (since exp(x) >> 1)
+    # For small x: softplus(x) = log(1 + exp(x))
+    # Use stable formula: softplus(x) = log1p(exp(x)) for x < threshold
+    #                                  = x for x >= threshold
+    # But since we don't have log1p, use: max(x, 0) + log(1 + exp(-|x|))
+
+    from .elementwise import clip, abs as abs_fn
+
+    # Stable softplus: sp(x) = max(0, x) + log(1 + exp(-|x|))
+    var zeros = ExTensor.from_scalar(0.0, tensor.dtype())
+    var x_pos = clip(tensor, 0.0, 1e10)  # max(0, x)
+    var x_abs = abs_fn(tensor)  # |x|
+    var neg_x_abs = multiply(x_abs, ExTensor.from_scalar(-1.0, tensor.dtype()))  # -|x|
+    var exp_neg_abs = exp(neg_x_abs)  # exp(-|x|)
+    var one_plus_exp = add(exp_neg_abs, ExTensor.from_scalar(1.0, tensor.dtype()))
+    var log_term = log(one_plus_exp)
+    var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
     var tanh_softplus = tanh(softplus)
     return multiply(tensor, tanh_softplus)
@@ -1065,7 +1079,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
                 result_ptr.bitcast[Float32]()[i] = val
             else:
                 # alpha * (exp(val) - 1)
-                var exp_val = exp_scalar_f32(val)
+                # Clip val to prevent extreme exp() values (exp(-20) ≈ 2e-9)
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
                 result_ptr.bitcast[Float32]()[i] = Float32(alpha) * (exp_val - 1.0)
     elif tensor.dtype() == DType.float64:
         for i in range(size):
@@ -1073,7 +1089,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
             if val > 0:
                 result_ptr.bitcast[Float64]()[i] = val
             else:
-                var exp_val = exp_scalar_f64(val)
+                # Clip val to prevent extreme exp() values
+                var val_clipped = max(val, Float64(-20.0))
+                var exp_val = exp_scalar_f64(val_clipped)
                 result_ptr.bitcast[Float64]()[i] = alpha * (exp_val - 1.0)
     elif tensor.dtype() == DType.float16:
         for i in range(size):
@@ -1081,7 +1099,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
             if val > 0:
                 result_ptr.bitcast[Float16]()[i] = Float16(val)
             else:
-                var exp_val = exp_scalar_f32(val)
+                # Clip val to prevent extreme exp() values
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
                 result_ptr.bitcast[Float16]()[i] = Float16(Float32(alpha) * (exp_val - 1.0))
     else:
         raise Error("elu: only float16/32/64 dtypes supported")
@@ -1165,10 +1185,17 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
         var grad_x = mish_backward(grad_output, x)
         ```
     """
-    # Compute softplus(x) = log(1 + exp(x))
-    var exp_x = exp(x)
-    var one_plus_exp = add(exp_x, ExTensor.from_scalar(1.0, x.dtype()))
-    var softplus = log(one_plus_exp)
+    # Compute softplus(x) = log(1 + exp(x)) with numerical stability
+    # Use stable formula: sp(x) = max(0, x) + log(1 + exp(-|x|))
+    from .elementwise import clip, abs as abs_fn
+
+    var x_pos = clip(x, 0.0, 1e10)  # max(0, x)
+    var x_abs = abs_fn(x)  # |x|
+    var neg_x_abs = multiply(x_abs, ExTensor.from_scalar(-1.0, x.dtype()))  # -|x|
+    var exp_neg_abs = exp(neg_x_abs)  # exp(-|x|)
+    var one_plus_exp = add(exp_neg_abs, ExTensor.from_scalar(1.0, x.dtype()))
+    var log_term = log(one_plus_exp)
+    var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
     # Compute tanh(softplus(x))
     var tanh_sp = tanh(softplus)
@@ -1228,8 +1255,9 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
             if val > 0:
                 result_ptr.bitcast[Float32]()[i] = grad_val
             else:
-                # alpha * exp(val)
-                var exp_val = exp_scalar_f32(val)
+                # alpha * exp(val) - clip val for numerical stability
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
                 result_ptr.bitcast[Float32]()[i] = grad_val * Float32(alpha) * exp_val
     elif x.dtype() == DType.float64:
         for i in range(size):
@@ -1239,7 +1267,9 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
             if val > 0:
                 result_ptr.bitcast[Float64]()[i] = grad_val
             else:
-                var exp_val = exp_scalar_f64(val)
+                # Clip val for numerical stability
+                var val_clipped = max(val, Float64(-20.0))
+                var exp_val = exp_scalar_f64(val_clipped)
                 result_ptr.bitcast[Float64]()[i] = grad_val * alpha * exp_val
     elif x.dtype() == DType.float16:
         for i in range(size):
@@ -1249,7 +1279,9 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
             if val > 0:
                 result_ptr.bitcast[Float16]()[i] = Float16(grad_val)
             else:
-                var exp_val = exp_scalar_f32(val)
+                # Clip val for numerical stability
+                var val_clipped = max(val, Float32(-20.0))
+                var exp_val = exp_scalar_f32(val_clipped)
                 result_ptr.bitcast[Float16]()[i] = Float16(grad_val * Float32(alpha) * exp_val)
     else:
         raise Error("elu_backward: only float16/32/64 dtypes supported")

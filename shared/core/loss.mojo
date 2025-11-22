@@ -334,13 +334,10 @@ fn cross_entropy_backward(
     # Gradient: softmax(logits) - targets
     var grad = subtract(probs, targets)
 
-    # Scale by upstream gradient (usually 1.0 for mean reduction)
-    # If grad_output is scalar, we need to broadcast it
-    # For now, assume grad_output is already properly shaped or is 1.0
-    # TODO: Handle proper broadcasting of grad_output
-
-    # Average over batch (matching forward pass mean reduction)
+    # Scale by upstream gradient and average over batch
+    # NOTE: Forward pass already averages via mean(ce, axis=0), so we divide by batch_size here
     var batch_size = Float32(logits.shape()[0])
     var grad_scaled = multiply(grad, ExTensor.from_scalar(1.0 / batch_size, grad.dtype()))
 
+    # Chain rule: multiply by upstream gradient
     return multiply(grad_scaled, grad_output)
