@@ -46,7 +46,19 @@ References:
 from .variable import Variable
 from .tape import GradientTape, TapeNode
 from .optimizers import SGD
-from .functional import LossAndGrad, mse_loss_and_grad, bce_loss_and_grad, ce_loss_and_grad, compute_gradient
+from .functional import (
+    LossAndGrad,
+    mse_loss_and_grad,
+    bce_loss_and_grad,
+    ce_loss_and_grad,
+    compute_gradient,
+    multiply_scalar,
+    add_scalar,
+    subtract_scalar,
+    divide_scalar,
+    apply_gradient,
+    apply_gradients,
+)
 
 __all__ = [
     "Variable",
@@ -58,4 +70,10 @@ __all__ = [
     "bce_loss_and_grad",
     "ce_loss_and_grad",
     "compute_gradient",
+    "multiply_scalar",
+    "add_scalar",
+    "subtract_scalar",
+    "divide_scalar",
+    "apply_gradient",
+    "apply_gradients",
 ]

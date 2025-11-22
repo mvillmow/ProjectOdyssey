@@ -13,19 +13,20 @@ Each helper function computes gradients for a specific loss + reduction pattern.
 This covers 90% of real use cases without the complexity of full autograd.
 
 Example:
-    from shared.autograd.functional import mse_loss_and_grad
+    from shared.autograd.functional import mse_loss_and_grad, multiply_scalar
 
     # Compute loss and gradient in one call
-    var loss, grad = mse_loss_and_grad(predictions, targets)
+    var result = mse_loss_and_grad(predictions, targets)
 
-    # Use gradient to update parameters
-    parameters = subtract(parameters, multiply(learning_rate, grad))
+    # Apply gradient with scalar learning rate
+    parameters = subtract(parameters, multiply_scalar(result.grad, 0.01))
 
 Common Patterns Supported:
 - MSE loss + mean reduction
 - Binary cross-entropy loss + mean reduction
 - Cross-entropy loss (includes softmax)
-- Custom: Just chain the backward functions yourself!
+- Scalar operations (multiply_scalar, add_scalar, etc.)
+- Parameter update helpers
 """
 
 from ..core.extensor import ExTensor
@@ -37,6 +38,182 @@ from ..core.loss import binary_cross_entropy, binary_cross_entropy_backward
 from ..core.loss import cross_entropy, cross_entropy_backward
 from ..core.creation import ones
 from collections.vector import DynamicVector
+
+
+# ============================================================================
+# Scalar Operations - Efficient tensor-scalar arithmetic
+# ============================================================================
+
+
+fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
+    """Multiply tensor by a scalar value.
+
+    More efficient than creating a full tensor filled with the scalar value.
+
+    Args:
+        tensor: Input tensor
+        scalar: Scalar value to multiply by
+
+    Returns:
+        New tensor with result
+
+    Example:
+        var scaled = multiply_scalar(gradients, 0.01)  # Scale by learning rate
+        var doubled = multiply_scalar(x, 2.0)
+    """
+    var result = ExTensor(tensor.shape(), tensor.dtype())
+    for i in range(tensor.numel()):
+        let val = tensor._get_float64(i)
+        result._set_float64(i, val * scalar)
+    return result
+
+
+fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
+    """Add a scalar value to all elements of a tensor.
+
+    Args:
+        tensor: Input tensor
+        scalar: Scalar value to add
+
+    Returns:
+        New tensor with result
+
+    Example:
+        var shifted = add_scalar(x, 1.0)  # x + 1
+    """
+    var result = ExTensor(tensor.shape(), tensor.dtype())
+    for i in range(tensor.numel()):
+        let val = tensor._get_float64(i)
+        result._set_float64(i, val + scalar)
+    return result
+
+
+fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
+    """Subtract a scalar value from all elements of a tensor.
+
+    Args:
+        tensor: Input tensor
+        scalar: Scalar value to subtract
+
+    Returns:
+        New tensor with result
+
+    Example:
+        var shifted = subtract_scalar(x, 1.0)  # x - 1
+    """
+    var result = ExTensor(tensor.shape(), tensor.dtype())
+    for i in range(tensor.numel()):
+        let val = tensor._get_float64(i)
+        result._set_float64(i, val - scalar)
+    return result
+
+
+fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
+    """Divide all elements of a tensor by a scalar value.
+
+    Args:
+        tensor: Input tensor
+        scalar: Scalar value to divide by
+
+    Returns:
+        New tensor with result
+
+    Raises:
+        Error if scalar is zero
+
+    Example:
+        var normalized = divide_scalar(x, x_max)  # Normalize by max value
+    """
+    if scalar == 0.0:
+        raise Error("Cannot divide by zero")
+
+    var result = ExTensor(tensor.shape(), tensor.dtype())
+    for i in range(tensor.numel()):
+        let val = tensor._get_float64(i)
+        result._set_float64(i, val / scalar)
+    return result
+
+
+# ============================================================================
+# Parameter Update Helpers
+# ============================================================================
+
+
+fn apply_gradient(
+    parameter: ExTensor,
+    gradient: ExTensor,
+    learning_rate: Float64
+) raises -> ExTensor:
+    """Apply a gradient to a parameter with given learning rate.
+
+    Performs: parameter = parameter - learning_rate * gradient
+
+    Args:
+        parameter: Parameter tensor to update
+        gradient: Gradient tensor (same shape as parameter)
+        learning_rate: Learning rate (step size)
+
+    Returns:
+        Updated parameter tensor
+
+    Raises:
+        Error if shapes don't match
+
+    Example:
+        w = apply_gradient(w, grad_w, 0.01)
+        b = apply_gradient(b, grad_b, 0.01)
+    """
+    if gradient.shape() != parameter.shape():
+        raise Error("Gradient shape must match parameter shape")
+
+    # Compute: parameter - lr * gradient
+    var update = multiply_scalar(gradient, learning_rate)
+    return subtract(parameter, update)
+
+
+fn apply_gradients(
+    inout parameters: DynamicVector[ExTensor],
+    gradients: DynamicVector[ExTensor],
+    learning_rate: Float64
+) raises:
+    """Apply gradients to multiple parameters in-place.
+
+    Performs: parameters[i] = parameters[i] - learning_rate * gradients[i]
+
+    Args:
+        parameters: Parameter tensors to update (modified in-place)
+        gradients: Gradient tensors (same shapes as parameters)
+        learning_rate: Learning rate (step size)
+
+    Raises:
+        Error if parameter count doesn't match gradient count
+        Error if any shape mismatch
+
+    Example:
+        var params = DynamicVector[ExTensor]()
+        params.push_back(w)
+        params.push_back(b)
+
+        var grads = DynamicVector[ExTensor]()
+        grads.push_back(grad_w)
+        grads.push_back(grad_b)
+
+        apply_gradients(params, grads, 0.01)
+
+        # Parameters are updated in-place
+        w = params[0]
+        b = params[1]
+    """
+    if len(parameters) != len(gradients):
+        raise Error("Parameter count must match gradient count")
+
+    for i in range(len(parameters)):
+        parameters[i] = apply_gradient(parameters[i], gradients[i], learning_rate)
+
+
+# ============================================================================
+# Loss and Gradient Helpers
+# ============================================================================
 
 
 struct LossAndGrad:
