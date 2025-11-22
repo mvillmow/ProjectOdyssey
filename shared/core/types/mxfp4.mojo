@@ -317,7 +317,7 @@ struct MXFP4(Stringable, Representable):
         # Simple LCG: seed = (1103515245 * seed + 12345) mod 2^32
         var rng_state = seed.cast[DType.uint32]()
         rng_state = (1103515245 * rng_state + 12345) & 0xFFFFFFFF
-        var random_val = Float32(rng_state.cast[DType.uint64]()) / Float32(0xFFFFFFFF)
+        var random_val = Float32(rng_state >> 8) / Float32(16777216.0)
 
         # Stochastic decision
         var result_bits: UInt8
