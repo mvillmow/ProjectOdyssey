@@ -17,7 +17,7 @@ References:
 """
 
 from model import LeNet5
-from data_loader import load_idx_labels, load_idx_images, normalize_images
+from data_loader import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
@@ -85,7 +85,7 @@ fn compute_gradients(
     Args:
         model: LeNet-5 model
         input: Batch of images (batch, 1, 28, 28)
-        labels: Batch of labels (batch,)
+        labels: One-hot encoded batch of labels (batch, num_classes)
         learning_rate: Learning rate for SGD
 
     Returns:
@@ -205,7 +205,7 @@ fn train_epoch(
     Args:
         model: LeNet-5 model
         train_images: Training images (num_samples, 1, 28, 28)
-        train_labels: Training labels (num_samples,)
+        train_labels: Integer training labels (num_samples,)
         batch_size: Mini-batch size
         learning_rate: Learning rate for SGD
         epoch: Current epoch number (1-indexed)
@@ -227,7 +227,10 @@ fn train_epoch(
 
         # Extract batch slice from dataset (zero-copy view)
         var batch_images = train_images.slice(start_idx, end_idx, axis=0)
-        var batch_labels = train_labels.slice(start_idx, end_idx, axis=0)
+        var batch_labels_int = train_labels.slice(start_idx, end_idx, axis=0)
+
+        # Convert batch labels to one-hot encoding (required for cross_entropy loss)
+        var batch_labels = one_hot_encode(batch_labels_int, num_classes=47)
 
         # Compute gradients and update parameters
         var batch_loss = compute_gradients(model, batch_images, batch_labels, learning_rate)
@@ -254,7 +257,7 @@ fn evaluate(
     Args:
         model: LeNet-5 model
         test_images: Test images (num_samples, 1, 28, 28)
-        test_labels: Test labels (num_samples,)
+        test_labels: Integer test labels (num_samples,)
 
     Returns:
         Test accuracy (0.0 to 1.0)
@@ -282,6 +285,8 @@ fn evaluate(
             # Extract single sample from batch
             var sample = batch_images.slice(i, i + 1, axis=0)
             var pred_class = model.predict(sample)
+
+            # Get true label (integer from uint8 tensor)
             var true_label = Int(batch_labels[i])
 
             if pred_class == true_label:

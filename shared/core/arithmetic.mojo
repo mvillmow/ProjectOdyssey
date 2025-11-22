@@ -39,12 +39,12 @@ fn _broadcast_binary[
         var result = _broadcast_binary[DType.float32, add_op](a, b)
     """
     # Compute broadcast shape
-    let result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape(), b.shape())
     var result = ExTensor(result_shape, dtype)
 
     # Compute broadcast strides
-    let strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    let strides_b = compute_broadcast_strides(b.shape(), result_shape)
+    var strides_a = compute_broadcast_strides(a.shape(), result_shape)
+    var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 
     # Calculate total elements in result
     var total_elems = 1
@@ -68,7 +68,7 @@ fn _broadcast_binary[
             for d in range(dim + 1, len(result_shape)):
                 stride_prod *= result_shape[d]
 
-            let coord = temp_idx // stride_prod
+            var coord = temp_idx // stride_prod
             temp_idx = temp_idx % stride_prod
 
             idx_a += coord * strides_a[dim]
@@ -286,9 +286,9 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Floor division: floor(x / y)
         # For correct negative handling, use: int(div) if div >= 0 else int(div) - 1
-        let div_result = x / y
-        let as_int = Int(div_result)
-        let floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        var div_result = x / y
+        var as_int = Int(div_result)
+        var floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
         return floored
 
     return _dispatch_broadcast_binary[_floor_div_op](a, b)
@@ -320,9 +320,9 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     @always_inline
     fn _mod_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Modulo: a % b = a - floor(a/b) * b
-        let div_result = x / y
-        let as_int = Int(div_result)
-        let floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        var div_result = x / y
+        var as_int = Int(div_result)
+        var floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
         return x - floored * y
 
     return _dispatch_broadcast_binary[_mod_op](a, b)
@@ -396,15 +396,15 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: DynamicVector[Int]) ra
     from .reduction import sum
 
     var result = grad
-    let grad_shape = grad.shape()
-    let grad_ndim = len(grad_shape)
-    let orig_ndim = len(original_shape)
+    var grad_shape = grad.shape()
+    var grad_ndim = len(grad_shape)
+    var orig_ndim = len(original_shape)
 
     # Handle prepended dimensions (when original had fewer dims)
     # Example: original (5,) broadcast to (3, 4, 5)
     # Need to sum over first (grad_ndim - orig_ndim) dimensions
     if orig_ndim < grad_ndim:
-        let dims_to_sum = grad_ndim - orig_ndim
+        var dims_to_sum = grad_ndim - orig_ndim
         for i in range(dims_to_sum):
             # Always sum over axis 0 since shape shrinks each time
             result = sum(result, axis=0, keepdims=False)
@@ -412,7 +412,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: DynamicVector[Int]) ra
     # Now handle dimensions that were size 1 and got broadcast
     # Example: (3, 1, 5) → (3, 4, 5), sum over axis 1 keeping dims
     for i in range(min(orig_ndim, grad_ndim)):
-        let dim_idx = i if orig_ndim < grad_ndim else i + (grad_ndim - orig_ndim)
+        var dim_idx = i if orig_ndim < grad_ndim else i + (grad_ndim - orig_ndim)
         if i < orig_ndim and original_shape[i] == 1 and i < len(result.shape()) and result.shape()[i] > 1:
             result = sum(result, axis=i, keepdims=True)
 
@@ -571,7 +571,7 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
     # Add epsilon to prevent division by zero
     var b_squared_safe = ExTensor(b_squared.shape(), b_squared.dtype())
     for i in range(b_squared.numel()):
-        let val = b_squared._get_float64(i)
+        var val = b_squared._get_float64(i)
         b_squared_safe._set_float64(i, val + EPSILON)
 
     # Compute -grad_output * a / b²
