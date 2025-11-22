@@ -13,6 +13,7 @@ Architecture:
 
 Modules:
     extensor: Core tensor type and creation functions
+    types: Custom data types (FP8 for 8-bit floating point)
     arithmetic: Element-wise arithmetic operations (add, subtract, multiply, divide)
     matrix: Matrix operations (matmul, transpose, dot, outer)
     activation: Activation functions (relu, sigmoid, tanh, softmax, gelu)
@@ -63,6 +64,12 @@ from .extensor import (
     zeros_like,
     full_like,
 )
+
+# ============================================================================
+# Custom Data Types
+# ============================================================================
+
+from .types.fp8 import FP8
 
 # ============================================================================
 # Arithmetic Operations
