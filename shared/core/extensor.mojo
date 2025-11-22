@@ -674,6 +674,385 @@ struct ExTensor(Movable):
 
         return result^
 
+    # ===----------------------------------------------------------------------===#
+    # Integer Type Conversions
+    # ===----------------------------------------------------------------------===#
+
+    fn to_int8(self) raises -> ExTensor:
+        """Convert tensor values to Int8 format.
+
+        Converts a tensor of any dtype to Int8 format, clamping values to the
+        range [-128, 127].
+
+        Returns:
+            A new ExTensor with dtype=int8 containing converted values
+
+        Raises:
+            Error: If conversion is not supported for the source dtype
+
+        Examples:
+            var t = zeros(List[Int](3, 4), DType.float32)
+            var i8_t = t.to_int8()  # Returns int8 tensor
+        """
+        from .types.integer import Int8
+
+        # Create output tensor with int8 dtype
+        var result = ExTensor(self._shape, DType.int8)
+
+        # Convert each element to Int8
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                result._data.bitcast[Int8]()[i] = self._data.bitcast[Int8]()[i]
+                continue
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_int8 conversion")
+
+            var i8_val = Int8.from_float32(val)
+            result._data.bitcast[Int8]()[i] = i8_val.value
+
+        return result^
+
+    fn to_int16(self) raises -> ExTensor:
+        """Convert tensor values to Int16 format.
+
+        Converts a tensor of any dtype to Int16 format, clamping values to the
+        range [-32768, 32767].
+
+        Returns:
+            A new ExTensor with dtype=int16 containing converted values
+        """
+        from .types.integer import Int16
+
+        var result = ExTensor(self._shape, DType.int16)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                result._data.bitcast[Int16]()[i] = self._data.bitcast[Int16]()[i]
+                continue
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_int16 conversion")
+
+            var i16_val = Int16.from_float32(val)
+            result._data.bitcast[Int16]()[i] = i16_val.value
+
+        return result^
+
+    fn to_int32(self) raises -> ExTensor:
+        """Convert tensor values to Int32 format.
+
+        Converts a tensor of any dtype to Int32 format, clamping values to the
+        range [-2147483648, 2147483647].
+
+        Returns:
+            A new ExTensor with dtype=int32 containing converted values
+        """
+        from .types.integer import Int32
+
+        var result = ExTensor(self._shape, DType.int32)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                result._data.bitcast[Int32]()[i] = self._data.bitcast[Int32]()[i]
+                continue
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_int32 conversion")
+
+            var i32_val = Int32.from_float32(val)
+            result._data.bitcast[Int32]()[i] = i32_val.value
+
+        return result^
+
+    fn to_int64(self) raises -> ExTensor:
+        """Convert tensor values to Int64 format.
+
+        Converts a tensor of any dtype to Int64 format.
+
+        Returns:
+            A new ExTensor with dtype=int64 containing converted values
+        """
+        from .types.integer import Int64
+
+        var result = ExTensor(self._shape, DType.int64)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                result._data.bitcast[Int64]()[i] = self._data.bitcast[Int64]()[i]
+                continue
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_int64 conversion")
+
+            var i64_val = Int64.from_float32(val)
+            result._data.bitcast[Int64]()[i] = i64_val.value
+
+        return result^
+
+    fn to_uint8(self) raises -> ExTensor:
+        """Convert tensor values to UInt8 format.
+
+        Converts a tensor of any dtype to UInt8 format, clamping values to the
+        range [0, 255].
+
+        Returns:
+            A new ExTensor with dtype=uint8 containing converted values
+        """
+        from .types.unsigned import UInt8
+
+        var result = ExTensor(self._shape, DType.uint8)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                result._data.bitcast[UInt8]()[i] = self._data.bitcast[UInt8]()[i]
+                continue
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_uint8 conversion")
+
+            var u8_val = UInt8.from_float32(val)
+            result._data.bitcast[UInt8]()[i] = u8_val.value
+
+        return result^
+
+    fn to_uint16(self) raises -> ExTensor:
+        """Convert tensor values to UInt16 format.
+
+        Converts a tensor of any dtype to UInt16 format, clamping values to the
+        range [0, 65535].
+
+        Returns:
+            A new ExTensor with dtype=uint16 containing converted values
+        """
+        from .types.unsigned import UInt16
+
+        var result = ExTensor(self._shape, DType.uint16)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                result._data.bitcast[UInt16]()[i] = self._data.bitcast[UInt16]()[i]
+                continue
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_uint16 conversion")
+
+            var u16_val = UInt16.from_float32(val)
+            result._data.bitcast[UInt16]()[i] = u16_val.value
+
+        return result^
+
+    fn to_uint32(self) raises -> ExTensor:
+        """Convert tensor values to UInt32 format.
+
+        Converts a tensor of any dtype to UInt32 format, clamping values to the
+        range [0, 4294967295].
+
+        Returns:
+            A new ExTensor with dtype=uint32 containing converted values
+        """
+        from .types.unsigned import UInt32
+
+        var result = ExTensor(self._shape, DType.uint32)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                result._data.bitcast[UInt32]()[i] = self._data.bitcast[UInt32]()[i]
+                continue
+            elif self._dtype == DType.uint64:
+                val = Float32(self._data.bitcast[UInt64]()[i])
+            else:
+                raise Error("Unsupported dtype for to_uint32 conversion")
+
+            var u32_val = UInt32.from_float32(val)
+            result._data.bitcast[UInt32]()[i] = u32_val.value
+
+        return result^
+
+    fn to_uint64(self) raises -> ExTensor:
+        """Convert tensor values to UInt64 format.
+
+        Converts a tensor of any dtype to UInt64 format, clamping negative values to 0.
+
+        Returns:
+            A new ExTensor with dtype=uint64 containing converted values
+        """
+        from .types.unsigned import UInt64
+
+        var result = ExTensor(self._shape, DType.uint64)
+
+        for i in range(self._numel):
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            elif self._dtype == DType.float64:
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            elif self._dtype == DType.int8:
+                val = Float32(self._data.bitcast[Int8]()[i])
+            elif self._dtype == DType.int16:
+                val = Float32(self._data.bitcast[Int16]()[i])
+            elif self._dtype == DType.int32:
+                val = Float32(self._data.bitcast[Int32]()[i])
+            elif self._dtype == DType.int64:
+                val = Float32(self._data.bitcast[Int64]()[i])
+            elif self._dtype == DType.uint8:
+                val = Float32(self._data.bitcast[UInt8]()[i])
+            elif self._dtype == DType.uint16:
+                val = Float32(self._data.bitcast[UInt16]()[i])
+            elif self._dtype == DType.uint32:
+                val = Float32(self._data.bitcast[UInt32]()[i])
+            elif self._dtype == DType.uint64:
+                result._data.bitcast[UInt64]()[i] = self._data.bitcast[UInt64]()[i]
+                continue
+            else:
+                raise Error("Unsupported dtype for to_uint64 conversion")
+
+            var u64_val = UInt64.from_float32(val)
+            result._data.bitcast[UInt64]()[i] = u64_val.value
+
+        return result^
+
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
     # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
     # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
