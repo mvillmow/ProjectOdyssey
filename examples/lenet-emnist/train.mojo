@@ -224,23 +224,19 @@ fn train_epoch(
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
         var end_idx = min(start_idx + batch_size, num_samples)
-        var actual_batch_size = end_idx - start_idx
 
-        # TODO: Extract batch slice when slicing is fully supported
-        # For now, we'll process the entire dataset (inefficient but demonstrates structure)
+        # Extract batch slice from dataset (zero-copy view)
+        var batch_images = train_images.slice(start_idx, end_idx, axis=0)
+        var batch_labels = train_labels.slice(start_idx, end_idx, axis=0)
 
         # Compute gradients and update parameters
-        var batch_loss = compute_gradients(model, train_images, train_labels, learning_rate)
+        var batch_loss = compute_gradients(model, batch_images, batch_labels, learning_rate)
         total_loss += batch_loss
 
         # Print progress every 100 batches
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
             print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss)
-
-        # Break after first batch for demonstration
-        # Remove this when batch slicing is implemented
-        break
 
     var avg_loss = total_loss / Float32(num_batches)
     print("  Average Loss: ", avg_loss)
@@ -268,21 +264,31 @@ fn evaluate(
 
     print("Evaluating...")
 
-    # TODO: Process in batches when slicing is implemented
-    # For now, evaluate on first 100 samples
-    var eval_samples = min(100, num_samples)
+    # Evaluate in batches to avoid memory issues
+    var eval_batch_size = 32
+    var num_eval_batches = (num_samples + eval_batch_size - 1) // eval_batch_size
 
-    for i in range(eval_samples):
-        # TODO: Extract single sample when slicing works
-        # For demonstration, we'll use the first image repeatedly
-        var pred_class = model.predict(test_images)
-        var true_label = Int(test_labels[i])
+    for batch_idx in range(num_eval_batches):
+        var start_idx = batch_idx * eval_batch_size
+        var end_idx = min(start_idx + eval_batch_size, num_samples)
 
-        if pred_class == true_label:
-            correct += 1
+        # Extract batch slice
+        var batch_images = test_images.slice(start_idx, end_idx, axis=0)
+        var batch_labels = test_labels.slice(start_idx, end_idx, axis=0)
 
-    var accuracy = Float32(correct) / Float32(eval_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", eval_samples, ")")
+        # Process each sample in the batch
+        var actual_batch_size = end_idx - start_idx
+        for i in range(actual_batch_size):
+            # Extract single sample from batch
+            var sample = batch_images.slice(i, i + 1, axis=0)
+            var pred_class = model.predict(sample)
+            var true_label = Int(batch_labels[i])
+
+            if pred_class == true_label:
+                correct += 1
+
+    var accuracy = Float32(correct) / Float32(num_samples)
+    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", num_samples, ")")
 
     return accuracy
 
