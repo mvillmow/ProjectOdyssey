@@ -1053,6 +1053,101 @@ struct ExTensor(Movable):
 
         return result^
 
+    # ========================================================================
+    # BF8 Conversion Methods
+    # ========================================================================
+
+    fn to_bf8(self) raises -> ExTensor:
+        """Convert tensor values to BF8 E5M2 format.
+
+        This method converts a tensor of any floating-point dtype to BF8 format,
+        stored as uint8. The conversion uses E5M2 encoding (1 sign bit, 5 exponent
+        bits, 2 mantissa bits) which provides larger range than FP8 E4M3.
+
+        Returns:
+            A new ExTensor with dtype=uint8 containing BF8-encoded values
+
+        Raises:
+            Error: If the source tensor is not a floating-point dtype
+
+        Examples:
+            var t = zeros(List[Int](3, 4), DType.float32)
+            var bf8_t = t.to_bf8()  # Returns uint8 tensor with BF8 encoding
+            var restored = bf8_t.from_bf8()  # Convert back to float32
+
+        Note:
+            BF8 has larger range (~±57344) than FP8 but less precision (2 mantissa bits).
+            Values outside this range are clamped. This is useful for memory-efficient
+            training/inference where range is more important than precision.
+        """
+        from .types.bf8 import BF8
+
+        # Verify source is floating point
+        if not (
+            self._dtype == DType.float16
+            or self._dtype == DType.float32
+            or self._dtype == DType.float64
+        ):
+            raise Error("to_bf8() requires a floating-point tensor")
+
+        # Create output tensor with uint8 dtype
+        var result = ExTensor(self._shape, DType.uint8)
+
+        # Convert each element to BF8
+        for i in range(self._numel):
+            # Get source value as Float32
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            else:  # float64
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+
+            # Convert to BF8 and store
+            var bf8_val = BF8.from_float32(val)
+            result._data.bitcast[UInt8]()[i] = bf8_val.value
+
+        return result^
+
+    fn from_bf8(self) raises -> ExTensor:
+        """Convert BF8-encoded tensor (uint8) back to Float32.
+
+        This method interprets a uint8 tensor as BF8 E5M2 encoded values and
+        converts them back to Float32 for computation.
+
+        Returns:
+            A new ExTensor with dtype=float32 containing decoded values
+
+        Raises:
+            Error: If the source tensor is not uint8 dtype
+
+        Examples:
+            var bf8_t = ...  # uint8 tensor with BF8 encoding
+            var float_t = bf8_t.from_bf8()  # Decode to float32
+
+        Note:
+            This assumes the uint8 tensor contains valid BF8 E5M2 encoded values.
+            Use this to decode tensors created by to_bf8().
+        """
+        from .types.bf8 import BF8
+
+        # Verify source is uint8
+        if self._dtype != DType.uint8:
+            raise Error("from_bf8() requires a uint8 tensor (BF8-encoded)")
+
+        # Create output tensor with float32 dtype
+        var result = ExTensor(self._shape, DType.float32)
+
+        # Convert each element from BF8 to Float32
+        for i in range(self._numel):
+            var bf8_bits = self._data.bitcast[UInt8]()[i]
+            var bf8_val = BF8(bf8_bits)
+            var float_val = bf8_val.to_float32()
+            result._data.bitcast[Float32]()[i] = float_val
+
+        return result^
+
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
     # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
     # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
