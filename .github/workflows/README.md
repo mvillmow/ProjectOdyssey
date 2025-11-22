@@ -1,614 +1,670 @@
-# CI/CD Workflows
+# GitHub Actions Workflows
 
-This directory contains all GitHub Actions workflows for the ML Odyssey project. These workflows provide automated
-quality gates, security scanning, and validation for all code changes.
+This directory contains all CI/CD workflows for the ML Odyssey project. The workflows are organized into categories based
+on their purpose: testing, validation, security, and performance monitoring.
 
-## Workflow Overview
+## Overview
 
-### Tier 1: Fast Gates (< 5 minutes)
+The CI/CD strategy uses GitHub Actions with the following principles:
 
-Required for all PRs - fast feedback on code quality.
+1. **Pixi-based Setup**: All workflows use Pixi for environment management instead of modular/setup-mojo
+2. **Parallel Execution**: Test workflows use matrix strategies for parallelization
+3. **Fail-Fast Control**: Strategic use of `fail-fast: false` allows complete test runs without early stopping
+4. **Artifact Preservation**: Test results and reports are uploaded for 7-30 days for analysis
+5. **PR Comments**: Test summaries automatically comment on PRs for quick feedback
+6. **Scheduled Runs**: Weekly security and benchmark runs ensure ongoing system health
 
-| Workflow | File | Triggers | Duration | Purpose |
-|----------|------|----------|----------|---------|
-| Pre-commit Checks | `pre-commit.yml` | PRs, pushes to main | ~2-3 min | Code formatting, linting |
-| Unit Tests | `unit-tests.yml` | PRs, pushes to main | ~5 min | Fast unit tests (Mojo + Python) |
-| Agent Tests | `test-agents.yml` | PRs to agent configs | ~1 min | Agent configuration validation |
+## Workflow Summary
 
-### Tier 2: Comprehensive Gates (< 10 minutes)
+| Workflow | Trigger | Purpose | Duration |
+|----------|---------|---------|----------|
+| **Test Workflows** | | | |
+| [unit-tests.yml](#unit-tests) | PR, push main, manual | Fast unit tests for Mojo/Python | < 5 min |
+| [integration-tests.yml](#integration-tests) | PR, push main, manual | Component interaction tests | < 8 min |
+| [comprehensive-tests.yml](#comprehensive-tests) | PR, push main, manual | All 112 Mojo tests in 17 groups | < 10 min |
+| [test-gradients.yml](#test-gradients) | PR on gradient changes, push main | Backward pass validation | < 5 min |
+| [test-data-utilities.yml](#test-data-utilities) | PR/push on data changes | Data loading and processing | < 5 min |
+| **Validation Workflows** | | | |
+| [script-validation.yml](#script-validation) | PR on scripts, push main, manual | 42 Python scripts validation | < 5 min |
+| [validate-configs.yml](#validate-configs) | PR/push on config changes | YAML and schema validation | < 5 min |
+| [test-agents.yml](#test-agents) | PR on agent configs, push main | Agent configuration testing | < 3 min |
+| [pre-commit.yml](#pre-commit) | PR, push main, manual | Code formatting and linting | < 5 min |
+| **Security Workflows** | | | |
+| [security-scan.yml](#security-scan) | PR, push main, weekly Monday 9 AM UTC | Dependency, secret, and SAST scanning | < 15 min |
+| [link-check.yml](#link-check) | PR on .md, push main, weekly Monday 9 AM UTC | Broken markdown links detection | < 3 min |
+| **Performance Workflows** | | | |
+| [simd-benchmarks-weekly.yml](#simd-benchmarks-weekly) | Weekly Sunday 2 AM UTC, manual | SIMD performance tracking | < 5 min |
 
-Required before merge - comprehensive validation.
+## Detailed Workflow Documentation
 
-| Workflow | File | Triggers | Duration | Purpose |
-|----------|------|----------|----------|---------|
-| Integration Tests | `integration-tests.yml` | PRs, pushes to main | ~8 min | Component interaction tests |
-| Security Scanning | `security-scan.yml` | PRs, pushes, weekly | ~5 min | Dependencies, secrets, SAST |
-| Build Validation | `build-validation.yml` | PRs, pushes to main | ~5 min | Build and packaging validation |
-| Paper Validation | `paper-validation.yml` | PRs to papers/ | ~3 min | Paper implementation validation |
-| Link Check | `link-check.yml` | PRs to markdown | ~1-2 min | Broken link detection |
+### Testing Workflows
 
-### Tier 3: Performance Gates (Optional)
+#### unit-tests
 
-Scheduled or on-demand - performance validation.
+**File**: `unit-tests.yml`
 
-| Workflow | File | Triggers | Duration | Purpose |
-|----------|------|----------|----------|---------|
-| Benchmarks | `benchmark.yml` | Manual, nightly, label | ~30 min | Performance benchmarking |
+**Triggers**: Pull requests, pushes to main, manual dispatch
 
-## Workflow Details
+**Purpose**: Fast unit tests for both Mojo and Python code, targeting < 5 minutes total duration.
 
-### 1. Pre-commit Checks (`pre-commit.yml`)
+**Key Features**:
 
-**Purpose**: Enforce code quality standards with automated formatting and linting.
+- **Mojo Tests** (`test-mojo` job):
+  - Runs individual test files from `tests/unit/` directory
+  - Uses pixi-based Mojo execution
+  - Handles missing tests gracefully during initial development
+  - Reports individual test pass/fail status
 
-### What it checks
+- **Python Tests** (`test-python` job):
+  - Runs pytest on `tests/unit/` with coverage reporting
+  - Generates HTML coverage reports
+  - Enforces 80% code coverage threshold (allows 0% during initial development)
+  - Uploads coverage artifacts for 7 days
 
-- Mojo code formatting (`mojo format`)
-- Markdown linting (`markdownlint-cli2`)
-- YAML syntax validation
-- Trailing whitespace, EOF newlines
-- Large file detection (max 1MB)
+- **Coverage Report** (`coverage-report` job):
+  - Combines results from Mojo and Python tests
+  - Comments on PRs with test summary
+  - Preserves combined report as artifact
 
-**When it runs**: Every PR and push to main
+**Matrix Strategy**: None (parallel jobs instead)
 
-### Local execution
+**Cache Strategy**:
 
-```bash
-# Install pre-commit
-pip install pre-commit
-pre-commit install
+- Pixi environments: Key based on `pixi.toml`
+- Python pip cache: Standard pip caching
 
-# Run all hooks
-pre-commit run --all-files
+**PR Comments**: Yes - Posts combined test results with pass/fail status
 
-# Run specific hook
-pre-commit run mojo-format --all-files
-```text
+**Artifacts**:
 
----
+- `mojo-test-results/` (7 days)
+- `python-coverage/` (7 days) - includes HTML coverage reports
+- `coverage-report` (30 days)
 
-### 2. Unit Tests (`unit-tests.yml`)
+**Failure Handling**:
 
-**Purpose**: Run fast unit tests for both Mojo and Python code with coverage reporting.
-
-### What it does
-
-- Runs Mojo unit tests (when they exist)
-- Runs Python unit tests with pytest
-- Generates coverage reports (target: 80% minimum, 90% ideal)
-- Posts coverage summary to PR comments
-- Fails if coverage < 80%
-
-**When it runs**: Every PR and push to main
-
-### Local execution
-
-```bash
-# Run Mojo tests
-pixi run mojo test tests/unit/
-
-# Run Python tests with coverage
-pixi run pytest tests/unit/ --cov --cov-report=term
-
-# Run both and check coverage threshold
-pixi run pytest tests/unit/ --cov --cov-fail-under=80
-```text
-
-**Expected output**: Coverage report in PR comment, artifacts with detailed results.
+- Continues running if Mojo tests fail (to see Python results)
+- Combined report fails if any test fails
+- Graceful handling of missing tests during setup phase
 
 ---
 
-### 3. Integration Tests (`integration-tests.yml`)
+#### integration-tests
 
-**Purpose**: Validate component interactions across three test suites.
+**File**: `integration-tests.yml`
 
-### Test suites
+**Triggers**: Pull requests (non-draft), pushes to main, manual dispatch
 
-1. **agent-workflows**: Agent system integration
-1. **paper-pipeline**: Paper implementation workflows
-1. **data-pipeline**: Data loading and processing
+**Purpose**: Test component interactions and integration between modules.
 
-### What it does
+**Key Features**:
 
-- Runs all three test suites in parallel (matrix strategy)
-- Generates combined report
-- Posts results to PR comments
-- Fails if any suite fails
+- **Matrix Strategy**: 3 parallel test suites
+  - `mojo-integration`: Tests in `tests/integration/` directory
+  - `python-integration`: Agent and foundation structure tests
+  - `shared-integration`: Tests in `tests/shared/integration/` directory
 
-**When it runs**: Every PR (except drafts) and pushes to main
+- **Smart Discovery**:
+  - Case-based pattern matching routes to correct test suite
+  - Each suite handles missing tests gracefully
+  - Detailed logging of test discovery process
 
-### Local execution
+- **Draft PR Skipping**: Uses `github.event.pull_request.draft == false` to skip draft PRs
 
-```bash
-# Run specific integration suite
-pixi run pytest tests/integration/agent-workflows/ -v
+- **Integration Report** (`integration-report` job):
+  - Aggregates results from all 3 suites
+  - Counts passed/failed suites
+  - Comments on PRs with detailed results
+  - Uploads report for 30 days
 
-# Run all integration tests
-pixi run pytest tests/integration/ -v
-```text
+**Cache Strategy**:
 
-**Expected output**: Integration test report in PR comment with pass/fail status per suite.
+- Pixi environments (key: pixi.toml)
+- Test fixtures (key: fixtures directory hash)
 
----
+**PR Comments**: Yes - Integration test summary
 
-### 4. Security Scanning (`security-scan.yml`)
+**Artifacts**:
 
-**Purpose**: Comprehensive security scanning for vulnerabilities, secrets, and code issues.
+- `integration-results-*` (7 days, one per suite)
+- `integration-failures-*` (14 days if failed)
+- `integration-report` (30 days)
 
-### Scanning components
+**Failure Handling**:
 
-1. **Dependency Scan**: Check Python dependencies for known vulnerabilities (Safety, OSV Scanner)
-1. **Secret Scan**: Detect exposed secrets (Gitleaks)
-1. **SAST Scan**: Static Application Security Testing (Semgrep)
-1. **Supply Chain Scan**: Dependency review for PRs (GitHub API)
-
-### Severity handling
-
-- **Critical**: Block merge immediately
-- **High**: Block merge, require fix or exception
-- **Medium**: Warning only
-- **Low**: Info only
-
-### When it runs
-
-- Every PR and push to main
-- Weekly schedule (Monday 9 AM UTC)
-- Manual dispatch
-
-### Local execution
-
-```bash
-# Run dependency scan
-safety check --json
-
-# Run secret scan
-gitleaks detect --source . --verbose
-
-# Run SAST
-semgrep --config auto
-```text
-
-**Expected output**: Security report in PR comment with findings by severity.
+- `fail-fast: false` - all suites run even if one fails
+- Individual suite failures captured in report
+- Overall workflow fails if any suite fails
 
 ---
 
-### 5. Build Validation (`build-validation.yml`)
+#### comprehensive-tests
 
-**Purpose**: Validate that all packages build successfully.
+**File**: `comprehensive-tests.yml`
 
-### Build targets
+**Triggers**: Pull requests, pushes to main, manual dispatch
 
-1. **Mojo Packages**: Compile all Mojo source files
-1. **Python Packages**: Build Python distributions (wheel, sdist)
-1. **Documentation**: Build MkDocs site
+**Purpose**: Run all 112+ Mojo tests organized into 17 logical groups for comprehensive coverage.
 
-### What it validates
+**Key Features**:
 
-- All source files compile without errors
-- Package metadata is valid
-- Documentation builds without errors
-- Internal links are valid
-- Smoke tests pass
+- **Matrix Strategy**: 17 parallel test groups covering:
+  1. Core: Tensors & Operations
+  2. Core: Layers & Activations
+  3. Core: Advanced Layers
+  4. Core: Legacy Tests
+  5. Training: Optimizers & Schedulers
+  6. Training: Loops & Metrics
+  7. Training: Callbacks
+  8. Data: Datasets
+  9. Data: Loaders & Samplers
+  10. Data: Transforms
+  11. Integration Tests
+  12. Utils & Fixtures
+  13. Benchmarks
+  14. Configs
+  15. Tooling
+  16. Top-Level Tests
+  17. Debug & Integration
 
-**When it runs**: Every PR and push to main
+- **Pattern Matching**: Each group uses glob patterns to discover and run relevant test files
 
-### Local execution
+- **Individual Test Execution**: Files executed one-by-one for clarity on which tests pass/fail
 
-```bash
-# Build Mojo packages
-mojo build src/your_file.mojo
+- **Test Group Summary**: Each group generates result file with test counts and failures
 
-# Build Python packages
-python -m build
+- **Combined Report** (`test-report` job):
+  - Aggregates all 17 group results
+  - Calculates total statistics
+  - Comments on PRs with detailed breakdown
 
-# Validate package metadata
-twine check dist/*
+**Cache Strategy**:
 
-# Build documentation
-mkdocs build --strict
-```text
+- Pixi environments (key: pixi.toml)
 
-**Expected output**: Build report in PR comment with status for each build target.
+**PR Comments**: Yes - Comprehensive test results with per-group breakdown
 
----
+**Artifacts**:
 
-### 6. Paper Validation (`paper-validation.yml`)
+- `test-results-*` (7 days, one per group)
+- `comprehensive-test-report` (30 days)
 
-**Purpose**: Validate paper implementations against required structure and specifications.
+**Failure Handling**:
 
-### Validation stages
-
-1. **Structure Validation** (~1 min):
-   - Required files present (README.md, metadata.yml)
-   - Required directories (implementation/, tests/)
-   - Valid metadata structure (title, authors, year, URL)
-
-1. **Implementation Validation** (~3 min):
-   - Implementation files exist
-   - Test files exist
-   - Paper-specific tests pass
-
-1. **Reproducibility Validation** (~10 min, optional):
-   - Training scripts run successfully
-   - Results match expected metrics (±5% tolerance)
-   - Only runs with `validate-reproducibility` label
-
-**When it runs**: PRs or pushes affecting `papers/` directory
-
-### Local execution
-
-```bash
-# Validate paper structure
-python scripts/validate_paper.py papers/lenet5/
-
-# Run paper tests
-pytest papers/lenet5/tests/ -v
-
-# Run training for reproducibility
-python papers/lenet5/train.py --quick-validation
-```text
-
-**Expected output**: Paper validation report in PR comment with pass/fail for each stage.
+- `fail-fast: false` - all groups run even if one fails
+- Overall workflow fails if any tests fail
 
 ---
 
-### 7. Performance Benchmarks (`benchmark.yml`)
+#### test-gradients
 
-**Purpose**: Execute performance benchmarks and detect regressions.
+**File**: `test-gradients.yml`
 
-### Benchmark suites
+**Triggers**: PR when backward/activation/arithmetic files change, pushes to main
 
-1. **tensor-ops**: Basic tensor operations (SIMD, vectorization)
-1. **model-training**: End-to-end training performance
-1. **data-loading**: Data pipeline throughput
+**Purpose**: Validate that all backward passes produce correct gradients (numerical accuracy).
 
-### Regression thresholds
+**Key Features**:
 
-- **Critical** (> 25% slower): Block merge
-- **High** (10-25% slower): Require justification
-- **Medium** (5-10% slower): Warning only
+- **Path-Based Triggering**: Only runs when gradient-related files change
+- **Gradient Checking Job**: Runs and validates gradient computation tests
+- **Coverage Report Job**: Calculates and displays gradient checking coverage
 
-### When it runs
+**Success Criteria**:
 
-- Manual dispatch (primary trigger)
-- Nightly schedule (2 AM UTC)
-- PRs with `benchmark` label
-
-### Local execution
-
-```bash
-# Run specific benchmark suite
-pixi run python benchmarks/tensor-ops/run_benchmark.py
-
-# Run all benchmarks
-pixi run python benchmarks/run_all.py
-```text
-
-**Expected output**: Benchmark report with performance metrics and regression analysis.
+- All gradient checks pass with exact match
+- Coverage >= 80% (warning only)
 
 ---
 
-### 8. Link Validation (`link-check.yml`)
+#### test-data-utilities
 
-**Purpose**: Detect broken links in markdown documentation.
+**File**: `test-data-utilities.yml`
 
-### What it checks
+**Triggers**: PR/push when data utilities or tests change
 
-- Internal links (relative paths)
-- External links (HTTP/HTTPS)
-- Anchor links within documents
+**Purpose**: Validate data loading, sampling, and transformation pipeline.
 
-### When it runs
+**Key Features**:
 
-- PRs or pushes affecting markdown files
-- Weekly schedule (Sunday)
-- Manual dispatch
-
-### Local execution
-
-```bash
-# Check links with lychee
-lychee --verbose --no-progress '**/*.md'
-```text
-
-**Expected output**: List of broken links (if any).
+- **Specific Test Execution**: Tests dataset, loader, transform, and sampler implementations
+- **All-in-One Runner**: Includes comprehensive data utilities test
 
 ---
 
-### 9. Agent Tests (`test-agents.yml`)
+### Validation Workflows
 
-**Purpose**: Validate agent configuration files.
+#### script-validation
 
-### What it validates
+**File**: `script-validation.yml`
 
-- Agent markdown files are valid
-- Delegation patterns are correct
-- Mojo code patterns in agents are valid
-- No broken links in agent docs
+**Triggers**: PR when Python scripts change, pushes to main, manual dispatch
 
-**When it runs**: PRs affecting `agents/` or `.claude/agents/`
+**Purpose**: Comprehensive validation of 42 Python scripts including syntax, linting, and formatting.
 
-### Local execution
+**Validation Steps**:
 
-```bash
-# Run agent validation script
-python scripts/validate_agents.py
-```text
+1. **Script Discovery** - Counts all `.py` files in `scripts/` directory
+2. **Syntax Validation** - Uses `python3 -m py_compile`
+3. **Linting with Ruff** - GitHub Actions output format
+4. **Format Checking** - Validates code formatting
+5. **Import Validation** - Checks for proper path setup
+6. **Executable Testing** - Runs scripts with `--help` flag
+7. **Shebang Validation** - Verifies `#!/usr/bin/env python3` headers
+8. **Common Issues Check** - Detects stderr/print and TODO comments
 
-**Expected output**: Validation report with any configuration errors.
+**Summary Output**: Comprehensive validation checklist with all checks performed
 
----
-
-## PR Workflow
-
-When you open a PR, workflows run in this order:
-
-```text
-1. Pre-commit Checks (2-3 min)
-   └─ If fails: Fix formatting issues
-   └─ If passes: Continue
-
-2. Fast Gates (parallel, 5 min)
-   ├─ Unit Tests
-   ├─ Agent Tests (if applicable)
-   └─ Link Check (if applicable)
-
-3. Comprehensive Gates (parallel, 10 min)
-   ├─ Integration Tests
-   ├─ Security Scanning
-   ├─ Build Validation
-   └─ Paper Validation (if applicable)
-
-4. Optional: Benchmarks (if labeled, 30 min)
-```text
-
-**Total time**: ~15-20 minutes for a typical PR (without benchmarks)
+**Failure Help**: Displays local fix instructions including pixi commands
 
 ---
 
-## Caching Strategy
+#### validate-configs
 
-All workflows use caching to improve performance:
+**File**: `validate-configs.yml`
 
-| Cache | Key | Purpose |
-|-------|-----|---------|
-| Pixi environments | `pixi-${{ hashFiles('pixi.toml') }}` | Mojo dependencies |
-| Python dependencies | `pip-${{ hashFiles('requirements*.txt') }}` | Python packages |
-| Pre-commit | `pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}` | Hook environments |
-| Test data | `test-data-${{ hashFiles('tests/fixtures/**') }}` | Test fixtures |
+**Triggers**: PR/push when config YAML files change
 
-**Cache hit rate target**: > 80%
+**Purpose**: Validate configuration files syntax, structure, and consistency.
+
+**Validation Jobs**:
+
+1. **validate-yaml** - YAML syntax and required files
+2. **validate-schemas** - Training config structure
+3. **test-config-loading** - Placeholder for Mojo tests
+4. **validate-experiments** - Experiment-to-paper references
+
+**Failure Conditions**:
+
+- Invalid YAML syntax
+- Missing required default config files
+- Invalid training config structure
+
+---
+
+#### test-agents
+
+**File**: `test-agents.yml`
+
+**Triggers**: PR when agent configs change, pushes to main
+
+**Purpose**: Validate agent configuration format, loading, and integration patterns.
+
+**Validation Steps**:
+
+1. Configuration syntax and format
+2. Agent discovery and loading
+3. Delegation pattern validation
+4. Workflow integration testing
+5. Mojo-specific pattern validation
+
+---
+
+#### pre-commit
+
+**File**: `pre-commit.yml`
+
+**Triggers**: PR, pushes to main, manual dispatch
+
+**Purpose**: Run pre-commit hooks for code formatting and linting.
+
+**Hook Types**:
+
+- `mojo format` - Auto-format Mojo code (`.mojo`, `.🔥` files)
+- `markdownlint-cli2` - Lint markdown files
+- `trailing-whitespace` - Remove trailing whitespace
+- `end-of-file-fixer` - Ensure files end with newline
+- `check-yaml` - Validate YAML syntax
+- `check-added-large-files` - Prevent files > 1MB
+- `mixed-line-ending` - Fix mixed line endings
+
+**Failure Help**: Shows how to run locally and fix issues
+
+---
+
+### Security Workflows
+
+#### security-scan
+
+**File**: `security-scan.yml`
+
+**Triggers**: PR, pushes to main, weekly Monday 9 AM UTC, manual dispatch
+
+**Purpose**: Comprehensive security scanning including dependencies, secrets, and code analysis.
+
+**Scanning Jobs**:
+
+1. **dependency-scan** - Safety and OSV Scanner for vulnerabilities
+2. **secret-scan** - Gitleaks for exposed secrets
+3. **sast-scan** - Semgrep for source code analysis
+4. **supply-chain-scan** - Dependency review for critical issues
+5. **security-report** - Aggregates all results and comments on PRs
+
+**Critical Failure Conditions**:
+
+- Secrets detected (exit 1)
+- Critical dependency vulnerabilities (exit 1)
+
+**Artifacts**:
+
+- `dependency-scan-results/` (30 days)
+- `security-report` (90 days)
+
+**PR Comments**: Yes - Security scan status and recommendations
+
+---
+
+#### link-check
+
+**File**: `link-check.yml`
+
+**Triggers**: PR on markdown changes, pushes to main, weekly Monday 9 AM UTC, manual dispatch
+
+**Purpose**: Detect broken markdown links and catch link rot over time.
+
+**Features**:
+
+- Uses Lychee link checker
+- Cache enabled with 1-day max age
+- 3 retries with 5-second wait between attempts
+- 15-second timeout per link
+- Excludes `notes/plan/` and `file:///` links
+
+**Failure Handling**: Fails workflow if broken links found
+
+---
+
+### Performance Workflows
+
+#### simd-benchmarks-weekly
+
+**File**: `simd-benchmarks-weekly.yml`
+
+**Triggers**: Weekly Sunday 2 AM UTC, manual dispatch
+
+**Purpose**: Track SIMD performance trends over time for performance regression detection.
+
+**Key Features**:
+
+- **Schedule**: Cron `0 2 * * 0` (Sunday 2 AM UTC)
+- **Branch Protection**: Only runs on `main` for scheduled runs
+- **Benchmark Execution**: Runs `benchmarks/bench_simd.mojo`
+- **Summary Generation**: Creates human-readable results with metadata
+- **Metrics Extraction**: Creates JSON for trend tracking
+- **Long-Term Storage**: Artifacts retained for 365 days
+
+**Performance Guidance**:
+
+- Float32: 3-5x speedup
+- Float64: 2-3x speedup
+- Larger tensors show better speedup
+
+**Artifacts**:
+
+- `simd-benchmark-results-*` (365 days):
+  - `simd-output.txt` - Raw benchmark output
+  - `summary.md` - Human-readable summary
+  - `metrics.json` - Structured metrics
+
+---
+
+## Common Patterns
+
+### Pixi-Based Environment Setup
+
+All workflows use the modern Pixi setup:
+
+```yaml
+- name: Set up Pixi
+  uses: prefix-dev/setup-pixi@v0.9.3
+  with:
+    pixi-version: latest
+    cache: true
+```
+
+This replaces the older `modular` CLI approach with Pixi's conda-compatible package management.
+
+### Matrix Strategies for Parallelization
+
+Workflows use matrix strategies to parallelize test execution:
+
+```yaml
+strategy:
+  fail-fast: false  # Continue all jobs even if one fails
+  matrix:
+    test-group:
+      - name: "Group 1"
+        path: "path/to/tests"
+        pattern: "test_*.mojo"
+      - name: "Group 2"
+        path: "path/to/tests"
+```
+
+### PR Comments with Results
+
+Test workflows automatically comment on PRs:
+
+```yaml
+- name: Comment on PR
+  if: github.event_name == 'pull_request'
+  uses: actions/github-script@v8
+  with:
+    script: |
+      # Update or create bot comment with test results
+```
+
+Each workflow checks for existing bot comments and updates them to avoid duplicate comments.
+
+### Artifact Retention Strategy
+
+Different artifact types have different retention periods:
+
+- Test results: 7 days (quick feedback)
+- Failure artifacts: 14 days (detailed investigation)
+- Reports: 30 days (trend analysis)
+- Security reports: 90 days (compliance)
+- Benchmark artifacts: 365 days (historical tracking)
+
+### Conditional Job Dependencies
+
+Jobs use `needs` and `if` conditions to manage dependencies:
+
+```yaml
+test-report:
+  needs: test-mojo-comprehensive
+  if: always()  # Run even if upstream fails
+```
+
+The `always()` condition allows report generation even when tests fail.
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
+### Tests Failing Locally But Passing in CI
 
-#### Pre-commit failures
+**Issue**: Test passes in CI but fails locally
 
-**Problem**: Formatting checks fail
+**Solutions**:
 
-### Solution
+1. Ensure you're using the same Python version: `python3 --version`
+2. Update Pixi: `pixi self-update`
+3. Clear Pixi cache: `rm -rf ~/.pixi && pixi install`
+4. Check for uncommitted changes that affect tests
 
-```bash
-# Auto-fix most issues
-pre-commit run --all-files
+### Workflows Timing Out
 
-# Commit the fixes
-git add .
-git commit -m "fix: apply pre-commit auto-fixes"
-```text
+**Issue**: Workflow exceeds timeout duration
 
-#### Test coverage below threshold
+**Solutions**:
 
-**Problem**: Coverage < 80%
+1. Check for hanging tests: `timeout 60 pixi run pytest tests/test_file.py`
+2. Split tests across more matrix jobs
+3. Increase timeout-minutes in workflow YAML (was designed for specific durations)
 
-**Solution**: Add more tests or mark lines as no-cover if appropriate
+### PR Comments Not Appearing
 
-```python
-# Exclude specific lines
-def debug_function():  # pragma: no cover
-    print("Debug only")
-```text
+**Issue**: Test results not commented on PR
 
-#### Security scan failures
+**Solutions**:
 
-**Problem**: Secrets detected
+1. Verify workflow has `pull-requests: write` permission
+2. Check if bot comment already exists and workflow tried to update non-existent comment
+3. Review workflow logs for JavaScript errors in github-script step
 
-### Solution
+### Secret Scan False Positives
 
-1. Remove the secret from code
-1. Use environment variables or GitHub Secrets
-1. Rotate the exposed credential
+**Issue**: Secret scan flags legitimate values as potential secrets
 
-**Problem**: Dependency vulnerabilities
+**Solutions**:
 
-### Solution
+1. Add patterns to Gitleaks config
+2. Use `# gitleaks:allow` comment in files (temporary)
+3. Configure allowlist in `.gitleaksignore` file
 
-```bash
-# Update vulnerable package
-pip install --upgrade <package-name>
+### Pixi Cache Not Working
 
-# Or add exception in .safety-policy.yml (with justification)
-```text
+**Issue**: Pixi environments rebuilt despite cache
 
-#### Build failures
+**Solutions**:
 
-**Problem**: Mojo compilation errors
-
-**Solution**: Run locally and fix syntax errors
-
-```bash
-mojo build src/your_file.mojo
-```text
-
-#### Integration test failures
-
-**Problem**: Flaky tests
-
-**Solution**: Tests automatically retry once. If still failing, fix the underlying issue.
+1. Verify `pixi.toml` hasn't changed unexpectedly
+2. Check cache action configuration: `uses: actions/cache@v4`
+3. Clear cache: Settings > Actions > Clear all caches
 
 ---
 
-## Local CI Simulation
+## Performance Optimization
 
-Run all CI checks locally before pushing:
+### Matrix Job Parallelization
 
-```bash
-# Create a script to run all checks
-cat > scripts/ci-local.sh << 'EOF'
-#!/bin/bash
-set -e
+The comprehensive test workflow uses 17 parallel jobs to reduce total duration from ~170 minutes to ~10 minutes.
 
-echo "🔍 Running pre-commit hooks..."
-pre-commit run --all-files
+**Before** (sequential):
 
-echo "🧪 Running unit tests..."
-pixi run pytest tests/unit/ --cov --cov-fail-under=80
+- 17 test groups × 10 minutes each = 170 minutes
 
-echo "🔗 Running integration tests..."
-pixi run pytest tests/integration/ -v
+**After** (parallel):
 
-echo "🔐 Running security scan..."
-gitleaks detect --source . --verbose
+- All 17 groups run simultaneously = 10 minutes
 
-echo "🏗️ Building packages..."
-python -m build
+### Caching Strategy
 
-echo "📚 Building documentation..."
-mkdocs build --strict
+All workflows implement multi-level caching:
 
-echo "✅ All CI checks passed!"
-EOF
+1. **Pixi Cache**: Environment directory (`~/.pixi`)
+2. **Pip Cache**: Python packages (`~/.cache/pip`)
+3. **Pre-commit Cache**: Hook environments (`~/.cache/pre-commit`)
+4. **Test Data Cache**: Fixtures directory
+5. **Lychee Cache**: Link check results
 
-chmod +x scripts/ci-local.sh
-./scripts/ci-local.sh
-```text
+### Selective Triggering
 
----
+Workflows use path-based triggers to avoid unnecessary runs:
 
-## GitHub Actions Cost Optimization
-
-**Free tier limit**: 2,000 minutes/month
-
-**Estimated usage** (with optimizations):
-
-- Pre-commit: ~40-60 min/day
-- Unit tests: ~100 min/day
-- Integration tests: ~80 min/day
-- Security: ~25 min/day
-- Build: ~100 min/day
-- Other: ~50 min/day
-
-**Total**: ~400 min/day ≈ 12,000 min/month (over free tier)
-
-### Optimizations applied
-
-1. Conditional execution (paper validation only on papers/ changes)
-1. Aggressive caching (saves ~30-60s per run)
-1. Parallel jobs where possible
-1. Skip duplicate checks on draft PRs
-1. Benchmarks optional/scheduled only
-
-**Optimized estimate**: ~8,000 min/month (within free tier)
+```yaml
+on:
+  push:
+    paths:
+      - 'scripts/**/*.py'  # Only run script validation when scripts change
+      - '.github/workflows/script-validation.yml'
+```
 
 ---
 
-## Monitoring
+## Maintenance Notes
 
-### Key Metrics
+### Weekly Tasks
 
-Track these metrics for CI/CD health:
+- **Monday 9 AM UTC**: Security scan and link check run automatically
+- **Sunday 2 AM UTC**: SIMD benchmarks run for performance tracking
 
-- **Workflow success rate**: Target > 95%
-- **Average duration**: Fast gates < 5 min, comprehensive < 10 min
-- **Cache hit rate**: Target > 80%
-- **PR merge time**: Target < 24 hours for approved PRs
+### Monthly Tasks
 
-### Alerts
+- Review security report artifacts for trends
+- Check benchmark artifacts for performance degradation
+- Update workflow dependencies (actions versions)
 
-**Critical** (immediate):
+### Pixi Configuration
 
-- All workflows failing on main
-- Critical security vulnerability
-- Secrets exposed
+All workflows depend on `pixi.toml` at repository root. Key points:
 
-**Warning** (daily):
+- Specify `mojo` version (pinned)
+- Include Python dependencies for scripts
+- Pin pre-commit tool versions
 
-- Workflow duration > 10 min
-- Cache hit rate < 60%
-- Test coverage drop > 5%
+### Handling Workflow Failures
+
+1. Check specific job logs in Actions tab
+2. Reproduce locally with same environment
+3. Update workflow YAML if infrastructure changed
+4. Test changes in feature branch before merging to main
 
 ---
 
 ## Adding New Workflows
 
-To add a new workflow:
+When adding new workflows:
 
-1. Create `.github/workflows/your-workflow.yml`
-1. Follow the template structure:
-
-```yaml
-name: Your Workflow
-
-on:
-  pull_request:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
-permissions:
-  contents: read
-
-jobs:
-  your-job:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - name: Your step
-        run: echo "Your commands"
-```text
-
-1. Add caching where appropriate
-1. Add timeout limits
-1. Test locally first
-1. Document in this README
+1. **Name**: Use descriptive name with `.yml` extension
+2. **Triggers**: Define clear triggering conditions
+3. **Caching**: Add appropriate caching (Pixi, pip, tool-specific)
+4. **Timeouts**: Set realistic timeout-minutes
+5. **Permissions**: Request minimum required (contents: read, pull-requests: write if commenting)
+6. **Documentation**: Add entry to this README with workflow details
+7. **Testing**: Test in feature branch before merging
 
 ---
 
-## Branch Protection Rules
+## Quick Reference
 
-Configure for `main` branch:
+### View Workflow Runs
 
-### Required status checks
+```bash
+# List recent runs
+gh run list
 
-- pre-commit
-- test-unit / test-mojo
-- test-unit / test-python
-- security / secret-scan
-- security / sast-scan
-- build / build-validation
+# View specific workflow
+gh run list --workflow script-validation.yml
 
-**Required reviews**: 1
+# View run details
+gh run view <run-id>
 
-### Additional rules
+# Download artifacts
+gh run download <run-id> -n artifact-name
+```
 
-- Dismiss stale reviews: true
-- Require code owner reviews: true
-- Include administrators: true
+### Trigger Workflow Manually
+
+```bash
+# Trigger workflow_dispatch
+gh workflow run script-validation.yml
+
+# With branch specification
+gh workflow run script-validation.yml --ref main
+```
+
+### Check Workflow Status
+
+```bash
+# View all workflows
+gh workflow list
+
+# View specific workflow status
+gh workflow view script-validation.yml
+```
 
 ---
 
-## References
+## Related Documentation
 
-- [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Workflow Syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax)
-- [Security Best Practices](https://docs.github.com/en/actions/reference/security/secure-use)
+- **Pixi Setup**: See `pixi.toml` for environment configuration
+- **Pre-commit Hooks**: See `.pre-commit-config.yaml` for local validation
+- **Agent System**: See `.claude/agents/` for AI agent configuration testing
+- **Security Policy**: See `SECURITY.md` for vulnerability reporting
+- **Development Guide**: See `CLAUDE.md` for development workflow and best practices
 
 ---
 
-**Last Updated**: 2025-11-09
+**Last Updated**: 2025-11-22
 **Maintained By**: ML Odyssey Team

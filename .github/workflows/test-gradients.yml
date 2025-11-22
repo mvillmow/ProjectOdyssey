@@ -28,14 +28,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Mojo
-        uses: modular/setup-mojo@v1
+      - name: Set up Pixi
+        uses: prefix-dev/setup-pixi@v0.9.3
         with:
-          mojo-version: '>=0.25.7'
+          pixi-version: latest
+          cache: true
 
       - name: Run gradient checking tests
         run: |
-          mojo test tests/shared/core/test_gradient_checking.mojo
+          pixi run mojo test tests/shared/core/test_gradient_checking.mojo
 
       - name: Check test results
         if: failure()
@@ -85,46 +86,3 @@ jobs:
               echo "✅ Good gradient test coverage!"
             fi
           fi
-
-  benchmark-simd:
-    name: SIMD Performance Benchmarks
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Mojo
-        uses: modular/setup-mojo@v1
-        with:
-          mojo-version: '>=0.25.7'
-
-      - name: Run SIMD benchmarks
-        run: |
-          echo "Running SIMD benchmarks..."
-          mojo run benchmarks/bench_simd.mojo
-
-      - name: Comment benchmark results
-        if: always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const issue_number = context.issue.number;
-            const comment = `## 🚀 SIMD Benchmark Results
-
-            SIMD optimizations have been benchmarked. See the workflow logs for detailed results.
-
-            Expected performance improvements:
-            - float32 operations: 3-5x speedup
-            - float64 operations: 2-3x speedup
-
-            ✅ All SIMD operations verified for correctness against scalar implementations.
-            `;
-
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              issue_number: issue_number,
-              body: comment
-            });

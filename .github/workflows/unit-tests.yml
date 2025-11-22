@@ -50,7 +50,35 @@ jobs:
           # Check if Mojo tests exist
           if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
             echo "Running Mojo unit tests..."
-            pixi run mojo test tests/unit/ --verbose
+            mkdir -p test-results
+
+            # Run each test file individually (mojo test command not available in 0.25.7)
+            test_count=0
+            failed_count=0
+            for test_file in tests/unit/test_*.mojo; do
+              if [ -f "$test_file" ]; then
+                echo ""
+                echo "=================================================="
+                echo "Running: $test_file"
+                echo "=================================================="
+                test_count=$((test_count + 1))
+
+                if pixi run mojo "$test_file"; then
+                  echo "✅ PASSED: $test_file"
+                else
+                  echo "❌ FAILED: $test_file"
+                  failed_count=$((failed_count + 1))
+                fi
+              fi
+            done
+
+            echo ""
+            echo "Test Summary: $test_count tests run, $failed_count failed"
+            echo "Test Summary: $test_count tests run, $failed_count failed" > test-results/mojo-tests.txt
+
+            if [ $failed_count -gt 0 ]; then
+              exit 1
+            fi
           else
             echo "⚠️  No Mojo unit tests found yet (tests/unit/*.mojo)"
             echo "This is expected during initial development."
