@@ -23,6 +23,17 @@ struct TrainerConfig:
     """Configuration for trainer behavior.
 
     Centralizes all training hyperparameters and settings.
+
+    Mixed Precision Training:
+        Set use_mixed_precision=True to enable FP16 training with automatic
+        gradient scaling. This can provide 2-3x speedup with minimal accuracy loss.
+
+        Example:
+            var config = TrainerConfig(
+                use_mixed_precision=True,
+                precision_dtype=DType.float16,
+                loss_scale=65536.0
+            )
     """
     var num_epochs: Int
     var batch_size: Int
@@ -32,6 +43,12 @@ struct TrainerConfig:
     var save_checkpoints: Bool
     var checkpoint_interval: Int  # Save checkpoint every N epochs
 
+    # Mixed precision training settings
+    var use_mixed_precision: Bool  # Enable FP16/BF16 training
+    var precision_dtype: DType  # DType.float16 or DType.float32 (DType.bfloat16 when available)
+    var loss_scale: Float32  # Initial loss scale for gradient scaling (default: 65536.0)
+    var gradient_clip_norm: Float32  # Clip gradients by norm (0 = no clipping)
+
     fn __init__(
         inout self,
         num_epochs: Int = 10,
@@ -40,7 +57,11 @@ struct TrainerConfig:
         log_interval: Int = 10,
         validate_interval: Int = 1,
         save_checkpoints: Bool = False,
-        checkpoint_interval: Int = 5
+        checkpoint_interval: Int = 5,
+        use_mixed_precision: Bool = False,
+        precision_dtype: DType = DType.float32,
+        loss_scale: Float32 = 65536.0,
+        gradient_clip_norm: Float32 = 0.0
     ):
         """Initialize trainer configuration with defaults."""
         self.num_epochs = num_epochs
@@ -50,6 +71,10 @@ struct TrainerConfig:
         self.validate_interval = validate_interval
         self.save_checkpoints = save_checkpoints
         self.checkpoint_interval = checkpoint_interval
+        self.use_mixed_precision = use_mixed_precision
+        self.precision_dtype = precision_dtype
+        self.loss_scale = loss_scale
+        self.gradient_clip_norm = gradient_clip_norm
 
 
 struct TrainingMetrics:

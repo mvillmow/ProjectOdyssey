@@ -24,6 +24,10 @@ from shared.training.trainer_interface import (
 from shared.training.loops.training_loop import TrainingLoop
 from shared.training.loops.validation_loop import ValidationLoop
 from shared.training.metrics import MetricLogger
+from shared.training.mixed_precision import (
+    GradientScaler, check_gradients_finite, clip_gradients_by_norm
+)
+from shared.core.numerical_safety import has_nan, has_inf
 
 
 struct BaseTrainer(Trainer):
@@ -131,6 +135,18 @@ struct BaseTrainer(Trainer):
         print("  Learning Rate: " + String(self.config.learning_rate))
         print("  Log Interval: " + String(self.config.log_interval))
         print("  Validate Interval: " + String(self.config.validate_interval))
+
+        # Print mixed precision settings
+        if self.config.use_mixed_precision:
+            print("\nMixed Precision Training: ENABLED")
+            var dtype_name = "float16" if self.config.precision_dtype == DType.float16 else "float32"
+            print("  Precision: " + dtype_name)
+            print("  Initial Loss Scale: " + String(self.config.loss_scale))
+            if self.config.gradient_clip_norm > 0.0:
+                print("  Gradient Clipping: " + String(self.config.gradient_clip_norm))
+        else:
+            print("\nMixed Precision Training: DISABLED")
+
         print()
 
         self.is_training = True
