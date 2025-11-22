@@ -27,7 +27,7 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
         # Sum all elements
         var result_shape = List[Int]()
         if keepdims:
-            for i in range(tensor.dim()):
+            for _ in range(tensor.dim()):
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 
@@ -68,7 +68,7 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
 
         # Iterate over all elements and accumulate
         var axis_size = input_shape[axis]
-        var total_elements = tensor.numel()
+        var _ = tensor.numel()
 
         # For each position in the result
         for result_idx in range(result.numel()):
@@ -173,7 +173,7 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
         # Max of all elements
         var result_shape = List[Int]()
         if keepdims:
-            for i in range(tensor.dim()):
+            for _ in range(tensor.dim()):
                 result_shape.append(1)
         var result = ExTensor(result_shape, tensor.dtype())
 

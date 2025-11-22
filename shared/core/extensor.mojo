@@ -103,7 +103,7 @@ struct ExTensor(Movable):
         # Calculate row-major strides (in elements, not bytes)
         self._strides = List[Int]()
         var stride = 1
-        for i in range(len(self._shape) - 1, -1, -1):
+        for _ in range(len(self._shape) - 1, -1, -1):
             self._strides.append(0)  # Preallocate
         for i in range(len(self._shape) - 1, -1, -1):
             self._strides[i] = stride
@@ -257,32 +257,15 @@ struct ExTensor(Movable):
         if new_numel != self._numel:
             raise Error("Cannot reshape: element count mismatch")
 
-        # Create view tensor
-        # Note: We allocate minimal memory (1 byte) which will be orphaned when we overwrite _data
-        # This is acceptable for views which are short-lived in training loops
-        var dummy_shape = List[Int]()
-        dummy_shape.append(1)
-        var result = ExTensor(dummy_shape, self._dtype)
+        # Create view tensor directly with correct shape
+        # IMPORTANT: Don't allocate dummy memory - it causes memory leaks!
+        var result = ExTensor(new_shape, self._dtype)
 
-        # Update to actual shape
-        result._shape = List[Int]()
-        for i in range(len(new_shape)):
-            result._shape.append(new_shape[i])
-
-        result._numel = new_numel  # Already calculated above
-        result._is_view = True
-
-        # Recalculate strides for new shape (row-major order)
-        result._strides = List[Int]()
-        var stride = 1
-        for i in range(len(result._shape) - 1, -1, -1):
-            result._strides.append(0)  # Preallocate
-        for i in range(len(result._shape) - 1, -1, -1):
-            result._strides[i] = stride
-            stride *= result._shape[i]
-
-        # Share data pointer with parent (overwrites the dummy allocation)
+        # Mark as view and point to parent's data
+        # Free the allocated data first to prevent memory leak
+        result._data.free()
         result._data = self._data
+        result._is_view = True
 
         return result^
 
@@ -350,32 +333,21 @@ struct ExTensor(Movable):
         var dtype_size = self._get_dtype_size()
         var offset_bytes = offset_elements * dtype_size
 
-        # Create view tensor
-        # Note: We allocate minimal memory (1 byte) which will be orphaned when we overwrite _data
-        # This is acceptable for views which are short-lived in training loops
-        var dummy_shape = List[Int]()
-        dummy_shape.append(1)
-        var result = ExTensor(dummy_shape, self._dtype)
+        # Create view tensor directly with correct shape
+        # IMPORTANT: Don't allocate dummy memory - it causes memory leaks!
+        var result = ExTensor(new_shape, self._dtype)
 
-        # Update to actual shape
-        result._shape = List[Int]()
-        for i in range(len(new_shape)):
-            result._shape.append(new_shape[i])
-
+        # Mark as view and point to parent's data
+        # Free the allocated data first to prevent memory leak
+        result._data.free()
+        result._data = self._data.offset(offset_bytes)
         result._is_view = True
 
-        # Calculate number of elements in the slice
-        result._numel = 1
-        for i in range(len(result._shape)):
-            result._numel *= result._shape[i]
-
         # Copy strides from parent (slice has same stride pattern)
+        # We need to update the strides list after creating the tensor
         result._strides = List[Int]()
         for i in range(len(self._strides)):
             result._strides.append(self._strides[i])
-
-        # Point to sliced data (offset into parent's memory)
-        result._data = self._data.offset(offset_bytes)
 
         return result^
 

@@ -48,7 +48,7 @@ fn parse_args() raises -> TrainConfig:
     """Parse command line arguments.
 
     Returns:
-        TrainConfig with parsed arguments
+        TrainConfig with parsed arguments.
     """
     var epochs = 10
     var batch_size = 32
@@ -83,13 +83,13 @@ fn compute_gradients(
     This implements the full forward and backward pass manually.
 
     Args:
-        model: LeNet-5 model
-        input: Batch of images (batch, 1, 28, 28)
-        labels: One-hot encoded batch of labels (batch, num_classes)
-        learning_rate: Learning rate for SGD
+        model: LeNet-5 model.
+        input: Batch of images (batch, 1, 28, 28).
+        labels: One-hot encoded batch of labels (batch, num_classes).
+        learning_rate: Learning rate for SGD.
 
     Returns:
-        Loss value for this batch
+        Loss value for this batch.
     """
     # ========== Forward Pass (with caching) ==========
 
@@ -203,16 +203,16 @@ fn train_epoch(
     """Train for one epoch.
 
     Args:
-        model: LeNet-5 model
-        train_images: Training images (num_samples, 1, 28, 28)
-        train_labels: Integer training labels (num_samples,)
-        batch_size: Mini-batch size
-        learning_rate: Learning rate for SGD
-        epoch: Current epoch number (1-indexed)
-        total_epochs: Total number of epochs
+        model: LeNet-5 model.
+        train_images: Training images (num_samples, 1, 28, 28).
+        train_labels: Integer training labels (num_samples,).
+        batch_size: Mini-batch size.
+        learning_rate: Learning rate for SGD.
+        epoch: Current epoch number (1-indexed).
+        total_epochs: Total number of epochs.
 
     Returns:
-        Average loss for the epoch
+        Average loss for the epoch.
     """
     var num_samples = train_images.shape()[0]
     var num_batches = (num_samples + batch_size - 1) // batch_size
@@ -255,12 +255,12 @@ fn evaluate(
     """Evaluate model on test set.
 
     Args:
-        model: LeNet-5 model
-        test_images: Test images (num_samples, 1, 28, 28)
-        test_labels: Integer test labels (num_samples,)
+        model: LeNet-5 model.
+        test_images: Test images (num_samples, 1, 28, 28).
+        test_labels: Integer test labels (num_samples,).
 
     Returns:
-        Test accuracy (0.0 to 1.0)
+        Test accuracy (0.0 to 1.0).
     """
     var num_samples = test_images.shape()[0]
     var correct = 0

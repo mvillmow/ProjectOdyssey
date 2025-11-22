@@ -129,7 +129,7 @@ fn compute_broadcast_strides(
     # Calculate original row-major strides
     var orig_strides = List[Int]()
     var stride = 1
-    for i in range(ndim_orig - 1, -1, -1):
+    for _ in range(ndim_orig - 1, -1, -1):
         orig_strides.append(0)  # Preallocate
     for i in range(ndim_orig - 1, -1, -1):
         orig_strides[i] = stride

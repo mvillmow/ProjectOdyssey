@@ -27,7 +27,7 @@ struct Conv2dBackwardResult(Movable):
         self.grad_kernel = grad_kernel^
         self.grad_bias = grad_bias^
 
-    fn __moveinit__(out self, owned other: Self):
+    fn __moveinit__(out self, deinit other: Self):
         """Move constructor."""
         self.grad_input = other.grad_input^
         self.grad_kernel = other.grad_kernel^
@@ -365,7 +365,7 @@ struct Conv2dNoBiasBackwardResult(Movable):
         self.grad_input = grad_input^
         self.grad_kernel = grad_kernel^
 
-    fn __moveinit__(out self, owned other: Self):
+    fn __moveinit__(out self, deinit other: Self):
         """Move constructor."""
         self.grad_input = other.grad_input^
         self.grad_kernel = other.grad_kernel^
