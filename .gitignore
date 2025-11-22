@@ -17,5 +17,21 @@ datasets/
 site/
 .cache/
 
+# Mojo build artifacts
+*.o
+*.a
+train
+examples/*/train
+examples/*/inference
+test_*
+!tests/**
+
+# Training artifacts
+*.log
+training_*.txt
+*_weights/
+checkpoints/
+
+# Editor files
 *.swp
 .coverage
