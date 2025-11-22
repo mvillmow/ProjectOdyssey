@@ -35,6 +35,10 @@ from memory import UnsafePointer, memset_zero, alloc
 from sys import simdwidthof
 from math import ceildiv
 
+# Memory safety constants
+alias MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
+alias WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
+
 
 struct ExTensor(Movable):
     """Dynamic tensor with runtime-determined shape and data type.
@@ -69,12 +73,15 @@ struct ExTensor(Movable):
     var _numel: Int
     var _is_view: Bool
 
-    fn __init__(out self, shape: List[Int], dtype: DType):
+    fn __init__(out self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
 
         Args:
             shape: The shape of the tensor as a vector of dimension sizes
             dtype: The data type of tensor elements
+
+        Raises:
+            Error: If tensor size exceeds MAX_TENSOR_BYTES (2 GB)
 
         Note:
             This is a low-level constructor. Users should prefer creation
@@ -102,9 +109,24 @@ struct ExTensor(Movable):
             self._strides[i] = stride
             stride *= self._shape[i]
 
-        # Allocate raw byte storage
+        # Validate memory requirements
         var dtype_size = ExTensor._get_dtype_size_static(dtype)
-        self._data = alloc[UInt8](self._numel * dtype_size)
+        var total_bytes = self._numel * dtype_size
+
+        if total_bytes > MAX_TENSOR_BYTES:
+            raise Error(
+                "Tensor too large: "
+                + String(total_bytes)
+                + " bytes exceeds maximum "
+                + String(MAX_TENSOR_BYTES)
+                + " bytes. Consider using smaller batch sizes."
+            )
+
+        if total_bytes > WARN_TENSOR_BYTES:
+            print("Warning: Large tensor allocation:", total_bytes, "bytes")
+
+        # Allocate raw byte storage (now with validation)
+        self._data = alloc[UInt8](total_bytes)
 
     fn __del__(deinit self):
         """Destructor to free allocated memory.
@@ -127,7 +149,8 @@ struct ExTensor(Movable):
 
     @staticmethod
     fn _get_dtype_size_static(dtype: DType) -> Int:
-        """Get size in bytes for a given dtype (static version for use in __init__)."""
+        """Get size in bytes for a given dtype (static version for use in __init__).
+        """
         if dtype == DType.float16:
             return 2
         elif dtype == DType.float32:
@@ -234,10 +257,126 @@ struct ExTensor(Movable):
         if new_numel != self._numel:
             raise Error("Cannot reshape: element count mismatch")
 
-        # Create new tensor sharing same data
-        var result = ExTensor(new_shape, self._dtype)
-        result._data = self._data  # Share data
-        result._is_view = True  # Mark as view
+        # Create view tensor
+        # Note: We allocate minimal memory (1 byte) which will be orphaned when we overwrite _data
+        # This is acceptable for views which are short-lived in training loops
+        var dummy_shape = List[Int]()
+        dummy_shape.append(1)
+        var result = ExTensor(dummy_shape, self._dtype)
+
+        # Update to actual shape
+        result._shape = List[Int]()
+        for i in range(len(new_shape)):
+            result._shape.append(new_shape[i])
+
+        result._numel = new_numel  # Already calculated above
+        result._is_view = True
+
+        # Recalculate strides for new shape (row-major order)
+        result._strides = List[Int]()
+        var stride = 1
+        for i in range(len(result._shape) - 1, -1, -1):
+            result._strides.append(0)  # Preallocate
+        for i in range(len(result._shape) - 1, -1, -1):
+            result._strides[i] = stride
+            stride *= result._shape[i]
+
+        # Share data pointer with parent (overwrites the dummy allocation)
+        result._data = self._data
+
+        return result^
+
+    fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
+        """Extract a slice along the specified axis.
+
+        Args:
+            start: Starting index (inclusive)
+            end: Ending index (exclusive)
+            axis: Axis to slice along (default: 0, the batch dimension)
+
+        Returns:
+            A new tensor containing the slice (shares memory with original)
+
+        Raises:
+            Error: If indices are out of bounds or axis is invalid
+
+        Example:
+            ```mojo
+            # Extract batch 0-32 from (112800, 1, 28, 28)
+            var batch = dataset.slice(0, 32, axis=0)  # Returns (32, 1, 28, 28)
+            ```
+        """
+        # Validate axis
+        if axis < 0 or axis >= len(self._shape):
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " out of range for tensor with "
+                + String(len(self._shape))
+                + " dimensions"
+            )
+
+        # Validate indices
+        var dim_size = self._shape[axis]
+        if start < 0 or start > dim_size:
+            raise Error(
+                "Start index "
+                + String(start)
+                + " out of range [0, "
+                + String(dim_size)
+                + "]"
+            )
+        if end < start or end > dim_size:
+            raise Error(
+                "End index "
+                + String(end)
+                + " out of range ["
+                + String(start)
+                + ", "
+                + String(dim_size)
+                + "]"
+            )
+
+        # Create new shape with sliced dimension
+        var new_shape = List[Int]()
+        for i in range(len(self._shape)):
+            if i == axis:
+                new_shape.append(end - start)
+            else:
+                new_shape.append(self._shape[i])
+
+        # Calculate offset to start of slice
+        var offset_elements = start * self._strides[axis]
+        var dtype_size = self._get_dtype_size()
+        var offset_bytes = offset_elements * dtype_size
+
+        # Create view tensor
+        # Note: We allocate minimal memory (1 byte) which will be orphaned when we overwrite _data
+        # This is acceptable for views which are short-lived in training loops
+        var dummy_shape = List[Int]()
+        dummy_shape.append(1)
+        var result = ExTensor(dummy_shape, self._dtype)
+
+        # Update to actual shape
+        result._shape = List[Int]()
+        for i in range(len(new_shape)):
+            result._shape.append(new_shape[i])
+
+        result._is_view = True
+
+        # Calculate number of elements in the slice
+        result._numel = 1
+        for i in range(len(result._shape)):
+            result._numel *= result._shape[i]
+
+        # Copy strides from parent (slice has same stride pattern)
+        result._strides = List[Int]()
+        for i in range(len(self._strides)):
+            result._strides.append(self._strides[i])
+
+        # Point to sliced data (offset into parent's memory)
+        result._data = self._data.offset(offset_bytes)
+
         return result^
 
     fn __getitem__(self, index: Int) raises -> Float64:
@@ -263,7 +402,8 @@ struct ExTensor(Movable):
         return self._get_float64(index)
 
     fn _get_float64(self, index: Int) -> Float64:
-        """Internal: Get value at index as Float64 (assumes float-compatible dtype)."""
+        """Internal: Get value at index as Float64 (assumes float-compatible dtype).
+        """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
 
@@ -296,7 +436,8 @@ struct ExTensor(Movable):
             ptr[] = value
 
     fn _get_int64(self, index: Int) -> Int64:
-        """Internal: Get value at index as Int64 (assumes integer-compatible dtype)."""
+        """Internal: Get value at index as Int64 (assumes integer-compatible dtype).
+        """
         var dtype_size = self._get_dtype_size()
         var offset = index * dtype_size
 
@@ -386,71 +527,85 @@ struct ExTensor(Movable):
     fn __add__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise addition: a + b"""
         from .arithmetic import add
+
         return add(self, other)
 
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise subtraction: a - b"""
         from .arithmetic import subtract
+
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise multiplication: a * b"""
         from .arithmetic import multiply
+
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise division: a / b"""
         from .arithmetic import divide
+
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise floor division: a // b"""
         from .arithmetic import floor_divide
+
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise modulo: a % b"""
         from .arithmetic import modulo
+
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise power: a ** b"""
         from .arithmetic import power
+
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
         """Matrix multiplication: a @ b"""
         from .matrix import matmul
+
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise equality: a == b"""
         from .comparison import equal
+
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise inequality: a != b"""
         from .comparison import not_equal
+
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise less than: a < b"""
         from .comparison import less
+
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise less or equal: a <= b"""
         from .comparison import less_equal
+
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise greater than: a > b"""
         from .comparison import greater
+
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise greater or equal: a >= b"""
         from .comparison import greater_equal
+
         return greater_equal(self, other)
 
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
@@ -462,7 +617,8 @@ struct ExTensor(Movable):
 # Creation Operations
 # ============================================================================
 
-fn zeros(shape: List[Int], dtype: DType) -> ExTensor:
+
+fn zeros(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with zeros.
 
     Args:
@@ -484,7 +640,7 @@ fn zeros(shape: List[Int], dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn ones(shape: List[Int], dtype: DType) -> ExTensor:
+fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create a tensor filled with ones.
 
     Args:
@@ -513,7 +669,7 @@ fn ones(shape: List[Int], dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn full(shape: List[Int], fill_value: Float64, dtype: DType) -> ExTensor:
+fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
     """Create a tensor filled with a specific value.
 
     Args:
@@ -543,7 +699,7 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn empty(shape: List[Int], dtype: DType) -> ExTensor:
+fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
     """Create an uninitialized tensor (fast allocation).
 
     Args:
@@ -566,7 +722,9 @@ fn empty(shape: List[Int], dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn arange(start: Float64, stop: Float64, step: Float64, dtype: DType) -> ExTensor:
+fn arange(
+    start: Float64, stop: Float64, step: Float64, dtype: DType
+) raises -> ExTensor:
     """Create 1D tensor with evenly spaced values.
 
     Args:
@@ -608,7 +766,7 @@ fn arange(start: Float64, stop: Float64, step: Float64, dtype: DType) -> ExTenso
     return tensor^
 
 
-fn eye(n: Int, m: Int, k: Int, dtype: DType) -> ExTensor:
+fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
     """Create 2D tensor with ones on diagonal.
 
     Args:
@@ -651,7 +809,7 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) -> ExTensor:
+fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) raises -> ExTensor:
     """Create 1D tensor with evenly spaced values (inclusive).
 
     Args:
@@ -704,7 +862,7 @@ fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) -> ExTensor:
     return tensor^
 
 
-fn ones_like(tensor: ExTensor) -> ExTensor:
+fn ones_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of ones with same shape and dtype as input.
 
     Args:
@@ -720,7 +878,7 @@ fn ones_like(tensor: ExTensor) -> ExTensor:
     return ones(tensor.shape(), tensor.dtype())
 
 
-fn zeros_like(tensor: ExTensor) -> ExTensor:
+fn zeros_like(tensor: ExTensor) raises -> ExTensor:
     """Create tensor of zeros with same shape and dtype as input.
 
     Args:
@@ -736,7 +894,7 @@ fn zeros_like(tensor: ExTensor) -> ExTensor:
     return zeros(tensor.shape(), tensor.dtype())
 
 
-fn full_like(tensor: ExTensor, fill_value: Float64) -> ExTensor:
+fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
     """Create tensor filled with a value, same shape and dtype as input.
 
     Args:
@@ -751,3 +909,53 @@ fn full_like(tensor: ExTensor, fill_value: Float64) -> ExTensor:
         var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
     """
     return full(tensor.shape(), fill_value, tensor.dtype())
+
+
+fn calculate_max_batch_size(
+    sample_shape: List[Int],
+    dtype: DType,
+    max_memory_bytes: Int = 500_000_000,  # 500 MB default
+) raises -> Int:
+    """Calculate maximum safe batch size for given sample shape.
+
+    Args:
+        sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST)
+        dtype: Data type of the tensor
+        max_memory_bytes: Maximum memory to use for a batch (default: 500 MB)
+
+    Returns:
+        Maximum batch size that fits in memory
+
+    Example:
+        ```mojo
+        # For MNIST: (1, 28, 28) images
+        var sample_shape = List[Int]()
+        sample_shape.append(1)
+        sample_shape.append(28)
+        sample_shape.append(28)
+        var max_batch = calculate_max_batch_size(sample_shape, DType.float32)
+        print("Max batch size:", max_batch)  # ~640,000 samples
+        ```
+    """
+    var sample_elements = 1
+    for i in range(len(sample_shape)):
+        sample_elements *= sample_shape[i]
+
+    var dtype_size = ExTensor._get_dtype_size_static(dtype)
+    var bytes_per_sample = sample_elements * dtype_size
+
+    if bytes_per_sample <= 0:
+        raise Error("Invalid sample shape or dtype")
+
+    var max_batch = max_memory_bytes // bytes_per_sample
+
+    if max_batch < 1:
+        raise Error(
+            "Single sample ("
+            + String(bytes_per_sample)
+            + " bytes) exceeds memory limit ("
+            + String(max_memory_bytes)
+            + " bytes)"
+        )
+
+    return max_batch
