@@ -580,6 +580,100 @@ struct ExTensor(Movable):
 
         return greater_equal(self, other)
 
+    # ========================================================================
+    # FP8 Conversion Methods
+    # ========================================================================
+
+    fn to_fp8(self) raises -> ExTensor:
+        """Convert tensor values to FP8 E4M3 format.
+
+        This method converts a tensor of any floating-point dtype to FP8 format,
+        stored as uint8. The conversion uses E4M3 encoding (1 sign bit, 4 exponent
+        bits, 3 mantissa bits) which is optimized for ML workloads.
+
+        Returns:
+            A new ExTensor with dtype=uint8 containing FP8-encoded values
+
+        Raises:
+            Error: If the source tensor is not a floating-point dtype
+
+        Examples:
+            var t = zeros(List[Int](3, 4), DType.float32)
+            var fp8_t = t.to_fp8()  # Returns uint8 tensor with FP8 encoding
+            var restored = fp8_t.from_fp8()  # Convert back to float32
+
+        Note:
+            FP8 has limited range (~±240) and precision. Values outside this range
+            are clamped. This is useful for memory-efficient training/inference.
+        """
+        from .types.fp8 import FP8
+
+        # Verify source is floating point
+        if not (
+            self._dtype == DType.float16
+            or self._dtype == DType.float32
+            or self._dtype == DType.float64
+        ):
+            raise Error("to_fp8() requires a floating-point tensor")
+
+        # Create output tensor with uint8 dtype
+        var result = ExTensor(self._shape, DType.uint8)
+
+        # Convert each element to FP8
+        for i in range(self._numel):
+            # Get source value as Float32
+            var val: Float32
+            if self._dtype == DType.float16:
+                val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
+            elif self._dtype == DType.float32:
+                val = self._data.bitcast[Float32]()[i]
+            else:  # float64
+                val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+
+            # Convert to FP8 and store
+            var fp8_val = FP8.from_float32(val)
+            result._data.bitcast[UInt8]()[i] = fp8_val.value
+
+        return result^
+
+    fn from_fp8(self) raises -> ExTensor:
+        """Convert FP8-encoded tensor (uint8) back to Float32.
+
+        This method interprets a uint8 tensor as FP8 E4M3 encoded values and
+        converts them back to Float32 for computation.
+
+        Returns:
+            A new ExTensor with dtype=float32 containing decoded values
+
+        Raises:
+            Error: If the source tensor is not uint8 dtype
+
+        Examples:
+            var fp8_t = ...  # uint8 tensor with FP8 encoding
+            var float_t = fp8_t.from_fp8()  # Decode to float32
+
+        Note:
+            This assumes the uint8 tensor contains valid FP8 E4M3 encoded values.
+            Use this to decode tensors created by to_fp8().
+        """
+        from .types.fp8 import FP8
+
+        # Verify source is uint8
+        if self._dtype != DType.uint8:
+            raise Error("from_fp8() requires a uint8 tensor (FP8-encoded)")
+
+        # Create output tensor with float32 dtype
+        var result = ExTensor(self._shape, DType.float32)
+
+        # Convert each element from FP8 to Float32
+        for i in range(self._numel):
+            var fp8_bits = self._data.bitcast[UInt8]()[i]
+            var fp8_val = FP8(fp8_bits)
+            var float_val = fp8_val.to_float32()
+            result._data.bitcast[Float32]()[i] = float_val
+
+        return result^
+
     # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
     # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
     # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
