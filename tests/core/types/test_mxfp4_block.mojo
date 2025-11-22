@@ -19,6 +19,27 @@ from tests.shared.conftest import (
     assert_almost_equal,
 )
 
+# **FIXME (TEST-001 - P0 CRITICAL)**: All-negative block tests missing
+# Current test suite does NOT test blocks with all negative values. Missing tests:
+#   1. Block with all negative values (e.g., all -1.0)
+#   2. Block with all negative different values (e.g., -1.0, -2.0, ..., -32.0)
+#   3. Verify scale computation handles negative max correctly
+#   4. Verify E2M1 encoding preserves sign bits correctly
+# Impact: Negative blocks are common in ML (negative gradients, negative weights)
+# Severity: BLOCKING - must test negative value handling before production use
+# See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-001)
+
+# **FIXME (TEST-003 - P0 CRITICAL)**: NaN/Infinity handling incomplete
+# Current test suite does NOT test special floating point values. Missing tests:
+#   1. Block containing NaN values (verify encoding/decoding behavior)
+#   2. Block containing +Infinity and -Infinity (verify clamping to max representable)
+#   3. Mixed block with NaN, Infinity, and normal values
+#   4. Verify from_float32() special case handling (lines 72-79 in fp4.mojo)
+#   5. Round-trip: NaN -> MXFP4 -> verify result (should map to max value 0b0111)
+# Impact: NaN/Inf values occur in ML (overflow, division by zero, numerical instability)
+# Severity: BLOCKING - special value handling must be tested before production use
+# See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-003)
+
 
 # ============================================================================
 # Block Creation Tests

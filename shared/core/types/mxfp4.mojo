@@ -23,6 +23,22 @@ Example:
 
     # Block storage (efficient: 32 values + 1 shared scale)
     var block = MXFP4Block.from_float32_array(data_array)
+
+**FIXME (DOC-001, DOC-002 - P0 CRITICAL)**: Missing research paper full citation
+Paper title mentioned above but MISSING:
+  - DOI or arXiv identifier
+  - Authors list
+  - Publication year and venue
+  - Direct link to paper
+
+Required citation format:
+  Dettmers et al., "Microscaling Data Formats for Deep Learning",
+  arXiv:XXXX.XXXXX, 2023. https://arxiv.org/abs/XXXX.XXXXX
+
+Impact: Research reproducibility compromised - developers cannot verify implementation
+        against reference specification. Affects scientific credibility.
+Severity: BLOCKING - must add full citation before publication/production use
+See: COMPREHENSIVE_REVIEW_FINDINGS.md (DOC-001, DOC-002)
 """
 
 from math import isnan, isinf
@@ -545,6 +561,16 @@ struct MXFP4Block(Stringable, Representable):
                 max_abs = abs_val
 
         # Compute scale (avoid division by zero)
+        # **FIXME (TEST-002 - P0 CRITICAL)**: Scale = 0 edge case untested
+        # When all values in block are zero or near-zero (< 1e-10), we fallback to scale=1.0
+        # This behavior is COMPLETELY UNTESTED. Missing test cases:
+        #   1. Block with all zeros (should encode as scale=1.0, all E2M1 values = 0)
+        #   2. Block with values < 1e-10 (should trigger fallback)
+        #   3. E8M0Scale.from_float32(0.0) direct behavior
+        #   4. Round-trip conversion: zeros -> MXFP4 -> zeros (verify lossless)
+        # Impact: Zero blocks are common in ML (dead neurons, zero gradients)
+        # Severity: BLOCKING - edge case must be tested before production use
+        # See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-002)
         var scale_val = max_abs / 6.0
         if scale_val < 1e-10:
             scale_val = 1.0
