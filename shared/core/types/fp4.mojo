@@ -24,6 +24,23 @@ Example:
 
 from math import isnan, isinf
 
+# **FIXME (TEST-010 - P0 CRITICAL)**: FP4_E2M1 base type completely untested (0% coverage)
+# This entire 217-line module has ZERO test coverage. Critical untested functions:
+# - Lines 56-139: from_float32() (E2M1 encoding algorithm)
+# - Lines 141-178: to_float32() (E2M1 decoding algorithm)
+# - Lines 180-194: String representations (__str__, __repr__)
+# - Lines 196-216: Comparison operators (__eq__, __ne__, __lt__, __le__, __gt__, __ge__)
+#
+# Impact: Base encoding/decoding used by MXFP4 and NVFP4 is completely untested
+# Action Required: Create tests/core/types/test_fp4_base.mojo with comprehensive tests
+# Minimum Tests Needed:
+#   1. Basic encoding/decoding (normal values, zero, special values)
+#   2. Edge cases (NaN, Infinity, scale=0)
+#   3. Comparison operators (6 operators)
+#   4. String representations
+# Severity: BLOCKING - base type must be tested before production use
+# See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-010)
+
 
 @value
 struct FP4_E2M1(Stringable, Representable):
