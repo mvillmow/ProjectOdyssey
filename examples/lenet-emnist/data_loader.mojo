@@ -159,3 +159,45 @@ fn normalize_images(mut images: ExTensor) raises -> ExTensor:
         dst_data[i] = Float32(src_data[i]) / 255.0
 
     return normalized^
+
+
+fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
+    """Convert integer labels to one-hot encoded float32 tensor.
+
+    Args:
+        labels: Integer labels as uint8 ExTensor, shape (num_samples,)
+        num_classes: Total number of classes
+
+    Returns:
+        One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
+
+    Example:
+        labels = [0, 2, 1]  # 3 samples, 3 classes
+        one_hot = one_hot_encode(labels, 3)
+        # Result shape: (3, 3)
+        # [[1.0, 0.0, 0.0],
+        #  [0.0, 0.0, 1.0],
+        #  [0.0, 1.0, 0.0]]
+    """
+    var num_samples = labels.shape()[0]
+
+    # Create output tensor (num_samples, num_classes)
+    var shape = List[Int]()
+    shape.append(num_samples)
+    shape.append(num_classes)
+    var one_hot = zeros(shape, DType.float32)
+
+    # Fill one-hot encoding
+    var labels_data = labels._data
+    var one_hot_data = one_hot._data.bitcast[Float32]()
+
+    for i in range(num_samples):
+        var label_idx = Int(labels_data[i])
+        if label_idx < 0 or label_idx >= num_classes:
+            raise Error("Label index out of range: " + String(label_idx))
+
+        # Set the corresponding class to 1.0
+        var offset = i * num_classes + label_idx
+        one_hot_data[offset] = 1.0
+
+    return one_hot^
