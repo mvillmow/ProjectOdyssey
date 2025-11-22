@@ -20,7 +20,14 @@ from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.linear import linear, linear_backward
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward, avgpool2d, avgpool2d_backward
-from shared.core.loss import cross_entropy, cross_entropy_backward
+from shared.core.loss import (
+    cross_entropy,
+    cross_entropy_backward,
+    binary_cross_entropy,
+    binary_cross_entropy_backward,
+    mean_squared_error,
+    mean_squared_error_backward,
+)
 from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
 from collections.vector import DynamicVector
 
@@ -610,6 +617,238 @@ fn test_cross_entropy_backward_gradient() raises:
 
 
 # ============================================================================
+# Binary Cross-Entropy Backward Tests
+# ============================================================================
+
+
+fn test_binary_cross_entropy_backward_shapes() raises:
+    """Test that binary_cross_entropy_backward returns correct gradient shape."""
+    var batch = 32
+    var features = 1
+
+    var pred_shape = DynamicVector[Int](2)
+    pred_shape[0] = batch
+    pred_shape[1] = features
+    var predictions = zeros(pred_shape, DType.float32)
+
+    # Initialize predictions in valid range [0, 1] (sigmoid outputs)
+    for i in range(batch):
+        predictions._data.bitcast[Float32]()[i] = Float32(i) / Float32(batch)
+
+    var targets = zeros(pred_shape, DType.float32)
+    # Set half to 0, half to 1
+    for i in range(batch // 2, batch):
+        targets._data.bitcast[Float32]()[i] = 1.0
+
+    # Forward pass - element-wise loss
+    var loss = binary_cross_entropy(predictions, targets)
+
+    # Backward pass
+    var grad_output = ones_like(loss)
+    var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
+
+    # Check shape matches predictions
+    var gp_shape = grad_pred.shape()
+    assert_equal(gp_shape[0], batch)
+    assert_equal(gp_shape[1], features)
+
+
+fn test_binary_cross_entropy_backward_gradient() raises:
+    """Test binary cross-entropy backward with numerical gradient checking.
+
+    CRITICAL TEST: Validates mathematical correctness of BCE backpropagation.
+    Uses central finite differences for gold-standard gradient validation.
+    """
+    var batch = 8
+
+    var pred_shape = DynamicVector[Int](1)
+    pred_shape[0] = batch
+    var predictions = zeros(pred_shape, DType.float32)
+
+    # Initialize predictions in valid range [0.1, 0.9] (avoid log(0) issues)
+    predictions._data.bitcast[Float32]()[0] = 0.1
+    predictions._data.bitcast[Float32]()[1] = 0.3
+    predictions._data.bitcast[Float32]()[2] = 0.5
+    predictions._data.bitcast[Float32]()[3] = 0.7
+    predictions._data.bitcast[Float32]()[4] = 0.9
+    predictions._data.bitcast[Float32]()[5] = 0.2
+    predictions._data.bitcast[Float32]()[6] = 0.6
+    predictions._data.bitcast[Float32]()[7] = 0.8
+
+    var targets = zeros(pred_shape, DType.float32)
+    targets._data.bitcast[Float32]()[0] = 0.0
+    targets._data.bitcast[Float32]()[1] = 1.0
+    targets._data.bitcast[Float32]()[2] = 0.0
+    targets._data.bitcast[Float32]()[3] = 1.0
+    targets._data.bitcast[Float32]()[4] = 0.0
+    targets._data.bitcast[Float32]()[5] = 1.0
+    targets._data.bitcast[Float32]()[6] = 0.0
+    targets._data.bitcast[Float32]()[7] = 1.0
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return binary_cross_entropy(inp, targets)
+
+    # Backward function wrapper
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return binary_cross_entropy_backward(grad_out, inp, targets)
+
+    var loss = forward(predictions)
+    var grad_output = ones_like(loss)
+
+    # Numerical gradient checking
+    # BCE uses simplified gradient (p - y), so should be quite accurate
+    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+
+
+fn test_binary_cross_entropy_backward_edge_cases() raises:
+    """Test BCE backward with edge case values near 0 and 1."""
+    var pred_shape = DynamicVector[Int](1)
+    pred_shape[0] = 4
+
+    var predictions = zeros(pred_shape, DType.float32)
+    # Test near boundaries (but not exactly at them due to epsilon clipping)
+    predictions._data.bitcast[Float32]()[0] = 0.001  # Near 0
+    predictions._data.bitcast[Float32]()[1] = 0.999  # Near 1
+    predictions._data.bitcast[Float32]()[2] = 0.5    # Middle
+    predictions._data.bitcast[Float32]()[3] = 0.1    # Low
+
+    var targets = zeros(pred_shape, DType.float32)
+    targets._data.bitcast[Float32]()[0] = 0.0
+    targets._data.bitcast[Float32]()[1] = 1.0
+    targets._data.bitcast[Float32]()[2] = 0.0
+    targets._data.bitcast[Float32]()[3] = 1.0
+
+    # Backward pass should not produce NaN or Inf
+    var loss = binary_cross_entropy(predictions, targets)
+    var grad_output = ones_like(loss)
+    var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
+
+    # Verify all gradients are finite
+    for i in range(4):
+        var grad = grad_pred._data.bitcast[Float32]()[i]
+        assert_true(grad == grad, "Gradient should not be NaN")  # NaN != NaN
+        assert_true(grad > -1e10 and grad < 1e10, "Gradient should not be Inf")
+
+
+# ============================================================================
+# Mean Squared Error Backward Tests
+# ============================================================================
+
+
+fn test_mean_squared_error_backward_shapes() raises:
+    """Test that mean_squared_error_backward returns correct gradient shape."""
+    var batch = 16
+    var features = 10
+
+    var pred_shape = DynamicVector[Int](2)
+    pred_shape[0] = batch
+    pred_shape[1] = features
+    var predictions = ones(pred_shape, DType.float32)
+
+    var targets = zeros(pred_shape, DType.float32)
+    for i in range(batch * features):
+        targets._data.bitcast[Float32]()[i] = Float32(i) * 0.1
+
+    # Forward pass - element-wise squared error
+    var loss = mean_squared_error(predictions, targets)
+
+    # Backward pass
+    var grad_output = ones_like(loss)
+    var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
+
+    # Check shape matches predictions
+    var gp_shape = grad_pred.shape()
+    assert_equal(gp_shape[0], batch)
+    assert_equal(gp_shape[1], features)
+
+
+fn test_mean_squared_error_backward_gradient() raises:
+    """Test mean squared error backward with numerical gradient checking.
+
+    CRITICAL TEST: Validates mathematical correctness of MSE backpropagation.
+    Uses central finite differences for gold-standard gradient validation.
+    """
+    var batch = 4
+    var features = 3
+
+    var pred_shape = DynamicVector[Int](2)
+    pred_shape[0] = batch
+    pred_shape[1] = features
+    var predictions = zeros(pred_shape, DType.float32)
+
+    # Initialize with non-uniform values
+    predictions._data.bitcast[Float32]()[0] = 0.5
+    predictions._data.bitcast[Float32]()[1] = -0.3
+    predictions._data.bitcast[Float32]()[2] = 1.2
+    predictions._data.bitcast[Float32]()[3] = -0.8
+    predictions._data.bitcast[Float32]()[4] = 0.1
+    predictions._data.bitcast[Float32]()[5] = 0.7
+    predictions._data.bitcast[Float32]()[6] = 2.0
+    predictions._data.bitcast[Float32]()[7] = -1.5
+    predictions._data.bitcast[Float32]()[8] = 0.0
+    predictions._data.bitcast[Float32]()[9] = 1.0
+    predictions._data.bitcast[Float32]()[10] = -0.5
+    predictions._data.bitcast[Float32]()[11] = 0.3
+
+    var targets = zeros(pred_shape, DType.float32)
+    targets._data.bitcast[Float32]()[0] = 0.2
+    targets._data.bitcast[Float32]()[1] = 0.4
+    targets._data.bitcast[Float32]()[2] = 0.8
+    targets._data.bitcast[Float32]()[3] = -0.3
+    targets._data.bitcast[Float32]()[4] = 0.5
+    targets._data.bitcast[Float32]()[5] = 1.0
+    targets._data.bitcast[Float32]()[6] = 1.5
+    targets._data.bitcast[Float32]()[7] = -1.0
+    targets._data.bitcast[Float32]()[8] = 0.3
+    targets._data.bitcast[Float32]()[9] = 0.7
+    targets._data.bitcast[Float32]()[10] = 0.0
+    targets._data.bitcast[Float32]()[11] = 0.6
+
+    # Forward function wrapper
+    fn forward(inp: ExTensor) raises -> ExTensor:
+        return mean_squared_error(inp, targets)
+
+    # Backward function wrapper
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+        return mean_squared_error_backward(grad_out, inp, targets)
+
+    var loss = forward(predictions)
+    var grad_output = ones_like(loss)
+
+    # Numerical gradient checking
+    # MSE has simple gradient: 2*(p - y), so should be very accurate
+    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+
+
+fn test_mean_squared_error_backward_zero_diff() raises:
+    """Test MSE backward when predictions equal targets (zero gradient)."""
+    var pred_shape = DynamicVector[Int](1)
+    pred_shape[0] = 5
+
+    var predictions = zeros(pred_shape, DType.float32)
+    for i in range(5):
+        predictions._data.bitcast[Float32]()[i] = Float32(i)
+
+    # Targets equal predictions - zero error
+    var targets = zeros(pred_shape, DType.float32)
+    for i in range(5):
+        targets._data.bitcast[Float32]()[i] = Float32(i)
+
+    var loss = mean_squared_error(predictions, targets)
+    var grad_output = ones_like(loss)
+    var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
+
+    # All gradients should be zero (2 * 0 = 0)
+    for i in range(5):
+        assert_almost_equal(
+            grad_pred._data.bitcast[Float32]()[i],
+            Float32(0.0),
+            tolerance=1e-6
+        )
+
+
+# ============================================================================
 # Main Test Runner
 # ============================================================================
 
@@ -667,5 +906,25 @@ fn main() raises:
 
     test_cross_entropy_backward_gradient()
     print("✓ test_cross_entropy_backward_gradient")
+
+    # Binary cross-entropy backward tests
+    test_binary_cross_entropy_backward_shapes()
+    print("✓ test_binary_cross_entropy_backward_shapes")
+
+    test_binary_cross_entropy_backward_gradient()
+    print("✓ test_binary_cross_entropy_backward_gradient")
+
+    test_binary_cross_entropy_backward_edge_cases()
+    print("✓ test_binary_cross_entropy_backward_edge_cases")
+
+    # Mean squared error backward tests
+    test_mean_squared_error_backward_shapes()
+    print("✓ test_mean_squared_error_backward_shapes")
+
+    test_mean_squared_error_backward_gradient()
+    print("✓ test_mean_squared_error_backward_gradient")
+
+    test_mean_squared_error_backward_zero_diff()
+    print("✓ test_mean_squared_error_backward_zero_diff")
 
     print("\nAll backward pass tests passed!")
