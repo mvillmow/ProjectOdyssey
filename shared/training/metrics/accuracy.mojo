@@ -115,7 +115,8 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
         var batch_size = shape_vec[0]
         var num_classes = shape_vec[1]
 
-        var result_shape = List[Int](batch_size)
+        var result_shape = List[Int]()
+        result_shape.append(batch_size)
         var result = ExTensor(result_shape, DType.int32)
 
         # For each sample in batch
@@ -345,7 +346,8 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
             correct_counts[label_val] += 1
 
     # Compute per-class accuracies
-    var result_shape = List[Int](num_classes)
+    var result_shape = List[Int]()
+    result_shape.append(num_classes)
     var result = ExTensor(result_shape, DType.float64)
 
     for c in range(num_classes):
