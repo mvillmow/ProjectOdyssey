@@ -63,6 +63,7 @@ struct BFloat16:
     # ========================================================================
 
     @staticmethod
+    @always_inline
     fn from_float32(value: Float32) -> BFloat16:
         """Convert Float32 to BFloat16 using rounding.
 
@@ -84,11 +85,10 @@ struct BFloat16:
         if isinf(value):
             return BFloat16._inf() if value > 0 else BFloat16._neg_inf()
 
-        # Get bit representation of Float32
-        var ptr = UnsafePointer[Float32].alloc(1)
-        ptr[0] = value
-        var bits32 = ptr.bitcast[UInt32]()[0]
-        ptr.free()
+        # Get bit representation of Float32 using stack allocation
+        var f32_val = value
+        var ptr_addr = UnsafePointer.address_of(f32_val)
+        var bits32 = ptr_addr.bitcast[UInt32]()[0]
 
         # Extract components from Float32 (32 bits)
         # Float32: [sign:1][exponent:8][mantissa:23]
@@ -123,6 +123,7 @@ struct BFloat16:
         return BFloat16(bits16)
 
     @staticmethod
+    @always_inline
     fn from_float32_truncate(value: Float32) -> BFloat16:
         """Convert Float32 to BFloat16 using simple truncation.
 
@@ -138,11 +139,10 @@ struct BFloat16:
         Example:
             var bf16 = BFloat16.from_float32_truncate(3.14159)
         """
-        # Get bit representation
-        var ptr = UnsafePointer[Float32].alloc(1)
-        ptr[0] = value
-        var bits32 = ptr.bitcast[UInt32]()[0]
-        ptr.free()
+        # Get bit representation using stack allocation
+        var f32_val = value
+        var ptr_addr = UnsafePointer.address_of(f32_val)
+        var bits32 = ptr_addr.bitcast[UInt32]()[0]
 
         # Simply take upper 16 bits (truncate lower 16)
         var bits16 = UInt16(bits32 >> 16)
@@ -153,6 +153,7 @@ struct BFloat16:
     # Conversion to Float32
     # ========================================================================
 
+    @always_inline
     fn to_float32(self) -> Float32:
         """Convert BFloat16 to Float32.
 
@@ -172,11 +173,10 @@ struct BFloat16:
         # We just zero-pad the lower 16 bits of mantissa
         var bits32 = UInt32(self.bits) << 16
 
-        # Convert bits to Float32
-        var ptr = UnsafePointer[UInt32].alloc(1)
-        ptr[0] = bits32
-        var result = ptr.bitcast[Float32]()[0]
-        ptr.free()
+        # Convert bits to Float32 using stack allocation
+        var u32_val = bits32
+        var ptr_addr = UnsafePointer.address_of(u32_val)
+        var result = ptr_addr.bitcast[Float32]()[0]
 
         return result
 
