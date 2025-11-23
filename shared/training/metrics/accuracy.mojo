@@ -173,7 +173,7 @@ fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> 
     Issue: #278-282 - Accuracy metrics.
     """
     # Validate shapes
-    var shape_vec = predictions.shape
+    var shape_vec = predictions.shape()
     if len(shape_vec) != 2:
         raise Error("topk_accuracy: predictions must be 2D logits")
 
@@ -224,7 +224,7 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
 
     Returns:.        Vector of k class indices with highest scores.
     """
-    var shape_vec = predictions.shape
+    var shape_vec = predictions.shape()
     var num_classes = shape_vec[1]
     var offset = batch_idx * num_classes
 
@@ -295,7 +295,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
     """
     # Get predicted classes
     var pred_classes: ExTensor
-    var pred_shape = predictions.shape
+    var pred_shape = predictions.shape()
     if len(pred_shape) == 2:
         pred_classes = argmax(predictions, axis=1)
     elif len(pred_shape) == 1:
@@ -391,7 +391,7 @@ struct AccuracyMetric:
         """
         # Get predicted classes
         var pred_classes: ExTensor
-        var pred_shape = predictions.shape
+        var pred_shape = predictions.shape()
         if len(pred_shape) == 2:
             pred_classes = argmax(predictions, axis=1)
         elif len(pred_shape) == 1:

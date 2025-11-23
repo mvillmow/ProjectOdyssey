@@ -65,7 +65,7 @@ struct TrainerConfig(Copyable, Movable):
     var gradient_clip_norm: Float32  # Clip gradients by norm (0 = no clipping)
 
     fn __init__(
-        mut self,
+        out self,
         num_epochs: Int = 10,
         batch_size: Int = 32,
         learning_rate: Float64 = 0.001,
@@ -312,15 +312,15 @@ struct DataLoader(Copyable, Movable):
         return DataBatch(batch_data, batch_labels)
 
 
-fn create_simple_dataloader(data: ExTensor, labels: ExTensor, batch_size: Int) -> DataLoader:
+fn create_simple_dataloader(var data: ExTensor, var labels: ExTensor, batch_size: Int) -> DataLoader:
     """Create a simple dataloader for training.
 
     Args:
-        data: Full dataset features
-        labels: Full dataset labels
+        data: Full dataset features (ownership transferred)
+        labels: Full dataset labels (ownership transferred)
         batch_size: Batch size
 
     Returns:
         DataLoader instance
     """
-    return DataLoader(data, labels, batch_size)
+    return DataLoader(data^, labels^, batch_size)

@@ -213,7 +213,7 @@ trait Serializable:
         ...
 
 
-trait Composable:
+trait Composable(Differentiable):
     """Components that can be composed into pipelines.
 
     Implement this trait for layers and operations that can be.
@@ -230,16 +230,14 @@ trait Composable:
     Example:.        struct Sequential(Composable):
             var layers: List[Composable]
 
-            fn compose[T: Composable](self, other: T) -> Sequential:
-                var new_layers = self.layers.copy()
-                new_layers.append(other)
-                return Sequential(new_layers)
+            fn compose[T: Composable](self, other: T) -> ComposedOp[Self, T]:
+                return ComposedOp[Self, T](self, other)
 
         # Usage:
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
     """
 
-    fn compose[T: Composable](self, other: T) raises -> ComposedOp:
+    fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
         """Compose this component with another.
 
         Args:.            `other`: Component to compose with.
@@ -255,22 +253,26 @@ trait Composable:
         ...
 
 
-struct ComposedOp(Differentiable, Composable):
+struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composable):
     """Composition of two differentiable operations.
 
     Represents the composition f ∘ g where:
         forward: x -> g(f(x))
         `backward`: Uses chain rule.
 
+    Parameters:
+        `F`: Type of first operation (must be Differentiable).
+        `S`: Type of second operation (must be Differentiable).
+
     Attributes:
         `first`: First operation (applied first)
         `second`: Second operation (applied second)
     """
 
-    var first: Differentiable
-    var second: Differentiable
+    var first: F
+    var second: S
 
-    fn __init__(out self, var first: Differentiable, var second: Differentiable):
+    fn __init__(out self, var first: F, var second: S):
         """Create composed operation.
 
         Args:.            `first`: First operation.
@@ -295,12 +297,12 @@ struct ComposedOp(Differentiable, Composable):
         var grad_second = self.second.backward(grad_output)
         return self.first.backward(grad_second)
 
-    fn compose[T: Composable](self, other: T) raises -> ComposedOp:
+    fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
         """Further compose with another operation.
 
         Returns: (self ∘ other)
         """
-        return ComposedOp(self, other)
+        return ComposedOp[Self, T](self, other)
 
 
 trait Trainable:

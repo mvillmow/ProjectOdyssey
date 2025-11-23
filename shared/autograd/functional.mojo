@@ -171,7 +171,7 @@ fn apply_gradient(
 
 
 fn apply_gradients(
-    inout parameters: List[ExTensor],
+    mut parameters: List[ExTensor],
     gradients: List[ExTensor],
     learning_rate: Float64
 ) raises:

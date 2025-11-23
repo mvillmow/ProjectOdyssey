@@ -98,9 +98,9 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
     var lines = List[String]()
 
     # Metadata
-    lines.append("EPOCH:" + str(checkpoint.epoch))
-    lines.append("LOSS:" + str(checkpoint.loss))
-    lines.append("ACCURACY:" + str(checkpoint.accuracy))
+    lines.append("EPOCH:" + String(checkpoint.epoch))
+    lines.append("LOSS:" + String(checkpoint.loss))
+    lines.append("ACCURACY:" + String(checkpoint.accuracy))
 
     # Model state
     for item in checkpoint.model_state.items():

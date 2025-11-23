@@ -83,15 +83,18 @@ trait Transform:
 # ============================================================================
 
 
-struct Compose(Transform, Copyable, Movable):
+struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
     """Compose multiple transforms sequentially.
 
     Applies transforms in order, passing output of each to the next.
+
+    Parameters:
+        `T`: Type of transforms in the composition (must implement Transform).
     """
 
-    var transforms: List[Transform]
+    var transforms: List[T]
 
-    fn __init__(out self, var transforms: List[Transform]):
+    fn __init__(out self, var transforms: List[T]):
         """Create composition of transforms.
 
         Args:.            `transforms`: List of transforms to apply in order.
@@ -108,25 +111,25 @@ struct Compose(Transform, Copyable, Movable):
         Raises:.            Error if any transform cannot be applied.
         """
         var result = data
-        for t in self.transforms:
-            result = t(result)
+        for i in range(len(self.transforms)):
+            result = self.transforms[i](result)
         return result
 
     fn __len__(self) -> Int:
         """Return number of transforms."""
         return len(self.transforms)
 
-    fn append(mut self, transform: Transform):
+    fn append(mut self, var transform: T):
         """Add a transform to the pipeline.
 
         Args:
             transform: Transform to add.
         """
-        self.transforms.append(transform)
+        self.transforms.append(transform^)
 
 
-# Type alias for backward compatibility and more intuitive naming
-alias Pipeline = Compose
+# Note: Pipeline is now generic - use Pipeline[T] where T is a Transform type
+# Example: Pipeline[Normalize] or Pipeline[ToExTensor]
 
 
 # ============================================================================
