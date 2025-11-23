@@ -24,7 +24,6 @@ from tests.shared.conftest import (
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like
 from shared.training.optimizers.sgd import sgd_step, sgd_step_simple
 from shared.training.optimizers.adam import adam_step, adam_step_simple
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -41,7 +40,7 @@ fn test_sgd_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that sgd_step accepts all hyperparameters
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)
@@ -71,7 +70,7 @@ fn test_sgd_basic_update() raises:
     This is a CRITICAL test that defines the core SGD behavior.
     """
     # Initial parameters: [1.0, 2.0, 3.0]
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var params = ones(shape, DType.float32)
 
     # Manually set values: [1.0, 2.0, 3.0]
@@ -108,7 +107,7 @@ fn test_sgd_momentum_accumulation() raises:
 
     This is a CRITICAL test for momentum-based training.
     """
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -144,7 +143,7 @@ fn test_sgd_weight_decay() raises:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update
     """
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -203,7 +202,7 @@ fn test_adam_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that adam_step accepts all hyperparameters
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
@@ -240,7 +239,7 @@ fn test_adam_parameter_update() raises:
 
     This is a CRITICAL test for Adam correctness.
     """
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 1
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -279,7 +278,7 @@ fn test_adam_bias_correction() raises:
 
     This is CRITICAL for Adam's fast convergence in early training.
     """
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 1
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -485,7 +484,7 @@ fn test_sgd_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -554,7 +553,7 @@ fn test_adam_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0

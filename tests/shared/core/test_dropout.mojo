@@ -20,7 +20,6 @@ from tests.shared.conftest import (
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.dropout import dropout, dropout2d, dropout_backward, dropout2d_backward
 from tests.helpers.gradient_checking import check_gradient
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -30,7 +29,7 @@ from collections.vector import DynamicVector
 
 fn test_dropout_shapes() raises:
     """Test that dropout returns correct output and mask shapes."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 4
     shape[1] = 10
     var x = ones(shape, DType.float32)
@@ -47,7 +46,7 @@ fn test_dropout_shapes() raises:
 
 fn test_dropout_inference_mode() raises:
     """Test that dropout passes input unchanged in inference mode."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 5
     var x = ones(shape, DType.float32)
@@ -75,7 +74,7 @@ fn test_dropout_inference_mode() raises:
 
 fn test_dropout_probability() raises:
     """Test that dropout approximately drops p% of elements."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 100
     shape[1] = 100
     var x = ones(shape, DType.float32)
@@ -102,7 +101,7 @@ fn test_dropout_probability() raises:
 
 fn test_dropout_scaling() raises:
     """Test that kept elements are scaled by 1/(1-p)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 10
     shape[1] = 10
     var x = ones(shape, DType.float32)
@@ -127,7 +126,7 @@ fn test_dropout_scaling() raises:
 
 fn test_dropout_reproducibility() raises:
     """Test that dropout with same seed produces same mask."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 5
     shape[1] = 5
     var x = ones(shape, DType.float32)
@@ -147,7 +146,7 @@ fn test_dropout_reproducibility() raises:
 
 fn test_dropout_backward_shapes() raises:
     """Test that dropout_backward returns correct gradient shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 4
     shape[1] = 8
     var x = ones(shape, DType.float32)
@@ -166,7 +165,7 @@ fn test_dropout_backward_shapes() raises:
 
 fn test_dropout_backward_gradient_flow() raises:
     """Test that dropout_backward only passes gradients through non-dropped elements."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 3
     var x = ones(shape, DType.float32)
@@ -194,7 +193,7 @@ fn test_dropout_backward_gradient_flow() raises:
 
 fn test_dropout_backward_gradient() raises:
     """Test dropout_backward with numerical gradient checking."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     var x = zeros(shape, DType.float32)
 
@@ -230,7 +229,7 @@ fn test_dropout_backward_gradient() raises:
 
 fn test_dropout2d_shapes() raises:
     """Test that dropout2d returns correct output and mask shapes."""
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     shape[0] = 2  # batch
     shape[1] = 3  # channels
     shape[2] = 4  # height
@@ -249,7 +248,7 @@ fn test_dropout2d_shapes() raises:
 
 fn test_dropout2d_channel_level() raises:
     """Test that dropout2d drops entire channels (all spatial positions)."""
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     shape[0] = 1  # batch
     shape[1] = 4  # channels
     shape[2] = 3  # height
@@ -279,7 +278,7 @@ fn test_dropout2d_channel_level() raises:
 
 fn test_dropout2d_inference_mode() raises:
     """Test that dropout2d passes input unchanged in inference mode."""
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -301,7 +300,7 @@ fn test_dropout2d_inference_mode() raises:
 
 fn test_dropout2d_backward_shapes() raises:
     """Test that dropout2d_backward returns correct gradient shape."""
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     shape[0] = 2
     shape[1] = 4
     shape[2] = 8
@@ -324,7 +323,7 @@ fn test_dropout2d_backward_shapes() raises:
 
 fn test_dropout2d_backward_gradient() raises:
     """Test dropout2d_backward with numerical gradient checking."""
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     shape[0] = 1
     shape[1] = 2
     shape[2] = 4

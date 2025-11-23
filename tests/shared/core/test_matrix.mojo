@@ -28,7 +28,6 @@ from shared.core.matrix import (
     transpose_backward,
 )
 from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -38,11 +37,11 @@ from collections.vector import DynamicVector
 
 fn test_matmul_shapes() raises:
     """Test that matmul returns correct output shape."""
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = 4
     shape_a[1] = 3
 
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = 3
     shape_b[1] = 5
 
@@ -58,11 +57,11 @@ fn test_matmul_shapes() raises:
 
 fn test_matmul_values() raises:
     """Test that matmul computes correct values."""
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = 2
     shape_a[1] = 2
 
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = 2
     shape_b[1] = 2
 
@@ -93,7 +92,7 @@ fn test_matmul_values() raises:
 
 fn test_matmul_identity() raises:
     """Test matmul with identity matrix."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 3
 
@@ -122,11 +121,11 @@ fn test_matmul_identity() raises:
 
 fn test_matmul_backward_shapes() raises:
     """Test that matmul_backward returns correct gradient shapes."""
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = 4
     shape_a[1] = 3
 
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = 3
     shape_b[1] = 5
 
@@ -135,7 +134,7 @@ fn test_matmul_backward_shapes() raises:
 
     var result = matmul(a, b)
 
-    var grad_output_shape = DynamicVector[Int](2)
+    var grad_output_shape = List[Int](2)
     grad_output_shape[0] = 4
     grad_output_shape[1] = 5
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -162,7 +161,7 @@ fn test_matmul_backward_gradient_a() raises:
     var n = 2
 
     # Create input A with shape (batch*m, k)
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = batch * m
     shape_a[1] = k
     var a = zeros(shape_a, DType.float32)
@@ -172,7 +171,7 @@ fn test_matmul_backward_gradient_a() raises:
         a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.0
 
     # Create input B with shape (k, n)
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = k
     shape_b[1] = n
     var b = zeros(shape_b, DType.float32)
@@ -207,7 +206,7 @@ fn test_matmul_backward_gradient_b() raises:
     var n = 2
 
     # Create input A with shape (m, k)
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = m
     shape_a[1] = k
     var a = zeros(shape_a, DType.float32)
@@ -217,7 +216,7 @@ fn test_matmul_backward_gradient_b() raises:
         a._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.0
 
     # Create input B with shape (k, n)
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = k
     shape_b[1] = n
     var b = zeros(shape_b, DType.float32)
@@ -249,7 +248,7 @@ fn test_matmul_backward_gradient_b() raises:
 
 fn test_transpose_shapes() raises:
     """Test that transpose returns correct output shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 4
     shape[1] = 10
 
@@ -263,7 +262,7 @@ fn test_transpose_shapes() raises:
 
 fn test_transpose_values() raises:
     """Test that transpose computes correct values."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
 
@@ -290,7 +289,7 @@ fn test_transpose_values() raises:
 
 fn test_transpose_double() raises:
     """Test that transpose(transpose(A)) = A."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
 
@@ -313,14 +312,14 @@ fn test_transpose_double() raises:
 
 fn test_transpose_backward_shapes() raises:
     """Test that transpose_backward returns correct gradient shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 4
     shape[1] = 10
 
     var a = ones(shape, DType.float32)
     var result = transpose(a)
 
-    var grad_output_shape = DynamicVector[Int](2)
+    var grad_output_shape = List[Int](2)
     grad_output_shape[0] = 10
     grad_output_shape[1] = 4
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -342,7 +341,7 @@ fn test_transpose_backward_gradient() raises:
     var n = 4
 
     # Create input with shape (m, n)
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = m
     shape[1] = n
     var x = zeros(shape, DType.float32)
@@ -373,7 +372,7 @@ fn test_transpose_backward_gradient() raises:
 
 fn test_dot_shapes() raises:
     """Test that dot returns scalar output."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
 
     var a = ones(shape, DType.float32)
@@ -387,7 +386,7 @@ fn test_dot_shapes() raises:
 
 fn test_dot_values() raises:
     """Test that dot computes correct values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
 
     var a = zeros(shape, DType.float32)
@@ -409,7 +408,7 @@ fn test_dot_values() raises:
 
 fn test_dot_orthogonal() raises:
     """Test dot product of orthogonal vectors."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 2
 
     var a = zeros(shape, DType.float32)
@@ -435,10 +434,10 @@ fn test_dot_orthogonal() raises:
 
 fn test_outer_shapes() raises:
     """Test that outer returns correct output shape."""
-    var shape_a = DynamicVector[Int](1)
+    var shape_a = List[Int](1)
     shape_a[0] = 3
 
-    var shape_b = DynamicVector[Int](1)
+    var shape_b = List[Int](1)
     shape_b[0] = 4
 
     var a = ones(shape_a, DType.float32)
@@ -453,10 +452,10 @@ fn test_outer_shapes() raises:
 
 fn test_outer_values() raises:
     """Test that outer computes correct values."""
-    var shape_a = DynamicVector[Int](1)
+    var shape_a = List[Int](1)
     shape_a[0] = 2
 
-    var shape_b = DynamicVector[Int](1)
+    var shape_b = List[Int](1)
     shape_b[0] = 3
 
     var a = zeros(shape_a, DType.float32)

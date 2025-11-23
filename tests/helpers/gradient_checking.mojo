@@ -14,7 +14,6 @@ Example usage:
 """
 
 from shared.core.extensor import ExTensor, zeros_like, ones_like
-from collections.vector import DynamicVector
 
 
 fn compute_numerical_gradient(
@@ -58,7 +57,7 @@ fn compute_numerical_gradient(
         fn relu_forward(x: ExTensor) raises -> ExTensor:
             return relu(x)
 
-        var x = ExTensor(DynamicVector[Int](10), DType.float32)
+        var x = ExTensor(List[Int](10), DType.float32)
         var numerical_grad = compute_numerical_gradient(relu_forward, x)
         var analytical_grad = relu_backward(ones_like(x), x)
         assert_gradients_close(analytical_grad, numerical_grad, rtol=1e-4)
@@ -204,7 +203,7 @@ fn check_gradient(
 
     Example:
         fn test_relu_gradient() raises:
-            var x = ExTensor(DynamicVector[Int](10), DType.float32)
+            var x = ExTensor(List[Int](10), DType.float32)
             # ... initialize x with test values ...
 
             fn forward(inp: ExTensor) raises -> ExTensor:
@@ -225,7 +224,7 @@ fn check_gradient(
         var result: Float64 = 0.0
         for i in range(out._numel):
             result += out._get_float64(i) * grad_output._get_float64(i)
-        var scalar_out = ExTensor(DynamicVector[Int](1), out._dtype)
+        var scalar_out = ExTensor(List[Int](1), out._dtype)
         scalar_out._set_float64(0, result)
         return scalar_out
 

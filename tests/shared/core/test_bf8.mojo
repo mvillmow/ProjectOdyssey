@@ -23,7 +23,6 @@ from shared.core.extensor import (
     full,
 )
 from shared.core.types.bf8 import BF8
-from collections.vector import DynamicVector
 from math import isnan, isinf
 
 
@@ -162,7 +161,7 @@ fn test_bf8_equality() raises:
 
 fn test_tensor_to_bf8() raises:
     """Test converting Float32 tensor to BF8."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
 
@@ -194,7 +193,7 @@ fn test_tensor_to_bf8() raises:
 
 fn test_tensor_from_bf8() raises:
     """Test converting BF8 tensor back to Float32."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 2
 
@@ -241,7 +240,7 @@ fn test_tensor_from_bf8() raises:
 
 fn test_tensor_bf8_roundtrip() raises:
     """Test round-trip conversion Float32 -> BF8 -> Float32."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
 
     # Create tensor with various values
@@ -269,7 +268,7 @@ fn test_tensor_bf8_roundtrip() raises:
 
 fn test_tensor_to_bf8_requires_float() raises:
     """Test that to_bf8() requires floating-point tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
 
     # Create int32 tensor
@@ -287,7 +286,7 @@ fn test_tensor_to_bf8_requires_float() raises:
 
 fn test_tensor_from_bf8_requires_uint8() raises:
     """Test that from_bf8() requires uint8 tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 3
 
     # Create float32 tensor (not uint8)

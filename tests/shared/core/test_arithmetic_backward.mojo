@@ -35,7 +35,6 @@ from shared.core.arithmetic import (
     divide_backward,
 )
 from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -43,18 +42,18 @@ from collections.vector import DynamicVector
 # ============================================================================
 
 
-fn create_shape_vec(dims: VariadicList[Int]) -> DynamicVector[Int]:
-    """Create a DynamicVector[Int] from variadic arguments.
+fn create_shape_vec(dims: VariadicList[Int]) -> List[Int]:
+    """Create a List[Int] from variadic arguments.
 
     Args:
         dims: Variable number of dimension sizes
 
     Returns:
-        DynamicVector[Int] with specified dimensions
+        List[Int] with specified dimensions
     """
-    var shape = DynamicVector[Int]()
+    var shape = List[Int]()
     for dim in dims:
-        shape.push_back(dim)
+        shape.append(dim)
     return shape
 
 

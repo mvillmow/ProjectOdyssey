@@ -16,7 +16,6 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from collections.vector import DynamicVector
 from math import abs, sqrt
 from shared.core import ExTensor, xavier_uniform, xavier_normal, kaiming_uniform, kaiming_normal, uniform, normal, constant
 
@@ -62,7 +61,7 @@ fn test_xavier_uniform_variance() raises:
     # Test configuration: fan_in=100, fan_out=50
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=42)
 
@@ -90,7 +89,7 @@ fn test_xavier_uniform_bounds() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=123)
 
@@ -112,7 +111,7 @@ fn test_xavier_uniform_reproducibility() raises:
 
     var fan_in = 50
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Generate with same seed twice
     var w1 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=999)
@@ -133,7 +132,7 @@ fn test_xavier_uniform_different_seeds() raises:
 
     var fan_in = 50
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Generate with different seeds
     var w1 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=111)
@@ -161,7 +160,7 @@ fn test_xavier_normal_variance() raises:
     # Test configuration: fan_in=200, fan_out=100
     var fan_in = 200
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=42)
 
@@ -189,7 +188,7 @@ fn test_xavier_normal_mean_zero() raises:
 
     var fan_in = 100
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=789)
 
@@ -217,7 +216,7 @@ fn test_xavier_normal_reproducibility() raises:
 
     var fan_in = 50
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Generate with same seed twice
     var w1 = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=555)
@@ -247,7 +246,7 @@ fn test_xavier_configurations() raises:
     for idx in range(len(configs)):
         var fan_in = configs[idx][0]
         var fan_out = configs[idx][1]
-        var shape = DynamicVector[Int](fan_in, fan_out)
+        var shape = List[Int](fan_in, fan_out)
 
         # Test uniform
         var w_uniform = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=42)
@@ -278,7 +277,7 @@ fn test_xavier_float64() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Test uniform with float64
     var w_uniform = xavier_uniform(fan_in, fan_out, shape, DType.float64, seed_val=42)
@@ -303,7 +302,7 @@ fn test_xavier_float16() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Test uniform with float16
     var w_uniform = xavier_uniform(fan_in, fan_out, shape, DType.float16, seed_val=42)
@@ -329,7 +328,7 @@ fn test_kaiming_uniform_variance_fan_in() raises:
     # Test configuration: fan_in=100, fan_out=50
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=42)
 
@@ -357,7 +356,7 @@ fn test_kaiming_uniform_variance_fan_out() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_out", seed_val=42)
 
@@ -382,7 +381,7 @@ fn test_kaiming_uniform_bounds() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=123)
 
@@ -404,7 +403,7 @@ fn test_kaiming_uniform_reproducibility() raises:
 
     var fan_in = 50
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Generate with same seed twice
     var w1 = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=999)
@@ -426,7 +425,7 @@ fn test_kaiming_normal_variance_fan_in() raises:
     # Test configuration: fan_in=200, fan_out=100
     var fan_in = 200
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=42)
 
@@ -454,7 +453,7 @@ fn test_kaiming_normal_mean_zero() raises:
 
     var fan_in = 100
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     var weights = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=789)
 
@@ -482,7 +481,7 @@ fn test_kaiming_normal_reproducibility() raises:
 
     var fan_in = 50
     var fan_out = 100
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Generate with same seed twice
     var w1 = kaiming_normal(fan_in, fan_out, shape, fan_mode="fan_in", seed_val=555)
@@ -503,7 +502,7 @@ fn test_kaiming_float64() raises:
 
     var fan_in = 100
     var fan_out = 50
-    var shape = DynamicVector[Int](fan_in, fan_out)
+    var shape = List[Int](fan_in, fan_out)
 
     # Test uniform with float64
     var w_uniform = kaiming_uniform(fan_in, fan_out, shape, fan_mode="fan_in", dtype=DType.float64, seed_val=42)
@@ -526,7 +525,7 @@ fn test_uniform_bounds() raises:
     """Test uniform distribution stays within bounds."""
     print("Testing uniform bounds...")
 
-    var shape = DynamicVector[Int](100, 50)
+    var shape = List[Int](100, 50)
     var low = -0.5
     var high = 0.5
 
@@ -545,7 +544,7 @@ fn test_uniform_mean() raises:
     """Test uniform distribution has correct mean."""
     print("Testing uniform mean...")
 
-    var shape = DynamicVector[Int](200, 100)
+    var shape = List[Int](200, 100)
     var low = -1.0
     var high = 1.0
 
@@ -573,7 +572,7 @@ fn test_uniform_reproducibility() raises:
     """Test uniform with fixed seed is reproducible."""
     print("Testing uniform reproducibility...")
 
-    var shape = DynamicVector[Int](50, 50)
+    var shape = List[Int](50, 50)
 
     # Generate with same seed twice
     var w1 = uniform(shape, low=-0.2, high=0.2, seed_val=999)
@@ -592,7 +591,7 @@ fn test_normal_mean_and_std() raises:
     """Test normal distribution has correct mean and standard deviation."""
     print("Testing normal mean and std...")
 
-    var shape = DynamicVector[Int](200, 100)
+    var shape = List[Int](200, 100)
     var expected_mean = 0.5
     var expected_std = 0.1
 
@@ -634,7 +633,7 @@ fn test_normal_reproducibility() raises:
     """Test normal with fixed seed is reproducible."""
     print("Testing normal reproducibility...")
 
-    var shape = DynamicVector[Int](50, 50)
+    var shape = List[Int](50, 50)
 
     # Generate with same seed twice
     var w1 = normal(shape, mean=0.0, std=0.05, seed_val=555)
@@ -653,7 +652,7 @@ fn test_constant_values() raises:
     """Test constant initialization fills with correct value."""
     print("Testing constant values...")
 
-    var shape = DynamicVector[Int](10, 10)
+    var shape = List[Int](10, 10)
     var value = 0.42
 
     var weights = constant(shape, value)
@@ -671,7 +670,7 @@ fn test_constant_ones_and_zeros() raises:
     """Test constant can create ones and zeros."""
     print("Testing constant ones and zeros...")
 
-    var shape = DynamicVector[Int](5, 5)
+    var shape = List[Int](5, 5)
 
     # Test ones
     var ones_tensor = constant(shape, 1.0)
@@ -692,7 +691,7 @@ fn test_uniform_float64() raises:
     """Test uniform with float64 dtype."""
     print("Testing uniform with float64...")
 
-    var shape = DynamicVector[Int](50, 50)
+    var shape = List[Int](50, 50)
     var weights = uniform(shape, low=-1.0, high=1.0, dtype=DType.float64, seed_val=42)
 
     assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")
@@ -709,7 +708,7 @@ fn test_normal_float64() raises:
     """Test normal with float64 dtype."""
     print("Testing normal with float64...")
 
-    var shape = DynamicVector[Int](50, 50)
+    var shape = List[Int](50, 50)
     var weights = normal(shape, mean=0.0, std=0.1, dtype=DType.float64, seed_val=42)
 
     assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")
@@ -721,7 +720,7 @@ fn test_constant_float64() raises:
     """Test constant with float64 dtype."""
     print("Testing constant with float64...")
 
-    var shape = DynamicVector[Int](5, 5)
+    var shape = List[Int](5, 5)
     var weights = constant(shape, 0.5, dtype=DType.float64)
 
     assert_equal(weights._dtype, DType.float64, "Should use float64 dtype")

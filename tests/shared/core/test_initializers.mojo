@@ -27,7 +27,6 @@ from shared.core.initializers import (
     normal,
     constant,
 )
-from collections.vector import DynamicVector
 from math import sqrt
 
 
@@ -309,7 +308,7 @@ fn test_kaiming_normal_std() raises:
 
 fn test_uniform_shape() raises:
     """Test uniform initialization with custom range."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 50
     shape[1] = 30
     var W = uniform(shape, -0.5, 0.5, DType.float32)
@@ -320,7 +319,7 @@ fn test_uniform_shape() raises:
 
 fn test_uniform_range() raises:
     """Test uniform values are within specified range."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 100
     shape[1] = 100
     var low = -0.7
@@ -336,7 +335,7 @@ fn test_uniform_range() raises:
 
 fn test_uniform_mean() raises:
     """Test uniform distribution has approximately correct mean."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 200
     shape[1] = 200
     var low = -1.0
@@ -357,7 +356,7 @@ fn test_uniform_mean() raises:
 
 fn test_normal_shape() raises:
     """Test normal initialization with custom parameters."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 50
     shape[1] = 30
     var W = normal(shape, 0.0, 1.0, DType.float32)
@@ -368,7 +367,7 @@ fn test_normal_shape() raises:
 
 fn test_normal_mean() raises:
     """Test normal distribution has approximately correct mean."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 200
     shape[1] = 200
     var target_mean = 2.5
@@ -383,7 +382,7 @@ fn test_normal_mean() raises:
 
 fn test_normal_std() raises:
     """Test normal distribution has approximately correct standard deviation."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 300
     shape[1] = 300
     var target_mean = 0.0
@@ -404,7 +403,7 @@ fn test_normal_std() raises:
 
 fn test_constant_shape() raises:
     """Test constant initialization preserves shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 50
     shape[1] = 30
     var W = constant(shape, 3.14, DType.float32)
@@ -415,7 +414,7 @@ fn test_constant_shape() raises:
 
 fn test_constant_value() raises:
     """Test constant initialization sets all values correctly."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 10
     shape[1] = 10
     var value = 7.5
@@ -428,7 +427,7 @@ fn test_constant_value() raises:
 
 fn test_constant_zero() raises:
     """Test constant initialization with zero."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 5
     shape[1] = 5
     var W = constant(shape, 0.0, DType.float32)
@@ -439,7 +438,7 @@ fn test_constant_zero() raises:
 
 fn test_constant_negative() raises:
     """Test constant initialization with negative value."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 5
     shape[1] = 5
     var value = -2.5
@@ -474,7 +473,7 @@ fn test_kaiming_normal_float64() raises:
 
 fn test_constant_float64() raises:
     """Test constant initialization with float64 dtype."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 10
     shape[1] = 10
     var W = constant(shape, 1.5, DType.float64)

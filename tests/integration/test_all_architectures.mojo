@@ -19,7 +19,6 @@ Usage:
 """
 
 from shared.core import ExTensor, zeros, ones
-from collections.vector import DynamicVector
 import sys
 
 
@@ -46,11 +45,11 @@ fn test_model_forward(
         # Create dummy input (batch_size, 3, 32, 32)
         print(f"Creating dummy input: ({batch_size}, 3, 32, 32)")
         var input = zeros(
-            DynamicVector[Int](4)
-                .push_back(batch_size)
-                .push_back(3)
-                .push_back(32)
-                .push_back(32),
+            List[Int](4)
+                .append(batch_size)
+                .append(3)
+                .append(32)
+                .append(32),
             DType.float32
         )
 
@@ -164,8 +163,8 @@ fn main() raises:
     print("  5. VGG-16 (if available)")
     print()
 
-    var results = DynamicVector[Bool]()
-    var model_names = DynamicVector[String]()
+    var results = List[Bool]()
+    var model_names = List[String]()
 
     # Test 1: ResNet-18
     print("\n" + "="*60)
@@ -179,8 +178,8 @@ fn main() raises:
     # We'll need to run this from the repo root and check if models work
     var resnet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.push_back(resnet_passed)
-    model_names.push_back("ResNet-18")
+    results.append(resnet_passed)
+    model_names.append("ResNet-18")
 
     # Test 2: GoogLeNet
     print("\n" + "="*60)
@@ -188,8 +187,8 @@ fn main() raises:
     print("="*60)
     var googlenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.push_back(googlenet_passed)
-    model_names.push_back("GoogLeNet")
+    results.append(googlenet_passed)
+    model_names.append("GoogLeNet")
 
     # Test 3: MobileNetV1
     print("\n" + "="*60)
@@ -197,8 +196,8 @@ fn main() raises:
     print("="*60)
     var mobilenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.push_back(mobilenet_passed)
-    model_names.push_back("MobileNetV1")
+    results.append(mobilenet_passed)
+    model_names.append("MobileNetV1")
 
     # Test 4: DenseNet-121
     print("\n" + "="*60)
@@ -206,8 +205,8 @@ fn main() raises:
     print("="*60)
     var densenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.push_back(densenet_passed)
-    model_names.push_back("DenseNet-121")
+    results.append(densenet_passed)
+    model_names.append("DenseNet-121")
 
     # Test 5: VGG-16
     print("\n" + "="*60)
@@ -215,8 +214,8 @@ fn main() raises:
     print("="*60)
     var vgg_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
-    results.push_back(vgg_passed)
-    model_names.push_back("VGG-16")
+    results.append(vgg_passed)
+    model_names.append("VGG-16")
 
     # Summary
     print("\n" + "="*60)
