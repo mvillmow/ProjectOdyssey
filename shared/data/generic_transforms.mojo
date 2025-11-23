@@ -110,8 +110,7 @@ struct LambdaTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
-struct ConditionalTransform(Transform, Copyable, Movable):
+struct ConditionalTransform[T: Transform](Transform, Copyable, Movable):
     """Apply transform only if predicate is true.
 
     Evaluates a predicate function on the input tensor. If true,
@@ -128,12 +127,12 @@ struct ConditionalTransform(Transform, Copyable, Movable):
     """
 
     var predicate: fn (ExTensor) -> Bool
-    var transform: Transform
+    var transform: T
 
     fn __init__(
         out self,
         predicate: fn (ExTensor) -> Bool,
-        var transform: Transform,
+        var transform: T,
     ):
         """Create conditional transform.
 
@@ -161,7 +160,6 @@ struct ConditionalTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct ClampTransform(Transform, Copyable, Movable):
     """Clamp tensor values to specified range [min_val, max_val].
 
@@ -220,7 +218,6 @@ struct ClampTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct DebugTransform(Transform, Copyable, Movable):
     """Debug transform for logging/inspection.
 
@@ -282,8 +279,7 @@ struct DebugTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
-struct SequentialTransform(Transform, Copyable, Movable):
+struct SequentialTransform[T: Transform](Transform, Copyable, Movable):
     """Apply transforms sequentially in order.
 
     Chains multiple transforms together, applying them in sequence.
@@ -300,9 +296,9 @@ struct SequentialTransform(Transform, Copyable, Movable):
         >>> var result = pipeline(data)
     """
 
-    var transforms: List[Transform]
+    var transforms: List[T]
 
-    fn __init__(out self, var transforms: List[Transform]):
+    fn __init__(out self, var transforms: List[T]):
         """Create sequential composition.
 
         Args:.            `transforms`: List of transforms to apply in order.
@@ -330,8 +326,7 @@ struct SequentialTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
-struct BatchTransform(Copyable, Movable):
+struct BatchTransform[T: Transform](Copyable, Movable):
     """Apply transform to a batch of tensors.
 
     Applies the same transform to each tensor in a list,
@@ -347,9 +342,9 @@ struct BatchTransform(Copyable, Movable):
         >>> var results = transform(batch)
     """
 
-    var transform: Transform
+    var transform: T
 
-    fn __init__(out self, var transform: Transform):
+    fn __init__(out self, var transform: T):
         """Create batch transform.
 
         Args:.            `transform`: Transform to apply to each tensor in batch.
@@ -377,7 +372,6 @@ struct BatchTransform(Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct ToFloat32(Transform, Copyable, Movable):
     """Convert tensor to Float32 dtype.
 
@@ -408,7 +402,6 @@ struct ToFloat32(Transform, Copyable, Movable):
         return ExTensor(result_values^)
 
 
-@fieldwise_init
 struct ToInt32(Transform, Copyable, Movable):
     """Convert tensor to Int32 dtype (truncation).
 
@@ -471,7 +464,7 @@ fn apply_to_tensor(
     return transform(data)
 
 
-fn compose_transforms(var transforms: List[Transform]) raises -> SequentialTransform:
+fn compose_transforms[T: Transform](var transforms: List[T]) raises -> SequentialTransform[T]:
     """Create sequential composition of transforms.
 
     Convenience function for building transform pipelines.
@@ -483,4 +476,4 @@ fn compose_transforms(var transforms: List[Transform]) raises -> SequentialTrans
     Example:.        >>> var pipeline = compose_transforms(List(norm, clamp, debug))
         >>> var result = pipeline(data)
     """
-    return SequentialTransform(transforms^)
+    return SequentialTransform[T](transforms^)

@@ -121,7 +121,7 @@ struct FileDataset(Dataset, Copyable, Movable):
     var _cache: Dict[Int, Tuple[ExTensor, ExTensor]]
 
     fn __init__(
-        mut self,
+        out self,
         owned file_paths: List[String],
         owned labels: List[Int],
         `cache`: Bool = False,

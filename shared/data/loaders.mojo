@@ -26,7 +26,7 @@ struct Batch(Copyable, Movable):
     var indices: List[Int]
 
     fn __init__(
-        mut self,
+        out self,
         owned data: ExTensor,
         owned labels: ExTensor,
         owned indices: List[Int],
@@ -60,7 +60,7 @@ struct BaseLoader(Copyable, Movable):
     var _len: Int
 
     fn __init__(
-        mut self,
+        out self,
         owned dataset: Dataset,
         batch_size: Int = 1,
         drop_last: Bool = False,
@@ -97,21 +97,25 @@ struct BaseLoader(Copyable, Movable):
 # ============================================================================
 
 
-struct BatchLoader(BaseLoader, Copyable, Movable):
+struct BatchLoader(Copyable, Movable):
     """Data loader with batching and optional shuffling.
 
     Loads data in batches, optionally shuffling the order of samples.
     """
 
+    var dataset: Dataset
+    var batch_size: Int
+    var drop_last: Bool
+    var _len: Int
     var sampler: Sampler
     var shuffle: Bool
 
     fn __init__(
-        mut self,
+        out self,
         owned dataset: Dataset,
-        `batch_size`: Int = 32,
-        `shuffle`: Bool = False,
-        `drop_last`: Bool = False,
+        batch_size: Int = 32,
+        shuffle: Bool = False,
+        drop_last: Bool = False,
         owned sampler: Optional[Sampler] = None,
     ) raises:
         """Create batch loader.
@@ -126,8 +130,21 @@ struct BatchLoader(BaseLoader, Copyable, Movable):
         Raises:
             Error if batch_size is invalid.
         """
-        # Initialize base loader
-        super().__init__(dataset^, batch_size, drop_last)
+        # Validate batch size
+        if batch_size <= 0:
+            raise Error("Batch size must be positive, got: " + String(batch_size))
+
+        # Initialize base fields (composition pattern instead of inheritance)
+        self.dataset = dataset^
+        self.batch_size = batch_size
+        self.drop_last = drop_last
+
+        # Calculate number of batches
+        var dataset_len = self.dataset.__len__()
+        if self.drop_last:
+            self._len = dataset_len // batch_size
+        else:
+            self._len = (dataset_len + batch_size - 1) // batch_size
 
         self.shuffle = shuffle
 
@@ -138,6 +155,10 @@ struct BatchLoader(BaseLoader, Copyable, Movable):
             self.sampler = RandomSampler(self.dataset.__len__())
         else:
             self.sampler = SequentialSampler(self.dataset.__len__())
+
+    fn __len__(self) -> Int:
+        """Return number of batches."""
+        return self._len
 
     fn __iter__(self) -> List[Batch]:
         """Iterate over batches.

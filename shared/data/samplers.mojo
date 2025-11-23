@@ -46,7 +46,7 @@ struct SequentialSampler(Sampler, Copyable, Movable):
     var end_index: Int
 
     fn __init__(
-        mut self,
+        out self,
         `data_source_len`: Int,
         `start_index`: Int = 0,
         `end_index`: Int = -1,
@@ -98,7 +98,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
     var seed_value: Optional[Int]
 
     fn __init__(
-        mut self,
+        out self,
         data_source_len: Int,
         replacement: Bool = False,
         num_samples: Optional[Int] = None,
@@ -177,7 +177,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
     var seed_value: Optional[Int]
 
     fn __init__(
-        mut self,
+        out self,
         owned weights: List[Float64],
         `num_samples`: Int,
         `replacement`: Bool = True,
