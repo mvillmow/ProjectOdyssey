@@ -27,12 +27,13 @@ from shared.core import (
     # Activations
     relu, sigmoid, tanh, softmax,
     # Loss functions
-    mse_loss, bce_loss,
+    mean_squared_error, binary_cross_entropy,
 )
 from shared.training.metrics import (
     AccuracyMetric, LossTracker, ConfusionMatrix,
     MetricCollection, MetricLogger
 )
+from shared.training.metrics.base import MetricResult
 
 
 fn test_initializers_with_activations() raises:
@@ -205,11 +206,13 @@ fn test_dtype_consistency_across_components() raises:
 
         # Initialize with specific dtype
         var weights = xavier_uniform(10, 10, shape, dtype=dt, seed_val=42)
-        assert_equal(weights.dtype, dt, "Initializer respects dtype")
+        if weights.dtype() != dt:
+            raise Error("Initializer respects dtype")
 
         # Ensure activations preserve dtype
         var activated = relu(weights)
-        assert_equal(activated.dtype, dt, "ReLU preserves dtype")
+        if activated.dtype() != dt:
+            raise Error("ReLU preserves dtype")
 
     print("  ✓ All components handle dtypes consistently")
 
@@ -350,8 +353,9 @@ fn test_multi_layer_network_integration() raises:
 
     # Verify valid results
     assert_true(acc >= 0.0 and acc <= 1.0, "Accuracy in valid range")
-    assert_equal(predictions.shape[0], 4, "Predictions batch size")
-    assert_equal(predictions.shape[1], 10, "Predictions num classes")
+    var pred_shape = predictions.shape()
+    assert_equal(pred_shape[0], 4, "Predictions batch size")
+    assert_equal(pred_shape[1], 10, "Predictions num classes")
 
     print("  Network: 784 -> 256 -> 128 -> 10")
     print("  Batch accuracy: " + String(acc))
