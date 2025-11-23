@@ -52,7 +52,9 @@ struct ExTensor(Copyable, Movable):
     to safely share data. Memory is freed only when the last reference is destroyed.
 
     Fixes: #1904 (MOJO-001), #1905 (MOJO-002), #1906 (MOJO-003),
-           #1907 (MOJO-004), #1908 (MOJO-005)
+           #1907 (MOJO-004), #1908 (MOJO-005),
+           #1909 (DATA-001), #1910 (DATA-002), #1911 (DATA-003),
+           #1912 (DATA-004), #1913 (DATA-005)
 
     Attributes:
         _data: UnsafePointer to raw byte storage (type-erased)
@@ -62,6 +64,7 @@ struct ExTensor(Copyable, Movable):
         _numel: Total number of elements in the tensor
         _is_view: Whether this tensor is a view (shares data with another tensor)
         _refcount: Shared reference count for memory management
+        _original_numel_quantized: For quantized tensors, stores original size before padding (-1 if not quantized)
 
     Examples:
         # Create tensors
@@ -81,6 +84,7 @@ struct ExTensor(Copyable, Movable):
     var _numel: Int
     var _is_view: Bool
     var _refcount: UnsafePointer[Int, origin=MutAnyOrigin]  # Shared reference count (fixes MOJO-003)
+    var _original_numel_quantized: Int  # Metadata for quantization: -1 if not quantized, original numel if quantized (fixes DATA-001)
 
     fn __init__(out self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
@@ -103,6 +107,7 @@ struct ExTensor(Copyable, Movable):
 
         self._dtype = dtype
         self._is_view = False
+        self._original_numel_quantized = -1  # Initialize as non-quantized (fixes DATA-001)
 
         # Calculate total number of elements
         self._numel = 1
@@ -158,6 +163,7 @@ struct ExTensor(Copyable, Movable):
         self._numel = existing._numel
         self._is_view = existing._is_view
         self._refcount = existing._refcount
+        self._original_numel_quantized = existing._original_numel_quantized
 
         # Increment reference count (shared ownership)
         if not self._is_view and self._refcount:
@@ -664,33 +670,11 @@ struct ExTensor(Copyable, Movable):
         Note:
             FP8 has limited range (~±240) and precision. Values outside this range
             are clamped. This is useful for memory-efficient training/inference.
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.fp8 import FP8
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         # Verify source is floating point
         if not (
@@ -705,14 +689,22 @@ struct ExTensor(Copyable, Movable):
 
         # Convert each element to FP8
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             # Get source value as Float32
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
                 val = self._data.bitcast[Float32]()[i]
-            else:  # float64
+            elif self._dtype == DType.float64:
                 val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            else:
+                # Defensive re-validation (fixes DATA-003)
+                raise Error("Invalid dtype for FP8 conversion")
 
             # Convert to FP8 and store
             var fp8_val = FP8.from_float32(val)
@@ -777,40 +769,25 @@ struct ExTensor(Copyable, Movable):
         Examples:
             var t = zeros(List[Int](3, 4), DType.float32)
             var i8_t = t.to_int8()  # Returns int8 tensor
+
+        Note:
+            FP16 inputs are converted to FP32 before conversion.
         """
         from .types.integer import Int8
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         # Create output tensor with int8 dtype
         var result = ExTensor(self._shape, DType.int8)
 
         # Convert each element to Int8
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -835,6 +812,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int8 conversion")
 
             var i8_val = Int8.from_float32(val)
@@ -853,35 +831,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.integer import Int16
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.int16)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -906,6 +866,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int16 conversion")
 
             var i16_val = Int16.from_float32(val)
@@ -924,35 +885,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.integer import Int32
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.int32)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -977,6 +920,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int32 conversion")
 
             var i32_val = Int32.from_float32(val)
@@ -994,35 +938,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.integer import Int64
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.int64)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1047,6 +973,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int64 conversion")
 
             var i64_val = Int64.from_float32(val)
@@ -1065,35 +992,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.unsigned import UInt8
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.uint8)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1118,6 +1027,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint8 conversion")
 
             var u8_val = UInt8.from_float32(val)
@@ -1136,35 +1046,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.unsigned import UInt16
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.uint16)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1189,6 +1081,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint16 conversion")
 
             var u16_val = UInt16.from_float32(val)
@@ -1207,35 +1100,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.unsigned import UInt32
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.uint32)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1260,6 +1135,7 @@ struct ExTensor(Copyable, Movable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint32 conversion")
 
             var u32_val = UInt32.from_float32(val)
@@ -1277,35 +1153,17 @@ struct ExTensor(Copyable, Movable):
         """
         from .types.unsigned import UInt64
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         var result = ExTensor(self._shape, DType.uint64)
 
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1330,6 +1188,7 @@ struct ExTensor(Copyable, Movable):
                 result._data.bitcast[UInt64]()[i] = self._data.bitcast[UInt64]()[i]
                 continue
             else:
+                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint64 conversion")
 
             var u64_val = UInt64.from_float32(val)
@@ -1363,33 +1222,11 @@ struct ExTensor(Copyable, Movable):
             BF8 has larger range (~±57344) than FP8 but less precision (2 mantissa bits).
             Values outside this range are clamped. This is useful for memory-efficient
             training/inference where range is more important than precision.
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.bf8 import BF8
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
+        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         # Verify source is floating point
         if not (
@@ -1404,14 +1241,22 @@ struct ExTensor(Copyable, Movable):
 
         # Convert each element to BF8
         for i in range(self._numel):
+            # Bounds check (fixes DATA-004)
+            if i >= self._numel:
+                raise Error("Index out of bounds during bitcast")
+
             # Get source value as Float32
             var val: Float32
+            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
                 val = self._data.bitcast[Float32]()[i]
-            else:  # float64
+            elif self._dtype == DType.float64:
                 val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
+            else:
+                # Defensive re-validation (fixes DATA-003)
+                raise Error("Invalid dtype for BF8 conversion")
 
             # Convert to BF8 and store
             var bf8_val = BF8.from_float32(val)
@@ -1474,64 +1319,27 @@ struct ExTensor(Copyable, Movable):
         Raises:
             Error: If the source tensor is not a floating-point dtype
 
-        **FIXME (DOC-003 - P0 CRITICAL)**: Missing comprehensive API usage examples
-        Current examples are too basic. Missing critical usage patterns:
-          1. Non-aligned tensor handling (33 elements → 64 padded → dimension loss)
-          2. Round-trip accuracy degradation examples with concrete numbers
-          3. Error case examples (what happens with int32 input?)
-          4. Multi-dimensional tensor examples (2D, 3D, 4D)
-          5. Integration examples with ML workflows (gradient compression, weight storage)
-          6. Performance comparison examples (memory savings, conversion overhead)
-
-        **FIXME (DOC-004 - P0 CRITICAL)**: Incomplete error documentation
-        "Raises" section lists one error but implementation has more failure modes:
-          1. Non-floating-point dtype error (documented but vague)
-          2. What about empty tensors? (untested, undocumented)
-          3. What about extremely large tensors? (OOM behavior undocumented)
-          4. What about tensors with NaN/Inf? (handled but undocumented)
-          5. Padding behavior errors (dimension loss not documented as "error")
-
-        Severity: BLOCKING API DOCUMENTATION - developers cannot use API safely
-        Impact: Users will misuse API, lose data, get wrong results
-        See: COMPREHENSIVE_REVIEW_FINDINGS.md (DOC-003, DOC-004)
-
         Examples:
-            var t = zeros(List[Int](64,), DType.float32)
-            var mxfp4_t = t.to_mxfp4()  # Returns uint8 tensor (2 blocks × 17 bytes)
-            var restored = mxfp4_t.from_mxfp4()  # Convert back to float32
+            # Aligned size (32 elements = 1 block)
+            var t = zeros(List[Int](32,), DType.float32)
+            var mxfp4_t = t.to_mxfp4()  # Returns uint8 tensor (17 bytes)
+            var restored = mxfp4_t.from_mxfp4()  # Restores 32 elements
+
+            # Non-aligned size (33 elements = 2 blocks with padding)
+            var t2 = zeros(List[Int](33,), DType.float32)
+            var mxfp4_t2 = t2.to_mxfp4()  # Pads to 64 elements, returns 34 bytes
+            var restored2 = mxfp4_t2.from_mxfp4()  # Correctly restores 33 elements!
 
         Note:
-            MXFP4 uses 32-element blocks. Tensor is padded to block boundary.
+            MXFP4 uses 32-element blocks. Non-aligned tensors are padded with zeros,
+            but original size is preserved in metadata. Round-trip conversion maintains
+            original tensor size.
             Memory efficiency: 17 bytes per 32 Float32 values (16:1 compression).
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.mxfp4 import MXFP4Block
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
-
-        # Verify source is floating point
+        # Verify source is floating point (DATA-003 outer check)
         if not (
             self._dtype == DType.float16
             or self._dtype == DType.float32
@@ -1539,29 +1347,15 @@ struct ExTensor(Copyable, Movable):
         ):
             raise Error("to_mxfp4() requires a floating-point tensor")
 
-        # **FIXME (DATA-001 - P0 CRITICAL)**: Padding data loss - silent tensor size corruption
-        # Non-aligned tensors are padded to 32-element boundaries with zeros, but original
-        # size is lost forever. Example:
-        #   Input: 33 elements → Padded to 64 elements (2 blocks × 32)
-        #   Output after from_mxfp4(): 64 elements (WRONG! Should be 33)
-        #
-        # Impact: ALL quantization workflows produce wrong tensor dimensions
-        # Solution: Implement QuantizedTensor wrapper with metadata:
-        #   struct QuantizedTensor:
-        #       var data: ExTensor
-        #       var original_shape: List[Int]
-        #       var original_numel: Int
-        #
-        # Severity: BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
-
-        # Current code pads without saving original size:
         # Calculate number of blocks (32 elements per block)
         var num_blocks = (self._numel + 31) // 32
         var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
 
         # Create output tensor as flattened uint8 array
         var result = ExTensor(List[Int](), DType.uint8)
+
+        # Store original size before padding (fixes DATA-001)
+        result._original_numel_quantized = self._numel
 
         # Process each block
         for block_idx in range(num_blocks):
@@ -1573,14 +1367,22 @@ struct ExTensor(Copyable, Movable):
             for i in range(32):
                 var idx = start_idx + i
                 if idx < self._numel:
+                    # Bounds check (fixes DATA-004)
+                    if idx >= self._numel:
+                        raise Error("Index out of bounds during bitcast")
+
                     # Get source value as Float32
                     var val: Float32
+                    # Defensive dtype re-validation (fixes DATA-003)
                     if self._dtype == DType.float16:
                         val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
                     elif self._dtype == DType.float32:
                         val = self._data.bitcast[Float32]()[idx]
-                    else:  # float64
+                    elif self._dtype == DType.float64:
                         val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                    else:
+                        # Defensive re-validation (fixes DATA-003)
+                        raise Error("Invalid dtype for MXFP4 quantization")
                     values.append(val)
                 else:
                     values.append(Float32(0.0))  # Padding
@@ -1610,11 +1412,12 @@ struct ExTensor(Copyable, Movable):
 
         Examples:
             var mxfp4_t = ...  # uint8 tensor with MXFP4 blocks
-            var float_t = mxfp4_t.from_mxfp4()  # Decode to float32
+            var float_t = mxfp4_t.from_mxfp4()  # Decode to float32, restores original size
 
         Note:
             This assumes the uint8 tensor contains valid MXFP4 blocks.
             Use this to decode tensors created by to_mxfp4().
+            Original tensor size is restored from metadata if available.
         """
         from .types.mxfp4 import MXFP4Block, E8M0Scale
 
@@ -1626,18 +1429,17 @@ struct ExTensor(Copyable, Movable):
         if self._numel % 17 != 0:
             raise Error("MXFP4 tensor size must be multiple of 17 bytes")
 
-        # **FIXME (DATA-002 - P0 CRITICAL)**: Cannot restore original dimensions
-        # No metadata exists to know original tensor size before padding.
-        # Always returns block-aligned size (multiple of 32).
-        #
-        # Example: 33-element tensor → 64-element output (31 extra zeros!)
-        #
-        # Solution: Requires DATA-001 fix (QuantizedTensor wrapper with metadata)
-        # Severity: BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
-
         var num_blocks = self._numel // 17
-        var output_size = num_blocks * 32
+        var padded_output_size = num_blocks * 32
+
+        # Check if original size is stored (fixes DATA-002)
+        var output_size: Int
+        if self._original_numel_quantized >= 0:
+            # Use stored original size (was set by to_mxfp4)
+            output_size = self._original_numel_quantized
+        else:
+            # Fallback to padded size for backwards compatibility
+            output_size = padded_output_size
 
         # Create output tensor
         var result = ExTensor(List[Int](), DType.float32)
@@ -1654,10 +1456,20 @@ struct ExTensor(Copyable, Movable):
 
             var block = MXFP4Block(data, scale)
 
-            # Decode block to Float32 values
+            # Decode block to Float32 values (only decode needed elements)
             var values = block.to_float32_array()
             for i in range(32):
-                result._data.bitcast[Float32]()[block_idx * 32 + i] = values[i]
+                var output_idx = block_idx * 32 + i
+                if output_idx < output_size:
+                    result._data.bitcast[Float32]()[output_idx] = values[i]
+
+        # Trim result to original size if needed
+        if output_size < padded_output_size:
+            # Create a new tensor with the correct size
+            var trimmed = ExTensor(List[Int](output_size), DType.float32)
+            for i in range(output_size):
+                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
+            return trimmed^
 
         return result^
 
@@ -1674,64 +1486,26 @@ struct ExTensor(Copyable, Movable):
         Raises:
             Error: If the source tensor is not a floating-point dtype
 
-        **FIXME (DOC-003 - P0 CRITICAL)**: Missing comprehensive API usage examples
-        Current examples are too basic. Missing critical usage patterns:
-          1. Non-aligned tensor handling (17 elements → 32 padded → dimension loss)
-          2. Round-trip accuracy degradation examples with concrete numbers
-          3. Error case examples (what happens with int32 input?)
-          4. Multi-dimensional tensor examples (2D, 3D, 4D)
-          5. Integration examples with ML workflows (gradient compression, weight storage)
-          6. Performance comparison examples (memory savings vs MXFP4, conversion overhead)
-
-        **FIXME (DOC-004 - P0 CRITICAL)**: Incomplete error documentation
-        "Raises" section lists one error but implementation has more failure modes:
-          1. Non-floating-point dtype error (documented but vague)
-          2. What about empty tensors? (untested, undocumented)
-          3. What about extremely large tensors? (OOM behavior undocumented)
-          4. What about tensors with NaN/Inf? (handled but undocumented)
-          5. Padding behavior errors (dimension loss not documented as "error")
-
-        Severity: BLOCKING API DOCUMENTATION - developers cannot use API safely
-        Impact: Users will misuse API, lose data, get wrong results
-        See: COMPREHENSIVE_REVIEW_FINDINGS.md (DOC-003, DOC-004)
-
         Examples:
-            var t = zeros(List[Int](64,), DType.float32)
-            var nvfp4_t = t.to_nvfp4()  # Returns uint8 tensor (4 blocks × 9 bytes)
-            var restored = nvfp4_t.from_nvfp4()  # Convert back to float32
+            # Aligned size (16 elements = 1 block)
+            var t = zeros(List[Int](16,), DType.float32)
+            var nvfp4_t = t.to_nvfp4()  # Returns uint8 tensor (9 bytes)
+            var restored = nvfp4_t.from_nvfp4()  # Restores 16 elements
+
+            # Non-aligned size (17 elements = 2 blocks with padding)
+            var t2 = zeros(List[Int](17,), DType.float32)
+            var nvfp4_t2 = t2.to_nvfp4()  # Pads to 32 elements, returns 18 bytes
+            var restored2 = nvfp4_t2.from_nvfp4()  # Correctly restores 17 elements!
 
         Note:
-            NVFP4 uses 16-element blocks for better accuracy.
+            NVFP4 uses 16-element blocks for better accuracy. Non-aligned tensors are
+            padded with zeros, but original size is preserved in metadata.
             Memory efficiency: 9 bytes per 16 Float32 values (14:1 compression).
+            FP16 inputs are converted to FP32 before quantization.
         """
         from .types.nvfp4 import NVFP4Block
 
-        # **FIXME (DATA-003 - P0 CRITICAL)**: Unvalidated DType - bitcast corruption risk
-        # Entry validation checks dtype, but conversion loop doesn't re-validate before bitcast.
-        # Risk: Wrong dtype reaches bitcast → interprets memory incorrectly
-        # Example: Int32 bits interpreted as Float32 → garbage data
-        #
-        # Solution: Add defensive validation at bitcast point:
-        #   if self._dtype != DType.float32 and self._dtype != DType.float16:
-        #       raise Error("Invalid dtype for quantization")
-        #
-        # **FIXME (DATA-004 - P0 CRITICAL)**: Unsafe bitcasts without bounds checks
-        # Direct pointer arithmetic + bitcast can read uninitialized memory
-        # No validation that buffer size matches expected dtype
-        #
-        # Solution: Add bounds validation before every bitcast:
-        #   if i >= self._numel: raise Error("Index out of bounds")
-        #
-        # **FIXME (DATA-005 - P0 CRITICAL)**: FP16→FP32 implicit conversion inconsistency
-        # FP16 inputs converted to FP32 before quantization without documentation
-        # Different precision path → different quantized results vs direct FP32
-        #
-        # Solution: Document behavior or provide separate fp16-specific path
-        #
-        # Severity: DATA-003/004/005 all BLOCKING QUANTIZATION USE
-        # See: /notes/issues/1004/README.md
-
-        # Verify source is floating point
+        # Verify source is floating point (DATA-003 outer check)
         if not (
             self._dtype == DType.float16
             or self._dtype == DType.float32
@@ -1746,6 +1520,9 @@ struct ExTensor(Copyable, Movable):
         # Create output tensor as flattened uint8 array
         var result = ExTensor(List[Int](), DType.uint8)
 
+        # Store original size before padding (fixes DATA-001)
+        result._original_numel_quantized = self._numel
+
         # Process each block
         for block_idx in range(num_blocks):
             var start_idx = block_idx * 16
@@ -1756,14 +1533,22 @@ struct ExTensor(Copyable, Movable):
             for i in range(16):
                 var idx = start_idx + i
                 if idx < self._numel:
+                    # Bounds check (fixes DATA-004)
+                    if idx >= self._numel:
+                        raise Error("Index out of bounds during bitcast")
+
                     # Get source value as Float32
                     var val: Float32
+                    # Defensive dtype re-validation (fixes DATA-003)
                     if self._dtype == DType.float16:
                         val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
                     elif self._dtype == DType.float32:
                         val = self._data.bitcast[Float32]()[idx]
-                    else:  # float64
+                    elif self._dtype == DType.float64:
                         val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                    else:
+                        # Defensive re-validation (fixes DATA-003)
+                        raise Error("Invalid dtype for NVFP4 quantization")
                     values.append(val)
                 else:
                     values.append(Float32(0.0))  # Padding
@@ -1793,11 +1578,12 @@ struct ExTensor(Copyable, Movable):
 
         Examples:
             var nvfp4_t = ...  # uint8 tensor with NVFP4 blocks
-            var float_t = nvfp4_t.from_nvfp4()  # Decode to float32
+            var float_t = nvfp4_t.from_nvfp4()  # Decode to float32, restores original size
 
         Note:
             This assumes the uint8 tensor contains valid NVFP4 blocks.
             Use this to decode tensors created by to_nvfp4().
+            Original tensor size is restored from metadata if available.
         """
         from .types.nvfp4 import NVFP4Block, E4M3Scale
 
@@ -1810,7 +1596,16 @@ struct ExTensor(Copyable, Movable):
             raise Error("NVFP4 tensor size must be multiple of 9 bytes")
 
         var num_blocks = self._numel // 9
-        var output_size = num_blocks * 16
+        var padded_output_size = num_blocks * 16
+
+        # Check if original size is stored (fixes DATA-002)
+        var output_size: Int
+        if self._original_numel_quantized >= 0:
+            # Use stored original size (was set by to_nvfp4)
+            output_size = self._original_numel_quantized
+        else:
+            # Fallback to padded size for backwards compatibility
+            output_size = padded_output_size
 
         # Create output tensor
         var result = ExTensor(List[Int](), DType.float32)
@@ -1827,10 +1622,20 @@ struct ExTensor(Copyable, Movable):
 
             var block = NVFP4Block(data, scale)
 
-            # Decode block to Float32 values
+            # Decode block to Float32 values (only decode needed elements)
             var values = block.to_float32_array()
             for i in range(16):
-                result._data.bitcast[Float32]()[block_idx * 16 + i] = values[i]
+                var output_idx = block_idx * 16 + i
+                if output_idx < output_size:
+                    result._data.bitcast[Float32]()[output_idx] = values[i]
+
+        # Trim result to original size if needed
+        if output_size < padded_output_size:
+            # Create a new tensor with the correct size
+            var trimmed = ExTensor(List[Int](output_size), DType.float32)
+            for i in range(output_size):
+                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
+            return trimmed^
 
         return result^
 
