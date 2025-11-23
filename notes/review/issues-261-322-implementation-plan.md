@@ -26,12 +26,12 @@ The ExTensor framework (issues #234-260) achieved 100% training readiness:
 
 This phase completes the shared library foundation by adding:
 
-### Core Operations:
+### Core Operations
 
 - Additional weight initializers (Kaiming/He, uniform/normal distributions)
 - Comprehensive evaluation metrics (accuracy, loss tracking, confusion matrix)
 
-### Training Infrastructure:
+### Training Infrastructure
 
 - Base trainer interface defining training contracts
 - Training loop implementation with gradient management

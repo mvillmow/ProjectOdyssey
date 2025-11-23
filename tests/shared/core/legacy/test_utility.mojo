@@ -26,7 +26,7 @@ from ..helpers.assertions import (
 fn test_copy_independence() raises:
     """Test that copy creates independent tensor."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 3.0, DType.float32)
     # let b = copy(a)  # TODO: Implement copy()
 
@@ -39,8 +39,8 @@ fn test_copy_independence() raises:
 fn test_clone_identical() raises:
     """Test that clone creates identical tensor."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = arange(0.0, 12.0, 1.0, DType.float32)
     # Reshape to 3x4 first
     # let b = clone(a)  # TODO: Implement clone()
@@ -58,9 +58,9 @@ fn test_clone_identical() raises:
 fn test_numel_total_elements() raises:
     """Test numel() returns total number of elements."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
     let t = ones(shape, DType.float32)
 
     assert_numel(t, 24, "numel should return 24 for (2,3,4)")
@@ -69,14 +69,14 @@ fn test_numel_total_elements() raises:
 fn test_dim_num_dimensions() raises:
     """Test that dim is correct."""
     var shape_1d = List[Int]()
-    shape_1d[0] = 10
+    shape_1d.append(10)
     let t1 = ones(shape_1d, DType.float32)
     assert_dim(t1, 1, "1D tensor should have dim=1")
 
     var shape_3d = List[Int]()
-    shape_3d[0] = 2
-    shape_3d[1] = 3
-    shape_3d[2] = 4
+    shape_3d.append(2)
+    shape_3d.append(3)
+    shape_3d.append(4)
     let t3 = ones(shape_3d, DType.float32)
     assert_dim(t3, 3, "3D tensor should have dim=3")
 
@@ -84,8 +84,8 @@ fn test_dim_num_dimensions() raises:
 fn test_shape_property() raises:
     """Test shape() returns correct shape."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let t = ones(shape, DType.float32)
 
     let s = t.shape()
@@ -97,7 +97,7 @@ fn test_shape_property() raises:
 fn test_dtype_property() raises:
     """Test dtype() returns correct data type."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let t32 = ones(shape, DType.float32)
     assert_dtype(t32, DType.float32, "Should be float32")
@@ -113,9 +113,9 @@ fn test_dtype_property() raises:
 fn test_stride_row_major() raises:
     """Test stride calculation for row-major (C-order)."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
     let t = ones(shape, DType.float32)  # Shape (2, 3, 4)
 
     # Row-major strides for (2,3,4): [12, 4, 1]
@@ -132,8 +132,8 @@ fn test_stride_row_major() raises:
 fn test_is_contiguous_true() raises:
     """Test that newly created tensors are contiguous."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let t = ones(shape, DType.float32)
 
     # TODO: assert_contiguous(t)
@@ -146,8 +146,8 @@ fn test_is_contiguous_true() raises:
 fn test_is_contiguous_after_transpose() raises:
     """Test that transposed tensor is not contiguous."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = ones(shape, DType.float32)
     # let b = transpose(a)  # TODO: Implement transpose()
 
@@ -164,8 +164,8 @@ fn test_is_contiguous_after_transpose() raises:
 fn test_contiguous_on_noncontiguous() raises:
     """Test making non-contiguous tensor contiguous."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = ones(shape, DType.float32)
     # let b = transpose(a)  # Not contiguous
     # let c = contiguous(b)  # TODO: Implement contiguous()
@@ -193,7 +193,7 @@ fn test_item_single_element() raises:
 fn test_item_requires_single_element() raises:
     """Test that item() requires single-element tensor."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let t = ones(shape, DType.float32)
     # let val = item(t)  # Should raise error
 
@@ -218,8 +218,8 @@ fn test_tolist_1d() raises:
 fn test_tolist_nested() raises:
     """Test converting multi-dimensional tensor to nested list."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
     let t = arange(0.0, 6.0, 1.0, DType.float32)
     # Reshape to 2x3 first
     # let lst = tolist(t)  # TODO: Implement tolist()
@@ -237,8 +237,8 @@ fn test_tolist_nested() raises:
 fn test_len_first_dim() raises:
     """Test __len__ returns size of first dimension."""
     var shape = List[Int]()
-    shape[0] = 5
-    shape[1] = 3
+    shape.append(5)
+    shape.append(3)
     let t = ones(shape, DType.float32)
 
     # let length = len(t)  # TODO: Implement __len__
@@ -249,7 +249,7 @@ fn test_len_first_dim() raises:
 fn test_len_1d() raises:
     """Test __len__ on 1D tensor."""
     var shape = List[Int]()
-    shape[0] = 10
+    shape.append(10)
     let t = ones(shape, DType.float32)
 
     # let length = len(t)
@@ -277,7 +277,7 @@ fn test_bool_single_element() raises:
 fn test_bool_requires_single_element() raises:
     """Test that __bool__ requires single-element tensor."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let t = ones(shape, DType.float32)
 
     # if t:  # Should raise error for multi-element tensor
@@ -318,7 +318,7 @@ fn test_float_conversion() raises:
 fn test_str_readable() raises:
     """Test __str__ produces readable output."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let t = arange(0.0, 3.0, 1.0, DType.float32)
 
     # let s = str(t)  # TODO: Implement __str__
@@ -329,8 +329,8 @@ fn test_str_readable() raises:
 fn test_repr_complete() raises:
     """Test __repr__ produces complete representation."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 2
+    shape.append(2)
+    shape.append(2)
     let t = ones(shape, DType.float32)
 
     # let r = repr(t)  # TODO: Implement __repr__
@@ -345,7 +345,7 @@ fn test_repr_complete() raises:
 fn test_hash_immutable() raises:
     """Test __hash__ for immutable tensors."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = arange(0.0, 3.0, 1.0, DType.float32)
     let b = arange(0.0, 3.0, 1.0, DType.float32)
 

@@ -2,7 +2,7 @@
 
 **Status:** COMPLETE - `/.pre-commit-config.yaml` exists and is configured
 
-### Implemented Hooks:
+### Implemented Hooks
 
 - markdownlint-cli2 (markdown linting)
 - trailing-whitespace, end-of-file-fixer, check-yaml, check-added-large-files, mixed-line-ending

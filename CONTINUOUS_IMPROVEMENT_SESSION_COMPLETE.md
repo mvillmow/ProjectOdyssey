@@ -576,4 +576,4 @@ Already well-architected, no structural changes needed.
 
 *All work completed using Claude Code with parallel sub-agent orchestration.*
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+🤖 Generated with [Claude Code](<https://claude.com/claude-code>

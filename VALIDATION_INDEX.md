@@ -27,6 +27,7 @@
 ## Top 5 Critical Issues
 
 ### 1. Tuple Return Type Syntax (Blocks ALL)
+
 - **Pattern**: `) raises -> (ExTensor, ExTensor)`
 - **Severity**: CRITICAL
 - **Affected**: All 6 architectures
@@ -34,24 +35,28 @@
 - **Fix**: Implement proper Mojo tuple return type syntax
 
 ### 2. Self Parameter Syntax (Blocks ALL)
+
 - **Pattern**: `fn __init__(inout self, ...)` / `fn forward(inout self, ...)`
 - **Severity**: CRITICAL
 - **Affected**: All 6 architectures (50+ methods)
 - **Fix**: Remove inout/borrowed qualifiers from self parameter
 
 ### 3. DynamicVector Not Available (Blocks ALL)
+
 - **Pattern**: `from collections.vector import DynamicVector`
 - **Severity**: CRITICAL
 - **Affected**: All 6 architectures
 - **Fix**: Replace with List[Int] or custom implementation
 
 ### 4. Normalization 3-Tuple Returns (Blocks 4)
+
 - **Pattern**: `) raises -> (ExTensor, ExTensor, ExTensor)`
 - **Severity**: CRITICAL
 - **Affected**: ResNet18, DenseNet121, GoogLeNet, MobileNetV1
 - **Fix**: Same as issue #1
 
 ### 5. Missing Initializer Functions (Blocks 2)
+
 - **Missing**: `he_uniform()`, `xavier_uniform()`
 - **Severity**: HIGH
 - **Affected**: AlexNet, VGG16
@@ -62,6 +67,7 @@
 **Location**: `/home/mvillmow/ml-odyssey/CIFAR10_VALIDATION_REPORT.md`
 
 **Contents**:
+
 - Executive summary
 - Per-architecture detailed analysis
 - Error category breakdown (8 categories)
@@ -90,40 +96,47 @@
 ## File-by-File Compilation Results
 
 ### Successful Files
+
 - None (0/23)
 
 ### Failed Files by Architecture
 
 **AlexNet-CIFAR10**:
+
 - model.mojo - FAILED (5 errors)
 - train.mojo - FAILED (2 errors)
 - inference.mojo - FAILED (2 errors)
 
 **ResNet18-CIFAR10**:
+
 - model.mojo - FAILED (6 errors)
 - test_model.mojo - FAILED (3 errors)
 - train.mojo - FAILED (3 errors)
 - inference.mojo - FAILED (3 errors)
 
 **DenseNet121-CIFAR10**:
+
 - model.mojo - FAILED (8 errors)
 - test_model.mojo - FAILED (3 errors)
 - train.mojo - FAILED (2 errors)
 - inference.mojo - FAILED (2 errors)
 
 **GoogLeNet-CIFAR10**:
+
 - model.mojo - FAILED (6 errors)
 - test_model.mojo - FAILED (3 errors)
 - train.mojo - FAILED (3 errors)
 - inference.mojo - FAILED (3 errors)
 
 **MobileNetV1-CIFAR10**:
+
 - model.mojo - FAILED (6 errors)
 - test_model.mojo - FAILED (3 errors)
 - train.mojo - FAILED (2 errors)
 - inference.mojo - FAILED (2 errors)
 
 **VGG16-CIFAR10**:
+
 - model.mojo - FAILED (5 errors)
 - train.mojo - FAILED (2 errors)
 - inference.mojo - FAILED (2 errors)
@@ -131,6 +144,7 @@
 ## FIXME Priority Phases
 
 ### Phase 1: Core Syntax Fixes (Blocks Everything)
+
 1. Fix tuple return type syntax
 2. Fix self parameter syntax
 3. Replace DynamicVector
@@ -140,15 +154,17 @@
 **Estimated Time**: 2-4 hours
 
 ### Phase 2: Function Implementations (Enables Training)
+
 6. Implement he_uniform() and xavier_uniform()
-7. Implement cross_entropy_loss()
-8. Implement load_cifar10_train_batches()
+2. Implement cross_entropy_loss()
+3. Implement load_cifar10_train_batches()
 
 **Estimated Time**: 1-2 hours
 
 ### Phase 3: Cleanup (Enables Tests/Inference)
+
 9. Replace f-strings with string concatenation
-10. Fix str() usage
+2. Fix str() usage
 
 **Estimated Time**: 30 minutes
 
@@ -171,10 +187,12 @@
 ## Repository Locations
 
 **Validation Reports**:
+
 - Full Report: `/home/mvillmow/ml-odyssey/CIFAR10_VALIDATION_REPORT.md`
 - This Index: `/home/mvillmow/ml-odyssey/VALIDATION_INDEX.md`
 
 **Example Directories**:
+
 - AlexNet: `/home/mvillmow/ml-odyssey/examples/alexnet-cifar10/`
 - ResNet18: `/home/mvillmow/ml-odyssey/examples/resnet18-cifar10/`
 - DenseNet121: `/home/mvillmow/ml-odyssey/examples/densenet121-cifar10/`
@@ -183,6 +201,7 @@
 - VGG16: `/home/mvillmow/ml-odyssey/examples/vgg16-cifar10/`
 
 **Shared Library** (Source of Many Errors):
+
 - `/home/mvillmow/ml-odyssey/shared/core/` - Core modules
 - `/home/mvillmow/ml-odyssey/shared/data/` - Data loading utilities
 

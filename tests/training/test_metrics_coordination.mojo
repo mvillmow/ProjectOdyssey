@@ -66,7 +66,7 @@ fn test_metric_result_tensor() raises:
     assert_false(result.is_scalar, "Result is not scalar")
 
     var value_tensor = result.get_tensor()
-    assert_equal(value_tensor.size(), 3, "Tensor size")
+    assert_equal(value_tensor.numel(), 3, "Tensor size")
     assert_equal(value_tensor._data.bitcast[Float32]()[0], 0.9, "Tensor value 0")
 
     # Should raise when accessing as scalar
@@ -87,16 +87,16 @@ fn test_metric_collection_basic() raises:
 
     var collection = MetricCollection()
 
-    assert_equal(collection.size(), 0, "Initial size is 0")
+    assert_equal(len(collection), 0, "Initial size is 0")
     assert_false(collection.contains("accuracy"), "Does not contain accuracy initially")
 
     # Add metrics
     collection.add("accuracy", AccuracyMetric())
-    assert_equal(collection.size(), 1, "Size after add")
+    assert_equal(len(collection), 1, "Size after add")
     assert_true(collection.contains("accuracy"), "Contains accuracy")
 
     collection.add("loss", LossTracker(window_size=100))
-    assert_equal(collection.size(), 2, "Size after second add")
+    assert_equal(len(collection), 2, "Size after second add")
     assert_true(collection.contains("loss"), "Contains loss")
 
     # Get names
@@ -115,11 +115,11 @@ fn test_metric_collection_duplicate_handling() raises:
     var collection = MetricCollection()
 
     collection.add("accuracy", AccuracyMetric())
-    assert_equal(collection.size(), 1, "Size after first add")
+    assert_equal(len(collection), 1, "Size after first add")
 
     # Add with same name - should warn and replace
     collection.add("accuracy", AccuracyMetric())
-    assert_equal(collection.size(), 1, "Size should stay 1 after duplicate")
+    assert_equal(len(collection), 1, "Size should stay 1 after duplicate")
 
     print("  ✓ MetricCollection handles duplicates correctly")
 
@@ -185,7 +185,7 @@ fn test_confusion_matrix_integration() raises:
     var precision = cm.get_precision()
 
     # Verify results
-    assert_equal(precision.size(), 3, "Precision has 3 classes")
+    assert_equal(precision.numel(), 3, "Precision has 3 classes")
 
     # Reset
     cm.reset()

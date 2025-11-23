@@ -50,7 +50,7 @@ Detailed specifications for all 27 backward pass functions organized by module:
   - `gelu_backward` - Exact and approximate formulas
   - `softmax_backward` - Jacobian with normalization
 
-### Contains for each function:
+### Contains for each function
 
 - Function signature and location
 - Mathematical formula with derivation

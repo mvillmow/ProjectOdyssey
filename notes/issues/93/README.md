@@ -8,7 +8,7 @@ Validate dependency management in magic.toml.
 
 Test file: `tests/dependencies/test_dependencies.py` (19 lines)
 
-### Test Coverage:
+### Test Coverage
 
 - `test_dependencies_section_structure()` - Validates dependencies section structure using tomllib parser
 - Checks if dependencies section exists and is properly formatted as dict
@@ -26,7 +26,7 @@ Test file: `tests/dependencies/test_dependencies.py` (19 lines)
 - ✅ TOML parsing validation implemented
 - ✅ Tests pass (verified)
 
-### References:
+### References
 
 - Test file: `/tests/dependencies/test_dependencies.py:1-19`
 - Config file: `/magic.toml:18-20` (commented placeholder for future dependencies)

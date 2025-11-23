@@ -66,6 +66,7 @@ The comprehensive test suite (`run_all_tests.mojo`) cannot run at all due to com
 | run_all_tests.mojo | FAILED | Cannot import test_augmentations.mojo (cascading failures) |
 
 **Overall Results**:
+
 - **Passed**: 4 test files
 - **Failed**: 19 test files
 - **Compilation Blocking**: Yes - comprehensive suite cannot run
@@ -75,24 +76,28 @@ The comprehensive test suite (`run_all_tests.mojo`) cannot run at all due to com
 ### Category 1: Deprecated @value Decorator (CRITICAL)
 
 **Affected Files**:
+
 - shared/data/transforms.mojo (4 occurrences)
 - shared/data/text_transforms.mojo (3 occurrences)
 - shared/data/generic_transforms.mojo (4 occurrences)
 - shared/data/samplers.mojo (3 occurrences)
 
 **Error Message**:
+
 ```
 error: '@value' has been removed, please use '@fieldwise_init' and explicit
 `Copyable` and `Movable` conformances instead
 ```
 
 **FIXME Locations**:
+
 1. `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:405, 501, 629, 728` (4 structs)
 2. `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:113, 178, 242, 319` (4 structs)
 3. `/home/mvillmow/ml-odyssey/shared/data/generic_transforms.mojo:38, 70, 178, 242, 411, 445` (6 structs)
 4. `/home/mvillmow/ml-odyssey/shared/data/samplers.mojo:38, 91, 172` (3 structs)
 
 **Fix Strategy**: Replace `@value` with `@fieldwise_init` and add explicit trait conformances:
+
 ```mojo
 @fieldwise_init
 struct MyStruct(Copyable, Movable):
@@ -104,6 +109,7 @@ struct MyStruct(Copyable, Movable):
 ### Category 2: ExTensor Memory Management (CRITICAL)
 
 **Affected Files**:
+
 - shared/data/transforms.mojo
 - shared/data/generic_transforms.mojo
 
@@ -112,9 +118,11 @@ struct MyStruct(Copyable, Movable):
 **Specific Issues**:
 
 #### Issue 2a: Missing Move Semantics in Return Statements
+
 **File**: `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:539, 603, 788, 825, 833`
 
 **Errors**:
+
 ```
 transforms.mojo:539:20: error: value of type 'ExTensor' cannot be implicitly copied
             return data
@@ -125,9 +133,11 @@ Note: consider transferring the value with '^'
 **FIXME**: Change `return data` to `return data^` in crop, erase, and other transform methods
 
 #### Issue 2b: Missing dtype Parameter in ExTensor Initialization
+
 **File**: `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:498, 402`
 
 **Errors**:
+
 ```
 transforms.mojo:498:24: error: invalid initialization: missing 1 required positional argument: 'dtype'
         return ExTensor(cropped^)
@@ -137,6 +147,7 @@ Note: function declared at /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:7
 ```
 
 **FIXME**: ExTensor requires both shape and dtype. Current signature at extensor.mojo:76:
+
 ```mojo
 fn __init__(out self, shape: List[Int], dtype: DType) raises:
 ```
@@ -144,9 +155,11 @@ fn __init__(out self, shape: List[Int], dtype: DType) raises:
 Transforms creating ExTensor need to pass dtype - likely `DType.float32` for most cases.
 
 #### Issue 2c: Missing num_elements() Method
+
 **File**: `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:51, 681, 546, 795, 833, 610`
 
 **Errors**:
+
 ```
 transforms.mojo:681:34: error: 'ExTensor' value has no attribute 'num_elements'
         var total_elements = data.num_elements()
@@ -154,6 +167,7 @@ transforms.mojo:681:34: error: 'ExTensor' value has no attribute 'num_elements'
 ```
 
 **FIXME**: ExTensor doesn't have `num_elements()`. Need to add this method or calculate from shape:
+
 ```mojo
 # Option 1: Add to ExTensor class
 fn num_elements(self) -> Int:
@@ -177,21 +191,25 @@ Also appears in `/home/mvillmow/ml-odyssey/shared/data/generic_transforms.mojo:1
 **Issue**: `cannot implicitly convert 'AnyTrait[Transform]' value to 'Copyable & Movable' in type parameter`
 
 **Affected Files**:
+
 - shared/data/transforms.mojo:100
 - shared/data/text_transforms.mojo:400
 
 **Error**:
+
 ```
 transforms.mojo:100:26: error: cannot implicitly convert 'AnyTrait[Transform]' value to 'Copyable & Movable' in type parameter
     var transforms: List[Transform]
 ```
 
 **FIXME Locations**:
+
 1. `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:100` (TransformPipeline)
 2. `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:400` (TextTransformPipeline)
 3. Test files: `test_augmentations.mojo:348, 374` and `test_generic_transforms.mojo:327`
 
 **Fix Strategy**: Traits in Mojo must be explicitly Copyable and Movable to be stored in collections:
+
 ```mojo
 trait Transform(Copyable, Movable):  # Add explicit trait requirements
     fn apply(self, data: ExTensor) -> ExTensor:
@@ -203,12 +221,14 @@ trait Transform(Copyable, Movable):  # Add explicit trait requirements
 ### Category 4: Missing Tensor Module Import
 
 **Affected Files**:
+
 - test_tensor_dataset.mojo
 - test_augmentations.mojo
 - test_text_augmentations.mojo
 - test_generic_transforms.mojo
 
 **Errors**:
+
 ```
 test_augmentations.mojo:19:6: error: unable to locate module 'tensor'
 from tensor import Tensor
@@ -216,6 +236,7 @@ from tensor import Tensor
 ```
 
 **FIXME**: No `tensor` module in standard Mojo library. Tests use ExTensor instead.
+
 - Replace `from tensor import Tensor` with ExTensor imports
 - Or move tests to use only ExTensor abstractions
 
@@ -226,6 +247,7 @@ from tensor import Tensor
 **File**: `/home/mvillmow/ml-odyssey/shared/data/loaders.mojo:106`
 
 **Error**:
+
 ```
 loaders.mojo:106:20: error: inheriting from structs is not allowed
 struct BatchLoader(BaseLoader):
@@ -233,6 +255,7 @@ struct BatchLoader(BaseLoader):
 ```
 
 **FIXME**: Mojo doesn't support struct inheritance. Use composition instead:
+
 ```mojo
 struct BatchLoader:
     var base_loader: BaseLoader  # Composition
@@ -240,6 +263,7 @@ struct BatchLoader:
 ```
 
 **Affected**:
+
 - Test file: test_batch_loader.mojo
 
 ---
@@ -247,11 +271,13 @@ struct BatchLoader:
 ### Category 6: Deprecated `owned` Keyword
 
 **Affected Files**:
+
 - shared/data/loaders.mojo:40
 - shared/data/text_transforms.mojo:257, 333
 - shared/data/samplers.mojo:186
 
 **Errors**:
+
 ```
 test_base_loader.mojo:40:31: warning: 'owned' has been deprecated, use 'deinit' instead
     fn __moveinit__(out self, owned existing: Self):
@@ -259,11 +285,13 @@ test_base_loader.mojo:40:31: warning: 'owned' has been deprecated, use 'deinit' 
 ```
 
 **FIXME Locations**:
+
 1. `/home/mvillmow/ml-odyssey/shared/data/loaders.mojo:40`
 2. `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:257, 333`
 3. `/home/mvillmow/ml-odyssey/shared/data/samplers.mojo:186`
 
 **Fix**: Replace `owned` with `var` (or `deinit` for move initialization):
+
 ```mojo
 fn __init__(out self, var data: List[String]):  # Use 'var' instead of 'owned'
     self.data = data^  # Transfer ownership
@@ -276,10 +304,12 @@ fn __init__(out self, var data: List[String]):  # Use 'var' instead of 'owned'
 **Error**: `use of unknown declaration 'str'`
 
 **Affected Files**:
+
 - test_file_dataset.mojo:104, 169
 - test_random.mojo:173
 
 **Locations**:
+
 ```mojo
 // test_file_dataset.mojo:104
 file_paths.append("/path/to/image_" + str(i) + ".jpg")
@@ -289,6 +319,7 @@ assert_true(not seen[idx], "Index " + str(idx) + " appears twice")
 ```
 
 **FIXME**: Mojo doesn't have a built-in `str()` function. Need custom implementation:
+
 ```mojo
 fn to_string(val: Int) -> String:
     # Implementation needed
@@ -304,6 +335,7 @@ Or use format strings with SIMD conversion
 **File**: `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:452, 473`
 
 **Error**:
+
 ```
 transforms.mojo:452:43: error: 'Int' is not subscriptable
             var pad = self.padding.value()[]
@@ -313,6 +345,7 @@ transforms.mojo:452:43: error: 'Int' is not subscriptable
 **Issue**: `padding.value()` returns an `Int`, not a subscriptable type. Incorrect use of Optional API.
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:452, 473`
 
 ---
@@ -322,6 +355,7 @@ transforms.mojo:452:43: error: 'Int' is not subscriptable
 **File**: `/home/mvillmow/ml-odyssey/shared/data/samplers.mojo:251`
 
 **Error**:
+
 ```
 samplers.mojo:251:22: error: invalid call to '__lt__': failed to infer parameter 'dtype'
 of parent struct 'SIMD', it inferred to two different values: 'DType.int64' and 'DType.float64'
@@ -340,6 +374,7 @@ of parent struct 'SIMD', it inferred to two different values: 'DType.int64' and 
 **File**: `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:257, 333`
 
 **Errors**:
+
 ```
 text_transforms.mojo:257:57: error: required positional argument follows optional positional argument
     fn __init__(out self, p: Float64 = 0.1, n: Int = 1, owned vocabulary: List[String]):
@@ -348,11 +383,13 @@ text_transforms.mojo:257:57: error: required positional argument follows optiona
 **FIXME**: Function signature has optional `p` and `n` but required `vocabulary` parameter after them.
 
 **Fix**: Reorder to required parameters first:
+
 ```mojo
 fn __init__(out self, vocabulary: List[String], p: Float64 = 0.1, n: Int = 1):
 ```
 
 **Affected**:
+
 - `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:257, 333`
 
 ---
@@ -362,6 +399,7 @@ fn __init__(out self, vocabulary: List[String], p: Float64 = 0.1, n: Int = 1):
 **File**: `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:84`
 
 **Error**:
+
 ```
 text_transforms.mojo:84:25: error: invalid call to 'append': method argument #0 cannot be converted
 from 'StringSlice[origin_of(text)]' to 'String'
@@ -369,6 +407,7 @@ from 'StringSlice[origin_of(text)]' to 'String'
 ```
 
 **FIXME**: Split returns StringSlice, not String. Need explicit conversion:
+
 ```mojo
 words.append(String(parts[i]))  # Explicit conversion
 ```
@@ -380,6 +419,7 @@ words.append(String(parts[i]))  # Explicit conversion
 **File**: `/home/mvillmow/ml-odyssey/shared/data/loaders.mojo:60`
 
 **Error**:
+
 ```
 loaders.mojo:60:5: error: dynamic traits not supported yet, please use a compile time generic instead of 'Dataset'
     var dataset: Dataset
@@ -387,6 +427,7 @@ loaders.mojo:60:5: error: dynamic traits not supported yet, please use a compile
 ```
 
 **FIXME**: Store dataset as generic type parameter, not dynamic trait reference:
+
 ```mojo
 struct BaseLoader[DatasetType: Dataset]:
     var dataset: DatasetType
@@ -397,6 +438,7 @@ struct BaseLoader[DatasetType: Dataset]:
 ### Category 13: Missing Main Function
 
 **Affected Files**:
+
 - test_datasets.mojo
 - test_loaders.mojo
 - test_transforms.mojo
@@ -404,6 +446,7 @@ struct BaseLoader[DatasetType: Dataset]:
 **Error**: `module does not define a 'main' function`
 
 **FIXME**: These are wrapper files that need to import and call test functions. Need to add a main function:
+
 ```mojo
 fn main():
     test_function_1()
@@ -429,29 +472,34 @@ These passing tests show that core abstractions work but concrete implementation
 ## Critical Path to Fixing All Tests
 
 ### Priority 1 (Blocking Everything)
+
 1. Fix `@value` decorator deprecation in all implementation files
 2. Add trait Copyable/Movable conformances
 3. Fix ExTensor memory management (move semantics with `^`)
 
 ### Priority 2 (Implementation Issues)
+
 4. Add `num_elements()` method to ExTensor or update all callers
-5. Fix ExTensor initialization to include dtype parameter
-6. Remove `owned` keyword deprecation
+2. Fix ExTensor initialization to include dtype parameter
+3. Remove `owned` keyword deprecation
 
 ### Priority 3 (Type System)
+
 7. Implement `str()` function or string conversion utilities
-8. Fix trait storage in List (ensure traits are Copyable/Movable)
-9. Fix struct inheritance → use composition pattern
+2. Fix trait storage in List (ensure traits are Copyable/Movable)
+3. Fix struct inheritance → use composition pattern
 
 ### Priority 4 (Test Infrastructure)
+
 10. Add main() functions to wrapper test files
-11. Ensure all imports are correct (no missing tensor module)
+2. Ensure all imports are correct (no missing tensor module)
 
 ### Priority 5 (Edge Cases)
+
 12. Fix string parameter ordering in functions
-13. Fix type inference issues in samplers
-14. Fix StringSlice conversion in text transforms
-15. Fix optional parameter handling
+2. Fix type inference issues in samplers
+3. Fix StringSlice conversion in text transforms
+4. Fix optional parameter handling
 
 ## Comprehensive Test Suite Status
 
@@ -460,6 +508,7 @@ These passing tests show that core abstractions work but concrete implementation
 **Status**: CANNOT RUN - Compilation fails on import
 
 **Included Tests** (38 total):
+
 - Base dataset tests
 - Base loader tests (with deprecation warning)
 - Pipeline tests

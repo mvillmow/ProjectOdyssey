@@ -69,6 +69,7 @@ All tests follow the pattern established in `tests/shared/core/test_backward.moj
 ### Gradient Checking Helpers
 
 Uses existing infrastructure from `tests/helpers/gradient_checking.mojo`:
+
 - `check_gradient()` - Main validation function (args: forward_fn, backward_fn, x, grad_output, rtol, atol)
 - `compute_numerical_gradient()` - Finite differences implementation
 - `assert_gradients_close()` - Element-wise tolerance comparison
@@ -76,6 +77,7 @@ Uses existing infrastructure from `tests/helpers/gradient_checking.mojo`:
 ### Tolerances
 
 Float32 tolerances (per gradient_checking.mojo documentation):
+
 - rtol (relative tolerance): 1e-3
 - atol (absolute tolerance): 1e-6
 
@@ -94,6 +96,7 @@ These are the standard for Float32 numerical gradient checking with central diff
 ### Compilation Status
 
 Current codebase has compilation issues unrelated to these test additions:
+
 - Core modules use deprecated `let` keyword (should be `var`)
 - Core modules have infrastructure errors (tuple returns, type annotations)
 - Gradient checking helpers have non-movable ExTensor issues in nested functions

@@ -4,11 +4,11 @@
 
 **File exists:** `/pyproject.toml` (71 lines, comprehensive configuration)
 
-### Why Complete:
+### Why Complete
 
 The pyproject.toml file was created before issue tracking began and contains:
 
-### Build System (lines 1-3):
+### Build System (lines 1-3)
 
 ```toml
 [build-system]

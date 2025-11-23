@@ -94,7 +94,7 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
 
 ## Notes
 
-### Key Design Principles:
+### Key Design Principles
 
 - **Dual type system:** ExTensor (runtime-flexible dynamic tensor) sharing common trait interface
 - **Tensor calculus foundation:** Operations preserve mathematical semantics (rank preservation, proper broadcasting, contraction)
@@ -102,14 +102,14 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
 - **YAGNI approach:** Implement minimal complete API, defer advanced features (autograd, GPU, einsum)
 - **Safety first:** Leverage Mojo's type system for compile-time validation where possible
 
-### Performance Strategy:
+### Performance Strategy
 
 - Static tensors enable compile-time shape checking and SIMD vectorization
 - Row-major (C-order) memory layout for cache efficiency
 - Strided memory for zero-copy slicing
 - Operation fusion opportunities (future optimization)
 
-### References:
+### References
 
 - [ExTensors Implementation Prompt](../../../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md) - Comprehensive design specification
 - [Array API Standard 2024](https://data-apis.org/array-api/2024.12/) - API reference

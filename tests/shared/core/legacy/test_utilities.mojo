@@ -18,9 +18,9 @@ fn test_ones_like_shape() raises:
     print("Testing ones_like shape...")
 
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
 
     var template = zeros(shape, DType.float32)
     var result = ones_like(template)
@@ -43,8 +43,8 @@ fn test_ones_like_values() raises:
     print("Testing ones_like values...")
 
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
 
     var template = zeros(shape, DType.float32)
     var result = ones_like(template)
@@ -64,8 +64,8 @@ fn test_ones_like_dtype() raises:
     print("Testing ones_like dtype...")
 
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 2
+    shape.append(2)
+    shape.append(2)
 
     # Test float32
     var template_f32 = zeros(shape, DType.float32)
@@ -91,8 +91,8 @@ fn test_zeros_like_values() raises:
     print("Testing zeros_like values...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 2
+    shape.append(3)
+    shape.append(2)
 
     var template = ones(shape, DType.float32)
     var result = zeros_like(template)
@@ -112,8 +112,8 @@ fn test_full_like_custom_value() raises:
     print("Testing full_like with custom value...")
 
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
 
     var template = zeros(shape, DType.float32)
     let fill_value = 3.14
@@ -142,22 +142,22 @@ fn test_utility_with_different_shapes() raises:
 
     # 1D
     var vec_shape = List[Int]()
-    vec_shape[0] = 5
+    vec_shape.append(5)
     var vec = zeros(vec_shape, DType.float32)
     var vec_ones = ones_like(vec)
 
     # 2D
     var mat_shape = List[Int]()
-    mat_shape[0] = 3
-    mat_shape[1] = 4
+    mat_shape.append(3)
+    mat_shape.append(4)
     var mat = zeros(mat_shape, DType.float32)
     var mat_full = full_like(mat, 2.0)
 
     # 3D
     var tensor_shape = List[Int]()
-    tensor_shape[0] = 2
-    tensor_shape[1] = 3
-    tensor_shape[2] = 4
+    tensor_shape.append(2)
+    tensor_shape.append(3)
+    tensor_shape.append(4)
     var tensor = zeros(tensor_shape, DType.float32)
     var tensor_ones = ones_like(tensor)
 

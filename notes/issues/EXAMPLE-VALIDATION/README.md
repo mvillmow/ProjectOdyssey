@@ -33,6 +33,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | simd_example.mojo | FAIL | Compilation | `inout self` syntax + missing `simdwidthof` + missing Tensor |
 
 **Findings**:
+
 - All examples use deprecated `inout self` syntax (should just be `self`)
 - References to non-existent `shared.core.types.Tensor`
 - Missing `simdwidthof` function from `sys.info`
@@ -45,6 +46,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | memory_optimization.mojo | FAIL | Compilation | `inout self` syntax + module path issues |
 
 **Findings**:
+
 - Same syntax issues as mojo-patterns examples
 - Missing module imports cause cascading errors
 
@@ -57,6 +59,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | focal_loss.mojo | FAIL | Compilation | `inout self` syntax + missing imports |
 
 **Findings**:
+
 - Attempting to import `Module`, `Linear` from `shared.core` which don't exist
 - Framework abstractions not properly exported
 
@@ -69,6 +72,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | linear_regression_improved.mojo | FAIL | Compilation | Added: `let` keyword not supported in Mojo |
 
 **Findings**:
+
 - `__all__` list at file scope not supported (Python feature, not Mojo)
 - `ExTensor` doesn't conform to `Copyable & Movable` - needs move semantics fixes
 - `let` keyword is Python, not Mojo (use `var` instead)
@@ -82,6 +86,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | test_arithmetic.mojo | FAIL | Compilation | Module path + DynamicVector missing |
 
 **Findings**:
+
 - Attempting to import from `src.extensor` (doesn't exist)
 - `DynamicVector` from `collections.vector` not available
 - Wrong module structure assumed
@@ -96,6 +101,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | mixed_precision_training.mojo | FAIL | Compilation | `inout self` syntax + missing ExTensor methods |
 
 **Findings**:
+
 - `@value` decorator no longer supported (use `@fieldwise_init` instead)
 - `str()` function calls in Mojo code - need proper string conversion
 - `int()` function calls - needs replacement with Mojo equivalents
@@ -108,6 +114,7 @@ Tested 57 Mojo example files across 9 categories. All examples fail compilation 
 | trait_based_layer.mojo | FAIL | Compilation | Multiple syntax issues + method missing |
 
 **Findings**:
+
 - `ExTensor` doesn't conform to `Copyable & Movable` trait
 - Missing `copy()` method on tensors
 - `inout self` syntax issues throughout
@@ -185,19 +192,21 @@ SOLUTION: Update ExTensor struct to implement required traits
 5. **ExTensor trait conformance** - 5 occurrences
 6. **Missing sys.info.simdwidthof** - 4 occurrences
 7. **str() function not available** - 4 occurrences
-8. **__all__ at file scope** - 3 occurrences
+8. ****all** at file scope** - 3 occurrences
 9. **Missing ExTensor.full() method** - 3 occurrences
 10. **let keyword not supported** - 2 occurrences
 
 ## Files by Complexity Level
 
 ### Simple Fixes (1-2 error categories)
+
 - trait_example.mojo
 - ownership_example.mojo
 - prelu_activation.mojo
 - focal_loss.mojo
 
 ### Medium Fixes (3-4 error categories)
+
 - simd_example.mojo
 - simd_optimization.mojo
 - memory_optimization.mojo
@@ -205,6 +214,7 @@ SOLUTION: Update ExTensor struct to implement required traits
 - trait_based_layer.mojo
 
 ### Complex Fixes (5+ error categories)
+
 - basic_usage.mojo
 - test_arithmetic.mojo
 - fp8_example.mojo
@@ -254,19 +264,19 @@ SOLUTION: Update ExTensor struct to implement required traits
 
 Key issues related to Mojo language changes:
 
-1. **Function Parameter Changes**: https://docs.modular.com/mojo/manual/lifecycle/inout-parameters
+1. **Function Parameter Changes**: <https://docs.modular.com/mojo/manual/lifecycle/inout-parameters>
    - `inout self` is no longer used for mutable method access
    - Methods naturally have mutable access to `self`
 
-2. **Struct Decorators**: https://docs.modular.com/mojo/manual/structs#value-types
+2. **Struct Decorators**: <https://docs.modular.com/mojo/manual/structs#value-types>
    - `@value` replaced with `@fieldwise_init`
    - Need explicit trait conformances
 
-3. **Move Semantics**: https://docs.modular.com/mojo/manual/lifecycle/owned-borrowed-inout
+3. **Move Semantics**: <https://docs.modular.com/mojo/manual/lifecycle/owned-borrowed-inout>
    - Use `^` operator to transfer ownership
    - List[T] requires T to be Copyable
 
-4. **Collections**: https://docs.modular.com/mojo/stdlib/collections/vector
+4. **Collections**: <https://docs.modular.com/mojo/stdlib/collections/vector>
    - Check if DynamicVector is in a different location
 
 ## Next Steps

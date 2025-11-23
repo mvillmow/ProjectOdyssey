@@ -437,4 +437,4 @@ infrastructure ready for optimization work.
 **Branch**: main
 **Next**: Push to remote and continue improvements
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+🤖 Generated with [Claude Code](<https://claude.com/claude-code>

@@ -7,6 +7,7 @@
 **Problem**: `examples/autograd/linear_regression.mojo` imports `SGD` but then does manual parameter updates.
 
 **Lines 12, 94-98**:
+
 ```mojo
 from shared.autograd import mse_loss_and_grad, SGD  # Imported but not used!
 
@@ -24,11 +25,13 @@ b = subtract(b, multiply(lr_tensor, grad_b_sum))
 **Problem**: `SGD.step()` expects `DynamicVector[Variable]`, but examples use raw `ExTensor`.
 
 **optimizers.mojo:90**:
+
 ```mojo
 fn step(self, inout parameters: DynamicVector[Variable]) raises:
 ```
 
 **Example uses**:
+
 ```mojo
 var w = ExTensor(...)  # Not a Variable!
 var b = ExTensor(...)  # Not a Variable!
@@ -75,6 +78,7 @@ var grad_w_sum = sum(grad_w_expanded)  # Already exists!
 **Problem**: SGD has `momentum` field but doesn't use it:
 
 **optimizers.mojo:69-71**:
+
 ```mojo
 var momentum: Float64
 # TODO: Add velocity storage for momentum
@@ -88,6 +92,7 @@ var momentum: Float64
 **Problem**: Creating full tensor of learning rates wastes memory:
 
 **optimizers.mojo:132-137**:
+
 ```mojo
 var lr_tensor = ExTensor(grad.shape(), grad.dtype())
 for j in range(lr_tensor.numel()):
@@ -105,24 +110,24 @@ var update = multiply(lr_tensor, grad)
 
 ## Recommendations
 
-### 🔴 Critical (Fix Now):
+### 🔴 Critical (Fix Now)
 
 1. **Fix the example** - Either use SGD or remove the import
 2. **Add scalar operations** - `multiply_scalar`, `add_scalar`, `divide_scalar`
 3. **Simplify example** - Use existing `sum()` instead of manual loops
 4. **Resolve optimizer/functional mismatch** - Pick one approach and commit
 
-### 🟡 High Priority:
+### 🟡 High Priority
 
-5. **Implement momentum** or remove the parameter
-6. **Add parameter update helper** - `apply_gradients(params, grads, lr)`
-7. **Add gradient clipping** - `clip_gradients(grads, max_norm)`
+1. **Implement momentum** or remove the parameter
+2. **Add parameter update helper** - `apply_gradients(params, grads, lr)`
+3. **Add gradient clipping** - `clip_gradients(grads, max_norm)`
 
-### 🟢 Nice to Have:
+### 🟢 Nice to Have
 
-8. **Add Adam optimizer** - Most popular in practice
-9. **Add numerical gradient checking** - For testing backward passes
-10. **Add more examples** - Binary classification, multi-class
+1. **Add Adam optimizer** - Most popular in practice
+2. **Add numerical gradient checking** - For testing backward passes
+3. **Add more examples** - Binary classification, multi-class
 
 ## Proposed Solutions
 
@@ -146,6 +151,7 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 ### Solution 2: Unified API Approach
 
 **Option A**: Make optimizer work with ExTensor
+
 ```mojo
 fn step_tensors(
     self,
@@ -156,6 +162,7 @@ fn step_tensors(
 ```
 
 **Option B**: Update examples to use Variables
+
 ```mojo
 var w = Variable(w_data, requires_grad=True)
 var b = Variable(b_data, requires_grad=True)
@@ -185,6 +192,7 @@ fn apply_gradients(
 ### Solution 4: Fix the Example
 
 **Replace manual updates with helper**:
+
 ```mojo
 # Collect gradients
 var grads = DynamicVector[ExTensor]()
@@ -206,13 +214,15 @@ b = params[1]
 
 ## Impact Analysis
 
-### Current State:
+### Current State
+
 - ❌ Example is confusing (imports unused optimizer)
 - ❌ Lots of boilerplate (lr tensor creation, manual sums)
 - ❌ API mismatch (optimizer vs functional)
 - ⚠️ Momentum doesn't work despite being in API
 
-### With Fixes:
+### With Fixes
+
 - ✅ Clear, working examples
 - ✅ Less boilerplate (scalar ops, helpers)
 - ✅ Consistent API
@@ -233,6 +243,7 @@ Total estimated time for critical fixes: **~2 hours**
 ## Conclusion
 
 The current implementation has good foundations but needs:
+
 1. **API consistency** - Functional vs optimizer approach
 2. **Reduced boilerplate** - Scalar ops and helpers
 3. **Working examples** - That actually use what they import

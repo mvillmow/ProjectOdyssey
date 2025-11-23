@@ -6,7 +6,7 @@ Plan Python project configuration strategy for ml-odyssey repository.
 
 ## Planning Complete
 
-### Why Complete:
+### Why Complete
 
 The repository uses a dual-file strategy for Python dependencies per ADR-001:
 
@@ -20,20 +20,20 @@ The repository uses a dual-file strategy for Python dependencies per ADR-001:
    - jinja2, pyyaml, click (template engine, config parsing, CLI framework)
    - Optional: matplotlib, pandas (for benchmarking reports)
 
-### Design Decision (ADR-001):
+### Design Decision (ADR-001)
 
 - **Python for tooling only** - automation scripts with subprocess output capture, regex, GitHub API
 - **Mojo for ML/AI** - all machine learning implementations
 - **Clear separation** - tools/requirements.txt for scripts, pyproject.toml for dev/test
 
-### Success Criteria:
+### Success Criteria
 
 - ✅ Dual-file strategy documented and justified (ADR-001)
 - ✅ pyproject.toml exists with comprehensive configuration
 - ✅ tools/requirements.txt exists for automation dependencies
 - ✅ Clear separation between test deps and tool deps
 
-### References:
+### References
 
 - `/pyproject.toml:1-71` (complete Python project configuration)
 - `/tools/requirements.txt:1-23` (automation script dependencies)

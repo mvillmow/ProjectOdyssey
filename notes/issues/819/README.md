@@ -124,7 +124,7 @@ During this planning phase, the documentation should cover:
 - Supports both unit and integration testing
 - Rich plugin ecosystem for extended functionality
 - Clear, informative output and reporting
-- Well-established conventions for test discovery (test_*.py, *_test.py)
+- Well-established conventions for test discovery (test_*.py,*_test.py)
 - Excellent support for parametrized tests and fixtures
 - Strong community and documentation
 

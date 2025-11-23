@@ -32,23 +32,23 @@ Add numerical gradient checking tests to validate analytical gradients against n
 
 #### Tests 13-16: Addition, Subtraction, Multiplication, Division (A operand)
 
-13. **test_add_backward_gradient** - Validates add backward for first operand with numerical gradient
-14. **test_subtract_backward_gradient** - Validates subtract backward for first operand
-15. **test_multiply_backward_gradient** - Validates multiply backward for first operand (product rule)
-16. **test_divide_backward_gradient** - Validates divide backward for first operand (quotient rule)
+1. **test_add_backward_gradient** - Validates add backward for first operand with numerical gradient
+2. **test_subtract_backward_gradient** - Validates subtract backward for first operand
+3. **test_multiply_backward_gradient** - Validates multiply backward for first operand (product rule)
+4. **test_divide_backward_gradient** - Validates divide backward for first operand (quotient rule)
 
 #### Tests 17-20: Operations (B operand)
 
-17. **test_add_backward_b_gradient** - Gradient w.r.t. second operand of addition
-18. **test_subtract_backward_b_gradient** - Gradient w.r.t. second operand (negated)
-19. **test_multiply_backward_b_gradient** - Gradient w.r.t. second operand (product rule)
-20. **test_divide_backward_b_gradient** - Gradient w.r.t. denominator (quotient rule)
+1. **test_add_backward_b_gradient** - Gradient w.r.t. second operand of addition
+2. **test_subtract_backward_b_gradient** - Gradient w.r.t. second operand (negated)
+3. **test_multiply_backward_b_gradient** - Gradient w.r.t. second operand (product rule)
+4. **test_divide_backward_b_gradient** - Gradient w.r.t. denominator (quotient rule)
 
 #### Tests 21-23: Broadcasting with Numerical Validation
 
-21. **test_add_backward_broadcast_gradient** - Addition with broadcast [3] -> [2,3]
-22. **test_multiply_backward_broadcast_gradient** - Multiplication with broadcast [3] -> [2,3]
-23. **test_divide_backward_broadcast_gradient** - Division with broadcast [3] -> [2,3]
+1. **test_add_backward_broadcast_gradient** - Addition with broadcast [3] -> [2,3]
+2. **test_multiply_backward_broadcast_gradient** - Multiplication with broadcast [3] -> [2,3]
+3. **test_divide_backward_broadcast_gradient** - Division with broadcast [3] -> [2,3]
 
 ## Implementation Details
 
@@ -107,6 +107,7 @@ This diverse test data exercises the gradient computation across a wider range o
 ### File: `/home/mvillmow/ml-odyssey/tests/shared/core/test_arithmetic_backward.mojo`
 
 **Changes Made**:
+
 1. Added import: `from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient`
 2. Added 11 new test functions (tests 13-23)
 3. Updated module docstring to mention numerical gradient checking
@@ -162,6 +163,7 @@ Each test uses the gold-standard numerical gradient checking:
 ### Error Messages
 
 If a test fails, the `check_gradient()` function provides clear error messages indicating:
+
 - Which element failed
 - The mismatch magnitude
 - Expected tolerance
@@ -220,6 +222,7 @@ Tests are organized in a logical sequence:
 3. New tests (21-23): Numerical validation with broadcasting
 
 This organization makes it easy to:
+
 - Run subset of tests for debugging
 - Understand which operations are covered
 - Identify patterns in test structure

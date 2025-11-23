@@ -24,15 +24,18 @@ This caused all arithmetic backward tests to fail to compile, blocking gradient 
 ### Affected Functions
 
 **arithmetic.mojo**:
+
 - `add_backward()` (line 548)
 - `subtract_backward()` (line 589)
 - `multiply_backward()` (line 621)
 - `divide_backward()` (line 654)
 
 **matrix.mojo**:
+
 - `matmul_backward()` (line 326)
 
 **activation.mojo**:
+
 - `prelu_backward()` (line 598)
 
 ## Decision
@@ -70,11 +73,13 @@ struct GradientTriple:
 ### API Usage
 
 **Before** (failed to compile):
+
 ```mojo
 var grad_a, grad_b = add_backward(grad_output, a_shape, b_shape)
 ```
 
 **After**:
+
 ```mojo
 var grads = add_backward(grad_output, a_shape, b_shape)
 var grad_a = grads.grad_a
@@ -92,6 +97,7 @@ var grad_b = grads.grad_b
 ## Alternatives Considered
 
 ### Option 1: Separate Functions
+
 ```mojo
 fn add_backward_a(grad_output, a_shape, b_shape) -> ExTensor
 fn add_backward_b(grad_output, a_shape, b_shape) -> ExTensor
@@ -100,6 +106,7 @@ fn add_backward_b(grad_output, a_shape, b_shape) -> ExTensor
 **Rejected**: Violates DRY principle, requires duplicate computation, poor API coherence.
 
 ### Option 2: Output Parameters (inout)
+
 ```mojo
 fn add_backward(grad_output, a_shape, b_shape, inout grad_a, inout grad_b) raises
 ```
@@ -107,6 +114,7 @@ fn add_backward(grad_output, a_shape, b_shape, inout grad_a, inout grad_b) raise
 **Rejected**: Requires pre-allocation, less elegant, doesn't support composition.
 
 ### Option 3: Python-style Tuple (current attempt)
+
 ```mojo
 fn add_backward(...) raises -> (ExTensor, ExTensor)
 ```
@@ -145,10 +153,12 @@ fn add_backward(...) raises -> (ExTensor, ExTensor)
 ### Field Naming Convention
 
 For binary operations:
+
 - `grad_a`: Gradient w.r.t. first input
 - `grad_b`: Gradient w.r.t. second input
 
 For ternary operations:
+
 - `grad_input`: Gradient w.r.t. input activation
 - `grad_weights`: Gradient w.r.t. learnable weights
 - `grad_bias`: Gradient w.r.t. bias term
@@ -181,6 +191,7 @@ This follows PyTorch conventions for consistency.
 ## Verification
 
 All 6 test functions in `test_backward.mojo` updated:
+
 - `test_linear_backward_shapes()`
 - `test_linear_backward_numerical()`
 - `test_linear_backward_batch()`
@@ -190,9 +201,9 @@ All 6 test functions in `test_backward.mojo` updated:
 
 ## References
 
-- Mojo Language: Struct Types (https://docs.modular.com/mojo/manual/lifecycle.html)
-- Zero-Cost Abstractions: (https://en.cppreference.com/w/cpp/language/Zero-overhead_principle)
-- Comparison with PyTorch tuple returns: https://pytorch.org/docs/stable/generated/torch.autograd.backward.html
+- Mojo Language: Struct Types (<https://docs.modular.com/mojo/manual/lifecycle.html>)
+- Zero-Cost Abstractions: (<https://en.cppreference.com/w/cpp/language/Zero-overhead_principle>)
+- Comparison with PyTorch tuple returns: <https://pytorch.org/docs/stable/generated/torch.autograd.backward.html>
 
 ## Related Issues
 

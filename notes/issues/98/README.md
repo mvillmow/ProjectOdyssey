@@ -8,7 +8,7 @@ Design channel configuration for Magic package manager.
 
 Channels configuration structure designed for future custom package sources.
 
-### Design Details:
+### Design Details
 
 - Channels allow custom package sources (conda-forge, modular, custom)
 - Configuration location: `magic.toml` under `[tool.magic.channels]`

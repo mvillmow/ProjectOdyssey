@@ -27,6 +27,7 @@ Created type-safe gradient container structs to replace tuple return types.
 Location: `/home/mvillmow/ml-odyssey/shared/core/gradient_types.mojo`
 
 **GradientPair struct** (for binary operations):
+
 ```mojo
 struct GradientPair:
     var grad_a: ExTensor
@@ -34,6 +35,7 @@ struct GradientPair:
 ```
 
 **GradientTriple struct** (for ternary operations - reusable for linear/conv):
+
 ```mojo
 struct GradientTriple:
     var grad_input: ExTensor
@@ -68,11 +70,13 @@ struct GradientTriple:
 ### API Changes
 
 **Before** (failed compilation):
+
 ```mojo
 var grad_a, grad_b = add_backward(grad_output, a_shape, b_shape)
 ```
 
 **After** (compiles successfully):
+
 ```mojo
 var grads = add_backward(grad_output, a_shape, b_shape)
 var grad_a = grads.grad_a
@@ -92,27 +96,32 @@ var grad_b = grads.grad_b
 ### Why Structs Over Alternatives?
 
 **Option 1: Separate Functions** - Rejected
+
 - Violates DRY (duplicate computation)
 - Incoherent API (separate functions for related gradients)
 
 **Option 2: Output Parameters (inout)** - Rejected
+
 - Requires pre-allocation at call site
 - Less functional/composable
 - More verbose
 
 **Option 3: Python-style Tuples** - Rejected
+
 - Does not compile reliably in Mojo v0.25.7
 - No named field support
 
 ### Field Naming
 
 Follows PyTorch conventions:
+
 - **Binary ops**: `grad_a`, `grad_b` (first, second operands)
 - **Ternary ops**: `grad_input`, `grad_weights`, `grad_bias`
 
 ## Testing
 
 All test cases updated to use new API. Tests verify:
+
 - Correct gradient shapes returned
 - Gradient computation correctness
 - Broadcasting and batching support
@@ -120,6 +129,7 @@ All test cases updated to use new API. Tests verify:
 ## Documentation
 
 Decision documented in:
+
 - `/home/mvillmow/ml-odyssey/notes/review/adr/ADR-002-gradient-struct-return-types.md`
 
 Comprehensive rationale, alternatives analysis, and migration guide included.

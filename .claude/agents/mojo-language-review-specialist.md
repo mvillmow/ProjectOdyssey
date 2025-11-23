@@ -410,6 +410,7 @@ fn modify(inout self):
 ```
 
 **Correct**:
+
 ```mojo
 fn __init__(mut self, value: Int):
 fn modify(mut self):
@@ -420,6 +421,7 @@ fn modify(mut self):
 ### ❌ DEPRECATED: `@value` decorator
 
 **Wrong**:
+
 ```mojo
 @value
 struct Transform:
@@ -427,6 +429,7 @@ struct Transform:
 ```
 
 **Correct**:
+
 ```mojo
 @fieldwise_init
 struct Transform(Copyable, Movable):
@@ -438,6 +441,7 @@ struct Transform(Copyable, Movable):
 ### ❌ NON-EXISTENT: `DynamicVector`
 
 **Wrong**:
+
 ```mojo
 from collections.vector import DynamicVector
 var values = DynamicVector[Int](10)
@@ -445,6 +449,7 @@ values.push_back(42)
 ```
 
 **Correct**:
+
 ```mojo
 var values = List[Int](10)
 values.append(42)
@@ -455,12 +460,14 @@ values.append(42)
 ### ❌ INVALID: Tuple return syntax
 
 **Wrong**:
+
 ```mojo
 fn compute() -> (Float32, Float32):
     return (1.0, 2.0)
 ```
 
 **Correct**:
+
 ```mojo
 fn compute() -> Tuple[Float32, Float32]:
     return Tuple[Float32, Float32](1.0, 2.0)
@@ -622,7 +629,7 @@ fn compute() -> Tuple[Float32, Float32]:
 See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions including linking to issues,
 verification steps, and requirements.
 
-**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue `issue-number``, verify issue is
+**Quick Summary**: Commit changes, push branch, create PR with `gh pr create --issue`issue-number``, verify issue is
 linked.
 
 ### Verification
@@ -664,7 +671,7 @@ After creating PR:
 
 ### Minimal Changes Principle
 
-### Make the SMALLEST change that solves the problem.
+### Make the SMALLEST change that solves the problem
 
 - ✅ Touch ONLY files directly related to the issue requirements
 - ✅ Make focused changes that directly address the issue

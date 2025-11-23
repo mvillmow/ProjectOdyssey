@@ -2,7 +2,7 @@
 
 **Status:** COMPLETE - Pre-commit hooks configured in `/.pre-commit-config.yaml` (46 lines)
 
-### Configuration:
+### Configuration
 
 - Markdown linting (markdownlint-cli2)
 - General file checks (trailing whitespace, EOF, YAML validation, large files, line endings)

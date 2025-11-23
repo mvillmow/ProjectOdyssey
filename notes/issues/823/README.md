@@ -67,7 +67,7 @@ The paper-specific test runner provides a focused test execution environment for
 - All tests for a paper are located in `<paper-name>/tests/`
 - Test runner searches this directory recursively
 - Skips tests in other paper directories
-- Supports pytest discovery patterns (test_*.py, *_test.py)
+- Supports pytest discovery patterns (test_*.py,*_test.py)
 
 #### 2. Test Type Support
 

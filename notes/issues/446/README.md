@@ -325,7 +325,8 @@ fn test_complex_scenario() raises:
 
    ```
 
-2. **Choose descriptive fixture parameters**
+1. **Choose descriptive fixture parameters**
+
    ```mojo
 
    // Good
@@ -336,7 +337,8 @@ fn test_complex_scenario() raises:
 
    ```
 
-3. **Don't modify shared fixtures**
+2. **Don't modify shared fixtures**
+
    ```mojo
 
    // Each test gets its own copy, modifications are safe
@@ -345,7 +347,8 @@ fn test_complex_scenario() raises:
 
    ```
 
-4. **Document expected fixture properties in tests**
+3. **Document expected fixture properties in tests**
+
    ```mojo
 
    fn test_normalization() raises:
@@ -358,6 +361,7 @@ fn test_complex_scenario() raises:
        assert_almost_equal(mean(normalized), 0.0, tolerance=1e-6)
 
    ```
+
 ```text
 
 ### 5. Naming Conventions

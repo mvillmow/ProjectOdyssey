@@ -535,6 +535,7 @@ From Issue #511 success criteria:
    ```
 
 1. **Implement Priority 1 tests**
+
    ```bash
    # Structure validation
    tests/skills/test_skill_structure.py
@@ -544,7 +545,8 @@ From Issue #511 success criteria:
 
    ```
 
-3. **Add CI/CD workflow**
+2. **Add CI/CD workflow**
+
    ```yaml
 
    # .github/workflows/test-skills.yml
@@ -561,11 +563,12 @@ From Issue #511 success criteria:
 
    ```
 
-4. **Document testing requirements**
+3. **Document testing requirements**
    - Update `/agents/guides/skill-testing.md`
    - Add skill test requirements to CLAUDE.md
 
-5. **Run tests and generate coverage report**
+4. **Run tests and generate coverage report**
+
    ```bash
 
    python3 -m pytest tests/skills/ -v --cov=.claude/skills

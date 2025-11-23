@@ -19,6 +19,7 @@ Added float64 (double precision) support to `sgd_momentum_update_inplace()` in `
 #### 1. **SIMD Optimization (HIGH PRIORITY)**
 
 **Current Implementation:**
+
 ```mojo
 for i in range(numel):
     velocity_data[i] = momentum * velocity_data[i] - lr * grad_data[i]
@@ -30,6 +31,7 @@ for i in range(numel):
 **Improvement:** Use `vectorize` like other SIMD operations in the codebase
 
 **Suggested Implementation:**
+
 ```mojo
 alias simd_width = simdwidthof[DType.float32]()  # or DType.float64
 
@@ -73,6 +75,7 @@ vectorize[vectorized_update, simd_width](numel)
 **Current:** Only checks `param.dtype()`, assumes grad and velocity match
 
 **Improvement:** Add explicit dtype validation:
+
 ```mojo
 if param.dtype() != grad.dtype() or param.dtype() != velocity.dtype():
     raise Error("param, grad, and velocity must all have the same dtype")
@@ -87,6 +90,7 @@ if param.dtype() != grad.dtype() or param.dtype() != velocity.dtype():
 **Current:** Float32 and float64 branches are nearly identical (14 lines duplicated)
 
 **Improvement:** Could extract into a parametric helper function:
+
 ```mojo
 @always_inline
 fn _sgd_momentum_update_impl[
@@ -111,6 +115,7 @@ fn _sgd_momentum_update_impl[
 ```
 
 Then call with:
+
 ```mojo
 if param.dtype() == DType.float32:
     _sgd_momentum_update_impl[DType.float32](param, grad, velocity, lr, momentum, numel)
@@ -144,13 +149,13 @@ elif param.dtype() == DType.float64:
 
 ### Medium Priority (Nice to Have)
 
-4. **Add dtype consistency checking** for better error messages
-5. **Add documentation** about performance characteristics
+1. **Add dtype consistency checking** for better error messages
+2. **Add documentation** about performance characteristics
 
 ### Low Priority (Optional)
 
-6. Refactor to eliminate code duplication (only if needed elsewhere)
-7. Add `@always_inline` decorator (profile first to see if needed)
+1. Refactor to eliminate code duplication (only if needed elsewhere)
+2. Add `@always_inline` decorator (profile first to see if needed)
 
 ---
 

@@ -25,6 +25,7 @@ All agent test scripts executed successfully. Tests analyze 38 agent configurati
 **Result**: ✅ ALL VALIDATIONS PASSED
 
 **Details**:
+
 - Total files validated: 38
 - Passed: 38 (100%)
 - Failed: 0
@@ -32,6 +33,7 @@ All agent test scripts executed successfully. Tests analyze 38 agent configurati
 - Total warnings: 0
 
 **Coverage**:
+
 - YAML frontmatter validation: PASS
 - Required fields (name, description, tools, model): PASS
 - Tool specifications: PASS
@@ -49,6 +51,7 @@ All agent configuration files meet the validation standards with correct YAML st
 **Result**: ✅ PASS
 
 **Details**:
+
 - Agents discovered: 38
 - Errors encountered: 0
 
@@ -93,6 +96,7 @@ All agent configuration files meet the validation standards with correct YAML st
 **Result**: ✅ PASS (with 57 warnings)
 
 **Details**:
+
 - Agents analyzed: 38
 - Errors: 0
 - Warnings: 57
@@ -126,6 +130,7 @@ All agent configuration files meet the validation standards with correct YAML st
 3. **Horizontal Coordination**: All agents document their hierarchy level clearly, enabling implicit coordination through the established 6-level hierarchy.
 
 **Recommendations for FIXME markers**:
+
 - Add explicit "Escalation Triggers" sections to agent configurations
 - Document common escalation scenarios (e.g., blocking dependencies, design conflicts)
 - Consider adding "Delegates To" pattern for clarity (though implicit delegation via hierarchy may be sufficient)
@@ -139,6 +144,7 @@ All agent configuration files meet the validation standards with correct YAML st
 **Result**: ✅ PASS (with 65 warnings about phase alignment)
 
 **Details**:
+
 - Agents analyzed: 38
 - Errors: 0
 - Warnings: 65
@@ -154,10 +160,12 @@ All agent configuration files meet the validation standards with correct YAML st
 | Cleanup | 12 | Final refinement and deployment |
 
 **Parallel Execution Support**:
+
 - Agents with explicit parallel execution guidance: 12
 - Agents without parallel execution guidance: 26
 
 **Git Worktree Integration**:
+
 - All 38 agents (100%) explicitly mention worktree compatibility
 - This is excellent - agents understand per-issue workflow isolation
 
@@ -166,6 +174,7 @@ All agent configuration files meet the validation standards with correct YAML st
 The warnings indicate that agent phase participation sometimes differs from the default expected pattern:
 
 **Default Expected Patterns**:
+
 - Level 0 (Chief): Plan, Cleanup
 - Level 1 (Orchestrators): Plan, Cleanup
 - Level 2 (Design): Plan, Cleanup
@@ -174,6 +183,7 @@ The warnings indicate that agent phase participation sometimes differs from the 
 - Level 5 (Junior): Test, Implementation, Packaging
 
 **Actual Deviations** (sampling):
+
 - Some Level 0-2 agents participate in Test/Implementation/Packaging (flexible role)
 - Some Level 3-4 agents focus narrowly on specific phases (specialized roles)
 - Some Level 5 agents properly omit Plan phase (correct)
@@ -189,6 +199,7 @@ The warnings indicate that agent phase participation sometimes differs from the 
 **Result**: ✅ PASS (with quality concerns noted)
 
 **Details**:
+
 - Agents analyzed: 38 total
 - Implementation agents: 27
 - Errors: 0
@@ -215,6 +226,7 @@ The warnings indicate that agent phase participation sometimes differs from the 
 | Traits/protocols | 2/27 | 7.4% ❌ |
 
 **Critical Mojo Patterns** (expected in implementation agents):
+
 - fn vs def: 15/27 (55.6%) - Below target
 - struct vs class: 12/27 (44.4%) - Below target
 - Memory management: 24/27 (88.9%) ✅ Excellent
@@ -289,6 +301,7 @@ To track improvements identified by these tests:
 **File**: `.claude/agents/*.md` (multiple files)
 
 **FIXME Template**:
+
 ```
 ## Escalation Triggers  // FIXME: Document when this agent should escalate
 
@@ -298,11 +311,13 @@ To track improvements identified by these tests:
 ```
 
 **Affected Agents** (all 38):
+
 - Every agent file needs an "Escalation Triggers" section
 
 ### 2. fn vs def Guidance (Priority: Low)
 
 **Files**: 12 agents with < 100% coverage
+
 ```
 // FIXME: Add fn vs def guidance section explaining when to use fn vs def
 ```
@@ -320,6 +335,7 @@ To track improvements identified by these tests:
 **Files**: performance-engineer, performance-specialist, senior-implementation-engineer
 
 **FIXME**:
+
 ```
 // FIXME: Add SIMD/vectorization guidance for performance-critical operations
 ```

@@ -12,20 +12,24 @@ Implemented comprehensive improvements to the scripts directory based on the val
 ### 1. URL Validation Pre-commit Hook ✅
 
 **Files Added:**
+
 - `scripts/validate_urls.py` - URL validation script for pre-commit
 
 **Changes:**
+
 - Added new pre-commit hook to validate HTTP/HTTPS URLs in Python files
 - Automatically checks URL reachability before commits
 - Skips known problematic URLs (NIST EMNIST server issues)
 - Returns clear error messages for broken links
 
 **Benefits:**
+
 - Catches broken URLs before they get committed
 - Prevents documentation rot
 - Improves link reliability across the codebase
 
 **Usage:**
+
 ```bash
 # Runs automatically on git commit
 # Or run manually:
@@ -35,21 +39,25 @@ pre-commit run validate-urls --all-files
 ### 2. EMNIST Download Script Improvements ✅
 
 **File Modified:**
+
 - `scripts/download_emnist.py`
 
 **Changes:**
+
 - Added fallback URL mechanism with multiple mirrors
 - Enhanced error handling with detailed troubleshooting
 - Improved documentation with type hints
 - Better exit codes and error messages
 
 **Before:**
+
 ```python
 EMNIST_BASE_URL = "http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST"
 EMNIST_GZIP_URL = f"{EMNIST_BASE_URL}/gzip.zip"
 ```
 
 **After:**
+
 ```python
 EMNIST_PRIMARY_URL = "http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST/gzip.zip"
 EMNIST_FALLBACK_URLS = [
@@ -59,6 +67,7 @@ EMNIST_URLS = [EMNIST_PRIMARY_URL] + EMNIST_FALLBACK_URLS
 ```
 
 **Fallback Logic:**
+
 - Tries primary URL first
 - Falls back to mirror URLs if primary fails
 - Reports all failures with troubleshooting steps
@@ -67,12 +76,14 @@ EMNIST_URLS = [EMNIST_PRIMARY_URL] + EMNIST_FALLBACK_URLS
 ### 3. Comprehensive Unit Tests ✅
 
 **Files Added:**
+
 - `tests/test_scripts_common.py` - Tests for scripts/common.py (9 tests)
 - `tests/test_scripts_validation.py` - Tests for scripts/validation.py (20 tests)
 
 **Test Coverage:**
 
 #### `test_scripts_common.py` (9/9 tests passing)
+
 - Label colors validation
 - Repository root detection
 - Agents directory path verification
@@ -80,6 +91,7 @@ EMNIST_URLS = [EMNIST_PRIMARY_URL] + EMNIST_FALLBACK_URLS
 - Color consistency checks
 
 #### `test_scripts_validation.py` (20/20 tests passing)
+
 - Finding markdown files with exclusions
 - File and directory validation
 - Markdown link extraction
@@ -87,6 +99,7 @@ EMNIST_URLS = [EMNIST_PRIMARY_URL] + EMNIST_FALLBACK_URLS
 - Markdown issue counting
 
 **Test Results:**
+
 ```bash
 $ python3 tests/test_scripts_common.py
 .........
@@ -102,22 +115,26 @@ OK
 ### 4. Fixed Syntax Errors ✅
 
 **Files Fixed:**
+
 - `scripts/agents/validate_agents.py:399`
 - `scripts/agents/list_agents.py:321`
 
 **Issue:** Trailing comma after inline comment
 
 **Before:**
+
 ```python
 default=None  # Will use get_agents_dir() if not specified,
 ```
 
 **After:**
+
 ```python
 default=None,  # Will use get_agents_dir() if not specified
 ```
 
 **Impact:**
+
 - Both scripts now run without syntax errors
 - Successfully validate 38 agent configurations
 - Successfully list agents across all 6 levels
@@ -125,14 +142,17 @@ default=None,  # Will use get_agents_dir() if not specified
 ### 5. Pre-commit Configuration Update ✅
 
 **File Modified:**
+
 - `.pre-commit-config.yaml`
 
 **Changes:**
+
 - Added `validate-urls` hook to security checks section
 - Runs on all Python files during commit
 - Uses system Python for compatibility
 
 **Configuration:**
+
 ```yaml
 - id: validate-urls
   name: Validate URLs in Python files
@@ -191,18 +211,21 @@ default=None,  # Will use get_agents_dir() if not specified
 ## Benefits
 
 ### Quality Improvements
+
 - ✅ **29 new unit tests** ensure shared utilities work correctly
 - ✅ **Syntax errors fixed** in agent scripts
 - ✅ **URL validation** prevents broken links in commits
 - ✅ **Better error handling** with fallback mechanisms
 
 ### Developer Experience
+
 - ✅ **Automatic validation** via pre-commit hooks
 - ✅ **Clear error messages** with troubleshooting steps
 - ✅ **Comprehensive test coverage** for confidence in changes
 - ✅ **Better documentation** with type hints and docstrings
 
 ### Reliability
+
 - ✅ **Fallback URLs** for EMNIST dataset downloads
 - ✅ **Robust error handling** in download scripts
 - ✅ **Validated URLs** before commits

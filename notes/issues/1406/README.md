@@ -27,7 +27,7 @@ As specified in the issue description.
 
 ## References
 
-- Issue: https://github.com/mvillmow/ml-odyssey/issues/1406
+- Issue: <https://github.com/mvillmow/ml-odyssey/issues/1406>
 - Related planning documentation in `/notes/plan/`
 - Agent hierarchy: `/agents/hierarchy.md`
 

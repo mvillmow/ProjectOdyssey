@@ -131,6 +131,32 @@ fn assert_less(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
+fn assert_shape_equal(shape1: List[Int], shape2: List[Int], message: String = "") raises:
+    """Assert two shapes are equal.
+
+    Args:
+        shape1: First shape.
+        shape2: Second shape.
+        message: Optional error message.
+
+    Raises:
+        Error if shapes are not equal.
+    """
+    if len(shape1) != len(shape2):
+        var error_msg = message if message else (
+            "Shape dimensions differ: " + String(len(shape1)) + " vs " + String(len(shape2))
+        )
+        raise Error(error_msg)
+
+    for i in range(len(shape1)):
+        if shape1[i] != shape2[i]:
+            var error_msg = message if message else (
+                "Shape mismatch at dimension " + String(i) + ": " +
+                String(shape1[i]) + " vs " + String(shape2[i])
+            )
+            raise Error(error_msg)
+
+
 # ============================================================================
 # Test Fixtures
 # ============================================================================

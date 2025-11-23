@@ -317,9 +317,9 @@ fn test_multi_layer_network_integration() raises:
     var b3 = constant(List[Int](), 0.0)
 
     # Verify all weights initialized
-    assert_equal(w1.size(), 784 * 256, "Layer 1 weights")
-    assert_equal(w2.size(), 256 * 128, "Layer 2 weights")
-    assert_equal(w3.size(), 128 * 10, "Layer 3 weights")
+    assert_equal(w1.numel(), 784 * 256, "Layer 1 weights")
+    assert_equal(w2.numel(), 256 * 128, "Layer 2 weights")
+    assert_equal(w3.numel(), 128 * 10, "Layer 3 weights")
 
     # Create fake mini-batch (batch_size=4)
     var input = normal(List[Int](4, 784), seed_val=42)

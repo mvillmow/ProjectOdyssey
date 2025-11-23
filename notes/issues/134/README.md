@@ -4,7 +4,7 @@
 
 **No custom test file needed** - gitattributes is validated by git itself.
 
-### Why No Tests:
+### Why No Tests
 
 Git provides built-in gitattributes validation:
 
@@ -13,7 +13,7 @@ Git provides built-in gitattributes validation:
 1. **Self-testing:** Incorrect attributes are immediately visible in git behavior
 1. **GitHub Linguist:** Validates attributes when rendering code
 
-### Functional Testing:
+### Functional Testing
 
 The gitattributes was tested functionally:
 
@@ -21,7 +21,7 @@ The gitattributes was tested functionally:
 - **Mojo files:** Will be validated when .mojo/.🔥 files are added
 - **Linguist:** GitHub will apply language detection automatically
 
-### Validation Method:
+### Validation Method
 
 ```bash
 # Test attributes on pixi.lock

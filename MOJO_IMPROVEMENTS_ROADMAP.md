@@ -23,11 +23,13 @@
 ### 1. SIMD Optimization for Core Operations
 
 **Current State:**
+
 - Manual loops in arithmetic operations (add, subtract, multiply, divide)
 - No vectorization in broadcasting
 - Element-wise operations iterate one element at a time
 
 **Target Performance:**
+
 - 2-8x speedup for element-wise operations
 - Reduced memory bandwidth usage
 - Better CPU cache utilization
@@ -61,6 +63,7 @@ fn add_simd[dtype: DType](a: ExTensor, b: ExTensor) raises -> ExTensor:
 ```
 
 **Files to Update:**
+
 1. `shared/core/arithmetic_simd.mojo` - New SIMD implementations
 2. `shared/core/elementwise_simd.mojo` - SIMD for exp, log, sqrt, etc.
 3. `shared/core/reduction_simd.mojo` - SIMD for sum, mean, max, min
@@ -116,6 +119,7 @@ fn bench_add_simd() raises -> BenchResult:
 ```
 
 **Success Criteria:**
+
 - [ ] 2x speedup for float32 operations on 1024x1024 tensors
 - [ ] 4x speedup for float32 operations on aligned data
 - [ ] All existing tests pass
@@ -126,11 +130,13 @@ fn bench_add_simd() raises -> BenchResult:
 ### 2. Comprehensive Gradient Checking
 
 **Current State:**
+
 - Backward passes implemented but limited validation
 - No systematic gradient checking tests
 - Risk of gradient bugs in complex operations
 
 **Target State:**
+
 - Automated gradient checking for all backward passes
 - Numerical validation against finite differences
 - Regression tests for gradient correctness
@@ -273,6 +279,7 @@ jobs:
 ```
 
 **Success Criteria:**
+
 - [ ] Gradient checking for all 20+ backward passes
 - [ ] All gradients correct within 1e-3 tolerance
 - [ ] CI catches gradient regressions automatically
@@ -285,11 +292,13 @@ jobs:
 ### 3. GPU Acceleration
 
 **Current State:**
+
 - All operations run on CPU
 - No GPU code in codebase
 - GPU feature commented out in mojo.toml
 
 **Target Performance:**
+
 - 10-100x speedup for large tensor operations
 - Support for training large models (ResNet-50, GPT-style)
 - Automatic GPU/CPU fallback
@@ -377,6 +386,7 @@ fn matmul_gpu(a: ExTensor, b: ExTensor) raises -> ExTensor:
 #### Phase 2: Core Operations (Weeks 3-4)
 
 Implement GPU versions of:
+
 1. `matmul_gpu` - Matrix multiplication
 2. `conv2d_gpu` - 2D convolution
 3. `batch_norm_gpu` - Batch normalization
@@ -406,6 +416,7 @@ fn benchmark_matmul_cpu_vs_gpu() raises:
 ```
 
 **Success Criteria:**
+
 - [ ] 10x speedup for 1024x1024 matmul
 - [ ] 50x speedup for 2048x2048 matmul
 - [ ] Automatic CPU fallback for small tensors
@@ -552,6 +563,7 @@ alias RotationMatrix = FixedTensor[3, 3, DType.float64]
 ```
 
 **Success Criteria:**
+
 - [ ] 10-30% speedup for hot paths
 - [ ] Zero runtime type checks
 - [ ] Maintained backward compatibility with ExTensor
@@ -562,6 +574,7 @@ alias RotationMatrix = FixedTensor[3, 3, DType.float64]
 ### 5. Complete Array API Implementation
 
 **Current State:**
+
 - 150+ operations implemented
 - Missing: reshape, advanced indexing, some matrix operations
 
@@ -593,12 +606,14 @@ fn reshape(tensor: ExTensor, new_shape: DynamicVector[Int]) raises -> ExTensor:
 #### Week 2-3: Advanced Indexing & Slicing
 
 Add support for:
+
 - Fancy indexing: `tensor[[0, 2, 5]]`
 - Boolean indexing: `tensor[tensor > 0]`
 - Ellipsis: `tensor[..., 0]`
 - None indexing: `tensor[:, None, :]`
 
 **Success Criteria:**
+
 - [ ] Pass Array API Standard test suite
 - [ ] 100% API coverage
 - [ ] Documentation of all operations

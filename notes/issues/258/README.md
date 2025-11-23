@@ -23,7 +23,7 @@ Implement Xavier (Glorot) initialization for neural network weights, providing b
 
 ### 1. Mathematical Foundation
 
-### Xavier/Glorot Initialization Theory:
+### Xavier/Glorot Initialization Theory
 
 The Xavier initialization method was introduced by Xavier Glorot and Yoshua Bengio in their 2010 paper "Understanding the difficulty of training deep feedforward neural networks." The core principle is to maintain consistent variance of activations and gradients across layers.
 

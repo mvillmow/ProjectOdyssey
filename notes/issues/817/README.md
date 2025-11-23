@@ -41,7 +41,7 @@ Create actual distributable package artifacts and integration components for the
   - Shared library integration patterns
 - **Package Artifacts Guide**: `/agents/guides/package-phase-guide.md`
 - **5-Phase Workflow Documentation**: `/notes/review/README.md`
-- **Mojo Package Documentation**: https://docs.modular.com/mojo/manual/packages/
+- **Mojo Package Documentation**: <https://docs.modular.com/mojo/manual/packages/>
 
 ## Implementation Notes
 

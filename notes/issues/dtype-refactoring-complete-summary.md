@@ -17,7 +17,7 @@ Successfully implemented generic dtype dispatch infrastructure and refactored 6 
 
 **File:** `shared/core/dtype_dispatch.mojo` (410 lines)
 
-### Functions:
+### Functions
 
 - `dispatch_unary` - Unary operations (all dtypes: 11 types)
 - `dispatch_binary` - Binary operations (all dtypes: 11 types)
@@ -26,7 +26,7 @@ Successfully implemented generic dtype dispatch infrastructure and refactored 6 
 - `dispatch_float_binary` - Float-only binary (float16/32/64)
 - `dispatch_float_scalar` - Float-only scalar (float16/32/64)
 
-### Key Features:
+### Key Features
 
 - Compile-time specialization using `@parameter`
 - Zero runtime overhead (identical performance to manual branching)

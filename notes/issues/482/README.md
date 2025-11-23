@@ -276,7 +276,8 @@ Document in `/notes/issues/482/lessons-learned.md`:
 
    ```
 
-2. **Reports Generate**:
+1. **Reports Generate**:
+
    ```bash
 
    # Console report
@@ -292,7 +293,8 @@ Document in `/notes/issues/482/lessons-learned.md`:
 
    ```
 
-3. **Documentation Accurate**:
+2. **Documentation Accurate**:
+
    ```bash
 
    # Verify examples
@@ -303,7 +305,7 @@ Document in `/notes/issues/482/lessons-learned.md`:
 
    ```
 
-4. **Performance Acceptable**:
+3. **Performance Acceptable**:
    - [ ] Report generation < 10 seconds: Yes/No
    - [ ] If no, document justification
 

@@ -31,7 +31,7 @@
 - [x] `pull_request` trigger valid where used
 - [x] `push` trigger valid where used
 - [x] `workflow_dispatch` trigger valid where used
-- [x] `schedule` trigger valid (cron: 0 2 * * 0)
+- [x] `schedule` trigger valid (cron: 0 2 ** 0)
 - [x] All trigger syntax correct
 
 ## Job Structure
@@ -173,36 +173,42 @@
 ## Special Features
 
 ### test-gradients.yml
+
 - [x] Coverage calculation logic valid
 - [x] Threshold checking correct
 - [x] Success/failure messaging clear
 - [x] Job dependency valid
 
 ### unit-tests.yml
+
 - [x] Mojo and Python tests handled
 - [x] Coverage threshold enforcement valid
 - [x] PR comment integration correct
 - [x] Multiple test runners configured
 
 ### integration-tests.yml
+
 - [x] Draft PR filtering valid
 - [x] Case statement logic correct
 - [x] Matrix strategy valid
 - [x] PR comment integration correct
 
 ### comprehensive-tests.yml
+
 - [x] 16 test groups properly defined
 - [x] Pattern expansion logic valid
 - [x] Test count parsing correct
 - [x] Complex matrix strategy valid
 
 ### script-validation.yml
+
 - [x] Path filtering valid
 - [x] Multi-stage validation correct
 - [x] Exit code handling correct
 - [x] Output assignment valid
 
 ### simd-benchmarks-weekly.yml
+
 - [x] Cron schedule valid
 - [x] Pipe error checking correct
 - [x] Heredoc syntax valid

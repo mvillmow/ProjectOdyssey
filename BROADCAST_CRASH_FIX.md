@@ -11,17 +11,20 @@
 ## Problem Description
 
 ### Symptoms
+
 - Training worked perfectly (69.09% test accuracy)
 - Inference compiled successfully
 - **Runtime crash** during forward pass with segmentation fault
 
 ### Stack Trace
+
 ```
 #4 shared::core::arithmetic::add() at arithmetic.mojo:159:18
 #5 _broadcast_binary() at arithmetic.mojo:78:43
 ```
 
 ### Crash Location
+
 The crash occurred during linear layer bias addition when broadcasting a 1D bias tensor to a 2D output tensor.
 
 **Scenario:** Broadcasting `bias (47,)` to `output (1, 47)` in LeNet-5's FC3 layer
@@ -33,6 +36,7 @@ The crash occurred during linear layer bias addition when broadcasting a 1D bias
 The index calculation in `_broadcast_binary()` incorrectly computed multi-dimensional coordinates when processing dimensions right-to-left.
 
 **Buggy Code (Lines 66-75):**
+
 ```mojo
 for dim in range(len(result_shape) - 1, -1, -1):
     var stride_prod = 1
@@ -51,6 +55,7 @@ for dim in range(len(result_shape) - 1, -1, -1):
 When broadcasting `(3,)` to `(2, 3)`:
 
 **Expected behavior:**
+
 ```
 result_idx=3 -> coordinates [1, 0] -> bias_idx = 1*0 + 0*1 = 0 ✓
 result_idx=4 -> coordinates [1, 1] -> bias_idx = 1*0 + 1*1 = 1 ✓
@@ -58,6 +63,7 @@ result_idx=5 -> coordinates [1, 2] -> bias_idx = 1*0 + 2*1 = 2 ✓
 ```
 
 **Actual buggy behavior:**
+
 ```
 result_idx=3 -> bias_idx = 3 ✗ (out of bounds!)
 result_idx=4 -> bias_idx = 4 ✗ (out of bounds!)
@@ -73,6 +79,7 @@ result_idx=5 -> bias_idx = 5 ✗ (out of bounds!)
 Precompute row-major strides for the result shape, then extract coordinates from left-to-right.
 
 **Fixed Code (Lines 54-86):**
+
 ```mojo
 # Precompute row-major strides for result shape
 var result_strides = List[Int]()
@@ -112,11 +119,13 @@ for result_idx in range(total_elems):
 ### Why This Works
 
 **Correct algorithm:**
+
 1. Precompute result strides: `(2, 3)` → `[3, 1]` (row-major)
 2. Extract coordinates left-to-right using division/modulo
 3. Use broadcast strides to compute source indices
 
 **Example for result_idx=3:**
+
 ```
 result_strides = [3, 1]
 coord[0] = 3 // 3 = 1,  temp_idx = 3 % 3 = 0
@@ -170,17 +179,20 @@ Inference complete!
 ## Files Changed
 
 ### Modified
+
 - `/home/mvillmow/ml-odyssey/shared/core/arithmetic.mojo`
   - Changed import from `collections.vector.DynamicVector` to `collections.List`
   - Fixed `_broadcast_binary()` index calculation algorithm (lines 54-86)
 
 ### No Other Changes Required
+
 - Previous fix to `broadcasting.mojo` (List[Int] constructor) was already correct
 - No changes needed to `linear.mojo`, `inference.mojo`, or other files
 
 ## Related Issues
 
 This fix resolves the same class of bugs that were previously fixed in:
+
 - `broadcasting.mojo::compute_broadcast_strides()` - List[Int] constructor issue
 - `matrix.mojo::transpose()` - List[Int] constructor issue
 

@@ -24,6 +24,7 @@ fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
 **Problem**: View shares parent's data pointer but has no lifetime guarantees. When parent is freed, view has dangling pointer.
 
 **Example**:
+
 ```mojo
 fn create_view() -> ExTensor:
     var parent = zeros(List[Int](10, 10), DType.float32)
@@ -53,7 +54,7 @@ fn __del__(deinit self):
 
 **Problem**: If exception occurs after `ExTensor()` allocation but before `free()`, memory leaks.
 
-### 5. Missing __copyinit__ (MOJO-005)
+### 5. Missing **copyinit** (MOJO-005)
 
 **Problem**: No explicit copy constructor. Mojo may synthesize shallow copy causing double-free.
 
@@ -112,7 +113,7 @@ struct ExTensor(Copyable, Movable):
 
 ## Implementation Plan
 
-### Phase 2.1: Add __copyinit__ (MOJO-005) - QUICK WIN
+### Phase 2.1: Add **copyinit** (MOJO-005) - QUICK WIN
 
 **Priority**: Implement first (1 hour)
 **Benefit**: Prevents accidental shallow copies immediately
@@ -144,6 +145,7 @@ fn __copyinit__(out self, existing: Self):
 **Benefit**: Enables safe shared ownership
 
 **Changes**:
+
 1. Add `_refcount: UnsafePointer[Int]` field to struct
 2. Allocate refcount in `__init__()`, initialize to 1
 3. Update `__copyinit__()` to increment refcount
@@ -155,6 +157,7 @@ fn __copyinit__(out self, existing: Self):
 **Benefit**: Views can safely share parent's data
 
 **Changes**:
+
 ```mojo
 fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
     # Validate shape
@@ -191,6 +194,7 @@ fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
 ## Testing Strategy
 
 ### 1. Basic Reference Counting Tests
+
 ```mojo
 fn test_copy_increments_refcount():
     var a = zeros(List[Int](10), DType.float32)
@@ -201,6 +205,7 @@ fn test_copy_increments_refcount():
 ```
 
 ### 2. View Lifetime Tests
+
 ```mojo
 fn test_view_outlives_parent():
     var view: ExTensor
@@ -214,6 +219,7 @@ fn test_view_outlives_parent():
 ```
 
 ### 3. Memory Leak Tests
+
 ```mojo
 fn test_no_leaks_on_exception():
     try:
@@ -229,7 +235,7 @@ fn test_no_leaks_on_exception():
 
 | Task | Effort | Risk |
 |------|--------|------|
-| Phase 2.1: __copyinit__ | 1 hour | LOW - straightforward |
+| Phase 2.1: **copyinit** | 1 hour | LOW - straightforward |
 | Phase 2.2: Reference counting | 2-3 hours | MEDIUM - pointer arithmetic |
 | Phase 2.3: Fix reshape/slice | 1-2 hours | LOW - simplified by refcount |
 | Phase 2.4: Double-free | 0 hours | - (fixed by 2.2) |

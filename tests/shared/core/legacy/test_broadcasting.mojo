@@ -27,7 +27,7 @@ from ..helpers.assertions import (
 fn test_broadcast_scalar_to_1d() raises:
     """Test broadcasting scalar to 1D tensor."""
     var shape_vec = List[Int]()
-    shape_vec[0] = 5
+    shape_vec.append(5)
     var shape_scalar = List[Int]()
 
     let a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
@@ -41,8 +41,8 @@ fn test_broadcast_scalar_to_1d() raises:
 fn test_broadcast_scalar_to_2d() raises:
     """Test broadcasting scalar to 2D tensor."""
     var shape_mat = List[Int]()
-    shape_mat[0] = 3
-    shape_mat[1] = 4
+    shape_mat.append(3)
+    shape_mat.append(4)
     var shape_scalar = List[Int]()
 
     let a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
@@ -56,9 +56,9 @@ fn test_broadcast_scalar_to_2d() raises:
 fn test_broadcast_scalar_to_3d() raises:
     """Test broadcasting scalar to 3D tensor."""
     var shape_3d = List[Int]()
-    shape_3d[0] = 2
-    shape_3d[1] = 3
-    shape_3d[2] = 4
+    shape_3d.append(2)
+    shape_3d.append(3)
+    shape_3d.append(4)
     var shape_scalar = List[Int]()
 
     let a = full(shape_3d, 2.0, DType.float32)  # 2x3x4 tensor
@@ -76,11 +76,11 @@ fn test_broadcast_scalar_to_3d() raises:
 fn test_broadcast_vector_to_matrix_row() raises:
     """Test broadcasting row vector to matrix."""
     var shape_mat = List[Int]()
-    shape_mat[0] = 3
-    shape_mat[1] = 4
+    shape_mat.append(3)
+    shape_mat.append(4)
     var shape_vec = List[Int]()
-    shape_vec[0] = 1
-    shape_vec[1] = 4
+    shape_vec.append(1)
+    shape_vec.append(4)
 
     let a = ones(shape_mat, DType.float32)  # 3x4 matrix
     let b = full(shape_vec, 2.0, DType.float32)  # 1x4 vector
@@ -93,11 +93,11 @@ fn test_broadcast_vector_to_matrix_row() raises:
 fn test_broadcast_vector_to_matrix_column() raises:
     """Test broadcasting column vector to matrix."""
     var shape_mat = List[Int]()
-    shape_mat[0] = 3
-    shape_mat[1] = 4
+    shape_mat.append(3)
+    shape_mat.append(4)
     var shape_vec = List[Int]()
-    shape_vec[0] = 3
-    shape_vec[1] = 1
+    shape_vec.append(3)
+    shape_vec.append(1)
 
     let a = ones(shape_mat, DType.float32)  # 3x4 matrix
     let b = full(shape_vec, 2.0, DType.float32)  # 3x1 vector
@@ -110,10 +110,10 @@ fn test_broadcast_vector_to_matrix_column() raises:
 fn test_broadcast_1d_to_2d() raises:
     """Test broadcasting 1D vector to 2D matrix."""
     var shape_mat = List[Int]()
-    shape_mat[0] = 3
-    shape_mat[1] = 4
+    shape_mat.append(3)
+    shape_mat.append(4)
     var shape_vec = List[Int]()
-    shape_vec[0] = 4
+    shape_vec.append(4)
 
     let a = ones(shape_mat, DType.float32)  # 3x4 matrix
     let b = full(shape_vec, 3.0, DType.float32)  # 4-element vector
@@ -130,13 +130,13 @@ fn test_broadcast_1d_to_2d() raises:
 fn test_broadcast_size_one_dim_leading() raises:
     """Test broadcasting with leading dimension of size 1."""
     var shape_a = List[Int]()
-    shape_a[0] = 1
-    shape_a[1] = 3
-    shape_a[2] = 4
+    shape_a.append(1)
+    shape_a.append(3)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 2
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(2)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = full(shape_a, 2.0, DType.float32)  # 1x3x4
     let b = ones(shape_b, DType.float32)  # 2x3x4
@@ -149,13 +149,13 @@ fn test_broadcast_size_one_dim_leading() raises:
 fn test_broadcast_size_one_dim_middle() raises:
     """Test broadcasting with middle dimension of size 1."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 1
-    shape_a[2] = 4
+    shape_a.append(2)
+    shape_a.append(1)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 2
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(2)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = full(shape_a, 5.0, DType.float32)  # 2x1x4
     let b = ones(shape_b, DType.float32)  # 2x3x4
@@ -168,13 +168,13 @@ fn test_broadcast_size_one_dim_middle() raises:
 fn test_broadcast_size_one_dim_trailing() raises:
     """Test broadcasting with trailing dimension of size 1."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 3
-    shape_a[2] = 1
+    shape_a.append(2)
+    shape_a.append(3)
+    shape_a.append(1)
     var shape_b = List[Int]()
-    shape_b[0] = 2
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(2)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = full(shape_a, 3.0, DType.float32)  # 2x3x1
     let b = full(shape_b, 2.0, DType.float32)  # 2x3x4
@@ -191,11 +191,11 @@ fn test_broadcast_size_one_dim_trailing() raises:
 fn test_broadcast_missing_leading_dims() raises:
     """Test broadcasting when tensor has fewer dimensions (aligned to right)."""
     var shape_3d = List[Int]()
-    shape_3d[0] = 2
-    shape_3d[1] = 3
-    shape_3d[2] = 4
+    shape_3d.append(2)
+    shape_3d.append(3)
+    shape_3d.append(4)
     var shape_1d = List[Int]()
-    shape_1d[0] = 4
+    shape_1d.append(4)
 
     let a = ones(shape_3d, DType.float32)  # 2x3x4
     let b = full(shape_1d, 2.0, DType.float32)  # (4,) -> broadcasts to (1,1,4) -> (2,3,4)
@@ -208,12 +208,12 @@ fn test_broadcast_missing_leading_dims() raises:
 fn test_broadcast_2d_to_3d() raises:
     """Test broadcasting 2D to 3D."""
     var shape_3d = List[Int]()
-    shape_3d[0] = 2
-    shape_3d[1] = 3
-    shape_3d[2] = 4
+    shape_3d.append(2)
+    shape_3d.append(3)
+    shape_3d.append(4)
     var shape_2d = List[Int]()
-    shape_2d[0] = 3
-    shape_2d[1] = 4
+    shape_2d.append(3)
+    shape_2d.append(4)
 
     let a = ones(shape_3d, DType.float32)  # 2x3x4
     let b = full(shape_2d, 3.0, DType.float32)  # 3x4 -> broadcasts to (1,3,4) -> (2,3,4)
@@ -230,13 +230,13 @@ fn test_broadcast_2d_to_3d() raises:
 fn test_broadcast_3d_complex() raises:
     """Test complex 3D broadcasting with multiple size-1 dimensions."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 1
-    shape_a[2] = 4
+    shape_a.append(2)
+    shape_a.append(1)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 1
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(1)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = full(shape_a, 2.0, DType.float32)  # 2x1x4
     let b = full(shape_b, 3.0, DType.float32)  # 1x3x4
@@ -249,15 +249,15 @@ fn test_broadcast_3d_complex() raises:
 fn test_broadcast_4d() raises:
     """Test 4D broadcasting."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 1
-    shape_a[2] = 3
-    shape_a[3] = 4
+    shape_a.append(2)
+    shape_a.append(1)
+    shape_a.append(3)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 1
-    shape_b[1] = 5
-    shape_b[2] = 3
-    shape_b[3] = 4
+    shape_b.append(1)
+    shape_b.append(5)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = ones(shape_a, DType.float32)  # 2x1x3x4
     let b = full(shape_b, 2.0, DType.float32)  # 1x5x3x4
@@ -274,11 +274,11 @@ fn test_broadcast_4d() raises:
 fn test_broadcast_incompatible_shapes_different_sizes() raises:
     """Test that incompatible shapes raise error."""
     var shape_a = List[Int]()
-    shape_a[0] = 3
-    shape_a[1] = 4
+    shape_a.append(3)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 3
-    shape_b[1] = 5  # Incompatible: 4 != 5 and neither is 1
+    shape_b.append(3)
+    shape_b.append(5  # Incompatible: 4 != 5 and neither is 1)
 
     let a = ones(shape_a, DType.float32)
     let b = ones(shape_b, DType.float32)
@@ -297,13 +297,13 @@ fn test_broadcast_incompatible_shapes_different_sizes() raises:
 fn test_broadcast_incompatible_inner_dims() raises:
     """Test that incompatible inner dimensions raise error."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 3
-    shape_a[2] = 4
+    shape_a.append(2)
+    shape_a.append(3)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 2
-    shape_b[1] = 5  # Incompatible: 3 != 5 and neither is 1
-    shape_b[2] = 4
+    shape_b.append(2)
+    shape_b.append(5  # Incompatible: 3 != 5 and neither is 1)
+    shape_b.append(4)
 
     let a = ones(shape_a, DType.float32)
     let b = ones(shape_b, DType.float32)
@@ -326,7 +326,7 @@ fn test_broadcast_incompatible_inner_dims() raises:
 fn test_broadcast_output_shape_scalar_1d() raises:
     """Test broadcast output shape for scalar + 1D."""
     var shape_vec = List[Int]()
-    shape_vec[0] = 5
+    shape_vec.append(5)
     var shape_scalar = List[Int]()
 
     let a = ones(shape_vec, DType.float32)
@@ -340,10 +340,10 @@ fn test_broadcast_output_shape_scalar_1d() raises:
 fn test_broadcast_output_shape_1d_2d() raises:
     """Test broadcast output shape for 1D + 2D."""
     var shape_2d = List[Int]()
-    shape_2d[0] = 3
-    shape_2d[1] = 4
+    shape_2d.append(3)
+    shape_2d.append(4)
     var shape_1d = List[Int]()
-    shape_1d[0] = 4
+    shape_1d.append(4)
 
     let a = ones(shape_2d, DType.float32)
     let b = ones(shape_1d, DType.float32)
@@ -356,13 +356,13 @@ fn test_broadcast_output_shape_1d_2d() raises:
 fn test_broadcast_output_shape_3d_complex() raises:
     """Test broadcast output shape for complex 3D case."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 1
-    shape_a[2] = 4
+    shape_a.append(2)
+    shape_a.append(1)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 1
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(1)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = ones(shape_a, DType.float32)
     let b = ones(shape_b, DType.float32)
@@ -379,10 +379,10 @@ fn test_broadcast_output_shape_3d_complex() raises:
 fn test_broadcast_preserves_dtype() raises:
     """Test that broadcasting preserves dtype."""
     var shape_a = List[Int]()
-    shape_a[0] = 3
-    shape_a[1] = 4
+    shape_a.append(3)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 4
+    shape_b.append(4)
 
     let a = ones(shape_a, DType.float64)
     let b = ones(shape_b, DType.float64)
@@ -400,7 +400,7 @@ fn test_broadcast_with_comparison_scalar() raises:
     from shared.core import greater
 
     var shape_vec = List[Int]()
-    shape_vec[0] = 5
+    shape_vec.append(5)
     var shape_scalar = List[Int]()
 
     let a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
@@ -418,10 +418,10 @@ fn test_broadcast_with_comparison_vector_matrix() raises:
     from shared.core import less_equal
 
     var shape_mat = List[Int]()
-    shape_mat[0] = 3
-    shape_mat[1] = 4
+    shape_mat.append(3)
+    shape_mat.append(4)
     var shape_vec = List[Int]()
-    shape_vec[0] = 4
+    shape_vec.append(4)
 
     let a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
     let b = full(shape_vec, 2.0, DType.float32)  # vector [2, 2, 2, 2]
@@ -436,8 +436,8 @@ fn test_broadcast_with_comparison_vector_matrix() raises:
 fn test_broadcast_chained_operations() raises:
     """Test chained operations with broadcasting."""
     var shape_mat = List[Int]()
-    shape_mat[0] = 2
-    shape_mat[1] = 3
+    shape_mat.append(2)
+    shape_mat.append(3)
     var shape_scalar = List[Int]()
 
     let a = full(shape_mat, 5.0, DType.float32)  # 2x3 matrix
@@ -456,10 +456,10 @@ fn test_broadcast_with_subtract() raises:
     from shared.core import subtract
 
     var shape_2d = List[Int]()
-    shape_2d[0] = 3
-    shape_2d[1] = 4
+    shape_2d.append(3)
+    shape_2d.append(4)
     var shape_1d = List[Int]()
-    shape_1d[0] = 4
+    shape_1d.append(4)
 
     let a = full(shape_2d, 10.0, DType.float32)  # 3x4 matrix of 10s
     let b = full(shape_1d, 3.0, DType.float32)  # vector [3, 3, 3, 3]
@@ -474,8 +474,8 @@ fn test_broadcast_with_divide() raises:
     from shared.core import divide
 
     var shape_mat = List[Int]()
-    shape_mat[0] = 2
-    shape_mat[1] = 5
+    shape_mat.append(2)
+    shape_mat.append(5)
     var shape_scalar = List[Int]()
 
     let a = full(shape_mat, 20.0, DType.float32)  # 2x5 matrix of 20s
@@ -489,13 +489,13 @@ fn test_broadcast_with_divide() raises:
 fn test_broadcast_complex_3d_with_multiply() raises:
     """Test complex 3D broadcasting with multiply."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 1
-    shape_a[2] = 4
+    shape_a.append(2)
+    shape_a.append(1)
+    shape_a.append(4)
     var shape_b = List[Int]()
-    shape_b[0] = 1
-    shape_b[1] = 3
-    shape_b[2] = 4
+    shape_b.append(1)
+    shape_b.append(3)
+    shape_b.append(4)
 
     let a = full(shape_a, 3.0, DType.float32)  # 2x1x4
     let b = full(shape_b, 4.0, DType.float32)  # 1x3x4

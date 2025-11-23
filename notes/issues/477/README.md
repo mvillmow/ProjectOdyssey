@@ -171,7 +171,8 @@ Document in `/notes/issues/477/lessons-learned.md`:
 
    ```
 
-2. **Documentation**:
+1. **Documentation**:
+
    ```bash
 
    # Check all links
@@ -182,7 +183,8 @@ Document in `/notes/issues/477/lessons-learned.md`:
 
    ```
 
-3. **CI Integration**:
+2. **CI Integration**:
+
    ```bash
 
    # Test workflow locally
@@ -190,7 +192,7 @@ Document in `/notes/issues/477/lessons-learned.md`:
 
    ```
 
-4. **Performance**:
+3. **Performance**:
    - Measure overhead: __%
    - Within target? Yes/No
    - If no, document justification

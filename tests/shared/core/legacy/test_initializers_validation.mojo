@@ -28,7 +28,7 @@ from shared.core import (
 fn compute_mean(tensor: ExTensor) -> Float64:
     """Compute mean of tensor values."""
     var sum = Float64(0.0)
-    var size = tensor.size()
+    var size = tensor.numel()
 
     if tensor.dtype == DType.float32:
         for i in range(size):
@@ -46,7 +46,7 @@ fn compute_mean(tensor: ExTensor) -> Float64:
 fn compute_variance(tensor: ExTensor, mean: Float64) -> Float64:
     """Compute variance of tensor values."""
     var sum_sq = Float64(0.0)
-    var size = tensor.size()
+    var size = tensor.numel()
 
     if tensor.dtype == DType.float32:
         for i in range(size):
@@ -89,13 +89,13 @@ fn test_all_initializers_produce_tensors() raises:
     var constant_t = constant(shape, 0.5)
 
     # Verify all have correct shape
-    assert_equal(xavier_u.size(), 10000, "Xavier uniform size")
-    assert_equal(xavier_n.size(), 10000, "Xavier normal size")
-    assert_equal(kaiming_u.size(), 10000, "Kaiming uniform size")
-    assert_equal(kaiming_n.size(), 10000, "Kaiming normal size")
-    assert_equal(uniform_t.size(), 10000, "Uniform size")
-    assert_equal(normal_t.size(), 10000, "Normal size")
-    assert_equal(constant_t.size(), 10000, "Constant size")
+    assert_equal(xavier_u.numel(), 10000, "Xavier uniform size")
+    assert_equal(xavier_n.numel(), 10000, "Xavier normal size")
+    assert_equal(kaiming_u.numel(), 10000, "Kaiming uniform size")
+    assert_equal(kaiming_n.numel(), 10000, "Kaiming normal size")
+    assert_equal(uniform_t.numel(), 10000, "Uniform size")
+    assert_equal(normal_t.numel(), 10000, "Normal size")
+    assert_equal(constant_t.numel(), 10000, "Constant size")
 
     print("  ✓ All initializers produce valid tensors")
 
@@ -371,13 +371,13 @@ fn test_initializers_api_consistency() raises:
     var c = constant(shape, 0.5, DType.float32)
 
     # All should return ExTensor
-    assert_equal(xu.size(), 10000, "Xavier uniform returns ExTensor")
-    assert_equal(xn.size(), 10000, "Xavier normal returns ExTensor")
-    assert_equal(ku.size(), 10000, "Kaiming uniform returns ExTensor")
-    assert_equal(kn.size(), 10000, "Kaiming normal returns ExTensor")
-    assert_equal(u.size(), 10000, "Uniform returns ExTensor")
-    assert_equal(n.size(), 10000, "Normal returns ExTensor")
-    assert_equal(c.size(), 10000, "Constant returns ExTensor")
+    assert_equal(xu.numel(), 10000, "Xavier uniform returns ExTensor")
+    assert_equal(xn.numel(), 10000, "Xavier normal returns ExTensor")
+    assert_equal(ku.numel(), 10000, "Kaiming uniform returns ExTensor")
+    assert_equal(kn.numel(), 10000, "Kaiming normal returns ExTensor")
+    assert_equal(u.numel(), 10000, "Uniform returns ExTensor")
+    assert_equal(n.numel(), 10000, "Normal returns ExTensor")
+    assert_equal(c.numel(), 10000, "Constant returns ExTensor")
 
     # All should raise on invalid inputs (tested in individual test files)
 
@@ -404,12 +404,12 @@ fn test_initializers_integration() raises:
     var b3 = uniform(List[Int](), low=-0.01, high=0.01, seed_val=4)
 
     # Verify all tensors have correct shapes
-    assert_equal(w1.size(), 784 * 256, "Layer 1 weights shape")
-    assert_equal(b1.size(), 256, "Layer 1 bias shape")
-    assert_equal(w2.size(), 256 * 128, "Layer 2 weights shape")
-    assert_equal(b2.size(), 128, "Layer 2 bias shape")
-    assert_equal(w3.size(), 128 * 10, "Layer 3 weights shape")
-    assert_equal(b3.size(), 10, "Layer 3 bias shape")
+    assert_equal(w1.numel(), 784 * 256, "Layer 1 weights shape")
+    assert_equal(b1.numel(), 256, "Layer 1 bias shape")
+    assert_equal(w2.numel(), 256 * 128, "Layer 2 weights shape")
+    assert_equal(b2.numel(), 128, "Layer 2 bias shape")
+    assert_equal(w3.numel(), 128 * 10, "Layer 3 weights shape")
+    assert_equal(b3.numel(), 10, "Layer 3 bias shape")
 
     # Verify biases are properly initialized
     var b1_mean = compute_mean(b1)

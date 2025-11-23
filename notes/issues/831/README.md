@@ -1,6 +1,6 @@
 # Issue #831: [Impl] Collect Coverage - Implementation
 
-**Issue URL**: https://github.com/mvillmow/ml-odyssey/issues/831
+**Issue URL**: <https://github.com/mvillmow/ml-odyssey/issues/831>
 
 ## Objective
 

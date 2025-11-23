@@ -15,6 +15,7 @@ Analysis and design phase - Ready to implement
 **Problem**: `to_mxfp4()` and `to_nvfp4()` pad tensors to 32-element and 16-element boundaries respectively, but lose the original size metadata.
 
 **Example**:
+
 - Input: 33 elements
 - Padded to: 64 elements (2 blocks × 32)
 - After `from_mxfp4()`: Returns 64 elements (WRONG! Should be 33)
@@ -25,6 +26,7 @@ Analysis and design phase - Ready to implement
 **Root Cause**: Original size is not preserved when padding
 
 **Solution Approach** (CHOSEN: SIMPLEST - Add metadata field):
+
 - Add `_original_numel_quantized: Int` field to ExTensor struct (-1 for non-quantized tensors)
 - Store original size in `to_mxfp4()` and `to_nvfp4()`
 - Restore original size in `from_mxfp4()` and `from_nvfp4()`
@@ -42,6 +44,7 @@ Analysis and design phase - Ready to implement
 ### #1911 (DATA-003): Unvalidated DType in Conversions
 
 **Problem**: 13 conversion methods don't re-validate dtype before bitcast operations:
+
 - `to_fp8()`, `to_bf8()`, `to_mxfp4()`, `to_nvfp4()`
 - `to_int8()`, `to_int16()`, `to_int32()`, `to_int64()`
 - `to_uint8()`, `to_uint16()`, `to_uint32()`, `to_uint64()`
@@ -57,6 +60,7 @@ Analysis and design phase - Ready to implement
 **Risk**: Access beyond buffer boundaries
 
 **Solution**: Add bounds checking assertions before bitcast operations:
+
 ```mojo
 if i >= self._numel:
     raise Error("Index out of bounds during bitcast")
@@ -69,6 +73,7 @@ if i >= self._numel:
 **Impact**: Different precision path → different quantized results vs direct FP32
 
 **Solution**: Add clear documentation in docstrings explaining:
+
 1. FP16 values are converted to FP32 before quantization
 2. This means precision may differ from direct FP32 quantization
 3. Document the exact conversion path for reproducibility
@@ -76,31 +81,38 @@ if i >= self._numel:
 ## Implementation Plan
 
 ### Step 1: Add metadata field to ExTensor struct
+
 - Add `_original_numel_quantized: Int = -1` field to struct
 - Document that -1 means non-quantized tensor
 
 ### Step 2: Modify to_mxfp4() and to_nvfp4()
+
 - Store original numel before padding
 - Create padded tensor as before
 - Set `_original_numel_quantized` field with original size
 
 ### Step 3: Modify from_mxfp4() and from_nvfp4()
+
 - Check if `_original_numel_quantized` is set (not -1)
 - If set, reshape result to original size instead of padded size
 - If not set, use padded size (backwards compatibility)
 
 ### Step 4: Add dtype validation to all 13 conversion methods
+
 - Add assertion before each bitcast checking dtype is valid
 - Use pattern: `if i == 0 and (dtype validation failed) then raise Error`
 
 ### Step 5: Add bounds checking to all bitcasts
+
 - Add check: `if i >= self._numel: raise Error`
 
 ### Step 6: Update docstrings for DATA-005
+
 - Document FP16→FP32 conversion behavior in all affected methods
 - Add note: "FP16 values are converted to FP32 before quantization"
 
 ### Step 7: Create comprehensive tests
+
 - Round-trip quantization with non-aligned sizes (33, 17, 100 elements)
 - Verify original size is restored
 - Test dtype validation catches wrong types
@@ -139,6 +151,7 @@ if i >= self._numel:
 ## Testing Strategy
 
 ### Test 1: Quantization Round-Trip with Non-Aligned Size
+
 ```mojo
 var t = zeros(List[Int](33), DType.float32)
 var encoded = t.to_mxfp4()
@@ -147,6 +160,7 @@ assert decoded.numel() == 33  # Not 64!
 ```
 
 ### Test 2: Dtype Validation
+
 ```mojo
 var t = zeros(List[Int](10), DType.int32)
 try:
@@ -157,12 +171,14 @@ except:
 ```
 
 ### Test 3: Bounds Checking
+
 ```mojo
 # Create tensor and manually set _numel to larger value
 # Verify bitcast catches out-of-bounds access
 ```
 
 ### Test 4: FP16 Behavior
+
 ```mojo
 var fp16_tensor = zeros(List[Int](10), DType.float16)
 var result = fp16_tensor.to_mxfp4()

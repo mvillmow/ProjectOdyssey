@@ -37,7 +37,7 @@ Implement all image augmentation transforms to match test expectations, resolvin
 - File: `/home/user/ml-odyssey/shared/data/transforms.mojo` lines 393-439
 - TODO: Line 437 - "TODO: For proper image flipping, need to reverse only width dimension"
 
-### Implementation approach:
+### Implementation approach
 
 ```mojo
 fn __call__(self, data: Tensor) raises -> Tensor:

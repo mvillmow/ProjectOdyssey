@@ -84,6 +84,7 @@ export_json_simple(results, "results.json")
 ### Mojo Compatibility
 
 Created using Mojo 0.25.7 (as specified in pixi.toml). The framework uses:
+
 - `import time as mojo_time` for nanosecond-precision timing
 - Built-in `List[T]` container (not DynamicVector, which has import issues in this version)
 - Python interop for file I/O (Mojo v0.25.7 limitation)
@@ -121,6 +122,7 @@ Created using Mojo 0.25.7 (as specified in pixi.toml). The framework uses:
 ## Next Steps (Phase 2+)
 
 ### Phase 2: Operation Benchmarks
+
 - Create benchmark files for each operation category:
   - `test_activation_benchmarks.mojo`: ReLU, Sigmoid, Tanh, GELU, etc.
   - `test_matrix_benchmarks.mojo`: MatMul, Transpose, etc.
@@ -130,17 +132,20 @@ Created using Mojo 0.25.7 (as specified in pixi.toml). The framework uses:
 - Capture baseline results
 
 ### Phase 3: Comparison Benchmarks
+
 - `compare_numpy.py`: Compare against NumPy baselines
 - `compare_pytorch.py`: Compare against PyTorch baselines
 - Establish performance parity targets
 
 ### Phase 4: CI/CD Integration
+
 - Integrate benchmarks into GitHub Actions workflow
 - Automatic baseline comparison on pull requests
 - Performance regression detection (>10% slowdown)
 - Historical tracking and reporting
 
 ### Phase 5: Optimization Targeting
+
 - Use framework to identify bottlenecks
 - Implement SIMD optimizations where profiling indicates benefit
 - Verify improvements with framework
@@ -149,6 +154,7 @@ Created using Mojo 0.25.7 (as specified in pixi.toml). The framework uses:
 ## Files Modified/Created
 
 **Created**:
+
 - `/home/mvillmow/ml-odyssey/benchmarks/__init__.mojo`
 - `/home/mvillmow/ml-odyssey/benchmarks/framework.mojo` (195 lines)
 - `/home/mvillmow/ml-odyssey/benchmarks/stats.mojo` (149 lines)

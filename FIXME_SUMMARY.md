@@ -35,7 +35,8 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 
 **File**: `shared/core/extensor.mojo` (1760 lines, 12 responsibilities)
 
-#### Memory Safety (MOJO-001 to MOJO-005):
+#### Memory Safety (MOJO-001 to MOJO-005)
+
 - **Line 76-91**: MOJO-005 - Missing `__copyinit__` (reference counting broken)
 - **Line 158-166**: MOJO-002 - Double-free risk in `__del__()` for tensor views
 - **Line 262-270**: MOJO-001 - Use-after-free in `reshape()` (view shares parent's data pointer)
@@ -43,7 +44,8 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 - **Line 310-312**: MOJO-001 - Use-after-free in `slice()` (same issue as reshape)
 - **Throughout**: MOJO-003 - Missing lifetime tracking for views
 
-#### Data Corruption (DATA-001 to DATA-005):
+#### Data Corruption (DATA-001 to DATA-005)
+
 - **Line ~1253** (to_mxfp4): DATA-001 - Padding data loss (33 elements → 64 padded → original size lost)
 - **Line ~1340** (from_mxfp4): DATA-002 - Missing size tracking (cannot restore original dimensions)
 - **13 conversion methods**: DATA-003, DATA-004, DATA-005 added to:
@@ -59,16 +61,19 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 ### 2. Testing Gaps
 
 #### File: `shared/core/types/fp4.mojo` (217 lines)
+
 - **Line 27-42**: TEST-010 - FP4_E2M1 base type completely untested (0% coverage)
   - Critical: 217 lines of encoding/decoding logic with ZERO tests
   - Required: Create `tests/core/types/test_fp4_base.mojo`
 
 #### File: `shared/core/types/mxfp4.mojo` (668 lines)
+
 - **Line 548-557**: TEST-002 - Scale = 0 edge case untested
   - Zero blocks common in ML (dead neurons, zero gradients)
   - Fallback to scale=1.0 behavior completely untested
 
 #### File: `tests/core/types/test_mxfp4_block.mojo`
+
 - **Line 22-30**: TEST-001 - All-negative block tests missing
   - Negative blocks common in ML (negative gradients, negative weights)
   - Scale computation for negative values untested
@@ -77,6 +82,7 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
   - Special value encoding/decoding untested
 
 #### File: `tests/core/types/test_nvfp4_block.mojo`
+
 - **Line 23-31**: TEST-001 - All-negative block tests missing (same as MXFP4)
 - **Line 33-42**: TEST-003 - NaN/Infinity handling incomplete (same as MXFP4)
 
@@ -87,14 +93,17 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 ### 3. Documentation Gaps
 
 #### File: `shared/core/types/mxfp4.mojo`
+
 - **Line 27-41**: DOC-001, DOC-002 - Missing research paper full citation
   - Title mentioned but NO: DOI, arXiv link, authors, publication venue
   - Research reproducibility compromised
 
 #### File: `shared/core/types/nvfp4.mojo`
+
 - **Line 30-44**: DOC-001, DOC-002 - Missing research paper full citation (same as MXFP4)
 
 #### File: `shared/core/extensor.mojo`
+
 - **Line 1459-1478**: DOC-003, DOC-004 - Incomplete API documentation for `to_mxfp4()`
   - Missing: Non-aligned tensor examples, error case examples, multi-dimensional examples
   - Missing: Complete error documentation (empty tensors, OOM, NaN/Inf, padding)
@@ -107,6 +116,7 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 ### 4. Algorithm Bugs (✅ FIXED)
 
 #### File: `shared/core/types/nvfp4.mojo`
+
 - **Line 85**: ✅ ALGO-001 FIXED - E4M3 subnormal encoding (4× quantization error)
   - Changed: `mantissa = int(scale * 128.0)` → `mantissa = int(scale * 512.0)`
 - **Line 368**: ✅ ALGO-002 FIXED - RNG normalization bias
@@ -114,6 +124,7 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
   - To: `Float32(rng_state >> 8) / Float32(16777216.0)`
 
 #### File: `shared/core/types/mxfp4.mojo`
+
 - **Line 320**: ✅ ALGO-002 FIXED - RNG normalization bias (same fix as NVFP4)
 
 **Status**: All algorithm bugs FIXED and committed. Deferred to CI for testing (no local Mojo compiler).
@@ -232,12 +243,14 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 **Total Estimated Effort**: 4-6 weeks (1 developer with Mojo access)
 
 **Critical Path**:
+
 1. Week 1-2: Memory safety fixes (MOJO-001 to MOJO-005)
 2. Week 3-4: Data corruption fixes (DATA-001 to DATA-005)
 3. Week 5: Testing (TEST-010, TEST-002, TEST-003, TEST-001)
 4. Week 6: Documentation (DOC-001 to DOC-004)
 
 **Parallelization Opportunity**: If 2-3 developers available:
+
 - Developer 1: Memory safety (Weeks 1-2)
 - Developer 2: Data corruption (Weeks 1-2, depends on QuantizedTensor design)
 - Developer 3: Testing (Weeks 1-2) + Documentation (Week 3)
@@ -247,7 +260,7 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 
 ## How to Use This Document
 
-### For Developers Implementing Fixes:
+### For Developers Implementing Fixes
 
 1. **Start with Memory Safety** (Phase 1) - foundation must be solid
 2. **Each FIXME comment contains**:
@@ -262,7 +275,7 @@ This document consolidates all **FIXME comments** added to the ML Odyssey codeba
 4. **Verify fixes**: Run `mojo test` after each fix (tests in `tests/core/types/`)
 5. **Cross-reference**: See `COMPREHENSIVE_REVIEW_FINDINGS.md` for complete technical analysis
 
-### For Project Managers:
+### For Project Managers
 
 - **All 17 unfixed issues are BLOCKING production use**
 - **Estimated effort**: 4-6 weeks (1 developer) or 2-3 weeks (3 developers in parallel)

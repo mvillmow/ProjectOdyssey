@@ -70,9 +70,11 @@ Traditional CNNs use a single kernel size per layer. Inception modules process t
 1×1 convolutions reduce the number of channels before expensive larger convolutions:
 
 **Without 1×1 reduction** (naive Inception):
+
 - Input: 256 channels → 3×3 conv (128 filters) → 256×128×9 = 295,296 parameters
 
 **With 1×1 reduction** (actual Inception):
+
 - Input: 256 channels → 1×1 conv (96 filters) → 3×3 conv (128 filters)
 - Parameters: (256×96×1) + (96×128×9) = 24,576 + 110,592 = 135,168 parameters
 - **Reduction: 54% fewer parameters!**
@@ -294,6 +296,7 @@ For an Inception module with input `x` (shape: [B, C_in, H, W]):
 ### Backward Pass
 
 Concatenation backward:
+
 - `grad_input = split(grad_output, [C1, C2, C3, C4])`
 - Each branch gets its portion of the gradient
 - Standard conv/pool backward for each branch
@@ -308,10 +311,12 @@ y = gamma * x_norm + beta
 ```
 
 During training:
+
 - Compute mean and variance over batch
 - Update running statistics with momentum
 
 During inference:
+
 - Use running mean and variance (fixed)
 
 ### Learning Rate Scheduling
@@ -329,9 +334,11 @@ Step decay schedule (similar to ResNet):
 ### Weight Initialization
 
 **Xavier initialization** for 1×1 convolutions:
+
 - Formula: `weights ~ N(0, sqrt(2 / (fan_in + fan_out)))`
 
 **He initialization** for 3×3 and 5×5 convolutions:
+
 - Formula: `weights ~ N(0, sqrt(2 / fan_in))`
 - Better for ReLU activations
 

@@ -32,7 +32,7 @@ When channels are activated, tests should validate:
 - ✅ Testing strategy aligned with placeholder approach
 - ✅ No tests needed for commented placeholder
 
-### References:
+### References
 
 - Config file: `/magic.toml:22-24` (commented placeholder - nothing to test yet)
 - Related: See `/tests/dependencies/test_dependencies.py` for similar pattern when activated

@@ -11,7 +11,7 @@ from tests.shared.conftest import (
     TestFixtures,
 )
 from shared.data.datasets import TensorDataset
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================

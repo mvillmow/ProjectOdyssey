@@ -111,7 +111,7 @@ For each operation category (following test file order):
 
 **Decision:** Implement only dynamic tensors (ExTensor) initially.
 
-### Rationale:
+### Rationale
 
 - Simpler implementation following KISS principle
 - Sufficient for research and experimentation
@@ -122,7 +122,7 @@ For each operation category (following test file order):
 
 **Decision:** Use `DynamicVector[Int]` or similar for runtime shape storage.
 
-### Rationale:
+### Rationale
 
 - Allows arbitrary number of dimensions
 - Efficient for small dimension counts (typical: 2-5)
@@ -132,7 +132,7 @@ For each operation category (following test file order):
 
 **Decision:** Separate broadcasting utility that computes output shapes and validates compatibility.
 
-### Rationale:
+### Rationale
 
 - Reusable across all operations
 - Clear separation of concerns
@@ -148,7 +148,7 @@ For each operation category (following test file order):
 - Read-only operations accept borrowed tensors
 - Mutations require `inout` parameters
 
-### Rationale:
+### Rationale
 
 - Safe by default (owned tensors prevent accidental aliasing)
 - Performance optimization available (in-place when needed)
@@ -158,7 +158,7 @@ For each operation category (following test file order):
 
 **Decision:** Transpose, reshape, and slice create views (zero-copy) when possible.
 
-### Rationale:
+### Rationale
 
 - Significant performance improvement
 - NumPy/PyTorch users expect this behavior
@@ -170,7 +170,7 @@ For each operation category (following test file order):
 
 **Decision:** Implement standard Mojo traits (Stringable, Representable, Sized, etc.) as appropriate.
 
-### Rationale:
+### Rationale
 
 - Interoperability with Mojo ecosystem
 - Standard protocols for common operations
@@ -180,7 +180,7 @@ For each operation category (following test file order):
 
 **Decision:** Runtime validation with descriptive error messages using Mojo's `raises` mechanism.
 
-### Rationale:
+### Rationale
 
 - Clear error messages improve developer experience
 - Runtime validation catches shape mismatches early
@@ -190,7 +190,7 @@ For each operation category (following test file order):
 
 **Decision:** Apply SIMD to element-wise operations with configurable width.
 
-### Rationale:
+### Rationale
 
 - Significant performance improvement for large tensors
 - Mojo's SIMD support makes this straightforward
@@ -216,7 +216,7 @@ For each operation category (following test file order):
 
 **Status:** Ready to begin implementation
 
-### Next Steps:
+### Next Steps
 
 1. Create minimal ExTensor struct (just enough to compile)
 1. Run creation operation tests (they will fail)

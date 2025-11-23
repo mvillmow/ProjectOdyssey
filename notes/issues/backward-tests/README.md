@@ -83,6 +83,7 @@ numerical_grad[i] ≈ (f(x + ε) - f(x - ε)) / (2ε)
 ```
 
 This is the gold standard for validating gradient computation and catches:
+
 - Incorrect derivatives
 - Off-by-one errors in indexing
 - Shape mismatches in gradient computation
@@ -91,6 +92,7 @@ This is the gold standard for validating gradient computation and catches:
 ## Integration
 
 Both tests are registered in `main()` function:
+
 - Call site 1: After `test_maxpool2d_backward_gradient_routing()` (line 647)
 - Call site 2: After `test_avgpool2d_backward_gradient_distribution()` (line 657)
 - Print statements confirm test execution

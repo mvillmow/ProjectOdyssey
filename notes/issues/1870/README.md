@@ -92,9 +92,11 @@ def smart_rate_limit_sleep():
 ### Performance Impact
 
 **Before**: Fixed 2-second sleep after every issue
+
 - 100 issues = 200 seconds (3m 20s) of pure waiting
 
 **After**: Adaptive sleep based on rate limit
+
 - Healthy rate limit (>100 remaining): ~0.5s API check only
 - 100 issues = 50 seconds (0m 50s) of API checks
 - **70% faster** when rate limit is healthy!

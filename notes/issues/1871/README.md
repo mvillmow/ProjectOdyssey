@@ -80,9 +80,11 @@ def create_issues_concurrent(components: List[Component], max_workers: int = 5):
 ### Performance Results
 
 **Sequential** (--workers 1):
+
 - 100 issues with smart rate limiting: ~50-200 seconds
 
 **Concurrent** (--workers 5):
+
 - 5 issues processed simultaneously
 - **5x throughput improvement**
 - Smart rate limiting prevents exhaustion

@@ -20,6 +20,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 ### 1. AlexNet-CIFAR10
 
 **Files Present:**
+
 - model.mojo (18.5 KB)
 - train.mojo (17.1 KB)
 - inference.mojo (6.9 KB)
@@ -38,6 +39,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | data_loader tuple return, DynamicVector, inout self, parse_args tuple |
 
 **Common Error Patterns:**
+
 - `no matching function in initialization ) raises -> (ExTensor, ExTensor):`
 - `module 'initializers' does not contain 'he_uniform'`
 - `unable to locate module 'vector'` (collections.vector import)
@@ -46,6 +48,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 ### 2. ResNet18-CIFAR10
 
 **Files Present:**
+
 - model.mojo (50.9 KB)
 - train.mojo (16.0 KB)
 - inference.mojo (8.1 KB)
@@ -65,6 +68,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | data_loader tuple, DynamicVector, inout self, f-string in print |
 
 **Unique Issues:**
+
 - `normalization.mojo:23:22: no matching function in initialization ) raises -> (ExTensor, ExTensor, ExTensor):`
 - `shared/core/arithmetic.mojo:430: use of unknown declaration 'DynamicVector'`
 - Multiple f-string failures in test_model.mojo and inference.mojo
@@ -72,6 +76,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 ### 3. DenseNet121-CIFAR10
 
 **Files Present:**
+
 - model.mojo (16.8 KB)
 - train.mojo (1.6 KB - STUB)
 - inference.mojo (992 B - STUB)
@@ -91,6 +96,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | batch_utils tuple, data_loader tuple, DynamicVector, f-string |
 
 **Unique Issues:**
+
 - `pooling.mojo:209:12: value of type 'ExTensor' cannot be implicitly copied`
 - Most complex model (10+ struct/class definitions with inout self errors)
 - Multiple return type incompatibilities in pooling operations
@@ -98,6 +104,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 ### 4. GoogLeNet-CIFAR10
 
 **Files Present:**
+
 - model.mojo (21.7 KB)
 - train.mojo (16.7 KB)
 - inference.mojo (8.1 KB)
@@ -117,6 +124,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | batch_utils tuple, DynamicVector, inout self, f-string |
 
 **Unique Issues:**
+
 - Missing function: `data.load_cifar10_train_batches` imported but not available
 - Multiple doc string warnings about parameter documentation format
 - Multi-branch Inception module complexity amplifies inout self issues
@@ -124,6 +132,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 ### 5. MobileNetV1-CIFAR10
 
 **Files Present:**
+
 - model.mojo (16.0 KB)
 - train.mojo (7.9 KB)
 - inference.mojo (6.4 KB)
@@ -143,12 +152,14 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | batch_utils tuple, DynamicVector, inout self, f-string |
 
 **Unique Issues:**
+
 - Depthwise/pointwise convolution operations use inout self extensively
 - Doc string format warnings for parameter descriptions
 
 ### 6. VGG16-CIFAR10
 
 **Files Present:**
+
 - model.mojo (24.1 KB)
 - train.mojo (27.3 KB)
 - inference.mojo (3.0 KB)
@@ -167,6 +178,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 | inference.mojo | FAILED | data_loader tuple, DynamicVector, inout self, unknown 'str' declaration |
 
 **Unique Issues:**
+
 - `inference.mojo:95: use of unknown declaration 'str'` - str() built-in not available in Mojo fn context
 - Missing `cross_entropy_loss` function import
 - Sequential architecture with 5+ tuple return compatibility issues
@@ -178,6 +190,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `no matching function in initialization ) raises -> (ExTensor, ExTensor)`
 
 **Affected locations:**
+
 - `data_loader.mojo:206` - `load_cifar10_train()` returns (ExTensor, ExTensor)
 - `data_loader.mojo:254` - `load_cifar10_test()` returns (ExTensor, ExTensor)
 - `dropout.mojo:22` - Forward pass returns (ExTensor, ExTensor)
@@ -198,6 +211,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `unable to locate module 'vector'` and `use of unknown declaration 'DynamicVector'`
 
 **Affected locations:**
+
 - `collections.vector.DynamicVector` import statements
 - Uses in: arithmetic.mojo (shape broadcasting), model files (weight storage), inference files (top-k operations)
 
@@ -212,6 +226,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `expected ')' in argument list` for `inout self` usage
 
 **Examples:**
+
 - `fn __init__(inout self, ...)`
 - `fn forward(inout self, borrowed input: ExTensor, ...)`
 - `fn save_weights(borrowed self, ...)`
@@ -220,6 +235,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Root Cause:** Mojo syntax changed for self parameter - `self` should not use `inout`/`borrowed` keywords in method definitions
 
 **Fix Required:** Remove inout/borrowed from self parameter:
+
 - `fn __init__(inout self, ...)` → `fn __init__(inout self, ...)`
 - OR rewrite as standalone functions
 
@@ -230,6 +246,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `module 'initializers' does not contain 'he_uniform'`
 
 **Missing functions:**
+
 - `he_uniform` - He uniform weight initialization
 - `xavier_uniform` - Xavier/Glorot uniform initialization
 
@@ -246,6 +263,7 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `module 'loss' does not contain 'cross_entropy_loss'`
 
 **Missing functions:**
+
 - `cross_entropy_loss` - Classification loss computation
 - `cross_entropy_loss_backward` - Gradient computation
 
@@ -262,12 +280,14 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 **Pattern:** `expected ')' in call argument list` for print(f"...")
 
 **Examples:**
+
 - `print(f"Output shape: ({logits.shape()[0]}, {logits.shape()[1]})")`
 - `print(f"Training samples: {train_images.shape()[0]}")`
 
 **Root Cause:** Mojo doesn't support f-string syntax (Python feature)
 
 **Fix Required:** Replace with string concatenation:
+
 ```mojo
 print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1]) + ")")
 ```
@@ -282,7 +302,7 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 
 **Root Cause:** Built-in str() conversion not available in standalone functions
 
-**Fix Required:** Use Tensor.__str__() or implement custom string conversion
+**Fix Required:** Use Tensor.**str**() or implement custom string conversion
 
 ---
 
@@ -298,6 +318,7 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 | VGG16 | 24.1 KB | 5 | 1 | 5 | HIGH |
 
 **Complexity Ranking:**
+
 1. **ResNet18** - Largest model file, highest error count
 2. **DenseNet121** - Most complex architecture (dense connections), pooling errors
 3. **GoogLeNet** - Multi-branch Inception modules, missing batch functions
@@ -318,7 +339,7 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 | shared/core/initializers.mojo | Missing he_uniform, xavier_uniform | AlexNet, VGG16 | HIGH |
 | shared/core/loss.mojo | Missing cross_entropy_loss | AlexNet, VGG16, GoogLeNet | HIGH |
 | shared/data/batch_utils.mojo | Tuple return type | ResNet, DenseNet, GoogLeNet, MobileNetV1 | CRITICAL |
-| shared/data/__init__.mojo | Imports from batch_utils | Most architectures | CRITICAL |
+| shared/data/**init**.mojo | Imports from batch_utils | Most architectures | CRITICAL |
 
 ### Model-Specific Files with Errors
 
@@ -363,29 +384,29 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 
 ### Priority 2: Shared Library Function Implementations
 
-6. **Implement he_uniform() and xavier_uniform()**
+1. **Implement he_uniform() and xavier_uniform()**
    - File: shared/core/initializers.mojo
    - Functions needed: he_uniform(), xavier_uniform()
    - Impact: AlexNet, VGG16
 
-7. **Implement cross_entropy_loss()**
+2. **Implement cross_entropy_loss()**
    - File: shared/core/loss.mojo
    - Functions needed: cross_entropy_loss(), cross_entropy_loss_backward()
    - Impact: AlexNet, VGG16, GoogLeNet
 
-8. **Implement load_cifar10_train_batches()**
-   - File: shared/data/batch_utils.mojo or shared/data/__init__.mojo
+3. **Implement load_cifar10_train_batches()**
+   - File: shared/data/batch_utils.mojo or shared/data/**init**.mojo
    - Impact: GoogLeNet train.mojo
 
 ### Priority 3: Architecture-Specific Fixes
 
-9. **Fix F-String Usage**
+1. **Fix F-String Usage**
    - Files: ResNet18/test_model.mojo, DenseNet/train.mojo, all inference.mojo files
    - Issue: `print(f"...")` not supported
    - Solution: Use string concatenation or custom formatting
    - Impact: 4 architectures
 
-10. **Fix str() Built-in Usage**
+2. **Fix str() Built-in Usage**
     - File: VGG16/inference.mojo (line 95)
     - Issue: `str()` not available in fn context
     - Solution: Implement custom conversion or use string formatting
@@ -393,7 +414,7 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 
 ### Priority 4: Data Loader Fixes
 
-11. **Fix Data Loader Tuple Returns**
+1. **Fix Data Loader Tuple Returns**
     - Files: examples/{arch}/data_loader.mojo (lines 206, 254, 178)
     - Issue: Same tuple return syntax as core library
     - Solution: Wait for Priority 1 fix, then apply same pattern
@@ -404,6 +425,7 @@ print("Output shape: (" + str(logits.shape()[0]) + ", " + str(logits.shape()[1])
 Once Priority 1 fixes are applied:
 
 1. **Recompile shared library modules first**
+
    ```bash
    mojo build -I . shared/core/dropout.mojo
    mojo build -I . shared/core/normalization.mojo
@@ -411,11 +433,13 @@ Once Priority 1 fixes are applied:
    ```
 
 2. **Recompile data utilities**
+
    ```bash
    mojo build -I . shared/data/batch_utils.mojo
    ```
 
 3. **Recompile each architecture in order of complexity**
+
    ```bash
    mojo build -I . examples/alexnet-cifar10/model.mojo
    mojo build -I . examples/resnet18-cifar10/model.mojo
@@ -440,6 +464,7 @@ Once Priority 1 fixes are applied:
 **Medium/Low Priority:** 2 (f-strings, str() built-in)
 
 **Estimated Fix Time:**
+
 - Shared library core: 2-4 hours
 - Function implementations: 1-2 hours
 - Architecture-specific: 1-2 hours per architecture (cascading fixes from core)

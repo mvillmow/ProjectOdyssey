@@ -26,12 +26,14 @@ and trait system improvements.
 **What:** Vectorized implementations of core arithmetic operations
 
 **Operations Implemented:**
+
 - `add_simd(a, b)` - SIMD addition
 - `subtract_simd(a, b)` - SIMD subtraction
 - `multiply_simd(a, b)` - SIMD multiplication
 - `divide_simd(a, b)` - SIMD division
 
 **Key Features:**
+
 ```mojo
 fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise addition.
@@ -55,6 +57,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 ```
 
 **Performance Gains:**
+
 | Operation | Before | After | Speedup |
 |-----------|--------|-------|---------|
 | Add (float32, 1024²) | 10ms | 2.5ms | 4x |
@@ -62,6 +65,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 | Add (float64, 1024²) | 20ms | 10ms | 2x |
 
 **Usage:**
+
 ```mojo
 from shared.core.arithmetic_simd import add_simd, multiply_simd
 
@@ -79,6 +83,7 @@ var c = add_simd(a, b)  # 4x faster than scalar add
 **What:** Compile-time dtype-specialized tensor for hot paths
 
 **Key Innovation:**
+
 ```mojo
 struct TypedTensor[dtype: DType, //]:
     """Compile-time typed tensor - dtype known at compile time.
@@ -94,6 +99,7 @@ struct TypedTensor[dtype: DType, //]:
 ```
 
 **Type Safety:**
+
 ```mojo
 var a = TypedTensor[DType.float32]([3, 4])  # Compile-time float32
 var b = TypedTensor[DType.float64]([3, 4])  # Compile-time float64
@@ -101,6 +107,7 @@ var b = TypedTensor[DType.float64]([3, 4])  # Compile-time float64
 ```
 
 **Helper Functions:**
+
 ```mojo
 fn zeros[dtype: DType, //](shape: DynamicVector[Int]) -> TypedTensor[dtype]
 fn ones[dtype: DType, //](shape: DynamicVector[Int]) -> TypedTensor[dtype]
@@ -108,6 +115,7 @@ fn full[dtype: DType, //](shape: DynamicVector[Int], value: Scalar[dtype]) -> Ty
 ```
 
 **Performance Improvement:**
+
 - 10-30% faster than ExTensor for same-dtype operations
 - Zero runtime dtype checking overhead
 - Enables better compiler optimizations
@@ -121,6 +129,7 @@ fn full[dtype: DType, //](shape: DynamicVector[Int], value: Scalar[dtype]) -> Ty
 **What:** Compile-time fixed-size tensor for maximum optimization
 
 **Key Innovation:**
+
 ```mojo
 struct FixedTensor[rows: Int, cols: Int, dtype: DType]:
     """Compile-time fixed dimensions - stack allocated.
@@ -140,6 +149,7 @@ struct FixedTensor[rows: Int, cols: Int, dtype: DType]:
 ```
 
 **Compile-Time Operations:**
+
 ```mojo
 fn matmul[M: Int, N: Int, K: Int, dtype: DType, //](
     a: FixedTensor[M, K, dtype],
@@ -162,6 +172,7 @@ fn matmul[M: Int, N: Int, K: Int, dtype: DType, //](
 ```
 
 **Type Aliases for Common Sizes:**
+
 ```mojo
 alias Kernel3x3_f32 = FixedTensor[3, 3, DType.float32]
 alias Kernel5x5_f32 = FixedTensor[5, 5, DType.float32]
@@ -170,6 +181,7 @@ alias Bias128_f32 = FixedTensor[1, 128, DType.float32]
 ```
 
 **Usage Example:**
+
 ```mojo
 # 3x3 convolution kernel
 alias Kernel3x3 = FixedTensor[3, 3, DType.float32]
@@ -188,6 +200,7 @@ kernel[1, 1] = 1.0  # Compile-time bounds check
 **What:** Numerical gradient validation using finite differences
 
 **Core Function:**
+
 ```mojo
 fn check_gradients(
     forward_fn: fn(ExTensor) -> ExTensor,
@@ -206,6 +219,7 @@ fn check_gradients(
 ```
 
 **Usage in Tests:**
+
 ```mojo
 fn test_relu_gradient() raises:
     """Test ReLU backward pass."""
@@ -221,6 +235,7 @@ fn test_relu_gradient() raises:
 ```
 
 **Verbose Mode:**
+
 ```mojo
 var passed = check_gradients_verbose(
     forward, backward, input,
@@ -236,6 +251,7 @@ var passed = check_gradients_verbose(
 ```
 
 **Benefits:**
+
 - Catches gradient bugs early
 - Validates complex backward passes
 - Essential for custom layers
@@ -252,6 +268,7 @@ var passed = check_gradients_verbose(
 **Traits Implemented:**
 
 #### 1. Differentiable Trait
+
 ```mojo
 trait Differentiable:
     """Components with forward/backward passes."""
@@ -266,6 +283,7 @@ trait Differentiable:
 ```
 
 #### 2. Parameterized Trait
+
 ```mojo
 trait Parameterized:
     """Components with learnable parameters."""
@@ -284,6 +302,7 @@ trait Parameterized:
 ```
 
 #### 3. Serializable Trait
+
 ```mojo
 trait Serializable:
     """Components that can be saved/loaded."""
@@ -298,6 +317,7 @@ trait Serializable:
 ```
 
 #### 4. Composable Trait
+
 ```mojo
 trait Composable:
     """Components that can be chained."""
@@ -308,6 +328,7 @@ trait Composable:
 ```
 
 #### 5. Trainable Trait
+
 ```mojo
 trait Trainable:
     """Components with training/eval modes."""
@@ -326,6 +347,7 @@ trait Trainable:
 ```
 
 **Usage Example:**
+
 ```mojo
 struct MyLayer(Differentiable, Parameterized, Serializable):
     var weights: ExTensor
@@ -348,6 +370,7 @@ struct MyLayer(Differentiable, Parameterized, Serializable):
 ```
 
 **Benefits:**
+
 - Zero runtime overhead (static dispatch)
 - Clear interface contracts
 - Composable abstractions
@@ -360,6 +383,7 @@ struct MyLayer(Differentiable, Parameterized, Serializable):
 **File:** `shared/testing/__init__.mojo`
 
 **Exports:**
+
 ```mojo
 from .gradient_checker import (
     check_gradients,
@@ -550,24 +574,24 @@ fn test_all_backward_passes() raises:
 
 ### Phase 2: Selective Integration (Week 3-4)
 
-3. **Replace hot-path operations with SIMD**
+1. **Replace hot-path operations with SIMD**
    - Profile to identify bottlenecks
    - Replace scalar add/multiply with SIMD variants
    - Verify numerical accuracy
 
-4. **Use TypedTensor for model parameters**
+2. **Use TypedTensor for model parameters**
    - Convert weight/bias tensors to TypedTensor
    - Measure performance improvement
    - Keep ExTensor for dynamic shapes
 
 ### Phase 3: Full Adoption (Week 5-6)
 
-5. **Use FixedTensor for kernels**
+1. **Use FixedTensor for kernels**
    - Conv2d kernels (3x3, 5x5)
    - Batch norm parameters
    - Embedding tables
 
-6. **Refactor layers using traits**
+2. **Refactor layers using traits**
    - Implement Differentiable, Parameterized
    - Better code organization
    - Easier testing
@@ -604,24 +628,24 @@ fn test_all_backward_passes() raises:
 
 ### Short-term (Week 2-4)
 
-3. **Create migration examples**
+1. **Create migration examples**
    - Convert ResNet-18 to use TypedTensor
    - Benchmark before/after
    - Document lessons learned
 
-4. **Expand SIMD coverage**
+2. **Expand SIMD coverage**
    - Element-wise operations (exp, log, sqrt)
    - Reduction operations (sum, mean, max)
    - Matrix operations (matmul)
 
 ### Long-term (Week 5+)
 
-5. **GPU acceleration** (from review)
+1. **GPU acceleration** (from review)
    - Implement GPU variants of SIMD operations
    - 10-100x speedup potential
    - Requires GPU-enabled environment
 
-6. **Complete Array API** (from review)
+2. **Complete Array API** (from review)
    - Implement remaining operations
    - 100% Array API Standard compliance
    - Better Python interop
@@ -632,9 +656,9 @@ fn test_all_backward_passes() raises:
 
 - **Review Document:** MOJO_CODEBASE_REVIEW.md
 - **Roadmap:** MOJO_IMPROVEMENTS_ROADMAP.md
-- **Mojo Manual:** https://docs.modular.com/mojo/manual/
-- **Array API Standard:** https://data-apis.org/array-api/latest/
-- **CS231n Gradient Checking:** http://cs231n.github.io/neural-networks-3/#gradcheck
+- **Mojo Manual:** <https://docs.modular.com/mojo/manual/>
+- **Array API Standard:** <https://data-apis.org/array-api/latest/>
+- **CS231n Gradient Checking:** <http://cs231n.github.io/neural-networks-3/#gradcheck>
 
 ---
 

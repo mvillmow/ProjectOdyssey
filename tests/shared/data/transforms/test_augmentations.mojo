@@ -16,7 +16,7 @@ from shared.data.transforms import (
     Pipeline,
     Compose,
 )
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================

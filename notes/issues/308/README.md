@@ -31,7 +31,7 @@ components to improve model performance.
 
 ### 1. Training Loop Architecture
 
-### Core Responsibilities:
+### Core Responsibilities
 
 - Iterate over training data batches
 - Coordinate forward pass (model inference)
@@ -42,7 +42,7 @@ components to improve model performance.
 - Invoke callbacks at defined points
 - Manage training state for resumption
 
-### Key Design Principles:
+### Key Design Principles
 
 - **Simplicity**: Keep the loop straightforward and readable
 - **Coordination**: Act as orchestrator, delegating to specialized components

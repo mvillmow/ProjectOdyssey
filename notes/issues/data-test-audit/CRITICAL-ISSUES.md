@@ -7,6 +7,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ### P0 - CRITICAL: Blocks Everything (Fix First)
 
 #### Issue: @value Decorator Deprecated (14 structs)
+
 - **Severity**: CRITICAL
 - **Impact**: Blocks 19 test files from compiling
 - **Files**: 4 implementation files
@@ -15,6 +16,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Critical**: All data transforms, samplers, and text transforms use @value. Compiler rejects entire module if ANY struct uses deprecated @value.
 
 **Blocking Tests**:
+
 - test_augmentations.mojo
 - test_text_augmentations.mojo
 - test_generic_transforms.mojo
@@ -28,16 +30,19 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: ExTensor Memory Management (Missing Move Semantics)
+
 - **Severity**: CRITICAL
 - **Impact**: Memory corruption or compiler errors at runtime
 - **Files**: 2 implementation files (transforms.mojo, generic_transforms.mojo)
 - **Count**: 30+ return statements, 5+ ExTensor constructors
 
 **Why Critical**: ExTensor cannot be implicitly copied. Without move semantics (^), code either:
+
 1. Fails to compile (preferred)
 2. Creates dangling pointers at runtime (catastrophic)
 
 **Blocking Tests**:
+
 - test_augmentations.mojo
 - test_image_transforms.mojo
 - test_tensor_transforms.mojo
@@ -48,17 +53,20 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: ExTensor Missing num_elements() Method
+
 - **Severity**: CRITICAL
 - **Impact**: 15+ locations calling non-existent method
 - **Files**: 2 implementation files
 - **Count**: 15 call sites
 
 **Why Critical**: No alternative API in ExTensor. Must either:
+
 1. Add method to ExTensor
 2. Replace all 15 call sites with inline calculations
 3. Both options block test execution
 
 **Blocking Tests**:
+
 - test_augmentations.mojo
 - test_generic_transforms.mojo
 
@@ -69,6 +77,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ### P1 - HIGH: Breaks Implementation
 
 #### Issue: Trait Copyable/Movable Conformance Missing (2 traits)
+
 - **Severity**: HIGH
 - **Impact**: Cannot store trait objects in List
 - **Files**: 2 files (transforms.mojo, text_transforms.mojo)
@@ -77,6 +86,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why High**: Prevents creating pipelines of transforms. Core functionality blocked.
 
 **Locations**:
+
 - TransformPipeline (line 100, transforms.mojo)
 - TextTransformPipeline (line 400, text_transforms.mojo)
 
@@ -85,6 +95,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: Struct Inheritance Not Allowed (1 struct)
+
 - **Severity**: HIGH
 - **Impact**: Inheritance pattern doesn't work in Mojo
 - **Files**: 1 file (loaders.mojo:106)
@@ -97,6 +108,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: Dynamic Traits Not Supported (1 struct)
+
 - **Severity**: HIGH
 - **Impact**: Cannot store dataset as trait reference
 - **Files**: 1 file (loaders.mojo:60)
@@ -111,6 +123,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ### P2 - MEDIUM: Deprecated Keywords
 
 #### Issue: owned Keyword Deprecated (10 locations)
+
 - **Severity**: MEDIUM
 - **Impact**: Compilation warnings/errors
 - **Files**: 4 files
@@ -119,6 +132,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Medium**: Can be fixed mechanically (replace owned with var). Doesn't prevent compilation if warnings are allowed.
 
 **Locations**:
+
 - loaders.mojo:40 (owned → deinit)
 - text_transforms.mojo:257, 333 (owned → var)
 - samplers.mojo:186 (owned → var)
@@ -128,6 +142,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: Required Parameters After Optional (2 functions)
+
 - **Severity**: MEDIUM
 - **Impact**: Function signatures invalid
 - **Files**: 1 file (text_transforms.mojo)
@@ -136,8 +151,9 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Medium**: Parameter ordering violates Mojo syntax rules. Must be fixed but isolated to 2 functions.
 
 **Locations**:
-- RandomSwapWords.__init__(line 257)
-- SynonymReplacement.__init__(line 333)
+
+- RandomSwapWords.**init**(line 257)
+- SynonymReplacement.**init**(line 333)
 
 **Time to Fix**: 10 minutes
 
@@ -146,6 +162,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ### P3 - LOW: Test Infrastructure
 
 #### Issue: Missing main() Function (3 test files)
+
 - **Severity**: LOW
 - **Impact**: Test files can't be executed as programs
 - **Files**: 3 wrapper test files
@@ -154,6 +171,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Low**: Only blocks direct execution. Can be worked around by importing and calling functions.
 
 **Locations**:
+
 - test_datasets.mojo
 - test_loaders.mojo
 - test_transforms.mojo
@@ -163,6 +181,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: String Conversion Function Missing (3 locations)
+
 - **Severity**: LOW
 - **Impact**: Can't convert Int to String
 - **Files**: 3 test files
@@ -171,6 +190,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Low**: Only used in test assertions. Can use format strings or SIMD conversion as workaround.
 
 **Locations**:
+
 - test_file_dataset.mojo:104, 169
 - test_random.mojo:173
 
@@ -179,6 +199,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 ---
 
 #### Issue: Missing Tensor Module Import (4 tests)
+
 - **Severity**: LOW
 - **Impact**: Tests try to import non-existent module
 - **Files**: 4 test files
@@ -187,6 +208,7 @@ Severity and impact analysis of blocking issues preventing data utility tests fr
 **Why Low**: Isolated to test files. Tests should use ExTensor instead.
 
 **Locations**:
+
 - test_tensor_dataset.mojo:14
 - test_augmentations.mojo:19
 - test_text_augmentations.mojo:9
@@ -259,16 +281,19 @@ run_all_tests.mojo (38 tests)
 ## Success Metrics
 
 ### Before Fixes
+
 - **Tests Passing**: 4/23 test files (17%)
 - **Tests Failing**: 19/23 test files (83%)
 - **Comprehensive Suite**: Cannot run (0/38 tests)
 
 ### After P0+P1 Fixes (estimated 2 hours)
+
 - **Tests Passing**: 18/23 test files (78%)
 - **Tests Failing**: 5/23 test files (22%)
 - **Comprehensive Suite**: Can run (35/38 tests if P3 still pending)
 
 ### After All Fixes (estimated 4-6 hours)
+
 - **Tests Passing**: 23/23 test files (100%)
 - **Tests Failing**: 0/23 test files (0%)
 - **Comprehensive Suite**: All pass (38/38 tests)
@@ -285,11 +310,13 @@ run_all_tests.mojo (38 tests)
 ### Architectural Impact: MEDIUM
 
 **Changes Required**:
+
 1. BaseLoader becomes generic instead of holding dynamic Dataset trait
 2. Loaders use composition instead of inheritance
 3. Transform trait requires explicit Copyable/Movable
 
 **Migration Path**:
+
 - Changes are backward compatible
 - Existing code using transforms still works
 - Only internal storage pattern changes
@@ -297,6 +324,7 @@ run_all_tests.mojo (38 tests)
 ### Testing Strategy
 
 **Phase 1: Fix P0 Issues**
+
 1. Fix @value decorators (5 min per struct)
 2. Run affected tests immediately
 3. Should unblock ~12 test files
@@ -316,29 +344,34 @@ run_all_tests.mojo (38 tests)
 ## Recommended Fix Order
 
 ### Day 1 Morning (1 hour)
+
 1. ✓ Fix @value decorators (critical path)
 2. ✓ Fix trait conformances (enables List storage)
 3. ✓ Verify 10-12 tests now pass
 
 ### Day 1 Afternoon (1.5 hours)
+
 4. ✓ Fix ExTensor move semantics
-5. ✓ Implement ExTensor.num_elements()
-6. ✓ Verify 8-10 additional tests pass
+2. ✓ Implement ExTensor.num_elements()
+3. ✓ Verify 8-10 additional tests pass
 
 ### Day 1 Late Afternoon (1.5 hours)
+
 7. ✓ Fix inheritance → composition
-8. ✓ Fix dynamic traits → generics
-9. ✓ Verify loader tests pass
+2. ✓ Fix dynamic traits → generics
+3. ✓ Verify loader tests pass
 
 ### Day 2 Morning (1 hour)
+
 10. ✓ Fix deprecated keywords
-11. ✓ Add test main() functions
-12. ✓ All 23 test files pass
+2. ✓ Add test main() functions
+3. ✓ All 23 test files pass
 
 ### Day 2 Afternoon (30 min)
+
 13. ✓ Run comprehensive suite
-14. ✓ Verify all 38 tests pass
-15. ✓ Add to CI/CD pipeline
+2. ✓ Verify all 38 tests pass
+3. ✓ Add to CI/CD pipeline
 
 ## Dependencies Between Issues
 
@@ -385,10 +418,10 @@ Test main() (P3)
 ### Critical Unblock Path
 
 1. @value → 8 tests unblocked
-2. + Trait conformances → 4 more tests (12 total)
-3. + ExTensor fixes → 4 more tests (16 total)
-4. + Inheritance/traits → 2 more tests (18 total)
-5. + Keywords/main → 5 more tests (23 total)
+2. - Trait conformances → 4 more tests (12 total)
+3. - ExTensor fixes → 4 more tests (16 total)
+4. - Inheritance/traits → 2 more tests (18 total)
+5. - Keywords/main → 5 more tests (23 total)
 
 ---
 

@@ -9,6 +9,7 @@
 **Issue**: `ExTensor` doesn't implement `Copyable` and `Movable` traits, causing type errors when used in collections or returned from functions.
 
 **Error Pattern**:
+
 ```
 error: value of type 'ExTensor' cannot be implicitly copied, it does not conform to 'ImplicitlyCopyable'
 error: cannot bind type 'ExTensor' to trait 'Copyable & Movable'
@@ -58,10 +59,12 @@ struct ExTensor:
 ```
 
 **Files Affected**:
+
 - All files importing ExTensor
 - All examples using ExTensor
 
 **Validation**:
+
 ```bash
 # After fix, verify:
 pixi run mojo build shared/core/types/extensor.mojo
@@ -105,16 +108,18 @@ struct ExTensor:
 ```
 
 **Examples Needing This**:
+
 - mixed_precision_training.mojo (needs `ExTensor.full()`)
 - All autograd examples (need tensor manipulation methods)
 
 ---
 
-### Fix 1.3: Fix Module Exports in shared/core/__init__.mojo
+### Fix 1.3: Fix Module Exports in shared/core/**init**.mojo
 
 **File**: `/home/mvillmow/ml-odyssey/shared/core/__init__.mojo`
 
 **Current Issues**:
+
 - `Tensor` type not exported (examples can't import it)
 - `Module` and `Linear` classes not exported
 - `creation` module functions not accessible
@@ -155,6 +160,7 @@ from shared.core.creation import (
 ```
 
 **Files Affected**:
+
 - attention_layer.mojo (imports Module, Linear)
 - prelu_activation.mojo (imports Module)
 - trait_example.mojo (imports Tensor)
@@ -165,6 +171,7 @@ from shared.core.creation import (
 ### Fix 1.4: Fix Data Type Decorators
 
 **Files**:
+
 - `/shared/core/types/fp8.mojo`
 - `/shared/core/types/bf8.mojo`
 - `/shared/core/types/integer.mojo`
@@ -200,6 +207,7 @@ struct FP8:
 ```
 
 **Pattern for All Type Definitions**:
+
 1. Replace `@value` with `@fieldwise_init`
 2. Update `__init__` to return `Self` (not use `inout self`)
 3. Add `__copyinit__` for Copy trait
@@ -207,6 +215,7 @@ struct FP8:
 5. Replace string conversion: `str(value)` → `String(value)` or `repr(value)`
 
 **Validation After Fix**:
+
 ```bash
 pixi run mojo run -I . examples/fp8_example.mojo 2>&1 | head -20
 # Should reach string conversion errors, not decorator errors
@@ -239,6 +248,7 @@ pixi run mojo run -I . examples/fp8_example.mojo 2>&1 | head -20
    - Affects: basic_usage.mojo, test_arithmetic.mojo
 
 **Search Commands**:
+
 ```bash
 # Find DynamicVector
 find /home/mvillmow/ml-odyssey -name "*.mojo" -type f -exec grep -l "DynamicVector" {} \;
@@ -258,6 +268,7 @@ grep -r "fn zeros" /home/mvillmow/ml-odyssey/shared/
 ### Fix 2.1: Remove `inout self` from Method Definitions
 
 **Pattern**:
+
 ```mojo
 # WRONG (Mojo 0.24.1+):
 fn forward(inout self, borrowed input: Tensor) -> Tensor:
@@ -271,15 +282,17 @@ fn forward(self, borrowed input: Tensor) -> Tensor:
 ```
 
 **Files Affected** (20+ occurrences):
+
 - trait_example.mojo
 - ownership_example.mojo
 - simd_example.mojo
 - performance examples
 - custom layer examples
 - trait_based_layer.mojo
-- All layer __init__ methods
+- All layer **init** methods
 
 **Automated Fix**:
+
 ```bash
 # Replace pattern across files
 cd /home/mvillmow/ml-odyssey
@@ -295,6 +308,7 @@ git diff examples/ | head -100
 ### Fix 2.2: Remove `owned` Parameter Deprecation
 
 **Pattern**:
+
 ```mojo
 # OLD (deprecated):
 fn consume_tensor(owned tensor: Tensor) -> Float64:
@@ -307,6 +321,7 @@ fn consume_tensor(tensor: ExTensor) -> Float64:
 ```
 
 **Note**: Some functions may need to use `^` when transferring ownership:
+
 ```mojo
 fn create_and_move() -> ExTensor:
     var tensor = ExTensor.zeros([10, 10])
@@ -332,7 +347,7 @@ return String("FP8(") + String(self.to_float32()) + ")"
 return "FP8(" + String(self.to_float32())[...] + ")"
 ```
 
-2. **integer_example.mojo** - Multiple `str()` calls
+1. **integer_example.mojo** - Multiple `str()` calls
 
 ```mojo
 # WRONG:
@@ -358,7 +373,7 @@ let val = tensor._get_float64(i)
 var val = tensor._get_float64(i)
 ```
 
-**Issue: `__all__` at file scope in shared/autograd/__init__.mojo**
+**Issue: `__all__` at file scope in shared/autograd/**init**.mojo**
 
 ```mojo
 # WRONG (file-scope expressions not allowed):
@@ -508,7 +523,7 @@ done
 
 2. **shared/core/types/fp8.mojo**
    - Replace @value with @fieldwise_init
-   - Fix __init__ signature
+   - Fix **init** signature
    - Fix string conversion
 
 3. **shared/core/types/bf8.mojo**
@@ -516,33 +531,33 @@ done
 
 4. **shared/core/types/integer.mojo**
    - Replace @value with @fieldwise_init
-   - Fix __init__ signature
+   - Fix **init** signature
    - Fix string conversion
 
 5. **shared/core/types/unsigned.mojo**
    - Same as integer.mojo
 
-6. **shared/core/__init__.mojo**
+6. **shared/core/**init**.mojo**
    - Fix module exports
-   - Remove __all__ file-scope list
+   - Remove **all** file-scope list
    - Export Tensor, Module, Linear, creation functions
 
-7. **shared/autograd/__init__.mojo**
-   - Remove __all__ file-scope list
+7. **shared/autograd/**init**.mojo**
+   - Remove **all** file-scope list
 
 ### Medium Priority (Syntax - fix after framework)
 
-8. **All files in examples/**
+1. **All files in examples/**
    - Remove `inout self` from methods
    - Fix `owned` parameters
    - Fix string conversion
    - Fix module imports
 
-9. **shared/autograd/functional.mojo**
+2. **shared/autograd/functional.mojo**
    - Replace `let` with `var`
    - Fix move semantics
 
-10. **shared/training/mixed_precision.mojo**
+3. **shared/training/mixed_precision.mojo**
     - Fix `inout` parameters
     - Fix move semantics
 

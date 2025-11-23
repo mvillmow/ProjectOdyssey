@@ -31,11 +31,13 @@ Validation of LeNet-EMNIST example files from PR #1896 shows **PARTIAL SUCCESS**
 ### test_gradients.mojo
 
 **Error 1**: Tuple return type syntax (line 32)
+
 ```mojo
 fn compute_gradient_stats(grad: ExTensor) raises -> (Float32, Float32, Float32, Int, Int):
 ```
 
 **Error 2**: `ExTensor` not Copyable/Movable (line 89)
+
 ```mojo
 ) raises -> List[ExTensor]:
          ~~~~~~~~~~~~~~~
@@ -45,11 +47,13 @@ cannot bind type 'ExTensor' to trait 'Copyable & Movable'
 ### test_weight_updates.mojo
 
 **Error 1**: Tuple return type syntax (line 146)
+
 ```mojo
 fn compute_weight_stats(initial: ExTensor, final: ExTensor) raises -> (Float32, Float32, Float32):
 ```
 
 **Error 2**: `ExTensor` not Copyable/Movable (line 120)
+
 ```mojo
 fn copy_weights(model: LeNet5) raises -> List[ExTensor]:
                                               ~~~~~~~~~~~~~~~
@@ -59,6 +63,7 @@ cannot bind type 'ExTensor' to trait 'Copyable & Movable'
 ### test_predictions.mojo
 
 **Error**: Tuple return type syntax (line 117)
+
 ```mojo
 fn predict_with_confidence(mut model: LeNet5, input: ExTensor, num_classes: Int) raises -> (Int, Float32):
 ```
@@ -70,12 +75,14 @@ fn predict_with_confidence(mut model: LeNet5, input: ExTensor, num_classes: Int)
 **This is NOT a LeNet-EMNIST issue - this is a Mojo compiler issue affecting the entire codebase.**
 
 The tuple return type syntax `(Type1, Type2)` appears in:
+
 - ✗ `examples/lenet-emnist/test_gradients.mojo`
 - ✗ `examples/lenet-emnist/test_weight_updates.mojo`
 - ✗ `examples/lenet-emnist/test_predictions.mojo`
-- ✗ `shared/core/broadcasting.mojo` (BroadcastIterator.__next__)
+- ✗ `shared/core/broadcasting.mojo` (BroadcastIterator.**next**)
 
 All fail with the same error in Mojo v0.25.7:
+
 ```
 error: no matching function in initialization
 fn func(...) raises -> (Int, Float32):
@@ -86,6 +93,7 @@ candidate not viable: failed to infer parameter 'element_types' of parent struct
 **Mojo Version**: 0.25.7.0.dev2025111305
 
 This suggests either:
+
 1. The tuple syntax is deprecated or changed in v0.25.7
 2. A separate import or feature flag is needed
 3. The syntax was never actually working in the codebase
@@ -103,6 +111,7 @@ All core files have documentation string warnings - minor issue, doesn't prevent
 ### test_loss_decrease.mojo ✅
 
 **Output**:
+
 ```
 Test 3: Loss Decrease Over 100 Batches
 ============================================================
@@ -131,6 +140,7 @@ Loss Analysis:
 ### test_training_metrics.mojo ✅
 
 **Output**:
+
 ```
 ============================================================
 Training Metrics Validation Test
@@ -165,6 +175,7 @@ Results:
 #### 1. Fix Tuple Return Type Syntax (Affects 4 files across codebase)
 
 **Files affected**:
+
 - `examples/lenet-emnist/test_gradients.mojo` (line 32, 89)
 - `examples/lenet-emnist/test_weight_updates.mojo` (line 120, 146)
 - `examples/lenet-emnist/test_predictions.mojo` (line 117)
@@ -173,6 +184,7 @@ Results:
 **Solution Options**:
 
 **Option A**: Use explicit Tuple type (recommended)
+
 ```mojo
 from collections import Tuple
 
@@ -182,6 +194,7 @@ fn compute_gradient_stats(grad: ExTensor) raises -> Tuple[Float32, Float32, Floa
 ```
 
 **Option B**: Use struct wrapper
+
 ```mojo
 struct GradientStats:
     var mean_abs: Float32
@@ -196,18 +209,21 @@ fn compute_gradient_stats(grad: ExTensor) raises -> GradientStats:
 ```
 
 **Option C**: Return single value and modify calling code
+
 - For simple cases, return a single primary value
 - Modify test logic to compute stats differently
 
 #### 2. Fix ExTensor List Collection Issue
 
 **Affected functions**:
+
 - `test_gradients.mojo`: `compute_gradients_with_capture()` returns `List[ExTensor]` (line 89)
 - `test_weight_updates.mojo`: `copy_weights()` returns `List[ExTensor]` (line 120)
 
 **Solution Options**:
 
 **Option A**: Use tuple/struct pattern instead of List
+
 ```mojo
 # Don't try to collect multiple tensors in a List
 # Instead, return a struct with named fields for each weight
@@ -221,6 +237,7 @@ fn copy_weights(model: LeNet5) raises -> WeightSnapshot:
 ```
 
 **Option B**: Process tensors immediately instead of collecting
+
 ```mojo
 # Instead of returning List[ExTensor], compute stats immediately
 fn analyze_weights(model: LeNet5) raises -> WightAnalysis:
@@ -229,12 +246,13 @@ fn analyze_weights(model: LeNet5) raises -> WightAnalysis:
 ```
 
 **Option C**: Use reference/pointer pattern
+
 - Return indices or identifiers instead of tensor objects
 - Let calling code fetch tensors by reference
 
 ### SHOULD FIX (Quality Issues)
 
-3. **Fix documentation warnings** in all files:
+1. **Fix documentation warnings** in all files:
    - Add periods (`.`) or backticks (`` ` ``) to end docstring descriptions
    - Fix "owned" deprecation warning in `weights.mojo` (line 36)
 
@@ -242,7 +260,7 @@ fn analyze_weights(model: LeNet5) raises -> WightAnalysis:
 
 ### VERIFICATION NEEDED
 
-4. **Confirm train.mojo and inference.mojo run correctly**:
+1. **Confirm train.mojo and inference.mojo run correctly**:
    - Both were run in background mode
    - Need to verify they complete successfully with actual data
    - Check for any runtime data errors when loading EMNIST data
@@ -275,11 +293,13 @@ examples/lenet-emnist/
 ### Scope of Issues
 
 **LeNet-EMNIST Specific**:
+
 - 3 test files cannot run due to tuple return syntax
 - 5 documentation files have minor linting warnings
 - 2 test files (test_loss_decrease, test_training_metrics) work perfectly
 
 **Codebase-Wide**:
+
 - Broadcasting iterator in shared/core also has tuple syntax issue
 - This suggests a systemic Mojo version compatibility problem
 - Other modules may have similar hidden issues when called

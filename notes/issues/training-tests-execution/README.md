@@ -14,6 +14,7 @@ Execute all training-related tests (optimizers, schedulers, loops, callbacks) an
 ### Status: BLOCKED - All tests fail at compilation stage
 
 The entire training test suite fails to compile due to:
+
 1. Deprecated Mojo syntax (`@value` decorator removed)
 2. Missing assertion helper functions
 3. Missing scheduler implementations
@@ -27,10 +28,12 @@ The entire training test suite fails to compile due to:
 ### 1. **Deprecated `@value` Decorator** [HIGHEST PRIORITY]
 
 **Affected Files**:
+
 - `/home/mvillmow/ml-odyssey/shared/training/base.mojo:44` (CallbackSignal, TrainingState)
 - `/home/mvillmow/ml-odyssey/shared/training/stubs.mojo:26`
 
 **Error Message**:
+
 ```
 error: '@value' has been removed, please use '@fieldwise_init' and explicit `Copyable` and `Movable` conformances instead
 ```
@@ -49,6 +52,7 @@ struct CallbackSignal:
 ```
 
 **Files to Fix**:
+
 - `/home/mvillmow/ml-odyssey/shared/training/base.mojo` (lines 23, 44)
 - `/home/mvillmow/ml-odyssey/shared/training/stubs.mojo` (line 26)
 
@@ -57,6 +61,7 @@ struct CallbackSignal:
 ### 2. **Missing Test Assertion Functions** [HIGH PRIORITY]
 
 **Missing in `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`**:
+
 - `assert_shape_equal`
 - `assert_less_or_equal`
 - `assert_greater_or_equal`
@@ -71,6 +76,7 @@ struct CallbackSignal:
 Add missing assertion functions to conftest.mojo following the existing pattern.
 
 **Affected Tests**:
+
 - test_rmsprop.mojo
 - test_step_scheduler.mojo
 - test_warmup_scheduler.mojo
@@ -84,6 +90,7 @@ Add missing assertion functions to conftest.mojo following the existing pattern.
 ### 3. **Missing Scheduler Implementations** [HIGH PRIORITY]
 
 **Missing Classes**:
+
 - `StepLR` (test_step_scheduler.mojo:20)
 - `WarmupLR` (test_warmup_scheduler.mojo:22)
 - `CosineAnnealingLR` (test_cosine_scheduler.mojo:22)
@@ -98,6 +105,7 @@ Implement scheduler classes in shared/training/schedulers module or create the m
 ### 4. **Missing Callback Implementations** [HIGH PRIORITY]
 
 **Missing Classes**:
+
 - `ModelCheckpoint` (test_checkpointing.mojo:19)
 - `EarlyStopping` (test_early_stopping.mojo:20)
 - `LoggingCallback` (test_logging_callback.mojo:18)
@@ -112,9 +120,11 @@ Implement callback classes in shared/training/callbacks module.
 ### 5. **Mojo Language API Incompatibilities** [MEDIUM PRIORITY]
 
 #### 5.1 Tuple Return Type Syntax
+
 **Error**: `no matching function in initialization`) raises -> (ExTensor, ExTensor)`
 
 **Affected Files**:
+
 - `/home/mvillmow/ml-odyssey/shared/training/optimizers/sgd.mojo:30`
 - `/home/mvillmow/ml-odyssey/shared/training/optimizers/adam.mojo:41, 158`
 - `/home/mvillmow/ml-odyssey/shared/training/optimizers/rmsprop.mojo:43, 169`
@@ -124,9 +134,11 @@ Implement callback classes in shared/training/callbacks module.
 **Fix Required**: Use proper tuple syntax or struct wrapper for multiple return values
 
 #### 5.2 Missing `inout` Keyword in Function Parameters
+
 **Error**: `expected ')' in argument list` at `inout result`
 
 **Affected Files**:
+
 - `/home/mvillmow/ml-odyssey/shared/core/arithmetic_simd.mojo:170, 189, 246, 265`
 
 **Issue**: `inout` keyword is no longer valid in parameter declarations in newer Mojo versions
@@ -134,18 +146,22 @@ Implement callback classes in shared/training/callbacks module.
 **Fix Required**: Replace `inout` with proper reference semantics
 
 #### 5.3 List Ownership Issues
+
 **Error**: `value of type 'List[Float32]' cannot be implicitly copied, it does not conform to 'ImplicitlyCopyable'`
 
 **Affected Files**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo:301`
 - `/home/mvillmow/ml-odyssey/shared/training/base.mojo:292`
 
 **Fix Required**: Use move semantics (`^`) or explicit copy for list returns
 
 #### 5.4 Float Special Values
+
 **Error**: `'Float64' value has no attribute 'nan'`
 
 **Affected Files**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/training/test_numerical_safety.mojo:64, 79, 80, 121, 137`
 
 **Issue**: Modern Mojo doesn't support `Float64.nan()`, `Float64.inf()`, `Float64.neg_inf()`
@@ -189,6 +205,7 @@ Implement callback classes in shared/training/callbacks module.
 ### Category 1: @value Decorator Removal (5 files affected)
 
 **Files**:
+
 1. `/home/mvillmow/ml-odyssey/shared/training/base.mojo:44` - CallbackSignal, TrainingState
 2. `/home/mvillmow/ml-odyssey/shared/training/stubs.mojo:26` - TrainerStub
 
@@ -196,6 +213,7 @@ Implement callback classes in shared/training/callbacks module.
 The `@value` decorator was removed in Mojo v0.25.7+ in favor of `@fieldwise_init` + explicit trait conformances.
 
 **Required Changes**:
+
 ```
 FIXME: shared/training/base.mojo:44 - Replace @value with @fieldwise_init and add Copyable, Movable traits
 FIXME: shared/training/stubs.mojo:26 - Replace @value with @fieldwise_init and add Copyable, Movable traits
@@ -204,6 +222,7 @@ FIXME: shared/training/stubs.mojo:26 - Replace @value with @fieldwise_init and a
 ### Category 2: Missing Assertion Functions (7 files affected)
 
 **Files Affected**:
+
 - test_rmsprop.mojo
 - test_step_scheduler.mojo
 - test_warmup_scheduler.mojo
@@ -213,6 +232,7 @@ FIXME: shared/training/stubs.mojo:26 - Replace @value with @fieldwise_init and a
 - test_numerical_safety.mojo
 
 **Missing Functions**:
+
 - `assert_shape_equal(shape1, shape2)` - Compare tensor shapes
 - `assert_less_or_equal(a, b)` - Assert a <= b
 - `assert_greater_or_equal(a, b)` - Assert a >= b
@@ -222,6 +242,7 @@ FIXME: shared/training/stubs.mojo:26 - Replace @value with @fieldwise_init and a
 - `assert_not_equal_tensor(t1, t2)` - Assert tensors not equal
 
 **Required Changes**:
+
 ```
 FIXME: tests/shared/conftest.mojo:end - Add missing assertion functions
   - assert_shape_equal
@@ -234,16 +255,19 @@ FIXME: tests/shared/conftest.mojo:end - Add missing assertion functions
 ### Category 3: Missing Scheduler Classes (3 files affected)
 
 **Files Affected**:
+
 - test_step_scheduler.mojo
 - test_warmup_scheduler.mojo
 - test_cosine_scheduler.mojo
 
 **Required Classes**:
+
 1. `StepLR` - Learning rate decay by steps
 2. `WarmupLR` - Learning rate warmup schedule
 3. `CosineAnnealingLR` - Cosine annealing schedule
 
 **Required Changes**:
+
 ```
 FIXME: shared/training/schedulers/__init__.mojo - Implement StepLR, WarmupLR, CosineAnnealingLR
 ```
@@ -251,16 +275,19 @@ FIXME: shared/training/schedulers/__init__.mojo - Implement StepLR, WarmupLR, Co
 ### Category 4: Missing Callback Classes (3 files affected)
 
 **Files Affected**:
+
 - test_checkpointing.mojo
 - test_early_stopping.mojo
 - test_logging_callback.mojo
 
 **Required Classes**:
+
 1. `ModelCheckpoint` - Save best model during training
 2. `EarlyStopping` - Stop training if metric doesn't improve
 3. `LoggingCallback` - Log metrics during training
 
 **Required Changes**:
+
 ```
 FIXME: shared/training/callbacks/__init__.mojo - Implement ModelCheckpoint, EarlyStopping, LoggingCallback
 ```
@@ -268,6 +295,7 @@ FIXME: shared/training/callbacks/__init__.mojo - Implement ModelCheckpoint, Earl
 ### Category 5: Mojo Language API Changes (8 files affected)
 
 #### 5.1 Tuple Return Type Syntax (3 files)
+
 - shared/training/optimizers/sgd.mojo:30
 - shared/training/optimizers/adam.mojo:41, 158
 - shared/training/optimizers/rmsprop.mojo:43, 169
@@ -275,6 +303,7 @@ FIXME: shared/training/callbacks/__init__.mojo - Implement ModelCheckpoint, Earl
 **Error**: `no matching function in initialization`) raises -> (ExTensor, ExTensor)`
 
 **Required Changes**:
+
 ```
 FIXME: shared/training/optimizers/sgd.mojo:30 - Fix tuple return type syntax
 FIXME: shared/training/optimizers/adam.mojo:41,158 - Fix tuple return type syntax
@@ -282,33 +311,39 @@ FIXME: shared/training/optimizers/rmsprop.mojo:43,169 - Fix tuple return type sy
 ```
 
 #### 5.2 inout Parameter Syntax (4 functions in 1 file)
+
 - shared/core/arithmetic_simd.mojo:170, 189, 246, 265
 
 **Error**: `expected ')' in argument list` at `inout result`
 
 **Required Changes**:
+
 ```
 FIXME: shared/core/arithmetic_simd.mojo:170,189,246,265 - Replace inout with proper reference semantics
 ```
 
 #### 5.3 List Ownership and Copyability (2 files)
+
 - tests/shared/conftest.mojo:301
 - shared/training/base.mojo:292
 
 **Error**: `value of type 'List[Float32]' cannot be implicitly copied`
 
 **Required Changes**:
+
 ```
 FIXME: tests/shared/conftest.mojo:301 - Use move operator ^ or explicit copy for List return
 FIXME: shared/training/base.mojo:292 - Use move operator ^ or explicit copy for List return
 ```
 
 #### 5.4 Float Special Values (1 file)
+
 - tests/shared/training/test_numerical_safety.mojo:64, 79, 80, 121, 137
 
 **Error**: `'Float64' value has no attribute 'nan'`
 
 **Required Changes**:
+
 ```
 FIXME: tests/shared/training/test_numerical_safety.mojo:64,79,80,121,137 - Use proper NaN/Inf handling
 ```
@@ -316,6 +351,7 @@ FIXME: tests/shared/training/test_numerical_safety.mojo:64,79,80,121,137 - Use p
 ### Category 6: Missing Module main() Function (4 files)
 
 **Files**:
+
 - test_loops.mojo
 - test_callbacks.mojo
 - test_metrics.mojo
@@ -330,9 +366,11 @@ FIXME: tests/shared/training/test_numerical_safety.mojo:64,79,80,121,137 - Use p
 ## Root Cause Analysis
 
 ### Mojo Version Incompatibility
+
 The codebase was developed against an older Mojo version (likely v0.24.x) and hasn't been updated for v0.25.7+.
 
 Key breaking changes:
+
 1. `@value` decorator → `@fieldwise_init` + traits
 2. Tuple return types require different syntax
 3. `inout` parameter syntax changed
@@ -340,11 +378,13 @@ Key breaking changes:
 5. List ownership requirements stricter
 
 ### Test Infrastructure Gaps
+
 1. Test assertion library incomplete
 2. Helper functions (create_simple_model, create_mock_dataloader, etc.) undefined
 3. Some test files appear to be incomplete or placeholder tests
 
 ### Missing Implementations
+
 1. Three scheduler classes not implemented
 2. Three callback classes not implemented
 3. Several training loop constructs missing or incomplete
@@ -371,6 +411,7 @@ Key breaking changes:
 ## Recommended Fix Priority
 
 ### Phase 1: Language Compatibility (Day 1)
+
 1. **Fix @value decorators** (5 locations) - Blocks 5+ files
 2. **Fix tuple return syntax** (6 locations) - Blocks 3 files
 3. **Fix inout parameters** (4 locations) - Blocks 1 file
@@ -378,14 +419,17 @@ Key breaking changes:
 5. **Fix Float special values** (5 locations) - Blocks 1 file
 
 ### Phase 2: Test Infrastructure (Day 2)
+
 1. **Add missing assertions** - Unblock 7 test files
 2. **Add missing helper functions** - Unblock training_loop tests
 
 ### Phase 3: Missing Implementations (Day 3)
+
 1. **Implement schedulers** (3 classes) - Unblock 3 tests
 2. **Implement callbacks** (3 classes) - Unblock 3 tests
 
 ### Phase 4: Test Harness (Day 4)
+
 1. **Fix module structure** for metrics, schedulers, loops, callbacks tests
 2. **Clarify test execution model** (main vs module)
 
@@ -474,6 +518,7 @@ FIXME: /home/mvillmow/ml-odyssey/tests/shared/training/test_numerical_safety.moj
 **Total Test Files**: 22
 
 ### Scheduled for Execution (14 files)
+
 1. test_optimizers.mojo - FAILED
 2. test_rmsprop.mojo - FAILED
 3. test_step_scheduler.mojo - FAILED
@@ -490,6 +535,7 @@ FIXME: /home/mvillmow/ml-odyssey/tests/shared/training/test_numerical_safety.moj
 14. test_numerical_safety.mojo - FAILED
 
 ### Related Tests (8 files - not in primary scope)
+
 1. test_accuracy_bugs.mojo
 2. test_confusion_matrix_bugs.mojo
 3. test_dtype_utils.mojo
@@ -497,13 +543,14 @@ FIXME: /home/mvillmow/ml-odyssey/tests/shared/training/test_numerical_safety.moj
 5. test_trainer_interface.mojo - FAILED
 6. test_trainer_interface_bugs.mojo
 7. test_schedulers.mojo - FAILED
-8. __init__.mojo
+8. **init**.mojo
 
 ---
 
 ## Documentation Location
 
 All test execution details and FIXME recommendations documented in:
+
 - **This Report**: `/home/mvillmow/ml-odyssey/notes/issues/training-tests-execution/README.md`
 
 ---

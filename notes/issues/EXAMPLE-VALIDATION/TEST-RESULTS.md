@@ -50,9 +50,9 @@ All 57 Mojo example files fail compilation. No examples reach runtime. Root caus
 
 | File | Status | Type | Primary Error | Issue Count |
 |------|--------|------|---------------|-------------|
-| simple_example.mojo | FAIL | Compilation | __all__ syntax + missing modules | 12+ |
-| linear_regression.mojo | FAIL | Compilation | __all__ syntax + missing modules | 12+ |
-| linear_regression_improved.mojo | FAIL | Compilation | __all__ syntax + 'let' keyword | 13+ |
+| simple_example.mojo | FAIL | Compilation | **all** syntax + missing modules | 12+ |
+| linear_regression.mojo | FAIL | Compilation | **all** syntax + missing modules | 12+ |
+| linear_regression_improved.mojo | FAIL | Compilation | **all** syntax + 'let' keyword | 13+ |
 
 **Category Summary**: All 3 fail due to file-scope syntax errors + missing creation module
 
@@ -101,6 +101,7 @@ All 57 Mojo example files fail compilation. No examples reach runtime. Root caus
 **Sample Test**: None individually tested (same patterns as tested categories)
 
 **Expected Issues**:
+
 - Missing module exports (Module, Linear, etc.)
 - Missing tensor creation functions
 - ExTensor trait conformance issues
@@ -141,7 +142,7 @@ Link/Finalization:     0 files pass
 
 2. **"unable to locate module" or "does not contain"** (30+ occurrences)
    - Cause: Wrong import paths, missing exports
-   - Fix: Correct paths, update __init__.mojo exports
+   - Fix: Correct paths, update **init**.mojo exports
    - Impact: 50% of examples
 
 3. **"@value has been removed"** (6+ occurrences)
@@ -223,18 +224,21 @@ PATH 5: Performance examples
 ## Framework Health Assessment
 
 ### Current State: DEGRADED
+
 - 0/57 examples compile
 - Multiple framework components outdated
 - Inconsistent module structure
 - Missing trait implementations
 
 ### After Phase 1 (Framework Fixes): RECOVERY
+
 - Estimated 45-50/57 examples compile
 - Framework modernized to Mojo 0.25.7
 - Module structure consistent
 - Traits properly implemented
 
 ### After Phase 1-3 (Full Implementation): HEALTHY
+
 - All 57/57 examples compile
 - All examples runnable
 - Framework fully compatible
@@ -306,6 +310,7 @@ done
 **Confidence in Analysis**: VERY HIGH (95%+)
 
 Reasons:
+
 - All errors from actual compiler output
 - Patterns verified across multiple files
 - Root causes traced to framework files
@@ -315,30 +320,36 @@ Reasons:
 ## Risk Assessment for Fixes
 
 ### Low Risk
+
 - Removing `inout self` (straightforward syntax change)
 - Updating import paths (clear documentation)
 
 ### Medium Risk
+
 - Implementing trait conformances (correct implementation needed)
 - Updating decorators (requires understanding new patterns)
 
 ### High Risk
+
 - Module API changes (may break existing functionality)
 - New trait implementations (complex interactions possible)
 
 ## Success Metrics (After Fixes Applied)
 
 ### Compilation Metrics
+
 - [ ] All 57 files compile without errors (Target: 100%)
 - [ ] No warnings during compilation (Target: 0 warnings)
 - [ ] Average compile time < 2 seconds per file
 
 ### Runtime Metrics
+
 - [ ] 50+ files run successfully (Target: 100%)
 - [ ] No segmentation faults (Target: 0)
 - [ ] Expected output matches specification (Target: 100% of tested files)
 
 ### Code Quality Metrics
+
 - [ ] No deprecated API usage (Target: 0)
 - [ ] All traits properly conforming (Target: 100%)
 - [ ] Clean module imports (Target: 0 import errors)
@@ -346,16 +357,19 @@ Reasons:
 ## Recommendations for Testing
 
 ### Before Starting Fixes
+
 1. Create feature branch for all changes
 2. Set up git hooks to prevent broken commits
 3. Create parallel version for regression testing
 
 ### During Implementation
+
 1. Test each phase individually (Phase 1, 2, 3, 4)
 2. Run examples after each major fix
 3. Verify no cascading errors introduced
 
 ### After Fixes Complete
+
 1. Run full test suite (all 57 examples)
 2. Generate coverage reports
 3. Create CI/CD validation workflow

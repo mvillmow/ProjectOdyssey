@@ -142,27 +142,32 @@
 ### Critical Stability (Division by Zero Prevention)
 
 1. **divide_backward**: B² + epsilon = 1e-10
+
    ```mojo
    b_squared_safe = b² + 1e-10
    grad_b = -grad_output * a / b_squared_safe
    ```
 
 1. **log_backward**: X + epsilon = 1e-10
+
    ```mojo
    result = grad / (x + 1e-10)
    ```
 
 1. **sqrt_backward**: 2*Y + epsilon = 1e-10
+
    ```mojo
    result = grad / (2.0 * output + 1e-10)
    ```
 
 1. **log10_backward**: X*LN10 + epsilon = 1e-10
+
    ```mojo
    result = grad / (x * 2.302585... + 1e-10)
    ```
 
 1. **log2_backward**: X*LN2 + epsilon = 1e-10
+
    ```mojo
    result = grad / (x * 0.693147... + 1e-10)
    ```
@@ -448,4 +453,3 @@ Can support:
 **The ExTensor framework is ready for training production neural networks.**
 
 All critical operations have correct, stable, and well-tested backward pass implementations.
-

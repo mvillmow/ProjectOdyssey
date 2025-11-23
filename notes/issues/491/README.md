@@ -351,21 +351,22 @@ CI automatically:
 
    ```
 
-2. Identify low-coverage files (red/orange in report)
+1. Identify low-coverage files (red/orange in report)
 
-3. Add tests for uncovered lines:
+2. Add tests for uncovered lines:
    - Focus on critical paths
    - Test error conditions
    - Test edge cases
 
-4. Verify locally:
+3. Verify locally:
+
    ```bash
 
    pytest --cov=scripts --cov-fail-under=80
 
    ```
 
-5. Push updates
+4. Push updates
 
 ### Scenario: Coverage Regression
 
@@ -374,6 +375,7 @@ CI automatically:
 **Solution**:
 
 1. Check what code changed:
+
    ```bash
 
    git diff main..HEAD
@@ -424,9 +426,9 @@ omit = [
 
    ```
 
-2. **Review HTML report** (if time permits)
+1. **Review HTML report** (if time permits)
 
-3. **Ensure critical paths tested**
+2. **Ensure critical paths tested**
 
 ### During Review
 
@@ -449,6 +451,7 @@ Quick reference:
 | HTML report | `--cov-report=html` |
 | Check threshold | `--cov-fail-under=80` |
 | Open HTML | `open htmlcov/index.html` |
+
 ```text
 
 **3. Developer Onboarding** (`docs/testing/coverage-onboarding.md`):

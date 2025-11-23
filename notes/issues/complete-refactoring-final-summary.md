@@ -46,7 +46,7 @@ Successfully completed comprehensive dtype refactoring across activation and ele
 
 ### Activation Functions (Zero Overhead)
 
-### Before:
+### Before
 
 ```mojo
 if tensor._dtype == DType.float32:

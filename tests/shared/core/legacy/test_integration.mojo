@@ -27,7 +27,7 @@ from ..helpers.assertions import (
 fn test_chained_add_operations() raises:
     """Test chaining multiple add operations."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = ones(shape, DType.float32)  # [1, 1, 1, 1, 1]
     let b = full(shape, 2.0, DType.float32)  # [2, 2, 2, 2, 2]
     let c = full(shape, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
@@ -40,7 +40,7 @@ fn test_chained_add_operations() raises:
 fn test_mixed_arithmetic_operations() raises:
     """Test mixing different arithmetic operations."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = full(shape, 4.0, DType.float32)
@@ -55,7 +55,7 @@ fn test_mixed_arithmetic_operations() raises:
 fn test_arithmetic_with_operator_overloading() raises:
     """Test using operator overloading for complex expressions."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = ones(shape, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = full(shape, 3.0, DType.float32)
@@ -69,8 +69,8 @@ fn test_arithmetic_with_operator_overloading() raises:
 fn test_complex_expression() raises:
     """Test complex arithmetic expression."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
     let a = full(shape, 1.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = full(shape, 3.0, DType.float32)
@@ -88,11 +88,11 @@ fn test_complex_expression() raises:
 
 fn test_identity_matrix_operations() raises:
     """Test operations with identity matrix."""
-    let I = eye(3, 3, DType.float32)
+    let I = eye(3, 3, 0, DType.float32)
     let A = full(List[Int](), 2.0, DType.float32)  # Will need reshaping
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 3
+    shape.append(3)
+    shape.append(3)
     let B = full(shape, 2.0, DType.float32)
 
     # I + B should give all 3s on diagonal, 2s elsewhere
@@ -112,7 +112,7 @@ fn test_arange_arithmetic() raises:
     """Test arithmetic with arange-created tensors."""
     let a = arange(0.0, 5.0, 1.0, DType.float32)  # [0, 1, 2, 3, 4]
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let b = ones(shape, DType.float32)  # [1, 1, 1, 1, 1]
 
     let result = add(a, b)  # [1, 2, 3, 4, 5]
@@ -141,7 +141,7 @@ fn test_linspace_operations() raises:
 fn test_same_dtype_consistency() raises:
     """Test that operations preserve dtype consistently."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let a32 = ones(shape, DType.float32)
     let b32 = ones(shape, DType.float32)
@@ -157,7 +157,7 @@ fn test_same_dtype_consistency() raises:
 fn test_int_dtype_operations() raises:
     """Test operations with integer dtypes."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let a = full(shape, 3.0, DType.int32)
     let b = full(shape, 2.0, DType.int32)
@@ -174,8 +174,8 @@ fn test_int_dtype_operations() raises:
 fn test_2d_elementwise_operations() raises:
     """Test element-wise operations on 2D tensors."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
 
@@ -188,9 +188,9 @@ fn test_2d_elementwise_operations() raises:
 fn test_3d_operations() raises:
     """Test operations on 3D tensors."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
     let a = ones(shape, DType.float32)
     let b = full(shape, 0.5, DType.float32)
 
@@ -207,7 +207,7 @@ fn test_3d_operations() raises:
 fn test_linear_transformation_pattern() raises:
     """Test pattern similar to linear layer: W*x + b."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     # Simulate weights, input, and bias
     let W = full(shape, 2.0, DType.float32)
@@ -224,7 +224,7 @@ fn test_linear_transformation_pattern() raises:
 fn test_gradient_descent_update_pattern() raises:
     """Test pattern similar to gradient descent: w - lr * grad."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let w = ones(shape, DType.float32)  # weights
     let grad = full(shape, 0.2, DType.float32)  # gradients
@@ -240,7 +240,7 @@ fn test_gradient_descent_update_pattern() raises:
 fn test_batch_normalization_pattern() raises:
     """Test pattern similar to batch normalization: (x - mean) * scale."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let x = full(shape, 5.0, DType.float32)
     let mean = full(shape, 3.0, DType.float32)
@@ -260,8 +260,8 @@ fn test_batch_normalization_pattern() raises:
 fn test_additive_identity() raises:
     """Test that adding zero doesn't change values."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = full(shape, 7.5, DType.float32)
     let zero = zeros(shape, DType.float32)
 
@@ -273,8 +273,8 @@ fn test_additive_identity() raises:
 fn test_multiplicative_identity() raises:
     """Test that multiplying by one doesn't change values."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = full(shape, 7.5, DType.float32)
     let one = ones(shape, DType.float32)
 
@@ -286,8 +286,8 @@ fn test_multiplicative_identity() raises:
 fn test_multiplicative_zero() raises:
     """Test that multiplying by zero gives zero."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     let a = full(shape, 99.9, DType.float32)
     let zero = zeros(shape, DType.float32)
 
@@ -319,7 +319,7 @@ fn test_scalar_operations() raises:
 fn test_large_tensor_operations() raises:
     """Test operations on large tensors."""
     var shape = List[Int]()
-    shape[0] = 10000
+    shape.append(10000)
     let a = ones(shape, DType.float32)
     let b = full(shape, 2.0, DType.float32)
 

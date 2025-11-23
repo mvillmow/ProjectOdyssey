@@ -13,7 +13,7 @@
 
 **File Created:** `shared/core/dtype_dispatch.mojo` (410 lines)
 
-### Exported Functions:
+### Exported Functions
 
 - `dispatch_unary` - Runtime dispatch for unary operations (all dtypes)
 - `dispatch_binary` - Runtime dispatch for binary operations (all dtypes)
@@ -22,14 +22,14 @@
 - `dispatch_float_binary` - Runtime dispatch for float-only binary operations
 - `dispatch_float_scalar` - Runtime dispatch for float-only scalar operations
 
-### Key Features:
+### Key Features
 
 - Compile-time specialization using `@parameter`
 - Zero runtime overhead compared to manual dtype branching
 - Support for 11 dtypes: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64
 - Separate dispatchers for all-dtype and float-only operations
 
-### Design Pattern:
+### Design Pattern
 
 ```mojo
 # Define the operation

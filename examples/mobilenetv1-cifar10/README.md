@@ -51,6 +51,7 @@ Operations: H × W × C_in × C_out × K × K
 ```
 
 **Example**: 32×32 input with 64 channels, 3×3 filters, 128 output channels:
+
 - Operations: 32 × 32 × 64 × 128 × 3 × 3 = **75,497,472 operations**
 
 ### Depthwise Separable Convolution
@@ -74,6 +75,7 @@ Total: H × W × C_in × (K² + C_out)
 ```
 
 **Same Example**:
+
 - Depthwise: 32 × 32 × 64 × 3 × 3 = 589,824 operations
 - Pointwise: 32 × 32 × 64 × 128 = 8,388,608 operations
 - **Total: 8,978,432 operations** (8.4× reduction!)
@@ -81,6 +83,7 @@ Total: H × W × C_in × (K² + C_out)
 ### Mathematical Comparison
 
 **Reduction Factor**:
+
 ```text
 Standard:   H × W × C_in × C_out × K²
 Depthwise:  H × W × C_in × (K² + C_out)
@@ -89,6 +92,7 @@ Reduction = (K² + C_out) / (C_out × K²) ≈ 1/C_out + 1/K²
 ```
 
 For typical values (C_out=128, K=3):
+
 - Reduction ≈ 1/128 + 1/9 ≈ 0.119 ≈ **8.4× fewer operations**
 
 ## Model Architecture
@@ -175,6 +179,7 @@ Each **Depthwise Separable Block** consists of:
    - Batch Normalization + ReLU
 
 **Key Benefits**:
+
 - **Efficiency**: 8-9× fewer operations than standard convolution
 - **Fewer parameters**: Smaller model size
 - **Same accuracy**: Competitive performance with standard CNNs
@@ -276,6 +281,7 @@ Based on reference implementations and similar experiments:
 For depthwise convolution with input `x` (shape: [B, C, H, W]):
 
 1. **Apply one filter per channel** (no cross-channel mixing):
+
    ```text
    For each channel c in C:
        output[:, c, :, :] = conv2d(input[:, c:c+1, :, :], kernel_c)
@@ -288,6 +294,7 @@ For depthwise convolution with input `x` (shape: [B, C, H, W]):
 ### Pointwise Convolution (1×1 Conv)
 
 1. **Channel mixing without spatial filtering**:
+
    ```text
    output = conv2d(input, weights_1x1, kernel_size=1)
    ```
@@ -331,10 +338,12 @@ Step decay schedule (same as other models):
 ### Weight Initialization
 
 **He initialization** for depthwise convolutions:
+
 - Formula: `weights ~ N(0, sqrt(2 / fan_in))`
 - fan_in = K × K × 1 (per-channel kernel)
 
 **Xavier initialization** for pointwise convolutions:
+
 - Formula: `weights ~ N(0, sqrt(2 / (fan_in + fan_out)))`
 - Better for 1×1 convolutions
 

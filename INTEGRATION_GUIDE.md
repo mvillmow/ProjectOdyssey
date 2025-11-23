@@ -52,6 +52,7 @@ mojo run examples/typed_tensor_demo.mojo
 ### CI Integration
 
 The gradient checking tests now run automatically on:
+
 - All PRs modifying backward passes
 - Pushes to main branch
 - Changes to activation or arithmetic files
@@ -65,13 +66,15 @@ Check status: `.github/workflows/test-gradients.yml`
 ### Phase 2.1: Replace Hot-Path Operations with SIMD
 
 **Target Files:**
+
 - `shared/training/loops/training_loop.mojo`
 - `shared/training/optimizers/*.mojo`
 - Forward passes in model implementations
 
 **Example Integration:**
 
-#### Before (Scalar):
+#### Before (Scalar)
+
 ```mojo
 from shared.core.arithmetic import add, multiply
 
@@ -81,7 +84,8 @@ fn update_weights(params: ExTensor, gradients: ExTensor, lr: Float64) -> ExTenso
     return subtract(params, update)
 ```
 
-#### After (SIMD):
+#### After (SIMD)
+
 ```mojo
 from shared.core.arithmetic_simd import add_simd, multiply_simd, subtract_simd
 
@@ -103,6 +107,7 @@ fn update_weights(params: ExTensor, gradients: ExTensor, lr: Float64) -> ExTenso
 - [ ] Document speedups in commit messages
 
 **Profiling Command:**
+
 ```bash
 mojo run -D ENABLE_PROFILING examples/resnet18-cifar10/train.mojo
 ```
@@ -110,13 +115,15 @@ mojo run -D ENABLE_PROFILING examples/resnet18-cifar10/train.mojo
 ### Phase 2.2: Convert Model Weights to TypedTensor
 
 **Target Files:**
+
 - `examples/resnet18-cifar10/model.mojo`
 - `examples/lenet-emnist/model.mojo`
 - Other model implementations
 
 **Example Conversion:**
 
-#### Before (ExTensor):
+#### Before (ExTensor)
+
 ```mojo
 struct ResNet18:
     var conv1_kernel: ExTensor
@@ -131,7 +138,8 @@ struct ResNet18:
         self.fc_bias = zeros([10], DType.float32)
 ```
 
-#### After (TypedTensor):
+#### After (TypedTensor)
+
 ```mojo
 from shared.core.typed_tensor import TypedTensor, zeros as typed_zeros
 
@@ -153,27 +161,32 @@ struct ResNet18:
 **Migration Steps:**
 
 1. **Add TypedTensor imports:**
+
    ```mojo
    from shared.core.typed_tensor import TypedTensor, zeros, ones
    ```
 
 2. **Update field declarations:**
+
    ```mojo
    var weights: TypedTensor[DType.float32]  # Instead of ExTensor
    ```
 
 3. **Update initialization:**
+
    ```mojo
    self.weights = zeros[DType.float32](shape)  # Instead of zeros(shape, DType.float32)
    ```
 
 4. **Update operations:**
+
    ```mojo
    from shared.core.typed_tensor import add, multiply
    var output = add(weights, bias)  # Compile-time specialized
    ```
 
 5. **Benchmark before/after:**
+
    ```bash
    # Before conversion
    mojo run examples/resnet18-cifar10/train.mojo --benchmark
@@ -185,6 +198,7 @@ struct ResNet18:
    ```
 
 **Expected Benefits:**
+
 - 10-30% faster weight updates
 - Compile-time dtype verification
 - Smaller binary size (no type erasure)
@@ -195,7 +209,8 @@ struct ResNet18:
 
 **Example:**
 
-#### Before (Dynamic):
+#### Before (Dynamic)
+
 ```mojo
 fn conv2d_3x3(input: ExTensor, kernel: ExTensor) -> ExTensor:
     # Runtime kernel size checks
@@ -204,7 +219,8 @@ fn conv2d_3x3(input: ExTensor, kernel: ExTensor) -> ExTensor:
     # ... implementation
 ```
 
-#### After (Fixed):
+#### After (Fixed)
+
 ```mojo
 from shared.core.fixed_tensor import FixedTensor, Kernel3x3_f32
 
@@ -219,7 +235,9 @@ fn conv2d_3x3_fixed(
 ```
 
 **Use Cases:**
+
 1. **Edge Detection Kernels:**
+
    ```mojo
    alias SobelX = FixedTensor[3, 3, DType.float32]
    var sobel_x = SobelX()
@@ -229,6 +247,7 @@ fn conv2d_3x3_fixed(
    ```
 
 2. **BatchNorm Parameters:**
+
    ```mojo
    alias BatchNormParams = FixedTensor[1, 256, DType.float32]
    var gamma = BatchNormParams(1.0)  # All ones
@@ -236,6 +255,7 @@ fn conv2d_3x3_fixed(
    ```
 
 3. **Small Weight Matrices:**
+
    ```mojo
    alias EmbeddingWeights = FixedTensor[512, 128, DType.float32]
    var embeddings = EmbeddingWeights()
@@ -246,17 +266,20 @@ fn conv2d_3x3_fixed(
 **Already Implemented!** ✅
 
 The CI workflow (`.github/workflows/test-gradients.yml`) automatically:
+
 - Runs gradient checking on all PRs
 - Verifies backward passes are correct
 - Reports coverage statistics
 - Benchmarks SIMD performance
 
 **Trigger Conditions:**
+
 - Changes to `*_backward.mojo` files
 - Changes to activation or arithmetic files
 - Changes to training infrastructure
 
 **Monitoring:**
+
 - Check Actions tab in GitHub
 - Review gradient test results
 - Monitor coverage reports
@@ -328,6 +351,7 @@ struct LinearLayer(Differentiable, Parameterized, Serializable):
 ```
 
 **Benefits:**
+
 - Clear interface contracts
 - Zero runtime overhead (static dispatch)
 - Composable (can chain layers)
@@ -557,6 +581,7 @@ and provide significant value with minimal risk.
 ### Immediate (This Week)
 
 1. **Run all tests:**
+
    ```bash
    # Verify everything works
    mojo run benchmarks/bench_simd.mojo
@@ -571,24 +596,24 @@ and provide significant value with minimal risk.
 
 ### Short-term (Week 2)
 
-3. **Start SIMD integration:**
+1. **Start SIMD integration:**
    - Profile hot paths
    - Replace arithmetic in training loop
    - Benchmark improvements
 
-4. **Begin TypedTensor conversion:**
+2. **Begin TypedTensor conversion:**
    - Start with simple model (LeNet)
    - Measure before/after
    - Document process
 
 ### Medium-term (Week 3-4)
 
-5. **Expand integration:**
+1. **Expand integration:**
    - Add FixedTensor to kernels
    - Refactor layers with traits
    - Comprehensive benchmarking
 
-6. **Documentation:**
+2. **Documentation:**
    - Performance tracking log
    - Lessons learned document
    - Migration guide updates
@@ -599,9 +624,9 @@ and provide significant value with minimal risk.
 
 - **MOJO_CODEBASE_REVIEW.md** - Original review and recommendations
 - **MOJO_FIXES_IMPLEMENTED.md** - Implementation details
-- **Mojo Manual** - https://docs.modular.com/mojo/manual/
-- **Array API Standard** - https://data-apis.org/array-api/latest/
-- **CS231n Gradient Checking** - http://cs231n.github.io/neural-networks-3/#gradcheck
+- **Mojo Manual** - <https://docs.modular.com/mojo/manual/>
+- **Array API Standard** - <https://data-apis.org/array-api/latest/>
+- **CS231n Gradient Checking** - <http://cs231n.github.io/neural-networks-3/#gradcheck>
 
 ---
 

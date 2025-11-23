@@ -289,12 +289,12 @@ The local documentation in `/home/user/ml-odyssey/notes/issues/` describes a **c
 
 #### ❌ Indexing Operations (0/9)
 
-- **Missing**: __getitem__, __setitem__, take, take_along_axis, put, gather, scatter, where, masked_select
+- **Missing**: **getitem**, **setitem**, take, take_along_axis, put, gather, scatter, where, masked_select
 
 #### ✅ Utility Operations (2/18+)
 
 - **Broadcasting utils**: broadcast_shapes, are_shapes_broadcastable
-- **Missing**: copy, clone, diff, __len__, __bool__, __int__, __float__, __str__, __repr__, __hash__, __contains__, __divmod__, item, tolist, numel, dim, size, stride, is_contiguous, contiguous
+- **Missing**: copy, clone, diff, **len**, **bool**, **int**, **float**, **str**, **repr**, **hash**, **contains**, **divmod**, item, tolist, numel, dim, size, stride, is_contiguous, contiguous
 
 ### Critical Work Remaining
 
@@ -322,7 +322,7 @@ The local documentation in `/home/user/ml-odyssey/notes/issues/` describes a **c
 
 1. **Utility Operations** (Medium Priority):
    - Implement 16+ utility operations
-   - Critical for usability: __str__, __repr__, item, tolist
+   - Critical for usability: **str**, **repr**, item, tolist
 
 ### Key Deliverables Status
 
@@ -484,13 +484,13 @@ All changes pushed to: `claude/extensor-test-specification-01UBGH2iQS4sgfQrXUE5j
    - **Impact**: Brings 16 operations to full spec compliance
 
 1. **Indexing/Slicing Implementation** (Critical Feature):
-   - Implement __getitem__ and __setitem__ (~3-4 hours)
+   - Implement **getitem** and **setitem** (~3-4 hours)
    - Implement take, gather, where (~2-3 hours)
    - Create test_indexing.mojo (~2-3 hours)
    - **Impact**: Enables tensor manipulation - critical for neural networks
 
 1. **Utility Operations** (Usability):
-   - Implement __str__, __repr__ (~1 hour)
+   - Implement **str**, **repr** (~1 hour)
    - Implement item, tolist (~1 hour)
    - Implement numel, dim, size (~30 min)
    - **Impact**: Makes library usable for debugging and inspection

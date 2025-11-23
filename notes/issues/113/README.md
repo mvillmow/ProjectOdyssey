@@ -4,13 +4,13 @@
 
 Python dependency structure designed following ADR-001 language selection strategy.
 
-### Design Decision:
+### Design Decision
 
 - **File:** `tools/requirements.txt` for Python automation dependencies
 - **Separate from Mojo:** Mojo dependencies go in `magic.toml`
 - **Rationale:** ADR-001 specifies Python only for tooling with technical justification
 
-### Why Complete:
+### Why Complete
 
 The file `/tools/requirements.txt` already exists (587 bytes, 23 lines) with:
 
@@ -26,20 +26,20 @@ This structure follows ADR-001 requirements:
 1. Must document justification (header comments in each tool)
 1. Mojo for ML/AI implementations
 
-### Additional Python Dependencies:
+### Additional Python Dependencies
 
 The repository also has `/pyproject.toml` with:
 
 - Core: pytest, pytest-cov, pytest-timeout, pytest-xdist
 - Dev: pre-commit, safety, bandit, mkdocs, ruff, mypy
 
-### Success Criteria:
+### Success Criteria
 
 - ✅ Structure defined (requirements.txt + pyproject.toml)
 - ✅ ADR-001 compliant (Python for tooling, Mojo for ML)
 - ✅ Clear separation between tool deps and test deps
 
-### References:
+### References
 
 - `/tools/requirements.txt:1-23` (tool dependencies)
 - `/pyproject.toml:16-38` (test and dev dependencies)

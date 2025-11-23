@@ -13,6 +13,7 @@
 Location: `tests/configs/test_schema.py`
 
 Tests Failing:
+
 - `test_lenet5_model_config_validates`
 - `test_all_default_configs_validate`
 - `test_all_lenet5_configs_validate`
@@ -20,6 +21,7 @@ Tests Failing:
 **Root Cause**: Model configuration format mismatch (uses `architecture` dict, schema expects `layers` array)
 
 **FIXME**:
+
 ```
 FIXME: /home/mvillmow/ml-odyssey/configs/schemas/model.schema.yaml
   Update schema or decide on format standard
@@ -42,6 +44,7 @@ Location: `tests/scripts/test_lint_configs.py::test_batch_size_too_large`
 **Root Cause**: Performance threshold checking logic missing in linter
 
 **FIXME**:
+
 ```
 FIXME: /home/mvillmow/ml-odyssey/scripts/lint_configs.py
   In _check_performance_thresholds() or similar method:
@@ -53,6 +56,7 @@ FIXME: /home/mvillmow/ml-odyssey/scripts/lint_configs.py
 ```
 
 **Code Template**:
+
 ```python
 def _check_batch_size(self, batch_size):
     if batch_size and batch_size > 2048:
@@ -72,6 +76,7 @@ Location: `tests/scripts/test_lint_configs.py::test_correct_indentation`
 **Root Cause**: Test YAML missing required `training.batch_size` key
 
 **FIXME**:
+
 ```
 FIXME: /home/mvillmow/ml-odyssey/tests/scripts/test_lint_configs.py
   Line 77-82: Update test YAML to include all required keys
@@ -103,6 +108,7 @@ Location: `tests/test_validation.py::test_check_all_sections_present`
 **Root Cause**: Pattern matching not correctly extracting markdown section names
 
 **FIXME**:
+
 ```
 FIXME: /home/mvillmow/ml-odyssey/scripts/validation.py
   In check_required_sections() function:
@@ -124,6 +130,7 @@ FIXME: /home/mvillmow/ml-odyssey/scripts/validation.py
 ```
 
 **Code Template**:
+
 ```python
 import re
 

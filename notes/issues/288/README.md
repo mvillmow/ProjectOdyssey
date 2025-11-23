@@ -26,7 +26,7 @@ Design and document the confusion matrix component for detailed classification a
 
 ### Architecture Design
 
-### Confusion Matrix Structure:
+### Confusion Matrix Structure
 
 - **Matrix Shape**: NxN for N classes (square matrix)
 - **Row Convention**: Rows represent ground truth labels
@@ -34,7 +34,7 @@ Design and document the confusion matrix component for detailed classification a
 - **Cell Values**: Count of samples where ground_truth=row and prediction=column
 - **Data Type**: Integer counters (accumulate over batches)
 
-### Key Design Choices:
+### Key Design Choices
 
 1. **Accumulation Strategy**:
    - Support incremental updates for large datasets
@@ -50,12 +50,12 @@ Design and document the confusion matrix component for detailed classification a
 1. **Derived Metrics**:
    - Per-class precision: diagonal / column_sum
    - Per-class recall: diagonal / row_sum
-   - Per-class F1-score: 2 * (precision * recall) / (precision + recall)
+   - Per-class F1-score: 2 *(precision* recall) / (precision + recall)
    - Support for extracting these metrics without manual calculation
 
 ### API Design
 
-### Core Operations:
+### Core Operations
 
 ```mojo
 # Initialize confusion matrix

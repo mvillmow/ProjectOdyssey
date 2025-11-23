@@ -12,7 +12,7 @@ Enhance README.md to clearly communicate the project's current status (planning/
 
 A reviewer noted: *"the main README is missing an overview of what the outcome was of replacing Python with mojo for these old papers. Maybe some neat pictures or something are called for."*
 
-### Current state:
+### Current state
 
 - README describes repository structure and language selection
 - No clear statement that project is still in infrastructure phase

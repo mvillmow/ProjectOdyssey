@@ -6,11 +6,11 @@ Plan gitignore patterns for ml-odyssey (Mojo/Python mixed project).
 
 ## Planning Complete
 
-### Why Complete:
+### Why Complete
 
 The `.gitignore` file exists (20 lines) with comprehensive patterns for the repository.
 
-### Patterns Included:
+### Patterns Included
 
 1. **Pixi environments** (lines 1-3):
    - `.pixi/*` - Pixi package manager cache
@@ -33,20 +33,20 @@ The `.gitignore` file exists (20 lines) with comprehensive patterns for the repo
    - `*.swp` - Vim swap files
    - `.coverage` - Python coverage data (added in this session)
 
-### Design Decisions:
+### Design Decisions
 
 - Keep pixi config but ignore cache (allows environment reproducibility)
 - Standard Python patterns (**pycache**)
 - Project-specific patterns (logs/, worktrees/ for git worktree workflow)
 - Coverage data excluded (too large, regenerated on each test run)
 
-### Success Criteria:
+### Success Criteria
 
 - ✅ All necessary patterns included
 - ✅ Pixi environment properly configured
 - ✅ Build artifacts excluded
 - ✅ Working and tested (no untracked build files)
 
-### References:
+### References
 
 - `/.gitignore:1-20` (complete gitignore configuration)

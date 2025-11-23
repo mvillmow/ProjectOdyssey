@@ -26,8 +26,8 @@ fn test_relu_gradient() raises:
     print("Testing ReLU gradient...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input = full(shape, 2.0, DType.float32)  # Positive inputs
 
@@ -47,8 +47,8 @@ fn test_relu_negative_inputs() raises:
     print("Testing ReLU gradient (negative inputs)...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input = full(shape, -2.0, DType.float32)  # Negative inputs
 
@@ -68,8 +68,8 @@ fn test_relu_mixed_inputs() raises:
     print("Testing ReLU gradient (mixed inputs)...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input = zeros(shape, DType.float32)
     # Set some positive, some negative
@@ -94,8 +94,8 @@ fn test_sigmoid_gradient() raises:
     print("Testing Sigmoid gradient...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input = full(shape, 0.5, DType.float32)
 
@@ -116,8 +116,8 @@ fn test_tanh_gradient() raises:
     print("Testing Tanh gradient...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input = full(shape, 0.5, DType.float32)
 
@@ -143,8 +143,8 @@ fn test_add_gradient() raises:
     print("Testing Add gradient...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input_a = ones(shape, DType.float32)
     var input_b = ones(shape, DType.float32)
@@ -167,8 +167,8 @@ fn test_multiply_gradient() raises:
     print("Testing Multiply gradient...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input_a = full(shape, 2.0, DType.float32)
     var input_b = full(shape, 3.0, DType.float32)
@@ -196,8 +196,8 @@ fn test_composite_relu_multiply() raises:
     print("Testing composite gradient (multiply -> relu)...")
 
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var input_a = full(shape, 2.0, DType.float32)
     var input_b = full(shape, 3.0, DType.float32)
@@ -233,8 +233,8 @@ fn test_gradient_at_zero() raises:
     print("Testing gradient at zero...")
 
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 2
+    shape.append(2)
+    shape.append(2)
 
     var input = zeros(shape, DType.float32)
 
@@ -255,8 +255,8 @@ fn test_gradient_small_tensor() raises:
     print("Testing gradient on small tensor...")
 
     var shape = List[Int]()
-    shape[0] = 1
-    shape[1] = 1
+    shape.append(1)
+    shape.append(1)
 
     var input = full(shape, 2.0, DType.float32)
 

@@ -5,6 +5,7 @@
 ### Mojo Patterns Examples
 
 #### 1. trait_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 11 unique errors
 **Primary Issues**: Missing Tensor import, inout self syntax
@@ -24,6 +25,7 @@ Error 11: Unable to parse file
 ```
 
 #### 2. ownership_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 10 unique errors
 **Primary Issues**: Missing Tensor import, inout self syntax, deprecated owned
@@ -48,6 +50,7 @@ Error 10: Unable to parse file
 ```
 
 #### 3. simd_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 13 errors
 **Primary Issues**: Missing simdwidthof, missing Tensor, inout self
@@ -70,6 +73,7 @@ Error 3-13: "expected ')' in argument list"
 ### Performance Examples
 
 #### 4. simd_optimization.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 15+ errors (same pattern as simd_example)
 **Primary Issues**: Missing simdwidthof, missing Tensor, inout in params
@@ -84,6 +88,7 @@ Errors 3-15: "expected ')' in argument list"
 ```
 
 #### 5. memory_optimization.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 12+ errors
 **Primary Issues**: Missing simdwidthof, missing Tensor, inout in params
@@ -96,6 +101,7 @@ Errors distributed across lines 12-13, 24, 30, 48, 53
 ### Custom Layers Examples
 
 #### 6. attention_layer.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 3 critical errors
 **Primary Issues**: Module/Linear/Tensor not exported from shared.core
@@ -114,6 +120,7 @@ Error 3: package 'core' does not contain 'Tensor'
 ```
 
 #### 7. prelu_activation.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 2 critical errors
 **Primary Issues**: Module/Tensor not exported from shared.core
@@ -128,6 +135,7 @@ Error 2: package 'core' does not contain 'Tensor'
 ```
 
 #### 8. focal_loss.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 6 errors
 **Primary Issues**: Missing Tensor import, inout self syntax
@@ -144,9 +152,10 @@ Error 2-3: "expected ')' in argument list"
 ### Autograd Examples
 
 #### 9. simple_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 12+ errors
-**Primary Issues**: __all__ syntax, missing modules, trait conformance
+**Primary Issues**: **all** syntax, missing modules, trait conformance
 
 ```
 Error 1: expressions not supported at file scope
@@ -168,11 +177,13 @@ Errors 4-12: Cascading errors from above
 ```
 
 #### 10. linear_regression.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 12+ errors (same as simple_example)
 **Primary Issues**: Same root causes as simple_example
 
 #### 11. linear_regression_improved.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 13+ errors
 **Primary Issues**: Same as above plus deprecated 'let' keyword
@@ -189,6 +200,7 @@ Error N: use of unknown declaration 'let'
 ### Basic Usage Examples
 
 #### 12. basic_usage.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 12+ errors
 **Primary Issues**: Wrong module path, missing DynamicVector
@@ -207,6 +219,7 @@ Errors 2-12: use of unknown declaration 'DynamicVector'
 ```
 
 #### 13. test_arithmetic.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 3 critical errors
 **Primary Issues**: Wrong module path, missing DynamicVector
@@ -223,6 +236,7 @@ Errors 2-3: use of unknown declaration 'DynamicVector'
 ### Data Type Examples
 
 #### 14. fp8_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 15+ errors
 **Primary Issues**: @value decorator removed, inout self, string conversion
@@ -251,6 +265,7 @@ Errors 16-17: use of unknown declaration 'str'
 ```
 
 #### 15. bf8_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 18+ errors
 **Primary Issues**: Same as fp8_example, plus cascading from fp8.mojo issues
@@ -262,6 +277,7 @@ All errors from fp8_example.mojo plus:
 ```
 
 #### 16. integer_example.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 20+ errors
 **Primary Issues**: @value decorator, inout self, string conversion
@@ -278,6 +294,7 @@ Error pattern in integer_example.mojo:25
 ```
 
 #### 17. mixed_precision_training.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 14+ errors
 **Primary Issues**: inout in params, missing ExTensor methods, move semantics
@@ -308,6 +325,7 @@ Errors 6-8: ExTensor implicit copy errors
 ### Trait-Based Examples
 
 #### 18. trait_based_layer.mojo
+
 **Status**: FAIL - Compilation
 **Error Count**: 25+ errors
 **Primary Issues**: Multiple syntax issues, missing methods, trait conformance
@@ -429,8 +447,8 @@ To minimize cascading errors, fix in this order:
 1. **First**: Fix shared library files that are imported
    - shared/core/types/extensor.mojo
    - shared/core/types/fp8.mojo, bf8.mojo, integer.mojo, unsigned.mojo
-   - shared/core/__init__.mojo
-   - shared/autograd/__init__.mojo
+   - shared/core/**init**.mojo
+   - shared/autograd/**init**.mojo
    - shared/autograd/functional.mojo (let → var)
    - shared/training/mixed_precision.mojo (inout params)
 
@@ -469,4 +487,3 @@ done
 3. **5% of errors** require finding correct module locations
 4. **Framework fixes are prerequisite** - must complete before example fixes
 5. **Estimated time**: 14-22 hours total to fix all issues
-

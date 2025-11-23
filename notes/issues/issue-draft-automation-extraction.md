@@ -12,7 +12,7 @@ Evaluate whether to extract the automation framework (hierarchical planning + Gi
 
 A reviewer observed: *"There's really two projects going on here that could each stand on their own two feet. I wonder if it would be worthwhile to fork the automated GH interactions into their own GitHub template and focus on that as a repo of its own."*
 
-### Current state:
+### Current state
 
 - Unified repository mixing ML implementation goals with automation infrastructure
 - Automation framework has potential standalone value:

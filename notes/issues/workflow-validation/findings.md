@@ -20,6 +20,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 2 (gradient-tests, gradient-coverage)
 - Triggers: pull_request, push
 - Dependencies: gradient-coverage depends on gradient-tests
@@ -27,6 +28,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Actions: checkout@v4, prefix-dev/setup-pixi@v0.9.3
 
 **Validation Details**:
+
 - Proper YAML syntax
 - All required fields present
 - Correct trigger configuration
@@ -36,6 +38,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Proper conditional logic (if: failure(), if: success())
 
 **Key Features**:
+
 - Gradient checking tests on pull requests and main branch pushes
 - Coverage calculation with threshold checking (80%)
 - Clear success/failure messaging
@@ -52,6 +55,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 3 (test-mojo, test-python, coverage-report)
 - Triggers: pull_request, push, workflow_dispatch
 - Permissions: contents: read, pull-requests: write
@@ -59,6 +63,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Actions: checkout@93cb6efe..., setup-python@v6, setup-pixi@v0.9.3, cache@v4, upload-artifact@v5, download-artifact@v6, github-script@v8
 
 **Validation Details**:
+
 - Valid YAML syntax
 - All required fields present
 - Proper trigger configuration
@@ -70,6 +75,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Valid conditional steps
 
 **Key Features**:
+
 - Handles both Mojo and Python unit tests
 - Coverage threshold enforcement (80%)
 - Graceful handling of missing tests
@@ -88,6 +94,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 2 (test-integration with matrix, integration-report)
 - Triggers: pull_request (with type filter), push, workflow_dispatch
 - Permissions: contents: read, pull-requests: write
@@ -99,6 +106,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Actions: checkout@93cb6efe..., setup-pixi@v0.9.3, cache@v4, upload-artifact@v5, download-artifact@v6, github-script@v8
 
 **Validation Details**:
+
 - Valid YAML syntax
 - All required fields present
 - Proper trigger configuration with draft PR filtering
@@ -110,6 +118,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Proper artifact handling with failure artifact upload
 
 **Key Features**:
+
 - Matrix-based parallel execution (3 suites)
 - Draft PR filtering prevents unnecessary runs
 - Test fixture caching
@@ -128,6 +137,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 2 (test-mojo-comprehensive with matrix, test-report)
 - Triggers: pull_request, push, workflow_dispatch
 - Permissions: contents: read, pull-requests: write
@@ -152,6 +162,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Actions: checkout@93cb6efe..., setup-pixi@v0.9.3, cache@v4, upload-artifact@v5, download-artifact@v6, github-script@v8
 
 **Validation Details**:
+
 - Valid YAML syntax
 - All required fields present
 - Proper trigger configuration
@@ -164,6 +175,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Complex bash pattern expansion logic
 
 **Key Features**:
+
 - 16 parallel test groups for comprehensive coverage
 - Handles glob patterns (*.mojo files)
 - Handles subdirectory patterns (datasets/test_*.mojo)
@@ -184,6 +196,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 1 (validate-scripts)
 - Triggers: pull_request (with path filter), push (with path filter), workflow_dispatch
 - Path Filter: scripts/**/*.py, .github/workflows/script-validation.yml
@@ -193,6 +206,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Actions: checkout@v5, setup-pixi@v0.9.3
 
 **Validation Details**:
+
 - Valid YAML syntax
 - All required fields present
 - Proper trigger configuration with path filtering
@@ -204,6 +218,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Helpful error messages with fix instructions
 
 **Validation Stages** (10 steps total):
+
 1. Find Python scripts (generates output)
 2. Syntax validation (py_compile)
 3. Linting (ruff)
@@ -216,6 +231,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 10. Helpful message on failure
 
 **Key Features**:
+
 - Path filtering prevents unnecessary runs
 - Comprehensive multi-stage validation
 - Output script count for potential downstream use
@@ -235,14 +251,16 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 **Status**: ✅ VALID
 
 **Key Properties**:
+
 - Jobs: 1 (simd-benchmarks)
-- Triggers: schedule (cron: 0 2 * * 0 = Sundays 2 AM UTC), workflow_dispatch
+- Triggers: schedule (cron: 0 2 ** 0 = Sundays 2 AM UTC), workflow_dispatch
 - Permissions: contents: read, pull-requests: write
 - Execution Filter: Only on main branch for scheduled runs
 - Timeout: 15 minutes
 - Actions: checkout@93cb6efe..., setup-pixi@v0.9.3, cache@v4, upload-artifact@v5
 
 **Validation Details**:
+
 - Valid YAML syntax
 - All required fields present
 - Proper trigger configuration (schedule with valid cron)
@@ -255,6 +273,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 - Date formatting correct
 
 **Key Features**:
+
 - Automatic weekly execution (Sundays 2 AM UTC)
 - Manual dispatch capability
 - Benchmark result capturing with tee
@@ -273,6 +292,7 @@ All 6 GitHub Actions workflow files have been validated for syntactic correctnes
 ### Shared Patterns (Best Practices)
 
 All workflows implement:
+
 1. **Consistent naming conventions**: Clear, descriptive step and job names
 2. **Proper checkout**: Using pinned versions for reproducibility
 3. **Pixi integration**: Consistent setup using prefix-dev/setup-pixi@v0.9.3
@@ -388,6 +408,7 @@ No warnings detected.
 **Overall Status**: ✅ READY FOR DEPLOYMENT
 
 All workflows are:
+
 - Syntactically correct
 - Structurally sound
 - Following best practices

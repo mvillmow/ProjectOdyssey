@@ -8,6 +8,7 @@
 After completing all P0 critical fixes and beginning P1 work, a detailed code examination reveals that the original comprehensive review's refactoring estimates require significant recalibration. Many suggested improvements need architectural consideration rather than straightforward pattern application.
 
 **Status**:
+
 - ✅ P0 Critical Issues: 4/4 completed (100%)
 - ⚠️ P1 Major Issues: Require architectural redesign, not simple refactoring
 - ✅ P2 Minor Issues: Mostly documentation improvements, limited quick wins available
@@ -38,12 +39,14 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
 ```
 
 **Why Simple Dispatch Doesn't Work**:
+
 - `_get_float64()` does runtime type conversion (Int32 → Float64, Float32 → Float64, etc.)
 - Accumulation happens in Float64 regardless of input dtype
 - This prevents precision loss during accumulation
 - Elementwise dispatch pattern assumes same-dtype operations
 
 **Correct Approach**:
+
 - Parametrize entire function by dtype: `fn matmul[dtype: DType](...)`
 - Use dtype-specific accumulator
 - Requires significant function restructuring (not just pattern application)
@@ -72,12 +75,14 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
 ```
 
 **Why Simple Dispatch Doesn't Work**:
+
 - Broadcasting logic is dtype-agnostic (operates on indices)
 - Only the actual operation (`a_val + b_val`) is dtype-specific
 - Would need to parametrize the inner loop only
 - Requires refactoring into helper functions
 
 **Correct Approach**:
+
 - Extract operation kernel: `fn add_kernel[dtype: DType](a_val, b_val) -> Scalar[dtype]`
 - Keep broadcasting logic dtype-agnostic
 - Dispatch only the kernel
@@ -104,6 +109,7 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
 #### Test File Structure
 
 Actual test files found:
+
 ```
 tests/shared/core/
 ├── test_backward.mojo          - Already has backward pass tests
@@ -126,11 +132,13 @@ tests/shared/core/
 #### Revised Approach
 
 **Option A: Retrofit Existing Tests** (Recommended)
+
 - Add `check_gradient()` calls to existing backward pass tests
 - Estimated: 1-2 hours per test file (just adding validation)
 - Total: 10-15 hours (vs original 22 hours)
 
 **Option B: Comprehensive Rewrite**
+
 - Rewrite all tests to use gradient checking as primary validation
 - More invasive changes
 - Estimated: 20-30 hours
@@ -142,6 +150,7 @@ tests/shared/core/
 ### P2: Minor Improvements
 
 **Original Estimates**:
+
 - @always_inline: 1 hour, 15 functions
 - Docstrings: 6 hours, 23 functions
 - Unused imports: 1 hour, 8 files
@@ -151,6 +160,7 @@ tests/shared/core/
 #### @always_inline Candidates
 
 Investigation of `shape.mojo`, `arithmetic.mojo`:
+
 - Most functions are 50+ lines (not good candidates for `@always_inline`)
 - Only small wrapper functions qualify:
   - `expand_dims()` - 10 lines, wraps `unsqueeze()`
@@ -163,6 +173,7 @@ Investigation of `shape.mojo`, `arithmetic.mojo`:
 #### Missing Docstrings
 
 Need to actually count functions without docstrings across:
+
 - `arithmetic.mojo` - Functions seem documented
 - `shape.mojo` - Functions seem documented
 - `indexing.mojo` - **File doesn't exist**
@@ -173,6 +184,7 @@ Need to actually count functions without docstrings across:
 #### Unused Imports
 
 **Actual Findings**:
+
 - `conv.mojo:3` - `from collections.vector import DynamicVector, List`
   - `List` is unused (only `DynamicVector` is used)
 - Need to check other 7 files
@@ -192,15 +204,18 @@ Need to actually count functions without docstrings across:
 ### Quick Wins Available
 
 ✅ **@always_inline for wrappers** (30 min):
+
 - `expand_dims()` in shape.mojo
 - `ravel()` in shape.mojo
 - 3-5 others in various modules
 
 ✅ **Clean up unused imports** (30 min):
+
 - Remove `List` from conv.mojo
 - Check and clean 7 other files
 
 ✅ **Spot docstring improvements** (1-2 hours):
+
 - Add docstrings where truly missing
 - Improve unclear documentation
 
@@ -215,6 +230,7 @@ Need to actually count functions without docstrings across:
 **Options**:
 
 **A. Full Parametrization** (Recommended for New Code)
+
 - Make functions fully generic: `fn matmul[dtype: DType](...)`
 - Compile-time specialization
 - No runtime type conversion overhead
@@ -222,12 +238,14 @@ Need to actually count functions without docstrings across:
 - **Cons**: Requires rewriting existing code, ~25-35 hours
 
 **B. Hybrid Approach** (Pragmatic)
+
 - Keep `_get_float64()` for operations needing it (accumulation, broadcasting)
 - Use dtype dispatch for simple elementwise operations (already done)
 - **Pros**: Works with existing code, minimal refactoring
 - **Cons**: Some runtime overhead for type conversion
 
 **C. Status Quo** (Current State)
+
 - `_get_float64()` provides type-agnostic interface
 - Works correctly, slight overhead
 - **Pros**: No work needed, battle-tested
@@ -242,6 +260,7 @@ Need to actually count functions without docstrings across:
 **Answer**: Yes, but retrofit incrementally
 
 **Approach**:
+
 1. Add `check_gradient()` to critical tests first (loss, conv, matrix)
 2. Retrofit other tests over time
 3. Make it a requirement for new backward pass implementations
@@ -262,7 +281,7 @@ Need to actually count functions without docstrings across:
 
 ### Short-term (1-2 weeks, 10-15 hours)
 
-4. 📋 Retrofit gradient checking in critical test files:
+1. 📋 Retrofit gradient checking in critical test files:
    - `test_backward.mojo` (loss functions)
    - `test_conv.mojo` (conv2d backward)
    - `test_matrix.mojo` (matmul backward)
@@ -271,9 +290,9 @@ Need to actually count functions without docstrings across:
 
 ### Long-term (1-2 months, 20-30 hours)
 
-5. 📋 Consider dtype parametrization for new operations
-6. 📋 Document hybrid dtype strategy (ADR-005)
-7. 📋 Gradually retrofit remaining tests with gradient checking
+1. 📋 Consider dtype parametrization for new operations
+2. 📋 Document hybrid dtype strategy (ADR-005)
+3. 📋 Gradually retrofit remaining tests with gradient checking
 
 ### NOT Recommended
 
@@ -295,6 +314,7 @@ The original review used pattern matching (counting `_get_float64` calls) withou
 ### 2. Test File Organization
 
 The repository has multiple test organization patterns:
+
 - `test_backward.mojo` - Dedicated backward pass tests
 - `test_*_backward.mojo` - Operation-specific backward tests
 - Legacy test files
@@ -305,6 +325,7 @@ Understanding the structure is crucial for accurate estimates.
 ### 3. "Quick Wins" Aren't Always Available
 
 When reviewing for improvements:
+
 - **@always_inline**: Only helps for very small functions (<10 lines)
 - **Docstrings**: Most functions are already documented
 - **Unused imports**: Limited impact, but easy to fix
@@ -312,6 +333,7 @@ When reviewing for improvements:
 ### 4. Architectural Decisions > Pattern Application
 
 Some refactorings require strategic decisions:
+
 - **Performance vs. Maintainability**: Type conversion overhead vs. code simplicity
 - **Consistency vs. Pragmatism**: Full dtype parametrization vs. hybrid approach
 - **Coverage vs. Effort**: 100% gradient checking vs. critical paths first
@@ -331,22 +353,26 @@ Some refactorings require strategic decisions:
 ### Path to 90/100 (Realistic)
 
 **Quick Wins** (2 hours):
+
 - @always_inline: +0.5
 - Clean imports: +0.3
 - Docstrings: +0.7
 - **Subtotal**: 78.5/100
 
 **Gradient Checking Retrofit** (10-15 hours):
+
 - Critical tests with numerical validation: +5.0
 - **Subtotal**: 83.5/100
 
 **Documentation & Architecture** (5-8 hours):
+
 - ADR-005: Hybrid Dtype Strategy: +1.0
 - ADR-006: Gradient Checking Standards: +0.5
 - Code review guidelines: +0.5
 - **Subtotal**: 85.5/100
 
 **Remaining to 90/100** (20-25 hours):
+
 - Complete gradient checking adoption: +2.0
 - Edge case test coverage: +1.5
 - Performance documentation: +1.0

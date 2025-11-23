@@ -22,14 +22,14 @@ The Base Trainer infrastructure (issues #303-322) achieved 100% training capabil
 
 This phase completes the training utilities by adding:
 
-### Learning Rate Schedulers:
+### Learning Rate Schedulers
 
 - Step decay scheduler for periodic rate reduction
 - Cosine annealing scheduler for smooth decay
 - Warmup scheduler for stable training initialization
 - Unified scheduler API and composition support
 
-### Training Callbacks:
+### Training Callbacks
 
 - Checkpointing callback for model persistence
 - Early stopping callback to prevent overfitting

@@ -12,7 +12,7 @@ from tests.shared.conftest import (
 )
 from shared.data.datasets import TensorDataset
 from shared.data.loaders import BatchLoader
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================

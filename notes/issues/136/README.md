@@ -2,22 +2,22 @@
 
 This is a duplicate of issue #135 (Implementation phase).
 
-### Why Complete:
+### Why Complete
 
 The .gitattributes file is inherently integrated - git automatically uses it.
 
-### Integration Points:
+### Integration Points
 
 1. **Git:** Automatically reads .gitattributes for all git operations
 1. **GitHub:** Uses linguist attributes for syntax highlighting and stats
 1. **Merge Conflicts:** Binary merge attribute prevents pixi.lock conflicts
 1. **IDE:** Some IDEs use .gitattributes for language detection
 
-### No Additional Work Needed:
+### No Additional Work Needed
 
 Gitattributes files work automatically once committed to the repository. No separate packaging or integration steps required.
 
-### Success Criteria:
+### Success Criteria
 
 - ✅ File committed to repository
 - ✅ Git respects attributes (verified)
@@ -26,6 +26,6 @@ Gitattributes files work automatically once committed to the repository. No sepa
 
 **Status:** COMPLETE (integration is automatic)
 
-### References:
+### References
 
 - `/.gitattributes:1-6` (automatically integrated by git)

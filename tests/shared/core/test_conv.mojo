@@ -40,15 +40,15 @@ fn test_conv2d_initialization() raises:
 
     # Kernel shape: (out_channels, in_channels, kH, kW)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = kernel_h
-    kernel_shape[3] = kernel_w
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(kernel_h)
+    kernel_shape.append(kernel_w)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Bias shape: (out_channels,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Verify shapes
@@ -79,23 +79,23 @@ fn test_conv2d_output_shape() raises:
 
     # Create input: (1, 1, 8, 8)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = in_channels
-    input_shape[2] = in_h
-    input_shape[3] = in_w
+    input_shape.append(batch)
+    input_shape.append(in_channels)
+    input_shape.append(in_h)
+    input_shape.append(in_w)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = kh
-    kernel_shape[3] = kw
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(kh)
+    kernel_shape.append(kw)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Compute convolution: stride=1, padding=0
@@ -125,23 +125,23 @@ fn test_conv2d_with_padding() raises:
 
     # Create input: (1, 1, 6, 6)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = in_channels
-    input_shape[2] = in_h
-    input_shape[3] = in_w
+    input_shape.append(batch)
+    input_shape.append(in_channels)
+    input_shape.append(in_h)
+    input_shape.append(in_w)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = kh
-    kernel_shape[3] = kw
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(kh)
+    kernel_shape.append(kw)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Compute with padding=1
@@ -168,23 +168,23 @@ fn test_conv2d_with_stride() raises:
 
     # Create input: (1, 1, 8, 8)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = in_channels
-    input_shape[2] = 8
-    input_shape[3] = 8
+    input_shape.append(batch)
+    input_shape.append(in_channels)
+    input_shape.append(8)
+    input_shape.append(8)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = 3
-    kernel_shape[3] = 3
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(3)
+    kernel_shape.append(3)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Compute with stride=2
@@ -209,24 +209,24 @@ fn test_conv2d_numerical_correctness() raises:
     """
     # Create input: (1, 1, 1, 1) with value 1.0
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 1
-    input_shape[3] = 1
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(1)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 1, 1) with value 2.0
     var kernel_shape = List[Int]()
-    kernel_shape[0] = 1
-    kernel_shape[1] = 1
-    kernel_shape[2] = 1
-    kernel_shape[3] = 1
+    kernel_shape.append(1)
+    kernel_shape.append(1)
+    kernel_shape.append(1)
+    kernel_shape.append(1)
     var kernel = ones(kernel_shape, DType.float32)
     kernel._data.bitcast[Float32]()[0] = 2.0
 
     # Create bias: (1,) with value 0.5
     var bias_shape = List[Int]()
-    bias_shape[0] = 1
+    bias_shape.append(1)
     var bias = zeros(bias_shape, DType.float32)
     bias._data.bitcast[Float32]()[0] = 0.5
 
@@ -253,23 +253,23 @@ fn test_conv2d_multi_channel() raises:
 
     # Create input: (1, 2, 3, 3)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = in_channels
-    input_shape[2] = in_h
-    input_shape[3] = in_w
+    input_shape.append(batch)
+    input_shape.append(in_channels)
+    input_shape.append(in_h)
+    input_shape.append(in_w)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (3, 2, 2, 2)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = 2
-    kernel_shape[3] = 2
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(2)
+    kernel_shape.append(2)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (3,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Compute convolution
@@ -290,18 +290,18 @@ fn test_conv2d_no_bias() raises:
     """
     # Create input: (1, 1, 3, 3)
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 3
-    input_shape[3] = 3
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(3)
+    input_shape.append(3)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 2, 2)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = 1
-    kernel_shape[1] = 1
-    kernel_shape[2] = 2
-    kernel_shape[3] = 2
+    kernel_shape.append(1)
+    kernel_shape.append(1)
+    kernel_shape.append(2)
+    kernel_shape.append(2)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Compute without bias
@@ -330,23 +330,23 @@ fn test_conv2d_batched() raises:
 
     # Create input: (4, 1, 4, 4)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = in_channels
-    input_shape[2] = 4
-    input_shape[3] = 4
+    input_shape.append(batch)
+    input_shape.append(in_channels)
+    input_shape.append(4)
+    input_shape.append(4)
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 2, 2)
     var kernel_shape = List[Int]()
-    kernel_shape[0] = out_channels
-    kernel_shape[1] = in_channels
-    kernel_shape[2] = 2
-    kernel_shape[3] = 2
+    kernel_shape.append(out_channels)
+    kernel_shape.append(in_channels)
+    kernel_shape.append(2)
+    kernel_shape.append(2)
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
     var bias_shape = List[Int]()
-    bias_shape[0] = out_channels
+    bias_shape.append(out_channels)
     var bias = zeros(bias_shape, DType.float32)
 
     # Compute convolution

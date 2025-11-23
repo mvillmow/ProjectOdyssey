@@ -9,9 +9,11 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## Documents in This Audit
 
 ### 1. README.md (Main Report)
+
 **Purpose**: Executive summary and detailed failure analysis
 **Length**: ~17 KB (650+ lines)
 **Contents**:
+
 - Executive summary
 - Test execution results (all 23 test files)
 - 13 detailed failure categories
@@ -24,9 +26,11 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ---
 
 ### 2. CRITICAL-ISSUES.md (Risk & Priority Analysis)
+
 **Purpose**: Severity assessment and implementation strategy
 **Length**: ~13 KB (450+ lines)
 **Contents**:
+
 - P0/P1/P2/P3 priority matrix
 - Root cause analysis
 - Error correlation and cascading failures
@@ -39,9 +43,11 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ---
 
 ### 3. FIXME-GUIDE.md (Solution Patterns)
+
 **Purpose**: Before/after code examples for all fix categories
 **Length**: ~14 KB (500+ lines)
 **Contents**:
+
 - 13 fix categories with code examples
 - Pattern-based solutions
 - Implementation order (4 phases)
@@ -53,9 +59,11 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ---
 
 ### 4. LINE-BY-LINE-FIXES.md (Precise Fix Locations)
+
 **Purpose**: Exact line numbers and specific code changes
 **Length**: ~16 KB (600+ lines)
 **Contents**:
+
 - All 15 implementation/test files
 - Specific error at each line number
 - Exact code before/after
@@ -69,18 +77,23 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## Quick Navigation by Task
 
 ### "I need to understand what's broken"
+
 → Read: **README.md** (Executive Summary section, pages 1-3)
 
 ### "I need to know what to fix first"
+
 → Read: **CRITICAL-ISSUES.md** (Priority Matrix section)
 
 ### "I want to fix one category of errors"
+
 → Read: **FIXME-GUIDE.md** (Find your category, see before/after code)
 
 ### "I need to fix a specific line"
+
 → Read: **LINE-BY-LINE-FIXES.md** (Find your file, see exact changes)
 
 ### "I'm implementing all fixes"
+
 → Follow: **CRITICAL-ISSUES.md** (Recommended Fix Order, Implementation Checklist)
 
 ---
@@ -90,6 +103,7 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ### Pass/Fail Breakdown
 
 **Passing Tests** (4 files, 0 failures):
+
 1. test_base_dataset.mojo ✓
 2. test_base_loader.mojo ✓ (1 deprecation warning)
 3. test_parallel_loader.mojo ✓
@@ -98,6 +112,7 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 6. test_image_transforms.mojo ✓
 
 **Failing Tests** (19 files with compilation errors):
+
 1. test_datasets.mojo ✗ (no main function)
 2. test_tensor_dataset.mojo ✗ (TensorDataset not exported)
 3. test_file_dataset.mojo ✗ (ExTensor traits + str() missing)
@@ -201,6 +216,7 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 **Root Cause**: Imports test_augmentations.mojo which has 20+ compilation errors
 
 **Expected Coverage** (after all fixes):
+
 - Base dataset tests: 4
 - Base loader tests: 3
 - Parallel loader tests: 2
@@ -241,24 +257,29 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## Implementation Timeline
 
 ### Day 1 Morning (1 hour)
+
 - Fix @value decorators → 8 tests pass
 - Fix trait conformances → 4 more tests pass
 - Fix basic parameter ordering
 
 ### Day 1 Afternoon (1.5 hours)
+
 - Fix ExTensor memory management → 4 more tests pass
 - Implement ExTensor.num_elements() → 2 more tests pass
 
 ### Day 1 Late Afternoon (1.5 hours)
+
 - Fix struct inheritance → loaders pass
 - Fix dynamic traits → base loader works
 
 ### Day 2 Morning (1 hour)
+
 - Fix deprecated keywords
 - Add test main() functions
 - All 23 tests pass
 
 ### Day 2 Afternoon (30 min)
+
 - Run comprehensive suite
 - All 38 tests pass
 
@@ -267,21 +288,25 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## Document Cross-References
 
 ### From README.md
+
 - Detailed failure analysis → FIXME-GUIDE.md for solutions
 - Line-by-line fix locations → LINE-BY-LINE-FIXES.md
 - Priority information → CRITICAL-ISSUES.md
 - Testing strategy → See Phase definitions below
 
 ### From CRITICAL-ISSUES.md
+
 - Code examples → FIXME-GUIDE.md
 - Exact locations → LINE-BY-LINE-FIXES.md
 - Full analysis → README.md
 
 ### From FIXME-GUIDE.md
+
 - Exact line numbers → LINE-BY-LINE-FIXES.md
 - Full context → README.md categories 1-13
 
 ### From LINE-BY-LINE-FIXES.md
+
 - Fix patterns → FIXME-GUIDE.md
 - Why it matters → README.md categories
 - Implementation priority → CRITICAL-ISSUES.md
@@ -291,24 +316,28 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## How to Use These Documents
 
 ### For Test Engineers
+
 1. Start: README.md (understand what's broken)
 2. Prioritize: CRITICAL-ISSUES.md (what to fix first)
 3. Implement: FIXME-GUIDE.md (how to fix each category)
 4. Verify: Test against each passing test file to ensure no regressions
 
 ### For Implementation Engineers
+
 1. Start: CRITICAL-ISSUES.md (understand priorities)
 2. Find exact changes: LINE-BY-LINE-FIXES.md (go line by line)
 3. Understand patterns: FIXME-GUIDE.md (for similar errors)
 4. Context: README.md (understand full scope)
 
 ### For Architecture/Leads
+
 1. Start: CRITICAL-ISSUES.md (risk assessment and timeline)
 2. Review: README.md (detailed analysis)
 3. Scope: Summary tables in INDEX.md (this file)
 4. Plan: Implementation Timeline in CRITICAL-ISSUES.md
 
 ### For Code Review
+
 1. Use: LINE-BY-LINE-FIXES.md (exact before/after)
 2. Patterns: FIXME-GUIDE.md (validate pattern consistency)
 3. Complete: README.md (ensure no issues missed)
@@ -318,6 +347,7 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 ## Next Steps
 
 ### Immediate (Create GitHub Issues)
+
 - [ ] Create issue for @value deprecation fixes (P0)
 - [ ] Create issue for ExTensor memory management (P0)
 - [ ] Create issue for ExTensor.num_elements() (P0)
@@ -325,11 +355,13 @@ All audit documents are located in: `/home/mvillmow/ml-odyssey/notes/issues/data
 - [ ] Create issue for struct/inheritance refactoring (P1)
 
 ### Week 1
+
 - [ ] Implement all P0 and P1 fixes
 - [ ] Run all tests to verify
 - [ ] Add to CI/CD pipeline
 
 ### Week 2
+
 - [ ] Implement P2 and P3 fixes
 - [ ] Run comprehensive test suite
 - [ ] Ensure all 38 tests pass

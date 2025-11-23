@@ -258,14 +258,15 @@ experimental_modules = 60  # Lower for experimental
 
    ```
 
-2. Identify low-coverage files (red in report)
+1. Identify low-coverage files (red in report)
 
-3. Add tests for uncovered lines:
+2. Add tests for uncovered lines:
    - Focus on critical paths first
    - Test error conditions
    - Test edge cases
 
-4. Re-run locally to verify:
+3. Re-run locally to verify:
+
    ```bash
 
    pytest --cov=scripts --cov-fail-under=80
@@ -279,6 +280,7 @@ experimental_modules = 60  # Lower for experimental
 **Solution**:
 
 1. Check what changed in your PR:
+
    ```bash
 
    git diff main -- '*.py'
@@ -293,6 +295,7 @@ experimental_modules = 60  # Lower for experimental
 3. Add missing tests
 
 4. Verify coverage restored:
+
    ```bash
 
    pytest --cov=scripts
@@ -326,6 +329,7 @@ experimental_modules = 60  # Lower for experimental
 **Solution**:
 
 1. Check exclusion patterns in `pyproject.toml`:
+
    ```toml
 
    [tool.coverage.run]
@@ -336,6 +340,7 @@ experimental_modules = 60  # Lower for experimental
    ```
 
 2. Test pattern matching:
+
    ```bash
 
    coverage debug sys  # Show coverage.py config
@@ -343,6 +348,7 @@ experimental_modules = 60  # Lower for experimental
    ```
 
 3. Verify files are excluded:
+
    ```bash
 
    coverage report --show-missing
@@ -357,6 +363,7 @@ experimental_modules = 60  # Lower for experimental
 **Solutions**:
 
 1. **Parallelize tests**:
+
    ```bash
 
    pytest --cov=scripts -n auto  # Requires pytest-xdist
@@ -364,6 +371,7 @@ experimental_modules = 60  # Lower for experimental
    ```
 
 2. **Reduce coverage scope**:
+
    ```toml
 
    [tool.coverage.run]
@@ -372,11 +380,13 @@ experimental_modules = 60  # Lower for experimental
    ```
 
 3. **Skip coverage locally** (when not needed):
+
    ```bash
 
    pytest  # No --cov flag
 
    ```
+
 ```text
 
 **4. Developer Guidelines** (`docs/testing/writing-tests-for-coverage.md`):
@@ -457,18 +467,19 @@ def test_function_handles_empty_input():
 
    ```
 
-2. **Run with coverage**:
+1. **Run with coverage**:
+
    ```bash
 
    pytest tests/test_new.py --cov=scripts.new_module
 
    ```
 
-3. **Check coverage report**:
+2. **Check coverage report**:
    - Should show 100% for new code
    - If not, add tests for uncovered lines
 
-4. **Iterate** until coverage meets threshold
+3. **Iterate** until coverage meets threshold
 
 ## Common Patterns
 

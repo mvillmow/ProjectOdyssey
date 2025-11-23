@@ -12,7 +12,7 @@ Create comprehensive documentation that explains how to generate plan files for 
 
 A reviewer noted: *"it's not super clear how to generate a plan file. Some documentation on what is required in order for create_issues.py to parse it would be super helpful."*
 
-### Current state:
+### Current state
 
 - Plan file format exists (Template 1: 9 sections)
 - Format is documented in CLAUDE.md but scattered
@@ -70,7 +70,7 @@ Make plan file creation accessible to anyone unfamiliar with the project by prov
 
 ## Technical Requirements
 
-### Plan file structure (Template 1):
+### Plan file structure (Template 1)
 
 1. Component Name (heading)
 1. Overview (2-3 sentences)
@@ -82,7 +82,7 @@ Make plan file creation accessible to anyone unfamiliar with the project by prov
 1. Success Criteria (checklist)
 1. Notes (additional context)
 
-### What create_issues.py expects:
+### What create_issues.py expects
 
 - Valid markdown structure
 - All 9 sections present
@@ -93,14 +93,14 @@ Make plan file creation accessible to anyone unfamiliar with the project by prov
 
 ## Implementation Notes
 
-### Style guidance:
+### Style guidance
 
 - Follow blog post style: conversational but precise
 - Include "Why" explanations, not just "How"
 - Use real examples from the project where possible
 - Anticipate user questions and address proactively
 
-### Structure:
+### Structure
 
 ```markdown
 # Plan File Generation Guide

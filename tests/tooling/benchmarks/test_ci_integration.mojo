@@ -198,7 +198,7 @@ fn test_historical_tracking() raises:
 
     # Verify historical data properties
     assert_true(results_stored, "Results should be stored over time")
-    assert_equal(historical_data.size(), 5, "Should have 5 historical records")
+    assert_equal(len(historical_data), 5, "Should have 5 historical records")
     assert_true(trends_calculable, "Trends should be calculable from data")
 
 
@@ -249,7 +249,7 @@ fn test_manual_benchmark_trigger() raises:
     # Verify manual trigger capabilities
     assert_true(workflow_dispatch_enabled, "workflow_dispatch should be enabled")
     assert_true(manual_trigger_supported, "Manual triggers should be supported")
-    assert_equal(trigger_options.size(), 2, "Should support multiple options")
+    assert_equal(len(trigger_options), 2, "Should support multiple options")
     assert_true(len(trigger_options[0]) > 0, "Options should be non-empty")
 
 

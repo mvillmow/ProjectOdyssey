@@ -56,6 +56,7 @@ grad_mean += grad_var * (Float32(-2.0) * Float32(0.0))
 ```
 
 Which is:
+
 ```
 grad_mean += (∂L/∂σ²) * (∂σ²/∂μ)
            = grad_var * (-2.0 * E[x - μ])

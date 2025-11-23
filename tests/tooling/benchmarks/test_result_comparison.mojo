@@ -200,9 +200,9 @@ fn test_missing_baseline_benchmark() raises:
 
     # Verify we can detect missing benchmarks
     var missing_found = false
-    for i in range(current_list.size()):
+    for i in range(len(current_list)):
         var found = false
-        for j in range(baseline_list.size()):
+        for j in range(len(baseline_list)):
             if current_list[i] == baseline_list[j]:
                 found = true
                 break
@@ -256,7 +256,7 @@ fn test_comparison_report_generation() raises:
     report.append("Improvements: " + String(improvements_count))
 
     # Verify report contains required sections
-    assert_equal(report.size(), 4, "Report should have 4 sections")
+    assert_equal(len(report), 4, "Report should have 4 sections")
     assert_true(len(report[0]) > 0, "Report header should exist")
     assert_true(len(report[1]) > 0, "Report should include total count")
 

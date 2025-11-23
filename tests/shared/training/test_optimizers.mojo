@@ -203,7 +203,7 @@ fn test_adam_initialization() raises:
     """
     # Test that adam_step accepts all hyperparameters
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var m = zeros(shape, DType.float32)
@@ -240,7 +240,7 @@ fn test_adam_parameter_update() raises:
     This is a CRITICAL test for Adam correctness.
     """
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -279,7 +279,7 @@ fn test_adam_bias_correction() raises:
     This is CRITICAL for Adam's fast convergence in early training.
     """
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -485,7 +485,7 @@ fn test_sgd_matches_pytorch() raises:
     """
     # Initial parameters
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
     params._data.bitcast[Float32]()[1] = 2.0
@@ -554,7 +554,7 @@ fn test_adam_matches_pytorch() raises:
     """
     # Initial parameters
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
     params._data.bitcast[Float32]()[1] = 2.0

@@ -26,7 +26,7 @@ This document summarizes the proposed response through three GitHub issues.
 
 **What it solves:** Makes plan file creation accessible through comprehensive tutorial, templates, and examples.
 
-### Deliverables:
+### Deliverables
 
 - Comprehensive guide at `notes/review/plan-file-guide.md`
 - Copyable template at `.templates/plan-template.md`
@@ -49,7 +49,7 @@ This document summarizes the proposed response through three GitHub issues.
 
 **What it solves:** Clarifies that project is in infrastructure phase while articulating vision for eventual outcomes.
 
-### Deliverables:
+### Deliverables
 
 - New "Current Status" section (infrastructure phase)
 - New "Vision & Expected Outcomes" section (10-100x speedups)
@@ -73,7 +73,7 @@ This document summarizes the proposed response through three GitHub issues.
 
 **What it solves:** Makes informed decision about whether to extract automation framework as standalone repository.
 
-### Deliverables:
+### Deliverables
 
 - ADR-002 documenting decision and rationale
 - Trade-off analysis of extraction vs unified approaches
@@ -92,13 +92,13 @@ This document summarizes the proposed response through three GitHub issues.
 
 ### Why This Approach
 
-### Chief Architect perspective:
+### Chief Architect perspective
 
 1. **Address immediate barriers first** (Issue #1) - Removes contributor friction
 1. **Set clear expectations** (Issue #2) - Prevents continued confusion
 1. **Make strategic decisions deliberately** (Issue #3) - No rush, gather data first
 
-### Alignment with project principles:
+### Alignment with project principles
 
 - **KISS:** Simple documentation improvements before complex architectural changes
 - **YAGNI:** Don't extract automation until we know it's valuable standalone

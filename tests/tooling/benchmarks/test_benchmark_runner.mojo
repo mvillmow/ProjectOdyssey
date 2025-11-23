@@ -76,7 +76,7 @@ fn test_multiple_iterations() raises:
         results.append(BenchmarkResult("iteration_test", duration, 100.0))
 
     # Verify we have all 5 results
-    assert_equal(results.size(), 5, "Should collect all 5 iteration results")
+    assert_equal(len(results), 5, "Should collect all 5 iteration results")
 
     # Verify first and last have different values (for statistics)
     assert_not_equal(
@@ -132,8 +132,8 @@ fn test_deterministic_execution() raises:
         results2.append(10.5)
 
     # Verify results are identical
-    assert_equal(results1.size(), results2.size(), "Should have same number of results")
-    for i in range(results1.size()):
+    assert_equal(len(results1), len(results2), "Should have same number of results")
+    for i in range(len(results1)):
         assert_equal(results1[i], results2[i], "Results should be identical with same seed")
 
 
@@ -222,10 +222,10 @@ fn test_json_output_format() raises:
     results.append(BenchmarkResult("bench_3", 15.7, 150.0, 15.0))
 
     # Verify we have all required fields present
-    assert_equal(results.size(), 3, "Should have 3 benchmarks")
+    assert_equal(len(results), 3, "Should have 3 benchmarks")
 
     # Verify each result has required fields for JSON
-    for i in range(results.size()):
+    for i in range(len(results)):
         var result = results[i]
         assert_true(len(result.name) > 0, "Name should be present")
         assert_greater(Float32(result.duration_ms), Float32(0.0), "Duration should be positive")

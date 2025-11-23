@@ -1,6 +1,7 @@
 # Foundation Tests - Quick Fix Guide
 
 ## Status
+
 - **Tests Passing**: 154/156 (98.7%)
 - **Tests Failing**: 2
 - **Tests Skipped**: 10 (intentional, not failures)
@@ -21,14 +22,16 @@ Two tests fail because there are extra directories in `/docs/`:
 ```
 
 ### Failing Tests
+
 1. `test_doc_structure.py::TestDocumentationStructure::test_no_unexpected_directories`
 2. `test_doc_structure.py::TestDocumentationHierarchy::test_tier_count`
 
 ## The Fix
 
-### Choose One Option:
+### Choose One Option
 
 #### Option A: Delete (Recommended if not needed)
+
 ```bash
 rm -rf /home/mvillmow/ml-odyssey/docs/backward-passes/
 rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
@@ -37,6 +40,7 @@ rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
 **Note**: `backward-passes/` has restricted permissions (700). Check contents before deleting.
 
 #### Option B: Reorganize (If content should be preserved)
+
 ```bash
 # Move content to appropriate tier
 # Examples:
@@ -53,17 +57,20 @@ pytest tests/foundation/docs/test_doc_structure.py -v
 ```
 
 Expected result:
+
 ```
 ===== 24 passed in 0.06s =====
 (14 passed from structure tests, 10 skipped from tier completion tests)
 ```
 
 Or run all foundation tests:
+
 ```bash
 pytest tests/foundation/ -v --tb=short
 ```
 
 Expected result:
+
 ```
 ===== 156 passed, 10 skipped in ~0.5s =====
 ```
@@ -71,17 +78,20 @@ Expected result:
 ## Files to Modify
 
 Only these 2 items need action:
+
 - [ ] `/home/mvillmow/ml-odyssey/docs/backward-passes/` - DELETE or MOVE
 - [ ] `/home/mvillmow/ml-odyssey/docs/extensor/` - DELETE or MOVE
 
 ## Optional: Enable Skipped Tests
 
 To enable 5 skipped tests in tier 1, create:
+
 ```bash
 touch /home/mvillmow/ml-odyssey/docs/getting-started/first-paper.md
 ```
 
 Add content:
+
 ```markdown
 # Getting Started with Your First Paper
 
@@ -91,6 +101,7 @@ Add content:
 ```
 
 This will enable:
+
 - test_first_paper_exists
 - test_first_paper_has_title
 - test_first_paper_has_tutorial

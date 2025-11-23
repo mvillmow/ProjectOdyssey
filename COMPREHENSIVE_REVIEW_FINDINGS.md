@@ -13,7 +13,7 @@ This comprehensive review evaluated the ML Odyssey Mojo-based AI research platfo
 ### Critical Findings Requiring Immediate Attention
 
 1. **🔴 CRITICAL (MOJO-001)**: Use-after-free vulnerability in ExTensor.reshape() and slice() - **memory corruption risk**
-2. **🔴 CRITICAL (MOJO-002)**: Double-free risk in ExTensor.__del__() for tensor views
+2. **🔴 CRITICAL (MOJO-002)**: Double-free risk in ExTensor.**del**() for tensor views
 3. **🔴 CRITICAL (DATA-001)**: Padding data loss in to_mxfp4/to_nvfp4 - **silent tensor size corruption**
 4. **🔴 CRITICAL (DATA-002)**: Missing size tracking in from_mxfp4/from_nvfp4 - **cannot restore dimensions**
 5. **🔴 CRITICAL (ALGO-001)**: E4M3 subnormal scale encoding uses wrong scaling factor (128 vs 512) - causes **4× quantization error** in NVFP4
@@ -69,21 +69,25 @@ This comprehensive review evaluated the ML Odyssey Mojo-based AI research platfo
 **Problem**: NVFP4 E4M3 scale encoding uses incorrect scaling factor causing 4× quantization error.
 
 **Current (Wrong)**:
+
 ```mojo
 var mantissa = int(scale * 128.0)  # ❌ Off by factor of 4
 ```
 
 **Expected (Paper Spec)**:
+
 ```mojo
 var mantissa = int(scale * 512.0)  # ✅ Correct per paper formula
 ```
 
 **Impact**:
+
 - All NVFP4 scales in range [2^-7, 2^-6) have 4× quantization error
 - Affects gradient compression accuracy
 - Research results non-reproducible with reference implementations
 
 **Verification Example**:
+
 - Input scale: 0.01
 - Current: mantissa=1 → reconstructed=0.00195 (5.1× error)
 - Expected: mantissa=5 → reconstructed=0.00977 (2.4× error)
@@ -100,17 +104,20 @@ var mantissa = int(scale * 512.0)  # ✅ Correct per paper formula
 **Problem**: Linear Congruential Generator (LCG) normalization has incorrect type casting.
 
 **Current (Problematic)**:
+
 ```mojo
 var random_val = Float32(rng_state.cast[DType.uint64]()) / Float32(0xFFFFFFFF)
 # ^^^ Unnecessary uint64 cast, divisor off-by-1
 ```
 
 **Expected (Standard Practice)**:
+
 ```mojo
 var random_val = Float32(rng_state >> 8) / Float32(16777216.0)  # Use upper 24 bits
 ```
 
 **Issues**:
+
 1. Unnecessary uint64 cast (potential bias)
 2. Divisor uses 2^32-1 instead of 2^32 (rare values > 1.0)
 3. LCG lower bits have known statistical biases
@@ -127,12 +134,14 @@ var random_val = Float32(rng_state >> 8) / Float32(16777216.0)  # Use upper 24 b
 **Problem**: Computing 2^exponent using loop-based multiplication accumulates error.
 
 **Current (Inefficient)**:
+
 ```mojo
 for _ in range(exponent):
     result *= 2.0  # Accumulates error, O(|exponent|)
 ```
 
 **Expected**:
+
 ```mojo
 return pow(2.0, Float32(exponent))  # Exact, O(1)
 ```
@@ -177,6 +186,7 @@ return pow(2.0, Float32(exponent))  # Exact, O(1)
 | Utility functions | 1712-1759 | `calculate_max_batch_size()` |
 
 **Impact**:
+
 - Difficult to test (12 responsibilities × dtype combinations)
 - Violates Open-Closed Principle (every new dtype requires editing core class)
 - Hard to maintain (changes cascade across responsibilities)
@@ -210,6 +220,7 @@ struct ExTensor(Movable):
 ```
 
 **Benefits**:
+
 - Single Responsibility Principle compliance
 - Open-Closed Principle (new types via plugins)
 - Easier testing (isolated components)
@@ -224,6 +235,7 @@ struct ExTensor(Movable):
 **Problem**: Mixed parent reference formats break navigation.
 
 **Current (Inconsistent)**:
+
 ```markdown
 [Parent](../../README.md)     # Some files
 [Parent](../plan.md)           # Other files
@@ -231,6 +243,7 @@ None (top-level)               # Top-level sections
 ```
 
 **Expected**:
+
 ```markdown
 # Top-level (Sections 01-06): None (top-level)
 # All subsections: [../plan.md](../plan.md)
@@ -248,6 +261,7 @@ None (top-level)               # Top-level sections
 **Problem**: 6 orchestrators for limited codebase creates coordination overhead.
 
 **Recommendation**: Consolidate to 4:
+
 - Merge CI/CD → Foundation (both infrastructure)
 - Merge Tooling → Shared Library (both implementation support)
 - Defer Agentic Workflows (circular dependency)
@@ -290,6 +304,7 @@ None (top-level)               # Top-level sections
 **Severity**: Critical | **Effort**: Small | **Priority**: P0
 
 **Untested Functions**:
+
 - Lines 56-139: `from_float32()` (E2M1 encoding)
 - Lines 141-178: `to_float32()` (E2M1 decoding)
 - Lines 180-194: String representations
@@ -298,6 +313,7 @@ None (top-level)               # Top-level sections
 **Impact**: Base type for all FP4 implementations has no direct tests.
 
 **Test Needed**:
+
 ```mojo
 fn test_fp4_e2m1_all_representable_values() raises:
     """Test all 16 E2M1 bit patterns."""
@@ -317,6 +333,7 @@ fn test_fp4_e2m1_all_representable_values() raises:
 **Severity**: Critical | **Effort**: Large | **Priority**: P0
 
 **40+ Untested Operators**:
+
 - Addition, subtraction, multiplication, division (4 operators × 2 types)
 - Negation (1 operator × 2 types)
 - Comparisons: ==, !=, <, <=, >, >= (6 operators × 2 types)
@@ -332,11 +349,13 @@ fn test_fp4_e2m1_all_representable_values() raises:
 **Severity**: Critical | **Effort**: Small | **Priority**: P0
 
 **Missing Tests**:
+
 - `E8M0Scale.from_float32(0.0)` behavior
 - `E4M3Scale.from_float32(0.0)` behavior
 - Block with all zeros (what happens to scale?)
 
 **Current Code**:
+
 ```mojo
 var scale_val = max_abs / 6.0
 if scale_val < 1e-10:
@@ -368,7 +387,7 @@ if scale_val < 1e-10:
 
 **Executive Summary**: Solid FP4 implementations with significant code duplication (400+ lines) and performance issues (loop-based exponentiation). One critical RNG distribution issue affects stochastic rounding correctness.
 
-### Key Findings:
+### Key Findings
 
 - **IMPL-001** (P1): Loop-based exponent calculation (inefficient, 10-20x slower)
 - **IMPL-002** (P1): Inefficient power-of-2 computation using loops
@@ -385,16 +404,17 @@ if scale_val < 1e-10:
 
 **🚨 CRITICAL MEMORY SAFETY BUGS FOUND**
 
-### 4 Critical P0 Issues:
+### 4 Critical P0 Issues
 
 - **MOJO-001** (P0): **Use-after-free in reshape()/slice()** - Views share parent's pointer but parent can be destroyed
-- **MOJO-002** (P0): **Double-free risk in __del__()** - Fragile `_is_view` flag can cause heap corruption
+- **MOJO-002** (P0): **Double-free risk in **del**()** - Fragile `_is_view` flag can cause heap corruption
 - **MOJO-003** (P0): **Missing lifetime tracking** - No reference counting, views can outlive parents
 - **MOJO-004** (P0): **Memory leak in view creation error path** - Exception between allocation and free() leaks memory
 
 **Immediate Action Required**: **DISABLE tensor views** (reshape/slice) or implement reference counting. Current implementation is **unsafe for production**.
 
-### Additional Findings:
+### Additional Findings
+
 - **MOJO-005** (P1): Missing `__copyinit__` - accidental shallow copies risk double-free
 - **MOJO-006** (P1): Suboptimal ownership in operators (unnecessary copies)
 - **MOJO-007-014**: SIMD alignment, RNG quality, padding documentation issues
@@ -407,21 +427,22 @@ if scale_val < 1e-10:
 
 **Executive Summary**: Documentation gaps affect developer productivity and research reproducibility. Critical missing elements: research paper citations, mathematical notation explanations, API usage examples.
 
-### Critical Gaps (P0):
+### Critical Gaps (P0)
 
 - **DOC-001** (P0): Missing "Microscaling Data Formats" paper full citation (no DOI, arXiv link)
 - **DOC-002** (P0): Research paper references incomplete across implementations
 - **DOC-003** (P0): ExTensor FP4 conversion methods lack usage examples
 - **DOC-004** (P0): Incomplete error documentation for conversions
 
-### High Priority (P1):
+### High Priority (P1)
 
 - **DOC-005-007**: Mathematical notation (E2M1, E4M3, E5M2) not explained
 - **DOC-008-009**: Stochastic rounding algorithm formula not documented
 - **DOC-010-011**: Block size design rationale missing (why 32 vs 16 elements?)
 - **DOC-012-013**: Type constraints (exactly 32/16 values) not clear in docs
 
-### Quick Wins (High Impact, Low Effort):
+### Quick Wins (High Impact, Low Effort)
+
 1. Add paper citation with arXiv link (15 minutes)
 2. Explain mathematical notation formats (20 minutes)
 3. Add type constraint warnings (10 minutes)
@@ -435,7 +456,7 @@ if scale_val < 1e-10:
 
 **🚨 CRITICAL DATA CORRUPTION RISKS IDENTIFIED**
 
-### 5 Critical P0 Issues:
+### 5 Critical P0 Issues
 
 - **DATA-001** (P0): **Padding data loss** - Non-aligned tensors padded with zeros, size grows (33→64 elements)
 - **DATA-002** (P0): **Missing size tracking** - from_mxfp4/nvfp4 cannot restore original dimensions
@@ -444,13 +465,14 @@ if scale_val < 1e-10:
 - **DATA-005** (P0): **FP16→FP32 implicit conversion** - Different quantization path causes inconsistency
 
 **Data Corruption Example**:
+
 ```
 Original: [1.0, 2.0, ..., 33rd_value] (33 elements)
 to_mxfp4(): Pads to 64 elements (2 blocks × 32)
 from_mxfp4(): Returns 64 elements (original size LOST!)
 ```
 
-### Major Issues (P1):
+### Major Issues (P1)
 
 - **DATA-006** (P1): Multi-dimensional tensors lose shape (flattened)
 - **DATA-007** (P1): from_fp8() doesn't validate data contains valid FP8
@@ -512,54 +534,54 @@ from_mxfp4(): Returns 64 elements (original size LOST!)
 
 #### 1B. Data Corruption Fixes (BLOCKING QUANTIZATION USE)
 
-3. **DATA-001-002**: Implement QuantizedTensor wrapper with metadata
+1. **DATA-001-002**: Implement QuantizedTensor wrapper with metadata
    - **Why**: Prevents silent tensor dimension corruption
    - **Effort**: 1 week
    - **Impact**: Preserves original size/shape through quantization
 
-4. **DATA-003-004**: Add dtype validation and bounds checking
+2. **DATA-003-004**: Add dtype validation and bounds checking
    - **Why**: Prevents bitcast corruption and buffer overruns
    - **Effort**: 2 days
    - **Files**: All conversion methods in `extensor.mojo`
 
-5. **DATA-005**: Fix FP16→FP32 implicit conversion
+3. **DATA-005**: Fix FP16→FP32 implicit conversion
    - **Why**: Consistent quantization path
    - **Effort**: 3 hours
 
 #### 1C. Algorithm Correctness Fixes
 
-6. **ALGO-001**: Fix E4M3 mantissa calculation (128 → 512)
+1. **ALGO-001**: Fix E4M3 mantissa calculation (128 → 512)
    - **Why**: 4× quantization error blocks research validity
    - **Effort**: 30 minutes
    - **File**: `nvfp4.mojo:85`
 
-7. **ALGO-002**: Fix stochastic RNG normalization
+2. **ALGO-002**: Fix stochastic RNG normalization
    - **Why**: Gradient compression bias
    - **Effort**: 1 hour
    - **Files**: `mxfp4.mojo:318-320`, `nvfp4.mojo:365-368`
 
-8. **IMPL-003**: Fix RNG distribution (remove unnecessary cast)
+3. **IMPL-003**: Fix RNG distribution (remove unnecessary cast)
    - **Why**: Correct probability distribution
    - **Effort**: 1 hour
 
 #### 1D. Critical Testing Gaps
 
-9. **TEST-010**: Add FP4_E2M1 all-values test
+1. **TEST-010**: Add FP4_E2M1 all-values test
    - **Why**: Base type 0% coverage
    - **Effort**: 2 hours
 
-10. **TEST-002**: Add scale=0 edge case tests
+2. **TEST-002**: Add scale=0 edge case tests
     - **Effort**: 1 hour
 
-11. **TEST-003**: Add NaN/Infinity handling tests
+3. **TEST-003**: Add NaN/Infinity handling tests
     - **Effort**: 2 hours
 
-12. **TEST-001**: Add all-negative block tests
+4. **TEST-001**: Add all-negative block tests
     - **Effort**: 1 hour
 
 #### 1E. Critical Documentation
 
-13. **DOC-001-004**: Add paper citations, math notation, API examples
+1. **DOC-001-004**: Add paper citations, math notation, API examples
     - **Why**: Research reproducibility and developer unblocking
     - **Effort**: 2-3 hours
 
@@ -573,24 +595,24 @@ from_mxfp4(): Returns 64 elements (original size LOST!)
 
 **Timeline**: Week 3-4
 
-9. **ARCH-001**: Refactor ExTensor (SRP compliance)
+1. **ARCH-001**: Refactor ExTensor (SRP compliance)
    - **Effort**: 2-3 weeks
    - **Impact**: Unblocks new types and operations
    - **Dependencies**: Blocks ARCH-004, ARCH-005
 
-10. **ARCH-005**: Extract tensor conversions (converter pattern)
+2. **ARCH-005**: Extract tensor conversions (converter pattern)
     - **Effort**: 1 week
     - **Synergistic with**: ARCH-001
 
-11. **ALGO-003**: Fix scale computation (use pow())
+3. **ALGO-003**: Fix scale computation (use pow())
     - **Effort**: 1-2 hours
     - **Impact**: Improves precision
 
-12. **TEST-006**: Improve stochastic statistical tests
+4. **TEST-006**: Improve stochastic statistical tests
     - **Effort**: 3-4 hours
     - **Impact**: Validates RNG quality
 
-13. **TEST-009**: Add multi-round trip stability tests
+5. **TEST-009**: Add multi-round trip stability tests
     - **Effort**: 2 hours
 
 ---
@@ -599,10 +621,10 @@ from_mxfp4(): Returns 64 elements (original size LOST!)
 
 **Timeline**: Month 2
 
-14. **ARCH-003**: Consolidate orchestrators (6 → 4)
-15. **ARCH-004**: Introduce TensorConverter trait
-16. **ARCH-006**: Create automated plan validation
-17. **TEST-007** to **TEST-015**: Complete test coverage
+1. **ARCH-003**: Consolidate orchestrators (6 → 4)
+2. **ARCH-004**: Introduce TensorConverter trait
+3. **ARCH-006**: Create automated plan validation
+4. **TEST-007** to **TEST-015**: Complete test coverage
 
 ---
 
@@ -610,8 +632,8 @@ from_mxfp4(): Returns 64 elements (original size LOST!)
 
 **Timeline**: Month 3
 
-18. **ARCH-007**: Document review specialist boundaries
-19. Other documentation and polish tasks
+1. **ARCH-007**: Document review specialist boundaries
+2. Other documentation and polish tasks
 
 ---
 
@@ -704,6 +726,7 @@ The following review areas require GitHub issue creation before agents can proce
 
 **Blocked**: Agent requires GitHub issue number
 **Scope**:
+
 - Mojo language idioms (fn vs def, struct vs class)
 - Ownership patterns (owned/borrowed/inout)
 - SIMD usage correctness
@@ -718,6 +741,7 @@ The following review areas require GitHub issue creation before agents can proce
 
 **Blocked**: Agent requires GitHub issue number
 **Scope**:
+
 - Memory safety (use-after-free, buffer overflows, leaks)
 - Ownership and lifetime management
 - Tensor view lifetimes
@@ -732,6 +756,7 @@ The following review areas require GitHub issue creation before agents can proce
 
 **Blocked**: Agent requires GitHub issue number
 **Scope**:
+
 - Docstring completeness
 - Research paper citations
 - Mathematical notation clarity
@@ -746,6 +771,7 @@ The following review areas require GitHub issue creation before agents can proce
 
 **Blocked**: Agent requires GitHub issue number
 **Scope**:
+
 - Tensor conversion correctness
 - Block padding and alignment
 - Multi-dimensional tensor support
@@ -761,6 +787,7 @@ The following review areas require GitHub issue creation before agents can proce
 ### Immediate Actions (This Week)
 
 1. **Create GitHub issue** for this comprehensive review:
+
    ```bash
    gh issue create \
      --title "[Review] Comprehensive Platform Review - FP4/FP8 Implementation" \
@@ -785,21 +812,21 @@ The following review areas require GitHub issue creation before agents can proce
 
 ### Week 2-4 Actions
 
-5. **Complete pending reviews**:
+1. **Complete pending reviews**:
    - Create GitHub issue for code review
    - Re-launch blocked agents (Implementation, Mojo, Documentation, Data Engineering)
    - Synthesize additional findings
 
-6. **Begin ExTensor refactoring** (ARCH-001):
+2. **Begin ExTensor refactoring** (ARCH-001):
    - Create design document
    - Break into subtasks
    - Coordinate with Chief Architect
 
 ### Long-term (Month 2-3)
 
-7. **Architecture improvements** (ARCH-003, ARCH-004, ARCH-005)
-8. **Complete test coverage** (remaining TEST-* issues)
-9. **Documentation polish**
+1. **Architecture improvements** (ARCH-003, ARCH-004, ARCH-005)
+2. **Complete test coverage** (remaining TEST-* issues)
+3. **Documentation polish**
 
 ---
 
@@ -823,12 +850,14 @@ Track these metrics to measure improvement:
 ### A. Complete Issue List
 
 **Algorithm Correctness (4 issues)**:
+
 - ALGO-001 (P0): E4M3 subnormal encoding error
 - ALGO-002 (P0): Stochastic RNG bias
 - ALGO-003 (P1): Inefficient scale computation
 - ALGO-004 (P1): Suboptimal RNG quality
 
 **Architecture (11 issues)**:
+
 - ARCH-001 (P0): ExTensor SRP violation
 - ARCH-002 (P1): Plan hierarchy inconsistency
 - ARCH-003 (P2): Excessive orchestrators
@@ -842,6 +871,7 @@ Track these metrics to measure improvement:
 - ARCH-011 (N/A): ✅ No circular dependencies
 
 **Testing (15 issues)**:
+
 - TEST-001 (P0): All-negative blocks
 - TEST-002 (P0): Scale=0 edge case
 - TEST-003 (P0): NaN/Infinity handling
@@ -865,6 +895,7 @@ Track these metrics to measure improvement:
 ### B. Review Methodology
 
 **Agents Used**:
+
 1. Architecture Review Specialist (✅ Complete)
 2. Algorithm Review Specialist (✅ Complete)
 3. Test Review Specialist (✅ Complete)
@@ -874,12 +905,14 @@ Track these metrics to measure improvement:
 7. Data Engineering Review Specialist (⏸️ Pending)
 
 **Tools**:
+
 - Glob: File discovery
 - Grep: Code search
 - Read: File inspection
 - Manual analysis: SOLID principles, design patterns
 
 **Scope**:
+
 - Recent implementations: mxfp4.mojo, nvfp4.mojo, extensor.mojo
 - Test suite: 59 tests across 4 files
 - Planning structure: 6 sections, 23+ subsections
@@ -890,11 +923,13 @@ Track these metrics to measure improvement:
 ### C. Contact and Escalation
 
 **For Questions**:
+
 - Architecture: Escalate to Chief Architect
 - Algorithm: Escalate to Algorithm Review Specialist
 - Testing: Escalate to Test Specialist
 
 **Documentation Location**:
+
 - This report: `/home/user/ml-odyssey/COMPREHENSIVE_REVIEW_FINDINGS.md`
 - Issue tracking: Create GitHub issue and move to `/notes/issues/<number>/README.md`
 
@@ -934,16 +969,19 @@ This comprehensive review identified **87 issues** across **7 specialized review
 ### Impact Assessment
 
 **Research Reproducibility**: ❌ **AT RISK**
+
 - NVFP4 deviates from paper specification
 - Stochastic rounding may have systematic bias
 - No validation against paper's representable values
 
 **Production Readiness**: ❌ **NOT SAFE**
+
 - Memory corruption bugs in core tensor operations
 - Silent data corruption in all quantization pipelines
 - Critical code paths completely untested
 
 **Developer Experience**: ⚠️ **BLOCKED**
+
 - Missing research paper citations
 - No API usage examples
 - Mathematical notation unexplained

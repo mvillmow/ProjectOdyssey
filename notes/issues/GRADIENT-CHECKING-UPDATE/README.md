@@ -9,43 +9,51 @@ Update 7 activation backward tests to use the gold-standard numerical gradient c
 ### 1. Test File Updates (`tests/shared/core/test_activations.mojo`)
 
 #### Added Imports
+
 - Added `zeros_like` and `ones_like` to ExTensor imports
 - Added imports for `check_gradient`, `compute_numerical_gradient`, and `assert_gradients_close` from gradient checking helper
 
 #### Updated Backward Tests
 
 **test_relu_backward** (Line 81)
+
 - Replaced manual analytical validation with `check_gradient()` helper
 - Uses numerical gradient checking with forward function wrapper
 - Tests 4-element input: [-1, 0, 0.5, 2]
 
 **test_leaky_relu_backward** (Line 142)
+
 - Added backward wrapper function to handle alpha parameter
 - Uses `check_gradient()` for numerical validation
 - Tests alpha=0.1 parameter
 
 **test_prelu_backward** (Line 193)
+
 - Special handling for tuple return (grad_in, grad_alpha)
 - Validates only grad_in using numerical gradient checking
 - Uses `result[0]` syntax to extract first element from tuple
 
 **test_sigmoid_backward** (Line 243)
+
 - Expanded to 3 test points for better coverage: [-1, 0, 1]
 - Special handling: sigmoid_backward takes output `y`, not input `x`
 - Uses underscore parameter with backticks syntax
 
 **test_tanh_backward** (Line 312)
+
 - Expanded to 3 test points: [-1, 0, 1]
 - Special handling: tanh_backward takes output `y`, not input `x`
 - Uses underscore parameter with backticks syntax
 
 **test_softmax_backward** (Line 427) - NEWLY CREATED
+
 - Created complete new test for softmax gradient checking
 - Uses 2D tensor (2x3) for softmax axis=1 computation
 - Special handling: softmax_backward takes output `y`, not input `x`
 - Tests with diverse input values
 
 **test_elu_backward** (Line 600)
+
 - Expanded to 3 test points: [-1, 0, 1]
 - Updated to use numerical gradient checking via `check_gradient()`
 - Note: elu_backward takes x, y, and alpha parameters
@@ -53,6 +61,7 @@ Update 7 activation backward tests to use the gold-standard numerical gradient c
 ### 2. Gradient Checking Helper Fixes (`tests/helpers/gradient_checking.mojo`)
 
 Fixed pre-existing compilation issues in gradient checking infrastructure:
+
 - Removed unsupported `from math import abs` (Mojo math.abs not available)
 - Replaced math_abs() calls with conditional absolute value computation
 - Simplified error messages (removed str() function calls that Mojo doesn't support)
@@ -78,6 +87,7 @@ Test file structure and imports are correct. Pre-existing compilation issues in 
 ## Testing Approach
 
 Each backward test follows the pattern:
+
 ```mojo
 fn test_xxx_backward() raises:
     # 1. Create input tensor with test values

@@ -23,26 +23,26 @@ Created `shared/core/numerical_safety.mojo` with compile-time optional safety ch
 
 ### Features
 
-### NaN/Inf Detection:
+### NaN/Inf Detection
 
 - `has_nan(tensor)` - Check if tensor contains NaN values
 - `has_inf(tensor)` - Check if tensor contains Inf values
 - `count_nan(tensor)` - Count number of NaN elements
 - `count_inf(tensor)` - Count number of Inf elements
 
-### Tensor Range Checking:
+### Tensor Range Checking
 
 - `tensor_min(tensor)` - Find minimum value
 - `tensor_max(tensor)` - Find maximum value
 - `check_tensor_range(tensor, min, max, name)` - Verify values in range
 
-### Gradient Monitoring:
+### Gradient Monitoring
 
 - `compute_tensor_l2_norm(tensor)` - Compute L2 norm
 - `check_gradient_norm(grad, max_norm, name)` - Detect gradient explosion
 - `check_gradient_vanishing(grad, min_norm, name)` - Detect vanishing gradients
 
-### Compile-Time Safety Checks:
+### Compile-Time Safety Checks
 
 ```mojo
 @parameter

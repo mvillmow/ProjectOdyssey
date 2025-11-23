@@ -20,6 +20,7 @@
 ## Top 10 Critical Issues
 
 ### 1. **Tuple Return Type Syntax** 🔴 CRITICAL
+
 - **Impact**: All 6 CIFAR-10 architectures + LeNet-EMNIST tests fail
 - **Error**: `raises -> (Type1, Type2)` invalid syntax
 - **Fix**: Use `Tuple[Type1, Type2]` or struct wrappers
@@ -27,6 +28,7 @@
 - **Effort**: 2-3 hours
 
 ### 2. **Self Parameter Syntax** 🔴 CRITICAL
+
 - **Impact**: 20+ files with 100+ method definition errors
 - **Error**: `inout self` / `borrowed self` invalid in fn methods
 - **Fix**: Remove qualifiers from self parameter
@@ -34,6 +36,7 @@
 - **Effort**: 3-4 hours
 
 ### 3. **Missing DynamicVector** 🔴 CRITICAL
+
 - **Impact**: ResNet, DenseNet, GoogLeNet, MobileNetV1 cannot compile
 - **Error**: `unable to locate module 'vector'`
 - **Fix**: Replace with `List[Int]`
@@ -41,6 +44,7 @@
 - **Effort**: 1-2 hours
 
 ### 4. **ExTensor Not Copyable/Movable** 🔴 CRITICAL
+
 - **Impact**: Cannot store ExTensor in List or return from functions
 - **Error**: `cannot bind type 'ExTensor' to trait 'Copyable & Movable'`
 - **Fix**: Use struct wrappers instead of List[ExTensor]
@@ -48,6 +52,7 @@
 - **Effort**: 1 hour
 
 ### 5. **Missing he_uniform() Function** 🔴 HIGH
+
 - **Impact**: AlexNet, VGG16 initialization fails
 - **Error**: `module 'initializers' does not contain 'he_uniform'`
 - **Fix**: Implement in shared/core/initializers.mojo
@@ -55,6 +60,7 @@
 - **Effort**: 1-1.5 hours
 
 ### 6. **Missing cross_entropy_loss() Function** 🔴 HIGH
+
 - **Impact**: AlexNet, VGG16, GoogLeNet training impossible
 - **Error**: `module 'loss' does not contain 'cross_entropy_loss'`
 - **Fix**: Implement in shared/core/loss.mojo
@@ -62,6 +68,7 @@
 - **Effort**: 1-1.5 hours
 
 ### 7. **F-String Syntax Not Supported** 🟡 MEDIUM
+
 - **Impact**: 4+ test and inference files fail
 - **Error**: `expected ')' in call argument list` for `print(f"...")`
 - **Fix**: Use string concatenation instead
@@ -69,6 +76,7 @@
 - **Effort**: 1 hour
 
 ### 8. **Documentation Warnings** 🟡 MEDIUM
+
 - **Impact**: 40+ warnings in compilation (no functional impact)
 - **Error**: Docstring missing period or backtick
 - **Fix**: Add `.` or backticks to docstring endings
@@ -76,12 +84,14 @@
 - **Effort**: 1-2 hours (automated)
 
 ### 9. **Extra Directories in /docs/** 🟢 LOW
+
 - **Impact**: 2 test failures in test_doc_structure.py
 - **Error**: Found `backward-passes/` and `extensor/` (expect 5 tiers, found 7)
 - **Fix**: Delete or reorganize extra directories
 - **Effort**: 15 minutes
 
 ### 10. **Missing str() Built-in** 🟢 LOW
+
 - **Impact**: VGG16 inference.mojo output formatting
 - **Error**: `use of unknown declaration 'str'`
 - **Fix**: Use type-specific string conversion
@@ -92,6 +102,7 @@
 ## Fix Priority Queue
 
 ### PHASE 1: Critical Compilation Blockers (Must Do First)
+
 **Estimated Time**: 4-6 hours | **Blocking**: 25+ files
 
 - [ ] Fix tuple return syntax (12+ files) - 2-3 hours
@@ -102,6 +113,7 @@
 **Success Criteria**: All shared/core modules compile without errors
 
 ### PHASE 2: Missing Function Implementations
+
 **Estimated Time**: 2-4 hours | **Blocking**: 3-4 architectures
 
 - [ ] Implement he_uniform() and xavier_uniform() - 1-1.5 hours
@@ -111,6 +123,7 @@
 **Success Criteria**: All 6 CIFAR-10 model.mojo files compile
 
 ### PHASE 3: Architecture-Specific Fixes
+
 **Estimated Time**: 4-6 hours | **Blocking**: remaining 20 files
 
 - [ ] Fix f-string usage (4 files) - 1 hour
@@ -120,6 +133,7 @@
 **Success Criteria**: All 44 example files compile without warnings
 
 ### PHASE 4: Infrastructure & Validation
+
 **Estimated Time**: 2-3 hours | **Blocking**: none (tests only)
 
 - [ ] Clean up /docs/ directories - 0.5 hours
@@ -167,14 +181,17 @@ TOTAL                          234     85.0% ⚠️
 ## One-Page Roadmap
 
 ### Today (Phase 1)
+
 Fix tuple syntax, self parameters, DynamicVector, ExTensor issues
 → Target: All shared/core compiles
 
 ### Tomorrow (Phase 2-3)
+
 Implement missing functions, fix architecture-specific issues
 → Target: All 44 examples compile
 
 ### Day 3 (Phase 4)
+
 Cleanup, validation, final testing
 → Target: 100% pass rate (234/234 files)
 
@@ -183,16 +200,19 @@ Cleanup, validation, final testing
 ## Next Steps (Immediate Actions)
 
 ### Right Now (15 minutes)
+
 1. Review this quick reference
 2. Read detailed report: `COMPREHENSIVE_TEST_VALIDATION_REPORT.md`
 3. Understand the 4-phase fix sequence
 
 ### Prepare to Code (30 minutes)
+
 1. Create feature branch for Phase 1 fixes
 2. Set up automated search-replace for mechanical changes
 3. Plan commit strategy (small, focused commits)
 
 ### Begin Phase 1 (4-6 hours)
+
 1. Start with tuple return syntax (smallest impact, highest frequency)
 2. Move to self parameter syntax (highest impact)
 3. Replace DynamicVector (clean find-replace)
@@ -217,18 +237,21 @@ Cleanup, validation, final testing
 ## Success Metrics
 
 ### Current State
+
 - Python tests: 97/97 ✅
 - Foundation: 154/156 ⚠️
 - Examples: 2/44 ❌
 - **Overall**: 85%
 
 ### Target State
+
 - Python tests: 97/97 ✅
 - Foundation: 156/156 ✅
 - Examples: 44/44 ✅
 - **Overall**: 100%
 
 ### Acceptance Criteria
+
 - ✓ All examples compile without errors
 - ✓ All examples compile without warnings
 - ✓ Foundation tests: 156/156 passing
@@ -240,17 +263,22 @@ Cleanup, validation, final testing
 ## Resources & Context
 
 ### Quick Problem Summary
+
 The codebase has modern tooling and planning but uses Mojo syntax incompatible with v0.25.7:
+
 - Tuple syntax: `(Type1, Type2)` → must use `Tuple[Type1, Type2]`
 - Self parameters: `fn method(inout self, ...)` → invalid
 - DynamicVector: not available in stdlib
 - ExTensor: not Copyable/Movable for collections
 
 ### Why It Happened
+
 Code may have been written for different Mojo version or generated before syntax solidified. The patterns are syntactically similar to valid Mojo but not actually valid in v0.25.7.
 
 ### How to Verify Fixes
+
 After Phase 1:
+
 ```bash
 mojo build -I . shared/core/dropout.mojo
 mojo build -I . shared/core/normalization.mojo
@@ -258,12 +286,14 @@ mojo build -I . examples/lenet-emnist/model.mojo
 ```
 
 After Phase 2:
+
 ```bash
 mojo build -I . examples/alexnet-cifar10/model.mojo
 mojo build -I . examples/*/train.mojo
 ```
 
 Final validation:
+
 ```bash
 pytest tests/foundation/ -v  # Should be 156/156
 mojo build -I . examples/**/*.mojo  # All should compile

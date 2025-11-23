@@ -205,7 +205,7 @@ fn _encode_nan() -> Self:
 
 ### 6. Missing Feature: Comparison Operators
 
-**Location**: `fp8.mojo` (missing __lt__, __le__, __gt__, __ge__)
+**Location**: `fp8.mojo` (missing **lt**, **le**, **gt**, **ge**)
 
 **Issue**: Can only check equality, not ordering
 
@@ -248,7 +248,7 @@ fn __ge__(self, other: Self) -> Bool:
 
 ### 7. Missing Feature: Arithmetic Operators
 
-**Location**: `fp8.mojo` (missing __add__, __sub__, __mul__, __div__)
+**Location**: `fp8.mojo` (missing **add**, **sub**, **mul**, **div**)
 
 **Issue**: Cannot perform arithmetic directly on FP8 values
 
@@ -427,7 +427,9 @@ save_to_disk(weights_fp8)  // 75% smaller file
 var weights_restored = weights_fp8.from_fp8()
 var output = forward_pass(input, weights_restored)
 ```
+
 """
+
 ```
 
 **Priority**: P3 - Documentation improvement

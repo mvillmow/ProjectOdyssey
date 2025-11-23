@@ -37,12 +37,14 @@
 ### Recent Improvements
 
 **Dtype Dispatch Refactoring** (commits 03769d8, 558a857):
+
 - ✅ Refactored `initializers.mojo`: Eliminated 21 dtype branches using 3 generic helpers
 - ✅ Refactored `activation.mojo`: `leaky_relu_backward`, `prelu_backward` using generic implementations
 - ✅ Added `@always_inline` to 23 small helper/operation functions
 - ✅ Net reduction: ~120 lines removed
 
 **Numerical Gradient Checking** (commit 5bbec60):
+
 - ✅ Implemented `compute_numerical_gradient()` using central differences (O(ε²) accuracy)
 - ✅ Added `assert_gradients_close()` for tolerance-based validation (rtol=1e-4, atol=1e-7)
 - ✅ Added `check_gradient()` comprehensive helper
@@ -120,6 +122,7 @@ fn matmul(borrowed a: ExTensor, borrowed b: ExTensor, inout result: ExTensor):
 **Current Status**: 45% adoption (3/7 eligible modules)
 
 **Completed Modules**:
+
 - ✅ `shared/core/dtype_dispatch.mojo` - Infrastructure (422 lines)
 - ✅ `shared/core/initializers.mojo` - 7 functions refactored (21 branches eliminated)
 - ✅ `shared/core/activation.mojo` - Forward + backward passes
@@ -136,11 +139,13 @@ fn matmul(borrowed a: ExTensor, borrowed b: ExTensor, inout result: ExTensor):
 | **Total** | **77** | **~300** | - | - |
 
 **Recommendation**:
+
 - Complete migration in priority order: matrix → arithmetic → reduction → comparison
 - Estimated total impact: ~300 lines eliminated, significant maintainability improvement
 - Pattern proven effective in completed modules
 
 **Example from `arithmetic.mojo:45-85`**:
+
 ```mojo
 # Current pattern (40 dtype branches)
 if dtype == DType.float32:
@@ -176,11 +181,13 @@ _dispatch_scalar_op[DType](tensor, result, scalar, lambda x, s: x + s)
 **Total Effort**: ~22 hours to achieve 100% numerical validation coverage
 
 **Recommendation**:
+
 1. Start with critical modules (loss, conv, matrix) - highest risk of gradient bugs
 2. Use pattern from `test_activations.mojo` as template
 3. Set tolerances based on numerical precision: rtol=1e-4, atol=1e-7 for Float32
 
 **Example Pattern**:
+
 ```mojo
 # Add to each backward pass test
 from tests.helpers.gradient_checking import check_gradient
@@ -209,11 +216,13 @@ fn test_conv2d_backward():
 **Issue**: Mixed owned/borrowed patterns across similar functions
 
 **Examples**:
+
 - `shared/core/arithmetic.mojo:12` - Uses `borrowed` for inputs, returns new tensor (correct)
 - `shared/core/matrix.mojo:89` - Uses `borrowed` for inputs, `inout` for output (different pattern)
 - `shared/core/conv.mojo:45` - Uses `owned` for input (unnecessary copy)
 
 **Recommendation**: Standardize on pattern:
+
 - **Inputs**: `borrowed` (read-only)
 - **Outputs**: Return new tensor (pure functional) OR `inout` for explicit mutation
 - **Avoid**: `owned` parameters unless ownership transfer is required
@@ -221,6 +230,7 @@ fn test_conv2d_backward():
 ### 4. Error Handling: Missing Precondition Checks
 
 **Modules with missing validation**:
+
 - `shared/core/matrix.mojo:89` - No check for compatible dimensions in matmul
 - `shared/core/conv.mojo:45` - No check for kernel size vs input size
 - `shared/core/pooling.mojo:23` - No check for pool size > input size
@@ -240,6 +250,7 @@ fn matmul(borrowed a: ExTensor, borrowed b: ExTensor) raises -> ExTensor:
 **Issue**: Some agent configurations don't match 6-layer hierarchy specification
 
 **Non-compliant Agents** (9 found):
+
 - `algorithm-review-specialist.md` - Missing tool specifications
 - `performance-engineer.md` - Wrong layer assignment (should be L4, marked as L3)
 - `test-specialist.md` - Unclear delegation rules to test-engineer
@@ -262,6 +273,7 @@ python3 tests/agents/validate_configs.py .claude/agents/
 ### 2. Documentation: Missing Docstrings
 
 **Functions without docstrings** (23 found):
+
 - `shared/core/arithmetic.mojo`: 5 functions
 - `shared/core/shape.mojo`: 8 functions
 - `shared/core/indexing.mojo`: 6 functions
@@ -295,6 +307,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### 3. Performance: Missing @always_inline Annotations
 
 **Candidates for @always_inline** (15 functions):
+
 - `shared/core/arithmetic.mojo`: Small element-wise helpers (5)
 - `shared/core/indexing.mojo`: Index calculation functions (4)
 - `shared/core/shape.mojo`: Shape manipulation helpers (6)
@@ -304,6 +317,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### 4. Code Quality: Unused Imports
 
 **Files with unused imports** (8 found):
+
 - `shared/core/conv.mojo:3` - Unused `List` import
 - `shared/core/pooling.mojo:5` - Unused `String` import
 - `tests/shared/core/test_conv.mojo:7` - Unused helper import
@@ -313,6 +327,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### 5. Testing: Missing Edge Case Coverage
 
 **Missing edge cases**:
+
 - Zero-sized tensors (shape with 0 dimension)
 - Single-element tensors (shape [1, 1, 1, 1])
 - Maximum dimension sizes
@@ -329,6 +344,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Goal**: 100% adoption for eligible modules (7 modules)
 
 **Migration Priority**:
+
 1. **High Priority** (critical path, high impact):
    - `matrix.mojo` - Core operation, simple, 15 refs → ~60 lines
    - `arithmetic.mojo` - High usage, moderate complexity, 40 refs → ~150 lines
@@ -338,11 +354,13 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
    - `comparison.mojo` - 12 refs → ~50 lines
 
 **Not Recommended for Migration**:
+
 - `loss.mojo` - Complex numerical stability logic, dispatch adds little value
 - `shape.mojo` - Mostly integer operations, few dtype-specific branches
 - `conv.mojo` - Complex 7-loop structure, dispatch not applicable
 
 **Estimated Total Impact**:
+
 - Lines reduced: ~300
 - Dtype branches eliminated: 77
 - Maintainability: Significant improvement
@@ -353,16 +371,19 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Recommendation**: Make `check_gradient()` mandatory for all backward pass tests
 
 **Implementation**:
+
 1. Update test template to include gradient checking
 2. Add CI check to enforce gradient checking in new tests
 3. Retrofit existing 12 test files (22 hours estimated)
 
 **Benefits**:
+
 - Catches gradient bugs early (conv2d stride bug would have been caught)
 - Mathematical correctness guarantee
 - Confidence in optimizer implementations
 
 **Acceptance Criteria**:
+
 - 100% of backward pass tests use numerical validation
 - Tolerances documented and justified (rtol=1e-4 for Float32, 1e-8 for Float64)
 - CI fails if numerical gradient check fails
@@ -372,6 +393,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Create**: `notes/review/adr/ADR-004-memory-management-patterns.md`
 
 **Content**:
+
 - When to use `owned` vs `borrowed` vs `inout`
 - Pure functional pattern (return new tensors)
 - In-place mutation pattern (`inout` parameters)
@@ -383,6 +405,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Create**: `notes/review/adr/ADR-003-dtype-dispatch-migration.md`
 
 **Content**:
+
 - When to use dtype dispatch pattern
 - When NOT to use it (complex logic, few dtype branches)
 - Step-by-step migration guide with examples
@@ -392,6 +415,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### 5. Strengthen Agent Hierarchy Compliance
 
 **Actions**:
+
 1. Run validation suite on all 38 agent configs
 2. Fix 9 non-compliant agents
 3. Add pre-commit hook for agent validation
@@ -466,6 +490,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### 2. Edge Case Coverage
 
 **Missing Coverage**:
+
 - Zero-sized tensors (0 tests)
 - Single-element tensors (2 tests only)
 - Maximum sizes (0 tests)
@@ -479,6 +504,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Missing**: Full training loop validation (forward → backward → optimize → repeat)
 
 **Recommendation**: Add integration test with small dataset (MNIST subset):
+
 - Train for 10 iterations
 - Verify loss decreases
 - Verify gradients flow correctly
@@ -490,6 +516,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Missing**: Statistical validation of initialization distributions
 
 **Recommendation**: Add tests for:
+
 - Xavier/Glorot: Verify variance = 2/(fan_in + fan_out)
 - He: Verify variance = 2/fan_in
 - Normal: Verify mean = 0, std = specified
@@ -504,6 +531,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Implementation**: `tests/helpers/gradient_checking.mojo` (234 lines)
 
 **Features**:
+
 - `compute_numerical_gradient()`: Central difference method (O(ε²) accuracy)
 - `assert_gradients_close()`: Tolerance-based comparison
 - `check_gradient()`: Comprehensive validation helper
@@ -515,6 +543,7 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 **Current**: 8% (1/13 test files using infrastructure)
 
 **Adoption Status**:
+
 - ✅ `test_activations.mojo`: Uses `check_gradient()` for all backward passes
 - ⏳ 12 other test files: Manual verification only
 
@@ -525,25 +554,30 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### Numerical Stability Analysis
 
 **Good Practices Observed**:
+
 - ✅ Log-sum-exp trick in softmax (shared/core/activation.mojo:89)
 - ✅ Epsilon in batch normalization denominator (shared/core/normalization.mojo:45)
 - ✅ Numerical safety module with NaN/Inf detection (shared/utils/numerical_safety.mojo)
 
 **Critical Issues**:
+
 - ❌ Missing epsilon in cross-entropy log (P0 issue - shared/core/loss.mojo:156)
 - ❌ No epsilon in layer norm (shared/core/normalization.mojo:123)
 
 **Minor Issues**:
+
 - ⚠️ Hardcoded epsilon values (use configurable parameter)
 - ⚠️ Inconsistent epsilon values across modules (1e-5 vs 1e-7 vs 1e-8)
 
 ### Tolerance Validation
 
 **Current Tolerances**:
+
 - Float32: rtol=1e-4, atol=1e-7
 - Float64: Not explicitly tested
 
 **Assessment**: Appropriate for Float32 based on:
+
 - Machine epsilon for Float32: ~1.2e-7
 - Relative tolerance accounts for accumulated rounding errors
 - Absolute tolerance handles near-zero gradients
@@ -609,16 +643,19 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 ### Technical Debt Measurement
 
 **Before Recent Refactoring**:
+
 - Dtype branches: ~150
 - Lines of duplicated dispatch code: ~550
 - Untested backward passes: 85/85 (100%)
 
 **After Recent Refactoring**:
+
 - Dtype branches: ~107 (29% reduction)
 - Lines of duplicated dispatch code: ~430 (22% reduction)
 - Untested backward passes: 84/85 (99%)
 
 **Remaining Debt**:
+
 - Dtype branches: 77 (can be eliminated)
 - Lines of duplicated code: ~300
 - Untested backward passes: 84
@@ -744,39 +781,39 @@ fn function_name(param1: Type1, param2: Type2) -> ReturnType:
 
 ### Short Term (Weeks 2-3)
 
-3. **Complete Dtype Dispatch Migration - Phase 1** (6 hours)
+1. **Complete Dtype Dispatch Migration - Phase 1** (6 hours)
    - matrix.mojo (2h)
    - arithmetic.mojo (4h)
 
-4. **Continue Gradient Checking** (6 hours)
+2. **Continue Gradient Checking** (6 hours)
    - test_normalization.mojo (2h)
    - test_pooling.mojo (2h)
    - test_arithmetic.mojo (2h)
 
-5. **Documentation** (4 hours)
+3. **Documentation** (4 hours)
    - ADR-003: Dtype Dispatch Migration Guide
    - ADR-004: Memory Management Patterns
 
 ### Medium Term (Weeks 4-6)
 
-6. **Complete Dtype Dispatch Migration - Phase 2** (4 hours)
+1. **Complete Dtype Dispatch Migration - Phase 2** (4 hours)
    - reduction.mojo (2h)
    - comparison.mojo (2h)
 
-7. **Finish Gradient Checking Retrofit** (10 hours)
+2. **Finish Gradient Checking Retrofit** (10 hours)
    - Remaining 7 test files
 
-8. **Code Quality Improvements** (7 hours)
+3. **Code Quality Improvements** (7 hours)
    - Add @always_inline annotations (1h)
    - Add missing docstrings (6h)
 
 ### Long Term (Month 2+)
 
-9. **Agent Hierarchy Compliance** (3 hours)
+1. **Agent Hierarchy Compliance** (3 hours)
    - Fix 9 non-compliant agents
    - Add pre-commit validation
 
-10. **Integration Tests** (8 hours)
+2. **Integration Tests** (8 hours)
     - End-to-end training test
     - Statistical initializer tests
     - Edge case coverage
@@ -817,6 +854,7 @@ The codebase is **production-ready after P0 fixes**, with a well-defined roadmap
 ---
 
 **Review Conducted By**:
+
 - Chief Architect (coordination)
 - Architecture Review Specialist
 - Implementation Review Specialist

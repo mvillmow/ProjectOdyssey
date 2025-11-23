@@ -136,14 +136,16 @@ update configuration following ADR-XXX.
 
    ```
 
-2. Run tests with coverage:
+1. Run tests with coverage:
+
    ```bash
 
    pytest --cov=scripts
 
    ```
 
-3. View HTML report:
+2. View HTML report:
+
    ```bash
 
    pytest --cov=scripts --cov-report=html
@@ -154,8 +156,10 @@ update configuration following ADR-XXX.
 ### CI Environment
 
 Coverage is collected automatically on all PRs. View reports in:
+
 - GitHub Actions artifacts
 - PR comments (after Issue #478-482 implemented)
+
 ```text
 
 **3. Performance Notes**

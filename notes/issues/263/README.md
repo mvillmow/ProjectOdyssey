@@ -25,13 +25,13 @@ Design and document the Kaiming (He) initialization method for neural network we
 
 ### Initialization Variants
 
-### Kaiming Uniform Distribution:
+### Kaiming Uniform Distribution
 
 - Formula: `W ~ U(-limit, limit)` where `limit = sqrt(6/fan)`
 - Theoretical basis: Uniform distribution with variance = 2/fan
 - Use case: When uniform weight distribution is preferred
 
-### Kaiming Normal Distribution:
+### Kaiming Normal Distribution
 
 - Formula: `W ~ N(0, std)` where `std = sqrt(2/fan)`
 - Theoretical basis: Normal distribution with variance = 2/fan
@@ -59,7 +59,7 @@ Kaiming initialization is based on the following principles:
 1. **Variance Preservation:** To maintain signal variance through layers, use Var(W) = 2/fan
 1. **Scaling Factor:** The factor of 2 (vs 1 in Xavier) compensates for ReLU's zero-out effect
 
-### Derivation:
+### Derivation
 
 - For linear layer: `y = Wx + b`
 - With ReLU activation: `E[ReLU(x)²] ≈ (1/2)E[x²]` (half of activations zeroed)
@@ -67,7 +67,7 @@ Kaiming initialization is based on the following principles:
 
 ### API Design
 
-### Function Signatures (to be implemented):
+### Function Signatures (to be implemented)
 
 ```mojo
 fn kaiming_uniform[fan_mode: String = "fan_in"](

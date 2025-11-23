@@ -4,7 +4,7 @@
 
 **No custom test file needed** - gitignore is validated by git itself.
 
-### Why No Tests:
+### Why No Tests
 
 Git provides built-in gitignore validation:
 
@@ -13,7 +13,7 @@ Git provides built-in gitignore validation:
 1. **Self-testing:** If wrong files are tracked, it's immediately visible in `git status`
 1. **Pre-commit validation:** check-added-large-files hook prevents large ignored files
 
-### Functional Testing:
+### Functional Testing
 
 The gitignore was tested functionally during development:
 
@@ -22,7 +22,7 @@ The gitignore was tested functionally during development:
 - `__pycache__/` directories → ignored correctly
 - `.pixi/*` ignored except `.pixi/config.toml` → verified working
 
-### Validation Method:
+### Validation Method
 
 ```bash
 # Test specific file

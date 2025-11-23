@@ -582,6 +582,7 @@ if bf16.is_finite():
 ```
 
 **BFloat16 Properties:**
+
 - Storage: uint16 (16 bits)
 - Format: 1 sign bit + 8 exponent bits + 7 mantissa bits
 - Range: Same as Float32 (~1e-38 to 3.4e38)
@@ -591,6 +592,7 @@ if bf16.is_finite():
 ### Examples
 
 See `examples/mixed_precision_training.mojo` for a complete example demonstrating:
+
 - FP16 model parameters
 - Gradient scaling and unscaling
 - Master weights for optimizer
@@ -600,12 +602,14 @@ See `examples/mixed_precision_training.mojo` for a complete example demonstratin
 ### API Reference
 
 **GradientScaler** - Manages loss/gradient scaling
+
 - `scale_loss(loss)` - Scale loss by current factor
 - `unscale_gradients(grads)` - Unscale gradients
 - `step()` - Update scale after successful step
 - `backoff()` - Reduce scale on overflow
 
 **Utility Functions**
+
 - `convert_to_fp32_master(params)` - Create FP32 master weights
 - `update_model_from_master(model, master)` - Copy master → model
 - `check_gradients_finite(grads)` - Check for NaN/Inf

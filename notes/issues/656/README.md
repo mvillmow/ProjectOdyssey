@@ -58,8 +58,8 @@ Design and document the Git configuration for proper handling of ML artifacts, l
 
 ### Configurations
 
-1. Text files: Auto line ending normalization (*.py, *.md, *.toml, *.yaml, *.mojo)
-1. Binary files: Explicitly mark as binary (*.pt, *.pth, *.onnx, *.pkl, *.png, *.jpg)
+1. Text files: Auto line ending normalization (*.py,*.md, *.toml,*.yaml, *.mojo)
+1. Binary files: Explicitly mark as binary (*.pt,*.pth, *.onnx,*.pkl, *.png,*.jpg)
 1. LFS patterns: Track large file types with Git LFS
 
 ### Alternatives Considered
@@ -80,10 +80,10 @@ Design and document the Git configuration for proper handling of ML artifacts, l
 
 ### LFS Tracked Files
 
-1. Model files: *.pt, *.pth, *.onnx, *.pb, *.h5, *.safetensors
-1. Checkpoint files: *.ckpt, *.checkpoint
-1. Dataset files: *.tar.gz, *.zip (in datasets/)
-1. Pickle files: *.pkl, *.pickle (large serialized objects)
+1. Model files: *.pt,*.pth, *.onnx,*.pb, *.h5,*.safetensors
+1. Checkpoint files: *.ckpt,*.checkpoint
+1. Dataset files: *.tar.gz,*.zip (in datasets/)
+1. Pickle files: *.pkl,*.pickle (large serialized objects)
 
 ### Alternatives Considered
 

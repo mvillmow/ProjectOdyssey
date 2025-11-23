@@ -206,6 +206,7 @@ Each **Dense Layer** (within a dense block) consists of:
 2. **Convolution**: BN → ReLU → Conv3×3 (k filters)
 
 Number of parameters per dense layer:
+
 - Bottleneck: (input_channels) × (4k) × 1 × 1
 - Convolution: (4k) × k × 3 × 3
 
@@ -219,12 +220,14 @@ Where θ = 0.5 (compression factor)
 **Total Connections**:
 
 In a dense block with L layers:
+
 - Layer 1: receives 1 input (c channels)
 - Layer 2: receives 2 inputs (c + k channels)
 - Layer L: receives L inputs (c + (L-1)k channels)
 - Total: L(L+1)/2 connections (quadratic!)
 
 For DenseNet-121: 6 + 12 + 24 + 16 = 58 layers in dense blocks
+
 - Total connections: (6×7)/2 + (12×13)/2 + (24×25)/2 + (16×17)/2 = 549 connections!
 
 ## Dataset Information
@@ -333,6 +336,7 @@ where:
 ```
 
 Forward pass:
+
 ```text
 x_ℓ = H_ℓ([x_0, x_1, ..., x_{ℓ-1}])
 ```
@@ -342,6 +346,7 @@ Where H_ℓ is the composite function: BN → ReLU → Conv1×1 → BN → ReLU 
 ### Backward Pass
 
 Concatenation backward:
+
 ```text
 grad_input = [grad_x_0, grad_x_1, ..., grad_x_{ℓ-1}]
 ```
@@ -351,11 +356,13 @@ Each layer receives gradients from ALL subsequent layers!
 ### Memory Efficiency
 
 DenseNet's memory consumption:
+
 - **Forward**: Must store all intermediate feature maps for concatenation
 - **Backward**: Must store all activations for gradient computation
 - **Peak memory**: Proportional to L² (quadratic in depth)
 
 Memory optimization techniques:
+
 1. **Shared memory buffers**: Reuse memory for concatenation
 2. **Checkpointing**: Recompute activations during backward pass
 3. **Mixed precision**: Use float16 for activations, float32 for weights
@@ -382,6 +389,7 @@ Step decay schedule (same as other models):
 ### Weight Initialization
 
 **He initialization** for all convolutions:
+
 - Formula: `weights ~ N(0, sqrt(2 / fan_in))`
 - Critical for training very deep networks
 

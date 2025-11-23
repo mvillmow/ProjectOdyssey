@@ -13,7 +13,6 @@ from tests.shared.conftest import (
     assert_true,
     assert_equal,
     assert_almost_equal,
-    assert_shape_equal,
     TestFixtures,
 )
 from shared.core.extensor import (
@@ -39,8 +38,8 @@ from shared.core.extensor import (
 fn test_zeros_creation() raises:
     """Test zeros tensor creation."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     var t = zeros(shape, DType.float32)
 
     # Check shape
@@ -55,8 +54,8 @@ fn test_zeros_creation() raises:
 fn test_ones_creation() raises:
     """Test ones tensor creation."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
     var t = ones(shape, DType.float32)
 
     # Check shape
@@ -71,8 +70,8 @@ fn test_ones_creation() raises:
 fn test_full_creation() raises:
     """Test full tensor creation with specified value."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 2
+    shape.append(2)
+    shape.append(2)
     var t = full(shape, 3.14, DType.float32)
 
     # Check shape
@@ -87,8 +86,8 @@ fn test_full_creation() raises:
 fn test_empty_creation() raises:
     """Test empty tensor creation (uninitialized memory)."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 3
+    shape.append(3)
+    shape.append(3)
     var t = empty(shape, DType.float32)
 
     # Check shape is correct (values are uninitialized)
@@ -122,7 +121,7 @@ fn test_arange_with_step() raises:
 
 fn test_eye_creation() raises:
     """Test identity matrix creation."""
-    var t = eye(3, DType.float32)
+    var t = eye(3, 3, 0, DType.float32)
 
     # Check shape (3x3)
     assert_equal(t.shape()[0], 3)
@@ -160,8 +159,8 @@ fn test_linspace_creation() raises:
 fn test_zeros_like() raises:
     """Test zeros_like creates tensor with same shape and dtype."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
     var x = full(shape, 5.0, DType.float32)
     var y = zeros_like(x)
 
@@ -180,9 +179,9 @@ fn test_zeros_like() raises:
 fn test_ones_like() raises:
     """Test ones_like creates tensor with same shape and dtype."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 2
-    shape[2] = 2
+    shape.append(2)
+    shape.append(2)
+    shape.append(2)
     var x = zeros(shape, DType.float64)
     var y = ones_like(x)
 
@@ -202,8 +201,8 @@ fn test_ones_like() raises:
 fn test_full_like() raises:
     """Test full_like creates tensor with same shape and dtype."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 2
+    shape.append(3)
+    shape.append(2)
     var x = zeros(shape, DType.float32)
     var y = full_like(x, 7.5)
 
@@ -227,13 +226,13 @@ fn test_full_like() raises:
 fn test_tensor_shape() raises:
     """Test tensor shape property."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
     var t = zeros(shape, DType.float32)
 
     var t_shape = t.shape()
-    assert_equal(t_shape.size, 3)
+    assert_equal(len(t_shape), 3)
     assert_equal(t_shape[0], 2)
     assert_equal(t_shape[1], 3)
     assert_equal(t_shape[2], 4)
@@ -242,7 +241,7 @@ fn test_tensor_shape() raises:
 fn test_tensor_dtype() raises:
     """Test tensor dtype property."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     var t_f32 = zeros(shape, DType.float32)
     assert_equal(t_f32.dtype(), DType.float32)
@@ -257,20 +256,20 @@ fn test_tensor_dtype() raises:
 fn test_tensor_numel() raises:
     """Test tensor numel (number of elements)."""
     var shape1 = List[Int]()
-    shape1[0] = 10
+    shape1.append(10)
     var t1 = zeros(shape1, DType.float32)
     assert_equal(t1.numel(), 10)
 
     var shape2 = List[Int]()
-    shape2[0] = 3
-    shape2[1] = 4
+    shape2.append(3)
+    shape2.append(4)
     var t2 = zeros(shape2, DType.float32)
     assert_equal(t2.numel(), 12)
 
     var shape3 = List[Int]()
-    shape3[0] = 2
-    shape3[1] = 3
-    shape3[2] = 4
+    shape3.append(2)
+    shape3.append(3)
+    shape3.append(4)
     var t3 = zeros(shape3, DType.float32)
     assert_equal(t3.numel(), 24)
 
@@ -278,21 +277,21 @@ fn test_tensor_numel() raises:
 fn test_tensor_dim() raises:
     """Test tensor dim (number of dimensions)."""
     var shape1 = List[Int]()
-    shape1[0] = 10
+    shape1.append(10)
     var t1 = zeros(shape1, DType.float32)
     assert_equal(t1.dim(), 1)
 
     var shape2 = List[Int]()
-    shape2[0] = 3
-    shape2[1] = 4
+    shape2.append(3)
+    shape2.append(4)
     var t2 = zeros(shape2, DType.float32)
     assert_equal(t2.dim(), 2)
 
     var shape3 = List[Int]()
-    shape3[0] = 2
-    shape3[1] = 3
-    shape3[2] = 4
-    shape3[3] = 5
+    shape3.append(2)
+    shape3.append(3)
+    shape3.append(4)
+    shape3.append(5)
     var t3 = zeros(shape3, DType.float32)
     assert_equal(t3.dim(), 4)
 
@@ -305,7 +304,7 @@ fn test_tensor_dim() raises:
 fn test_float_dtypes() raises:
     """Test tensor creation with different float dtypes."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
 
     # float16
     var t_f16 = zeros(shape, DType.float16)
@@ -326,7 +325,7 @@ fn test_float_dtypes() raises:
 fn test_int_dtypes() raises:
     """Test tensor creation with different integer dtypes."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
 
     # int8
     var t_i8 = zeros(shape, DType.int8)
@@ -352,7 +351,7 @@ fn test_int_dtypes() raises:
 fn test_uint_dtypes() raises:
     """Test tensor creation with different unsigned integer dtypes."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
 
     # uint8
     var t_u8 = zeros(shape, DType.uint8)
@@ -383,7 +382,7 @@ fn test_uint_dtypes() raises:
 fn test_scalar_tensor() raises:
     """Test scalar tensor (0 dimensions, single element)."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     var t = full(shape, 42.0, DType.float32)
 
     assert_equal(t.numel(), 1)
@@ -394,9 +393,9 @@ fn test_scalar_tensor() raises:
 fn test_large_tensor() raises:
     """Test large tensor creation."""
     var shape = List[Int]()
-    shape[0] = 10
-    shape[1] = 20
-    shape[2] = 30
+    shape.append(10)
+    shape.append(20)
+    shape.append(30)
     var t = zeros(shape, DType.float32)
 
     assert_equal(t.shape()[0], 10)
@@ -410,10 +409,10 @@ fn test_high_dimensional_tensor() raises:
     """Test high-dimensional tensor (4D, 5D, 6D)."""
     # 4D tensor
     var shape4 = List[Int]()
-    shape4[0] = 2
-    shape4[1] = 3
-    shape4[2] = 4
-    shape4[3] = 5
+    shape4.append(2)
+    shape4.append(3)
+    shape4.append(4)
+    shape4.append(5)
     var t4 = zeros(shape4, DType.float32)
     assert_equal(t4.dim(), 4)
     assert_equal(t4.numel(), 120)
@@ -435,7 +434,7 @@ fn test_high_dimensional_tensor() raises:
 fn test_set_and_get_values() raises:
     """Test setting and getting individual values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     var t = zeros(shape, DType.float32)
 
     # Set values
@@ -456,8 +455,8 @@ fn test_set_and_get_values() raises:
 fn test_2d_indexing() raises:
     """Test 2D tensor indexing."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
     var t = zeros(shape, DType.float32)
 
     # Set value at (1, 2) -> linear index = 1*4 + 2 = 6
@@ -471,9 +470,9 @@ fn test_2d_indexing() raises:
 fn test_3d_indexing() raises:
     """Test 3D tensor indexing."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
-    shape[2] = 4
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
     var t = zeros(shape, DType.float32)
 
     # Set value at (1, 2, 3) -> linear index = 1*12 + 2*4 + 3 = 23

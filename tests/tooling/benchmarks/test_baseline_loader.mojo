@@ -45,10 +45,10 @@ fn test_load_valid_baseline() raises:
     baseline_benchmarks.append("conv2d_16x16")
 
     # Verify all benchmarks are present
-    assert_equal(baseline_benchmarks.size(), 3, "Should load all benchmark entries")
+    assert_equal(len(baseline_benchmarks), 3, "Should load all benchmark entries")
 
     # Verify each benchmark name is non-empty
-    for i in range(baseline_benchmarks.size()):
+    for i in range(len(baseline_benchmarks)):
         assert_true(len(baseline_benchmarks[i]) > 0, "Benchmark name should be present")
 
 
@@ -195,7 +195,7 @@ fn test_baseline_lookup_by_name() raises:
 
     # Test lookup of existing benchmark
     var found_index = -1
-    for i in range(baseline.size()):
+    for i in range(len(baseline)):
         if baseline[i].name == "matrix_multiply":
             found_index = i
             break

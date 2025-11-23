@@ -100,6 +100,7 @@ test_all_lenet5_configs_validate ................. FAILED ❌
    - **Issue**: Model configuration format inconsistency
 
 **FIXME Locations**:
+
 - `configs/papers/lenet5/model.yaml` - Update architecture structure to match schema
 - `configs/schemas/model.schema.yaml` - Review schema requirements or update it to accept both formats
 - Implementation: Either refactor YAML configs OR update schema to be more flexible
@@ -188,6 +189,7 @@ TestVerboseMode (2 tests) ...................... PASSED (2/2)
    - **Fix**: Implement batch size threshold validation in linter
 
 **FIXME Locations**:
+
 - `scripts/lint_configs.py` - Add batch size threshold detection (> 2048 should warn)
 - `tests/scripts/test_lint_configs.py` - Line 77-87: Update test YAML or separate concerns
 - Implementation: Add performance threshold checking to ConfigLinter class
@@ -221,6 +223,7 @@ TestCountMarkdownIssues (3 tests) .............. PASSED (3/3)
    - **Fix**: Update section detection regex to extract heading content properly
 
 **FIXME Locations**:
+
 - `scripts/validation.py` - Function `check_required_sections()` needs fix
 - Pattern likely needs to extract text after "##" and compare case-insensitively
 - Implementation: Update regex/parsing logic to handle section names correctly
@@ -298,6 +301,7 @@ test_multiple_tarballs_same_day ............... PASSED
 ### Tests Not Found (as Requested)
 
 The following test paths were requested but do NOT exist in the repository:
+
 - ❌ `tests/dependencies/test_dependencies.py` - EXISTS (not as requested, slight path variation)
 - ❌ `tests/test_validation.py` - EXISTS (found in correct location)
 
@@ -306,6 +310,7 @@ All requested test files were found in the repository (with expected location va
 ### Test Infrastructure Status
 
 **✅ Working Well**:
+
 - GitHub template validation (42/42 tests)
 - Config file parsing (3/3 tests)
 - Markdown utilities (20/20 tests)
@@ -314,6 +319,7 @@ All requested test files were found in the repository (with expected location va
 - Package creation (5/5 tests)
 
 **⚠️ Needs Fixes**:
+
 - Configuration schema validation (3 failures)
 - Config linting with thresholds (2 failures)
 - Markdown section detection (1 failure)
@@ -327,6 +333,7 @@ All requested test files were found in the repository (with expected location va
 #### 1. Configuration Schema Validation Issues (3 failures)
 
 **Files to Fix**:
+
 1. `/home/mvillmow/ml-odyssey/configs/papers/lenet5/model.yaml`
    - **Issue**: Architecture structure doesn't match schema requirements
    - **Fix**: Convert from `architecture: {conv1, conv2, ...}` to `layers: [...]` array format
@@ -343,6 +350,7 @@ All requested test files were found in the repository (with expected location va
    - **Priority**: HIGH - Default configuration baseline
 
 **Implementation Location**:
+
 ```
 FIXME: configs/schemas/model.schema.yaml (line 1)
   - Define whether model config should use 'architecture' dict or 'layers' array
@@ -363,10 +371,12 @@ FIXME: configs/defaults/model.yaml
 `/home/mvillmow/ml-odyssey/scripts/lint_configs.py`
 
 **Issue**: Performance threshold checking incomplete
+
 - Batch size thresholds not implemented
 - Test expects warning for batch_size: 10000 but none generated
 
 **Fix**:
+
 ```python
 # FIXME: scripts/lint_configs.py
 # Add batch size threshold detection in check_performance_thresholds()
@@ -392,10 +402,12 @@ def _check_batch_size_thresholds(self, config):
 `/home/mvillmow/ml-odyssey/scripts/validation.py`
 
 **Issue**: Function `check_required_sections()` not detecting markdown sections
+
 - Test expects sections "Section 1" and "Section 2" to be found
 - Current implementation missing sections
 
 **Fix**:
+
 ```python
 # FIXME: scripts/validation.py
 # In check_required_sections() function:
@@ -431,11 +443,14 @@ def check_required_sections(content, required_sections):
 `/home/mvillmow/ml-odyssey/tests/scripts/test_lint_configs.py`
 
 **Issue**: Test YAML has required key `training.batch_size` missing
+
 - Test at line 77-87 tests formatting but linter checks required keys
 - YAML needs either all required keys or test needs to be adjusted
 
 **Fix Options**:
+
 1. Add required fields to test YAML (preferred for realistic tests)
+
    ```yaml
    training:
      epochs: 10
@@ -466,22 +481,24 @@ def check_required_sections(content, required_sections):
 
 ### Follow-up Actions (Medium Priority)
 
-3. **Fix Markdown Section Detection**
+1. **Fix Markdown Section Detection**
    - Update validation.py section detection logic
    - Ensure pattern correctly extracts heading text
 
-4. **Update Test Configurations**
+2. **Update Test Configurations**
    - Add required fields to test YAML files
    - Make tests more realistic while testing specific concerns
 
 ### Testing Strategy
 
 **Before Merging Any PR**:
+
 1. Run all 146 tests: `pytest tests/ -v`
 2. Ensure pass rate ≥ 95% (currently 96%)
 3. No new failures introduced
 
 **Recommended Test Additions**:
+
 - Add tests for batch size thresholds in lint_configs
 - Add tests for model config format expectations
 - Add tests for schema flexibility/strictness
@@ -493,35 +510,43 @@ def check_required_sections(content, required_sections):
 ### Test Files (26 total)
 
 **Configuration & Schema Tests** (5 files, 22 tests):
+
 - `tests/config/test_magic_toml.py` (3 tests)
 - `tests/configs/test_schema.py` (18 tests) ⚠️ 3 failures
 
 **GitHub Infrastructure** (1 file, 42 tests):
+
 - `tests/github/test_templates.py` (42 tests) ✅
 
 **Dependencies** (1 file, 1 test):
+
 - `tests/dependencies/test_dependencies.py` (1 test) ✅
 
 **Linting & Validation** (2 files, 38 tests):
+
 - `tests/scripts/test_lint_configs.py` (23 tests) ⚠️ 2 failures
 - `tests/test_validation.py` (15 tests) ⚠️ 1 failure
 
 **Utilities** (2 files, 19 tests):
+
 - `tests/test_common.py` (10 tests) ✅
 - `tests/test_scripts_common.py` (9 tests) ✅
 
 **Validation & Packaging** (2 files, 25 tests):
+
 - `tests/test_scripts_validation.py` (20 tests) ✅
 - `tests/test_package_papers.py` (5 tests) ✅
 
 ### Implementation Files Needing Updates
 
 **Primary**:
+
 - `/home/mvillmow/ml-odyssey/scripts/lint_configs.py` - Add threshold checks
 - `/home/mvillmow/ml-odyssey/scripts/validation.py` - Fix section detection
 - `/home/mvillmow/ml-odyssey/configs/papers/lenet5/model.yaml` - Fix structure
 
 **Secondary**:
+
 - `/home/mvillmow/ml-odyssey/configs/schemas/model.schema.yaml` - Review requirements
 - `/home/mvillmow/ml-odyssey/configs/defaults/model.yaml` - Ensure compliance
 
@@ -532,6 +557,7 @@ def check_required_sections(content, required_sections):
 **Overall Status**: 96% test pass rate (140/146 tests passing)
 
 The test infrastructure is **solid** with minor gaps:
+
 - 3 configuration schema issues (format mismatch)
 - 2 linting feature gaps (thresholds not implemented)
 - 1 validation logic issue (section detection)
@@ -540,6 +566,7 @@ The test infrastructure is **solid** with minor gaps:
 All issues have clear root causes and defined FIXME locations for implementation engineers. No architectural problems detected—only specific implementation work needed.
 
 **Estimated Effort to Fix**: 2-4 hours for experienced developer
+
 - Schema issues: 1 hour (decide format, update configs/schema)
 - Linting thresholds: 30 minutes (add 5-10 lines of code)
 - Validation fix: 30 minutes (regex pattern update)

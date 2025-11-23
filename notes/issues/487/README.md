@@ -357,7 +357,8 @@ Document in `/notes/issues/487/lessons-learned.md`:
 
    ```
 
-2. **CI Gates Work**:
+1. **CI Gates Work**:
+
    ```bash
 
    # Simulate CI locally
@@ -367,7 +368,8 @@ Document in `/notes/issues/487/lessons-learned.md`:
 
    ```
 
-3. **Documentation Accurate**:
+2. **Documentation Accurate**:
+
    ```bash
 
    # Test all examples
@@ -378,7 +380,7 @@ Document in `/notes/issues/487/lessons-learned.md`:
 
    ```
 
-4. **Performance Acceptable**:
+3. **Performance Acceptable**:
    - [ ] Coverage overhead < 20%: Yes/No
    - [ ] Gate check < 30 seconds: Yes/No
    - [ ] If no, document justification

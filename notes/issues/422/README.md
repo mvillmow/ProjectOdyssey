@@ -279,6 +279,7 @@ fn benchmark_preprocessing_pipeline() raises:
    ```
 
 1. **In-Place Operations**: Add `_inplace` variants
+
    ```mojo
    fn normalize_inplace(inout data: Tensor[dtype]) raises:
        """Normalize in-place (no allocation)."""
@@ -286,12 +287,14 @@ fn benchmark_preprocessing_pipeline() raises:
    ```
 
 1. **Transform Fusion**: Combine sequential operations
+
    ```mojo
    # Instead of: normalize -> standardize (2 passes)
    # Fuse to: (x - min) / range * scale + offset (1 pass)
    ```
 
 1. **Lazy Evaluation**: Defer computation until needed
+
    ```mojo
    var lazy = pipeline.lazy(data)  # No computation yet
    var result = lazy.evaluate()    # Compute when needed
@@ -471,6 +474,7 @@ To be filled after integration testing:
    ```
 
 1. **Performance Regression Tests**:
+
    ```mojo
    fn test_normalize_performance_regression() raises:
        """Ensure performance doesn't degrade."""
@@ -479,6 +483,7 @@ To be filled after integration testing:
    ```
 
 1. **Stress Tests**:
+
    ```mojo
    fn test_normalize_large_tensor() raises:
        """Test with very large tensor (1M elements)."""

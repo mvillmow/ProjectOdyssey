@@ -55,6 +55,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 **Summary**: All 97 Python tests in `tests/tooling/` directory pass with zero failures.
 
 **Test Coverage**:
+
 - Paper filtering and test-specific execution (13 tests)
 - User prompts and interactive CLI input (17 tests)
 - Paper scaffolding and directory generation (25 tests)
@@ -63,6 +64,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 - Category organization (11 tests)
 
 **Key Results**:
+
 - Execution Time: 0.58 seconds (excellent performance)
 - All implementations working as expected
 - Test isolation and cleanup excellent
@@ -77,12 +79,14 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 **Summary**: Foundation test suite executes 156 tests with 154 passing and 2 failing.
 
 **Test Results**:
+
 | Category | Passed | Failed | Skipped | Rate |
 |----------|--------|--------|---------|------|
 | Structure Tests | 100 | 0 | 0 | 100% ✅ |
 | Documentation Tests | 54 | 2 | 10 | 96% ⚠️ |
 
 **Structure Tests (ALL PASSING)** ✅:
+
 - Directory structure validation (22/22)
 - Papers directory creation (11/11)
 - Supporting directories (20/20)
@@ -91,6 +95,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 - API contracts (17/17)
 
 **Documentation Tests**:
+
 - Core documentation all present (35/35) ✅
 - Advanced documentation all present (28/28) ✅
 - Development documentation all present (24/24) ✅
@@ -98,6 +103,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 - Tier structure validation (14/14 pass, 2 fail) ❌
 
 **Failures**:
+
 1. `test_no_unexpected_directories` - Found extra directories in `/docs/`:
    - `/docs/backward-passes/` (with restricted permissions 700)
    - `/docs/extensor/`
@@ -117,6 +123,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 **Example Test Results**:
 
 #### LeNet-EMNIST (10 files)
+
 | File | Status | Issue |
 |------|--------|-------|
 | model.mojo | ⚠️ WARNINGS | 17 doc string warnings |
@@ -135,6 +142,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 #### CIFAR-10 Architectures (6 architectures × 4+ files = 24+ files)
 
 **AlexNet-CIFAR10** - 0/5 pass ❌
+
 - model.mojo - FAIL: dropout tuple return, he_uniform missing, DynamicVector, inout self
 - train.mojo - FAIL: data_loader tuple, cross_entropy_loss missing, dropout tuple
 - inference.mojo - FAIL: data_loader tuple, DynamicVector, inout self
@@ -142,6 +150,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 - weights.mojo - FAIL: tuple return (String, ExTensor)
 
 **ResNet18-CIFAR10** - 0/5 pass ❌
+
 - model.mojo - FAIL: normalization 3-tuple return, he_uniform, DynamicVector, 6+ inout self errors
 - test_model.mojo - FAIL: DynamicVector, inout self, f-string in print
 - train.mojo - FAIL: normalization 3-tuple (2 locations), DynamicVector in arithmetic
@@ -149,24 +158,28 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 - data_loader.mojo - FAIL (symlink to AlexNet)
 
 **DenseNet121-CIFAR10** - 0/4 pass ❌
+
 - model.mojo - FAIL: normalization 3-tuple, DynamicVector, 8+ inout self errors
 - test_model.mojo - FAIL: DynamicVector, inout self, f-string
 - train.mojo - FAIL: batch_utils tuple, data_loader tuple, DynamicVector
 - inference.mojo - FAIL: batch_utils tuple, data_loader tuple, DynamicVector, f-string
 
 **GoogLeNet-CIFAR10** - 0/4 pass ❌
+
 - model.mojo - FAIL: normalization 3-tuple, DynamicVector, inout self, doc warnings
 - test_model.mojo - FAIL: DynamicVector, inout self, f-string
 - train.mojo - FAIL: normalization (2 locations), DynamicVector, missing load_cifar10_train_batches
 - inference.mojo - FAIL: batch_utils tuple, DynamicVector, inout self, f-string
 
 **MobileNetV1-CIFAR10** - 0/4 pass ❌
+
 - model.mojo - FAIL: normalization 3-tuple, DynamicVector, inout self
 - test_model.mojo - FAIL: DynamicVector, inout self, f-string
 - train.mojo - FAIL: normalization 3-tuple (2 locations), batch_utils tuple, DynamicVector
 - inference.mojo - FAIL: batch_utils tuple, DynamicVector, inout self, f-string
 
 **VGG16-CIFAR10** - 0/5 pass ❌
+
 - model.mojo - FAIL: dropout 2-tuple, he_uniform, DynamicVector, inout self
 - train.mojo - FAIL: data_loader tuples (2 locations), dropout tuple, cross_entropy_loss
 - inference.mojo - FAIL: data_loader tuple, DynamicVector, inout self, unknown 'str'
@@ -182,6 +195,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 **Summary**: All 9 benchmark files exist but are placeholder/stub implementations.
 
 **Benchmark Files (9 total)**:
+
 - `benchmarks/scripts/run_benchmarks.mojo` - Stub
 - `benchmarks/scripts/compare_results.mojo` - Stub
 - `benchmarks/papers/*/benchmark.mojo` - All stubs
@@ -204,6 +218,7 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 | Paper Examples | 10 | Mostly placeholders awaiting implementation |
 
 **Examples**:
+
 - `shared/core/layers.mojo` - Placeholder
 - `shared/core/activation.mojo` - Placeholder
 - `shared/core/loss.mojo` - Placeholder (missing cross_entropy_loss)
@@ -215,19 +230,25 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 ### Phase 6: Build System - 3 Types Analyzed
 
 #### 1. Mojo Compilation
+
 **Status**: BLOCKED
+
 - Core modules compile but with warnings (doc strings, deprecated syntax)
 - Example files fail to compile (critical syntax errors)
 - Cannot build distributable packages until core fixes applied
 
 #### 2. Package Structure
+
 **Status**: READY
+
 - Directory structure correct
 - Template system functional
 - Package metadata structure in place
 
 #### 3. CI/CD Pipeline
+
 **Status**: IN PROGRESS
+
 - GitHub workflow files exist
 - Pre-commit hooks configured (mojo format, markdown linting)
 - Test automation framework in place
@@ -257,10 +278,11 @@ fn forward(input: ExTensor) raises -> (ExTensor, ExTensor):
 ```
 
 **Files Affected**:
+
 - `shared/core/dropout.mojo:22` - (ExTensor, ExTensor)
 - `shared/core/normalization.mojo:23` - (ExTensor, ExTensor, ExTensor)
 - `shared/core/normalization.mojo:371` - (ExTensor, ExTensor, ExTensor)
-- `shared/core/broadcasting.mojo:199` - BroadcastIterator.__next__
+- `shared/core/broadcasting.mojo:199` - BroadcastIterator.**next**
 - `shared/data/batch_utils.mojo:90` - (ExTensor, ExTensor)
 - `examples/lenet-emnist/test_gradients.mojo:32` - 5-tuple return
 - `examples/lenet-emnist/test_weight_updates.mojo:146` - 3-tuple return
@@ -271,13 +293,16 @@ fn forward(input: ExTensor) raises -> (ExTensor, ExTensor):
 **Root Cause**: Mojo v0.25.7 changed tuple type initialization syntax. The syntax `(Type1, Type2)` is not recognized.
 
 **Solution Options**:
+
 1. **Use explicit Tuple type** (Recommended):
+
 ```mojo
 fn forward(input: ExTensor) raises -> Tuple[ExTensor, ExTensor]:
     return Tuple(output, mask)
 ```
 
-2. **Use struct wrapper**:
+1. **Use struct wrapper**:
+
 ```mojo
 struct ForwardResult:
     var output: ExTensor
@@ -287,7 +312,8 @@ fn forward(input: ExTensor) raises -> ForwardResult:
     return ForwardResult(output, mask)
 ```
 
-3. **Return single value** (for simple cases):
+1. **Return single value** (for simple cases):
+
 ```mojo
 fn forward(input: ExTensor) raises -> ExTensor:
     return output  // Modify test logic to compute mask separately
@@ -320,6 +346,7 @@ fn forward(inout self, borrowed input: ExTensor) raises -> ExTensor:
 ```
 
 **Files Affected**:
+
 - All 6 CIFAR-10 model.mojo files (ResNet18, DenseNet121, GoogLeNet, MobileNetV1, etc.)
 - All CIFAR-10 test_model.mojo files
 - LeNet-EMNIST test files
@@ -371,6 +398,7 @@ var indices: DynamicVector[Int]
 ```
 
 **Files Affected**:
+
 - `shared/core/arithmetic.mojo:430` - Shape broadcasting operations
 - `examples/resnet18-cifar10/model.mojo` - Multiple uses
 - `examples/densenet121-cifar10/model.mojo` - Multiple uses
@@ -381,21 +409,25 @@ var indices: DynamicVector[Int]
 **Root Cause**: DynamicVector was expected but not implemented in current Mojo stdlib.
 
 **Solution Options**:
+
 1. **Use List[Int] instead** (Recommended):
+
 ```mojo
 var shape: List[Int] = List[Int]()
 shape.append(h)
 shape.append(w)
 ```
 
-2. **Implement custom vector type**:
+1. **Implement custom vector type**:
+
 ```mojo
 struct DynamicVector[T]:
     var _data: List[T]
     # ... custom implementation
 ```
 
-3. **Use tuple/fixed-size arrays**:
+1. **Use tuple/fixed-size arrays**:
+
 ```mojo
 var shape: SIMD[DType.int32, 2] = SIMD[DType.int32, 2](h, w)
 ```
@@ -426,13 +458,16 @@ fn compute_gradients() raises -> List[ExTensor]:
 ```
 
 **Files Affected**:
+
 - `examples/lenet-emnist/test_gradients.mojo:89` - compute_gradients_with_capture()
 - `examples/lenet-emnist/test_weight_updates.mojo:120` - copy_weights()
 
 **Root Cause**: ExTensor struct doesn't implement Copyable and Movable traits, preventing it from being stored in collections.
 
 **Solution Options**:
+
 1. **Use struct wrapper** (Recommended):
+
 ```mojo
 struct WeightSnapshot:
     var conv1_kernel: ExTensor
@@ -443,7 +478,8 @@ fn copy_weights(model: LeNet5) raises -> WeightSnapshot:
     return WeightSnapshot(model.conv1_kernel, model.conv1_bias)
 ```
 
-2. **Process immediately instead of collecting**:
+1. **Process immediately instead of collecting**:
+
 ```mojo
 fn analyze_weights(model: LeNet5) raises -> WeightAnalysis:
     # Compute stats for each weight individually
@@ -451,7 +487,8 @@ fn analyze_weights(model: LeNet5) raises -> WeightAnalysis:
     return WeightAnalysis(mean=..., std=..., ...)
 ```
 
-3. **Add Copyable/Movable to ExTensor**:
+1. **Add Copyable/Movable to ExTensor**:
+
 ```mojo
 @value  # Makes struct Copyable/Movable
 struct ExTensor:
@@ -480,10 +517,12 @@ fn initialize_weights_he() raises:
 ```
 
 **Functions Missing**:
+
 - `he_uniform(fan_in: Int, fan_out: Int) -> ExTensor`
 - `xavier_uniform(fan_in: Int, fan_out: Int) -> ExTensor`
 
 **Files Affected**:
+
 - `examples/alexnet-cifar10/model.mojo` - Uses he_uniform
 - `examples/vgg16-cifar10/model.mojo` - Uses he_uniform/xavier_uniform
 
@@ -526,10 +565,12 @@ fn training_step() raises:
 ```
 
 **Functions Missing**:
+
 - `cross_entropy_loss(logits: ExTensor, targets: ExTensor) -> Float32`
 - `cross_entropy_loss_backward(logits: ExTensor, targets: ExTensor) -> ExTensor`
 
 **Files Affected**:
+
 - `examples/alexnet-cifar10/train.mojo`
 - `examples/vgg16-cifar10/train.mojo`
 - `examples/googlenet-cifar10/train.mojo`
@@ -575,6 +616,7 @@ print(f"Training samples: {train_images.shape()[0]}")
 ```
 
 **Files Affected**:
+
 - `examples/resnet18-cifar10/test_model.mojo`
 - `examples/densenet121-cifar10/train.mojo`
 - `examples/googlenet-cifar10/inference.mojo`
@@ -621,6 +663,7 @@ fn forward(self, owned input: ExTensor) -> ExTensor:  # "owned" is deprecated fo
 ```
 
 **Examples**:
+
 - `examples/lenet-emnist/model.mojo` - 17 warnings
 - `examples/lenet-emnist/weights.mojo` - 11 warnings + deprecated `owned` syntax
 - `examples/lenet-emnist/data_loader.mojo` - 12 warnings
@@ -671,6 +714,7 @@ Two extra directories exist in `/docs/` that break the 5-tier documentation stru
 **Test Impact**: 2 test failures in `test_doc_structure.py`
 
 **Solution**: Delete or reorganize:
+
 ```bash
 rm -rf /home/mvillmow/ml-odyssey/docs/backward-passes/
 rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
@@ -773,30 +817,35 @@ Paper Examples (10):
 **Timeline**: Days 1-2 (4-6 hours)
 
 #### Step 1.1: Fix Tuple Return Type Syntax
+
 - **Files**: 12 files across shared/core and examples
 - **Action**: Update all tuple return signatures to use explicit Tuple type or struct wrappers
 - **Testing**: Compile shared/core modules first
 - **Estimated**: 2-3 hours
 
 #### Step 1.2: Fix Self Parameter Syntax
+
 - **Files**: 20+ model and utility files
 - **Action**: Remove inout/borrowed qualifiers from self parameters
 - **Testing**: Verify method calls still work
 - **Estimated**: 3-4 hours
 
 #### Step 1.3: Replace DynamicVector with List[Int]
+
 - **Files**: arithmetic.mojo + 4 architecture files
 - **Action**: Global search-replace DynamicVector with List
 - **Testing**: Verify shape operations work correctly
 - **Estimated**: 1-2 hours
 
 #### Step 1.4: Implement ExTensor Copyable/Movable
+
 - **Files**: ExTensor definition + usage in collections
 - **Action**: Add @value decorator or implement traits, or refactor to struct wrappers
 - **Testing**: Verify List[ExTensor] works or use struct wrappers
 - **Estimated**: 1 hour
 
 **Phase 1 Completion Criteria**:
+
 - ✓ All shared/core modules compile without errors
 - ✓ Broadcasting module works
 - ✓ Normalization and dropout compile
@@ -811,24 +860,28 @@ Paper Examples (10):
 **Timeline**: Day 2-3 (2-4 hours)
 
 #### Step 2.1: Implement Initializers
+
 - **File**: shared/core/initializers.mojo
 - **Functions**: he_uniform(), xavier_uniform()
 - **Testing**: AlexNet/VGG16 weight initialization
 - **Estimated**: 1-1.5 hours
 
 #### Step 2.2: Implement Cross-Entropy Loss
+
 - **File**: shared/core/loss.mojo
 - **Functions**: cross_entropy_loss(), cross_entropy_loss_backward()
 - **Testing**: AlexNet/VGG16/GoogLeNet training
 - **Estimated**: 1-1.5 hours
 
 #### Step 2.3: Implement Missing Data Functions
-- **File**: shared/data/batch_utils.mojo or __init__.mojo
+
+- **File**: shared/data/batch_utils.mojo or **init**.mojo
 - **Function**: load_cifar10_train_batches()
 - **Testing**: GoogLeNet training
 - **Estimated**: 0.5 hours
 
 **Phase 2 Completion Criteria**:
+
 - ✓ All 6 CIFAR-10 model.mojo files compile
 - ✓ All train.mojo files can import required functions
 - ✓ All initializers available
@@ -842,24 +895,28 @@ Paper Examples (10):
 **Timeline**: Day 3-4 (4-6 hours, cascading from Phase 1-2)
 
 #### Step 3.1: Fix F-String Usage
+
 - **Files**: 4+ test_model.mojo and inference.mojo files
 - **Action**: Replace f-strings with string concatenation
 - **Testing**: Print statements output correctly
 - **Estimated**: 1 hour
 
 #### Step 3.2: Fix str() Built-in Usage
+
 - **File**: VGG16 inference.mojo
 - **Action**: Replace str() calls with appropriate string conversion
 - **Testing**: Inference output correct
 - **Estimated**: 0.5 hours
 
 #### Step 3.3: Clean Up Documentation Warnings
+
 - **Files**: 15+ files across examples
 - **Action**: Add periods/backticks to docstrings
 - **Testing**: No warnings during compilation
 - **Estimated**: 1-2 hours
 
 **Phase 3 Completion Criteria**:
+
 - ✓ All 6 CIFAR-10 architectures compile without errors
 - ✓ All LeNet-EMNIST test files compile
 - ✓ No documentation warnings
@@ -873,21 +930,25 @@ Paper Examples (10):
 **Timeline**: Day 4 (2-3 hours)
 
 #### Step 4.1: Clean Up /docs/ Directory
+
 - **Action**: Remove backward-passes/ and extensor/ directories
 - **Testing**: Documentation structure tests pass
 - **Estimated**: 0.5 hours
 
 #### Step 4.2: Re-run Full Test Suite
+
 - **Command**: `pytest tests/foundation/ -v`
 - **Target**: 100% pass rate (156/156 tests)
 - **Estimated**: 1 hour
 
 #### Step 4.3: Validate Example Compilation
+
 - **Command**: Compile all 6 CIFAR-10 architectures + LeNet-EMNIST
 - **Target**: All compile without errors
 - **Estimated**: 1 hour
 
 **Phase 4 Completion Criteria**:
+
 - ✓ Foundation test suite: 156/156 passing
 - ✓ All examples compile successfully
 - ✓ Documentation structure correct
@@ -919,11 +980,13 @@ Phase 4: Testing & Validation
 ## Validation & Regression Testing
 
 ### Pre-Fix Baseline
+
 - Foundation tests: 154/156 passing (98.7%)
 - Python tests: 97/97 passing (100%)
 - Example files: 2/44 passing (4.5%)
 
 ### Post-Fix Target
+
 - Foundation tests: 156/156 passing (100%)
 - Python tests: 97/97 passing (100%)
 - Example files: 44/44 passing (100%)
@@ -932,6 +995,7 @@ Phase 4: Testing & Validation
 ### Regression Test Plan
 
 After each phase, run:
+
 ```bash
 # Phase 1 completion
 pytest tests/foundation/test_directory_structure.py -v
@@ -957,7 +1021,9 @@ mojo test examples/**/*.mojo
 ### A. File-by-File Test Results
 
 #### Python Tests (32 files, 97 tests, 100% pass)
+
 All in `tests/tooling/` and `tests/foundation/`:
+
 - test_paper_filter.py - 13/13 ✅
 - test_user_prompts.py - 17/17 ✅
 - test_paper_scaffold.py - 25/25 ✅
@@ -966,21 +1032,26 @@ All in `tests/tooling/` and `tests/foundation/`:
 - test_category_organization.py - 15/15 ✅
 
 #### Foundation Tests (12 files, 154/156 passing, 98.7%)
+
 Structure tests: 100/100 ✅
 Documentation tests: 54/54 ✅
 Doc structure: 14/16 ⚠️ (2 failures due to extra directories)
 Getting started: 10/15 ⊘ (5 skipped for missing first-paper.md)
 
 #### Example Files (44 files, 2/44 passing, 4.5%)
+
 LeNet-EMNIST:
+
 - test_loss_decrease.mojo ✅
 - test_training_metrics.mojo ✅
 - Others: 8 failures due to tuple syntax and traits
 
 CIFAR-10 (6 architectures):
+
 - All 23+ files fail due to multiple critical syntax errors
 
 #### Benchmark Files (9 files, 0/9 passing, 0%)
+
 All stubs/placeholders - Expected
 
 ---
@@ -988,6 +1059,7 @@ All stubs/placeholders - Expected
 ### B. Error Categorization
 
 **By Frequency**:
+
 1. Tuple return type errors - 35+ instances
 2. Inout self parameter errors - 100+ instances
 3. DynamicVector missing - 15+ instances
@@ -998,6 +1070,7 @@ All stubs/placeholders - Expected
 8. Built-in function errors - 1 instance
 
 **By Severity**:
+
 - CRITICAL (blocking compilation): 4 issues
 - HIGH (blocking examples): 3 issues
 - MEDIUM (quality/features): 2 issues
@@ -1031,6 +1104,7 @@ All stubs/placeholders - Expected
 The ML Odyssey codebase demonstrates:
 
 **Strengths**:
+
 1. ✅ Excellent Python test infrastructure (100% pass)
 2. ✅ Solid directory structure and planning (100% structure tests pass)
 3. ✅ Good documentation organization (96% of tests pass)
@@ -1038,6 +1112,7 @@ The ML Odyssey codebase demonstrates:
 5. ✅ Proper use of agents and hierarchical planning
 
 **Weaknesses**:
+
 1. ❌ Tuple return type syntax incompatibility with Mojo v0.25.7
 2. ❌ Self parameter syntax incompatibility in method definitions
 3. ❌ DynamicVector not available in standard library
@@ -1045,6 +1120,7 @@ The ML Odyssey codebase demonstrates:
 5. ❌ ExTensor cannot be used in collections
 
 **Impact Summary**:
+
 - Development infrastructure: READY (100%)
 - Foundation & planning: READY (98.7%)
 - Example implementations: BLOCKED (4.5% - only 2 of 44 files work)
@@ -1074,11 +1150,13 @@ The ML Odyssey codebase demonstrates:
 ### Risk Assessment
 
 **High Risk Items**:
+
 - Tuple return type fix requires changes across 12 files - potential for cascading errors
 - Self parameter fix affects 100+ method definitions - high impact if done incorrectly
 - ExTensor trait issue may require architectural changes to tensor handling
 
 **Mitigation**:
+
 - Use automated search-replace for mechanical fixes
 - Test each phase before moving to next
 - Keep git commits granular for easy rollback

@@ -28,16 +28,19 @@ var _original_numel_quantized: Int  # Metadata for quantization: -1 if not quant
 ```
 
 **Initialization** (Line 107):
+
 ```mojo
 self._original_numel_quantized = -1  # Initialize as non-quantized (fixes DATA-001)
 ```
 
 **Copy Constructor** (Line 163):
+
 ```mojo
 self._original_numel_quantized = existing._original_numel_quantized
 ```
 
 **Struct Documentation** (Lines 54-67):
+
 ```mojo
 Fixes: #1904 (MOJO-001), #1905 (MOJO-002), #1906 (MOJO-003),
        #1907 (MOJO-004), #1908 (MOJO-005),
@@ -56,6 +59,7 @@ Attributes:
 **Pattern for `to_mxfp4()` (Lines 1501-1560)**:
 
 1. Remove FIXME comments:
+
 ```mojo
 # BEFORE (removed):
 # **FIXME (DATA-001 - P0 CRITICAL)**: Padding data loss...
@@ -67,7 +71,8 @@ Attributes:
 # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 ```
 
-2. Store original size before padding (DATA-001):
+1. Store original size before padding (DATA-001):
+
 ```mojo
 var result = ExTensor(List[Int](), DType.uint8)
 
@@ -75,7 +80,8 @@ var result = ExTensor(List[Int](), DType.uint8)
 result._original_numel_quantized = self._numel
 ```
 
-3. Add bounds check and dtype validation (DATA-003, DATA-004):
+1. Add bounds check and dtype validation (DATA-003, DATA-004):
+
 ```mojo
 for i in range(32):
     var idx = start_idx + i
@@ -101,7 +107,8 @@ for i in range(32):
         values.append(Float32(0.0))  # Padding
 ```
 
-4. Update docstring (DATA-005):
+1. Update docstring (DATA-005):
+
 ```mojo
 Examples:
     # Aligned size (32 elements = 1 block)
@@ -127,6 +134,7 @@ Note:
 **Pattern for `from_mxfp4()` (Lines 1593-1635)**:
 
 1. Check if metadata exists (DATA-002):
+
 ```mojo
 var num_blocks = self._numel // 17
 var padded_output_size = num_blocks * 32
@@ -141,7 +149,8 @@ else:
     output_size = padded_output_size
 ```
 
-2. Decode only needed elements:
+1. Decode only needed elements:
+
 ```mojo
 var values = block.to_float32_array()
 for i in range(32):
@@ -150,7 +159,8 @@ for i in range(32):
         result._data.bitcast[Float32]()[output_idx] = values[i]
 ```
 
-3. Trim to original size if needed:
+1. Trim to original size if needed:
+
 ```mojo
 # Trim result to original size if needed
 if output_size < padded_output_size:
@@ -168,6 +178,7 @@ return result^
 **Pattern for `to_fp8()` (Lines 691-713)**:
 
 1. Update docstring with FP16 note (DATA-005):
+
 ```mojo
 Note:
     FP8 has limited range (~±240) and precision. Values outside this range
@@ -175,7 +186,8 @@ Note:
     FP16 inputs are converted to FP32 before quantization.
 ```
 
-2. Add bounds check and dtype validation in loop:
+1. Add bounds check and dtype validation in loop:
+
 ```mojo
 for i in range(self._numel):
     # Bounds check (fixes DATA-004)
@@ -205,6 +217,7 @@ for i in range(self._numel):
 **Pattern applied uniformly to all 8 methods** (Lines 784-816 for to_int8, similar for others):
 
 1. Add bounds check and dtype validation header:
+
 ```mojo
 for i in range(self._numel):
     # Bounds check (fixes DATA-004)
@@ -216,14 +229,16 @@ for i in range(self._numel):
     if self._dtype == DType.float16:
 ```
 
-2. Add defensive re-validation at end of dtype chain:
+1. Add defensive re-validation at end of dtype chain:
+
 ```mojo
     else:
         # Defensive re-validation (fixes DATA-003)
         raise Error("Unsupported dtype for to_intX conversion")
 ```
 
-3. Update docstring with FP16 note:
+1. Update docstring with FP16 note:
+
 ```mojo
 Note:
     FP16 inputs are converted to FP32 before conversion.
@@ -234,12 +249,14 @@ Note:
 ### Modified File: `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo`
 
 **Changes**:
+
 - Total lines modified: ~150 lines
 - New lines added: ~60 lines (bounds checks, dtype validation, metadata)
 - FIXME comments replaced: ~90 lines
 - Methods modified: 13 (2 quantize + 2 dequantize + 4 basic + 5 integer)
 
 **Line Ranges by Issue**:
+
 - DATA-001/002: Lines 84, 107, 163, 1519, 1593-1635, 1685, 1762-1801
 - DATA-003: Lines 677, 705-707, 1178, 1206-1208, 1537, 1545-1546, 1703, 1710-1712, and all 8 integer methods
 - DATA-004: Lines 692-694, 1193-1195, 1531-1533, 1697-1699, and all 8 integer methods
@@ -248,12 +265,14 @@ Note:
 ### New Test File: `/home/mvillmow/ml-odyssey/tests/test_data_integrity.mojo`
 
 **Statistics**:
+
 - Total lines: ~320 lines
 - Test functions: 12
 - Lines per test: ~25 lines average
 - Coverage: All 5 issues + backwards compatibility + metadata preservation
 
 **Test Functions**:
+
 1. `test_mxfp4_aligned_roundtrip()` - DATA-001/002 basic
 2. `test_mxfp4_unaligned_roundtrip()` - DATA-001/002 critical
 3. `test_mxfp4_various_unaligned_sizes()` - DATA-001/002 comprehensive
@@ -270,21 +289,25 @@ Note:
 ## Implementation Quality
 
 ### Defensive Programming
+
 - Bounds checks that logically shouldn't fail (defensive)
 - Dtype validation at bitcast point (not just entry)
 - Clear error messages for debugging
 
 ### Backwards Compatibility
+
 - Sentinel value (-1) for non-quantized tensors
 - Fallback to padded size if metadata missing
 - Existing API unchanged
 
 ### Code Consistency
+
 - Same pattern applied to all methods
 - Clear comments indicating which issue is fixed
 - Uniform error message format
 
 ### Testing
+
 - Critical test case for each issue
 - Edge cases (aligned, unaligned, various sizes)
 - Metadata and backwards compatibility verified
@@ -293,12 +316,14 @@ Note:
 ## Verification Steps
 
 1. **Compile Check**:
+
    ```bash
    cd /home/mvillmow/ml-odyssey
    mojo shared/core/extensor.mojo 2>&1 | head -20
    ```
 
 2. **Test Execution**:
+
    ```bash
    mojo tests/test_data_integrity.mojo
    ```
@@ -311,26 +336,31 @@ Note:
 ## Summary of Changes by Issue
 
 ### DATA-001: Metadata field, storage in to_mxfp4/to_nvfp4
+
 - **Total changes**: 3 locations (struct + 2 methods)
 - **Code lines**: ~10 lines of implementation code
 - **Impact**: Tensors now preserve original size through quantization
 
 ### DATA-002: Metadata restoration in from_mxfp4/from_nvfp4
+
 - **Total changes**: 2 locations (2 dequant methods)
 - **Code lines**: ~20 lines of restoration + trimming logic
 - **Impact**: Dequantized tensors restore to original size
 
 ### DATA-003: Dtype validation in all 13 conversion methods
+
 - **Total changes**: 13 locations (defensive else clause)
 - **Code lines**: ~2 lines per method × 13 = ~26 lines
 - **Impact**: Type safety, catches corruption early
 
 ### DATA-004: Bounds checking in all 13 conversion methods
+
 - **Total changes**: 13 locations (if check in each loop)
 - **Code lines**: ~3 lines per method × 13 = ~39 lines
 - **Impact**: Memory safety, prevents undefined behavior
 
 ### DATA-005: Documentation updates in docstrings
+
 - **Total changes**: 6 locations (4 quantization + 2 others)
 - **Code lines**: ~8 lines per method documentation
 - **Impact**: Users understand FP16→FP32 conversion path

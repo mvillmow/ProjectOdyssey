@@ -185,6 +185,7 @@ fn modify(inout self):
 ```
 
 **CORRECT**:
+
 ```mojo
 fn __init__(mut self, value: Int):
     self.value = value
@@ -196,6 +197,7 @@ fn modify(mut self):
 #### ❌ DEPRECATED: `@value` decorator → ✅ USE: `@fieldwise_init` + traits
 
 **WRONG**:
+
 ```mojo
 @value
 struct Transform:
@@ -203,6 +205,7 @@ struct Transform:
 ```
 
 **CORRECT**:
+
 ```mojo
 @fieldwise_init
 struct Transform(Copyable, Movable):
@@ -212,6 +215,7 @@ struct Transform(Copyable, Movable):
 #### ❌ NON-EXISTENT: `DynamicVector` → ✅ USE: `List`
 
 **WRONG**:
+
 ```mojo
 from collections.vector import DynamicVector
 
@@ -220,6 +224,7 @@ values.push_back(42)
 ```
 
 **CORRECT**:
+
 ```mojo
 var values = List[Int](10)
 values.append(42)
@@ -228,12 +233,14 @@ values.append(42)
 #### ❌ INVALID: Tuple return syntax `-> (T1, T2)` → ✅ USE: `Tuple[T1, T2]`
 
 **WRONG**:
+
 ```mojo
 fn compute() -> (Float32, Float32):
     return (1.0, 2.0)
 ```
 
 **CORRECT**:
+
 ```mojo
 fn compute() -> Tuple[Float32, Float32]:
     return Tuple[Float32, Float32](1.0, 2.0)
@@ -244,24 +251,28 @@ fn compute() -> Tuple[Float32, Float32]:
 **Mojo v0.25.7+ parameter types**:
 
 1. **`read`** (default) - Immutable reference:
+
 ```mojo
 fn process(data: ExTensor):  # read is implicit
     print(data.shape)
 ```
 
-2. **`mut`** - Mutable reference (replaces `inout`):
+1. **`mut`** - Mutable reference (replaces `inout`):
+
 ```mojo
 fn modify(mut data: ExTensor):
     data._fill_zero()
 ```
 
-3. **`var`** - Owned value (takes ownership):
+1. **`var`** - Owned value (takes ownership):
+
 ```mojo
 fn consume(var data: ExTensor):
     data += 1  # Owns the data, caller loses access
 ```
 
-4. **`ref`** - Parametric reference (advanced):
+1. **`ref`** - Parametric reference (advanced):
+
 ```mojo
 fn generic_ref[mutability: Bool](ref [mutability] data: ExTensor):
     # Can be mutable or immutable based on parameter
@@ -270,6 +281,7 @@ fn generic_ref[mutability: Bool](ref [mutability] data: ExTensor):
 #### ✅ CORRECT: Struct Initialization Patterns
 
 **With `@fieldwise_init` (recommended for simple structs)**:
+
 ```mojo
 @fieldwise_init
 struct Point(Copyable, Movable):
@@ -280,6 +292,7 @@ var p = Point(1.0, 2.0)  # Auto-generated constructor
 ```
 
 **Manual constructor (for complex initialization)**:
+
 ```mojo
 struct Tensor(Copyable, Movable):
     var data: DTypePointer[DType.float32]
@@ -296,6 +309,7 @@ struct Tensor(Copyable, Movable):
 #### ✅ CORRECT: Common Mojo Patterns
 
 **Loop with mutable references**:
+
 ```mojo
 var list = List[Int](1, 2, 3)
 for ref item in list:  # Use 'ref' to mutate
@@ -303,6 +317,7 @@ for ref item in list:  # Use 'ref' to mutate
 ```
 
 **Ownership transfer with `^`**:
+
 ```mojo
 fn take_ownership(var data: String):
     print(data)
@@ -313,6 +328,7 @@ take_ownership(message^)  # Transfer ownership
 ```
 
 **Trait conformance**:
+
 ```mojo
 struct MyType(Copyable, Movable, Stringable):
     var value: Int

@@ -26,7 +26,7 @@ from ..helpers.assertions import (
 fn test_equal_same_values() raises:
     """Test equal with identical values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = equal(a, b)
@@ -41,7 +41,7 @@ fn test_equal_same_values() raises:
 fn test_equal_different_values() raises:
     """Test equal with different values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = equal(a, b)
@@ -55,7 +55,7 @@ fn test_equal_different_values() raises:
 fn test_equal_with_dunder() raises:
     """Test equal using == operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = a == b
@@ -72,7 +72,7 @@ fn test_equal_with_dunder() raises:
 fn test_not_equal_same_values() raises:
     """Test not_equal with identical values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = not_equal(a, b)
@@ -86,7 +86,7 @@ fn test_not_equal_same_values() raises:
 fn test_not_equal_different_values() raises:
     """Test not_equal with different values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = not_equal(a, b)
@@ -100,7 +100,7 @@ fn test_not_equal_different_values() raises:
 fn test_not_equal_with_dunder() raises:
     """Test not_equal using != operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = a != b
@@ -117,7 +117,7 @@ fn test_not_equal_with_dunder() raises:
 fn test_less_true() raises:
     """Test less when first tensor has smaller values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = less(a, b)
@@ -131,7 +131,7 @@ fn test_less_true() raises:
 fn test_less_false() raises:
     """Test less when first tensor has larger values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = less(a, b)
@@ -145,7 +145,7 @@ fn test_less_false() raises:
 fn test_less_with_dunder() raises:
     """Test less using < operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = a < b
@@ -162,7 +162,7 @@ fn test_less_with_dunder() raises:
 fn test_less_equal_true_less() raises:
     """Test less_equal when values are less."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = less_equal(a, b)
@@ -175,7 +175,7 @@ fn test_less_equal_true_less() raises:
 fn test_less_equal_true_equal() raises:
     """Test less_equal when values are equal."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 3.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = less_equal(a, b)
@@ -188,7 +188,7 @@ fn test_less_equal_true_equal() raises:
 fn test_less_equal_with_dunder() raises:
     """Test less_equal using <= operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = a <= b
@@ -205,7 +205,7 @@ fn test_less_equal_with_dunder() raises:
 fn test_greater_true() raises:
     """Test greater when first tensor has larger values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = greater(a, b)
@@ -218,7 +218,7 @@ fn test_greater_true() raises:
 fn test_greater_false() raises:
     """Test greater when first tensor has smaller values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = greater(a, b)
@@ -231,7 +231,7 @@ fn test_greater_false() raises:
 fn test_greater_with_dunder() raises:
     """Test greater using > operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = a > b
@@ -248,7 +248,7 @@ fn test_greater_with_dunder() raises:
 fn test_greater_equal_true_greater() raises:
     """Test greater_equal when values are greater."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = greater_equal(a, b)
@@ -261,7 +261,7 @@ fn test_greater_equal_true_greater() raises:
 fn test_greater_equal_true_equal() raises:
     """Test greater_equal when values are equal."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 3.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = greater_equal(a, b)
@@ -274,7 +274,7 @@ fn test_greater_equal_true_equal() raises:
 fn test_greater_equal_with_dunder() raises:
     """Test greater_equal using >= operator."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = a >= b
@@ -291,7 +291,7 @@ fn test_greater_equal_with_dunder() raises:
 fn test_comparison_with_negatives() raises:
     """Test comparisons with negative values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     let a = full(shape, -2.0, DType.float32)
     let b = full(shape, -5.0, DType.float32)

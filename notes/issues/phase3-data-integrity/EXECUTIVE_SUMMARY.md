@@ -76,16 +76,19 @@ if (dtype == float32) {  // OK
 ### Why This Approach?
 
 **For DATA-001/002**: Chose simple metadata field vs. new struct wrapper
+
 - ✓ Simpler implementation (1 field = 8 bytes)
 - ✓ Backwards compatible (works with old code)
 - ✗ New struct would break API
 
 **For DATA-003/004**: Applied defensive checks uniformly across all 13 methods
+
 - ✓ Catches bugs early
 - ✓ Consistent error handling
 - ✓ Clear who is responsible for validation
 
 **For DATA-005**: Updated docstrings with concrete examples
+
 - ✓ Shows aligned AND non-aligned tensor behavior
 - ✓ Explains FP16→FP32 conversion path
 - ✓ Users can verify expected behavior
@@ -112,6 +115,7 @@ Created 12 comprehensive tests covering:
 ✓ Backwards compatibility for non-quantized tensors
 
 **Critical Test**: `test_mxfp4_unaligned_roundtrip()`
+
 - Tests 33 elements → MXFP4 → 33 elements
 - Fails without DATA-001 fix
 - Fails without DATA-002 fix

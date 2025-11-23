@@ -5,7 +5,7 @@ converters. Covers identity, lambda, conditional, clamp, debug, batch processing
 and type conversions.
 """
 
-from tensor import Tensor
+from shared.core.extensor import ExTensor
 from tests.shared.conftest import (
     assert_true,
     assert_equal,

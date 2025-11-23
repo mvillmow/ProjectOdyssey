@@ -7,7 +7,7 @@ what's currently implemented, what's in progress, and what's deferred.
 
 ## Current Status (Committed)
 
-###  ✅ Implemented
+### ✅ Implemented
 
 1. **Variable wrapper** (`variable.mojo`)
    - Wraps ExTensor with `requires_grad` flag
@@ -30,12 +30,12 @@ what's currently implemented, what's in progress, and what's deferred.
 
 ### 🚧 In Progress
 
-5. **Automatic operation recording**
+1. **Automatic operation recording**
    - Requires Variable arithmetic operations (`__add__`, `__mul__`, etc.)
    - Requires global tape management
    - **Challenge**: Mojo's constraints on global mutable state
 
-6. **Full backward() implementation**
+2. **Full backward() implementation**
    - Requires topological sort of computation graph
    - Requires backward function dispatch
    - Requires gradient accumulation
@@ -46,6 +46,7 @@ what's currently implemented, what's in progress, and what's deferred.
 ### Challenge 1: Global Mutable State
 
 **Problem**: PyTorch-style autograd relies heavily on global mutable state:
+
 - Global tape that's implicitly updated
 - Global Variable registry
 - Thread-local storage for gradients
@@ -54,6 +55,7 @@ what's currently implemented, what's in progress, and what's deferred.
 management makes this difficult.
 
 **Solutions Considered**:
+
 1. **Explicit tape passing** - Pass tape as argument to all operations
    - Pro: Works with Mojo's ownership
    - Con: Verbose API, not Pythonic
@@ -69,6 +71,7 @@ management makes this difficult.
 ### Challenge 2: Type System Limitations
 
 **Problem**: PyTorch uses dynamic typing extensively:
+
 - Operations return Union types
 - Dict[int, Tensor] for gradient storage
 - Dynamic dispatch based on operation type
@@ -76,6 +79,7 @@ management makes this difficult.
 **Mojo Constraint**: Static typing, limited generic support, no Dict in stdlib.
 
 **Solutions Implemented**:
+
 - `VariableRegistry`: Parallel DynamicVectors instead of Dict
 - `GradientRegistry`: Same approach for gradients
 - String-based operation dispatch (if/elif chains)
@@ -123,6 +127,7 @@ with better structure than raw ExTensor operations.
 **Value**: Semi-automatic gradients for custom operations.
 
 **API**:
+
 ```mojo
 var tape = GradientTape()
 tape.enable()
@@ -145,6 +150,7 @@ tape.backward(loss)
 - PyTorch-like API
 
 **Blockers**:
+
 - Mojo language maturity (global state, Dict, better generics)
 - Significant engineering effort
 - May need Mojo stdlib improvements
@@ -162,6 +168,7 @@ tape.backward(loss)
 5. 📝 Clear documentation of limitations and path forward
 
 **Value proposition**:
+
 - Works today with current Mojo
 - Reduces boilerplate compared to pure ExTensor
 - Clear API for training loops

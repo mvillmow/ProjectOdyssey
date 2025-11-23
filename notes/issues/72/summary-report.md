@@ -4,7 +4,7 @@
 
 Issue #72 has successfully completed the design and documentation phase for the ML Odyssey configs/ directory system. The design provides a robust, scalable, three-tier configuration hierarchy (defaults → paper-specific → experiment) that integrates seamlessly with existing Mojo utilities while following KISS and YAGNI principles.
 
-### Key Achievements:
+### Key Achievements
 
 - ✅ Comprehensive architecture designed and documented
 - ✅ Integration with existing `shared/utils/config.mojo` specified

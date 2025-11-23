@@ -38,12 +38,12 @@ from tests.helpers.gradient_checking import check_gradient, compute_numerical_gr
 fn test_matmul_shapes() raises:
     """Test that matmul returns correct output shape."""
     var shape_a = List[Int]()
-    shape_a[0] = 4
-    shape_a[1] = 3
+    shape_a.append(4)
+    shape_a.append(3)
 
     var shape_b = List[Int]()
-    shape_b[0] = 3
-    shape_b[1] = 5
+    shape_b.append(3)
+    shape_b.append(5)
 
     var a = ones(shape_a, DType.float32)
     var b = ones(shape_b, DType.float32)
@@ -58,12 +58,12 @@ fn test_matmul_shapes() raises:
 fn test_matmul_values() raises:
     """Test that matmul computes correct values."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
-    shape_a[1] = 2
+    shape_a.append(2)
+    shape_a.append(2)
 
     var shape_b = List[Int]()
-    shape_b[0] = 2
-    shape_b[1] = 2
+    shape_b.append(2)
+    shape_b.append(2)
 
     var a = zeros(shape_a, DType.float32)
     var b = zeros(shape_b, DType.float32)
@@ -93,8 +93,8 @@ fn test_matmul_values() raises:
 fn test_matmul_identity() raises:
     """Test matmul with identity matrix."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 3
+    shape.append(3)
+    shape.append(3)
 
     var a = zeros(shape, DType.float32)
     var identity = zeros(shape, DType.float32)
@@ -122,12 +122,12 @@ fn test_matmul_identity() raises:
 fn test_matmul_backward_shapes() raises:
     """Test that matmul_backward returns correct gradient shapes."""
     var shape_a = List[Int]()
-    shape_a[0] = 4
-    shape_a[1] = 3
+    shape_a.append(4)
+    shape_a.append(3)
 
     var shape_b = List[Int]()
-    shape_b[0] = 3
-    shape_b[1] = 5
+    shape_b.append(3)
+    shape_b.append(5)
 
     var a = ones(shape_a, DType.float32)
     var b = ones(shape_b, DType.float32)
@@ -135,8 +135,8 @@ fn test_matmul_backward_shapes() raises:
     var result = matmul(a, b)
 
     var grad_output_shape = List[Int]()
-    grad_output_shape[0] = 4
-    grad_output_shape[1] = 5
+    grad_output_shape.append(4)
+    grad_output_shape.append(5)
     var grad_output = ones(grad_output_shape, DType.float32)
 
     var (grad_a, grad_b) = matmul_backward(grad_output, a, b)
@@ -162,8 +162,8 @@ fn test_matmul_backward_gradient_a() raises:
 
     # Create input A with shape (batch*m, k)
     var shape_a = List[Int]()
-    shape_a[0] = batch * m
-    shape_a[1] = k
+    shape_a.append(batch * m)
+    shape_a.append(k)
     var a = zeros(shape_a, DType.float32)
 
     # Initialize A with non-uniform values
@@ -172,8 +172,8 @@ fn test_matmul_backward_gradient_a() raises:
 
     # Create input B with shape (k, n)
     var shape_b = List[Int]()
-    shape_b[0] = k
-    shape_b[1] = n
+    shape_b.append(k)
+    shape_b.append(n)
     var b = zeros(shape_b, DType.float32)
 
     # Initialize B with non-uniform values
@@ -207,8 +207,8 @@ fn test_matmul_backward_gradient_b() raises:
 
     # Create input A with shape (m, k)
     var shape_a = List[Int]()
-    shape_a[0] = m
-    shape_a[1] = k
+    shape_a.append(m)
+    shape_a.append(k)
     var a = zeros(shape_a, DType.float32)
 
     # Initialize A with non-uniform values
@@ -217,8 +217,8 @@ fn test_matmul_backward_gradient_b() raises:
 
     # Create input B with shape (k, n)
     var shape_b = List[Int]()
-    shape_b[0] = k
-    shape_b[1] = n
+    shape_b.append(k)
+    shape_b.append(n)
     var b = zeros(shape_b, DType.float32)
 
     # Initialize B with non-uniform values
@@ -249,8 +249,8 @@ fn test_matmul_backward_gradient_b() raises:
 fn test_transpose_shapes() raises:
     """Test that transpose returns correct output shape."""
     var shape = List[Int]()
-    shape[0] = 4
-    shape[1] = 10
+    shape.append(4)
+    shape.append(10)
 
     var a = ones(shape, DType.float32)
     var result = transpose(a)
@@ -263,8 +263,8 @@ fn test_transpose_shapes() raises:
 fn test_transpose_values() raises:
     """Test that transpose computes correct values."""
     var shape = List[Int]()
-    shape[0] = 2
-    shape[1] = 3
+    shape.append(2)
+    shape.append(3)
 
     var a = zeros(shape, DType.float32)
 
@@ -290,8 +290,8 @@ fn test_transpose_values() raises:
 fn test_transpose_double() raises:
     """Test that transpose(transpose(A)) = A."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 4
+    shape.append(3)
+    shape.append(4)
 
     var a = zeros(shape, DType.float32)
 
@@ -313,15 +313,15 @@ fn test_transpose_double() raises:
 fn test_transpose_backward_shapes() raises:
     """Test that transpose_backward returns correct gradient shape."""
     var shape = List[Int]()
-    shape[0] = 4
-    shape[1] = 10
+    shape.append(4)
+    shape.append(10)
 
     var a = ones(shape, DType.float32)
     var result = transpose(a)
 
     var grad_output_shape = List[Int]()
-    grad_output_shape[0] = 10
-    grad_output_shape[1] = 4
+    grad_output_shape.append(10)
+    grad_output_shape.append(4)
     var grad_output = ones(grad_output_shape, DType.float32)
 
     var grad_input = transpose_backward(grad_output)
@@ -342,8 +342,8 @@ fn test_transpose_backward_gradient() raises:
 
     # Create input with shape (m, n)
     var shape = List[Int]()
-    shape[0] = m
-    shape[1] = n
+    shape.append(m)
+    shape.append(n)
     var x = zeros(shape, DType.float32)
 
     # Initialize with non-uniform values
@@ -373,7 +373,7 @@ fn test_transpose_backward_gradient() raises:
 fn test_dot_shapes() raises:
     """Test that dot returns scalar output."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
 
     var a = ones(shape, DType.float32)
     var b = ones(shape, DType.float32)
@@ -387,7 +387,7 @@ fn test_dot_shapes() raises:
 fn test_dot_values() raises:
     """Test that dot computes correct values."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
 
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -409,7 +409,7 @@ fn test_dot_values() raises:
 fn test_dot_orthogonal() raises:
     """Test dot product of orthogonal vectors."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
 
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -435,10 +435,10 @@ fn test_dot_orthogonal() raises:
 fn test_outer_shapes() raises:
     """Test that outer returns correct output shape."""
     var shape_a = List[Int]()
-    shape_a[0] = 3
+    shape_a.append(3)
 
     var shape_b = List[Int]()
-    shape_b[0] = 4
+    shape_b.append(4)
 
     var a = ones(shape_a, DType.float32)
     var b = ones(shape_b, DType.float32)
@@ -453,10 +453,10 @@ fn test_outer_shapes() raises:
 fn test_outer_values() raises:
     """Test that outer computes correct values."""
     var shape_a = List[Int]()
-    shape_a[0] = 2
+    shape_a.append(2)
 
     var shape_b = List[Int]()
-    shape_b[0] = 3
+    shape_b.append(3)
 
     var a = zeros(shape_a, DType.float32)
     var b = zeros(shape_b, DType.float32)

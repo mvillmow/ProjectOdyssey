@@ -29,6 +29,7 @@ runtime issues, or missing dependencies. Document required fixes for each exampl
 **Lines of Output**: 12 error messages
 
 **Primary Issues**:
+
 1. **API Mismatch** (CRITICAL): Imports non-existent classes
    - `from shared.core import Layer, Sequential` - these classes do NOT exist
    - `from shared.training import Trainer, SGD` - these classes do NOT exist
@@ -58,6 +59,7 @@ doesn't exist in the pure functional library implementation.
 **Lines of Output**: 7 error messages
 
 **Primary Issues**:
+
 1. **API Mismatch** (CRITICAL): Non-existent exports
    - `from shared.core import Layer, Sequential, ReLU, Softmax`
    - Actual API: `relu()` and `softmax()` are functions, not classes
@@ -74,6 +76,7 @@ doesn't exist in the pure functional library implementation.
 4. **Missing Import**: Uses `List` type without importing it
 
 **Root Cause**:
+
 - Assumes Layer/Sequential class design not implemented
 - Uses obsolete/incorrect Mojo method parameter syntax
 
@@ -87,6 +90,7 @@ doesn't exist in the pure functional library implementation.
 **Lines of Output**: 10 error messages
 
 **Primary Issues**:
+
 1. **API Mismatch** (CRITICAL): Non-existent trainer classes
    - `from shared.training import Trainer, SGD, CrossEntropyLoss`
    - These classes do NOT exist in shared.training
@@ -117,6 +121,7 @@ doesn't exist in the pure functional library implementation.
 **Lines of Output**: 20+ error messages
 
 **Primary Issues**:
+
 1. **Stdlib Import Error**: Outdated or incorrect import path
    - `from collections.vector import DynamicVector`
    - Need to verify correct Mojo stdlib path for DynamicVector
@@ -141,11 +146,13 @@ doesn't exist in the pure functional library implementation.
    - Line 44: `fn create_synthetic_data() raises -> (ExTensor, ExTensor):`
 
 **Root Cause**:
+
 - Uses outdated Mojo syntax (`let` for variables)
 - Missing function exports from shared library
 - Mojo language version/syntax incompatibilities
 
 **Fix Required**:
+
 - Change all `let` declarations to `var`
 - Fix stdlib import paths
 - Add `mean` and `mean_backward` to `shared.core/__init__.mojo` exports
@@ -161,6 +168,7 @@ doesn't exist in the pure functional library implementation.
 **Examples Affected**: quickstart, first_model_model, first_model_train
 
 **Problem**: Examples were written assuming a high-level OOP API that doesn't exist:
+
 - `Layer` and `Sequential` container classes
 - `Trainer` class for orchestrating training loops
 - Optimizer classes (`SGD`, etc.)
@@ -168,6 +176,7 @@ doesn't exist in the pure functional library implementation.
 - `TensorDataset` class
 
 **Actual Library Design**: Pure functional API
+
 - `ExTensor` as core type
 - Functions: `add()`, `subtract()`, `matmul()`, `relu()`, `sigmoid()`, etc.
 - Callbacks interface and schedulers (no high-level Trainer)
@@ -181,6 +190,7 @@ doesn't exist in the pure functional library implementation.
 ### Category 2: Shared Library Structural Issues (20% of issues)
 
 **Problems**:
+
 1. `BatchLoader` struct attempts inheritance from `BaseLoader`
    - Mojo does NOT support struct inheritance
    - Workaround: Use composition or make generic
@@ -202,6 +212,7 @@ doesn't exist in the pure functional library implementation.
 **Examples Affected**: mlp_training_example primarily
 
 **Problems**:
+
 1. Syntax errors: `let` keyword for variables (Mojo uses `var`)
 2. Outdated stdlib import paths: `collections.vector.DynamicVector`
 3. Method parameter syntax: `inout self` (should be `inout self: Self` or just `self`)
@@ -215,6 +226,7 @@ doesn't exist in the pure functional library implementation.
 ## FIXME Markers Added
 
 All 4 example files have been updated with FIXME comments documenting:
+
 - Compilation errors found
 - Root causes
 - Severity level
@@ -246,6 +258,7 @@ All 4 example files have been updated with FIXME comments documenting:
 ### Immediate Actions (Priority: CRITICAL)
 
 1. **Fix Shared Library Issues First**:
+
    ```mojo
    // In shared/core/__init__.mojo - add missing exports:
    from .reduction import mean, mean_backward  // or correct module path
@@ -264,6 +277,7 @@ All 4 example files have been updated with FIXME comments documenting:
    ```
 
 2. **Fix MLP Example** (Most Complete, Closest to Working):
+
    ```mojo
    // Replace all 'let' with 'var'
    var learning_rate = 0.1
@@ -294,11 +308,13 @@ All 4 example files have been updated with FIXME comments documenting:
 ### Testing Strategy
 
 After fixes, test each example with:
+
 ```bash
 pixi run mojo run -I . examples/getting-started/<example>.mojo 2>&1 | head -50
 ```
 
 Success criteria:
+
 - Compilation succeeds (no errors)
 - Execution completes or reaches timeout gracefully
 - Output shows expected results (loss decreasing, training progress, etc.)
@@ -308,6 +324,7 @@ Success criteria:
 ### Documentation Updates
 
 Update `docs/getting-started/`:
+
 1. **quickstart.md**: Change from high-level OOP to functional API
 2. **first_model.md**: Choose approach (functional or build Layer/Sequential first)
 3. **mlp_training.md**: Verify syntax and show correct patterns
@@ -348,6 +365,7 @@ Update `docs/getting-started/`:
 ## References
 
 **Related Documentation**:
+
 - `/notes/review/` - Architecture and design decisions
 - `/agents/` - Team coordination and workflows
 - `shared/core/__init__.mojo` - Core library exports

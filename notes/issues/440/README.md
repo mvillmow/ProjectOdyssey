@@ -111,15 +111,16 @@ fn measure_time[func: fn () raises -> None]() raises -> Float64:
 
    ```
 
-2. **Keep commented** if Tensor not ready (current approach is fine)
+1. **Keep commented** if Tensor not ready (current approach is fine)
 
-3. **Remove entirely** if not needed soon
+2. **Remove entirely** if not needed soon
 
 ### 3. Enhanced Data Generators
 
 **Current**: Basic generators exist (uniform, sequential)
 
 **Potential Additions** (if tests need them):
+
 ```mojo
 
 fn create_random_vector(size: Int, seed: Int = 42) -> List[Float32]:

@@ -61,7 +61,7 @@
 
 ### 1. Generic Dispatch Pattern
 
-### Before (66 lines per function):
+### Before (66 lines per function)
 
 ```mojo
 fn relu(tensor: ExTensor) raises -> ExTensor:

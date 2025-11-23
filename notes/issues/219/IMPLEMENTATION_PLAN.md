@@ -248,14 +248,14 @@ Critical for flexibility but can be deferred initially.
 
 ### Tasks
 
-- [ ] **__getitem__()**: Read access via indexing
+- [ ] ****getitem**()**: Read access via indexing
   - Support integer indexing: tensor[0]
   - Support slicing: tensor[1:5]
   - Support multi-dimensional: tensor[1:3, 2:4]
   - Support negative indices: tensor[-1]
   - Support stride: tensor[::2]
-- [ ] **__setitem__()**: Write access via indexing
-  - Support same patterns as __getitem__
+- [ ] ****setitem**()**: Write access via indexing
+  - Support same patterns as **getitem**
   - Handle broadcasting of RHS
 - [ ] Return views when possible, copies when necessary
 
@@ -369,7 +369,7 @@ Nice-to-have operations for specific use cases.
 ### Development Workflow
 
 1. **For each operation**:
-   - Read Array API spec: https://data-apis.org/array-api/latest/API_specification/
+   - Read Array API spec: <https://data-apis.org/array-api/latest/API_specification/>
    - Write TDD tests first (already done for most)
    - Implement simple/correct version first
    - Optimize after correctness verified
@@ -384,7 +384,7 @@ Nice-to-have operations for specific use cases.
 
 1. **Code Organization**:
    - Group operations by module (arithmetic.mojo, reduction.mojo, etc.)
-   - Export in __init__.mojo
+   - Export in **init**.mojo
    - Add dunder methods to ExTensor struct where applicable
    - Keep implementation and tests in sync
 

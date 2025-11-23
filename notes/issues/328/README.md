@@ -42,19 +42,23 @@ Conduct comprehensive review of StepLR implementation and tests to ensure produc
    - Type annotations on all parameters
 
 1. **Good defensive programming**
+
    ```mojo
    if self.step_size <= 0:
        return self.base_lr
    ```
+
    - Prevents division by zero
    - Graceful degradation instead of crash
 
 1. **Correct mathematical implementation**
+
    ```mojo
    var num_steps = epoch // self.step_size
    var decay_factor = self.gamma ** num_steps
    return self.base_lr * decay_factor
    ```
+
    - Integer division for discrete steps ✅
    - Power operator for exponential decay ✅
    - Formula matches specification exactly ✅

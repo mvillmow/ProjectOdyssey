@@ -72,6 +72,7 @@ Implement coverage tool setup based on the design from Issue #473 and validated 
 ### Start Small
 
 1. **Validate Python coverage works**:
+
    ```bash
    # Test coverage for Python scripts
    pytest --cov=scripts tests/

@@ -19,7 +19,7 @@ All issues have been addressed with targeted, minimal changes.
 
 ### Issue 1: Trait Object Dereferencing Error
 
-**Location**: `text_transforms.mojo`, line 408 (TextCompose.__call__)
+**Location**: `text_transforms.mojo`, line 408 (TextCompose.**call**)
 
 ### Problem
 

@@ -36,7 +36,7 @@ jobs:
 
       - name: Run gradient checking tests
         run: |
-          pixi run mojo test tests/shared/core/test_gradient_checking.mojo
+          pixi run mojo tests/shared/core/test_gradient_checking.mojo
 
       - name: Check test results
         if: failure()

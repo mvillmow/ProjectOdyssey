@@ -118,6 +118,7 @@ Created comprehensive release workflow at `.github/workflows/release.yml` with:
 #### Artifact Handling
 
 Artifacts included in releases:
+
 - Python packages: `*.tar.gz`, `*.whl`
 - Mojo packages: Built binaries from src/
 - `checksums.txt` - SHA256 checksums
@@ -140,6 +141,7 @@ git push origin v0.1.0
 ```
 
 **Manual trigger**:
+
 - Go to Actions > Release workflow
 - Click "Run workflow"
 - Enter version (e.g., v0.1.0-beta.1)

@@ -8,7 +8,7 @@
 
 The Shared Library has **substantial test coverage** with 45 out of 71 test files implemented (63%). However, **17 critical test files are empty** and need implementation. The existing implementations are comprehensive with thousands of lines of real code.
 
-##Test Coverage Analysis
+## Test Coverage Analysis
 
 ### Overall Statistics
 
@@ -228,17 +228,17 @@ These test base classes (individual implementations already tested):
 
 8-10. **test_datasets.mojo, test_loaders.mojo, test_transforms.mojo**
 
-   - Tests: Base class interfaces
-   - Impact: Documentation/validation
-   - Estimated effort: 30-50 lines each
+- Tests: Base class interfaces
+- Impact: Documentation/validation
+- Estimated effort: 30-50 lines each
 
 ### Priority 5: Performance Tests (NICE TO HAVE)
 
 11-12. **bench_data_loading.mojo, bench_layers.mojo**
 
-   - Tests: Performance benchmarks
-   - Impact: Performance tracking
-   - Estimated effort: 100-150 lines each
+- Tests: Performance benchmarks
+- Impact: Performance tracking
+- Estimated effort: 100-150 lines each
 
 ## Recommendations
 
@@ -299,11 +299,13 @@ From Issue #499 success criteria:
 ### For Issue #499 Completion
 
 1. **Run Existing Tests** (Requires Mojo)
+
    ```bash
    mojo test tests/shared/
    ```
 
 1. **Generate Coverage Report** (Requires Mojo)
+
    ```bash
    # If Mojo has coverage tool:
    mojo test --coverage tests/shared/

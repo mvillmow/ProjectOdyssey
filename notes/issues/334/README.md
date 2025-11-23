@@ -24,6 +24,7 @@ lr(epoch) = base_lr                              if epoch >= warmup_epochs
 ```
 
 Where:
+
 - `base_lr`: Target learning rate after warmup completes (e.g., 0.1)
 - `warmup_epochs`: Number of epochs for the warmup phase (e.g., 10)
 - `epoch`: Current training epoch (0-indexed)
@@ -31,6 +32,7 @@ Where:
 ### Example Behavior
 
 With `base_lr=0.1`, `warmup_epochs=10`:
+
 - Epoch 0: lr = 0.0 (0%)
 - Epoch 5: lr = 0.05 (50%)
 - Epoch 10: lr = 0.1 (100%, warmup complete)
@@ -116,6 +118,7 @@ trait LRScheduler:
 | `warmup_epochs` | Int | Required | [1, ) | Epochs for warmup |
 
 **Common Values**:
+
 - `warmup_epochs`: 5, 10, 20 (5-10% of total epochs)
 - `base_lr`: 0.001, 0.01, 0.1 (depends on optimizer)
 
@@ -233,12 +236,15 @@ for epoch in range(100):
 ## Files
 
 **Implementation**:
+
 - `shared/training/schedulers.mojo` - WarmupLR struct implementation (lines 158-213)
 
 **Tests**:
+
 - `tests/shared/training/test_warmup_scheduler.mojo` - Comprehensive test suite
 
 **Documentation**:
+
 - `shared/training/README.md` - Usage examples and API docs
 
 ## Comparison with Other Schedulers
@@ -256,21 +262,25 @@ for epoch in range(100):
 Based on research and practice:
 
 **Small models/datasets**:
+
 - Warmup epochs: 5-10
 - Total epochs: 100-200
 - Warmup ratio: 5-10%
 
 **Medium models**:
+
 - Warmup epochs: 10-20
 - Total epochs: 200-500
 - Warmup ratio: 5-10%
 
 **Large models (ResNet, Transformers)**:
+
 - Warmup epochs: 5-20
 - Total epochs: 100-300
 - Warmup ratio: 5-10%
 
 **Very large models (BERT, GPT)**:
+
 - Warmup steps: 10,000-40,000
 - Total steps: 100,000-1,000,000
 - Warmup ratio: 5-10%

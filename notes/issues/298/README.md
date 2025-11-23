@@ -31,7 +31,7 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 1. Tensor Operations Architecture
 
-### Four-Layer Hierarchy:
+### Four-Layer Hierarchy
 
 1. **Core Operations Layer** (this component)
    - Provides unified interface for all mathematical operations
@@ -52,14 +52,14 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 2. Numerical Stability First
 
-### Priority Order:
+### Priority Order
 
 1. Correctness - All operations produce mathematically correct results
 1. Numerical Stability - Proper handling of edge cases and overflow/underflow
 1. Readability - Simple, understandable implementations
 1. Performance - Optimization comes after correctness is verified
 
-### Key Stability Measures:
+### Key Stability Measures
 
 - Sigmoid/tanh: Use appropriate clipping to avoid overflow
 - Softmax: Subtract max value before exponential (log-sum-exp trick)
@@ -70,7 +70,7 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 3. Broadcasting Support
 
-### Design Approach:
+### Design Approach
 
 - Start with simple, non-broadcast implementations
 - Add broadcasting support incrementally
@@ -81,7 +81,7 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 4. Initialization Variance Scaling
 
-### Statistical Requirements:
+### Statistical Requirements
 
 - **Xavier/Glorot:** Variance = 2 / (fan_in + fan_out)
   - For sigmoid/tanh activations
@@ -95,13 +95,13 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 5. Metrics Design
 
-### Three-Tier Metrics System:
+### Three-Tier Metrics System
 
 1. **Accuracy Metrics:** Top-1, top-k, per-class accuracy
 1. **Loss Tracking:** Moving averages, min/max/mean statistics
 1. **Confusion Matrix:** Detailed classification error analysis
 
-### Design Principles:
+### Design Principles
 
 - Handle edge cases (empty batches, single-class predictions)
 - Provide interpretable outputs suitable for logging
@@ -111,14 +111,14 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 6. API Design Principles
 
-### Interface Guidelines:
+### Interface Guidelines
 
 - **Simplicity:** Functions should have clear, minimal parameters
 - **Consistency:** Similar operations should have similar signatures
 - **Type Safety:** Leverage Mojo's type system for compile-time checks
 - **Documentation:** All public APIs must have comprehensive docstrings
 
-### Error Handling:
+### Error Handling
 
 - Explicit error messages for dimension mismatches
 - Graceful handling of edge cases (empty tensors, invalid inputs)
@@ -128,14 +128,14 @@ Design and document fundamental mathematical operations needed for machine learn
 
 ### 7. Mojo Language Patterns
 
-### Code Standards:
+### Code Standards
 
 - Prefer `fn` over `def` for performance-critical operations
 - Use `owned` and `borrowed` for memory safety
 - Leverage SIMD for element-wise operations
 - Follow struct-based design for encapsulation
 
-### Performance Considerations:
+### Performance Considerations
 
 - Use SIMD operations for vectorizable computations
 - Minimize memory allocations

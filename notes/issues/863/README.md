@@ -328,7 +328,8 @@ pyyaml>=6.0
 
    ```
 
-3. **Create Verification Scripts**
+1. **Create Verification Scripts**
+
    ```bash
 
    # Make scripts executable
@@ -340,13 +341,13 @@ pyyaml>=6.0
 
    ```
 
-4. **Document Build Process**
+2. **Document Build Process**
    - Create `BUILD_PACKAGE.md` with build instructions
    - Document configuration requirements
    - Provide troubleshooting guide
    - Include verification procedures
 
-5. **Configure Distribution**
+3. **Configure Distribution**
    - Update `.gitignore` to exclude binary artifacts
    - Document package contents
    - Specify package metadata
@@ -549,14 +550,16 @@ After completing this packaging phase:
 
    ```
 
-2. **Test Installation**:
+1. **Test Installation**:
+
    ```bash
 
    ./scripts/install_verify.sh
 
    ```
 
-3. **Verify Integration**:
+2. **Verify Integration**:
+
    ```bash
 
    # Test complete installer workflow
@@ -564,13 +567,13 @@ After completing this packaging phase:
 
    ```
 
-4. **Create PR**:
+3. **Create PR**:
    - Link to issue #863
    - Include build scripts and documentation
    - Do NOT commit binary artifacts
    - Reference issue in commit message
 
-5. **Cleanup Phase** (#864):
+4. **Cleanup Phase** (#864):
    - Address any issues found during packaging
    - Refactor if needed
    - Finalize documentation

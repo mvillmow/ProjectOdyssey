@@ -32,7 +32,7 @@ from ..helpers.assertions import (
 fn test_empty_tensor_creation() raises:
     """Test creating empty tensor with 0 elements."""
     var shape = List[Int]()
-    shape[0] = 0
+    shape.append(0)
     let t = zeros(shape, DType.float32)
 
     assert_numel(t, 0, "Empty tensor should have 0 elements")
@@ -42,7 +42,7 @@ fn test_empty_tensor_creation() raises:
 fn test_empty_tensor_operations() raises:
     """Test operations on empty tensors."""
     var shape = List[Int]()
-    shape[0] = 0
+    shape.append(0)
     let a = zeros(shape, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = add(a, b)
@@ -53,8 +53,8 @@ fn test_empty_tensor_operations() raises:
 fn test_empty_tensor_2d() raises:
     """Test 2D empty tensor (0 rows or 0 cols)."""
     var shape = List[Int]()
-    shape[0] = 3
-    shape[1] = 0  # 3x0 matrix
+    shape.append(3)
+    shape.append(0  # 3x0 matrix)
     let t = zeros(shape, DType.float32)
 
     assert_numel(t, 0, "3x0 matrix should have 0 elements")
@@ -91,7 +91,7 @@ fn test_scalar_to_vector_broadcast() raises:
     """Test broadcasting scalar to vector."""
     var shape_scalar = List[Int]()
     var shape_vec = List[Int]()
-    shape_vec[0] = 5
+    shape_vec.append(5)
 
     let a = full(shape_scalar, 10.0, DType.float32)  # scalar
     let b = full(shape_vec, 2.0, DType.float32)  # vector
@@ -108,7 +108,7 @@ fn test_scalar_to_vector_broadcast() raises:
 fn test_large_1d_tensor() raises:
     """Test creating and operating on large 1D tensor."""
     var shape = List[Int]()
-    shape[0] = 10000000  # 10 million elements
+    shape.append(10000000  # 10 million elements)
     let t = zeros(shape, DType.float32)
 
     assert_numel(t, 10000000, "Large tensor should have 10M elements")
@@ -135,7 +135,7 @@ fn test_large_dimension_count() raises:
 fn test_nan_propagation_add() raises:
     """Test that NaN propagates through addition."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, Float32.nan, DType.float32)  # TODO: Create NaN tensor
     # let b = ones(shape, DType.float32)
     # let c = add(a, b)
@@ -150,7 +150,7 @@ fn test_nan_propagation_add() raises:
 fn test_nan_propagation_multiply() raises:
     """Test that NaN propagates through multiplication."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, Float32.nan, DType.float32)
     # let b = full(shape, 0.0, DType.float32)
     # let c = multiply(a, b)
@@ -165,7 +165,7 @@ fn test_nan_propagation_multiply() raises:
 fn test_nan_equality() raises:
     """Test NaN equality (NaN != NaN per IEEE 754)."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     # let a = full(shape, Float32.nan, DType.float32)
     # let b = full(shape, Float32.nan, DType.float32)
     # let c = equal(a, b)  # TODO: Implement equal()
@@ -182,7 +182,7 @@ fn test_nan_equality() raises:
 fn test_inf_arithmetic() raises:
     """Test arithmetic with infinity."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, Float32.infinity, DType.float32)
     # let b = full(shape, 1.0, DType.float32)
     # let c = add(a, b)
@@ -197,7 +197,7 @@ fn test_inf_arithmetic() raises:
 fn test_inf_multiplication() raises:
     """Test infinity multiplication."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, Float32.infinity, DType.float32)
     # let b = full(shape, 2.0, DType.float32)
     # let c = multiply(a, b)
@@ -212,7 +212,7 @@ fn test_inf_multiplication() raises:
 fn test_inf_times_zero() raises:
     """Test infinity times zero (should give NaN)."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, Float32.infinity, DType.float32)
     # let b = zeros(shape, DType.float32)
     # let c = multiply(a, b)
@@ -227,7 +227,7 @@ fn test_inf_times_zero() raises:
 fn test_negative_inf() raises:
     """Test negative infinity."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, -Float32.infinity, DType.float32)
     # let b = full(shape, 1.0, DType.float32)
     # let c = add(a, b)
@@ -242,7 +242,7 @@ fn test_negative_inf() raises:
 fn test_inf_comparison() raises:
     """Test comparison with infinity."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # let a = full(shape, 1000000.0, DType.float32)
     # let b = full(shape, Float32.infinity, DType.float32)
     # let c = less(a, b)  # TODO: Implement less()
@@ -259,7 +259,7 @@ fn test_inf_comparison() raises:
 fn test_overflow_float32() raises:
     """Test overflow behavior for float32."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create values close to float32 max
     # let a = full(shape, 1e38, DType.float32)
     # let b = full(shape, 1e38, DType.float32)
@@ -275,7 +275,7 @@ fn test_overflow_float32() raises:
 fn test_overflow_int32() raises:
     """Test overflow behavior for int32."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create values close to int32 max
     # let a = full(shape, 2147483647.0, DType.int32)  # INT32_MAX
     # let b = ones(shape, DType.int32)
@@ -293,7 +293,7 @@ fn test_overflow_int32() raises:
 fn test_underflow_float64() raises:
     """Test underflow behavior for float64."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create very small values
     # let a = full(shape, 1e-300, DType.float64)
     # let b = full(shape, 1e-100, DType.float64)
@@ -311,7 +311,7 @@ fn test_underflow_float64() raises:
 fn test_divide_by_zero_float() raises:
     """Test division by zero for floating point."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = full(shape, 1.0, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = divide(a, b)
@@ -328,7 +328,7 @@ fn test_divide_by_zero_float() raises:
 fn test_divide_by_zero_int() raises:
     """Test division by zero for integers."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = full(shape, 10.0, DType.int32)
     let b = zeros(shape, DType.int32)
     # let c = divide(a, b)  # TODO: Implement divide()
@@ -341,7 +341,7 @@ fn test_divide_by_zero_int() raises:
 fn test_divide_zero_by_zero() raises:
     """Test 0/0 (should give NaN for floats)."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = zeros(shape, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = divide(a, b)
@@ -356,7 +356,7 @@ fn test_divide_zero_by_zero() raises:
 fn test_divide_negative_by_zero() raises:
     """Test -1/0 (should give -inf for floats)."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = full(shape, -1.0, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = divide(a, b)
@@ -377,7 +377,7 @@ fn test_divide_negative_by_zero() raises:
 fn test_modulo_by_zero() raises:
     """Test modulo by zero (should give NaN for floats)."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = full(shape, 5.0, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = modulo(a, b)
@@ -392,7 +392,7 @@ fn test_modulo_by_zero() raises:
 fn test_modulo_with_negative_divisor() raises:
     """Test modulo with negative divisor."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, -3.0, DType.float32)
     let c = modulo(a, b)
@@ -404,7 +404,7 @@ fn test_modulo_with_negative_divisor() raises:
 fn test_modulo_both_negative() raises:
     """Test modulo with both negative values."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, -7.0, DType.float32)
     let b = full(shape, -3.0, DType.float32)
     let c = modulo(a, b)
@@ -420,7 +420,7 @@ fn test_modulo_both_negative() raises:
 fn test_power_zero_to_zero() raises:
     """Test 0^0 (mathematically undefined, conventionally 1)."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = zeros(shape, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = power(a, b)
@@ -432,7 +432,7 @@ fn test_power_zero_to_zero() raises:
 fn test_power_negative_base_even() raises:
     """Test negative base with even exponent."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, -2.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
     let c = power(a, b)
@@ -444,7 +444,7 @@ fn test_power_negative_base_even() raises:
 fn test_power_negative_base_odd() raises:
     """Test negative base with odd exponent."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, -2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = power(a, b)
@@ -456,7 +456,7 @@ fn test_power_negative_base_odd() raises:
 fn test_power_zero_base_positive_exp() raises:
     """Test 0^n for positive n."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = zeros(shape, DType.float32)
     let b = full(shape, 5.0, DType.float32)
     let c = power(a, b)
@@ -472,7 +472,7 @@ fn test_power_zero_base_positive_exp() raises:
 fn test_floor_divide_by_zero() raises:
     """Test floor division by zero."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     let a = full(shape, 10.0, DType.float32)
     let b = zeros(shape, DType.float32)
     let c = floor_divide(a, b)
@@ -487,7 +487,7 @@ fn test_floor_divide_by_zero() raises:
 fn test_floor_divide_with_remainder() raises:
     """Test floor division with remainder."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = floor_divide(a, b)
@@ -499,7 +499,7 @@ fn test_floor_divide_with_remainder() raises:
 fn test_floor_divide_negative_result() raises:
     """Test floor division with negative result."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, -7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
     let c = floor_divide(a, b)
@@ -515,7 +515,7 @@ fn test_floor_divide_negative_result() raises:
 fn test_comparison_with_zero() raises:
     """Test comparison operations with zero."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
 
     let positive = full(shape, 1.0, DType.float32)
     let negative = full(shape, -1.0, DType.float32)
@@ -536,7 +536,7 @@ fn test_comparison_with_zero() raises:
 fn test_comparison_equal_values() raises:
     """Test equality comparison with same values."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = full(shape, 3.14159, DType.float64)
     let b = full(shape, 3.14159, DType.float64)
     let c = equal(a, b)
@@ -548,7 +548,7 @@ fn test_comparison_equal_values() raises:
 fn test_comparison_very_close_values() raises:
     """Test comparison with very close but not equal values."""
     var shape = List[Int]()
-    shape[0] = 1
+    shape.append(1)
     let a = full(shape, 1.0, DType.float32)
     let b = full(shape, 1.0000001, DType.float32)
 
@@ -569,7 +569,7 @@ fn test_comparison_very_close_values() raises:
 fn test_subnormal_numbers() raises:
     """Test handling of subnormal (denormalized) numbers."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create subnormal float32 value (~1e-40)
     # let a = full(shape, 1e-40, DType.float32)
     # let b = full(shape, 1.0, DType.float32)
@@ -587,7 +587,7 @@ fn test_subnormal_numbers() raises:
 fn test_catastrophic_cancellation() raises:
     """Test catastrophic cancellation in subtraction."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create two very close values
     # let a = full(shape, 1.0000000001, DType.float64)
     # let b = full(shape, 1.0, DType.float64)
@@ -601,7 +601,7 @@ fn test_catastrophic_cancellation() raises:
 fn test_associativity_loss() raises:
     """Test loss of associativity in floating point."""
     var shape = List[Int]()
-    shape[0] = 3
+    shape.append(3)
     # Create specific values to demonstrate associativity loss
     # let a = full(shape, 1e20, DType.float32)
     # let b = full(shape, 1.0, DType.float32)
@@ -622,7 +622,7 @@ fn test_associativity_loss() raises:
 fn test_bool_dtype_operations() raises:
     """Test operations on bool dtype tensors."""
     var shape = List[Int]()
-    shape[0] = 5
+    shape.append(5)
     let a = ones(shape, DType.bool)  # All True
     let b = zeros(shape, DType.bool)  # All False
 
@@ -635,7 +635,7 @@ fn test_bool_dtype_operations() raises:
 fn test_int8_range() raises:
     """Test int8 range limits."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create values at int8 boundaries
     # let a = full(shape, 127.0, DType.int8)  # INT8_MAX
     # let b = full(shape, -128.0, DType.int8)  # INT8_MIN
@@ -649,7 +649,7 @@ fn test_int8_range() raises:
 fn test_uint8_range() raises:
     """Test uint8 range limits."""
     var shape = List[Int]()
-    shape[0] = 2
+    shape.append(2)
     # Create values at uint8 boundaries
     # let a = full(shape, 255.0, DType.uint8)  # UINT8_MAX
     # let b = zeros(shape, DType.uint8)  # UINT8_MIN

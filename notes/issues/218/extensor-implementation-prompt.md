@@ -4,7 +4,7 @@
 
 You are tasked with designing and implementing **ExTensors** (Extensible Tensors), a comprehensive tensor class for the ML Odyssey project. This implementation will serve as the foundational data structure for all neural network operations in the codebase. ExTensors must be both flexible enough to handle dynamic workloads and optimized enough to achieve maximum performance when tensor shapes are known at compile-time.
 
-### Why this matters:
+### Why this matters
 
 - Tensors are the fundamental data structure in all deep learning frameworks
 - Performance-critical ML workloads require compile-time optimization when possible
@@ -24,7 +24,7 @@ Re-interpret GitHub issues #218-222 (originally scoped for basic arithmetic oper
 
 Implement ExTensor as a runtime-flexible tensor class:
 
-### ExTensor (Dynamic Tensor):
+### ExTensor (Dynamic Tensor)
 
 - Shape determined at runtime
 - Flexible for research and experimentation
@@ -40,7 +40,7 @@ Implement ExTensor as a runtime-flexible tensor class:
 
 Implement operations grounded in tensor calculus principles:
 
-### Core tensor algebra operations:
+### Core tensor algebra operations
 
 - **Tensor addition/subtraction:** Only defined for tensors of same rank and compatible dimensions
 - **Tensor product (outer product):** Combines tensors of rank (m, n) to produce rank (m+n) tensor
@@ -48,7 +48,7 @@ Implement operations grounded in tensor calculus principles:
 - **Scalar multiplication:** Scales all tensor elements
 - **Element-wise operations:** Apply functions element-wise while preserving tensor structure
 
-### Type preservation:
+### Type preservation
 
 - Operations should preserve or predictably transform tensor rank
 - Clear semantics for covariant vs contravariant indices (future extension)
@@ -256,14 +256,14 @@ Based on the **Array API Standard 2024**, **Mojo's built-in operations**, and Py
 
 Support for arbitrary data types via Mojo's DType system:
 
-### Initial supported types:
+### Initial supported types
 
 - Float: `DType.float16`, `DType.float32`, `DType.float64`
 - Integer: `DType.int8`, `DType.int16`, `DType.int32`, `DType.int64`
 - Unsigned: `DType.uint8`, `DType.uint16`, `DType.uint32`, `DType.uint64`
 - Boolean: `DType.bool`
 
-### Extension path:
+### Extension path
 
 - Custom data types via parametric DType parameter
 - Mixed-precision operations (future)
@@ -288,7 +288,7 @@ Implement NumPy-style broadcasting rules:
 1. Missing dimensions treated as 1
 1. Output shape is element-wise maximum of input shapes
 
-### Examples:
+### Examples
 
 ```text
 (3, 4, 5) + (4, 5)    → (3, 4, 5)  # Missing dimension = 1

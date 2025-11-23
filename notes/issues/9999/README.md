@@ -5,6 +5,7 @@
 Executed all 8 core tensor test files. **All 8 tests FAILED** at compilation stage with systematic compilation errors preventing test execution. No tests reached runtime verification.
 
 **Root Cause**: Multiple compilation errors across the codebase prevent tests from compiling:
+
 1. Missing `assert_shape_equal` function in conftest
 2. `DynamicVector` from `collections.vector` not available in Mojo 0.25.7
 3. `math.abs` and `math.round` not available in Mojo standard library
@@ -38,6 +39,7 @@ Executed all 8 core tensor test files. **All 8 tests FAILED** at compilation sta
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -49,11 +51,13 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/extensor.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`
 2. Invalid import: `from collections.vector import DynamicVector` - `collections.vector` module doesn't exist in Mojo 0.25.7
 3. Invalid function call: `eye(3, DType.float32)` - function requires 4 arguments: `eye(n, m, k, dtype)`
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`: Add `assert_shape_equal` function definition
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_tensors.mojo`: Remove `from collections.vector import DynamicVector`
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_tensors.mojo`: Fix `eye()` function calls to include all 4 arguments
@@ -65,6 +69,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -76,6 +81,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/arithmetic.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in conftest
 2. Implementation file uses `DynamicVector[Int]` which is not available in Mojo 0.25.7
    - Line 430: `fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:`
@@ -85,6 +91,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 4. Test code references undefined variables `grad_a` and `grad_b` (should be from backward pass)
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`: Add `assert_shape_equal` function
 - `/home/mvillmow/ml-odyssey/shared/core/arithmetic.mojo`: Replace `DynamicVector[Int]` with `List[Int]` throughout file
   - Line 380, 430, 473, etc.
@@ -97,6 +104,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -108,6 +116,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/elementwise.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in conftest
 2. Invalid imports in implementation file: `from math import abs as math_abs` and `from math import round as math_round`
    - Mojo 0.25.7 doesn't provide `abs` or `round` in the math module
@@ -122,6 +131,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 4. Invalid import: `from collections.vector import DynamicVector` (Line 49)
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/shared/core/elementwise.mojo`:
   - Line 14: Replace `from math import abs as math_abs` - use builtin or define custom function
   - Line 17: Replace `from math import round as math_round` - use custom implementation
@@ -136,6 +146,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -147,6 +158,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/matrix.mojo` and `shared/core/gradient_types.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in conftest
 2. Invalid import: `from collections.vector import DynamicVector` (Line 31)
 3. Undefined variables `grad_a` and `grad_b` in test code (Lines 146-151)
@@ -155,6 +167,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
    - Line 41: `self.grad_b = grad_b` - cannot implicitly copy ExTensor
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`: Add `assert_shape_equal` function
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_matrix.mojo`:
   - Line 31: Remove `from collections.vector import DynamicVector`
@@ -169,6 +182,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -180,6 +194,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/reduction.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in conftest
 2. Invalid import: `from collections.vector import DynamicVector` (Line 38)
 3. Multiple ExTensor return statements missing move semantics:
@@ -194,6 +209,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
    - Line 788: `var test_coords = coords` - needs `.copy()`
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`: Add `assert_shape_equal` function
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_reduction.mojo`: Remove invalid import (Line 38)
 - `/home/mvillmow/ml-odyssey/shared/core/reduction.mojo`:
@@ -211,6 +227,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Issue**: This test file was listed in the task but doesn't exist in the repository.
 
 **FIXME Locations**:
+
 - Create the missing test file or remove from test list
 
 ---
@@ -220,6 +237,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: use of unknown declaration 'DynamicVector'
 fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:
@@ -231,6 +249,7 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
 **Implementation File Being Tested**: `shared/core/activation.mojo` and `shared/testing/gradient_checker.mojo`
 
 **Root Causes**:
+
 1. DynamicVector not available throughout codebase (passed through many files)
 2. Invalid imports: `from collections.vector import DynamicVector` (Line 17)
 3. Non-raising functions trying to call raising functions:
@@ -247,6 +266,7 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
    - Line 222 in gradient_checking.mojo: `fn scaled_forward(inp: ExTensor) raises -> ExTensor:` captures ExTensor
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/shared/core/arithmetic.mojo`: Replace all `DynamicVector[Int]` with `List[Int]`
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_gradient_checking.mojo`:
   - Line 17: Remove invalid import
@@ -265,6 +285,7 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
 **Exit Code**: 1 (Compilation Error)
 
 **Primary Error**:
+
 ```
 error: module 'conftest' does not contain 'assert_shape_equal'
     assert_shape_equal,
@@ -276,6 +297,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 **Implementation File Being Tested**: `shared/core/pooling.mojo`
 
 **Root Causes**:
+
 1. Missing `assert_shape_equal` function in conftest
 2. Invalid import: `from collections.vector import DynamicVector` (Line 32)
 3. ExTensor return statements missing move semantics:
@@ -284,6 +306,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 4. Closure capture and copyability issues (inherited from gradient_checking.mojo issues)
 
 **FIXME Locations**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`: Add `assert_shape_equal` function
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_backward.mojo`: Remove invalid import (Line 32)
 - `/home/mvillmow/ml-odyssey/shared/core/pooling.mojo`:
@@ -316,7 +339,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 
 ### Priority 2: Supporting Fixes (Required for Tests)
 
-4. **`/home/mvillmow/ml-odyssey/shared/core/reduction.mojo`**
+1. **`/home/mvillmow/ml-odyssey/shared/core/reduction.mojo`**
    - **Lines**: 474, 523, 667, 803 (return statements)
    - **FIXME**: Add `^` to ExTensor return statements
    - **Message**: `FIXME(#1XXX): ExTensor requires move semantics (^) when returning`
@@ -324,19 +347,19 @@ error: module 'conftest' does not contain 'assert_shape_equal'
    - **FIXME**: Add `.copy()` to List assignments
    - **Message**: `FIXME(#1XXX): List[Int] is non-copyable, use .copy() for assignments`
 
-5. **`/home/mvillmow/ml-odyssey/shared/core/pooling.mojo`**
+2. **`/home/mvillmow/ml-odyssey/shared/core/pooling.mojo`**
    - **Lines**: 209, 483 (return statements)
    - **FIXME**: Add `^` to ExTensor return statements
    - **Message**: `FIXME(#1XXX): ExTensor requires move semantics (^) when returning`
 
-6. **`/home/mvillmow/ml-odyssey/shared/core/gradient_types.mojo`**
+3. **`/home/mvillmow/ml-odyssey/shared/core/gradient_types.mojo`**
    - **Lines**: 40, 41 (field assignments)
    - **FIXME**: Use move semantics for ExTensor fields
    - **Message**: `FIXME(#1XXX): ExTensor is non-copyable, use move semantics (^)`
 
 ### Priority 3: Gradient Checking Fixes (Complex, Requires Design Review)
 
-7. **`/home/mvillmow/ml-odyssey/shared/testing/gradient_checker.mojo`**
+1. **`/home/mvillmow/ml-odyssey/shared/testing/gradient_checker.mojo`**
    - **Line**: 41 (math.abs import)
    - **FIXME**: Replace math.abs import
    - **Message**: `FIXME(#1XXX): math.abs not available in Mojo stdlib`
@@ -347,12 +370,12 @@ error: module 'conftest' does not contain 'assert_shape_equal'
    - **FIXME**: Implement Writable trait for List[Int] or format differently
    - **Message**: `FIXME(#1XXX): List[Int] not compatible with print, need custom formatting`
 
-8. **`/home/mvillmow/ml-odyssey/shared/core/activation.mojo`**
+2. **`/home/mvillmow/ml-odyssey/shared/core/activation.mojo`**
    - **Line**: 200 (sigmoid function type issue)
    - **FIXME**: Fix type inference in sigmoid implementation
    - **Message**: `FIXME(#1XXX): Type mismatch in sigmoid: mixing T and Float32 in expression`
 
-9. **`/home/mvillmow/ml-odyssey/tests/shared/core/test_gradient_checking.mojo`**
+3. **`/home/mvillmow/ml-odyssey/tests/shared/core/test_gradient_checking.mojo`**
    - **Lines**: 35, 38, 56, 59, 82, 85, 103, 106, etc. (non-raising functions calling raising functions)
    - **FIXME**: Mark test functions as `raises`
    - **Message**: `FIXME(#1XXX): Test functions must be marked as 'raises' to call raising functions like relu()`
@@ -362,7 +385,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 
 ### Priority 4: Missing Test Files
 
-10. **`/home/mvillmow/ml-odyssey/tests/shared/core/test_broadcasting.mojo`**
+1. **`/home/mvillmow/ml-odyssey/tests/shared/core/test_broadcasting.mojo`**
     - **Status**: File does not exist
     - **FIXME**: Either create the test file or remove from test list
     - **Message**: `FIXME(#1XXX): test_broadcasting.mojo missing from test suite`
@@ -396,6 +419,7 @@ error: module 'conftest' does not contain 'assert_shape_equal'
 ## Test Files with Import Issues
 
 All test files import from `collections.vector` which doesn't exist:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_tensors.mojo` (Line 32)
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_arithmetic.mojo` (Line 34)
 - `/home/mvillmow/ml-odyssey/tests/shared/core/test_elementwise.mojo` (Line 49)

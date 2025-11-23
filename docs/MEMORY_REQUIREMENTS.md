@@ -289,7 +289,7 @@ if batch_memory > 100_000_000:  # 100 MB
 
 - LeNet-5 Paper: LeCun et al. (1998), "Gradient-based learning applied to document recognition"
 - EMNIST Dataset: Cohen et al. (2017), "EMNIST: an extension of MNIST to handwritten letters"
-- ML Odyssey Documentation: [Repository README](../README.md)
+- ML Odyssey Documentation: [Repository README](index.md)
 
 ## Quick Reference
 

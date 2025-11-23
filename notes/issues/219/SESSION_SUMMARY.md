@@ -108,7 +108,7 @@ Updated 3 files to reference Python Array API Standard 2023.12:
 
 1. **`src/extensor/__init__.mojo`** (lines 1-42)
    - Added Array API Standard compliance statement
-   - Linked to https://data-apis.org/array-api/latest/
+   - Linked to <https://data-apis.org/array-api/latest/>
    - Listed implemented operations by category
    - Provided usage examples with operator overloading
 

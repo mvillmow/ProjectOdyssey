@@ -38,7 +38,7 @@ Preserved pre-deletion state with verification report for historical reference.
 
 Removed 13 files (6,606 deletions):
 
-- src/extensor/__init__.mojo
+- src/extensor/**init**.mojo
 - src/extensor/activations.mojo
 - src/extensor/arithmetic.mojo
 - src/extensor/broadcasting.mojo

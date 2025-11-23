@@ -387,7 +387,7 @@ These tests should be written BEFORE implementing the operations (TDD approach).
 
 #### 4.1 Basic Indexing (Est: 2-3 days)
 
-**__getitem__() - 25 tests**
+****getitem**() - 25 tests**
 
 - Integer indexing - 4 tests
 - Single slice - 4 tests
@@ -397,7 +397,7 @@ These tests should be written BEFORE implementing the operations (TDD approach).
 - Out-of-bounds error - 2 tests
 - View verification - 3 tests
 
-**__setitem__() - 20 tests**
+****setitem**() - 20 tests**
 
 - Integer indexing - 4 tests
 - Slice assignment - 4 tests
@@ -797,6 +797,7 @@ Add 30-50% buffer for:
 ### Immediate Actions (This Week)
 
 1. **Clean up duplicate test files** (0.5 day)
+
    ```bash
    rm tests/extensor/test_comparison.mojo
    rm tests/extensor/test_reduction.mojo

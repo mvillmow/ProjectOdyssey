@@ -42,10 +42,10 @@ fn test_maxpool2d_output_shape() raises:
 
     # Create input: (1, 1, 8, 8)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = in_h
-    input_shape[3] = in_w
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(in_h)
+    input_shape.append(in_w)
     var input = ones(input_shape, DType.float32)
 
     # Compute maxpool: kernel=2, stride=2 (default)
@@ -69,10 +69,10 @@ fn test_maxpool2d_stride_default() raises:
 
     # Create input: (1, 1, 6, 6)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 6
-    input_shape[3] = 6
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(6)
+    input_shape.append(6)
     var input = ones(input_shape, DType.float32)
 
     # Compute maxpool: kernel=3, stride=0 (default to kernel_size=3)
@@ -96,10 +96,10 @@ fn test_maxpool2d_numerical_correctness() raises:
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 2
-    input_shape[3] = 2
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(2)
+    input_shape.append(2)
     var input = ones(input_shape, DType.float32)
     input._data.bitcast[Float32]()[0] = 1.0
     input._data.bitcast[Float32]()[1] = 2.0
@@ -131,10 +131,10 @@ fn test_maxpool2d_multi_channel() raises:
 
     # Create input: (1, 3, 4, 4)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 4
-    input_shape[3] = 4
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(4)
+    input_shape.append(4)
     var input = ones(input_shape, DType.float32)
 
     # Compute maxpool: kernel=2, stride=2
@@ -158,10 +158,10 @@ fn test_maxpool2d_batched() raises:
 
     # Create input: (4, 1, 6, 6)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 6
-    input_shape[3] = 6
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(6)
+    input_shape.append(6)
     var input = ones(input_shape, DType.float32)
 
     # Compute maxpool: kernel=2, stride=2
@@ -181,10 +181,10 @@ fn test_maxpool2d_method_selection() raises:
     Currently only 'direct' method is supported.
     """
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 4
-    input_shape[3] = 4
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(4)
+    input_shape.append(4)
     var input = ones(input_shape, DType.float32)
 
     # Test with explicit method="direct"
@@ -207,10 +207,10 @@ fn test_avgpool2d_output_shape() raises:
 
     # Create input: (1, 1, 8, 8)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 8
-    input_shape[3] = 8
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(8)
+    input_shape.append(8)
     var input = ones(input_shape, DType.float32)
 
     # Compute avgpool: kernel=2, stride=2
@@ -233,10 +233,10 @@ fn test_avgpool2d_numerical_correctness() raises:
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 2
-    input_shape[3] = 2
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(2)
+    input_shape.append(2)
     var input = ones(input_shape, DType.float32)
     input._data.bitcast[Float32]()[0] = 1.0
     input._data.bitcast[Float32]()[1] = 2.0
@@ -258,10 +258,10 @@ fn test_avgpool2d_multi_channel() raises:
 
     # Create input: (1, 4, 6, 6)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 6
-    input_shape[3] = 6
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(6)
+    input_shape.append(6)
     var input = ones(input_shape, DType.float32)
 
     # Compute avgpool: kernel=3, stride=3
@@ -278,10 +278,10 @@ fn test_avgpool2d_multi_channel() raises:
 fn test_avgpool2d_method_selection() raises:
     """Test avgpool2d method parameter."""
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 4
-    input_shape[3] = 4
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(4)
+    input_shape.append(4)
     var input = ones(input_shape, DType.float32)
 
     # Test with explicit method="direct"
@@ -306,10 +306,10 @@ fn test_global_avgpool2d_output_shape() raises:
 
     # Create input: (2, 3, 8, 8)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = height
-    input_shape[3] = width
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(height)
+    input_shape.append(width)
     var input = ones(input_shape, DType.float32)
 
     # Compute global avgpool
@@ -331,10 +331,10 @@ fn test_global_avgpool2d_numerical_correctness() raises:
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 2
-    input_shape[3] = 2
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(2)
+    input_shape.append(2)
     var input = ones(input_shape, DType.float32)
     input._data.bitcast[Float32]()[0] = 1.0
     input._data.bitcast[Float32]()[1] = 2.0
@@ -366,10 +366,10 @@ fn test_global_avgpool2d_multi_channel() raises:
 
     # Create input: (1, 2, 3, 3)
     var input_shape = List[Int]()
-    input_shape[0] = batch
-    input_shape[1] = channels
-    input_shape[2] = 3
-    input_shape[3] = 3
+    input_shape.append(batch)
+    input_shape.append(channels)
+    input_shape.append(3)
+    input_shape.append(3)
     var input = ones(input_shape, DType.float32)
 
     # Channel 0: all 1.0, Channel 1: all 2.0
@@ -394,10 +394,10 @@ fn test_global_avgpool2d_multi_channel() raises:
 fn test_global_avgpool2d_method_selection() raises:
     """Test global_avgpool2d method parameter."""
     var input_shape = List[Int]()
-    input_shape[0] = 1
-    input_shape[1] = 1
-    input_shape[2] = 4
-    input_shape[3] = 4
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(4)
+    input_shape.append(4)
     var input = ones(input_shape, DType.float32)
 
     # Test with explicit method="direct"

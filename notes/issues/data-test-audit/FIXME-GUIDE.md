@@ -25,6 +25,7 @@ Quick reference guide for fixing the 13 categories of compilation errors blockin
 ## Category 1: Fix @value Decorator
 
 ### Before (Current - Won't Compile)
+
 ```mojo
 @value
 struct Normalize:
@@ -33,6 +34,7 @@ struct Normalize:
 ```
 
 ### After (Fixed)
+
 ```mojo
 @fieldwise_init
 struct Normalize(Copyable, Movable):
@@ -43,18 +45,21 @@ struct Normalize(Copyable, Movable):
 ### Files to Update (14 structs total)
 
 **transforms.mojo** (4 structs):
+
 - Line 405: `Normalize`
 - Line 501: `Denormalize`
 - Line 629: `RandomCrop`
 - Line 728: `RandomRotation`
 
 **text_transforms.mojo** (4 structs):
+
 - Line 113: `RandomSwapWords`
 - Line 178: `RandomDeleteWords`
 - Line 242: `RandomDuplicateWords`
 - Line 319: `SynonymReplacement`
 
 **generic_transforms.mojo** (6 structs):
+
 - Line 38: `IdentityTransform`
 - Line 70: `Compose`
 - Line 178: `Clamp`
@@ -63,6 +68,7 @@ struct Normalize(Copyable, Movable):
 - Line 445: `ToInt32`
 
 **samplers.mojo** (3 structs):
+
 - Line 38: `SequentialSampler`
 - Line 91: `RandomSampler`
 - Line 172: `WeightedSampler`
@@ -74,6 +80,7 @@ struct Normalize(Copyable, Movable):
 ### Pattern 2a: Add Move Semantics in Returns
 
 **Before**:
+
 ```mojo
 fn crop(self, h_start: Int, h_end: Int, w_start: Int, w_end: Int) -> ExTensor:
     var cropped = ExTensor(...)
@@ -82,6 +89,7 @@ fn crop(self, h_start: Int, h_end: Int, w_start: Int, w_end: Int) -> ExTensor:
 ```
 
 **After**:
+
 ```mojo
 fn crop(self, h_start: Int, h_end: Int, w_start: Int, w_end: Int) -> ExTensor:
     var cropped = ExTensor(...)
@@ -90,6 +98,7 @@ fn crop(self, h_start: Int, h_end: Int, w_start: Int, w_end: Int) -> ExTensor:
 ```
 
 **Files & Lines** (transforms.mojo):
+
 - Line 539: `erase()` method
 - Line 603: `rotate_90()` method
 - Line 788: `to_grayscale()` method
@@ -99,20 +108,24 @@ fn crop(self, h_start: Int, h_end: Int, w_start: Int, w_end: Int) -> ExTensor:
 ### Pattern 2b: Add dtype Parameter in ExTensor Constructor
 
 **Before**:
+
 ```mojo
 return ExTensor(cropped^)  # ERROR: missing dtype
 ```
 
 **After**:
+
 ```mojo
 return ExTensor(cropped^, DType.float32)
 ```
 
 **Files & Lines** (transforms.mojo):
+
 - Line 498: `Crop.apply()` method
 - Line 402: Similar location in crop transform
 
-**Alternative Fix**: Update ExTensor.__init__ signature:
+**Alternative Fix**: Update ExTensor.**init** signature:
+
 ```mojo
 fn __init__(out self, data: List[Float32], shape: List[Int], dtype: DType = DType.float32) raises:
     # Allow dtype to be optional with default
@@ -139,6 +152,7 @@ struct ExTensor:
 **Option 2: Fix all callers** (if Option 1 not possible)
 
 Replace each `data.num_elements()` with:
+
 ```mojo
 var num_elements = 1
 for dim in data.shape:
@@ -146,11 +160,13 @@ for dim in data.shape:
 ```
 
 **Files & Lines** (transforms.mojo):
+
 - Line 51: `random_float()` helper
 - Line 681, 546, 795, 610: Various transform methods
 - Line 833: `normalize()` method
 
 **Files & Lines** (generic_transforms.mojo):
+
 - Lines 108, 110, 221, 223, 278, 281, 437, 439, 473, 475
 
 ---
@@ -158,6 +174,7 @@ for dim in data.shape:
 ## Category 3: Fix Trait Conformances
 
 ### Before
+
 ```mojo
 trait Transform:
     fn apply(self, data: ExTensor) -> ExTensor:
@@ -169,6 +186,7 @@ struct Pipeline:
 ```
 
 ### After
+
 ```mojo
 trait Transform(Copyable, Movable):
     fn apply(self, data: ExTensor) -> ExTensor:
@@ -180,6 +198,7 @@ struct Pipeline:
 ```
 
 **Files to Update** (2 files, 2 traits):
+
 1. `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo:54`
    - Trait: `Transform`
    - Fix: Change `trait Transform:` to `trait Transform(Copyable, Movable):`
@@ -193,12 +212,14 @@ struct Pipeline:
 ## Category 4: Remove Deprecated `owned` Keyword
 
 ### Before
+
 ```mojo
 fn __moveinit__(out self, owned existing: Self):
     # ERROR: 'owned' has been deprecated, use 'deinit' instead
 ```
 
 ### After
+
 ```mojo
 fn __moveinit__(out self, deinit existing: Self):
     # For move initialization
@@ -207,18 +228,21 @@ fn __moveinit__(out self, deinit existing: Self):
 **For function parameters**, use `var` instead:
 
 ### Before
+
 ```mojo
 fn __init__(out self, p: Float64 = 0.1, owned vocabulary: List[String]):
     # ERROR: 'owned' is deprecated and also has wrong parameter ordering
 ```
 
 ### After
+
 ```mojo
 fn __init__(out self, vocabulary: List[String], p: Float64 = 0.1):
     self.vocabulary = vocabulary^  # Transfer ownership
 ```
 
 **Files & Lines to Update**:
+
 1. `/home/mvillmow/ml-odyssey/shared/data/loaders.mojo:40`
    - Change: `owned existing` → `deinit existing`
 
@@ -261,6 +285,7 @@ fn int_to_string(value: Int) -> String:
 ```
 
 **Usage**:
+
 ```mojo
 # Before
 file_paths.append("/path/to/image_" + str(i) + ".jpg")
@@ -270,6 +295,7 @@ file_paths.append("/path/to/image_" + int_to_string(i) + ".jpg")
 ```
 
 **Files to Update**:
+
 - `test_file_dataset.mojo`: Lines 104, 169
 - `test_random.mojo`: Line 173
 
@@ -280,6 +306,7 @@ file_paths.append("/path/to/image_" + int_to_string(i) + ".jpg")
 ### Location 1: Sampler Type Inference (samplers.mojo:251)
 
 **Before**:
+
 ```mojo
 var r = random_si64(0, Int64(total)) as Float64  # r is Float64
 var cumsum = List[Int64](...)  # cumsum contains Int64
@@ -288,6 +315,7 @@ if r < cumsum[i]:  # ERROR: can't compare Float64 < Int64
 ```
 
 **After**:
+
 ```mojo
 var r = Float64(random_si64(0, Int64(total))) / Float64(total)
 var cumsum = List[Float64](...)  # Convert to Float64
@@ -300,6 +328,7 @@ if r < cumsum[i]:  # OK: Float64 < Float64
 ## Category 7: Fix Struct Inheritance
 
 ### Before (Mojo doesn't support struct inheritance)
+
 ```mojo
 struct BaseLoader:
     var dataset: Dataset
@@ -310,6 +339,7 @@ struct BatchLoader(BaseLoader):  # ERROR: inheriting from structs not allowed
 ```
 
 ### After (Use Composition)
+
 ```mojo
 struct BaseLoader:
     var dataset: Dataset
@@ -330,18 +360,21 @@ struct BatchLoader:
 ## Category 8: Fix Parameter Ordering
 
 ### Before
+
 ```mojo
 fn __init__(out self, p: Float64 = 0.1, n: Int = 1, owned vocabulary: List[String]):
     # ERROR: required parameter 'vocabulary' follows optional parameters
 ```
 
 ### After
+
 ```mojo
 fn __init__(out self, vocabulary: List[String], p: Float64 = 0.1, n: Int = 1):
     self.vocabulary = vocabulary^
 ```
 
 **Files & Lines**:
+
 - `/home/mvillmow/ml-odyssey/shared/data/text_transforms.mojo:257`
   - Function: `RandomSwapWords.__init__`
   - Params: Move `vocabulary` before optional `p`, `n`
@@ -355,6 +388,7 @@ fn __init__(out self, vocabulary: List[String], p: Float64 = 0.1, n: Int = 1):
 ## Category 9: Fix StringSlice Conversion
 
 ### Before
+
 ```mojo
 var parts = text.split(" ")
 for i in range(parts.size()):
@@ -362,6 +396,7 @@ for i in range(parts.size()):
 ```
 
 ### After
+
 ```mojo
 var parts = text.split(" ")
 for i in range(parts.size()):
@@ -375,11 +410,13 @@ for i in range(parts.size()):
 ## Category 10: Fix String Slice Copying
 
 ### Before
+
 ```mojo
 var words = new_words  # ERROR: can't implicitly copy List[String]
 ```
 
 ### After
+
 ```mojo
 words = new_words^  # Transfer ownership
 ```
@@ -391,12 +428,14 @@ words = new_words^  # Transfer ownership
 ## Category 11: Fix Dynamic Trait Usage
 
 ### Before (Won't compile)
+
 ```mojo
 struct BaseLoader:
     var dataset: Dataset  # ERROR: dynamic traits not supported
 ```
 
 ### After (Use Generic Type Parameter)
+
 ```mojo
 struct BaseLoader[DatasetType: Dataset]:
     var dataset: DatasetType
@@ -412,16 +451,19 @@ struct BaseLoader[DatasetType: Dataset]:
 ## Category 12: Fix Optional Value Access
 
 ### Before
+
 ```mojo
 var pad = self.padding.value()[]  # ERROR: Int is not subscriptable
 ```
 
 ### After
+
 ```mojo
 var pad = self.padding.value()  # value() returns the Int directly
 ```
 
 **Files & Lines** (transforms.mojo):
+
 - Line 452: `Pad.apply()` method
 - Line 473: Similar location
 
@@ -430,6 +472,7 @@ var pad = self.padding.value()  # value() returns the Int directly
 ## Category 13: Add Test Main Functions
 
 ### Before (Won't compile - no main function)
+
 ```mojo
 # test_datasets.mojo
 fn test_tensor_dataset():
@@ -440,6 +483,7 @@ fn test_file_dataset():
 ```
 
 ### After (Add main orchestrator)
+
 ```mojo
 fn test_tensor_dataset():
     ...
@@ -455,6 +499,7 @@ fn main():
 ```
 
 **Files to Update**:
+
 - `/home/mvillmow/ml-odyssey/tests/shared/data/test_datasets.mojo`
 - `/home/mvillmow/ml-odyssey/tests/shared/data/test_loaders.mojo`
 - `/home/mvillmow/ml-odyssey/tests/shared/data/test_transforms.mojo`
@@ -464,6 +509,7 @@ fn main():
 ## Implementation Order
 
 ### Phase 1: Unblock Compilation (1-2 hours)
+
 1. Replace all @value with @fieldwise_init + trait conformances (30 min)
 2. Add (Copyable, Movable) to Transform and TextTransform traits (15 min)
 3. Remove all `owned` keywords (10 min)
@@ -471,19 +517,22 @@ fn main():
 5. Add ^ move semantics to ExTensor returns (20 min)
 
 ### Phase 2: Fix Type System (1-2 hours)
+
 6. Add dtype to ExTensor constructors (30 min)
-7. Implement num_elements() method (30 min)
-8. Fix struct inheritance with composition (15 min)
-9. Fix type mismatches in samplers (20 min)
+2. Implement num_elements() method (30 min)
+3. Fix struct inheritance with composition (15 min)
+4. Fix type mismatches in samplers (20 min)
 
 ### Phase 3: Fix Utilities (30-45 min)
+
 10. Implement string conversion functions (20 min)
-11. Fix StringSlice conversions (10 min)
-12. Fix optional value access (5 min)
+2. Fix StringSlice conversions (10 min)
+3. Fix optional value access (5 min)
 
 ### Phase 4: Test Infrastructure (30-45 min)
+
 13. Add main() functions to wrapper tests (20 min)
-14. Run all tests to verify fixes (15 min)
+2. Run all tests to verify fixes (15 min)
 
 ---
 

@@ -70,7 +70,7 @@ fn test_multiple_regressions_detection() raises:
 
     # Count regressions
     var regression_count = 0
-    for i in range(regressions.size()):
+    for i in range(len(regressions)):
         if regressions[i] > regression_threshold:
             regression_count = regression_count + 1
 
@@ -97,7 +97,7 @@ fn test_no_false_positives() raises:
 
     # Count false positives (should be 0)
     var false_positive_count = 0
-    for i in range(changes.size()):
+    for i in range(len(changes)):
         if changes[i] > regression_threshold:
             false_positive_count = false_positive_count + 1
 
@@ -123,7 +123,7 @@ fn test_exit_code_success() raises:
     scenarios.append(-10.0)  # Good improvement
 
     var has_regression = false
-    for i in range(scenarios.size()):
+    for i in range(len(scenarios)):
         if scenarios[i] > regression_threshold:
             has_regression = true
             break
@@ -149,7 +149,7 @@ fn test_exit_code_failure() raises:
     scenarios.append(5.0)    # Normal variance
 
     var has_regression = false
-    for i in range(scenarios.size()):
+    for i in range(len(scenarios)):
         if scenarios[i] > regression_threshold:
             has_regression = true
             break
@@ -177,7 +177,7 @@ fn test_regression_report_format() raises:
     report.append("Current: 115.0ms")
 
     # Verify all required sections present
-    assert_equal(report.size(), 5, "Report should have 5 sections")
+    assert_equal(len(report), 5, "Report should have 5 sections")
     assert_true(report[0].find("REGRESSION") >= 0, "Report should have REGRESSION header")
     assert_true(report[1].find("Benchmark") >= 0, "Report should include benchmark name")
     assert_true(report[2].find("Change") >= 0, "Report should show percentage change")
@@ -224,7 +224,7 @@ fn test_improvement_reporting() raises:
 
     # Count actual regressions
     var regression_count = 0
-    for i in range(improvements.size()):
+    for i in range(len(improvements)):
         if improvements[i] > regression_threshold:
             regression_count = regression_count + 1
 
@@ -257,7 +257,7 @@ fn test_ci_integration_output() raises:
     assert_equal(exit_code_failure, 1, "Failure exit code should be 1")
 
     # Verify output is present
-    assert_equal(ci_output.size(), 3, "Should have 3 output lines")
+    assert_equal(len(ci_output), 3, "Should have 3 output lines")
     assert_true(len(ci_output[0]) > 0, "Should have result line")
 
 

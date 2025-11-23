@@ -76,8 +76,14 @@ jobs:
               echo "Running Mojo integration tests..."
               # Run tests/integration/*.mojo files
               if [ -d "tests/integration" ] && [ -n "$(find tests/integration -maxdepth 1 -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
-                pixi run mojo test tests/integration/ --verbose
-                echo "✅ Mojo integration tests completed"
+                EXIT_CODE=0
+                for file in tests/integration/*.mojo; do
+                  if [ -f "$file" ]; then
+                    echo "Running $file..."
+                    pixi run mojo "$file" || EXIT_CODE=$?
+                  fi
+                done
+                exit $EXIT_CODE
               else
                 echo "⚠️  No Mojo integration tests found in tests/integration/"
                 echo "No Mojo integration tests found" > test-results/mojo-integration-results.txt
@@ -92,7 +98,7 @@ jobs:
               [ -f "tests/foundation/test_structure_integration.py" ] && TEST_FILES="$TEST_FILES tests/foundation/test_structure_integration.py"
 
               if [ -n "$TEST_FILES" ]; then
-                pixi run pytest $TEST_FILES --verbose --maxfail=3 --timeout=180
+                pixi run python -m pytest $TEST_FILES --verbose --maxfail=3 --timeout=180
                 echo "✅ Python integration tests completed"
               else
                 echo "⚠️  No Python integration tests found"
@@ -104,8 +110,14 @@ jobs:
               echo "Running shared library integration tests..."
               # Run tests/shared/integration/*.mojo files
               if [ -d "tests/shared/integration" ] && [ -n "$(find tests/shared/integration -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
-                pixi run mojo test tests/shared/integration/ --verbose
-                echo "✅ Shared integration tests completed"
+                EXIT_CODE=0
+                for file in tests/shared/integration/*.mojo; do
+                  if [ -f "$file" ]; then
+                    echo "Running $file..."
+                    pixi run mojo "$file" || EXIT_CODE=$?
+                  fi
+                done
+                exit $EXIT_CODE
               else
                 echo "⚠️  No shared integration tests found in tests/shared/integration/"
                 echo "No shared integration tests found" > test-results/shared-integration-results.txt
