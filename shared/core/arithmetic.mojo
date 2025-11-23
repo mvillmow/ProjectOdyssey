@@ -20,20 +20,17 @@ fn _broadcast_binary[
 ](a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Apply binary operation with broadcasting and compile-time dtype specialization.
 
-    This helper eliminates 200+ lines of duplicated broadcasting code and removes
+    This helper eliminates 200+ lines of duplicated broadcasting code and removes.
     dtype conversion overhead by using compile-time specialization.
 
-    Args:
-        dtype: Compile-time dtype parameter
-        op: Binary operation function (e.g., add, subtract, multiply, divide)
-        a: First tensor
-        b: Second tensor
+    Args:.        `dtype`: Compile-time dtype parameter.
+        `op`: Binary operation function (e.g., add, subtract, multiply, divide)
+        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        Result tensor with operation applied element-wise with broadcasting
+    Returns:.        Result tensor with operation applied element-wise with broadcasting.
 
-    Example:
-        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    Example:.        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = _broadcast_binary[DType.float32, add_op](a, b)
@@ -93,19 +90,16 @@ fn _dispatch_broadcast_binary[
 ](a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Runtime dispatch to compile-time specialized broadcasting binary operation.
 
-    This dispatcher performs runtime dtype checking but dispatches to compile-time
+    This dispatcher performs runtime dtype checking but dispatches to compile-time.
     specialized versions, ensuring zero overhead compared to hand-written dtype branches.
 
-    Args:
-        op: Binary operation function pointer
-        a: First tensor
-        b: Second tensor
+    Args:.        `op`: Binary operation function pointer.
+        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        Result tensor with operation applied with broadcasting
+    Returns:.        Result tensor with operation applied with broadcasting.
 
-    Raises:
-        Error: If dtypes don't match or are unsupported
+    Raises:.        Error: If dtypes don't match or are unsupported.
     """
     # Validate dtypes match
     if a._dtype != b._dtype:
@@ -141,15 +135,12 @@ fn _dispatch_broadcast_binary[
 fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise addition with broadcasting.
 
-    Args:
-        a: First tensor
-        b: Second tensor
+    Args:.        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        A new tensor containing a + b
+    Returns:.        A new tensor containing a + b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = zeros(List[Int](), DType.float32)
@@ -173,15 +164,12 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise subtraction with broadcasting.
 
-    Args:
-        a: First tensor
-        b: Second tensor
+    Args:.        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        A new tensor containing a - b
+    Returns:.        A new tensor containing a - b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -204,15 +192,12 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise multiplication with broadcasting.
 
-    Args:
-        a: First tensor
-        b: Second tensor
+    Args:.        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        A new tensor containing a * b
+    Returns:.        A new tensor containing a * b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](), 2.0, DType.float32)
@@ -234,15 +219,12 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise division with broadcasting.
 
-    Args:
-        a: First tensor (numerator)
-        b: Second tensor (denominator)
+    Args:.        `a`: First tensor (numerator)
+        `b`: Second tensor (denominator)
 
-    Returns:
-        A new tensor containing a / b
+    Returns:.        A new tensor containing a / b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Note:
         Division by zero follows IEEE 754 semantics for floating-point types:
@@ -270,15 +252,12 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise floor division with broadcasting.
 
-    Args:
-        a: First tensor (numerator)
-        b: Second tensor (denominator)
+    Args:.        `a`: First tensor (numerator)
+        `b`: Second tensor (denominator)
 
-    Returns:
-        A new tensor containing a // b (floor division)
+    Returns:.        A new tensor containing a // b (floor division)
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](), 7.0, DType.float32)
@@ -305,15 +284,12 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise modulo with broadcasting.
 
-    Args:
-        a: First tensor
-        b: Second tensor (modulus)
+    Args:.        `a`: First tensor.
+        `b`: Second tensor (modulus)
 
-    Returns:
-        A new tensor containing a % b
+    Returns:.        A new tensor containing a % b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](), 7.0, DType.int32)
@@ -339,15 +315,12 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise exponentiation with broadcasting.
 
-    Args:
-        a: Base tensor
-        b: Exponent tensor
+    Args:.        `a`: Base tensor.
+        `b`: Exponent tensor.
 
-    Returns:
-        A new tensor containing a ** b
+    Returns:.        A new tensor containing a ** b.
 
-    Raises:
-        Error if shapes are not broadcast-compatible or dtypes don't match
+    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](), 2.0, DType.float32)
@@ -383,12 +356,10 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
     When forward pass broadcasts input from original_shape to grad.shape(),
     backward pass must sum gradient back to original_shape.
 
-    Args:
-        grad: Gradient tensor (broadcast shape)
-        original_shape: Original input shape before broadcasting
+    Args:.        `grad`: Gradient tensor (broadcast shape)
+        `original_shape`: Original input shape before broadcasting.
 
-    Returns:
-        Reduced gradient matching original_shape
+    Returns:.        Reduced gradient matching original_shape.
 
     Examples:
         # Broadcasting (3, 1, 5) → (3, 4, 5)
@@ -434,16 +405,14 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
         ∂L/∂A = ∂L/∂C (summed over broadcasted dimensions)
         ∂L/∂B = ∂L/∂C (summed over broadcasted dimensions)
 
-    Handles broadcasting: If input was broadcast to output shape, gradient
+    Handles broadcasting: If input was broadcast to output shape, gradient.
     is summed back to the original input shape.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a_shape: Original shape of first input (A)
-        b_shape: Original shape of second input (B)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
+        `a_shape`: Original shape of first input (A)
+        `b_shape`: Original shape of second input (B)
 
-    Returns:
-        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
         # No broadcasting
@@ -479,13 +448,11 @@ fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[In
 
     The gradient for B is negated since ∂(A-B)/∂B = -1.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a_shape: Original shape of first input (A)
-        b_shape: Original shape of second input (B)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
+        `a_shape`: Original shape of first input (A)
+        `b_shape`: Original shape of second input (B)
 
-    Returns:
-        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
     var grad_a = _reduce_broadcast_dims(grad_output, a_shape)
@@ -509,13 +476,11 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         ∂L/∂A = ∂L/∂C * B  (product rule, reduced for broadcasting)
         ∂L/∂B = ∂L/∂C * A  (reduced for broadcasting)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
+        `a`: First input from forward pass (A)
+        `b`: Second input from forward pass (B)
 
-    Returns:
-        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -546,13 +511,11 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
 
     Includes numerical stability: adds small epsilon to prevent division by zero.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
+        `a`: First input from forward pass (A)
+        `b`: Second input from forward pass (B)
 
-    Returns:
-        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
         var a = ones(List[Int](), DType.float32)

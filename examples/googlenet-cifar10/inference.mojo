@@ -72,7 +72,7 @@ fn evaluate_model(
         total_per_class.append(0)
 
     if verbose:
-        print(f"Evaluating on {num_samples} samples ({num_batches} batches)...")
+        print("Evaluating on " + str(num_samples) + " samples (" + str(num_batches) + " batches)...")
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
@@ -121,12 +121,12 @@ fn evaluate_model(
         if verbose and (batch_idx + 1) % 20 == 0:
             var progress = Float32(batch_idx + 1) / Float32(num_batches) * 100.0
             var current_acc = Float32(total_correct) / Float32((batch_idx + 1) * batch_size) * 100.0
-            print(f"  Progress: {progress:.1f}% - Current Acc: {current_acc:.2f}%")
+            print("  Progress: " + str(progress) + "% - Current Acc: " + str(current_acc) + "%")
 
     var overall_accuracy = Float32(total_correct) / Float32(num_samples) * 100.0
 
     if verbose:
-        print(f"Evaluation complete!")
+        print("Evaluation complete!")
         print()
 
     return (overall_accuracy, correct_per_class, total_per_class)
@@ -149,12 +149,12 @@ fn print_detailed_results(
     print("=" * 60)
     print()
 
-    print(f"Overall Accuracy: {accuracy:.2f}%")
+    print("Overall Accuracy: " + str(accuracy) + "%")
     print()
 
     print("Per-Class Accuracy:")
     print("-" * 60)
-    print(f"{'Class':<12} {'Correct':<10} {'Total':<10} {'Accuracy':<10}")
+    print(str('Class') + " " + str('Correct') + " " + str('Total') + " " + str('Accuracy'))
     print("-" * 60)
 
     for i in range(10):
@@ -163,7 +163,7 @@ fn print_detailed_results(
         var total = total_per_class[i]
         var class_acc = Float32(correct) / Float32(total) * 100.0 if total > 0 else Float32(0.0)
 
-        print(f"{class_name:<12} {correct:<10} {total:<10} {class_acc:.2f}%")
+        print(str(class_name) + " " + str(correct) + " " + str(total) + " " + str(class_acc) + "%")
 
     print("-" * 60)
     print()
@@ -182,9 +182,9 @@ fn main() raises:
     var evaluate_all = True  # Evaluate on full test set
 
     print("Configuration:")
-    print(f"  Weights directory: {weights_dir}")
-    print(f"  Batch size: {batch_size}")
-    print(f"  Evaluate full test set: {evaluate_all}")
+    print("  Weights directory: " + str(weights_dir))
+    print("  Batch size: " + str(batch_size))
+    print("  Evaluate full test set: " + str(evaluate_all))
     print()
 
     # Load CIFAR-10 test set
@@ -194,9 +194,9 @@ fn main() raises:
     var test_labels = test_data[1]
 
     var num_samples = test_images.shape()[0]
-    print(f"  Test samples: {num_samples}")
-    print(f"  Image shape: (3, 32, 32)")
-    print(f"  Number of classes: 10")
+    print("  Test samples: " + str(num_samples))
+    print("  Image shape: (3, 32, 32)")
+    print("  Number of classes: 10")
     print()
 
     # Initialize model
@@ -208,13 +208,13 @@ fn main() raises:
     print()
 
     # Load weights
-    print(f"Loading weights from {weights_dir}/...")
+    print("Loading weights from " + str(weights_dir) + "/...")
     try:
         model.load_weights(weights_dir)
         print("  ✓ Weights loaded successfully")
         print()
     except e:
-        print(f"  ✗ Failed to load weights: {e}")
+        print("  ✗ Failed to load weights: " + str(e))
         print()
         print("ERROR: Cannot proceed without trained weights.")
         print()

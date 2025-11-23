@@ -4,8 +4,7 @@ This module provides utilities for measuring execution time, tracking memory
 usage, and generating performance reports. Useful for identifying bottlenecks
 and optimizing performance-critical code.
 
-Example:
-    from shared.utils import Timer, profile_function, memory_usage
+Example:.    from shared.utils import Timer, profile_function, memory_usage
 
     # Measure execution time
     with Timer("forward_pass"):
@@ -13,7 +12,7 @@ Example:
 
     # Get memory usage
     var mem = memory_usage()
-    print(f"Memory: {mem.used_mb}MB / {mem.peak_mb}MB")
+    print("Memory: " + str(mem.used_mb) + "MB / " + str(mem.peak_mb) + "MB")
 """
 
 from collections import Tuple
@@ -136,8 +135,7 @@ struct Timer:
     Measures elapsed time of a code block and optionally prints the result.
     Can be used standalone or in a with statement.
 
-    Example:
-        # Basic usage with print
+    Example:.        # Basic usage with print.
         with Timer("forward_pass"):
             var output = model.forward(inputs)
         # Output: forward_pass: 0.0234s
@@ -154,8 +152,7 @@ struct Timer:
     fn __init__(out self, name: String = ""):
         """Create timer with optional name.
 
-        Args:
-            name: Timer name for display
+        Args:.            `name`: Timer name for display.
         """
         self.name = name
         self.start_ns = 0
@@ -170,9 +167,9 @@ struct Timer:
         self.end_ns = self._get_time_ns()
         var elapsed_ms = (self.end_ns - self.start_ns) / 1_000_000.0
         if self.name:
-            print(f"{self.name}: {elapsed_ms:.4f}ms")
+            print(self.name + ": " + str(elapsed_ms) + "ms")
         else:
-            print(f"Elapsed: {elapsed_ms:.4f}ms")
+            print("Elapsed: " + str(elapsed_ms) + "ms")
 
     fn _get_time_ns(self) -> Int:
         """Get current time in nanoseconds."""
@@ -208,13 +205,11 @@ fn memory_usage() -> MemoryStats:
 
     Returns information about allocated, peak, and available memory.
 
-    Returns:
-        Memory statistics
+    Returns:.        Memory statistics.
 
-    Example:
-        var mem = memory_usage()
-        print(f"Allocated: {mem.allocated_mb()}MB")
-        print(f"Peak: {mem.peak_mb()}MB")
+    Example:.        var mem = memory_usage()
+        print("Allocated: " + str(mem.allocated_mb()) + "MB")
+        print("Peak: " + str(mem.peak_mb()) + "MB")
     """
     var stats = MemoryStats()
     # TODO: Implement memory tracking
@@ -224,8 +219,7 @@ fn memory_usage() -> MemoryStats:
 fn memory_at_checkpoint() -> MemoryStats:
     """Record memory usage at a checkpoint.
 
-    Returns:
-        Memory statistics at this point
+    Returns:.        Memory statistics at this point.
     """
     return memory_usage()
 
@@ -233,12 +227,10 @@ fn memory_at_checkpoint() -> MemoryStats:
 fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
     """Compute memory change between two points.
 
-    Args:
-        before: Memory before operation
-        after: Memory after operation
+    Args:.        `before`: Memory before operation.
+        `after`: Memory after operation.
 
-    Returns:
-        Memory delta in bytes (positive = increase)
+    Returns:.        Memory delta in bytes (positive = increase)
     """
     return after.allocated_bytes - before.allocated_bytes
 
@@ -253,12 +245,10 @@ fn profile_function(name: String, func_ptr: fn () -> None) -> TimingStats:
 
     Measures function execution time and returns statistics.
 
-    Args:
-        name: Function name
-        func_ptr: Pointer to function (simplified)
+    Args:.        `name`: Function name.
+        `func_ptr`: Pointer to function (simplified)
 
-    Returns:
-        Timing statistics for function
+    Returns:.        Timing statistics for function.
     """
     # TODO: Implement function profiling
     var stats = TimingStats()
@@ -273,13 +263,11 @@ fn benchmark_function(
 
     Runs function multiple times and computes statistics (mean, std dev, etc).
 
-    Args:
-        name: Function name
-        func_ptr: Function to benchmark
-        iterations: Number of iterations
+    Args:.        `name`: Function name.
+        `func_ptr`: Function to benchmark.
+        `iterations`: Number of iterations.
 
-    Returns:
-        Timing statistics with min, max, average, std dev
+    Returns:.        Timing statistics with min, max, average, std dev.
     """
     # TODO: Implement function benchmarking
     var stats = TimingStats()
@@ -340,7 +328,7 @@ struct CallStack:
 
 
 fn generate_timing_report(
-    timings: Dict[String, TimingStats]
+    `timings`: Dict[String, TimingStats]
 ) -> ProfilingReport:
     """Generate profiling report from timing data.
 
@@ -366,7 +354,7 @@ fn print_timing_report(report: ProfilingReport):
 
 
 fn export_profiling_report(
-    report: ProfilingReport, filepath: String, format: String = "json"
+    `report`: ProfilingReport, filepath: String, format: String = "json"
 ) -> Bool:
     """Export profiling report to file.
 
@@ -425,7 +413,7 @@ struct BaselineMetrics:
 
 
 fn compare_to_baseline(
-    current: TimingStats, baseline: BaselineMetrics
+    `current`: TimingStats, baseline: BaselineMetrics.
 ) -> Tuple[Bool, Float32]:
     """Check if current performance is within baseline tolerance.
 
@@ -441,8 +429,8 @@ fn compare_to_baseline(
 
 
 fn detect_performance_regression(
-    current_metrics: Dict[String, TimingStats],
-    baseline_metrics: Dict[String, BaselineMetrics],
+    `current_metrics`: Dict[String, TimingStats],
+    `baseline_metrics`: Dict[String, BaselineMetrics],
 ) -> List[String]:
     """Detect performance regressions compared to baseline.
 

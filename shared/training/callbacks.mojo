@@ -27,22 +27,21 @@ from shared.training.base import (
 struct EarlyStopping(Callback):
     """Stop training when monitored metric stops improving.
 
-    Early stopping monitors a validation metric and stops training when
+    Early stopping monitors a validation metric and stops training when.
     the metric fails to improve for a specified number of epochs (patience).
 
     Supports both minimization (e.g., loss) and maximization (e.g., accuracy) modes.
 
     Attributes:
-        monitor: Name of metric to monitor (e.g., "val_loss", "val_accuracy")
-        patience: Number of epochs with no improvement before stopping
-        min_delta: Minimum change to qualify as improvement
+        `monitor`: Name of metric to monitor (e.g., "val_loss", "val_accuracy")
+        `patience`: Number of epochs with no improvement before stopping.
+        `min_delta`: Minimum change to qualify as improvement.
         mode: "min" for minimization (loss), "max" for maximization (accuracy)
-        best_value: Best value seen so far
-        wait_count: Epochs since last improvement
-        stopped: Whether training has been stopped
+        `best_value`: Best value seen so far.
+        `wait_count`: Epochs since last improvement.
+        `stopped`: Whether training has been stopped.
 
-    Example:
-        # For loss (minimize)
+    Example:.        # For loss (minimize)
         var early_stop = EarlyStopping(
             monitor="val_loss",
             patience=5,
@@ -76,10 +75,9 @@ struct EarlyStopping(Callback):
     ):
         """Initialize early stopping callback.
 
-        Args:
-            monitor: Metric to monitor (e.g., "val_loss", "val_accuracy").
-            patience: Epochs to wait before stopping.
-            min_delta: Minimum improvement threshold.
+        Args:.            `monitor`: Metric to monitor (e.g., "val_loss", "val_accuracy").
+            `patience`: Epochs to wait before stopping.
+            `min_delta`: Minimum improvement threshold.
             mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy).
         """
         self.monitor = monitor
@@ -224,11 +222,11 @@ struct ModelCheckpoint(Callback):
 
     fn __init__(
         out self,
-        filepath: String = "checkpoint.pt",
-        monitor: String = "val_loss",
-        save_best_only: Bool = False,
-        save_frequency: Int = 1,
-        mode: String = "min",
+        `filepath`: String = "checkpoint.pt",
+        `monitor`: String = "val_loss",
+        `save_best_only`: Bool = False,
+        `save_frequency`: Int = 1,
+        `mode`: String = "min",
     ):
         """Initialize checkpoint callback.
 
@@ -273,14 +271,12 @@ struct ModelCheckpoint(Callback):
         - If save_best_only=True: Save only when monitored metric improves
         - Otherwise: Save every save_frequency epochs
 
-        If saving fails, logs a warning but continues training to prevent I/O
+        If saving fails, logs a warning but continues training to prevent I/O.
         errors from interrupting the training process.
 
-        Args:
-            state: Training state with current epoch number and metrics.
+        Args:.            `state`: Training state with current epoch number and metrics.
 
-        Returns:
-            CONTINUE always (even if checkpoint save fails).
+        Returns:.            CONTINUE always (even if checkpoint save fails).
         """
         var should_save = False
 
@@ -334,16 +330,14 @@ struct ModelCheckpoint(Callback):
     fn get_save_count(self) -> Int:
         """Get number of checkpoints saved.
 
-        Returns:
-            Number of checkpoints saved so far.
+        Returns:.            Number of checkpoints saved so far.
         """
         return self.save_count
 
     fn get_error_count(self) -> Int:
         """Get number of checkpoint save errors.
 
-        Returns:
-            Number of failed checkpoint save attempts.
+        Returns:.            Number of failed checkpoint save attempts.
         """
         return self.error_count
 
@@ -360,11 +354,10 @@ struct LoggingCallback(Callback):
     Logs training progress to stdout at regular intervals.
 
     Attributes:
-        log_interval: Log every N epochs
-        log_count: Number of times logged
+        `log_interval`: Log every N epochs.
+        `log_count`: Number of times logged.
 
-    Example:
-        var logger = LoggingCallback(log_interval=1)
+    Example:.        var logger = LoggingCallback(log_interval=1)
     """
 
     var log_interval: Int
@@ -373,8 +366,7 @@ struct LoggingCallback(Callback):
     fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
 
-        Args:
-            log_interval: Log every N epochs.
+        Args:.            `log_interval`: Log every N epochs.
         """
         self.log_interval = log_interval
         self.log_count = 0

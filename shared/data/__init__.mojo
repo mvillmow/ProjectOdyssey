@@ -4,13 +4,12 @@ Data Processing Library
 Provides data loading, preprocessing, and augmentation utilities for ML Odyssey.
 
 Modules:
-    datasets: Dataset abstractions and common dataset implementations
-    loaders: Data loading utilities with batching and shuffling
-    transforms: Data transformation and augmentation functions
-    samplers: Sampling strategies for data iteration
+    `datasets`: Dataset abstractions and common dataset implementations.
+    `loaders`: Data loading utilities with batching and shuffling.
+    `transforms`: Data transformation and augmentation functions.
+    `samplers`: Sampling strategies for data iteration.
 
-Example:
-    from shared.data import ExTensorDataset, BatchLoader, Normalize, ToExTensor, Compose
+Example:.    from shared.data import ExTensorDataset, BatchLoader, Normalize, ToExTensor, Compose
 
     # Create transforms pipeline
     transform = Compose([

@@ -26,25 +26,22 @@ fn batch_norm2d(
     Normalizes activations across the batch dimension for each channel.
     Returns updated running statistics (pure functional - caller must capture).
 
-    Args:
-        x: Input tensor of shape (batch, channels, height, width)
-        gamma: Scale parameter of shape (channels,)
-        beta: Shift parameter of shape (channels,)
-        running_mean: Running mean of shape (channels,)
-        running_var: Running variance of shape (channels,)
-        training: If True, use batch statistics and update running stats.
+    Args:.        `x`: Input tensor of shape (batch, channels, height, width)
+        `gamma`: Scale parameter of shape (channels,)
+        `beta`: Shift parameter of shape (channels,)
+        `running_mean`: Running mean of shape (channels,)
+        `running_var`: Running variance of shape (channels,)
+        `training`: If True, use batch statistics and update running stats.
                  If False, use running statistics.
-        momentum: Momentum for running statistics update (default: 0.1)
-        epsilon: Small constant for numerical stability (default: 1e-5)
+        `momentum`: Momentum for running statistics update (default: 0.1)
+        `epsilon`: Small constant for numerical stability (default: 1e-5)
 
-    Returns:
-        Tuple of (output, new_running_mean, new_running_var):
+    Returns:.        Tuple of (output, new_running_mean, new_running_var):
             - output: Normalized tensor, shape (batch, channels, height, width)
             - new_running_mean: Updated running mean, shape (channels,)
             - new_running_var: Updated running variance, shape (channels,)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import batch_norm2d, zeros, ones
 
         var gamma = ones([channels])
@@ -289,16 +286,13 @@ fn normalize_rgb(
 
     This is commonly used with ImageNet statistics for transfer learning.
 
-    Args:
-        images: Input uint8 tensor of shape (N, 3, H, W)
-        mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406))
-        std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225))
+    Args:.        `images`: Input uint8 tensor of shape (N, 3, H, W)
+        `mean`: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406))
+        `std`: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225))
 
-    Returns:
-        Normalized float32 tensor of shape (N, 3, H, W)
+    Returns:.        Normalized float32 tensor of shape (N, 3, H, W)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import normalize_rgb
 
         # ImageNet normalization
@@ -373,23 +367,20 @@ fn batch_norm2d_backward(
 
     Computes gradients with respect to input, gamma, and beta parameters.
 
-    Args:
-        grad_output: Gradient w.r.t. output (batch, channels, height, width)
-        x: Original input tensor (batch, channels, height, width)
-        gamma: Scale parameter (channels,)
-        running_mean: Running mean (channels,) - used in inference mode
-        running_var: Running variance (channels,) - used in inference mode
-        training: Whether in training mode (affects gradient computation)
-        epsilon: Small constant for numerical stability (default: 1e-5)
+    Args:.        `grad_output`: Gradient w.r.t. output (batch, channels, height, width)
+        `x`: Original input tensor (batch, channels, height, width)
+        `gamma`: Scale parameter (channels,)
+        `running_mean`: Running mean (channels,) - used in inference mode.
+        `running_var`: Running variance (channels,) - used in inference mode.
+        `training`: Whether in training mode (affects gradient computation)
+        `epsilon`: Small constant for numerical stability (default: 1e-5)
 
-    Returns:
-        Tuple of (grad_input, grad_gamma, grad_beta):
+    Returns:.        Tuple of (grad_input, grad_gamma, grad_beta):
             - grad_input: Gradient w.r.t. input (batch, channels, height, width)
             - grad_gamma: Gradient w.r.t. gamma (channels,)
             - grad_beta: Gradient w.r.t. beta (channels,)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import batch_norm2d_backward
 
         # Forward pass (save x for backward)
@@ -773,17 +764,14 @@ fn layer_norm(
     Normalizes activations across the feature dimension for each sample.
     Unlike batch norm, this doesn't require running statistics.
 
-    Args:
-        x: Input tensor of shape (batch, features) or (batch, channels, height, width)
-        gamma: Scale parameter of shape matching last dim(s)
-        beta: Shift parameter of shape matching last dim(s)
-        epsilon: Small constant for numerical stability (default: 1e-5)
+    Args:.        `x`: Input tensor of shape (batch, features) or (batch, channels, height, width)
+        `gamma`: Scale parameter of shape matching last dim(s)
+        `beta`: Shift parameter of shape matching last dim(s)
+        `epsilon`: Small constant for numerical stability (default: 1e-5)
 
-    Returns:
-        Normalized tensor, same shape as input
+    Returns:.        Normalized tensor, same shape as input.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import layer_norm, zeros, ones
 
         # For 2D input (batch, features)

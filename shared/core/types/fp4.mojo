@@ -14,8 +14,7 @@ Key characteristics:
 - Limited range (2-bit exponent)
 - Requires external scale factor for proper representation
 
-Example:
-    from shared.core.types.fp4 import FP4_E2M1
+Example:.    from shared.core.types.fp4 import FP4_E2M1
 
     # E2M1 is typically used within block structures
     var fp4_val = FP4_E2M1.from_float32(1.5, scale=1.0)
@@ -65,8 +64,7 @@ struct FP4_E2M1(Stringable, Representable):
     fn __init__(mut self, value: UInt8 = 0):
         """Initialize FP4_E2M1 from raw 4-bit value.
 
-        Args:
-            value: Raw 4-bit representation (only lower 4 bits used)
+        Args:.            `value`: Raw 4-bit representation (only lower 4 bits used)
         """
         self.value = value & 0xF  # Mask to 4 bits
 
@@ -74,12 +72,10 @@ struct FP4_E2M1(Stringable, Representable):
     fn from_float32(x: Float32, scale: Float32 = 1.0) -> Self:
         """Convert Float32 to FP4 E2M1 format with given scale.
 
-        Args:
-            x: Float32 value to convert
-            scale: Block-level scale factor
+        Args:.            `x`: Float32 value to convert.
+            `scale`: Block-level scale factor.
 
-        Returns:
-            FP4_E2M1 representation
+        Returns:.            FP4_E2M1 representation.
 
         Note:
             The value is divided by scale before encoding.
@@ -158,11 +154,9 @@ struct FP4_E2M1(Stringable, Representable):
     fn to_float32(self, scale: Float32 = 1.0) -> Float32:
         """Convert FP4 E2M1 to Float32 with given scale.
 
-        Args:
-            scale: Block-level scale factor
+        Args:.            `scale`: Block-level scale factor.
 
-        Returns:
-            Float32 representation of the scaled E2M1 value
+        Returns:.            Float32 representation of the scaled E2M1 value.
         """
         # Extract components (4 bits total)
         var sign = (self.value >> 3) & 0x1
@@ -197,37 +191,31 @@ struct FP4_E2M1(Stringable, Representable):
     fn __str__(self) -> String:
         """String representation showing FP4 value as Float32 (unscaled).
 
-        Returns:
-            String representation
+        Returns:.            String representation.
         """
         return "FP4_E2M1(" + str(self.to_float32(scale=1.0)) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing bits and value.
 
-        Returns:
-            Detailed string representation
+        Returns:.            Detailed string representation.
         """
         return "FP4_E2M1(bits=0x" + hex(self.value) + ", value=" + str(self.to_float32(scale=1.0)) + ")"
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.
 
-        Args:
-            other: Other FP4_E2M1 value
+        Args:.            `other`: Other FP4_E2M1 value.
 
-        Returns:
-            True if bit patterns match
+        Returns:.            True if bit patterns match.
         """
         return self.value == other.value
 
     fn __ne__(self, other: Self) -> Bool:
         """Check inequality.
 
-        Args:
-            other: Other FP4_E2M1 value
+        Args:.            `other`: Other FP4_E2M1 value.
 
-        Returns:
-            True if bit patterns differ
+        Returns:.            True if bit patterns differ.
         """
         return self.value != other.value

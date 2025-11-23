@@ -27,12 +27,11 @@ struct StepLR(LRScheduler):
         lr = base_lr * gamma^(epoch // step_size)
 
     Attributes:
-        base_lr: Initial learning rate
-        step_size: Number of epochs between LR reductions
-        gamma: Multiplicative factor for LR reduction
+        `base_lr`: Initial learning rate.
+        `step_size`: Number of epochs between LR reductions.
+        `gamma`: Multiplicative factor for LR reduction.
 
-    Example:
-        var scheduler = StepLR(
+    Example:.        var scheduler = StepLR(
             base_lr=0.1,
             step_size=10,
             gamma=0.1
@@ -50,10 +49,9 @@ struct StepLR(LRScheduler):
     ):
         """Initialize StepLR scheduler.
 
-        Args:
-            base_lr: Initial learning rate.
-            step_size: Number of epochs between LR reductions.
-            gamma: Multiplicative factor for LR reduction.
+        Args:.            `base_lr`: Initial learning rate.
+            `step_size`: Number of epochs between LR reductions.
+            `gamma`: Multiplicative factor for LR reduction.
         """
         self.base_lr = base_lr
         self.step_size = step_size
@@ -62,12 +60,10 @@ struct StepLR(LRScheduler):
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate using step decay formula.
 
-        Args:
-            epoch: Current epoch (0-indexed).
-            batch: Current batch (unused for epoch-based scheduler).
+        Args:.            `epoch`: Current epoch (0-indexed).
+            `batch`: Current batch (unused for epoch-based scheduler).
 
-        Returns:
-            Learning rate for this epoch.
+        Returns:.            Learning rate for this epoch.
         """
         if self.step_size <= 0:
             return self.base_lr
@@ -86,19 +82,18 @@ struct StepLR(LRScheduler):
 struct CosineAnnealingLR(LRScheduler):
     """Cosine annealing: smooth cosine decay from base_lr to eta_min.
 
-    The learning rate follows a cosine curve, starting at base_lr and
+    The learning rate follows a cosine curve, starting at base_lr and.
     smoothly decaying to eta_min over T_max epochs.
 
     Formula:
         lr = eta_min + (base_lr - eta_min) * (1 + cos(pi * epoch / T_max)) / 2
 
     Attributes:
-        base_lr: Initial learning rate
+        `base_lr`: Initial learning rate.
         T_max: Maximum number of epochs (period)
-        eta_min: Minimum learning rate
+        `eta_min`: Minimum learning rate.
 
-    Example:
-        var scheduler = CosineAnnealingLR(
+    Example:.        var scheduler = CosineAnnealingLR(
             base_lr=0.1,
             T_max=100,
             eta_min=0.0
@@ -117,10 +112,9 @@ struct CosineAnnealingLR(LRScheduler):
     ):
         """Initialize Cosine Annealing scheduler.
 
-        Args:
-            base_lr: Initial learning rate.
+        Args:.            `base_lr`: Initial learning rate.
             T_max: Maximum number of epochs (period).
-            eta_min: Minimum learning rate.
+            `eta_min`: Minimum learning rate.
         """
         self.base_lr = base_lr
         self.T_max = T_max
@@ -129,12 +123,10 @@ struct CosineAnnealingLR(LRScheduler):
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate using cosine annealing formula.
 
-        Args:
-            epoch: Current epoch (0-indexed).
-            batch: Current batch (unused).
+        Args:.            `epoch`: Current epoch (0-indexed).
+            `batch`: Current batch (unused).
 
-        Returns:
-            Learning rate for this epoch.
+        Returns:.            Learning rate for this epoch.
         """
         if self.T_max <= 0:
             return self.base_lr
@@ -167,11 +159,10 @@ struct WarmupLR(LRScheduler):
         lr = base_lr                            for epoch >= warmup_epochs
 
     Attributes:
-        base_lr: Target learning rate after warmup
-        warmup_epochs: Number of epochs for warmup phase
+        `base_lr`: Target learning rate after warmup.
+        `warmup_epochs`: Number of epochs for warmup phase.
 
-    Example:
-        var scheduler = WarmupLR(
+    Example:.        var scheduler = WarmupLR(
             base_lr=0.1,
             warmup_epochs=10
         )
@@ -185,9 +176,8 @@ struct WarmupLR(LRScheduler):
     fn __init__(out self, base_lr: Float64, warmup_epochs: Int):
         """Initialize Warmup scheduler.
 
-        Args:
-            base_lr: Target learning rate after warmup.
-            warmup_epochs: Number of epochs for warmup.
+        Args:.            `base_lr`: Target learning rate after warmup.
+            `warmup_epochs`: Number of epochs for warmup.
         """
         self.base_lr = base_lr
         self.warmup_epochs = warmup_epochs
@@ -195,12 +185,10 @@ struct WarmupLR(LRScheduler):
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate with linear warmup.
 
-        Args:
-            epoch: Current epoch (0-indexed).
-            batch: Current batch (unused).
+        Args:.            `epoch`: Current epoch (0-indexed).
+            `batch`: Current batch (unused).
 
-        Returns:
-            Learning rate for this epoch.
+        Returns:.            Learning rate for this epoch.
         """
         if self.warmup_epochs <= 0:
             return self.base_lr

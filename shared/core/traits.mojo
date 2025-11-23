@@ -17,8 +17,7 @@ Trait Categories:
 3. Serializable - Components that can be saved/loaded
 4. Composable - Components that can be chained
 
-Example:
-    struct MyLayer(Differentiable, Parameterized):
+Example:.    struct MyLayer(Differentiable, Parameterized):
         fn forward(self, input: ExTensor) -> ExTensor:
             # ... implementation
 
@@ -35,20 +34,19 @@ from shared.core import ExTensor
 trait Differentiable:
     """Components that support automatic differentiation.
 
-    Implement this trait for all neural network layers and operations
+    Implement this trait for all neural network layers and operations.
     that participate in backpropagation.
 
     Required Methods:
-        forward: Compute output from input (forward pass)
-        backward: Compute input gradient from output gradient (backward pass)
+        `forward`: Compute output from input (forward pass)
+        `backward`: Compute input gradient from output gradient (backward pass)
 
     Contract:
         - forward and backward must be mathematical inverses
         - backward must preserve batch dimension
         - backward must handle None/zero gradients gracefully
 
-    Example:
-        struct ReLULayer(Differentiable):
+    Example:.        struct ReLULayer(Differentiable):
             var last_input: ExTensor  # Cache for backward pass
 
             fn forward(mut self, input: ExTensor) -> ExTensor:
@@ -62,14 +60,11 @@ trait Differentiable:
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Compute forward pass.
 
-        Args:
-            input: Input tensor (batch_size, ...)
+        Args:.            `input`: Input tensor (batch_size, ...)
 
-        Returns:
-            Output tensor (batch_size, ...)
+        Returns:.            Output tensor (batch_size, ...)
 
-        Raises:
-            Error: If input shape is invalid
+        Raises:.            Error: If input shape is invalid.
 
         Note:
             May cache values needed for backward pass.
@@ -79,14 +74,11 @@ trait Differentiable:
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Compute backward pass (input gradient).
 
-        Args:
-            grad_output: Gradient w.r.t. output (∂L/∂output)
+        Args:.            `grad_output`: Gradient w.r.t. output (∂L/∂output)
 
-        Returns:
-            Gradient w.r.t. input (∂L/∂input)
+        Returns:.            Gradient w.r.t. input (∂L/∂input)
 
-        Raises:
-            Error: If backward called before forward
+        Raises:.            Error: If backward called before forward.
 
         Note:
             Uses values cached during forward pass.
@@ -97,21 +89,20 @@ trait Differentiable:
 trait Parameterized:
     """Components with learnable parameters.
 
-    Implement this trait for layers that have weights, biases, or other
+    Implement this trait for layers that have weights, biases, or other.
     trainable parameters that should be updated during optimization.
 
     Required Methods:
-        parameters: Return list of all parameter tensors
-        gradients: Return list of all gradient tensors
-        zero_grad: Reset all gradients to zero
+        `parameters`: Return list of all parameter tensors.
+        `gradients`: Return list of all gradient tensors.
+        `zero_grad`: Reset all gradients to zero.
 
     Contract:
         - parameters() and gradients() must return same-length lists
         - Parameters and gradients must correspond (same order)
         - zero_grad() must clear all gradient accumulation
 
-    Example:
-        struct LinearLayer(Parameterized):
+    Example:.        struct LinearLayer(Parameterized):
             var weights: ExTensor
             var bias: ExTensor
             var grad_weights: ExTensor
@@ -131,8 +122,7 @@ trait Parameterized:
     fn parameters(self) raises -> List[ExTensor]:
         """Get all learnable parameters.
 
-        Returns:
-            List of parameter tensors
+        Returns:.            List of parameter tensors.
 
         Note:
             Order must match gradients() return order.
@@ -143,8 +133,7 @@ trait Parameterized:
     fn gradients(self) raises -> List[ExTensor]:
         """Get gradients for all parameters.
 
-        Returns:
-            List of gradient tensors
+        Returns:.            List of gradient tensors.
 
         Note:
             Must correspond 1:1 with parameters().
@@ -155,11 +144,10 @@ trait Parameterized:
     fn zero_grad(mut self) raises:
         """Reset all gradients to zero.
 
-        Called at the beginning of each mini-batch to clear
+        Called at the beginning of each mini-batch to clear.
         accumulated gradients from previous iteration.
 
-        Example:
-            model.zero_grad()  # Clear gradients
+        Example:.            model.zero_grad()  # Clear gradients.
             loss = forward_pass(model, input, target)
             backward_pass(loss)  # Accumulate gradients
             optimizer.step(model.parameters(), model.gradients())
@@ -170,12 +158,12 @@ trait Parameterized:
 trait Serializable:
     """Components that can be saved and loaded.
 
-    Implement this trait for models and layers that need to persist
+    Implement this trait for models and layers that need to persist.
     state to disk (checkpointing, model saving).
 
     Required Methods:
-        save: Write state to file
-        load: Read state from file
+        `save`: Write state to file.
+        `load`: Read state from file.
 
     Contract:
         - save() must write all necessary state
@@ -183,8 +171,7 @@ trait Serializable:
         - Round-trip (save->load) must be identity
         - File format should be documented
 
-    Example:
-        struct ConvLayer(Serializable):
+    Example:.        struct ConvLayer(Serializable):
             var weights: ExTensor
             var bias: ExTensor
 
@@ -202,11 +189,9 @@ trait Serializable:
     fn save(self, path: String) raises:
         """Save component state to file.
 
-        Args:
-            path: File path or directory
+        Args:.            `path`: File path or directory.
 
-        Raises:
-            Error: If write fails or path is invalid
+        Raises:.            Error: If write fails or path is invalid.
 
         Note:
             Should save all state needed to restore component.
@@ -217,11 +202,9 @@ trait Serializable:
     fn load(mut self, path: String) raises:
         """Load component state from file.
 
-        Args:
-            path: File path or directory
+        Args:.            `path`: File path or directory.
 
-        Raises:
-            Error: If file doesn't exist, is corrupted, or has version mismatch
+        Raises:.            Error: If file doesn't exist, is corrupted, or has version mismatch.
 
         Note:
             Should validate loaded state (shapes, dtypes).
@@ -233,19 +216,18 @@ trait Serializable:
 trait Composable:
     """Components that can be composed into pipelines.
 
-    Implement this trait for layers and operations that can be
+    Implement this trait for layers and operations that can be.
     chained together (e.g., Sequential, Residual connections).
 
     Required Methods:
-        compose: Chain this component with another
+        `compose`: Chain this component with another.
 
     Contract:
         - Composition must preserve differentiability
         - Output shape of self must match input shape of other
         - Associative: (A ∘ B) ∘ C = A ∘ (B ∘ C)
 
-    Example:
-        struct Sequential(Composable):
+    Example:.        struct Sequential(Composable):
             var layers: List[Composable]
 
             fn compose[T: Composable](self, other: T) -> Sequential:
@@ -260,17 +242,13 @@ trait Composable:
     fn compose[T: Composable](self, other: T) raises -> ComposedOp:
         """Compose this component with another.
 
-        Args:
-            other: Component to compose with
+        Args:.            `other`: Component to compose with.
 
-        Returns:
-            Composed operation (self ∘ other)
+        Returns:.            Composed operation (self ∘ other)
 
-        Raises:
-            Error: If shapes are incompatible
+        Raises:.            Error: If shapes are incompatible.
 
-        Example:
-            var layer1 = Linear(784, 128)
+        Example:.            var layer1 = Linear(784, 128)
             var layer2 = ReLU()
             var composed = layer1.compose(layer2)  # Linear -> ReLU
         """
@@ -282,11 +260,11 @@ struct ComposedOp(Differentiable, Composable):
 
     Represents the composition f ∘ g where:
         forward: x -> g(f(x))
-        backward: Uses chain rule
+        `backward`: Uses chain rule.
 
     Attributes:
-        first: First operation (applied first)
-        second: Second operation (applied second)
+        `first`: First operation (applied first)
+        `second`: Second operation (applied second)
     """
 
     var first: Differentiable
@@ -295,9 +273,8 @@ struct ComposedOp(Differentiable, Composable):
     fn __init__(mut self, var first: Differentiable, var second: Differentiable):
         """Create composed operation.
 
-        Args:
-            first: First operation
-            second: Second operation (receives output of first)
+        Args:.            `first`: First operation.
+            `second`: Second operation (receives output of first)
         """
         self.first = first^
         self.second = second^
@@ -313,7 +290,7 @@ struct ComposedOp(Differentiable, Composable):
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Backward pass through composition.
 
-        Uses chain rule: d(second ∘ first)/dx = d(second)/d(first) * d(first)/dx
+        Uses chain rule: d(second ∘ first)/dx = d(second)/d(first) * d(first)/dx.
         """
         var grad_second = self.second.backward(grad_output)
         return self.first.backward(grad_second)
@@ -329,16 +306,15 @@ struct ComposedOp(Differentiable, Composable):
 trait Trainable:
     """Components that support training mode.
 
-    Implement this trait for components that behave differently during
+    Implement this trait for components that behave differently during.
     training vs. inference (e.g., Dropout, BatchNorm).
 
     Required Methods:
-        train: Set to training mode
-        eval: Set to evaluation mode
-        is_training: Check current mode
+        `train`: Set to training mode.
+        `eval`: Set to evaluation mode.
+        `is_training`: Check current mode.
 
-    Example:
-        struct Dropout(Trainable):
+    Example:.        struct Dropout(Trainable):
             var training: Bool
             var p: Float64
 
@@ -375,7 +351,6 @@ trait Trainable:
     fn is_training(self) -> Bool:
         """Check if component is in training mode.
 
-        Returns:
-            True if training, False if evaluating
+        Returns:.            True if training, False if evaluating.
         """
         ...

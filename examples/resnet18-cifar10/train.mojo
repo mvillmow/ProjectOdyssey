@@ -293,7 +293,7 @@ fn train_epoch(
         # - Momentum velocity updates
 
         if (batch_idx + 1) % 100 == 0:
-            print(f"  Batch {batch_idx + 1}/{num_batches}, Loss: {loss_value:.4f}")
+            print("  Batch " + str(batch_idx + 1) + "/" + str(num_batches) + ", Loss: " + str(loss_value))
 
     var avg_loss = total_loss / Float32(num_batches)
     return avg_loss
@@ -315,11 +315,11 @@ fn main() raises:
     var lr_decay_factor = Float32(0.2)  # Multiply by 0.2
 
     print("Configuration:")
-    print(f"  Epochs: {epochs}")
-    print(f"  Batch size: {batch_size}")
-    print(f"  Initial learning rate: {initial_lr}")
-    print(f"  Momentum: {momentum}")
-    print(f"  LR decay: {lr_decay_factor}x every {lr_decay_epochs} epochs")
+    print("  Epochs: " + str(epochs))
+    print("  Batch size: " + str(batch_size))
+    print("  Initial learning rate: " + str(initial_lr))
+    print("  Momentum: " + str(momentum))
+    print("  LR decay: " + str(lr_decay_factor) + "x every " + str(lr_decay_epochs) + " epochs")
     print()
 
     # Load CIFAR-10 dataset
@@ -332,8 +332,8 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    print(f"  Training samples: {train_images.shape()[0]}")
-    print(f"  Test samples: {test_images.shape()[0]}")
+    print("  Training samples: " + str(train_images.shape()[0]))
+    print("  Test samples: " + str(test_images.shape()[0]))
     print()
 
     # Initialize model
@@ -391,10 +391,10 @@ fn main() raises:
     var demo_logits = model.forward(demo_batch, training=True)
     var demo_loss = cross_entropy(demo_logits, demo_labels)
 
-    print(f"  Forward pass successful")
-    print(f"  Batch shape: (10, 3, 32, 32)")
-    print(f"  Output logits shape: (10, 10)")
-    print(f"  Loss value: {demo_loss:.4f}")
+    print("  Forward pass successful")
+    print("  Batch shape: (10, 3, 32, 32)")
+    print("  Output logits shape: (10, 10)")
+    print("  Loss value: " + str(demo_loss))
     print()
 
     print("ResNet-18 forward pass is complete.")

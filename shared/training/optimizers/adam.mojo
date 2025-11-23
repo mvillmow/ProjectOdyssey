@@ -45,23 +45,21 @@ fn adam_step(
     Returns new parameters, new first moment (m), and new second moment (v).
     Caller manages all state including timestep tracking.
 
-    Args:
-        params: Model parameters to update
-        gradients: Gradients of loss with respect to params
-        m: First moment estimates (exponential moving average of gradients)
-        v: Second moment estimates (exponential moving average of squared gradients)
-        t: Current timestep (starts at 1, increments each step)
-        learning_rate: Step size for parameter updates
-        beta1: Exponential decay rate for first moment (default: 0.9)
-        beta2: Exponential decay rate for second moment (default: 0.999)
-        epsilon: Small constant for numerical stability (default: 1e-8)
-        weight_decay: L2 regularization factor (default: 0.0, no regularization)
+    Args:.        `params`: Model parameters to update.
+        `gradients`: Gradients of loss with respect to params.
+        `m`: First moment estimates (exponential moving average of gradients)
+        `v`: Second moment estimates (exponential moving average of squared gradients)
+        `t`: Current timestep (starts at 1, increments each step)
+        `learning_rate`: Step size for parameter updates.
+        `beta1`: Exponential decay rate for first moment (default: 0.9)
+        `beta2`: Exponential decay rate for second moment (default: 0.999)
+        `epsilon`: Small constant for numerical stability (default: 1e-8)
+        `weight_decay`: L2 regularization factor (default: 0.0, no regularization)
 
-    Returns:
-        Tuple of (new_params, new_m, new_v)
+    Returns:.        Tuple of (new_params, new_m, new_v)
 
     Example (basic Adam):
-        ```mojo
+        ```mojo.
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import adam_step
 
@@ -168,19 +166,16 @@ fn adam_step_simple(
         v_hat = v / (1 - 0.999^t)
         params = params - lr * m_hat / (sqrt(v_hat) + 1e-8)
 
-    Args:
-        params: Model parameters to update
-        gradients: Gradients of loss with respect to params
-        m: First moment estimate
-        v: Second moment estimate
-        t: Current timestep (starts at 1)
-        learning_rate: Step size for parameter updates
+    Args:.        `params`: Model parameters to update.
+        `gradients`: Gradients of loss with respect to params.
+        `m`: First moment estimate.
+        `v`: Second moment estimate.
+        `t`: Current timestep (starts at 1)
+        `learning_rate`: Step size for parameter updates.
 
-    Returns:
-        Tuple of (new_params, new_m, new_v)
+    Returns:.        Tuple of (new_params, new_m, new_v)
 
-    Example:
-        var W = xavier_uniform(784, 128, shape, DType.float32)
+    Example:.        var W = xavier_uniform(784, 128, shape, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
         var t = 1

@@ -27,7 +27,7 @@ struct Statistics:
 
     Provides mean, standard deviation, min, max, and count of values.
 
-    Issue: #283-287 - Loss tracking
+    Issue: #283-287 - Loss tracking.
     """
     var mean: Float32
     var std: Float32
@@ -60,10 +60,10 @@ struct Statistics:
 struct ComponentTracker:
     """Tracks a single loss component with statistics and moving average.
 
-    Uses Welford's algorithm for numerically stable variance computation
+    Uses Welford's algorithm for numerically stable variance computation.
     and a circular buffer for moving average.
 
-    Issue: #283-287 - Loss tracking
+    Issue: #283-287 - Loss tracking.
     """
     var window_size: Int
     var buffer: List[Float32]
@@ -83,8 +83,7 @@ struct ComponentTracker:
     fn __init__(mut self, window_size: Int):
         """Initialize tracker with specified window size.
 
-        Args:
-            window_size: Number of values to keep for moving average
+        Args:.            `window_size`: Number of values to keep for moving average.
         """
         self.window_size = window_size
         self.buffer = List[Float32]()
@@ -107,11 +106,10 @@ struct ComponentTracker:
 
         Uses Welford's algorithm for numerically stable online variance computation.
 
-        Args:
-            value: New loss value to add
+        Args:.            `value`: New loss value to add.
 
         Reference:
-            Welford, B. P. (1962). "Note on a method for calculating corrected sums
+            Welford, B. P. (1962). "Note on a method for calculating corrected sums.
             of squares and products". Technometrics. 4 (3): 419–420.
         """
         self.last_value = value
@@ -156,8 +154,7 @@ struct ComponentTracker:
     fn get_statistics(self) -> Statistics:
         """Get statistical summary (mean, std, min, max, count).
 
-        Returns:
-            Statistics struct with overall statistics (not just window)
+        Returns:.            Statistics struct with overall statistics (not just window)
         """
         var stats = Statistics()
 

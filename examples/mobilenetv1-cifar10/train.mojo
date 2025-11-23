@@ -94,7 +94,7 @@ fn train_epoch(
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_loss = Float32(0.0)
 
-    print(f"Epoch {epoch + 1}: lr={learning_rate:.6f}")
+    print("Epoch " + str(epoch + 1) + ": lr=" + str(learning_rate))
 
     # Placeholder training loop
     for batch_idx in range(num_batches):
@@ -118,7 +118,7 @@ fn train_epoch(
 
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
-            print(f"  Batch {batch_idx + 1}/{num_batches}, Loss: {avg_loss:.4f}")
+            print("  Batch " + str(batch_idx + 1) + "/" + str(num_batches) + ", Loss: " + str(avg_loss))
 
     var avg_loss = total_loss / Float32(num_batches)
     return avg_loss
@@ -176,19 +176,19 @@ fn main() raises:
     var weights_dir = "mobilenetv1_weights"
 
     print("Configuration:")
-    print(f"  Epochs: {epochs}")
-    print(f"  Batch size: {batch_size}")
-    print(f"  Initial learning rate: {initial_lr}")
-    print(f"  Momentum: {momentum}")
-    print(f"  Data directory: {data_dir}")
-    print(f"  Weights directory: {weights_dir}")
+    print("  Epochs: " + str(epochs))
+    print("  Batch size: " + str(batch_size))
+    print("  Initial learning rate: " + str(initial_lr))
+    print("  Momentum: " + str(momentum))
+    print("  Data directory: " + str(data_dir))
+    print("  Weights directory: " + str(weights_dir))
     print()
 
     print("Loading CIFAR-10 training set...")
     var train_data = load_cifar10_train(data_dir)
     var train_images = train_data[0]
     var train_labels = train_data[1]
-    print(f"  Training samples: {train_images.shape()[0]}")
+    print("  Training samples: " + str(train_images.shape()[0]))
     print()
 
     print("Initializing MobileNetV1 model...")
@@ -218,29 +218,29 @@ fn main() raises:
             epoch,
         )
 
-        print(f"Epoch {epoch + 1}/{epochs} - Loss: {train_loss:.4f}")
+        print("Epoch " + str(epoch + 1) + "/" + str(epochs) + " - Loss: " + str(train_loss))
 
         if (epoch + 1) % 10 == 0:
             var val_acc = validate(model, train_images, train_labels, batch_size)
-            print(f"  Validation Accuracy: {val_acc:.2f}%")
+            print("  Validation Accuracy: " + str(val_acc) + "%")
 
         print()
 
     print("Training complete!")
     print()
 
-    print(f"Saving weights to {weights_dir}/...")
+    print("Saving weights to " + str(weights_dir) + "/...")
     try:
         model.save_weights(weights_dir)
         print("  ✓ Weights saved successfully")
     except e:
-        print(f"  ✗ Failed to save weights: {e}")
+        print("  ✗ Failed to save weights: " + str(e))
 
     print()
     print("=" * 60)
     print("Training Summary")
     print("=" * 60)
-    print(f"Total epochs: {epochs}")
-    print(f"Final learning rate: {compute_learning_rate(initial_lr, epochs - 1):.6f}")
-    print(f"Model saved to: {weights_dir}/")
+    print("Total epochs: " + str(epochs))
+    print("Final learning rate: " + str(compute_learning_rate(initial_lr, epochs - 1)))
+    print("Model saved to: " + str(weights_dir) + "/")
     print("=" * 60)

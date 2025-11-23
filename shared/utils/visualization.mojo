@@ -4,8 +4,7 @@ This module provides functions for plotting training curves, confusion matrices,
 model architecture diagrams, and other visualizations useful for understanding
 model behavior.
 
-Example:
-    from shared.utils import plot_training_curves
+Example:.    from shared.utils import plot_training_curves
 
     var train_losses = List[Float32]()
     var val_losses = List[Float32]()
@@ -86,11 +85,11 @@ struct ConfusionMatrixData:
 
 
 fn plot_training_curves(
-    train_losses: List[Float32],
-    val_losses: List[Float32],
-    train_accs: List[Float32] = List[Float32](),
-    val_accs: List[Float32] = List[Float32](),
-    save_path: String = "",
+    `train_losses`: List[Float32],
+    `val_losses`: List[Float32],
+    `train_accs`: List[Float32] = List[Float32](),
+    `val_accs`: List[Float32] = List[Float32](),
+    `save_path`: String = "",
 ) -> Bool:
     """Plot training and validation curves.
 
@@ -130,7 +129,7 @@ fn plot_training_curves(
 
 
 fn plot_loss_only(
-    losses: List[Float32], label: String = "Loss", save_path: String = ""
+    `losses`: List[Float32], label: String = "Loss", save_path: String = ""
 ) -> Bool:
     """Plot single loss curve.
 
@@ -147,9 +146,9 @@ fn plot_loss_only(
 
 
 fn plot_accuracy_only(
-    accuracies: List[Float32],
-    label: String = "Accuracy",
-    save_path: String = "",
+    `accuracies`: List[Float32],
+    `label`: String = "Accuracy",
+    `save_path`: String = "",
 ) -> Bool:
     """Plot single accuracy curve.
 
@@ -171,7 +170,7 @@ fn plot_accuracy_only(
 
 
 fn compute_confusion_matrix(
-    y_true: List[Int], y_pred: List[Int], num_classes: Int = 0
+    `y_true`: List[Int], y_pred: List[Int], num_classes: Int = 0.
 ) -> List[List[Int]]:
     """Compute confusion matrix from predictions.
 
@@ -188,11 +187,11 @@ fn compute_confusion_matrix(
 
 
 fn plot_confusion_matrix(
-    y_true: List[Int],
-    y_pred: List[Int],
-    class_names: List[String] = List[String](),
-    normalize: Bool = False,
-    save_path: String = "",
+    `y_true`: List[Int],
+    `y_pred`: List[Int],
+    `class_names`: List[String] = List[String](),
+    `normalize`: Bool = False,
+    `save_path`: String = "",
 ) -> Bool:
     """Plot confusion matrix heatmap.
 
@@ -245,7 +244,7 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
 
 
 fn compute_matrix_metrics(
-    matrix: List[List[Int]],
+    `matrix`: List[List[Int]],
 ) -> Tuple[Float32, Float32, Float32]:
     """Compute accuracy, precision, recall from confusion matrix.
 
@@ -265,7 +264,7 @@ fn compute_matrix_metrics(
 
 
 fn visualize_model_architecture(
-    model_name: String, layer_info: List[String], save_path: String = ""
+    `model_name`: String, layer_info: List[String], save_path: String = ""
 ) -> Bool:
     """Visualize neural network architecture as diagram.
 
@@ -300,9 +299,9 @@ fn visualize_model_architecture(
 
 
 fn visualize_tensor_shapes(
-    input_shape: List[Int],
-    layer_shapes: List[List[Int]],
-    save_path: String = "",
+    `input_shape`: List[Int],
+    `layer_shapes`: List[List[Int]],
+    `save_path`: String = "",
 ) -> Bool:
     """Visualize tensor shapes through layers.
 
@@ -324,9 +323,9 @@ fn visualize_tensor_shapes(
 
 
 fn visualize_gradient_flow(
-    gradients: List[Float32],
-    layer_names: List[String] = List[String](),
-    save_path: String = "",
+    `gradients`: List[Float32],
+    `layer_names`: List[String] = List[String](),
+    `save_path`: String = "",
 ) -> Bool:
     """Visualize gradient flow through network.
 
@@ -366,10 +365,10 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
 
 
 fn show_images(
-    images: List[String],
-    labels: List[String] = List[String](),
-    nrow: Int = 8,
-    save_path: String = "",
+    `images`: List[String],
+    `labels`: List[String] = List[String](),
+    `nrow`: Int = 8,
+    `save_path`: String = "",
 ) -> Bool:
     """Display grid of images (useful for dataset visualization).
 
@@ -399,10 +398,10 @@ fn show_images(
 
 
 fn show_augmented_images(
-    original: List[String],
-    augmented: List[String],
-    nrow: Int = 4,
-    save_path: String = "",
+    `original`: List[String],
+    `augmented`: List[String],
+    `nrow`: Int = 4,
+    `save_path`: String = "",
 ) -> Bool:
     """Show original and augmented versions side by side.
 
@@ -425,7 +424,7 @@ fn show_augmented_images(
 
 
 fn visualize_feature_maps(
-    feature_maps: List[String], layer_name: String = "", save_path: String = ""
+    `feature_maps`: List[String], layer_name: String = "", save_path: String = ""
 ) -> Bool:
     """Visualize learned feature maps from a layer.
 

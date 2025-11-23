@@ -5,7 +5,7 @@ conversion methods and operator support. These types integrate with the ExTensor
 and provide a consistent interface for integer operations.
 
 Examples:
-    ```mojo
+    ```mojo.
     from shared.core.types.integer import Int8, Int16, Int32, Int64
 
     # Create integer values

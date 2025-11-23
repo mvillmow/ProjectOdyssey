@@ -21,20 +21,20 @@ fn main() raises:
     print("DenseNet-121 Training on CIFAR-10")
     print("=" * 60)
     print()
-    
+
     var train_data = load_cifar10_train("datasets/cifar10")
     var train_images = train_data[0]
     var train_labels = train_data[1]
-    print(f"Training samples: {train_images.shape()[0]}")
+    print("Training samples: " + str(train_images.shape()[0]))
     print()
-    
+
     var model = DenseNet121(num_classes=10)
     print("Model: DenseNet-121")
     print("Total layers: 121")
     print("Dense connections: 549")
     print("Parameters: ~7M")
     print()
-    
+
     print("NOTE: Dense connectivity creates complex backward pass:")
     print("  - Each layer receives gradients from ALL subsequent layers")
     print("  - Concatenation splits gradients to multiple paths")

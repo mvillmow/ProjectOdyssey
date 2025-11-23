@@ -9,8 +9,7 @@ This module provides tools for:
 All safety checks use @parameter for compile-time enable/disable, ensuring zero
 runtime overhead when safety mode is disabled.
 
-Example:
-    ```mojo
+Example:.    ```mojo.
     from shared.core import ExTensor, check_tensor_safety
 
     # Enable safety checks at compile time
@@ -30,14 +29,11 @@ from collections import List
 fn has_nan(tensor: ExTensor) -> Bool:
     """Check if tensor contains any NaN values.
 
-    Args:
-        tensor: Input tensor to check
+    Args:.        `tensor`: Input tensor to check.
 
-    Returns:
-        True if any element is NaN, False otherwise
+    Returns:.        True if any element is NaN, False otherwise.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, float("nan"), 3.0]])
         assert_true(has_nan(x))
         ```
@@ -69,14 +65,11 @@ fn has_nan(tensor: ExTensor) -> Bool:
 fn has_inf(tensor: ExTensor) -> Bool:
     """Check if tensor contains any Inf values (positive or negative).
 
-    Args:
-        tensor: Input tensor to check
+    Args:.        `tensor`: Input tensor to check.
 
-    Returns:
-        True if any element is Inf or -Inf, False otherwise
+    Returns:.        True if any element is Inf or -Inf, False otherwise.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, float("inf"), 3.0]])
         assert_true(has_inf(x))
         ```
@@ -108,14 +101,11 @@ fn has_inf(tensor: ExTensor) -> Bool:
 fn count_nan(tensor: ExTensor) -> Int:
     """Count number of NaN values in tensor.
 
-    Args:
-        tensor: Input tensor to check
+    Args:.        `tensor`: Input tensor to check.
 
-    Returns:
-        Number of NaN elements
+    Returns:.        Number of NaN elements.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, float("nan"), float("nan")]])
         assert_equal(count_nan(x), 2)
         ```
@@ -145,14 +135,11 @@ fn count_nan(tensor: ExTensor) -> Int:
 fn count_inf(tensor: ExTensor) -> Int:
     """Count number of Inf values in tensor.
 
-    Args:
-        tensor: Input tensor to check
+    Args:.        `tensor`: Input tensor to check.
 
-    Returns:
-        Number of Inf/-Inf elements
+    Returns:.        Number of Inf/-Inf elements.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, float("inf"), float("-inf")]])
         assert_equal(count_inf(x), 2)
         ```
@@ -189,15 +176,12 @@ fn check_tensor_safety[enable: Bool = False](
     When enable=True, raises Error if NaN or Inf found.
     When enable=False, compiles to nothing (zero overhead).
 
-    Args:
-        tensor: Tensor to check
-        name: Name for error message (default: "tensor")
+    Args:.        `tensor`: Tensor to check.
+        `name`: Name for error message (default: "tensor")
 
-    Raises:
-        Error: If tensor contains NaN or Inf values (only when enable=True)
+    Raises:.        Error: If tensor contains NaN or Inf values (only when enable=True)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         # Production mode: safety disabled (zero overhead)
         check_tensor_safety(output)  # Compiles to nothing
 
@@ -227,14 +211,11 @@ fn check_tensor_safety[enable: Bool = False](
 fn tensor_min(tensor: ExTensor) -> Float64:
     """Find minimum value in tensor.
 
-    Args:
-        tensor: Input tensor
+    Args:.        `tensor`: Input tensor.
 
-    Returns:
-        Minimum value as Float64
+    Returns:.        Minimum value as Float64.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, -5.0, 3.0]])
         assert_equal(tensor_min(x), -5.0)
         ```
@@ -270,14 +251,11 @@ fn tensor_min(tensor: ExTensor) -> Float64:
 fn tensor_max(tensor: ExTensor) -> Float64:
     """Find maximum value in tensor.
 
-    Args:
-        tensor: Input tensor
+    Args:.        `tensor`: Input tensor.
 
-    Returns:
-        Maximum value as Float64
+    Returns:.        Maximum value as Float64.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[1.0, 10.0, 3.0]])
         assert_equal(tensor_max(x), 10.0)
         ```
@@ -318,17 +296,14 @@ fn check_tensor_range(
 ) raises:
     """Check if all tensor values are within [min_val, max_val].
 
-    Args:
-        tensor: Tensor to check
-        min_val: Minimum allowed value
-        max_val: Maximum allowed value
-        name: Name for error message
+    Args:.        `tensor`: Tensor to check.
+        `min_val`: Minimum allowed value.
+        `max_val`: Maximum allowed value.
+        `name`: Name for error message.
 
-    Raises:
-        Error: If any value is outside the range
+    Raises:.        Error: If any value is outside the range.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var probs = sigmoid(logits)
         check_tensor_range(probs, 0.0, 1.0, "probabilities")
         # Raises if probs contains values outside [0, 1]
@@ -348,14 +323,11 @@ fn check_tensor_range(
 fn compute_tensor_l2_norm(tensor: ExTensor) -> Float64:
     """Compute L2 norm of tensor: sqrt(sum(x^2)).
 
-    Args:
-        tensor: Input tensor
+    Args:.        `tensor`: Input tensor.
 
-    Returns:
-        L2 norm as Float64
+    Returns:.        L2 norm as Float64.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var x = ExTensor([[3.0, 4.0]])
         assert_equal(compute_tensor_l2_norm(x), 5.0)  # sqrt(9 + 16)
         ```
@@ -389,16 +361,13 @@ fn check_gradient_norm(
 ) raises:
     """Check if gradient L2 norm exceeds threshold (gradient explosion detection).
 
-    Args:
-        gradient: Gradient tensor to check
-        max_norm: Maximum allowed L2 norm
-        name: Name for error message
+    Args:.        `gradient`: Gradient tensor to check.
+        `max_norm`: Maximum allowed L2 norm.
+        `name`: Name for error message.
 
-    Raises:
-        Error: If gradient norm exceeds max_norm
+    Raises:.        Error: If gradient norm exceeds max_norm.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var grad_w = linear_backward(grad_out, x, w)[1]
         check_gradient_norm(grad_w, max_norm=100.0, "weight_gradient")
         # Raises if ||grad_w||_2 > 100
@@ -424,16 +393,13 @@ fn check_gradient_vanishing(
 ) raises:
     """Check if gradient L2 norm is too small (gradient vanishing detection).
 
-    Args:
-        gradient: Gradient tensor to check
-        min_norm: Minimum expected L2 norm
-        name: Name for error message
+    Args:.        `gradient`: Gradient tensor to check.
+        `min_norm`: Minimum expected L2 norm.
+        `name`: Name for error message.
 
-    Raises:
-        Error: If gradient norm is below min_norm
+    Raises:.        Error: If gradient norm is below min_norm.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         var grad_w = linear_backward(grad_out, x, w)[1]
         check_gradient_vanishing(grad_w, min_norm=1e-6, "weight_gradient")
         # Raises if ||grad_w||_2 < 1e-6
@@ -466,17 +432,14 @@ fn check_gradient_safety[enable: Bool = False](
     - Gradient explosion (norm > max_norm)
     - Gradient vanishing (norm < min_norm)
 
-    Args:
-        gradient: Gradient tensor to check
-        max_norm: Maximum allowed L2 norm
-        min_norm: Minimum expected L2 norm
-        name: Name for error message
+    Args:.        `gradient`: Gradient tensor to check.
+        `max_norm`: Maximum allowed L2 norm.
+        `min_norm`: Minimum expected L2 norm.
+        `name`: Name for error message.
 
-    Raises:
-        Error: If any safety check fails (only when enable=True)
+    Raises:.        Error: If any safety check fails (only when enable=True)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         # Debug mode: full gradient safety
         var grad = backward_pass(loss)
         check_gradient_safety[enable=True](grad, max_norm=100.0)

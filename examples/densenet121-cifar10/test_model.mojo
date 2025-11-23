@@ -24,7 +24,7 @@ fn main() raises:
 
     print("\nTesting inference mode...")
     var logits_inf = model.forward(input, training=False)
-    print(f"  Output shape: ({logits_inf.shape()[0]}, {logits_inf.shape()[1]})")
+    print("  Output shape: (" + str(logits_inf.shape()[0]) + ", " + str(logits_inf.shape()[1]) + ")")
     if logits_inf.shape()[0] == 1 and logits_inf.shape()[1] == 10:
         print("✓ Inference mode PASSED")
     else:
@@ -33,7 +33,7 @@ fn main() raises:
 
     print("\nTesting training mode...")
     var logits_train = model.forward(input, training=True)
-    print(f"  Output shape: ({logits_train.shape()[0]}, {logits_train.shape()[1]})")
+    print("  Output shape: (" + str(logits_train.shape()[0]) + ", " + str(logits_train.shape()[1]) + ")")
     if logits_train.shape()[0] == 1 and logits_train.shape()[1] == 10:
         print("✓ Training mode PASSED")
     else:

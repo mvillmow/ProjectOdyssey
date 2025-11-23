@@ -11,15 +11,12 @@ fn broadcast_shapes(
 ) raises -> List[Int]:
     """Compute the broadcast shape of two tensor shapes.
 
-    Args:
-        shape1: First tensor shape
-        shape2: Second tensor shape
+    Args:.        `shape1`: First tensor shape.
+        `shape2`: Second tensor shape.
 
-    Returns:
-        The broadcast result shape
+    Returns:.        The broadcast result shape.
 
-    Raises:
-        Error if shapes are not broadcast-compatible
+    Raises:.        Error if shapes are not broadcast-compatible.
 
     Broadcasting rules:
         1. Compare shapes element-wise from right to left
@@ -71,12 +68,10 @@ fn are_shapes_broadcastable(
 ) -> Bool:
     """Check if two shapes are broadcast-compatible.
 
-    Args:
-        shape1: First tensor shape
-        shape2: Second tensor shape
+    Args:.        `shape1`: First tensor shape.
+        `shape2`: Second tensor shape.
 
-    Returns:
-        True if shapes are broadcast-compatible, False otherwise
+    Returns:.        True if shapes are broadcast-compatible, False otherwise.
 
     Examples:
         are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
@@ -105,12 +100,10 @@ fn compute_broadcast_strides(
 ) -> List[Int]:
     """Compute strides for broadcasting a tensor to a new shape.
 
-    Args:
-        original_shape: The original tensor shape
-        broadcast_shape: The target broadcast shape
+    Args:.        `original_shape`: The original tensor shape.
+        `broadcast_shape`: The target broadcast shape.
 
-    Returns:
-        Strides for the broadcast tensor (0 for broadcasted dimensions)
+    Returns:.        Strides for the broadcast tensor (0 for broadcasted dimensions)
 
     Note:
         Dimensions that are 1 in the original shape get stride 0 in the broadcast.
@@ -159,7 +152,7 @@ fn compute_broadcast_strides(
 struct BroadcastIterator:
     """Iterator for efficiently iterating over broadcast tensor elements.
 
-    This allows element-wise operations to work efficiently with broadcasting
+    This allows element-wise operations to work efficiently with broadcasting.
     without materializing the full broadcast tensor.
     """
 
@@ -177,10 +170,9 @@ struct BroadcastIterator:
     ):
         """Initialize broadcast iterator.
 
-        Args:
-            shape: The broadcast output shape
-            strides1: Broadcast strides for first tensor
-            strides2: Broadcast strides for second tensor
+        Args:.            `shape`: The broadcast output shape.
+            `strides1`: Broadcast strides for first tensor.
+            `strides2`: Broadcast strides for second tensor.
         """
         self.shape = shape
         self.strides1 = strides1

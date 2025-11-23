@@ -31,19 +31,16 @@ fn training_step(
 ) raises -> Float64:
     """Execute single training step (forward, backward, update).
 
-    Args:
-        model_forward: Function to compute model forward pass
-        compute_loss: Function to compute loss
-        optimizer_step: Function to update weights
-        zero_gradients: Function to zero gradients
-        data: Input batch data
-        labels: Target labels
+    Args:.        `model_forward`: Function to compute model forward pass.
+        `compute_loss`: Function to compute loss.
+        `optimizer_step`: Function to update weights.
+        `zero_gradients`: Function to zero gradients.
+        `data`: Input batch data.
+        `labels`: Target labels.
 
-    Returns:
-        Loss value for this batch
+    Returns:.        Loss value for this batch.
 
-    Raises:
-        Error if any step fails
+    Raises:.        Error if any step fails.
     """
     # Zero gradients from previous step
     zero_gradients()
@@ -77,17 +74,15 @@ fn train_one_epoch(
 ) raises:
     """Train for one epoch.
 
-    Args:
-        model_forward: Forward pass function
-        compute_loss: Loss computation function
-        optimizer_step: Weight update function
-        zero_gradients: Gradient zeroing function
-        train_loader: Training data loader
-        metrics: Training metrics to update
-        log_interval: Log metrics every N batches
+    Args:.        `model_forward`: Forward pass function.
+        `compute_loss`: Loss computation function.
+        `optimizer_step`: Weight update function.
+        `zero_gradients`: Gradient zeroing function.
+        `train_loader`: Training data loader.
+        `metrics`: Training metrics to update.
+        `log_interval`: Log metrics every N batches.
 
-    Raises:
-        Error if training fails
+    Raises:.        Error if training fails.
     """
     var epoch_loss = Float64(0.0)
     var num_batches = 0
@@ -156,10 +151,9 @@ struct TrainingLoop:
     ):
         """Initialize training loop.
 
-        Args:
-            log_interval: Log metrics every N batches
-            clip_gradients: Whether to clip gradients
-            max_grad_norm: Maximum gradient norm for clipping
+        Args:.            `log_interval`: Log metrics every N batches.
+            `clip_gradients`: Whether to clip gradients.
+            `max_grad_norm`: Maximum gradient norm for clipping.
         """
         self.log_interval = log_interval
         self.clip_gradients = clip_gradients
@@ -176,16 +170,14 @@ struct TrainingLoop:
     ) raises:
         """Run one training epoch.
 
-        Args:
-            model_forward: Forward pass function
-            compute_loss: Loss computation function
-            optimizer_step: Weight update function
-            zero_gradients: Gradient zeroing function
-            train_loader: Training data loader
-            metrics: Training metrics to update
+        Args:.            `model_forward`: Forward pass function.
+            `compute_loss`: Loss computation function.
+            `optimizer_step`: Weight update function.
+            `zero_gradients`: Gradient zeroing function.
+            `train_loader`: Training data loader.
+            `metrics`: Training metrics to update.
 
-        Raises:
-            Error if training fails
+        Raises:.            Error if training fails.
         """
         train_one_epoch(
             model_forward,
@@ -209,17 +201,15 @@ struct TrainingLoop:
     ) raises:
         """Run complete training loop.
 
-        Args:
-            model_forward: Forward pass function
-            compute_loss: Loss computation function
-            optimizer_step: Weight update function
-            zero_gradients: Gradient zeroing function
-            train_loader: Training data loader
-            num_epochs: Number of epochs to train
-            metrics: Training metrics to update
+        Args:.            `model_forward`: Forward pass function.
+            `compute_loss`: Loss computation function.
+            `optimizer_step`: Weight update function.
+            `zero_gradients`: Gradient zeroing function.
+            `train_loader`: Training data loader.
+            `num_epochs`: Number of epochs to train.
+            `metrics`: Training metrics to update.
 
-        Raises:
-            Error if training fails
+        Raises:.            Error if training fails.
         """
         print("\nStarting training for " + String(num_epochs) + " epochs...")
         print("=" * 50)

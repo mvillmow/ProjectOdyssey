@@ -17,29 +17,25 @@ from utils.index import Index
 trait Dataset:
     """Base interface for all datasets.
 
-    All datasets must implement __len__ and __getitem__ to provide
+    All datasets must implement __len__ and __getitem__ to provide.
     indexed access to samples.
     """
 
     fn __len__(self) -> Int:
         """Return the number of samples in the dataset.
 
-        Returns:
-            Number of samples.
+        Returns:.            Number of samples.
         """
         ...
 
     fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get a sample from the dataset.
 
-        Args:
-            index: Index of the sample to retrieve.
+        Args:.            `index`: Index of the sample to retrieve.
 
-        Returns:
-            Tuple of (data, label) tensors.
+        Returns:.            Tuple of (data, label) tensors.
 
-        Raises:
-            Error if index is out of bounds.
+        Raises:.            Error if index is out of bounds.
         """
         ...
 
@@ -64,12 +60,10 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
     fn __init__(out self, var data: ExTensor, var labels: ExTensor) raises:
         """Create dataset from tensors.
 
-        Args:
-            data: Data tensor of shape (N, ...).
-            labels: Label tensor of shape (N, ...).
+        Args:.            `data`: Data tensor of shape (N, ...).
+            `labels`: Label tensor of shape (N, ...).
 
-        Raises:
-            Error if data and labels have different first dimensions.
+        Raises:.            Error if data and labels have different first dimensions.
         """
         if data.shape[0] != labels.shape[0]:
             raise Error("Data and labels must have same number of samples")
@@ -133,7 +127,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         out self,
         owned file_paths: List[String],
         owned labels: List[Int],
-        cache: Bool = False,
+        `cache`: Bool = False,
     ) raises:
         """Create dataset from file paths.
 
@@ -161,14 +155,11 @@ struct FileDataset(Dataset, Copyable, Movable):
     fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Load and return sample at index.
 
-        Args:
-            index: Sample index (supports negative indexing).
+        Args:.            `index`: Sample index (supports negative indexing).
 
-        Returns:
-            Tuple of (data, label) tensors.
+        Returns:.            Tuple of (data, label) tensors.
 
-        Raises:
-            Error if index is out of bounds or file cannot be loaded.
+        Raises:.            Error if index is out of bounds or file cannot be loaded.
         """
         var idx = index
         if idx < 0:
@@ -205,14 +196,11 @@ struct FileDataset(Dataset, Copyable, Movable):
         This is a placeholder implementation that creates a dummy tensor.
         Proper file loading requires format-specific decoders.
 
-        Args:
-            path: Path to file.
+        Args:.            `path`: Path to file.
 
-        Returns:
-            Loaded data as tensor.
+        Returns:.            Loaded data as tensor.
 
-        Raises:
-            Error if file cannot be loaded.
+        Raises:.            Error if file cannot be loaded.
         """
         # TODO: Implement proper file loading based on file extension:
         #

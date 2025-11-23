@@ -33,20 +33,16 @@ fn binary_cross_entropy(
         p = predictions (should be in [0, 1] range, typically from sigmoid)
         y = targets (ground truth labels, 0 or 1)
 
-    Args:
-        predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1)
-        targets: Ground truth binary labels (0 or 1), same shape as predictions
-        epsilon: Small constant for numerical stability (prevents log(0))
+    Args:.        `predictions`: Predicted probabilities, shape (batch_size,) or (batch_size, 1)
+        `targets`: Ground truth binary labels (0 or 1), same shape as predictions.
+        `epsilon`: Small constant for numerical stability (prevents log(0))
 
-    Returns:
-        Loss tensor of same shape as inputs (element-wise loss)
-        Use mean() or sum() to get scalar loss for backpropagation
+    Returns:.        Loss tensor of same shape as inputs (element-wise loss)
+        Use mean() or sum() to get scalar loss for backpropagation.
 
-    Raises:
-        Error if shapes don't match or dtypes are incompatible
+    Raises:.        Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        var predictions = sigmoid(logits)  # (batch_size,)
+    Example:.        var predictions = sigmoid(logits)  # (batch_size,)
         var targets = ... # (batch_size,) with values 0 or 1
         var loss_per_sample = binary_cross_entropy(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
@@ -108,17 +104,14 @@ fn binary_cross_entropy_backward(
 
     This implementation uses the simplified form for efficiency and stability.
 
-    Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward)
-        predictions: Original predictions passed to forward pass
-        targets: Original targets passed to forward pass
-        epsilon: Small constant for numerical stability (unused in simplified form)
+    Args:.        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `predictions`: Original predictions passed to forward pass.
+        `targets`: Original targets passed to forward pass.
+        `epsilon`: Small constant for numerical stability (unused in simplified form)
 
-    Returns:
-        Gradient with respect to predictions, same shape as predictions
+    Returns:.        Gradient with respect to predictions, same shape as predictions.
 
-    Example:
-        # Forward
+    Example:.        # Forward.
         var loss = mean(binary_cross_entropy(predictions, targets))
 
         # Backward
@@ -138,23 +131,19 @@ fn mean_squared_error(predictions: ExTensor, targets: ExTensor) raises -> ExTens
     """Mean squared error loss for regression.
 
     Formula:
-        MSE = (predictions - targets)^2
+        MSE = (predictions - targets)^2.
 
     Returns element-wise squared error. Use mean() to get scalar loss.
 
-    Args:
-        predictions: Predicted values, any shape
-        targets: Ground truth values, same shape as predictions
+    Args:.        `predictions`: Predicted values, any shape.
+        `targets`: Ground truth values, same shape as predictions.
 
-    Returns:
-        Squared error tensor, same shape as inputs
-        Use mean() or sum() to get scalar loss for backpropagation
+    Returns:.        Squared error tensor, same shape as inputs.
+        Use mean() or sum() to get scalar loss for backpropagation.
 
-    Raises:
-        Error if shapes don't match or dtypes are incompatible
+    Raises:.        Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        var predictions = model(x)  # (batch_size, output_dim)
+    Example:.        var predictions = model(x)  # (batch_size, output_dim)
         var targets = y_true        # (batch_size, output_dim)
         var loss_per_sample = mean_squared_error(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss
@@ -180,16 +169,13 @@ fn mean_squared_error_backward(
     Formula:
         ∂MSE/∂predictions = 2 * (predictions - targets)
 
-    Args:
-        grad_output: Gradient from upstream (e.g., from mean_backward)
-        predictions: Original predictions passed to forward pass
-        targets: Original targets passed to forward pass
+    Args:.        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `predictions`: Original predictions passed to forward pass.
+        `targets`: Original targets passed to forward pass.
 
-    Returns:
-        Gradient with respect to predictions, same shape as predictions
+    Returns:.        Gradient with respect to predictions, same shape as predictions.
 
-    Example:
-        # Forward
+    Example:.        # Forward.
         var loss = mean(mean_squared_error(predictions, targets))
 
         # Backward
@@ -221,21 +207,17 @@ fn cross_entropy(
 
     This implementation uses the log-sum-exp trick for numerical stability.
 
-    Args:
-        logits: Raw model outputs (before softmax), shape (batch_size, num_classes)
-        targets: One-hot encoded ground truth, same shape as logits
-        axis: Axis along which to compute softmax (default: -1, last axis)
-        epsilon: Small constant for numerical stability in log operations (default: 1e-7)
+    Args:.        `logits`: Raw model outputs (before softmax), shape (batch_size, num_classes)
+        `targets`: One-hot encoded ground truth, same shape as logits.
+        `axis`: Axis along which to compute softmax (default: -1, last axis)
+        `epsilon`: Small constant for numerical stability in log operations (default: 1e-7)
 
-    Returns:
-        Loss tensor, shape depends on reduction
-        Use mean() to get scalar loss for backpropagation
+    Returns:.        Loss tensor, shape depends on reduction.
+        Use mean() to get scalar loss for backpropagation.
 
-    Raises:
-        Error if shapes don't match or dtypes are incompatible
+    Raises:.        Error if shapes don't match or dtypes are incompatible.
 
-    Example:
-        var logits = model(x)           # (batch_size, num_classes)
+    Example:.        var logits = model(x)           # (batch_size, num_classes)
         var targets_onehot = ...        # (batch_size, num_classes) one-hot
         var loss_per_sample = cross_entropy(logits, targets_onehot)
         var loss = mean(loss_per_sample)  # Scalar loss
@@ -307,19 +289,16 @@ fn cross_entropy_backward(
     For cross-entropy with softmax, the gradient simplifies to:
         ∂CE/∂logits = softmax(logits) - targets
 
-    This beautiful result comes from the chain rule and the properties
+    This beautiful result comes from the chain rule and the properties.
     of the softmax function.
 
-    Args:
-        grad_output: Gradient from upstream (scalar for mean reduction)
-        logits: Original logits passed to forward pass, shape (batch, num_classes)
-        targets: Original one-hot targets, shape (batch, num_classes)
+    Args:.        `grad_output`: Gradient from upstream (scalar for mean reduction)
+        `logits`: Original logits passed to forward pass, shape (batch, num_classes)
+        `targets`: Original one-hot targets, shape (batch, num_classes)
 
-    Returns:
-        Gradient with respect to logits, shape (batch, num_classes)
+    Returns:.        Gradient with respect to logits, shape (batch, num_classes)
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import cross_entropy, cross_entropy_backward
 
         # Forward pass
@@ -329,7 +308,7 @@ fn cross_entropy_backward(
         ```
 
     Note:
-        The gradient is already averaged over the batch if the forward pass
+        The gradient is already averaged over the batch if the forward pass.
         used mean reduction.
     """
     # Compute softmax probabilities

@@ -205,20 +205,18 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn sigmoid(tensor: ExTensor) raises -> ExTensor:
     """Apply sigmoid activation: 1 / (1 + exp(-x)).
 
-    Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation
+    Sigmoid maps inputs to (0, 1) range. Uses numerically stable implementation.
     with input clipping to prevent overflow in exp() computation.
 
     For large |x| (>20), uses approximations:
     - x > 20: sigmoid(x) ≈ 1.0
     - x < -20: sigmoid(x) ≈ 0.0
 
-    Supported dtypes: float16, float32, float64
+    Supported dtypes: float16, float32, float64.
 
-    Args:
-        tensor: Input tensor of any shape
+    Args:.        `tensor`: Input tensor of any shape.
 
-    Returns:
-        New tensor with sigmoid applied element-wise, values in (0, 1)
+    Returns:.        New tensor with sigmoid applied element-wise, values in (0, 1)
 
     Examples:
         var x = ExTensor(...)  # [-2, 0, 2]
@@ -485,12 +483,10 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     ReLU gradient: ∂L/∂x = ∂L/∂y * (x > 0)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        x: Input tensor from forward pass
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `x`: Input tensor from forward pass.
 
-    Returns:
-        Gradient with respect to input (∂L/∂x)
+    Returns:.        Gradient with respect to input (∂L/∂x)
 
     Examples:
         var x = ExTensor(...)  # Input
@@ -530,13 +526,11 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
 
     Leaky ReLU gradient: ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        x: Input tensor from forward pass
-        alpha: Slope for negative values (default: 0.01)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `x`: Input tensor from forward pass.
+        `alpha`: Slope for negative values (default: 0.01)
 
-    Returns:
-        Gradient with respect to input (∂L/∂x)
+    Returns:.        Gradient with respect to input (∂L/∂x)
     """
     if grad_output._dtype != x._dtype:
         raise Error("leaky_relu_backward: grad_output and x must have same dtype")
@@ -603,13 +597,11 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises ->
     - ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
     - ∂L/∂alpha = sum(∂L/∂y * x) where x <= 0
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        x: Input tensor from forward pass
-        alpha: Learnable slope parameter
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `x`: Input tensor from forward pass.
+        `alpha`: Learnable slope parameter.
 
-    Returns:
-        GradientPair containing (grad_input, grad_alpha)
+    Returns:.        GradientPair containing (grad_input, grad_alpha)
     """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
@@ -675,12 +667,10 @@ fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     Tanh gradient: ∂L/∂x = ∂L/∂y * (1 - y²)
     where y = tanh(x)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        output: Output from forward pass (tanh(x))
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `output`: Output from forward pass (tanh(x))
 
-    Returns:
-        Gradient with respect to input (∂L/∂x)
+    Returns:.        Gradient with respect to input (∂L/∂x)
 
     Note:
         Takes output instead of input to avoid recomputing tanh.
@@ -699,15 +689,13 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
     GELU gradient (exact): ∂L/∂x = ∂L/∂y * [Φ(x) + x*φ(x)]
     where Φ is CDF and φ is PDF of standard normal
 
-    GELU gradient (approximate): Uses derivative of tanh approximation
+    GELU gradient (approximate): Uses derivative of tanh approximation.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        x: Input tensor from forward pass
-        approximate: Use tanh approximation (True) or exact erf (False)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `x`: Input tensor from forward pass.
+        `approximate`: Use tanh approximation (True) or exact erf (False)
 
-    Returns:
-        Gradient with respect to input (∂L/∂x)
+    Returns:.        Gradient with respect to input (∂L/∂x)
     """
     if grad_output._dtype != x._dtype:
         raise Error("gelu_backward: grad_output and x must have same dtype")
@@ -816,21 +804,18 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
 
     where y = softmax(x) is the output from the forward pass.
 
-    The gradient takes into account that each output depends on all inputs
+    The gradient takes into account that each output depends on all inputs.
     through the normalization term, creating a Jacobian matrix.
 
-    Supported dtypes: float16, float32, float64
+    Supported dtypes: float16, float32, float64.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂y)
-        output: Softmax output from forward pass (y = softmax(x))
-        axis: Axis along which softmax was computed (default: -1)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂y)
+        `output`: Softmax output from forward pass (y = softmax(x))
+        `axis`: Axis along which softmax was computed (default: -1)
 
-    Returns:
-        Gradient with respect to input (∂L/∂x)
+    Returns:.        Gradient with respect to input (∂L/∂x)
 
-    Raises:
-        Error: If dtypes don't match or shapes incompatible
+    Raises:.        Error: If dtypes don't match or shapes incompatible.
 
     Examples:
         var x = ExTensor(...)  # Input
@@ -839,7 +824,7 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
         var grad_x = softmax_backward(grad_y, y)  # Backward pass
 
     References:
-        The gradient formula accounts for the fact that softmax output y_i
+        The gradient formula accounts for the fact that softmax output y_i.
         depends on all inputs x_j, not just x_i, due to the normalization.
     """
     if grad_output._dtype != output._dtype:
@@ -939,7 +924,7 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
 fn swish(tensor: ExTensor) raises -> ExTensor:
     """Swish activation function (also known as SiLU - Sigmoid Linear Unit).
 
-    Swish is a smooth, non-monotonic activation function that performs better
+    Swish is a smooth, non-monotonic activation function that performs better.
     than ReLU in deep networks.
 
     Formula:
@@ -951,14 +936,11 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
         - Self-gated (uses its own value as gate)
         - Bounded below, unbounded above
 
-    Args:
-        tensor: Input tensor of any shape
+    Args:.        `tensor`: Input tensor of any shape.
 
-    Returns:
-        Output tensor with swish applied element-wise
+    Returns:.        Output tensor with swish applied element-wise.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import ExTensor, swish
 
         var x = ExTensor.from_list([...])
@@ -976,7 +958,7 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
 fn mish(tensor: ExTensor) raises -> ExTensor:
     """Mish activation function.
 
-    Mish is a smooth, self-regularized non-monotonic activation function
+    Mish is a smooth, self-regularized non-monotonic activation function.
     that has shown improvements over ReLU and Swish in some tasks.
 
     Formula:
@@ -989,14 +971,11 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
         - Self-regularized (bounded below)
         - Unbounded above
 
-    Args:
-        tensor: Input tensor of any shape
+    Args:.        `tensor`: Input tensor of any shape.
 
-    Returns:
-        Output tensor with mish applied element-wise
+    Returns:.        Output tensor with mish applied element-wise.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import ExTensor, mish
 
         var x = ExTensor.from_list([...])
@@ -1048,15 +1027,12 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
         - Saturates for large negative values
         - Reduces bias shift
 
-    Args:
-        tensor: Input tensor of any shape
-        alpha: Scale for negative values (default: 1.0)
+    Args:.        `tensor`: Input tensor of any shape.
+        `alpha`: Scale for negative values (default: 1.0)
 
-    Returns:
-        Output tensor with ELU applied element-wise
+    Returns:.        Output tensor with ELU applied element-wise.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import ExTensor, elu
 
         var x = ExTensor.from_list([...])
@@ -1064,7 +1040,7 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
         ```
 
     Reference:
-        Clevert et al., "Fast and Accurate Deep Network Learning by
+        Clevert et al., "Fast and Accurate Deep Network Learning by.
         Exponential Linear Units (ELUs)" (2015)
     """
     var result = zeros_like(tensor)
@@ -1133,15 +1109,12 @@ fn swish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
         d/dx[swish(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
                        = sigmoid(x) * (1 + x * (1 - sigmoid(x)))
 
-    Args:
-        grad_output: Gradient from upstream
-        x: Input from forward pass
+    Args:.        `grad_output`: Gradient from upstream.
+        `x`: Input from forward pass.
 
-    Returns:
-        Gradient with respect to input
+    Returns:.        Gradient with respect to input.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import swish, swish_backward
 
         # Forward
@@ -1168,15 +1141,12 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     The derivative involves the derivative of tanh(softplus(x)).
 
-    Args:
-        grad_output: Gradient from upstream
-        x: Input from forward pass
+    Args:.        `grad_output`: Gradient from upstream.
+        `x`: Input from forward pass.
 
-    Returns:
-        Gradient with respect to input
+    Returns:.        Gradient with respect to input.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import mish, mish_backward
 
         # Forward
@@ -1223,16 +1193,13 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
         d/dx[elu(x)] = 1 if x > 0
         d/dx[elu(x)] = alpha * exp(x) if x <= 0
 
-    Args:
-        grad_output: Gradient from upstream
-        x: Input from forward pass
-        alpha: Scale for negative values (must match forward pass)
+    Args:.        `grad_output`: Gradient from upstream.
+        `x`: Input from forward pass.
+        `alpha`: Scale for negative values (must match forward pass)
 
-    Returns:
-        Gradient with respect to input
+    Returns:.        Gradient with respect to input.
 
-    Example:
-        ```mojo
+    Example:.        ```mojo.
         from shared.core import elu, elu_backward
 
         # Forward

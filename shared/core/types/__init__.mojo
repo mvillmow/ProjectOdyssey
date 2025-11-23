@@ -17,8 +17,7 @@ Components:
     - Int8, Int16, Int32, Int64: Signed integer types
     - UInt8, UInt16, UInt32, UInt64: Unsigned integer types
 
-Example:
-    from shared.core.types import Tensor, Shape, DType, FP8, BF8
+Example:.    from shared.core.types import Tensor, Shape, DType, FP8, BF8
     from shared.core.types import FP4_E2M1, MXFP4, NVFP4
     from shared.core.types import Int8, Int16, Int32, Int64
     from shared.core.types import UInt8, UInt16, UInt32, UInt64

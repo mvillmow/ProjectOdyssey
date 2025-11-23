@@ -14,8 +14,7 @@ Key characteristics:
 - Precision: Limited (E2M1 values)
 - Use case: Memory-efficient ML training and inference
 
-Example:
-    from shared.core.types.mxfp4 import MXFP4, MXFP4Block
+Example:.    from shared.core.types.mxfp4 import MXFP4, MXFP4Block
 
     # Individual value (stores both E2M1 and scale for convenience)
     var val = MXFP4.from_float32(3.14159)
@@ -31,7 +30,7 @@ Reference:
     https://arxiv.org/abs/2310.10537
     https://doi.org/10.48550/arXiv.2310.10537
 
-    The paper demonstrates that microscaling (per-block scaling factors) enables
+    The paper demonstrates that microscaling (per-block scaling factors) enables.
     efficient low-precision quantization (4-bit) while maintaining accuracy in
     deep learning training and inference. MXFP4 uses E8M0 scales (256 dynamic range)
     across 32-element blocks for maximum efficiency.
@@ -52,15 +51,14 @@ struct E8M0Scale(Stringable, Representable):
 
     Represents: 2^(exponent - 127)
 
-    Valid range: 2^-127 to 2^128
+    Valid range: 2^-127 to 2^128.
     """
     var exponent: UInt8
 
     fn __init__(mut self, exponent: UInt8 = 127):
         """Initialize E8M0 scale from raw exponent.
 
-        Args:
-            exponent: 8-bit exponent value (bias = 127)
+        Args:.            exponent: 8-bit exponent value (bias = 127)
         """
         self.exponent = exponent
 
@@ -68,11 +66,9 @@ struct E8M0Scale(Stringable, Representable):
     fn from_float32(scale: Float32) -> Self:
         """Compute E8M0 scale from Float32 value.
 
-        Args:
-            scale: Positive Float32 scale value
+        Args:.            `scale`: Positive Float32 scale value.
 
-        Returns:
-            E8M0 representation
+        Returns:.            E8M0 representation.
 
         Note:
             Scale must be positive. Negative or zero values return minimum scale.
@@ -110,8 +106,7 @@ struct E8M0Scale(Stringable, Representable):
     fn to_float32(self) -> Float32:
         """Convert E8M0 scale to Float32.
 
-        Returns:
-            Float32 representation: 2^(exponent - 127)
+        Returns:.            Float32 representation: 2^(exponent - 127)
         """
         var exponent = self.exponent.cast[DType.int32]() - 127
 
@@ -129,16 +124,14 @@ struct E8M0Scale(Stringable, Representable):
     fn __str__(self) -> String:
         """String representation showing scale value.
 
-        Returns:
-            String representation
+        Returns:.            String representation.
         """
         return "E8M0(exp=" + str(self.exponent) + ", scale=" + str(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation.
 
-        Returns:
-            Detailed string representation
+        Returns:.            Detailed string representation.
         """
         return self.__str__()
 
@@ -162,9 +155,8 @@ struct MXFP4(Stringable, Representable):
     fn __init__(mut self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
-        Args:
-            value: E2M1 encoded value
-            scale: E8M0 scale factor
+        Args:.            `value`: E2M1 encoded value.
+            `scale`: E8M0 scale factor.
         """
         self.value = value
         self.scale = scale
@@ -175,11 +167,9 @@ struct MXFP4(Stringable, Representable):
 
         Computes optimal scale for the single value and encodes.
 
-        Args:
-            x: Float32 value to convert
+        Args:.            `x`: Float32 value to convert.
 
-        Returns:
-            MXFP4 representation
+        Returns:.            MXFP4 representation.
         """
         # Handle special cases
         if isnan(x) or isinf(x):
@@ -215,22 +205,19 @@ struct MXFP4(Stringable, Representable):
         """Convert Float32 to MXFP4 with stochastic rounding.
 
         Uses stochastic rounding which is recommended for gradient quantization.
-        When a value falls between two representable FP4 values, probabilistically
+        When a value falls between two representable FP4 values, probabilistically.
         round up or down based on distance.
 
-        Args:
-            x: Float32 value to convert
-            seed: Random seed for deterministic stochastic rounding
+        Args:.            `x`: Float32 value to convert.
+            `seed`: Random seed for deterministic stochastic rounding.
 
-        Returns:
-            MXFP4 representation with stochastic rounding
+        Returns:.            MXFP4 representation with stochastic rounding.
 
         Note:
             Use this for gradients and backward computations.
             Use from_float32() for forward passes and weights.
 
-        Example:
-            # Gradient value 1.25 between 1.0 and 1.5
+        Example:.            # Gradient value 1.25 between 1.0 and 1.5.
             # Will round to 1.5 with ~50% probability
             var grad = MXFP4.from_float32_stochastic(1.25, seed=12345)
         """
@@ -266,13 +253,11 @@ struct MXFP4(Stringable, Representable):
     fn _fp4_stochastic_round(x: Float32, scale: Float32, seed: UInt64) -> FP4_E2M1:
         """Internal: Stochastic rounding helper using simple LCG.
 
-        Args:
-            x: Float32 value to encode
-            scale: Scale factor
-            seed: Random seed
+        Args:.            `x`: Float32 value to encode.
+            `scale`: Scale factor.
+            `seed`: Random seed.
 
-        Returns:
-            FP4_E2M1 value with stochastic rounding
+        Returns:.            FP4_E2M1 value with stochastic rounding.
         """
         var scaled = x / scale
         var sign: UInt8 = 0
@@ -343,60 +328,50 @@ struct MXFP4(Stringable, Representable):
     fn to_float32(self) -> Float32:
         """Convert MXFP4 to Float32.
 
-        Returns:
-            Float32 representation
+        Returns:.            Float32 representation.
         """
         return self.value.to_float32(scale=self.scale.to_float32())
 
     fn __add__(self, other: MXFP4) -> MXFP4:
         """Add two MXFP4 values (via Float32).
 
-        Args:
-            other: Value to add
+        Args:.            `other`: Value to add.
 
-        Returns:
-            Sum as MXFP4
+        Returns:.            Sum as MXFP4.
         """
         return MXFP4.from_float32(self.to_float32() + other.to_float32())
 
     fn __sub__(self, other: MXFP4) -> MXFP4:
         """Subtract two MXFP4 values (via Float32).
 
-        Args:
-            other: Value to subtract
+        Args:.            `other`: Value to subtract.
 
-        Returns:
-            Difference as MXFP4
+        Returns:.            Difference as MXFP4.
         """
         return MXFP4.from_float32(self.to_float32() - other.to_float32())
 
     fn __mul__(self, other: MXFP4) -> MXFP4:
         """Multiply two MXFP4 values (via Float32).
 
-        Args:
-            other: Value to multiply
+        Args:.            `other`: Value to multiply.
 
-        Returns:
-            Product as MXFP4
+        Returns:.            Product as MXFP4.
         """
         return MXFP4.from_float32(self.to_float32() * other.to_float32())
 
     fn __truediv__(self, other: MXFP4) -> MXFP4:
         """Divide two MXFP4 values (via Float32).
 
-        Args:
-            other: Divisor
+        Args:.            `other`: Divisor.
 
-        Returns:
-            Quotient as MXFP4
+        Returns:.            Quotient as MXFP4.
         """
         return MXFP4.from_float32(self.to_float32() / other.to_float32())
 
     fn __neg__(self) -> MXFP4:
         """Negate MXFP4 value.
 
-        Returns:
-            Negated value
+        Returns:.            Negated value.
         """
         # Flip sign bit in E2M1 value
         var neg_value = FP4_E2M1(self.value.value ^ 0b1000)
@@ -405,82 +380,68 @@ struct MXFP4(Stringable, Representable):
     fn __eq__(self, other: MXFP4) -> Bool:
         """Check equality.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if equal
+        Returns:.            True if equal.
         """
         return self.value == other.value and self.scale.exponent == other.scale.exponent
 
     fn __ne__(self, other: MXFP4) -> Bool:
         """Check inequality.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if not equal
+        Returns:.            True if not equal.
         """
         return not (self == other)
 
     fn __lt__(self, other: MXFP4) -> Bool:
         """Check less than.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if self < other
+        Returns:.            True if self < other.
         """
         return self.to_float32() < other.to_float32()
 
     fn __le__(self, other: MXFP4) -> Bool:
         """Check less than or equal.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if self <= other
+        Returns:.            True if self <= other.
         """
         return self.to_float32() <= other.to_float32()
 
     fn __gt__(self, other: MXFP4) -> Bool:
         """Check greater than.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if self > other
+        Returns:.            True if self > other.
         """
         return self.to_float32() > other.to_float32()
 
     fn __ge__(self, other: MXFP4) -> Bool:
         """Check greater than or equal.
 
-        Args:
-            other: Value to compare
+        Args:.            `other`: Value to compare.
 
-        Returns:
-            True if self >= other
+        Returns:.            True if self >= other.
         """
         return self.to_float32() >= other.to_float32()
 
     fn __str__(self) -> String:
         """Convert to string.
 
-        Returns:
-            String representation
+        Returns:.            String representation.
         """
         return "MXFP4(" + str(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Get representation string.
 
-        Returns:
-            Representation string
+        Returns:.            Representation string.
         """
         return "MXFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
@@ -500,8 +461,7 @@ struct MXFP4Block(Stringable, Representable):
 
     This provides 16:1 compression vs Float32 (17 bytes vs 128 bytes).
 
-    Example:
-        from collections import List
+    Example:.        from collections import List.
 
         # Create block from Float32 array
         var values = List[Float32]()

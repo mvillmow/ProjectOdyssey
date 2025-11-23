@@ -4,8 +4,7 @@ This module provides structured logging capabilities with multiple handlers
 and formatters. It supports file and console output with configurable
 log levels.
 
-Example:
-    from shared.utils import Logger, StreamHandler, FileHandler
+Example:.    from shared.utils import Logger, StreamHandler, FileHandler
 
     var logger = Logger("training")
     logger.add_handler(StreamHandler())
@@ -27,7 +26,7 @@ struct LogLevel:
     """Log level enumeration with numeric values for comparison.
 
     Levels are ordered from least (DEBUG) to most (CRITICAL) severe.
-    Log filtering uses numeric comparison: logger only outputs
+    Log filtering uses numeric comparison: logger only outputs.
     messages with level >= logger's configured level.
     """
 
@@ -46,7 +45,7 @@ struct LogLevel:
 struct LogRecord:
     """Record of a single log message.
 
-    Contains all information needed by handlers to format and output
+    Contains all information needed by handlers to format and output.
     a log message including the logger name, level, message, and timestamp.
     """
 
@@ -64,11 +63,10 @@ struct LogRecord:
     ):
         """Initialize a log record.
 
-        Args:
-            logger_name: Name of the logger that created this record
-            level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-            message: The log message
-            timestamp: Optional timestamp (auto-generated if empty)
+        Args:.            `logger_name`: Name of the logger that created this record.
+            `level`: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+            `message`: The log message.
+            `timestamp`: Optional timestamp (auto-generated if empty)
         """
         self.logger_name = logger_name
         self.level = level
@@ -78,12 +76,11 @@ struct LogRecord:
     fn _get_timestamp(self) -> String:
         """Generate current timestamp string.
 
-        Uses time.now() to get current Unix timestamp and formats it
+        Uses time.now() to get current Unix timestamp and formats it.
         as ISO 8601 basic format. Mojo v0.25.7 lacks full datetime
         support, so this is a simplified implementation.
 
-        Returns:
-            Timestamp string in format "YYYY-MM-DD HH:MM:SS"
+        Returns:.            Timestamp string in format "YYYY-MM-DD HH:MM:SS"
         """
         # NOTE: This is a simplified implementation until Mojo
         # stdlib includes full datetime support
@@ -244,8 +241,7 @@ struct FileHandler(Handler):
     fn __init__(out self, filepath: String):
         """Create file handler that writes to given file.
 
-        Args:
-            filepath: Path to log file to write to
+        Args:.            `filepath`: Path to log file to write to.
         """
         self.filepath = filepath
         self.formatter = TimestampFormatter()
@@ -394,15 +390,12 @@ fn _init_default_logger():
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
     """Get or create a named logger.
 
-    Args:
-        name: Logger name
-        level: Log level threshold (default: INFO)
+    Args:.        `name`: Logger name.
+        `level`: Log level threshold (default: INFO)
 
-    Returns:
-        Logger with specified name and level
+    Returns:.        Logger with specified name and level.
 
-    Example:
-        var logger = get_logger("training")
+    Example:.        var logger = get_logger("training")
         logger.info("Training started")
     """
     return Logger(name, level)

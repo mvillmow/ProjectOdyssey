@@ -4,8 +4,7 @@ This module provides utilities for setting global random seeds,
 saving and restoring random state, and ensuring reproducibility
 across the entire ML pipeline.
 
-Example:
-    from shared.utils import set_seed, get_random_state, set_random_state
+Example:.    from shared.utils import set_seed, get_random_state, set_random_state
 
     # Set seed for reproducibility
     set_seed(42)
@@ -77,11 +76,9 @@ fn set_seed(seed: Int):
 
     Setting the same seed ensures reproducible results across runs.
 
-    Args:
-        seed: Random seed value (0-2147483647)
+    Args:.        `seed`: Random seed value (0-2147483647)
 
-    Example:
-        # At start of experiment
+    Example:.        # At start of experiment.
         set_seed(42)
 
         # All random operations are now deterministic
@@ -96,12 +93,10 @@ fn set_seed(seed: Int):
 fn get_global_seed() -> Int:
     """Get current global random seed.
 
-    Returns:
-        Current seed value
+    Returns:.        Current seed value.
 
-    Example:
-        var seed = get_global_seed()
-        print(f"Using seed: {seed}")
+    Example:.        var seed = get_global_seed()
+        print("Using seed: " + str(seed))
     """
     return _global_seed
 
@@ -114,15 +109,13 @@ fn get_global_seed() -> Int:
 fn get_random_state() -> RandomState:
     """Get current random state for all RNGs.
 
-    Captures the complete state of all random number generators so it can
+    Captures the complete state of all random number generators so it can.
     be saved to disk or restored later. This is essential for resuming
     training and validation workflows.
 
-    Returns:
-        Current random state
+    Returns:.        Current random state.
 
-    Example:
-        # Before starting validation
+    Example:.        # Before starting validation.
         var state = get_random_state()
 
         # Validation with different random data
@@ -141,14 +134,12 @@ fn get_random_state() -> RandomState:
 fn set_random_state(state: RandomState):
     """Restore previous random state.
 
-    Restores all RNGs to a previously saved state. This ensures that
+    Restores all RNGs to a previously saved state. This ensures that.
     resuming training or validation continues with the same random sequence.
 
-    Args:
-        state: Previously saved random state
+    Args:.        `state`: Previously saved random state.
 
-    Example:
-        var saved_state = get_random_state()
+    Example:.        var saved_state = get_random_state()
         # ... do something ...
         set_random_state(saved_state)
     """
@@ -160,8 +151,7 @@ fn set_random_state(state: RandomState):
 fn save_random_state(state: RandomState):
     """Save random state to list (for history tracking).
 
-    Args:
-        state: State to save
+    Args:.        `state`: State to save.
     """
     _saved_states.append(state)
 
@@ -169,11 +159,9 @@ fn save_random_state(state: RandomState):
 fn get_saved_state(index: Int) -> RandomState:
     """Get previously saved random state by index.
 
-    Args:
-        index: Index in saved states list
+    Args:.        `index`: Index in saved states list.
 
-    Returns:
-        Saved random state
+    Returns:.        Saved random state.
     """
     if index < _saved_states.size():
         return _saved_states[index]
@@ -192,8 +180,7 @@ struct SeedContext:
     Allows temporarily changing the random seed within a context,
     then restoring the original seed when exiting.
 
-    Example:
-        # Current seed is 42
+    Example:.        # Current seed is 42.
         set_seed(42)
 
         # Temporarily use different seed
@@ -210,8 +197,7 @@ struct SeedContext:
     fn __init__(out self, seed: Int):
         """Create context manager with new seed.
 
-        Args:
-            seed: Seed to use within context
+        Args:.            `seed`: Seed to use within context.
         """
         self.saved_seed = get_global_seed()
         self.new_seed = seed

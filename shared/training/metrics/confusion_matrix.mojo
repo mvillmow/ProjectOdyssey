@@ -26,11 +26,11 @@ from math import sqrt
 struct ConfusionMatrix:
     """Confusion matrix for classification analysis.
 
-    Maintains an NxN matrix where matrix[i, j] represents the count of samples
+    Maintains an NxN matrix where matrix[i, j] represents the count of samples.
     with true label i that were predicted as label j.
 
-    Rows = true labels
-    Columns = predicted labels
+    Rows = true labels.
+    Columns = predicted labels.
 
     Features:
     - Incremental updates (efficient for large datasets)
@@ -48,7 +48,7 @@ struct ConfusionMatrix:
         var recall = cm.get_recall()
         var f1 = cm.get_f1_score()
 
-    Issue: #288-292 - Confusion matrix
+    Issue: #288-292 - Confusion matrix.
     """
     var num_classes: Int
     var matrix: ExTensor  # Shape: [num_classes, num_classes], dtype=int32
@@ -58,9 +58,8 @@ struct ConfusionMatrix:
     fn __init__(mut self, num_classes: Int, class_names: List[String] = List[String]()):
         """Initialize NxN confusion matrix.
 
-        Args:
-            num_classes: Number of classes
-            class_names: Optional list of class names (default: empty)
+        Args:.            `num_classes`: Number of classes.
+            `class_names`: Optional list of class names (default: empty)
         """
         self.num_classes = num_classes
 
@@ -76,12 +75,10 @@ struct ConfusionMatrix:
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update confusion matrix with new batch of predictions.
 
-        Args:
-            predictions: Predicted class indices [batch_size] or logits [batch_size, num_classes]
-            labels: True class labels [batch_size]
+        Args:.            `predictions`: Predicted class indices [batch_size] or logits [batch_size, num_classes]
+            `labels`: True class labels [batch_size]
 
-        Raises:
-            Error: If shapes are incompatible or labels out of range
+        Raises:.            Error: If shapes are incompatible or labels out of range.
         """
         # Get predicted classes
         var pred_classes: ExTensor

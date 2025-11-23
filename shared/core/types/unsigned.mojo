@@ -5,7 +5,7 @@ conversion methods and operator support. These types integrate with the ExTensor
 and provide a consistent interface for unsigned integer operations.
 
 Examples:
-    ```mojo
+    ```mojo.
     from shared.core.types.unsigned import UInt8, UInt16, UInt32, UInt64
 
     # Create unsigned integer values

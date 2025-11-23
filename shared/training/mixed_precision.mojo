@@ -35,15 +35,14 @@ struct GradientScaler:
     Dynamically adjusts scale factor based on gradient overflow/underflow.
 
     Attributes:
-        scale: Current loss scale factor (default: 65536.0 = 2^16)
-        growth_factor: Factor to increase scale (default: 2.0)
-        backoff_factor: Factor to decrease scale (default: 0.5)
-        growth_interval: Steps between scale increases (default: 2000)
-        min_scale: Minimum allowed scale (default: 1.0)
-        max_scale: Maximum allowed scale (default: 65536.0)
+        `scale`: Current loss scale factor (default: 65536.0 = 2^16)
+        `growth_factor`: Factor to increase scale (default: 2.0)
+        `backoff_factor`: Factor to decrease scale (default: 0.5)
+        `growth_interval`: Steps between scale increases (default: 2000)
+        `min_scale`: Minimum allowed scale (default: 1.0)
+        `max_scale`: Maximum allowed scale (default: 65536.0)
 
-    Example:
-        var scaler = GradientScaler()
+    Example:.        var scaler = GradientScaler()
 
         # In training loop:
         var scaled_loss = scaler.scale(loss)
@@ -77,13 +76,12 @@ struct GradientScaler:
                 max_scale: Float32 = 65536.0):
         """Initialize gradient scaler.
 
-        Args:
-            initial_scale: Initial loss scale (power of 2 recommended)
-            growth_factor: Multiplicative factor for scale growth
-            backoff_factor: Multiplicative factor for scale reduction
-            growth_interval: Steps between automatic scale increases
-            min_scale: Minimum allowed scale factor
-            max_scale: Maximum allowed scale factor
+        Args:.            `initial_scale`: Initial loss scale (power of 2 recommended)
+            `growth_factor`: Multiplicative factor for scale growth.
+            `backoff_factor`: Multiplicative factor for scale reduction.
+            `growth_interval`: Steps between automatic scale increases.
+            `min_scale`: Minimum allowed scale factor.
+            `max_scale`: Maximum allowed scale factor.
         """
         self.scale = initial_scale
         self.growth_factor = growth_factor
@@ -97,17 +95,13 @@ struct GradientScaler:
     fn scale_loss(self, loss: ExTensor) raises -> ExTensor:
         """Scale loss by current scale factor.
 
-        Args:
-            loss: Unscaled loss tensor (typically scalar)
+        Args:.            `loss`: Unscaled loss tensor (typically scalar)
 
-        Returns:
-            Scaled loss tensor
+        Returns:.            Scaled loss tensor.
 
-        Raises:
-            Error: If loss is empty or scale is invalid
+        Raises:.            Error: If loss is empty or scale is invalid.
 
-        Example:
-            var loss = compute_loss(predictions, targets)
+        Example:.            var loss = compute_loss(predictions, targets)
             var scaled_loss = scaler.scale_loss(loss)
         """
         # Validate input
@@ -123,17 +117,13 @@ struct GradientScaler:
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
         """Unscale gradients by dividing by scale factor.
 
-        Args:
-            gradients: Scaled gradients from backward pass
+        Args:.            `gradients`: Scaled gradients from backward pass.
 
-        Returns:
-            Unscaled gradients ready for optimizer
+        Returns:.            Unscaled gradients ready for optimizer.
 
-        Raises:
-            Error: If gradients are empty or scale is zero
+        Raises:.            Error: If gradients are empty or scale is zero.
 
-        Example:
-            var scaled_grads = backward(scaled_loss)
+        Example:.            var scaled_grads = backward(scaled_loss)
             var grads = scaler.unscale_gradients(scaled_grads)
         """
         # Validate input
@@ -152,8 +142,7 @@ struct GradientScaler:
         Increases scale if no overflow occurred for growth_interval steps.
         Should be called after each successful optimizer update.
 
-        Example:
-            if optimizer_step_successful:
+        Example:.            if optimizer_step_successful:
                 scaler.step()
         """
         self._num_steps += 1
@@ -172,8 +161,7 @@ struct GradientScaler:
         Called when NaN or Inf detected in gradients.
         Reduces scale and resets growth counter.
 
-        Example:
-            if has_nan(gradients) or has_inf(gradients):
+        Example:.            if has_nan(gradients) or has_inf(gradients):
                 scaler.backoff()
                 continue  # Skip optimizer step
         """
@@ -185,16 +173,14 @@ struct GradientScaler:
     fn get_scale(self) -> Float32:
         """Get current scale factor.
 
-        Returns:
-            Current loss scale value
+        Returns:.            Current loss scale value.
         """
         return self.scale
 
     fn get_num_steps(self) -> Int:
         """Get total number of steps taken.
 
-        Returns:
-            Number of successful optimizer steps
+        Returns:.            Number of successful optimizer steps.
         """
         return self._num_steps
 
@@ -205,17 +191,13 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     Creates FP32 copy of parameters for optimizer state management.
     Use when training with FP16/BF16 but need FP32 precision for updates.
 
-    Args:
-        params: Model parameters (any dtype)
+    Args:.        `params`: Model parameters (any dtype)
 
-    Returns:
-        FP32 copy of parameters
+    Returns:.        FP32 copy of parameters.
 
-    Raises:
-        Error: If params is empty
+    Raises:.        Error: If params is empty.
 
-    Example:
-        # Model params in FP16
+    Example:.        # Model params in FP16.
         var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
 
         # Create FP32 master weights for optimizer
@@ -262,15 +244,12 @@ fn update_model_from_master(inout model_params: ExTensor,
     Copies FP32 master weights back to model parameters with dtype conversion.
     Call after optimizer updates master weights.
 
-    Args:
-        model_params: Model parameters to update (FP16/BF16)
-        master_params: Updated master weights (FP32)
+    Args:.        `model_params`: Model parameters to update (FP16/BF16)
+        `master_params`: Updated master weights (FP32)
 
-    Raises:
-        Error: If tensors are empty or shapes don't match
+    Raises:.        Error: If tensors are empty or shapes don't match.
 
-    Example:
-        # Optimizer updates master weights in FP32
+    Example:.        # Optimizer updates master weights in FP32.
         optimizer_step(master_params, gradients)
 
         # Copy back to FP16 model params
@@ -314,14 +293,11 @@ fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
     Returns True if gradients are all finite (no NaN or Inf).
     Use to validate gradients before optimizer step.
 
-    Args:
-        gradients: Gradient tensor to check
+    Args:.        `gradients`: Gradient tensor to check.
 
-    Returns:
-        True if all gradients are finite, False otherwise
+    Returns:.        True if all gradients are finite, False otherwise.
 
-    Example:
-        if check_gradients_finite(grads):
+    Example:.        if check_gradients_finite(grads):
             optimizer_step(grads)
         else:
             scaler.backoff()
@@ -336,18 +312,14 @@ fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTe
     Scales gradients if their L2 norm exceeds max_norm.
     Useful for preventing gradient explosion in mixed precision.
 
-    Args:
-        gradients: Gradient tensor
-        max_norm: Maximum allowed gradient norm
+    Args:.        `gradients`: Gradient tensor.
+        `max_norm`: Maximum allowed gradient norm.
 
-    Returns:
-        Clipped gradients
+    Returns:.        Clipped gradients.
 
-    Raises:
-        Error: If max_norm is non-positive or gradients are empty
+    Raises:.        Error: If max_norm is non-positive or gradients are empty.
 
-    Example:
-        # Clip to prevent explosion in FP16
+    Example:.        # Clip to prevent explosion in FP16.
         var clipped_grads = clip_gradients_by_norm(grads, 1.0)
     """
     # Validate input
@@ -384,19 +356,15 @@ fn clip_gradients_by_value(gradients: ExTensor,
     Clamps each gradient value to [min_value, max_value].
     Simpler than norm clipping but less theoretically motivated.
 
-    Args:
-        gradients: Gradient tensor
-        min_value: Minimum allowed gradient value
-        max_value: Maximum allowed gradient value
+    Args:.        `gradients`: Gradient tensor.
+        `min_value`: Minimum allowed gradient value.
+        `max_value`: Maximum allowed gradient value.
 
-    Returns:
-        Clipped gradients
+    Returns:.        Clipped gradients.
 
-    Raises:
-        Error: If min_value >= max_value or gradients are empty
+    Raises:.        Error: If min_value >= max_value or gradients are empty.
 
-    Example:
-        # Clip each gradient to [-1, 1]
+    Example:.        # Clip each gradient to [-1, 1]
         var clipped = clip_gradients_by_value(grads, -1.0, 1.0)
     """
     # Validate input

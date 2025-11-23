@@ -8,8 +8,7 @@ This module implements FP8 E4M3 format:
 FP8 is used for memory-efficient training and inference in modern ML workloads.
 Supported range: approximately ±240 with reduced precision.
 
-Example:
-    from shared.core.types.fp8 import FP8
+Example:.    from shared.core.types.fp8 import FP8
 
     var x = FP8.from_float32(3.14159)
     var y = x.to_float32()
@@ -37,8 +36,7 @@ struct FP8(Stringable, Representable):
     fn __init__(mut self, value: UInt8 = 0):
         """Initialize FP8 from raw UInt8 bits.
 
-        Args:
-            value: Raw 8-bit representation
+        Args:.            `value`: Raw 8-bit representation.
         """
         self.value = value
 
@@ -46,11 +44,9 @@ struct FP8(Stringable, Representable):
     fn from_float32(x: Float32) -> Self:
         """Convert Float32 to FP8 E4M3 format.
 
-        Args:
-            x: Float32 value to convert
+        Args:.            `x`: Float32 value to convert.
 
-        Returns:
-            FP8 representation (with potential precision loss)
+        Returns:.            FP8 representation (with potential precision loss)
 
         Note:
             Values outside FP8 range are clamped to max/min representable values.
@@ -132,8 +128,7 @@ struct FP8(Stringable, Representable):
     fn to_float32(self) -> Float32:
         """Convert FP8 E4M3 to Float32.
 
-        Returns:
-            Float32 representation of the FP8 value
+        Returns:.            Float32 representation of the FP8 value.
         """
         # Extract components
         var sign = (self.value >> 7) & 0x1
@@ -191,37 +186,31 @@ struct FP8(Stringable, Representable):
     fn __str__(self) -> String:
         """String representation showing FP8 value as Float32.
 
-        Returns:
-            String representation
+        Returns:.            String representation.
         """
         return "FP8(" + str(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing both bits and value.
 
-        Returns:
-            Detailed string representation
+        Returns:.            Detailed string representation.
         """
         return "FP8(bits=0x" + hex(self.value) + ", value=" + str(self.to_float32()) + ")"
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.
 
-        Args:
-            other: Other FP8 value
+        Args:.            `other`: Other FP8 value.
 
-        Returns:
-            True if bit patterns match
+        Returns:.            True if bit patterns match.
         """
         return self.value == other.value
 
     fn __ne__(self, other: Self) -> Bool:
         """Check inequality.
 
-        Args:
-            other: Other FP8 value
+        Args:.            `other`: Other FP8 value.
 
-        Returns:
-            True if bit patterns differ
+        Returns:.            True if bit patterns differ.
         """
         return self.value != other.value

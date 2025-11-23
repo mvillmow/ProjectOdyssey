@@ -12,24 +12,23 @@ Architecture:
     - Functions return new values, never mutate inputs
 
 Modules:
-    extensor: Core tensor type and creation functions
-    types: Custom data types (FP8 for E4M3, BF8 for E5M2 8-bit floating point)
-    arithmetic: Element-wise arithmetic operations (add, subtract, multiply, divide)
-    matrix: Matrix operations (matmul, transpose, dot, outer)
-    activation: Activation functions (relu, sigmoid, tanh, softmax, gelu)
-    linear: Linear transformations
-    conv: Convolutional operations
-    pooling: Pooling operations
-    elementwise: Element-wise math functions (exp, log, sqrt, abs, clip)
-    comparison: Comparison operations (equal, less, greater)
-    broadcasting: Broadcasting utilities
-    initializers: Weight initialization functions
-    loss: Loss functions
-    numerical_safety: NaN/Inf detection, gradient monitoring, numerical stability checks
-    dtype_dispatch: Generic dtype dispatch helpers for eliminating dtype branching
+    `extensor`: Core tensor type and creation functions.
+    `types`: Custom data types (FP8 for E4M3, BF8 for E5M2 8-bit floating point)
+    `arithmetic`: Element-wise arithmetic operations (add, subtract, multiply, divide)
+    `matrix`: Matrix operations (matmul, transpose, dot, outer)
+    `activation`: Activation functions (relu, sigmoid, tanh, softmax, gelu)
+    `linear`: Linear transformations.
+    `conv`: Convolutional operations.
+    `pooling`: Pooling operations.
+    `elementwise`: Element-wise math functions (exp, log, sqrt, abs, clip)
+    `comparison`: Comparison operations (equal, less, greater)
+    `broadcasting`: Broadcasting utilities.
+    `initializers`: Weight initialization functions.
+    `loss`: Loss functions.
+    `numerical_safety`: NaN/Inf detection, gradient monitoring, numerical stability checks.
+    `dtype_dispatch`: Generic dtype dispatch helpers for eliminating dtype branching.
 
-Example:
-    from shared.core.extensor import ExTensor, zeros
+Example:.    from shared.core.extensor import ExTensor, zeros
     from shared.core.linear import linear
     from shared.core.activation import relu
     from shared.core.matrix import matmul, transpose

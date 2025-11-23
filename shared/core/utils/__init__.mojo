@@ -13,8 +13,7 @@ Components:
     - debug: Debugging utilities (shape checking, gradient verification)
     - profile: Performance profiling tools
 
-Example:
-    from shared.core.utils import xavier_init, he_init
+Example:.    from shared.core.utils import xavier_init, he_init
     from shared.core.types import Tensor
 
     fn initialize_weights(mut tensor: Tensor, activation: String):

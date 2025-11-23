@@ -14,12 +14,12 @@ from .extensor import ExTensor
 struct GradientPair:
     """Container for gradients from binary operations.
 
-    Used for backward functions that compute gradients with respect to
+    Used for backward functions that compute gradients with respect to.
     two inputs (e.g., add_backward, multiply_backward).
 
     Attributes:
-        grad_a: Gradient with respect to first input
-        grad_b: Gradient with respect to second input
+        `grad_a`: Gradient with respect to first input.
+        `grad_b`: Gradient with respect to second input.
 
     Examples:
         var grads = add_backward(grad_output, a_shape, b_shape)
@@ -33,9 +33,8 @@ struct GradientPair:
     fn __init__(out self, grad_a: ExTensor, grad_b: ExTensor):
         """Initialize gradient pair.
 
-        Args:
-            grad_a: Gradient tensor for first input
-            grad_b: Gradient tensor for second input
+        Args:.            `grad_a`: Gradient tensor for first input.
+            `grad_b`: Gradient tensor for second input.
         """
         self.grad_a = grad_a
         self.grad_b = grad_b
@@ -44,13 +43,13 @@ struct GradientPair:
 struct GradientTriple:
     """Container for gradients from ternary operations.
 
-    Used for backward functions that compute gradients with respect to
+    Used for backward functions that compute gradients with respect to.
     three inputs (e.g., linear_backward, conv2d_backward).
 
     Attributes:
-        grad_input: Gradient with respect to input activation
-        grad_weights: Gradient with respect to weights
-        grad_bias: Gradient with respect to bias
+        `grad_input`: Gradient with respect to input activation.
+        `grad_weights`: Gradient with respect to weights.
+        `grad_bias`: Gradient with respect to bias.
 
     Examples:
         var grads = linear_backward(grad_output, x, weights)
@@ -71,10 +70,9 @@ struct GradientTriple:
     ):
         """Initialize gradient triple.
 
-        Args:
-            grad_input: Gradient tensor for input
-            grad_weights: Gradient tensor for weights
-            grad_bias: Gradient tensor for bias
+        Args:.            `grad_input`: Gradient tensor for input.
+            `grad_weights`: Gradient tensor for weights.
+            `grad_bias`: Gradient tensor for bias.
         """
         self.grad_input = grad_input
         self.grad_weights = grad_weights

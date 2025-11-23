@@ -34,10 +34,9 @@ struct Batch(Copyable, Movable):
     ):
         """Create a batch.
 
-        Args:
-            data: Batch data tensor.
-            labels: Batch labels tensor.
-            indices: Original indices of samples in the batch.
+        Args:.            `data`: Batch data tensor.
+            `labels`: Batch labels tensor.
+            `indices`: Original indices of samples in the batch.
         """
         self.data = data^
         self.labels = labels^
@@ -70,13 +69,11 @@ struct BaseLoader(Copyable, Movable):
     ) raises:
         """Create base loader.
 
-        Args:
-            dataset: Dataset to load from.
-            batch_size: Number of samples per batch.
-            drop_last: Whether to drop the last incomplete batch.
+        Args:.            `dataset`: Dataset to load from.
+            `batch_size`: Number of samples per batch.
+            `drop_last`: Whether to drop the last incomplete batch.
 
-        Raises:
-            Error if batch_size is invalid.
+        Raises:.            Error if batch_size is invalid.
         """
         if batch_size <= 0:
             raise Error("Batch size must be positive, got: " + str(batch_size))
@@ -115,9 +112,9 @@ struct BatchLoader(BaseLoader, Copyable, Movable):
     fn __init__(
         out self,
         owned dataset: Dataset,
-        batch_size: Int = 32,
-        shuffle: Bool = False,
-        drop_last: Bool = False,
+        `batch_size`: Int = 32,
+        `shuffle`: Bool = False,
+        `drop_last`: Bool = False,
         owned sampler: Optional[Sampler] = None,
     ) raises:
         """Create batch loader.

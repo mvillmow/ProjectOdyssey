@@ -27,20 +27,17 @@ from collections import List
 fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     """Compute top-1 accuracy for a single batch.
 
-    Top-1 accuracy is the fraction of samples where the predicted class
+    Top-1 accuracy is the fraction of samples where the predicted class.
     (argmax of logits) exactly matches the true label.
 
-    Args:
-        predictions: Model predictions/logits of shape [batch_size, num_classes]
+    Args:.        `predictions`: Model predictions/logits of shape [batch_size, num_classes]
                     or predicted class indices of shape [batch_size]
-        labels: True class labels of shape [batch_size]
+        `labels`: True class labels of shape [batch_size]
 
-    Returns:
-        Accuracy as a fraction in [0, 1]
+    Returns:.        Accuracy as a fraction in [0, 1]
 
-    Raises:
-        Error: If shapes are incompatible
-        Error: If batch sizes don't match
+    Raises:.        Error: If shapes are incompatible.
+        Error: If batch sizes don't match.
 
     Examples:
         # With logits (need argmax)
@@ -52,7 +49,7 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
         var preds = ExTensor(List[Int](), DType.int32)  # Already argmaxed
         var acc2 = top1_accuracy(preds, labels)
 
-    Issue: #278-282 - Accuracy metrics
+    Issue: #278-282 - Accuracy metrics.
     """
     # Determine if predictions are logits (2D) or class indices (1D)
     var pred_classes: ExTensor
@@ -95,15 +92,12 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
 fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Compute argmax along specified axis.
 
-    Args:
-        tensor: Input tensor
-        axis: Axis along which to compute argmax (typically 1 for [batch, classes])
+    Args:.        `tensor`: Input tensor.
+        `axis`: Axis along which to compute argmax (typically 1 for [batch, classes])
 
-    Returns:
-        Tensor of indices with shape reduced along specified axis
+    Returns:.        Tensor of indices with shape reduced along specified axis.
 
-    Raises:
-        Error: If axis is out of bounds
+    Raises:.        Error: If axis is out of bounds.
     """
     if axis < 0 or axis >= len(tensor.shape()):
         raise Error("argmax: axis out of bounds")
@@ -159,27 +153,24 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
 fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> Float64:
     """Compute top-k accuracy for a single batch.
 
-    Top-k accuracy is the fraction of samples where the true label appears
+    Top-k accuracy is the fraction of samples where the true label appears.
     in the k predictions with highest logits.
 
-    Args:
-        predictions: Model logits of shape [batch_size, num_classes]
-        labels: True class labels of shape [batch_size]
-        k: Number of top predictions to consider (default: 5)
+    Args:.        `predictions`: Model logits of shape [batch_size, num_classes]
+        `labels`: True class labels of shape [batch_size]
+        `k`: Number of top predictions to consider (default: 5)
 
-    Returns:
-        Accuracy as a fraction in [0, 1]
+    Returns:.        Accuracy as a fraction in [0, 1]
 
-    Raises:
-        Error: If shapes are incompatible
-        Error: If k <= 0 or k > num_classes
+    Raises:.        Error: If shapes are incompatible.
+        Error: If k <= 0 or k > num_classes.
 
     Examples:
         var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
         var labels = ExTensor(List[Int](), DType.int32)
         var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
 
-    Issue: #278-282 - Accuracy metrics
+    Issue: #278-282 - Accuracy metrics.
     """
     # Validate shapes
     if len(predictions.shape()) != 2:
@@ -227,13 +218,11 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
 
     Uses selection algorithm (not full sort) for efficiency.
 
-    Args:
-        predictions: Logits tensor [batch_size, num_classes]
-        batch_idx: Which sample in the batch
-        k: Number of top indices to return
+    Args:.        `predictions`: Logits tensor [batch_size, num_classes]
+        `batch_idx`: Which sample in the batch.
+        `k`: Number of top indices to return.
 
-    Returns:
-        Vector of k class indices with highest scores
+    Returns:.        Vector of k class indices with highest scores.
     """
     var shape_vec = predictions.shape()
     var num_classes = shape_vec[1]
@@ -288,16 +277,13 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
     Returns a tensor where each element is the accuracy for that class,
     computed as: correct_for_class / total_samples_for_class
 
-    Args:
-        predictions: Model predictions/logits (same format as top1_accuracy)
-        labels: True class labels of shape [batch_size]
-        num_classes: Total number of classes
+    Args:.        `predictions`: Model predictions/logits (same format as top1_accuracy)
+        `labels`: True class labels of shape [batch_size]
+        `num_classes`: Total number of classes.
 
-    Returns:
-        Tensor of shape [num_classes] with per-class accuracies
+    Returns:.        Tensor of shape [num_classes] with per-class accuracies.
 
-    Raises:
-        Error: If shapes are incompatible
+    Raises:.        Error: If shapes are incompatible.
 
     Examples:
         var logits = ExTensor(List[Int](), DType.float32)
@@ -305,7 +291,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
         var per_class_acc = per_class_accuracy(logits, labels, num_classes=10)
         # per_class_acc[0] = accuracy for class 0, etc.
 
-    Issue: #278-282 - Accuracy metrics
+    Issue: #278-282 - Accuracy metrics.
     """
     # Get predicted classes
     var pred_classes: ExTensor
@@ -381,7 +367,7 @@ struct AccuracyMetric:
         var final_acc = metric.compute()
         metric.reset()  # For next epoch
 
-    Issue: #278-282 - Accuracy metrics
+    Issue: #278-282 - Accuracy metrics.
     """
     var correct_count: Int
     var total_count: Int

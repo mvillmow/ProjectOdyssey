@@ -17,15 +17,12 @@ from shared.core.gradient_types import GradientPair
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
-    Args:
-        a: First tensor (matrix or vector)
-        b: Second tensor (matrix or vector)
+    Args:.        `a`: First tensor (matrix or vector)
+        `b`: Second tensor (matrix or vector)
 
-    Returns:
-        A new tensor containing the matrix product a @ b
+    Returns:.        A new tensor containing the matrix product a @ b.
 
-    Raises:
-        Error if dimensions are incompatible
+    Raises:.        Error if dimensions are incompatible.
 
     Requirements:
         - 2D @ 2D: a.shape = (m, k), b.shape = (k, n) -> result.shape = (m, n)
@@ -188,11 +185,9 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn transpose(tensor: ExTensor) raises -> ExTensor:
     """Transpose tensor dimensions.
 
-    Args:
-        tensor: Input tensor
+    Args:.        `tensor`: Input tensor.
 
-    Returns:
-        A new tensor with transposed dimensions (reverses all axes)
+    Returns:.        A new tensor with transposed dimensions (reverses all axes)
 
     Examples:
         var t = zeros(List[Int](3, 4), DType.float32)
@@ -262,12 +257,10 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
 fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Dot product of tensors.
 
-    Args:
-        a: First tensor
-        b: Second tensor
+    Args:.        `a`: First tensor.
+        `b`: Second tensor.
 
-    Returns:
-        Dot product (scalar for 1D, matrix product for 2D)
+    Returns:.        Dot product (scalar for 1D, matrix product for 2D)
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -306,12 +299,10 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Outer product of two vectors.
 
-    Args:
-        a: First 1D tensor (vector)
-        b: Second 1D tensor (vector)
+    Args:.        `a`: First 1D tensor (vector)
+        `b`: Second 1D tensor (vector)
 
-    Returns:
-        A 2D tensor containing the outer product
+    Returns:.        A 2D tensor containing the outer product.
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -364,13 +355,11 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         - 1D @ 2D: Vector-matrix multiplication
         - Batched: N-D tensors with batched matmul
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
+        `a`: First input from forward pass (A)
+        `b`: Second input from forward pass (B)
 
-    Returns:
-        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
+    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
         # Forward pass
@@ -468,11 +457,9 @@ fn transpose_backward(grad_output: ExTensor) raises -> ExTensor:
 
     The gradient of transpose is simply transposing the gradient back.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y)
 
-    Returns:
-        Gradient w.r.t. input (∂L/∂X)
+    Returns:.        Gradient w.r.t. input (∂L/∂X)
 
     Examples:
         var x = zeros(List[Int](3, 4), DType.float32)

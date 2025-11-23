@@ -28,8 +28,7 @@ fn random_float() -> Float64:
 
     Uses 1 billion possible values for better probability distribution.
 
-    Returns:
-        Random float in range [0.0, 1.0).
+    Returns:.        Random float in range [0.0, 1.0).
     """
     return Float64(random_si64(0, 1000000000)) / 1000000000.0
 
@@ -39,15 +38,12 @@ fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int
 
     Assumes square images: H = W = sqrt(num_elements / channels).
 
-    Args:
-        data: Flattened image tensor.
-        channels: Number of channels (default: 3 for RGB).
+    Args:.        `data`: Flattened image tensor.
+        `channels`: Number of channels (default: 3 for RGB).
 
-    Returns:
-        Tuple of (height, width, channels).
+    Returns:.        Tuple of (height, width, channels).
 
-    Raises:
-        Error if dimensions don't work out to square image.
+    Raises:.        Error if dimensions don't work out to square image.
     """
     var total_elements = data.num_elements()
     var pixels = total_elements // channels
@@ -74,14 +70,11 @@ trait Transform:
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the transform to data.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Transformed tensor.
+        Returns:.            Transformed tensor.
 
-        Raises:
-            Error if transform cannot be applied.
+        Raises:.            Error if transform cannot be applied.
         """
         ...
 
@@ -103,22 +96,18 @@ struct Compose(Transform, Copyable, Movable):
     fn __init__(out self, var transforms: List[Transform]):
         """Create composition of transforms.
 
-        Args:
-            transforms: List of transforms to apply in order.
+        Args:.            `transforms`: List of transforms to apply in order.
         """
         self.transforms = transforms^
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Transformed tensor after all transforms.
+        Returns:.            Transformed tensor after all transforms.
 
-        Raises:
-            Error if any transform cannot be applied.
+        Raises:.            Error if any transform cannot be applied.
         """
         var result = data
         for t in self.transforms:
@@ -743,10 +732,10 @@ struct RandomErasing(Transform, Copyable, Movable):
 
     fn __init__(
         out self,
-        p: Float64 = 0.5,
-        scale: Tuple[Float64, Float64] = (0.02, 0.33),
-        ratio: Tuple[Float64, Float64] = (0.3, 3.3),
-        value: Float64 = 0.0
+        `p`: Float64 = 0.5,
+        `scale`: Tuple[Float64, Float64] = (0.02, 0.33),
+        `ratio`: Tuple[Float64, Float64] = (0.3, 3.3),
+        `value`: Float64 = 0.0.
     ):
         """Create random erasing transform.
 

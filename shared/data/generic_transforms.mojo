@@ -14,8 +14,7 @@ Key Features:
 - Batch transforms (apply to lists)
 - Type conversions (Float32, Int32)
 
-Example:
-    >>> # Create preprocessing pipeline
+Example:.    >>> # Create preprocessing pipeline
     >>> fn scale(x: Float32) -> Float32:
     ...     return x / 255.0
     >>>
@@ -39,25 +38,22 @@ from shared.data.transforms import Transform
 struct IdentityTransform(Transform, Copyable, Movable):
     """Identity transform - returns input unchanged.
 
-    Useful as a placeholder or for conditional pipelines where
+    Useful as a placeholder or for conditional pipelines where.
     no transformation should be applied under certain conditions.
 
     Time Complexity: O(1) - just returns reference to input.
     Space Complexity: O(1) - no allocation.
 
-    Example:
-        >>> var identity = IdentityTransform()
+    Example:.        >>> var identity = IdentityTransform()
         >>> var result = identity(data)  # result == data
     """
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply identity transform (passthrough).
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Input tensor unchanged.
+        Returns:.            Input tensor unchanged.
         """
         return data
 
@@ -71,15 +67,14 @@ struct IdentityTransform(Transform, Copyable, Movable):
 struct LambdaTransform(Transform, Copyable, Movable):
     """Apply a function element-wise to tensor values.
 
-    Provides flexible inline transformations without defining
+    Provides flexible inline transformations without defining.
     a full transform struct. The function is applied to each
     element independently.
 
     Time Complexity: O(n) where n is number of elements.
     Space Complexity: O(n) for output tensor.
 
-    Example:
-        >>> fn double(x: Float32) -> Float32:
+    Example:.        >>> fn double(x: Float32) -> Float32:
         ...     return x * 2.0
         >>>
         >>> var transform = LambdaTransform(double)
@@ -91,19 +86,16 @@ struct LambdaTransform(Transform, Copyable, Movable):
     fn __init__(out self, func: fn (Float32) -> Float32):
         """Create lambda transform.
 
-        Args:
-            func: Function to apply element-wise.
+        Args:.            `func`: Function to apply element-wise.
         """
         self.func = func
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply function to each element.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Transformed tensor with function applied to each element.
+        Returns:.            Transformed tensor with function applied to each element.
         """
         var result_values = List[Float32](capacity=data.num_elements())
 
@@ -130,8 +122,7 @@ struct ConditionalTransform(Transform, Copyable, Movable):
     Time Complexity: O(p + t) where p is predicate cost, t is transform cost.
     Space Complexity: O(n) if transform applied, O(1) otherwise.
 
-    Example:
-        >>> fn is_large(tensor: ExTensor) -> Bool:
+    Example:.        >>> fn is_large(tensor: ExTensor) -> Bool:
         ...     return tensor.num_elements() > 100
         >>>
         >>> var transform = ConditionalTransform(is_large, augment)
@@ -148,9 +139,8 @@ struct ConditionalTransform(Transform, Copyable, Movable):
     ):
         """Create conditional transform.
 
-        Args:
-            predicate: Function to evaluate on tensor.
-            transform: Transform to apply if predicate is true.
+        Args:.            `predicate`: Function to evaluate on tensor.
+            `transform`: Transform to apply if predicate is true.
         """
         self.predicate = predicate
         self.transform = transform^
@@ -158,11 +148,9 @@ struct ConditionalTransform(Transform, Copyable, Movable):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply transform if predicate is true.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Transformed tensor if predicate true, otherwise original.
+        Returns:.            Transformed tensor if predicate true, otherwise original.
         """
         if self.predicate(data):
             return self.transform(data)
@@ -179,14 +167,13 @@ struct ConditionalTransform(Transform, Copyable, Movable):
 struct ClampTransform(Transform, Copyable, Movable):
     """Clamp tensor values to specified range [min_val, max_val].
 
-    Limits all values to be within the specified range. Values below
+    Limits all values to be within the specified range. Values below.
     min_val are set to min_val, values above max_val are set to max_val.
 
     Time Complexity: O(n) where n is number of elements.
     Space Complexity: O(n) for output tensor.
 
-    Example:
-        >>> var clamp = ClampTransform(0.0, 1.0)
+    Example:.        >>> var clamp = ClampTransform(0.0, 1.0)
         >>> var result = clamp(data)  # All values in [0, 1]
     """
 
@@ -196,12 +183,10 @@ struct ClampTransform(Transform, Copyable, Movable):
     fn __init__(out self, min_val: Float32, max_val: Float32):
         """Create clamp transform.
 
-        Args:
-            min_val: Minimum allowed value.
-            max_val: Maximum allowed value.
+        Args:.            `min_val`: Minimum allowed value.
+            `max_val`: Maximum allowed value.
 
-        Raises:
-            Error if min_val > max_val.
+        Raises:.            Error if min_val > max_val.
         """
         if min_val > max_val:
             raise Error("min_val must be <= max_val")
@@ -212,11 +197,9 @@ struct ClampTransform(Transform, Copyable, Movable):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Clamp all values to [min_val, max_val].
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            ExTensor with all values clamped to range.
+        Returns:.            ExTensor with all values clamped to range.
         """
         var result_values = List[Float32](capacity=data.num_elements())
 
@@ -243,15 +226,14 @@ struct ClampTransform(Transform, Copyable, Movable):
 struct DebugTransform(Transform, Copyable, Movable):
     """Debug transform for logging/inspection.
 
-    Prints tensor information (shape, statistics) for debugging
+    Prints tensor information (shape, statistics) for debugging.
     purposes, then returns the tensor unchanged. Useful for
     inspecting intermediate results in transform pipelines.
 
     Time Complexity: O(n) for statistics computation.
     Space Complexity: O(1) - no allocation.
 
-    Example:
-        >>> var debug = DebugTransform("layer1_output")
+    Example:.        >>> var debug = DebugTransform("layer1_output")
         >>> var result = debug(data)  # Prints info, returns data
     """
 
@@ -260,19 +242,16 @@ struct DebugTransform(Transform, Copyable, Movable):
     fn __init__(out self, name: String):
         """Create debug transform.
 
-        Args:
-            name: Name to display in debug output.
+        Args:.            `name`: Name to display in debug output.
         """
         self.name = name
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Print tensor info and return unchanged.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            Input tensor unchanged.
+        Returns:.            Input tensor unchanged.
         """
         print("[DEBUG: " + self.name + "]")
         print("  Elements:", data.num_elements())
@@ -315,8 +294,7 @@ struct SequentialTransform(Transform, Copyable, Movable):
     Time Complexity: O(sum of all transform costs).
     Space Complexity: O(n) for intermediate results.
 
-    Example:
-        >>> var transforms = List[Transform]()
+    Example:.        >>> var transforms = List[Transform]()
         >>> transforms.append(normalize)
         >>> transforms.append(clamp)
         >>>
@@ -329,19 +307,16 @@ struct SequentialTransform(Transform, Copyable, Movable):
     fn __init__(out self, var transforms: List[Transform]):
         """Create sequential composition.
 
-        Args:
-            transforms: List of transforms to apply in order.
+        Args:.            `transforms`: List of transforms to apply in order.
         """
         self.transforms = transforms^
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            ExTensor after all transforms applied.
+        Returns:.            ExTensor after all transforms applied.
         """
         var result = data
 
@@ -367,8 +342,7 @@ struct BatchTransform(Copyable, Movable):
     Time Complexity: O(b * t) where b is batch size, t is transform cost.
     Space Complexity: O(b * n) for output batch.
 
-    Example:
-        >>> var batch = List[ExTensor]()
+    Example:.        >>> var batch = List[ExTensor]()
         >>> # ... fill batch ...
         >>>
         >>> var transform = BatchTransform(normalize)
@@ -380,19 +354,16 @@ struct BatchTransform(Copyable, Movable):
     fn __init__(out self, var transform: Transform):
         """Create batch transform.
 
-        Args:
-            transform: Transform to apply to each tensor in batch.
+        Args:.            `transform`: Transform to apply to each tensor in batch.
         """
         self.transform = transform^
 
     fn __call__(self, batch: List[ExTensor]) raises -> List[ExTensor]:
         """Apply transform to each tensor in batch.
 
-        Args:
-            batch: List of input tensors.
+        Args:.            `batch`: List of input tensors.
 
-        Returns:
-            List of transformed tensors (same order as input).
+        Returns:.            List of transformed tensors (same order as input).
         """
         var results = List[ExTensor](capacity=len(batch))
 
@@ -418,19 +389,16 @@ struct ToFloat32(Transform, Copyable, Movable):
     Time Complexity: O(n) where n is number of elements.
     Space Complexity: O(n) for output tensor.
 
-    Example:
-        >>> var converter = ToFloat32()
+    Example:.        >>> var converter = ToFloat32()
         >>> var result = converter(int_tensor)
     """
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Float32.
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            ExTensor with all values as Float32.
+        Returns:.            ExTensor with all values as Float32.
         """
         # ExTensor is already Float32 in current implementation
         # Just create a copy with Float32 values
@@ -453,19 +421,16 @@ struct ToInt32(Transform, Copyable, Movable):
     Time Complexity: O(n) where n is number of elements.
     Space Complexity: O(n) for output tensor.
 
-    Example:
-        >>> var converter = ToInt32()
+    Example:.        >>> var converter = ToInt32()
         >>> var result = converter(float_tensor)  # Truncates decimals
     """
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Int32 (truncate).
 
-        Args:
-            data: Input tensor.
+        Args:.            `data`: Input tensor.
 
-        Returns:
-            ExTensor with all values truncated to Int32.
+        Returns:.            ExTensor with all values truncated to Int32.
 
         Note:
             Truncates toward zero: 2.9 -> 2, -2.9 -> -2.
@@ -491,18 +456,15 @@ fn apply_to_tensor(
 ) raises -> ExTensor:
     """Apply function element-wise to tensor.
 
-    Helper function for creating ad-hoc transforms without
+    Helper function for creating ad-hoc transforms without.
     defining a transform struct.
 
-    Args:
-        data: Input tensor.
-        func: Function to apply to each element.
+    Args:.        `data`: Input tensor.
+        `func`: Function to apply to each element.
 
-    Returns:
-        Transformed tensor.
+    Returns:.        Transformed tensor.
 
-    Example:
-        >>> fn square(x: Float32) -> Float32:
+    Example:.        >>> fn square(x: Float32) -> Float32:
         ...     return x * x
         >>>
         >>> var result = apply_to_tensor(data, square)
@@ -516,14 +478,11 @@ fn compose_transforms(var transforms: List[Transform]) raises -> SequentialTrans
 
     Convenience function for building transform pipelines.
 
-    Args:
-        transforms: List of transforms to compose.
+    Args:.        `transforms`: List of transforms to compose.
 
-    Returns:
-        SequentialTransform that applies all transforms in order.
+    Returns:.        SequentialTransform that applies all transforms in order.
 
-    Example:
-        >>> var pipeline = compose_transforms(List(norm, clamp, debug))
+    Example:.        >>> var pipeline = compose_transforms(List(norm, clamp, debug))
         >>> var result = pipeline(data)
     """
     return SequentialTransform(transforms^)

@@ -15,8 +15,7 @@ Components:
     - MaxPool2D: 2D max pooling
     - AvgPool2D: 2D average pooling
 
-Example:
-    from shared.core.layers import Linear, ReLU
+Example:.    from shared.core.layers import Linear, ReLU
 
     struct MLP:
         var fc1: Linear

@@ -10,13 +10,11 @@ from .extensor import ExTensor
 fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
     """Sum tensor elements along an axis.
 
-    Args:
-        tensor: Input tensor
-        axis: Axis to reduce (-1 for all axes)
-        keepdims: Whether to keep reduced dimensions as size 1
+    Args:.        `tensor`: Input tensor.
+        `axis`: Axis to reduce (-1 for all axes)
+        `keepdims`: Whether to keep reduced dimensions as size 1.
 
-    Returns:
-        A new tensor with sum along specified axis
+    Returns:.        A new tensor with sum along specified axis.
 
     Examples:
         var t = ones(List[Int](3, 4), DType.float32)
@@ -116,13 +114,11 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
 fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
     """Compute mean of tensor elements along an axis.
 
-    Args:
-        tensor: Input tensor
-        axis: Axis to reduce (-1 for all axes)
-        keepdims: Whether to keep reduced dimensions as size 1
+    Args:.        `tensor`: Input tensor.
+        `axis`: Axis to reduce (-1 for all axes)
+        `keepdims`: Whether to keep reduced dimensions as size 1.
 
-    Returns:
-        A new tensor with mean along specified axis
+    Returns:.        A new tensor with mean along specified axis.
 
     Examples:
         var t = ones(List[Int](3, 4), DType.float32)
@@ -157,13 +153,11 @@ fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTe
 fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
     """Find maximum of tensor elements along an axis.
 
-    Args:
-        tensor: Input tensor
-        axis: Axis to reduce (-1 for all axes)
-        keepdims: Whether to keep reduced dimensions as size 1
+    Args:.        `tensor`: Input tensor.
+        `axis`: Axis to reduce (-1 for all axes)
+        `keepdims`: Whether to keep reduced dimensions as size 1.
 
-    Returns:
-        A new tensor with maximum along specified axis
+    Returns:.        A new tensor with maximum along specified axis.
 
     Examples:
         var t = arange(0.0, 12.0, 1.0, DType.float32)
@@ -269,13 +263,11 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
 fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
     """Find minimum of tensor elements along an axis.
 
-    Args:
-        tensor: Input tensor
-        axis: Axis to reduce (-1 for all axes)
-        keepdims: Whether to keep reduced dimensions as size 1
+    Args:.        `tensor`: Input tensor.
+        `axis`: Axis to reduce (-1 for all axes)
+        `keepdims`: Whether to keep reduced dimensions as size 1.
 
-    Returns:
-        A new tensor with minimum along specified axis
+    Returns:.        A new tensor with minimum along specified axis.
 
     Examples:
         var t = arange(0.0, 12.0, 1.0, DType.float32)
@@ -392,13 +384,11 @@ fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) r
     The gradient broadcasts the reduced gradient back to the original input shape.
     Each element of the input contributes equally to the sum, so gradient is 1.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-        input_shape: Original shape of input before reduction
-        axis: Axis along which sum was computed (-1 for all axes)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        `input_shape`: Original shape of input before reduction.
+        `axis`: Axis along which sum was computed (-1 for all axes)
 
-    Returns:
-        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape
+    Returns:.        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
 
     Examples:
         # Sum all elements
@@ -482,16 +472,14 @@ fn mean_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) 
 
     where N is the number of elements that were averaged.
 
-    Similar to sum_backward, but scaled by 1/N since each input element
+    Similar to sum_backward, but scaled by 1/N since each input element.
     contributes 1/N to the mean.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-        input_shape: Original shape of input before reduction
-        axis: Axis along which mean was computed (-1 for all axes)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        `input_shape`: Original shape of input before reduction.
+        `axis`: Axis along which mean was computed (-1 for all axes)
 
-    Returns:
-        Gradient w.r.t. input (∂L/∂X) - broadcast and scaled
+    Returns:.        Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
 
     Examples:
         var x = ones(List[Int](3, 4), DType.float32)
@@ -532,13 +520,11 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
     If multiple elements are maximum, gradient is split equally among them.
     This is the standard behavior for max pooling backward pass.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-        x: Input from forward pass (before reduction)
-        axis: Axis along which max was computed (-1 for all axes)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        `x`: Input from forward pass (before reduction)
+        `axis`: Axis along which max was computed (-1 for all axes)
 
-    Returns:
-        Gradient w.r.t. input (∂L/∂X)
+    Returns:.        Gradient w.r.t. input (∂L/∂X)
 
     Examples:
         # Max over all elements
@@ -676,13 +662,11 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
     If multiple elements are minimum, gradient is split equally among them.
     This is analogous to max pooling but for minimum values.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor
-        x: Input from forward pass (before reduction)
-        axis: Axis along which min was computed (-1 for all axes)
+    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
+        `x`: Input from forward pass (before reduction)
+        `axis`: Axis along which min was computed (-1 for all axes)
 
-    Returns:
-        Gradient w.r.t. input (∂L/∂X)
+    Returns:.        Gradient w.r.t. input (∂L/∂X)
 
     Examples:
         var x = tensor([3.0, 1.0, 2.0, 1.0])  # Two min values at indices 1, 3

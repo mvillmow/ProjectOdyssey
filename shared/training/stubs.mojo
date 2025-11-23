@@ -27,7 +27,7 @@ from shared.training.base import (
 struct MockTrainer:
     """Stub trainer for testing trainer interface contract.
 
-    This minimal implementation provides just enough functionality
+    This minimal implementation provides just enough functionality.
     to make interface tests executable.
     """
 
@@ -242,10 +242,9 @@ struct MockEarlyStopping(Callback):
     ):
         """Initialize early stopping.
 
-        Args:
-            monitor: Metric to monitor.
-            patience: Epochs to wait before stopping.
-            min_delta: Minimum improvement threshold.
+        Args:.            `monitor`: Metric to monitor.
+            `patience`: Epochs to wait before stopping.
+            `min_delta`: Minimum improvement threshold.
         """
         self.monitor = monitor
         self.patience = patience
@@ -327,8 +326,7 @@ struct MockCheckpoint(Callback):
     fn __init__(out self, save_path: String = "checkpoint.pt"):
         """Initialize checkpoint callback.
 
-        Args:
-            save_path: Path template for saving checkpoints.
+        Args:.            `save_path`: Path template for saving checkpoints.
         """
         self.save_path = save_path
         self.save_count = 0
@@ -377,8 +375,7 @@ struct MockLoggingCallback(Callback):
     fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
 
-        Args:
-            log_interval: Log every N epochs.
+        Args:.            `log_interval`: Log every N epochs.
         """
         self.log_interval = log_interval
         self.log_count = 0
