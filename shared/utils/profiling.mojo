@@ -212,7 +212,7 @@ fn memory_usage() -> MemoryStats:
     """
     var stats = MemoryStats()
     # TODO: Implement memory tracking
-    return stats
+    return stats^
 
 
 fn memory_at_checkpoint() -> MemoryStats:

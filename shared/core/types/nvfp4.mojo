@@ -45,7 +45,6 @@ from math import isnan, isinf
 from .fp4 import FP4_E2M1
 
 
-@fieldwise_init
 struct E4M3Scale(Stringable, Representable, Copyable, Movable):
     """4-bit exponent + 3-bit mantissa scale factor for NVFP4 blocks.
 
@@ -186,7 +185,6 @@ struct E4M3Scale(Stringable, Representable, Copyable, Movable):
         return self.__str__()
 
 
-@fieldwise_init
 struct NVFP4(Stringable, Representable, Copyable, Movable):
     """NVFP4 individual value (E2M1 + E4M3 scale).
 
@@ -496,7 +494,6 @@ struct NVFP4(Stringable, Representable, Copyable, Movable):
         return "NVFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
 
-@fieldwise_init
 struct NVFP4Block(Stringable, Representable, Copyable, Movable):
     """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total).
 

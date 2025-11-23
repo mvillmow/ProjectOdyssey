@@ -40,7 +40,6 @@ from math import isnan, isinf
 from .fp4 import FP4_E2M1
 
 
-@fieldwise_init
 struct E8M0Scale(Stringable, Representable, Copyable, Movable):
     """8-bit exponent-only scale factor for MXFP4 blocks.
 
@@ -136,7 +135,6 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
         return self.__str__()
 
 
-@fieldwise_init
 struct MXFP4(Stringable, Representable, Copyable, Movable):
     """MXFP4 individual value (E2M1 + E8M0 scale).
 
@@ -446,7 +444,6 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
         return "MXFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
 
-@fieldwise_init
 struct MXFP4Block(Stringable, Representable, Copyable, Movable):
     """MXFP4 block storage: 32 E2M1 values + 1 E8M0 scale (17 bytes total).
 

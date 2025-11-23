@@ -27,7 +27,6 @@ Examples:
 from math import trunc
 
 
-@fieldwise_init
 struct Int8(Stringable, Representable, Copyable, Movable):
     """8-bit signed integer type (-128 to 127)."""
 
@@ -317,7 +316,6 @@ struct Int8(Stringable, Representable, Copyable, Movable):
         return Self(-Int(self.value))
 
 
-@fieldwise_init
 struct Int16(Stringable, Representable, Copyable, Movable):
     """16-bit signed integer type (-32768 to 32767)."""
 
@@ -421,7 +419,6 @@ struct Int16(Stringable, Representable, Copyable, Movable):
         return Self(-Int(self.value))
 
 
-@fieldwise_init
 struct Int32(Stringable, Representable, Copyable, Movable):
     """32-bit signed integer type (-2147483648 to 2147483647)."""
 
@@ -525,7 +522,6 @@ struct Int32(Stringable, Representable, Copyable, Movable):
         return Self(-Int(self.value))
 
 
-@fieldwise_init
 struct Int64(Stringable, Representable, Copyable, Movable):
     """64-bit signed integer type (-9223372036854775808 to 9223372036854775807)."""
 

@@ -77,7 +77,7 @@ fn split_words(text: String) raises -> List[String]:
         if len(parts[i]) > 0:
             words.append(parts[i])
 
-    return words
+    return words^
 
 
 fn join_words(words: List[String]) raises -> String:

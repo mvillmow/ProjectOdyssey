@@ -25,7 +25,7 @@ See mixed precision training examples in examples/mixed_precision/
 
 from ..core.extensor import ExTensor
 from ..core.numerical_safety import has_nan, has_inf
-from math import log2, pow
+from math import log2
 
 
 struct GradientScaler:
@@ -237,7 +237,7 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     return result
 
 
-fn update_model_from_master(inout model_params: ExTensor,
+fn update_model_from_master(mut model_params: ExTensor,
                             master_params: ExTensor) raises:
     """Update model parameters from FP32 master weights with SIMD optimization.
 

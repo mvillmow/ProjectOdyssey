@@ -86,7 +86,7 @@ struct ConfusionMatrix:
         """
         # Get predicted classes
         var pred_classes: ExTensor
-        var pred_shape = predictions.shape
+        var pred_shape = predictions.shape()
 
         if len(pred_shape) == 2:
             # Logits - need argmax

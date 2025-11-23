@@ -53,7 +53,7 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     """
     # Determine if predictions are logits (2D) or class indices (1D)
     var pred_classes: ExTensor
-    var pred_shape = predictions.shape
+    var pred_shape = predictions.shape()
 
     if len(pred_shape) == 2:
         # Predictions are logits, need to compute argmax
@@ -100,7 +100,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
 
     Raises:.        Error: If axis is out of bounds.
     """
-    var shape_vec = tensor.shape
+    var shape_vec = tensor.shape()
     if axis < 0 or axis >= len(shape_vec):
         raise Error("argmax: axis out of bounds")
 
