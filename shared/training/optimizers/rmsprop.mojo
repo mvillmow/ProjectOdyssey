@@ -22,7 +22,6 @@ Reference:
     machine learning, 4(2), 26-31.
 """
 
-from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.elementwise import sqrt

@@ -6,7 +6,6 @@ custom BFloat16 type.
 
 from shared.core.bfloat16 import BFloat16, print_bfloat16_bits
 from testing import assert_equal, assert_true, assert_false
-from math import abs
 
 
 fn test_bfloat16_zero() raises:

@@ -4,7 +4,7 @@ Tests arithmetic operations including add, subtract, multiply, divide, floor_div
 modulo, power, and matmul with same-shape tensors, broadcasting, and edge cases.
 """
 
-from sys import DType
+from memory import DType
 
 # Import ExTensor and arithmetic operations
 from shared.core import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
@@ -31,9 +31,9 @@ fn test_add_same_shape_1d() raises:
     """Test adding two 1D tensors with same shape."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 2.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = add(a, b)
+    vara = full(shape, 2.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = add(a, b)
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_dtype(c, DType.float32, "Result should have float32 dtype")
@@ -45,9 +45,9 @@ fn test_add_same_shape_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float64)
-    let b = full(shape, 2.5, DType.float64)
-    let c = add(a, b)
+    vara = ones(shape, DType.float64)
+    varb = full(shape, 2.5, DType.float64)
+    varc = add(a, b)
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_dtype(c, DType.float64, "Result should have float64 dtype")
@@ -59,9 +59,9 @@ fn test_add_zeros() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = full(shape, 7.0, DType.float32)
-    let b = zeros(shape, DType.float32)
-    let c = add(a, b)
+    vara = full(shape, 7.0, DType.float32)
+    varb = zeros(shape, DType.float32)
+    varc = add(a, b)
 
     assert_all_values(c, 7.0, 1e-6, "x + 0 should equal x")
 
@@ -70,9 +70,9 @@ fn test_add_negative_values() raises:
     """Test adding negative values."""
     var shape = List[Int]()
     shape.append(10)
-    let a = full(shape, -5.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = add(a, b)
+    vara = full(shape, -5.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = add(a, b)
 
     assert_all_values(c, -2.0, 1e-6, "-5.0 + 3.0 should be -2.0")
 
@@ -85,9 +85,9 @@ fn test_subtract_same_shape_1d() raises:
     """Test subtracting two 1D tensors with same shape."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = subtract(a, b)
+    vara = full(shape, 7.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = subtract(a, b)
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_dtype(c, DType.float32, "Result should have float32 dtype")
@@ -99,9 +99,9 @@ fn test_subtract_same_shape_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = full(shape, 10.0, DType.float64)
-    let b = full(shape, 2.5, DType.float64)
-    let c = subtract(a, b)
+    vara = full(shape, 10.0, DType.float64)
+    varb = full(shape, 2.5, DType.float64)
+    varc = subtract(a, b)
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_dtype(c, DType.float64, "Result should have float64 dtype")
@@ -113,9 +113,9 @@ fn test_subtract_zeros() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = full(shape, 9.0, DType.float32)
-    let b = zeros(shape, DType.float32)
-    let c = subtract(a, b)
+    vara = full(shape, 9.0, DType.float32)
+    varb = zeros(shape, DType.float32)
+    varc = subtract(a, b)
 
     assert_all_values(c, 9.0, 1e-6, "x - 0 should equal x")
 
@@ -124,9 +124,9 @@ fn test_subtract_negative_result() raises:
     """Test subtraction resulting in negative values."""
     var shape = List[Int]()
     shape.append(10)
-    let a = full(shape, 3.0, DType.float32)
-    let b = full(shape, 5.0, DType.float32)
-    let c = subtract(a, b)
+    vara = full(shape, 3.0, DType.float32)
+    varb = full(shape, 5.0, DType.float32)
+    varc = subtract(a, b)
 
     assert_all_values(c, -2.0, 1e-6, "3.0 - 5.0 should be -2.0")
 
@@ -139,9 +139,9 @@ fn test_multiply_same_shape_1d() raises:
     """Test multiplying two 1D tensors with same shape."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 4.0, DType.float32)
-    let b = full(shape, 2.5, DType.float32)
-    let c = multiply(a, b)
+    vara = full(shape, 4.0, DType.float32)
+    varb = full(shape, 2.5, DType.float32)
+    varc = multiply(a, b)
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_dtype(c, DType.float32, "Result should have float32 dtype")
@@ -153,9 +153,9 @@ fn test_multiply_same_shape_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = full(shape, 3.0, DType.float64)
-    let b = full(shape, 1.5, DType.float64)
-    let c = multiply(a, b)
+    vara = full(shape, 3.0, DType.float64)
+    varb = full(shape, 1.5, DType.float64)
+    varc = multiply(a, b)
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_dtype(c, DType.float64, "Result should have float64 dtype")
@@ -167,9 +167,9 @@ fn test_multiply_by_zero() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = full(shape, 99.0, DType.float32)
-    let b = zeros(shape, DType.float32)
-    let c = multiply(a, b)
+    vara = full(shape, 99.0, DType.float32)
+    varb = zeros(shape, DType.float32)
+    varc = multiply(a, b)
 
     assert_all_values(c, 0.0, 1e-8, "x * 0 should equal 0")
 
@@ -178,9 +178,9 @@ fn test_multiply_by_one() raises:
     """Test multiplying by one (should not change values)."""
     var shape = List[Int]()
     shape.append(10)
-    let a = full(shape, 7.5, DType.float32)
-    let b = ones(shape, DType.float32)
-    let c = multiply(a, b)
+    vara = full(shape, 7.5, DType.float32)
+    varb = ones(shape, DType.float32)
+    varc = multiply(a, b)
 
     assert_all_values(c, 7.5, 1e-6, "x * 1 should equal x")
 
@@ -189,9 +189,9 @@ fn test_multiply_negative() raises:
     """Test multiplying with negative values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -3.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = multiply(a, b)
+    vara = full(shape, -3.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = multiply(a, b)
 
     assert_all_values(c, -6.0, 1e-6, "-3.0 * 2.0 should be -6.0")
 
@@ -204,9 +204,9 @@ fn test_dunder_add() raises:
     """Test __add__ operator overloading (a + b)."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 3.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = a + b
+    vara = full(shape, 3.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = a + b
 
     assert_all_values(c, 5.0, 1e-6, "a + b should work via __add__")
 
@@ -215,9 +215,9 @@ fn test_dunder_sub() raises:
     """Test __sub__ operator overloading (a - b)."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = a - b
+    vara = full(shape, 7.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = a - b
 
     assert_all_values(c, 4.0, 1e-6, "a - b should work via __sub__")
 
@@ -226,9 +226,9 @@ fn test_dunder_mul() raises:
     """Test __mul__ operator overloading (a * b)."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 4.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = a * b
+    vara = full(shape, 4.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = a * b
 
     assert_all_values(c, 8.0, 1e-6, "a * b should work via __mul__")
 
@@ -237,12 +237,12 @@ fn test_chained_operations() raises:
     """Test chained operations with multiple operators."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 2.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = full(shape, 1.0, DType.float32)
+    vara = full(shape, 2.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = full(shape, 1.0, DType.float32)
 
     # (a + b) * c = (2 + 3) * 1 = 5
-    let result = (a + b) * c
+    varresult = (a + b) * c
     assert_all_values(result, 5.0, 1e-6, "(2 + 3) * 1 should be 5")
 
 
@@ -251,12 +251,12 @@ fn test_complex_expression() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = ones(shape, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = full(shape, 3.0, DType.float32)
+    vara = ones(shape, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = full(shape, 3.0, DType.float32)
 
     # a + b * c = 1 + 2 * 3 = 1 + 6 = 7
-    let result = a + b * c
+    varresult = a + b * c
     assert_all_values(result, 7.0, 1e-6, "1 + 2 * 3 should be 7")
 
 
@@ -268,9 +268,9 @@ fn test_add_preserves_dtype_float32() raises:
     """Test that add preserves float32 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let a = ones(shape, DType.float32)
-    let b = ones(shape, DType.float32)
-    let c = add(a, b)
+    vara = ones(shape, DType.float32)
+    varb = ones(shape, DType.float32)
+    varc = add(a, b)
 
     assert_dtype(c, DType.float32, "Result should preserve float32 dtype")
 
@@ -279,9 +279,9 @@ fn test_add_preserves_dtype_float64() raises:
     """Test that add preserves float64 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let a = ones(shape, DType.float64)
-    let b = ones(shape, DType.float64)
-    let c = add(a, b)
+    vara = ones(shape, DType.float64)
+    varb = ones(shape, DType.float64)
+    varc = add(a, b)
 
     assert_dtype(c, DType.float64, "Result should preserve float64 dtype")
 
@@ -290,9 +290,9 @@ fn test_multiply_preserves_dtype_int32() raises:
     """Test that multiply preserves int32 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let a = ones(shape, DType.int32)
-    let b = full(shape, 2.0, DType.int32)
-    let c = multiply(a, b)
+    vara = ones(shape, DType.int32)
+    varb = full(shape, 2.0, DType.int32)
+    varc = multiply(a, b)
 
     assert_dtype(c, DType.int32, "Result should preserve int32 dtype")
 
@@ -305,9 +305,9 @@ fn test_add_preserves_shape_1d() raises:
     """Test that add preserves 1D shape."""
     var shape = List[Int]()
     shape.append(10)
-    let a = ones(shape, DType.float32)
-    let b = ones(shape, DType.float32)
-    let c = add(a, b)
+    vara = ones(shape, DType.float32)
+    varb = ones(shape, DType.float32)
+    varc = add(a, b)
 
     assert_dim(c, 1, "Result should be 1D")
     assert_numel(c, 10, "Result should have 10 elements")
@@ -319,9 +319,9 @@ fn test_add_preserves_shape_3d() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)
-    let b = ones(shape, DType.float32)
-    let c = add(a, b)
+    vara = ones(shape, DType.float32)
+    varb = ones(shape, DType.float32)
+    varc = add(a, b)
 
     assert_dim(c, 3, "Result should be 3D")
     assert_numel(c, 24, "Result should have 24 elements")
@@ -338,14 +338,14 @@ fn test_add_mismatched_shapes_raises_error() raises:
     var shape_b = List[Int]()
     shape_b.append(10)
 
-    let a = ones(shape_a, DType.float32)
-    let b = ones(shape_b, DType.float32)
+    vara = ones(shape_a, DType.float32)
+    varb = ones(shape_b, DType.float32)
 
     # This should raise an error
     # For now, we expect it to return zeros or error
     # TODO: Verify proper error handling once implemented
     # try:
-    #     let c = add(a, b)
+    #     varc = add(a, b)
     #     raise Error("Should have raised error for mismatched shapes")
     # except:
     #     pass  # Expected
@@ -361,8 +361,8 @@ fn test_multiply_mismatched_shapes_raises_error() raises:
     shape_b.append(3)
     shape_b.append(5)
 
-    let a = ones(shape_a, DType.float32)
-    let b = ones(shape_b, DType.float32)
+    vara = ones(shape_a, DType.float32)
+    varb = ones(shape_b, DType.float32)
 
     # This should raise an error
     # TODO: Verify proper error handling once implemented
@@ -378,8 +378,8 @@ fn test_add_mismatched_dtypes_raises_error() raises:
     var shape = List[Int]()
     shape.append(5)
 
-    let a = ones(shape, DType.float32)
-    let b = ones(shape, DType.float64)
+    vara = ones(shape, DType.float32)
+    varb = ones(shape, DType.float64)
 
     # This should raise an error
     # TODO: Verify proper error handling once implemented
@@ -394,9 +394,9 @@ fn test_divide_same_shape() raises:
     """Test dividing two tensors with same shape."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 6.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = divide(a, b)
+    vara = full(shape, 6.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = divide(a, b)
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_dtype(c, DType.float32, "Result should have float32 dtype")
@@ -408,9 +408,9 @@ fn test_divide_by_one() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = full(shape, 7.5, DType.float32)
-    let b = ones(shape, DType.float32)
-    let c = divide(a, b)
+    vara = full(shape, 7.5, DType.float32)
+    varb = ones(shape, DType.float32)
+    varc = divide(a, b)
 
     assert_all_values(c, 7.5, 1e-6, "x / 1 should be x")
 
@@ -419,9 +419,9 @@ fn test_divide_by_two() raises:
     """Test dividing by two."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 10.0, DType.float64)
-    let b = full(shape, 2.0, DType.float64)
-    let c = divide(a, b)
+    vara = full(shape, 10.0, DType.float64)
+    varb = full(shape, 2.0, DType.float64)
+    varc = divide(a, b)
 
     assert_dtype(c, DType.float64, "Should preserve float64")
     assert_all_values(c, 5.0, 1e-8, "10.0 / 2.0 should be 5.0")
@@ -431,9 +431,9 @@ fn test_divide_negative() raises:
     """Test dividing negative values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -6.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = divide(a, b)
+    vara = full(shape, -6.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = divide(a, b)
 
     assert_all_values(c, -3.0, 1e-6, "-6.0 / 2.0 should be -3.0")
 
@@ -446,9 +446,9 @@ fn test_floor_divide_same_shape() raises:
     """Test floor division with same shape."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = floor_divide(a, b)
+    vara = full(shape, 7.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = floor_divide(a, b)
 
     assert_all_values(c, 3.0, 1e-6, "7.0 // 2.0 should be 3.0")
 
@@ -457,9 +457,9 @@ fn test_floor_divide_positive() raises:
     """Test floor division with positive values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 9.0, DType.float32)
-    let b = full(shape, 4.0, DType.float32)
-    let c = floor_divide(a, b)
+    vara = full(shape, 9.0, DType.float32)
+    varb = full(shape, 4.0, DType.float32)
+    varc = floor_divide(a, b)
 
     assert_all_values(c, 2.0, 1e-6, "9.0 // 4.0 should be 2.0")
 
@@ -468,9 +468,9 @@ fn test_floor_divide_negative() raises:
     """Test floor division with negative dividend."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -7.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = floor_divide(a, b)
+    vara = full(shape, -7.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = floor_divide(a, b)
 
     assert_all_values(c, -4.0, 1e-6, "-7.0 // 2.0 should be -4.0")
 
@@ -483,9 +483,9 @@ fn test_modulo_positive() raises:
     """Test modulo with positive values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = modulo(a, b)
+    vara = full(shape, 7.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = modulo(a, b)
 
     assert_all_values(c, 1.0, 1e-6, "7.0 % 3.0 should be 1.0")
 
@@ -494,9 +494,9 @@ fn test_modulo_negative_dividend() raises:
     """Test modulo with negative dividend."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -7.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = modulo(a, b)
+    vara = full(shape, -7.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = modulo(a, b)
 
     # Python semantics: -7 % 3 = 2 (not -1)
     assert_all_values(c, 2.0, 1e-6, "-7.0 % 3.0 should be 2.0 (Python semantics)")
@@ -506,9 +506,9 @@ fn test_modulo_fractional() raises:
     """Test modulo with fractional values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.5, DType.float32)
-    let b = full(shape, 2.5, DType.float32)
-    let c = modulo(a, b)
+    vara = full(shape, 7.5, DType.float32)
+    varb = full(shape, 2.5, DType.float32)
+    varc = modulo(a, b)
 
     assert_all_values(c, 0.0, 1e-6, "7.5 % 2.5 should be 0.0")
 
@@ -521,9 +521,9 @@ fn test_power_integer_exponent() raises:
     """Test power with small integer exponent."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 2.0, DType.float32)
-    let b = full(shape, 3.0, DType.float32)
-    let c = power(a, b)
+    vara = full(shape, 2.0, DType.float32)
+    varb = full(shape, 3.0, DType.float32)
+    varc = power(a, b)
 
     assert_all_values(c, 8.0, 1e-6, "2.0 ** 3.0 should be 8.0")
 
@@ -532,9 +532,9 @@ fn test_power_zero_exponent() raises:
     """Test power with zero exponent."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 5.0, DType.float32)
-    let b = full(shape, 0.0, DType.float32)
-    let c = power(a, b)
+    vara = full(shape, 5.0, DType.float32)
+    varb = full(shape, 0.0, DType.float32)
+    varc = power(a, b)
 
     assert_all_values(c, 1.0, 1e-6, "x ** 0 should be 1.0")
 
@@ -543,9 +543,9 @@ fn test_power_one_exponent() raises:
     """Test power with exponent of one."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 7.5, DType.float32)
-    let b = full(shape, 1.0, DType.float32)
-    let c = power(a, b)
+    vara = full(shape, 7.5, DType.float32)
+    varb = full(shape, 1.0, DType.float32)
+    varc = power(a, b)
 
     assert_all_values(c, 7.5, 1e-6, "x ** 1 should be x")
 
@@ -554,9 +554,9 @@ fn test_power_negative_base() raises:
     """Test power with negative base."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -2.0, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
-    let c = power(a, b)
+    vara = full(shape, -2.0, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
+    varc = power(a, b)
 
     assert_all_values(c, 4.0, 1e-6, "(-2.0) ** 2.0 should be 4.0")
 

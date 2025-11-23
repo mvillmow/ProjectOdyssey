@@ -4,7 +4,7 @@ Tests all tensor creation functions including zeros, ones, full, arange,
 from_array, eye, linspace, and empty with various shapes and dtypes.
 """
 
-from sys import DType
+from memory import DType
 
 # Import ExTensor and creation operations
 from shared.core import ExTensor, zeros, ones, full, empty, arange, eye, linspace
@@ -34,7 +34,7 @@ fn test_zeros_1d_float32() raises:
     """Test creating 1D tensor of zeros with float32."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_dim(t, 1, "zeros 1D should have 1 dimension")
     assert_numel(t, 5, "zeros 1D should have 5 elements")
@@ -47,7 +47,7 @@ fn test_zeros_2d_int64() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = zeros(shape, DType.int64)
+    vart = zeros(shape, DType.int64)
 
     assert_dim(t, 2, "zeros 2D should have 2 dimensions")
     assert_numel(t, 12, "zeros 2D(3,4) should have 12 elements")
@@ -61,7 +61,7 @@ fn test_zeros_3d_float64() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = zeros(shape, DType.float64)
+    vart = zeros(shape, DType.float64)
 
     assert_dim(t, 3, "zeros 3D should have 3 dimensions")
     assert_numel(t, 24, "zeros 3D(2,3,4) should have 24 elements")
@@ -72,7 +72,7 @@ fn test_zeros_3d_float64() raises:
 fn test_zeros_empty_shape() raises:
     """Test creating 0D scalar tensor of zeros."""
     var shape = List[Int]()
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_dim(t, 0, "zeros 0D should have 0 dimensions")
     assert_numel(t, 1, "zeros 0D should have 1 element")
@@ -84,7 +84,7 @@ fn test_zeros_large_shape() raises:
     """Test creating zeros with very large shape."""
     var shape = List[Int]()
     shape.append(10000)
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_numel(t, 10000, "zeros large should have 10000 elements")
     # Spot-check a few values
@@ -101,7 +101,7 @@ fn test_ones_1d_float32() raises:
     """Test creating 1D tensor of ones with float32."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_dim(t, 1, "ones 1D should have 1 dimension")
     assert_numel(t, 5, "ones 1D should have 5 elements")
@@ -114,7 +114,7 @@ fn test_ones_2d_int32() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.int32)
+    vart = ones(shape, DType.int32)
 
     assert_dim(t, 2, "ones 2D should have 2 dimensions")
     assert_numel(t, 12, "ones 2D(3,4) should have 12 elements")
@@ -128,7 +128,7 @@ fn test_ones_3d_float64() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float64)
+    vart = ones(shape, DType.float64)
 
     assert_dim(t, 3, "ones 3D should have 3 dimensions")
     assert_numel(t, 24, "ones 3D(2,3,4) should have 24 elements")
@@ -145,7 +145,7 @@ fn test_full_positive_value() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = full(shape, 5.5, DType.float32)
+    vart = full(shape, 5.5, DType.float32)
 
     assert_numel(t, 12, "full should have 12 elements")
     assert_dtype(t, DType.float32, "full should have float32 dtype")
@@ -156,7 +156,7 @@ fn test_full_negative_value() raises:
     """Test creating tensor filled with negative value."""
     var shape = List[Int]()
     shape.append(10)
-    let t = full(shape, -3.14, DType.float64)
+    vart = full(shape, -3.14, DType.float64)
 
     assert_numel(t, 10, "full should have 10 elements")
     assert_dtype(t, DType.float64, "full should have float64 dtype")
@@ -168,7 +168,7 @@ fn test_full_zero_value() raises:
     var shape = List[Int]()
     shape.append(5)
     shape.append(5)
-    let t = full(shape, 0.0, DType.float32)
+    vart = full(shape, 0.0, DType.float32)
 
     assert_numel(t, 25, "full with 0.0 should have 25 elements")
     assert_all_values(t, 0.0, 1e-8, "full with 0.0 should match zeros")
@@ -178,7 +178,7 @@ fn test_full_large_value() raises:
     """Test creating tensor filled with large value."""
     var shape = List[Int]()
     shape.append(100)
-    let t = full(shape, 999999.0, DType.float32)
+    vart = full(shape, 999999.0, DType.float32)
 
     assert_numel(t, 100, "full should have 100 elements")
     assert_all_values(t, 999999.0, 1e-2, "full should contain large value")
@@ -193,7 +193,7 @@ fn test_empty_allocates_memory() raises:
     var shape = List[Int]()
     shape.append(5)
     shape.append(10)
-    let t = empty(shape, DType.float32)
+    vart = empty(shape, DType.float32)
 
     # Verify tensor is created with correct shape and dtype
     # Don't check values (they are undefined/uninitialized)
@@ -206,7 +206,7 @@ fn test_empty_1d() raises:
     """Test creating empty 1D tensor."""
     var shape = List[Int]()
     shape.append(100)
-    let t = empty(shape, DType.float64)
+    vart = empty(shape, DType.float64)
 
     assert_numel(t, 100, "empty 1D should have 100 elements")
     assert_dim(t, 1, "empty 1D should have 1 dimension")
@@ -218,7 +218,7 @@ fn test_empty_2d() raises:
     var shape = List[Int]()
     shape.append(8)
     shape.append(8)
-    let t = empty(shape, DType.int32)
+    vart = empty(shape, DType.int32)
 
     assert_numel(t, 64, "empty 2D should have 64 elements")
     assert_dim(t, 2, "empty 2D should have 2 dimensions")
@@ -231,7 +231,7 @@ fn test_empty_2d() raises:
 
 fn test_arange_basic() raises:
     """Test arange with start, stop, step=1."""
-    let t = arange(0.0, 10.0, 1.0, DType.float32)
+    vart = arange(0.0, 10.0, 1.0, DType.float32)
 
     assert_numel(t, 10, "arange(0, 10, 1) should have 10 elements")
     assert_dim(t, 1, "arange should be 1D")
@@ -244,7 +244,7 @@ fn test_arange_basic() raises:
 
 fn test_arange_step_2() raises:
     """Test arange with step > 1."""
-    let t = arange(0.0, 10.0, 2.0, DType.float32)
+    vart = arange(0.0, 10.0, 2.0, DType.float32)
 
     assert_numel(t, 5, "arange(0, 10, 2) should have 5 elements")
     assert_value_at(t, 0, 0.0, 1e-6, "arange[0]")
@@ -256,7 +256,7 @@ fn test_arange_step_2() raises:
 
 fn test_arange_step_fractional() raises:
     """Test arange with fractional step."""
-    let t = arange(0.0, 1.0, 0.2, DType.float64)
+    vart = arange(0.0, 1.0, 0.2, DType.float64)
 
     assert_numel(t, 5, "arange(0, 1, 0.2) should have 5 elements")
     assert_value_at(t, 0, 0.0, 1e-8, "arange fractional [0]")
@@ -268,7 +268,7 @@ fn test_arange_step_fractional() raises:
 
 fn test_arange_reverse() raises:
     """Test arange with negative step (reverse order)."""
-    let t = arange(10.0, 0.0, -1.0, DType.float32)
+    vart = arange(10.0, 0.0, -1.0, DType.float32)
 
     assert_numel(t, 10, "arange(10, 0, -1) should have 10 elements")
     # Check values: [10, 9, 8, ..., 1]
@@ -278,7 +278,7 @@ fn test_arange_reverse() raises:
 
 fn test_arange_float() raises:
     """Test arange with float dtype."""
-    let t = arange(1.5, 5.5, 1.0, DType.float64)
+    vart = arange(1.5, 5.5, 1.0, DType.float64)
 
     assert_numel(t, 4, "arange(1.5, 5.5, 1.0) should have 4 elements")
     assert_dtype(t, DType.float64, "arange should have float64 dtype")
@@ -319,7 +319,7 @@ fn test_from_array_3d() raises:
 
 fn test_eye_square() raises:
     """Test creating square identity matrix."""
-    let t = eye(5, 5, 0, DType.float32)
+    vart = eye(5, 5, 0, DType.float32)
 
     assert_dim(t, 2, "eye should be 2D")
     assert_numel(t, 25, "eye(5,5) should have 25 elements")
@@ -328,7 +328,7 @@ fn test_eye_square() raises:
     # Check diagonal is 1, off-diagonal is 0
     for i in range(5):
         for j in range(5):
-            let flat_idx = i * 5 + j
+            varflat_idx = i * 5 + j
             if i == j:
                 assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
             else:
@@ -337,7 +337,7 @@ fn test_eye_square() raises:
 
 fn test_eye_rectangular() raises:
     """Test creating rectangular identity matrix."""
-    let t = eye(3, 5, 0, DType.float64)
+    vart = eye(3, 5, 0, DType.float64)
 
     assert_dim(t, 2, "eye should be 2D")
     assert_numel(t, 15, "eye(3,5) should have 15 elements")
@@ -346,7 +346,7 @@ fn test_eye_rectangular() raises:
     # Check diagonal is 1 where i==j, rest is 0
     for i in range(3):
         for j in range(5):
-            let flat_idx = i * 5 + j
+            varflat_idx = i * 5 + j
             if i == j:
                 assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
             else:
@@ -366,7 +366,7 @@ fn test_eye_offset_diagonal() raises:
 
 fn test_linspace_basic() raises:
     """Test linspace with basic range."""
-    let t = linspace(0.0, 10.0, 11, DType.float32)
+    vart = linspace(0.0, 10.0, 11, DType.float32)
 
     assert_numel(t, 11, "linspace(0, 10, 11) should have 11 elements")
     assert_dim(t, 1, "linspace should be 1D")
@@ -379,7 +379,7 @@ fn test_linspace_basic() raises:
 
 fn test_linspace_negative_range() raises:
     """Test linspace with negative start/stop."""
-    let t = linspace(-5.0, 5.0, 11, DType.float64)
+    vart = linspace(-5.0, 5.0, 11, DType.float64)
 
     assert_numel(t, 11, "linspace(-5, 5, 11) should have 11 elements")
     assert_dtype(t, DType.float64, "linspace should have float64 dtype")
@@ -391,7 +391,7 @@ fn test_linspace_negative_range() raises:
 
 fn test_linspace_small_num() raises:
     """Test linspace with small number of points."""
-    let t = linspace(0.0, 1.0, 2, DType.float32)
+    vart = linspace(0.0, 1.0, 2, DType.float32)
 
     assert_numel(t, 2, "linspace(0, 1, 2) should have 2 elements")
     assert_value_at(t, 0, 0.0, 1e-6, "linspace start should be 0.0")
@@ -400,7 +400,7 @@ fn test_linspace_small_num() raises:
 
 fn test_linspace_large_num() raises:
     """Test linspace with large number of points."""
-    let t = linspace(0.0, 100.0, 101, DType.float64)
+    vart = linspace(0.0, 100.0, 101, DType.float64)
 
     assert_numel(t, 101, "linspace(0, 100, 101) should have 101 elements")
     # Spot-check a few values
@@ -417,7 +417,7 @@ fn test_creation_float16() raises:
     """Test creation operations with float16 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.float16)
+    vart = zeros(shape, DType.float16)
     assert_dtype(t, DType.float16, "zeros should support float16")
 
 
@@ -425,7 +425,7 @@ fn test_creation_float32() raises:
     """Test creation operations with float32 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
     assert_dtype(t, DType.float32, "ones should support float32")
 
 
@@ -433,7 +433,7 @@ fn test_creation_float64() raises:
     """Test creation operations with float64 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = full(shape, 3.14, DType.float64)
+    vart = full(shape, 3.14, DType.float64)
     assert_dtype(t, DType.float64, "full should support float64")
 
 
@@ -441,7 +441,7 @@ fn test_creation_int8() raises:
     """Test creation operations with int8 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.int8)
+    vart = zeros(shape, DType.int8)
     assert_dtype(t, DType.int8, "zeros should support int8")
 
 
@@ -449,7 +449,7 @@ fn test_creation_int32() raises:
     """Test creation operations with int32 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.int32)
+    vart = ones(shape, DType.int32)
     assert_dtype(t, DType.int32, "ones should support int32")
 
 
@@ -457,7 +457,7 @@ fn test_creation_uint8() raises:
     """Test creation operations with uint8 dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = full(shape, 255.0, DType.uint8)
+    vart = full(shape, 255.0, DType.uint8)
     assert_dtype(t, DType.uint8, "full should support uint8")
 
 
@@ -465,7 +465,7 @@ fn test_creation_bool() raises:
     """Test creation operations with bool dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.bool)
+    vart = zeros(shape, DType.bool)
     assert_dtype(t, DType.bool, "zeros should support bool")
 
 
@@ -476,7 +476,7 @@ fn test_creation_bool() raises:
 fn test_creation_0d_scalar() raises:
     """Test creating 0D scalar tensor."""
     var shape = List[Int]()
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_dim(t, 0, "0D tensor should have 0 dimensions")
     assert_numel(t, 1, "0D tensor should have 1 element")
@@ -487,7 +487,7 @@ fn test_creation_very_large_1d() raises:
     """Test creating very large 1D tensor."""
     var shape = List[Int]()
     shape.append(1000000)
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_numel(t, 1000000, "Large 1D tensor should have 1000000 elements")
     # Spot-check a few values
@@ -500,7 +500,7 @@ fn test_creation_high_dimensional() raises:
     var shape = List[Int]()
     for i in range(8):
         shape[i] = 2
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_dim(t, 8, "8D tensor should have 8 dimensions")
     assert_numel(t, 256, "8D tensor (2x2x2x2x2x2x2x2) should have 256 elements")

@@ -15,7 +15,6 @@ Example:.    from shared.utils import Timer, profile_function, memory_usage
     print("Memory: " + str(mem.used_mb) + "MB / " + str(mem.peak_mb) + "MB")
 """
 
-from collections import Tuple
 
 # ============================================================================
 # Timing Data Structures

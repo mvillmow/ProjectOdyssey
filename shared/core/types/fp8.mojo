@@ -17,8 +17,8 @@ Example:.    from shared.core.types.fp8 import FP8
 from math import isnan, isinf
 
 
-@value
-struct FP8(Stringable, Representable):
+@fieldwise_init
+struct FP8(Stringable, Representable, Copyable, Movable):
     """8-bit floating point number in E4M3 format.
 
     Memory layout (1 byte):

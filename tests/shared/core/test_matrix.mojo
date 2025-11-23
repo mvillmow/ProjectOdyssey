@@ -139,7 +139,9 @@ fn test_matmul_backward_shapes() raises:
     grad_output_shape.append(5)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = matmul_backward(grad_output, a, b)
+    var grads = matmul_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should have same shape as a
     assert_equal(grad_a.shape()[0], 4)
@@ -186,8 +188,8 @@ fn test_matmul_backward_gradient_a() raises:
 
     # Backward function wrapper for grad_a
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var (grad_a, _) = matmul_backward(grad_out, inp, b)
-        return grad_a
+        var grads = matmul_backward(grad_out, inp, b)
+        return grads.grad_a
 
     var output = forward(a)
     var grad_output = ones_like(output)
@@ -231,8 +233,8 @@ fn test_matmul_backward_gradient_b() raises:
 
     # Backward function wrapper for grad_b
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var (_, grad_b) = matmul_backward(grad_out, a, inp)
-        return grad_b
+        var grads = matmul_backward(grad_out, a, inp)
+        return grads.grad_b
 
     var output = forward(b)
     var grad_output = ones_like(output)

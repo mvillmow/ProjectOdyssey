@@ -17,7 +17,6 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from math import abs
 from shared.core import ExTensor
 from shared.training.metrics import (
     Metric, MetricResult, MetricCollection, MetricLogger,

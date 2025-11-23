@@ -14,7 +14,7 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from math import abs, sqrt
+from math import sqrt
 from shared.training.metrics import LossTracker, Statistics
 
 

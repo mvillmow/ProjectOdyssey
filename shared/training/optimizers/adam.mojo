@@ -19,7 +19,6 @@ Reference:
     arXiv preprint arXiv:1412.6980.
 """
 
-from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd, divide_simd

@@ -17,7 +17,7 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from math import abs, exp, sqrt, tanh as math_tanh
+from math import exp, sqrt, tanh as math_tanh
 from shared.core import (
     ExTensor, zeros, ones, full, arange,
     relu, leaky_relu, prelu,

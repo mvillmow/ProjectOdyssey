@@ -27,14 +27,14 @@ fn test_binary_cross_entropy_perfect_prediction() raises:
 
     # Perfect predictions: pred = target
     for i in range(4):
-        let val = 1.0 if i % 2 == 0 else 0.0
+        varval = 1.0 if i % 2 == 0 else 0.0
         predictions._set_float64(i, val)
         targets._set_float64(i, val)
 
     var loss = binary_cross_entropy(predictions, targets)
     var avg_loss = mean(loss)
 
-    let loss_val = avg_loss._get_float64(0)
+    varloss_val = avg_loss._get_float64(0)
     print("  Perfect prediction loss:", loss_val)
 
     # Should be very close to 0 (within epsilon tolerance)
@@ -54,15 +54,15 @@ fn test_binary_cross_entropy_worst_prediction() raises:
 
     # Worst predictions: pred = 1 - target
     for i in range(4):
-        let target_val = 1.0 if i % 2 == 0 else 0.0
-        let pred_val = 1.0 - target_val  # Opposite
+        vartarget_val = 1.0 if i % 2 == 0 else 0.0
+        varpred_val = 1.0 - target_val  # Opposite
         predictions._set_float64(i, pred_val)
         targets._set_float64(i, target_val)
 
     var loss = binary_cross_entropy(predictions, targets)
     var avg_loss = mean(loss)
 
-    let loss_val = avg_loss._get_float64(0)
+    varloss_val = avg_loss._get_float64(0)
     print("  Worst prediction loss:", loss_val)
 
     # Should be high (> 1.0)
@@ -110,14 +110,14 @@ fn test_mean_squared_error_zero_loss() raises:
 
     # Identical values
     for i in range(5):
-        let val = Float64(i) * 0.5
+        varval = Float64(i) * 0.5
         predictions._set_float64(i, val)
         targets._set_float64(i, val)
 
     var loss = mean_squared_error(predictions, targets)
     var avg_loss = mean(loss)
 
-    let loss_val = avg_loss._get_float64(0)
+    varloss_val = avg_loss._get_float64(0)
     print("  MSE zero loss:", loss_val)
 
     # Should be exactly 0
@@ -152,12 +152,12 @@ fn test_mean_squared_error_known_values() raises:
     var loss = mean_squared_error(predictions, targets)
     var avg_loss = mean(loss)
 
-    let loss_val = avg_loss._get_float64(0)
+    varloss_val = avg_loss._get_float64(0)
     print("  MSE known value:", loss_val)
 
     # Should be approximately 0.666...
-    let expected = 2.0 / 3.0
-    let diff = abs(loss_val - expected)
+    varexpected = 2.0 / 3.0
+    vardiff = abs(loss_val - expected)
     if diff > 0.01:
         raise Error("MSE loss doesn't match expected value")
 
@@ -192,9 +192,9 @@ fn test_mean_squared_error_gradient() raises:
     var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
 
     # Check values
-    let grad0 = grad_pred._get_float64(0)
-    let grad1 = grad_pred._get_float64(1)
-    let grad2 = grad_pred._get_float64(2)
+    vargrad0 = grad_pred._get_float64(0)
+    vargrad1 = grad_pred._get_float64(1)
+    vargrad2 = grad_pred._get_float64(2)
 
     print("  Gradients: [", grad0, ",", grad1, ",", grad2, "]")
 
@@ -228,7 +228,7 @@ fn test_loss_numerical_stability() raises:
     var loss = binary_cross_entropy(predictions, targets)
     var avg_loss = mean(loss)
 
-    let loss_val = avg_loss._get_float64(0)
+    varloss_val = avg_loss._get_float64(0)
     print("  BCE with extreme values:", loss_val)
 
     # Should be finite (not NaN or Inf)

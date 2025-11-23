@@ -4,7 +4,7 @@ Tests fundamental ExTensor properties including shape, dtype, numel, strides,
 contiguity, and basic tensor operations that should work with current implementation.
 """
 
-from sys import DType
+from memory import DType
 
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, eye
@@ -29,9 +29,9 @@ fn test_shape_1d() raises:
     """Test shape property for 1D tensor."""
     var shape = List[Int]()
     shape.append(10)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let s = t.shape()
+    vars = t.shape()
     assert_equal_int(len(s), 1, "1D tensor should have 1 dimension in shape")
     assert_equal_int(s[0], 10, "First dimension should be 10")
 
@@ -41,9 +41,9 @@ fn test_shape_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let s = t.shape()
+    vars = t.shape()
     assert_equal_int(len(s), 2, "2D tensor should have 2 dimensions")
     assert_equal_int(s[0], 3, "First dimension should be 3")
     assert_equal_int(s[1], 4, "Second dimension should be 4")
@@ -55,9 +55,9 @@ fn test_shape_3d() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let s = t.shape()
+    vars = t.shape()
     assert_equal_int(len(s), 3, "3D tensor should have 3 dimensions")
     assert_equal_int(s[0], 2, "Dim 0 should be 2")
     assert_equal_int(s[1], 3, "Dim 1 should be 3")
@@ -67,9 +67,9 @@ fn test_shape_3d() raises:
 fn test_shape_scalar() raises:
     """Test shape property for scalar (0D) tensor."""
     var shape = List[Int]()
-    let t = full(shape, 42.0, DType.float32)
+    vart = full(shape, 42.0, DType.float32)
 
-    let s = t.shape()
+    vars = t.shape()
     assert_equal_int(len(s), 0, "Scalar tensor should have 0 dimensions")
 
 
@@ -81,7 +81,7 @@ fn test_dtype_float32() raises:
     """Test dtype property for float32 tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_dtype(t, DType.float32, "Should be float32")
 
@@ -90,7 +90,7 @@ fn test_dtype_float64() raises:
     """Test dtype property for float64 tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float64)
+    vart = ones(shape, DType.float64)
 
     assert_dtype(t, DType.float64, "Should be float64")
 
@@ -99,7 +99,7 @@ fn test_dtype_int32() raises:
     """Test dtype property for int32 tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.int32)
+    vart = zeros(shape, DType.int32)
 
     assert_dtype(t, DType.int32, "Should be int32")
 
@@ -108,7 +108,7 @@ fn test_dtype_int64() raises:
     """Test dtype property for int64 tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.int64)
+    vart = zeros(shape, DType.int64)
 
     assert_dtype(t, DType.int64, "Should be int64")
 
@@ -117,7 +117,7 @@ fn test_dtype_bool() raises:
     """Test dtype property for bool tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = zeros(shape, DType.bool)
+    vart = zeros(shape, DType.bool)
 
     assert_dtype(t, DType.bool, "Should be bool")
 
@@ -130,7 +130,7 @@ fn test_numel_1d() raises:
     """Test numel for 1D tensor."""
     var shape = List[Int]()
     shape.append(10)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_numel(t, 10, "1D tensor with 10 elements")
 
@@ -140,7 +140,7 @@ fn test_numel_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_numel(t, 12, "2D tensor with 12 elements (3*4)")
 
@@ -151,7 +151,7 @@ fn test_numel_3d() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_numel(t, 24, "3D tensor with 24 elements (2*3*4)")
 
@@ -159,7 +159,7 @@ fn test_numel_3d() raises:
 fn test_numel_scalar() raises:
     """Test numel for scalar tensor."""
     var shape = List[Int]()
-    let t = full(shape, 1.0, DType.float32)
+    vart = full(shape, 1.0, DType.float32)
 
     assert_numel(t, 1, "Scalar tensor has 1 element")
 
@@ -168,7 +168,7 @@ fn test_numel_empty() raises:
     """Test numel for empty tensor."""
     var shape = List[Int]()
     shape.append(0)
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     assert_numel(t, 0, "Empty tensor has 0 elements")
 
@@ -181,9 +181,9 @@ fn test_strides_1d() raises:
     """Test stride calculation for 1D tensor."""
     var shape = List[Int]()
     shape.append(10)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let strides = t._strides
+    varstrides = t._strides
     assert_equal_int(len(strides), 1, "1D tensor should have 1 stride")
     assert_equal_int(strides[0], 1, "1D stride should be 1")
 
@@ -193,9 +193,9 @@ fn test_strides_2d_row_major() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let strides = t._strides
+    varstrides = t._strides
     assert_equal_int(len(strides), 2, "2D tensor should have 2 strides")
     assert_equal_int(strides[0], 4, "Outer stride should be 4 (row length)")
     assert_equal_int(strides[1], 1, "Inner stride should be 1")
@@ -207,9 +207,9 @@ fn test_strides_3d_row_major() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let strides = t._strides
+    varstrides = t._strides
     assert_equal_int(len(strides), 3, "3D tensor should have 3 strides")
     assert_equal_int(strides[0], 12, "Stride 0 should be 12 (3*4)")
     assert_equal_int(strides[1], 4, "Stride 1 should be 4")
@@ -225,7 +225,7 @@ fn test_contiguous_new_tensor() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_true(t.is_contiguous(), "Newly created tensor should be contiguous")
 
@@ -234,7 +234,7 @@ fn test_contiguous_1d() raises:
     """Test that 1D tensors are contiguous."""
     var shape = List[Int]()
     shape.append(100)
-    let t = arange(0.0, 100.0, 1.0, DType.float32)
+    vart = arange(0.0, 100.0, 1.0, DType.float32)
 
     assert_true(t.is_contiguous(), "1D tensor should be contiguous")
 
@@ -242,7 +242,7 @@ fn test_contiguous_1d() raises:
 fn test_contiguous_scalar() raises:
     """Test that scalar tensors are contiguous."""
     var shape = List[Int]()
-    let t = full(shape, 5.0, DType.float32)
+    vart = full(shape, 5.0, DType.float32)
 
     assert_true(t.is_contiguous(), "Scalar tensor should be contiguous")
 
@@ -255,7 +255,7 @@ fn test_dim_1d() raises:
     """Test dim for 1D tensor."""
     var shape = List[Int]()
     shape.append(10)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_dim(t, 1, "1D tensor should have dim=1")
 
@@ -265,7 +265,7 @@ fn test_dim_2d() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_dim(t, 2, "2D tensor should have dim=2")
 
@@ -276,7 +276,7 @@ fn test_dim_3d() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_dim(t, 3, "3D tensor should have dim=3")
 
@@ -284,7 +284,7 @@ fn test_dim_3d() raises:
 fn test_dim_scalar() raises:
     """Test dim for scalar (0D) tensor."""
     var shape = List[Int]()
-    let t = full(shape, 1.0, DType.float32)
+    vart = full(shape, 1.0, DType.float32)
 
     assert_dim(t, 0, "Scalar tensor should have dim=0")
 
@@ -295,7 +295,7 @@ fn test_dim_scalar() raises:
 
 fn test_value_access_1d() raises:
     """Test accessing values in 1D tensor."""
-    let t = arange(0.0, 5.0, 1.0, DType.float32)
+    vart = arange(0.0, 5.0, 1.0, DType.float32)
 
     assert_value_at(t, 0, 0.0, 1e-6, "First element")
     assert_value_at(t, 2, 2.0, 1e-6, "Middle element")
@@ -307,7 +307,7 @@ fn test_value_access_2d_row_major() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let t = arange(0.0, 6.0, 1.0, DType.float32)
+    vart = arange(0.0, 6.0, 1.0, DType.float32)
     # Should be: [[0, 1, 2], [3, 4, 5]]
 
     assert_value_at(t, 0, 0.0, 1e-6, "Element [0,0]")
@@ -318,7 +318,7 @@ fn test_value_access_2d_row_major() raises:
 
 fn test_value_access_identity() raises:
     """Test accessing values in identity matrix."""
-    let t = eye(3, 3, 0, DType.float32)
+    vart = eye(3, 3, 0, DType.float32)
 
     # Diagonal elements should be 1.0
     assert_value_at(t, 0, 1.0, 1e-6, "Diagonal [0,0]")
@@ -339,7 +339,7 @@ fn test_all_zeros_pattern() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(3)
-    let t = zeros(shape, DType.float32)
+    vart = zeros(shape, DType.float32)
 
     for i in range(9):
         assert_value_at(t, i, 0.0, 1e-8, "All elements should be 0")
@@ -350,7 +350,7 @@ fn test_all_ones_pattern() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(3)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     for i in range(9):
         assert_value_at(t, i, 1.0, 1e-8, "All elements should be 1")
@@ -361,7 +361,7 @@ fn test_full_pattern() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(4)
-    let t = full(shape, 7.5, DType.float32)
+    vart = full(shape, 7.5, DType.float32)
 
     for i in range(8):
         assert_value_at(t, i, 7.5, 1e-6, "All elements should be 7.5")
@@ -369,7 +369,7 @@ fn test_full_pattern() raises:
 
 fn test_arange_sequential_pattern() raises:
     """Test that arange creates sequential values."""
-    let t = arange(0.0, 10.0, 1.0, DType.float32)
+    vart = arange(0.0, 10.0, 1.0, DType.float32)
 
     for i in range(10):
         assert_value_at(t, i, Float64(i), 1e-6, "Sequential values")
@@ -377,11 +377,11 @@ fn test_arange_sequential_pattern() raises:
 
 fn test_eye_identity_pattern() raises:
     """Test that eye creates proper identity pattern."""
-    let t = eye(4, 4, 0, DType.float32)
+    vart = eye(4, 4, 0, DType.float32)
 
     for i in range(4):
         for j in range(4):
-            let idx = i * 4 + j
+            varidx = i * 4 + j
             if i == j:
                 assert_value_at(t, idx, 1.0, 1e-6, "Diagonal should be 1")
             else:
@@ -397,7 +397,7 @@ fn test_is_view_false_for_new_tensors() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_false(t._is_view, "Newly created tensor should not be a view")
 
@@ -410,9 +410,9 @@ fn test_dtype_size_float32() raises:
     """Test dtype size for float32."""
     var shape = List[Int]()
     shape.append(1)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let size = t._get_dtype_size()
+    varsize = t._get_dtype_size()
     assert_equal_int(size, 4, "float32 should be 4 bytes")
 
 
@@ -420,9 +420,9 @@ fn test_dtype_size_float64() raises:
     """Test dtype size for float64."""
     var shape = List[Int]()
     shape.append(1)
-    let t = ones(shape, DType.float64)
+    vart = ones(shape, DType.float64)
 
-    let size = t._get_dtype_size()
+    varsize = t._get_dtype_size()
     assert_equal_int(size, 8, "float64 should be 8 bytes")
 
 
@@ -430,9 +430,9 @@ fn test_dtype_size_int32() raises:
     """Test dtype size for int32."""
     var shape = List[Int]()
     shape.append(1)
-    let t = zeros(shape, DType.int32)
+    vart = zeros(shape, DType.int32)
 
-    let size = t._get_dtype_size()
+    varsize = t._get_dtype_size()
     assert_equal_int(size, 4, "int32 should be 4 bytes")
 
 

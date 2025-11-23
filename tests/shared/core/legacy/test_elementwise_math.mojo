@@ -4,8 +4,7 @@ Tests transcendental functions (exp, log, sqrt), trigonometric functions (sin, c
 and utility functions (abs, sign, clip) following Array API Standard.
 """
 
-from sys import DType
-from math import abs as math_abs
+from memory import DType
 
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
@@ -29,8 +28,8 @@ fn test_abs_positive() raises:
     """Test abs with positive values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = arange(1.0, 6.0, 1.0, DType.float32)  # [1, 2, 3, 4, 5]
-    let b = abs(a)
+    vara = arange(1.0, 6.0, 1.0, DType.float32)  # [1, 2, 3, 4, 5]
+    varb = abs(a)
 
     # Positive values should remain unchanged
     assert_value_at(b, 0, 1.0, 1e-6, "abs(1) = 1")
@@ -44,8 +43,8 @@ fn test_abs_negative() raises:
     """Test abs with negative values."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, -3.0, DType.float32)
-    let b = abs(a)
+    vara = full(shape, -3.0, DType.float32)
+    varb = abs(a)
 
     # Should convert to positive
     assert_all_values(b, 3.0, 1e-6, "abs(negative) = positive")
@@ -54,8 +53,8 @@ fn test_abs_negative() raises:
 fn test_abs_mixed() raises:
     """Test abs with mixed positive/negative values."""
     # Create array: [-2, -1, 0, 1, 2]
-    let a = arange(-2.0, 3.0, 1.0, DType.float32)
-    let b = abs(a)
+    vara = arange(-2.0, 3.0, 1.0, DType.float32)
+    varb = abs(a)
 
     # Expected: [2, 1, 0, 1, 2]
     assert_value_at(b, 0, 2.0, 1e-6, "abs(-2) = 2")
@@ -69,8 +68,8 @@ fn test_abs_preserves_dtype() raises:
     """Test that abs preserves dtype."""
     var shape = List[Int]()
     shape.append(5)
-    let a = ones(shape, DType.float64)
-    let b = abs(a)
+    vara = ones(shape, DType.float64)
+    varb = abs(a)
 
     assert_dtype(b, DType.float64, "abs should preserve float64")
 
@@ -83,8 +82,8 @@ fn test_sign_positive() raises:
     """Test sign with positive values."""
     var shape = List[Int]()
     shape.append(3)
-    let a = full(shape, 5.0, DType.float32)
-    let b = sign(a)
+    vara = full(shape, 5.0, DType.float32)
+    varb = sign(a)
 
     # Positive values should give +1
     assert_all_values(b, 1.0, 1e-6, "sign(positive) = 1")
@@ -94,8 +93,8 @@ fn test_sign_negative() raises:
     """Test sign with negative values."""
     var shape = List[Int]()
     shape.append(3)
-    let a = full(shape, -5.0, DType.float32)
-    let b = sign(a)
+    vara = full(shape, -5.0, DType.float32)
+    varb = sign(a)
 
     # Negative values should give -1
     assert_all_values(b, -1.0, 1e-6, "sign(negative) = -1")
@@ -105,8 +104,8 @@ fn test_sign_zero() raises:
     """Test sign with zero values."""
     var shape = List[Int]()
     shape.append(3)
-    let a = zeros(shape, DType.float32)
-    let b = sign(a)
+    vara = zeros(shape, DType.float32)
+    varb = sign(a)
 
     # Zero should give 0
     assert_all_values(b, 0.0, 1e-6, "sign(0) = 0")
@@ -115,8 +114,8 @@ fn test_sign_zero() raises:
 fn test_sign_mixed() raises:
     """Test sign with mixed values."""
     # Create array: [-2, -1, 0, 1, 2]
-    let a = arange(-2.0, 3.0, 1.0, DType.float32)
-    let b = sign(a)
+    vara = arange(-2.0, 3.0, 1.0, DType.float32)
+    varb = sign(a)
 
     # Expected: [-1, -1, 0, 1, 1]
     assert_value_at(b, 0, -1.0, 1e-6, "sign(-2) = -1")
@@ -134,8 +133,8 @@ fn test_exp_zeros() raises:
     """Test exp(0) = 1."""
     var shape = List[Int]()
     shape.append(5)
-    let a = zeros(shape, DType.float32)
-    let b = exp(a)
+    vara = zeros(shape, DType.float32)
+    varb = exp(a)
 
     # exp(0) = 1
     assert_all_values(b, 1.0, 1e-6, "exp(0) should be 1")
@@ -145,8 +144,8 @@ fn test_exp_ones() raises:
     """Test exp(1) ≈ 2.71828."""
     var shape = List[Int]()
     shape.append(3)
-    let a = ones(shape, DType.float32)
-    let b = exp(a)
+    vara = ones(shape, DType.float32)
+    varb = exp(a)
 
     # exp(1) ≈ e ≈ 2.71828
     assert_all_values(b, 2.71828, 1e-5, "exp(1) should be approximately e")
@@ -156,8 +155,8 @@ fn test_exp_small_values() raises:
     """Test exp with small values."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 0.5, DType.float32)
-    let b = exp(a)
+    vara = full(shape, 0.5, DType.float32)
+    varb = exp(a)
 
     # exp(0.5) ≈ 1.64872
     assert_value_at(b, 0, 1.64872, 1e-4, "exp(0.5) should be ~1.649")
@@ -167,8 +166,8 @@ fn test_exp_negative() raises:
     """Test exp with negative values."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, -1.0, DType.float32)
-    let b = exp(a)
+    vara = full(shape, -1.0, DType.float32)
+    varb = exp(a)
 
     # exp(-1) ≈ 0.36788 (1/e)
     assert_value_at(b, 0, 0.36788, 1e-4, "exp(-1) should be ~0.368")
@@ -182,8 +181,8 @@ fn test_log_one() raises:
     """Test log(1) = 0."""
     var shape = List[Int]()
     shape.append(5)
-    let a = ones(shape, DType.float32)
-    let b = log(a)
+    vara = ones(shape, DType.float32)
+    varb = log(a)
 
     # log(1) = 0
     assert_all_values(b, 0.0, 1e-6, "log(1) should be 0")
@@ -193,8 +192,8 @@ fn test_log_e() raises:
     """Test log(e) = 1."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 2.71828, DType.float32)  # e
-    let b = log(a)
+    vara = full(shape, 2.71828, DType.float32)  # e
+    varb = log(a)
 
     # log(e) = 1
     assert_value_at(b, 0, 1.0, 1e-4, "log(e) should be 1")
@@ -204,8 +203,8 @@ fn test_log_powers_of_2() raises:
     """Test log with powers of 2."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 2.0, DType.float32)
-    let b = log(a)
+    vara = full(shape, 2.0, DType.float32)
+    varb = log(a)
 
     # log(2) ≈ 0.69315
     assert_value_at(b, 0, 0.69315, 1e-4, "log(2) should be ~0.693")
@@ -226,7 +225,7 @@ fn test_sqrt_perfect_squares() raises:
     a._set_float64(2, 9.0)
     a._set_float64(3, 16.0)
     a._set_float64(4, 25.0)
-    let b = sqrt(a)
+    varb = sqrt(a)
 
     # Expected: [1, 2, 3, 4, 5]
     assert_value_at(b, 0, 1.0, 1e-6, "sqrt(1) = 1")
@@ -240,8 +239,8 @@ fn test_sqrt_zero() raises:
     """Test sqrt(0) = 0."""
     var shape = List[Int]()
     shape.append(3)
-    let a = zeros(shape, DType.float32)
-    let b = sqrt(a)
+    vara = zeros(shape, DType.float32)
+    varb = sqrt(a)
 
     # sqrt(0) = 0
     assert_all_values(b, 0.0, 1e-6, "sqrt(0) should be 0")
@@ -251,8 +250,8 @@ fn test_sqrt_one() raises:
     """Test sqrt(1) = 1."""
     var shape = List[Int]()
     shape.append(3)
-    let a = ones(shape, DType.float32)
-    let b = sqrt(a)
+    vara = ones(shape, DType.float32)
+    varb = sqrt(a)
 
     # sqrt(1) = 1
     assert_all_values(b, 1.0, 1e-6, "sqrt(1) should be 1")
@@ -262,8 +261,8 @@ fn test_sqrt_two() raises:
     """Test sqrt(2) ≈ 1.41421."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 2.0, DType.float32)
-    let b = sqrt(a)
+    vara = full(shape, 2.0, DType.float32)
+    varb = sqrt(a)
 
     # sqrt(2) ≈ 1.41421
     assert_value_at(b, 0, 1.41421, 1e-4, "sqrt(2) should be ~1.414")
@@ -277,8 +276,8 @@ fn test_sin_zero() raises:
     """Test sin(0) = 0."""
     var shape = List[Int]()
     shape.append(3)
-    let a = zeros(shape, DType.float32)
-    let b = sin(a)
+    vara = zeros(shape, DType.float32)
+    varb = sin(a)
 
     # sin(0) = 0
     assert_all_values(b, 0.0, 1e-6, "sin(0) should be 0")
@@ -288,8 +287,8 @@ fn test_sin_pi_over_2() raises:
     """Test sin(π/2) = 1."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 1.5708, DType.float32)  # π/2 ≈ 1.5708
-    let b = sin(a)
+    vara = full(shape, 1.5708, DType.float32)  # π/2 ≈ 1.5708
+    varb = sin(a)
 
     # sin(π/2) = 1
     assert_value_at(b, 0, 1.0, 1e-4, "sin(π/2) should be 1")
@@ -299,8 +298,8 @@ fn test_sin_pi() raises:
     """Test sin(π) ≈ 0."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 3.14159, DType.float32)  # π
-    let b = sin(a)
+    vara = full(shape, 3.14159, DType.float32)  # π
+    varb = sin(a)
 
     # sin(π) ≈ 0
     assert_value_at(b, 0, 0.0, 1e-5, "sin(π) should be ~0")
@@ -314,8 +313,8 @@ fn test_cos_zero() raises:
     """Test cos(0) = 1."""
     var shape = List[Int]()
     shape.append(3)
-    let a = zeros(shape, DType.float32)
-    let b = cos(a)
+    vara = zeros(shape, DType.float32)
+    varb = cos(a)
 
     # cos(0) = 1
     assert_all_values(b, 1.0, 1e-6, "cos(0) should be 1")
@@ -325,8 +324,8 @@ fn test_cos_pi_over_2() raises:
     """Test cos(π/2) ≈ 0."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 1.5708, DType.float32)  # π/2
-    let b = cos(a)
+    vara = full(shape, 1.5708, DType.float32)  # π/2
+    varb = cos(a)
 
     # cos(π/2) ≈ 0
     assert_value_at(b, 0, 0.0, 1e-4, "cos(π/2) should be ~0")
@@ -336,8 +335,8 @@ fn test_cos_pi() raises:
     """Test cos(π) = -1."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 3.14159, DType.float32)  # π
-    let b = cos(a)
+    vara = full(shape, 3.14159, DType.float32)  # π
+    varb = cos(a)
 
     # cos(π) = -1
     assert_value_at(b, 0, -1.0, 1e-4, "cos(π) should be ~-1")
@@ -351,8 +350,8 @@ fn test_tanh_zero() raises:
     """Test tanh(0) = 0."""
     var shape = List[Int]()
     shape.append(3)
-    let a = zeros(shape, DType.float32)
-    let b = tanh(a)
+    vara = zeros(shape, DType.float32)
+    varb = tanh(a)
 
     # tanh(0) = 0
     assert_all_values(b, 0.0, 1e-6, "tanh(0) should be 0")
@@ -362,8 +361,8 @@ fn test_tanh_large_positive() raises:
     """Test tanh(large) ≈ 1."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 10.0, DType.float32)
-    let b = tanh(a)
+    vara = full(shape, 10.0, DType.float32)
+    varb = tanh(a)
 
     # tanh(10) ≈ 1 (saturates)
     assert_value_at(b, 0, 1.0, 1e-5, "tanh(large) should be ~1")
@@ -373,8 +372,8 @@ fn test_tanh_large_negative() raises:
     """Test tanh(-large) ≈ -1."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, -10.0, DType.float32)
-    let b = tanh(a)
+    vara = full(shape, -10.0, DType.float32)
+    varb = tanh(a)
 
     # tanh(-10) ≈ -1 (saturates)
     assert_value_at(b, 0, -1.0, 1e-5, "tanh(-large) should be ~-1")
@@ -384,8 +383,8 @@ fn test_tanh_small_values() raises:
     """Test tanh with small values."""
     var shape = List[Int]()
     shape.append(1)
-    let a = full(shape, 0.5, DType.float32)
-    let b = tanh(a)
+    vara = full(shape, 0.5, DType.float32)
+    varb = tanh(a)
 
     # tanh(0.5) ≈ 0.46212
     assert_value_at(b, 0, 0.46212, 1e-4, "tanh(0.5) should be ~0.462")
@@ -398,8 +397,8 @@ fn test_tanh_small_values() raises:
 fn test_clip_basic() raises:
     """Test clip with basic range."""
     # Create array: [1, 2, 3, 4, 5]
-    let a = arange(1.0, 6.0, 1.0, DType.float32)
-    let b = clip(a, 2.0, 4.0)
+    vara = arange(1.0, 6.0, 1.0, DType.float32)
+    varb = clip(a, 2.0, 4.0)
 
     # Expected: [2, 2, 3, 4, 4]
     assert_value_at(b, 0, 2.0, 1e-6, "clip(1, 2, 4) = 2")
@@ -413,8 +412,8 @@ fn test_clip_all_below() raises:
     """Test clip when all values below min."""
     var shape = List[Int]()
     shape.append(3)
-    let a = ones(shape, DType.float32)
-    let b = clip(a, 5.0, 10.0)
+    vara = ones(shape, DType.float32)
+    varb = clip(a, 5.0, 10.0)
 
     # All values should be clipped to min
     assert_all_values(b, 5.0, 1e-6, "clip(1, 5, 10) should be 5")
@@ -424,8 +423,8 @@ fn test_clip_all_above() raises:
     """Test clip when all values above max."""
     var shape = List[Int]()
     shape.append(3)
-    let a = full(shape, 20.0, DType.float32)
-    let b = clip(a, 5.0, 10.0)
+    vara = full(shape, 20.0, DType.float32)
+    varb = clip(a, 5.0, 10.0)
 
     # All values should be clipped to max
     assert_all_values(b, 10.0, 1e-6, "clip(20, 5, 10) should be 10")
@@ -439,22 +438,22 @@ fn test_operations_preserve_dtype() raises:
     """Test that all operations preserve dtype."""
     var shape = List[Int]()
     shape.append(3)
-    let a = ones(shape, DType.float64)
+    vara = ones(shape, DType.float64)
 
     # All operations should preserve float64
-    let b_abs = abs(a)
+    varb_abs = abs(a)
     assert_dtype(b_abs, DType.float64, "abs should preserve dtype")
 
-    let b_sign = sign(a)
+    varb_sign = sign(a)
     assert_dtype(b_sign, DType.float64, "sign should preserve dtype")
 
-    let b_exp = exp(a)
+    varb_exp = exp(a)
     assert_dtype(b_exp, DType.float64, "exp should preserve dtype")
 
-    let b_log = log(a)
+    varb_log = log(a)
     assert_dtype(b_log, DType.float64, "log should preserve dtype")
 
-    let b_sqrt = sqrt(a)
+    varb_sqrt = sqrt(a)
     assert_dtype(b_sqrt, DType.float64, "sqrt should preserve dtype")
 
 

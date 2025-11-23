@@ -154,8 +154,8 @@ fn test_trainer_training_reduces_loss() raises:
     var results = trainer.train(epochs=5, train_loader, val_loader)
     #
     # Loss should decrease over training
-    let initial_loss = results["train_loss"][0]
-    let final_loss = results["train_loss"][-1]
+    varinitial_loss = results["train_loss"][0]
+    varfinal_loss = results["train_loss"][-1]
     assert_less(final_loss, initial_loss)
 
 

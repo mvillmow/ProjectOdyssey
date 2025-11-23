@@ -14,8 +14,7 @@ Bugs tested:
 - Line 296: concatenate() - var result_shape = List[Int]()
 """
 
-from sys import DType
-from collections import List
+from memory import DType
 
 # Import ExTensor and shape operations
 from shared.core import ExTensor, ones, zeros, arange

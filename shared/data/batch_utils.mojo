@@ -4,7 +4,6 @@ This module provides utilities for extracting mini-batches from datasets
 for training and evaluation.
 """
 
-from collections import Tuple
 from ..core import ExTensor, zeros
 
 

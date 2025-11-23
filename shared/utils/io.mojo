@@ -25,7 +25,6 @@ All implementations marked with "WARNING: NOT YET IMPLEMENTED - Placeholder inte
 See Issue #49 for details
 """
 
-from collections import Tuple
 from python import Python
 
 

@@ -12,8 +12,6 @@ Usage:
         print("Version string:", v)
 """
 
-from collections import Tuple
-
 # Version constants (updated by scripts/update_version.py)
 alias VERSION = "0.1.0"
 alias VERSION_MAJOR = 0

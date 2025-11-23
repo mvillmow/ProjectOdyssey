@@ -12,7 +12,6 @@ Key components:
 All mocks use deterministic seeds for reproducible tests.
 """
 
-from collections import Tuple
 from random import seed, randn, randint
 from tests.shared.fixtures.mock_tensors import (
     create_random_tensor,

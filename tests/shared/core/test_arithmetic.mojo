@@ -83,7 +83,9 @@ fn test_add_backward() raises:
     var b = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = add_backward(grad_output, a, b)
+    var grads = add_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # Gradient of add is just pass-through
     for i in range(6):
@@ -141,7 +143,9 @@ fn test_subtract_backward() raises:
     var b = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = subtract_backward(grad_output, a, b)
+    var grads = subtract_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # Gradient of subtract: d/da = +1, d/db = -1
     for i in range(6):
@@ -203,7 +207,9 @@ fn test_multiply_backward() raises:
     b._data.bitcast[Float32]()[0] = 4.0
     b._data.bitcast[Float32]()[1] = 5.0
 
-    var (grad_a, grad_b) = multiply_backward(grad_output, a, b)
+    var grads = multiply_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # Gradient of multiply: d/da = b, d/db = a
     assert_almost_equal(grad_a._data.bitcast[Float32]()[0], Float32(4.0), tolerance=1e-5)
@@ -266,7 +272,9 @@ fn test_divide_backward() raises:
     b._data.bitcast[Float32]()[0] = 2.0
     b._data.bitcast[Float32]()[1] = 4.0
 
-    var (grad_a, grad_b) = divide_backward(grad_output, a, b)
+    var grads = divide_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # Gradient of divide: d/da = 1/b, d/db = -a/b^2
     # d/da[0] = 1/2 = 0.5

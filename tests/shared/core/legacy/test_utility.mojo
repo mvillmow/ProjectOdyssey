@@ -4,7 +4,7 @@ Tests utility functions including copy, clone, properties, conversions,
 and helper methods like numel, dim, size, stride, is_contiguous.
 """
 
-from sys import DType
+from memory import DType
 
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange
@@ -27,8 +27,8 @@ fn test_copy_independence() raises:
     """Test that copy creates independent tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let a = full(shape, 3.0, DType.float32)
-    # let b = copy(a)  # TODO: Implement copy()
+    vara = full(shape, 3.0, DType.float32)
+    # varb = copy(a)  # TODO: Implement copy()
 
     # Modify a, b should not change
     # a[0] = 99.0  # TODO: Implement __setitem__
@@ -41,9 +41,9 @@ fn test_clone_identical() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)
+    vara = arange(0.0, 12.0, 1.0, DType.float32)
     # Reshape to 3x4 first
-    # let b = clone(a)  # TODO: Implement clone()
+    # varb = clone(a)  # TODO: Implement clone()
 
     # Should have same values
     # for i in range(12):
@@ -61,7 +61,7 @@ fn test_numel_total_elements() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     assert_numel(t, 24, "numel should return 24 for (2,3,4)")
 
@@ -70,14 +70,14 @@ fn test_dim_num_dimensions() raises:
     """Test that dim is correct."""
     var shape_1d = List[Int]()
     shape_1d.append(10)
-    let t1 = ones(shape_1d, DType.float32)
+    vart1 = ones(shape_1d, DType.float32)
     assert_dim(t1, 1, "1D tensor should have dim=1")
 
     var shape_3d = List[Int]()
     shape_3d.append(2)
     shape_3d.append(3)
     shape_3d.append(4)
-    let t3 = ones(shape_3d, DType.float32)
+    vart3 = ones(shape_3d, DType.float32)
     assert_dim(t3, 3, "3D tensor should have dim=3")
 
 
@@ -86,9 +86,9 @@ fn test_shape_property() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    let s = t.shape()
+    vars = t.shape()
     assert_equal_int(len(s), 2, "Shape should have 2 dimensions")
     assert_equal_int(s[0], 3, "First dimension should be 3")
     assert_equal_int(s[1], 4, "Second dimension should be 4")
@@ -99,10 +99,10 @@ fn test_dtype_property() raises:
     var shape = List[Int]()
     shape.append(5)
 
-    let t32 = ones(shape, DType.float32)
+    vart32 = ones(shape, DType.float32)
     assert_dtype(t32, DType.float32, "Should be float32")
 
-    let t64 = ones(shape, DType.float64)
+    vart64 = ones(shape, DType.float64)
     assert_dtype(t64, DType.float64, "Should be float64")
 
 
@@ -116,10 +116,10 @@ fn test_stride_row_major() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)  # Shape (2, 3, 4)
+    vart = ones(shape, DType.float32)  # Shape (2, 3, 4)
 
     # Row-major strides for (2,3,4): [12, 4, 1]
-    let strides = t._strides
+    varstrides = t._strides
     assert_equal_int(strides[0], 12, "Stride for dim 0 should be 12")
     assert_equal_int(strides[1], 4, "Stride for dim 1 should be 4")
     assert_equal_int(strides[2], 1, "Stride for dim 2 should be 1")
@@ -134,11 +134,11 @@ fn test_is_contiguous_true() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     # TODO: assert_contiguous(t)
     # For now, just test the method exists
-    let contig = t.is_contiguous()
+    varcontig = t.is_contiguous()
     # Should be True for newly created tensor
     pass  # Placeholder
 
@@ -148,11 +148,11 @@ fn test_is_contiguous_after_transpose() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)
-    # let b = transpose(a)  # TODO: Implement transpose()
+    vara = ones(shape, DType.float32)
+    # varb = transpose(a)  # TODO: Implement transpose()
 
     # Transposed tensor is typically not contiguous
-    # let contig = b.is_contiguous()
+    # varcontig = b.is_contiguous()
     # assert_false(contig, "Transposed tensor should not be contiguous")
     pass  # Placeholder
 
@@ -166,12 +166,12 @@ fn test_contiguous_on_noncontiguous() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)
-    # let b = transpose(a)  # Not contiguous
-    # let c = contiguous(b)  # TODO: Implement contiguous()
+    vara = ones(shape, DType.float32)
+    # varb = transpose(a)  # Not contiguous
+    # varc = contiguous(b)  # TODO: Implement contiguous()
 
     # c should now be contiguous
-    # let contig = c.is_contiguous()
+    # varcontig = c.is_contiguous()
     # assert_true(contig, "contiguous() should make tensor contiguous")
     pass  # Placeholder
 
@@ -183,8 +183,8 @@ fn test_contiguous_on_noncontiguous() raises:
 fn test_item_single_element() raises:
     """Test extracting value from single-element tensor."""
     var shape = List[Int]()
-    let t = full(shape, 42.0, DType.float32)
-    # let val = item(t)  # TODO: Implement item()
+    vart = full(shape, 42.0, DType.float32)
+    # varval = item(t)  # TODO: Implement item()
 
     # assert_equal_float(val, 42.0, 1e-6, "item() should extract scalar value")
     pass  # Placeholder
@@ -194,8 +194,8 @@ fn test_item_requires_single_element() raises:
     """Test that item() requires single-element tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float32)
-    # let val = item(t)  # Should raise error
+    vart = ones(shape, DType.float32)
+    # varval = item(t)  # Should raise error
 
     # TODO: Verify error handling
     pass  # Placeholder
@@ -207,8 +207,8 @@ fn test_item_requires_single_element() raises:
 
 fn test_tolist_1d() raises:
     """Test converting 1D tensor to list."""
-    let t = arange(0.0, 5.0, 1.0, DType.float32)
-    # let lst = tolist(t)  # TODO: Implement tolist()
+    vart = arange(0.0, 5.0, 1.0, DType.float32)
+    # varlst = tolist(t)  # TODO: Implement tolist()
 
     # Should return [0, 1, 2, 3, 4]
     # assert_equal_int(len(lst), 5, "List should have 5 elements")
@@ -220,9 +220,9 @@ fn test_tolist_nested() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let t = arange(0.0, 6.0, 1.0, DType.float32)
+    vart = arange(0.0, 6.0, 1.0, DType.float32)
     # Reshape to 2x3 first
-    # let lst = tolist(t)  # TODO: Implement tolist()
+    # varlst = tolist(t)  # TODO: Implement tolist()
 
     # Should return [[0, 1, 2], [3, 4, 5]]
     # assert_equal_int(len(lst), 2, "Outer list should have 2 elements")
@@ -239,9 +239,9 @@ fn test_len_first_dim() raises:
     var shape = List[Int]()
     shape.append(5)
     shape.append(3)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    # let length = len(t)  # TODO: Implement __len__
+    # varlength = len(t)  # TODO: Implement __len__
     # assert_equal_int(length, 5, "__len__ should return first dimension")
     pass  # Placeholder
 
@@ -250,9 +250,9 @@ fn test_len_1d() raises:
     """Test __len__ on 1D tensor."""
     var shape = List[Int]()
     shape.append(10)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    # let length = len(t)
+    # varlength = len(t)
     # assert_equal_int(length, 10, "__len__ should return size for 1D")
     pass  # Placeholder
 
@@ -264,8 +264,8 @@ fn test_len_1d() raises:
 fn test_bool_single_element() raises:
     """Test __bool__ on single-element tensor."""
     var shape = List[Int]()
-    let t_zero = full(shape, 0.0, DType.float32)
-    let t_nonzero = full(shape, 5.0, DType.float32)
+    vart_zero = full(shape, 0.0, DType.float32)
+    vart_nonzero = full(shape, 5.0, DType.float32)
 
     # if t_zero:  # Should be False
     #     raise Error("Zero tensor should be falsy")
@@ -278,7 +278,7 @@ fn test_bool_requires_single_element() raises:
     """Test that __bool__ requires single-element tensor."""
     var shape = List[Int]()
     shape.append(5)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
     # if t:  # Should raise error for multi-element tensor
     #     pass
@@ -294,9 +294,9 @@ fn test_bool_requires_single_element() raises:
 fn test_int_conversion() raises:
     """Test __int__ conversion."""
     var shape = List[Int]()
-    let t = full(shape, 42.5, DType.float32)
+    vart = full(shape, 42.5, DType.float32)
 
-    # let val = int(t)  # TODO: Implement __int__
+    # varval = int(t)  # TODO: Implement __int__
     # assert_equal_int(val, 42, "__int__ should convert to int")
     pass  # Placeholder
 
@@ -304,9 +304,9 @@ fn test_int_conversion() raises:
 fn test_float_conversion() raises:
     """Test __float__ conversion."""
     var shape = List[Int]()
-    let t = full(shape, 42.0, DType.int32)
+    vart = full(shape, 42.0, DType.int32)
 
-    # let val = float(t)  # TODO: Implement __float__
+    # varval = float(t)  # TODO: Implement __float__
     # assert_equal_float(val, 42.0, 1e-6, "__float__ should convert to float")
     pass  # Placeholder
 
@@ -319,9 +319,9 @@ fn test_str_readable() raises:
     """Test __str__ produces readable output."""
     var shape = List[Int]()
     shape.append(3)
-    let t = arange(0.0, 3.0, 1.0, DType.float32)
+    vart = arange(0.0, 3.0, 1.0, DType.float32)
 
-    # let s = str(t)  # TODO: Implement __str__
+    # vars = str(t)  # TODO: Implement __str__
     # Should produce something like "ExTensor([0, 1, 2], dtype=float32)"
     pass  # Placeholder
 
@@ -331,9 +331,9 @@ fn test_repr_complete() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(2)
-    let t = ones(shape, DType.float32)
+    vart = ones(shape, DType.float32)
 
-    # let r = repr(t)  # TODO: Implement __repr__
+    # varr = repr(t)  # TODO: Implement __repr__
     # Should produce detailed representation
     pass  # Placeholder
 
@@ -346,11 +346,11 @@ fn test_hash_immutable() raises:
     """Test __hash__ for immutable tensors."""
     var shape = List[Int]()
     shape.append(3)
-    let a = arange(0.0, 3.0, 1.0, DType.float32)
-    let b = arange(0.0, 3.0, 1.0, DType.float32)
+    vara = arange(0.0, 3.0, 1.0, DType.float32)
+    varb = arange(0.0, 3.0, 1.0, DType.float32)
 
-    # let hash_a = hash(a)  # TODO: Implement __hash__
-    # let hash_b = hash(b)
+    # varhash_a = hash(a)  # TODO: Implement __hash__
+    # varhash_b = hash(b)
     # Equal tensors should have same hash
     # assert_equal_int(hash_a, hash_b, "Equal tensors should have same hash")
     pass  # Placeholder
@@ -362,8 +362,8 @@ fn test_hash_immutable() raises:
 
 fn test_diff_1d() raises:
     """Test computing consecutive differences."""
-    let t = arange(0.0, 5.0, 1.0, DType.float32)  # [0, 1, 2, 3, 4]
-    # let d = diff(t)  # TODO: Implement diff()
+    vart = arange(0.0, 5.0, 1.0, DType.float32)  # [0, 1, 2, 3, 4]
+    # vard = diff(t)  # TODO: Implement diff()
 
     # Result: [1, 1, 1, 1] (4 elements)
     # assert_numel(d, 4, "diff should have n-1 elements")
@@ -373,8 +373,8 @@ fn test_diff_1d() raises:
 
 fn test_diff_higher_order() raises:
     """Test higher-order differences."""
-    let t = arange(0.0, 5.0, 1.0, DType.float32)
-    # let d = diff(t, n=2)  # TODO: Implement n parameter
+    vart = arange(0.0, 5.0, 1.0, DType.float32)
+    # vard = diff(t, n=2)  # TODO: Implement n parameter
 
     # Second differences of [0,1,2,3,4] -> [0,0,0]
     # assert_numel(d, 3, "Second diff should have n-2 elements")

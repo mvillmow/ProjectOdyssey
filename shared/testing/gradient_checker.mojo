@@ -38,7 +38,6 @@ References:
 """
 
 from shared.core import ExTensor, zeros_like
-from math import abs as math_abs
 
 
 fn check_gradients(
@@ -139,7 +138,7 @@ fn check_gradients(
     for i in range(input.numel()):
         var analytical = analytical_grad._get_float64(i)
         var numerical = numerical_grad._get_float64(i)
-        var diff = math_abs(analytical - numerical)
+        var diff = abs(analytical - numerical)
 
         if diff > max_diff:
             max_diff = diff
@@ -232,7 +231,7 @@ fn check_gradients_verbose(
         for i in range(min(input.numel(), 20)):  # Print first 20
             var analytical = analytical_grad._get_float64(i)
             var numerical = numerical_grad._get_float64(i)
-            var diff = math_abs(analytical - numerical)
+            var diff = abs(analytical - numerical)
             var status = "PASS" if diff < tolerance else "FAIL"
 
             if print_all or diff >= tolerance:
@@ -268,9 +267,9 @@ fn relative_error(analytical: Float64, numerical: Float64) -> Float64:
     Example:
         var err = relative_error(0.5, 0.501)  # Returns ~0.002 (0.2%)
     """
-    var numerator = math_abs(analytical - numerical)
+    var numerator = abs(analytical - numerical)
     var denominator = max(
-        math_abs(analytical),
-        max(math_abs(numerical), 1e-8)
+        abs(analytical),
+        max(abs(numerical), 1e-8)
     )
     return numerator / denominator

@@ -51,7 +51,7 @@ fn test_ones_like_values() raises:
 
     # Check all values are 1
     for i in range(result.numel()):
-        let val = result._get_float64(i)
+        varval = result._get_float64(i)
         if val != 1.0:
             raise Error("ones_like should fill with 1.0")
 
@@ -99,7 +99,7 @@ fn test_zeros_like_values() raises:
 
     # Check all values are 0
     for i in range(result.numel()):
-        let val = result._get_float64(i)
+        varval = result._get_float64(i)
         if val != 0.0:
             raise Error("zeros_like should fill with 0.0")
 
@@ -116,14 +116,14 @@ fn test_full_like_custom_value() raises:
     shape.append(3)
 
     var template = zeros(shape, DType.float32)
-    let fill_value = 3.14
+    varfill_value = 3.14
 
     var result = full_like(template, fill_value)
 
     # Check all values are fill_value
     for i in range(result.numel()):
-        let val = result._get_float64(i)
-        let diff = abs(val - fill_value)
+        varval = result._get_float64(i)
+        vardiff = abs(val - fill_value)
         if diff > 0.001:
             raise Error("full_like should fill with custom value")
 

@@ -10,8 +10,7 @@ Bug tested:
 - Line 270: DataLoader.next() - var batch_labels_shape = List[Int]()
 """
 
-from sys import DType
-from collections import List
+from memory import DType
 
 # Import ExTensor and trainer interface
 from shared.core import ExTensor, ones

@@ -198,7 +198,7 @@ fn avgpool2d(
                     var out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
                     output._data.bitcast[Float32]()[out_idx] = avg_val
 
-    return output
+    return output^
 
 
 fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
@@ -264,7 +264,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
             var out_idx = b * channels + c
             output._data.bitcast[Float32]()[out_idx] = avg_val
 
-    return output
+    return output^
 
 
 fn maxpool2d_backward(

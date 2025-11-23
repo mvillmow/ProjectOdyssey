@@ -406,7 +406,7 @@ fn test_optimizer_property_decreasing_loss() raises:
     # var params = Tensor(List[Float32](), Shape(1))
     # #
     # # Test each optimizer
-    # let optimizers = [
+    # varoptimizers = [
     #     SGD(learning_rate=0.1),
     #     Adam(learning_rate=0.1),
     #     RMSprop(learning_rate=0.1),
@@ -435,7 +435,7 @@ fn test_optimizer_property_gradient_shape() raises:
     """
     # TODO(#1538): Implement when optimizers are available
     # # Test with various parameter shapes
-    # let shapes = [Shape(10), Shape(10, 5), Shape(3, 32, 32)]
+    # varshapes = [Shape(10), Shape(10, 5), Shape(3, 32, 32)]
     # #
     # for shape in shapes:
     #     var params = Tensor.randn(shape)

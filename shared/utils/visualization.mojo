@@ -14,8 +14,6 @@ Example:.    from shared.utils import plot_training_curves
     plot_training_curves(train_losses, val_losses, save_path="curves.png")
 """
 
-from collections import Tuple
-
 # ============================================================================
 # Plot Data Structures
 # ============================================================================

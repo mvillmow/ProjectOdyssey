@@ -30,14 +30,15 @@ struct GradientPair:
     var grad_a: ExTensor
     var grad_b: ExTensor
 
-    fn __init__(out self, grad_a: ExTensor, grad_b: ExTensor):
+    fn __init__(out self, owned grad_a: ExTensor, owned grad_b: ExTensor):
         """Initialize gradient pair.
 
-        Args:.            `grad_a`: Gradient tensor for first input.
+        Args:
+            `grad_a`: Gradient tensor for first input.
             `grad_b`: Gradient tensor for second input.
         """
-        self.grad_a = grad_a
-        self.grad_b = grad_b
+        self.grad_a = grad_a^
+        self.grad_b = grad_b^
 
 
 struct GradientTriple:
@@ -64,16 +65,17 @@ struct GradientTriple:
 
     fn __init__(
         out self,
-        grad_input: ExTensor,
-        grad_weights: ExTensor,
-        grad_bias: ExTensor,
+        owned grad_input: ExTensor,
+        owned grad_weights: ExTensor,
+        owned grad_bias: ExTensor,
     ):
         """Initialize gradient triple.
 
-        Args:.            `grad_input`: Gradient tensor for input.
+        Args:
+            `grad_input`: Gradient tensor for input.
             `grad_weights`: Gradient tensor for weights.
             `grad_bias`: Gradient tensor for bias.
         """
-        self.grad_input = grad_input
-        self.grad_weights = grad_weights
-        self.grad_bias = grad_bias
+        self.grad_input = grad_input^
+        self.grad_weights = grad_weights^
+        self.grad_bias = grad_bias^

@@ -11,10 +11,8 @@ from math import log as math_log
 from math import sin as math_sin
 from math import cos as math_cos
 from math import tanh as math_tanh
-from math import abs as math_abs
 from math import ceil as math_ceil
 from math import floor as math_floor
-from math import round as math_round
 from math import trunc as math_trunc
 from memory import UnsafePointer
 
@@ -29,9 +27,9 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Absolute value operation."""
     @parameter
     if T == DType.float16 or T == DType.float32:
-        return Scalar[T](math_abs(Float32(x)))
+        return Scalar[T](abs(Float32(x)))
     else:
-        return Scalar[T](math_abs(Float64(x)))
+        return Scalar[T](abs(Float64(x)))
 
 
 fn abs(tensor: ExTensor) raises -> ExTensor:
@@ -322,9 +320,9 @@ fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Round operation."""
     @parameter
     if T == DType.float16 or T == DType.float32:
-        return Scalar[T](math_round(Float32(x)))
+        return Scalar[T](round(Float32(x)))
     else:
-        return Scalar[T](math_round(Float64(x)))
+        return Scalar[T](round(Float64(x)))
 
 
 fn round(tensor: ExTensor) raises -> ExTensor:

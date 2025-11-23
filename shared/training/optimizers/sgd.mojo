@@ -14,7 +14,6 @@ With weight decay (L2 regularization):
     params = params - learning_rate * (gradients + weight_decay * params)
 """
 
-from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add
 from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd

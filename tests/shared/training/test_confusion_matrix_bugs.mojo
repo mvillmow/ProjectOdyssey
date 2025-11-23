@@ -10,8 +10,7 @@ Bug tested:
 - Line 323: argmax() - var result_shape = List[Int]()
 """
 
-from sys import DType
-from collections import List
+from memory import DType
 
 # Import ExTensor and confusion matrix
 from shared.core import ExTensor, ones, zeros

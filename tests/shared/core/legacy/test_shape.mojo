@@ -4,7 +4,7 @@ Tests shape manipulation including reshape, squeeze, unsqueeze, expand_dims,
 flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 """
 
-from sys import DType
+from memory import DType
 
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
@@ -27,11 +27,11 @@ fn test_reshape_valid() raises:
     """Test reshaping to compatible size."""
     var shape_orig = List[Int]()
     shape_orig.append(12)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
+    vara = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
     var new_shape = List[Int]()
     new_shape.append(3)
     new_shape.append(4)
-    let b = reshape(a, new_shape)
+    varb = reshape(a, new_shape)
 
     assert_dim(b, 2, "Reshaped tensor should be 2D")
     assert_numel(b, 12, "Reshaped tensor should have same number of elements")
@@ -41,11 +41,11 @@ fn test_reshape_invalid_size() raises:
     """Test that reshape with incompatible size raises error."""
     var shape = List[Int]()
     shape.append(12)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)
+    vara = arange(0.0, 12.0, 1.0, DType.float32)
     # var new_shape = List[Int]()
     # new_shape[0] = 3
     # new_shape[1] = 5  # 15 elements, incompatible with 12
-    # let b = reshape(a, new_shape)  # Should raise error
+    # varb = reshape(a, new_shape)  # Should raise error
 
     # TODO: Verify error handling
     pass  # Placeholder
@@ -55,11 +55,11 @@ fn test_reshape_infer_dimension() raises:
     """Test reshape with inferred dimension (-1)."""
     var shape = List[Int]()
     shape.append(12)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)
+    vara = arange(0.0, 12.0, 1.0, DType.float32)
     var new_shape = List[Int]()
     new_shape.append(3)
     new_shape.append(-1  # Infer: should be 4)
-    let b = reshape(a, new_shape)
+    varb = reshape(a, new_shape)
 
     assert_dim(b, 2, "Should be 2D")
     assert_numel(b, 12, "Should have 12 elements")
@@ -76,8 +76,8 @@ fn test_squeeze_all_dims() raises:
     shape.append(3)
     shape.append(1)
     shape.append(4)
-    let a = ones(shape, DType.float32)  # Shape (1, 3, 1, 4)
-    let b = squeeze(a)
+    vara = ones(shape, DType.float32)  # Shape (1, 3, 1, 4)
+    varb = squeeze(a)
 
     # Result should be (3, 4)
     assert_dim(b, 2, "Should remove all size-1 dims")
@@ -90,8 +90,8 @@ fn test_squeeze_specific_dim() raises:
     shape.append(1)
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)  # Shape (1, 3, 4)
-    let b = squeeze(a, dim=0)
+    vara = ones(shape, DType.float32)  # Shape (1, 3, 4)
+    varb = squeeze(a, dim=0)
 
     # Result should be (3, 4)
     assert_dim(b, 2, "Should remove dim 0")
@@ -106,8 +106,8 @@ fn test_unsqueeze_add_dim() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)  # Shape (3, 4)
-    let b = unsqueeze(a, dim=0)
+    vara = ones(shape, DType.float32)  # Shape (3, 4)
+    varb = unsqueeze(a, dim=0)
 
     # Result should be (1, 3, 4)
     assert_dim(b, 3, "Should add dimension")
@@ -119,8 +119,8 @@ fn test_expand_dims_at_end() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)
-    let b = expand_dims(a, dim=-1)
+    vara = ones(shape, DType.float32)
+    varb = expand_dims(a, dim=-1)
 
     # Result should be (3, 4, 1)
     assert_dim(b, 3, "Should add trailing dimension")
@@ -135,8 +135,8 @@ fn test_flatten_c_order() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)
-    let b = flatten(a)
+    vara = arange(0.0, 12.0, 1.0, DType.float32)
+    varb = flatten(a)
 
     assert_dim(b, 1, "Flattened tensor should be 1D")
     assert_numel(b, 12, "Should have 12 elements")
@@ -147,8 +147,8 @@ fn test_ravel_view() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)
-    let b = ravel(a)
+    vara = ones(shape, DType.float32)
+    varb = ravel(a)
 
     # Should be 1D view of same data (currently copies, TODO: implement views)
     assert_dim(b, 1, "Ravel should be 1D")
@@ -167,13 +167,13 @@ fn test_concatenate_axis_0() raises:
     shape_b.append(3)
     shape_b.append(3)
 
-    let a = ones(shape_a, DType.float32)  # 2x3
-    let b = full(shape_b, 2.0, DType.float32)  # 3x3
+    vara = ones(shape_a, DType.float32)  # 2x3
+    varb = full(shape_b, 2.0, DType.float32)  # 3x3
 
     var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
-    let c = concatenate(tensors, axis=0)
+    varc = concatenate(tensors, axis=0)
 
     # Result should be 5x3 (2+3 rows, 3 cols)
     assert_dim(c, 2, "Concatenated tensor should be 2D")
@@ -189,13 +189,13 @@ fn test_concatenate_axis_1() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    let a = ones(shape_a, DType.float32)  # 3x2
-    let b = full(shape_b, 2.0, DType.float32)  # 3x4
+    vara = ones(shape_a, DType.float32)  # 3x2
+    varb = full(shape_b, 2.0, DType.float32)  # 3x4
 
     var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
-    let c = concatenate(tensors, axis=1)
+    varc = concatenate(tensors, axis=1)
 
     # Result should be 3x6 (3 rows, 2+4 cols)
     assert_numel(c, 18, "Should have 18 elements (3*6)")
@@ -211,13 +211,13 @@ fn test_stack_new_axis() raises:
     shape.append(2)
     shape.append(3)
 
-    let a = ones(shape, DType.float32)  # 2x3
-    let b = full(shape, 2.0, DType.float32)  # 2x3
+    vara = ones(shape, DType.float32)  # 2x3
+    varb = full(shape, 2.0, DType.float32)  # 2x3
 
     var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
-    let c = stack(tensors, axis=0)
+    varc = stack(tensors, axis=0)
 
     # Result should be 2x2x3 (stacked along new axis 0)
     assert_dim(c, 3, "Stacked tensor should be 3D")
@@ -230,13 +230,13 @@ fn test_stack_axis_1() raises:
     shape.append(2)
     shape.append(3)
 
-    let a = ones(shape, DType.float32)
-    let b = full(shape, 2.0, DType.float32)
+    vara = ones(shape, DType.float32)
+    varb = full(shape, 2.0, DType.float32)
 
     var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
-    let c = stack(tensors, axis=1)
+    varc = stack(tensors, axis=1)
 
     # Result should be 2x2x3 (stacked along axis 1)
     assert_dim(c, 3, "Should be 3D")
@@ -250,8 +250,8 @@ fn test_split_equal() raises:
     """Test splitting into equal parts."""
     var shape = List[Int]()
     shape.append(12)
-    let a = arange(0.0, 12.0, 1.0, DType.float32)
-    # let parts = split(a, 3)  # TODO: Implement split()
+    vara = arange(0.0, 12.0, 1.0, DType.float32)
+    # varparts = split(a, 3)  # TODO: Implement split()
 
     # Should give 3 tensors of size 4 each
     # assert_equal_int(len(parts), 3, "Should split into 3 parts")
@@ -264,8 +264,8 @@ fn test_split_unequal() raises:
     """Test splitting into unequal parts."""
     var shape = List[Int]()
     shape.append(10)
-    let a = arange(0.0, 10.0, 1.0, DType.float32)
-    # let parts = split(a, [3, 5, 10])  # TODO: Implement split with indices
+    vara = arange(0.0, 10.0, 1.0, DType.float32)
+    # varparts = split(a, [3, 5, 10])  # TODO: Implement split with indices
 
     # Should give 3 tensors of sizes 3, 2, 5
     # assert_numel(parts[0], 3, "First part should have 3 elements")
@@ -282,8 +282,8 @@ fn test_tile_1d() raises:
     """Test tiling 1D tensor."""
     var shape = List[Int]()
     shape.append(3)
-    let a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
-    # let b = tile(a, 3)  # TODO: Implement tile()
+    vara = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
+    # varb = tile(a, 3)  # TODO: Implement tile()
 
     # Result: [0, 1, 2, 0, 1, 2, 0, 1, 2] (9 elements)
     # assert_numel(b, 9, "Tiled tensor should have 9 elements")
@@ -295,8 +295,8 @@ fn test_tile_multidim() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = ones(shape, DType.float32)  # 2x3
-    # let b = tile(a, (2, 3))  # TODO: Implement tile() with tuple
+    vara = ones(shape, DType.float32)  # 2x3
+    # varb = tile(a, (2, 3))  # TODO: Implement tile() with tuple
 
     # Result should be 4x9 (2*2 rows, 3*3 cols)
     # assert_numel(b, 36, "Should have 36 elements (4*9)")
@@ -311,8 +311,8 @@ fn test_repeat_elements() raises:
     """Test repeating each element."""
     var shape = List[Int]()
     shape.append(3)
-    let a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
-    # let b = repeat(a, 2)  # TODO: Implement repeat()
+    vara = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
+    # varb = repeat(a, 2)  # TODO: Implement repeat()
 
     # Result: [0, 0, 1, 1, 2, 2] (6 elements)
     # assert_numel(b, 6, "Repeated tensor should have 6 elements")
@@ -324,8 +324,8 @@ fn test_repeat_axis() raises:
     var shape = List[Int]()
     shape.append(2)
     shape.append(3)
-    let a = ones(shape, DType.float32)  # 2x3
-    # let b = repeat(a, 2, axis=0)  # TODO: Implement repeat() with axis
+    vara = ones(shape, DType.float32)  # 2x3
+    # varb = repeat(a, 2, axis=0)  # TODO: Implement repeat() with axis
 
     # Result should be 4x3 (each row repeated twice)
     # assert_numel(b, 12, "Should have 12 elements (4*3)")
@@ -340,11 +340,11 @@ fn test_broadcast_to_compatible() raises:
     """Test broadcasting to compatible shape."""
     var shape_orig = List[Int]()
     shape_orig.append(3)
-    let a = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
+    vara = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
     # var target_shape = List[Int]()
     # target_shape[0] = 4
     # target_shape[1] = 3
-    # let b = broadcast_to(a, target_shape)  # TODO: Implement broadcast_to()
+    # varb = broadcast_to(a, target_shape)  # TODO: Implement broadcast_to()
 
     # Result should be 4x3 (broadcasting (3,) to (4,3))
     # assert_dim(b, 2, "Broadcasted tensor should be 2D")
@@ -356,10 +356,10 @@ fn test_broadcast_to_incompatible() raises:
     """Test that broadcasting to incompatible shape raises error."""
     var shape_orig = List[Int]()
     shape_orig.append(3)
-    let a = arange(0.0, 3.0, 1.0, DType.float32)
+    vara = arange(0.0, 3.0, 1.0, DType.float32)
     # var target_shape = List[Int]()
     # target_shape[0] = 5  # Incompatible: 3 != 5
-    # let b = broadcast_to(a, target_shape)  # Should raise error
+    # varb = broadcast_to(a, target_shape)  # Should raise error
 
     # TODO: Verify error handling
     pass  # Placeholder
@@ -375,8 +375,8 @@ fn test_permute_axes() raises:
     shape.append(2)
     shape.append(3)
     shape.append(4)
-    let a = ones(shape, DType.float32)  # Shape (2, 3, 4)
-    # let b = permute(a, (2, 0, 1))  # TODO: Implement permute()
+    vara = ones(shape, DType.float32)  # Shape (2, 3, 4)
+    # varb = permute(a, (2, 0, 1))  # TODO: Implement permute()
 
     # Result should be (4, 2, 3)
     # assert_dim(b, 3, "Should still be 3D")
@@ -392,11 +392,11 @@ fn test_reshape_preserves_dtype() raises:
     """Test that reshape preserves dtype."""
     var shape = List[Int]()
     shape.append(12)
-    let a = arange(0.0, 12.0, 1.0, DType.float64)
+    vara = arange(0.0, 12.0, 1.0, DType.float64)
     # var new_shape = List[Int]()
     # new_shape[0] = 3
     # new_shape[1] = 4
-    # let b = reshape(a, new_shape)
+    # varb = reshape(a, new_shape)
 
     # assert_dtype(b, DType.float64, "Reshape should preserve dtype")
     pass  # Placeholder
