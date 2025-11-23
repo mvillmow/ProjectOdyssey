@@ -93,9 +93,9 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
         if idx < 0 or idx >= self._len:
             raise Error(
                 "Index "
-                + str(index)
+                + String(index)
                 + " out of bounds for dataset of size "
-                + str(self._len)
+                + String(self._len)
             )
 
         # Return views into the data
@@ -165,9 +165,9 @@ struct FileDataset(Dataset, Copyable, Movable):
         if idx < 0 or idx >= self._len:
             raise Error(
                 "Index "
-                + str(index)
+                + String(index)
                 + " out of bounds for dataset of size "
-                + str(self._len)
+                + String(self._len)
             )
 
         # Check cache first

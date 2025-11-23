@@ -21,7 +21,7 @@ Usage:
     print(bf16)  # BFloat16(3.140625)
 """
 
-from memory import UnsafePointer
+from memory import UnsafePointer, Pointer
 from math import isnan, isinf
 
 
@@ -87,8 +87,8 @@ struct BFloat16:
 
         # Get bit representation of Float32 using stack allocation
         var f32_val = value
-        var ptr_addr = UnsafePointer.address_of(f32_val)
-        var bits32 = ptr_addr.bitcast[UInt32]()[0]
+        var ptr_addr = Pointer.address_of(f32_val)
+        var bits32 = ptr_addr.bitcast[UInt32]()[]
 
         # Extract components from Float32 (32 bits)
         # Float32: [sign:1][exponent:8][mantissa:23]
@@ -141,8 +141,8 @@ struct BFloat16:
         """
         # Get bit representation using stack allocation
         var f32_val = value
-        var ptr_addr = UnsafePointer.address_of(f32_val)
-        var bits32 = ptr_addr.bitcast[UInt32]()[0]
+        var ptr_addr = Pointer.address_of(f32_val)
+        var bits32 = ptr_addr.bitcast[UInt32]()[]
 
         # Simply take upper 16 bits (truncate lower 16)
         var bits16 = UInt16(bits32 >> 16)
@@ -175,8 +175,8 @@ struct BFloat16:
 
         # Convert bits to Float32 using stack allocation
         var u32_val = bits32
-        var ptr_addr = UnsafePointer.address_of(u32_val)
-        var result = ptr_addr.bitcast[Float32]()[0]
+        var ptr_addr = Pointer.address_of(u32_val)
+        var result = ptr_addr.bitcast[Float32]()[]
 
         return result
 

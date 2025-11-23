@@ -43,7 +43,7 @@ fn extract_batch(
 
     # Handle edge case: start_idx beyond dataset
     if start_idx >= num_samples:
-        raise Error("start_idx (" + str(start_idx) + ") >= num_samples (" + str(num_samples) + ")")
+        raise Error("start_idx (" + String(start_idx) + ") >= num_samples (" + String(num_samples) + ")")
 
     # Compute actual batch size (handle partial batches at end)
     var actual_batch_size = min(batch_size, num_samples - start_idx)
@@ -119,7 +119,7 @@ fn extract_batch_pair(
     var label_samples = labels.shape[0]
 
     if data_samples != label_samples:
-        raise Error("Data samples (" + str(data_samples) + ") != label samples (" + str(label_samples) + ")")
+        raise Error("Data samples (" + String(data_samples) + ") != label samples (" + String(label_samples) + ")")
 
     # Extract both batches
     var batch_data = extract_batch(data, start_idx, batch_size)

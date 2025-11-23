@@ -74,7 +74,7 @@ struct BaseLoader(Copyable, Movable):
         Raises:.            Error if batch_size is invalid.
         """
         if batch_size <= 0:
-            raise Error("Batch size must be positive, got: " + str(batch_size))
+            raise Error("Batch size must be positive, got: " + String(batch_size))
 
         self.dataset = dataset^
         self.batch_size = batch_size

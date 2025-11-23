@@ -244,9 +244,9 @@ struct Reshape(Transform, Copyable, Movable):
         if target_elements != data.num_elements():
             raise Error(
                 "Cannot reshape tensor with "
-                + str(data.num_elements())
+                + String(data.num_elements())
                 + " elements to shape with "
-                + str(target_elements)
+                + String(target_elements)
                 + " elements"
             )
 
