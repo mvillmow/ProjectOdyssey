@@ -84,13 +84,14 @@ struct MetricResult(Copyable, Movable):
     fn get_tensor(self) raises -> ExTensor:
         """Get tensor value.
 
-        Returns:.            Tensor value.
+        Returns:.            Tensor value (copy).
 
         Raises:.            Error if metric is scalar.
         """
         if self.is_scalar:
             raise Error("Metric '" + self.name + "' is not tensor")
-        return self.tensor_value
+        # Return copy of tensor value
+        return ExTensor(self.tensor_value)
 
 
 struct MetricCollection:
@@ -258,7 +259,8 @@ struct MetricLogger:
         """
         for i in range(self.num_metrics):
             if self.metric_names[i] == metric_name:
-                return self.metric_history[i]
+                # Explicit copy of the history list
+                return List[Float64](self.metric_history[i])
 
         raise Error("Metric '" + metric_name + "' not found in logger")
 

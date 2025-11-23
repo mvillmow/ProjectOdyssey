@@ -53,11 +53,12 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     """
     # Determine if predictions are logits (2D) or class indices (1D)
     var pred_classes: ExTensor
+    var pred_shape = predictions.shape
 
-    if len(predictions.shape) == 2:
+    if len(pred_shape) == 2:
         # Predictions are logits, need to compute argmax
         pred_classes = argmax(predictions, axis=1)
-    elif len(predictions.shape) == 1:
+    elif len(pred_shape) == 1:
         # Predictions are already class indices (borrow reference, no copy needed)
         pred_classes = predictions^
     else:
@@ -99,10 +100,9 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
 
     Raises:.        Error: If axis is out of bounds.
     """
-    if axis < 0 or axis >= len(tensor.shape):
-        raise Error("argmax: axis out of bounds")
-
     var shape_vec = tensor.shape
+    if axis < 0 or axis >= len(shape_vec):
+        raise Error("argmax: axis out of bounds")
 
     if axis == 1 and len(shape_vec) == 2:
         # Common case: [batch_size, num_classes] -> [batch_size]
@@ -140,7 +140,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
 
             result._data.bitcast[Int32]()[b] = Int32(max_idx)
 
-        return result
+        return result^
     else:
         raise Error("argmax: only axis=1 for 2D tensors currently supported")
 
@@ -173,10 +173,10 @@ fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> 
     Issue: #278-282 - Accuracy metrics.
     """
     # Validate shapes
-    if len(predictions.shape) != 2:
+    var shape_vec = predictions.shape
+    if len(shape_vec) != 2:
         raise Error("topk_accuracy: predictions must be 2D logits")
 
-    var shape_vec = predictions.shape
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
@@ -263,7 +263,7 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
 
         result.append(indices[i])
 
-    return result
+    return result^
 
 
 # ============================================================================
@@ -295,9 +295,10 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
     """
     # Get predicted classes
     var pred_classes: ExTensor
-    if len(predictions.shape) == 2:
+    var pred_shape = predictions.shape
+    if len(pred_shape) == 2:
         pred_classes = argmax(predictions, axis=1)
-    elif len(predictions.shape) == 1:
+    elif len(pred_shape) == 1:
         # Transfer ownership - predictions won't be used after this
         pred_classes = predictions^
     else:
@@ -346,7 +347,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
 
         result._data.bitcast[Float64]()[c] = acc
 
-    return result
+    return result^
 
 
 # ============================================================================
@@ -390,9 +391,10 @@ struct AccuracyMetric:
         """
         # Get predicted classes
         var pred_classes: ExTensor
-        if len(predictions.shape) == 2:
+        var pred_shape = predictions.shape
+        if len(pred_shape) == 2:
             pred_classes = argmax(predictions, axis=1)
-        elif len(predictions.shape) == 1:
+        elif len(pred_shape) == 1:
             # Transfer ownership - predictions won't be used after this
             pred_classes = predictions^
         else:

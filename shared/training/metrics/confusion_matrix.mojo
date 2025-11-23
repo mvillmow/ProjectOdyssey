@@ -55,11 +55,14 @@ struct ConfusionMatrix:
     var class_names: List[String]
     var has_class_names: Bool
 
-    fn __init__(out self, num_classes: Int, class_names: List[String] = List[String]()):
+    fn __init__(out self, num_classes: Int, class_names: List[String] = List[String]()) raises:
         """Initialize NxN confusion matrix.
 
         Args:.            `num_classes`: Number of classes.
             `class_names`: Optional list of class names (default: empty)
+
+        Raises:
+            Error: If tensor size exceeds memory limits
         """
         self.num_classes = num_classes
 
@@ -83,11 +86,12 @@ struct ConfusionMatrix:
         """
         # Get predicted classes
         var pred_classes: ExTensor
+        var pred_shape = predictions.shape
 
-        if len(predictions.shape) == 2:
+        if len(pred_shape) == 2:
             # Logits - need argmax
             pred_classes = argmax(predictions)
-        elif len(predictions.shape) == 1:
+        elif len(pred_shape) == 1:
             # Already class indices - transfer ownership
             pred_classes = predictions^
         else:
@@ -205,7 +209,7 @@ struct ConfusionMatrix:
         else:
             raise Error("ConfusionMatrix.normalize: invalid mode (use 'row', 'column', 'total', or 'none')")
 
-        return result
+        return result^
 
     fn get_precision(self) raises -> ExTensor:
         """Compute per-class precision.
@@ -238,7 +242,7 @@ struct ConfusionMatrix:
             else:
                 result._data.bitcast[Float64]()[col] = 0.0
 
-        return result
+        return result^
 
     fn get_recall(self) raises -> ExTensor:
         """Compute per-class recall.
@@ -271,7 +275,7 @@ struct ConfusionMatrix:
             else:
                 result._data.bitcast[Float64]()[row] = 0.0
 
-        return result
+        return result^
 
     fn get_f1_score(self) raises -> ExTensor:
         """Compute per-class F1-score.
@@ -298,7 +302,7 @@ struct ConfusionMatrix:
             else:
                 result._data.bitcast[Float64]()[i] = 0.0
 
-        return result
+        return result^
 
 
 # Helper function for argmax (same as in accuracy.mojo, but duplicated for independence)
@@ -311,10 +315,10 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
     Returns:
         Tensor of indices [batch_size]
     """
-    if len(tensor.shape) != 2:
+    var shape_vec = tensor.shape
+    if len(shape_vec) != 2:
         raise Error("argmax: only 2D tensors supported")
 
-    var shape_vec = tensor.shape
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
@@ -348,4 +352,4 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
 
         result._data.bitcast[Int32]()[b] = Int32(max_idx)
 
-    return result
+    return result^
