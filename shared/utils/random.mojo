@@ -61,9 +61,12 @@ struct RandomState(Copyable, Movable):
 # ============================================================================
 
 
-# Global state for the module
-var _global_seed: Int = 42
-var _saved_states: List[RandomState] = List[RandomState]()
+# Global state for the module - wrapped in struct to avoid global var restriction
+# NOTE: Mojo v0.25.7 doesn't support mutable global variables.
+# These functions are stubs that will be replaced with proper state management.
+# TODO: Implement proper state management (pass state explicitly or use context manager)
+
+alias DEFAULT_SEED = 42
 
 
 fn set_seed(seed: Int):
@@ -83,11 +86,16 @@ fn set_seed(seed: Int):
 
         # All random operations are now deterministic
         var weights = random_normal((100, 50))
+
+    Note:
+        Current implementation is a stub. Global state is not yet supported.
+        Use SeedContext for scoped seed management instead.
     """
-    _global_seed = seed
     # TODO: Actually set Mojo stdlib RNG seed
     # TODO: Set custom RNG seeds
     # TODO: Synchronize with any external libraries
+    # TEMPORARY: This is a stub - no-op until proper state management is implemented
+    pass
 
 
 fn get_global_seed() -> Int:
@@ -97,8 +105,12 @@ fn get_global_seed() -> Int:
 
     Example:.        var seed = get_global_seed()
         print("Using seed: " + str(seed))
+
+    Note:
+        Current implementation returns default seed (42).
+        Global state is not yet supported.
     """
-    return _global_seed
+    return DEFAULT_SEED
 
 
 # ============================================================================
@@ -123,9 +135,12 @@ fn get_random_state() -> RandomState:
 
         # Restore state to continue training with same random sequence
         set_random_state(state)
+
+    Note:
+        Current implementation is a stub. Returns state with default seed.
     """
     var state = RandomState()
-    state.set_seed(_global_seed)
+    state.set_seed(DEFAULT_SEED)
     # TODO: Capture Mojo stdlib RNG state
     # TODO: Capture custom RNG state
     return state
@@ -142,18 +157,27 @@ fn set_random_state(state: RandomState):
     Example:.        var saved_state = get_random_state()
         # ... do something ...
         set_random_state(saved_state)
+
+    Note:
+        Current implementation is a stub. Global state is not yet supported.
     """
-    _global_seed = state.seed_used
     # TODO: Restore Mojo stdlib RNG state
     # TODO: Restore custom RNG state
+    # TEMPORARY: This is a stub - no-op until proper state management is implemented
+    pass
 
 
 fn save_random_state(state: RandomState):
     """Save random state to list (for history tracking).
 
     Args:.        `state`: State to save.
+
+    Note:
+        Current implementation is a stub. Global state is not yet supported.
     """
-    _saved_states.append(state)
+    # TODO: Implement with proper state container
+    # TEMPORARY: This is a stub - no-op until proper state management is implemented
+    pass
 
 
 fn get_saved_state(index: Int) -> RandomState:
@@ -162,11 +186,12 @@ fn get_saved_state(index: Int) -> RandomState:
     Args:.        `index`: Index in saved states list.
 
     Returns:.        Saved random state.
+
+    Note:
+        Current implementation is a stub. Always returns empty state.
     """
-    if index < _saved_states.size():
-        return _saved_states[index]
-    else:
-        return RandomState()
+    # TODO: Implement with proper state container
+    return RandomState()
 
 
 # ============================================================================

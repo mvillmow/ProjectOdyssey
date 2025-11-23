@@ -104,15 +104,15 @@ struct EarlyStopping(Callback, Copyable, Movable):
 
         self.wait_count = 0
         self.stopped = False
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Check for improvement and decide whether to stop.
@@ -125,7 +125,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
         """
         # Check if monitored metric exists
         if self.monitor not in state.metrics:
-            return CONTINUE
+            return CallbackSignal(0)
 
         var current_value = state.metrics[self.monitor]
 
@@ -147,17 +147,17 @@ struct EarlyStopping(Callback, Copyable, Movable):
         if self.wait_count >= self.patience:
             self.stopped = True
             state.should_stop = True
-            return STOP
+            return CallbackSignal(1)
 
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn should_stop(self) -> Bool:
         """Check if training should stop.
@@ -254,15 +254,15 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training start."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at training end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Save checkpoint at end of epoch with error handling.
@@ -317,15 +317,15 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
             #     # Continue training despite checkpoint save failure
 
         # Always return CONTINUE to prevent I/O errors from stopping training
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn get_save_count(self) -> Int:
         """Get number of checkpoints saved.
@@ -373,15 +373,15 @@ struct LoggingCallback(Callback, Copyable, Movable):
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log training start."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_train_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log training end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at epoch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """Log metrics at end of epoch.
@@ -395,15 +395,15 @@ struct LoggingCallback(Callback, Copyable, Movable):
         if state.epoch % self.log_interval == 0:
             self.log_count += 1
             # TODO(#34): Implement actual logging when desired
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch begin."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn on_batch_end(mut self, mut state: TrainingState) -> CallbackSignal:
         """No-op at batch end."""
-        return CONTINUE
+        return CallbackSignal(0)
 
     fn get_log_count(self) -> Int:
         """Get number of times logged.

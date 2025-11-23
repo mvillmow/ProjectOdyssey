@@ -18,7 +18,6 @@ Example:.    from shared.core.types.bf8 import BF8
 from math import isnan, isinf
 
 
-@fieldwise_init
 struct BF8(Stringable, Representable, Copyable, Movable):
     """8-bit floating point number in E5M2 format.
 
@@ -85,7 +84,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
             if abs_x < 0.000030517578125:  # Below subnormal range
                 return BF8(sign << 7)  # Zero
             # Subnormal handling: exp=0, encode in mantissa
-            var mantissa = int(abs_x * 16384.0)  # Scale to 2-bit range
+            var mantissa = Int(abs_x * 16384.0)  # Scale to 2-bit range
             if mantissa > 3:
                 mantissa = 3
             var bits = (sign << 7) | mantissa.cast[DType.uint8]()
@@ -118,7 +117,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
         # Extract mantissa (2 bits)
         # scaled is in [1, 2), we want the fractional part
         var mantissa_val = scaled - 1.0  # Now in [0, 1)
-        var mantissa = int(mantissa_val * 4.0)  # Scale to 2-bit range [0, 3]
+        var mantissa = Int(mantissa_val * 4.0)  # Scale to 2-bit range [0, 3]
         if mantissa > 3:
             mantissa = 3
 

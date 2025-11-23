@@ -275,8 +275,8 @@ fn sqrt_scalar_f64(x: Float64) -> Float64:
 
 fn normalize_rgb(
     images: ExTensor,
-    mean: (Float32, Float32, Float32),
-    std: (Float32, Float32, Float32)
+    mean: Tuple[Float32, Float32, Float32],
+    std: Tuple[Float32, Float32, Float32]
 ) raises -> ExTensor:
     """Normalize RGB images with per-channel mean and standard deviation.
 

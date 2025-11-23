@@ -86,7 +86,7 @@ struct SGD:
         self.learning_rate = learning_rate
         self.momentum = momentum
 
-    fn step(self, inout parameters: List[Variable]) raises:
+    fn step(self, mut parameters: List[Variable]) raises:
         """Update parameters using their gradients.
 
         Performs one step of gradient descent:
@@ -138,7 +138,7 @@ struct SGD:
             # Apply update: parameter = parameter - lr * gradient
             param.data = subtract(param.data, update)
 
-    fn zero_grad(self, inout parameters: List[Variable]):
+    fn zero_grad(self, mut parameters: List[Variable]):
         """Reset all parameter gradients to None.
 
         Should be called after each optimizer step to clear gradients before

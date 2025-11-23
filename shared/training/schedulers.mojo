@@ -17,8 +17,8 @@ from shared.training.base import LRScheduler
 # ============================================================================
 
 
-@value
-struct StepLR(LRScheduler):
+@fieldwise_init
+struct StepLR(LRScheduler, Copyable, Movable):
     """Step decay: reduce learning rate at fixed intervals.
 
     Reduces the learning rate by a factor of gamma every step_size epochs.
@@ -78,8 +78,8 @@ struct StepLR(LRScheduler):
 # ============================================================================
 
 
-@value
-struct CosineAnnealingLR(LRScheduler):
+@fieldwise_init
+struct CosineAnnealingLR(LRScheduler, Copyable, Movable):
     """Cosine annealing: smooth cosine decay from base_lr to eta_min.
 
     The learning rate follows a cosine curve, starting at base_lr and.
@@ -147,8 +147,8 @@ struct CosineAnnealingLR(LRScheduler):
 # ============================================================================
 
 
-@value
-struct WarmupLR(LRScheduler):
+@fieldwise_init
+struct WarmupLR(LRScheduler, Copyable, Movable):
     """Linear warmup: gradually increase learning rate during initial epochs.
 
     The learning rate increases linearly from 0 to base_lr over warmup_epochs,

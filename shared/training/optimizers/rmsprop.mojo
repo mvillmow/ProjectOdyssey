@@ -96,7 +96,7 @@ fn rmsprop_step(
         Caller must capture all three return values and update their variables.
         Timestep t must be tracked by caller and incremented after each step.
     """
-    if params.shape != gradients.shape:
+    if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
 
     if params.dtype() != gradients.dtype():

@@ -110,7 +110,7 @@ struct LambdaTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct ConditionalTransform[T: Transform](Transform, Copyable, Movable):
+struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
     """Apply transform only if predicate is true.
 
     Evaluates a predicate function on the input tensor. If true,
@@ -279,7 +279,7 @@ struct DebugTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct SequentialTransform[T: Transform](Transform, Copyable, Movable):
+struct SequentialTransform[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
     """Apply transforms sequentially in order.
 
     Chains multiple transforms together, applying them in sequence.
@@ -326,7 +326,7 @@ struct SequentialTransform[T: Transform](Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct BatchTransform[T: Transform](Copyable, Movable):
+struct BatchTransform[T: Transform & Copyable & Movable](Copyable, Movable):
     """Apply transform to a batch of tensors.
 
     Applies the same transform to each tensor in a list,
@@ -464,7 +464,7 @@ fn apply_to_tensor(
     return transform(data)
 
 
-fn compose_transforms[T: Transform](var transforms: List[T]) raises -> SequentialTransform[T]:
+fn compose_transforms[T: Transform & Copyable & Movable](var transforms: List[T]) raises -> SequentialTransform[T]:
     """Create sequential composition of transforms.
 
     Convenience function for building transform pipelines.

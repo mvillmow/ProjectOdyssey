@@ -32,7 +32,7 @@ Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 
 from collections import List
 from memory import UnsafePointer, memset_zero, alloc
-from sys.info import simdwidthof
+from sys import simdwidthof
 from math import ceildiv
 
 # Memory safety constants
@@ -1932,7 +1932,9 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
     Example:.        var x = zeros(List[Int](3, 4), DType.float32)
         var y = ones_like(x)  # (3, 4) tensor of ones, float32
     """
-    return ones(tensor.shape, tensor.dtype())
+    var shape = tensor.shape
+    var dtype = tensor.dtype()
+    return ones(shape, dtype)
 
 
 fn zeros_like(tensor: ExTensor) raises -> ExTensor:
@@ -1945,7 +1947,9 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
     Example:.        var x = ones(List[Int](3, 4), DType.float32)
         var y = zeros_like(x)  # (3, 4) tensor of zeros, float32
     """
-    return zeros(tensor.shape, tensor.dtype())
+    var shape = tensor.shape
+    var dtype = tensor.dtype()
+    return zeros(shape, dtype)
 
 
 fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
@@ -1959,7 +1963,9 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
     Example:.        var x = ones(List[Int](3, 4), DType.float32)
         var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
     """
-    return full(tensor.shape, fill_value, tensor.dtype())
+    var shape = tensor.shape
+    var dtype = tensor.dtype()
+    return full(shape, fill_value, dtype)
 
 
 fn calculate_max_batch_size(

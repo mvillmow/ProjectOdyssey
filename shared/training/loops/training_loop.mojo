@@ -68,7 +68,7 @@ fn train_one_epoch(
     compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
     optimizer_step: fn() raises -> None,
     zero_gradients: fn() raises -> None,
-    train_loader: DataLoader,
+    mut train_loader: DataLoader,
     mut metrics: TrainingMetrics,
     log_interval: Int = 10
 ) raises:
@@ -166,7 +166,7 @@ struct TrainingLoop:
         optimizer_step: fn() raises -> None,
         zero_gradients: fn() raises -> None,
         train_loader: DataLoader,
-        inout metrics: TrainingMetrics
+        mut metrics: TrainingMetrics
     ) raises:
         """Run one training epoch.
 
@@ -197,7 +197,7 @@ struct TrainingLoop:
         zero_gradients: fn() raises -> None,
         train_loader: DataLoader,
         num_epochs: Int,
-        inout metrics: TrainingMetrics
+        mut metrics: TrainingMetrics
     ) raises:
         """Run complete training loop.
 

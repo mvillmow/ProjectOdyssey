@@ -315,7 +315,7 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
     Returns:
         Tensor of indices [batch_size]
     """
-    var shape_vec = tensor.shape
+    var shape_vec = tensor.shape()
     if len(shape_vec) != 2:
         raise Error("argmax: only 2D tensors supported")
 

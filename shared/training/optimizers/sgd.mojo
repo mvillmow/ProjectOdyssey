@@ -70,7 +70,7 @@ fn sgd_step(
         This is a pure function - it returns new state rather than mutating.
         Caller must capture both return values and update their variables.
     """
-    if params.shape != gradients.shape:
+    if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
 
     if params.dtype() != gradients.dtype():
@@ -131,7 +131,7 @@ fn sgd_step_simple(
         var grad_W1 = ... # Computed gradients
         W1 = sgd_step_simple(W1, grad_W1, 0.01)
     """
-    if params.shape != gradients.shape:
+    if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
 
     if params.dtype() != gradients.dtype():
@@ -188,10 +188,10 @@ fn sgd_momentum_update_inplace(
     """
     var numel = param.numel()
 
-    if param.shape != grad.shape:
+    if param.shape() != grad.shape():
         raise Error("Parameter and gradient must have the same shape")
 
-    if param.shape != velocity.shape:
+    if param.shape() != velocity.shape():
         raise Error("Parameter and velocity must have the same shape")
 
     # Dispatch based on dtype
