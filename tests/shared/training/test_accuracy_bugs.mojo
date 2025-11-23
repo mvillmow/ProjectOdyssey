@@ -193,19 +193,19 @@ fn main() raises:
         test_top1_accuracy_with_logits()
         print("    ✓ top1_accuracy with logits")
     except e:
-        print("    ✗ top1_accuracy with logits CRASHED:", str(e))
+        print("    ✗ top1_accuracy with logits CRASHED:", String(e))
 
     try:
         test_top1_accuracy_small_batch()
         print("    ✓ top1_accuracy small batch")
     except e:
-        print("    ✗ top1_accuracy small batch CRASHED:", str(e))
+        print("    ✗ top1_accuracy small batch CRASHED:", String(e))
 
     try:
         test_top1_accuracy_large_batch()
         print("    ✓ top1_accuracy large batch")
     except e:
-        print("    ✗ top1_accuracy large batch CRASHED:", str(e))
+        print("    ✗ top1_accuracy large batch CRASHED:", String(e))
 
     # per_class_accuracy() bugs
     print("  Testing per_class_accuracy() bugs...")
@@ -213,19 +213,19 @@ fn main() raises:
         test_per_class_accuracy_basic()
         print("    ✓ per_class_accuracy basic")
     except e:
-        print("    ✗ per_class_accuracy basic CRASHED:", str(e))
+        print("    ✗ per_class_accuracy basic CRASHED:", String(e))
 
     try:
         test_per_class_accuracy_many_classes()
         print("    ✓ per_class_accuracy many classes")
     except e:
-        print("    ✗ per_class_accuracy many classes CRASHED:", str(e))
+        print("    ✗ per_class_accuracy many classes CRASHED:", String(e))
 
     try:
         test_per_class_accuracy_few_classes()
         print("    ✓ per_class_accuracy binary")
     except e:
-        print("    ✗ per_class_accuracy binary CRASHED:", str(e))
+        print("    ✗ per_class_accuracy binary CRASHED:", String(e))
 
     print("")
     print("accuracy.mojo bug tests completed!")

@@ -174,27 +174,27 @@ fn main() raises:
     try:
         test_confusion_matrix_update_with_logits()
     except e:
-        print("    ✗ update with logits CRASHED:", str(e))
+        print("    ✗ update with logits CRASHED:", String(e))
 
     try:
         test_confusion_matrix_small_batch()
     except e:
-        print("    ✗ small batch CRASHED:", str(e))
+        print("    ✗ small batch CRASHED:", String(e))
 
     try:
         test_confusion_matrix_large_batch()
     except e:
-        print("    ✗ large batch CRASHED:", str(e))
+        print("    ✗ large batch CRASHED:", String(e))
 
     try:
         test_confusion_matrix_multiple_updates()
     except e:
-        print("    ✗ multiple updates CRASHED:", str(e))
+        print("    ✗ multiple updates CRASHED:", String(e))
 
     try:
         test_confusion_matrix_binary_classification()
     except e:
-        print("    ✗ binary classification CRASHED:", str(e))
+        print("    ✗ binary classification CRASHED:", String(e))
 
     print("")
     print("confusion_matrix.mojo bug tests completed!")

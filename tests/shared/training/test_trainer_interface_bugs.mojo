@@ -172,27 +172,27 @@ fn main() raises:
     try:
         test_dataloader_next_normal_batch()
     except e:
-        print("    ✗ normal batch CRASHED:", str(e))
+        print("    ✗ normal batch CRASHED:", String(e))
 
     try:
         test_dataloader_next_small_batch()
     except e:
-        print("    ✗ small batch CRASHED:", str(e))
+        print("    ✗ small batch CRASHED:", String(e))
 
     try:
         test_dataloader_next_large_batch()
     except e:
-        print("    ✗ large batch CRASHED:", str(e))
+        print("    ✗ large batch CRASHED:", String(e))
 
     try:
         test_dataloader_next_partial_last_batch()
     except e:
-        print("    ✗ partial last batch CRASHED:", str(e))
+        print("    ✗ partial last batch CRASHED:", String(e))
 
     try:
         test_dataloader_multiple_iterations()
     except e:
-        print("    ✗ multiple iterations CRASHED:", str(e))
+        print("    ✗ multiple iterations CRASHED:", String(e))
 
     print("")
     print("trainer_interface.mojo bug tests completed!")
