@@ -19,7 +19,6 @@ Output:
 from shared.core import ExTensor, zeros, ones
 from shared.core.arithmetic import add, subtract, multiply, divide
 from shared.core.arithmetic_simd import add_simd, subtract_simd, multiply_simd, divide_simd
-from collections.vector import DynamicVector
 from time import now
 
 
@@ -42,7 +41,7 @@ fn benchmark_operation(
         iterations: Number of iterations for timing
     """
     # Create test tensors
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = size
     shape[1] = size
 
@@ -90,7 +89,7 @@ fn verify_correctness() raises -> Bool:
     """
     print("\n=== Verifying SIMD Correctness ===\n")
 
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 10
     shape[1] = 10
 

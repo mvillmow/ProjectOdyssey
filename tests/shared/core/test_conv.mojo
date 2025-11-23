@@ -19,7 +19,6 @@ from tests.shared.conftest import (
 )
 from shared.core.extensor import ExTensor, zeros, ones
 from shared.core.conv import conv2d, conv2d_no_bias
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -40,7 +39,7 @@ fn test_conv2d_initialization() raises:
     var kernel_w = 3
 
     # Kernel shape: (out_channels, in_channels, kH, kW)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = kernel_h
@@ -48,7 +47,7 @@ fn test_conv2d_initialization() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Bias shape: (out_channels,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -79,7 +78,7 @@ fn test_conv2d_output_shape() raises:
     var kw = 3
 
     # Create input: (1, 1, 8, 8)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = in_h
@@ -87,7 +86,7 @@ fn test_conv2d_output_shape() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = kh
@@ -95,7 +94,7 @@ fn test_conv2d_output_shape() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -125,7 +124,7 @@ fn test_conv2d_with_padding() raises:
     var kw = 3
 
     # Create input: (1, 1, 6, 6)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = in_h
@@ -133,7 +132,7 @@ fn test_conv2d_with_padding() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = kh
@@ -141,7 +140,7 @@ fn test_conv2d_with_padding() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -168,7 +167,7 @@ fn test_conv2d_with_stride() raises:
     var out_channels = 1
 
     # Create input: (1, 1, 8, 8)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = 8
@@ -176,7 +175,7 @@ fn test_conv2d_with_stride() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 3, 3)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = 3
@@ -184,7 +183,7 @@ fn test_conv2d_with_stride() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -209,7 +208,7 @@ fn test_conv2d_numerical_correctness() raises:
     - Expected output: 1.0 * 2.0 + 0.5 = 2.5
     """
     # Create input: (1, 1, 1, 1) with value 1.0
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 1
@@ -217,7 +216,7 @@ fn test_conv2d_numerical_correctness() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 1, 1) with value 2.0
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = 1
     kernel_shape[1] = 1
     kernel_shape[2] = 1
@@ -226,7 +225,7 @@ fn test_conv2d_numerical_correctness() raises:
     kernel._data.bitcast[Float32]()[0] = 2.0
 
     # Create bias: (1,) with value 0.5
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = 1
     var bias = zeros(bias_shape, DType.float32)
     bias._data.bitcast[Float32]()[0] = 0.5
@@ -253,7 +252,7 @@ fn test_conv2d_multi_channel() raises:
     var in_w = 3
 
     # Create input: (1, 2, 3, 3)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = in_h
@@ -261,7 +260,7 @@ fn test_conv2d_multi_channel() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (3, 2, 2, 2)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = 2
@@ -269,7 +268,7 @@ fn test_conv2d_multi_channel() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (3,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -290,7 +289,7 @@ fn test_conv2d_no_bias() raises:
     Should be equivalent to conv2d with zero bias.
     """
     # Create input: (1, 1, 3, 3)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 3
@@ -298,7 +297,7 @@ fn test_conv2d_no_bias() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 2, 2)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = 1
     kernel_shape[1] = 1
     kernel_shape[2] = 2
@@ -330,7 +329,7 @@ fn test_conv2d_batched() raises:
     var out_channels = 1
 
     # Create input: (4, 1, 4, 4)
-    var input_shape = DynamicVector[Int](4)
+    var input_shape = List[Int](4)
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = 4
@@ -338,7 +337,7 @@ fn test_conv2d_batched() raises:
     var input = ones(input_shape, DType.float32)
 
     # Create kernel: (1, 1, 2, 2)
-    var kernel_shape = DynamicVector[Int](4)
+    var kernel_shape = List[Int](4)
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = 2
@@ -346,7 +345,7 @@ fn test_conv2d_batched() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias: (1,)
-    var bias_shape = DynamicVector[Int](1)
+    var bias_shape = List[Int](1)
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 

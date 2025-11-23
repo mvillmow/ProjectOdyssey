@@ -16,7 +16,6 @@ Validation strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from collections.vector import DynamicVector
 from math import abs, sqrt
 from shared.core import (
     ExTensor,
@@ -72,7 +71,7 @@ fn test_all_initializers_produce_tensors() raises:
     """Validate that all initializers produce valid ExTensor objects."""
     print("Testing all initializers produce valid tensors...")
 
-    var shape = DynamicVector[Int](100, 100)
+    var shape = List[Int](100, 100)
     var fan_in = 100
     var fan_out = 100
 
@@ -105,7 +104,7 @@ fn test_all_initializers_respect_seed() raises:
     """Validate that all initializers are reproducible with seeds."""
     print("Testing all initializers respect seeds...")
 
-    var shape = DynamicVector[Int](50, 50)
+    var shape = List[Int](50, 50)
     var fan_in = 50
     var fan_out = 50
     var seed = 42
@@ -175,7 +174,7 @@ fn test_xavier_statistical_properties() raises:
     """Validate Xavier initializers have correct statistical properties."""
     print("Testing Xavier statistical properties...")
 
-    var shape = DynamicVector[Int](1000, 1000)
+    var shape = List[Int](1000, 1000)
     var fan_in = 1000
     var fan_out = 1000
 
@@ -214,7 +213,7 @@ fn test_kaiming_statistical_properties() raises:
     """Validate Kaiming initializers have correct statistical properties."""
     print("Testing Kaiming statistical properties...")
 
-    var shape = DynamicVector[Int](1000, 1000)
+    var shape = List[Int](1000, 1000)
     var fan_in = 1000
     var fan_out = 1000
 
@@ -267,7 +266,7 @@ fn test_basic_distributions_statistical_properties() raises:
     """Validate basic distributions have correct statistical properties."""
     print("Testing basic distribution statistical properties...")
 
-    var shape = DynamicVector[Int](1000, 1000)
+    var shape = List[Int](1000, 1000)
 
     # Uniform distribution: mean should be (low+high)/2, variance should be (high-low)²/12
     var low = -0.5
@@ -321,13 +320,13 @@ fn test_all_initializers_support_dtypes() raises:
     """Validate that all initializers support multiple dtypes."""
     print("Testing all initializers support multiple dtypes...")
 
-    var shape = DynamicVector[Int](10, 10)
+    var shape = List[Int](10, 10)
     var fan_in = 10
     var fan_out = 10
 
     # Test each initializer with float16, float32, float64
-    var dtypes = DynamicVector[DType](DType.float16, DType.float32, DType.float64)
-    var dtype_names = DynamicVector[String]("float16", "float32", "float64")
+    var dtypes = List[DType](DType.float16, DType.float32, DType.float64)
+    var dtype_names = List[String]("float16", "float32", "float64")
 
     for i in range(3):
         var dt = dtypes[i]
@@ -356,7 +355,7 @@ fn test_initializers_api_consistency() raises:
     """Validate that all initializers follow consistent API patterns."""
     print("Testing initializers API consistency...")
 
-    var shape = DynamicVector[Int](100, 100)
+    var shape = List[Int](100, 100)
     var fan_in = 100
     var fan_out = 100
 
@@ -390,19 +389,19 @@ fn test_initializers_integration() raises:
     print("Testing initializers integration...")
 
     # Simulate initializing a multi-layer network
-    var layer1_shape = DynamicVector[Int](784, 256)  # Input layer
-    var layer2_shape = DynamicVector[Int](256, 128)  # Hidden layer
-    var layer3_shape = DynamicVector[Int](128, 10)   # Output layer
+    var layer1_shape = List[Int](784, 256)  # Input layer
+    var layer2_shape = List[Int](256, 128)  # Hidden layer
+    var layer3_shape = List[Int](128, 10)   # Output layer
 
     # Use different initializers for different layers
     var w1 = kaiming_uniform(784, 256, layer1_shape, seed_val=1)  # ReLU layer
-    var b1 = constant(DynamicVector[Int](256), 0.0)
+    var b1 = constant(List[Int](256), 0.0)
 
     var w2 = kaiming_normal(256, 128, layer2_shape, seed_val=2)  # ReLU layer
-    var b2 = constant(DynamicVector[Int](128), 0.0)
+    var b2 = constant(List[Int](128), 0.0)
 
     var w3 = xavier_uniform(128, 10, layer3_shape, seed_val=3)  # Softmax layer
-    var b3 = uniform(DynamicVector[Int](10), low=-0.01, high=0.01, seed_val=4)
+    var b3 = uniform(List[Int](10), low=-0.01, high=0.01, seed_val=4)
 
     # Verify all tensors have correct shapes
     assert_equal(w1.size(), 784 * 256, "Layer 1 weights shape")

@@ -38,7 +38,7 @@ fn test_loss_scaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create a simple loss tensor (scalar)
-    var loss = ExTensor.full(DynamicVector[Int](1), 0.5, DType.float32)
+    var loss = ExTensor.full(List[Int](1), 0.5, DType.float32)
 
     # Scale the loss
     var scaled_loss = scaler.scale_loss(loss)
@@ -57,7 +57,7 @@ fn test_gradient_unscaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create scaled gradients
-    var scaled_grads = ExTensor.full(DynamicVector[Int](10), 2048.0, DType.float32)
+    var scaled_grads = ExTensor.full(List[Int](10), 2048.0, DType.float32)
 
     # Unscale the gradients (2048 / 1024 = 2.0)
     var unscaled_grads = scaler.unscale_gradients(scaled_grads)
@@ -151,7 +151,7 @@ fn test_fp32_master_conversion() raises:
     print("Testing FP32 master conversion...")
 
     # Create FP16 parameters
-    var fp16_params = ExTensor.full(DynamicVector[Int](100), 0.5, DType.float16)
+    var fp16_params = ExTensor.full(List[Int](100), 0.5, DType.float16)
 
     # Convert to FP32 master weights
     var master_params = convert_to_fp32_master(fp16_params)
@@ -170,7 +170,7 @@ fn test_update_model_from_master() raises:
     print("Testing model update from master...")
 
     # Create FP16 model params and FP32 master weights
-    var shape = DynamicVector[Int](50)
+    var shape = List[Int](50)
     var fp16_params = ExTensor.full(shape, 1.0, DType.float16)
     var master_params = ExTensor.full(shape, 2.0, DType.float32)
 
@@ -189,7 +189,7 @@ fn test_check_gradients_finite() raises:
     print("Testing gradient finite check...")
 
     # Create finite gradients
-    var finite_grads = ExTensor.full(DynamicVector[Int](100), 1.0, DType.float32)
+    var finite_grads = ExTensor.full(List[Int](100), 1.0, DType.float32)
     assert_true(check_gradients_finite(finite_grads), "Finite gradients should return True")
 
     # TODO: Test with NaN/Inf gradients when we can create them
@@ -203,7 +203,7 @@ fn test_clip_gradients_by_value() raises:
     print("Testing gradient clipping by value...")
 
     # Create gradients with various values
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var grads = ExTensor(shape, DType.float32)
 
     # Set some values manually
@@ -231,7 +231,7 @@ fn test_clip_gradients_by_norm() raises:
     print("Testing gradient clipping by norm...")
 
     # Create gradients with known norm
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var grads = ExTensor(shape, DType.float32)
 
     # Set values: [3.0, 4.0, 0.0] -> norm = sqrt(9 + 16) = 5.0
@@ -259,8 +259,8 @@ fn test_fp16_operations() raises:
     print("Testing FP16 operations...")
 
     # Create FP16 tensors
-    var a = ExTensor.full(DynamicVector[Int](100), 2.0, DType.float16)
-    var b = ExTensor.full(DynamicVector[Int](100), 3.0, DType.float16)
+    var a = ExTensor.full(List[Int](100), 2.0, DType.float16)
+    var b = ExTensor.full(List[Int](100), 3.0, DType.float16)
 
     # Test addition
     var c = a + b

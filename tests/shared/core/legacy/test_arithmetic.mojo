@@ -29,7 +29,7 @@ from ..helpers.assertions import (
 
 fn test_add_same_shape_1d() raises:
     """Test adding two 1D tensors with same shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -42,7 +42,7 @@ fn test_add_same_shape_1d() raises:
 
 fn test_add_same_shape_2d() raises:
     """Test adding two 2D tensors with same shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float64)
@@ -56,7 +56,7 @@ fn test_add_same_shape_2d() raises:
 
 fn test_add_zeros() raises:
     """Test adding zeros (should not change values)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
     let a = full(shape, 7.0, DType.float32)
@@ -68,7 +68,7 @@ fn test_add_zeros() raises:
 
 fn test_add_negative_values() raises:
     """Test adding negative values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let a = full(shape, -5.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -83,7 +83,7 @@ fn test_add_negative_values() raises:
 
 fn test_subtract_same_shape_1d() raises:
     """Test subtracting two 1D tensors with same shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -96,7 +96,7 @@ fn test_subtract_same_shape_1d() raises:
 
 fn test_subtract_same_shape_2d() raises:
     """Test subtracting two 2D tensors with same shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let a = full(shape, 10.0, DType.float64)
@@ -110,7 +110,7 @@ fn test_subtract_same_shape_2d() raises:
 
 fn test_subtract_zeros() raises:
     """Test subtracting zeros (should not change values)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
     let a = full(shape, 9.0, DType.float32)
@@ -122,7 +122,7 @@ fn test_subtract_zeros() raises:
 
 fn test_subtract_negative_result() raises:
     """Test subtraction resulting in negative values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let a = full(shape, 3.0, DType.float32)
     let b = full(shape, 5.0, DType.float32)
@@ -137,7 +137,7 @@ fn test_subtract_negative_result() raises:
 
 fn test_multiply_same_shape_1d() raises:
     """Test multiplying two 1D tensors with same shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 4.0, DType.float32)
     let b = full(shape, 2.5, DType.float32)
@@ -150,7 +150,7 @@ fn test_multiply_same_shape_1d() raises:
 
 fn test_multiply_same_shape_2d() raises:
     """Test multiplying two 2D tensors with same shape."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let a = full(shape, 3.0, DType.float64)
@@ -164,7 +164,7 @@ fn test_multiply_same_shape_2d() raises:
 
 fn test_multiply_by_zero() raises:
     """Test multiplying by zero (should give all zeros)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
     let a = full(shape, 99.0, DType.float32)
@@ -176,7 +176,7 @@ fn test_multiply_by_zero() raises:
 
 fn test_multiply_by_one() raises:
     """Test multiplying by one (should not change values)."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let a = full(shape, 7.5, DType.float32)
     let b = ones(shape, DType.float32)
@@ -187,7 +187,7 @@ fn test_multiply_by_one() raises:
 
 fn test_multiply_negative() raises:
     """Test multiplying with negative values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, -3.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -202,7 +202,7 @@ fn test_multiply_negative() raises:
 
 fn test_dunder_add() raises:
     """Test __add__ operator overloading (a + b)."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 3.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -213,7 +213,7 @@ fn test_dunder_add() raises:
 
 fn test_dunder_sub() raises:
     """Test __sub__ operator overloading (a - b)."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -224,7 +224,7 @@ fn test_dunder_sub() raises:
 
 fn test_dunder_mul() raises:
     """Test __mul__ operator overloading (a * b)."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 4.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -235,7 +235,7 @@ fn test_dunder_mul() raises:
 
 fn test_chained_operations() raises:
     """Test chained operations with multiple operators."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -248,7 +248,7 @@ fn test_chained_operations() raises:
 
 fn test_complex_expression() raises:
     """Test complex expression with multiple operations."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
     let a = ones(shape, DType.float32)
@@ -266,7 +266,7 @@ fn test_complex_expression() raises:
 
 fn test_add_preserves_dtype_float32() raises:
     """Test that add preserves float32 dtype."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = ones(shape, DType.float32)
     let b = ones(shape, DType.float32)
@@ -277,7 +277,7 @@ fn test_add_preserves_dtype_float32() raises:
 
 fn test_add_preserves_dtype_float64() raises:
     """Test that add preserves float64 dtype."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = ones(shape, DType.float64)
     let b = ones(shape, DType.float64)
@@ -288,7 +288,7 @@ fn test_add_preserves_dtype_float64() raises:
 
 fn test_multiply_preserves_dtype_int32() raises:
     """Test that multiply preserves int32 dtype."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = ones(shape, DType.int32)
     let b = full(shape, 2.0, DType.int32)
@@ -303,7 +303,7 @@ fn test_multiply_preserves_dtype_int32() raises:
 
 fn test_add_preserves_shape_1d() raises:
     """Test that add preserves 1D shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let a = ones(shape, DType.float32)
     let b = ones(shape, DType.float32)
@@ -315,7 +315,7 @@ fn test_add_preserves_shape_1d() raises:
 
 fn test_add_preserves_shape_3d() raises:
     """Test that add preserves 3D shape."""
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -333,9 +333,9 @@ fn test_add_preserves_shape_3d() raises:
 
 fn test_add_mismatched_shapes_raises_error() raises:
     """Test that add with mismatched shapes raises error."""
-    var shape_a = DynamicVector[Int](1)
+    var shape_a = List[Int](1)
     shape_a[0] = 5
-    var shape_b = DynamicVector[Int](1)
+    var shape_b = List[Int](1)
     shape_b[0] = 10
 
     let a = ones(shape_a, DType.float32)
@@ -354,10 +354,10 @@ fn test_add_mismatched_shapes_raises_error() raises:
 
 fn test_multiply_mismatched_shapes_raises_error() raises:
     """Test that multiply with mismatched shapes raises error."""
-    var shape_a = DynamicVector[Int](2)
+    var shape_a = List[Int](2)
     shape_a[0] = 3
     shape_a[1] = 4
-    var shape_b = DynamicVector[Int](2)
+    var shape_b = List[Int](2)
     shape_b[0] = 3
     shape_b[1] = 5
 
@@ -375,7 +375,7 @@ fn test_multiply_mismatched_shapes_raises_error() raises:
 
 fn test_add_mismatched_dtypes_raises_error() raises:
     """Test that add with mismatched dtypes raises error."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
 
     let a = ones(shape, DType.float32)
@@ -392,7 +392,7 @@ fn test_add_mismatched_dtypes_raises_error() raises:
 
 fn test_divide_same_shape() raises:
     """Test dividing two tensors with same shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 6.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -405,7 +405,7 @@ fn test_divide_same_shape() raises:
 
 fn test_divide_by_one() raises:
     """Test dividing by one (identity)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let a = full(shape, 7.5, DType.float32)
@@ -417,7 +417,7 @@ fn test_divide_by_one() raises:
 
 fn test_divide_by_two() raises:
     """Test dividing by two."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 10.0, DType.float64)
     let b = full(shape, 2.0, DType.float64)
@@ -429,7 +429,7 @@ fn test_divide_by_two() raises:
 
 fn test_divide_negative() raises:
     """Test dividing negative values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, -6.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -444,7 +444,7 @@ fn test_divide_negative() raises:
 
 fn test_floor_divide_same_shape() raises:
     """Test floor division with same shape."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -455,7 +455,7 @@ fn test_floor_divide_same_shape() raises:
 
 fn test_floor_divide_positive() raises:
     """Test floor division with positive values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 9.0, DType.float32)
     let b = full(shape, 4.0, DType.float32)
@@ -466,7 +466,7 @@ fn test_floor_divide_positive() raises:
 
 fn test_floor_divide_negative() raises:
     """Test floor division with negative dividend."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, -7.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)
@@ -481,7 +481,7 @@ fn test_floor_divide_negative() raises:
 
 fn test_modulo_positive() raises:
     """Test modulo with positive values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -492,7 +492,7 @@ fn test_modulo_positive() raises:
 
 fn test_modulo_negative_dividend() raises:
     """Test modulo with negative dividend."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, -7.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -504,7 +504,7 @@ fn test_modulo_negative_dividend() raises:
 
 fn test_modulo_fractional() raises:
     """Test modulo with fractional values."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.5, DType.float32)
     let b = full(shape, 2.5, DType.float32)
@@ -519,7 +519,7 @@ fn test_modulo_fractional() raises:
 
 fn test_power_integer_exponent() raises:
     """Test power with small integer exponent."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 2.0, DType.float32)
     let b = full(shape, 3.0, DType.float32)
@@ -530,7 +530,7 @@ fn test_power_integer_exponent() raises:
 
 fn test_power_zero_exponent() raises:
     """Test power with zero exponent."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 5.0, DType.float32)
     let b = full(shape, 0.0, DType.float32)
@@ -541,7 +541,7 @@ fn test_power_zero_exponent() raises:
 
 fn test_power_one_exponent() raises:
     """Test power with exponent of one."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, 7.5, DType.float32)
     let b = full(shape, 1.0, DType.float32)
@@ -552,7 +552,7 @@ fn test_power_one_exponent() raises:
 
 fn test_power_negative_base() raises:
     """Test power with negative base."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let a = full(shape, -2.0, DType.float32)
     let b = full(shape, 2.0, DType.float32)

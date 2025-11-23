@@ -17,7 +17,6 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from collections.vector import DynamicVector
 from math import abs, exp, sqrt, tanh as math_tanh
 from shared.core import (
     ExTensor, zeros, ones, full, arange,
@@ -32,7 +31,7 @@ fn test_relu_basic() raises:
     print("Testing ReLU basic functionality...")
 
     # Create test tensor: [-2, -1, 0, 1, 2]
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -56,7 +55,7 @@ fn test_relu_non_negativity() raises:
     """Test ReLU always produces non-negative outputs."""
     print("Testing ReLU non-negativity property...")
 
-    var shape = DynamicVector[Int](100)
+    var shape = List[Int](100)
     var x = ExTensor(shape, DType.float32)
 
     # Fill with values from -50 to 50
@@ -77,7 +76,7 @@ fn test_leaky_relu_basic() raises:
     """Test Leaky ReLU with default alpha=0.01."""
     print("Testing Leaky ReLU basic functionality...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -101,7 +100,7 @@ fn test_leaky_relu_custom_alpha() raises:
     """Test Leaky ReLU with custom alpha value."""
     print("Testing Leaky ReLU with custom alpha...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -4.0
     x._data.bitcast[Float32]()[1] = 0.0
@@ -121,7 +120,7 @@ fn test_prelu_scalar_alpha() raises:
     """Test PReLU with scalar alpha parameter."""
     print("Testing PReLU with scalar alpha...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -130,7 +129,7 @@ fn test_prelu_scalar_alpha() raises:
     x._data.bitcast[Float32]()[4] = 2.0
 
     # Scalar alpha = 0.2
-    var alpha_shape = DynamicVector[Int](1)
+    var alpha_shape = List[Int](1)
     var alpha = full(alpha_shape, 0.2, DType.float32)
 
     var y = prelu(x, alpha)
@@ -149,7 +148,7 @@ fn test_prelu_elementwise_alpha() raises:
     """Test PReLU with element-wise alpha parameters."""
     print("Testing PReLU with element-wise alpha...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -175,7 +174,7 @@ fn test_sigmoid_basic() raises:
     """Test sigmoid basic functionality."""
     print("Testing sigmoid basic functionality...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -207,7 +206,7 @@ fn test_sigmoid_numerical_stability() raises:
     """Test sigmoid with extreme values."""
     print("Testing sigmoid numerical stability...")
 
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -100.0
     x._data.bitcast[Float32]()[1] = -20.0
@@ -231,7 +230,7 @@ fn test_tanh_basic() raises:
     """Test tanh basic functionality."""
     print("Testing tanh basic functionality...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -270,7 +269,7 @@ fn test_tanh_values() raises:
     """Test tanh against known values."""
     print("Testing tanh against known values...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float64)
     x._data.bitcast[Float64]()[0] = 0.0
     x._data.bitcast[Float64]()[1] = 1.0
@@ -296,7 +295,7 @@ fn test_softmax_basic() raises:
     print("Testing softmax basic functionality...")
 
     # 1D case: [1, 2, 3]
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1.0
     x._data.bitcast[Float32]()[1] = 2.0
@@ -328,7 +327,7 @@ fn test_softmax_2d() raises:
     print("Testing softmax on 2D tensor...")
 
     # 2x3 tensor
-    var shape = DynamicVector[Int](2, 3)
+    var shape = List[Int](2, 3)
     var x = ExTensor(shape, DType.float32)
     # Row 1: [1, 2, 3]
     x._data.bitcast[Float32]()[0] = 1.0
@@ -355,7 +354,7 @@ fn test_softmax_numerical_stability() raises:
     """Test softmax with large values (numerical stability)."""
     print("Testing softmax numerical stability...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1000.0
     x._data.bitcast[Float32]()[1] = 1001.0
@@ -381,7 +380,7 @@ fn test_gelu_approximate() raises:
     """Test GELU with tanh approximation."""
     print("Testing GELU with approximation...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -413,7 +412,7 @@ fn test_gelu_exact() raises:
     """Test GELU with exact erf implementation."""
     print("Testing GELU with exact formula...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -439,7 +438,7 @@ fn test_gelu_comparison() raises:
     """Compare approximate and exact GELU implementations."""
     print("Testing GELU approximate vs exact...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
@@ -469,7 +468,7 @@ fn test_relu_integer_types() raises:
     print("Testing ReLU with integer types...")
 
     # Test int32
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x_int32 = ExTensor(shape, DType.int32)
     x_int32._data.bitcast[Int32]()[0] = -2
     x_int32._data.bitcast[Int32]()[1] = -1
@@ -509,7 +508,7 @@ fn test_sigmoid_float16() raises:
     """Test sigmoid with float16."""
     print("Testing sigmoid with float16...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float16)
     x._data.bitcast[Float16]()[0] = Float16(-1.0)
     x._data.bitcast[Float16]()[1] = Float16(0.0)
@@ -533,7 +532,7 @@ fn test_gelu_float16() raises:
     """Test GELU with float16."""
     print("Testing GELU with float16...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float16)
     x._data.bitcast[Float16]()[0] = Float16(-1.0)
     x._data.bitcast[Float16]()[1] = Float16(0.0)
@@ -557,7 +556,7 @@ fn test_relu_gradient() raises:
     """Test ReLU backward pass using numerical gradient checking."""
     print("Testing ReLU gradient...")
 
-    var shape = DynamicVector[Int](5)
+    var shape = List[Int](5)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -0.5
@@ -588,7 +587,7 @@ fn test_leaky_relu_gradient() raises:
     """Test Leaky ReLU backward pass."""
     print("Testing Leaky ReLU gradient...")
 
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = -0.1
@@ -615,7 +614,7 @@ fn test_sigmoid_gradient() raises:
     """Test sigmoid backward pass."""
     print("Testing sigmoid gradient...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = 0.0
@@ -649,7 +648,7 @@ fn test_tanh_gradient() raises:
     """Test tanh backward pass."""
     print("Testing tanh gradient...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = 0.0
@@ -683,7 +682,7 @@ fn test_softmax_gradient() raises:
     """Test softmax backward pass."""
     print("Testing softmax gradient...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1.0
     x._data.bitcast[Float32]()[1] = 2.0
@@ -717,7 +716,7 @@ fn test_gelu_gradient() raises:
     """Test GELU backward pass."""
     print("Testing GELU gradient...")
 
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = 0.0
@@ -746,14 +745,14 @@ fn test_prelu_gradient() raises:
     """Test PReLU backward pass with learnable parameters."""
     print("Testing PReLU gradient...")
 
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int](4)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
     x._data.bitcast[Float32]()[1] = -1.0
     x._data.bitcast[Float32]()[2] = 1.0
     x._data.bitcast[Float32]()[3] = 2.0
 
-    var alpha_shape = DynamicVector[Int](4)
+    var alpha_shape = List[Int](4)
     var alpha = ExTensor(alpha_shape, DType.float32)
     for i in range(4):
         alpha._data.bitcast[Float32]()[i] = 0.25
@@ -794,7 +793,7 @@ fn test_integration_forward_backward() raises:
     print("Testing integration: forward + backward pass...")
 
     # Input data
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     var x = ExTensor(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
     x._data.bitcast[Float32]()[1] = 0.5

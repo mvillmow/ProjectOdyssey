@@ -27,7 +27,7 @@ from ..helpers.assertions import (
 
 fn test_shape_1d() raises:
     """Test shape property for 1D tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let t = ones(shape, DType.float32)
 
@@ -38,7 +38,7 @@ fn test_shape_1d() raises:
 
 fn test_shape_2d() raises:
     """Test shape property for 2D tensor."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -51,7 +51,7 @@ fn test_shape_2d() raises:
 
 fn test_shape_3d() raises:
     """Test shape property for 3D tensor."""
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -66,7 +66,7 @@ fn test_shape_3d() raises:
 
 fn test_shape_scalar() raises:
     """Test shape property for scalar (0D) tensor."""
-    var shape = DynamicVector[Int](0)
+    var shape = List[Int](0)
     let t = full(shape, 42.0, DType.float32)
 
     let s = t.shape()
@@ -79,7 +79,7 @@ fn test_shape_scalar() raises:
 
 fn test_dtype_float32() raises:
     """Test dtype property for float32 tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let t = ones(shape, DType.float32)
 
@@ -88,7 +88,7 @@ fn test_dtype_float32() raises:
 
 fn test_dtype_float64() raises:
     """Test dtype property for float64 tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let t = ones(shape, DType.float64)
 
@@ -97,7 +97,7 @@ fn test_dtype_float64() raises:
 
 fn test_dtype_int32() raises:
     """Test dtype property for int32 tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let t = zeros(shape, DType.int32)
 
@@ -106,7 +106,7 @@ fn test_dtype_int32() raises:
 
 fn test_dtype_int64() raises:
     """Test dtype property for int64 tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let t = zeros(shape, DType.int64)
 
@@ -115,7 +115,7 @@ fn test_dtype_int64() raises:
 
 fn test_dtype_bool() raises:
     """Test dtype property for bool tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 5
     let t = zeros(shape, DType.bool)
 
@@ -128,7 +128,7 @@ fn test_dtype_bool() raises:
 
 fn test_numel_1d() raises:
     """Test numel for 1D tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let t = ones(shape, DType.float32)
 
@@ -137,7 +137,7 @@ fn test_numel_1d() raises:
 
 fn test_numel_2d() raises:
     """Test numel for 2D tensor."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -147,7 +147,7 @@ fn test_numel_2d() raises:
 
 fn test_numel_3d() raises:
     """Test numel for 3D tensor."""
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -158,7 +158,7 @@ fn test_numel_3d() raises:
 
 fn test_numel_scalar() raises:
     """Test numel for scalar tensor."""
-    var shape = DynamicVector[Int](0)
+    var shape = List[Int](0)
     let t = full(shape, 1.0, DType.float32)
 
     assert_numel(t, 1, "Scalar tensor has 1 element")
@@ -166,7 +166,7 @@ fn test_numel_scalar() raises:
 
 fn test_numel_empty() raises:
     """Test numel for empty tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 0
     let t = zeros(shape, DType.float32)
 
@@ -179,7 +179,7 @@ fn test_numel_empty() raises:
 
 fn test_strides_1d() raises:
     """Test stride calculation for 1D tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let t = ones(shape, DType.float32)
 
@@ -190,7 +190,7 @@ fn test_strides_1d() raises:
 
 fn test_strides_2d_row_major() raises:
     """Test stride calculation for 2D tensor (row-major)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -203,7 +203,7 @@ fn test_strides_2d_row_major() raises:
 
 fn test_strides_3d_row_major() raises:
     """Test stride calculation for 3D tensor (row-major)."""
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -222,7 +222,7 @@ fn test_strides_3d_row_major() raises:
 
 fn test_contiguous_new_tensor() raises:
     """Test that newly created tensors are contiguous."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -232,7 +232,7 @@ fn test_contiguous_new_tensor() raises:
 
 fn test_contiguous_1d() raises:
     """Test that 1D tensors are contiguous."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 100
     let t = arange(0.0, 100.0, 1.0, DType.float32)
 
@@ -241,7 +241,7 @@ fn test_contiguous_1d() raises:
 
 fn test_contiguous_scalar() raises:
     """Test that scalar tensors are contiguous."""
-    var shape = DynamicVector[Int](0)
+    var shape = List[Int](0)
     let t = full(shape, 5.0, DType.float32)
 
     assert_true(t.is_contiguous(), "Scalar tensor should be contiguous")
@@ -253,7 +253,7 @@ fn test_contiguous_scalar() raises:
 
 fn test_dim_1d() raises:
     """Test dim for 1D tensor."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 10
     let t = ones(shape, DType.float32)
 
@@ -262,7 +262,7 @@ fn test_dim_1d() raises:
 
 fn test_dim_2d() raises:
     """Test dim for 2D tensor."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -272,7 +272,7 @@ fn test_dim_2d() raises:
 
 fn test_dim_3d() raises:
     """Test dim for 3D tensor."""
-    var shape = DynamicVector[Int](3)
+    var shape = List[Int](3)
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -283,7 +283,7 @@ fn test_dim_3d() raises:
 
 fn test_dim_scalar() raises:
     """Test dim for scalar (0D) tensor."""
-    var shape = DynamicVector[Int](0)
+    var shape = List[Int](0)
     let t = full(shape, 1.0, DType.float32)
 
     assert_dim(t, 0, "Scalar tensor should have dim=0")
@@ -304,7 +304,7 @@ fn test_value_access_1d() raises:
 
 fn test_value_access_2d_row_major() raises:
     """Test accessing values in 2D tensor (row-major order)."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 3
     let t = arange(0.0, 6.0, 1.0, DType.float32)
@@ -336,7 +336,7 @@ fn test_value_access_identity() raises:
 
 fn test_all_zeros_pattern() raises:
     """Test that zeros creates all zero values."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 3
     let t = zeros(shape, DType.float32)
@@ -347,7 +347,7 @@ fn test_all_zeros_pattern() raises:
 
 fn test_all_ones_pattern() raises:
     """Test that ones creates all one values."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 3
     let t = ones(shape, DType.float32)
@@ -358,7 +358,7 @@ fn test_all_ones_pattern() raises:
 
 fn test_full_pattern() raises:
     """Test that full creates uniform values."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 2
     shape[1] = 4
     let t = full(shape, 7.5, DType.float32)
@@ -394,7 +394,7 @@ fn test_eye_identity_pattern() raises:
 
 fn test_is_view_false_for_new_tensors() raises:
     """Test that newly created tensors are not views."""
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int](2)
     shape[0] = 3
     shape[1] = 4
     let t = ones(shape, DType.float32)
@@ -408,7 +408,7 @@ fn test_is_view_false_for_new_tensors() raises:
 
 fn test_dtype_size_float32() raises:
     """Test dtype size for float32."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 1
     let t = ones(shape, DType.float32)
 
@@ -418,7 +418,7 @@ fn test_dtype_size_float32() raises:
 
 fn test_dtype_size_float64() raises:
     """Test dtype size for float64."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 1
     let t = ones(shape, DType.float64)
 
@@ -428,7 +428,7 @@ fn test_dtype_size_float64() raises:
 
 fn test_dtype_size_int32() raises:
     """Test dtype size for int32."""
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int](1)
     shape[0] = 1
     let t = zeros(shape, DType.int32)
 

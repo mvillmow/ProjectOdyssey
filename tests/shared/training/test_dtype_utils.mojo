@@ -115,7 +115,7 @@ fn test_bfloat16_alias_behavior() raises:
     # Verify bfloat16_dtype can be used like DType.float16
     from shared.core import ExTensor
 
-    var tensor = ExTensor.zeros(DynamicVector[Int](10), bfloat16_dtype)
+    var tensor = ExTensor.zeros(List[Int](10), bfloat16_dtype)
     assert_equal(tensor.dtype(), DType.float16, "BF16 tensor should have float16 dtype (aliased)")
 
     print("✓ BFloat16 alias behavior test passed")

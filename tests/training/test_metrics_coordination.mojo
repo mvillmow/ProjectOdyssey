@@ -17,7 +17,6 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from collections.vector import DynamicVector
 from math import abs
 from shared.core import ExTensor
 from shared.training.metrics import (
@@ -56,7 +55,7 @@ fn test_metric_result_tensor() raises:
     """Test MetricResult with tensor values."""
     print("Testing MetricResult tensor...")
 
-    var tensor = ExTensor(DynamicVector[Int](3), DType.float32)
+    var tensor = ExTensor(List[Int](3), DType.float32)
     tensor._data.bitcast[Float32]()[0] = 0.9
     tensor._data.bitcast[Float32]()[1] = 0.8
     tensor._data.bitcast[Float32]()[2] = 0.95
@@ -132,8 +131,8 @@ fn test_accuracy_metric_interface_compliance() raises:
     var metric = AccuracyMetric()
 
     # Create test data
-    var preds = ExTensor(DynamicVector[Int](4), DType.int32)
-    var labels = ExTensor(DynamicVector[Int](4), DType.int32)
+    var preds = ExTensor(List[Int](4), DType.int32)
+    var labels = ExTensor(List[Int](4), DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
     preds._data.bitcast[Int32]()[1] = 1  # ✓
@@ -166,8 +165,8 @@ fn test_confusion_matrix_integration() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds = ExTensor(DynamicVector[Int](5), DType.int32)
-    var labels = ExTensor(DynamicVector[Int](5), DType.int32)
+    var preds = ExTensor(List[Int](5), DType.int32)
+    var labels = ExTensor(List[Int](5), DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
@@ -206,9 +205,9 @@ fn test_metric_logger_basic() raises:
     var logger = MetricLogger()
 
     # Log first epoch
-    var epoch0_metrics = DynamicVector[MetricResult]()
-    epoch0_metrics.push_back(MetricResult("accuracy", 0.7))
-    epoch0_metrics.push_back(MetricResult("loss", 0.5))
+    var epoch0_metrics = List[MetricResult]()
+    epoch0_metrics.append(MetricResult("accuracy", 0.7))
+    epoch0_metrics.append(MetricResult("loss", 0.5))
 
     logger.log_epoch(0, epoch0_metrics)
 
@@ -216,9 +215,9 @@ fn test_metric_logger_basic() raises:
     assert_equal(logger.num_metrics, 2, "Tracked 2 metrics")
 
     # Log second epoch
-    var epoch1_metrics = DynamicVector[MetricResult]()
-    epoch1_metrics.push_back(MetricResult("accuracy", 0.8))
-    epoch1_metrics.push_back(MetricResult("loss", 0.4))
+    var epoch1_metrics = List[MetricResult]()
+    epoch1_metrics.append(MetricResult("accuracy", 0.8))
+    epoch1_metrics.append(MetricResult("loss", 0.4))
 
     logger.log_epoch(1, epoch1_metrics)
 
@@ -235,11 +234,11 @@ fn test_metric_logger_history() raises:
 
     # Log multiple epochs
     for i in range(5):
-        var metrics = DynamicVector[MetricResult]()
+        var metrics = List[MetricResult]()
         var acc = 0.5 + Float64(i) * 0.1  # 0.5, 0.6, 0.7, 0.8, 0.9
         var loss = 1.0 - Float64(i) * 0.1  # 1.0, 0.9, 0.8, 0.7, 0.6
-        metrics.push_back(MetricResult("accuracy", acc))
-        metrics.push_back(MetricResult("loss", loss))
+        metrics.append(MetricResult("accuracy", acc))
+        metrics.append(MetricResult("loss", loss))
         logger.log_epoch(i, metrics)
 
     # Get history
@@ -270,19 +269,19 @@ fn test_metric_logger_best() raises:
     var logger = MetricLogger()
 
     # Log epochs with varying metrics
-    var metrics0 = DynamicVector[MetricResult]()
-    metrics0.push_back(MetricResult("accuracy", 0.7))
-    metrics0.push_back(MetricResult("loss", 0.8))
+    var metrics0 = List[MetricResult]()
+    metrics0.append(MetricResult("accuracy", 0.7))
+    metrics0.append(MetricResult("loss", 0.8))
     logger.log_epoch(0, metrics0)
 
-    var metrics1 = DynamicVector[MetricResult]()
-    metrics1.push_back(MetricResult("accuracy", 0.9))  # Best accuracy
-    metrics1.push_back(MetricResult("loss", 0.6))
+    var metrics1 = List[MetricResult]()
+    metrics1.append(MetricResult("accuracy", 0.9))  # Best accuracy
+    metrics1.append(MetricResult("loss", 0.6))
     logger.log_epoch(1, metrics1)
 
-    var metrics2 = DynamicVector[MetricResult]()
-    metrics2.push_back(MetricResult("accuracy", 0.8))
-    metrics2.push_back(MetricResult("loss", 0.5))  # Best loss
+    var metrics2 = List[MetricResult]()
+    metrics2.append(MetricResult("accuracy", 0.8))
+    metrics2.append(MetricResult("loss", 0.5))  # Best loss
     logger.log_epoch(2, metrics2)
 
     # Get best values
@@ -299,9 +298,9 @@ fn test_create_metric_summary() raises:
     """Test create_metric_summary formatting."""
     print("Testing create_metric_summary...")
 
-    var results = DynamicVector[MetricResult]()
-    results.push_back(MetricResult("accuracy", 0.9234))
-    results.push_back(MetricResult("loss", 0.1523))
+    var results = List[MetricResult]()
+    results.append(MetricResult("accuracy", 0.9234))
+    results.append(MetricResult("loss", 0.1523))
 
     var summary = create_metric_summary(results)
 
@@ -342,8 +341,8 @@ fn test_multi_metric_training_simulation() raises:
         # Simulate 5 batches per epoch
         for batch in range(5):
             # Create fake batch data
-            var preds = ExTensor(DynamicVector[Int](4), DType.int32)
-            var labels = ExTensor(DynamicVector[Int](4), DType.int32)
+            var preds = ExTensor(List[Int](4), DType.int32)
+            var labels = ExTensor(List[Int](4), DType.int32)
 
             for i in range(4):
                 var pred_class = (i + batch + epoch) % 3
@@ -362,8 +361,8 @@ fn test_multi_metric_training_simulation() raises:
         print("  Epoch " + String(epoch) + ": accuracy=" + String(epoch_acc))
 
         # Log to history
-        var epoch_metrics = DynamicVector[MetricResult]()
-        epoch_metrics.push_back(MetricResult("accuracy", epoch_acc))
+        var epoch_metrics = List[MetricResult]()
+        epoch_metrics.append(MetricResult("accuracy", epoch_acc))
         logger.log_epoch(epoch, epoch_metrics)
 
     # Verify we logged all epochs
@@ -384,8 +383,8 @@ fn test_metric_interface_consistency() raises:
     var confusion = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds = ExTensor(DynamicVector[Int](2), DType.int32)
-    var labels = ExTensor(DynamicVector[Int](2), DType.int32)
+    var preds = ExTensor(List[Int](2), DType.int32)
+    var labels = ExTensor(List[Int](2), DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
     labels._data.bitcast[Int32]()[0] = 0

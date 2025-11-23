@@ -145,12 +145,12 @@ fn assert_close_float(
 # ============================================================================
 # Note: Import ExTensor in your test files before using these assertions
 
-fn assert_shape[T: AnyType](tensor: T, expected: DynamicVector[Int], message: String = "") raises:
+fn assert_shape[T: AnyType](tensor: T, expected: List[Int], message: String = "") raises:
     """Assert tensor has expected shape.
 
     Args:
         tensor: ExTensor to check
-        expected: Expected shape as DynamicVector
+        expected: Expected shape as List
         message: Optional error message
 
     Raises:

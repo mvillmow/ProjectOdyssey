@@ -13,7 +13,6 @@ Testing strategy:
 """
 
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
-from collections.vector import DynamicVector
 from math import abs
 from shared.core import ExTensor
 from shared.training.metrics import top1_accuracy, topk_accuracy, per_class_accuracy, AccuracyMetric
@@ -28,11 +27,11 @@ fn test_top1_accuracy_perfect() raises:
     var num_classes = 5
 
     # Logits: make diagonal dominant (correct class has highest score)
-    var logits_shape = DynamicVector[Int](batch_size, num_classes)
+    var logits_shape = List[Int](batch_size, num_classes)
     var logits = ExTensor(logits_shape, DType.float32)
 
     # Labels: 0, 1, 2, 3, 4, 0, 1, 2, 3, 4
-    var labels_shape = DynamicVector[Int](batch_size)
+    var labels_shape = List[Int](batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     for i in range(batch_size):
@@ -62,10 +61,10 @@ fn test_top1_accuracy_half_correct() raises:
     var batch_size = 10
     var num_classes = 3
 
-    var logits_shape = DynamicVector[Int](batch_size, num_classes)
+    var logits_shape = List[Int](batch_size, num_classes)
     var logits = ExTensor(logits_shape, DType.float32)
 
-    var labels_shape = DynamicVector[Int](batch_size)
+    var labels_shape = List[Int](batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # First 5 correct, last 5 incorrect
@@ -105,7 +104,7 @@ fn test_top1_accuracy_with_indices() raises:
     var batch_size = 8
 
     # Predicted classes
-    var preds_shape = DynamicVector[Int](batch_size)
+    var preds_shape = List[Int](batch_size)
     var preds = ExTensor(preds_shape, DType.int32)
 
     # True labels
@@ -135,10 +134,10 @@ fn test_topk_accuracy_k1() raises:
     var batch_size = 6
     var num_classes = 4
 
-    var logits_shape = DynamicVector[Int](batch_size, num_classes)
+    var logits_shape = List[Int](batch_size, num_classes)
     var logits = ExTensor(logits_shape, DType.float32)
 
-    var labels_shape = DynamicVector[Int](batch_size)
+    var labels_shape = List[Int](batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Perfect predictions
@@ -171,10 +170,10 @@ fn test_topk_accuracy_k3() raises:
     var batch_size = 4
     var num_classes = 5
 
-    var logits_shape = DynamicVector[Int](batch_size, num_classes)
+    var logits_shape = List[Int](batch_size, num_classes)
     var logits = ExTensor(logits_shape, DType.float32)
 
-    var labels_shape = DynamicVector[Int](batch_size)
+    var labels_shape = List[Int](batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Sample 0: true=0, scores=[5, 4, 3, 2, 1] -> top-3=[0,1,2] -> correct
@@ -183,22 +182,22 @@ fn test_topk_accuracy_k3() raises:
     # Sample 3: true=4, scores=[5, 4, 3, 2, 1] -> top-3=[0,1,2] -> incorrect
     # Expected: 2/4 = 0.5
 
-    var scores = DynamicVector[DynamicVector[Float32]](batch_size)
-    scores.push_back(DynamicVector[Float32](num_classes))
-    scores[0].push_back(5.0); scores[0].push_back(4.0); scores[0].push_back(3.0)
-    scores[0].push_back(2.0); scores[0].push_back(1.0)
+    var scores = List[List[Float32]](batch_size)
+    scores.append(List[Float32](num_classes))
+    scores[0].append(5.0); scores[0].append(4.0); scores[0].append(3.0)
+    scores[0].append(2.0); scores[0].append(1.0)
 
-    scores.push_back(DynamicVector[Float32](num_classes))
-    scores[1].push_back(1.0); scores[1].push_back(2.0); scores[1].push_back(5.0)
-    scores[1].push_back(4.0); scores[1].push_back(3.0)
+    scores.append(List[Float32](num_classes))
+    scores[1].append(1.0); scores[1].append(2.0); scores[1].append(5.0)
+    scores[1].append(4.0); scores[1].append(3.0)
 
-    scores.push_back(DynamicVector[Float32](num_classes))
-    scores[2].push_back(3.0); scores[2].push_back(4.0); scores[2].push_back(5.0)
-    scores[2].push_back(1.0); scores[2].push_back(2.0)
+    scores.append(List[Float32](num_classes))
+    scores[2].append(3.0); scores[2].append(4.0); scores[2].append(5.0)
+    scores[2].append(1.0); scores[2].append(2.0)
 
-    scores.push_back(DynamicVector[Float32](num_classes))
-    scores[3].push_back(5.0); scores[3].push_back(4.0); scores[3].push_back(3.0)
-    scores[3].push_back(2.0); scores[3].push_back(1.0)
+    scores.append(List[Float32](num_classes))
+    scores[3].append(5.0); scores[3].append(4.0); scores[3].append(3.0)
+    scores[3].append(2.0); scores[3].append(1.0)
 
     # Fill logits
     for i in range(batch_size):
@@ -227,25 +226,25 @@ fn test_per_class_accuracy() raises:
     var batch_size = 12
     var num_classes = 3
 
-    var logits_shape = DynamicVector[Int](batch_size, num_classes)
+    var logits_shape = List[Int](batch_size, num_classes)
     var logits = ExTensor(logits_shape, DType.float32)
 
-    var labels_shape = DynamicVector[Int](batch_size)
+    var labels_shape = List[Int](batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Class 0: 4 samples, 3 correct -> 75%
     # Class 1: 4 samples, 2 correct -> 50%
     # Class 2: 4 samples, 4 correct -> 100%
 
-    var true_classes = DynamicVector[Int](batch_size)
-    true_classes.push_back(0); true_classes.push_back(0); true_classes.push_back(0); true_classes.push_back(0)
-    true_classes.push_back(1); true_classes.push_back(1); true_classes.push_back(1); true_classes.push_back(1)
-    true_classes.push_back(2); true_classes.push_back(2); true_classes.push_back(2); true_classes.push_back(2)
+    var true_classes = List[Int](batch_size)
+    true_classes.append(0); true_classes.append(0); true_classes.append(0); true_classes.append(0)
+    true_classes.append(1); true_classes.append(1); true_classes.append(1); true_classes.append(1)
+    true_classes.append(2); true_classes.append(2); true_classes.append(2); true_classes.append(2)
 
-    var pred_classes = DynamicVector[Int](batch_size)
-    pred_classes.push_back(0); pred_classes.push_back(0); pred_classes.push_back(0); pred_classes.push_back(1)  # 3/4 for class 0
-    pred_classes.push_back(1); pred_classes.push_back(1); pred_classes.push_back(0); pred_classes.push_back(2)  # 2/4 for class 1
-    pred_classes.push_back(2); pred_classes.push_back(2); pred_classes.push_back(2); pred_classes.push_back(2)  # 4/4 for class 2
+    var pred_classes = List[Int](batch_size)
+    pred_classes.append(0); pred_classes.append(0); pred_classes.append(0); pred_classes.append(1)  # 3/4 for class 0
+    pred_classes.append(1); pred_classes.append(1); pred_classes.append(0); pred_classes.append(2)  # 2/4 for class 1
+    pred_classes.append(2); pred_classes.append(2); pred_classes.append(2); pred_classes.append(2)  # 4/4 for class 2
 
     # Fill data
     for i in range(batch_size):
@@ -284,9 +283,9 @@ fn test_accuracy_metric_incremental() raises:
 
     # Batch 1: 8 samples, 6 correct
     var batch1_size = 8
-    var logits1_shape = DynamicVector[Int](batch1_size, 3)
+    var logits1_shape = List[Int](batch1_size, 3)
     var logits1 = ExTensor(logits1_shape, DType.float32)
-    var labels1_shape = DynamicVector[Int](batch1_size)
+    var labels1_shape = List[Int](batch1_size)
     var labels1 = ExTensor(labels1_shape, DType.int32)
 
     for i in range(batch1_size):
@@ -312,9 +311,9 @@ fn test_accuracy_metric_incremental() raises:
 
     # Batch 2: 4 samples, 2 correct
     var batch2_size = 4
-    var logits2_shape = DynamicVector[Int](batch2_size, 3)
+    var logits2_shape = List[Int](batch2_size, 3)
     var logits2 = ExTensor(logits2_shape, DType.float32)
-    var labels2_shape = DynamicVector[Int](batch2_size)
+    var labels2_shape = List[Int](batch2_size)
     var labels2 = ExTensor(labels2_shape, DType.int32)
 
     for i in range(batch2_size):
