@@ -47,9 +47,12 @@ struct ExTensor(Copyable, Movable):
     supporting arbitrary dimensions (0D scalars to N-D tensors), multiple data types,
     and NumPy-style broadcasting for all operations.
 
-    **WARNING**: Copyable trait added for compatibility with List[ExTensor] and function returns.
-    However, proper __copyinit__ implementation is still missing (see #1908 / MOJO-005).
-    Current behavior may result in shallow copies and potential double-free bugs.
+    Memory Safety: Implements reference counting for safe shared ownership.
+    Copying a tensor increments the reference count, allowing views and copies
+    to safely share data. Memory is freed only when the last reference is destroyed.
+
+    Fixes: #1904 (MOJO-001), #1905 (MOJO-002), #1906 (MOJO-003),
+           #1907 (MOJO-004), #1908 (MOJO-005)
 
     Attributes:
         _data: UnsafePointer to raw byte storage (type-erased)
@@ -58,6 +61,7 @@ struct ExTensor(Copyable, Movable):
         _dtype: The data type of tensor elements
         _numel: Total number of elements in the tensor
         _is_view: Whether this tensor is a view (shares data with another tensor)
+        _refcount: Shared reference count for memory management
 
     Examples:
         # Create tensors
@@ -76,23 +80,7 @@ struct ExTensor(Copyable, Movable):
     var _dtype: DType
     var _numel: Int
     var _is_view: Bool
-
-    # **FIXME (MOJO-003 - P0 CRITICAL)**: Missing lifetime tracking
-    # No reference counting or borrow tracking exists. Views can outlive parents.
-    # This causes use-after-free bugs (MOJO-001) and double-free bugs (MOJO-002).
-    #
-    # Required: Implement shared ownership with reference counting:
-    #   var _refcount: UnsafePointer[Int]  # Shared reference count
-    #
-    # **FIXME (MOJO-005 - P1 HIGH)**: Missing __copyinit__
-    # No explicit copy constructor. If Mojo synthesizes one, it will shallow-copy
-    # _data pointer causing aliasing and double-free.
-    #
-    # Required: Add __copyinit__ to prevent accidental copies:
-    #   fn __copyinit__(out self, existing: Self):
-    #       constrained[False, "ExTensor cannot be copied"]()
-    #
-    # See: /notes/issues/1002/README.md
+    var _refcount: UnsafePointer[Int, origin=MutAnyOrigin]  # Shared reference count (fixes MOJO-003)
 
     fn __init__(out self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
@@ -149,29 +137,47 @@ struct ExTensor(Copyable, Movable):
         # Allocate raw byte storage (now with validation)
         self._data = alloc[UInt8](total_bytes)
 
-    fn __del__(deinit self):
-        """Destructor to free allocated memory.
+        # Allocate and initialize reference count (fixes MOJO-003, MOJO-006)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1  # Start with 1 reference
 
-        Only frees memory if this tensor owns the data (not a view).
-        Views share data with another tensor and should not free it.
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor - creates shared ownership with reference counting.
 
-        Note:
-            Currently, all tensors own their data since views are not yet implemented.
-            _is_view is always False in the current implementation.
+        Creates a new reference to the same underlying data.
+        Increments the reference count to track shared ownership.
+        This prevents double-free and enables safe view semantics.
+
+        Fixes: #1908 (MOJO-005), part of #1906 (MOJO-003)
         """
-        # **FIXME (MOJO-002 - P0 CRITICAL)**: Double-free risk
-        # Fragile _is_view flag can cause double-free if:
-        # 1. Parent freed before view
-        # 2. View's _is_view flag corrupted
-        # 3. Shallow copy created accidentally
-        #
-        # Solution: Implement reference counting with Arc-like pattern
-        # Severity: BLOCKING PRODUCTION USE
-        # See: /notes/issues/1002/README.md
-        if not self._is_view:
-            # Free the allocated memory
-            # Since _data is always allocated in __init__, this is safe
-            self._data.free()
+        # Shallow copy all fields
+        self._data = existing._data
+        self._shape = existing._shape.copy()
+        self._strides = existing._strides.copy()
+        self._dtype = existing._dtype
+        self._numel = existing._numel
+        self._is_view = existing._is_view
+        self._refcount = existing._refcount
+
+        # Increment reference count (shared ownership)
+        if not self._is_view and self._refcount:
+            self._refcount[] += 1
+
+    fn __del__(deinit self):
+        """Destructor - decrements ref count, frees if last reference.
+
+        Uses reference counting to safely manage shared ownership.
+        Only frees memory when the last reference is destroyed.
+
+        Fixes: #1905 (MOJO-002), #1906 (MOJO-003)
+        """
+        if not self._is_view and self._refcount:
+            self._refcount[] -= 1
+
+            # If last reference, free everything
+            if self._refcount[] == 0:
+                self._data.free()
+                self._refcount.free()
 
     fn _get_dtype_size(self) -> Int:
         """Get size in bytes for the tensor's dtype."""
@@ -277,17 +283,13 @@ struct ExTensor(Copyable, Movable):
             expected_stride *= self._shape[i]
         return True
 
-    # **FIXME (MOJO-001 - P0 CRITICAL)**: Use-after-free vulnerability in reshape()
-    # This method creates a view that shares parent's data pointer, but parent can be
-    # destroyed while view is still alive, causing use-after-free and undefined behavior.
-    #
-    # Issue: View holds dangling pointer after parent destruction
-    # Impact: Memory corruption, crashes, undefined behavior
-    # Solution: Implement reference counting or copy-based reshape
-    # Severity: BLOCKING PRODUCTION USE
-    # See: /notes/issues/1002/README.md
     fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
         """Reshape tensor to new shape (must have same total elements).
+
+        Creates a view sharing data with the original tensor.
+        Uses reference counting to ensure data remains valid.
+
+        Fixes: #1904 (MOJO-001), #1907 (MOJO-004)
 
         Args:
             new_shape: The new shape for the tensor
@@ -300,7 +302,7 @@ struct ExTensor(Copyable, Movable):
 
         Example:
             var t = zeros(List[Int](2, 3), DType.float32)
-            var reshaped = t.reshape(List[Int]())  # (2, 3) -> (6,)
+            var reshaped = t.reshape(List[Int](6))  # (2, 3) -> (6,)
         """
         # Verify total elements match
         var new_numel = 1
@@ -310,26 +312,32 @@ struct ExTensor(Copyable, Movable):
         if new_numel != self._numel:
             raise Error("Cannot reshape: element count mismatch")
 
-        # Create view tensor directly with correct shape
-        # IMPORTANT: Don't allocate dummy memory - it causes memory leaks!
-        var result = ExTensor(new_shape, self._dtype)
+        # Create view by explicitly copying (increments refcount via __copyinit__)
+        var result = self.copy()
 
-        # **FIXME (MOJO-004 - P0 CRITICAL)**: Memory leak in error path
-        # If exception occurs between allocation above and free() below, memory leaks
-        # Solution: Use RAII guard pattern or avoid intermediate allocation
-        # Mark as view and point to parent's data
-        # Free the allocated data first to prevent memory leak
-        result._data.free()  # UNSAFE: Creates view by freeing then reassigning
-        result._data = self._data
-        result._is_view = True
+        # Update shape
+        result._shape = List[Int]()
+        for i in range(len(new_shape)):
+            result._shape.append(new_shape[i])
+
+        # Recalculate strides for new shape
+        result._strides = List[Int]()
+        var stride = 1
+        for _ in range(len(new_shape) - 1, -1, -1):
+            result._strides.append(0)
+        for i in range(len(new_shape) - 1, -1, -1):
+            result._strides[i] = stride
+            stride *= new_shape[i]
 
         return result^
 
-    # **FIXME (MOJO-001 - P0 CRITICAL)**: Use-after-free vulnerability in slice()
-    # Same issue as reshape() - creates view with shared pointer but no lifetime tracking
-    # See: MOJO-001 above and /notes/issues/1002/README.md
     fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
         """Extract a slice along the specified axis.
+
+        Creates a view sharing data with the original tensor.
+        Uses reference counting to ensure data remains valid.
+
+        Fixes: #1904 (MOJO-001), #1907 (MOJO-004)
 
         Args:
             start: Starting index (inclusive)
@@ -379,34 +387,26 @@ struct ExTensor(Copyable, Movable):
                 + "]"
             )
 
-        # Create new shape with sliced dimension
-        var new_shape = List[Int]()
-        for i in range(len(self._shape)):
-            if i == axis:
-                new_shape.append(end - start)
-            else:
-                new_shape.append(self._shape[i])
-
         # Calculate offset to start of slice
         var offset_elements = start * self._strides[axis]
         var dtype_size = self._get_dtype_size()
         var offset_bytes = offset_elements * dtype_size
 
-        # Create view tensor directly with correct shape
-        # IMPORTANT: Don't allocate dummy memory - it causes memory leaks!
-        var result = ExTensor(new_shape, self._dtype)
+        # Create view by explicitly copying (increments refcount via __copyinit__)
+        var result = self.copy()
 
-        # Mark as view and point to parent's data
-        # Free the allocated data first to prevent memory leak
-        result._data.free()
+        # Update shape with sliced dimension
+        result._shape = List[Int]()
+        for i in range(len(self._shape)):
+            if i == axis:
+                result._shape.append(end - start)
+            else:
+                result._shape.append(self._shape[i])
+
+        # Update data pointer to slice offset
         result._data = self._data.offset(offset_bytes)
-        result._is_view = True
 
-        # Copy strides from parent (slice has same stride pattern)
-        # We need to update the strides list after creating the tensor
-        result._strides = List[Int]()
-        for i in range(len(self._strides)):
-            result._strides.append(self._strides[i])
+        # Strides remain the same (already copied by __copyinit__)
 
         return result^
 
