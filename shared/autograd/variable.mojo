@@ -59,35 +59,35 @@ struct Variable:
     var requires_grad: Bool
     # TODO: Add grad_fn field once we implement backward functions
 
-    fn __init__(out self, data: ExTensor, requires_grad: Bool = False):
+    fn __init__(out self, var data: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable from an ExTensor.
 
         Args:
-            data: The tensor values to wrap
+            data: The tensor values to wrap (ownership transferred)
             requires_grad: Whether to track gradients for this variable (default: False)
 
         Examples:
             var x = Variable(zeros(shape, dtype), requires_grad=True)
             var y = Variable(ones(shape, dtype))  # requires_grad=False by default
         """
-        self.data = data
+        self.data = data^
         self.grad = None
         self.requires_grad = requires_grad
 
-    fn __init__(out self, data: ExTensor, grad: ExTensor, requires_grad: Bool = False):
+    fn __init__(out self, var data: ExTensor, var grad: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable with explicit gradient.
 
         Args:
-            data: The tensor values to wrap
-            grad: The gradient tensor
+            data: The tensor values to wrap (ownership transferred)
+            grad: The gradient tensor (ownership transferred)
             requires_grad: Whether to track gradients for this variable
 
         Note:
             This constructor is primarily for internal use when creating
             intermediate Variables during operations.
         """
-        self.data = data
-        self.grad = grad
+        self.data = data^
+        self.grad = grad^
         self.requires_grad = requires_grad
 
     fn zero_grad(mut self):

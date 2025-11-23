@@ -42,7 +42,7 @@ struct LogLevel:
 # ============================================================================
 
 
-struct LogRecord:
+struct LogRecord(Copyable, Movable):
     """Record of a single log message.
 
     Contains all information needed by handlers to format and output.

@@ -11,7 +11,7 @@ This module defines:
 from .extensor import ExTensor
 
 
-struct GradientPair:
+struct GradientPair(Copyable, Movable):
     """Container for gradients from binary operations.
 
     Used for backward functions that compute gradients with respect to.
@@ -41,7 +41,7 @@ struct GradientPair:
         self.grad_b = grad_b^
 
 
-struct GradientTriple:
+struct GradientTriple(Copyable, Movable):
     """Container for gradients from ternary operations.
 
     Used for backward functions that compute gradients with respect to.

@@ -22,7 +22,7 @@ from math import sqrt, min as math_min, max as math_max
 # ============================================================================
 
 
-struct Statistics:
+struct Statistics(Copyable, Movable):
     """Statistical summary of loss values.
 
     Provides mean, standard deviation, min, max, and count of values.
@@ -57,7 +57,7 @@ struct Statistics:
 # ============================================================================
 
 
-struct ComponentTracker:
+struct ComponentTracker(Copyable, Movable):
     """Tracks a single loss component with statistics and moving average.
 
     Uses Welford's algorithm for numerically stable variance computation.

@@ -33,7 +33,7 @@ from python import Python
 # ============================================================================
 
 
-struct Checkpoint:
+struct Checkpoint(Copyable, Movable):
     """Container for model checkpoint data.
 
     Holds model state, optimizer state, training metadata (epoch, loss, etc.)
@@ -253,7 +253,7 @@ fn load_checkpoint(filepath: String) -> Checkpoint:
 # ============================================================================
 
 
-struct TensorMetadata:
+struct TensorMetadata(Copyable, Movable):
     """Metadata for serialized tensor."""
 
     var dtype: String
@@ -267,7 +267,7 @@ struct TensorMetadata:
         self.size_bytes = 0
 
 
-struct SerializedTensor:
+struct SerializedTensor(Copyable, Movable):
     """Serialized tensor with metadata and data."""
 
     var metadata: TensorMetadata

@@ -65,7 +65,7 @@ alias OP_TANH = "tanh"
 alias OP_SOFTMAX = "softmax"
 
 
-struct TapeNode:
+struct TapeNode(Copyable, Movable):
     """Represents a single operation in the computation graph.
 
     Each node records:

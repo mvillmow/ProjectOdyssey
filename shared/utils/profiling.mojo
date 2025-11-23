@@ -21,7 +21,7 @@ Example:.    from shared.utils import Timer, profile_function, memory_usage
 # ============================================================================
 
 
-struct TimingRecord:
+struct TimingRecord(Copyable, Movable):
     """Record of a single timing measurement."""
 
     var name: String
@@ -35,7 +35,7 @@ struct TimingRecord:
         self.call_count = 1
 
 
-struct TimingStats:
+struct TimingStats(Copyable, Movable):
     """Statistics for multiple timing measurements."""
 
     var name: String
@@ -62,7 +62,7 @@ struct TimingStats:
 # ============================================================================
 
 
-struct MemoryStats:
+struct MemoryStats(Copyable, Movable):
     """Memory usage statistics."""
 
     var allocated_bytes: Int
@@ -93,7 +93,7 @@ struct MemoryStats:
 # ============================================================================
 
 
-struct ProfilingReport:
+struct ProfilingReport(Copyable, Movable):
     """Complete profiling report with timing and memory data."""
 
     var timing_stats: Dict[String, TimingStats]
@@ -128,7 +128,7 @@ struct ProfilingReport:
 # ============================================================================
 
 
-struct Timer:
+struct Timer(Copyable, Movable):
     """Context manager for measuring code execution time.
 
     Measures elapsed time of a code block and optionally prints the result.
@@ -280,7 +280,7 @@ fn benchmark_function(
 # ============================================================================
 
 
-struct CallStackEntry:
+struct CallStackEntry(Copyable, Movable):
     """Entry in call stack for profiling."""
 
     var function_name: String
@@ -294,7 +294,7 @@ struct CallStackEntry:
         self.memory_delta_bytes = 0
 
 
-struct CallStack:
+struct CallStack(Copyable, Movable):
     """Profiling information for entire call stack."""
 
     var root: CallStackEntry
@@ -395,7 +395,7 @@ fn measure_profiling_overhead(num_measurements: Int = 100) -> Float32:
 # ============================================================================
 
 
-struct BaselineMetrics:
+struct BaselineMetrics(Copyable, Movable):
     """Baseline metrics for comparing performance."""
 
     var name: String

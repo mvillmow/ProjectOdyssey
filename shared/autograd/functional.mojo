@@ -228,15 +228,15 @@ struct LossAndGrad:
     var loss: ExTensor
     var grad: ExTensor
 
-    fn __init__(out self, loss: ExTensor, grad: ExTensor):
+    fn __init__(out self, var loss: ExTensor, var grad: ExTensor):
         """Initialize loss and gradient pair.
 
         Args:
-            loss: Scalar loss tensor
-            grad: Gradient tensor
+            loss: Scalar loss tensor (ownership transferred)
+            grad: Gradient tensor (ownership transferred)
         """
-        self.loss = loss
-        self.grad = grad
+        self.loss = loss^
+        self.grad = grad^
 
 
 fn mse_loss_and_grad(

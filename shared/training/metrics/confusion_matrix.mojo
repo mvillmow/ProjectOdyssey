@@ -69,7 +69,8 @@ struct ConfusionMatrix:
         for i in range(num_classes * num_classes):
             self.matrix._data.bitcast[Int32]()[i] = 0
 
-        self.class_names = class_names
+        # Explicit copy of class_names list
+        self.class_names = List[String](class_names)
         self.has_class_names = len(class_names) > 0
 
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
@@ -87,8 +88,8 @@ struct ConfusionMatrix:
             # Logits - need argmax
             pred_classes = argmax(predictions)
         elif len(predictions.shape()) == 1:
-            # Already class indices
-            pred_classes = predictions
+            # Already class indices - transfer ownership
+            pred_classes = predictions^
         else:
             raise Error("ConfusionMatrix.update: predictions must be 1D or 2D")
 

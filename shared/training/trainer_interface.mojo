@@ -19,7 +19,7 @@ from collections import List
 from shared.core import ExTensor
 
 
-struct TrainerConfig:
+struct TrainerConfig(Copyable, Movable):
     """Configuration for trainer behavior.
 
     Centralizes all training hyperparameters and settings.
@@ -92,7 +92,7 @@ struct TrainerConfig:
         self.gradient_clip_norm = gradient_clip_norm
 
 
-struct TrainingMetrics:
+struct TrainingMetrics(Copyable, Movable):
     """Metrics collected during training.
 
     Stores current and historical metrics for analysis.
@@ -217,7 +217,7 @@ trait Trainer:
         ...
 
 
-struct DataBatch:
+struct DataBatch(Copyable, Movable):
     """Single batch of training/validation data.
 
     Represents a mini-batch with input features and labels.
@@ -226,18 +226,18 @@ struct DataBatch:
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
 
-    fn __init__(out self, data: ExTensor, labels: ExTensor):
+    fn __init__(out self, var data: ExTensor, var labels: ExTensor):
         """Initialize data batch.
 
-        Args:.            `data`: Input features tensor.
-            `labels`: Labels tensor.
+        Args:.            `data`: Input features tensor (ownership transferred).
+            `labels`: Labels tensor (ownership transferred).
         """
-        self.data = data
-        self.labels = labels
-        self.batch_size = data.shape[0]
+        self.data = data^
+        self.labels = labels^
+        self.batch_size = self.data.shape[0]
 
 
-struct DataLoader:
+struct DataLoader(Copyable, Movable):
     """Simple data loader for batching.
 
     Provides iteration over dataset in batches.
@@ -251,17 +251,17 @@ struct DataLoader:
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(out self, data: ExTensor, labels: ExTensor, batch_size: Int):
+    fn __init__(out self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
         """Initialize data loader.
 
-        Args:.            `data`: Full dataset features.
-            `labels`: Full dataset labels.
+        Args:.            `data`: Full dataset features (ownership transferred).
+            `labels`: Full dataset labels (ownership transferred).
             `batch_size`: Batch size.
         """
-        self.data = data
-        self.labels = labels
+        self.data = data^
+        self.labels = labels^
         self.batch_size = batch_size
-        self.num_samples = data.shape[0]
+        self.num_samples = self.data.shape[0]
         self.num_batches = (self.num_samples + batch_size - 1) // batch_size
         self.current_batch = 0
 

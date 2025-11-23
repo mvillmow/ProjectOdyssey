@@ -28,7 +28,7 @@ Example:.    from shared.utils import set_seed, get_random_state, set_random_sta
 # ============================================================================
 
 
-struct RandomState:
+struct RandomState(Copyable, Movable):
     """Container for random number generator state.
 
     Stores the complete state of all RNGs so it can be saved and restored.
@@ -174,7 +174,7 @@ fn get_saved_state(index: Int) -> RandomState:
 # ============================================================================
 
 
-struct SeedContext:
+struct SeedContext(Copyable, Movable):
     """Context manager for temporary seed changes.
 
     Allows temporarily changing the random seed within a context,
@@ -281,7 +281,7 @@ fn shuffle[T: Movable](mut items: List[T]):
 # ============================================================================
 
 
-struct DistributionStats:
+struct DistributionStats(Copyable, Movable):
     """Statistics for testing random distribution quality."""
 
     var mean: Float32

@@ -45,7 +45,7 @@ trait Metric:
         ...
 
 
-struct MetricResult:
+struct MetricResult(Copyable, Movable):
     """Result from metric computation.
 
     Can represent scalar metrics (accuracy, loss) or tensor metrics.
@@ -63,12 +63,12 @@ struct MetricResult:
         self.scalar_value = value
         self.tensor_value = ExTensor(List[Int]())  # Placeholder
 
-    fn __init__(out self, name: String, value: ExTensor):
-        """Create tensor metric result."""
+    fn __init__(out self, name: String, var value: ExTensor):
+        """Create tensor metric result (ownership transferred)."""
         self.name = name
         self.is_scalar = False
         self.scalar_value = 0.0
-        self.tensor_value = value
+        self.tensor_value = value^
 
     fn get_scalar(self) raises -> Float64:
         """Get scalar value.

@@ -19,7 +19,7 @@ Example:.    from shared.utils import plot_training_curves
 # ============================================================================
 
 
-struct PlotData:
+struct PlotData(Copyable, Movable):
     """Data for a single plot."""
 
     var title: String
@@ -39,7 +39,7 @@ struct PlotData:
         self.label = ""
 
 
-struct PlotSeries:
+struct PlotSeries(Copyable, Movable):
     """Multiple data series for plotting."""
 
     var title: String
@@ -59,7 +59,7 @@ struct PlotSeries:
         self.series_data.append(series)
 
 
-struct ConfusionMatrixData:
+struct ConfusionMatrixData(Copyable, Movable):
     """Data for confusion matrix visualization."""
 
     var class_names: List[String]

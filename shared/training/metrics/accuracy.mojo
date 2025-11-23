@@ -58,8 +58,8 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
         # Predictions are logits, need to compute argmax
         pred_classes = argmax(predictions, axis=1)
     elif len(predictions.shape()) == 1:
-        # Predictions are already class indices
-        pred_classes = predictions
+        # Predictions are already class indices (borrow reference, no copy needed)
+        pred_classes = predictions^
     else:
         raise Error("top1_accuracy: predictions must be 1D (class indices) or 2D (logits)")
 
@@ -298,7 +298,8 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
     if len(predictions.shape()) == 2:
         pred_classes = argmax(predictions, axis=1)
     elif len(predictions.shape()) == 1:
-        pred_classes = predictions
+        # Transfer ownership - predictions won't be used after this
+        pred_classes = predictions^
     else:
         raise Error("per_class_accuracy: invalid predictions shape")
 
@@ -392,7 +393,8 @@ struct AccuracyMetric:
         if len(predictions.shape()) == 2:
             pred_classes = argmax(predictions, axis=1)
         elif len(predictions.shape()) == 1:
-            pred_classes = predictions
+            # Transfer ownership - predictions won't be used after this
+            pred_classes = predictions^
         else:
             raise Error("AccuracyMetric.update: invalid predictions shape")
 
