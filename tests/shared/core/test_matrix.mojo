@@ -51,8 +51,8 @@ fn test_matmul_shapes() raises:
     var result = matmul(a, b)
 
     # (4, 3) @ (3, 5) = (4, 5)
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 5)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 5)
 
 
 fn test_matmul_values() raises:
@@ -144,12 +144,12 @@ fn test_matmul_backward_shapes() raises:
     var grad_b = grads.grad_b
 
     # grad_a should have same shape as a
-    assert_equal(grad_a.shape()[0], 4)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 4)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should have same shape as b
-    assert_equal(grad_b.shape()[0], 3)
-    assert_equal(grad_b.shape()[1], 5)
+    assert_equal(grad_b.shape[0], 3)
+    assert_equal(grad_b.shape[1], 5)
 
 
 fn test_matmul_backward_gradient_a() raises:
@@ -258,8 +258,8 @@ fn test_transpose_shapes() raises:
     var result = transpose(a)
 
     # (4, 10) -> (10, 4)
-    assert_equal(result.shape()[0], 10)
-    assert_equal(result.shape()[1], 4)
+    assert_equal(result.shape[0], 10)
+    assert_equal(result.shape[1], 4)
 
 
 fn test_transpose_values() raises:
@@ -329,8 +329,8 @@ fn test_transpose_backward_shapes() raises:
     var grad_input = transpose_backward(grad_output)
 
     # Gradient should have same shape as input
-    assert_equal(grad_input.shape()[0], 4)
-    assert_equal(grad_input.shape()[1], 10)
+    assert_equal(grad_input.shape[0], 4)
+    assert_equal(grad_input.shape[1], 10)
 
 
 fn test_transpose_backward_gradient() raises:
@@ -383,7 +383,7 @@ fn test_dot_shapes() raises:
     var result = dot(a, b)
 
     # Dot product returns scalar
-    assert_equal(result.shape()[0], 1)
+    assert_equal(result.shape[0], 1)
 
 
 fn test_dot_values() raises:
@@ -448,8 +448,8 @@ fn test_outer_shapes() raises:
     var result = outer(a, b)
 
     # (3,) outer (4,) = (3, 4)
-    assert_equal(result.shape()[0], 3)
-    assert_equal(result.shape()[1], 4)
+    assert_equal(result.shape[0], 3)
+    assert_equal(result.shape[1], 4)
 
 
 fn test_outer_values() raises:

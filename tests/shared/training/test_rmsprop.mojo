@@ -50,10 +50,10 @@ fn test_rmsprop_step_shapes() raises:
     )
 
     # Check shapes
-    assert_equal(new_params.shape()[0], 4)
-    assert_equal(new_params.shape()[1], 10)
-    assert_equal(new_square_avg.shape()[0], 4)
-    assert_equal(new_square_avg.shape()[1], 10)
+    assert_equal(new_params.shape[0], 4)
+    assert_equal(new_params.shape[1], 10)
+    assert_equal(new_square_avg.shape[0], 4)
+    assert_equal(new_square_avg.shape[1], 10)
 
 
 fn test_rmsprop_simple_shapes() raises:
@@ -75,10 +75,10 @@ fn test_rmsprop_simple_shapes() raises:
     )
 
     # Check shapes
-    assert_equal(new_params.shape()[0], 4)
-    assert_equal(new_params.shape()[1], 10)
-    assert_equal(new_square_avg.shape()[0], 4)
-    assert_equal(new_square_avg.shape()[1], 10)
+    assert_equal(new_params.shape[0], 4)
+    assert_equal(new_params.shape[1], 10)
+    assert_equal(new_square_avg.shape[0], 4)
+    assert_equal(new_square_avg.shape[1], 10)
 
 
 fn test_rmsprop_step_parameter_update() raises:

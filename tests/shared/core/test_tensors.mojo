@@ -43,8 +43,8 @@ fn test_zeros_creation() raises:
     var t = zeros(shape, DType.float32)
 
     # Check shape
-    assert_equal(t.shape()[0], 3)
-    assert_equal(t.shape()[1], 4)
+    assert_equal(t.shape[0], 3)
+    assert_equal(t.shape[1], 4)
 
     # Check all values are zero
     for i in range(12):
@@ -59,8 +59,8 @@ fn test_ones_creation() raises:
     var t = ones(shape, DType.float32)
 
     # Check shape
-    assert_equal(t.shape()[0], 2)
-    assert_equal(t.shape()[1], 3)
+    assert_equal(t.shape[0], 2)
+    assert_equal(t.shape[1], 3)
 
     # Check all values are one
     for i in range(6):
@@ -75,8 +75,8 @@ fn test_full_creation() raises:
     var t = full(shape, 3.14, DType.float32)
 
     # Check shape
-    assert_equal(t.shape()[0], 2)
-    assert_equal(t.shape()[1], 2)
+    assert_equal(t.shape[0], 2)
+    assert_equal(t.shape[1], 2)
 
     # Check all values are 3.14
     for i in range(4):
@@ -91,8 +91,8 @@ fn test_empty_creation() raises:
     var t = empty(shape, DType.float32)
 
     # Check shape is correct (values are uninitialized)
-    assert_equal(t.shape()[0], 3)
-    assert_equal(t.shape()[1], 3)
+    assert_equal(t.shape[0], 3)
+    assert_equal(t.shape[1], 3)
     assert_equal(t.numel(), 9)
 
 
@@ -124,8 +124,8 @@ fn test_eye_creation() raises:
     var t = eye(3, 3, 0, DType.float32)
 
     # Check shape (3x3)
-    assert_equal(t.shape()[0], 3)
-    assert_equal(t.shape()[1], 3)
+    assert_equal(t.shape[0], 3)
+    assert_equal(t.shape[1], 3)
 
     # Check diagonal is 1, off-diagonal is 0
     for i in range(3):
@@ -165,8 +165,8 @@ fn test_zeros_like() raises:
     var y = zeros_like(x)
 
     # Check shape matches
-    assert_equal(y.shape()[0], 2)
-    assert_equal(y.shape()[1], 3)
+    assert_equal(y.shape[0], 2)
+    assert_equal(y.shape[1], 3)
 
     # Check dtype matches
     assert_equal(y.dtype(), DType.float32)
@@ -186,9 +186,9 @@ fn test_ones_like() raises:
     var y = ones_like(x)
 
     # Check shape matches
-    assert_equal(y.shape()[0], 2)
-    assert_equal(y.shape()[1], 2)
-    assert_equal(y.shape()[2], 2)
+    assert_equal(y.shape[0], 2)
+    assert_equal(y.shape[1], 2)
+    assert_equal(y.shape[2], 2)
 
     # Check dtype matches
     assert_equal(y.dtype(), DType.float64)
@@ -207,8 +207,8 @@ fn test_full_like() raises:
     var y = full_like(x, 7.5)
 
     # Check shape matches
-    assert_equal(y.shape()[0], 3)
-    assert_equal(y.shape()[1], 2)
+    assert_equal(y.shape[0], 3)
+    assert_equal(y.shape[1], 2)
 
     # Check dtype matches
     assert_equal(y.dtype(), DType.float32)
@@ -231,7 +231,7 @@ fn test_tensor_shape() raises:
     shape.append(4)
     var t = zeros(shape, DType.float32)
 
-    var t_shape = t.shape()
+    var t_shape = t.shape
     assert_equal(len(t_shape), 3)
     assert_equal(t_shape[0], 2)
     assert_equal(t_shape[1], 3)
@@ -398,9 +398,9 @@ fn test_large_tensor() raises:
     shape.append(30)
     var t = zeros(shape, DType.float32)
 
-    assert_equal(t.shape()[0], 10)
-    assert_equal(t.shape()[1], 20)
-    assert_equal(t.shape()[2], 30)
+    assert_equal(t.shape[0], 10)
+    assert_equal(t.shape[1], 20)
+    assert_equal(t.shape[2], 30)
     assert_equal(t.numel(), 6000)
     assert_equal(t.dim(), 3)
 

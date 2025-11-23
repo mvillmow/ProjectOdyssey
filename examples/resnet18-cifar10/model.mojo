@@ -756,7 +756,7 @@ struct ResNet18:
         var gap = avgpool2d(s4b2_out, kernel_size=4, stride=1, padding=0)
 
         # ========== Flatten: (batch, 512, 1, 1) → (batch, 512) ==========
-        var gap_shape = gap.shape()
+        var gap_shape = gap.shape
         var batch_size = gap_shape[0]
         var flatten_shape = List[Int]()
         flatten_shape.append(batch_size)
@@ -780,7 +780,7 @@ struct ResNet18:
         var logits = self.forward(input, training=False)
 
         # Find argmax
-        var logits_shape = logits.shape()
+        var logits_shape = logits.shape
         var max_idx = 0
         var max_val = logits[0]
 

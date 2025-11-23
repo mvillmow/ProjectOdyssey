@@ -84,10 +84,10 @@ struct ConfusionMatrix:
         # Get predicted classes
         var pred_classes: ExTensor
 
-        if len(predictions.shape()) == 2:
+        if len(predictions.shape) == 2:
             # Logits - need argmax
             pred_classes = argmax(predictions)
-        elif len(predictions.shape()) == 1:
+        elif len(predictions.shape) == 1:
             # Already class indices - transfer ownership
             pred_classes = predictions^
         else:
@@ -311,10 +311,10 @@ fn argmax(tensor: ExTensor) raises -> ExTensor:
     Returns:
         Tensor of indices [batch_size]
     """
-    if len(tensor.shape()) != 2:
+    if len(tensor.shape) != 2:
         raise Error("argmax: only 2D tensors supported")
 
-    var shape_vec = tensor.shape()
+    var shape_vec = tensor.shape
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 

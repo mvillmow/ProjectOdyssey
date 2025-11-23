@@ -36,12 +36,12 @@ fn _broadcast_binary[
         var result = _broadcast_binary[DType.float32, add_op](a, b)
     """
     # Compute broadcast shape
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, dtype)
 
     # Compute broadcast strides
-    var strides_a = compute_broadcast_strides(a.shape(), result_shape)
-    var strides_b = compute_broadcast_strides(b.shape(), result_shape)
+    var strides_a = compute_broadcast_strides(a.shape, result_shape)
+    var strides_b = compute_broadcast_strides(b.shape, result_shape)
 
     # Calculate total elements in result
     var total_elems = 1
@@ -353,7 +353,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> ExTensor:
     """Reduce gradient from broadcast shape back to original shape.
 
-    When forward pass broadcasts input from original_shape to grad.shape(),
+    When forward pass broadcasts input from original_shape to grad.shape,
     backward pass must sum gradient back to original_shape.
 
     Args:.        `grad`: Gradient tensor (broadcast shape)
@@ -375,7 +375,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
     from .reduction import sum
 
     var result = grad
-    var grad_shape = grad.shape()
+    var grad_shape = grad.shape
     var grad_ndim = len(grad_shape)
     var orig_ndim = len(original_shape)
 
@@ -392,7 +392,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
     # Example: (3, 1, 5) → (3, 4, 5), sum over axis 1 keeping dims
     for i in range(min(orig_ndim, grad_ndim)):
         var dim_idx = i if orig_ndim < grad_ndim else i + (grad_ndim - orig_ndim)
-        if i < orig_ndim and original_shape[i] == 1 and i < len(result.shape()) and result.shape()[i] > 1:
+        if i < orig_ndim and original_shape[i] == 1 and i < len(result.shape) and result.shape[i] > 1:
             result = sum(result, axis=i, keepdims=True)
 
     return result
@@ -420,7 +420,7 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
         var b = ones(List[Int](), DType.float32)
         var c = add(a, b)
         var grad_c = ones(List[Int](), DType.float32)
-        var grads = add_backward(grad_c, a.shape(), b.shape())
+        var grads = add_backward(grad_c, a.shape, b.shape)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
 
@@ -429,7 +429,7 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
         var y = ones(List[Int](), DType.float32)
         var z = add(x, y)  # Shape (3, 4)
         var grad_z = ones(List[Int](), DType.float32)
-        var grads = add_backward(grad_z, x.shape(), y.shape())
+        var grads = add_backward(grad_z, x.shape, y.shape)
         # grads.grad_a will be shape (3, 1) - summed over broadcast dimension
     """
     # For addition, gradient passes through but must be reduced for broadcasting
@@ -459,7 +459,7 @@ fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[In
 
     # Gradient for B is negated
     # Create a tensor of -1s with same shape as grad_output
-    var neg_grad = ExTensor(grad_output.shape(), grad_output.dtype())
+    var neg_grad = ExTensor(grad_output.shape, grad_output.dtype())
     for i in range(grad_output.numel()):
         neg_grad._set_float64(i, -grad_output._get_float64(i))
 
@@ -493,11 +493,11 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
     """
     # grad_a = grad_output * b (then reduce for broadcasting)
     var grad_a_unreduced = multiply(grad_output, b)
-    var grad_a = _reduce_broadcast_dims(grad_a_unreduced, a.shape())
+    var grad_a = _reduce_broadcast_dims(grad_a_unreduced, a.shape)
 
     # grad_b = grad_output * a (then reduce for broadcasting)
     var grad_b_unreduced = multiply(grad_output, a)
-    var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())
+    var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape)
 
     return GradientPair(grad_a, grad_b)
 
@@ -533,14 +533,14 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
 
     # grad_a = grad_output / b (then reduce for broadcasting)
     var grad_a_unreduced = divide(grad_output, b)
-    var grad_a = _reduce_broadcast_dims(grad_a_unreduced, a.shape())
+    var grad_a = _reduce_broadcast_dims(grad_a_unreduced, a.shape)
 
     # grad_b = -grad_output * a / b²
     # Add epsilon to b² for numerical stability
     var b_squared = multiply(b, b)
 
     # Add epsilon to prevent division by zero
-    var b_squared_safe = ExTensor(b_squared.shape(), b_squared.dtype())
+    var b_squared_safe = ExTensor(b_squared.shape, b_squared.dtype())
     for i in range(b_squared.numel()):
         var val = b_squared._get_float64(i)
         b_squared_safe._set_float64(i, val + EPSILON)
@@ -550,12 +550,12 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
     var grad_b_positive = divide(temp, b_squared_safe)
 
     # Negate it
-    var grad_b_unreduced = ExTensor(grad_b_positive.shape(), grad_b_positive.dtype())
+    var grad_b_unreduced = ExTensor(grad_b_positive.shape, grad_b_positive.dtype())
     for i in range(grad_b_positive.numel()):
         grad_b_unreduced._set_float64(i, -grad_b_positive._get_float64(i))
 
     # Reduce for broadcasting
-    var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())
+    var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape)
 
     return GradientPair(grad_a, grad_b)
 

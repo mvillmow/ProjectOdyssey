@@ -106,7 +106,7 @@ fn train_epoch(
     Returns:
         Average training loss for the epoch
     """
-    var num_samples = train_images.shape()[0]
+    var num_samples = train_images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_loss = Float32(0.0)
 
@@ -347,7 +347,7 @@ fn validate(
     Returns:
         Validation accuracy (percentage)
     """
-    var num_samples = val_images.shape()[0]
+    var num_samples = val_images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_correct = 0
 
@@ -356,7 +356,7 @@ fn validate(
         var batch_pair = extract_batch_pair(val_images, val_labels, start_idx, batch_size)
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape[0]
 
         # Forward pass (inference mode)
         var logits = model.forward(batch_images, training=False)
@@ -409,7 +409,7 @@ fn main() raises:
     var train_images = train_data[0]
     var train_labels = train_data[1]
 
-    var num_train = train_images.shape()[0]
+    var num_train = train_images.shape[0]
     print("  Training samples: " + str(num_train))
     print("  Image shape: (3, 32, 32)")
     print("  Number of classes: 10")

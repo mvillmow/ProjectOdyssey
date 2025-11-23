@@ -54,8 +54,8 @@ fn test_linear_initialization() raises:
     var bias = zeros(bias_shape, DType.float32)
 
     # Verify shapes
-    var w_shape = weights.shape()
-    var b_shape = bias.shape()
+    var w_shape = weights.shape
+    var b_shape = bias.shape
     assert_equal(w_shape[0], out_features)
     assert_equal(w_shape[1], in_features)
     assert_equal(b_shape[0], out_features)
@@ -102,7 +102,7 @@ fn test_linear_forward() raises:
     var output = linear(input, weights, bias)
 
     # Check output shape
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], batch_size)
     assert_equal(out_shape[1], out_features)
 
@@ -141,7 +141,7 @@ fn test_linear_no_bias() raises:
     var output = linear_no_bias(input, weights)
 
     # Check output shape
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], out_features)
 

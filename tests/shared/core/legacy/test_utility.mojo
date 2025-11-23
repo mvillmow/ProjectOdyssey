@@ -88,7 +88,7 @@ fn test_shape_property() raises:
     shape.append(4)
     vart = ones(shape, DType.float32)
 
-    vars = t.shape()
+    vars = t.shape
     assert_equal_int(len(s), 2, "Shape should have 2 dimensions")
     assert_equal_int(s[0], 3, "First dimension should be 3")
     assert_equal_int(s[1], 4, "Second dimension should be 4")

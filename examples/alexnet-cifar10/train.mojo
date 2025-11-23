@@ -109,7 +109,7 @@ fn compute_gradients(
     var pool3_out = maxpool2d(relu5_out, kernel_size=3, stride=2, padding=0)
 
     # Flatten
-    var pool3_shape = pool3_out.shape()
+    var pool3_shape = pool3_out.shape
     var batch_size = pool3_shape[0]
     var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
     var flatten_shape = List[Int]()
@@ -297,7 +297,7 @@ fn train_epoch(
     Returns:
         Average loss for the epoch
     """
-    var num_samples = train_images.shape()[0]
+    var num_samples = train_images.shape[0]
     var num_batches = (num_samples + batch_size - 1) // batch_size
 
     var total_loss = Float32(0.0)
@@ -346,7 +346,7 @@ fn evaluate(
     Returns:
         Test accuracy (0.0 to 1.0)
     """
-    var num_samples = test_images.shape()[0]
+    var num_samples = test_images.shape[0]
     var correct = 0
 
     print("Evaluating...")
@@ -382,22 +382,22 @@ fn initialize_velocities(model: AlexNet) raises -> List[ExTensor]:
     var velocities = List[ExTensor]()
 
     # Initialize velocities for all 16 parameters (conv1-5 + fc1-3, weights + bias)
-    velocities.append(zeros(model.conv1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_bias.shape(), DType.float32))
-    velocities.append(zeros(model.fc1_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.fc2_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.fc3_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv2_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv3_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv3_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv4_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv4_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv5_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv5_bias.shape, DType.float32))
+    velocities.append(zeros(model.fc1_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc1_bias.shape, DType.float32))
+    velocities.append(zeros(model.fc2_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc2_bias.shape, DType.float32))
+    velocities.append(zeros(model.fc3_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc3_bias.shape, DType.float32))
 
     return velocities
 
@@ -449,8 +449,8 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    print("  Training samples: ", train_images.shape()[0])
-    print("  Test samples: ", test_images.shape()[0])
+    print("  Training samples: ", train_images.shape[0])
+    print("  Test samples: ", test_images.shape[0])
     print()
 
     # Training loop with learning rate decay

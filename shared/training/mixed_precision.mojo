@@ -111,7 +111,7 @@ struct GradientScaler:
             raise Error("Scale factor must be positive, got: " + String(self.scale))
 
         # Create a scalar tensor with the scale value and multiply
-        var scale_tensor = ExTensor.full(loss.shape(), Float64(self.scale), loss.dtype())
+        var scale_tensor = ExTensor.full(loss.shape, Float64(self.scale), loss.dtype())
         return loss * scale_tensor
 
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
@@ -133,7 +133,7 @@ struct GradientScaler:
             raise Error("Cannot unscale with zero scale factor")
 
         # Create a scalar tensor with the scale value and divide
-        var scale_tensor = ExTensor.full(gradients.shape(), Float64(self.scale), gradients.dtype())
+        var scale_tensor = ExTensor.full(gradients.shape, Float64(self.scale), gradients.dtype())
         return gradients / scale_tensor
 
     fn step(mut self):
@@ -208,7 +208,7 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
         raise Error("Cannot convert empty parameter tensor")
 
     # Create FP32 tensor with same shape
-    var result = ExTensor(params.shape(), DType.float32)
+    var result = ExTensor(params.shape, DType.float32)
     var size = params._numel
 
     # If already FP32, just copy
@@ -342,7 +342,7 @@ fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTe
     # Clip if norm exceeds max_norm
     if grad_norm > Float64(max_norm):
         var scale_factor = Float64(max_norm) / grad_norm
-        var scale_tensor = ExTensor.full(gradients.shape(), scale_factor, gradients.dtype())
+        var scale_tensor = ExTensor.full(gradients.shape, scale_factor, gradients.dtype())
         return gradients * scale_tensor
     else:
         return gradients
@@ -374,7 +374,7 @@ fn clip_gradients_by_value(gradients: ExTensor,
         return gradients  # No clipping needed for empty tensor
 
     # Clamp each element to [min_value, max_value]
-    var result = ExTensor(gradients.shape(), gradients.dtype())
+    var result = ExTensor(gradients.shape, gradients.dtype())
     var size = gradients._numel
 
     # Use optimized path for Float32

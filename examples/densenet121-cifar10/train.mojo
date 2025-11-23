@@ -25,7 +25,7 @@ fn main() raises:
     var train_data = load_cifar10_train("datasets/cifar10")
     var train_images = train_data[0]
     var train_labels = train_data[1]
-    print("Training samples: " + str(train_images.shape()[0]))
+    print("Training samples: " + str(train_images.shape[0]))
     print()
 
     var model = DenseNet121(num_classes=10)

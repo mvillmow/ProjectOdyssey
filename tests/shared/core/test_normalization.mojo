@@ -57,14 +57,14 @@ fn test_batch_norm2d_shapes() raises:
     )
 
     # Check output shape
-    assert_equal(output.shape()[0], 2)
-    assert_equal(output.shape()[1], 3)
-    assert_equal(output.shape()[2], 4)
-    assert_equal(output.shape()[3], 4)
+    assert_equal(output.shape[0], 2)
+    assert_equal(output.shape[1], 3)
+    assert_equal(output.shape[2], 4)
+    assert_equal(output.shape[3], 4)
 
     # Check statistics shapes
-    assert_equal(new_mean.shape()[0], 3)
-    assert_equal(new_var.shape()[0], 3)
+    assert_equal(new_mean.shape[0], 3)
+    assert_equal(new_var.shape[0], 3)
 
 
 fn test_batch_norm2d_training_mode() raises:
@@ -382,10 +382,10 @@ fn test_batch_norm2d_backward_shapes() raises:
     assert_shape_equal(grad_beta, gamma, "grad_beta should match beta shape")
 
     # Check specific dimensions
-    assert_equal(grad_input.shape()[0], 3, "batch dimension")
-    assert_equal(grad_input.shape()[1], 4, "channels dimension")
-    assert_equal(grad_gamma.shape()[0], 4, "gamma channels")
-    assert_equal(grad_beta.shape()[0], 4, "beta channels")
+    assert_equal(grad_input.shape[0], 3, "batch dimension")
+    assert_equal(grad_input.shape[1], 4, "channels dimension")
+    assert_equal(grad_gamma.shape[0], 4, "gamma channels")
+    assert_equal(grad_beta.shape[0], 4, "beta channels")
 
 
 # ============================================================================
@@ -408,8 +408,8 @@ fn test_layer_norm_shapes_2d() raises:
     var output = layer_norm(x, gamma, beta, epsilon=1e-5)
 
     # Check output shape
-    assert_equal(output.shape()[0], 4)
-    assert_equal(output.shape()[1], 10)
+    assert_equal(output.shape[0], 4)
+    assert_equal(output.shape[1], 10)
 
 
 fn test_layer_norm_shapes_4d() raises:
@@ -431,10 +431,10 @@ fn test_layer_norm_shapes_4d() raises:
     var output = layer_norm(x, gamma, beta, epsilon=1e-5)
 
     # Check output shape
-    assert_equal(output.shape()[0], 2)
-    assert_equal(output.shape()[1], 3)
-    assert_equal(output.shape()[2], 4)
-    assert_equal(output.shape()[3], 4)
+    assert_equal(output.shape[0], 2)
+    assert_equal(output.shape[1], 3)
+    assert_equal(output.shape[2], 4)
+    assert_equal(output.shape[3], 4)
 
 
 fn test_layer_norm_normalization_2d() raises:

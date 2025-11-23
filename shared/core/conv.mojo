@@ -9,7 +9,7 @@ from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
 from collections import List
-from math import max as math_max
+# max is now a builtin in Mojo - no import needed
 
 
 struct Conv2dBackwardResult(Movable):
@@ -71,7 +71,7 @@ fn conv2d(
     Raises:.        Error: If tensor shapes are incompatible.
     """
     # Get input dimensions
-    var x_shape = x.shape()
+    var x_shape = x.shape
     if len(x_shape) != 4:
         raise Error("Input must be 4D tensor (batch, channels, height, width)")
 
@@ -81,7 +81,7 @@ fn conv2d(
     var in_width = x_shape[3]
 
     # Get kernel dimensions
-    var k_shape = kernel.shape()
+    var k_shape = kernel.shape
     if len(k_shape) != 4:
         raise Error("Kernel must be 4D tensor (out_channels, in_channels, kH, kW)")
 
@@ -170,7 +170,7 @@ fn conv2d_no_bias(
     Raises:.        Error: If tensor shapes are incompatible.
     """
     # Create zero bias
-    var k_shape = kernel.shape()
+    var k_shape = kernel.shape
     var out_channels = k_shape[0]
     var bias_shape = List[Int]()
     bias_shape.append(out_channels)
@@ -225,9 +225,9 @@ fn conv2d_backward(
     Raises:.        Error if tensor shapes are incompatible.
     """
     # Get dimensions
-    var x_shape = x.shape()
-    var k_shape = kernel.shape()
-    var grad_out_shape = grad_output.shape()
+    var x_shape = x.shape
+    var k_shape = kernel.shape
+    var grad_out_shape = grad_output.shape
 
     var batch = x_shape[0]
     var in_channels = x_shape[1]

@@ -98,7 +98,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
         # Squeeze specific dim
         var c = squeeze(a, 0)  # Shape (3, 1, 4)
     """
-    var old_shape = tensor.shape()
+    var old_shape = tensor.shape
     var ndim = len(old_shape)
 
     if dim != -999:
@@ -151,7 +151,7 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         var b = unsqueeze(a, 0)  # Shape (1, 3, 4)
         var c = unsqueeze(a, -1)  # Shape (3, 4, 1)
     """
-    var old_shape = tensor.shape()
+    var old_shape = tensor.shape
     var ndim = len(old_shape)
     var new_ndim = ndim + 1
 
@@ -242,10 +242,10 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 
     if num_tensors == 1:
         # Single tensor, just return copy
-        return reshape(tensors[0], tensors[0].shape())
+        return reshape(tensors[0], tensors[0].shape)
 
     # Get reference shape and dtype from first tensor
-    var ref_shape = tensors[0].shape()
+    var ref_shape = tensors[0].shape
     var ndim = len(ref_shape)
     var dtype = tensors[0].dtype()
 
@@ -257,7 +257,7 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     # Validate all tensors have same shape except along concat axis
     var concat_size = 0
     for i in range(num_tensors):
-        var shape = tensors[i].shape()
+        var shape = tensors[i].shape
 
         if len(shape) != ndim:
             raise Error("concatenate: all tensors must have same number of dimensions")
@@ -323,12 +323,12 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         raise Error("stack: need at least one tensor")
 
     # All tensors must have identical shapes
-    var ref_shape = tensors[0].shape()
+    var ref_shape = tensors[0].shape
     var ndim = len(ref_shape)
     var dtype = tensors[0].dtype()
 
     for i in range(1, num_tensors):
-        var shape = tensors[i].shape()
+        var shape = tensors[i].shape
 
         if len(shape) != ndim:
             raise Error("stack: all tensors must have same number of dimensions")

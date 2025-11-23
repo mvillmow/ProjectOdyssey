@@ -62,15 +62,15 @@ fn test_linear_backward_shapes() raises:
     var grads = linear_backward(grad_output, x, weights)
 
     # Check shapes
-    var gi_shape = grads.grad_input.shape()
+    var gi_shape = grads.grad_input.shape
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], in_features)
 
-    var gw_shape = grads.grad_weights.shape()
+    var gw_shape = grads.grad_weights.shape
     assert_equal(gw_shape[0], out_features)
     assert_equal(gw_shape[1], in_features)
 
-    var gb_shape = grads.grad_bias.shape()
+    var gb_shape = grads.grad_bias.shape
     assert_equal(gb_shape[0], out_features)
 
 
@@ -106,7 +106,7 @@ fn test_linear_backward_numerical() raises:
     var grads = linear_backward(grad_output, x, weights)
 
     # Check grad_input shape
-    var gi_shape = grads.grad_input.shape()
+    var gi_shape = grads.grad_input.shape
     assert_equal(gi_shape[0], 1)
     assert_equal(gi_shape[1], 2)
 
@@ -142,9 +142,9 @@ fn test_linear_backward_batch() raises:
     var grads = linear_backward(grad_output, x, weights)
 
     # Verify shapes
-    assert_equal(grads.grad_input.shape()[0], batch)
-    assert_equal(grads.grad_weights.shape()[0], out_features)
-    assert_equal(grads.grad_bias.shape()[0], out_features)
+    assert_equal(grads.grad_input.shape[0], batch)
+    assert_equal(grads.grad_weights.shape[0], out_features)
+    assert_equal(grads.grad_bias.shape[0], out_features)
 
 
 fn test_linear_backward_gradient() raises:
@@ -239,7 +239,7 @@ fn test_conv2d_backward_shapes() raises:
 
     # Forward pass to get output shape
     var output = conv2d(x, kernel, bias, stride=1, padding=0)
-    var out_shape = output.shape()
+    var out_shape = output.shape
 
     # Create grad_output with same shape as output
     var grad_output = ones_like(output)
@@ -248,19 +248,19 @@ fn test_conv2d_backward_shapes() raises:
     var grads = conv2d_backward(grad_output, x, kernel, stride=1, padding=0)
 
     # Check shapes match original inputs
-    var gi_shape = grads.grad_input.shape()
+    var gi_shape = grads.grad_input.shape
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], in_channels)
     assert_equal(gi_shape[2], in_h)
     assert_equal(gi_shape[3], in_w)
 
-    var gk_shape = grads.grad_weights.shape()
+    var gk_shape = grads.grad_weights.shape
     assert_equal(gk_shape[0], out_channels)
     assert_equal(gk_shape[1], in_channels)
     assert_equal(gk_shape[2], kh)
     assert_equal(gk_shape[3], kw)
 
-    var gb_shape = grads.grad_bias.shape()
+    var gb_shape = grads.grad_bias.shape
     assert_equal(gb_shape[0], out_channels)
 
 
@@ -296,7 +296,7 @@ fn test_conv2d_backward_with_stride() raises:
     var grads = conv2d_backward(grad_output, x, kernel, stride=2, padding=0)
 
     # Check grad_input shape matches input
-    var gi_shape = grads.grad_input.shape()
+    var gi_shape = grads.grad_input.shape
     assert_equal(gi_shape[0], 1)
     assert_equal(gi_shape[1], 1)
     assert_equal(gi_shape[2], 8)
@@ -384,7 +384,7 @@ fn test_maxpool2d_backward_shapes() raises:
     var grad_input = maxpool2d_backward(grad_output, x, kernel_size=2, stride=2, padding=0)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], channels)
     assert_equal(gi_shape[2], height)
@@ -446,7 +446,7 @@ fn test_avgpool2d_backward_shapes() raises:
     var grad_input = avgpool2d_backward(grad_output, x, kernel_size=2, stride=2, padding=0)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], channels)
     assert_equal(gi_shape[2], height)
@@ -568,7 +568,7 @@ fn test_cross_entropy_backward_shapes() raises:
     var grad_logits = cross_entropy_backward(grad_output, logits, targets)
 
     # Check shape matches logits
-    var gl_shape = grad_logits.shape()
+    var gl_shape = grad_logits.shape
     assert_equal(gl_shape[0], batch)
     assert_equal(gl_shape[1], num_classes)
 
@@ -647,7 +647,7 @@ fn test_binary_cross_entropy_backward_shapes() raises:
     var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
 
     # Check shape matches predictions
-    var gp_shape = grad_pred.shape()
+    var gp_shape = grad_pred.shape
     assert_equal(gp_shape[0], batch)
     assert_equal(gp_shape[1], features)
 
@@ -757,7 +757,7 @@ fn test_mean_squared_error_backward_shapes() raises:
     var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
 
     # Check shape matches predictions
-    var gp_shape = grad_pred.shape()
+    var gp_shape = grad_pred.shape
     assert_equal(gp_shape[0], batch)
     assert_equal(gp_shape[1], features)
 

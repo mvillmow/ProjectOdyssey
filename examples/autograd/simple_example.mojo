@@ -93,11 +93,11 @@ fn simple_linear_regression() raises:
         # TODO: Replace with tape.backward() when fully implemented
 
         # Gradient of loss (scalar): ∂loss/∂loss = 1
-        var grad_loss = ones(loss.shape(), loss.dtype())
+        var grad_loss = ones(loss.shape, loss.dtype())
 
         # Gradient of mean: ∂loss/∂squared_errors
         var grad_squared_errors = mean_backward(
-            grad_loss, squared_errors.shape(), axis=-1
+            grad_loss, squared_errors.shape, axis=-1
         )
 
         # Gradient of MSE: ∂squared_errors/∂predictions

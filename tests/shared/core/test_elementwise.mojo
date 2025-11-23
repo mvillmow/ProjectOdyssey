@@ -63,8 +63,8 @@ fn test_abs_shapes() raises:
 
     var result = abs(x)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_abs_values() raises:
@@ -173,8 +173,8 @@ fn test_exp_shapes() raises:
 
     var result = exp(x)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_exp_values() raises:
@@ -252,8 +252,8 @@ fn test_log_shapes() raises:
 
     var result = log(x)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_log_values() raises:
@@ -419,8 +419,8 @@ fn test_sqrt_shapes() raises:
 
     var result = sqrt(x)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_sqrt_values() raises:
@@ -542,8 +542,8 @@ fn test_clip_shapes() raises:
 
     var result = clip(x, min_val=-1.0, max_val=1.0)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_clip_values() raises:

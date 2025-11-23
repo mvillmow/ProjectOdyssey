@@ -31,7 +31,7 @@ fn test_shape_1d() raises:
     shape.append(10)
     vart = ones(shape, DType.float32)
 
-    vars = t.shape()
+    vars = t.shape
     assert_equal_int(len(s), 1, "1D tensor should have 1 dimension in shape")
     assert_equal_int(s[0], 10, "First dimension should be 10")
 
@@ -43,7 +43,7 @@ fn test_shape_2d() raises:
     shape.append(4)
     vart = ones(shape, DType.float32)
 
-    vars = t.shape()
+    vars = t.shape
     assert_equal_int(len(s), 2, "2D tensor should have 2 dimensions")
     assert_equal_int(s[0], 3, "First dimension should be 3")
     assert_equal_int(s[1], 4, "Second dimension should be 4")
@@ -57,7 +57,7 @@ fn test_shape_3d() raises:
     shape.append(4)
     vart = ones(shape, DType.float32)
 
-    vars = t.shape()
+    vars = t.shape
     assert_equal_int(len(s), 3, "3D tensor should have 3 dimensions")
     assert_equal_int(s[0], 2, "Dim 0 should be 2")
     assert_equal_int(s[1], 3, "Dim 1 should be 3")
@@ -69,7 +69,7 @@ fn test_shape_scalar() raises:
     var shape = List[Int]()
     vart = full(shape, 42.0, DType.float32)
 
-    vars = t.shape()
+    vars = t.shape
     assert_equal_int(len(s), 0, "Scalar tensor should have 0 dimensions")
 
 

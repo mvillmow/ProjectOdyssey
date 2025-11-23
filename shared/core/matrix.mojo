@@ -54,8 +54,8 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot multiply matrices with different dtypes")
 
     # Check dimension compatibility
-    var a_shape = a.shape()
-    var b_shape = b.shape()
+    var a_shape = a.shape
+    var b_shape = b.shape
     var a_ndim = len(a_shape)
     var b_ndim = len(b_shape)
 
@@ -201,7 +201,7 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
         TODO: Add support for custom axis permutation via axes parameter.
     """
     var ndim = tensor.dim()
-    var input_shape = tensor.shape()
+    var input_shape = tensor.shape
 
     # Build result shape (reverse all dimensions)
     var result_shape = List[Int]()
@@ -233,8 +233,8 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
             result_coords.append(0)
         var temp_idx = result_idx
         for i in range(ndim - 1, -1, -1):
-            result_coords[i] = temp_idx % result.shape()[i]
-            temp_idx //= result.shape()[i]
+            result_coords[i] = temp_idx % result.shape[i]
+            temp_idx //= result.shape[i]
 
         # Map result coordinates to input coordinates (reverse order)
         # BUGFIX: Initialize list properly before indexing
@@ -275,7 +275,7 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
     # For 2D: matrix multiplication
     if a.dim() == 1 and b.dim() == 1:
         # Vector dot product
-        if len(a.shape()) != len(b.shape()) or a.shape()[0] != b.shape()[0]:
+        if len(a.shape) != len(b.shape) or a.shape[0] != b.shape[0]:
             raise Error("Incompatible shapes for dot product")
 
         var result_shape = List[Int]()  # Scalar (0D)
@@ -283,7 +283,7 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
         # Compute dot product: sum of a[i] * b[i]
         var sum_val: Float64 = 0.0
-        var length = a.shape()[0]
+        var length = a.shape[0]
         for i in range(length):
             var a_val = a._get_float64(i)
             var b_val = b._get_float64(i)
@@ -318,14 +318,14 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     # Output shape is (len(a), len(b))
     var result_shape = List[Int]()
-    result_shape.append(a.shape()[0])
-    result_shape.append(b.shape()[0])
+    result_shape.append(a.shape[0])
+    result_shape.append(b.shape[0])
 
     var result = ExTensor(result_shape, a.dtype())
 
     # Implement outer product: result[i, j] = a[i] * b[j]
-    var len_a = a.shape()[0]
-    var len_b = b.shape()[0]
+    var len_a = a.shape[0]
+    var len_b = b.shape[0]
 
     for i in range(len_a):
         for j in range(len_b):
@@ -378,8 +378,8 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         ∂L/∂A[i,k] = Σ_j (∂L/∂C[i,j] * B[k,j]) = (∂L/∂C @ B^T)[i,k]
         ∂L/∂B[k,j] = Σ_i (∂L/∂A[i,k] * A[i,k]) = (A^T @ ∂L/∂C)[k,j]
     """
-    var a_shape = a.shape()
-    var b_shape = b.shape()
+    var a_shape = a.shape
+    var b_shape = b.shape
     var a_ndim = len(a_shape)
     var b_ndim = len(b_shape)
 

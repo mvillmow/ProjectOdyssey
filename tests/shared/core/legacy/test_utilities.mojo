@@ -30,11 +30,11 @@ fn test_ones_like_shape() raises:
         raise Error("ones_like should preserve number of dimensions")
 
     for i in range(template.dim()):
-        if result.shape()[i] != template.shape()[i]:
+        if result.shape[i] != template.shape[i]:
             raise Error("ones_like should preserve all dimensions")
 
-    print("  Template shape:", template.shape()[0], "x", template.shape()[1], "x", template.shape()[2])
-    print("  Result shape:", result.shape()[0], "x", result.shape()[1], "x", result.shape()[2])
+    print("  Template shape:", template.shape[0], "x", template.shape[1], "x", template.shape[2])
+    print("  Result shape:", result.shape[0], "x", result.shape[1], "x", result.shape[2])
     print("  ✓ ones_like shape test passed")
 
 
@@ -162,9 +162,9 @@ fn test_utility_with_different_shapes() raises:
     var tensor_ones = ones_like(tensor)
 
     print("  Scalar (0D): ✓")
-    print("  Vector (1D):", vec_ones.shape()[0], "elements ✓")
-    print("  Matrix (2D):", mat_full.shape()[0], "x", mat_full.shape()[1], "✓")
-    print("  Tensor (3D):", tensor_ones.shape()[0], "x", tensor_ones.shape()[1], "x", tensor_ones.shape()[2], "✓")
+    print("  Vector (1D):", vec_ones.shape[0], "elements ✓")
+    print("  Matrix (2D):", mat_full.shape[0], "x", mat_full.shape[1], "✓")
+    print("  Tensor (3D):", tensor_ones.shape[0], "x", tensor_ones.shape[1], "x", tensor_ones.shape[2], "✓")
     print("  ✓ Various shapes test passed")
 
 

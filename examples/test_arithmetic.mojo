@@ -25,7 +25,7 @@ fn main() raises:
     var c = a + b
     print("  Expected: all 3.0")
     print("  Result numel:", c.numel())
-    print("  Result shape:", c.shape()[0], "x", c.shape()[1])
+    print("  Result shape:", c.shape[0], "x", c.shape[1])
     print("  First element:", c._get_float64(0))
 
     # Test subtraction

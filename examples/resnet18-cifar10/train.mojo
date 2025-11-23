@@ -45,7 +45,7 @@ fn compute_accuracy(model: inout ResNet18, images: ExTensor, labels: ExTensor) r
     Returns:
         Accuracy as percentage (0-100)
     """
-    var num_samples = images.shape()[0]
+    var num_samples = images.shape[0]
     var correct = 0
 
     # Evaluate in batches to avoid memory issues
@@ -57,7 +57,7 @@ fn compute_accuracy(model: inout ResNet18, images: ExTensor, labels: ExTensor) r
         var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape[0]
 
         # Forward pass (inference mode)
         var logits = model.forward(batch_images, training=False)
@@ -129,7 +129,7 @@ fn train_epoch(
         automatic differentiation instead of manual backpropagation for such
         deep networks.
     """
-    var num_samples = train_images.shape()[0]
+    var num_samples = train_images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_loss = Float32(0.0)
 
@@ -142,7 +142,7 @@ fn train_epoch(
         var batch_pair = extract_batch_pair(train_images, train_labels, start_idx, batch_size)
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape[0]
 
         # ========== FORWARD PASS WITH CACHING ==========
         # NOTE: A complete implementation would cache ALL intermediate activations
@@ -184,7 +184,7 @@ fn train_epoch(
         #    var grad_s4b2_skip = relu_backward(grad_s4b2_out, s4b2_skip)
         #
         #    # Split gradient at skip connection
-        #    var s4b2_shapes = (s4b2_bn2.shape(), s4b1_out.shape())
+        #    var s4b2_shapes = (s4b2_bn2.shape, s4b1_out.shape)
         #    var grad_pair = add_backward(grad_s4b2_skip, s4b2_shapes[0], s4b2_shapes[1])
         #    var grad_s4b2_bn2 = grad_pair[0]  # Main path
         #    var grad_s4b2_from_skip = grad_pair[1]  # Skip path
@@ -332,8 +332,8 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    print("  Training samples: " + str(train_images.shape()[0]))
-    print("  Test samples: " + str(test_images.shape()[0]))
+    print("  Training samples: " + str(train_images.shape[0]))
+    print("  Test samples: " + str(test_images.shape[0]))
     print()
 
     # Initialize model

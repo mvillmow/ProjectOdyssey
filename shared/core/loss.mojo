@@ -54,7 +54,7 @@ fn binary_cross_entropy(
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
 
-    if predictions.shape() != targets.shape():
+    if predictions.shape != targets.shape:
         raise Error("Predictions and targets must have the same shape")
 
     # Clip predictions to prevent log(0) and log(1)
@@ -62,7 +62,7 @@ fn binary_cross_entropy(
 
     # Compute log(p) and log(1-p)
     var log_pred = log(clipped)
-    var one = ExTensor(clipped.shape(), clipped.dtype())
+    var one = ExTensor(clipped.shape, clipped.dtype())
     for i in range(one.numel()):
         one._set_float64(i, 1.0)
 
@@ -76,7 +76,7 @@ fn binary_cross_entropy(
     var sum_terms = add(term1, term2)
 
     # Negate: BCE = -(term1 + term2)
-    var zero = ExTensor(sum_terms.shape(), sum_terms.dtype())
+    var zero = ExTensor(sum_terms.shape, sum_terms.dtype())
     for i in range(zero.numel()):
         zero._set_float64(i, 0.0)
 
@@ -151,7 +151,7 @@ fn mean_squared_error(predictions: ExTensor, targets: ExTensor) raises -> ExTens
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
 
-    if predictions.shape() != targets.shape():
+    if predictions.shape != targets.shape:
         raise Error("Predictions and targets must have the same shape")
 
     # MSE = (predictions - targets)^2
@@ -187,7 +187,7 @@ fn mean_squared_error_backward(
     var diff = subtract(predictions, targets)
 
     # Create tensor with value 2.0
-    var two = ExTensor(diff.shape(), diff.dtype())
+    var two = ExTensor(diff.shape, diff.dtype())
     for i in range(two.numel()):
         two._set_float64(i, 2.0)
 
@@ -233,7 +233,7 @@ fn cross_entropy(
     if logits.dtype() != targets.dtype():
         raise Error("Logits and targets must have the same dtype")
 
-    if logits.shape() != targets.shape():
+    if logits.shape != targets.shape:
         raise Error("Logits and targets must have the same shape")
 
     # Implement cross-entropy with log-sum-exp trick for numerical stability
@@ -241,7 +241,7 @@ fn cross_entropy(
     # where log_sum_exp(x) = max(x) + log(sum(exp(x - max(x))))
 
     # Assume last axis is the class dimension
-    var shape = logits.shape()
+    var shape = logits.shape
     var class_axis = len(shape) - 1 if axis == -1 else axis
 
     # Step 1: Find max along class axis for numerical stability
@@ -258,7 +258,7 @@ fn cross_entropy(
 
     # Step 5: Compute log_sum_exp = max + log(sum_exp + epsilon)
     # Add epsilon for numerical stability to prevent log(0)
-    var epsilon_tensor = ExTensor(sum_exp.shape(), sum_exp.dtype())
+    var epsilon_tensor = ExTensor(sum_exp.shape, sum_exp.dtype())
     for i in range(epsilon_tensor.numel()):
         epsilon_tensor._set_float64(i, epsilon)
     var sum_exp_stable = add(sum_exp, epsilon_tensor)
@@ -272,7 +272,7 @@ fn cross_entropy(
     var ce_sum = sum(ce_per_sample, axis=class_axis, keepdims=False)  # Sum over classes
 
     # Negate: create -1.0 scalar tensor
-    var neg_one = ExTensor(ce_sum.shape(), logits.dtype())
+    var neg_one = ExTensor(ce_sum.shape, logits.dtype())
     for i in range(neg_one.numel()):
         neg_one._set_float64(i, -1.0)
     var ce = multiply(ce_sum, neg_one)
@@ -312,7 +312,7 @@ fn cross_entropy_backward(
         used mean reduction.
     """
     # Compute softmax probabilities
-    var axis = len(logits.shape()) - 1  # Last axis is classes
+    var axis = len(logits.shape) - 1  # Last axis is classes
     var probs = softmax(logits, axis=axis)
 
     # Gradient: softmax(logits) - targets
@@ -320,11 +320,11 @@ fn cross_entropy_backward(
 
     # Scale by upstream gradient and average over batch
     # NOTE: Forward pass already averages via mean(ce, axis=0), so we divide by batch_size here
-    var batch_size = Float32(logits.shape()[0])
+    var batch_size = Float32(logits.shape[0])
     var scale_val = 1.0 / batch_size
 
     # Create scale tensor with same shape as grad
-    var scale_tensor = ExTensor(grad.shape(), grad.dtype())
+    var scale_tensor = ExTensor(grad.shape, grad.dtype())
     for i in range(scale_tensor.numel()):
         scale_tensor._set_float64(i, Float64(scale_val))
 

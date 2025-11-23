@@ -30,7 +30,7 @@ fn evaluate_model(
     verbose: Bool = True
 ) raises -> (Float32, List[Int], List[Int]):
     """Evaluate model on a dataset."""
-    var num_samples = images.shape()[0]
+    var num_samples = images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_correct = 0
     var correct_per_class = List[Int]()
@@ -48,7 +48,7 @@ fn evaluate_model(
         var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape[0]
 
         var logits = model.forward(batch_images, training=False)
 
@@ -135,7 +135,7 @@ fn main() raises:
     var test_data = load_cifar10_test("datasets/cifar10")
     var test_images = test_data[0]
     var test_labels = test_data[1]
-    print("  Test samples: " + str(test_images.shape()[0]))
+    print("  Test samples: " + str(test_images.shape[0]))
     print()
 
     print("Initializing MobileNetV1 model...")

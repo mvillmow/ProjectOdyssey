@@ -60,7 +60,7 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
         var scaled = multiply_scalar(gradients, 0.01)  # Scale by learning rate
         var doubled = multiply_scalar(x, 2.0)
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
     for i in range(tensor.numel()):
         let val = tensor._get_float64(i)
         result._set_float64(i, val * scalar)
@@ -80,7 +80,7 @@ fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     Example:
         var shifted = add_scalar(x, 1.0)  # x + 1
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
     for i in range(tensor.numel()):
         let val = tensor._get_float64(i)
         result._set_float64(i, val + scalar)
@@ -100,7 +100,7 @@ fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     Example:
         var shifted = subtract_scalar(x, 1.0)  # x - 1
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
     for i in range(tensor.numel()):
         let val = tensor._get_float64(i)
         result._set_float64(i, val - scalar)
@@ -126,7 +126,7 @@ fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     if scalar == 0.0:
         raise Error("Cannot divide by zero")
 
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
     for i in range(tensor.numel()):
         let val = tensor._get_float64(i)
         result._set_float64(i, val / scalar)
@@ -162,7 +162,7 @@ fn apply_gradient(
         w = apply_gradient(w, grad_w, 0.01)
         b = apply_gradient(b, grad_b, 0.01)
     """
-    if gradient.shape() != parameter.shape():
+    if gradient.shape != parameter.shape:
         raise Error("Gradient shape must match parameter shape")
 
     # Compute: parameter - lr * gradient
@@ -270,8 +270,8 @@ fn mse_loss_and_grad(
     var loss = mean(squared_errors, axis=-1, keepdims=False)
 
     # Backward pass
-    var grad_loss = ones(loss.shape(), loss.dtype())
-    var grad_squared_errors = mean_backward(grad_loss, squared_errors.shape(), axis=-1)
+    var grad_loss = ones(loss.shape, loss.dtype())
+    var grad_squared_errors = mean_backward(grad_loss, squared_errors.shape, axis=-1)
     var grad_predictions = mean_squared_error_backward(
         grad_squared_errors, predictions, targets
     )
@@ -310,8 +310,8 @@ fn bce_loss_and_grad(
     var loss = mean(bce_per_sample, axis=-1, keepdims=False)
 
     # Backward pass
-    var grad_loss = ones(loss.shape(), loss.dtype())
-    var grad_bce = mean_backward(grad_loss, bce_per_sample.shape(), axis=-1)
+    var grad_loss = ones(loss.shape, loss.dtype())
+    var grad_bce = mean_backward(grad_loss, bce_per_sample.shape, axis=-1)
     var grad_predictions = binary_cross_entropy_backward(
         grad_bce, predictions, targets, epsilon
     )
@@ -353,7 +353,7 @@ fn ce_loss_and_grad(
     var loss = cross_entropy(logits, targets, axis=-1, epsilon=epsilon)
 
     # Backward pass
-    var grad_loss = ones(loss.shape(), loss.dtype())
+    var grad_loss = ones(loss.shape, loss.dtype())
     var grad_logits = cross_entropy_backward(grad_loss, logits, targets, epsilon)
 
     return LossAndGrad(loss, grad_logits)

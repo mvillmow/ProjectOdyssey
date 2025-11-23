@@ -59,7 +59,7 @@ fn evaluate_model(
         Top-5 accuracy: Model is correct if true label is in top 5 predictions
         For CIFAR-10 (10 classes), Top-5 is less meaningful but included for completeness
     """
-    var num_samples = test_images.shape()[0]
+    var num_samples = test_images.shape[0]
     var correct_top1 = 0
     var correct_top5 = 0
 
@@ -113,7 +113,7 @@ fn _argmax(tensor: ExTensor) raises -> Int:
     Returns:
         Index of maximum value
     """
-    var shape = tensor.shape()
+    var shape = tensor.shape
     var max_idx = 0
     var max_val = tensor[0]
 
@@ -138,7 +138,7 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     Note:
         Simple implementation using repeated argmax (not optimal but clear)
     """
-    var shape = tensor.shape()
+    var shape = tensor.shape
     var num_classes = shape[1]
     var indices = List[Int]()
 
@@ -216,7 +216,7 @@ fn main() raises:
     var test_data = load_cifar10_test(data_dir)
     var test_images = test_data[0]
     var test_labels = test_data[1]
-    print("  Test samples: ", test_images.shape()[0])
+    print("  Test samples: ", test_images.shape[0])
     print()
 
     # Evaluate model

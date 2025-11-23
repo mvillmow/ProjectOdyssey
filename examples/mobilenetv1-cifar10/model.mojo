@@ -59,12 +59,12 @@ fn depthwise_conv2d(
         This is a naive implementation. For production, this should be
         implemented in the shared library with SIMD optimizations.
     """
-    var batch_size = x.shape()[0]
-    var channels = x.shape()[1]
-    var height = x.shape()[2]
-    var width = x.shape()[3]
-    var kernel_h = weights.shape()[2]
-    var kernel_w = weights.shape()[3]
+    var batch_size = x.shape[0]
+    var channels = x.shape[1]
+    var height = x.shape[2]
+    var width = x.shape[3]
+    var kernel_h = weights.shape[2]
+    var kernel_w = weights.shape[3]
 
     # Calculate output dimensions
     var out_h = (height + 2 * padding - kernel_h) // stride + 1
@@ -386,8 +386,8 @@ struct MobileNetV1:
         # Shape: (batch, 1024, 1, 1)
 
         # Flatten
-        var batch_size = out.shape()[0]
-        var channels = out.shape()[1]
+        var batch_size = out.shape[0]
+        var channels = out.shape[1]
         var flattened = zeros(
             List[Int]().append(batch_size).append(channels),
             out.dtype(),

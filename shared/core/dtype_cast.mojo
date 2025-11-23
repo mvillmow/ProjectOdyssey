@@ -35,7 +35,7 @@ fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
     if tensor.dtype() == target_dtype:
         return tensor
 
-    var result = ExTensor(tensor.shape(), target_dtype)
+    var result = ExTensor(tensor.shape, target_dtype)
     var size = tensor._numel
 
     # Optimized paths for common conversions
@@ -107,7 +107,7 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
         raise Error("Cannot convert empty tensor to BFloat16")
 
     # Create uint16 tensor for BF16 storage
-    var result = ExTensor(tensor.shape(), DType.uint16)
+    var result = ExTensor(tensor.shape, DType.uint16)
     var size = tensor._numel
 
     # Convert each element
@@ -140,7 +140,7 @@ fn cast_from_bfloat16(tensor: ExTensor, target_dtype: DType = DType.float32) rai
     if target_dtype != DType.float32 and target_dtype != DType.float64 and target_dtype != DType.float16:
         raise Error("Target dtype must be floating point")
 
-    var result = ExTensor(tensor.shape(), target_dtype)
+    var result = ExTensor(tensor.shape, target_dtype)
     var size = tensor._numel
 
     # Convert each element

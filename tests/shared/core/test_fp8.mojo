@@ -171,7 +171,7 @@ fn test_tensor_to_fp8() raises:
     assert_true(fp8_tensor.dtype() == DType.uint8, "FP8 tensor should have uint8 dtype")
 
     # Check shape is preserved
-    assert_shape_equal(fp8_tensor.shape(), t.shape())
+    assert_shape_equal(fp8_tensor.shape, t.shape)
 
     # Check that values are encoded (not zero)
     var has_nonzero = False
@@ -202,7 +202,7 @@ fn test_tensor_from_fp8() raises:
     assert_true(restored.dtype() == DType.float32, "Restored tensor should have float32 dtype")
 
     # Check shape is preserved
-    assert_shape_equal(restored.shape(), original.shape())
+    assert_shape_equal(restored.shape, original.shape)
 
     # Check values are approximately restored (with FP8 precision loss)
     assert_almost_equal(

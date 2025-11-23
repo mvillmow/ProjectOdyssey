@@ -193,7 +193,7 @@ fn check_gradients_verbose(
 
     if print_all or not passed:
         print("\n=== Gradient Check Details ===")
-        print("Input shape:", input.shape())
+        print("Input shape:", input.shape)
         print("Epsilon:", epsilon)
         print("Tolerance:", tolerance)
 

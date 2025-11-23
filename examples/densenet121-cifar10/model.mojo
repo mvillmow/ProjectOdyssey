@@ -49,14 +49,14 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
     if len(tensors) == 1:
         return tensors[0]
 
-    var batch_size = tensors[0].shape()[0]
-    var height = tensors[0].shape()[2]
-    var width = tensors[0].shape()[3]
+    var batch_size = tensors[0].shape[0]
+    var height = tensors[0].shape[2]
+    var width = tensors[0].shape[3]
 
     # Calculate total channels
     var total_channels = 0
     for i in range(len(tensors)):
-        total_channels += tensors[i].shape()[1]
+        total_channels += tensors[i].shape[1]
 
     # Create output tensor
     var result = zeros(
@@ -75,7 +75,7 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
     # Copy each tensor's data
     for i in range(len(tensors)):
         var tensor = tensors[i]
-        var channels = tensor.shape()[1]
+        var channels = tensor.shape[1]
         var tensor_data = tensor._data.bitcast[Float32]()
 
         for b in range(batch_size):
@@ -444,8 +444,8 @@ struct DenseNet121:
         # Shape: (batch, 1024, 1, 1)
 
         # Flatten
-        var batch_size = out.shape()[0]
-        var channels = out.shape()[1]
+        var batch_size = out.shape[0]
+        var channels = out.shape[1]
         var flattened = zeros(
             List[Int]().append(batch_size).append(channels),
             out.dtype(),

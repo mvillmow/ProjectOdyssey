@@ -151,7 +151,7 @@ struct LeNet5:
         var pool2_out = maxpool2d(relu2_out, kernel_size=2, stride=2, padding=0)
 
         # Flatten: (batch, 16, 4, 4) -> (batch, 256)
-        var pool2_shape = pool2_out.shape()
+        var pool2_shape = pool2_out.shape
         var batch_size = pool2_shape[0]
         var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
 
@@ -185,7 +185,7 @@ struct LeNet5:
         var logits = self.forward(input)
 
         # Find argmax
-        var logits_shape = logits.shape()
+        var logits_shape = logits.shape
         var max_idx = 0
         var max_val = logits[0]
 

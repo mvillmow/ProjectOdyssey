@@ -34,8 +34,8 @@ fn verify_he_uniform_alias() raises:
     var he = he_uniform(fan_in, fan_out, shape, seed_val=42)
 
     print("✓ Both functions compiled successfully")
-    print("  kaiming_uniform shape:", kaiming.shape())
-    print("  he_uniform shape:", he.shape())
+    print("  kaiming_uniform shape:", kaiming.shape)
+    print("  he_uniform shape:", he.shape)
 
     # Check first few values match
     var matches = True
@@ -73,14 +73,14 @@ fn verify_cross_entropy() raises:
     # Forward pass
     var loss = cross_entropy(logits, targets)
     print("✓ cross_entropy compiled and executed")
-    print("  Loss shape:", loss.shape())
+    print("  Loss shape:", loss.shape)
     print("  Loss value:", loss._get_float64(0))
 
     # Backward pass
-    var grad_output = ones(loss.shape())
+    var grad_output = ones(loss.shape)
     var grad_logits = cross_entropy_backward(grad_output, logits, targets)
     print("✓ cross_entropy_backward compiled and executed")
-    print("  Gradient shape:", grad_logits.shape())
+    print("  Gradient shape:", grad_logits.shape)
 
 
 fn verify_all_initializers() raises:

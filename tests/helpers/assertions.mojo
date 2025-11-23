@@ -157,7 +157,7 @@ fn assert_shape[T: AnyType](tensor: T, expected: List[Int], message: String = ""
         Error if shapes don't match
     """
     # Get actual shape
-    varactual_shape = tensor.shape()
+    varactual_shape = tensor.shape
 
     # Check dimensions match
     if len(actual_shape) != len(expected):
@@ -224,7 +224,7 @@ fn assert_dim[T: AnyType](tensor: T, expected_dim: Int, message: String = "") ra
     Raises:
         Error if dimensions don't match
     """
-    varactual_dim = len(tensor.shape())
+    varactual_dim = len(tensor.shape)
     if actual_dim != expected_dim:
         var msg = "Dimension count mismatch: expected " + str(expected_dim) + ", got " + str(actual_dim)
         if message:
@@ -301,8 +301,8 @@ fn assert_all_close[T: AnyType](
         Error if shapes don't match or values differ beyond tolerance
     """
     # Check shapes match
-    varshape_a = a.shape()
-    varshape_b = b.shape()
+    varshape_a = a.shape
+    varshape_b = b.shape
 
     if len(shape_a) != len(shape_b):
         raise Error("Shape dimension mismatch: " + str(len(shape_a)) + " vs " + str(len(shape_b)))

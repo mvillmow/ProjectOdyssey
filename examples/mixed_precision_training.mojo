@@ -45,7 +45,7 @@ fn simple_optimizer_step(inout master_params: ExTensor,
                          gradients: ExTensor,
                          learning_rate: Float64) raises:
     """Simple SGD update: params = params - lr * grads."""
-    var lr_tensor = ExTensor.full(master_params.shape(), learning_rate, master_params.dtype())
+    var lr_tensor = ExTensor.full(master_params.shape, learning_rate, master_params.dtype())
     var update = gradients * lr_tensor
     master_params = master_params - update
 

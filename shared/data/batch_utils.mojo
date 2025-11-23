@@ -38,7 +38,7 @@ fn extract_batch(
         - Works with any tensor dimensionality (2D, 3D, 4D, etc.)
         - Efficient memory copying with proper bounds checking
     """
-    var data_shape = data.shape()
+    var data_shape = data.shape
     var num_samples = data_shape[0]
 
     # Handle edge case: start_idx beyond dataset
@@ -115,8 +115,8 @@ fn extract_batch_pair(
         - Efficient for training loops
     """
     # Verify matching sizes
-    var data_samples = data.shape()[0]
-    var label_samples = labels.shape()[0]
+    var data_samples = data.shape[0]
+    var label_samples = labels.shape[0]
 
     if data_samples != label_samples:
         raise Error("Data samples (" + str(data_samples) + ") != label samples (" + str(label_samples) + ")")

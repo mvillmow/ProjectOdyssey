@@ -14,7 +14,8 @@ Issues covered:
 """
 
 from collections import List
-from math import sqrt, min as math_min, max as math_max
+from math import sqrt
+# min and max are now builtins in Mojo - no import needed
 
 
 # ============================================================================

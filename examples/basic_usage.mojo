@@ -38,7 +38,7 @@ fn main() raises:
     var a = arange(0.0, 10.0, 1.0, DType.float32)
     print("\nCreated arange tensor [0, 10) with step 1")
     print("  - numel:", a.numel())
-    print("  - shape:", a.shape()[0])
+    print("  - shape:", a.shape[0])
 
     # eye
     var e = eye(3, 3, 0, DType.float32)

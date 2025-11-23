@@ -48,8 +48,8 @@ fn test_add_shapes() raises:
 
     var result = add(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_add_values() raises:
@@ -108,8 +108,8 @@ fn test_subtract_shapes() raises:
 
     var result = subtract(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_subtract_values() raises:
@@ -168,8 +168,8 @@ fn test_multiply_shapes() raises:
 
     var result = multiply(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_multiply_values() raises:
@@ -233,8 +233,8 @@ fn test_divide_shapes() raises:
 
     var result = divide(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_divide_values() raises:
@@ -303,8 +303,8 @@ fn test_floor_divide_shapes() raises:
 
     var result = floor_divide(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_floor_divide_values() raises:
@@ -345,8 +345,8 @@ fn test_modulo_shapes() raises:
 
     var result = modulo(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_modulo_values() raises:
@@ -387,8 +387,8 @@ fn test_power_shapes() raises:
 
     var result = power(a, b)
 
-    assert_equal(result.shape()[0], 4)
-    assert_equal(result.shape()[1], 10)
+    assert_equal(result.shape[0], 4)
+    assert_equal(result.shape[1], 10)
 
 
 fn test_power_values() raises:

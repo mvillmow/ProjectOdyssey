@@ -194,7 +194,7 @@ struct AlexNet:
         var pool3_out = maxpool2d(relu5_out, kernel_size=3, stride=2, padding=0)
 
         # Flatten: (batch, 256, 1, 1) -> (batch, 256)
-        var pool3_shape = pool3_out.shape()
+        var pool3_shape = pool3_out.shape
         var batch_size = pool3_shape[0]
         var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
 
@@ -234,7 +234,7 @@ struct AlexNet:
         var logits = self.forward(input, training=False)
 
         # Find argmax
-        var logits_shape = logits.shape()
+        var logits_shape = logits.shape
         var max_idx = 0
         var max_val = logits[0]
 

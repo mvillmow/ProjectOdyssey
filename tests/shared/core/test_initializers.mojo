@@ -114,8 +114,8 @@ fn test_xavier_uniform_shape() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = xavier_uniform(fan_in, fan_out, shape, DType.float32)
 
-    assert_equal(W.shape()[0], fan_in)
-    assert_equal(W.shape()[1], fan_out)
+    assert_equal(W.shape[0], fan_in)
+    assert_equal(W.shape[1], fan_out)
     assert_equal(W.numel(), fan_in * fan_out)
 
 
@@ -184,8 +184,8 @@ fn test_xavier_normal_shape() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = xavier_normal(fan_in, fan_out, shape, DType.float32)
 
-    assert_equal(W.shape()[0], fan_in)
-    assert_equal(W.shape()[1], fan_out)
+    assert_equal(W.shape[0], fan_in)
+    assert_equal(W.shape[1], fan_out)
 
 
 fn test_xavier_normal_mean() raises:
@@ -229,8 +229,8 @@ fn test_kaiming_uniform_shape() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = kaiming_uniform(fan_in, fan_out, shape, "fan_in", DType.float32)
 
-    assert_equal(W.shape()[0], fan_in)
-    assert_equal(W.shape()[1], fan_out)
+    assert_equal(W.shape[0], fan_in)
+    assert_equal(W.shape[1], fan_out)
 
 
 fn test_kaiming_uniform_range() raises:
@@ -293,8 +293,8 @@ fn test_kaiming_normal_shape() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = kaiming_normal(fan_in, fan_out, shape, "fan_in", DType.float32)
 
-    assert_equal(W.shape()[0], fan_in)
-    assert_equal(W.shape()[1], fan_out)
+    assert_equal(W.shape[0], fan_in)
+    assert_equal(W.shape[1], fan_out)
 
 
 fn test_kaiming_normal_mean() raises:
@@ -338,8 +338,8 @@ fn test_uniform_shape() raises:
     shape[1] = 30
     var W = uniform(shape, -0.5, 0.5, DType.float32)
 
-    assert_equal(W.shape()[0], 50)
-    assert_equal(W.shape()[1], 30)
+    assert_equal(W.shape[0], 50)
+    assert_equal(W.shape[1], 30)
 
 
 fn test_uniform_range() raises:
@@ -388,8 +388,8 @@ fn test_normal_shape() raises:
     shape[1] = 30
     var W = normal(shape, 0.0, 1.0, DType.float32)
 
-    assert_equal(W.shape()[0], 50)
-    assert_equal(W.shape()[1], 30)
+    assert_equal(W.shape[0], 50)
+    assert_equal(W.shape[1], 30)
 
 
 fn test_normal_mean() raises:
@@ -435,8 +435,8 @@ fn test_constant_shape() raises:
     shape[1] = 30
     var W = constant(shape, 3.14, DType.float32)
 
-    assert_equal(W.shape()[0], 50)
-    assert_equal(W.shape()[1], 30)
+    assert_equal(W.shape[0], 50)
+    assert_equal(W.shape[1], 30)
 
 
 fn test_constant_value() raises:
@@ -488,8 +488,8 @@ fn test_xavier_uniform_float64() raises:
     var W = xavier_uniform(fan_in, fan_out, shape, DType.float64)
 
     assert_true(W._dtype == DType.float64, "Xavier uniform should have float64 dtype")
-    assert_equal(W.shape()[0], 100)
-    assert_equal(W.shape()[1], 50)
+    assert_equal(W.shape[0], 100)
+    assert_equal(W.shape[1], 50)
 
 
 fn test_kaiming_normal_float64() raises:
@@ -500,8 +500,8 @@ fn test_kaiming_normal_float64() raises:
     var W = kaiming_normal(fan_in, fan_out, shape, "fan_in", DType.float64)
 
     assert_true(W._dtype == DType.float64, "Kaiming normal should have float64 dtype")
-    assert_equal(W.shape()[0], 100)
-    assert_equal(W.shape()[1], 50)
+    assert_equal(W.shape[0], 100)
+    assert_equal(W.shape[1], 50)
 
 
 fn test_constant_float64() raises:
@@ -532,8 +532,8 @@ fn test_small_dimensions() raises:
     # Kaiming with fan_in=2
     var shape2 = List[Int](2, 3)
     var W2 = kaiming_uniform(2, 3, shape2, "fan_in", DType.float32)
-    assert_equal(W2.shape()[0], 2)
-    assert_equal(W2.shape()[1], 3)
+    assert_equal(W2.shape[0], 2)
+    assert_equal(W2.shape[1], 3)
 
 
 fn test_rectangular_matrices() raises:
@@ -541,14 +541,14 @@ fn test_rectangular_matrices() raises:
     # Tall matrix (more rows than columns)
     var shape_tall = List[Int](1000, 10)
     var W_tall = xavier_uniform(1000, 10, shape_tall, DType.float32)
-    assert_equal(W_tall.shape()[0], 1000)
-    assert_equal(W_tall.shape()[1], 10)
+    assert_equal(W_tall.shape[0], 1000)
+    assert_equal(W_tall.shape[1], 10)
 
     # Wide matrix (more columns than rows)
     var shape_wide = List[Int](10, 1000)
     var W_wide = kaiming_uniform(10, 1000, shape_wide, "fan_in", DType.float32)
-    assert_equal(W_wide.shape()[0], 10)
-    assert_equal(W_wide.shape()[1], 1000)
+    assert_equal(W_wide.shape[0], 10)
+    assert_equal(W_wide.shape[1], 1000)
 
 
 fn test_large_initialization() raises:
@@ -559,8 +559,8 @@ fn test_large_initialization() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = xavier_uniform(fan_in, fan_out, shape, DType.float32)
 
-    assert_equal(W.shape()[0], 5000)
-    assert_equal(W.shape()[1], 5000)
+    assert_equal(W.shape[0], 5000)
+    assert_equal(W.shape[1], 5000)
     assert_equal(W.numel(), 25000000)
 
     # Verify statistical properties still hold

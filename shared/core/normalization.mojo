@@ -80,7 +80,7 @@ fn batch_norm2d(
         Pure functional: caller must capture and manage all three return values.
         Running statistics are updated only during training mode.
     """
-    var x_shape = x.shape()
+    var x_shape = x.shape
     if len(x_shape) != 4:
         raise Error("batch_norm2d requires 4D input (batch, channels, height, width)")
 
@@ -305,7 +305,7 @@ fn normalize_rgb(
         - Output is float32 with normalized values
         - Common for CIFAR-10, ImageNet, and other RGB datasets
     """
-    var shape = images.shape()
+    var shape = images.shape
     if len(shape) != 4:
         raise Error("normalize_rgb requires 4D input (N, 3, H, W)")
 
@@ -442,8 +442,8 @@ fn batch_norm2d_backward(
         Training mode requires computing batch statistics from x.
         Inference mode uses precomputed running statistics.
     """
-    var x_shape = x.shape()
-    var grad_shape = grad_output.shape()
+    var x_shape = x.shape
+    var grad_shape = grad_output.shape
 
     if x_shape.size != 4 or grad_shape.size != 4:
         raise Error("batch_norm2d_backward requires 4D inputs (batch, channels, height, width)")
@@ -796,7 +796,7 @@ fn layer_norm(
         - Normalizes each sample independently
         - Commonly used in transformers and RNNs
     """
-    var x_shape = x.shape()
+    var x_shape = x.shape
 
     if len(x_shape) == 2:
         # 2D input: (batch, features)

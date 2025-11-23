@@ -22,7 +22,7 @@ fn compute_test_accuracy(inout model: VGG16, test_images: ExTensor, test_labels:
     Returns:
         Accuracy as percentage (0-100)
     """
-    var test_shape = test_images.shape()
+    var test_shape = test_images.shape
     var num_test_samples = test_shape[0]
 
     var correct = 0

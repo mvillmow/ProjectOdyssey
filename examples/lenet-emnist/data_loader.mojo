@@ -148,7 +148,7 @@ fn normalize_images(mut images: ExTensor) raises -> ExTensor:
     Note:
         Converts pixel values from [0, 255] to [0.0, 1.0]
     """
-    var shape = images.shape()
+    var shape = images.shape
     var normalized = zeros(shape, DType.float32)
 
     var num_elements = images.numel()
@@ -179,7 +179,7 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
         #  [0.0, 0.0, 1.0],
         #  [0.0, 1.0, 0.0]]
     """
-    var num_samples = labels.shape()[0]
+    var num_samples = labels.shape[0]
 
     # Create output tensor (num_samples, num_classes)
     var shape = List[Int]()

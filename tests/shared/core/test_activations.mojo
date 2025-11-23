@@ -110,9 +110,9 @@ fn test_relu_shape() raises:
 
     var y = relu(x)
 
-    assert_equal(y.shape()[0], 2)
-    assert_equal(y.shape()[1], 3)
-    assert_equal(y.shape()[2], 4)
+    assert_equal(y.shape[0], 2)
+    assert_equal(y.shape[1], 3)
+    assert_equal(y.shape[2], 4)
 
 
 # ============================================================================
@@ -503,8 +503,8 @@ fn test_gelu_shape() raises:
 
     var y = gelu(x)
 
-    assert_equal(y.shape()[0], 3)
-    assert_equal(y.shape()[1], 4)
+    assert_equal(y.shape[0], 3)
+    assert_equal(y.shape[1], 4)
 
 
 fn test_gelu_backward_gradient() raises:
@@ -621,9 +621,9 @@ fn test_mish_shape() raises:
 
     var y = mish(x)
 
-    assert_equal(y.shape()[0], 2)
-    assert_equal(y.shape()[1], 3)
-    assert_equal(y.shape()[2], 4)
+    assert_equal(y.shape[0], 2)
+    assert_equal(y.shape[1], 3)
+    assert_equal(y.shape[2], 4)
 
 
 fn test_mish_backward_gradient() raises:

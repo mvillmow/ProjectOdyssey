@@ -85,7 +85,7 @@ fn test_add_backward() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Call add_backward - passing shapes as per function signature
-    var (grad_a, grad_b) = add_backward(grad_output, a.shape(), b.shape())
+    var (grad_a, grad_b) = add_backward(grad_output, a.shape, b.shape)
 
     # For addition, gradients should just pass through (equal to grad_output)
     for i in range(6):
@@ -127,11 +127,11 @@ fn test_add_scalar_backward() raises:
     var (grad_a, grad_b) = add_backward(grad_output, a_shape, b_shape)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [1]
-    assert_equal(grad_b.shape()[0], 1)
+    assert_equal(grad_b.shape[0], 1)
 
     # grad_b should contain sum of 6 ones = 6.0
     assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5)
@@ -153,7 +153,7 @@ fn test_subtract_backward() raises:
     var b = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = subtract_backward(grad_output, a.shape(), b.shape())
+    var (grad_a, grad_b) = subtract_backward(grad_output, a.shape, b.shape)
 
     # grad_a should be positive (1.0)
     for i in range(6):
@@ -194,11 +194,11 @@ fn test_subtract_scalar_backward() raises:
     var (grad_a, grad_b) = subtract_backward(grad_output, a_shape, b_shape)
 
     # grad_a should match shape [2, 3] with value 1.0
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [1] with value -6.0 (sum of -ones)
-    assert_equal(grad_b.shape()[0], 1)
+    assert_equal(grad_b.shape[0], 1)
     assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(-6.0), tolerance=1e-5)
 
 
@@ -265,14 +265,14 @@ fn test_multiply_scalar_backward() raises:
     var (grad_a, grad_b) = multiply_backward(grad_output, a, b_scalar)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
     # grad_a = grad_output * b = 1.0 * 2.0 = 2.0
     for i in range(6):
         assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5)
 
     # grad_b should be reduced to shape [1]
-    assert_equal(grad_b.shape()[0], 1)
+    assert_equal(grad_b.shape[0], 1)
     # grad_b = sum(grad_output * a) = sum(1.0 * 1.0) = 6.0
     assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5)
 
@@ -344,14 +344,14 @@ fn test_divide_scalar_backward() raises:
     var (grad_a, grad_b) = divide_backward(grad_output, a, b_scalar)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
     # grad_a = grad_output / b = 1.0 / 2.0 = 0.5
     for i in range(6):
         assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(0.5), tolerance=1e-4)
 
     # grad_b should be reduced to shape [1]
-    assert_equal(grad_b.shape()[0], 1)
+    assert_equal(grad_b.shape[0], 1)
     # grad_b = sum(-grad_output * a / b²) = sum(-1.0 * 2.0 / 4.0) = 6 * (-0.5) = -3.0
     assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(-3.0), tolerance=1e-4)
 
@@ -379,11 +379,11 @@ fn test_add_broadcast() raises:
     var (grad_a, grad_b) = add_backward(grad_output, a_shape, b_shape)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [3]
-    assert_equal(grad_b.shape()[0], 3)
+    assert_equal(grad_b.shape[0], 3)
 
     # grad_b should contain sum over first dimension (2 ones = 2.0)
     for i in range(3):
@@ -412,11 +412,11 @@ fn test_subtract_broadcast() raises:
     var (grad_a, grad_b) = subtract_backward(grad_output, a_shape, b_shape)
 
     # grad_a should match shape [2, 3] with value 1.0
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [3] with value -2.0 (sum of -ones)
-    assert_equal(grad_b.shape()[0], 3)
+    assert_equal(grad_b.shape[0], 3)
     for i in range(3):
         assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(-2.0), tolerance=1e-5)
 
@@ -446,11 +446,11 @@ fn test_multiply_broadcast() raises:
     var (grad_a, grad_b) = multiply_backward(grad_output, a, b)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [3]
-    assert_equal(grad_b.shape()[0], 3)
+    assert_equal(grad_b.shape[0], 3)
     # grad_b[i] = sum(grad_output * a) = sum(1.0 * 1.0) over first dim = 2.0
     for i in range(3):
         assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5)
@@ -484,11 +484,11 @@ fn test_divide_broadcast() raises:
     var (grad_a, grad_b) = divide_backward(grad_output, a, b)
 
     # grad_a should match shape [2, 3]
-    assert_equal(grad_a.shape()[0], 2)
-    assert_equal(grad_a.shape()[1], 3)
+    assert_equal(grad_a.shape[0], 2)
+    assert_equal(grad_a.shape[1], 3)
 
     # grad_b should be reduced to shape [3]
-    assert_equal(grad_b.shape()[0], 3)
+    assert_equal(grad_b.shape[0], 3)
     # grad_b[i] = sum(-grad_output * a / b²) = sum(-1.0 * 2.0 / 4.0) over first dim
     #           = 2 * (-0.5) = -1.0
     for i in range(3):
@@ -520,7 +520,7 @@ fn test_add_backward_gradient() raises:
         return add(inp, b)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, inp.shape(), b.shape())
+        var grads = add_backward(grad_out, inp.shape, b.shape)
         return grads.grad_a
 
     var output = forward(a)
@@ -552,7 +552,7 @@ fn test_subtract_backward_gradient() raises:
         return subtract(inp, b)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = subtract_backward(grad_out, inp.shape(), b.shape())
+        var grads = subtract_backward(grad_out, inp.shape, b.shape)
         return grads.grad_a
 
     var output = forward(a)
@@ -650,7 +650,7 @@ fn test_add_backward_b_gradient() raises:
         return add(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, a.shape(), inp.shape())
+        var grads = add_backward(grad_out, a.shape, inp.shape)
         return grads.grad_b
 
     var output = forward(b)
@@ -682,7 +682,7 @@ fn test_subtract_backward_b_gradient() raises:
         return subtract(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = subtract_backward(grad_out, a.shape(), inp.shape())
+        var grads = subtract_backward(grad_out, a.shape, inp.shape)
         return grads.grad_b
 
     var output = forward(b)
@@ -782,7 +782,7 @@ fn test_add_backward_broadcast_gradient() raises:
         return add(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, a_shape, inp.shape())
+        var grads = add_backward(grad_out, a_shape, inp.shape)
         return grads.grad_b
 
     var output = forward(b)

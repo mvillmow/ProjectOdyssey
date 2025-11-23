@@ -94,10 +94,10 @@ fn test_binary_cross_entropy_gradient_shape() raises:
     var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
 
     # Check shape matches
-    if grad_pred.shape()[0] != predictions.shape()[0]:
+    if grad_pred.shape[0] != predictions.shape[0]:
         raise Error("Gradient shape should match predictions shape")
 
-    print("  Gradient shape:", grad_pred.shape()[0])
+    print("  Gradient shape:", grad_pred.shape[0])
     print("  ✓ BCE gradient shape test passed")
 
 

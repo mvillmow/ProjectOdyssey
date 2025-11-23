@@ -16,7 +16,7 @@ fn main() raises:
     var test_data = load_cifar10_test("datasets/cifar10")
     var test_images = test_data[0]
     var test_labels = test_data[1]
-    print("Test samples: " + str(test_images.shape()[0]))
+    print("Test samples: " + str(test_images.shape[0]))
     print()
 
     var model = DenseNet121(num_classes=10)

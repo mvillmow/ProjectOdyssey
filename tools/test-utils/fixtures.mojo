@@ -55,7 +55,7 @@ struct SimpleCNN:
         # In real implementation, this would include conv, pool, fc layers
 
         # For now, just return a tensor of appropriate shape
-        let batch_size = input.shape()[0]
+        let batch_size = input.shape[0]
         var output = Tensor[DType.float32](TensorShape(batch_size, self.num_classes))
 
         # Fill with dummy values
@@ -100,7 +100,7 @@ struct LinearModel:
             Output tensor (batch_size, out_features)
         """
         # Simplified implementation
-        let batch_size = input.shape()[0]
+        let batch_size = input.shape[0]
         var output = Tensor[DType.float32](TensorShape(batch_size, self.out_features))
 
         # Fill with dummy values

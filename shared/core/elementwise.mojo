@@ -246,7 +246,7 @@ fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor
     if min_val > max_val:
         raise Error("clip requires min_val <= max_val")
 
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -362,7 +362,7 @@ fn trunc(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.9, -2.9, 3.1])
         var b = trunc(a)  # [1.0, -2.0, 3.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -392,8 +392,8 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("logical_and: tensors must have same dtype")
 
-    var shape_a = a.shape()
-    var shape_b = b.shape()
+    var shape_a = a.shape
+    var shape_b = b.shape
 
     if len(shape_a) != len(shape_b):
         raise Error("logical_and: tensors must have same shape (broadcasting TODO)")
@@ -402,7 +402,7 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
         if shape_a[i] != shape_b[i]:
             raise Error("logical_and: tensors must have same shape (broadcasting TODO)")
 
-    var result = ExTensor(a.shape(), DType.bool)
+    var result = ExTensor(a.shape, DType.bool)
 
     var numel = a.numel()
     for i in range(numel):
@@ -431,8 +431,8 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("logical_or: tensors must have same dtype")
 
-    var shape_a = a.shape()
-    var shape_b = b.shape()
+    var shape_a = a.shape
+    var shape_b = b.shape
 
     if len(shape_a) != len(shape_b):
         raise Error("logical_or: tensors must have same shape (broadcasting TODO)")
@@ -441,7 +441,7 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
         if shape_a[i] != shape_b[i]:
             raise Error("logical_or: tensors must have same shape (broadcasting TODO)")
 
-    var result = ExTensor(a.shape(), DType.bool)
+    var result = ExTensor(a.shape, DType.bool)
 
     var numel = a.numel()
     for i in range(numel):
@@ -465,7 +465,7 @@ fn logical_not(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([0.0, 1.0, 2.0])
         var b = logical_not(a)  # [True, False, False]
     """
-    var result = ExTensor(tensor.shape(), DType.bool)
+    var result = ExTensor(tensor.shape, DType.bool)
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -493,8 +493,8 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("logical_xor: tensors must have same dtype")
 
-    var shape_a = a.shape()
-    var shape_b = b.shape()
+    var shape_a = a.shape
+    var shape_b = b.shape
 
     if len(shape_a) != len(shape_b):
         raise Error("logical_xor: tensors must have same shape (broadcasting TODO)")
@@ -503,7 +503,7 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
         if shape_a[i] != shape_b[i]:
             raise Error("logical_xor: tensors must have same shape (broadcasting TODO)")
 
-    var result = ExTensor(a.shape(), DType.bool)
+    var result = ExTensor(a.shape, DType.bool)
 
     var numel = a.numel()
     for i in range(numel):
@@ -535,7 +535,7 @@ fn log10(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.0, 10.0, 100.0])
         var b = log10(a)  # [0.0, 1.0, 2.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -561,7 +561,7 @@ fn log2(tensor: ExTensor) raises -> ExTensor:
         var a = tensor([1.0, 2.0, 8.0])
         var b = log2(a)  # [0.0, 1.0, 3.0]
     """
-    var result = ExTensor(tensor.shape(), tensor.dtype())
+    var result = ExTensor(tensor.shape, tensor.dtype())
 
     var numel = tensor.numel()
     for i in range(numel):
@@ -598,7 +598,7 @@ fn exp_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
         var grad_y = ones([3, 4])
         var grad_x = exp_backward(grad_y, y)  # grad_x = grad_y * y
     """
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -632,7 +632,7 @@ fn log_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """
     alias EPSILON = 1e-10
 
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -668,7 +668,7 @@ fn sqrt_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     """
     alias EPSILON = 1e-10
 
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -701,7 +701,7 @@ fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
         var grad_y = ones([5])
         var grad_x = abs_backward(grad_y, x)  # [-1, -1, 0, 1, 1]
     """
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -742,7 +742,7 @@ fn clip_backward(grad_output: ExTensor, x: ExTensor, min_val: Float64, max_val: 
         var grad_y = ones([5])
         var grad_x = clip_backward(grad_y, x, -1.0, 1.0)  # [0, 1, 1, 1, 0]
     """
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -774,7 +774,7 @@ fn log10_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     alias EPSILON = 1e-10
     alias LN10 = 2.302585092994046  # ln(10)
 
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
@@ -801,7 +801,7 @@ fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     alias EPSILON = 1e-10
     alias LN2 = 0.6931471805599453  # ln(2)
 
-    var result = ExTensor(grad_output.shape(), grad_output.dtype())
+    var result = ExTensor(grad_output.shape, grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)

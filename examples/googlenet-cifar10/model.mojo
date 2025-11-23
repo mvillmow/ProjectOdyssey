@@ -229,9 +229,9 @@ struct InceptionModule:
             Output tensor (batch, out_channels, H, W)
             where out_channels = out_1x1 + out_3x3 + out_5x5 + pool_proj
         """
-        var batch_size = x.shape()[0]
-        var height = x.shape()[2]
-        var width = x.shape()[3]
+        var batch_size = x.shape[0]
+        var height = x.shape[2]
+        var width = x.shape[3]
 
         # Branch 1: 1×1 conv
         var b1 = conv2d(x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0)
@@ -310,13 +310,13 @@ fn concatenate_depthwise(
     Returns:
         Concatenated tensor (batch, C1+C2+C3+C4, H, W)
     """
-    var batch_size = t1.shape()[0]
-    var c1 = t1.shape()[1]
-    var c2 = t2.shape()[1]
-    var c3 = t3.shape()[1]
-    var c4 = t4.shape()[1]
-    var height = t1.shape()[2]
-    var width = t1.shape()[3]
+    var batch_size = t1.shape[0]
+    var c1 = t1.shape[1]
+    var c2 = t2.shape[1]
+    var c3 = t3.shape[1]
+    var c4 = t4.shape[1]
+    var height = t1.shape[2]
+    var width = t1.shape[3]
 
     var total_channels = c1 + c2 + c3 + c4
     var result = zeros(
@@ -604,8 +604,8 @@ struct GoogLeNet:
         # Shape: (batch, 1024, 1, 1)
 
         # Flatten
-        var batch_size = out.shape()[0]
-        var channels = out.shape()[1]
+        var batch_size = out.shape[0]
+        var channels = out.shape[1]
         var flattened = zeros(
             List[Int]().append(batch_size).append(channels),
             out.dtype(),

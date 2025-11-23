@@ -128,7 +128,7 @@ fn compute_gradients(
     var pool5_out = maxpool2d(relu5_3_out, kernel_size=2, stride=2, padding=0)
 
     # Flatten
-    var pool5_shape = pool5_out.shape()
+    var pool5_shape = pool5_out.shape
     var batch_size = pool5_shape[0]
     var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
     var flatten_shape = List[Int]()
@@ -415,7 +415,7 @@ fn train_epoch(
     Returns:
         Average loss for the epoch
     """
-    var num_samples = train_images.shape()[0]
+    var num_samples = train_images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 
     var total_loss = Float32(0.0)
@@ -463,7 +463,7 @@ fn evaluate(
     Returns:
         Test accuracy (0.0 to 1.0)
     """
-    var num_samples = test_images.shape()[0]
+    var num_samples = test_images.shape[0]
     var correct = 0
 
     print("Evaluating on ", num_samples, " samples...")
@@ -505,48 +505,48 @@ fn initialize_velocities(model: VGG16) raises -> List[ExTensor]:
 
     # Initialize velocities for all 32 parameters (conv1-5 blocks + fc1-3)
     # Block 1 (4 params)
-    velocities.append(zeros(model.conv1_1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv1_1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv1_2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv1_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv1_1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv1_2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv1_2_bias.shape, DType.float32))
 
     # Block 2 (4 params)
-    velocities.append(zeros(model.conv2_1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv2_1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv2_2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv2_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv2_1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv2_2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv2_2_bias.shape, DType.float32))
 
     # Block 3 (6 params)
-    velocities.append(zeros(model.conv3_1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_3_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv3_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv3_1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv3_2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv3_2_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv3_3_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv3_3_bias.shape, DType.float32))
 
     # Block 4 (6 params)
-    velocities.append(zeros(model.conv4_1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_3_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv4_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv4_1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv4_2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv4_2_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv4_3_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv4_3_bias.shape, DType.float32))
 
     # Block 5 (6 params)
-    velocities.append(zeros(model.conv5_1_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_2_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_3_kernel.shape(), DType.float32))
-    velocities.append(zeros(model.conv5_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_1_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv5_1_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv5_2_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv5_2_bias.shape, DType.float32))
+    velocities.append(zeros(model.conv5_3_kernel.shape, DType.float32))
+    velocities.append(zeros(model.conv5_3_bias.shape, DType.float32))
 
     # FC layers (6 params)
-    velocities.append(zeros(model.fc1_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc1_bias.shape(), DType.float32))
-    velocities.append(zeros(model.fc2_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc2_bias.shape(), DType.float32))
-    velocities.append(zeros(model.fc3_weights.shape(), DType.float32))
-    velocities.append(zeros(model.fc3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc1_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc1_bias.shape, DType.float32))
+    velocities.append(zeros(model.fc2_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc2_bias.shape, DType.float32))
+    velocities.append(zeros(model.fc3_weights.shape, DType.float32))
+    velocities.append(zeros(model.fc3_bias.shape, DType.float32))
 
     return velocities
 
@@ -598,8 +598,8 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    print("  Training samples: ", train_images.shape()[0])
-    print("  Test samples: ", test_images.shape()[0])
+    print("  Training samples: ", train_images.shape[0])
+    print("  Test samples: ", test_images.shape[0])
     print()
 
     # Training loop with learning rate decay

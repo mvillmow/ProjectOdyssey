@@ -64,8 +64,8 @@ fn test_model_forward(
         print("\nTesting inference mode...")
         var logits_inference = forward_fn(input, False)
 
-        var batch_out = logits_inference.shape()[0]
-        var classes_out = logits_inference.shape()[1]
+        var batch_out = logits_inference.shape[0]
+        var classes_out = logits_inference.shape[1]
 
         print("  Output shape: (" + str(batch_out) + ", " + str(classes_out) + ")")
 
@@ -83,8 +83,8 @@ fn test_model_forward(
         print("\nTesting training mode...")
         var logits_training = forward_fn(input, True)
 
-        var batch_train = logits_training.shape()[0]
-        var classes_train = logits_training.shape()[1]
+        var batch_train = logits_training.shape[0]
+        var classes_train = logits_training.shape[1]
 
         print("  Output shape: (" + str(batch_train) + ", " + str(classes_train) + ")")
 

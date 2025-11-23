@@ -134,7 +134,7 @@ fn dropout2d(
     if p < 0.0 or p >= 1.0:
         raise Error("Dropout probability must be in [0, 1)")
 
-    var x_shape = x.shape()
+    var x_shape = x.shape
     if len(x_shape) != 4:
         raise Error("dropout2d requires 4D input (batch, channels, height, width)")
 

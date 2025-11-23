@@ -44,7 +44,7 @@ fn main() raises:
         tensor_f32._data.bitcast[Float32]()[i] = Float32(i) * 10.0 - 50.0
 
     print("Original Float32 tensor (3x4):")
-    print("  Shape:", tensor_f32.shape()[0], "x", tensor_f32.shape()[1])
+    print("  Shape:", tensor_f32.shape[0], "x", tensor_f32.shape[1])
     print("  DType:", tensor_f32.dtype())
     print("  Size: 12 elements × 4 bytes = 48 bytes")
     print("  Values:")
@@ -55,7 +55,7 @@ fn main() raises:
     var tensor_bf8 = tensor_f32.to_bf8()
 
     print("\nBF8-encoded tensor (stored as uint8):")
-    print("  Shape:", tensor_bf8.shape()[0], "x", tensor_bf8.shape()[1])
+    print("  Shape:", tensor_bf8.shape[0], "x", tensor_bf8.shape[1])
     print("  DType:", tensor_bf8.dtype())
     print("  Size: 12 elements × 1 byte = 12 bytes")
     print("  Memory savings: 75% (48 bytes -> 12 bytes)")
@@ -64,7 +64,7 @@ fn main() raises:
     var tensor_restored = tensor_bf8.from_bf8()
 
     print("\nRestored Float32 tensor:")
-    print("  Shape:", tensor_restored.shape()[0], "x", tensor_restored.shape()[1])
+    print("  Shape:", tensor_restored.shape[0], "x", tensor_restored.shape[1])
     print("  DType:", tensor_restored.dtype())
     print("  Values (with BF8 precision loss):")
     for i in range(12):

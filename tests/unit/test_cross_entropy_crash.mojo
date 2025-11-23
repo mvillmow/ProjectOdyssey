@@ -27,7 +27,7 @@ fn test_cross_entropy_small_batch() raises:
     logits_shape.append(num_classes)
 
     var logits = zeros(logits_shape, DType.float32)
-    print("Logits created:", logits.shape()[0], "x", logits.shape()[1])
+    print("Logits created:", logits.shape[0], "x", logits.shape[1])
 
     # Fill with some test values
     for i in range(logits.numel()):
@@ -35,7 +35,7 @@ fn test_cross_entropy_small_batch() raises:
 
     # Create one-hot targets: (2, 47)
     var targets = zeros(logits_shape, DType.float32)
-    print("Targets created:", targets.shape()[0], "x", targets.shape()[1])
+    print("Targets created:", targets.shape[0], "x", targets.shape[1])
 
     # Set one-hot: first sample class 5, second sample class 10
     targets._set_float64(5, 1.0)  # First sample, class 5
@@ -46,7 +46,7 @@ fn test_cross_entropy_small_batch() raises:
 
     try:
         var loss = cross_entropy(logits, targets)
-        print("Loss computed successfully! Shape:", loss.shape())
+        print("Loss computed successfully! Shape:", loss.shape)
         print("Loss value:", loss[0])
     except e:
         print("ERROR:", e)

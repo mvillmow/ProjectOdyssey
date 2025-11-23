@@ -26,14 +26,14 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 
@@ -67,14 +67,14 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 
@@ -108,14 +108,14 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 
@@ -149,14 +149,14 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 
@@ -190,14 +190,14 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 
@@ -231,14 +231,14 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
 
-    var result_shape = broadcast_shapes(a.shape(), b.shape())
+    var result_shape = broadcast_shapes(a.shape, b.shape)
     var result = ExTensor(result_shape, DType.bool)
 
     # Simple case: same shape (no broadcasting)
-    if len(a.shape()) == len(b.shape()):
+    if len(a.shape) == len(b.shape):
         var same_shape = True
-        for i in range(len(a.shape())):
-            if a.shape()[i] != b.shape()[i]:
+        for i in range(len(a.shape)):
+            if a.shape[i] != b.shape[i]:
                 same_shape = False
                 break
 

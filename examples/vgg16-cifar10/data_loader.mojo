@@ -283,7 +283,7 @@ fn _copy_batch_data(
         src_labels: Source batch labels (10,000 labels)
         offset: Starting index in destination tensor
     """
-    var batch_size = src_images.shape()[0]
+    var batch_size = src_images.shape[0]
     var pixels_per_image = 3 * 32 * 32  # RGB channels * height * width
 
     # Copy images

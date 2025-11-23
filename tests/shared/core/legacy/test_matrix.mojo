@@ -222,8 +222,8 @@ fn test_transpose_2d() raises:
     assert_dim(b, 2, "Transpose should be 2D")
     assert_numel(b, 12, "Transpose should have same number of elements")
     # TODO: Once transpose is implemented, verify shape is (4, 3):
-    # assert_equal_int(b.shape()[0], 4, "First dim should be 4")
-    # assert_equal_int(b.shape()[1], 3, "Second dim should be 3")
+    # assert_equal_int(b.shape[0], 4, "First dim should be 4")
+    # assert_equal_int(b.shape[1], 3, "Second dim should be 3")
 
 
 fn test_transpose_3d_default() raises:
@@ -239,9 +239,9 @@ fn test_transpose_3d_default() raises:
     assert_dim(b, 3, "Transpose should be 3D")
     assert_numel(b, 24, "Transpose should have same number of elements")
     # TODO: Once transpose is implemented, verify shape is (4, 3, 2):
-    # assert_equal_int(b.shape()[0], 4, "First dim should be 4")
-    # assert_equal_int(b.shape()[1], 3, "Second dim should be 3")
-    # assert_equal_int(b.shape()[2], 2, "Third dim should be 2")
+    # assert_equal_int(b.shape[0], 4, "First dim should be 4")
+    # assert_equal_int(b.shape[1], 3, "Second dim should be 3")
+    # assert_equal_int(b.shape[2], 2, "Third dim should be 2")
 
 
 fn test_transpose_3d_permute() raises:
@@ -297,8 +297,8 @@ fn test_transpose_twice() raises:
     assert_dim(c, 2, "Double transpose should be 2D")
     assert_numel(c, 15, "Double transpose should preserve elements")
     # TODO: Once transpose is implemented, verify shape:
-    # assert_equal_int(c.shape()[0], 3, "Should be back to 3")
-    # assert_equal_int(c.shape()[1], 5, "Should be back to 5")
+    # assert_equal_int(c.shape[0], 3, "Should be back to 3")
+    # assert_equal_int(c.shape[1], 5, "Should be back to 5")
 
 
 fn test_transpose_preserves_dtype() raises:

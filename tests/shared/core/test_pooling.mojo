@@ -52,7 +52,7 @@ fn test_maxpool2d_output_shape() raises:
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0)
 
     # Check output shape: (1, 1, 4, 4)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 4)
@@ -80,7 +80,7 @@ fn test_maxpool2d_stride_default() raises:
 
     # Check output shape: (1, 1, 2, 2)
     # (6 - 3) // 3 + 1 = 2
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 2)
@@ -110,7 +110,7 @@ fn test_maxpool2d_numerical_correctness() raises:
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0)
 
     # Check output shape: (1, 1, 1, 1)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 1)
@@ -141,7 +141,7 @@ fn test_maxpool2d_multi_channel() raises:
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0)
 
     # Check output shape: (1, 3, 2, 2) - channels preserved
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 3)  # Channels preserved
     assert_equal(out_shape[2], 2)
@@ -168,7 +168,7 @@ fn test_maxpool2d_batched() raises:
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0)
 
     # Check output shape: (4, 1, 3, 3) - batch preserved
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 4)  # Batch preserved
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 3)
@@ -191,7 +191,7 @@ fn test_maxpool2d_method_selection() raises:
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0, method="direct")
 
     # Should succeed
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[2], 2)
 
 
@@ -217,7 +217,7 @@ fn test_avgpool2d_output_shape() raises:
     var output = avgpool2d(input, kernel_size=2, stride=2, padding=0)
 
     # Check output shape: (1, 1, 4, 4)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 4)
@@ -268,7 +268,7 @@ fn test_avgpool2d_multi_channel() raises:
     var output = avgpool2d(input, kernel_size=3, stride=3, padding=0)
 
     # Check output shape: (1, 4, 2, 2) - channels preserved
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 4)  # Channels preserved
     assert_equal(out_shape[2], 2)
@@ -288,7 +288,7 @@ fn test_avgpool2d_method_selection() raises:
     var output = avgpool2d(input, kernel_size=2, stride=2, padding=0, method="direct")
 
     # Should succeed
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[2], 2)
 
 
@@ -316,7 +316,7 @@ fn test_global_avgpool2d_output_shape() raises:
     var output = global_avgpool2d(input)
 
     # Check output shape: (2, 3, 1, 1)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 2)  # Batch preserved
     assert_equal(out_shape[1], 3)  # Channels preserved
     assert_equal(out_shape[2], 1)  # Height reduced to 1
@@ -345,7 +345,7 @@ fn test_global_avgpool2d_numerical_correctness() raises:
     var output = global_avgpool2d(input)
 
     # Check output shape: (1, 1, 1, 1)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 1)
@@ -404,7 +404,7 @@ fn test_global_avgpool2d_method_selection() raises:
     var output = global_avgpool2d(input, method="direct")
 
     # Should succeed
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[2], 1)
     assert_equal(out_shape[3], 1)
 

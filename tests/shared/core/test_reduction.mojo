@@ -58,10 +58,10 @@ fn test_sum_backward_shapes() raises:
     var grad_output = ones_like(result)
 
     # Backward pass
-    var grad_input = sum_backward(grad_output, x.shape(), axis=1)
+    var grad_input = sum_backward(grad_output, x.shape, axis=1)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], 2)
     assert_equal(gi_shape[1], 3)
     assert_equal(gi_shape[2], 4)
@@ -92,7 +92,7 @@ fn test_sum_backward_gradient() raises:
 
     # Backward function wrapper
     fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return sum_backward(grad, inp.shape(), axis=1)
+        return sum_backward(grad, inp.shape, axis=1)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -119,10 +119,10 @@ fn test_mean_backward_shapes() raises:
     var grad_output = ones_like(result)
 
     # Backward pass
-    var grad_input = mean_backward(grad_output, x.shape(), axis=1)
+    var grad_input = mean_backward(grad_output, x.shape, axis=1)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], 2)
     assert_equal(gi_shape[1], 3)
     assert_equal(gi_shape[2], 4)
@@ -153,7 +153,7 @@ fn test_mean_backward_gradient() raises:
 
     # Backward function wrapper
     fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return mean_backward(grad, inp.shape(), axis=1)
+        return mean_backward(grad, inp.shape, axis=1)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -182,7 +182,7 @@ fn test_max_reduce_backward_shapes() raises:
     var grad_input = max_reduce_backward(grad_output, x, axis=1)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], 3)
     assert_equal(gi_shape[1], 4)
 
@@ -241,7 +241,7 @@ fn test_min_reduce_backward_shapes() raises:
     var grad_input = min_reduce_backward(grad_output, x, axis=1)
 
     # Check shape matches input
-    var gi_shape = grad_input.shape()
+    var gi_shape = grad_input.shape
     assert_equal(gi_shape[0], 3)
     assert_equal(gi_shape[1], 4)
 

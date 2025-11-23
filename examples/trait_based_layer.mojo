@@ -155,8 +155,8 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
     fn init_xavier(mut self) raises:
         """Initialize weights using Xavier initialization."""
         # Xavier: weights ~ U(-sqrt(6/(in+out)), sqrt(6/(in+out)))
-        var in_features = self.weights.shape()[1]
-        var out_features = self.weights.shape()[0]
+        var in_features = self.weights.shape[1]
+        var out_features = self.weights.shape[0]
         var sum_features = Float64(in_features + out_features)
         var bound = (6.0 / sum_features) ** 0.5
 

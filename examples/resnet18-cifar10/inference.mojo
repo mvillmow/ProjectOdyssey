@@ -59,7 +59,7 @@ fn evaluate_model(
         - correct_per_class: Correct predictions per class (10,)
         - total_per_class: Total samples per class (10,)
     """
-    var num_samples = images.shape()[0]
+    var num_samples = images.shape[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 
     var total_correct = 0
@@ -82,7 +82,7 @@ fn evaluate_model(
         var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape[0]
 
         # Forward pass (inference mode - no BN running stats updates)
         var logits = model.forward(batch_images, training=False)
@@ -193,7 +193,7 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    var num_samples = test_images.shape()[0]
+    var num_samples = test_images.shape[0]
     print("  Test samples: " + str(num_samples))
     print("  Image shape: (3, 32, 32)")
     print("  Number of classes: 10")

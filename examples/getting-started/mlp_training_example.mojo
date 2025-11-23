@@ -131,8 +131,8 @@ fn train_mlp() raises:
     # Create synthetic data
     print("\nCreating synthetic XOR data...")
     var (X, y_true) = create_synthetic_data()
-    print("Input shape:", X.shape()[0], "x", X.shape()[1])
-    print("Target shape:", y_true.shape()[0], "x", y_true.shape()[1])
+    print("Input shape:", X.shape[0], "x", X.shape[1])
+    print("Target shape:", y_true.shape[0], "x", y_true.shape[1])
 
     # Initialize network parameters
     print("\nInitializing network parameters...")
@@ -149,8 +149,8 @@ fn train_mlp() raises:
     var W2 = xavier_uniform(4, 1, W2_shape, DType.float32)
     var b2 = zeros(b2_shape, DType.float32)
 
-    print("W1 shape:", W1.shape()[0], "x", W1.shape()[1])
-    print("W2 shape:", W2.shape()[0], "x", W2.shape()[1])
+    print("W1 shape:", W1.shape[0], "x", W1.shape[1])
+    print("W2 shape:", W2.shape[0], "x", W2.shape[1])
 
     # Training loop
     print("\nStarting training...")
@@ -193,7 +193,7 @@ fn train_mlp() raises:
         var grad_loss = ones(grad_loss_shape, DType.float32)  # scalar 1.0
 
         # Backprop through mean
-        var grad_loss_val = mean_backward(grad_loss, loss_val.shape())
+        var grad_loss_val = mean_backward(grad_loss, loss_val.shape)
 
         # Backprop through BCE
         var grad_pred = binary_cross_entropy_backward(grad_loss_val, pred, y_sample)
@@ -205,8 +205,8 @@ fn train_mlp() raises:
         # z2 = W2 @ h1 + b2
         var (grad_h1_from_add, grad_b2) = add_backward(
             grad_z2,
-            matmul(W2, h1).shape(),
-            b2.shape()
+            matmul(W2, h1).shape,
+            b2.shape
         )
         var (grad_W2, grad_h1_from_matmul) = matmul_backward(
             grad_h1_from_add,
@@ -222,8 +222,8 @@ fn train_mlp() raises:
         # z1 = W1 @ x_sample + b1
         var (grad_x_from_add, grad_b1) = add_backward(
             grad_z1,
-            matmul(W1, x_sample).shape(),
-            b1.shape()
+            matmul(W1, x_sample).shape,
+            b1.shape
         )
         var (grad_W1, grad_x) = matmul_backward(
             grad_x_from_add,

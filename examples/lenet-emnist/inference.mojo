@@ -99,7 +99,7 @@ fn infer_single(mut model: LeNet5, image: ExTensor) raises -> PredictionResult:
     var logits = model.forward(image)
 
     # Find argmax and max value
-    var num_classes = logits.shape()[1]
+    var num_classes = logits.shape[1]
     var max_idx = 0
     var max_val_data = logits._data.bitcast[Float32]()
     var max_val = max_val_data[0]
@@ -135,7 +135,7 @@ fn evaluate_test_set(
     Returns:
         EvaluationResult with accuracy and counts.
     """
-    var num_samples = images.shape()[0]
+    var num_samples = images.shape[0]
     var correct = 0
 
     print("Evaluating on", num_samples, "test samples...")
@@ -214,7 +214,7 @@ fn main() raises:
     # Normalize images
     var test_images = normalize_images(test_images_raw)
 
-    print("  Test samples: ", test_images.shape()[0])
+    print("  Test samples: ", test_images.shape[0])
     print()
 
     # Run inference on test set

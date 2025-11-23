@@ -101,7 +101,7 @@ fn save_tensor(tensor: ExTensor, name: String, filepath: String) raises:
         Line 2: dtype shape_dim0 shape_dim1 ...
         Line 3: hex_data
     """
-    var shape = tensor.shape()
+    var shape = tensor.shape
     var dtype = tensor.dtype()
     var numel = tensor.numel()
 

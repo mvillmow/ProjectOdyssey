@@ -52,8 +52,8 @@ fn test_conv2d_initialization() raises:
     var bias = zeros(bias_shape, DType.float32)
 
     # Verify shapes
-    var k_shape = kernel.shape()
-    var b_shape = bias.shape()
+    var k_shape = kernel.shape
+    var b_shape = bias.shape
     assert_equal(k_shape[0], out_channels)
     assert_equal(k_shape[1], in_channels)
     assert_equal(k_shape[2], kernel_h)
@@ -102,7 +102,7 @@ fn test_conv2d_output_shape() raises:
     var output = conv2d(input, kernel, bias, stride=1, padding=0)
 
     # Check output shape: (1, 1, 6, 6)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 6)  # (8 - 3) / 1 + 1 = 6
@@ -148,7 +148,7 @@ fn test_conv2d_with_padding() raises:
     var output = conv2d(input, kernel, bias, stride=1, padding=1)
 
     # Check output shape: (1, 1, 6, 6) - same as input due to padding
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 6)
@@ -191,7 +191,7 @@ fn test_conv2d_with_stride() raises:
     var output = conv2d(input, kernel, bias, stride=2, padding=0)
 
     # Check output shape: (1, 1, 3, 3)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 3)
@@ -276,7 +276,7 @@ fn test_conv2d_multi_channel() raises:
     var output = conv2d(input, kernel, bias, stride=1, padding=0)
 
     # Check output shape: (1, 3, 2, 2)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 3)  # 3 output channels
     assert_equal(out_shape[2], 2)  # (3 - 2) + 1 = 2
@@ -308,7 +308,7 @@ fn test_conv2d_no_bias() raises:
     var output = conv2d_no_bias(input, kernel, stride=1, padding=0)
 
     # Check output shape: (1, 1, 2, 2)
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 2)
@@ -353,7 +353,7 @@ fn test_conv2d_batched() raises:
     var output = conv2d(input, kernel, bias, stride=1, padding=0)
 
     # Check output shape: (4, 1, 3, 3) - batch size preserved
-    var out_shape = output.shape()
+    var out_shape = output.shape
     assert_equal(out_shape[0], 4)
     assert_equal(out_shape[1], 1)
     assert_equal(out_shape[2], 3)

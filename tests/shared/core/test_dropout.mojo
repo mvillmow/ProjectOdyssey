@@ -38,10 +38,10 @@ fn test_dropout_shapes() raises:
     var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
 
     # Check shapes
-    assert_equal(output.shape()[0], 4)
-    assert_equal(output.shape()[1], 10)
-    assert_equal(mask.shape()[0], 4)
-    assert_equal(mask.shape()[1], 10)
+    assert_equal(output.shape[0], 4)
+    assert_equal(output.shape[1], 10)
+    assert_equal(mask.shape[0], 4)
+    assert_equal(mask.shape[1], 10)
 
 
 fn test_dropout_inference_mode() raises:
@@ -159,8 +159,8 @@ fn test_dropout_backward_shapes() raises:
     var grad_input = dropout_backward(grad_output, mask, p=0.5)
 
     # Check shape
-    assert_equal(grad_input.shape()[0], 4)
-    assert_equal(grad_input.shape()[1], 8)
+    assert_equal(grad_input.shape[0], 4)
+    assert_equal(grad_input.shape[1], 8)
 
 
 fn test_dropout_backward_gradient_flow() raises:
@@ -240,10 +240,10 @@ fn test_dropout2d_shapes() raises:
     var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
 
     # Check shapes match input
-    assert_equal(output.shape()[0], 2)
-    assert_equal(output.shape()[1], 3)
-    assert_equal(output.shape()[2], 4)
-    assert_equal(output.shape()[3], 4)
+    assert_equal(output.shape[0], 2)
+    assert_equal(output.shape[1], 3)
+    assert_equal(output.shape[2], 4)
+    assert_equal(output.shape[3], 4)
 
 
 fn test_dropout2d_channel_level() raises:
@@ -315,10 +315,10 @@ fn test_dropout2d_backward_shapes() raises:
     var grad_input = dropout2d_backward(grad_output, mask, p=0.2)
 
     # Check shape
-    assert_equal(grad_input.shape()[0], 2)
-    assert_equal(grad_input.shape()[1], 4)
-    assert_equal(grad_input.shape()[2], 8)
-    assert_equal(grad_input.shape()[3], 8)
+    assert_equal(grad_input.shape[0], 2)
+    assert_equal(grad_input.shape[1], 4)
+    assert_equal(grad_input.shape[2], 8)
+    assert_equal(grad_input.shape[3], 8)
 
 
 fn test_dropout2d_backward_gradient() raises:

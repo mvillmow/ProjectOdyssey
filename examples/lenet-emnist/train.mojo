@@ -104,7 +104,7 @@ fn compute_gradients(
     var pool2_out = maxpool2d(relu2_out, kernel_size=2, stride=2, padding=0)
 
     # Flatten
-    var pool2_shape = pool2_out.shape()
+    var pool2_shape = pool2_out.shape
     var batch_size = pool2_shape[0]
     var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
     var flatten_shape = List[Int]()
@@ -214,7 +214,7 @@ fn train_epoch(
     Returns:
         Average loss for the epoch.
     """
-    var num_samples = train_images.shape()[0]
+    var num_samples = train_images.shape[0]
     var num_batches = (num_samples + batch_size - 1) // batch_size
 
     var total_loss = Float32(0.0)
@@ -262,7 +262,7 @@ fn evaluate(
     Returns:
         Test accuracy (0.0 to 1.0).
     """
-    var num_samples = test_images.shape()[0]
+    var num_samples = test_images.shape[0]
     var correct = 0
 
     print("Evaluating...")
@@ -342,8 +342,8 @@ fn main() raises:
     var train_images = normalize_images(train_images_raw)
     var test_images = normalize_images(test_images_raw)
 
-    print("  Training samples: ", train_images.shape()[0])
-    print("  Test samples: ", test_images.shape()[0])
+    print("  Training samples: ", train_images.shape[0])
+    print("  Test samples: ", test_images.shape[0])
     print()
 
     # Training loop

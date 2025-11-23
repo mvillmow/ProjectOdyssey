@@ -147,7 +147,7 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
 
     Examples:
         var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
-        var a = full(x.shape(), 0.25, DType.float32)
+        var a = full(x.shape, 0.25, DType.float32)
         var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
     """
     # Validate alpha is scalar or compatible shape

@@ -66,12 +66,12 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         raise Error("Cannot add tensors with different dtypes")
 
     # Check if we can use SIMD (same shape, contiguous)
-    if a.shape() != b.shape():
+    if a.shape != b.shape:
         # Fall back to broadcasting
         from .arithmetic import add
         return add(a, b)
 
-    var result = ExTensor(a.shape(), a.dtype())
+    var result = ExTensor(a.shape, a.dtype())
 
     # Dispatch to dtype-specific SIMD implementation
     if a.dtype() == DType.float32:
@@ -142,11 +142,11 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot subtract tensors with different dtypes")
 
-    if a.shape() != b.shape():
+    if a.shape != b.shape:
         from .arithmetic import subtract
         return subtract(a, b)
 
-    var result = ExTensor(a.shape(), a.dtype())
+    var result = ExTensor(a.shape, a.dtype())
 
     if a.dtype() == DType.float32:
         _subtract_simd_float32(a, b, result)
@@ -215,11 +215,11 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot multiply tensors with different dtypes")
 
-    if a.shape() != b.shape():
+    if a.shape != b.shape:
         from .arithmetic import multiply
         return multiply(a, b)
 
-    var result = ExTensor(a.shape(), a.dtype())
+    var result = ExTensor(a.shape, a.dtype())
 
     if a.dtype() == DType.float32:
         _multiply_simd_float32(a, b, result)
@@ -288,11 +288,11 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.dtype() != b.dtype():
         raise Error("Cannot divide tensors with different dtypes")
 
-    if a.shape() != b.shape():
+    if a.shape != b.shape:
         from .arithmetic import divide
         return divide(a, b)
 
-    var result = ExTensor(a.shape(), a.dtype())
+    var result = ExTensor(a.shape, a.dtype())
 
     if a.dtype() == DType.float32:
         _divide_simd_float32(a, b, result)

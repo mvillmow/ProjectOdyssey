@@ -26,8 +26,8 @@ fn main() raises:
     # Test inference mode
     print("\nTesting inference mode...")
     var logits_inf = model.forward(input, training=False)
-    print("  Output shape: (" + str(logits_inf.shape()[0]) + ", " + str(logits_inf.shape()[1]) + ")")
-    if logits_inf.shape()[0] == 4 and logits_inf.shape()[1] == 10:
+    print("  Output shape: (" + str(logits_inf.shape[0]) + ", " + str(logits_inf.shape[1]) + ")")
+    if logits_inf.shape[0] == 4 and logits_inf.shape[1] == 10:
         print("✓ Inference mode PASSED")
     else:
         print("✗ Inference mode FAILED - wrong output shape")
@@ -36,8 +36,8 @@ fn main() raises:
     # Test training mode
     print("\nTesting training mode...")
     var logits_train = model.forward(input, training=True)
-    print("  Output shape: (" + str(logits_train.shape()[0]) + ", " + str(logits_train.shape()[1]) + ")")
-    if logits_train.shape()[0] == 4 and logits_train.shape()[1] == 10:
+    print("  Output shape: (" + str(logits_train.shape[0]) + ", " + str(logits_train.shape[1]) + ")")
+    if logits_train.shape[0] == 4 and logits_train.shape[1] == 10:
         print("✓ Training mode PASSED")
     else:
         print("✗ Training mode FAILED - wrong output shape")

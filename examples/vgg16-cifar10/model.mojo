@@ -356,7 +356,7 @@ struct VGG16:
         var pool5 = maxpool2d(relu5_3, kernel_size=2, stride=2, padding=0)  # 2x2 -> 1x1
 
         # Flatten: (batch, 512, 1, 1) -> (batch, 512)
-        var pool5_shape = pool5.shape()
+        var pool5_shape = pool5.shape
         var batch_size = pool5_shape[0]
         var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
 
@@ -396,7 +396,7 @@ struct VGG16:
         var logits = self.forward(input, training=False)
 
         # Find argmax
-        var logits_shape = logits.shape()
+        var logits_shape = logits.shape
         var max_idx = 0
         var max_val = logits[0]
 

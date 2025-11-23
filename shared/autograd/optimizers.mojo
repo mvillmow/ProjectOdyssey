@@ -124,11 +124,11 @@ struct SGD:
             var grad = param.grad.value()
 
             # Verify gradient shape matches parameter shape
-            if grad.shape() != param.data.shape():
+            if grad.shape != param.data.shape:
                 raise Error("Gradient shape mismatch with parameter shape")
 
             # Create learning rate tensor
-            var lr_tensor = ExTensor(grad.shape(), grad.dtype())
+            var lr_tensor = ExTensor(grad.shape, grad.dtype())
             for j in range(lr_tensor.numel()):
                 lr_tensor._set_float64(j, self.learning_rate)
 

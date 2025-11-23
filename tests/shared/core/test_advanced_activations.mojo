@@ -49,8 +49,8 @@ fn test_swish_shapes() raises:
     var output = swish(x)
 
     # Check shape
-    assert_equal(output.shape()[0], 4)
-    assert_equal(output.shape()[1], 10)
+    assert_equal(output.shape[0], 4)
+    assert_equal(output.shape[1], 10)
 
 
 fn test_swish_values() raises:
@@ -114,8 +114,8 @@ fn test_swish_backward_shapes() raises:
     var grad_input = swish_backward(grad_output, x)
 
     # Check shape
-    assert_equal(grad_input.shape()[0], 3)
-    assert_equal(grad_input.shape()[1], 5)
+    assert_equal(grad_input.shape[0], 3)
+    assert_equal(grad_input.shape[1], 5)
 
 
 fn test_swish_backward_zero() raises:
@@ -152,8 +152,8 @@ fn test_mish_shapes() raises:
     var output = mish(x)
 
     # Check shape
-    assert_equal(output.shape()[0], 4)
-    assert_equal(output.shape()[1], 10)
+    assert_equal(output.shape[0], 4)
+    assert_equal(output.shape[1], 10)
 
 
 fn test_mish_values() raises:
@@ -203,8 +203,8 @@ fn test_mish_backward_shapes() raises:
     var grad_input = mish_backward(grad_output, x)
 
     # Check shape
-    assert_equal(grad_input.shape()[0], 3)
-    assert_equal(grad_input.shape()[1], 5)
+    assert_equal(grad_input.shape[0], 3)
+    assert_equal(grad_input.shape[1], 5)
 
 
 fn test_mish_backward_positive() raises:
@@ -236,8 +236,8 @@ fn test_elu_shapes() raises:
     var output = elu(x, alpha=1.0)
 
     # Check shape
-    assert_equal(output.shape()[0], 4)
-    assert_equal(output.shape()[1], 10)
+    assert_equal(output.shape[0], 4)
+    assert_equal(output.shape[1], 10)
 
 
 fn test_elu_positive_values() raises:
@@ -353,8 +353,8 @@ fn test_elu_backward_shapes() raises:
     var grad_input = elu_backward(grad_output, x, alpha=1.0)
 
     # Check shape
-    assert_equal(grad_input.shape()[0], 3)
-    assert_equal(grad_input.shape()[1], 5)
+    assert_equal(grad_input.shape[0], 3)
+    assert_equal(grad_input.shape[1], 5)
 
 
 fn test_elu_backward_positive() raises:
