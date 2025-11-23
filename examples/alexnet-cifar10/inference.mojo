@@ -21,7 +21,7 @@ from shared.core import ExTensor
 from sys import argv
 
 
-fn parse_args() raises -> (String, String):
+fn parse_args() raises -> Tuple[String, String]:
     """Parse command line arguments.
 
     Returns:
@@ -44,7 +44,7 @@ fn evaluate_model(
     inout model: AlexNet,
     borrowed test_images: ExTensor,
     borrowed test_labels: ExTensor
-) raises -> (Float32, Float32):
+) raises -> Tuple[Float32, Float32]:
     """Evaluate model on test set with Top-1 and Top-5 accuracy.
 
     Args:

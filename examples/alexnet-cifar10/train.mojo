@@ -30,7 +30,7 @@ from sys import argv
 from collections.vector import DynamicVector
 
 
-fn parse_args() raises -> (Int, Int, Float32, Float32, String, String):
+fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
     """Parse command line arguments.
 
     Returns:

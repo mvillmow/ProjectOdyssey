@@ -126,7 +126,7 @@ fn save_tensor(tensor: ExTensor, name: String, filepath: String) raises:
         _ = f.write(hex_data + "\n")
 
 
-fn load_tensor(filepath: String) raises -> (String, ExTensor):
+fn load_tensor(filepath: String) raises -> Tuple[String, ExTensor]:
     """Load tensor from file.
 
     Args:

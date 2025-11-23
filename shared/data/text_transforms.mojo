@@ -254,7 +254,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     var n: Int  # Number of words to insert
     var vocabulary: List[String]  # Words to insert from
 
-    fn __init__(out self, p: Float64 = 0.1, n: Int = 1, owned vocabulary: List[String]):
+    fn __init__(out self, p: Float64 = 0.1, n: Int = 1, var vocabulary: List[String]):
         """Create random insertion transform.
 
         Args:
@@ -330,7 +330,7 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     var p: Float64  # Probability of replacing each word
     var synonyms: Dict[String, List[String]]  # Synonym dictionary
 
-    fn __init__(out self, p: Float64 = 0.2, owned synonyms: Dict[String, List[String]]):
+    fn __init__(out self, p: Float64 = 0.2, var synonyms: Dict[String, List[String]]):
         """Create random synonym replacement transform.
 
         Args:
@@ -399,7 +399,7 @@ struct TextCompose(TextTransform, Copyable, Movable):
 
     var transforms: List[TextTransform]
 
-    fn __init__(out self, owned transforms: List[TextTransform]):
+    fn __init__(out self, var transforms: List[TextTransform]):
         """Create composition of text transforms.
 
         Args:

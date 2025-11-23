@@ -175,7 +175,7 @@ fn normalize_images_rgb(inout images: ExTensor) raises -> ExTensor:
     return normalize_rgb_shared(images, mean, std)
 
 
-fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> (ExTensor, ExTensor):
+fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> Tuple[ExTensor, ExTensor]:
     """Load a single CIFAR-10 batch (images and labels).
 
     Args:
@@ -203,7 +203,7 @@ fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> (ExTensor
     return (images_normalized^, labels^)
 
 
-fn load_cifar10_train(data_dir: String) raises -> (ExTensor, ExTensor):
+fn load_cifar10_train(data_dir: String) raises -> Tuple[ExTensor, ExTensor]:
     """Load all CIFAR-10 training data (all 5 batches).
 
     Args:
@@ -251,7 +251,7 @@ fn load_cifar10_train(data_dir: String) raises -> (ExTensor, ExTensor):
     return (all_images^, all_labels^)
 
 
-fn load_cifar10_test(data_dir: String) raises -> (ExTensor, ExTensor):
+fn load_cifar10_test(data_dir: String) raises -> Tuple[ExTensor, ExTensor]:
     """Load CIFAR-10 test data.
 
     Args:

@@ -63,7 +63,7 @@ from shared.core import (
 from shared.training.optimizers import sgd_step_simple
 
 
-fn create_synthetic_data() raises -> (ExTensor, ExTensor):
+fn create_synthetic_data() raises -> Tuple[ExTensor, ExTensor]:
     """Create synthetic XOR-like binary classification data.
 
     Returns:

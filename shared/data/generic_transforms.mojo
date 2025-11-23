@@ -144,7 +144,7 @@ struct ConditionalTransform(Transform, Copyable, Movable):
     fn __init__(
         out self,
         predicate: fn (ExTensor) -> Bool,
-        owned transform: Transform,
+        var transform: Transform,
     ):
         """Create conditional transform.
 
@@ -326,7 +326,7 @@ struct SequentialTransform(Transform, Copyable, Movable):
 
     var transforms: List[Transform]
 
-    fn __init__(out self, owned transforms: List[Transform]):
+    fn __init__(out self, var transforms: List[Transform]):
         """Create sequential composition.
 
         Args:
@@ -377,7 +377,7 @@ struct BatchTransform(Copyable, Movable):
 
     var transform: Transform
 
-    fn __init__(out self, owned transform: Transform):
+    fn __init__(out self, var transform: Transform):
         """Create batch transform.
 
         Args:
@@ -511,7 +511,7 @@ fn apply_to_tensor(
     return transform(data)
 
 
-fn compose_transforms(owned transforms: List[Transform]) raises -> SequentialTransform:
+fn compose_transforms(var transforms: List[Transform]) raises -> SequentialTransform:
     """Create sequential composition of transforms.
 
     Convenience function for building transform pipelines.

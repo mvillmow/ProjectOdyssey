@@ -99,7 +99,7 @@ struct Compose(Transform, Copyable, Movable):
 
     var transforms: List[Transform]
 
-    fn __init__(out self, owned transforms: List[Transform]):
+    fn __init__(out self, var transforms: List[Transform]):
         """Create composition of transforms.
 
         Args:
@@ -228,7 +228,7 @@ struct Reshape(Transform, Copyable, Movable):
 
     var target_shape: List[Int]
 
-    fn __init__(out self, owned target_shape: List[Int]):
+    fn __init__(out self, var target_shape: List[Int]):
         """Create reshape transform.
 
         Args:
