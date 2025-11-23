@@ -227,13 +227,13 @@ fn main() raises:
         test_reshape_with_inferred_dimension()
         print("    ✓ reshape with -1 dimension")
     except e:
-        print("    ✗ reshape with -1 dimension CRASHED:", str(e))
+        print("    ✗ reshape with -1 dimension CRASHED:", String(e))
 
     try:
         test_reshape_explicit_shape()
         print("    ✓ reshape explicit shape")
     except e:
-        print("    ✗ reshape explicit shape CRASHED:", str(e))
+        print("    ✗ reshape explicit shape CRASHED:", String(e))
 
     # squeeze() bugs
     print("  Testing squeeze() bugs...")
@@ -241,13 +241,13 @@ fn main() raises:
         test_squeeze_specific_dimension()
         print("    ✓ squeeze specific dimension")
     except e:
-        print("    ✗ squeeze specific dimension CRASHED:", str(e))
+        print("    ✗ squeeze specific dimension CRASHED:", String(e))
 
     try:
         test_squeeze_all_dimensions()
         print("    ✓ squeeze all dimensions")
     except e:
-        print("    ✗ squeeze all dimensions CRASHED:", str(e))
+        print("    ✗ squeeze all dimensions CRASHED:", String(e))
 
     # unsqueeze() bugs
     print("  Testing unsqueeze() bugs...")
@@ -255,13 +255,13 @@ fn main() raises:
         test_unsqueeze_add_dimension()
         print("    ✓ unsqueeze add dimension")
     except e:
-        print("    ✗ unsqueeze add dimension CRASHED:", str(e))
+        print("    ✗ unsqueeze add dimension CRASHED:", String(e))
 
     try:
         test_unsqueeze_negative_index()
         print("    ✓ unsqueeze negative index")
     except e:
-        print("    ✗ unsqueeze negative index CRASHED:", str(e))
+        print("    ✗ unsqueeze negative index CRASHED:", String(e))
 
     # concatenate() bug
     print("  Testing concatenate() bugs...")
@@ -269,7 +269,7 @@ fn main() raises:
         test_concatenate_along_axis()
         print("    ✓ concatenate along axis")
     except e:
-        print("    ✗ concatenate along axis CRASHED:", str(e))
+        print("    ✗ concatenate along axis CRASHED:", String(e))
 
     print("")
     print("shape.mojo bug tests completed!")

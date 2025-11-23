@@ -217,7 +217,7 @@ fn assert_tensors_equal(
     if len(a) != len(b):
         var error_msg = message if message else "Tensor sizes don't match"
         error_msg = (
-            error_msg + " (a: " + str(len(a)) + ", b: " + str(len(b)) + ")"
+            error_msg + " (a: " + String(len(a)) + ", b: " + String(len(b)) + ")"
         )
         raise Error(error_msg)
 
@@ -229,13 +229,13 @@ fn assert_tensors_equal(
             error_msg = (
                 error_msg
                 + " at index "
-                + str(i)
+                + String(i)
                 + " (a: "
-                + str(a[i])
+                + String(a[i])
                 + ", b: "
-                + str(b[i])
+                + String(b[i])
                 + ", diff: "
-                + str(diff)
+                + String(diff)
                 + ")"
             )
             raise Error(error_msg)
@@ -267,9 +267,9 @@ fn assert_shape_equal(
         error_msg = (
             error_msg
             + " (actual: "
-            + str(len(actual_shape))
+            + String(len(actual_shape))
             + ", expected: "
-            + str(len(expected_shape))
+            + String(len(expected_shape))
             + ")"
         )
         raise Error(error_msg)
@@ -281,11 +281,11 @@ fn assert_shape_equal(
             error_msg = (
                 error_msg
                 + " at dimension "
-                + str(i)
+                + String(i)
                 + " (actual: "
-                + str(actual_shape[i])
+                + String(actual_shape[i])
                 + ", expected: "
-                + str(expected_shape[i])
+                + String(expected_shape[i])
                 + ")"
             )
             raise Error(error_msg)

@@ -37,13 +37,13 @@ fn test_model_forward(
     Returns:
         True if test passes, False otherwise
     """
-    print("\n" + str('='*60))
-    print("Testing " + str(model_name))
-    print(str('='*60))
+    print("\n" + String('='*60))
+    print("Testing " + String(model_name))
+    print(String('='*60))
 
     try:
         # Create dummy input (batch_size, 3, 32, 32)
-        print("Creating dummy input: (" + str(batch_size) + ", 3, 32, 32)")
+        print("Creating dummy input: (" + String(batch_size) + ", 3, 32, 32)")
         var input = zeros(
             List[Int]()
                 .append(batch_size)
@@ -67,14 +67,14 @@ fn test_model_forward(
         var batch_out = logits_inference.shape[0]
         var classes_out = logits_inference.shape[1]
 
-        print("  Output shape: (" + str(batch_out) + ", " + str(classes_out) + ")")
+        print("  Output shape: (" + String(batch_out) + ", " + String(classes_out) + ")")
 
         if batch_out != batch_size:
-            print("✗ FAIL: Expected batch size " + str(batch_size) + ", got " + str(batch_out))
+            print("✗ FAIL: Expected batch size " + String(batch_size) + ", got " + String(batch_out))
             return False
 
         if classes_out != 10:
-            print("✗ FAIL: Expected 10 classes, got " + str(classes_out))
+            print("✗ FAIL: Expected 10 classes, got " + String(classes_out))
             return False
 
         print("✓ Inference mode passed")
@@ -86,14 +86,14 @@ fn test_model_forward(
         var batch_train = logits_training.shape[0]
         var classes_train = logits_training.shape[1]
 
-        print("  Output shape: (" + str(batch_train) + ", " + str(classes_train) + ")")
+        print("  Output shape: (" + String(batch_train) + ", " + String(classes_train) + ")")
 
         if batch_train != batch_size:
-            print("✗ FAIL: Expected batch size " + str(batch_size) + ", got " + str(batch_train))
+            print("✗ FAIL: Expected batch size " + String(batch_size) + ", got " + String(batch_train))
             return False
 
         if classes_train != 10:
-            print("✗ FAIL: Expected 10 classes, got " + str(classes_train))
+            print("✗ FAIL: Expected 10 classes, got " + String(classes_train))
             return False
 
         print("✓ Training mode passed")
@@ -113,7 +113,7 @@ fn test_model_forward(
         # Note: For some models without dropout, outputs might be same
         # Just report, don't fail
         var same_pct = Float32(same_count) / Float32(total_count) * 100.0
-        print("  " + str(same_pct) + "% of outputs are identical")
+        print("  " + String(same_pct) + "% of outputs are identical")
 
         if same_pct == 100.0:
             print("  ⚠ Warning: Outputs identical (no batch norm running stats difference)")
@@ -136,17 +136,17 @@ fn test_model_forward(
         else:
             print("✓ No NaN/Inf detected")
 
-        print("\n" + str('='*60))
-        print("✓ " + str(model_name) + " PASSED ALL TESTS")
-        print(str('='*60) + "\n")
+        print("\n" + String('='*60))
+        print("✓ " + String(model_name) + " PASSED ALL TESTS")
+        print(String('='*60) + "\n")
 
         return True
 
     except e:
-        print("\n" + str('='*60))
-        print("✗ " + str(model_name) + " FAILED")
-        print("Error: " + str(e))
-        print(str('='*60) + "\n")
+        print("\n" + String('='*60))
+        print("✗ " + String(model_name) + " FAILED")
+        print("Error: " + String(e))
+        print(String('='*60) + "\n")
         return False
 
 
@@ -228,16 +228,16 @@ fn main() raises:
 
     for i in range(total_tests):
         var status = "✓ PASS" if results[i] else "✗ FAIL"
-        print(str(status) + ": " + str(model_names[i]))
+        print(String(status) + ": " + String(model_names[i]))
         if results[i]:
             passed_tests += 1
 
     print()
-    print("Total: " + str(passed_tests) + "/" + str(total_tests) + " tests passed")
+    print("Total: " + String(passed_tests) + "/" + String(total_tests) + " tests passed")
 
     if passed_tests == total_tests:
         print("\n🎉 ALL TESTS PASSED!")
     else:
-        print("\n⚠ " + str(total_tests - passed_tests) + " test(s) failed")
+        print("\n⚠ " + String(total_tests - passed_tests) + " test(s) failed")
 
     print("="*60)

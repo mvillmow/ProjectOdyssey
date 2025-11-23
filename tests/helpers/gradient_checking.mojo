@@ -232,4 +232,4 @@ fn check_gradient(
 
     # Compare
     assert_gradients_close(analytical, numerical, rtol, atol,
-                          "Gradient check failed for " + str(x._dtype))
+                          "Gradient check failed for " + String(x._dtype))

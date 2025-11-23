@@ -162,9 +162,9 @@ struct BroadcastIterator:
 
     fn __init__(
         out self,
-        shape: List[Int],
-        strides1: List[Int],
-        strides2: List[Int],
+        var shape: List[Int],
+        var strides1: List[Int],
+        var strides2: List[Int],
     ):
         """Initialize broadcast iterator.
 
