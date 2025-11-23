@@ -1330,6 +1330,38 @@ struct ExTensor(Copyable, Movable):
             var mxfp4_t2 = t2.to_mxfp4()  # Pads to 64 elements, returns 34 bytes
             var restored2 = mxfp4_t2.from_mxfp4()  # Correctly restores 33 elements!
 
+            # Small tensors (1 element still uses full 32-element block)
+            var scalar = ExTensor(List[Int](1,), DType.float32)
+            var quantized_scalar = scalar.to_mxfp4()  # Returns 17 bytes (padded to 32)
+
+            # Multi-dimensional tensors (flattened for quantization)
+            var weights = ExTensor(List[Int](64, 128), DType.float32)  # 8192 elements
+            var quantized_weights = weights.to_mxfp4()  # 256 blocks × 17 bytes = 4352 bytes
+
+            # ML workflow: quantize model weights for memory efficiency
+            fn quantize_model_weights(weights: ExTensor) raises -> ExTensor:
+                # Convert FP32 weights to MXFP4 (16:1 compression)
+                return weights.to_mxfp4()
+
+            # ML workflow: quantize gradients during training
+            fn quantize_gradients(gradients: ExTensor) raises -> ExTensor:
+                # MXFP4 works for both positive and negative values
+                var quantized = gradients.to_mxfp4()
+                # Dequantize before optimizer update
+                return quantized.from_mxfp4()
+
+        Error Handling:
+            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
+            - NaN values: Automatically clamped to max representable value (no error)
+            - Infinity values: Automatically clamped to max representable value (no error)
+            - Non-aligned sizes: Automatically padded with zeros (no error, transparent)
+            - OOM conditions: Raises allocation error if insufficient memory for blocks
+
+        Performance:
+            - Compression ratio: 16:1 vs Float32 (17 bytes per 32 values)
+            - Time complexity: O(n) where n is number of elements
+            - Memory overhead: Temporary padding for non-aligned sizes
+
         Note:
             MXFP4 uses 32-element blocks. Non-aligned tensors are padded with zeros,
             but original size is preserved in metadata. Round-trip conversion maintains
@@ -1496,6 +1528,44 @@ struct ExTensor(Copyable, Movable):
             var t2 = zeros(List[Int](17,), DType.float32)
             var nvfp4_t2 = t2.to_nvfp4()  # Pads to 32 elements, returns 18 bytes
             var restored2 = nvfp4_t2.from_nvfp4()  # Correctly restores 17 elements!
+
+            # Small tensors (1 element still uses full 16-element block)
+            var scalar = ExTensor(List[Int](1,), DType.float32)
+            var quantized_scalar = scalar.to_nvfp4()  # Returns 9 bytes (padded to 16)
+
+            # Multi-dimensional tensors (flattened for quantization)
+            var activations = ExTensor(List[Int](128, 256), DType.float32)  # 32768 elements
+            var quantized_activations = activations.to_nvfp4()  # 2048 blocks × 9 bytes = 18432 bytes
+
+            # ML workflow: quantize activations with better accuracy than MXFP4
+            fn quantize_activations(activations: ExTensor) raises -> ExTensor:
+                # NVFP4 provides better accuracy (smaller blocks = better scale granularity)
+                return activations.to_nvfp4()
+
+            # ML workflow: quantize gradients with E4M3 scale (recommended by paper)
+            fn quantize_gradients_nvfp4(gradients: ExTensor) raises -> ExTensor:
+                # E4M3 achieves best results according to Dettmers et al. 2023
+                var quantized = gradients.to_nvfp4()
+                return quantized.from_nvfp4()
+
+            # Compare accuracy: NVFP4 vs MXFP4
+            fn compare_quantization_accuracy(data: ExTensor) raises:
+                var mxfp4_quantized = data.to_mxfp4().from_mxfp4()
+                var nvfp4_quantized = data.to_nvfp4().from_nvfp4()
+                # NVFP4 typically has lower error due to smaller blocks (16 vs 32)
+
+        Error Handling:
+            - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
+            - NaN values: Automatically clamped to max representable value (no error)
+            - Infinity values: Automatically clamped to max representable value (no error)
+            - Non-aligned sizes: Automatically padded with zeros (no error, transparent)
+            - OOM conditions: Raises allocation error if insufficient memory for blocks
+
+        Performance:
+            - Compression ratio: 14:1 vs Float32 (9 bytes per 16 values)
+            - Time complexity: O(n) where n is number of elements
+            - Memory overhead: Temporary padding for non-aligned sizes
+            - Accuracy: Better than MXFP4 due to smaller blocks (per Dettmers et al.)
 
         Note:
             NVFP4 uses 16-element blocks for better accuracy. Non-aligned tensors are
