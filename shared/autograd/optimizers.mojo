@@ -35,7 +35,6 @@ Design Note:
 from ..core.extensor import ExTensor
 from ..core.arithmetic import subtract, multiply
 from .variable import Variable
-from collections.vector import DynamicVector
 
 
 struct SGD:
@@ -68,9 +67,9 @@ struct SGD:
     var learning_rate: Float64
     var momentum: Float64
     # TODO: Add velocity storage for momentum
-    # var velocities: DynamicVector[ExTensor]
+    # var velocities: List[ExTensor]
 
-    fn __init__(inout self, learning_rate: Float64, momentum: Float64 = 0.0):
+    fn __init__(mut self, learning_rate: Float64, momentum: Float64 = 0.0):
         """Initialize SGD optimizer.
 
         Args:
@@ -87,7 +86,7 @@ struct SGD:
         self.learning_rate = learning_rate
         self.momentum = momentum
 
-    fn step(self, inout parameters: DynamicVector[Variable]) raises:
+    fn step(self, inout parameters: List[Variable]) raises:
         """Update parameters using their gradients.
 
         Performs one step of gradient descent:
@@ -139,7 +138,7 @@ struct SGD:
             # Apply update: parameter = parameter - lr * gradient
             param.data = subtract(param.data, update)
 
-    fn zero_grad(self, inout parameters: DynamicVector[Variable]):
+    fn zero_grad(self, inout parameters: List[Variable]):
         """Reset all parameter gradients to None.
 
         Should be called after each optimizer step to clear gradients before

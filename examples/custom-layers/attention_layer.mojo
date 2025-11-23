@@ -25,7 +25,7 @@ struct MultiHeadAttention(Module):
     var v_proj: Linear  # Value projection
     var out_proj: Linear  # Output projection
 
-    fn __init__(inout self, embed_dim: Int, num_heads: Int):
+    fn __init__(mut self, embed_dim: Int, num_heads: Int):
         """Initialize multi-head attention.
 
         Args:
@@ -42,7 +42,7 @@ struct MultiHeadAttention(Module):
         self.v_proj = Linear(embed_dim, embed_dim)
         self.out_proj = Linear(embed_dim, embed_dim)
 
-    fn forward(inout self, borrowed x: Tensor) -> Tensor:
+    fn forward(mut self, x: Tensor) -> Tensor:
         """Compute multi-head attention.
 
         Args:
@@ -77,7 +77,7 @@ struct MultiHeadAttention(Module):
         # Output projection
         return self.out_proj.forward(attn_output)
 
-    fn parameters(inout self) -> List[Tensor]:
+    fn parameters(mut self) -> List[Tensor]:
         var params = List[Tensor]()
         params.extend(self.q_proj.parameters())
         params.extend(self.k_proj.parameters())

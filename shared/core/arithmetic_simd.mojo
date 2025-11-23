@@ -26,7 +26,6 @@ Usage:
 from algorithm import vectorize
 from sys.info import simdwidthof
 from .extensor import ExTensor
-from collections.vector import DynamicVector
 
 
 # ============================================================================

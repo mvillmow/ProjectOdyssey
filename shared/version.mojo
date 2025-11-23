@@ -12,6 +12,8 @@ Usage:
         print("Version string:", v)
 """
 
+from collections import Tuple
+
 # Version constants (updated by scripts/update_version.py)
 alias VERSION = "0.1.0"
 alias VERSION_MAJOR = 0
@@ -29,7 +31,7 @@ fn get_version() -> String:
     return VERSION
 
 
-fn get_version_tuple() -> (Int, Int, Int):
+fn get_version_tuple() -> Tuple[Int, Int, Int]:
     """
     Get the version as a tuple of integers.
 

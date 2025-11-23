@@ -18,7 +18,7 @@ struct PReLU(Module):
     """
     var alpha: Tensor  # Learnable slope for negative values
 
-    fn __init__(inout self, num_features: Int = 1, init_value: Float64 = 0.25):
+    fn __init__(mut self, num_features: Int = 1, init_value: Float64 = 0.25):
         """Initialize PReLU.
 
         Args:
@@ -27,7 +27,7 @@ struct PReLU(Module):
         """
         self.alpha = Tensor.ones(num_features) * init_value
 
-    fn forward(inout self, borrowed input: Tensor) -> Tensor:
+    fn forward(mut self, input: Tensor) -> Tensor:
         """Forward pass.
 
         Returns:
@@ -43,7 +43,7 @@ struct PReLU(Module):
             # Per-channel alpha
             return positive + self.alpha.reshape(1, -1, 1, 1) * negative
 
-    fn parameters(inout self) -> List[Tensor]:
+    fn parameters(mut self) -> List[Tensor]:
         """Return alpha for optimization."""
         return [self.alpha]
 

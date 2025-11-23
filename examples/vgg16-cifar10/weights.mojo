@@ -19,7 +19,6 @@ Each parameter is saved to its own file:
 """
 
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
 from memory import UnsafePointer
 from pathlib import Path
 
@@ -161,9 +160,9 @@ fn load_tensor(filepath: String) raises -> Tuple[String, ExTensor]:
     var dtype = _parse_dtype(dtype_str)
 
     # Parse shape
-    var shape = DynamicVector[Int]()
+    var shape = List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.push_back(int(meta_parts[i]))
+        shape.append(int(meta_parts[i]))
 
     # Create tensor
     var tensor = zeros(shape, dtype)

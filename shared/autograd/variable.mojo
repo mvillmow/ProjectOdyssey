@@ -59,7 +59,7 @@ struct Variable:
     var requires_grad: Bool
     # TODO: Add grad_fn field once we implement backward functions
 
-    fn __init__(inout self, data: ExTensor, requires_grad: Bool = False):
+    fn __init__(mut self, data: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable from an ExTensor.
 
         Args:
@@ -74,7 +74,7 @@ struct Variable:
         self.grad = None
         self.requires_grad = requires_grad
 
-    fn __init__(inout self, data: ExTensor, grad: ExTensor, requires_grad: Bool = False):
+    fn __init__(mut self, data: ExTensor, grad: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable with explicit gradient.
 
         Args:
@@ -90,7 +90,7 @@ struct Variable:
         self.grad = grad
         self.requires_grad = requires_grad
 
-    fn zero_grad(inout self):
+    fn zero_grad(mut self):
         """Reset gradients to None.
 
         Should be called before each backward pass to prevent gradient accumulation
@@ -105,7 +105,7 @@ struct Variable:
         """
         self.grad = None
 
-    fn backward(inout self):
+    fn backward(mut self):
         """Compute gradients via automatic differentiation.
 
         Triggers backward pass through the computation graph, computing gradients

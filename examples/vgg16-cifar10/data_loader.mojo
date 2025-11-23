@@ -21,7 +21,6 @@ References:
 
 from shared.core import ExTensor, zeros
 from shared.core.normalization import normalize_rgb as normalize_rgb_shared
-from collections.vector import DynamicVector
 from memory import UnsafePointer
 
 
@@ -78,7 +77,7 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor
-    var shape = DynamicVector[Int](1)
+    var shape = List[Int]()
     shape[0] = num_items
     var labels = zeros(shape, DType.uint8)
 
@@ -134,7 +133,7 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor (num_images, channels, rows, cols) for CNN input
-    var shape = DynamicVector[Int](4)
+    var shape = List[Int]()
     shape[0] = num_images
     shape[1] = num_channels  # RGB channels
     shape[2] = num_rows
@@ -226,14 +225,14 @@ fn load_cifar10_train(data_dir: String) raises -> (ExTensor, ExTensor):
     var batch1_labels = batch1[1]
 
     # Create full training tensors (50,000 samples)
-    var train_shape = DynamicVector[Int](4)
+    var train_shape = List[Int]()
     train_shape[0] = 50000  # 5 batches * 10,000 images
     train_shape[1] = 3      # RGB channels
     train_shape[2] = 32     # height
     train_shape[3] = 32     # width
     var all_images = zeros(train_shape, DType.float32)
 
-    var label_shape = DynamicVector[Int](1)
+    var label_shape = List[Int]()
     label_shape[0] = 50000
     var all_labels = zeros(label_shape, DType.uint8)
 

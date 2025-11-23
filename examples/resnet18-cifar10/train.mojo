@@ -30,7 +30,6 @@ from shared.core.normalization import batch_norm2d, batch_norm2d_backward
 from shared.core.arithmetic import add, add_backward
 from shared.data import extract_batch_pair, compute_num_batches
 from shared.training.optimizers import sgd_momentum_update_inplace
-from collections.vector import DynamicVector
 from model import ResNet18
 from data_loader import load_cifar10_train, load_cifar10_test
 
@@ -66,11 +65,11 @@ fn compute_accuracy(model: inout ResNet18, images: ExTensor, labels: ExTensor) r
         # Count correct predictions
         for i in range(current_batch_size):
             # Extract single sample
-            var sample_shape = DynamicVector[Int](4)
-            sample_shape.push_back(1)
-            sample_shape.push_back(3)
-            sample_shape.push_back(32)
-            sample_shape.push_back(32)
+            var sample_shape = List[Int]()
+            sample_shape.append(1)
+            sample_shape.append(3)
+            sample_shape.append(32)
+            sample_shape.append(32)
 
             # Create slice for this sample
             var sample = zeros(sample_shape, DType.float32)
@@ -97,7 +96,7 @@ fn train_epoch(
     batch_size: Int,
     learning_rate: Float32,
     momentum: Float32,
-    inout velocities: DynamicVector[ExTensor],
+    inout velocities: List[ExTensor],
 ) raises -> Float32:
     """Train for one epoch with manual backpropagation through all 18 layers.
 
@@ -346,7 +345,7 @@ fn main() raises:
 
     # Initialize momentum velocities (one per trainable parameter)
     print("Initializing momentum velocities...")
-    var velocities = DynamicVector[ExTensor]()
+    var velocities = List[ExTensor]()
 
     # Note: In a complete implementation, initialize 84 velocity tensors
     # matching the shape of each parameter. For this demonstration:

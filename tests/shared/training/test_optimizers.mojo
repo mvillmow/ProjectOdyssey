@@ -40,7 +40,7 @@ fn test_sgd_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that sgd_step accepts all hyperparameters
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)
@@ -70,7 +70,7 @@ fn test_sgd_basic_update() raises:
     This is a CRITICAL test that defines the core SGD behavior.
     """
     # Initial parameters: [1.0, 2.0, 3.0]
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var params = ones(shape, DType.float32)
 
     # Manually set values: [1.0, 2.0, 3.0]
@@ -107,7 +107,7 @@ fn test_sgd_momentum_accumulation() raises:
 
     This is a CRITICAL test for momentum-based training.
     """
-    var shape = List[Int](1)
+    var shape = List[Int]()
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -143,7 +143,7 @@ fn test_sgd_weight_decay() raises:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update
     """
-    var shape = List[Int](1)
+    var shape = List[Int]()
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -202,7 +202,7 @@ fn test_adam_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that adam_step accepts all hyperparameters
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
@@ -239,7 +239,7 @@ fn test_adam_parameter_update() raises:
 
     This is a CRITICAL test for Adam correctness.
     """
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -278,7 +278,7 @@ fn test_adam_bias_correction() raises:
 
     This is CRITICAL for Adam's fast convergence in early training.
     """
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -403,7 +403,7 @@ fn test_optimizer_property_decreasing_loss() raises:
     # # Minimum at x=0
     # #
     # var initial_value = Float32(5.0)
-    # var params = Tensor(List[Float32](initial_value), Shape(1))
+    # var params = Tensor(List[Float32](), Shape(1))
     # #
     # # Test each optimizer
     # let optimizers = [
@@ -484,7 +484,7 @@ fn test_sgd_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -553,7 +553,7 @@ fn test_adam_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0

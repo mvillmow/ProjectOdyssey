@@ -41,7 +41,7 @@ fn benchmark_operation(
         iterations: Number of iterations for timing
     """
     # Create test tensors
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = size
     shape[1] = size
 
@@ -89,7 +89,7 @@ fn verify_correctness() raises -> Bool:
     """
     print("\n=== Verifying SIMD Correctness ===\n")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 10
     shape[1] = 10
 

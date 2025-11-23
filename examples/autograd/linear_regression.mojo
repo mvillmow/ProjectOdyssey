@@ -13,7 +13,6 @@ from shared.autograd import mse_loss_and_grad, SGD
 from shared.core.extensor import ExTensor
 from shared.core.creation import zeros, ones
 from shared.core.arithmetic import add, multiply, subtract
-from collections.vector import DynamicVector
 
 
 fn linear_regression_functional() raises:
@@ -29,10 +28,10 @@ fn linear_regression_functional() raises:
     var num_epochs: Int = 50
 
     # Create parameters: w and b
-    var w = ExTensor(DynamicVector[Int](1), DType.float32)
+    var w = ExTensor(List[Int](), DType.float32)
     w._set_float64(0, 0.5)  # Initialize w = 0.5
 
-    var b = ExTensor(DynamicVector[Int](1), DType.float32)
+    var b = ExTensor(List[Int](), DType.float32)
     b._set_float64(0, 0.0)  # Initialize b = 0.0
 
     print("Initial parameters:")
@@ -43,11 +42,11 @@ fn linear_regression_functional() raises:
     # Create training data: y = 2*x + 1
     # X = [1, 2, 3, 4, 5]
     # Y = [3, 5, 7, 9, 11]
-    var X = ExTensor(DynamicVector[Int](5), DType.float32)
+    var X = ExTensor(List[Int](), DType.float32)
     for i in range(5):
         X._set_float64(i, Float64(i + 1))
 
-    var Y = ExTensor(DynamicVector[Int](5), DType.float32)
+    var Y = ExTensor(List[Int](), DType.float32)
     for i in range(5):
         Y._set_float64(i, Float64(2 * (i + 1) + 1))
 
@@ -57,11 +56,11 @@ fn linear_regression_functional() raises:
     # Training loop
     for epoch in range(num_epochs):
         # Forward pass: predictions = w * X + b
-        var w_expanded = ExTensor(DynamicVector[Int](5), DType.float32)
+        var w_expanded = ExTensor(List[Int](), DType.float32)
         for i in range(5):
             w_expanded._set_float64(i, w._get_float64(0))
 
-        var b_expanded = ExTensor(DynamicVector[Int](5), DType.float32)
+        var b_expanded = ExTensor(List[Int](), DType.float32)
         for i in range(5):
             b_expanded._set_float64(i, b._get_float64(0))
 
@@ -76,7 +75,7 @@ fn linear_regression_functional() raises:
         # ∂loss/∂w = sum(∂loss/∂predictions * ∂predictions/∂w)
         #          = sum(grad_predictions * X)
         var grad_w_expanded = multiply(grad_predictions, X)
-        var grad_w_sum = ExTensor(DynamicVector[Int](1), DType.float32)
+        var grad_w_sum = ExTensor(List[Int](), DType.float32)
         var grad_w_val: Float64 = 0.0
         for i in range(5):
             grad_w_val += grad_w_expanded._get_float64(i)
@@ -84,14 +83,14 @@ fn linear_regression_functional() raises:
 
         # ∂loss/∂b = sum(∂loss/∂predictions * ∂predictions/∂b)
         #          = sum(grad_predictions)
-        var grad_b_sum = ExTensor(DynamicVector[Int](1), DType.float32)
+        var grad_b_sum = ExTensor(List[Int](), DType.float32)
         var grad_b_val: Float64 = 0.0
         for i in range(5):
             grad_b_val += grad_predictions._get_float64(i)
         grad_b_sum._set_float64(0, grad_b_val)
 
         # Update parameters: param = param - lr * gradient
-        var lr_tensor = ExTensor(DynamicVector[Int](1), DType.float32)
+        var lr_tensor = ExTensor(List[Int](), DType.float32)
         lr_tensor._set_float64(0, learning_rate)
 
         w = subtract(w, multiply(lr_tensor, grad_w_sum))

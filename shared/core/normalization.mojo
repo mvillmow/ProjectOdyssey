@@ -8,7 +8,7 @@ from .extensor import ExTensor, zeros_like, ones_like, full_like
 from .arithmetic import subtract, add, multiply, divide, power
 from .elementwise import sqrt
 from .reduction import mean as reduce_mean, sum as reduce_sum
-from collections import List
+from collections import List, Tuple
 
 
 fn batch_norm2d(
@@ -20,7 +20,7 @@ fn batch_norm2d(
     training: Bool,
     momentum: Float64 = 0.1,
     epsilon: Float64 = 1e-5
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Functional 2D batch normalization.
 
     Normalizes activations across the batch dimension for each channel.
@@ -368,7 +368,7 @@ fn batch_norm2d_backward(
     running_var: ExTensor,
     training: Bool,
     epsilon: Float64 = 1e-5
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for 2D batch normalization.
 
     Computes gradients with respect to input, gamma, and beta parameters.

@@ -63,7 +63,7 @@ struct MetricResult:
         self.name = name
         self.is_scalar = True
         self.scalar_value = value
-        self.tensor_value = ExTensor(DynamicVector[Int](1))  # Placeholder
+        self.tensor_value = ExTensor(List[Int]())  # Placeholder
 
     fn __init__(mut self, name: String, value: ExTensor):
         """Create tensor metric result."""

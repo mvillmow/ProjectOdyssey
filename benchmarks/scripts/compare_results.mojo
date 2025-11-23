@@ -36,7 +36,7 @@ struct BenchmarkData:
     var iterations: Int
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         duration_ms: Float64,
         throughput: Float64,
@@ -61,7 +61,7 @@ struct ComparisonResult:
     var severity: String  # "none", "minor", "moderate", "severe"
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         baseline_duration: Float64,
         current_duration: Float64,

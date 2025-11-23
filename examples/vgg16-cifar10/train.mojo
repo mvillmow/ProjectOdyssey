@@ -28,7 +28,6 @@ from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
 from shared.training.schedulers import step_lr
 from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices
 from sys import argv
-from collections.vector import DynamicVector
 
 
 fn parse_args() raises -> (Int, Int, Float32, Float32, String, String):
@@ -68,7 +67,7 @@ fn compute_gradients(
     borrowed labels: ExTensor,
     learning_rate: Float32,
     momentum: Float32,
-    inout velocities: DynamicVector[ExTensor]
+    inout velocities: List[ExTensor]
 ) raises -> Float32:
     """Compute gradients and update parameters for one batch.
 
@@ -132,9 +131,9 @@ fn compute_gradients(
     var pool5_shape = pool5_out.shape()
     var batch_size = pool5_shape[0]
     var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
-    var flatten_shape = DynamicVector[Int](2)
-    flatten_shape.push_back(batch_size)
-    flatten_shape.push_back(flattened_size)
+    var flatten_shape = List[Int]()
+    flatten_shape.append(batch_size)
+    flatten_shape.append(flattened_size)
     var flattened = pool5_out.reshape(flatten_shape)
 
     # FC1 + ReLU + Dropout
@@ -398,7 +397,7 @@ fn train_epoch(
     momentum: Float32,
     epoch: Int,
     total_epochs: Int,
-    inout velocities: DynamicVector[ExTensor]
+    inout velocities: List[ExTensor]
 ) raises -> Float32:
     """Train for one epoch.
 
@@ -493,7 +492,7 @@ fn evaluate(
     return accuracy
 
 
-fn initialize_velocities(model: VGG16) raises -> DynamicVector[ExTensor]:
+fn initialize_velocities(model: VGG16) raises -> List[ExTensor]:
     """Initialize momentum velocities for all parameters (32 tensors).
 
     Args:
@@ -502,52 +501,52 @@ fn initialize_velocities(model: VGG16) raises -> DynamicVector[ExTensor]:
     Returns:
         DynamicVector of zero-initialized velocity tensors matching parameter shapes
     """
-    var velocities = DynamicVector[ExTensor](32)
+    var velocities = List[ExTensor]()
 
     # Initialize velocities for all 32 parameters (conv1-5 blocks + fc1-3)
     # Block 1 (4 params)
-    velocities.push_back(zeros(model.conv1_1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv1_1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv1_2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv1_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_2_bias.shape(), DType.float32))
 
     # Block 2 (4 params)
-    velocities.push_back(zeros(model.conv2_1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv2_1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv2_2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv2_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_2_bias.shape(), DType.float32))
 
     # Block 3 (6 params)
-    velocities.push_back(zeros(model.conv3_1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_3_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_3_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_3_bias.shape(), DType.float32))
 
     # Block 4 (6 params)
-    velocities.push_back(zeros(model.conv4_1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_3_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_3_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_3_bias.shape(), DType.float32))
 
     # Block 5 (6 params)
-    velocities.push_back(zeros(model.conv5_1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_3_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_3_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_3_bias.shape(), DType.float32))
 
     # FC layers (6 params)
-    velocities.push_back(zeros(model.fc1_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc2_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc3_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc1_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc2_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc3_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc3_bias.shape(), DType.float32))
 
     return velocities
 

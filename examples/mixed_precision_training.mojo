@@ -27,7 +27,6 @@ from shared.training.mixed_precision import (
     clip_gradients_by_norm
 )
 from shared.training.trainer_interface import TrainerConfig
-from collections.vector import DynamicVector
 
 
 fn simulate_forward_pass(params: ExTensor, input: ExTensor) raises -> ExTensor:
@@ -81,7 +80,7 @@ fn main() raises:
     print("Initializing model parameters...")
     print("-" * 70)
 
-    var param_shape = DynamicVector[Int](100)
+    var param_shape = List[Int]()
 
     # Model parameters in FP16
     var model_params = ExTensor.full(param_shape, 1.0, model_dtype)

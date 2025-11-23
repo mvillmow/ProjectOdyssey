@@ -29,7 +29,7 @@ from shared.training.optimizers.rmsprop import rmsprop_step, rmsprop_step_simple
 
 fn test_rmsprop_step_shapes() raises:
     """Test that rmsprop_step returns correct shapes."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
 
@@ -58,7 +58,7 @@ fn test_rmsprop_step_shapes() raises:
 
 fn test_rmsprop_simple_shapes() raises:
     """Test that rmsprop_step_simple returns correct shapes."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
 
@@ -83,7 +83,7 @@ fn test_rmsprop_simple_shapes() raises:
 
 fn test_rmsprop_step_parameter_update() raises:
     """Test that rmsprop_step updates parameters correctly."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -128,7 +128,7 @@ fn test_rmsprop_step_parameter_update() raises:
 
 fn test_rmsprop_simple_parameter_update() raises:
     """Test that rmsprop_step_simple updates parameters correctly."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -158,7 +158,7 @@ fn test_rmsprop_simple_parameter_update() raises:
 
 fn test_rmsprop_square_avg_accumulation() raises:
     """Test that square_avg accumulates correctly over multiple steps."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -208,7 +208,7 @@ fn test_rmsprop_square_avg_accumulation() raises:
 
 fn test_rmsprop_with_momentum() raises:
     """Test rmsprop with momentum."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -253,7 +253,7 @@ fn test_rmsprop_with_momentum() raises:
 
 fn test_rmsprop_with_weight_decay() raises:
     """Test rmsprop with weight decay."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -281,7 +281,7 @@ fn test_rmsprop_with_weight_decay() raises:
 
 fn test_rmsprop_zero_gradient() raises:
     """Test that rmsprop handles zero gradients correctly."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -310,7 +310,7 @@ fn test_rmsprop_zero_gradient() raises:
 
 fn test_rmsprop_alpha_parameter() raises:
     """Test that alpha parameter controls averaging."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -352,7 +352,7 @@ fn test_rmsprop_alpha_parameter() raises:
 
 fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
     """Test that epsilon prevents division by zero."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
 
     var params = ones(shape, DType.float32)
@@ -380,7 +380,7 @@ fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
 
 fn test_rmsprop_batch_update() raises:
     """Test rmsprop with batch of parameters."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 10
     shape[1] = 5
 

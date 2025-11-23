@@ -37,7 +37,7 @@ struct BenchmarkConfig:
     var measure_iterations: Int
 
     fn __init__(
-        inout self,
+        mut self,
         warmup: Int = 100,
         iterations: Int = 1000,
     ):
@@ -83,7 +83,7 @@ struct BenchmarkResult:
     var dtype: String
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         mean_time_us: Float64,
         std_dev_us: Float64,

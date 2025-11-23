@@ -22,6 +22,7 @@ Reference:
     machine learning, 4(2), 26-31.
 """
 
+from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.elementwise import sqrt
@@ -40,7 +41,7 @@ fn rmsprop_step(
     weight_decay: Float64 = 0.0,
     momentum: Float64 = 0.0,
     buf: ExTensor = ExTensor()
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single RMSprop optimization step - pure functional.
 
     Returns new parameters, new square average, and new momentum buffer.
@@ -166,7 +167,7 @@ fn rmsprop_step_simple(
     learning_rate: Float64,
     alpha: Float64 = 0.99,
     epsilon: Float64 = 1e-8
-) raises -> (ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor]:
     """Simplified RMSprop step without weight decay, momentum, or timestep.
 
     This is a convenience function for basic RMSprop updates.

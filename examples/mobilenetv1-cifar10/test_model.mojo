@@ -2,7 +2,6 @@
 
 from model import MobileNetV1
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
 
 fn main() raises:
     print("Testing MobileNetV1 Model")
@@ -14,7 +13,7 @@ fn main() raises:
 
     print("\nCreating dummy input (batch=2, channels=3, height=32, width=32)...")
     var input = zeros(
-        DynamicVector[Int](4).push_back(2).push_back(3).push_back(32).push_back(32),
+        List[Int]().append(2).append(3).append(32).append(32),
         DType.float32
     )
     var input_data = input._data.bitcast[Float32]()

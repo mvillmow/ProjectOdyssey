@@ -152,8 +152,8 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = zeros(DynamicVector[Int](3, 4), DType.float32)
-        var b = ones(DynamicVector[Int](3, 4), DType.float32)
+        var a = zeros(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = add(a, b)  # Shape (3, 4), all ones
 
         # Broadcasting example
@@ -184,8 +184,8 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = ones(DynamicVector[Int](3, 4), DType.float32)
-        var b = ones(DynamicVector[Int](3, 4), DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = subtract(a, b)  # Shape (3, 4), all zeros
 
         # Broadcasting example
@@ -215,8 +215,8 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
+        var a = full(List[Int](), 2.0, DType.float32)
+        var b = full(List[Int](), 3.0, DType.float32)
         var c = multiply(a, b)  # Shape (3, 4), all 6.0
 
         # Broadcasting example
@@ -251,8 +251,8 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         - 0.0 / 0.0 -> NaN
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 6.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = full(List[Int](), 6.0, DType.float32)
+        var b = full(List[Int](), 2.0, DType.float32)
         var c = divide(a, b)  # Shape (3, 4), all 3.0
 
         # Broadcasting example
@@ -281,8 +281,8 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 7.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = full(List[Int](), 7.0, DType.float32)
+        var b = full(List[Int](), 2.0, DType.float32)
         var c = floor_divide(a, b)  # Shape (3, 4), all 3.0
 
         # Broadcasting example
@@ -316,8 +316,8 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 7.0, DType.int32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.int32)
+        var a = full(List[Int](), 7.0, DType.int32)
+        var b = full(List[Int](), 3.0, DType.int32)
         var c = modulo(a, b)  # Shape (3, 4), all 1
 
         # Broadcasting example
@@ -350,8 +350,8 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match
 
     Examples:
-        var a = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 3.0, DType.float32)
+        var a = full(List[Int](), 2.0, DType.float32)
+        var b = full(List[Int](), 3.0, DType.float32)
         var c = power(a, b)  # Shape (3, 4), all 8.0
 
         # Broadcasting example
@@ -377,7 +377,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ==============================================================================
 
 
-fn _reduce_broadcast_dims(grad: ExTensor, original_shape: DynamicVector[Int]) raises -> ExTensor:
+fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> ExTensor:
     """Reduce gradient from broadcast shape back to original shape.
 
     When forward pass broadcasts input from original_shape to grad.shape(),
@@ -427,7 +427,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: DynamicVector[Int]) ra
     return result
 
 
-fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:
+fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) raises -> GradientPair:
     """Compute gradients for element-wise addition.
 
     For C = A + B, given ∂L/∂C, computes:
@@ -447,19 +447,19 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
 
     Examples:
         # No broadcasting
-        var a = ones(DynamicVector[Int](3, 4), DType.float32)
-        var b = ones(DynamicVector[Int](3, 4), DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = add(a, b)
-        var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
+        var grad_c = ones(List[Int](), DType.float32)
         var grads = add_backward(grad_c, a.shape(), b.shape())
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
 
         # With broadcasting
-        var x = ones(DynamicVector[Int](3, 1), DType.float32)
-        var y = ones(DynamicVector[Int](3, 4), DType.float32)
+        var x = ones(List[Int](), DType.float32)
+        var y = ones(List[Int](), DType.float32)
         var z = add(x, y)  # Shape (3, 4)
-        var grad_z = ones(DynamicVector[Int](3, 4), DType.float32)
+        var grad_z = ones(List[Int](), DType.float32)
         var grads = add_backward(grad_z, x.shape(), y.shape())
         # grads.grad_a will be shape (3, 1) - summed over broadcast dimension
     """
@@ -470,7 +470,7 @@ fn add_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: Dyn
     return GradientPair(grad_a, grad_b)
 
 
-fn subtract_backward(grad_output: ExTensor, a_shape: DynamicVector[Int], b_shape: DynamicVector[Int]) raises -> GradientPair:
+fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) raises -> GradientPair:
     """Compute gradients for element-wise subtraction.
 
     For C = A - B, given ∂L/∂C, computes:
@@ -518,10 +518,10 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
-        var a = ones(DynamicVector[Int](3, 4), DType.float32)
-        var b = ones(DynamicVector[Int](3, 4), DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = multiply(a, b)
-        var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
+        var grad_c = ones(List[Int](), DType.float32)
         var grads = multiply_backward(grad_c, a, b)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
@@ -555,10 +555,10 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs
 
     Examples:
-        var a = ones(DynamicVector[Int](3, 4), DType.float32)
-        var b = full(DynamicVector[Int](3, 4), 2.0, DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = full(List[Int](), 2.0, DType.float32)
         var c = divide(a, b)
-        var grad_c = ones(DynamicVector[Int](3, 4), DType.float32)
+        var grad_c = ones(List[Int](), DType.float32)
         var grads = divide_backward(grad_c, a, b)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b

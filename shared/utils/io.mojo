@@ -26,6 +26,7 @@ All implementations marked with "WARNING: NOT YET IMPLEMENTED - Placeholder inte
 See Issue #49 for details
 """
 
+from collections import Tuple
 from python import Python
 
 
@@ -493,7 +494,7 @@ fn join_path(base: String, path: String) raises -> String:
         return clean_base + "/" + clean_path
 
 
-fn split_path(filepath: String) -> (String, String):
+fn split_path(filepath: String) -> Tuple[String, String]:
     """Split path into directory and filename.
 
     Args:

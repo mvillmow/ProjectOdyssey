@@ -40,7 +40,7 @@ from shared.core.arithmetic import (
 
 fn test_add_shapes() raises:
     """Test that add returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -54,7 +54,7 @@ fn test_add_shapes() raises:
 
 fn test_add_values() raises:
     """Test that add computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -76,7 +76,7 @@ fn test_add_values() raises:
 
 fn test_add_backward() raises:
     """Test add backward pass."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     var a = ones(shape, DType.float32)
@@ -98,7 +98,7 @@ fn test_add_backward() raises:
 
 fn test_subtract_shapes() raises:
     """Test that subtract returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -112,7 +112,7 @@ fn test_subtract_shapes() raises:
 
 fn test_subtract_values() raises:
     """Test that subtract computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -134,7 +134,7 @@ fn test_subtract_values() raises:
 
 fn test_subtract_backward() raises:
     """Test subtract backward pass."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     var a = ones(shape, DType.float32)
@@ -156,7 +156,7 @@ fn test_subtract_backward() raises:
 
 fn test_multiply_shapes() raises:
     """Test that multiply returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -170,7 +170,7 @@ fn test_multiply_shapes() raises:
 
 fn test_multiply_values() raises:
     """Test that multiply computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -192,7 +192,7 @@ fn test_multiply_values() raises:
 
 fn test_multiply_backward() raises:
     """Test multiply backward pass."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -219,7 +219,7 @@ fn test_multiply_backward() raises:
 
 fn test_divide_shapes() raises:
     """Test that divide returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -233,7 +233,7 @@ fn test_divide_shapes() raises:
 
 fn test_divide_values() raises:
     """Test that divide computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -255,7 +255,7 @@ fn test_divide_values() raises:
 
 fn test_divide_backward() raises:
     """Test divide backward pass."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -287,7 +287,7 @@ fn test_divide_backward() raises:
 
 fn test_floor_divide_shapes() raises:
     """Test that floor_divide returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -301,7 +301,7 @@ fn test_floor_divide_shapes() raises:
 
 fn test_floor_divide_values() raises:
     """Test that floor_divide computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -329,7 +329,7 @@ fn test_floor_divide_values() raises:
 
 fn test_modulo_shapes() raises:
     """Test that modulo returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -343,7 +343,7 @@ fn test_modulo_shapes() raises:
 
 fn test_modulo_values() raises:
     """Test that modulo computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -371,7 +371,7 @@ fn test_modulo_values() raises:
 
 fn test_power_shapes() raises:
     """Test that power returns correct output shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 4
     shape[1] = 10
     var a = ones(shape, DType.float32)
@@ -385,7 +385,7 @@ fn test_power_shapes() raises:
 
 fn test_power_values() raises:
     """Test that power computes correct values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)

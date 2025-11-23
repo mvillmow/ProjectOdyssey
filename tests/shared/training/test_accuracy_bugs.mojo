@@ -1,14 +1,14 @@
 """Tests for List[Int] constructor bugs in accuracy.mojo.
 
 This test file demonstrates the bugs in accuracy.mojo functions that use the
-unsafe pattern: List[Int](n) followed by list[i] = value.
+unsafe pattern: List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fixes are applied, demonstrating the bug.
 After fixing, they should PASS.
 
 Bugs tested:
-- Line 118: argmax() - var result_shape = List[Int](batch_size)
-- Line 348: per_class_accuracy() - var result_shape = List[Int](num_classes)
+- Line 118: argmax() - var result_shape = List[Int]()
+- Line 348: per_class_accuracy() - var result_shape = List[Int]()
 """
 
 from sys import DType
@@ -26,7 +26,7 @@ from shared.training.metrics.accuracy import top1_accuracy, per_class_accuracy
 fn test_top1_accuracy_with_logits() raises:
     """Test top1_accuracy with logits (triggers argmax bug at line 118).
 
-    Bug: Line 118 uses List[Int](batch_size) then indexes at line 146.
+    Bug: Line 118 uses List[Int]() then indexes at line 146.
     This crashes because the list has undefined size.
     """
     # Create logits tensor [batch_size=4, num_classes=3]
@@ -54,7 +54,7 @@ fn test_top1_accuracy_with_logits() raises:
 fn test_top1_accuracy_small_batch() raises:
     """Test top1_accuracy with small batch (triggers argmax bug).
 
-    Bug: Line 118 uses List[Int](batch_size) then indexes.
+    Bug: Line 118 uses List[Int]() then indexes.
     Even with batch_size=1, this crashes.
     """
     # Create logits tensor [batch_size=1, num_classes=10]
@@ -78,7 +78,7 @@ fn test_top1_accuracy_small_batch() raises:
 fn test_top1_accuracy_large_batch() raises:
     """Test top1_accuracy with larger batch (triggers argmax bug).
 
-    Bug: Line 118 uses List[Int](batch_size) then indexes.
+    Bug: Line 118 uses List[Int]() then indexes.
     Larger batch size makes the bug more likely to manifest.
     """
     # Create logits tensor [batch_size=100, num_classes=10]
@@ -106,7 +106,7 @@ fn test_top1_accuracy_large_batch() raises:
 fn test_per_class_accuracy_basic() raises:
     """Test per_class_accuracy (triggers bug at line 348).
 
-    Bug: Line 348 uses List[Int](num_classes) then indexes at line 358.
+    Bug: Line 348 uses List[Int]() then indexes at line 358.
     This crashes because the list has undefined size.
     """
     # Create logits tensor [batch_size=10, num_classes=3]
@@ -130,7 +130,7 @@ fn test_per_class_accuracy_basic() raises:
 fn test_per_class_accuracy_many_classes() raises:
     """Test per_class_accuracy with many classes (triggers bug at line 348).
 
-    Bug: Line 348 uses List[Int](num_classes) then indexes.
+    Bug: Line 348 uses List[Int]() then indexes.
     More classes = more likely to crash.
     """
     # Create logits tensor [batch_size=50, num_classes=20]

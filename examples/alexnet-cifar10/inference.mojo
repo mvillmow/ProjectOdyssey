@@ -125,7 +125,7 @@ fn _argmax(tensor: ExTensor) raises -> Int:
     return max_idx
 
 
-fn _top_k_indices(tensor: ExTensor, k: Int) raises -> DynamicVector[Int]:
+fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     """Find indices of top-k maximum values in 1D tensor.
 
     Args:
@@ -140,13 +140,13 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> DynamicVector[Int]:
     """
     var shape = tensor.shape()
     var num_classes = shape[1]
-    var indices = DynamicVector[Int](k)
+    var indices = List[Int]()
 
     # Create a copy of tensor values for modification
-    var values = DynamicVector[Float32](num_classes)
+    var values = List[Float32]()
     var tensor_data = tensor._data.bitcast[Float32]()
     for i in range(num_classes):
-        values.push_back(tensor_data[i])
+        values.append(tensor_data[i])
 
     # Find top-k by repeatedly finding max and setting it to -inf
     for _ in range(k):
@@ -158,7 +158,7 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> DynamicVector[Int]:
                 max_val = values[i]
                 max_idx = i
 
-        indices.push_back(max_idx)
+        indices.append(max_idx)
         values[max_idx] = Float32(-1e9)  # Set to very negative value
 
     return indices

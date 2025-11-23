@@ -43,7 +43,7 @@ fn evaluate_model(
     labels: ExTensor,
     batch_size: Int = 100,
     verbose: Bool = True
-) raises -> Tuple[Float32, DynamicVector[Int], DynamicVector[Int]]:
+) raises -> Tuple[Float32, List[Int], List[Int]]:
     """Evaluate model on a dataset.
 
     Args:

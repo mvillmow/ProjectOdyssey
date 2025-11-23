@@ -395,13 +395,13 @@ fn test_initializers_integration() raises:
 
     # Use different initializers for different layers
     var w1 = kaiming_uniform(784, 256, layer1_shape, seed_val=1)  # ReLU layer
-    var b1 = constant(List[Int](256), 0.0)
+    var b1 = constant(List[Int](), 0.0)
 
     var w2 = kaiming_normal(256, 128, layer2_shape, seed_val=2)  # ReLU layer
-    var b2 = constant(List[Int](128), 0.0)
+    var b2 = constant(List[Int](), 0.0)
 
     var w3 = xavier_uniform(128, 10, layer3_shape, seed_val=3)  # Softmax layer
-    var b3 = uniform(List[Int](10), low=-0.01, high=0.01, seed_val=4)
+    var b3 = uniform(List[Int](), low=-0.01, high=0.01, seed_val=4)
 
     # Verify all tensors have correct shapes
     assert_equal(w1.size(), 784 * 256, "Layer 1 weights shape")

@@ -33,7 +33,6 @@ from shared.core import (
     xavier_normal,
     constant,
 )
-from collections.vector import DynamicVector
 
 
 struct InceptionModule:
@@ -101,7 +100,7 @@ struct InceptionModule:
     var bn1x1_4_running_var: ExTensor
 
     fn __init__(
-        inout self,
+        mut self,
         in_channels: Int,
         out_1x1: Int,
         reduce_3x3: Int,
@@ -123,103 +122,103 @@ struct InceptionModule:
         """
         # Branch 1: 1×1 conv
         self.conv1x1_1_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(out_1x1)
-            .push_back(in_channels)
-            .push_back(1)
-            .push_back(1),
+            List[Int]()
+            .append(out_1x1)
+            .append(in_channels)
+            .append(1)
+            .append(1),
             fan_in=in_channels,
         )
-        self.conv1x1_1_bias = zeros(DynamicVector[Int](1).push_back(out_1x1))
-        self.bn1x1_1_gamma = constant(DynamicVector[Int](1).push_back(out_1x1), 1.0)
-        self.bn1x1_1_beta = zeros(DynamicVector[Int](1).push_back(out_1x1))
-        self.bn1x1_1_running_mean = zeros(DynamicVector[Int](1).push_back(out_1x1))
+        self.conv1x1_1_bias = zeros(List[Int]().append(out_1x1))
+        self.bn1x1_1_gamma = constant(List[Int]().append(out_1x1), 1.0)
+        self.bn1x1_1_beta = zeros(List[Int]().append(out_1x1))
+        self.bn1x1_1_running_mean = zeros(List[Int]().append(out_1x1))
         self.bn1x1_1_running_var = constant(
-            DynamicVector[Int](1).push_back(out_1x1), 1.0
+            List[Int]().append(out_1x1), 1.0
         )
 
         # Branch 2: 1×1 reduce
         self.conv1x1_2_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(reduce_3x3)
-            .push_back(in_channels)
-            .push_back(1)
-            .push_back(1),
+            List[Int]()
+            .append(reduce_3x3)
+            .append(in_channels)
+            .append(1)
+            .append(1),
             fan_in=in_channels,
         )
-        self.conv1x1_2_bias = zeros(DynamicVector[Int](1).push_back(reduce_3x3))
-        self.bn1x1_2_gamma = constant(DynamicVector[Int](1).push_back(reduce_3x3), 1.0)
-        self.bn1x1_2_beta = zeros(DynamicVector[Int](1).push_back(reduce_3x3))
-        self.bn1x1_2_running_mean = zeros(DynamicVector[Int](1).push_back(reduce_3x3))
+        self.conv1x1_2_bias = zeros(List[Int]().append(reduce_3x3))
+        self.bn1x1_2_gamma = constant(List[Int]().append(reduce_3x3), 1.0)
+        self.bn1x1_2_beta = zeros(List[Int]().append(reduce_3x3))
+        self.bn1x1_2_running_mean = zeros(List[Int]().append(reduce_3x3))
         self.bn1x1_2_running_var = constant(
-            DynamicVector[Int](1).push_back(reduce_3x3), 1.0
+            List[Int]().append(reduce_3x3), 1.0
         )
 
         # Branch 2: 3×3 conv
         self.conv3x3_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(out_3x3)
-            .push_back(reduce_3x3)
-            .push_back(3)
-            .push_back(3),
+            List[Int]()
+            .append(out_3x3)
+            .append(reduce_3x3)
+            .append(3)
+            .append(3),
             fan_in=reduce_3x3 * 9,
         )
-        self.conv3x3_bias = zeros(DynamicVector[Int](1).push_back(out_3x3))
-        self.bn3x3_gamma = constant(DynamicVector[Int](1).push_back(out_3x3), 1.0)
-        self.bn3x3_beta = zeros(DynamicVector[Int](1).push_back(out_3x3))
-        self.bn3x3_running_mean = zeros(DynamicVector[Int](1).push_back(out_3x3))
-        self.bn3x3_running_var = constant(DynamicVector[Int](1).push_back(out_3x3), 1.0)
+        self.conv3x3_bias = zeros(List[Int]().append(out_3x3))
+        self.bn3x3_gamma = constant(List[Int]().append(out_3x3), 1.0)
+        self.bn3x3_beta = zeros(List[Int]().append(out_3x3))
+        self.bn3x3_running_mean = zeros(List[Int]().append(out_3x3))
+        self.bn3x3_running_var = constant(List[Int]().append(out_3x3), 1.0)
 
         # Branch 3: 1×1 reduce
         self.conv1x1_3_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(reduce_5x5)
-            .push_back(in_channels)
-            .push_back(1)
-            .push_back(1),
+            List[Int]()
+            .append(reduce_5x5)
+            .append(in_channels)
+            .append(1)
+            .append(1),
             fan_in=in_channels,
         )
-        self.conv1x1_3_bias = zeros(DynamicVector[Int](1).push_back(reduce_5x5))
-        self.bn1x1_3_gamma = constant(DynamicVector[Int](1).push_back(reduce_5x5), 1.0)
-        self.bn1x1_3_beta = zeros(DynamicVector[Int](1).push_back(reduce_5x5))
-        self.bn1x1_3_running_mean = zeros(DynamicVector[Int](1).push_back(reduce_5x5))
+        self.conv1x1_3_bias = zeros(List[Int]().append(reduce_5x5))
+        self.bn1x1_3_gamma = constant(List[Int]().append(reduce_5x5), 1.0)
+        self.bn1x1_3_beta = zeros(List[Int]().append(reduce_5x5))
+        self.bn1x1_3_running_mean = zeros(List[Int]().append(reduce_5x5))
         self.bn1x1_3_running_var = constant(
-            DynamicVector[Int](1).push_back(reduce_5x5), 1.0
+            List[Int]().append(reduce_5x5), 1.0
         )
 
         # Branch 3: 5×5 conv
         self.conv5x5_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(out_5x5)
-            .push_back(reduce_5x5)
-            .push_back(5)
-            .push_back(5),
+            List[Int]()
+            .append(out_5x5)
+            .append(reduce_5x5)
+            .append(5)
+            .append(5),
             fan_in=reduce_5x5 * 25,
         )
-        self.conv5x5_bias = zeros(DynamicVector[Int](1).push_back(out_5x5))
-        self.bn5x5_gamma = constant(DynamicVector[Int](1).push_back(out_5x5), 1.0)
-        self.bn5x5_beta = zeros(DynamicVector[Int](1).push_back(out_5x5))
-        self.bn5x5_running_mean = zeros(DynamicVector[Int](1).push_back(out_5x5))
-        self.bn5x5_running_var = constant(DynamicVector[Int](1).push_back(out_5x5), 1.0)
+        self.conv5x5_bias = zeros(List[Int]().append(out_5x5))
+        self.bn5x5_gamma = constant(List[Int]().append(out_5x5), 1.0)
+        self.bn5x5_beta = zeros(List[Int]().append(out_5x5))
+        self.bn5x5_running_mean = zeros(List[Int]().append(out_5x5))
+        self.bn5x5_running_var = constant(List[Int]().append(out_5x5), 1.0)
 
         # Branch 4: 1×1 projection after pooling
         self.conv1x1_4_weights = kaiming_normal(
-            DynamicVector[Int](4)
-            .push_back(pool_proj)
-            .push_back(in_channels)
-            .push_back(1)
-            .push_back(1),
+            List[Int]()
+            .append(pool_proj)
+            .append(in_channels)
+            .append(1)
+            .append(1),
             fan_in=in_channels,
         )
-        self.conv1x1_4_bias = zeros(DynamicVector[Int](1).push_back(pool_proj))
-        self.bn1x1_4_gamma = constant(DynamicVector[Int](1).push_back(pool_proj), 1.0)
-        self.bn1x1_4_beta = zeros(DynamicVector[Int](1).push_back(pool_proj))
-        self.bn1x1_4_running_mean = zeros(DynamicVector[Int](1).push_back(pool_proj))
+        self.conv1x1_4_bias = zeros(List[Int]().append(pool_proj))
+        self.bn1x1_4_gamma = constant(List[Int]().append(pool_proj), 1.0)
+        self.bn1x1_4_beta = zeros(List[Int]().append(pool_proj))
+        self.bn1x1_4_running_mean = zeros(List[Int]().append(pool_proj))
         self.bn1x1_4_running_var = constant(
-            DynamicVector[Int](1).push_back(pool_proj), 1.0
+            List[Int]().append(pool_proj), 1.0
         )
 
-    fn forward(inout self, x: ExTensor, training: Bool) raises -> ExTensor:
+    fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through Inception module.
 
         Args:
@@ -321,11 +320,11 @@ fn concatenate_depthwise(
 
     var total_channels = c1 + c2 + c3 + c4
     var result = zeros(
-        DynamicVector[Int](4)
-        .push_back(batch_size)
-        .push_back(total_channels)
-        .push_back(height)
-        .push_back(width),
+        List[Int]()
+        .append(batch_size)
+        .append(total_channels)
+        .append(height)
+        .append(width),
         t1.dtype(),
     )
 
@@ -407,7 +406,7 @@ struct GoogLeNet:
     var fc_weights: ExTensor
     var fc_bias: ExTensor
 
-    fn __init__(inout self, num_classes: Int = 10) raises:
+    fn __init__(mut self, num_classes: Int = 10) raises:
         """Initialize GoogLeNet model.
 
         Args:
@@ -415,14 +414,14 @@ struct GoogLeNet:
         """
         # Initial convolution: 3×3, 64 filters
         self.initial_conv_weights = kaiming_normal(
-            DynamicVector[Int](4).push_back(64).push_back(3).push_back(3).push_back(3),
+            List[Int]().append(64).append(3).append(3).append(3),
             fan_in=3 * 9,
         )
-        self.initial_conv_bias = zeros(DynamicVector[Int](1).push_back(64))
-        self.initial_bn_gamma = constant(DynamicVector[Int](1).push_back(64), 1.0)
-        self.initial_bn_beta = zeros(DynamicVector[Int](1).push_back(64))
-        self.initial_bn_running_mean = zeros(DynamicVector[Int](1).push_back(64))
-        self.initial_bn_running_var = constant(DynamicVector[Int](1).push_back(64), 1.0)
+        self.initial_conv_bias = zeros(List[Int]().append(64))
+        self.initial_bn_gamma = constant(List[Int]().append(64), 1.0)
+        self.initial_bn_beta = zeros(List[Int]().append(64))
+        self.initial_bn_running_mean = zeros(List[Int]().append(64))
+        self.initial_bn_running_var = constant(List[Int]().append(64), 1.0)
 
         # Inception 3a: input 64, output 256 (64 + 128 + 32 + 32)
         self.inception_3a = InceptionModule(
@@ -525,11 +524,11 @@ struct GoogLeNet:
 
         # Final FC layer: 1024 → num_classes
         self.fc_weights = xavier_normal(
-            DynamicVector[Int](2).push_back(num_classes).push_back(1024), fan_in=1024, fan_out=num_classes
+            List[Int]().append(num_classes).append(1024), fan_in=1024, fan_out=num_classes
         )
-        self.fc_bias = zeros(DynamicVector[Int](1).push_back(num_classes))
+        self.fc_bias = zeros(List[Int]().append(num_classes))
 
-    fn forward(inout self, x: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through GoogLeNet.
 
         Args:
@@ -608,7 +607,7 @@ struct GoogLeNet:
         var batch_size = out.shape()[0]
         var channels = out.shape()[1]
         var flattened = zeros(
-            DynamicVector[Int](2).push_back(batch_size).push_back(channels),
+            List[Int]().append(batch_size).append(channels),
             out.dtype(),
         )
         var flattened_data = flattened._data.bitcast[Float32]()
@@ -628,7 +627,7 @@ struct GoogLeNet:
 
         return logits
 
-    fn load_weights(inout self, weights_dir: String) raises:
+    fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:

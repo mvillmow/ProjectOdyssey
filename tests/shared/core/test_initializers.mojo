@@ -10,6 +10,7 @@ Tests cover:
 All tests use pure functional API.
 """
 
+from collections import Tuple
 from tests.shared.conftest import (
     assert_true,
     assert_equal,
@@ -76,7 +77,7 @@ fn compute_std(tensor: ExTensor, mean: Float64) -> Float64:
     return sqrt(compute_variance(tensor, mean))
 
 
-fn compute_min_max(tensor: ExTensor) -> (Float64, Float64):
+fn compute_min_max(tensor: ExTensor) -> Tuple[Float64, Float64]:
     """Compute min and max values in tensor."""
     var size = tensor.numel()
     var min_val = Float64(1e308)
@@ -156,7 +157,7 @@ fn test_xavier_uniform_variance() raises:
     var mean = compute_mean(W)
     var std_dev = compute_std(W, mean)
 
-    # For uniform distribution U(-a, a): variance = a²/3
+    # For uniform distribution U(-a, a): variance = aï¿½/3
     # Xavier limit: a = sqrt(6 / (fan_in + fan_out))
     # Expected std = a / sqrt(3) = sqrt(6 / (fan_in + fan_out)) / sqrt(3)
     #                             = sqrt(2 / (fan_in + fan_out))

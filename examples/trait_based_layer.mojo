@@ -23,7 +23,6 @@ Usage:
 
 from shared.core import ExTensor, zeros, zeros_like, linear
 from shared.core.traits import Differentiable, Parameterized, Serializable, Trainable
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -45,12 +44,12 @@ struct ReLULayer(Differentiable):
 
     var last_input: ExTensor  # Cached for backward pass
 
-    fn __init__(inout self) raises:
+    fn __init__(mut self) raises:
         """Initialize ReLU layer."""
         # Start with empty tensor (will be filled during first forward)
-        self.last_input = zeros(DynamicVector[Int](1).push_back(1))
+        self.last_input = zeros(List[Int]().append(1))
 
-    fn forward(inout self, input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass: ReLU(x) = max(0, x)
 
         Args:
@@ -128,7 +127,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
     var last_input: ExTensor
     var last_output: ExTensor
 
-    fn __init__(inout self, in_features: Int, out_features: Int) raises:
+    fn __init__(mut self, in_features: Int, out_features: Int) raises:
         """Initialize fully connected layer.
 
         Args:
@@ -136,24 +135,24 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             out_features: Output dimension
         """
         # Initialize weights and gradients
-        var w_shape = DynamicVector[Int](2)
-        w_shape.push_back(out_features)
-        w_shape.push_back(in_features)
+        var w_shape = List[Int]()
+        w_shape.append(out_features)
+        w_shape.append(in_features)
         self.weights = zeros(w_shape)
         self.grad_weights = zeros(w_shape)
 
-        var b_shape = DynamicVector[Int](1)
-        b_shape.push_back(out_features)
+        var b_shape = List[Int]()
+        b_shape.append(out_features)
         self.bias = zeros(b_shape)
         self.grad_bias = zeros(b_shape)
 
         # Initialize cache
-        var cache_shape = DynamicVector[Int](1)
-        cache_shape.push_back(1)
+        var cache_shape = List[Int]()
+        cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_output = zeros(cache_shape)
 
-    fn init_xavier(inout self) raises:
+    fn init_xavier(mut self) raises:
         """Initialize weights using Xavier initialization."""
         # Xavier: weights ~ U(-sqrt(6/(in+out)), sqrt(6/(in+out)))
         var in_features = self.weights.shape()[1]
@@ -168,7 +167,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         self.bias.fill(0.0)
 
     # Differentiable trait implementation
-    fn forward(inout self, input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass: y = xW^T + b
 
         Args:
@@ -224,7 +223,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         grads.append(self.grad_bias)
         return grads
 
-    fn zero_grad(inout self) raises:
+    fn zero_grad(mut self) raises:
         """Reset all gradients to zero."""
         self.grad_weights.fill(0.0)
         self.grad_bias.fill(0.0)
@@ -279,14 +278,14 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     var momentum: Float64
     var epsilon: Float64
 
-    fn __init__(inout self, num_features: Int) raises:
+    fn __init__(mut self, num_features: Int) raises:
         """Initialize batch normalization layer.
 
         Args:
             num_features: Number of features (channels)
         """
-        var shape = DynamicVector[Int](1)
-        shape.push_back(num_features)
+        var shape = List[Int]()
+        shape.append(num_features)
 
         # Learnable parameters
         self.gamma = zeros(shape)
@@ -303,8 +302,8 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         self.grad_beta = zeros(shape)
 
         # Cache
-        var cache_shape = DynamicVector[Int](1)
-        cache_shape.push_back(1)
+        var cache_shape = List[Int]()
+        cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_normalized = zeros(cache_shape)
 
@@ -314,7 +313,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         self.epsilon = 1e-5
 
     # Differentiable trait
-    fn forward(inout self, input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass: Normalize, scale, and shift."""
         self.last_input = input.copy()
 
@@ -342,7 +341,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         grads.append(self.grad_beta)
         return grads
 
-    fn zero_grad(inout self) raises:
+    fn zero_grad(mut self) raises:
         """Reset gradients."""
         self.grad_gamma.fill(0.0)
         self.grad_beta.fill(0.0)
@@ -353,17 +352,17 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         # TODO: Implement tensor serialization
         print("Saving BatchNorm to:", path)
 
-    fn load(inout self, path: String) raises:
+    fn load(mut self, path: String) raises:
         """Load layer state from file."""
         # TODO: Implement tensor deserialization
         print("Loading BatchNorm from:", path)
 
     # Trainable trait
-    fn train(inout self):
+    fn train(mut self):
         """Set layer to training mode."""
         self.training_mode = True
 
-    fn eval(inout self):
+    fn eval(mut self):
         """Set layer to evaluation mode."""
         self.training_mode = False
 
@@ -386,9 +385,9 @@ fn demonstrate_trait_usage() raises:
     print("1. Differentiable Layer (ReLU)")
     print("-" * 40)
     var relu = ReLULayer()
-    var input_shape = DynamicVector[Int](2)
-    input_shape.push_back(2)
-    input_shape.push_back(3)
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(3)
     var relu_input = zeros(input_shape)
     relu_input._set_float64(0, -1.0)
     relu_input._set_float64(1, 2.0)

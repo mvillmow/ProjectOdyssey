@@ -119,7 +119,7 @@ trait Callback:
 
     Example:
         struct MyCallback(Callback):
-            fn on_epoch_end(inout self, inout state: TrainingState) -> CallbackSignal:
+            fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
                 print("Epoch", state.epoch, "loss:", state.metrics["train_loss"])
                 return CONTINUE
     """

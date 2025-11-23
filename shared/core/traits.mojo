@@ -51,7 +51,7 @@ trait Differentiable:
         struct ReLULayer(Differentiable):
             var last_input: ExTensor  # Cache for backward pass
 
-            fn forward(inout self, input: ExTensor) -> ExTensor:
+            fn forward(mut self, input: ExTensor) -> ExTensor:
                 self.last_input = input.copy()
                 return relu(input)
 
@@ -59,7 +59,7 @@ trait Differentiable:
                 return relu_backward(grad_output, self.last_input)
     """
 
-    fn forward(inout self, input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Compute forward pass.
 
         Args:
@@ -123,7 +123,7 @@ trait Parameterized:
             fn gradients(self) -> List[ExTensor]:
                 return [self.grad_weights, self.grad_bias]
 
-            fn zero_grad(inout self):
+            fn zero_grad(mut self):
                 self.grad_weights.fill(0.0)
                 self.grad_bias.fill(0.0)
     """
@@ -152,7 +152,7 @@ trait Parameterized:
         """
         ...
 
-    fn zero_grad(inout self) raises:
+    fn zero_grad(mut self) raises:
         """Reset all gradients to zero.
 
         Called at the beginning of each mini-batch to clear
@@ -193,7 +193,7 @@ trait Serializable:
                 write_tensor(path + "/weights.bin", self.weights)
                 write_tensor(path + "/bias.bin", self.bias)
 
-            fn load(inout self, path: String) raises:
+            fn load(mut self, path: String) raises:
                 # Load weights and bias from file
                 self.weights = read_tensor(path + "/weights.bin")
                 self.bias = read_tensor(path + "/bias.bin")
@@ -214,7 +214,7 @@ trait Serializable:
         """
         ...
 
-    fn load(inout self, path: String) raises:
+    fn load(mut self, path: String) raises:
         """Load component state from file.
 
         Args:
@@ -302,7 +302,7 @@ struct ComposedOp(Differentiable, Composable):
         self.first = first^
         self.second = second^
 
-    fn forward(inout self, input: ExTensor) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass through composition.
 
         Computes: second(first(input))
@@ -342,10 +342,10 @@ trait Trainable:
             var training: Bool
             var p: Float64
 
-            fn train(inout self):
+            fn train(mut self):
                 self.training = True
 
-            fn eval(inout self):
+            fn eval(mut self):
                 self.training = False
 
             fn is_training(self) -> Bool:
@@ -358,14 +358,14 @@ trait Trainable:
                     # No dropout during inference
     """
 
-    fn train(inout self):
+    fn train(mut self):
         """Set component to training mode.
 
         Enables training-specific behavior (dropout, batch norm updates, etc.).
         """
         ...
 
-    fn eval(inout self):
+    fn eval(mut self):
         """Set component to evaluation mode.
 
         Disables training-specific behavior for inference.

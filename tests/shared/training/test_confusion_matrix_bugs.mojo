@@ -1,13 +1,13 @@
 """Tests for List[Int] constructor bugs in confusion_matrix.mojo.
 
 This test file demonstrates the bug in confusion_matrix.mojo that uses the
-unsafe pattern: List[Int](n) followed by list[i] = value.
+unsafe pattern: List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fix is applied, demonstrating the bug.
 After fixing, they should PASS.
 
 Bug tested:
-- Line 323: argmax() - var result_shape = List[Int](batch_size)
+- Line 323: argmax() - var result_shape = List[Int]()
 """
 
 from sys import DType
@@ -25,7 +25,7 @@ from shared.training.metrics.confusion_matrix import ConfusionMatrix
 fn test_confusion_matrix_update_with_logits() raises:
     """Test ConfusionMatrix.update with logits (triggers argmax bug at line 323).
 
-    Bug: Line 323 uses List[Int](batch_size) then indexes at line 350.
+    Bug: Line 323 uses List[Int]() then indexes at line 350.
     This crashes because the list has undefined size.
     """
     # Create confusion matrix for 3 classes
@@ -52,7 +52,7 @@ fn test_confusion_matrix_update_with_logits() raises:
 fn test_confusion_matrix_small_batch() raises:
     """Test ConfusionMatrix with small batch (triggers argmax bug).
 
-    Bug: Line 323 uses List[Int](batch_size) then indexes.
+    Bug: Line 323 uses List[Int]() then indexes.
     Even with batch_size=1, this crashes.
     """
     # Create confusion matrix for 5 classes
@@ -79,7 +79,7 @@ fn test_confusion_matrix_small_batch() raises:
 fn test_confusion_matrix_large_batch() raises:
     """Test ConfusionMatrix with large batch (triggers argmax bug).
 
-    Bug: Line 323 uses List[Int](batch_size) then indexes.
+    Bug: Line 323 uses List[Int]() then indexes.
     Larger batch makes bug more likely to manifest.
     """
     # Create confusion matrix for 10 classes

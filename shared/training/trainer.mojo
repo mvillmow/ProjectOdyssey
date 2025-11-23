@@ -206,7 +206,7 @@ struct BaseTrainer(Trainer):
         self.metrics.print_summary()
         self.metric_logger.print_summary()
 
-    fn fit(inout self, num_epochs: Int, validate_every: Int = 1) raises:
+    fn fit(mut self, num_epochs: Int, validate_every: Int = 1) raises:
         """Convenience method matching Trainer trait.
 
         NOTE: Use the full fit() method with model/optimizer functions.

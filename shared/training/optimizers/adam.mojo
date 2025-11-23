@@ -19,6 +19,7 @@ Reference:
     arXiv preprint arXiv:1412.6980.
 """
 
+from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd, divide_simd
@@ -38,7 +39,7 @@ fn adam_step(
     beta2: Float64 = 0.999,
     epsilon: Float64 = 1e-8,
     weight_decay: Float64 = 0.0
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single Adam optimization step - pure functional.
 
     Returns new parameters, new first moment (m), and new second moment (v).
@@ -155,7 +156,7 @@ fn adam_step_simple(
     v: ExTensor,
     t: Int,
     learning_rate: Float64
-) raises -> (ExTensor, ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Simplified Adam step with default hyperparameters.
 
     This is a convenience function for basic Adam optimization.

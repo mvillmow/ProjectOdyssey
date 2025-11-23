@@ -17,7 +17,7 @@ fn test_ones_like_shape() raises:
     """Test that ones_like creates tensor with correct shape."""
     print("Testing ones_like shape...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -42,7 +42,7 @@ fn test_ones_like_values() raises:
     """Test that ones_like fills tensor with ones."""
     print("Testing ones_like values...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
 
@@ -63,7 +63,7 @@ fn test_ones_like_dtype() raises:
     """Test that ones_like preserves dtype."""
     print("Testing ones_like dtype...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 2
 
@@ -90,7 +90,7 @@ fn test_zeros_like_values() raises:
     """Test that zeros_like fills tensor with zeros."""
     print("Testing zeros_like values...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 2
 
@@ -111,7 +111,7 @@ fn test_full_like_custom_value() raises:
     """Test that full_like fills with custom value."""
     print("Testing full_like with custom value...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
 
@@ -141,20 +141,20 @@ fn test_utility_with_different_shapes() raises:
     var scalar_zeros = zeros_like(scalar)
 
     # 1D
-    var vec_shape = List[Int](1)
+    var vec_shape = List[Int]()
     vec_shape[0] = 5
     var vec = zeros(vec_shape, DType.float32)
     var vec_ones = ones_like(vec)
 
     # 2D
-    var mat_shape = List[Int](2)
+    var mat_shape = List[Int]()
     mat_shape[0] = 3
     mat_shape[1] = 4
     var mat = zeros(mat_shape, DType.float32)
     var mat_full = full_like(mat, 2.0)
 
     # 3D
-    var tensor_shape = List[Int](3)
+    var tensor_shape = List[Int]()
     tensor_shape[0] = 2
     tensor_shape[1] = 3
     tensor_shape[2] = 4

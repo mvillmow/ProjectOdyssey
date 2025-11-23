@@ -149,7 +149,7 @@ struct BenchmarkMetrics:
     var max_duration_ms: Float64
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         description: String,
         duration_ms: Float64,

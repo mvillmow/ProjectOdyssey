@@ -44,12 +44,12 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
 
     Examples:
         # With logits (need argmax)
-        var logits = ExTensor(DynamicVector[Int](4, 3), DType.float32)  # 4 samples, 3 classes
-        var labels = ExTensor(DynamicVector[Int](4), DType.int32)
+        var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 3 classes
+        var labels = ExTensor(List[Int](), DType.int32)
         var acc = top1_accuracy(logits, labels)
 
         # With predicted class indices
-        var preds = ExTensor(DynamicVector[Int](4), DType.int32)  # Already argmaxed
+        var preds = ExTensor(List[Int](), DType.int32)  # Already argmaxed
         var acc2 = top1_accuracy(preds, labels)
 
     Issue: #278-282 - Accuracy metrics
@@ -175,8 +175,8 @@ fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> 
         Error: If k <= 0 or k > num_classes
 
     Examples:
-        var logits = ExTensor(DynamicVector[Int](4, 10), DType.float32)  # 4 samples, 10 classes
-        var labels = ExTensor(DynamicVector[Int](4), DType.int32)
+        var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
+        var labels = ExTensor(List[Int](), DType.int32)
         var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
 
     Issue: #278-282 - Accuracy metrics
@@ -300,8 +300,8 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
         Error: If shapes are incompatible
 
     Examples:
-        var logits = ExTensor(DynamicVector[Int](100, 10), DType.float32)
-        var labels = ExTensor(DynamicVector[Int](100), DType.int32)
+        var logits = ExTensor(List[Int](), DType.float32)
+        var labels = ExTensor(List[Int](), DType.int32)
         var per_class_acc = per_class_accuracy(logits, labels, num_classes=10)
         # per_class_acc[0] = accuracy for class 0, etc.
 

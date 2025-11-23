@@ -2,7 +2,6 @@
 
 from model import DenseNet121
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
 
 fn main() raises:
     print("Testing DenseNet-121 Model")
@@ -15,7 +14,7 @@ fn main() raises:
     print("\nCreating dummy input (batch=1, channels=3, height=32, width=32)...")
     print("  (Using batch=1 due to memory constraints)")
     var input = zeros(
-        DynamicVector[Int](4).push_back(1).push_back(3).push_back(32).push_back(32),
+        List[Int]().append(1).append(3).append(32).append(32),
         DType.float32
     )
     var input_data = input._data.bitcast[Float32]()

@@ -56,7 +56,7 @@ from math import tanh as math_tanh, exp as math_exp
 
 fn test_relu_basic() raises:
     """Test ReLU with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 5
     var x = zeros(shape, DType.float32)
 
@@ -79,7 +79,7 @@ fn test_relu_basic() raises:
 
 fn test_relu_backward() raises:
     """Test ReLU gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 4
     var x = zeros(shape, DType.float32)
 
@@ -102,7 +102,7 @@ fn test_relu_backward() raises:
 
 fn test_relu_shape() raises:
     """Test ReLU preserves shape."""
-    var shape = List[Int](3)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -122,7 +122,7 @@ fn test_relu_shape() raises:
 
 fn test_leaky_relu_basic() raises:
     """Test Leaky ReLU with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -140,7 +140,7 @@ fn test_leaky_relu_basic() raises:
 
 fn test_leaky_relu_backward() raises:
     """Test Leaky ReLU gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var x = zeros(shape, DType.float32)
 
@@ -168,7 +168,7 @@ fn test_leaky_relu_backward() raises:
 
 fn test_prelu_basic() raises:
     """Test PReLU with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
     var alpha = zeros(shape, DType.float32)
@@ -191,7 +191,7 @@ fn test_prelu_basic() raises:
 
 fn test_prelu_backward() raises:
     """Test PReLU gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var x = zeros(shape, DType.float32)
     var alpha = zeros(shape, DType.float32)
@@ -224,7 +224,7 @@ fn test_prelu_backward() raises:
 
 fn test_sigmoid_basic() raises:
     """Test sigmoid with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -241,7 +241,7 @@ fn test_sigmoid_basic() raises:
 
 fn test_sigmoid_backward() raises:
     """Test sigmoid gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -268,7 +268,7 @@ fn test_sigmoid_backward() raises:
 
 fn test_sigmoid_range() raises:
     """Test sigmoid output is in (0, 1)."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 5
     var x = zeros(shape, DType.float32)
 
@@ -294,7 +294,7 @@ fn test_sigmoid_range() raises:
 
 fn test_tanh_basic() raises:
     """Test tanh with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -311,7 +311,7 @@ fn test_tanh_basic() raises:
 
 fn test_tanh_backward() raises:
     """Test tanh gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -338,7 +338,7 @@ fn test_tanh_backward() raises:
 
 fn test_tanh_range() raises:
     """Test tanh output is in (-1, 1)."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 5
     var x = zeros(shape, DType.float32)
 
@@ -364,7 +364,7 @@ fn test_tanh_range() raises:
 
 fn test_softmax_basic_2d() raises:
     """Test softmax 2D normalization."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 1
     shape[1] = 3
     var x = zeros(shape, DType.float32)
@@ -384,7 +384,7 @@ fn test_softmax_basic_2d() raises:
 
 fn test_softmax_one_hot() raises:
     """Test softmax with large difference (one-hot-like)."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 1
     shape[1] = 3
     var x = zeros(shape, DType.float32)
@@ -403,7 +403,7 @@ fn test_softmax_one_hot() raises:
 
 fn test_softmax_sum_to_one() raises:
     """Test softmax probabilities sum to 1."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 4
     var x = zeros(shape, DType.float32)
@@ -427,7 +427,7 @@ fn test_softmax_sum_to_one() raises:
 
 fn test_softmax_backward() raises:
     """Test softmax gradient with numerical validation."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     var x = zeros(shape, DType.float32)
@@ -463,7 +463,7 @@ fn test_softmax_backward() raises:
 
 fn test_gelu_basic() raises:
     """Test GELU with known value at x=0."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var x = zeros(shape, DType.float32)
 
@@ -477,7 +477,7 @@ fn test_gelu_basic() raises:
 
 fn test_gelu_positive() raises:
     """Test GELU with positive values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var x = zeros(shape, DType.float32)
 
@@ -496,7 +496,7 @@ fn test_gelu_positive() raises:
 
 fn test_gelu_shape() raises:
     """Test GELU preserves shape."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
     var x = ones(shape, DType.float32)
@@ -509,7 +509,7 @@ fn test_gelu_shape() raises:
 
 fn test_gelu_backward_gradient() raises:
     """Test GELU backward with numerical gradient checking."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -540,7 +540,7 @@ fn test_gelu_backward_gradient() raises:
 
 fn test_swish_basic() raises:
     """Test swish with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var x = zeros(shape, DType.float32)
 
@@ -554,7 +554,7 @@ fn test_swish_basic() raises:
 
 fn test_swish_positive() raises:
     """Test swish with large positive value."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var x = zeros(shape, DType.float32)
 
@@ -568,7 +568,7 @@ fn test_swish_positive() raises:
 
 fn test_swish_backward_gradient() raises:
     """Test Swish backward with numerical gradient checking."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -599,7 +599,7 @@ fn test_swish_backward_gradient() raises:
 
 fn test_mish_basic() raises:
     """Test mish with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var x = zeros(shape, DType.float32)
 
@@ -613,7 +613,7 @@ fn test_mish_basic() raises:
 
 fn test_mish_shape() raises:
     """Test mish preserves shape."""
-    var shape = List[Int](3)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -628,7 +628,7 @@ fn test_mish_shape() raises:
 
 fn test_mish_backward_gradient() raises:
     """Test Mish backward with numerical gradient checking."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -659,7 +659,7 @@ fn test_mish_backward_gradient() raises:
 
 fn test_elu_basic() raises:
     """Test ELU with known values."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -679,7 +679,7 @@ fn test_elu_basic() raises:
 
 fn test_elu_backward() raises:
     """Test ELU gradient with numerical validation."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     var x = zeros(shape, DType.float32)
 
@@ -710,7 +710,7 @@ fn test_elu_backward() raises:
 
 fn test_relu_float64() raises:
     """Test ReLU with float64 dtype."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 2
     var x = zeros(shape, DType.float64)
 
@@ -725,7 +725,7 @@ fn test_relu_float64() raises:
 
 fn test_sigmoid_float64() raises:
     """Test sigmoid with float64 dtype."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 1
     var x = zeros(shape, DType.float64)
 

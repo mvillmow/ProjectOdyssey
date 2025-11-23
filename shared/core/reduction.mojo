@@ -410,7 +410,7 @@ fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) r
         # Sum along specific axis
         var x2 = ones(List[Int](3, 4), DType.float32)
         var y2 = sum(x2, axis=1)  # Shape (3,)
-        var grad_y2 = ones(List[Int](3), DType.float32)
+        var grad_y2 = ones(List[Int](), DType.float32)
         var grad_x2 = sum_backward(grad_y2, x2.shape(), axis=1)  # Shape (3, 4)
     """
     # Create result tensor with input shape

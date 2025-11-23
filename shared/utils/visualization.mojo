@@ -15,6 +15,7 @@ Example:
     plot_training_curves(train_losses, val_losses, save_path="curves.png")
 """
 
+from collections import Tuple
 
 # ============================================================================
 # Plot Data Structures
@@ -245,7 +246,7 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
 
 fn compute_matrix_metrics(
     matrix: List[List[Int]],
-) -> (Float32, Float32, Float32):
+) -> Tuple[Float32, Float32, Float32]:
     """Compute accuracy, precision, recall from confusion matrix.
 
     Args:
@@ -346,7 +347,7 @@ fn visualize_gradient_flow(
     return True
 
 
-fn detect_gradient_issues(gradients: List[Float32]) -> (Bool, Bool):
+fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     """Detect vanishing or exploding gradients.
 
     Args:

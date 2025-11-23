@@ -37,7 +37,6 @@ from ..core.loss import mean_squared_error, mean_squared_error_backward
 from ..core.loss import binary_cross_entropy, binary_cross_entropy_backward
 from ..core.loss import cross_entropy, cross_entropy_backward
 from ..core.creation import ones
-from collections.vector import DynamicVector
 
 
 # ============================================================================
@@ -172,8 +171,8 @@ fn apply_gradient(
 
 
 fn apply_gradients(
-    inout parameters: DynamicVector[ExTensor],
-    gradients: DynamicVector[ExTensor],
+    inout parameters: List[ExTensor],
+    gradients: List[ExTensor],
     learning_rate: Float64
 ) raises:
     """Apply gradients to multiple parameters in-place.
@@ -190,13 +189,13 @@ fn apply_gradients(
         Error if any shape mismatch
 
     Example:
-        var params = DynamicVector[ExTensor]()
-        params.push_back(w)
-        params.push_back(b)
+        var params = List[ExTensor]()
+        params.append(w)
+        params.append(b)
 
-        var grads = DynamicVector[ExTensor]()
-        grads.push_back(grad_w)
-        grads.push_back(grad_b)
+        var grads = List[ExTensor]()
+        grads.append(grad_w)
+        grads.append(grad_b)
 
         apply_gradients(params, grads, 0.01)
 
@@ -229,7 +228,7 @@ struct LossAndGrad:
     var loss: ExTensor
     var grad: ExTensor
 
-    fn __init__(inout self, loss: ExTensor, grad: ExTensor):
+    fn __init__(mut self, loss: ExTensor, grad: ExTensor):
         """Initialize loss and gradient pair.
 
         Args:
@@ -396,4 +395,3 @@ fn compute_gradient(
         return result.grad
     else:
         raise Error("Unknown loss type: " + loss_type + ". Use 'mse', 'bce', or 'ce'.")
-

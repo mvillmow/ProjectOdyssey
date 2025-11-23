@@ -27,7 +27,6 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
 from shared.training.schedulers import step_lr
 from sys import argv
-from collections.vector import DynamicVector
 
 
 fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
@@ -67,7 +66,7 @@ fn compute_gradients(
     borrowed labels: ExTensor,
     learning_rate: Float32,
     momentum: Float32,
-    inout velocities: DynamicVector[ExTensor]
+    inout velocities: List[ExTensor]
 ) raises -> Float32:
     """Compute gradients and update parameters for one batch.
 
@@ -113,9 +112,9 @@ fn compute_gradients(
     var pool3_shape = pool3_out.shape()
     var batch_size = pool3_shape[0]
     var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
-    var flatten_shape = DynamicVector[Int](2)
-    flatten_shape.push_back(batch_size)
-    flatten_shape.push_back(flattened_size)
+    var flatten_shape = List[Int]()
+    flatten_shape.append(batch_size)
+    flatten_shape.append(flattened_size)
     var flattened = pool3_out.reshape(flatten_shape)
 
     # FC1 + ReLU + Dropout
@@ -280,7 +279,7 @@ fn train_epoch(
     momentum: Float32,
     epoch: Int,
     total_epochs: Int,
-    inout velocities: DynamicVector[ExTensor]
+    inout velocities: List[ExTensor]
 ) raises -> Float32:
     """Train for one epoch.
 
@@ -371,7 +370,7 @@ fn evaluate(
     return accuracy
 
 
-fn initialize_velocities(model: AlexNet) raises -> DynamicVector[ExTensor]:
+fn initialize_velocities(model: AlexNet) raises -> List[ExTensor]:
     """Initialize momentum velocities for all parameters (16 tensors).
 
     Args:
@@ -380,25 +379,25 @@ fn initialize_velocities(model: AlexNet) raises -> DynamicVector[ExTensor]:
     Returns:
         DynamicVector of zero-initialized velocity tensors matching parameter shapes
     """
-    var velocities = DynamicVector[ExTensor](16)
+    var velocities = List[ExTensor]()
 
     # Initialize velocities for all 16 parameters (conv1-5 + fc1-3, weights + bias)
-    velocities.push_back(zeros(model.conv1_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv2_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv3_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv4_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_kernel.shape(), DType.float32))
-    velocities.push_back(zeros(model.conv5_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc1_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc1_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc2_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc2_bias.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc3_weights.shape(), DType.float32))
-    velocities.push_back(zeros(model.fc3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv3_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv4_bias.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_kernel.shape(), DType.float32))
+    velocities.append(zeros(model.conv5_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc1_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc1_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc2_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc2_bias.shape(), DType.float32))
+    velocities.append(zeros(model.fc3_weights.shape(), DType.float32))
+    velocities.append(zeros(model.fc3_bias.shape(), DType.float32))
 
     return velocities
 

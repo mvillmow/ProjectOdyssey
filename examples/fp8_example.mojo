@@ -8,7 +8,6 @@ This example shows:
 """
 
 from shared.core import ExTensor, zeros, FP8
-from collections.vector import DynamicVector
 
 
 fn main() raises:
@@ -34,7 +33,7 @@ fn main() raises:
     print("\n2. Tensor Conversion to FP8")
     print("-" * 40)
 
-    var shape = DynamicVector[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -77,7 +76,7 @@ fn main() raises:
     print("\n3. Memory Efficiency")
     print("-" * 40)
 
-    var large_shape = DynamicVector[Int](2)
+    var large_shape = List[Int]()
     large_shape[0] = 1000
     large_shape[1] = 1000
 

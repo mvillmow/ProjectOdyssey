@@ -2,7 +2,6 @@
 
 from model import ResNet18
 from shared.core import ExTensor, zeros
-from collections.vector import DynamicVector
 
 fn main() raises:
     print("Testing ResNet-18 Model")
@@ -16,7 +15,7 @@ fn main() raises:
     # Create dummy input
     print("\nCreating dummy input (batch=4, channels=3, height=32, width=32)...")
     var input = zeros(
-        DynamicVector[Int](4).push_back(4).push_back(3).push_back(32).push_back(32),
+        List[Int]().append(4).append(3).append(32).append(32),
         DType.float32
     )
     var input_data = input._data.bitcast[Float32]()

@@ -1,13 +1,13 @@
 """Tests for List[Int] constructor bugs in trainer_interface.mojo.
 
 This test file demonstrates the bug in trainer_interface.mojo that uses the
-unsafe pattern: List[Int](n) followed by list[i] = value.
+unsafe pattern: List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fix is applied, demonstrating the bug.
 After fixing, they should PASS.
 
 Bug tested:
-- Line 270: DataLoader.next() - var batch_labels_shape = List[Int](actual_batch_size)
+- Line 270: DataLoader.next() - var batch_labels_shape = List[Int]()
 """
 
 from sys import DType
@@ -25,7 +25,7 @@ from shared.training.trainer_interface import DataLoader
 fn test_dataloader_next_normal_batch() raises:
     """Test DataLoader.next() with normal batch (triggers bug at line 270).
 
-    Bug: Line 270 uses List[Int](actual_batch_size) then is passed to ExTensor.
+    Bug: Line 270 uses List[Int]() then is passed to ExTensor.
     This crashes because the list has undefined size.
     """
     # Create dummy dataset

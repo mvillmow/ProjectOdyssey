@@ -45,7 +45,7 @@ fn test_model_forward(
         # Create dummy input (batch_size, 3, 32, 32)
         print(f"Creating dummy input: ({batch_size}, 3, 32, 32)")
         var input = zeros(
-            List[Int](4)
+            List[Int]()
                 .append(batch_size)
                 .append(3)
                 .append(32)

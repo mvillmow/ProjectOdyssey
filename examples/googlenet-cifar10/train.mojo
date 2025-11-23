@@ -58,7 +58,6 @@ from shared.data import (
     extract_batch_pair,
     compute_num_batches,
 )
-from collections.vector import DynamicVector
 from model import GoogLeNet, InceptionModule
 from data_loader import load_cifar10_train
 

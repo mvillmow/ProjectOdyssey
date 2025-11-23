@@ -13,7 +13,7 @@ from memory import memset_zero
 struct TensorGenerator:
     """Generate test tensors with various patterns and distributions."""
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize tensor generator."""
         pass
 

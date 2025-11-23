@@ -41,7 +41,7 @@ fn test_maxpool2d_output_shape() raises:
     var in_w = 8
 
     # Create input: (1, 1, 8, 8)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = in_h
@@ -68,7 +68,7 @@ fn test_maxpool2d_stride_default() raises:
     var channels = 1
 
     # Create input: (1, 1, 6, 6)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 6
@@ -95,7 +95,7 @@ fn test_maxpool2d_numerical_correctness() raises:
     Expected max: 4.0
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 2
@@ -130,7 +130,7 @@ fn test_maxpool2d_multi_channel() raises:
     var channels = 3
 
     # Create input: (1, 3, 4, 4)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 4
@@ -157,7 +157,7 @@ fn test_maxpool2d_batched() raises:
     var channels = 1
 
     # Create input: (4, 1, 6, 6)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 6
@@ -180,7 +180,7 @@ fn test_maxpool2d_method_selection() raises:
 
     Currently only 'direct' method is supported.
     """
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 4
@@ -206,7 +206,7 @@ fn test_avgpool2d_output_shape() raises:
     var channels = 1
 
     # Create input: (1, 1, 8, 8)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 8
@@ -232,7 +232,7 @@ fn test_avgpool2d_numerical_correctness() raises:
     Expected average: (1+2+3+4) / 4 = 2.5
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 2
@@ -257,7 +257,7 @@ fn test_avgpool2d_multi_channel() raises:
     var channels = 4
 
     # Create input: (1, 4, 6, 6)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 6
@@ -277,7 +277,7 @@ fn test_avgpool2d_multi_channel() raises:
 
 fn test_avgpool2d_method_selection() raises:
     """Test avgpool2d method parameter."""
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 4
@@ -305,7 +305,7 @@ fn test_global_avgpool2d_output_shape() raises:
     var width = 8
 
     # Create input: (2, 3, 8, 8)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = height
@@ -330,7 +330,7 @@ fn test_global_avgpool2d_numerical_correctness() raises:
     Expected average: (1+2+3+4) / 4 = 2.5
     """
     # Create input: (1, 1, 2, 2) with values [1, 2, 3, 4]
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 2
@@ -365,7 +365,7 @@ fn test_global_avgpool2d_multi_channel() raises:
     var channels = 2
 
     # Create input: (1, 2, 3, 3)
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = 3
@@ -393,7 +393,7 @@ fn test_global_avgpool2d_multi_channel() raises:
 
 fn test_global_avgpool2d_method_selection() raises:
     """Test global_avgpool2d method parameter."""
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 4

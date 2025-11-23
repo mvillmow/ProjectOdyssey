@@ -16,6 +16,7 @@ Example:
     print(f"Memory: {mem.used_mb}MB / {mem.peak_mb}MB")
 """
 
+from collections import Tuple
 
 # ============================================================================
 # Timing Data Structures
@@ -425,7 +426,7 @@ struct BaselineMetrics:
 
 fn compare_to_baseline(
     current: TimingStats, baseline: BaselineMetrics
-) -> (Bool, Float32):
+) -> Tuple[Bool, Float32]:
     """Check if current performance is within baseline tolerance.
 
     Args:

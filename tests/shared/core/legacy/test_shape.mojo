@@ -25,10 +25,10 @@ from ..helpers.assertions import (
 
 fn test_reshape_valid() raises:
     """Test reshaping to compatible size."""
-    var shape_orig = List[Int](1)
+    var shape_orig = List[Int]()
     shape_orig[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
-    var new_shape = List[Int](2)
+    var new_shape = List[Int]()
     new_shape[0] = 3
     new_shape[1] = 4
     let b = reshape(a, new_shape)
@@ -39,10 +39,10 @@ fn test_reshape_valid() raises:
 
 fn test_reshape_invalid_size() raises:
     """Test that reshape with incompatible size raises error."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)
-    # var new_shape = List[Int](2)
+    # var new_shape = List[Int]()
     # new_shape[0] = 3
     # new_shape[1] = 5  # 15 elements, incompatible with 12
     # let b = reshape(a, new_shape)  # Should raise error
@@ -53,10 +53,10 @@ fn test_reshape_invalid_size() raises:
 
 fn test_reshape_infer_dimension() raises:
     """Test reshape with inferred dimension (-1)."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)
-    var new_shape = List[Int](2)
+    var new_shape = List[Int]()
     new_shape[0] = 3
     new_shape[1] = -1  # Infer: should be 4
     let b = reshape(a, new_shape)
@@ -71,7 +71,7 @@ fn test_reshape_infer_dimension() raises:
 
 fn test_squeeze_all_dims() raises:
     """Test removing all size-1 dimensions."""
-    var shape = List[Int](4)
+    var shape = List[Int]()
     shape[0] = 1
     shape[1] = 3
     shape[2] = 1
@@ -86,7 +86,7 @@ fn test_squeeze_all_dims() raises:
 
 fn test_squeeze_specific_dim() raises:
     """Test removing specific size-1 dimension."""
-    var shape = List[Int](3)
+    var shape = List[Int]()
     shape[0] = 1
     shape[1] = 3
     shape[2] = 4
@@ -103,7 +103,7 @@ fn test_squeeze_specific_dim() raises:
 
 fn test_unsqueeze_add_dim() raises:
     """Test adding a size-1 dimension."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)  # Shape (3, 4)
@@ -116,7 +116,7 @@ fn test_unsqueeze_add_dim() raises:
 
 fn test_expand_dims_at_end() raises:
     """Test adding dimension at end."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)
@@ -132,7 +132,7 @@ fn test_expand_dims_at_end() raises:
 
 fn test_flatten_c_order() raises:
     """Test flattening tensor to 1D (C order)."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
     let a = arange(0.0, 12.0, 1.0, DType.float32)
@@ -144,7 +144,7 @@ fn test_flatten_c_order() raises:
 
 fn test_ravel_view() raises:
     """Test ravel (should return view if possible)."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
     let a = ones(shape, DType.float32)
@@ -160,17 +160,17 @@ fn test_ravel_view() raises:
 
 fn test_concatenate_axis_0() raises:
     """Test concatenating along axis 0."""
-    var shape_a = List[Int](2)
+    var shape_a = List[Int]()
     shape_a[0] = 2
     shape_a[1] = 3
-    var shape_b = List[Int](2)
+    var shape_b = List[Int]()
     shape_b[0] = 3
     shape_b[1] = 3
 
     let a = ones(shape_a, DType.float32)  # 2x3
     let b = full(shape_b, 2.0, DType.float32)  # 3x3
 
-    var tensors = List[ExTensor](2)
+    var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
     let c = concatenate(tensors, axis=0)
@@ -182,17 +182,17 @@ fn test_concatenate_axis_0() raises:
 
 fn test_concatenate_axis_1() raises:
     """Test concatenating along axis 1."""
-    var shape_a = List[Int](2)
+    var shape_a = List[Int]()
     shape_a[0] = 3
     shape_a[1] = 2
-    var shape_b = List[Int](2)
+    var shape_b = List[Int]()
     shape_b[0] = 3
     shape_b[1] = 4
 
     let a = ones(shape_a, DType.float32)  # 3x2
     let b = full(shape_b, 2.0, DType.float32)  # 3x4
 
-    var tensors = List[ExTensor](2)
+    var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
     let c = concatenate(tensors, axis=1)
@@ -207,14 +207,14 @@ fn test_concatenate_axis_1() raises:
 
 fn test_stack_new_axis() raises:
     """Test stacking tensors along new axis."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
 
     let a = ones(shape, DType.float32)  # 2x3
     let b = full(shape, 2.0, DType.float32)  # 2x3
 
-    var tensors = List[ExTensor](2)
+    var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
     let c = stack(tensors, axis=0)
@@ -226,14 +226,14 @@ fn test_stack_new_axis() raises:
 
 fn test_stack_axis_1() raises:
     """Test stacking along axis 1."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
 
     let a = ones(shape, DType.float32)
     let b = full(shape, 2.0, DType.float32)
 
-    var tensors = List[ExTensor](2)
+    var tensors = List[ExTensor]()
     tensors[0] = a
     tensors[1] = b
     let c = stack(tensors, axis=1)
@@ -248,7 +248,7 @@ fn test_stack_axis_1() raises:
 
 fn test_split_equal() raises:
     """Test splitting into equal parts."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float32)
     # let parts = split(a, 3)  # TODO: Implement split()
@@ -262,7 +262,7 @@ fn test_split_equal() raises:
 
 fn test_split_unequal() raises:
     """Test splitting into unequal parts."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 10
     let a = arange(0.0, 10.0, 1.0, DType.float32)
     # let parts = split(a, [3, 5, 10])  # TODO: Implement split with indices
@@ -280,7 +280,7 @@ fn test_split_unequal() raises:
 
 fn test_tile_1d() raises:
     """Test tiling 1D tensor."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     let a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
     # let b = tile(a, 3)  # TODO: Implement tile()
@@ -292,7 +292,7 @@ fn test_tile_1d() raises:
 
 fn test_tile_multidim() raises:
     """Test tiling with multi-dimensional repetitions."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     let a = ones(shape, DType.float32)  # 2x3
@@ -309,7 +309,7 @@ fn test_tile_multidim() raises:
 
 fn test_repeat_elements() raises:
     """Test repeating each element."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
     let a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
     # let b = repeat(a, 2)  # TODO: Implement repeat()
@@ -321,7 +321,7 @@ fn test_repeat_elements() raises:
 
 fn test_repeat_axis() raises:
     """Test repeating along specific axis."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     let a = ones(shape, DType.float32)  # 2x3
@@ -338,10 +338,10 @@ fn test_repeat_axis() raises:
 
 fn test_broadcast_to_compatible() raises:
     """Test broadcasting to compatible shape."""
-    var shape_orig = List[Int](1)
+    var shape_orig = List[Int]()
     shape_orig[0] = 3
     let a = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
-    # var target_shape = List[Int](2)
+    # var target_shape = List[Int]()
     # target_shape[0] = 4
     # target_shape[1] = 3
     # let b = broadcast_to(a, target_shape)  # TODO: Implement broadcast_to()
@@ -354,10 +354,10 @@ fn test_broadcast_to_compatible() raises:
 
 fn test_broadcast_to_incompatible() raises:
     """Test that broadcasting to incompatible shape raises error."""
-    var shape_orig = List[Int](1)
+    var shape_orig = List[Int]()
     shape_orig[0] = 3
     let a = arange(0.0, 3.0, 1.0, DType.float32)
-    # var target_shape = List[Int](1)
+    # var target_shape = List[Int]()
     # target_shape[0] = 5  # Incompatible: 3 != 5
     # let b = broadcast_to(a, target_shape)  # Should raise error
 
@@ -371,7 +371,7 @@ fn test_broadcast_to_incompatible() raises:
 
 fn test_permute_axes() raises:
     """Test permuting axes (similar to transpose with axes)."""
-    var shape = List[Int](3)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
     shape[2] = 4
@@ -390,10 +390,10 @@ fn test_permute_axes() raises:
 
 fn test_reshape_preserves_dtype() raises:
     """Test that reshape preserves dtype."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 12
     let a = arange(0.0, 12.0, 1.0, DType.float64)
-    # var new_shape = List[Int](2)
+    # var new_shape = List[Int]()
     # new_shape[0] = 3
     # new_shape[1] = 4
     # let b = reshape(a, new_shape)

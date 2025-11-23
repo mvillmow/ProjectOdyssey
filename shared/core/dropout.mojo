@@ -10,7 +10,7 @@ This helps prevent overfitting by randomly "dropping out" neurons.
 from .extensor import ExTensor, zeros_like, ones_like
 from .arithmetic import multiply, divide
 from .extensor import full_like
-from collections import List
+from collections import List, Tuple
 import random
 
 
@@ -19,7 +19,7 @@ fn dropout(
     p: Float64,
     training: Bool,
     seed: Int = 0
-) raises -> (ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor]:
     """Functional dropout with mask return.
 
     Randomly zeros elements with probability p during training.
@@ -105,7 +105,7 @@ fn dropout2d(
     p: Float64,
     training: Bool,
     seed: Int = 0
-) raises -> (ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor]:
     """Functional 2D dropout (spatial dropout) for CNNs.
 
     Randomly zeros entire channels with probability p during training.

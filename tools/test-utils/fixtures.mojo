@@ -21,7 +21,7 @@ struct SimpleCNN:
     var num_classes: Int
 
     fn __init__(
-        inout self,
+        mut self,
         in_channels: Int = 1,
         out_channels: Int = 8,
         num_classes: Int = 10
@@ -75,7 +75,7 @@ struct LinearModel:
     var in_features: Int
     var out_features: Int
 
-    fn __init__(inout self, in_features: Int, out_features: Int):
+    fn __init__(mut self, in_features: Int, out_features: Int):
         """
         Initialize linear model.
 

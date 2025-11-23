@@ -52,7 +52,7 @@ fn test_fp4_e2m1_representable_values() raises:
     # exp=3, mantissa=0: 4.0
     # exp=3, mantissa=1: 6.0
 
-    var values = List[Float32](7)
+    var values = List[Float32]()
     values.append(0.0)
     values.append(1.0)
     values.append(1.5)

@@ -21,7 +21,7 @@ fn test_binary_cross_entropy_perfect_prediction() raises:
     """Test BCE with perfect predictions (should be near zero)."""
     print("Testing BCE with perfect predictions...")
 
-    var shape = List[Int](4)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -48,7 +48,7 @@ fn test_binary_cross_entropy_worst_prediction() raises:
     """Test BCE with worst predictions (should be high)."""
     print("Testing BCE with worst predictions...")
 
-    var shape = List[Int](4)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -76,7 +76,7 @@ fn test_binary_cross_entropy_gradient_shape() raises:
     """Test that BCE backward produces correct gradient shape."""
     print("Testing BCE gradient shape...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -104,7 +104,7 @@ fn test_mean_squared_error_zero_loss() raises:
     """Test MSE with identical predictions and targets."""
     print("Testing MSE with zero loss...")
 
-    var shape = List[Int](5)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -131,7 +131,7 @@ fn test_mean_squared_error_known_values() raises:
     """Test MSE with known error values."""
     print("Testing MSE with known values...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -168,7 +168,7 @@ fn test_mean_squared_error_gradient() raises:
     """Test MSE gradient computation."""
     print("Testing MSE gradient...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -213,7 +213,7 @@ fn test_loss_numerical_stability() raises:
     """Test that loss functions handle extreme values gracefully."""
     print("Testing loss function numerical stability...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
 
@@ -241,7 +241,7 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     """Test BCE backward with numerical gradient checking."""
     print("Testing BCE backward gradient checking...")
 
-    var shape = List[Int](4)
+    var shape = List[Int]()
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
 
@@ -277,7 +277,7 @@ fn test_mean_squared_error_backward_gradient() raises:
     """Test MSE backward with numerical gradient checking."""
     print("Testing MSE backward gradient checking...")
 
-    var shape = List[Int](5)
+    var shape = List[Int]()
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
 

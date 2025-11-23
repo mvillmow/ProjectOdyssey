@@ -18,7 +18,7 @@ struct BenchmarkResult:
     var memory_mb: Float64
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         latency_ms: Float64 = 0.0,
         throughput: Float64 = 0.0,
@@ -54,7 +54,7 @@ struct ModelBenchmark:
     var num_iterations: Int
 
     fn __init__(
-        inout self,
+        mut self,
         name: String,
         num_warmup: Int = 5,
         num_iterations: Int = 100

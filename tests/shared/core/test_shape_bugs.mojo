@@ -1,17 +1,17 @@
 """Tests for List[Int] constructor bugs in shape.mojo.
 
 This test file demonstrates the bugs in shape.mojo functions that use the
-unsafe pattern: List[Int](n) followed by list[i] = value.
+unsafe pattern: List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fixes are applied, demonstrating the bug.
 After fixing, they should PASS.
 
 Bugs tested:
-- Line 48: reshape() - var final_shape = List[Int](new_len)
+- Line 48: reshape() - var final_shape = List[Int]()
 - Line 121: squeeze(dim) - var new_shape = List[Int](ndim - 1)
-- Line 141: squeeze() - var new_shape = List[Int](new_dims)
-- Line 177: unsqueeze() - var new_shape = List[Int](new_ndim)
-- Line 296: concatenate() - var result_shape = List[Int](ndim)
+- Line 141: squeeze() - var new_shape = List[Int]()
+- Line 177: unsqueeze() - var new_shape = List[Int]()
+- Line 296: concatenate() - var result_shape = List[Int]()
 """
 
 from sys import DType
@@ -37,7 +37,7 @@ from ..helpers.assertions import (
 fn test_reshape_with_inferred_dimension() raises:
     """Test reshape with -1 dimension (triggers List constructor bug at line 48).
 
-    Bug: Line 48-59 uses List[Int](new_len) then indexes it.
+    Bug: Line 48-59 uses List[Int]() then indexes it.
     This crashes because the list has undefined size.
     """
     # Create a 1D tensor with 12 elements
@@ -59,7 +59,7 @@ fn test_reshape_with_inferred_dimension() raises:
 fn test_reshape_explicit_shape() raises:
     """Test reshape with explicit dimensions (triggers List constructor bug at line 48).
 
-    Bug: Line 62-65 uses List[Int](new_len) then indexes it.
+    Bug: Line 62-65 uses List[Int]() then indexes it.
     This crashes because the list has undefined size.
     """
     # Create a 1D tensor with 12 elements
@@ -108,7 +108,7 @@ fn test_squeeze_specific_dimension() raises:
 fn test_squeeze_all_dimensions() raises:
     """Test squeeze all size-1 dimensions (triggers bug at line 141).
 
-    Bug: Line 141 uses List[Int](new_dims) then indexes at line 145.
+    Bug: Line 141 uses List[Int]() then indexes at line 145.
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (1, 3, 1, 4)
@@ -135,7 +135,7 @@ fn test_squeeze_all_dimensions() raises:
 fn test_unsqueeze_add_dimension() raises:
     """Test unsqueeze to add dimension (triggers bug at line 177).
 
-    Bug: Line 177 uses List[Int](new_ndim) then indexes at line 181/183.
+    Bug: Line 177 uses List[Int]() then indexes at line 181/183.
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
@@ -156,7 +156,7 @@ fn test_unsqueeze_add_dimension() raises:
 fn test_unsqueeze_negative_index() raises:
     """Test unsqueeze with negative index (triggers bug at line 177).
 
-    Bug: Line 177 uses List[Int](new_ndim) then indexes at line 181/183.
+    Bug: Line 177 uses List[Int]() then indexes at line 181/183.
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
@@ -181,7 +181,7 @@ fn test_unsqueeze_negative_index() raises:
 fn test_concatenate_along_axis() raises:
     """Test concatenate tensors (triggers bug at line 296).
 
-    Bug: Line 296 uses List[Int](ndim) then indexes at line 299/301.
+    Bug: Line 296 uses List[Int]() then indexes at line 299/301.
     This crashes because the list has undefined size.
     """
     # Create two tensors to concatenate

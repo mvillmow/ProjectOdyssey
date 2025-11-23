@@ -48,7 +48,6 @@ Examples:
 """
 
 from ..core.extensor import ExTensor
-from collections.vector import DynamicVector
 
 
 # Operation types supported by the gradient tape
@@ -92,13 +91,13 @@ struct TapeNode:
     """
 
     var op_type: String
-    var input_ids: DynamicVector[Int]
+    var input_ids: List[Int]
     var output_id: Int
     # TODO: Add saved_tensors field for storing metadata needed in backward pass
     # For now, we'll rely on the backward functions in shared/core/ which take
     # the necessary inputs directly
 
-    fn __init__(inout self, op_type: String, input_ids: DynamicVector[Int], output_id: Int):
+    fn __init__(mut self, op_type: String, input_ids: List[Int], output_id: Int):
         """Initialize a tape node.
 
         Args:
@@ -139,15 +138,15 @@ struct GradientTape:
         tape.disable()
     """
 
-    var nodes: DynamicVector[TapeNode]
+    var nodes: List[TapeNode]
     var enabled: Bool
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Initialize an empty gradient tape."""
-        self.nodes = DynamicVector[TapeNode]()
+        self.nodes = List[TapeNode]()
         self.enabled = False
 
-    fn enable(inout self):
+    fn enable(mut self):
         """Enable recording of operations.
 
         After calling enable(), all operations on Variables with requires_grad=True
@@ -160,7 +159,7 @@ struct GradientTape:
         """
         self.enabled = True
 
-    fn disable(inout self):
+    fn disable(mut self):
         """Disable recording of operations.
 
         After calling disable(), operations will not be recorded. This is useful
@@ -172,7 +171,7 @@ struct GradientTape:
         """
         self.enabled = False
 
-    fn clear(inout self):
+    fn clear(mut self):
         """Clear all recorded operations.
 
         Resets the tape to an empty state. Should be called after backward()
@@ -182,9 +181,9 @@ struct GradientTape:
             tape.backward(loss)
             tape.clear()  # Free memory
         """
-        self.nodes = DynamicVector[TapeNode]()
+        self.nodes = List[TapeNode]()
 
-    fn record(inout self, op_type: String, input_ids: DynamicVector[Int], output_id: Int):
+    fn record(mut self, op_type: String, input_ids: List[Int], output_id: Int):
         """Record an operation in the tape.
 
         This method is called internally by Variable operations to register
@@ -207,9 +206,9 @@ struct GradientTape:
             return
 
         var node = TapeNode(op_type, input_ids, output_id)
-        self.nodes.push_back(node)
+        self.nodes.append(node)
 
-    fn backward(inout self):
+    fn backward(mut self):
         """Compute gradients by traversing tape in reverse.
 
         Applies the chain rule in reverse topological order:

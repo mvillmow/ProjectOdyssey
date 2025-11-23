@@ -45,7 +45,7 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var c = matmul(a, b)  # Shape (3, 5)
 
         var W = zeros(List[Int](10, 5), DType.float32)
-        var x = zeros(List[Int](5), DType.float32)
+        var x = zeros(List[Int](), DType.float32)
         var y = matmul(W, x)  # Shape (10,) - matrix @ vector
 
     Note:
@@ -216,7 +216,7 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
     var result = ExTensor(result_shape, tensor.dtype())
 
     # Compute strides for input tensor (row-major order)
-    # BUGFIX: List[Int](ndim) creates a list with wrong initialization
+    # BUGFIX: List[Int]() creates a list with wrong initialization
     # We need to build the list using append() instead of indexing
     var input_strides = List[Int]()
     var stride = 1
@@ -270,8 +270,8 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Dot product (scalar for 1D, matrix product for 2D)
 
     Examples:
-        var a = ones(List[Int](5), DType.float32)
-        var b = ones(List[Int](5), DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = dot(a, b)  # Scalar 5.0
     """
     # Check dtype compatibility
@@ -314,8 +314,8 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
         A 2D tensor containing the outer product
 
     Examples:
-        var a = ones(List[Int](3), DType.float32)
-        var b = ones(List[Int](4), DType.float32)
+        var a = ones(List[Int](), DType.float32)
+        var b = ones(List[Int](), DType.float32)
         var c = outer(a, b)  # Shape (3, 4), all ones
     """
     # Check that inputs are 1D

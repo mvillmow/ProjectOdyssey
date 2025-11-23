@@ -12,6 +12,7 @@ These limitations are due to Mojo's current ExTensor API not exposing shape meta
 Future versions may support arbitrary image dimensions.
 """
 
+from collections import Tuple
 from shared.core.extensor import ExTensor
 from math import sqrt, floor, ceil, sin, cos
 from random import random_si64

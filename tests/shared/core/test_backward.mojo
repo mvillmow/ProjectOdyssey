@@ -43,17 +43,17 @@ fn test_linear_backward_shapes() raises:
     var out_features = 5
 
     # Create tensors
-    var input_shape = List[Int](2)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_features
     var x = ones(input_shape, DType.float32)
 
-    var weight_shape = List[Int](2)
+    var weight_shape = List[Int]()
     weight_shape[0] = out_features
     weight_shape[1] = in_features
     var weights = ones(weight_shape, DType.float32)
 
-    var grad_out_shape = List[Int](2)
+    var grad_out_shape = List[Int]()
     grad_out_shape[0] = batch
     grad_out_shape[1] = out_features
     var grad_output = ones(grad_out_shape, DType.float32)
@@ -80,14 +80,14 @@ fn test_linear_backward_numerical() raises:
     This is a simple sanity check with known values.
     """
     # Simple case: 1 sample, 2 inputs, 2 outputs
-    var input_shape = List[Int](2)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 2
     var x = ones(input_shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1.0
     x._data.bitcast[Float32]()[1] = 2.0
 
-    var weight_shape = List[Int](2)
+    var weight_shape = List[Int]()
     weight_shape[0] = 2
     weight_shape[1] = 2
     var weights = zeros(weight_shape, DType.float32)
@@ -97,7 +97,7 @@ fn test_linear_backward_numerical() raises:
     weights._data.bitcast[Float32]()[3] = 0.4  # w[1,1]
 
     # Gradient from upstream (pretend loss gradient)
-    var grad_out_shape = List[Int](2)
+    var grad_out_shape = List[Int]()
     grad_out_shape[0] = 1
     grad_out_shape[1] = 2
     var grad_output = ones(grad_out_shape, DType.float32)
@@ -123,17 +123,17 @@ fn test_linear_backward_batch() raises:
     var in_features = 4
     var out_features = 2
 
-    var input_shape = List[Int](2)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_features
     var x = ones(input_shape, DType.float32)
 
-    var weight_shape = List[Int](2)
+    var weight_shape = List[Int]()
     weight_shape[0] = out_features
     weight_shape[1] = in_features
     var weights = ones(weight_shape, DType.float32)
 
-    var grad_out_shape = List[Int](2)
+    var grad_out_shape = List[Int]()
     grad_out_shape[0] = batch
     grad_out_shape[1] = out_features
     var grad_output = ones(grad_out_shape, DType.float32)
@@ -153,7 +153,7 @@ fn test_linear_backward_gradient() raises:
     var in_features = 3
     var out_features = 2
 
-    var input_shape = List[Int](2)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_features
     var x = zeros(input_shape, DType.float32)
@@ -166,7 +166,7 @@ fn test_linear_backward_gradient() raises:
     x._data.bitcast[Float32]()[4] = 0.1
     x._data.bitcast[Float32]()[5] = 0.7
 
-    var weight_shape = List[Int](2)
+    var weight_shape = List[Int]()
     weight_shape[0] = out_features
     weight_shape[1] = in_features
     var weights = zeros(weight_shape, DType.float32)
@@ -179,7 +179,7 @@ fn test_linear_backward_gradient() raises:
 
     # Forward function wrapper (linear with non-zero bias to test bias gradient)
     fn forward(inp: ExTensor) raises -> ExTensor:
-        var bias_shape = List[Int](1)
+        var bias_shape = List[Int]()
         bias_shape[0] = out_features
         var bias = zeros(bias_shape, DType.float32)
         bias._data.bitcast[Float32]()[0] = 0.3
@@ -188,7 +188,7 @@ fn test_linear_backward_gradient() raises:
 
     # Backward function wrapper (only return grad_input)
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var bias_shape = List[Int](1)
+        var bias_shape = List[Int]()
         bias_shape[0] = out_features
         var bias = zeros(bias_shape, DType.float32)
         var grads = linear_backward(grad_out, inp, weights)
@@ -217,7 +217,7 @@ fn test_conv2d_backward_shapes() raises:
     var kw = 3
 
     # Create input
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = in_h
@@ -225,7 +225,7 @@ fn test_conv2d_backward_shapes() raises:
     var x = ones(input_shape, DType.float32)
 
     # Create kernel
-    var kernel_shape = List[Int](4)
+    var kernel_shape = List[Int]()
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = kh
@@ -233,7 +233,7 @@ fn test_conv2d_backward_shapes() raises:
     var kernel = ones(kernel_shape, DType.float32)
 
     # Create bias
-    var bias_shape = List[Int](1)
+    var bias_shape = List[Int]()
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -270,21 +270,21 @@ fn test_conv2d_backward_with_stride() raises:
     var in_channels = 1
     var out_channels = 1
 
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = 8
     input_shape[3] = 8
     var x = ones(input_shape, DType.float32)
 
-    var kernel_shape = List[Int](4)
+    var kernel_shape = List[Int]()
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = 3
     kernel_shape[3] = 3
     var kernel = ones(kernel_shape, DType.float32)
 
-    var bias_shape = List[Int](1)
+    var bias_shape = List[Int]()
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -313,7 +313,7 @@ fn test_conv2d_backward_gradient() raises:
     var kh = 3
     var kw = 3
 
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = in_channels
     input_shape[2] = in_h
@@ -324,7 +324,7 @@ fn test_conv2d_backward_gradient() raises:
     for i in range(batch * in_channels * in_h * in_w):
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 2.5
 
-    var kernel_shape = List[Int](4)
+    var kernel_shape = List[Int]()
     kernel_shape[0] = out_channels
     kernel_shape[1] = in_channels
     kernel_shape[2] = kh
@@ -335,7 +335,7 @@ fn test_conv2d_backward_gradient() raises:
     for i in range(out_channels * in_channels * kh * kw):
         kernel._data.bitcast[Float32]()[i] = Float32(i) * 0.05 - 0.5
 
-    var bias_shape = List[Int](1)
+    var bias_shape = List[Int]()
     bias_shape[0] = out_channels
     var bias = zeros(bias_shape, DType.float32)
 
@@ -369,7 +369,7 @@ fn test_maxpool2d_backward_shapes() raises:
     var height = 8
     var width = 8
 
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = height
@@ -394,7 +394,7 @@ fn test_maxpool2d_backward_shapes() raises:
 fn test_maxpool2d_backward_gradient_routing() raises:
     """Test that maxpool2d_backward routes gradients only to max positions."""
     # Create a simple 2x2 input with known max
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 2
@@ -431,7 +431,7 @@ fn test_avgpool2d_backward_shapes() raises:
     var height = 8
     var width = 8
 
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = batch
     input_shape[1] = channels
     input_shape[2] = height
@@ -456,7 +456,7 @@ fn test_avgpool2d_backward_shapes() raises:
 fn test_avgpool2d_backward_gradient_distribution() raises:
     """Test that avgpool2d_backward distributes gradients equally."""
     # Create a simple 2x2 input
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1
     input_shape[1] = 1
     input_shape[2] = 2
@@ -482,7 +482,7 @@ fn test_avgpool2d_backward_gradient_distribution() raises:
 fn test_maxpool2d_backward_gradient() raises:
     """Test maxpool2d backward with numerical gradient checking."""
     # Create input with non-uniform values
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1  # batch
     input_shape[1] = 2  # channels
     input_shape[2] = 4  # height
@@ -511,7 +511,7 @@ fn test_maxpool2d_backward_gradient() raises:
 fn test_avgpool2d_backward_gradient() raises:
     """Test avgpool2d backward with numerical gradient checking."""
     # Create input with non-uniform values
-    var input_shape = List[Int](4)
+    var input_shape = List[Int]()
     input_shape[0] = 1  # batch
     input_shape[1] = 2  # channels
     input_shape[2] = 4  # height
@@ -547,12 +547,12 @@ fn test_cross_entropy_backward_shapes() raises:
     var batch = 4
     var num_classes = 10
 
-    var logits_shape = List[Int](2)
+    var logits_shape = List[Int]()
     logits_shape[0] = batch
     logits_shape[1] = num_classes
     var logits = ones(logits_shape, DType.float32)
 
-    var targets_shape = List[Int](2)
+    var targets_shape = List[Int]()
     targets_shape[0] = batch
     targets_shape[1] = num_classes
     var targets = zeros(targets_shape, DType.float32)
@@ -578,7 +578,7 @@ fn test_cross_entropy_backward_gradient() raises:
     var batch = 2
     var num_classes = 3
 
-    var logits_shape = List[Int](2)
+    var logits_shape = List[Int]()
     logits_shape[0] = batch
     logits_shape[1] = num_classes
     var logits = zeros(logits_shape, DType.float32)
@@ -591,7 +591,7 @@ fn test_cross_entropy_backward_gradient() raises:
     logits._data.bitcast[Float32]()[4] = 0.1
     logits._data.bitcast[Float32]()[5] = 0.7
 
-    var targets_shape = List[Int](2)
+    var targets_shape = List[Int]()
     targets_shape[0] = batch
     targets_shape[1] = num_classes
     var targets = zeros(targets_shape, DType.float32)
@@ -625,7 +625,7 @@ fn test_binary_cross_entropy_backward_shapes() raises:
     var batch = 32
     var features = 1
 
-    var pred_shape = List[Int](2)
+    var pred_shape = List[Int]()
     pred_shape[0] = batch
     pred_shape[1] = features
     var predictions = zeros(pred_shape, DType.float32)
@@ -660,7 +660,7 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     """
     var batch = 8
 
-    var pred_shape = List[Int](1)
+    var pred_shape = List[Int]()
     pred_shape[0] = batch
     var predictions = zeros(pred_shape, DType.float32)
 
@@ -702,7 +702,7 @@ fn test_binary_cross_entropy_backward_gradient() raises:
 
 fn test_binary_cross_entropy_backward_edge_cases() raises:
     """Test BCE backward with edge case values near 0 and 1."""
-    var pred_shape = List[Int](1)
+    var pred_shape = List[Int]()
     pred_shape[0] = 4
 
     var predictions = zeros(pred_shape, DType.float32)
@@ -740,7 +740,7 @@ fn test_mean_squared_error_backward_shapes() raises:
     var batch = 16
     var features = 10
 
-    var pred_shape = List[Int](2)
+    var pred_shape = List[Int]()
     pred_shape[0] = batch
     pred_shape[1] = features
     var predictions = ones(pred_shape, DType.float32)
@@ -771,7 +771,7 @@ fn test_mean_squared_error_backward_gradient() raises:
     var batch = 4
     var features = 3
 
-    var pred_shape = List[Int](2)
+    var pred_shape = List[Int]()
     pred_shape[0] = batch
     pred_shape[1] = features
     var predictions = zeros(pred_shape, DType.float32)
@@ -822,7 +822,7 @@ fn test_mean_squared_error_backward_gradient() raises:
 
 fn test_mean_squared_error_backward_zero_diff() raises:
     """Test MSE backward when predictions equal targets (zero gradient)."""
-    var pred_shape = List[Int](1)
+    var pred_shape = List[Int]()
     pred_shape[0] = 5
 
     var predictions = zeros(pred_shape, DType.float32)

@@ -62,7 +62,6 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform
 from shared.training.optimizers import sgd_momentum_update_inplace
-from collections.vector import DynamicVector
 from weights import save_tensor, load_tensor
 
 
@@ -149,7 +148,7 @@ struct VGG16:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(inout self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
+    fn __init__(mut self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
         """Initialize VGG-16 model with random weights.
 
         Args:
@@ -161,151 +160,151 @@ struct VGG16:
 
         # Block 1: Input channels=3 (RGB), output channels=64
         # Conv1_1: (64, 3, 3, 3)
-        var conv1_1_shape = DynamicVector[Int](4)
-        conv1_1_shape.push_back(64)   # out_channels
-        conv1_1_shape.push_back(3)    # in_channels (RGB)
-        conv1_1_shape.push_back(3)    # kernel_height
-        conv1_1_shape.push_back(3)    # kernel_width
+        var conv1_1_shape = List[Int]()
+        conv1_1_shape.append(64)   # out_channels
+        conv1_1_shape.append(3)    # in_channels (RGB)
+        conv1_1_shape.append(3)    # kernel_height
+        conv1_1_shape.append(3)    # kernel_width
         self.conv1_1_kernel = he_uniform(conv1_1_shape, DType.float32)
-        self.conv1_1_bias = zeros(DynamicVector[Int](1).push_back(64), DType.float32)
+        self.conv1_1_bias = zeros(List[Int]().append(64), DType.float32)
 
         # Conv1_2: (64, 64, 3, 3)
-        var conv1_2_shape = DynamicVector[Int](4)
-        conv1_2_shape.push_back(64)   # out_channels
-        conv1_2_shape.push_back(64)   # in_channels
-        conv1_2_shape.push_back(3)    # kernel_height
-        conv1_2_shape.push_back(3)    # kernel_width
+        var conv1_2_shape = List[Int]()
+        conv1_2_shape.append(64)   # out_channels
+        conv1_2_shape.append(64)   # in_channels
+        conv1_2_shape.append(3)    # kernel_height
+        conv1_2_shape.append(3)    # kernel_width
         self.conv1_2_kernel = he_uniform(conv1_2_shape, DType.float32)
-        self.conv1_2_bias = zeros(DynamicVector[Int](1).push_back(64), DType.float32)
+        self.conv1_2_bias = zeros(List[Int]().append(64), DType.float32)
 
         # Block 2: Input channels=64, output channels=128
         # Conv2_1: (128, 64, 3, 3)
-        var conv2_1_shape = DynamicVector[Int](4)
-        conv2_1_shape.push_back(128)
-        conv2_1_shape.push_back(64)
-        conv2_1_shape.push_back(3)
-        conv2_1_shape.push_back(3)
+        var conv2_1_shape = List[Int]()
+        conv2_1_shape.append(128)
+        conv2_1_shape.append(64)
+        conv2_1_shape.append(3)
+        conv2_1_shape.append(3)
         self.conv2_1_kernel = he_uniform(conv2_1_shape, DType.float32)
-        self.conv2_1_bias = zeros(DynamicVector[Int](1).push_back(128), DType.float32)
+        self.conv2_1_bias = zeros(List[Int]().append(128), DType.float32)
 
         # Conv2_2: (128, 128, 3, 3)
-        var conv2_2_shape = DynamicVector[Int](4)
-        conv2_2_shape.push_back(128)
-        conv2_2_shape.push_back(128)
-        conv2_2_shape.push_back(3)
-        conv2_2_shape.push_back(3)
+        var conv2_2_shape = List[Int]()
+        conv2_2_shape.append(128)
+        conv2_2_shape.append(128)
+        conv2_2_shape.append(3)
+        conv2_2_shape.append(3)
         self.conv2_2_kernel = he_uniform(conv2_2_shape, DType.float32)
-        self.conv2_2_bias = zeros(DynamicVector[Int](1).push_back(128), DType.float32)
+        self.conv2_2_bias = zeros(List[Int]().append(128), DType.float32)
 
         # Block 3: Input channels=128, output channels=256
         # Conv3_1: (256, 128, 3, 3)
-        var conv3_1_shape = DynamicVector[Int](4)
-        conv3_1_shape.push_back(256)
-        conv3_1_shape.push_back(128)
-        conv3_1_shape.push_back(3)
-        conv3_1_shape.push_back(3)
+        var conv3_1_shape = List[Int]()
+        conv3_1_shape.append(256)
+        conv3_1_shape.append(128)
+        conv3_1_shape.append(3)
+        conv3_1_shape.append(3)
         self.conv3_1_kernel = he_uniform(conv3_1_shape, DType.float32)
-        self.conv3_1_bias = zeros(DynamicVector[Int](1).push_back(256), DType.float32)
+        self.conv3_1_bias = zeros(List[Int]().append(256), DType.float32)
 
         # Conv3_2: (256, 256, 3, 3)
-        var conv3_2_shape = DynamicVector[Int](4)
-        conv3_2_shape.push_back(256)
-        conv3_2_shape.push_back(256)
-        conv3_2_shape.push_back(3)
-        conv3_2_shape.push_back(3)
+        var conv3_2_shape = List[Int]()
+        conv3_2_shape.append(256)
+        conv3_2_shape.append(256)
+        conv3_2_shape.append(3)
+        conv3_2_shape.append(3)
         self.conv3_2_kernel = he_uniform(conv3_2_shape, DType.float32)
-        self.conv3_2_bias = zeros(DynamicVector[Int](1).push_back(256), DType.float32)
+        self.conv3_2_bias = zeros(List[Int]().append(256), DType.float32)
 
         # Conv3_3: (256, 256, 3, 3)
-        var conv3_3_shape = DynamicVector[Int](4)
-        conv3_3_shape.push_back(256)
-        conv3_3_shape.push_back(256)
-        conv3_3_shape.push_back(3)
-        conv3_3_shape.push_back(3)
+        var conv3_3_shape = List[Int]()
+        conv3_3_shape.append(256)
+        conv3_3_shape.append(256)
+        conv3_3_shape.append(3)
+        conv3_3_shape.append(3)
         self.conv3_3_kernel = he_uniform(conv3_3_shape, DType.float32)
-        self.conv3_3_bias = zeros(DynamicVector[Int](1).push_back(256), DType.float32)
+        self.conv3_3_bias = zeros(List[Int]().append(256), DType.float32)
 
         # Block 4: Input channels=256, output channels=512
         # Conv4_1: (512, 256, 3, 3)
-        var conv4_1_shape = DynamicVector[Int](4)
-        conv4_1_shape.push_back(512)
-        conv4_1_shape.push_back(256)
-        conv4_1_shape.push_back(3)
-        conv4_1_shape.push_back(3)
+        var conv4_1_shape = List[Int]()
+        conv4_1_shape.append(512)
+        conv4_1_shape.append(256)
+        conv4_1_shape.append(3)
+        conv4_1_shape.append(3)
         self.conv4_1_kernel = he_uniform(conv4_1_shape, DType.float32)
-        self.conv4_1_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv4_1_bias = zeros(List[Int]().append(512), DType.float32)
 
         # Conv4_2: (512, 512, 3, 3)
-        var conv4_2_shape = DynamicVector[Int](4)
-        conv4_2_shape.push_back(512)
-        conv4_2_shape.push_back(512)
-        conv4_2_shape.push_back(3)
-        conv4_2_shape.push_back(3)
+        var conv4_2_shape = List[Int]()
+        conv4_2_shape.append(512)
+        conv4_2_shape.append(512)
+        conv4_2_shape.append(3)
+        conv4_2_shape.append(3)
         self.conv4_2_kernel = he_uniform(conv4_2_shape, DType.float32)
-        self.conv4_2_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv4_2_bias = zeros(List[Int]().append(512), DType.float32)
 
         # Conv4_3: (512, 512, 3, 3)
-        var conv4_3_shape = DynamicVector[Int](4)
-        conv4_3_shape.push_back(512)
-        conv4_3_shape.push_back(512)
-        conv4_3_shape.push_back(3)
-        conv4_3_shape.push_back(3)
+        var conv4_3_shape = List[Int]()
+        conv4_3_shape.append(512)
+        conv4_3_shape.append(512)
+        conv4_3_shape.append(3)
+        conv4_3_shape.append(3)
         self.conv4_3_kernel = he_uniform(conv4_3_shape, DType.float32)
-        self.conv4_3_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv4_3_bias = zeros(List[Int]().append(512), DType.float32)
 
         # Block 5: Input channels=512, output channels=512
         # Conv5_1: (512, 512, 3, 3)
-        var conv5_1_shape = DynamicVector[Int](4)
-        conv5_1_shape.push_back(512)
-        conv5_1_shape.push_back(512)
-        conv5_1_shape.push_back(3)
-        conv5_1_shape.push_back(3)
+        var conv5_1_shape = List[Int]()
+        conv5_1_shape.append(512)
+        conv5_1_shape.append(512)
+        conv5_1_shape.append(3)
+        conv5_1_shape.append(3)
         self.conv5_1_kernel = he_uniform(conv5_1_shape, DType.float32)
-        self.conv5_1_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv5_1_bias = zeros(List[Int]().append(512), DType.float32)
 
         # Conv5_2: (512, 512, 3, 3)
-        var conv5_2_shape = DynamicVector[Int](4)
-        conv5_2_shape.push_back(512)
-        conv5_2_shape.push_back(512)
-        conv5_2_shape.push_back(3)
-        conv5_2_shape.push_back(3)
+        var conv5_2_shape = List[Int]()
+        conv5_2_shape.append(512)
+        conv5_2_shape.append(512)
+        conv5_2_shape.append(3)
+        conv5_2_shape.append(3)
         self.conv5_2_kernel = he_uniform(conv5_2_shape, DType.float32)
-        self.conv5_2_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv5_2_bias = zeros(List[Int]().append(512), DType.float32)
 
         # Conv5_3: (512, 512, 3, 3)
-        var conv5_3_shape = DynamicVector[Int](4)
-        conv5_3_shape.push_back(512)
-        conv5_3_shape.push_back(512)
-        conv5_3_shape.push_back(3)
-        conv5_3_shape.push_back(3)
+        var conv5_3_shape = List[Int]()
+        conv5_3_shape.append(512)
+        conv5_3_shape.append(512)
+        conv5_3_shape.append(3)
+        conv5_3_shape.append(3)
         self.conv5_3_kernel = he_uniform(conv5_3_shape, DType.float32)
-        self.conv5_3_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.conv5_3_bias = zeros(List[Int]().append(512), DType.float32)
 
         # After all conv blocks + pools: 32 -> 16 -> 8 -> 4 -> 2 -> 1
         # Flattened size: 512 * 1 * 1 = 512
 
         # FC1: 512 -> 512
-        var fc1_shape = DynamicVector[Int](2)
-        fc1_shape.push_back(512)   # out_features
-        fc1_shape.push_back(512)   # in_features
+        var fc1_shape = List[Int]()
+        fc1_shape.append(512)   # out_features
+        fc1_shape.append(512)   # in_features
         self.fc1_weights = he_uniform(fc1_shape, DType.float32)
-        self.fc1_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.fc1_bias = zeros(List[Int]().append(512), DType.float32)
 
         # FC2: 512 -> 512
-        var fc2_shape = DynamicVector[Int](2)
-        fc2_shape.push_back(512)   # out_features
-        fc2_shape.push_back(512)   # in_features
+        var fc2_shape = List[Int]()
+        fc2_shape.append(512)   # out_features
+        fc2_shape.append(512)   # in_features
         self.fc2_weights = he_uniform(fc2_shape, DType.float32)
-        self.fc2_bias = zeros(DynamicVector[Int](1).push_back(512), DType.float32)
+        self.fc2_bias = zeros(List[Int]().append(512), DType.float32)
 
         # FC3: 512 -> num_classes
-        var fc3_shape = DynamicVector[Int](2)
-        fc3_shape.push_back(num_classes)  # out_features
-        fc3_shape.push_back(512)          # in_features
+        var fc3_shape = List[Int]()
+        fc3_shape.append(num_classes)  # out_features
+        fc3_shape.append(512)          # in_features
         self.fc3_weights = he_uniform(fc3_shape, DType.float32)
-        self.fc3_bias = zeros(DynamicVector[Int](1).push_back(num_classes), DType.float32)
+        self.fc3_bias = zeros(List[Int]().append(num_classes), DType.float32)
 
-    fn forward(inout self, borrowed input: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through VGG-16.
 
         Args:
@@ -361,9 +360,9 @@ struct VGG16:
         var batch_size = pool5_shape[0]
         var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
 
-        var flatten_shape = DynamicVector[Int](2)
-        flatten_shape.push_back(batch_size)
-        flatten_shape.push_back(flattened_size)
+        var flatten_shape = List[Int]()
+        flatten_shape.append(batch_size)
+        flatten_shape.append(flattened_size)
         var flattened = pool5.reshape(flatten_shape)
 
         # FC1 + ReLU + Dropout
@@ -385,7 +384,7 @@ struct VGG16:
 
         return output
 
-    fn predict(inout self, borrowed input: ExTensor) raises -> Int:
+    fn predict(mut self, input: ExTensor) raises -> Int:
         """Predict class for a single input.
 
         Args:
@@ -408,7 +407,7 @@ struct VGG16:
 
         return max_idx
 
-    fn save_weights(borrowed self, weights_dir: String) raises:
+    fn save_weights(self, weights_dir: String) raises:
         """Save model weights to directory.
 
         Args:
@@ -462,7 +461,7 @@ struct VGG16:
         save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
         save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
 
-    fn load_weights(inout self, weights_dir: String) raises:
+    fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:

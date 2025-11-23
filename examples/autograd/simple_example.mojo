@@ -20,7 +20,6 @@ from shared.core.arithmetic import add, multiply, subtract
 from shared.core.reduction import sum as tensor_sum, mean
 from shared.core.loss import mean_squared_error, mean_squared_error_backward
 from shared.core.reduction import mean_backward
-from collections.vector import DynamicVector
 
 
 fn simple_linear_regression() raises:
@@ -38,11 +37,11 @@ fn simple_linear_regression() raises:
     var num_epochs: Int = 10
 
     # Create parameters
-    var w_data = zeros(DynamicVector[Int](1), DType.float32)
+    var w_data = zeros(List[Int](), DType.float32)
     w_data._set_float64(0, 0.5)  # Initialize w = 0.5
     var w = Variable(w_data, requires_grad=True)
 
-    var b_data = zeros(DynamicVector[Int](1), DType.float32)
+    var b_data = zeros(List[Int](), DType.float32)
     b_data._set_float64(0, 0.0)  # Initialize b = 0.0
     var b = Variable(b_data, requires_grad=True)
 
@@ -54,11 +53,11 @@ fn simple_linear_regression() raises:
     # Create simple training data: y = 2*x + 1
     # X = [1, 2, 3, 4, 5]
     # Y = [3, 5, 7, 9, 11]
-    var X = ExTensor(DynamicVector[Int](5), DType.float32)
+    var X = ExTensor(List[Int](), DType.float32)
     for i in range(5):
         X._set_float64(i, Float64(i + 1))
 
-    var Y = ExTensor(DynamicVector[Int](5), DType.float32)
+    var Y = ExTensor(List[Int](), DType.float32)
     for i in range(5):
         Y._set_float64(i, Float64(2 * (i + 1) + 1))
 
@@ -75,11 +74,11 @@ fn simple_linear_regression() raises:
     # Training loop
     for epoch in range(num_epochs):
         # Forward pass: predictions = w * X + b
-        var w_expanded = ExTensor(DynamicVector[Int](5), DType.float32)
+        var w_expanded = ExTensor(List[Int](), DType.float32)
         for i in range(5):
             w_expanded._set_float64(i, w.data._get_float64(0))
 
-        var b_expanded = ExTensor(DynamicVector[Int](5), DType.float32)
+        var b_expanded = ExTensor(List[Int](), DType.float32)
         for i in range(5):
             b_expanded._set_float64(i, b.data._get_float64(0))
 
@@ -120,9 +119,9 @@ fn simple_linear_regression() raises:
         b.grad = grad_b_sum
 
         # Update parameters using optimizer
-        var params = DynamicVector[Variable]()
-        params.push_back(w)
-        params.push_back(b)
+        var params = List[Variable]()
+        params.append(w)
+        params.append(b)
         optimizer.step(params)
 
         # Reset gradients

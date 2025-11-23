@@ -68,7 +68,7 @@ struct GradientScaler:
     var min_scale: Float32
     var max_scale: Float32
 
-    fn __init__(inout self,
+    fn __init__(mut self,
                 initial_scale: Float32 = 65536.0,
                 growth_factor: Float32 = 2.0,
                 backoff_factor: Float32 = 0.5,
@@ -146,7 +146,7 @@ struct GradientScaler:
         var scale_tensor = ExTensor.full(gradients.shape(), Float64(self.scale), gradients.dtype())
         return gradients / scale_tensor
 
-    fn step(inout self):
+    fn step(mut self):
         """Update scale factor after successful optimizer step.
 
         Increases scale if no overflow occurred for growth_interval steps.
@@ -166,7 +166,7 @@ struct GradientScaler:
                 self.scale = new_scale
             self._steps_since_growth = 0
 
-    fn backoff(inout self):
+    fn backoff(mut self):
         """Reduce scale factor after gradient overflow.
 
         Called when NaN or Inf detected in gradients.

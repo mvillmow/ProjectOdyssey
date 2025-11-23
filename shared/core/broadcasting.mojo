@@ -3,7 +3,7 @@
 Implements NumPy-style broadcasting rules for tensor operations.
 """
 
-from collections import List
+from collections import List, Tuple
 
 
 fn broadcast_shapes(
@@ -196,7 +196,7 @@ struct BroadcastIterator:
         """Return iterator."""
         return self
 
-    fn __next__(mut self) raises -> (Int, Int):
+    fn __next__(mut self) raises -> Tuple[Int, Int]:
         """Get next pair of indices for the two tensors.
 
         Returns:

@@ -9,7 +9,6 @@ Usage:
 from shared.core import ExTensor, zeros
 from data_loader import load_cifar10_batch
 from model import VGG16
-from collections.vector import DynamicVector
 
 
 fn compute_test_accuracy(inout model: VGG16, test_images: ExTensor, test_labels: ExTensor) raises -> Float32:
@@ -33,11 +32,11 @@ fn compute_test_accuracy(inout model: VGG16, test_images: ExTensor, test_labels:
     # Process each test sample
     for i in range(num_test_samples):
         # Get single sample (simplified - in production would use proper slicing)
-        var sample_shape = DynamicVector[Int](4)
-        sample_shape.push_back(1)   # batch size = 1
-        sample_shape.push_back(3)   # RGB channels
-        sample_shape.push_back(32)  # height
-        sample_shape.push_back(32)  # width
+        var sample_shape = List[Int]()
+        sample_shape.append(1)   # batch size = 1
+        sample_shape.append(3)   # RGB channels
+        sample_shape.append(32)  # height
+        sample_shape.append(32)  # width
 
         var sample = zeros(sample_shape, DType.float32)
         # TODO: Copy actual sample data from test_images[i]
@@ -68,8 +67,8 @@ fn main() raises:
 
     # Load test set
     print("Loading CIFAR-10 test set...")
-    var test_images = zeros(DynamicVector[Int](4).push_back(10000).push_back(3).push_back(32).push_back(32), DType.float32)
-    var test_labels = zeros(DynamicVector[Int](1).push_back(10000), DType.float32)
+    var test_images = zeros(List[Int]().append(10000).append(3).append(32).append(32), DType.float32)
+    var test_labels = zeros(List[Int]().append(10000), DType.float32)
 
     # TODO: Load actual test set using load_cifar10_batch
     print("Test set loaded: 10,000 images")

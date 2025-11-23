@@ -36,7 +36,7 @@ struct DigitClassifier:
 
     var model: Sequential
 
-    fn __init__(inout self):
+    fn __init__(mut self):
         """Create a 3-layer network: 784 -> 128 -> 64 -> 10."""
 
         # Input: 784 pixels (28x28 flattened)
@@ -53,10 +53,10 @@ struct DigitClassifier:
             Softmax(),
         ])
 
-    fn forward(inout self, borrowed input: Tensor) -> Tensor:
+    fn forward(mut self, input: Tensor) -> Tensor:
         """Forward pass through the network."""
         return self.model.forward(input)
 
-    fn parameters(inout self) -> List[Tensor]:
+    fn parameters(mut self) -> List[Tensor]:
         """Get all trainable parameters."""
         return self.model.parameters()

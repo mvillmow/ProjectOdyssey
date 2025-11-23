@@ -14,7 +14,7 @@ fn test_sgd_momentum_float32() raises:
     print("Testing sgd_momentum_update_inplace with float32...")
 
     # Create float32 tensors
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var param = ExTensor(shape, DType.float32)
     var grad = ExTensor(shape, DType.float32)
     var velocity = zeros_like(param)
@@ -56,7 +56,7 @@ fn test_sgd_momentum_float64() raises:
     print("Testing sgd_momentum_update_inplace with float64...")
 
     # Create float64 tensors
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var param = ExTensor(shape, DType.float64)
     var grad = ExTensor(shape, DType.float64)
     var velocity = zeros_like(param)
@@ -98,7 +98,7 @@ fn test_sgd_momentum_multi_step_float64() raises:
     print("Testing multi-step SGD momentum with float64...")
 
     # Create float64 tensors
-    var shape = List[Int](2)
+    var shape = List[Int]()
     var param = ExTensor(shape, DType.float64)
     var grad = ExTensor(shape, DType.float64)
     var velocity = zeros_like(param)

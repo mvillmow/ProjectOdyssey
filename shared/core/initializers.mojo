@@ -561,7 +561,7 @@ fn constant(shape: List[Int], value: Float64, dtype: DType = DType.float32) rais
         var custom = constant(List[Int](5, 5), 0.5)
 
         # Initialize bias with 0.01
-        var bias = constant(List[Int](100), 0.01)
+        var bias = constant(List[Int](), 0.01)
 
     Issue: #268-272 - Uniform/Normal basic distributions
     """

@@ -14,7 +14,6 @@ Features:
 
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches
-from collections.vector import DynamicVector
 from model import MobileNetV1
 from data_loader import load_cifar10_test
 
@@ -29,13 +28,13 @@ fn evaluate_model(
     labels: ExTensor,
     batch_size: Int = 100,
     verbose: Bool = True
-) raises -> (Float32, DynamicVector[Int], DynamicVector[Int]):
+) raises -> (Float32, List[Int], List[Int]):
     """Evaluate model on a dataset."""
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_correct = 0
-    var correct_per_class = DynamicVector[Int](10)
-    var total_per_class = DynamicVector[Int](10)
+    var correct_per_class = List[Int]()
+    var total_per_class = List[Int]()
 
     for i in range(10):
         correct_per_class[i] = 0
@@ -54,7 +53,7 @@ fn evaluate_model(
         var logits = model.forward(batch_images, training=False)
 
         for i in range(current_batch_size):
-            var sample_logits = zeros(DynamicVector[Int](1).push_back(10), DType.float32)
+            var sample_logits = zeros(List[Int]().append(10), DType.float32)
             var sample_logits_data = sample_logits._data.bitcast[Float32]()
             var logits_data = logits._data.bitcast[Float32]()
 
@@ -91,8 +90,8 @@ fn evaluate_model(
 
 fn print_detailed_results(
     accuracy: Float32,
-    correct_per_class: DynamicVector[Int],
-    total_per_class: DynamicVector[Int]
+    correct_per_class: List[Int],
+    total_per_class: List[Int]
 ):
     """Print detailed evaluation results."""
     print("=" * 60)

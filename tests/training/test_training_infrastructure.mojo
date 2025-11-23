@@ -39,7 +39,7 @@ fn mock_model_forward(input: ExTensor) raises -> ExTensor:
 
 fn mock_compute_loss(predictions: ExTensor, labels: ExTensor) raises -> ExTensor:
     """Mock loss computation - returns constant loss."""
-    var loss = ExTensor(List[Int](1), DType.float32)
+    var loss = ExTensor(List[Int](), DType.float32)
     loss._data.bitcast[Float32]()[0] = 0.5
     return loss
 
@@ -179,7 +179,7 @@ fn test_dataloader_basic() raises:
     print("Testing DataLoader basic...")
 
     var data = ExTensor(List[Int](10, 5), DType.float32)
-    var labels = ExTensor(List[Int](10), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)
 
     var loader = DataLoader(data, labels, batch_size=3)
 
@@ -195,7 +195,7 @@ fn test_dataloader_iteration() raises:
     print("Testing DataLoader iteration...")
 
     var data = ExTensor(List[Int](10, 5), DType.float32)
-    var labels = ExTensor(List[Int](10), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)
 
     var loader = DataLoader(data, labels, batch_size=3)
 
@@ -353,7 +353,7 @@ fn test_databatch_creation() raises:
     print("Testing DataBatch creation...")
 
     var data = ExTensor(List[Int](5, 10), DType.float32)
-    var labels = ExTensor(List[Int](5), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)
 
     var batch = DataBatch(data, labels)
 

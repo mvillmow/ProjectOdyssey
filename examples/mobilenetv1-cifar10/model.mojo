@@ -31,7 +31,6 @@ from shared.core import (
     xavier_normal,
     constant,
 )
-from collections.vector import DynamicVector
 
 
 fn depthwise_conv2d(
@@ -73,11 +72,11 @@ fn depthwise_conv2d(
 
     # Create output tensor
     var output = zeros(
-        DynamicVector[Int](4)
-        .push_back(batch_size)
-        .push_back(channels)
-        .push_back(out_h)
-        .push_back(out_w),
+        List[Int]()
+        .append(batch_size)
+        .append(channels)
+        .append(out_h)
+        .append(out_w),
         x.dtype(),
     )
 
@@ -92,7 +91,7 @@ fn depthwise_conv2d(
         for c in range(channels):
             # Extract single channel
             var channel_input = zeros(
-                DynamicVector[Int](4).push_back(1).push_back(1).push_back(height).push_back(width),
+                List[Int]().append(1).append(1).append(height).append(width),
                 x.dtype(),
             )
             var channel_input_data = channel_input._data.bitcast[Float32]()
@@ -106,7 +105,7 @@ fn depthwise_conv2d(
 
             # Extract single filter for this channel
             var channel_filter = zeros(
-                DynamicVector[Int](4).push_back(1).push_back(1).push_back(kernel_h).push_back(kernel_w),
+                List[Int]().append(1).append(1).append(kernel_h).append(kernel_w),
                 weights.dtype(),
             )
             var channel_filter_data = channel_filter._data.bitcast[Float32]()
@@ -118,7 +117,7 @@ fn depthwise_conv2d(
                     channel_filter_data[dst_idx] = weights_data[filter_idx]
 
             # Create single-element bias
-            var channel_bias = zeros(DynamicVector[Int](1).push_back(1), bias.dtype())
+            var channel_bias = zeros(List[Int]().append(1), bias.dtype())
             var channel_bias_data = channel_bias._data.bitcast[Float32]()
             channel_bias_data[0] = bias_data[c]
 
@@ -169,7 +168,7 @@ struct DepthwiseSeparableBlock:
     var pw_bn_running_var: ExTensor
 
     fn __init__(
-        inout self, in_channels: Int, out_channels: Int, stride: Int = 1
+        mut self, in_channels: Int, out_channels: Int, stride: Int = 1
     ) raises:
         """Initialize depthwise separable block.
 
@@ -180,33 +179,33 @@ struct DepthwiseSeparableBlock:
         """
         # Depthwise convolution weights (one 3×3 filter per channel)
         self.dw_weights = kaiming_normal(
-            DynamicVector[Int](4).push_back(in_channels).push_back(1).push_back(3).push_back(3),
+            List[Int]().append(in_channels).append(1).append(3).append(3),
             fan_in=9,  # 3×3 kernel
         )
-        self.dw_bias = zeros(DynamicVector[Int](1).push_back(in_channels))
-        self.dw_bn_gamma = constant(DynamicVector[Int](1).push_back(in_channels), 1.0)
-        self.dw_bn_beta = zeros(DynamicVector[Int](1).push_back(in_channels))
-        self.dw_bn_running_mean = zeros(DynamicVector[Int](1).push_back(in_channels))
-        self.dw_bn_running_var = constant(DynamicVector[Int](1).push_back(in_channels), 1.0)
+        self.dw_bias = zeros(List[Int]().append(in_channels))
+        self.dw_bn_gamma = constant(List[Int]().append(in_channels), 1.0)
+        self.dw_bn_beta = zeros(List[Int]().append(in_channels))
+        self.dw_bn_running_mean = zeros(List[Int]().append(in_channels))
+        self.dw_bn_running_var = constant(List[Int]().append(in_channels), 1.0)
 
         # Pointwise convolution weights (1×1, channel mixing)
         self.pw_weights = xavier_normal(
-            DynamicVector[Int](4)
-            .push_back(out_channels)
-            .push_back(in_channels)
-            .push_back(1)
-            .push_back(1),
+            List[Int]()
+            .append(out_channels)
+            .append(in_channels)
+            .append(1)
+            .append(1),
             fan_in=in_channels,
             fan_out=out_channels,
         )
-        self.pw_bias = zeros(DynamicVector[Int](1).push_back(out_channels))
-        self.pw_bn_gamma = constant(DynamicVector[Int](1).push_back(out_channels), 1.0)
-        self.pw_bn_beta = zeros(DynamicVector[Int](1).push_back(out_channels))
-        self.pw_bn_running_mean = zeros(DynamicVector[Int](1).push_back(out_channels))
-        self.pw_bn_running_var = constant(DynamicVector[Int](1).push_back(out_channels), 1.0)
+        self.pw_bias = zeros(List[Int]().append(out_channels))
+        self.pw_bn_gamma = constant(List[Int]().append(out_channels), 1.0)
+        self.pw_bn_beta = zeros(List[Int]().append(out_channels))
+        self.pw_bn_running_mean = zeros(List[Int]().append(out_channels))
+        self.pw_bn_running_var = constant(List[Int]().append(out_channels), 1.0)
 
     fn forward(
-        inout self, x: ExTensor, stride: Int, training: Bool
+        mut self, x: ExTensor, stride: Int, training: Bool
     ) raises -> ExTensor:
         """Forward pass through depthwise separable block.
 
@@ -286,7 +285,7 @@ struct MobileNetV1:
     var fc_weights: ExTensor
     var fc_bias: ExTensor
 
-    fn __init__(inout self, num_classes: Int = 10) raises:
+    fn __init__(mut self, num_classes: Int = 10) raises:
         """Initialize MobileNetV1 model.
 
         Args:
@@ -294,14 +293,14 @@ struct MobileNetV1:
         """
         # Initial standard convolution: 3×3, 32 filters, stride=2
         self.initial_conv_weights = kaiming_normal(
-            DynamicVector[Int](4).push_back(32).push_back(3).push_back(3).push_back(3),
+            List[Int]().append(32).append(3).append(3).append(3),
             fan_in=3 * 9,
         )
-        self.initial_conv_bias = zeros(DynamicVector[Int](1).push_back(32))
-        self.initial_bn_gamma = constant(DynamicVector[Int](1).push_back(32), 1.0)
-        self.initial_bn_beta = zeros(DynamicVector[Int](1).push_back(32))
-        self.initial_bn_running_mean = zeros(DynamicVector[Int](1).push_back(32))
-        self.initial_bn_running_var = constant(DynamicVector[Int](1).push_back(32), 1.0)
+        self.initial_conv_bias = zeros(List[Int]().append(32))
+        self.initial_bn_gamma = constant(List[Int]().append(32), 1.0)
+        self.initial_bn_beta = zeros(List[Int]().append(32))
+        self.initial_bn_running_mean = zeros(List[Int]().append(32))
+        self.initial_bn_running_var = constant(List[Int]().append(32), 1.0)
 
         # Depthwise separable blocks
         # Channel progression: 32 → 64 → 128 → 256 → 512 → 1024
@@ -321,13 +320,13 @@ struct MobileNetV1:
 
         # Final FC layer: 1024 → num_classes
         self.fc_weights = xavier_normal(
-            DynamicVector[Int](2).push_back(num_classes).push_back(1024),
+            List[Int]().append(num_classes).append(1024),
             fan_in=1024,
             fan_out=num_classes,
         )
-        self.fc_bias = zeros(DynamicVector[Int](1).push_back(num_classes))
+        self.fc_bias = zeros(List[Int]().append(num_classes))
 
-    fn forward(inout self, x: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(mut self, x: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through MobileNetV1.
 
         Args:
@@ -390,7 +389,7 @@ struct MobileNetV1:
         var batch_size = out.shape()[0]
         var channels = out.shape()[1]
         var flattened = zeros(
-            DynamicVector[Int](2).push_back(batch_size).push_back(channels),
+            List[Int]().append(batch_size).append(channels),
             out.dtype(),
         )
         var flattened_data = flattened._data.bitcast[Float32]()
@@ -406,7 +405,7 @@ struct MobileNetV1:
 
         return logits
 
-    fn load_weights(inout self, weights_dir: String) raises:
+    fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:

@@ -4,8 +4,8 @@ This module provides utilities for extracting mini-batches from datasets
 for training and evaluation.
 """
 
+from collections import Tuple
 from ..core import ExTensor, zeros
-from collections.vector import DynamicVector
 
 
 fn extract_batch(
@@ -53,10 +53,10 @@ fn extract_batch(
     var actual_batch_size = min(batch_size, num_samples - start_idx)
 
     # Build output shape: (actual_batch_size, ...)
-    var batch_shape = DynamicVector[Int]()
-    batch_shape.push_back(actual_batch_size)
+    var batch_shape = List[Int]()
+    batch_shape.append(actual_batch_size)
     for i in range(1, data_shape.size):
-        batch_shape.push_back(data_shape[i])
+        batch_shape.append(data_shape[i])
 
     # Create output tensor
     var batch = zeros(batch_shape, data.dtype())
@@ -87,7 +87,7 @@ fn extract_batch_pair(
     labels: ExTensor,
     start_idx: Int,
     batch_size: Int
-) raises -> (ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor]:
     """Extract a mini-batch of both data and labels.
 
     Convenience function that extracts matching batches from both
@@ -164,7 +164,7 @@ fn get_batch_indices(
     batch_idx: Int,
     batch_size: Int,
     num_samples: Int
-) -> (Int, Int, Int):
+) -> Tuple[Int, Int, Int]:
     """Compute start index, end index, and actual size for a batch.
 
     Helper function to compute batch boundaries with proper handling

@@ -16,7 +16,7 @@ fn test_sgd_step_simple_basic() raises:
     """Test basic SGD parameter update."""
     print("Testing basic SGD step...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -62,7 +62,7 @@ fn test_sgd_step_zero_gradients() raises:
     """Test SGD with zero gradients (params should not change)."""
     print("Testing SGD with zero gradients...")
 
-    var shape = List[Int](3)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
     var gradients = zeros(shape, DType.float32)
 
@@ -99,7 +99,7 @@ fn test_sgd_step_large_learning_rate() raises:
     """Test SGD with large learning rate."""
     print("Testing SGD with large learning rate...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -134,7 +134,7 @@ fn test_sgd_step_negative_gradients() raises:
     """Test SGD with negative gradients (params should increase)."""
     print("Testing SGD with negative gradients...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -170,7 +170,7 @@ fn test_sgd_step_with_weight_decay() raises:
     """Test SGD with L2 weight decay."""
     print("Testing SGD with weight decay...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)  # Not used, but required
@@ -212,7 +212,7 @@ fn test_sgd_multi_step_convergence() raises:
     """Test multiple SGD steps converge towards target."""
     print("Testing multi-step SGD convergence...")
 
-    var shape = List[Int](1)
+    var shape = List[Int]()
     var params = ExTensor(shape, DType.float32)
 
     # Start at params = 10, try to reach target = 0

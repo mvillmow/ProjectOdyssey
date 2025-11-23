@@ -25,7 +25,7 @@ fn test_relu_gradient() raises:
     """Test ReLU backward pass using gradient checking."""
     print("Testing ReLU gradient...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -46,7 +46,7 @@ fn test_relu_negative_inputs() raises:
     """Test ReLU gradient with negative inputs (zero gradient region)."""
     print("Testing ReLU gradient (negative inputs)...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -67,7 +67,7 @@ fn test_relu_mixed_inputs() raises:
     """Test ReLU gradient with mixed positive/negative inputs."""
     print("Testing ReLU gradient (mixed inputs)...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -93,7 +93,7 @@ fn test_sigmoid_gradient() raises:
     """Test Sigmoid backward pass using gradient checking."""
     print("Testing Sigmoid gradient...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -115,7 +115,7 @@ fn test_tanh_gradient() raises:
     """Test Tanh backward pass using gradient checking."""
     print("Testing Tanh gradient...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -142,7 +142,7 @@ fn test_add_gradient() raises:
     """Test addition backward pass using gradient checking."""
     print("Testing Add gradient...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -166,7 +166,7 @@ fn test_multiply_gradient() raises:
     """Test multiplication backward pass using gradient checking."""
     print("Testing Multiply gradient...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -195,7 +195,7 @@ fn test_composite_relu_multiply() raises:
     """Test gradient through composite operation: multiply -> relu."""
     print("Testing composite gradient (multiply -> relu)...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -232,7 +232,7 @@ fn test_gradient_at_zero() raises:
     """Test gradient checking at zero (potential numerical issues)."""
     print("Testing gradient at zero...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 2
 
@@ -254,7 +254,7 @@ fn test_gradient_small_tensor() raises:
     """Test gradient checking on very small tensors (1x1)."""
     print("Testing gradient on small tensor...")
 
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 1
     shape[1] = 1
 

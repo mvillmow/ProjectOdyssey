@@ -4,6 +4,7 @@ This module provides the core dataset abstractions and common implementations
 for loading and accessing data in ML workflows.
 """
 
+from collections import Tuple
 from shared.core.extensor import ExTensor
 from utils.index import Index
 

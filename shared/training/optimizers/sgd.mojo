@@ -14,6 +14,7 @@ With weight decay (L2 regularization):
     params = params - learning_rate * (gradients + weight_decay * params)
 """
 
+from collections import Tuple
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add
 from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd
@@ -27,7 +28,7 @@ fn sgd_step(
     learning_rate: Float64,
     momentum: Float64 = 0.0,
     weight_decay: Float64 = 0.0
-) raises -> (ExTensor, ExTensor):
+) raises -> Tuple[ExTensor, ExTensor]:
     """Perform a single SGD optimization step - pure functional.
 
     Returns new parameters and new velocity. Caller manages all state.

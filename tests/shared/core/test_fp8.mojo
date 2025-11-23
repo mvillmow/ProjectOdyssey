@@ -151,7 +151,7 @@ fn test_fp8_equality() raises:
 
 fn test_tensor_to_fp8() raises:
     """Test converting Float32 tensor to FP8."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 3
 
@@ -183,7 +183,7 @@ fn test_tensor_to_fp8() raises:
 
 fn test_tensor_from_fp8() raises:
     """Test converting FP8 tensor back to Float32."""
-    var shape = List[Int](2)
+    var shape = List[Int]()
     shape[0] = 2
     shape[1] = 2
 
@@ -229,7 +229,7 @@ fn test_tensor_from_fp8() raises:
 
 fn test_tensor_fp8_roundtrip() raises:
     """Test round-trip conversion Float32 -> FP8 -> Float32."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 5
 
     # Create tensor with various values
@@ -256,7 +256,7 @@ fn test_tensor_fp8_roundtrip() raises:
 
 fn test_tensor_to_fp8_requires_float() raises:
     """Test that to_fp8() requires floating-point tensor."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
 
     # Create int32 tensor
@@ -274,7 +274,7 @@ fn test_tensor_to_fp8_requires_float() raises:
 
 fn test_tensor_from_fp8_requires_uint8() raises:
     """Test that from_fp8() requires uint8 tensor."""
-    var shape = List[Int](1)
+    var shape = List[Int]()
     shape[0] = 3
 
     # Create float32 tensor (not uint8)

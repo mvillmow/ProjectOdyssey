@@ -81,10 +81,10 @@ fn test_forward_pass_with_metrics() raises:
     var w2_shape = List[Int](3, 4)  # 4 hidden, 3 outputs
 
     var w1 = kaiming_uniform(3, 4, w1_shape, seed_val=1)
-    var b1 = constant(List[Int](4), 0.0)
+    var b1 = constant(List[Int](), 0.0)
 
     var w2 = xavier_uniform(4, 3, w2_shape, seed_val=2)
-    var b2 = constant(List[Int](3), 0.0)
+    var b2 = constant(List[Int](), 0.0)
 
     # Create fake input (batch_size=5, features=3)
     var input_shape = List[Int](5, 3)
@@ -99,7 +99,7 @@ fn test_forward_pass_with_metrics() raises:
     var predictions = softmax(output)
 
     # Create fake labels
-    var labels = ExTensor(List[Int](5), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)
     labels._data.bitcast[Int32]()[0] = 0
     labels._data.bitcast[Int32]()[1] = 1
     labels._data.bitcast[Int32]()[2] = 2
@@ -151,7 +151,7 @@ fn test_training_loop_simulation() raises:
         for batch_idx in range(num_batches):
             # Create fake batch
             var input = normal(List[Int](batch_size, input_dim), seed_val=epoch * 100 + batch_idx)
-            var labels = ExTensor(List[Int](batch_size), DType.int32)
+            var labels = ExTensor(List[Int](), DType.int32)
 
             for i in range(batch_size):
                 labels._data.bitcast[Int32]()[i] = Int32((i + batch_idx) % output_dim)
@@ -267,7 +267,7 @@ fn test_batch_processing_pipeline() raises:
     for batch_idx in range(num_batches):
         # Generate batch
         var input = normal(List[Int](batch_size, num_features), seed_val=batch_idx)
-        var labels = ExTensor(List[Int](batch_size), DType.int32)
+        var labels = ExTensor(List[Int](), DType.int32)
 
         for i in range(batch_size):
             labels._data.bitcast[Int32]()[i] = Int32(i % num_classes)
@@ -308,13 +308,13 @@ fn test_multi_layer_network_integration() raises:
 
     # Initialize all layers with appropriate methods
     var w1 = kaiming_uniform(784, 256, List[Int](256, 784), seed_val=1)
-    var b1 = constant(List[Int](256), 0.0)
+    var b1 = constant(List[Int](), 0.0)
 
     var w2 = kaiming_uniform(256, 128, List[Int](128, 256), seed_val=2)
-    var b2 = constant(List[Int](128), 0.0)
+    var b2 = constant(List[Int](), 0.0)
 
     var w3 = xavier_uniform(128, 10, List[Int](10, 128), seed_val=3)
-    var b3 = constant(List[Int](10), 0.0)
+    var b3 = constant(List[Int](), 0.0)
 
     # Verify all weights initialized
     assert_equal(w1.size(), 784 * 256, "Layer 1 weights")
@@ -323,7 +323,7 @@ fn test_multi_layer_network_integration() raises:
 
     # Create fake mini-batch (batch_size=4)
     var input = normal(List[Int](4, 784), seed_val=42)
-    var labels = ExTensor(List[Int](4), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)
     labels._data.bitcast[Int32]()[0] = 7
     labels._data.bitcast[Int32]()[1] = 2
     labels._data.bitcast[Int32]()[2] = 1
@@ -362,8 +362,8 @@ fn test_error_handling_across_components() raises:
     print("Testing error handling across components...")
 
     # Test mismatched shapes in metric updates
-    var preds = ExTensor(List[Int](5), DType.int32)
-    var labels = ExTensor(List[Int](3), DType.int32)  # Mismatched size
+    var preds = ExTensor(List[Int](), DType.int32)
+    var labels = ExTensor(List[Int](), DType.int32)  # Mismatched size
 
     var accuracy = AccuracyMetric()
 

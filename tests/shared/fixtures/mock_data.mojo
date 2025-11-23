@@ -12,6 +12,7 @@ Key components:
 All mocks use deterministic seeds for reproducible tests.
 """
 
+from collections import Tuple
 from random import seed, randn, randint
 from tests.shared.fixtures.mock_tensors import (
     create_random_tensor,
@@ -44,7 +45,7 @@ struct MockDataset:
     var random_seed: Int
 
     fn __init__(
-        inout self,
+        mut self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -80,7 +81,7 @@ struct MockDataset:
         """
         return self.num_samples
 
-    fn get_item(self, index: Int) -> (List[Float32], List[Float32]):
+    fn get_item(self, index: Int) -> Tuple[List[Float32], List[Float32]]:
         """Get a single sample by index.
 
         Args:
@@ -135,7 +136,7 @@ struct MockClassificationDataset:
     var random_seed: Int
 
     fn __init__(
-        inout self,
+        mut self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         num_classes: Int = 5,
@@ -167,7 +168,7 @@ struct MockClassificationDataset:
         """Get dataset size."""
         return self.num_samples
 
-    fn get_item(self, index: Int) -> (List[Float32], Int):
+    fn get_item(self, index: Int) -> Tuple[List[Float32], Int]:
         """Get classification sample.
 
         Args:
@@ -220,7 +221,7 @@ struct MockRegressionDataset:
     var noise_scale: Float32
 
     fn __init__(
-        inout self,
+        mut self,
         num_samples: Int = 100,
         input_dim: Int = 10,
         output_dim: Int = 1,
@@ -256,7 +257,7 @@ struct MockRegressionDataset:
         """Get dataset size."""
         return self.num_samples
 
-    fn get_item(self, index: Int) -> (List[Float32], List[Float32]):
+    fn get_item(self, index: Int) -> Tuple[List[Float32], List[Float32]]:
         """Get regression sample.
 
         Args:
@@ -321,7 +322,7 @@ struct MockDataLoader:
     var num_batches: Int
 
     fn __init__(
-        inout self, num_samples: Int, batch_size: Int, shuffle: Bool = False
+        mut self, num_samples: Int, batch_size: Int, shuffle: Bool = False
     ):
         """Initialize data loader.
 
@@ -412,7 +413,7 @@ struct MockDataLoader:
 
 fn create_mock_batch(
     batch_size: Int, input_dim: Int, output_dim: Int = 1, random_seed: Int = 42
-) -> (List[List[Float32]], List[List[Float32]]):
+) -> Tuple[List[List[Float32]], List[List[Float32]]]:
     """Create a mock batch of data.
 
     Convenience function for creating a batch without full dataset/loader setup.
@@ -456,7 +457,7 @@ fn create_mock_batch(
 
 fn create_mock_classification_batch(
     batch_size: Int, input_dim: Int, num_classes: Int = 5, random_seed: Int = 42
-) -> (List[List[Float32]], List[Int]):
+) -> Tuple[List[List[Float32]], List[Int]]:
     """Create a mock classification batch.
 
     Args:

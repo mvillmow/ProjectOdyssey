@@ -29,7 +29,6 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform, xavier_uniform
 from shared.training.optimizers import sgd_momentum_update_inplace
-from collections.vector import DynamicVector
 from weights import save_tensor, load_tensor
 
 
@@ -80,7 +79,7 @@ struct AlexNet:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(inout self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
+    fn __init__(mut self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
         """Initialize AlexNet model with random weights.
 
         Args:
@@ -91,49 +90,49 @@ struct AlexNet:
         self.dropout_rate = dropout_rate
 
         # Conv1: 3 input channels (RGB), 96 output channels, 11x11 kernel
-        var conv1_shape = DynamicVector[Int](4)
-        conv1_shape.push_back(96)  # out_channels
-        conv1_shape.push_back(3)   # in_channels (RGB)
-        conv1_shape.push_back(11)  # kernel_height
-        conv1_shape.push_back(11)  # kernel_width
+        var conv1_shape = List[Int]()
+        conv1_shape.append(96)  # out_channels
+        conv1_shape.append(3)   # in_channels (RGB)
+        conv1_shape.append(11)  # kernel_height
+        conv1_shape.append(11)  # kernel_width
         self.conv1_kernel = he_uniform(conv1_shape, DType.float32)
-        self.conv1_bias = zeros(DynamicVector[Int](1).push_back(96), DType.float32)
+        self.conv1_bias = zeros(List[Int]().append(96), DType.float32)
 
         # Conv2: 96 input channels, 256 output channels, 5x5 kernel
-        var conv2_shape = DynamicVector[Int](4)
-        conv2_shape.push_back(256)  # out_channels
-        conv2_shape.push_back(96)   # in_channels
-        conv2_shape.push_back(5)    # kernel_height
-        conv2_shape.push_back(5)    # kernel_width
+        var conv2_shape = List[Int]()
+        conv2_shape.append(256)  # out_channels
+        conv2_shape.append(96)   # in_channels
+        conv2_shape.append(5)    # kernel_height
+        conv2_shape.append(5)    # kernel_width
         self.conv2_kernel = he_uniform(conv2_shape, DType.float32)
-        self.conv2_bias = zeros(DynamicVector[Int](1).push_back(256), DType.float32)
+        self.conv2_bias = zeros(List[Int]().append(256), DType.float32)
 
         # Conv3: 256 input channels, 384 output channels, 3x3 kernel
-        var conv3_shape = DynamicVector[Int](4)
-        conv3_shape.push_back(384)  # out_channels
-        conv3_shape.push_back(256)  # in_channels
-        conv3_shape.push_back(3)    # kernel_height
-        conv3_shape.push_back(3)    # kernel_width
+        var conv3_shape = List[Int]()
+        conv3_shape.append(384)  # out_channels
+        conv3_shape.append(256)  # in_channels
+        conv3_shape.append(3)    # kernel_height
+        conv3_shape.append(3)    # kernel_width
         self.conv3_kernel = he_uniform(conv3_shape, DType.float32)
-        self.conv3_bias = zeros(DynamicVector[Int](1).push_back(384), DType.float32)
+        self.conv3_bias = zeros(List[Int]().append(384), DType.float32)
 
         # Conv4: 384 input channels, 384 output channels, 3x3 kernel
-        var conv4_shape = DynamicVector[Int](4)
-        conv4_shape.push_back(384)  # out_channels
-        conv4_shape.push_back(384)  # in_channels
-        conv4_shape.push_back(3)    # kernel_height
-        conv4_shape.push_back(3)    # kernel_width
+        var conv4_shape = List[Int]()
+        conv4_shape.append(384)  # out_channels
+        conv4_shape.append(384)  # in_channels
+        conv4_shape.append(3)    # kernel_height
+        conv4_shape.append(3)    # kernel_width
         self.conv4_kernel = he_uniform(conv4_shape, DType.float32)
-        self.conv4_bias = zeros(DynamicVector[Int](1).push_back(384), DType.float32)
+        self.conv4_bias = zeros(List[Int]().append(384), DType.float32)
 
         # Conv5: 384 input channels, 256 output channels, 3x3 kernel
-        var conv5_shape = DynamicVector[Int](4)
-        conv5_shape.push_back(256)  # out_channels
-        conv5_shape.push_back(384)  # in_channels
-        conv5_shape.push_back(3)    # kernel_height
-        conv5_shape.push_back(3)    # kernel_width
+        var conv5_shape = List[Int]()
+        conv5_shape.append(256)  # out_channels
+        conv5_shape.append(384)  # in_channels
+        conv5_shape.append(3)    # kernel_height
+        conv5_shape.append(3)    # kernel_width
         self.conv5_kernel = he_uniform(conv5_shape, DType.float32)
-        self.conv5_bias = zeros(DynamicVector[Int](1).push_back(256), DType.float32)
+        self.conv5_bias = zeros(List[Int]().append(256), DType.float32)
 
         # After conv1 (32x32 -> 5x5 with stride=4, padding=2) -> pool1 (5x5 -> 2x2 with stride=2)
         # After conv2 (2x2 -> 2x2 with padding=2) -> pool2 (2x2 -> 1x1 with stride=2)
@@ -141,27 +140,27 @@ struct AlexNet:
         # Flattened size: 256 * 1 * 1 = 256
 
         # FC1: 256 -> 4096
-        var fc1_shape = DynamicVector[Int](2)
-        fc1_shape.push_back(4096)  # out_features
-        fc1_shape.push_back(256)   # in_features
+        var fc1_shape = List[Int]()
+        fc1_shape.append(4096)  # out_features
+        fc1_shape.append(256)   # in_features
         self.fc1_weights = xavier_uniform(fc1_shape, DType.float32)
-        self.fc1_bias = zeros(DynamicVector[Int](1).push_back(4096), DType.float32)
+        self.fc1_bias = zeros(List[Int]().append(4096), DType.float32)
 
         # FC2: 4096 -> 4096
-        var fc2_shape = DynamicVector[Int](2)
-        fc2_shape.push_back(4096)  # out_features
-        fc2_shape.push_back(4096)  # in_features
+        var fc2_shape = List[Int]()
+        fc2_shape.append(4096)  # out_features
+        fc2_shape.append(4096)  # in_features
         self.fc2_weights = xavier_uniform(fc2_shape, DType.float32)
-        self.fc2_bias = zeros(DynamicVector[Int](1).push_back(4096), DType.float32)
+        self.fc2_bias = zeros(List[Int]().append(4096), DType.float32)
 
         # FC3: 4096 -> num_classes
-        var fc3_shape = DynamicVector[Int](2)
-        fc3_shape.push_back(num_classes)  # out_features
-        fc3_shape.push_back(4096)         # in_features
+        var fc3_shape = List[Int]()
+        fc3_shape.append(num_classes)  # out_features
+        fc3_shape.append(4096)         # in_features
         self.fc3_weights = xavier_uniform(fc3_shape, DType.float32)
-        self.fc3_bias = zeros(DynamicVector[Int](1).push_back(num_classes), DType.float32)
+        self.fc3_bias = zeros(List[Int]().append(num_classes), DType.float32)
 
-    fn forward(inout self, borrowed input: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(mut self, input: ExTensor, training: Bool = True) raises -> ExTensor:
         """Forward pass through AlexNet.
 
         Args:
@@ -199,9 +198,9 @@ struct AlexNet:
         var batch_size = pool3_shape[0]
         var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
 
-        var flatten_shape = DynamicVector[Int](2)
-        flatten_shape.push_back(batch_size)
-        flatten_shape.push_back(flattened_size)
+        var flatten_shape = List[Int]()
+        flatten_shape.append(batch_size)
+        flatten_shape.append(flattened_size)
         var flattened = pool3_out.reshape(flatten_shape)
 
         # FC1 + ReLU + Dropout
@@ -223,7 +222,7 @@ struct AlexNet:
 
         return output
 
-    fn predict(inout self, borrowed input: ExTensor) raises -> Int:
+    fn predict(mut self, input: ExTensor) raises -> Int:
         """Predict class for a single input.
 
         Args:
@@ -246,7 +245,7 @@ struct AlexNet:
 
         return max_idx
 
-    fn save_weights(borrowed self, weights_dir: String) raises:
+    fn save_weights(self, weights_dir: String) raises:
         """Save model weights to directory.
 
         Args:
@@ -274,7 +273,7 @@ struct AlexNet:
         save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
         save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
 
-    fn load_weights(inout self, weights_dir: String) raises:
+    fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:
@@ -332,7 +331,7 @@ struct AlexNet:
         var result16 = load_tensor(weights_dir + "/fc3_bias.weights")
         self.fc3_bias = result16[1]^
 
-    fn update_parameters(inout self, learning_rate: Float32, momentum: Float32,
+    fn update_parameters(mut self, learning_rate: Float32, momentum: Float32,
                         grad_conv1_kernel: ExTensor,
                         grad_conv1_bias: ExTensor,
                         grad_conv2_kernel: ExTensor,

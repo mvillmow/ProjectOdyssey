@@ -44,7 +44,6 @@ from shared.core import (
     cross_entropy_backward,
 )
 from shared.data import extract_batch_pair, compute_num_batches
-from collections.vector import DynamicVector
 from model import MobileNetV1
 from data_loader import load_cifar10_train
 

@@ -40,12 +40,16 @@ alias MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
 alias WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
 
 
-struct ExTensor(Movable):
+struct ExTensor(Copyable, Movable):
     """Dynamic tensor with runtime-determined shape and data type.
 
     ExTensor provides a flexible tensor implementation for machine learning workloads,
     supporting arbitrary dimensions (0D scalars to N-D tensors), multiple data types,
     and NumPy-style broadcasting for all operations.
+
+    **WARNING**: Copyable trait added for compatibility with List[ExTensor] and function returns.
+    However, proper __copyinit__ implementation is still missing (see #1908 / MOJO-005).
+    Current behavior may result in shallow copies and potential double-free bugs.
 
     Attributes:
         _data: UnsafePointer to raw byte storage (type-erased)
@@ -296,7 +300,7 @@ struct ExTensor(Movable):
 
         Example:
             var t = zeros(List[Int](2, 3), DType.float32)
-            var reshaped = t.reshape(List[Int](6))  # (2, 3) -> (6,)
+            var reshaped = t.reshape(List[Int]())  # (2, 3) -> (6,)
         """
         # Verify total elements match
         var new_numel = 1
@@ -1557,7 +1561,7 @@ struct ExTensor(Movable):
         var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
 
         # Create output tensor as flattened uint8 array
-        var result = ExTensor(List[Int](total_bytes), DType.uint8)
+        var result = ExTensor(List[Int](), DType.uint8)
 
         # Process each block
         for block_idx in range(num_blocks):
@@ -1636,7 +1640,7 @@ struct ExTensor(Movable):
         var output_size = num_blocks * 32
 
         # Create output tensor
-        var result = ExTensor(List[Int](output_size), DType.float32)
+        var result = ExTensor(List[Int](), DType.float32)
 
         # Decode each block
         for block_idx in range(num_blocks):
@@ -1740,7 +1744,7 @@ struct ExTensor(Movable):
         var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block
 
         # Create output tensor as flattened uint8 array
-        var result = ExTensor(List[Int](total_bytes), DType.uint8)
+        var result = ExTensor(List[Int](), DType.uint8)
 
         # Process each block
         for block_idx in range(num_blocks):
@@ -1809,7 +1813,7 @@ struct ExTensor(Movable):
         var output_size = num_blocks * 16
 
         # Create output tensor
-        var result = ExTensor(List[Int](output_size), DType.float32)
+        var result = ExTensor(List[Int](), DType.float32)
 
         # Decode each block
         for block_idx in range(num_blocks):
