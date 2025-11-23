@@ -87,7 +87,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
 
 @always_inline
-fn _add_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _add_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD addition for float32 tensors."""
     alias simd_width = simdwidthof[DType.float32]()
     var size = a.numel()
@@ -106,7 +106,7 @@ fn _add_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
 
 
 @always_inline
-fn _add_simd_float64(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD addition for float64 tensors."""
     alias simd_width = simdwidthof[DType.float64]()
     var size = a.numel()
@@ -160,7 +160,7 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
 
 @always_inline
-fn _subtract_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _subtract_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD subtraction for float32 tensors."""
     alias simd_width = simdwidthof[DType.float32]()
     var size = a.numel()
@@ -179,7 +179,7 @@ fn _subtract_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) rais
 
 
 @always_inline
-fn _subtract_simd_float64(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _subtract_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD subtraction for float64 tensors."""
     alias simd_width = simdwidthof[DType.float64]()
     var size = a.numel()
@@ -233,7 +233,7 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
 
 @always_inline
-fn _multiply_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _multiply_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD multiplication for float32 tensors."""
     alias simd_width = simdwidthof[DType.float32]()
     var size = a.numel()
@@ -252,7 +252,7 @@ fn _multiply_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) rais
 
 
 @always_inline
-fn _multiply_simd_float64(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _multiply_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD multiplication for float64 tensors."""
     alias simd_width = simdwidthof[DType.float64]()
     var size = a.numel()
@@ -306,7 +306,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
 
 @always_inline
-fn _divide_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _divide_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD division for float32 tensors."""
     alias simd_width = simdwidthof[DType.float32]()
     var size = a.numel()
@@ -325,7 +325,7 @@ fn _divide_simd_float32(a: ExTensor, b: ExTensor, inout result: ExTensor) raises
 
 
 @always_inline
-fn _divide_simd_float64(a: ExTensor, b: ExTensor, inout result: ExTensor) raises:
+fn _divide_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD division for float64 tensors."""
     alias simd_width = simdwidthof[DType.float64]()
     var size = a.numel()

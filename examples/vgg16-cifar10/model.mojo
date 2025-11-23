@@ -148,7 +148,7 @@ struct VGG16:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(mut self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
+    fn __init__(out self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
         """Initialize VGG-16 model with random weights.
 
         Args:

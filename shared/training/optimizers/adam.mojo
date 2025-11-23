@@ -24,7 +24,6 @@ from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd, divide_simd
 from shared.core.elementwise import sqrt
 from shared.core.extensor import full_like, ones_like
-from math import pow
 
 
 fn adam_step(

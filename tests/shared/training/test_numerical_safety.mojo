@@ -45,9 +45,9 @@ fn test_numerical_safety_valid_loss() raises:
 
     # TODO(#34): Add NaN/Inf detection when implemented
     Currently stub always returns True
-    assert_false(is_valid_loss(Float64.nan()))
-    assert_false(is_valid_loss(Float64.inf()))
-    assert_false(is_valid_loss(Float64.neg_inf()))
+    assert_false(is_valid_loss(Float64(0.0) / Float64(0.0)))  # NaN
+    assert_false(is_valid_loss(Float64(1.0) / Float64(0.0)))  # +Inf
+    assert_false(is_valid_loss(-Float64(1.0) / Float64(0.0)))  # -Inf
 
 
 fn test_numerical_safety_nan_loss() raises:
@@ -61,7 +61,7 @@ fn test_numerical_safety_nan_loss() raises:
     # TODO(#34): Implement when Float64.nan() is available
     from shared.training.base import is_valid_loss
     #
-    var nan_loss = Float64.nan()
+    var nan_loss = Float64(0.0) / Float64(0.0)  # NaN
     assert_false(is_valid_loss(nan_loss))
 
 
@@ -76,8 +76,8 @@ fn test_numerical_safety_inf_loss() raises:
     # TODO(#34): Implement when Float64.inf() is available
     from shared.training.base import is_valid_loss
     #
-    var inf_loss = Float64.inf()
-    var neg_inf_loss = Float64.neg_inf()
+    var inf_loss = Float64(1.0) / Float64(0.0)  # +Inf
+    var neg_inf_loss = -Float64(1.0) / Float64(0.0)  # -Inf
     #
     assert_false(is_valid_loss(inf_loss))
     assert_false(is_valid_loss(neg_inf_loss))
@@ -118,7 +118,7 @@ fn test_numerical_safety_nan_gradients() raises:
     # TODO(#34): Implement when gradient checking is available
     from shared.training.base import is_valid_gradient
     #
-    var nan_grads = List[Float64](0.1, Float64.nan(), 0.3)
+    var nan_grads = List[Float64](0.1, Float64(0.0) / Float64(0.0), 0.3)  # NaN in middle
     assert_false(is_valid_gradient(nan_grads))
 
 
@@ -134,7 +134,7 @@ fn test_numerical_safety_inf_gradients() raises:
     # TODO(#34): Implement when gradient checking is available
     from shared.training.base import is_valid_gradient
     #
-    var inf_grads = List[Float64](0.1, Float64.inf(), 0.3)
+    var inf_grads = List[Float64](0.1, Float64(1.0) / Float64(0.0), 0.3)  # +Inf in middle
     assert_false(is_valid_gradient(inf_grads))
 
 
@@ -258,8 +258,8 @@ fn test_numerical_safety_handles_zero_gradients() raises:
     var initial_weights = model.get_weights().copy()
     #
     # Training step with zero gradients
-    var inputs = Tensor.zeros(4, 10)
-    var targets = Tensor.zeros(4, 1)
+    var inputs = Tensor.zeros(4, 10, DType.float32)
+    var targets = Tensor.zeros(4, 1, DType.float32)
     var loss = training_loop.step(inputs, targets)
     #
     # Weights should be unchanged

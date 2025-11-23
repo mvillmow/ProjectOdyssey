@@ -23,8 +23,8 @@ from shared.training.base import (
 # ============================================================================
 
 
-@value
-struct EarlyStopping(Callback):
+@fieldwise_init
+struct EarlyStopping(Callback, Copyable, Movable):
     """Stop training when monitored metric stops improving.
 
     Early stopping monitors a validation metric and stops training when.
@@ -173,8 +173,8 @@ struct EarlyStopping(Callback):
 # ============================================================================
 
 
-@value
-struct ModelCheckpoint(Callback):
+@fieldwise_init
+struct ModelCheckpoint(Callback, Copyable, Movable):
     """Save model checkpoints during training.
 
     Saves the model state at specified intervals or when metrics improve.
@@ -347,8 +347,8 @@ struct ModelCheckpoint(Callback):
 # ============================================================================
 
 
-@value
-struct LoggingCallback(Callback):
+@fieldwise_init
+struct LoggingCallback(Callback, Copyable, Movable):
     """Log training metrics at specified intervals.
 
     Logs training progress to stdout at regular intervals.

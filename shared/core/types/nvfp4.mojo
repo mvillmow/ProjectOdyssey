@@ -45,8 +45,8 @@ from math import isnan, isinf
 from .fp4 import FP4_E2M1
 
 
-@value
-struct E4M3Scale(Stringable, Representable):
+@fieldwise_init
+struct E4M3Scale(Stringable, Representable, Copyable, Movable):
     """4-bit exponent + 3-bit mantissa scale factor for NVFP4 blocks.
 
     Memory layout (7 bits stored in UInt8):
@@ -63,7 +63,7 @@ struct E4M3Scale(Stringable, Representable):
     """
     var value: UInt8  # Only lower 7 bits are used
 
-    fn __init__(mut self, value: UInt8 = 0x38):
+    fn __init__(out self, value: UInt8 = 0x38):
         """Initialize E4M3 scale from raw 7-bit value.
 
         Args:.            value: 7-bit representation (default = 0x38 = exp:7, mantissa:0 = 1.0)
@@ -176,7 +176,7 @@ struct E4M3Scale(Stringable, Representable):
         """
         var exp = (self.value >> 3) & 0xF
         var mantissa = self.value & 0x7
-        return "E4M3(exp=" + str(exp) + ", mantissa=" + str(mantissa) + ", scale=" + str(self.to_float32()) + ")"
+        return "E4M3(exp=" + String(exp) + ", mantissa=" + String(mantissa) + ", scale=" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation.
@@ -186,8 +186,8 @@ struct E4M3Scale(Stringable, Representable):
         return self.__str__()
 
 
-@value
-struct NVFP4(Stringable, Representable):
+@fieldwise_init
+struct NVFP4(Stringable, Representable, Copyable, Movable):
     """NVFP4 individual value (E2M1 + E4M3 scale).
 
     Acts like FP16 but stores internally as 4-bit E2M1 value plus 7-bit E4M3 scale.
@@ -202,7 +202,7 @@ struct NVFP4(Stringable, Representable):
     var value: FP4_E2M1
     var scale: E4M3Scale
 
-    fn __init__(mut self, value: FP4_E2M1 = FP4_E2M1(), scale: E4M3Scale = E4M3Scale()):
+    fn __init__(out self, value: FP4_E2M1 = FP4_E2M1(), scale: E4M3Scale = E4M3Scale()):
         """Initialize NVFP4 from E2M1 value and E4M3 scale.
 
         Args:.            `value`: E2M1 encoded value.
@@ -486,7 +486,7 @@ struct NVFP4(Stringable, Representable):
 
         Returns:.            String representation.
         """
-        return "NVFP4(" + str(self.to_float32()) + ")"
+        return "NVFP4(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Get representation string.
@@ -496,8 +496,8 @@ struct NVFP4(Stringable, Representable):
         return "NVFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
 
-@value
-struct NVFP4Block(Stringable, Representable):
+@fieldwise_init
+struct NVFP4Block(Stringable, Representable, Copyable, Movable):
     """NVFP4 block storage: 16 E2M1 values + 1 E4M3 scale (9 bytes total).
 
     Memory layout:
@@ -525,12 +525,12 @@ struct NVFP4Block(Stringable, Representable):
     var data: SIMD[DType.uint8, 8]  # 16 E2M1 values (2 per byte)
     var scale: E4M3Scale  # Shared E4M3 scale
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize NVFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 8](0)
         self.scale = E4M3Scale(0x38)  # Scale = 1.0
 
-    fn __init__(mut self, data: SIMD[DType.uint8, 8], scale: E4M3Scale):
+    fn __init__(out self, data: SIMD[DType.uint8, 8], scale: E4M3Scale):
         """Initialize NVFP4Block from packed data and scale.
 
         Args:
@@ -639,7 +639,7 @@ struct NVFP4Block(Stringable, Representable):
 
         return NVFP4(fp4_val, self.scale)
 
-    fn set(mut self, index: Int, value: NVFP4) raises:
+    fn set(mut self, index: Int, value: NVFP4) raises -> None:
         """Set NVFP4 value at index (0-15).
 
         Args:
@@ -679,7 +679,7 @@ struct NVFP4Block(Stringable, Representable):
         Returns:
             String representation
         """
-        return "NVFP4Block(16 values, scale=" + str(self.scale.to_float32()) + ")"
+        return "NVFP4Block(16 values, scale=" + String(self.scale.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation.

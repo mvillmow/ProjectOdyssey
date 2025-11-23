@@ -45,10 +45,10 @@ struct EfficientConv2D:
     var weight: Tensor
     var im2col_buffer: Tensor  # Reused buffer
 
-    fn __init__(mut self, in_channels: Int, out_channels: Int, kernel_size: Int):
+    fn __init__(out self, in_channels: Int, out_channels: Int, kernel_size: Int):
         self.weight = Tensor.randn(out_channels, in_channels, kernel_size, kernel_size)
         # Preallocate maximum buffer size
-        self.im2col_buffer = Tensor.zeros(1024, in_channels * kernel_size * kernel_size)
+        self.im2col_buffer = Tensor.zeros(1024, in_channels * kernel_size * kernel_size, DType.float32)
 
     fn forward(mut self, input: Tensor) -> Tensor:
         """Forward pass reusing buffer instead of allocating."""

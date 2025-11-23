@@ -781,7 +781,7 @@ struct EarlyStoppingCallback:
         self.min_delta = min_delta
         self.mode = mode
         self.restore_best_weights = restore_best_weights
-        self.best_metric = Float64.infinity() if mode == "min" else -Float64.infinity()
+        self.best_metric = Float64(1.0) / Float64(0.0) if mode == "min" else -Float64(1.0) / Float64(0.0)  # +Inf or -Inf
         self.wait_count = 0
         self.stopped_epoch = 0
         self.best_weights = None

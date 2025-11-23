@@ -61,7 +61,7 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
     """
     var value: UInt8  # Only lower 4 bits are used
 
-    fn __init__(mut self, value: UInt8 = 0):
+    fn __init__(out self, value: UInt8 = 0):
         """Initialize FP4_E2M1 from raw 4-bit value.
 
         Args:.            `value`: Raw 4-bit representation (only lower 4 bits used)
@@ -193,14 +193,14 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
 
         Returns:.            String representation.
         """
-        return "FP4_E2M1(" + str(self.to_float32(scale=1.0)) + ")"
+        return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing bits and value.
 
         Returns:.            Detailed string representation.
         """
-        return "FP4_E2M1(bits=0x" + hex(self.value) + ", value=" + str(self.to_float32(scale=1.0)) + ")"
+        return "FP4_E2M1(bits=0x" + hex(self.value) + ", value=" + String(self.to_float32(scale=1.0)) + ")"
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.

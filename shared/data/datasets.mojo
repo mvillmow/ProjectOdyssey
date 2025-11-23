@@ -44,7 +44,6 @@ trait Dataset:
 # ============================================================================
 
 
-@fieldwise_init
 struct ExTensorDataset(Dataset, Copyable, Movable):
     """Dataset wrapping tensors for in-memory data.
 
@@ -108,7 +107,6 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct FileDataset(Dataset, Copyable, Movable):
     """Dataset for loading data from files.
 
@@ -123,7 +121,7 @@ struct FileDataset(Dataset, Copyable, Movable):
     var _cache: Dict[Int, Tuple[ExTensor, ExTensor]]
 
     fn __init__(
-        out self,
+        mut self,
         owned file_paths: List[String],
         owned labels: List[Int],
         `cache`: Bool = False,

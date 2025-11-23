@@ -237,7 +237,7 @@ struct ResNet18:
     var fc_weights: ExTensor
     var fc_bias: ExTensor
 
-    fn __init__(mut self, num_classes: Int = 10) raises:
+    fn __init__(out self, num_classes: Int = 10) raises:
         """Initialize ResNet-18 model with random weights.
 
         Args:

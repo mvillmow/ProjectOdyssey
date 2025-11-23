@@ -16,8 +16,8 @@ from collections import Dict
 # ============================================================================
 
 
-@value
-struct CallbackSignal:
+@fieldwise_init
+struct CallbackSignal(Copyable, Movable):
     """Signal returned by callbacks to control training flow.
 
     Values:
@@ -40,8 +40,8 @@ alias CONTINUE = CallbackSignal(0)
 alias STOP = CallbackSignal(1)
 
 
-@value
-struct TrainingState:
+@fieldwise_init
+struct TrainingState(Copyable, Movable):
     """Training state passed to callbacks.
 
     This struct provides callbacks with access to training metrics and control.

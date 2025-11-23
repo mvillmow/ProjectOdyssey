@@ -69,7 +69,7 @@ struct SGD:
     # TODO: Add velocity storage for momentum
     # var velocities: List[ExTensor]
 
-    fn __init__(mut self, learning_rate: Float64, momentum: Float64 = 0.0):
+    fn __init__(out self, learning_rate: Float64, momentum: Float64 = 0.0):
         """Initialize SGD optimizer.
 
         Args:

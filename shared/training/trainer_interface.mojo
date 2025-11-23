@@ -108,7 +108,7 @@ struct TrainingMetrics:
     var best_val_accuracy: Float64
     var best_epoch: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize training metrics with defaults."""
         self.current_epoch = 0
         self.current_batch = 0
@@ -226,7 +226,7 @@ struct DataBatch:
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
 
-    fn __init__(mut self, data: ExTensor, labels: ExTensor):
+    fn __init__(out self, data: ExTensor, labels: ExTensor):
         """Initialize data batch.
 
         Args:.            `data`: Input features tensor.
@@ -251,7 +251,7 @@ struct DataLoader:
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(mut self, data: ExTensor, labels: ExTensor, batch_size: Int):
+    fn __init__(out self, data: ExTensor, labels: ExTensor, batch_size: Int):
         """Initialize data loader.
 
         Args:.            `data`: Full dataset features.

@@ -22,11 +22,10 @@ Reference:
     machine learning, 4(2), 26-31.
 """
 
-from shared.core.extensor import ExTensor
+from shared.core.extensor import ExTensor, zeros
 from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.elementwise import sqrt
 from shared.core.extensor import full_like, zeros_like
-from math import pow
 
 
 fn rmsprop_step(
@@ -39,7 +38,7 @@ fn rmsprop_step(
     epsilon: Float64 = 1e-8,
     weight_decay: Float64 = 0.0,
     momentum: Float64 = 0.0,
-    buf: ExTensor = ExTensor()
+    buf: ExTensor = ExTensor(List[Float32](), DType.float32)
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single RMSprop optimization step - pure functional.
 
@@ -194,7 +193,7 @@ fn rmsprop_step_simple(
     var (new_params, new_square_avg, _) = rmsprop_step(
         params, gradients, square_avg, 1,  # t=1 (not used without momentum/wd)
         learning_rate, alpha, epsilon,
-        weight_decay=0.0, momentum=0.0, buf=ExTensor()
+        weight_decay=0.0, momentum=0.0, buf=ExTensor(List[Float32](), DType.float32)
     )
 
     return (new_params, new_square_avg)

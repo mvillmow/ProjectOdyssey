@@ -27,7 +27,7 @@ fn relu_simd(inout tensor: Tensor):
 
 fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
     """Matrix multiplication using SIMD."""
-    var result = Tensor.zeros(a.shape[0], b.shape[1])
+    var result = Tensor.zeros(a.shape[0], b.shape[1], DType.float32)
 
     alias simd_width = simdwidthof[DType.float32]()
 

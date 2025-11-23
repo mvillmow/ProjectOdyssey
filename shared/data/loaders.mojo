@@ -14,7 +14,6 @@ from .samplers import Sampler, SequentialSampler, RandomSampler
 # ============================================================================
 
 
-@fieldwise_init
 struct Batch(Copyable, Movable):
     """Container for a batch of samples.
 
@@ -27,7 +26,7 @@ struct Batch(Copyable, Movable):
     var indices: List[Int]
 
     fn __init__(
-        out self,
+        mut self,
         owned data: ExTensor,
         owned labels: ExTensor,
         owned indices: List[Int],
@@ -49,7 +48,6 @@ struct Batch(Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct BaseLoader(Copyable, Movable):
     """Base data loader with core functionality.
 
@@ -62,7 +60,7 @@ struct BaseLoader(Copyable, Movable):
     var _len: Int
 
     fn __init__(
-        out self,
+        mut self,
         owned dataset: Dataset,
         batch_size: Int = 1,
         drop_last: Bool = False,
@@ -99,7 +97,6 @@ struct BaseLoader(Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct BatchLoader(BaseLoader, Copyable, Movable):
     """Data loader with batching and optional shuffling.
 
@@ -110,7 +107,7 @@ struct BatchLoader(BaseLoader, Copyable, Movable):
     var shuffle: Bool
 
     fn __init__(
-        out self,
+        mut self,
         owned dataset: Dataset,
         `batch_size`: Int = 32,
         `shuffle`: Bool = False,

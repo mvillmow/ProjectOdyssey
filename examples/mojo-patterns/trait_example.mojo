@@ -41,9 +41,9 @@ struct Linear(Module):
     var weight: Tensor
     var bias: Tensor
 
-    fn __init__(mut self, input_size: Int, output_size: Int):
+    fn __init__(out self, input_size: Int, output_size: Int):
         self.weight = Tensor.randn(output_size, input_size)
-        self.bias = Tensor.zeros(output_size)
+        self.bias = Tensor.zeros(output_size, DType.float32)
 
     fn forward(mut self, input: Tensor) -> Tensor:
         return input @ self.weight.T + self.bias
@@ -58,7 +58,7 @@ struct Adam(Optimizer):
     var beta1: Float64
     var beta2: Float64
 
-    fn __init__(mut self, lr: Float64 = 0.001, beta1: Float64 = 0.9, beta2: Float64 = 0.999):
+    fn __init__(out self, lr: Float64 = 0.001, beta1: Float64 = 0.9, beta2: Float64 = 0.999):
         self.lr = lr
         self.beta1 = beta1
         self.beta2 = beta2

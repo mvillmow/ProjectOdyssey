@@ -15,6 +15,7 @@ Testing strategy:
 - Different configurations: Various fan_in/fan_out combinations
 """
 
+from memory import DType
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from math import sqrt
 from shared.core import ExTensor, xavier_uniform, xavier_normal, kaiming_uniform, kaiming_normal, uniform, normal, constant

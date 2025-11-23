@@ -8,7 +8,6 @@ from .extensor import ExTensor, zeros_like, ones_like, full_like
 from .arithmetic import subtract, add, multiply, divide, power
 from .elementwise import sqrt
 from .reduction import mean as reduce_mean, sum as reduce_sum
-from collections import List, Tuple
 
 
 fn batch_norm2d(
@@ -316,7 +315,7 @@ fn normalize_rgb(
     var num_cols = shape[3]
 
     if num_channels != 3:
-        raise Error("normalize_rgb requires 3 RGB channels, got: " + str(num_channels))
+        raise Error("normalize_rgb requires 3 RGB channels, got: " + String(num_channels))
 
     # Create output tensor (float32)
     var normalized = zeros(shape, DType.float32)

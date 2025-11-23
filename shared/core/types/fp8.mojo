@@ -33,7 +33,7 @@ struct FP8(Stringable, Representable, Copyable, Movable):
     """
     var value: UInt8
 
-    fn __init__(mut self, value: UInt8 = 0):
+    fn __init__(out self, value: UInt8 = 0):
         """Initialize FP8 from raw UInt8 bits.
 
         Args:.            `value`: Raw 8-bit representation.
@@ -188,14 +188,14 @@ struct FP8(Stringable, Representable, Copyable, Movable):
 
         Returns:.            String representation.
         """
-        return "FP8(" + str(self.to_float32()) + ")"
+        return "FP8(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing both bits and value.
 
         Returns:.            Detailed string representation.
         """
-        return "FP8(bits=0x" + hex(self.value) + ", value=" + str(self.to_float32()) + ")"
+        return "FP8(bits=0x" + hex(self.value) + ", value=" + String(self.to_float32()) + ")"
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.

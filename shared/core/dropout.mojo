@@ -10,7 +10,6 @@ This helps prevent overfitting by randomly "dropping out" neurons.
 from .extensor import ExTensor, zeros_like, ones_like
 from .arithmetic import multiply, divide
 from .extensor import full_like
-from collections import List, Tuple
 import random
 
 

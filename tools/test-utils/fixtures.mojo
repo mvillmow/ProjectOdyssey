@@ -75,7 +75,7 @@ struct LinearModel:
     var in_features: Int
     var out_features: Int
 
-    fn __init__(mut self, in_features: Int, out_features: Int):
+    fn __init__(out self, in_features: Int, out_features: Int):
         """
         Initialize linear model.
 
