@@ -197,7 +197,10 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     else:
         @parameter
         if T == DType.float16:
-            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-Float32(x)))
+            # Upcast to Float32 for computation, then cast back
+            var x_f32 = Float32(x)
+            var result_f32 = Float32(1.0) / (Float32(1.0) + exp(-x_f32))
+            return Scalar[T](result_f32)
         else:
             return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
 
