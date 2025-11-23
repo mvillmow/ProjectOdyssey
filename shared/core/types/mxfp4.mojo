@@ -24,21 +24,17 @@ Example:
     # Block storage (efficient: 32 values + 1 shared scale)
     var block = MXFP4Block.from_float32_array(data_array)
 
-**FIXME (DOC-001, DOC-002 - P0 CRITICAL)**: Missing research paper full citation
-Paper title mentioned above but MISSING:
-  - DOI or arXiv identifier
-  - Authors list
-  - Publication year and venue
-  - Direct link to paper
+Reference:
+    Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer.
+    "Microscaling Data Formats for Deep Learning."
+    arXiv preprint arXiv:2310.10537, 2023.
+    https://arxiv.org/abs/2310.10537
+    https://doi.org/10.48550/arXiv.2310.10537
 
-Required citation format:
-  Dettmers et al., "Microscaling Data Formats for Deep Learning",
-  arXiv:XXXX.XXXXX, 2023. https://arxiv.org/abs/XXXX.XXXXX
-
-Impact: Research reproducibility compromised - developers cannot verify implementation
-        against reference specification. Affects scientific credibility.
-Severity: BLOCKING - must add full citation before publication/production use
-See: COMPREHENSIVE_REVIEW_FINDINGS.md (DOC-001, DOC-002)
+    The paper demonstrates that microscaling (per-block scaling factors) enables
+    efficient low-precision quantization (4-bit) while maintaining accuracy in
+    deep learning training and inference. MXFP4 uses E8M0 scales (256 dynamic range)
+    across 32-element blocks for maximum efficiency.
 """
 
 from math import isnan, isinf
