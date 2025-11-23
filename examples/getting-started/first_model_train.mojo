@@ -6,13 +6,35 @@ Usage:
     pixi run mojo run examples/getting-started/first_model_train.mojo
 
 See documentation: docs/getting-started/first_model.md
+
+FIXME: This example does not compile. Issues:
+1. API Mismatch: Imports Trainer, SGD, CrossEntropyLoss classes that do
+   NOT exist in shared.training. The actual library provides:
+   - Callback interface and schedulers
+   - No high-level Trainer class
+   - No optimizer classes (SGD, etc.)
+   - No built-in loss function classes
+
+2. Missing callbacks: EarlyStopping and ModelCheckpoint are exported but
+   need to be used differently (they exist in shared.training.callbacks)
+
+3. Module dependencies: Imports from 'model' and 'prepare_data' modules
+   that don't exist. Also depends on first_model_model.mojo which doesn't
+   compile.
+
+4. Data loading issue: BatchLoader has struct inheritance issues in the
+   library itself (cascading dependency failure)
+
+This example needs complete redesign to use actual functional API and
+would require implementing helper modules for data preparation.
 """
 
-from shared.training import Trainer, SGD, CrossEntropyLoss
-from shared.training.callbacks import EarlyStopping, ModelCheckpoint
-from shared.data import BatchLoader
-from model import DigitClassifier
-from prepare_data import prepare_mnist
+# FIXME: These imports don't exist in shared library
+# from shared.training import Trainer, SGD, CrossEntropyLoss
+# from shared.training.callbacks import EarlyStopping, ModelCheckpoint
+# from shared.data import BatchLoader
+# from model import DigitClassifier
+# from prepare_data import prepare_mnist
 
 
 fn main() raises:

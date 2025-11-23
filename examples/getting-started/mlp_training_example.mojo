@@ -11,9 +11,31 @@ Architecture:
 
 This example trains on synthetic XOR-like data to demonstrate that the training
 pipeline is fully functional.
+
+FIXME: This example has multiple compilation issues:
+1. Import error: `from collections.vector import DynamicVector` uses outdated
+   import path. Mojo stdlib changed - need to verify correct path.
+
+2. Missing exports: `mean` and `mean_backward` functions are not exported
+   from shared.core/__init__.mojo even though they're referenced in imports.
+   Check if they exist in shared.core.reduction or similar module.
+
+3. Syntax errors: Uses `let` keyword for variable declaration (lines 106-108, 222-224, 257-260).
+   Mojo requires `var` for variables. Also uses `let` in parameter positions
+   which is incorrect syntax.
+
+4. Type system issue: ExTensor assignment on line 40 fails because ExTensor
+   cannot be implicitly copied (needs explicit move or borrowing).
+
+5. Return type syntax: Function returns `(ExTensor, ExTensor)` on line 44
+   which may need proper tuple syntax handling.
+
+This example is closest to working - syntax fixes and export verification
+should allow it to compile and run.
 """
 
-from collections.vector import DynamicVector
+# FIXME: Check correct import path for DynamicVector
+# from collections.vector import DynamicVector
 from shared.core import (
     ExTensor, DType,
     # Creation

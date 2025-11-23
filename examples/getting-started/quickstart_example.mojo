@@ -7,11 +7,28 @@ Usage:
     pixi run mojo run examples/getting-started/quickstart_example.mojo
 
 See documentation: docs/getting-started/quickstart.md
+
+FIXME: This example does not compile. Issues:
+1. API Mismatch: Examples import Layer, Sequential, Trainer, SGD, TensorDataset
+   which are NOT exported from shared library. The actual library provides:
+   - Pure functional API (ExTensor, add(), matmul(), relu(), etc.)
+   - No high-level Layer/Sequential classes
+   - No Trainer or optimizer classes
+   - Use ExTensorDataset instead of TensorDataset
+
+2. Data loading issue: BatchLoader inherits from BaseLoader which is not
+   supported in Mojo (structs cannot inherit)
+
+3. Type mismatch: Code uses Tensor but library exports ExTensor
+
+This example needs complete redesign to use actual functional API.
+See mlp_training_example.mojo for correct usage pattern.
 """
 
-from shared.core import Layer, Sequential
-from shared.training import Trainer, SGD
-from shared.data import TensorDataset, BatchLoader
+# FIXME: Remove these imports - they don't exist in shared library
+# from shared.core import Layer, Sequential
+# from shared.training import Trainer, SGD
+# from shared.data import TensorDataset, BatchLoader
 
 
 fn main() raises:
