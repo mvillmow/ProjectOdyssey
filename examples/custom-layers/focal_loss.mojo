@@ -22,7 +22,7 @@ struct FocalLoss:
     var alpha: Float64  # Weighting factor
     var gamma: Float64  # Focusing parameter
 
-    fn __init__(mut self, alpha: Float64 = 0.25, gamma: Float64 = 2.0):
+    fn __init__(out self, alpha: Float64 = 0.25, gamma: Float64 = 2.0):
         self.alpha = alpha
         self.gamma = gamma
 
@@ -40,7 +40,7 @@ struct FocalLoss:
         var num_classes = predictions.shape[1]
 
         # Get predicted probabilities for true class
-        var p_t = Tensor.zeros(batch_size)
+        var p_t = Tensor.zeros(batch_size, DType.float32)
         for i in range(batch_size):
             var true_class = int(targets[i])
             p_t[i] = predictions[i, true_class]

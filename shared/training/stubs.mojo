@@ -23,8 +23,8 @@ from shared.training.base import (
 # ============================================================================
 
 
-@value
-struct MockTrainer:
+@fieldwise_init
+struct MockTrainer(Copyable, Movable):
     """Stub trainer for testing trainer interface contract.
 
     This minimal implementation provides just enough functionality.

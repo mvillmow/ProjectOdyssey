@@ -22,7 +22,7 @@ Issues covered:
 
 from math import exp, erf, sqrt, tanh as math_tanh
 from collections import List
-from .extensor import ExTensor
+from .extensor import ExTensor, full
 from .reduction import sum as tensor_sum, max as tensor_max
 from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
 from .gradient_types import GradientPair
@@ -998,12 +998,12 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
     from .elementwise import clip, abs as abs_fn
 
     # Stable softplus: sp(x) = max(0, x) + log(1 + exp(-|x|))
-    var zeros = ExTensor.from_scalar(0.0, tensor.dtype())
+    var zeros = full(tensor._shape, 0.0, tensor._dtype)
     var x_pos = clip(tensor, 0.0, 1e10)  # max(0, x)
     var x_abs = abs_fn(tensor)  # |x|
-    var neg_x_abs = multiply(x_abs, ExTensor.from_scalar(-1.0, tensor.dtype()))  # -|x|
+    var neg_x_abs = multiply(x_abs, full(x_abs._shape, -1.0, x_abs._dtype))  # -|x|
     var exp_neg_abs = exp(neg_x_abs)  # exp(-|x|)
-    var one_plus_exp = add(exp_neg_abs, ExTensor.from_scalar(1.0, tensor.dtype()))
+    var one_plus_exp = add(exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype))
     var log_term = log(one_plus_exp)
     var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
@@ -1127,9 +1127,9 @@ fn swish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     var sig = sigmoid(x)
 
     # Derivative: sigmoid(x) * (1 + x * (1 - sigmoid(x)))
-    var one_minus_sig = subtract(ExTensor.from_scalar(1.0, sig.dtype()), sig)
+    var one_minus_sig = subtract(full(sig._shape, 1.0, sig._dtype), sig)
     var x_term = multiply(x, one_minus_sig)
-    var one_plus_x_term = add(ExTensor.from_scalar(1.0, x_term.dtype()), x_term)
+    var one_plus_x_term = add(full(x_term._shape, 1.0, x_term._dtype), x_term)
     var derivative = multiply(sig, one_plus_x_term)
 
     # Apply chain rule
@@ -1161,9 +1161,9 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     var x_pos = clip(x, 0.0, 1e10)  # max(0, x)
     var x_abs = abs_fn(x)  # |x|
-    var neg_x_abs = multiply(x_abs, ExTensor.from_scalar(-1.0, x.dtype()))  # -|x|
+    var neg_x_abs = multiply(x_abs, full(x_abs._shape, -1.0, x_abs._dtype))  # -|x|
     var exp_neg_abs = exp(neg_x_abs)  # exp(-|x|)
-    var one_plus_exp = add(exp_neg_abs, ExTensor.from_scalar(1.0, x.dtype()))
+    var one_plus_exp = add(exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype))
     var log_term = log(one_plus_exp)
     var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
@@ -1178,7 +1178,7 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     # where sech²(y) = 1 - tanh²(y)
 
     var tanh_sq = multiply(tanh_sp, tanh_sp)
-    var sech_sq = subtract(ExTensor.from_scalar(1.0, tanh_sq.dtype()), tanh_sq)
+    var sech_sq = subtract(full(tanh_sq._shape, 1.0, tanh_sq._dtype), tanh_sq)
     var x_sech_sig = multiply(multiply(x, sech_sq), sig)
     var derivative = add(tanh_sp, x_sech_sig)
 

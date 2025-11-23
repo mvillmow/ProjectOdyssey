@@ -55,7 +55,7 @@ struct ConfusionMatrix:
     var class_names: List[String]
     var has_class_names: Bool
 
-    fn __init__(mut self, num_classes: Int, class_names: List[String] = List[String]()):
+    fn __init__(out self, num_classes: Int, class_names: List[String] = List[String]()):
         """Initialize NxN confusion matrix.
 
         Args:.            `num_classes`: Number of classes.

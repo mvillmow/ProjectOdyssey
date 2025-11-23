@@ -35,7 +35,6 @@ trait Sampler:
 # ============================================================================
 
 
-@fieldwise_init
 struct SequentialSampler(Sampler, Copyable, Movable):
     """Samples elements sequentially in order.
 
@@ -47,7 +46,7 @@ struct SequentialSampler(Sampler, Copyable, Movable):
     var end_index: Int
 
     fn __init__(
-        out self,
+        mut self,
         `data_source_len`: Int,
         `start_index`: Int = 0,
         `end_index`: Int = -1,
@@ -87,7 +86,6 @@ struct SequentialSampler(Sampler, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct RandomSampler(Sampler, Copyable, Movable):
     """Samples elements randomly without replacement.
 
@@ -100,7 +98,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
     var seed_value: Optional[Int]
 
     fn __init__(
-        out self,
+        mut self,
         data_source_len: Int,
         replacement: Bool = False,
         num_samples: Optional[Int] = None,
@@ -167,7 +165,6 @@ struct RandomSampler(Sampler, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct WeightedSampler(Sampler, Copyable, Movable):
     """Samples elements according to given weights.
 
@@ -180,7 +177,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
     var seed_value: Optional[Int]
 
     fn __init__(
-        out self,
+        mut self,
         owned weights: List[Float64],
         `num_samples`: Int,
         `replacement`: Bool = True,

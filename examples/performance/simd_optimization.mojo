@@ -46,7 +46,7 @@ fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
     var n = b.shape[1]
     var k = a.shape[1]
 
-    var result = Tensor.zeros(m, n)
+    var result = Tensor.zeros(m, n, DType.float32)
 
     alias simd_width = simdwidthof[DType.float32]()
 
@@ -84,8 +84,8 @@ fn main() raises:
     # Example 2: SIMD Batch Normalization
     print("\n2. SIMD Batch Normalization")
     var input_data = Tensor.randn(128, 256)
-    var mean = Tensor.zeros(256)
-    var variance = Tensor.ones(256)
+    var mean = Tensor.zeros(256, DType.float32)
+    var variance = Tensor.ones(256, DType.float32)
     print("Normalizing tensor of shape", input_data.shape, "...")
     batch_norm_simd(input_data, mean, variance)
     print("SIMD batch norm complete!")

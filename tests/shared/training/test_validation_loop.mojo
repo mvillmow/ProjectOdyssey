@@ -44,8 +44,8 @@ fn test_validation_loop_single_batch() raises:
     var validation_loop = ValidationLoop(model, loss_fn)
     #
     # Create single batch
-    var inputs = Tensor.ones(4, 10)
-    var targets = Tensor.zeros(4, 1)
+    var inputs = Tensor.ones(4, 10, DType.float32)
+    var targets = Tensor.zeros(4, 1, DType.float32)
     #
     # Get initial weights
     var initial_weights = model.get_weights().copy()

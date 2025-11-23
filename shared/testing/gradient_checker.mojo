@@ -38,6 +38,7 @@ References:
 """
 
 from shared.core import ExTensor, zeros_like
+from shared.core.reduction import sum as tensor_sum
 
 
 fn check_gradients(
@@ -116,12 +117,12 @@ fn check_gradients(
         # f(x + ε)
         input_copy_plus._set_float64(i, original_val + epsilon)
         var output_plus = forward_fn(input_copy_plus)
-        var sum_plus = output_plus.sum()
+        var sum_plus = tensor_sum(output_plus)
 
         # f(x - ε)
         input_copy_minus._set_float64(i, original_val - epsilon)
         var output_minus = forward_fn(input_copy_minus)
-        var sum_minus = output_minus.sum()
+        var sum_minus = tensor_sum(output_minus)
 
         # Numerical gradient: [f(x+ε) - f(x-ε)] / (2ε)
         var numerical = (sum_plus - sum_minus) / (2.0 * epsilon)
@@ -212,11 +213,11 @@ fn check_gradients_verbose(
 
             input_copy_plus._set_float64(i, original_val + epsilon)
             var output_plus = forward_fn(input_copy_plus)
-            var sum_plus = output_plus.sum()
+            var sum_plus = tensor_sum(output_plus)
 
             input_copy_minus._set_float64(i, original_val - epsilon)
             var output_minus = forward_fn(input_copy_minus)
-            var sum_minus = output_minus.sum()
+            var sum_minus = tensor_sum(output_minus)
 
             var numerical = (sum_plus - sum_minus) / (2.0 * epsilon)
             numerical_grad._set_float64(i, numerical)

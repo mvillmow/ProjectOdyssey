@@ -47,8 +47,8 @@ fn test_training_loop_single_batch() raises:
     var training_loop = TrainingLoop(model, optimizer, loss_fn)
     #
     # Create single batch
-    var inputs = Tensor.ones(4, 10)  # batch_size=4, input_dim=10
-    var targets = Tensor.zeros(4, 1)  # batch_size=4, output_dim=1
+    var inputs = Tensor.ones(4, 10, DType.float32)  # batch_size=4, input_dim=10
+    var targets = Tensor.zeros(4, 1, DType.float32)  # batch_size=4, output_dim=1
     #
     # Get initial weights
     var initial_weights = model.get_weights().copy()

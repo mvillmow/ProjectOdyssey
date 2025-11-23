@@ -541,7 +541,7 @@ fn log10(tensor: ExTensor) raises -> ExTensor:
     for i in range(numel):
         var val = tensor._get_float64(i)
         if val <= 0.0:
-            raise Error("log10 requires positive values, got " + str(val))
+            raise Error("log10 requires positive values, got " + String(val))
         # log10(x) = log(x) / log(10)
         result._set_float64(i, math_log(val) / math_log(10.0))
 
@@ -567,7 +567,7 @@ fn log2(tensor: ExTensor) raises -> ExTensor:
     for i in range(numel):
         var val = tensor._get_float64(i)
         if val <= 0.0:
-            raise Error("log2 requires positive values, got " + str(val))
+            raise Error("log2 requires positive values, got " + String(val))
         # log2(x) = log(x) / log(2)
         result._set_float64(i, math_log(val) / math_log(2.0))
 

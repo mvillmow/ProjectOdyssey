@@ -40,8 +40,8 @@ from math import isnan, isinf
 from .fp4 import FP4_E2M1
 
 
-@value
-struct E8M0Scale(Stringable, Representable):
+@fieldwise_init
+struct E8M0Scale(Stringable, Representable, Copyable, Movable):
     """8-bit exponent-only scale factor for MXFP4 blocks.
 
     Memory layout (1 byte):
@@ -55,7 +55,7 @@ struct E8M0Scale(Stringable, Representable):
     """
     var exponent: UInt8
 
-    fn __init__(mut self, exponent: UInt8 = 127):
+    fn __init__(out self, exponent: UInt8 = 127):
         """Initialize E8M0 scale from raw exponent.
 
         Args:.            exponent: 8-bit exponent value (bias = 127)
@@ -126,7 +126,7 @@ struct E8M0Scale(Stringable, Representable):
 
         Returns:.            String representation.
         """
-        return "E8M0(exp=" + str(self.exponent) + ", scale=" + str(self.to_float32()) + ")"
+        return "E8M0(exp=" + String(self.exponent) + ", scale=" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation.
@@ -136,8 +136,8 @@ struct E8M0Scale(Stringable, Representable):
         return self.__str__()
 
 
-@value
-struct MXFP4(Stringable, Representable):
+@fieldwise_init
+struct MXFP4(Stringable, Representable, Copyable, Movable):
     """MXFP4 individual value (E2M1 + E8M0 scale).
 
     Acts like FP16 but stores internally as 4-bit E2M1 value plus 8-bit E8M0 scale.
@@ -152,7 +152,7 @@ struct MXFP4(Stringable, Representable):
     var value: FP4_E2M1
     var scale: E8M0Scale
 
-    fn __init__(mut self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
+    fn __init__(out self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
         Args:.            `value`: E2M1 encoded value.
@@ -436,7 +436,7 @@ struct MXFP4(Stringable, Representable):
 
         Returns:.            String representation.
         """
-        return "MXFP4(" + str(self.to_float32()) + ")"
+        return "MXFP4(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Get representation string.
@@ -446,8 +446,8 @@ struct MXFP4(Stringable, Representable):
         return "MXFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
 
 
-@value
-struct MXFP4Block(Stringable, Representable):
+@fieldwise_init
+struct MXFP4Block(Stringable, Representable, Copyable, Movable):
     """MXFP4 block storage: 32 E2M1 values + 1 E8M0 scale (17 bytes total).
 
     Memory layout:
@@ -474,12 +474,12 @@ struct MXFP4Block(Stringable, Representable):
     var data: SIMD[DType.uint8, 16]  # 32 E2M1 values (2 per byte)
     var scale: E8M0Scale  # Shared E8M0 scale
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize MXFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 16](0)
         self.scale = E8M0Scale(127)  # Scale = 1.0
 
-    fn __init__(mut self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
+    fn __init__(out self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
         """Initialize MXFP4Block from packed data and scale.
 
         Args:
@@ -598,7 +598,7 @@ struct MXFP4Block(Stringable, Representable):
 
         return MXFP4(fp4_val, self.scale)
 
-    fn set(mut self, index: Int, value: MXFP4) raises:
+    fn set(mut self, index: Int, value: MXFP4) raises -> None:
         """Set MXFP4 value at index (0-31).
 
         Args:
@@ -638,7 +638,7 @@ struct MXFP4Block(Stringable, Representable):
         Returns:
             String representation
         """
-        return "MXFP4Block(32 values, scale=" + str(self.scale.to_float32()) + ")"
+        return "MXFP4Block(32 values, scale=" + String(self.scale.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation.

@@ -22,6 +22,8 @@ from shared.core import (
     xavier_uniform, xavier_normal,
     kaiming_uniform, kaiming_normal,
     uniform, normal, constant,
+    # Matrix operations
+    matmul,
     # Activations
     relu, sigmoid, tanh, softmax,
     # Loss functions
@@ -90,11 +92,11 @@ fn test_forward_pass_with_metrics() raises:
     var input = normal(input_shape, mean=0.0, std=1.0, seed_val=3)
 
     # Forward pass: input @ w1.T + b1
-    var h1 = input.matmul(w1)  # (5, 4)
+    var h1 = matmul(input, w1)  # (5, 4)
     var h1_act = relu(h1)
 
     # Second layer: h1 @ w2.T + b2
-    var output = h1_act.matmul(w2)  # (5, 3)
+    var output = matmul(h1_act, w2)  # (5, 3)
     var predictions = softmax(output)
 
     # Create fake labels
@@ -156,9 +158,9 @@ fn test_training_loop_simulation() raises:
                 labels._data.bitcast[Int32]()[i] = Int32((i + batch_idx) % output_dim)
 
             # Forward pass
-            var h1 = input.matmul(w1)
+            var h1 = matmul(input, w1)
             var h1_act = relu(h1)
-            var output = h1_act.matmul(w2)
+            var output = matmul(h1_act, w2)
             var predictions = softmax(output)
 
             # Compute loss (fake - just use small random value)
@@ -272,7 +274,7 @@ fn test_batch_processing_pipeline() raises:
             labels._data.bitcast[Int32]()[i] = Int32(i % num_classes)
 
         # Forward pass
-        var logits = input.matmul(weights)
+        var logits = matmul(input, weights)
         var predictions = softmax(logits)
 
         # Update metrics
@@ -329,13 +331,13 @@ fn test_multi_layer_network_integration() raises:
     labels._data.bitcast[Int32]()[3] = 0
 
     # Forward pass through 3 layers
-    var h1 = input.matmul(w1)  # (4, 256)
+    var h1 = matmul(input, w1)  # (4, 256)
     var h1_act = relu(h1)
 
-    var h2 = h1_act.matmul(w2)  # (4, 128)
+    var h2 = matmul(h1_act, w2)  # (4, 128)
     var h2_act = relu(h2)
 
-    var output = h2_act.matmul(w3)  # (4, 10)
+    var output = matmul(h2_act, w3)  # (4, 10)
     var predictions = softmax(output)
 
     # Compute metrics

@@ -102,7 +102,6 @@ fn join_words(words: List[String]) raises -> String:
 # ============================================================================
 
 
-@fieldwise_init
 struct RandomSwap(TextTransform, Copyable, Movable):
     """Randomly swap positions of word pairs.
 
@@ -162,7 +161,6 @@ struct RandomSwap(TextTransform, Copyable, Movable):
         return join_words(words)
 
 
-@fieldwise_init
 struct RandomDeletion(TextTransform, Copyable, Movable):
     """Randomly delete words from text.
 
@@ -221,7 +219,6 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
         return join_words(kept_words)
 
 
-@fieldwise_init
 struct RandomInsertion(TextTransform, Copyable, Movable):
     """Insert random words from vocabulary into text.
 
@@ -293,7 +290,6 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
         return join_words(words)
 
 
-@fieldwise_init
 struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     """Replace random words with synonyms from dictionary.
 
@@ -361,7 +357,6 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct TextCompose(TextTransform, Copyable, Movable):
     """Compose multiple text transforms sequentially.
 

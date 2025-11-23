@@ -18,8 +18,8 @@ Example:.    from shared.core.types.bf8 import BF8
 from math import isnan, isinf
 
 
-@value
-struct BF8(Stringable, Representable):
+@fieldwise_init
+struct BF8(Stringable, Representable, Copyable, Movable):
     """8-bit floating point number in E5M2 format.
 
     Memory layout (1 byte):
@@ -34,7 +34,7 @@ struct BF8(Stringable, Representable):
     """
     var value: UInt8
 
-    fn __init__(mut self, value: UInt8 = 0):
+    fn __init__(out self, value: UInt8 = 0):
         """Initialize BF8 from raw UInt8 bits.
 
         Args:.            `value`: Raw 8-bit representation.
@@ -189,14 +189,14 @@ struct BF8(Stringable, Representable):
 
         Returns:.            String representation.
         """
-        return "BF8(" + str(self.to_float32()) + ")"
+        return "BF8(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Detailed representation showing both bits and value.
 
         Returns:.            Detailed string representation.
         """
-        return "BF8(bits=0x" + hex(self.value) + ", value=" + str(self.to_float32()) + ")"
+        return "BF8(bits=0x" + hex(self.value) + ", value=" + String(self.to_float32()) + ")"
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.

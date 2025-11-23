@@ -372,7 +372,7 @@ struct AccuracyMetric:
     var correct_count: Int
     var total_count: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize with zero counts."""
         self.correct_count = 0
         self.total_count = 0

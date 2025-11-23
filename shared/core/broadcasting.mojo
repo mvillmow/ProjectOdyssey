@@ -3,8 +3,6 @@
 Implements NumPy-style broadcasting rules for tensor operations.
 """
 
-from collections import List, Tuple
-
 
 fn broadcast_shapes(
     shape1: List[Int], shape2: List[Int]

@@ -34,7 +34,6 @@ from shared.data.transforms import Transform
 # ============================================================================
 
 
-@fieldwise_init
 struct IdentityTransform(Transform, Copyable, Movable):
     """Identity transform - returns input unchanged.
 
@@ -63,7 +62,6 @@ struct IdentityTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct LambdaTransform(Transform, Copyable, Movable):
     """Apply a function element-wise to tensor values.
 

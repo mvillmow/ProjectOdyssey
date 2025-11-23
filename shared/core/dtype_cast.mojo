@@ -135,7 +135,7 @@ fn cast_from_bfloat16(tensor: ExTensor, target_dtype: DType = DType.float32) rai
         var fp32_params = cast_from_bfloat16(bf16_params)
     """
     if tensor.dtype() != DType.uint16:
-        raise Error("Expected uint16 tensor for BFloat16 storage, got: " + str(tensor.dtype()))
+        raise Error("Expected uint16 tensor for BFloat16 storage, got: " + String(tensor.dtype()))
 
     if target_dtype != DType.float32 and target_dtype != DType.float64 and target_dtype != DType.float16:
         raise Error("Target dtype must be floating point")

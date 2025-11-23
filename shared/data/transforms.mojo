@@ -83,7 +83,6 @@ trait Transform:
 # ============================================================================
 
 
-@fieldwise_init
 struct Compose(Transform, Copyable, Movable):
     """Compose multiple transforms sequentially.
 
@@ -135,7 +134,6 @@ alias Pipeline = Compose
 # ============================================================================
 
 
-@fieldwise_init
 struct ToExTensor(Transform, Copyable, Movable):
     """Convert data to tensor format.
 
@@ -158,7 +156,6 @@ struct ToExTensor(Transform, Copyable, Movable):
         return data
 
 
-@fieldwise_init
 struct Normalize(Transform, Copyable, Movable):
     """Normalize tensor with mean and standard deviation.
 
@@ -208,7 +205,6 @@ struct Normalize(Transform, Copyable, Movable):
         return ExTensor(normalized^)
 
 
-@fieldwise_init
 struct Reshape(Transform, Copyable, Movable):
     """Reshape tensor to target shape.
 
@@ -269,7 +265,6 @@ struct Reshape(Transform, Copyable, Movable):
 # ============================================================================
 
 
-@fieldwise_init
 struct Resize(Transform, Copyable, Movable):
     """Resize image to target size.
 
@@ -280,7 +275,7 @@ struct Resize(Transform, Copyable, Movable):
     var interpolation: String
 
     fn __init__(
-        out self, size: Tuple[Int, Int], interpolation: String = "bilinear"
+        mut self, size: Tuple[Int, Int], interpolation: String = "bilinear"
     ):
         """Create resize transform.
 
@@ -328,7 +323,6 @@ struct Resize(Transform, Copyable, Movable):
         return ExTensor(resized^)
 
 
-@fieldwise_init
 struct CenterCrop(Transform, Copyable, Movable):
     """Crop the center of an image.
 
@@ -391,7 +385,6 @@ struct CenterCrop(Transform, Copyable, Movable):
         return ExTensor(cropped^)
 
 
-@fieldwise_init
 struct RandomCrop(Transform, Copyable, Movable):
     """Random crop from an image.
 
@@ -487,7 +480,6 @@ struct RandomCrop(Transform, Copyable, Movable):
         return ExTensor(cropped^)
 
 
-@fieldwise_init
 struct RandomHorizontalFlip(Transform, Copyable, Movable):
     """Randomly flip image horizontally.
 
@@ -551,7 +543,6 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
         return ExTensor(flipped^)
 
 
-@fieldwise_init
 struct RandomVerticalFlip(Transform, Copyable, Movable):
     """Randomly flip image vertically.
 
@@ -615,7 +606,6 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
         return ExTensor(flipped^)
 
 
-@fieldwise_init
 struct RandomRotation(Transform, Copyable, Movable):
     """Randomly rotate image.
 
@@ -626,7 +616,7 @@ struct RandomRotation(Transform, Copyable, Movable):
     var fill_value: Float64
 
     fn __init__(
-        out self, degrees: Tuple[Float64, Float64], fill_value: Float64 = 0.0
+        mut self, degrees: Tuple[Float64, Float64], fill_value: Float64 = 0.0
     ):
         """Create random rotation transform.
 
@@ -714,7 +704,6 @@ struct RandomRotation(Transform, Copyable, Movable):
         return ExTensor(rotated^)
 
 
-@fieldwise_init
 struct RandomErasing(Transform, Copyable, Movable):
     """Randomly erase rectangular regions in images (Cutout augmentation).
 
@@ -730,11 +719,11 @@ struct RandomErasing(Transform, Copyable, Movable):
     var value: Float64  # Fill value (0 for black, can be random)
 
     fn __init__(
-        out self,
+        mut self,
         `p`: Float64 = 0.5,
         `scale`: Tuple[Float64, Float64] = (0.02, 0.33),
         `ratio`: Tuple[Float64, Float64] = (0.3, 3.3),
-        `value`: Float64 = 0.0.
+        `value`: Float64 = 0.0
     ):
         """Create random erasing transform.
 

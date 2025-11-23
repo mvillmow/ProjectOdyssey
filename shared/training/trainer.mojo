@@ -60,7 +60,7 @@ struct BaseTrainer(Trainer):
     var validation_loop: ValidationLoop
     var is_training: Bool
 
-    fn __init__(mut self, config: TrainerConfig):
+    fn __init__(out self, config: TrainerConfig):
         """Initialize base trainer.
 
         Args:.            `config`: Trainer configuration.
