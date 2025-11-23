@@ -157,7 +157,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
             for i in range(min(self.num_samples, self.data_source_len)):
                 indices.append(all_indices[i])
 
-        return indices
+        return indices^
 
 
 # ============================================================================
@@ -196,18 +196,18 @@ struct WeightedSampler(Sampler, Copyable, Movable):
         """
         # Validate weights
         var total_weight = Float64(0)
-        for w in weights:
-            if w[] < 0:
+        for i in range(len(weights)):
+            if weights[i] < 0:
                 raise Error("Weights must be non-negative")
-            total_weight += w[]
+            total_weight += weights[i]
 
         if total_weight == 0:
             raise Error("At least one weight must be positive")
 
         # Normalize weights
         self.weights = List[Float64](capacity=len(weights))
-        for w in weights:
-            self.weights.append(w[] / total_weight)
+        for i in range(len(weights)):
+            self.weights.append(weights[i] / total_weight)
 
         self.num_samples = num_samples
         self.replacement = replacement
@@ -231,8 +231,8 @@ struct WeightedSampler(Sampler, Copyable, Movable):
         # Build cumulative weights for sampling
         var cumsum = List[Float64](capacity=len(self.weights))
         var total = Float64(0)
-        for w in self.weights:
-            total += w[]
+        for i in range(len(self.weights)):
+            total += self.weights[i]
             cumsum.append(total)
 
         # Sample indices

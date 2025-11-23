@@ -41,7 +41,6 @@ from math import isnan, isinf
 # See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-010)
 
 
-@fieldwise_init
 struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
     """4-bit floating point number in E2M1 format.
 
