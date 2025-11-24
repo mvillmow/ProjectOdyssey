@@ -48,6 +48,7 @@ Analyze and fix all Mojo files in the `shared/` directory for Mojo v0.25.7+ comp
 **Issue**: Mojo v0.25.7+ deprecated `str()` function. Use `String()` instead.
 
 **Pattern**:
+
 ```mojo
 # Old (deprecated)
 var text = "Value: " + str(value)
@@ -57,6 +58,7 @@ var text = "Value: " + String(value)
 ```
 
 **Files Fixed**:
+
 - `shared/utils/config.mojo` - 8 occurrences
   - Line 91: Converting int list to string list
   - Lines 603-609: Writing YAML values
@@ -88,6 +90,7 @@ var text = "Value: " + String(value)
 **Status**: ✓ Verified both files have no actual tuple returns
 
 Files checked:
+
 - `shared/core/linear.mojo` - No tuple returns
 - `shared/core/pooling.mojo` - No tuple returns
 
@@ -172,16 +175,19 @@ All modified files passed verification:
 ## What Wasn't Changed (and Why)
 
 ### 1. Pointer Dereference Syntax (`ptr[]`)
+
 - ✓ Correct in v0.25.7+
 - Used throughout for `UnsafePointer` operations
 - Pattern: `var ptr = ...; var value = ptr[]; return ptr[].cast[T]()`
 
 ### 2. @fieldwise_init and Traits
+
 - ✓ Already using modern pattern where needed
 - Pattern: `struct Type(Copyable, Movable, ImplicitlyCopyable)`
 - No deprecated `@value` decorator found
 
 ### 3. Parameter Conventions
+
 - ✓ All already correct
 - `out self` in constructors
 - `mut self` in mutating methods
@@ -190,6 +196,7 @@ All modified files passed verification:
 ## Remaining Work
 
 ### Architecture Issues (Out of Scope)
+
 While fixing v0.25.7 compatibility, identified other issues that are not syntax-related:
 
 1. **Import Architecture**: Files use relative imports that may need restructuring

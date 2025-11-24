@@ -3,13 +3,17 @@
 ## Quick Navigation
 
 ### For Quick Fixes
+
 Start here: **[QUICK_START.md](QUICK_START.md)**
+
 - Step-by-step instructions with code snippets
 - 26 minutes to fix all issues
 - Ready-to-copy fixes for each file
 
 ### For Understanding Problems
+
 Read: **[README.md](README.md)**
+
 - Executive summary of all failures
 - Comprehensive error categorization
 - Root cause analysis for each error type
@@ -17,7 +21,9 @@ Read: **[README.md](README.md)**
 - Estimated fix time and priorities
 
 ### For Technical Deep-Dive
+
 Reference: **[ERROR_CATALOG.md](ERROR_CATALOG.md)**
+
 - Complete error messages and locations
 - Detailed code examples showing the problem
 - Multiple solution approaches
@@ -47,7 +53,7 @@ Reference: **[ERROR_CATALOG.md](ERROR_CATALOG.md)**
 ### By Severity
 
 1. **CRITICAL** (Must fix first)
-   - ExTensor.__init__ using `mut` instead of `out` (8 errors)
+   - ExTensor.**init** using `mut` instead of `out` (8 errors)
    - ExTensor not ImplicitlyCopyable (7 errors)
 
 2. **HIGH** (Enables most tests)
@@ -67,7 +73,7 @@ Reference: **[ERROR_CATALOG.md](ERROR_CATALOG.md)**
 | Error Type | Count | Category | File |
 |------------|-------|----------|------|
 | DType not Comparable | 17 | HIGH | conftest.mojo, test_tensors.mojo |
-| ExTensor __init__ | 8 | CRITICAL | extensor.mojo |
+| ExTensor **init** | 8 | CRITICAL | extensor.mojo |
 | ExTensor ImplicitlyCopyable | 7 | CRITICAL | extensor.mojo |
 | exp() type inference | 4 | MEDIUM | activation.mojo |
 | Float64 vs Float32 | 4 | MEDIUM | conftest.mojo |
@@ -80,15 +86,18 @@ Reference: **[ERROR_CATALOG.md](ERROR_CATALOG.md)**
 ## Files Requiring Changes
 
 ### Priority 1 - CRITICAL (3 minutes)
+
 - `shared/core/extensor.mojo` - 3 changes (lines 43, 89, 149)
 
 ### Priority 2 - HIGH (13 minutes)
+
 - `tests/shared/conftest.mojo` - 2 additions
 - `shared/core/elementwise.mojo` - 1 change (lines 25-32)
 - `tests/shared/core/test_tensors.mojo` - 17 updates
 - `shared/core/activation.mojo` - 2 type hints (lines 1008, 1168)
 
 ### Priority 3 - MEDIUM (9 minutes)
+
 - `tests/shared/core/test_activations.mojo` - 2 fixes (lines 215, 700)
 
 ---
@@ -96,25 +105,32 @@ Reference: **[ERROR_CATALOG.md](ERROR_CATALOG.md)**
 ## Reading Guide by Role
 
 ### I want to fix this quickly
+
 → Read: **[QUICK_START.md](QUICK_START.md)**
+
 - Copy-paste ready code snippets
 - Step-by-step checklist
 - Verification commands
 
 ### I need to understand what went wrong
+
 → Read: **[README.md](README.md)** sections:
+
 - Executive Summary
 - Categorized Error Analysis (sections 1-8)
 - Recommended Fix Order
 
 ### I need implementation details
+
 → Read: **[ERROR_CATALOG.md](ERROR_CATALOG.md)** for:
+
 - Specific error messages
 - Exact line numbers and code
 - Root cause explanations
 - Multiple solution options
 
 ### I'm implementing a fix
+
 → Use: **[QUICK_START.md](QUICK_START.md)** Step X (matching the error)
 Then verify with: **[ERROR_CATALOG.md](ERROR_CATALOG.md)** Error Type X (for details)
 
@@ -136,11 +152,13 @@ TOTAL                               57    BLOCKED
 ```
 
 ### Status Legend
+
 - **BLOCKED**: Cannot compile (0 tests executed)
 - **FAILED**: Compiled but tests failed (0 occurrences)
 - **PASSED**: All tests passed (0 occurrences)
 
 ### No Runtime Execution
+
 All failures occurred at **compilation stage** - no Mojo test runner executed.
 
 ---
@@ -159,6 +177,7 @@ All failures occurred at **compilation stage** - no Mojo test runner executed.
 | **TOTAL** | ~33 min | Full resolution |
 
 ### Critical Path
+
 1. extensor.mojo (3 min) - Blocks everything else
 2. conftest.mojo (5 min) - Enables 17 tensor tests
 3. elementwise.mojo (3 min) - Enables element-wise ops
@@ -172,21 +191,25 @@ All failures occurred at **compilation stage** - no Mojo test runner executed.
 ## Key Findings
 
 ### Root Cause
+
 Mojo v0.25.7+ introduced breaking changes to initialization methods and trait requirements. The codebase uses deprecated v0.24 syntax in core libraries.
 
 ### Impact Assessment
+
 - **No tests execute** - all fail at compilation
 - **No data loss** - all changes are syntax updates
 - **No logic changes** - fixes only update to current Mojo version
 - **Low risk** - straightforward upgrades to new syntax
 
 ### Why This Matters
+
 - Core tests cannot validate functionality
 - Integration tests likely blocked as well
 - CI/CD pipeline won't pass
 - Code cannot be deployed until fixed
 
 ### Why It's Easy to Fix
+
 - All issues are simple syntax/API updates
 - No algorithmic changes needed
 - Clear error messages point to exact locations
@@ -229,11 +252,13 @@ Step 4: Commit changes
 ## Related Documentation
 
 ### In This Project
+
 - `/home/mvillmow/ml-odyssey/CLAUDE.md` - Mojo syntax standards (section on v0.25.7+)
 - `/home/mvillmow/ml-odyssey/.claude/` - Agent configuration
 - `/home/mvillmow/ml-odyssey/notes/review/` - Comprehensive architectural docs
 
 ### External References
+
 - [Mojo Manual: Types](https://docs.modular.com/mojo/manual/types)
 - [Mojo Manual: Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
 - [Mojo Changelog v0.25.7](https://docs.modular.com/mojo/changelog)
@@ -243,7 +268,9 @@ Step 4: Commit changes
 ## Questions?
 
 ### Quick questions → Check [QUICK_START.md](QUICK_START.md) Step X
+
 ### Detailed explanation → Check [README.md](README.md) Error Category X
+
 ### Technical deep-dive → Check [ERROR_CATALOG.md](ERROR_CATALOG.md) Error Type X
 
 ---
@@ -255,4 +282,3 @@ Step 4: Commit changes
 **Analysis of**: Core test suites (test_layers, test_activations, test_advanced_activations, test_tensors)
 **Status**: Complete analysis with fix recommendations
 **Next Step**: Begin implementation from QUICK_START.md
-

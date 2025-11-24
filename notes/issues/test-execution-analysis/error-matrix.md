@@ -62,6 +62,7 @@ Utility Tests (6 files)
 ### CRITICAL ERRORS (Block Compilation)
 
 #### shared/core/extensor.mojo
+
 ```
 Line 89:  fn __init__(mut self, ...) → Change to: out self
 Line 149: fn __copyinit__(mut self, ...) → Change to: out self
@@ -70,6 +71,7 @@ Impact: Blocks ALL tests that use ExTensor
 ```
 
 #### shared/training/metrics/base.mojo
+
 ```
 Line 59:  fn __init__(mut self, name: String, value: Float64) → out self
 Line 220: fn __init__(mut self) → out self
@@ -78,6 +80,7 @@ Impact: Blocks ALL metrics-dependent tests
 ```
 
 #### shared/training/metrics/accuracy.mojo
+
 ```
 Line 377: fn __init__(mut self) → out self
 Status: 1 change needed
@@ -85,6 +88,7 @@ Impact: Blocks accuracy metric tests
 ```
 
 #### shared/training/metrics/loss_tracker.mojo
+
 ```
 Line 231: fn __init__(mut self, window_size: Int = 100) → out self
 Status: 1 change needed
@@ -92,6 +96,7 @@ Impact: Blocks loss tracking tests
 ```
 
 #### shared/training/metrics/confusion_matrix.mojo
+
 ```
 Line 58: fn __init__(mut self, num_classes: Int, ...) → out self
 Status: 1 change needed
@@ -99,6 +104,7 @@ Impact: Blocks confusion matrix tests
 ```
 
 #### shared/core/types/fp8.mojo
+
 ```
 Line 36: fn __init__(mut self, value: UInt8 = 0) → out self
 Line 87: var mantissa = int(abs_x * 128.0) → Int(abs_x * 128.0)
@@ -107,6 +113,7 @@ Impact: Blocks FP8 type usage in data tests
 ```
 
 #### shared/core/types/integer.mojo
+
 ```
 Line 39: fn __init__(mut self, value: Int8) → out self
 Status: 1 change needed
@@ -114,6 +121,7 @@ Impact: Blocks Int8 type usage
 ```
 
 #### shared/core/types/mxfp4.mojo
+
 ```
 Line 57:  fn __init__(mut self, exponent: UInt8 = 127) → out self
 Line 103: biased_exp.cast[DType.uint8]() → UInt8(biased_exp)
@@ -123,6 +131,7 @@ Impact: Blocks MXFP4 type usage in data tests
 ```
 
 #### shared/core/types/nvfp4.mojo
+
 ```
 Line 65:  fn __init__(mut self, value: UInt8 = 0x38) → out self
 Line 94:  var mantissa = int(scale * 512.0) → Int(scale * 512.0)
@@ -134,6 +143,7 @@ Impact: Blocks NVFP4 type usage in data tests
 ### HIGH PRIORITY (Block Specific Test Suites)
 
 #### tests/integration/test_all_architectures.mojo
+
 ```
 Line 49: Invalid List mutation pattern
 Pattern:
@@ -153,6 +163,7 @@ Impact: Blocks entire integration test suite
 ```
 
 #### tests/test_data_integrity.mojo
+
 ```
 Lines 30, 51, 82, 107, 129, 190, 204, 233, 254:
   assert condition, "message" → Invalid syntax in v0.25.7+
@@ -171,6 +182,7 @@ Impact: Blocks data integrity test execution
 ### MEDIUM PRIORITY (Test Infrastructure)
 
 #### tests/shared/utils/test_*.mojo (6 files)
+
 ```
 All files lack main() function
 Files:
@@ -236,42 +248,51 @@ Update CI/CD workflow         | Medium | Medium
 ### Must Fix First (Blocks Everything)
 
 1. **ExTensor constructor (2 changes)**
+
    ```
    shared/core/extensor.mojo:89,149
    fn __init__(mut self → out self
    ```
+
    Once fixed: 50% of tests can compile
 
 2. **Metric constructors (5 changes)**
+
    ```
    shared/training/metrics/*.mojo
    All fn __init__(mut self → out self
    ```
+
    Once fixed: 80% of tests can compile
 
 3. **Numeric type constructors (7 changes)**
+
    ```
    shared/core/types/*.mojo
    All fn __init__(mut self → out self
    ```
+
    Once fixed: 90% of tests can compile
 
 ### Then Fix (Unblock Specific Tests)
 
-4. **List mutation in integration test (1 change)**
+1. **List mutation in integration test (1 change)**
+
    ```
    tests/integration/test_all_architectures.mojo:49
    Restructure List building
    ```
 
-5. **Deprecated int() calls (2 changes)**
+2. **Deprecated int() calls (2 changes)**
+
    ```
    shared/core/types/fp8.mojo:87
    shared/core/types/nvfp4.mojo:94
    int() → Int()
    ```
 
-6. **Type casting API (1 change)**
+3. **Type casting API (1 change)**
+
    ```
    shared/core/types/mxfp4.mojo:103
    .cast[DType.uint8]() → UInt8()
@@ -279,19 +300,22 @@ Update CI/CD workflow         | Medium | Medium
 
 ### Finally Address (Infrastructure)
 
-7. **Test framework issues (6+ files)**
+1. **Test framework issues (6+ files)**
+
    ```
    Add main() or test runner
    6 utility test files
    ```
 
-8. **Type conversion issues (2 changes)**
+2. **Type conversion issues (2 changes)**
+
    ```
    tests/test_data_integrity.mojo:181,167
    Explicit Float conversions
    ```
 
-9. **Assertion syntax (12+ instances)**
+3. **Assertion syntax (12+ instances)**
+
    ```
    tests/test_data_integrity.mojo
    Update to v0.25.7+ syntax
@@ -367,4 +391,3 @@ Priority | Error Type              | Count | Status
    - Expected outcome: All utility tests can run
 
 **Total estimated time**: 40-50 minutes for all compilation errors
-

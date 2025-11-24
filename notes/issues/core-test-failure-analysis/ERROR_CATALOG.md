@@ -9,6 +9,7 @@ This document provides the complete technical breakdown of all 57 compilation er
 ## Error Type 1: ExTensor Initialization (8 errors)
 
 ### Error Message
+
 ```
 __init__ method must return Self type with 'out' argument
 ```
@@ -16,12 +17,14 @@ __init__ method must return Self type with 'out' argument
 ### Severity: CRITICAL
 
 ### Locations
+
 1. `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo:89` - `__init__` method
 2. `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo:149` - `__copyinit__` method
 
 Both methods appear in 4 test files each, creating 8 total errors (1 per inclusion).
 
 ### Current Code (extensor.mojo)
+
 ```mojo
 # Line 89
 fn __init__(mut self, shape: List[Int], dtype: DType) raises:
@@ -35,10 +38,13 @@ fn __copyinit__(mut self, existing: Self):
 ```
 
 ### Root Cause
+
 Mojo v0.25.7+ deprecated `mut self` in initialization methods. The required syntax is `out self` which explicitly indicates ownership is being transferred to the new object being initialized.
 
 ### Fix
+
 Replace `mut self` with `out self`:
+
 ```mojo
 # Line 89 - FIXED
 fn __init__(out self, shape: List[Int], dtype: DType) raises:
@@ -52,7 +58,9 @@ fn __copyinit__(out self, existing: Self):
 ```
 
 ### Why This Matters
+
 Without `out`, Mojo cannot properly track ownership. The `out` parameter means:
+
 - The method takes ownership of `self`
 - The method must initialize all fields of `self`
 - After return, `self` is properly constructed
@@ -62,6 +70,7 @@ Without `out`, Mojo cannot properly track ownership. The `out` parameter means:
 ## Error Type 2: DType Not Comparable (17 errors)
 
 ### Error Message
+
 ```
 invalid call to 'assert_equal': failed to infer parameter 'T', argument type 'DType'
 does not conform to trait 'Comparable'
@@ -72,6 +81,7 @@ does not conform to trait 'Comparable'
 ### Count: 17 instances
 
 ### Specific Locations in test_tensors.mojo
+
 ```
 Line 172:  assert_equal(y.dtype(), DType.float32)
 Line 194:  assert_equal(y.dtype(), DType.float64)
@@ -93,10 +103,13 @@ Line 373:  assert_equal(t_u64.dtype(), DType.uint64)
 ```
 
 ### Root Cause
+
 The generic assertion function `assert_equal[T: Comparable]` requires type T to conform to the `Comparable` trait. `DType` is an enum that does not conform to this trait (Mojo enums don't automatically implement comparison traits).
 
 ### Original assert_equal Definition
+
 Location: `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo:46`
+
 ```mojo
 fn assert_equal[T: Comparable](a: T, b: T, message: String = "") raises:
     """Assert exact equality of two values."""
@@ -108,6 +121,7 @@ fn assert_equal[T: Comparable](a: T, b: T, message: String = "") raises:
 ### Solution 1: Add Specialized DType Function
 
 Add to `conftest.mojo` after line 78:
+
 ```mojo
 fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
     """Assert exact equality of DType values."""
@@ -117,6 +131,7 @@ fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
 ```
 
 Then update all 17 calls in `test_tensors.mojo`:
+
 ```mojo
 # BEFORE
 assert_equal(y.dtype(), DType.float32)
@@ -134,6 +149,7 @@ This would require modifying core Mojo types which is not practical. Solution 1 
 ## Error Type 3: ExTensor Not ImplicitlyCopyable (7 errors)
 
 ### Error Message
+
 ```
 value of type 'ExTensor' cannot be implicitly copied, it does not conform to
 'ImplicitlyCopyable'
@@ -146,23 +162,27 @@ value of type 'ExTensor' cannot be implicitly copied, it does not conform to
 ### Specific Locations
 
 **test_activations.mojo:**
+
 ```
 Line 206:  fn forward(inp: ExTensor) raises -> ExTensor:
 Line 213:  fn backward_input(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
 ```
 
 **gradient_checking.mojo (included from test_activations.mojo):**
+
 ```
 Line 221:  fn scaled_forward(inp: ExTensor) raises -> ExTensor:
 ```
 
 **activation.mojo (included indirectly):**
+
 ```
 Line 1088: return result
 Line 1259: return result
 ```
 
 **Related cascading errors from type synthesis:**
+
 ```
 test_activations.mojo:206  - cannot synthesize __copyinit__ (field 'field0')
 test_activations.mojo:213  - cannot synthesize __copyinit__ (field 'field0')
@@ -172,11 +192,13 @@ gradient_checking.mojo:221 - cannot synthesize __copyinit__ (field 'field1')
 ### Root Cause
 
 ExTensor is declared as:
+
 ```mojo
 struct ExTensor(Copyable, Movable):
 ```
 
 This means ExTensor can be copied, but Mojo v0.25.7+ distinguishes between:
+
 - **`Copyable`**: Can be explicitly copied via `.copy()` method or `^` operator
 - **`ImplicitlyCopyable`**: Can be copied implicitly (like built-in types)
 
@@ -206,11 +228,13 @@ note: you can copy it explicitly with '.copy()'
 File: `shared/core/extensor.mojo:43`
 
 **BEFORE:**
+
 ```mojo
 struct ExTensor(Copyable, Movable):
 ```
 
 **AFTER:**
+
 ```mojo
 struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 ```
@@ -220,6 +244,7 @@ This is the simplest fix. ExTensor already implements copy semantics through `__
 **Solution 2: Use Ownership Transfer (NOT RECOMMENDED)**
 
 Modify function signatures to use `^` operator:
+
 ```mojo
 fn forward(inp: ExTensor^) raises -> ExTensor:
     # inp is moved, caller loses access
@@ -230,6 +255,7 @@ This would require changes throughout the codebase and complicates API.
 **Solution 3: Use Reference Semantics (NOT RECOMMENDED)**
 
 Use borrowed references:
+
 ```mojo
 fn forward(ref inp: ExTensor) raises -> ExTensor:
 ```
@@ -237,6 +263,7 @@ fn forward(ref inp: ExTensor) raises -> ExTensor:
 This changes the API contract.
 
 ### Recommended Fix
+
 Update line 43 of `extensor.mojo` to add `ImplicitlyCopyable` trait. This enables seamless parameter passing and return values.
 
 ---
@@ -244,6 +271,7 @@ Update line 43 of `extensor.mojo` to add `ImplicitlyCopyable` trait. This enable
 ## Error Type 4: exp() Type Inference (4 errors)
 
 ### Error Message
+
 ```
 no matching function in call to 'exp'
 ```
@@ -255,6 +283,7 @@ no matching function in call to 'exp'
 ### Specific Locations
 
 **activation.mojo:**
+
 ```
 Line 1008: var exp_neg_abs = exp(neg_x_abs)  # In selu_forward()
            ~~~^~~~~~~~~~~
@@ -284,6 +313,7 @@ argument type 'ExTensor' does not conform to trait '_Expable'
 ### Root Cause
 
 The `exp()` function in `elementwise.mojo:86` expects an `ExTensor`:
+
 ```mojo
 fn exp(tensor: ExTensor) raises -> ExTensor:
     """Exponential function element-wise (e^x)."""
@@ -291,6 +321,7 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
 ```
 
 The variables `neg_x_abs` (lines 1008, 1168) are ExTensor results from operations like:
+
 ```mojo
 var neg_x_abs = -(abs(x))  # Line 1007 in selu_forward
 var neg_x_abs = -(abs(x))  # Line 1167 in celu_forward
@@ -321,6 +352,7 @@ fn celu_forward(x: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 ### Solution
 
 Add explicit type annotation:
+
 ```mojo
 # BEFORE
 var neg_x_abs = -(abs(x))
@@ -333,6 +365,7 @@ var exp_neg_abs: ExTensor = exp(neg_x_abs)
 ```
 
 Or simplify to one line:
+
 ```mojo
 var exp_neg_abs = exp(-(abs(x)))
 ```
@@ -346,6 +379,7 @@ Mojo's type inference for operator results on custom types (like ExTensor) somet
 ## Error Type 5: Float64 vs Float32 Assertion Mismatch (4 errors)
 
 ### Error Message
+
 ```
 invalid call to 'assert_almost_equal': argument #0 cannot be converted from
 'Float64' to 'Float32'
@@ -358,6 +392,7 @@ invalid call to 'assert_almost_equal': argument #0 cannot be converted from
 ### Specific Locations
 
 **test_activations.mojo:**
+
 ```
 Line 722: assert_almost_equal(y._data.bitcast[Float64]()[0], 0.0, tolerance=1e-10)
 Line 723: assert_almost_equal(y._data.bitcast[Float64]()[1], 1.0, tolerance=1e-10)
@@ -365,6 +400,7 @@ Line 736: assert_almost_equal(y._data.bitcast[Float64]()[0], 0.5, tolerance=1e-1
 ```
 
 **test_tensors.mojo:**
+
 ```
 Line 198: assert_almost_equal(y._data.bitcast[Float64]()[i], 1.0, tolerance=1e-10)
 ```
@@ -372,6 +408,7 @@ Line 198: assert_almost_equal(y._data.bitcast[Float64]()[i], 1.0, tolerance=1e-1
 ### Current assert_almost_equal Definition
 
 Location: `tests/shared/conftest.mojo:80`
+
 ```mojo
 fn assert_almost_equal(
     a: Float32, b: Float32, tolerance: Float32 = 1e-6, message: String = ""
@@ -394,6 +431,7 @@ Mojo's type system is strict: `Float64` cannot be implicitly converted to `Float
 ### Solution: Add Float64 Overload
 
 Add to `conftest.mojo` after the existing `assert_almost_equal`:
+
 ```mojo
 fn assert_almost_equal(
     a: Float64, b: Float64, tolerance: Float64 = 1e-6, message: String = ""
@@ -412,6 +450,7 @@ The test code can then remain unchanged - Mojo's overload resolution will select
 ### Why Both Versions
 
 Different contexts require different precision:
+
 - `Float32`: Standard assertions for float32 tensors (precision: ~1e-6)
 - `Float64`: Higher precision assertions for double-precision comparisons (precision: ~1e-10)
 
@@ -422,6 +461,7 @@ Different contexts require different precision:
 ### Error 6a: elu_backward Parameter Mismatch
 
 ### Error Message
+
 ```
 invalid call to 'elu_backward': argument passed both as positional and keyword
 operand: 'alpha'
@@ -430,22 +470,26 @@ operand: 'alpha'
 **Location**: `test_activations.mojo:700`
 
 **Code**:
+
 ```mojo
 return elu_backward(grad, inp, out, alpha=1.0)
                                       ^^^^^^^^^ Error here
 ```
 
 **Function Definition** (activation.mojo:1192):
+
 ```mojo
 fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 ```
 
 **Root Cause**: The function signature has 3 parameters:
+
 1. `grad_output`
 2. `x`
 3. `alpha` (with default)
 
 But the test passes 4 arguments:
+
 1. `grad` → `grad_output`
 2. `inp` → `x`
 3. `out` → ??? (not in signature)
@@ -454,6 +498,7 @@ But the test passes 4 arguments:
 The `out` argument doesn't exist in the function signature.
 
 **Fix**:
+
 ```mojo
 # BEFORE (WRONG)
 return elu_backward(grad, inp, out, alpha=1.0)
@@ -465,6 +510,7 @@ return elu_backward(grad, inp, alpha=1.0)
 ### Error 6b: check_gradient Closure Signature
 
 ### Error Message
+
 ```
 invalid call to 'check_gradient': argument #0 cannot be converted from
 'fn(inp: ExTensor) raises escaping -> ExTensor' to
@@ -474,6 +520,7 @@ invalid call to 'check_gradient': argument #0 cannot be converted from
 **Location**: `test_activations.mojo:217`
 
 **Code**:
+
 ```mojo
 fn forward(inp: ExTensor) raises -> ExTensor:
     return tanh(inp)
@@ -487,6 +534,7 @@ check_gradient(forward, backward_input, x, grad_out, rtol=1e-4, atol=1e-7)
 ```
 
 **check_gradient Definition** (gradient_checking.mojo:178):
+
 ```mojo
 fn check_gradient(
     forward: fn(ExTensor) raises -> ExTensor,
@@ -498,6 +546,7 @@ fn check_gradient(
 **Root Cause**: The nested functions are defined inside the test function, capturing local variables. This makes them "escaping" closures with different type signatures than standalone functions.
 
 Mojo's function type system distinguishes:
+
 - `fn(ExTensor) raises -> ExTensor` - standalone function
 - `fn(inp: ExTensor) raises escaping -> ExTensor` - nested function with captures
 
@@ -514,6 +563,7 @@ The `escaping` keyword indicates the function escapes the local scope.
 ## Error Type 7: Scalar abs() Wrong Function (4 errors)
 
 ### Error Message
+
 ```
 invalid call to 'abs': argument #0 cannot be converted from 'Float32/Float64'
 to 'ExTensor'
@@ -526,6 +576,7 @@ to 'ExTensor'
 ### Specific Locations
 
 **elementwise.mojo:30-32** - In `_abs_op` function:
+
 ```mojo
 @always_inline
 fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
@@ -540,6 +591,7 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 ### Root Cause
 
 The code is calling `abs(Float32(x))` where:
+
 - `Float32(x)` creates a Float32 scalar
 - But `abs()` is overloaded to expect `ExTensor` (from elementwise.mojo:35)
 
@@ -556,6 +608,7 @@ So calling `abs(Float32(...))` fails because Float32 is not ExTensor.
 Use Mojo's built-in `abs()` for scalars or implement scalar absolute value directly:
 
 **Option 1: Direct Implementation (RECOMMENDED)**
+
 ```mojo
 @always_inline
 fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
@@ -567,6 +620,7 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 ```
 
 **Option 2: Use Math Library**
+
 ```mojo
 from math import abs as math_abs
 
@@ -581,6 +635,7 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 ```
 
 **Option 3: Use Scalar Method**
+
 ```mojo
 # Mojo scalars have built-in abs
 return x.abs()
@@ -594,9 +649,10 @@ Overloading `abs()` for both `ExTensor` and scalars without proper disambiguatio
 
 ## Error Type 8: Type System Synthesis (3 errors)
 
-### Error 8a: Cannot Synthesize __copyinit__
+### Error 8a: Cannot Synthesize **copyinit**
 
 ### Error Message
+
 ```
 cannot synthesize __copyinit__ because field 'field0' has non-copyable type
 'ExTensor'
@@ -605,6 +661,7 @@ cannot synthesize __copyinit__ because field 'field0' has non-copyable type
 ### Severity: LOW (symptom of Error Type 3)
 
 ### Locations
+
 ```
 test_activations.mojo:206  - forward function
 test_activations.mojo:213  - backward_input function
@@ -612,16 +669,19 @@ gradient_checking.mojo:221 - scaled_forward function
 ```
 
 ### Root Cause
+
 When nested functions are defined with ExTensor parameters, Mojo tries to create a wrapper struct to capture state. Since ExTensor is not `ImplicitlyCopyable`, the struct cannot auto-generate `__copyinit__`.
 
 This is a cascading error from Error Type 3.
 
 ### Fix
+
 Adding `ImplicitlyCopyable` to ExTensor (Error Type 3 fix) resolves this automatically.
 
 ### Error 8b: GradientPair Not Subscriptable
 
 ### Error Message
+
 ```
 'GradientPair' is not subscriptable, it does not implement the
 `__getitem__`/`__setitem__` methods
@@ -632,6 +692,7 @@ Adding `ImplicitlyCopyable` to ExTensor (Error Type 3 fix) resolves this automat
 ### Location: `test_activations.mojo:215`
 
 **Code**:
+
 ```mojo
 fn backward_input(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
     var result = tanh_backward(grad, inp)
@@ -640,10 +701,13 @@ fn backward_input(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
 ```
 
 ### Root Cause
+
 `tanh_backward()` returns a `GradientPair` (presumably a struct or tuple with multiple gradient values). The test code assumes it's subscriptable like a tuple, but `GradientPair` doesn't implement `__getitem__`.
 
 ### Solution
+
 Access the gradient by field name instead of index:
+
 ```mojo
 # BEFORE
 return result[0]
@@ -660,7 +724,7 @@ Need to find `GradientPair` definition to determine correct field name.
 
 | Error Type | Count | Severity | Files | Quick Fix |
 |------------|-------|----------|-------|-----------|
-| 1. __init__ syntax | 8 | CRITICAL | extensor.mojo | Change `mut` → `out` |
+| 1. **init** syntax | 8 | CRITICAL | extensor.mojo | Change `mut` → `out` |
 | 2. DType not Comparable | 17 | HIGH | test_tensors.mojo | Add assert_dtype_equal |
 | 3. Not ImplicitlyCopyable | 7 | HIGH | extensor.mojo | Add trait |
 | 4. exp() type inference | 4 | MEDIUM | activation.mojo | Add type hints |
@@ -682,4 +746,3 @@ Need to find `GradientPair` definition to determine correct field name.
 6. Run `test_tensors.mojo` (requires type 2 fix)
 7. Run `test_activations.mojo` (requires types 4, 5, 6, 8b fixes)
 8. Run `test_advanced_activations.mojo`
-

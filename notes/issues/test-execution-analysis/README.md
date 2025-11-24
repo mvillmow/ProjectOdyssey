@@ -32,17 +32,23 @@ Ran all test suites (5 test categories, 10 test files). **100% failure rate** wi
 **Status**: FAILED (compilation error)
 
 **Error Summary**:
+
 - **Error 1**: Line 49:24 - Invalid mutating method call
+
   ```
   error: invalid call to 'append': invalid use of mutating method on rvalue of type 'List[Int]'
       .append(batch_size)
   ```
+
 - **Error 2**: Multiple `__init__` constructor errors in included headers
+
   ```
   /shared/core/extensor.mojo:89:8: error: __init__ method must return Self type with 'out' argument
   fn __init__(mut self, shape: List[Int], dtype: DType) raises:
   ```
+
 - **Error 3**: Multiple `__init__` constructor errors in metrics
+
   ```
   /shared/training/metrics/base.mojo:220:8: error: __init__ method must return Self type with 'out' argument
   fn __init__(mut self):
@@ -55,16 +61,19 @@ Ran all test suites (5 test categories, 10 test files). **100% failure rate** wi
 ### 2. Top-Level Tests
 
 #### 2a. Core Operations Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/test_core_operations.mojo`
 
 **Status**: FAILED (compilation error)
 
 **Errors**:
+
 - `__init__` parameter convention errors in ExTensor (line 89)
 - `__init__` parameter convention errors in metrics (lines 220, 231, 59)
 - Multiple string conversion errors using deprecated `int()` function
 
 **Root Cause**: Dependency chain:
+
 ```
 test_core_operations.mojo
   → shared.core.ExTensor (line 89: mut self should be out self)
@@ -75,18 +84,20 @@ test_core_operations.mojo
 ```
 
 #### 2b. Data Integrity Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/test_data_integrity.mojo`
 
 **Status**: FAILED (compilation error)
 
 **Errors** (28 total):
+
 1. **Constructor errors** (5+ instances):
-   - ExTensor.__init__ (line 89)
-   - ExTensor.__copyinit__ (line 149)
-   - FP8.__init__ (line 36)
-   - MXFP4.__init__ (line 57)
-   - Int8.__init__ (line 39)
-   - NVFP4.__init__ (line 65, 525)
+   - ExTensor.**init** (line 89)
+   - ExTensor.**copyinit** (line 149)
+   - FP8.**init** (line 36)
+   - MXFP4.**init** (line 57)
+   - Int8.**init** (line 39)
+   - NVFP4.**init** (line 65, 525)
 
 2. **Type system errors** (8 instances):
    - `int()` builtin no longer exists → use `Int()`
@@ -111,11 +122,13 @@ test_core_operations.mojo
 **Files Attempted**: 6 test files
 
 #### 3a. Config Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_config.mojo`
 
 **Status**: FAILED (missing main function)
 
 **Error**:
+
 ```
 error: module does not define a `main` function
 ```
@@ -125,6 +138,7 @@ error: module does not define a `main` function
 **Content Analysis**: File contains test functions (e.g., `test_load_yaml_config()`) but no `main()` entry point.
 
 #### 3b. Logging Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_logging.mojo`
 
 **Status**: FAILED (missing main function)
@@ -132,6 +146,7 @@ error: module does not define a `main` function
 **Error**: Same as 3a - no `main()` function defined.
 
 #### 3c. IO Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_io.mojo`
 
 **Status**: FAILED (missing main function)
@@ -139,6 +154,7 @@ error: module does not define a `main` function
 **Error**: Same as 3a - no `main()` function defined.
 
 #### 3d. Profiling Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_profiling.mojo`
 
 **Status**: FAILED (missing main function)
@@ -146,6 +162,7 @@ error: module does not define a `main` function
 **Error**: Same as 3a - no `main()` function defined.
 
 #### 3e. Random Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_random.mojo`
 
 **Status**: FAILED (missing main function)
@@ -153,6 +170,7 @@ error: module does not define a `main` function
 **Error**: Same as 3a - no `main()` function defined.
 
 #### 3f. Visualization Utils Test
+
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/utils/test_visualization.mojo`
 
 **Status**: FAILED (missing main function)
@@ -160,6 +178,7 @@ error: module does not define a `main` function
 **Error**: Same as 3a - no `main()` function defined.
 
 **Root Cause**: These are library test modules, not executable programs. They need:
+
 1. A test runner framework (like pytest for Python, or custom Mojo test runner)
 2. OR a `main()` function that runs all test functions
 3. OR to be integrated into the CI/CD system differently
@@ -175,18 +194,20 @@ error: module does not define a `main` function
 **Count**: 7+ instances across multiple files
 
 **Files Affected**:
-- `/shared/core/extensor.mojo:89` - ExTensor.__init__
-- `/shared/core/extensor.mojo:149` - ExTensor.__copyinit__
-- `/shared/core/types/fp8.mojo:36` - FP8.__init__
-- `/shared/core/types/mxfp4.mojo:57` - MXFP4.__init__
-- `/shared/core/types/integer.mojo:39` - Int8.__init__
-- `/shared/training/metrics/base.mojo:220,59` - MetricBase, MetricResult.__init__
-- `/shared/training/metrics/accuracy.mojo:377` - AccuracyMetric.__init__
-- `/shared/training/metrics/loss_tracker.mojo:231` - LossTracker.__init__
-- `/shared/training/metrics/confusion_matrix.mojo:58` - ConfusionMatrix.__init__
-- `/shared/core/types/nvfp4.mojo:65,525` - NVFP4.__init__
+
+- `/shared/core/extensor.mojo:89` - ExTensor.**init**
+- `/shared/core/extensor.mojo:149` - ExTensor.**copyinit**
+- `/shared/core/types/fp8.mojo:36` - FP8.**init**
+- `/shared/core/types/mxfp4.mojo:57` - MXFP4.**init**
+- `/shared/core/types/integer.mojo:39` - Int8.**init**
+- `/shared/training/metrics/base.mojo:220,59` - MetricBase, MetricResult.**init**
+- `/shared/training/metrics/accuracy.mojo:377` - AccuracyMetric.**init**
+- `/shared/training/metrics/loss_tracker.mojo:231` - LossTracker.**init**
+- `/shared/training/metrics/confusion_matrix.mojo:58` - ConfusionMatrix.**init**
+- `/shared/core/types/nvfp4.mojo:65,525` - NVFP4.**init**
 
 **Fix Pattern**:
+
 ```mojo
 // WRONG (deprecated pre-v0.25.7):
 fn __init__(mut self, shape: List[Int], dtype: DType) raises:
@@ -208,12 +229,14 @@ fn __init__(out self, shape: List[Int], dtype: DType) raises:
 **Count**: 2 instances
 
 **Files Affected**:
+
 - `/shared/core/types/fp8.mojo:87` - `int(abs_x * 128.0)`
 - `/shared/core/types/nvfp4.mojo:94` - `int(scale * 512.0)`
 
 **Issue**: Mojo v0.25.7+ renamed lowercase `int()` to `Int()` (capitalized).
 
 **Fix Pattern**:
+
 ```mojo
 // WRONG (pre-v0.25.7):
 var mantissa = int(abs_x * 128.0)
@@ -233,11 +256,13 @@ var mantissa = Int(abs_x * 128.0)
 **Count**: 1 instance
 
 **File Affected**:
+
 - `/shared/core/types/mxfp4.mojo:103` - `biased_exp.cast[DType.uint8]()`
 
 **Issue**: Mojo v0.25.7+ changed the API for type casting on scalars.
 
 **Fix Pattern**:
+
 ```mojo
 // WRONG (pre-v0.25.7):
 return E8M0Scale(biased_exp.cast[DType.uint8]())
@@ -258,12 +283,14 @@ return E8M0Scale(UInt8(biased_exp))
 **Count**: 2 instances
 
 **Files Affected**:
+
 - `/tests/test_data_integrity.mojo:181` - `Float32` to `Float16` conversion
 - `/shared/core/types/fp4.mojo:167` - `Float64` to `Float32` conversion
 
 **Issue**: v0.25.7+ is stricter about floating-point type conversions.
 
 **Fix Pattern**:
+
 ```mojo
 // WRONG (may have worked in older versions):
 t_fp16._data.bitcast[Float16]()[i] = val_f32  # Float32 → Float16
@@ -285,11 +312,13 @@ t_fp16._data.bitcast[Float16]()[i] = converted
 **Count**: 12+ instances
 
 **File Affected**:
+
 - `/tests/test_data_integrity.mojo:30,51,82,107,129,190,204,233,254`
 
 **Issue**: Mojo v0.25.7+ changed assertion syntax from `assert condition, "message"` to using testing module.
 
 **Fix Pattern**:
+
 ```mojo
 // OLD (pre-v0.25.7) - may still work:
 assert decoded.numel() == 32, "Decoded size should be 32"
@@ -314,6 +343,7 @@ assert_equal(result, 32)
 **Count**: 6 instances (all utility tests)
 
 **Files Affected**:
+
 - `/tests/shared/utils/test_config.mojo`
 - `/tests/shared/utils/test_logging.mojo`
 - `/tests/shared/utils/test_io.mojo`
@@ -324,7 +354,9 @@ assert_equal(result, 32)
 **Root Cause**: These are library test modules that rely on a test runner framework, but no test runner is configured. The workflow tries to run them with `mojo -I .` which expects a `main()` function.
 
 **Fix Options**:
+
 1. **Add main() function** - Quick fix for development
+
    ```mojo
    fn main():
        test_load_yaml_config()
@@ -367,12 +399,14 @@ The codebase has **not been fully migrated** to Mojo v0.25.7+ syntax standards. 
 **File**: `/tests/integration/test_all_architectures.mojo:49`
 
 **Error**:
+
 ```
 error: invalid call to 'append': invalid use of mutating method on rvalue of type 'List[Int]'
     .append(batch_size)
 ```
 
 **Pattern**:
+
 ```mojo
 // WRONG - chaining append on rvalue:
 var input = zeros(
@@ -382,6 +416,7 @@ var input = zeros(
 ```
 
 **Fix**:
+
 ```mojo
 // CORRECT - build list then use:
 var shape = List[Int]()
@@ -445,11 +480,13 @@ var input = zeros(shape, DType.float32)
 **Test Framework**: Direct Mojo execution (`pixi run mojo -I . <test_file>`)
 
 **Expected Test Structure**: Each test file must have:
+
 1. A `main()` function (for Mojo standalone execution)
 2. OR be runnable through a test runner framework
 3. OR follow a specific test discovery pattern
 
 **Current Status**: Tests are organized by directory but lack:
+
 - Unified test runner
 - Test discovery mechanism
 - Test result aggregation
@@ -458,6 +495,7 @@ var input = zeros(shape, DType.float32)
 ### CI/CD Integration
 
 **Workflows Configured**:
+
 - `unit-tests.yml` - Runs tests/unit/*.mojo files
 - `integration-tests.yml` - Runs tests/integration/*.mojo files
 - `comprehensive-tests.yml` - Broader test coverage
@@ -661,6 +699,7 @@ var input = zeros(shape, DType.float32)
 #### 11. `/tests/test_data_integrity.mojo`
 
 **Update assertions**:
+
 ```mojo
 // BEFORE:
 assert decoded.numel() == 32, "Decoded size should be 32"
@@ -676,6 +715,7 @@ if not (decoded.numel() == 32):
 ```
 
 **Type conversion fixes**:
+
 ```mojo
 // LINE 181:
 // BEFORE:
@@ -698,6 +738,7 @@ return Float32(0.0) if sign == 0 else Float32(-0.0)
 #### 12. Utility Test Files
 
 Add `main()` function to:
+
 - `/tests/shared/utils/test_config.mojo`
 - `/tests/shared/utils/test_logging.mojo`
 - `/tests/shared/utils/test_io.mojo`
@@ -706,6 +747,7 @@ Add `main()` function to:
 - `/tests/shared/utils/test_visualization.mojo`
 
 **Pattern**:
+
 ```mojo
 fn main():
     """Run all tests."""
@@ -725,13 +767,15 @@ fn main():
 **Time estimate**: 30-45 minutes
 
 **Order**:
-1. Fix ExTensor.__init__ and __copyinit__ (2 changes)
-2. Fix all metric __init__ methods (5 changes)
-3. Fix all numeric type __init__ methods (7 changes)
+
+1. Fix ExTensor.**init** and **copyinit** (2 changes)
+2. Fix all metric **init** methods (5 changes)
+3. Fix all numeric type **init** methods (7 changes)
 4. Fix int() → Int() conversions (2 changes)
 5. Fix type casting issues (1 change)
 
 **Files to modify**: 9 files
+
 - shared/core/extensor.mojo
 - shared/training/metrics/base.mojo
 - shared/training/metrics/accuracy.mojo
@@ -747,6 +791,7 @@ fn main():
 **Time estimate**: 20-30 minutes
 
 **Files**:
+
 1. tests/integration/test_all_architectures.mojo (1 change: List chaining)
 2. tests/test_data_integrity.mojo (13+ changes: assertions, type conversions)
 
@@ -755,6 +800,7 @@ fn main():
 **Time estimate**: 15-20 minutes
 
 **Options**:
+
 1. Add main() functions to utility tests (6 files)
 2. OR set up proper test runner framework
 3. OR update CI/CD workflow to skip utility tests
@@ -807,4 +853,3 @@ fn main():
 | Critical blockers | 3 |
 | Files requiring fixes | 11 |
 | Estimated fix time | 60-90 minutes |
-

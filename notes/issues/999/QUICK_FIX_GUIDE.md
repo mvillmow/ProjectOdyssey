@@ -10,6 +10,7 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 ## Top Priority Fixes (Do These First)
 
 ### Fix 1: simdwidthof Import (5 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/core/arithmetic_simd.mojo:27`
 
 ```diff
@@ -18,6 +19,7 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 ```
 
 ### Fix 2: Add ImplicitlyCopyable Trait (5 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo:43`
 
 ```diff
@@ -25,7 +27,8 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 + struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 ```
 
-### Fix 3: __init__ Signature (5 minutes)
+### Fix 3: **init** Signature (5 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo:89`
 
 ```diff
@@ -33,7 +36,8 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 + fn __init__(out self, shape: List[Int], dtype: DType) raises:
 ```
 
-### Fix 4: __copyinit__ Signature (5 minutes)
+### Fix 4: **copyinit** Signature (5 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo:149`
 
 ```diff
@@ -41,7 +45,8 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 + fn __copyinit__(out self, existing: Self):
 ```
 
-### Fix 5: Base.mojo __init__ (5 minutes)
+### Fix 5: Base.mojo **init** (5 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/training/base.mojo:69`
 
 ```diff
@@ -51,6 +56,7 @@ pixi run mojo -I . tests/shared/training/test_training_loop.mojo
 ```
 
 ### Fix 6: RMSprop - Remove 'owned' (10 minutes)
+
 **File:** `/home/mvillmow/ml-odyssey/shared/training/optimizers/rmsprop.mojo:40`
 
 ```diff
@@ -62,7 +68,8 @@ Then update function signature to require explicit buf parameter (remove default
 
 ## Affected Files Summary
 
-### Will Fail Until Fixed:
+### Will Fail Until Fixed
+
 - shared/core/extensor.mojo (fixes 1-4 needed)
 - shared/core/arithmetic_simd.mojo (fix 1 needed)
 - shared/training/base.mojo (fix 5 needed)
@@ -70,7 +77,8 @@ Then update function signature to require explicit buf parameter (remove default
 - shared/training/optimizers/sgd.mojo (will work after fix 2)
 - shared/training/optimizers/adam.mojo (will work after fix 2)
 
-### Test Files:
+### Test Files
+
 - test_optimizers.mojo (needs fixes 1-2 in core, then will pass)
 - test_training_loop.mojo (needs implementation of TrainingLoop, MSELoss, etc.)
 
@@ -91,7 +99,8 @@ pixi run mojo -I . tests/shared/training/test_optimizers.mojo
 
 ## Error Messages You'll See
 
-### Before Fixes:
+### Before Fixes
+
 ```
 error: module 'info' does not contain 'simdwidthof'
 error: value of type 'ExTensor' cannot be implicitly copied
@@ -99,7 +108,8 @@ error: __init__ method must return Self type with 'out' argument
 error: 'owned' has been deprecated, use 'var' instead
 ```
 
-### After Critical Fixes:
+### After Critical Fixes
+
 ```
 error: use of unknown declaration 'TrainingLoop'
 error: use of unknown declaration 'create_simple_model'

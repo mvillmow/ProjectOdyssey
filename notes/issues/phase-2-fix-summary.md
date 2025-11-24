@@ -17,6 +17,7 @@ All Phase 2 compilation errors have been successfully fixed. This document summa
 **Fix**: Changed all 4 occurrences of `shapes.append(s*)` to `shapes.append(s*.copy())`
 
 **Before**:
+
 ```mojo
 var s1 = List[Int]()
 s1.append(2)
@@ -24,6 +25,7 @@ shapes.append(s1)  # Error: Cannot pass non-copyable value
 ```
 
 **After**:
+
 ```mojo
 var s1 = List[Int]()
 s1.append(2)
@@ -41,11 +43,13 @@ shapes.append(s1.copy())  # Creates explicit copy
 **Fix**: Changed all 4 occurrences of `.shape` to `.shape()`
 
 **Before**:
+
 ```mojo
 var w_shape = weights.shape  # Error: shape() is a method
 ```
 
 **After**:
+
 ```mojo
 var w_shape = weights.shape()  # Correct method call
 ```
@@ -59,6 +63,7 @@ var w_shape = weights.shape()  # Correct method call
 **Fix**: Replaced `assert_less(a, b)` with `assert_true(a < b, "message")`
 
 **Before**:
+
 ```mojo
 for i in range(5):
     var val = output._data.bitcast[Float32]()[i]
@@ -67,6 +72,7 @@ for i in range(5):
 ```
 
 **After**:
+
 ```mojo
 for i in range(5):
     var val = output._data.bitcast[Float32]()[i]
@@ -85,11 +91,13 @@ for i in range(5):
 **Fix**: Changed `.shape[i]` to `.shape()[i]`
 
 **Before**:
+
 ```mojo
 assert_equal(y.shape[0], 2)  # Error: shape() is a method
 ```
 
 **After**:
+
 ```mojo
 assert_equal(y.shape()[0], 2)  # Correct method call
 ```
@@ -107,6 +115,7 @@ assert_equal(y.shape()[0], 2)  # Correct method call
 **Additional Fixes**: Added move semantics (^) to GradientPair returns for proper ownership transfer.
 
 **Before**:
+
 ```mojo
 var result_shape = broadcast_shapes(a.shape, b.shape)  # Error: shape() is method
 var strides_a = compute_broadcast_strides(a.shape, result_shape)
@@ -114,6 +123,7 @@ var strides_b = compute_broadcast_strides(b.shape, result_shape)
 ```
 
 **After**:
+
 ```mojo
 var result_shape = broadcast_shapes(a.shape(), b.shape())  # Correct
 var strides_a = compute_broadcast_strides(a.shape(), result_shape)
@@ -121,11 +131,13 @@ var strides_b = compute_broadcast_strides(b.shape(), result_shape)
 ```
 
 **Before** (Gradient functions):
+
 ```mojo
 return GradientPair(grad_a, grad_b)  # Error: missing move semantics
 ```
 
 **After**:
+
 ```mojo
 return GradientPair(grad_a^, grad_b^)  # Correct: transfers ownership
 ```
@@ -155,6 +167,7 @@ All fixes ensure compliance with Mojo v0.25.7+ language requirements:
 ## Verification
 
 All changes maintain:
+
 - Code correctness
 - Original functionality
 - Test coverage

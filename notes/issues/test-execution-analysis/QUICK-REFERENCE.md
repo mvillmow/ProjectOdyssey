@@ -38,6 +38,7 @@ All test suites fail due to **incomplete Mojo v0.25.7+ migration** in core libra
 **Pattern**: Find all `fn __init__(mut self` and `fn __copyinit__(mut self`, replace with `out self`
 
 **Files**:
+
 - shared/core/extensor.mojo (2 instances)
 - shared/training/metrics/base.mojo (2 instances)
 - shared/training/metrics/accuracy.mojo (1 instance)
@@ -49,6 +50,7 @@ All test suites fail due to **incomplete Mojo v0.25.7+ migration** in core libra
 - shared/core/types/nvfp4.mojo (2 instances)
 
 **Before/After**:
+
 ```mojo
 fn __init__(mut self → fn __init__(out self
 fn __copyinit__(mut self → fn __copyinit__(out self
@@ -63,10 +65,12 @@ fn __copyinit__(mut self → fn __copyinit__(out self
 **Pattern**: Replace `int()` with `Int()`
 
 **Files**:
+
 - shared/core/types/fp8.mojo:87
 - shared/core/types/nvfp4.mojo:94
 
 **Before/After**:
+
 ```mojo
 var mantissa = int(value) → var mantissa = Int(value)
 ```
@@ -82,6 +86,7 @@ var mantissa = int(value) → var mantissa = Int(value)
 **File**: shared/core/types/mxfp4.mojo:103
 
 **Before/After**:
+
 ```mojo
 biased_exp.cast[DType.uint8]() → UInt8(biased_exp)
 ```
@@ -95,6 +100,7 @@ biased_exp.cast[DType.uint8]() → UInt8(biased_exp)
 **File**: tests/integration/test_all_architectures.mojo:49
 
 **Before**:
+
 ```mojo
 var input = zeros(
     List[Int]()
@@ -107,6 +113,7 @@ var input = zeros(
 ```
 
 **After**:
+
 ```mojo
 var shape = List[Int]()
 shape.append(batch_size)
@@ -129,17 +136,20 @@ var input = zeros(shape, DType.float32)
 **Pattern**: Update assertion syntax to v0.25.7+
 
 **Before**:
+
 ```mojo
 assert decoded.numel() == 32, "Decoded size should be 32"
 ```
 
 **After (Option A - Recommended)**:
+
 ```mojo
 from testing import assert_equal
 assert_equal(decoded.numel(), 32)
 ```
 
 **After (Option B - Minimal)**:
+
 ```mojo
 if not (decoded.numel() == 32):
     raise Error("Decoded size should be 32")
@@ -154,6 +164,7 @@ if not (decoded.numel() == 32):
 **File**: tests/test_data_integrity.mojo
 
 **Line 181 - Float32→Float16**:
+
 ```mojo
 // Before:
 t_fp16._data.bitcast[Float16]()[i] = val_f32
@@ -164,6 +175,7 @@ t_fp16._data.bitcast[Float16]()[i] = val_f16
 ```
 
 **Line 167 - Float64→Float32**:
+
 ```mojo
 // Before:
 return 0.0 if sign == 0 else -0.0
@@ -181,6 +193,7 @@ return Float32(0.0) if sign == 0 else Float32(-0.0)
 ### 7. Add main() to Utility Tests (5 minutes)
 
 **Files**:
+
 - tests/shared/utils/test_config.mojo
 - tests/shared/utils/test_logging.mojo
 - tests/shared/utils/test_io.mojo
@@ -206,7 +219,7 @@ fn main():
 
 ### Phase 1: Library Code (5 minutes)
 
-- [ ] Fix ExTensor.__init__ and __copyinit__ (shared/core/extensor.mojo:89,149)
+- [ ] Fix ExTensor.**init** and **copyinit** (shared/core/extensor.mojo:89,149)
 - [ ] Fix metrics constructors (shared/training/metrics/*.mojo)
 - [ ] Fix numeric type constructors (shared/core/types/*.mojo)
 - [ ] Replace int() with Int() (2 files)
@@ -272,6 +285,7 @@ Expected: All tests compile and execute without errors
 ## Key Files to Modify
 
 **Priority 1 (Library Code)** - 9 files:
+
 1. shared/core/extensor.mojo
 2. shared/training/metrics/base.mojo
 3. shared/training/metrics/accuracy.mojo
@@ -283,10 +297,12 @@ Expected: All tests compile and execute without errors
 9. shared/core/types/nvfp4.mojo
 
 **Priority 2 (Test Code)** - 2 files:
+
 1. tests/integration/test_all_architectures.mojo
 2. tests/test_data_integrity.mojo
 
 **Priority 3 (Test Infrastructure)** - 6 files:
+
 1. tests/shared/utils/test_config.mojo
 2. tests/shared/utils/test_logging.mojo
 3. tests/shared/utils/test_io.mojo
@@ -299,6 +315,7 @@ Expected: All tests compile and execute without errors
 ## Common Patterns to Fix
 
 ### Pattern 1: Constructor Parameters
+
 ```
 🔍 Find: fn __init__(mut self
 🔄 Replace: fn __init__(out self
@@ -308,6 +325,7 @@ Expected: All tests compile and execute without errors
 ```
 
 ### Pattern 2: Deprecated Builtin
+
 ```
 🔍 Find: int(
 🔄 Replace: Int(
@@ -315,6 +333,7 @@ Expected: All tests compile and execute without errors
 ```
 
 ### Pattern 3: List Mutation
+
 ```
 List[Int]()
     .append(x)
@@ -328,6 +347,7 @@ lst.append(y)
 ```
 
 ### Pattern 4: Type Conversion
+
 ```
 Float16(float32_value)  // Explicit conversion
 Float32(float64_value)  // Explicit conversion
@@ -364,4 +384,3 @@ For detailed information, see:
 **Last Updated**: 2025-11-23
 **Analysis Depth**: Complete - all test suites analyzed, all errors categorized
 **Confidence Level**: High - errors are well-understood and have clear fixes
-

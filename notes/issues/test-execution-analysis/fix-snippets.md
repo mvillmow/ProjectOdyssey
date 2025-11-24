@@ -12,7 +12,7 @@
 
 **Lines**: 89, 149
 
-#### Change 1: __init__ method (line 89)
+#### Change 1: **init** method (line 89)
 
 ```mojo
 // BEFORE:
@@ -48,7 +48,7 @@ fn __init__(out self, shape: List[Int], dtype: DType) raises:
     """
 ```
 
-#### Change 2: __copyinit__ method (line 149)
+#### Change 2: **copyinit** method (line 149)
 
 ```mojo
 // BEFORE:
@@ -82,7 +82,7 @@ fn __copyinit__(out self, existing: Self):
 
 **Lines**: 59, 220
 
-#### Change 1: MetricResult.__init__ scalar (line 59)
+#### Change 1: MetricResult.**init** scalar (line 59)
 
 ```mojo
 // BEFORE:
@@ -102,7 +102,7 @@ fn __init__(out self, name: String, value: Float64):
     self.tensor_value = ExTensor(List[Int]())  # Placeholder
 ```
 
-#### Change 2: MetricBase.__init__ (line 220)
+#### Change 2: MetricBase.**init** (line 220)
 
 ```mojo
 // BEFORE:
@@ -192,7 +192,7 @@ fn __init__(out self, num_classes: Int, class_names: List[String] = List[String]
 
 **Lines**: 36, 87
 
-#### Change 1: FP8.__init__ (line 36)
+#### Change 1: FP8.**init** (line 36)
 
 ```mojo
 // BEFORE:
@@ -256,7 +256,7 @@ fn __init__(out self, value: Int8):
 
 **Lines**: 57, 103, 474
 
-#### Change 1: MXFP4.__init__ (line 57)
+#### Change 1: MXFP4.**init** (line 57)
 
 ```mojo
 // BEFORE:
@@ -286,7 +286,7 @@ fn get_scale(self) -> E8M0Scale:
     return E8M0Scale(UInt8(biased_exp))
 ```
 
-#### Change 3: E8M0Scale.__init__ (line 474)
+#### Change 3: E8M0Scale.**init** (line 474)
 
 ```mojo
 // BEFORE:
@@ -308,7 +308,7 @@ fn __init__(out self):
 
 **Lines**: 65, 94, 525
 
-#### Change 1: NVFP4.__init__ (line 65)
+#### Change 1: NVFP4.**init** (line 65)
 
 ```mojo
 // BEFORE:
@@ -340,7 +340,7 @@ fn to_nvfp4(x: Float32, scale: Float32) -> NVFP4:
     return NVFP4(encoded)
 ```
 
-#### Change 3: E4M3Scale.__init__ (line 525)
+#### Change 3: E4M3Scale.**init** (line 525)
 
 ```mojo
 // BEFORE:
@@ -424,6 +424,7 @@ if not (decoded.numel() == 32):
 ```
 
 **All instances to fix**:
+
 - Line 30: `assert decoded.numel() == 32, "Decoded size should be 32"`
 - Line 51: `assert (encoded.numel() == 32), "Encoded size"`
 - Line 82: `assert (t_fp8.numel() == 10), "FP8 tensor should have 10 elements"`
@@ -517,6 +518,7 @@ fn main():
 ```
 
 **Apply to**:
+
 - `/tests/shared/utils/test_config.mojo` - Add main() calling all test_* functions
 - `/tests/shared/utils/test_logging.mojo` - Add main() calling all test_* functions
 - `/tests/shared/utils/test_io.mojo` - Add main() calling all test_* functions
@@ -531,6 +533,7 @@ fn main():
 ### Recommended Sequence
 
 **Step 1: Apply all constructor fixes (5 minutes)**
+
 1. Fix ExTensor (2 changes)
 2. Fix metrics base (2 changes)
 3. Fix accuracy (1 change)
@@ -544,6 +547,7 @@ fn main():
 Expected outcome: Library compiles successfully
 
 **Step 2: Apply test-specific fixes (10 minutes)**
+
 1. Fix integration test List pattern (1 change)
 2. Update data integrity assertions (9+ changes)
 3. Fix float conversions (2 changes)
@@ -551,6 +555,7 @@ Expected outcome: Library compiles successfully
 Expected outcome: All tests compile and run
 
 **Step 3: Fix test infrastructure (5 minutes)**
+
 1. Add main() to utility tests (6 files)
 
 Expected outcome: All test suites executable
@@ -583,4 +588,3 @@ done
 **Files to modify**: 11
 **Estimated time**: 40-50 minutes
 **Expected result**: All tests compile and executable
-

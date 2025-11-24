@@ -6,7 +6,7 @@ All Core test suites failed at compilation due to 5 critical/high priority issue
 
 | Priority | Issue | Files | Time |
 |----------|-------|-------|------|
-| 🔴 CRITICAL | ExTensor.__init__ using `mut` instead of `out` | extensor.mojo:89,149 | 2 min |
+| 🔴 CRITICAL | ExTensor.**init** using `mut` instead of `out` | extensor.mojo:89,149 | 2 min |
 | 🔴 CRITICAL | ExTensor not ImplicitlyCopyable | extensor.mojo:43 | 1 min |
 | 🟠 HIGH | DType not Comparable | conftest.mojo + test_tensors.mojo | 10 min |
 | 🟠 HIGH | Float64 assert overload missing | conftest.mojo | 5 min |
@@ -23,6 +23,7 @@ All Core test suites failed at compilation due to 5 critical/high priority issue
 **File**: `/home/mvillmow/ml-odyssey/shared/core/extensor.mojo`
 
 #### Change 1: Line 89
+
 ```mojo
 # BEFORE
 fn __init__(mut self, shape: List[Int], dtype: DType) raises:
@@ -32,6 +33,7 @@ fn __init__(out self, shape: List[Int], dtype: DType) raises:
 ```
 
 #### Change 2: Line 149
+
 ```mojo
 # BEFORE
 fn __copyinit__(mut self, existing: Self):
@@ -41,6 +43,7 @@ fn __copyinit__(out self, existing: Self):
 ```
 
 #### Change 3: Line 43
+
 ```mojo
 # BEFORE
 struct ExTensor(Copyable, Movable):
@@ -57,7 +60,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
 **File**: `/home/mvillmow/ml-odyssey/tests/shared/conftest.mojo`
 
-#### Add after existing assert_almost_equal (around line 99):
+#### Add after existing assert_almost_equal (around line 99)
 
 ```mojo
 fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
@@ -87,7 +90,7 @@ fn assert_almost_equal(
 
 **File**: `/home/mvillmow/ml-odyssey/shared/core/elementwise.mojo`
 
-#### Replace lines 25-32:
+#### Replace lines 25-32
 
 ```mojo
 # BEFORE
@@ -155,6 +158,7 @@ Replace all calls to `assert_equal(y.dtype(), DType.xxx)` with `assert_dtype_equ
 **Lines to update**: 172, 194, 214, 247, 250, 253, 311, 316, 321, 332, 337, 342, 347, 358, 363, 368, 373
 
 Example:
+
 ```mojo
 # BEFORE (Line 172)
 assert_equal(y.dtype(), DType.float32)
@@ -164,6 +168,7 @@ assert_dtype_equal(y.dtype(), DType.float32)
 ```
 
 Search & Replace:
+
 ```bash
 # In your editor, find: assert_equal(.*\.dtype\(\)
 # Replace with: assert_dtype_equal($1
@@ -204,6 +209,7 @@ return result.gradient  # Check GradientPair definition for correct field name
 ### Step 7: Verify All Tests Pass
 
 Run each test:
+
 ```bash
 pixi run mojo -I . tests/shared/core/test_layers.mojo
 pixi run mojo -I . tests/shared/core/test_activations.mojo
@@ -233,18 +239,22 @@ After each step, verify compilation:
 ## Common Issues
 
 ### Issue: "ExTensor still not ImplicitlyCopyable"
+
 **Cause**: Trait definition error
 **Fix**: Ensure line 43 has: `struct ExTensor(Copyable, Movable, ImplicitlyCopyable):`
 
 ### Issue: "assert_dtype_equal not found"
+
 **Cause**: Function not added to conftest.mojo
 **Fix**: Add the function definition from Step 2
 
 ### Issue: "exp() still failing"
+
 **Cause**: Type annotation incomplete
 **Fix**: Use exact code from Step 4 with `: ExTensor` type hints
 
 ### Issue: "test_tensors.mojo still failing on assert_equal"
+
 **Cause**: Forgot to update calls
 **Fix**: Replace all 17 instances of `assert_equal(x.dtype(), ...)` with `assert_dtype_equal(...)`
 
@@ -290,7 +300,7 @@ After each step, verify compilation:
 ## Questions?
 
 Refer to:
+
 - [ERROR_CATALOG.md](./ERROR_CATALOG.md) for detailed error explanations
 - [README.md](./README.md) for comprehensive analysis
-- Mojo documentation: https://docs.modular.com/mojo/manual/types
-
+- Mojo documentation: <https://docs.modular.com/mojo/manual/types>

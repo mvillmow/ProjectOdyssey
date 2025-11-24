@@ -14,6 +14,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 ## Files Fixed
 
 ### 1. test_integer.mojo (2 fixes)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/shared/core/test_integer.mojo`
 - **Issue**: Deprecated `str()` function calls
 - **Lines fixed**: 132, 136
@@ -21,6 +22,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 - **Context**: Test function `test_int8_string_representation()`
 
 ### 2. test_unsigned.mojo (2 fixes)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/shared/core/test_unsigned.mojo`
 - **Issue**: Deprecated `str()` function calls
 - **Lines fixed**: 121, 125
@@ -28,6 +30,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 - **Context**: Test function `test_uint8_string_representation()`
 
 ### 3. test_fp4_base.mojo (1 fix)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/core/types/test_fp4_base.mojo`
 - **Issue**: Deprecated `str()` function call
 - **Line fixed**: 301
@@ -35,6 +38,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 - **Context**: Test function `test_fp4_string_representation()`
 
 ### 4. test_creation.mojo (2 fixes)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/shared/core/legacy/test_creation.mojo`
 - **Issue**: Deprecated `str()` function calls for integer concatenation
 - **Lines fixed**: 242, 377
@@ -42,6 +46,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 - **Context**: Test functions `test_arange_basic()` and `test_linspace_basic()`
 
 ### 5. test_random.mojo (1 fix)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/shared/data/samplers/test_random.mojo`
 - **Issue**: Deprecated `str()` function call for integer concatenation
 - **Line fixed**: 173
@@ -49,6 +54,7 @@ Analyze and fix all Mojo test files in `/home/mvillmow/ml-odyssey/tests/` for Mo
 - **Context**: Test function `test_random_sampler_no_duplicates()`
 
 ### 6. test_file_dataset.mojo (2 fixes)
+
 - **Location**: `/home/mvillmow/ml-odyssey/tests/shared/data/datasets/test_file_dataset.mojo`
 - **Issue**: Deprecated `str()` function calls for integer concatenation in file path construction
 - **Lines fixed**: 104, 169
@@ -94,19 +100,22 @@ These do not require fixing since they're not active code.
 
 The Mojo v0.25.7+ migration replaced the deprecated `str()` function with the `String()` constructor.
 
-### Before (Deprecated):
+### Before (Deprecated)
+
 ```mojo
 var message = "Index " + str(idx) + " appears twice"
 var text = str(some_value)
 ```
 
-### After (v0.25.7+):
+### After (v0.25.7+)
+
 ```mojo
 var message = "Index " + String(idx) + " appears twice"
 var text = String(some_value)
 ```
 
-### How it works:
+### How it works
+
 - `String()` is the official constructor for creating String objects from various types
 - It automatically converts numeric types (Int, Float32, UInt8, etc.) to strings
 - Works in string concatenation with `+` operator
@@ -135,6 +144,7 @@ The following test categories were analyzed:
 ## Files Analyzed But Not Modified
 
 133 test files scanned. 127 files required no changes because they either:
+
 1. Do not use deprecated `str()` function
 2. Do not use deprecated `inout` syntax (already using `out` or `mut`)
 3. Do not use other v0.25.7 compatibility issues
@@ -156,6 +166,7 @@ The following test categories were analyzed:
 ## Implementation Notes
 
 All fixes follow the minimal changes principle:
+
 - Only modified lines that required updating
 - No refactoring of unrelated code
 - Preserved all test logic and semantics

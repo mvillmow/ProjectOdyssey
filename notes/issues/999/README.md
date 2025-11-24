@@ -53,17 +53,20 @@ Analyze and categorize all compilation and runtime failures in the Training test
 **Cause:** ExTensor not declared with ImplicitlyCopyable trait
 
 **Files Affected:**
+
 - tests/shared/training/test_optimizers.mojo (15+ instances)
 - shared/training/optimizers/sgd.mojo (3+ instances)
 - shared/training/optimizers/adam.mojo (2+ instances)
 
 **Example Error:**
+
 ```
 test_optimizers.mojo:123:20: error: value of type 'ExTensor' cannot be implicitly copied
     params = result[0]
 ```
 
 **Fix:** Add ImplicitlyCopyable to ExTensor struct definition
+
 ```mojo
 // shared/core/extensor.mojo:43
 struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
@@ -71,20 +74,23 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
 ### Pattern 2: Mojo v0.25.7+ Lifecycle Method Signatures (3+ instances)
 
-**Cause:** __init__ and __copyinit__ use 'mut' instead of 'out'
+**Cause:** **init** and **copyinit** use 'mut' instead of 'out'
 
 **Files Affected:**
-- shared/core/extensor.mojo:89 (__init__)
-- shared/core/extensor.mojo:149 (__copyinit__)
-- shared/training/base.mojo:69 (__init__)
+
+- shared/core/extensor.mojo:89 (**init**)
+- shared/core/extensor.mojo:149 (**copyinit**)
+- shared/training/base.mojo:69 (**init**)
 
 **Example Error:**
+
 ```
 extensor.mojo:149:8: error: __init__ method must return Self type with 'out' argument
     fn __copyinit__(mut self, existing: Self):
 ```
 
 **Fix Pattern:**
+
 ```mojo
 fn __init__(out self, ...):  // Use 'out' instead of 'mut'
 fn __copyinit__(out self, existing: Self):
@@ -95,10 +101,12 @@ fn __copyinit__(out self, existing: Self):
 **Cause:** Test files reference undefined classes, functions, and assertions
 
 **Files Affected:**
+
 - tests/shared/training/test_training_loop.mojo
 - tests/shared/training/test_validation_loop.mojo
 
 **Example Errors:**
+
 ```
 test_training_loop.mojo:44:17: error: use of unknown declaration 'create_simple_model'
 test_training_loop.mojo:45:21: error: use of unknown declaration 'SGD'
@@ -107,6 +115,7 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ```
 
 **Missing Items:**
+
 - TrainingLoop, ValidationLoop classes
 - Loss functions (MSELoss, CrossEntropyLoss)
 - Helper functions (create_simple_model, create_mock_dataloader, etc.)
@@ -117,18 +126,21 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ### Category 1: Mojo v0.25.7+ Migration Issues (50+ errors)
 
 #### 1a. simdwidthof Import Error
+
 - **File:** shared/core/arithmetic_simd.mojo:27
 - **Error:** module 'info' does not contain 'simdwidthof'
 - **Current:** from sys.info import simdwidthof
 - **Fix:** from sys import simdwidthof
 
-#### 1b. __init__/__copyinit__ Signature Error
+#### 1b. **init**/**copyinit** Signature Error
+
 - **Files:** shared/core/extensor.mojo:89, 149; shared/training/base.mojo:69
-- **Error:** __init__ method must return Self type with 'out' argument
-- **Current:** fn __init__(mut self, ...)
-- **Fix:** fn __init__(out self, ...)
+- **Error:** **init** method must return Self type with 'out' argument
+- **Current:** fn **init**(mut self, ...)
+- **Fix:** fn **init**(out self, ...)
 
 #### 1c. ImplicitlyCopyable Trait Violation
+
 - **File:** tests/shared/training/test_optimizers.mojo:123-124, 132-133, 163, 260-262
 - **Error:** value of type 'ExTensor' cannot be implicitly copied
 - **Root Cause:** ExTensor declared (Copyable, Movable) but not ImplicitlyCopyable
@@ -136,12 +148,14 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 - **Fix:** Add ImplicitlyCopyable trait to ExTensor struct
 
 #### 1d. 'owned' Keyword Deprecation
+
 - **File:** shared/training/optimizers/rmsprop.mojo:40
 - **Error:** 'owned' has been deprecated, use 'var' instead
 - **Current:** owned buf: ExTensor = zeros(List[Int](0), DType.float32)
 - **Fix:** var buf: ExTensor = zeros(List[Int](0), DType.float32)
 
 #### 1e. Raising Function in Default Arguments
+
 - **File:** shared/training/optimizers/rmsprop.mojo:40
 - **Error:** cannot call raising function in default argument
 - **Fix:** Remove default initialization
@@ -149,6 +163,7 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ### Category 2: Missing Test Infrastructure (35+ errors)
 
 **Missing Functions:**
+
 - create_simple_model() - 8 uses
 - create_mock_dataloader() - 5 uses
 - create_simple_dataset() - 3 uses
@@ -158,6 +173,7 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 - create_classifier() - 1 use
 
 **Missing Classes:**
+
 - TrainingLoop - 8+ uses
 - ValidationLoop - 5+ uses
 - MSELoss - 8+ uses
@@ -165,6 +181,7 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 - Linear - 1 use
 
 **Missing Assertion Functions:**
+
 - assert_greater() - 5+ uses
 - assert_not_equal_tensor() - 1 use
 - assert_tensor_equal() - 1 use
@@ -172,11 +189,13 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ### Category 3: Ownership & Borrowing Violations (10+ errors)
 
 #### 3a. Implicit Copy of Non-ImplicitlyCopyable Type
+
 - **Files:** shared/training/optimizers/sgd.mojo:88, 101, 109; adam.mojo:93, 145
 - **Error:** value of type 'ExTensor' cannot be implicitly copied
 - **Fix:** Add ImplicitlyCopyable trait to ExTensor
 
 #### 3b. Ownership Transfer from Immutable Reference
+
 - **File:** shared/training/metrics/accuracy.mojo:63, 303
 - **Error:** cannot transfer out of immutable reference
 - **Pattern:** pred_classes = predictions^
@@ -185,18 +204,22 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ### Category 4: Missing Modules/Packages (8+ errors)
 
 #### 4a. Invalid DType Import
+
 - **File:** tests/shared/training/test_accuracy_bugs.mojo:14
 - **Error:** package 'memory' does not contain 'DType'
 - **Fix:** Remove or use correct import
 
 #### 4b. Missing Scheduler Classes
+
 - **File:** tests/shared/training/test_cosine_scheduler.mojo:22
 - **Missing:** shared/training/schedulers/ module with CosineAnnealingLR
 
 #### 4c. Missing Callback Classes
+
 - **Missing:** shared/training/callbacks/ module with EarlyStopping, ModelCheckpoint, LoggingCallback
 
 #### 4d. Missing Test Assertion Functions
+
 - **File:** test_cosine_scheduler.mojo:18-19
 - **Missing from conftest:** assert_greater_or_equal, assert_less_or_equal
 
@@ -205,44 +228,49 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 ### CRITICAL (Blocks Compilation)
 
 1. Fix simdwidthof import (shared/core/arithmetic_simd.mojo:27)
-2. Fix __init__/__copyinit__ signatures (use 'out' not 'mut')
+2. Fix **init**/**copyinit** signatures (use 'out' not 'mut')
 3. Add ImplicitlyCopyable to ExTensor struct
 4. Fix rmsprop optimizer (remove 'owned', remove raising defaults)
 
 ### HIGH (Blocks Test Execution)
 
-5. Implement missing test helper functions in conftest.mojo
-6. Implement TrainingLoop and ValidationLoop classes
-7. Implement Loss function module
-8. Add missing assertion functions to conftest.mojo
-9. Fix DType import in test_accuracy_bugs.mojo
+1. Implement missing test helper functions in conftest.mojo
+2. Implement TrainingLoop and ValidationLoop classes
+3. Implement Loss function module
+4. Add missing assertion functions to conftest.mojo
+5. Fix DType import in test_accuracy_bugs.mojo
 
 ### MEDIUM (Test Coverage)
 
-10. Implement missing scheduler classes
-11. Implement missing callback classes
-12. Implement test cases in empty test files
-13. Update tensor API (Tensor class vs ExTensor usage)
+1. Implement missing scheduler classes
+2. Implement missing callback classes
+3. Implement test cases in empty test files
+4. Update tensor API (Tensor class vs ExTensor usage)
 
 ## File Locations & Line Numbers
 
 **ExTensor Issues:**
+
 - /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:43 (struct declaration)
-- /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:89 (__init__ signature)
-- /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:149 (__copyinit__ signature)
+- /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:89 (**init** signature)
+- /home/mvillmow/ml-odyssey/shared/core/extensor.mojo:149 (**copyinit** signature)
 
 **SIMD Import Issue:**
+
 - /home/mvillmow/ml-odyssey/shared/core/arithmetic_simd.mojo:27
 
 **Optimizer Issues:**
+
 - /home/mvillmow/ml-odyssey/shared/training/optimizers/rmsprop.mojo:40
 - /home/mvillmow/ml-odyssey/shared/training/optimizers/sgd.mojo:88, 101, 109
 - /home/mvillmow/ml-odyssey/shared/training/optimizers/adam.mojo:93, 145
 
 **Base Training Issues:**
+
 - /home/mvillmow/ml-odyssey/shared/training/base.mojo:69
 
 **Metrics Issues:**
+
 - /home/mvillmow/ml-odyssey/shared/training/metrics/accuracy.mojo:63, 303
 
 ## Implementation Impact
@@ -258,4 +286,3 @@ test_training_loop.mojo:47:25: error: use of unknown declaration 'TrainingLoop'
 3. Implement missing classes (TrainingLoop, ValidationLoop, Loss functions)
 4. Run tests again to identify runtime failures
 5. Implement scheduler and callback classes for full test coverage
-
