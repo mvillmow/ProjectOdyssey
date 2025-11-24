@@ -69,14 +69,14 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.bool_val = value
         self.list_val = List[String]()
 
-    fn __init__(out self, value: List[String]):
+    fn __init__(out self, var value: List[String]):
         """Create ConfigValue from List[String]."""
         self.value_type = "list"
         self.int_val = 0
         self.float_val = 0.0
         self.str_val = ""
         self.bool_val = False
-        self.list_val = value
+        self.list_val = value^
 
     fn __init__(out self, value: List[Int]):
         """Create ConfigValue from List[Int]."""
@@ -89,6 +89,15 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         # Convert int list to string list for storage
         for i in range(len(value)):
             self.list_val.append(String(value[i]))
+
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor for ConfigValue."""
+        self.value_type = existing.value_type
+        self.int_val = existing.int_val
+        self.float_val = existing.float_val
+        self.str_val = existing.str_val
+        self.bool_val = existing.bool_val
+        self.list_val = existing.list_val.copy()
 
 
 # ============================================================================
@@ -109,6 +118,10 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         """Create empty configuration."""
         self.data = Dict[String, ConfigValue]()
 
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor for Config."""
+        self.data = existing.data.copy()
+
     fn set(mut self, key: String, value: Int):
         """Set integer configuration value."""
         self.data[key] = ConfigValue(value)
@@ -125,13 +138,13 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         """Set boolean configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(mut self, key: String, value: List[Int]):
+    fn set(mut self, key: String, var value: List[Int]):
         """Set list of integers configuration value."""
         self.data[key] = ConfigValue(value)
 
-    fn set(mut self, key: String, value: List[String]):
+    fn set(mut self, key: String, var value: List[String]):
         """Set list of strings configuration value."""
-        self.data[key] = ConfigValue(value)
+        self.data[key] = ConfigValue(value^)
 
     fn has(self, key: String) -> Bool:
         """Check if configuration key exists.
@@ -500,8 +513,8 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                     if ":" in line:
                         var parts = line.split(":")
                         if len(parts) >= 2:
-                            var key = parts[0].strip()
-                            var value_str = parts[1].strip()
+                            var key = String(parts[0].strip())
+                            var value_str = String(parts[1].strip())
 
                             # Try to parse as number
                             if "." in value_str:
@@ -559,12 +572,12 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 var pairs = clean.split(",")
 
                 for i in range(len(pairs)):
-                    var pair = pairs[i].strip()
+                    var pair = String(pairs[i].strip())
                     if ":" in pair:
                         var parts = pair.split(":")
                         if len(parts) >= 2:
-                            var key = parts[0].strip()
-                            var value_str = parts[1].strip()
+                            var key = String(parts[0].strip())
+                            var value_str = String(parts[1].strip())
 
                             # Try to parse as number
                             if "." in value_str:
