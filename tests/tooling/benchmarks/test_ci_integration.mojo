@@ -23,6 +23,8 @@ from tests.shared.conftest import (
     assert_true,
     assert_false,
     assert_equal,
+    assert_greater,
+    assert_less,
 )
 
 
@@ -36,9 +38,9 @@ fn test_pr_benchmark_execution() raises:
     - PR check passes/fails based on regressions
     """
     # Test PR benchmark execution
-    var pr_executed = true
-    var baseline_compared = true
-    var report_generated = true
+    var pr_executed = True
+    var baseline_compared = True
+    var report_generated = True
 
     # Verify CI steps complete
     assert_true(pr_executed, "Benchmarks should run on PR")
@@ -56,9 +58,9 @@ fn test_baseline_update_on_merge() raises:
     - Timestamp and metadata included
     """
     # Test baseline update on merge
-    var baseline_updated = true
-    var baseline_saved = true
-    var history_preserved = true
+    var baseline_updated = True
+    var baseline_saved = True
+    var history_preserved = True
 
     # Verify baseline operations
     assert_true(baseline_updated, "Baseline should be updated on merge")
@@ -76,10 +78,10 @@ fn test_scheduled_benchmark_runs() raises:
     - Trends can be tracked
     """
     # Test scheduled benchmark runs
-    var schedule_triggered = true
-    var results_stored = true
-    var timestamp_included = true
-    var trends_trackable = true
+    var schedule_triggered = True
+    var results_stored = True
+    var timestamp_included = True
+    var trends_trackable = True
 
     # Verify scheduled execution capabilities
     assert_true(schedule_triggered, "Benchmarks should run on schedule")
@@ -98,9 +100,9 @@ fn test_ci_exit_code_handling() raises:
     - Exit code matches regression state
     """
     # Test CI exit code handling
-    var exit_0_workflow_continues = true
-    var exit_1_workflow_fails = true
-    var exit_code_enforced = true
+    var exit_0_workflow_continues = True
+    var exit_1_workflow_fails = True
+    var exit_code_enforced = True
 
     # Verify exit code behavior
     assert_true(exit_0_workflow_continues, "Exit 0 should allow workflow to continue")
@@ -118,10 +120,10 @@ fn test_benchmark_result_artifacts() raises:
     - Used for historical tracking
     """
     # Test artifact storage
-    var artifacts_saved = true
-    var json_format_preserved = true
-    var downloadable = true
-    var retained = true
+    var artifacts_saved = True
+    var json_format_preserved = True
+    var downloadable = True
+    var retained = True
 
     # Verify artifact capabilities
     assert_true(artifacts_saved, "Results should be saved as artifacts")
@@ -140,9 +142,9 @@ fn test_github_actions_annotations() raises:
     - Link to detailed results
     """
     # Test GitHub Actions annotations
-    var annotations_created = true
-    var visible_in_pr = true
-    var includes_benchmark_name = true
+    var annotations_created = True
+    var visible_in_pr = True
+    var includes_benchmark_name = True
 
     # Create annotation example
     var annotation = "::error::Regression detected in matrix_op: +15% slowdown"
@@ -183,10 +185,10 @@ fn test_historical_tracking() raises:
     - Performance graphs (if implemented)
     """
     # Test historical tracking
-    var results_stored = true
-    var queryable = true
-    var trends_calculable = true
-    var long_term_enabled = true
+    var results_stored = True
+    var queryable = True
+    var trends_calculable = True
+    var long_term_enabled = True
 
     # Create historical data structure
     var historical_data = List[Float64](capacity=5)
@@ -237,9 +239,9 @@ fn test_manual_benchmark_trigger() raises:
     - Results same as automatic runs
     """
     # Test manual benchmark triggering
-    var workflow_dispatch_enabled = true
-    var manual_trigger_supported = true
-    var options_supported = true
+    var workflow_dispatch_enabled = True
+    var manual_trigger_supported = True
+    var options_supported = True
 
     # Test example with options
     var trigger_options = List[String](capacity=2)

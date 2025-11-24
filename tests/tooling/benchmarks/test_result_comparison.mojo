@@ -199,15 +199,15 @@ fn test_missing_baseline_benchmark() raises:
     current_list.append("bench_3")  # Missing in baseline
 
     # Verify we can detect missing benchmarks
-    var missing_found = false
+    var missing_found = False
     for i in range(len(current_list)):
-        var found = false
+        var found = False
         for j in range(len(baseline_list)):
             if current_list[i] == baseline_list[j]:
-                found = true
+                found = True
                 break
         if not found:
-            missing_found = true
+            missing_found = True
 
     assert_true(missing_found, "Should detect benchmark missing in baseline")
 

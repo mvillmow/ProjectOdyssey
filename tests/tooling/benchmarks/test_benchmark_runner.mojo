@@ -27,7 +27,9 @@ from tests.shared.conftest import (
     assert_greater,
     assert_less,
     assert_almost_equal,
+    assert_not_equal,
     TestFixtures,
+    BenchmarkResult,
 )
 
 

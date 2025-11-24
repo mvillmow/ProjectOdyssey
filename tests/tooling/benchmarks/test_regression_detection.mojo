@@ -24,6 +24,7 @@ from tests.shared.conftest import (
     assert_false,
     assert_equal,
     assert_greater,
+    assert_less,
 )
 
 
@@ -76,7 +77,7 @@ fn test_multiple_regressions_detection() raises:
 
     # Verify all regressions detected
     assert_equal(regression_count, 3, "Should detect all 3 regressions")
-    assert_equal(regression_count > 0, true, "Should report at least one regression")
+    assert_equal(regression_count > 0, True, "Should report at least one regression")
 
 
 fn test_no_false_positives() raises:
@@ -102,7 +103,7 @@ fn test_no_false_positives() raises:
             false_positive_count = false_positive_count + 1
 
     assert_equal(false_positive_count, 0, "Should have no false positives")
-    assert_equal(false_positive_count > 0, false, "No changes should trigger alerts")
+    assert_equal(false_positive_count > 0, False, "No changes should trigger alerts")
 
 
 fn test_exit_code_success() raises:
@@ -122,14 +123,14 @@ fn test_exit_code_success() raises:
     scenarios.append(10.0)   # At threshold
     scenarios.append(-10.0)  # Good improvement
 
-    var has_regression = false
+    var has_regression = False
     for i in range(len(scenarios)):
         if scenarios[i] > regression_threshold:
-            has_regression = true
+            has_regression = True
             break
 
     assert_false(has_regression, "Should not have any regressions")
-    assert_equal(has_regression, false, "Exit code should be 0 (success)")
+    assert_equal(has_regression, False, "Exit code should be 0 (success)")
 
 
 fn test_exit_code_failure() raises:
@@ -148,14 +149,14 @@ fn test_exit_code_failure() raises:
     scenarios.append(15.0)   # Regression (should trigger exit 1)
     scenarios.append(5.0)    # Normal variance
 
-    var has_regression = false
+    var has_regression = False
     for i in range(len(scenarios)):
         if scenarios[i] > regression_threshold:
-            has_regression = true
+            has_regression = True
             break
 
     assert_true(has_regression, "Should detect regression")
-    assert_equal(has_regression, true, "Exit code should be 1 (failure)")
+    assert_equal(has_regression, True, "Exit code should be 1 (failure)")
 
 
 fn test_regression_report_format() raises:
