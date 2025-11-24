@@ -20,7 +20,7 @@
 
 ### PASSED: Structure Tests (100/100)
 
-```
+```text
 test_directory_structure.py .................... 22 PASSED
 test_papers_directory.py ...................... 11 PASSED
 test_supporting_directories.py ................ 20 PASSED
@@ -29,7 +29,7 @@ test_structure_integration.py ................. 14 PASSED
 test_api_contracts.py ......................... 17 PASSED
                                             ──────────
 SUBTOTAL                                     100 PASSED ✓
-```
+```text
 
 **All foundation structure tests pass without issues.**
 
@@ -37,7 +37,7 @@ SUBTOTAL                                     100 PASSED ✓
 
 ### Documentation Tests Summary
 
-```
+```text
 test_dev_docs.py ........................ 24 PASSED
 test_advanced_docs.py .................. 28 PASSED
 test_core_docs.py ...................... 35 PASSED
@@ -46,7 +46,7 @@ test_doc_completeness.py ............... 39 PASSED, 10 SKIPPED
 test_doc_structure.py .................. 14 PASSED, 2 FAILED, 10 SKIPPED
                                       ─────────────────────────────────
 SUBTOTAL                             54 PASSED, 2 FAILED, 10 SKIPPED
-```
+```text
 
 ---
 
@@ -58,19 +58,19 @@ Both failures in `test_doc_structure.py`:
 
 #### Failure #1: Extra directories found
 
-```
+```text
 Test: test_no_unexpected_directories
 Status: FAILED
 Reason: Found unexpected directories: {'extensor', 'backward-passes'}
-```
+```text
 
 #### Failure #2: Wrong directory count
 
-```
+```text
 Test: test_tier_count
 Status: FAILED
 Reason: Expected 5 tier directories, found 7
-```
+```text
 
 **Root Cause**: `/docs/` contains extra directories outside the 5-tier structure:
 
@@ -93,7 +93,7 @@ Reason: Expected 5 tier directories, found 7
 ```bash
 rm -rf /home/mvillmow/ml-odyssey/docs/backward-passes/
 rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
-```
+```text
 
 **Option 2: Reorganize into appropriate tiers**
 
@@ -164,7 +164,7 @@ rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
 
 ```bash
 pytest tests/foundation/ -v --tb=short
-```
+```text
 
 ### Environment
 
@@ -247,15 +247,15 @@ To verify all tests still pass after fixes:
 ```bash
 cd /home/mvillmow/ml-odyssey
 pytest tests/foundation/ -v --tb=short
-```
+```text
 
 Expected output:
 
-```
+```text
 ============================== test session starts ==============================
 ...
 ====================== 156 passed, 10 skipped in ~0.5s =======================
-```
+```text
 
 ---
 

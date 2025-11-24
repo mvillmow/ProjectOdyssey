@@ -289,10 +289,10 @@ Tests documentation directory structure:
 
 #### Failure #1: `test_no_unexpected_directories`
 
-```
+```text
 AssertionError: Unexpected directories: {'extensor', 'backward-passes'}
 assert 2 == 0
-```
+```text
 
 **Location**: `/home/mvillmow/ml-odyssey/docs/`
 
@@ -318,10 +318,10 @@ assert 2 == 0
 
 #### Failure #2: `test_tier_count`
 
-```
+```text
 AssertionError: Should have exactly 5 tier directories
 assert 7 == 5
-```
+```text
 
 **Location**: `/home/mvillmow/ml-odyssey/docs/`
 
@@ -452,10 +452,10 @@ assert 7 == 5
 
 **Files to Handle**:
 
-```
+```text
 /home/mvillmow/ml-odyssey/docs/backward-passes/     # Remove or reorganize
 /home/mvillmow/ml-odyssey/docs/extensor/           # Remove or reorganize
-```
+```text
 
 **Actions** (choose one):
 
@@ -464,7 +464,7 @@ assert 7 == 5
 ```bash
 rm -rf /home/mvillmow/ml-odyssey/docs/backward-passes/
 rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
-```
+```text
 
 **Option B: Move to appropriate tier** (if content should be preserved)
 
@@ -473,7 +473,7 @@ rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
 # - If advanced training topic -> move to advanced/
 # - If core architecture -> move to core/
 # - If implementation detail -> move to dev/
-```
+```text
 
 **Why**: Tests expect exactly 5 tier directories in the documentation structure. These extra directories break the documentation tier hierarchy.
 

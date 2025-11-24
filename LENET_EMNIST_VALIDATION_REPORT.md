@@ -34,7 +34,7 @@ Validation of LeNet-EMNIST example files from PR #1896 shows **PARTIAL SUCCESS**
 
 ```mojo
 fn compute_gradient_stats(grad: ExTensor) raises -> (Float32, Float32, Float32, Int, Int):
-```
+```text
 
 **Error 2**: `ExTensor` not Copyable/Movable (line 89)
 
@@ -42,7 +42,7 @@ fn compute_gradient_stats(grad: ExTensor) raises -> (Float32, Float32, Float32, 
 ) raises -> List[ExTensor]:
          ~~~~~~~~~~~~~~~
 cannot bind type 'ExTensor' to trait 'Copyable & Movable'
-```
+```text
 
 ### test_weight_updates.mojo
 
@@ -50,7 +50,7 @@ cannot bind type 'ExTensor' to trait 'Copyable & Movable'
 
 ```mojo
 fn compute_weight_stats(initial: ExTensor, final: ExTensor) raises -> (Float32, Float32, Float32):
-```
+```text
 
 **Error 2**: `ExTensor` not Copyable/Movable (line 120)
 
@@ -58,7 +58,7 @@ fn compute_weight_stats(initial: ExTensor, final: ExTensor) raises -> (Float32, 
 fn copy_weights(model: LeNet5) raises -> List[ExTensor]:
                                               ~~~~~~~~~~~~~~~
 cannot bind type 'ExTensor' to trait 'Copyable & Movable'
-```
+```text
 
 ### test_predictions.mojo
 
@@ -66,7 +66,7 @@ cannot bind type 'ExTensor' to trait 'Copyable & Movable'
 
 ```mojo
 fn predict_with_confidence(mut model: LeNet5, input: ExTensor, num_classes: Int) raises -> (Int, Float32):
-```
+```text
 
 ## Root Causes
 
@@ -83,12 +83,12 @@ The tuple return type syntax `(Type1, Type2)` appears in:
 
 All fail with the same error in Mojo v0.25.7:
 
-```
+```text
 error: no matching function in initialization
 fn func(...) raises -> (Int, Float32):
                        ~~~^~~~~~~~~~
 candidate not viable: failed to infer parameter 'element_types' of parent struct 'Tuple'
-```
+```text
 
 **Mojo Version**: 0.25.7.0.dev2025111305
 
@@ -112,7 +112,7 @@ All core files have documentation string warnings - minor issue, doesn't prevent
 
 **Output**:
 
-```
+```text
 Test 3: Loss Decrease Over 100 Batches
 ============================================================
 
@@ -133,7 +133,7 @@ Loss Analysis:
   Final loss (batch  100 ):  3.8511102
   Absolute reduction:  0.27582908
   Percent reduction:  6.683623 %
-```
+```text
 
 **Status**: Working perfectly - demonstrates loss is actually decreasing during training.
 
@@ -141,7 +141,7 @@ Loss Analysis:
 
 **Output**:
 
-```
+```text
 ============================================================
 Training Metrics Validation Test
 ============================================================
@@ -164,7 +164,7 @@ Results:
   Difference:  0.0 %
 
 ✓ RESULT: Both evaluation methods produce IDENTICAL results.
-```
+```text
 
 **Status**: Working perfectly - confirms training and inference evaluation logic is consistent.
 
@@ -191,7 +191,7 @@ from collections import Tuple
 fn compute_gradient_stats(grad: ExTensor) raises -> Tuple[Float32, Float32, Float32, Int, Int]:
     # ... implementation ...
     return Tuple(mean_abs, std, max_abs, num_nan, num_inf)
-```
+```text
 
 **Option B**: Use struct wrapper
 
@@ -206,7 +206,7 @@ struct GradientStats:
 fn compute_gradient_stats(grad: ExTensor) raises -> GradientStats:
     # ... implementation ...
     return GradientStats(mean_abs, std, max_abs, num_nan, num_inf)
-```
+```text
 
 **Option C**: Return single value and modify calling code
 
@@ -234,7 +234,7 @@ struct WeightSnapshot:
 
 fn copy_weights(model: LeNet5) raises -> WeightSnapshot:
     return WeightSnapshot(model.conv1_kernel, model.conv1_bias, ...)
-```
+```text
 
 **Option B**: Process tensors immediately instead of collecting
 
@@ -243,7 +243,7 @@ fn copy_weights(model: LeNet5) raises -> WeightSnapshot:
 fn analyze_weights(model: LeNet5) raises -> WightAnalysis:
     # Compute stats for each weight individually
     # Return analysis struct with stats (not tensors)
-```
+```text
 
 **Option C**: Use reference/pointer pattern
 
@@ -267,7 +267,7 @@ fn analyze_weights(model: LeNet5) raises -> WightAnalysis:
 
 ## Files Requiring Fixes
 
-```
+```text
 examples/lenet-emnist/
 ├── model.mojo                   [⚠️ Fix doc strings]
 ├── weights.mojo                 [⚠️ Fix doc strings + deprecated 'owned']
@@ -279,7 +279,7 @@ examples/lenet-emnist/
 ├── test_loss_decrease.mojo      [✅ PASS]
 ├── test_predictions.mojo        [❌ MUST FIX: Tuple syntax]
 └── test_training_metrics.mojo   [✅ PASS]
-```
+```text
 
 ## Next Steps
 
