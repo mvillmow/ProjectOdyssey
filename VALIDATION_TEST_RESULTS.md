@@ -18,9 +18,11 @@
 ## 1. Pre-Commit Hooks Results
 
 ### Status: PARTIAL FAILURE
+
 **Exit Code**: 1 (failed) - 2 failing hooks, 5 passing hooks
 
 ### Passing Hooks (7/7)
+
 - Check for shell=True (Security) - PASSED
 - Trim Trailing Whitespace - PASSED
 - Fix End of Files - PASSED
@@ -32,10 +34,12 @@
 ### Failing Hooks (2/7)
 
 #### Hook 1: Validate URLs in Python Files
+
 **Status**: FAILED (Exit Code: 1)
 **Files Affected**: 2 files with broken URLs
 
 **Failures**:
+
 1. **File**: Unknown (URL in script context)
    - **Error**: `https://example.com): URL Error: [Errno -2] Name or service not known`
    - **Root Cause**: Malformed URL with closing parenthesis - typo in source
@@ -47,6 +51,7 @@
    - **Fix Required**: Same as above
 
 **Note**: The URL validation script correctly identifies that:
+
 - `https://example.com` (legitimate) → Skipped (known issue)
 - `https://example.com)` (typo) → Failed to validate
 
@@ -55,6 +60,7 @@
 ---
 
 #### Hook 2: Markdown Linting
+
 **Status**: FAILED (Exit Code: 1)
 **Tool**: markdownlint-cli2 v0.12.1
 **Files Scanned**: 152 markdown files
@@ -63,6 +69,7 @@
 ### Markdown Error Breakdown
 
 #### Error Type 1: Line Length (MD013) - 29 instances
+
 **Limit**: 120 characters
 **Affected Files**: 17 files
 
@@ -84,15 +91,17 @@
 | examples/lenet-emnist/README.md | 159 | 169 | 49 |
 | TEST_EXECUTION_REPORT.md | 310 | 147 | 27 |
 | COMPREHENSIVE_TEST_VALIDATION_REPORT.md | 0 | (length check) | (needs review) |
-| And 2+ more files with various violations |
+| And 2+ more files with various violations | - | - | - |
 
 **Most Common Pattern**: Documentation headers describing complex models/implementations exceed 120-char limit
 
 **Specific Examples**:
+
 - ResNet18 GAP_ANALYSIS.md line 222: 214 characters (exceeds by 94)
 - ResNet18 README.md line 231: 261 characters (exceeds by 141) - WORST OFFENDER
 
 **Fix Strategy**:
+
 1. Break long descriptions into multiple lines at clause boundaries
 2. Use references or links instead of inline long text
 3. Reformat tables that contribute to length
@@ -100,6 +109,7 @@
 ---
 
 #### Error Type 2: Missing Language Tags (MD040) - 28 instances
+
 **Issue**: Fenced code blocks without language specification
 **Affected Files**: 10 files
 
@@ -136,12 +146,14 @@
 **Most Affected**: MOJO_INTEGRATION_SUMMARY.md (13 instances)
 
 **Fix Strategy**:
+
 1. Identify code block content (Mojo, Python, text, etc.)
 2. Add appropriate language tag: ` ```mojo `, ` ```python `, ` ```bash `, etc.
 3. For output/logs, use ` ```text `
 
 **Example Patterns**:
-```
+
+```text
 WRONG:
     ```
     var x = 5
@@ -149,11 +161,12 @@ WRONG:
 CORRECT:
     ```mojo
     var x = 5
-```
+```text
 
 ---
 
 #### Error Type 3: Table Column Count (MD056) - 3 instances
+
 **Issue**: Table rows have mismatched column counts
 **Affected Files**: 2 files
 
@@ -172,12 +185,14 @@ CORRECT:
 ### Markdown Error Summary
 
 **Total Errors by Category**:
+
 - Line Length (MD013): 29 instances
 - Missing Language Tag (MD040): 28 instances
 - Table Column Mismatch (MD056): 3 instances
 - Line Length + Missing Language (Multiple files): 3 instances
 
 **Files Requiring Attention** (by error count):
+
 1. MOJO_INTEGRATION_SUMMARY.md - 13 errors (11 missing language tags + 2 length)
 2. TEST_RESULTS.md - 8 errors (4 missing language + 4 length)
 3. examples/resnet18-cifar10/README.md - 3 errors
@@ -190,6 +205,7 @@ CORRECT:
 ## 2. Python Test Results (pytest)
 
 ### Status: PASSED
+
 **Test Framework**: pytest 7.4.4
 **Total Tests**: 520
 **Passed**: 495
@@ -200,10 +216,12 @@ CORRECT:
 ### Test Category Breakdown
 
 #### Category 1: Core Tests (6 tests) - PASSED
+
 - `test_common.py`: Label colors, repo root detection, agent/plan directories
 - All validation and utility functions working correctly
 
 #### Category 2: Configuration Tests (21 tests) - PASSED
+
 - `tests/configs/test_schema.py`: YAML schema validation
 - Training config validation: PASSED
 - Model config validation: PASSED
@@ -212,6 +230,7 @@ CORRECT:
 - Type checking, range validation, enum validation all PASSED
 
 #### Category 3: Foundation Tests (70+ tests) - PASSED
+
 - Directory structure validation: PASSED
 - Papers directory creation and permissions: PASSED
 - Shared library directory structure: PASSED
@@ -221,6 +240,7 @@ CORRECT:
 - File permissions: PASSED
 
 #### Category 4: Documentation Tests (80+ tests) - PASSED (with 25 skipped)
+
 - Core docs (8 docs verified): PASSED
 - Advanced docs (6 docs verified): PASSED
 - Getting started docs: SKIPPED (first-paper.md not created yet)
@@ -228,10 +248,12 @@ CORRECT:
 - All existing documentation has proper structure, titles, and content
 
 **Skipped Tests** (all related to not-yet-created docs):
+
 - 14 tests for `/docs/getting-started/first-paper.md` (expected - TBD)
 - 6 tests for `/docs/core/detailed.md`, `/docs/core/architecture.md`, etc. (not yet created)
 
 #### Category 5: GitHub Templates Tests (50+ tests) - PASSED
+
 - Issue templates: PASSED (all YAML valid)
 - Bug report template: PASSED
 - Feature request template: PASSED
@@ -243,6 +265,7 @@ CORRECT:
 - PR template: PASSED
 
 #### Category 6: Script Validation Tests (40+ tests) - PASSED
+
 - YAML syntax validation: PASSED
 - Formatting checks (indentation, tabs, whitespace): PASSED
 - Deprecated key detection: PASSED
@@ -252,6 +275,7 @@ CORRECT:
 - Error message formatting: PASSED
 
 #### Category 7: Tooling Tests (70+ tests) - PASSED
+
 - Paper filtering (name matching, partial matches): PASSED
 - Paper scaffold (directory creation, template rendering): PASSED
 - User prompts (interactive input validation): PASSED
@@ -260,11 +284,13 @@ CORRECT:
 - Tools documentation: PASSED
 
 #### Category 8: Dependencies Tests (1 test) - PASSED
+
 - Dependencies section structure: PASSED
 
 ### Warnings Detected
 
 **Python Deprecation Warnings**:
+
 - `DeprecationWarning` from tarfile module in tests/test_package_papers.py
 - **Severity**: LOW - Will be fixed in Python 3.14
 - **Action**: Minor - update tarfile calls to use `filter=` parameter
@@ -274,6 +300,7 @@ CORRECT:
 ## 3. Test Infrastructure Status
 
 ### Pre-commit Configuration
+
 **File**: `/home/mvillmow/ml-odyssey/.pre-commit-config.yaml`
 **Status**: Properly configured
 
@@ -284,6 +311,7 @@ CORRECT:
 - General file checks: ENABLED
 
 ### Pytest Configuration
+
 **File**: `pytest.ini` (exists, properly configured)
 **Test Discovery**: Working correctly
 **Test Execution**: Fast and reliable (1.12s for 520 tests)
@@ -293,6 +321,7 @@ CORRECT:
 ## 4. Top 3 Most Common Error Patterns
 
 ### Pattern 1: Missing Language Tags in Code Blocks (28 instances)
+
 **Severity**: MEDIUM
 **Files Affected**: 10 files
 **Most Common In**: Documentation summary files generated during development
@@ -300,11 +329,13 @@ CORRECT:
 **Root Cause**: Auto-generated documentation files created without pre-commit validation
 
 **Fix Approach**:
+
 1. Grep for bare ` ``` ` without language
 2. Add language identifier based on context
 3. Re-run pre-commit validation
 
 **Example Files to Fix**:
+
 - MOJO_INTEGRATION_SUMMARY.md (13 instances)
 - BROADCAST_CRASH_FIX.md (4 instances)
 - TEST_RESULTS.md (5 instances)
@@ -312,6 +343,7 @@ CORRECT:
 ---
 
 ### Pattern 2: Lines Exceeding 120 Character Limit (29 instances)
+
 **Severity**: MEDIUM-LOW
 **Files Affected**: 17 files
 **Most Common In**: Example READMEs and analysis documents
@@ -319,11 +351,13 @@ CORRECT:
 **Root Cause**: Long technical descriptions and URLs in headers/descriptions
 
 **Lines That Need Wrapping** (worst offenders):
+
 - resnet18/README.md:231 (261 chars - needs heavy wrapping)
 - resnet18/GAP_ANALYSIS.md:222 (214 chars - long technical explanation)
 - googlenet/README.md:3 (179 chars - model description)
 
 **Fix Approach**:
+
 1. Identify natural break points (clauses, commas)
 2. Split long lines at 120 char boundary
 3. Use reference-style links for long URLs
@@ -332,6 +366,7 @@ CORRECT:
 ---
 
 ### Pattern 3: Table Column Mismatches (3 instances)
+
 **Severity**: LOW
 **Files Affected**: 1 file
 **Location**: MOJO_FIXES_IMPLEMENTED.md (lines 418, 422, 425)
@@ -339,6 +374,7 @@ CORRECT:
 **Root Cause**: Incomplete table row formatting
 
 **Fix Approach**:
+
 1. Add missing pipe separators
 2. Ensure all rows match header column count
 3. Test with markdown validator
@@ -359,7 +395,9 @@ Only 2 unique URL failures detected (both typos in source):
 **Note**: This is a **typo in documentation**, not a reachable URL issue.
 
 ### Skipped URLs (Known Issues)
+
 The following legitimate URLs are correctly skipped (cannot validate due to server/network issues):
+
 - `https://example.com` - Test/example placeholder
 - `http://example.com` - Test/example placeholder
 - `https://arxiv.org/abs/1234.5678` - Example arxiv link
@@ -374,6 +412,7 @@ The following legitimate URLs are correctly skipped (cannot validate due to serv
 ### Status: UNABLE TO EXECUTE (Mojo not installed in environment)
 
 **Mojo Test Files Identified**:
+
 - `/home/mvillmow/ml-odyssey/tests/test_core_operations.mojo`
 - `/home/mvillmow/ml-odyssey/tests/test_data_integrity.mojo`
 - `/home/mvillmow/ml-odyssey/tests/shared/integration/test_end_to_end.mojo`
@@ -390,26 +429,29 @@ The following legitimate URLs are correctly skipped (cannot validate due to serv
 ## 7. Immediate Action Items
 
 ### HIGH PRIORITY (Must fix before merge)
+
 1. **Fix malformed URLs** (2 instances)
    - Search for `https://example.com)`
    - Remove trailing `)`
    - Files: Unknown locations (caught by validator)
 
 ### MEDIUM PRIORITY (Should fix)
-2. **Add language tags to code blocks** (28 instances)
+
+1. **Add language tags to code blocks** (28 instances)
    - Files: MOJO_INTEGRATION_SUMMARY.md, TEST_RESULTS.md, etc.
    - Action: Add ` ```mojo `, ` ```python `, ` ```text ` as appropriate
 
-3. **Wrap lines exceeding 120 characters** (29 instances)
+2. **Wrap lines exceeding 120 characters** (29 instances)
    - Files: Example READMEs, analysis documents
    - Action: Break at clause boundaries, use reference-style links
 
-4. **Fix table column mismatches** (3 instances)
+3. **Fix table column mismatches** (3 instances)
    - File: MOJO_FIXES_IMPLEMENTED.md lines 418, 422, 425
    - Action: Add missing pipe separators
 
 ### LOW PRIORITY (Nice to have)
-5. **Update Python tarfile calls** (deprecation warning)
+
+1. **Update Python tarfile calls** (deprecation warning)
    - When Python 3.14 compatibility needed
    - Add `filter='data'` parameter to tarfile operations
 
@@ -418,6 +460,7 @@ The following legitimate URLs are correctly skipped (cannot validate due to serv
 ## 8. Commands to Fix Issues Locally
 
 ### Validate all fixes
+
 ```bash
 # Run all validation tests
 pre-commit run --all-files
@@ -430,9 +473,10 @@ npx markdownlint-cli2 FILENAME.md
 
 # Run URL validation
 python3 scripts/validate_urls.py FILE.py
-```
+```text
 
 ### Quick fix commands
+
 ```bash
 # Fix markdown line length (automated)
 # (requires manual intervention - line breaking)
@@ -442,24 +486,27 @@ grep -r '```$' *.md | grep -v '```mojo' | grep -v '```python' | grep -v '```bash
 
 # Find malformed URLs
 grep -r 'https://example.com)' .
-```
+```text
 
 ---
 
 ## 9. CI/CD Integration Notes
 
 ### Current Pipeline Status
+
 - Pre-commit hooks: Configured to run on all PRs
 - pytest tests: Integrated in CI pipeline
 - Markdown linting: Configured to run on all commits
 - URL validation: Configured to run on Python files
 
 ### What's Working
+
 - Fast test execution (1.12s for 520 tests)
 - Good test coverage across foundation, configs, and tooling
 - Documentation structure verified automatically
 
 ### What Needs Attention
+
 - Markdown linting catching documentation quality issues
 - URL validation script working correctly (identifies typos)
 - Mojo test execution requires Mojo compiler installation
@@ -491,6 +538,7 @@ The validation test suite is **functional and well-structured**. The codebase sh
 5. **Mojo Tests Pending**: Require Mojo compiler for execution
 
 **Recommended Next Steps**:
+
 1. Fix the 2 malformed URLs (quick fix)
 2. Add missing language tags to 28 code blocks (documentation quality)
 3. Wrap 29 lines exceeding 120 characters (style compliance)

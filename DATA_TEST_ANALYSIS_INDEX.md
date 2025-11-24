@@ -14,21 +14,27 @@ All errors are fixable through systematic pattern replacements following Mojo v0
 ## Quick Start
 
 ### For Decision Makers
+
 Start with: **ANALYSIS_SUMMARY.txt**
+
 - Executive summary of all issues
 - 80-minute fix estimate across 5 phases
 - Risk assessment (LOW)
 - Next steps and resource allocation
 
 ### For Implementers
+
 Start with: **FIX_GUIDE.md**
+
 - Step-by-step fix instructions
 - Before/after code examples
 - Verification checklist
 - Files to modify with exact line numbers
 
 ### For Detailed Understanding
+
 Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
+
 - Complete error listing with context
 - Root cause analysis
 - Code examples for each error type
@@ -39,9 +45,11 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ## Analysis Documents
 
 ### 1. ANALYSIS_SUMMARY.txt
+
 **Purpose**: High-level overview for decision makers and project managers
 
 **Contents**:
+
 - Results overview (39 errors, 0/43 tests executed)
 - Error categorization with severity levels
 - Top 3 error patterns with statistics
@@ -57,9 +65,11 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ---
 
 ### 2. FIX_GUIDE.md
+
 **Purpose**: Detailed implementation guide with code examples
 
 **Contents**:
+
 - Overview of all 39 errors
 - 5 error patterns with before/after code
 - Affected file locations and line numbers
@@ -73,6 +83,7 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 **File Size**: ~12 KB
 
 **Quick Navigation**:
+
 - Error Pattern 1: `__init__` missing return type (17 errors)
 - Error Pattern 2: ExTensor ownership violations (11 errors)
 - Error Pattern 3: Missing Tensor import (1 issue, 17 usages)
@@ -82,9 +93,11 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ---
 
 ### 3. DATA_TEST_FAILURE_ANALYSIS.md
+
 **Purpose**: Comprehensive technical analysis with root causes
 
 **Contents**:
+
 - Executive summary
 - Test execution results and coverage
 - Detailed error categorization (5 categories)
@@ -100,6 +113,7 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 **File Size**: ~20 KB
 
 **Key Sections**:
+
 - Category 1: `__init__` missing return type (errors: 17, lines provided)
 - Category 2: ExTensor ownership issues (errors: 11, lines provided)
 - Category 3: Missing Tensor import (usages: 17, lines provided)
@@ -109,9 +123,11 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ---
 
 ### 4. TEST_FAILURE_SUMMARY.txt
+
 **Purpose**: Visual overview with charts and quick reference
 
 **Contents**:
+
 - Compilation status and error distribution
 - Error breakdown by category with ASCII visualization
 - Error location map by file
@@ -153,6 +169,7 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ## Files Requiring Fixes
 
 ### Test Files (5)
+
 1. `/home/mvillmow/ml-odyssey/tests/shared/data/datasets/test_base_dataset.mojo`
    - 1 `__init__` syntax error
    - 1 trait conformance issue
@@ -172,6 +189,7 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
    - 17 usages affected
 
 ### Implementation Files (2)
+
 1. `/home/mvillmow/ml-odyssey/shared/data/transforms.mojo`
    - 2 `__init__` syntax errors (RandomCrop, RandomRotation)
    - 1 Optional syntax error
@@ -183,30 +201,35 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 ## Fix Execution Plan
 
 ### Phase 1: `__init__` Return Types (30 min)
+
 **Fixes**: 17 errors
 **Action**: Add `-> Self` return type to all `__init__` methods
 **Files**: 7 files across tests and implementation
 **Verification**: Run compilation test
 
 ### Phase 2: ExTensor Ownership (15 min)
+
 **Fixes**: 11 errors
 **Action**: Add `^` to ExTensor return statements
 **Files**: shared/data/transforms.mojo (4 locations)
 **Verification**: Run compilation test
 
 ### Phase 3: Tensor Import (10 min)
+
 **Fixes**: 17 usage errors
 **Action**: Add Tensor to import statement
 **Files**: tests/shared/data/transforms/test_augmentations.mojo
 **Verification**: Run full test suite
 
 ### Phase 4: Optional Syntax (5 min)
+
 **Fixes**: 1 error
 **Action**: Remove `[]` subscript from `value()` call
 **Files**: shared/data/transforms.mojo (line 458)
 **Verification**: Run compilation test
 
 ### Phase 5: Trait Conformances (20 min)
+
 **Fixes**: 9 cascading errors
 **Action**: Add `@fieldwise_init` and `(Copyable, Movable)` to structs
 **Files**: 4 test files
@@ -238,32 +261,36 @@ Start with: **DATA_TEST_FAILURE_ANALYSIS.md**
 
 ## References
 
-- **Mojo Manual**: https://docs.modular.com/mojo/manual/types
-- **Ownership Guide**: https://docs.modular.com/mojo/manual/values/ownership
-- **Traits**: https://docs.modular.com/mojo/manual/traits
+- **Mojo Manual**: <https://docs.modular.com/mojo/manual/types>
+- **Ownership Guide**: <https://docs.modular.com/mojo/manual/values/ownership>
+- **Traits**: <https://docs.modular.com/mojo/manual/traits>
 
 ## Document Relationships
 
-```
+```text
 ANALYSIS_SUMMARY.txt (Start here for overview)
     ↓
     ├─→ FIX_GUIDE.md (Use for implementation)
     ├─→ DATA_TEST_FAILURE_ANALYSIS.md (Use for deep understanding)
     └─→ TEST_FAILURE_SUMMARY.txt (Use for quick reference)
-```
+```text
 
 ## Support
 
 ### Questions About Analysis?
+
 Read: **DATA_TEST_FAILURE_ANALYSIS.md** (comprehensive reference)
 
 ### How Do I Fix This?
+
 Read: **FIX_GUIDE.md** (step-by-step implementation)
 
 ### Need Executive Summary?
+
 Read: **ANALYSIS_SUMMARY.txt** (high-level overview)
 
 ### Need Quick Reference?
+
 Read: **TEST_FAILURE_SUMMARY.txt** (tables and charts)
 
 ---
