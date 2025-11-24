@@ -168,7 +168,7 @@ fn plot_accuracy_only(
 
 
 fn compute_confusion_matrix(
-    `y_true`: List[Int], y_pred: List[Int], num_classes: Int = 0.
+    `y_true`: List[Int], y_pred: List[Int], num_classes: Int = 0
 ) -> List[List[Int]]:
     """Compute confusion matrix from predictions.
 
