@@ -37,7 +37,7 @@ fn rmsprop_step(
     epsilon: Float64 = 1e-8,
     weight_decay: Float64 = 0.0,
     momentum: Float64 = 0.0,
-    var buf: ExTensor = zeros(List[Int](0), DType.float32)
+    buf: Optional[ExTensor] = None
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single RMSprop optimization step - pure functional.
 
@@ -108,6 +108,13 @@ fn rmsprop_step(
     if t <= 0:
         raise Error("Timestep t must be positive (starts at 1)")
 
+    # Initialize buf if not provided
+    var initialized_buf: ExTensor
+    if buf:
+        initialized_buf = buf.value()
+    else:
+        initialized_buf = zeros(List[Int](0), DType.float32)
+
     var effective_gradients = gradients
 
     # Apply weight decay (L2 regularization) if specified
@@ -133,17 +140,17 @@ fn rmsprop_step(
     var normalized_grad = divide(effective_gradients, denom)
 
     # Apply momentum if specified
-    var new_buf = buf
+    var new_buf = initialized_buf
     var update = normalized_grad
 
     if momentum > 0.0:
-        if buf.numel() == 0:
+        if initialized_buf.numel() == 0:
             # Initialize buffer if not provided
             new_buf = zeros_like(params)
 
         # buf = momentum * buf + normalized_grad
         var momentum_tensor = full_like(params, momentum)
-        var buf_term = multiply(momentum_tensor, buf)
+        var buf_term = multiply(momentum_tensor, initialized_buf)
         new_buf = add(buf_term, normalized_grad)
         update = new_buf
 
@@ -192,7 +199,7 @@ fn rmsprop_step_simple(
     var (new_params, new_square_avg, _) = rmsprop_step(
         params, gradients, square_avg, 1,  # t=1 (not used without momentum/wd)
         learning_rate, alpha, epsilon,
-        weight_decay=0.0, momentum=0.0, buf=zeros(List[Int](0), DType.float32)
+        weight_decay=0.0, momentum=0.0, buf=None
     )
 
     return (new_params, new_square_avg)
