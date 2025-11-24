@@ -412,7 +412,7 @@ struct BaselineMetrics(Copyable, Movable):
 
 
 fn compare_to_baseline(
-    `current`: TimingStats, baseline: BaselineMetrics.
+    `current`: TimingStats, baseline: BaselineMetrics
 ) -> Tuple[Bool, Float32]:
     """Check if current performance is within baseline tolerance.
 
