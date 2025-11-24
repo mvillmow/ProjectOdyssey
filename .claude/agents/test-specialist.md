@@ -143,6 +143,27 @@ tests/
 
 **Rule of Thumb**: If it can't run automatically in CI, it's not a test it's a manual procedure.
 
+## Mojo Test Patterns
+
+**IMPORTANT**: Reference comprehensive test patterns when planning test strategies:
+
+- [agents/guides/mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) - Common test patterns and fixes
+
+### Key Test Patterns to Plan For
+
+1. **Test Entry Points** - Plan for main functions that call test functions
+2. **Python Interop** - Consider Python dependencies (time, os, etc.)
+3. **Import Strategy** - Plan relative import structure
+4. **Assertion Coverage** - Ensure all needed assertions are available
+5. **CI Integration** - Design tests to run automatically in CI
+
+When creating test specifications for engineers, include:
+
+- Required assertion functions to import
+- Python interop requirements
+- Expected test entry point structure
+- CI/CD integration requirements
+
 ## Mojo-Specific Guidelines
 
 ### Function Definitions
@@ -151,11 +172,12 @@ tests/
 - Use `def` for prototyping or Python interop
 - Default to `fn` unless flexibility is needed
 
-### Memory Management
+### Memory Management (Mojo v0.25.7+)
 
-- Use `owned` for ownership transfer
-- Use `borrowed` for read-only access
-- Use `inout` for mutable references
+- Use `var` for owned values (ownership transfer)
+- Use `read` (default) for immutable references
+- Use `mut` for mutable references (replaces `inout`)
+- Use `ref` for parametric references (advanced)
 - Prefer value semantics (struct) over reference semantics (class)
 
 ### Performance
@@ -164,7 +186,8 @@ tests/
 - Use `@parameter` for compile-time constants
 - Avoid unnecessary copies with move semantics (`^`)
 
-See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines and
+[mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) for test-specific patterns.
 
 ## Mojo Language Patterns
 

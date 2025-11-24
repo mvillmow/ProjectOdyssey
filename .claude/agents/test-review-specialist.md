@@ -158,6 +158,24 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 
 ```text
 
+## Mojo Test Pattern Review
+
+**IMPORTANT**: When reviewing Mojo tests, verify compliance with:
+
+- [agents/guides/mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) - Common test patterns
+
+### Mojo Test Pattern Checklist
+
+- [ ] Test file has `fn main() raises:` entry point
+- [ ] Main function calls all test functions
+- [ ] Boolean literals use `True`/`False` (not `true`/`false`)
+- [ ] Functions that can raise have `raises` keyword
+- [ ] Functions with closures have `escaping` keyword
+- [ ] All assertion functions are properly imported
+- [ ] Python interop uses correct syntax (subscripts, module imports)
+- [ ] Import paths are relative and match file structure
+- [ ] Struct return values use field access (not tuple unpacking)
+
 ## Review Checklist
 
 ### Coverage Completeness

@@ -99,6 +99,32 @@ tests/
 
 **Rule of Thumb**: If it can't run automatically in CI, it's not a test—it's a manual procedure.
 
+## Mojo Test Patterns
+
+**IMPORTANT**: When writing or fixing Mojo tests, follow the comprehensive patterns in:
+
+- [agents/guides/mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) - Common test patterns and fixes
+
+### Key Test Patterns
+
+1. **Test Entry Points** - All test files need `fn main() raises:` that calls test functions
+2. **Python Interop** - Use correct syntax for time module, dictionaries, etc.
+3. **Import Paths** - Use relative imports, not absolute package imports
+4. **Boolean Literals** - Use `True`/`False` not `true`/`false`
+5. **Function Signatures** - Add `raises` and `escaping` keywords where needed
+6. **Assertion Imports** - Import complete set of assertions needed
+7. **Markdown Docs** - Add language tags to code blocks, wrap long lines
+
+**Migration Checklist** (for fixing existing tests):
+
+- [ ] Main entry point defined (`fn main() raises:`)
+- [ ] All test functions called from main
+- [ ] Python interop uses correct syntax
+- [ ] Import paths match file structure
+- [ ] Boolean literals are `True`/`False`
+- [ ] Functions have `raises` keyword where needed
+- [ ] All assertion functions imported
+
 ## Mojo-Specific Guidelines
 
 ### Function Definitions
@@ -107,11 +133,12 @@ tests/
 - Use `def` for prototyping or Python interop
 - Default to `fn` unless flexibility is needed
 
-### Memory Management
+### Memory Management (Mojo v0.25.7+)
 
-- Use `owned` for ownership transfer
-- Use `borrowed` for read-only access
-- Use `inout` for mutable references
+- Use `var` for owned values (ownership transfer)
+- Use `read` (default) for immutable references
+- Use `mut` for mutable references (replaces `inout`)
+- Use `ref` for parametric references (advanced)
 - Prefer value semantics (struct) over reference semantics (class)
 
 ### Performance
@@ -120,7 +147,8 @@ tests/
 - Use `@parameter` for compile-time constants
 - Avoid unnecessary copies with move semantics (`^`)
 
-See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines and
+[mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) for test-specific patterns.
 
 ### Mojo Language Patterns
 
