@@ -743,7 +743,8 @@ When implementing these improvements:
 
 ## Resources
 
-- [Mojo Documentation](https://docs.modular.com/mojo/)
+- [Mojo SIMD Documentation](https://docs.modular.com/mojo/manual/types#simd-and-dtype)
+- [Mojo GPU Programming](https://docs.modular.com/mojo/manual/gpu/intro-tutorial)
 - [Array API Standard](https://data-apis.org/array-api/latest/)
 - [Mojo Parameters](https://docs.modular.com/mojo/manual/parameters/)
 

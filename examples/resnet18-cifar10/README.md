@@ -418,7 +418,7 @@ See [GAP_ANALYSIS.md](GAP_ANALYSIS.md) for:
   - Official PyTorch implementation
   - Demonstrates architecture details and skip connections
 
-- **ResNet TensorFlow**: <https://github.com/tensorflow/models/tree/master/official/legacy/image_classification/resnet>
+- **ResNet TensorFlow**: <https://github.com/tensorflow/models/blob/master/official/vision/modeling/backbones/resnet.py>
   - TensorFlow official implementation
 
 ### Related Resources
