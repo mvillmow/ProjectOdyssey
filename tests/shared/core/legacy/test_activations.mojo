@@ -766,10 +766,10 @@ fn test_prelu_gradient() raises:
     for i in range(4):
         grad_output._data.bitcast[Float32]()[i] = 1.0
 
-    # Backward pass returns tuple (grad_input, grad_alpha)
+    # Backward pass returns GradientPair (grad_a, grad_b)
     var grads = prelu_backward(grad_output, x, alpha)
-    var grad_x = grads[0]
-    var grad_alpha = grads[1]
+    var grad_x = grads.grad_a
+    var grad_alpha = grads.grad_b
 
     # Check grad_input
     # PReLU grad: alpha if x <= 0, else 1
