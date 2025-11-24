@@ -423,7 +423,7 @@ class TestTier4Integration:
 
     def test_tier4_document_count(self, dev_docs_dir: Path) -> None:
         """
-        Test that Tier 4 has exactly 4 documents.
+        Test that Tier 4 has exactly 10 documents.
 
         Args:
             dev_docs_dir: Path to dev docs directory
@@ -433,6 +433,12 @@ class TestTier4Integration:
             "api-reference.md",
             "release-process.md",
             "ci-cd.md",
+            "build.md",
+            "fixes.md",
+            "phases.md",
+            "reviews.md",
+            "roadmap.md",
+            "validation.md",
         ]
 
         for doc in docs:
@@ -441,7 +447,7 @@ class TestTier4Integration:
                 pytest.skip(f"Documentation file not created yet: {doc_path}")
 
         md_files = list(dev_docs_dir.glob("*.md"))
-        assert len(md_files) == 4, f"Tier 4 should have 4 documents, found {len(md_files)}"
+        assert len(md_files) == 10, f"Tier 4 should have 10 documents, found {len(md_files)}"
 
     def test_no_unexpected_dev_docs(self, dev_docs_dir: Path) -> None:
         """
@@ -455,6 +461,12 @@ class TestTier4Integration:
             "api-reference.md",
             "release-process.md",
             "ci-cd.md",
+            "build.md",
+            "fixes.md",
+            "phases.md",
+            "reviews.md",
+            "roadmap.md",
+            "validation.md",
         }
 
         for doc in expected_docs:

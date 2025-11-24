@@ -23,8 +23,8 @@ fn test_extensor_init_simple() raises:
     var t1 = ExTensor(shape1, DType.float32)
     print("SUCCESS: numel =", t1.numel(), "dim =", t1.dim())
 
-    # Check strides
-    var strides = t1._strides
+    # Check strides (need explicit copy since List[Int] isn't ImplicitlyCopyable)
+    var strides = t1._strides.copy()
     print("Strides:", strides[0], strides[1])
     assert_equal(strides[0], 3)  # Row-major: 3 elements per row
     assert_equal(strides[1], 1)
@@ -164,7 +164,7 @@ fn test_extensor_stride_preallocate() raises:
     shapes.append(s4.copy())
 
     for i in range(len(shapes)):
-        var shape = shapes[i]
+        var shape = shapes[i].copy()
         print("\nTesting stride preallocation for shape with", len(shape), "dimensions...")
 
         # Manually simulate the stride calculation

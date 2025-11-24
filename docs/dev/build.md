@@ -1,12 +1,13 @@
 # Consolidated Build & Installation
 
-From root MDs (backed up `notes/root-backup/`). Links to [phases.md](../phases.md).
+From root MDs (backed up `notes/root-backup/`). Links to [phases.md](phases.md).
 
 ## Package Building
 
 **File**: `BUILD_PACKAGE.md`
 
 **Training Module**:
+
 - `mojo package shared/training -o dist/training-0.1.0.mojopkg`
 - Verify: `./scripts/install_verify_training.sh`
 - Automated: `./scripts/build_training_package.sh`
@@ -18,6 +19,7 @@ From root MDs (backed up `notes/root-backup/`). Links to [phases.md](../phases.m
 **File**: `INSTALL.md`
 
 **Docker (Recommended)**:
+
 ```bash
 git clone https://github.com/mvillmow/ml-odyssey.git
 cd ml-odyssey
@@ -27,6 +29,7 @@ pixi run pytest tests/
 ```
 
 **Pixi Local**:
+
 ```bash
 pixi install
 pixi shell

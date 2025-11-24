@@ -1,6 +1,7 @@
 # Consolidated Validation Reports
 
-Summaries from root validation/test documents (backed up in `notes/root-backup/`). Links to [learnings.md](../learnings.md), [phases.md](../phases.md).
+Summaries from root validation/test documents (backed up in `notes/root-backup/`).
+Links to [learnings.md](../learnings.md), [phases.md](phases.md).
 
 ## CIFAR-10 Compilation Validation
 
@@ -11,6 +12,7 @@ Summaries from root validation/test documents (backed up in `notes/root-backup/`
 **Results**: 0/23 files compile (100% fail).
 
 **Blockers** (shared):
+
 - Tuple returns invalid (dropout, normalization, batch_utils).
 - `DynamicVector` missing (arithmetic.mojo).
 - `inout self` syntax errors (all models).
@@ -25,7 +27,8 @@ Summaries from root validation/test documents (backed up in `notes/root-backup/`
 
 **Files**: `FOUNDATION_TEST_SUMMARY.md`, `FOUNDATION_TEST_INDEX.md`, `FOUNDATION_TEST_QUICK_FIX.md`
 
-**Summary**: (From backups) Core tensor ops (ExTensor init, arithmetic, shape); quick fixes for leaks/transpose; index of unit/integration tests.
+**Summary**: (From backups) Core tensor ops (ExTensor init, arithmetic, shape);
+quick fixes for leaks/transpose; index of unit/integration tests.
 
 **Status**: Passed post-fixes; stress tests 10k iters.
 

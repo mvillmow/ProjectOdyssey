@@ -1,6 +1,7 @@
 # Consolidated Root-Level Fixes
 
-Detailed histories of critical bug fixes from root MDs (backed up in `notes/root-backup/`). See [docs/learnings.md](learnings.md) for generalized lessons.
+Detailed histories of critical bug fixes from root MDs (backed up in `notes/root-backup/`).
+See [learnings.md](../learnings.md) for generalized lessons.
 
 ## ExTensor Memory Leak (reshape/slice)
 
@@ -8,9 +9,10 @@ Detailed histories of critical bug fixes from root MDs (backed up in `notes/root
 
 **Problem**: Dummy allocations in views orphaned; tcmalloc OOM during training.
 
-**Root Cause**: `ExTensor(dummy_shape, dtype)` alloc → overwrite `_data` without free.
+**Root Cause**: `ExTensor(dummy_shape, dtype)` alloc -> overwrite `_data` without free.
 
 **Fix**:
+
 - Free `result._data` before `result._data = self._data`.
 - Added refcounting: `_refcount: UnsafePointer[Int]`, `__copyinit__` incr, `__del__` decr/free if 0.
 - `reshape/slice`: Copy-based views, update shape/strides safely.
@@ -23,20 +25,20 @@ Detailed histories of critical bug fixes from root MDs (backed up in `notes/root
 
 **File**: `BROADCAST_CRASH_FIX.md`
 
-**Problem**: Segfault in FC bias add; 1D→2D broadcast.
+**Problem**: Segfault in FC bias add; 1D->2D broadcast.
 
 **Root Cause**: Wrong index calc (right-to-left strides); out-of-bounds.
 
 **Fix**: Precompute row-major strides; left-to-right coord extract (`// %`).
 
 ```mojo
-# Strides e.g. (2,3) → [3,1]
+# Strides e.g. (2,3) -> [3,1]
 for dim in range(len(shape)):
     coord = temp_idx // strides[dim]
     temp_idx %= strides[dim]
 ```
 
-**Verification**: 1D→2D, middle-dim, scalar broadcasts; inference success.
+**Verification**: 1D->2D, middle-dim, scalar broadcasts; inference success.
 
 **Modified**: `shared/core/arithmetic.mojo:_broadcast_binary()`.
 
@@ -50,7 +52,7 @@ for dim in range(len(shape)):
 
 **Fix**: `List[Int]()` + append; temp lists for reverse.
 
-**TDD Path**: Full train → forward → FC1 → transpose minimal repro.
+**TDD Path**: Full train -> forward -> FC1 -> transpose minimal repro.
 
 **Verification**: (120,256) transpose, batch=32 forward.
 
@@ -60,19 +62,21 @@ for dim in range(len(shape)):
 
 **File**: `LIST_CONSTRUCTOR_FIXES_SUMMARY.md`
 
-**Problem**: `List[Int](n)` undefined size → index crash.
+**Problem**: `List[Int](n)` undefined size -> index crash.
 
 **Instances**:
+
 - `shape.mojo`: reshape(-1), squeeze, unsqueeze, concatenate (4x).
 - `accuracy.mojo`: argmax, per_class_accuracy (2x).
 - `confusion_matrix.mojo`: argmax (1x).
 - `trainer_interface.mojo`: DataLoader.next() (1x).
 
-**Fix**: Everywhere → `List[Int]()` + append.
+**Fix**: Everywhere -> `List[Int]()` + append.
 
 **Tests Created**: `test_*_bugs.mojo` suites.
 
 ## Other Fixes (To Merge)
+
 - Blocker summaries, import fixes, security wave1, etc. (summarize from backups).
 
 Updated: 2025-11-24
