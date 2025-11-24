@@ -11,13 +11,13 @@ Tests cover:
 All tests use pure functional API.
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
-    assert_shape_equal,
-    TestFixtures,
+    assert_equal_int,
+    assert_close_float,
+    assert_shape,
 )
+from tests.shared.conftest import TestFixtures
 from tests.helpers.gradient_checking import (
     compute_numerical_gradient,
     assert_gradients_close,

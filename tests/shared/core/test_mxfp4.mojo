@@ -11,10 +11,10 @@ Tests cover:
 - Edge cases and boundary values
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
+    assert_equal_int,
+    assert_close_float,
 )
 from shared.core.types.mxfp4 import MXFP4, E8M0Scale
 from math import isnan, isinf

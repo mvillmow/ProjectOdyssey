@@ -9,12 +9,12 @@ Tests cover:
 All tests use pure functional API.
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
-    TestFixtures,
+    assert_equal_int,
+    assert_close_float,
 )
+from tests.shared.conftest import TestFixtures
 from shared.core.extensor import (
     ExTensor,
     zeros,
@@ -43,12 +43,12 @@ fn test_zeros_creation() raises:
     var t = zeros(shape, DType.float32)
 
     # Check shape
-    assert_equal(t.shape()[0], 3)
-    assert_equal(t.shape()[1], 4)
+    assert_equal_int(t.shape()[0], 3)
+    assert_equal_int(t.shape()[1], 4)
 
     # Check all values are zero
     for i in range(12):
-        assert_almost_equal(t._data.bitcast[Float32]()[i], Float32(0.0), tolerance=1e-5)
+        assert_close_float(Float64(t._data.bitcast[Float32]()[i]), Float64(0.0), atol=1e-5)
 
 
 fn test_ones_creation() raises:

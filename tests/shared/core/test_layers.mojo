@@ -13,13 +13,13 @@ Note: Tests have been adapted from class-based API to pure functional API
 as per architecture decision to use functional design throughout shared library.
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
-    assert_shape_equal,
-    TestFixtures,
+    assert_equal_int,
+    assert_close_float,
+    assert_shape,
 )
+from tests.shared.conftest import TestFixtures
 from shared.core.extensor import ExTensor, zeros, ones
 from shared.core.linear import linear, linear_no_bias
 from shared.core.activation import relu, sigmoid, tanh, softmax

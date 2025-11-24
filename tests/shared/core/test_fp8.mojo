@@ -9,13 +9,13 @@ Tests cover:
 - Round-trip conversion accuracy
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
-    assert_shape_equal,
-    TestFixtures,
+    assert_equal_int,
+    assert_close_float,
+    assert_shape,
 )
+from tests.shared.conftest import TestFixtures
 from shared.core.extensor import (
     ExTensor,
     zeros,

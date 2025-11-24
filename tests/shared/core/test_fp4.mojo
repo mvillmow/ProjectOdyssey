@@ -9,10 +9,10 @@ Tests cover:
 - Edge cases and boundary values
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
+    assert_equal_int,
+    assert_close_float,
 )
 from shared.core.types.fp4 import FP4_E2M1
 from math import isnan, isinf

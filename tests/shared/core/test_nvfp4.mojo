@@ -12,10 +12,10 @@ Tests cover:
 - Accuracy comparison with MXFP4
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
+    assert_equal_int,
+    assert_close_float,
 )
 from shared.core.types.nvfp4 import NVFP4, E4M3Scale
 from math import isnan, isinf
