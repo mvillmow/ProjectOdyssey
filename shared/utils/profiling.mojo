@@ -441,4 +441,4 @@ fn detect_performance_regression(
         List of functions with regressions
     """
     # TODO: Implement regression detection for multiple functions
-    return List[String]()
+    return List[String]()^

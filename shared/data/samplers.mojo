@@ -78,7 +78,7 @@ struct SequentialSampler(Sampler, Copyable, Movable):
         var indices = List[Int](capacity=self.__len__())
         for i in range(self.start_index, self.end_index):
             indices.append(i)
-        return indices
+        return indices^
 
 
 # ============================================================================
@@ -268,4 +268,4 @@ struct WeightedSampler(Sampler, Copyable, Movable):
                         total += w[]
                         cumsum.append(total)
 
-        return indices
+        return indices^

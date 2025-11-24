@@ -63,7 +63,7 @@ struct MockTrainer(Copyable, Movable):
             results["train_loss_" + String(epoch)] = train_loss
             results["val_loss_" + String(epoch)] = val_loss
 
-        return results
+        return results^
 
     fn validate(self) raises -> Dict[String, Float64]:
         """Stub validate method.
@@ -74,7 +74,7 @@ struct MockTrainer(Copyable, Movable):
         var results = Dict[String, Float64]()
         results["loss"] = 0.5
         results["accuracy"] = 0.85
-        return results
+        return results^
 
     fn save_checkpoint(self, path: String) raises:
         """Stub save checkpoint (no-op)."""

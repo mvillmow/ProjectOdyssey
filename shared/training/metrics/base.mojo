@@ -155,7 +155,7 @@ struct MetricCollection:
         Returns:
             Vector of metric names
         """
-        return self.metric_names
+        return self.metric_names^
 
     fn contains(self, name: String) -> Bool:
         """Check if metric exists in collection.
@@ -260,7 +260,7 @@ struct MetricLogger:
         for i in range(self.num_metrics):
             if self.metric_names[i] == metric_name:
                 # Explicit copy of the history list
-                return List[Float64](self.metric_history[i])
+                return List[Float64](self.metric_history[i])^
 
         raise Error("Metric '" + metric_name + "' not found in logger")
 

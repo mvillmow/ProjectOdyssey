@@ -371,7 +371,7 @@ fn create_test_vector(size: Int, value: Float32 = 1.0) -> List[Float32]:
     var vec = List[Float32](capacity=size)
     for _ in range(size):
         vec.append(value)
-    return vec
+    return vec^
 
 
 fn create_test_matrix(
@@ -390,7 +390,7 @@ fn create_test_matrix(
     var matrix = List[List[Float32]](capacity=rows)
     for _ in range(rows):
         matrix.append(create_test_vector(cols, value))
-    return matrix
+    return matrix^
 
 
 fn create_sequential_vector(size: Int, start: Float32 = 0.0) -> List[Float32]:
@@ -406,4 +406,4 @@ fn create_sequential_vector(size: Int, start: Float32 = 0.0) -> List[Float32]:
     var vec = List[Float32](capacity=size)
     for i in range(size):
         vec.append(start + Float32(i))
-    return vec
+    return vec^

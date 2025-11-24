@@ -335,4 +335,4 @@ struct LossTracker:
         Returns:
             Vector of component names
         """
-        return self.components
+        return self.components^

@@ -261,4 +261,4 @@ fn clip_gradients(gradients: List[Float64], max_norm: Float64) -> List[Float64]:
     """
     print("[WARNING] clip_gradients is a placeholder - returns gradients unchanged")
     # TODO(#34): Implement gradient norm computation and clipping
-    return gradients
+    return gradients^

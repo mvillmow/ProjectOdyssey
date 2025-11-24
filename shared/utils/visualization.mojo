@@ -181,7 +181,7 @@ fn compute_confusion_matrix(
         Confusion matrix (num_classes x num_classes)
     """
     # TODO: Implement confusion matrix computation
-    return List[List[Int]]()
+    return List[List[Int]]()^
 
 
 fn plot_confusion_matrix(
@@ -238,7 +238,7 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
         Normalized matrix with values in [0, 1]
     """
     # TODO: Implement normalization (divide by row totals)
-    return List[List[Float32]]()
+    return List[List[Float32]]()^
 
 
 fn compute_matrix_metrics(

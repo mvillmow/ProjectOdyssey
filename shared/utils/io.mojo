@@ -326,7 +326,7 @@ fn deserialize_tensor(serialized: SerializedTensor) -> List[String]:
     var result = List[String]()
     for i in range(len(serialized.data)):
         result.append(serialized.data[i])
-    return result
+    return result^
 
 
 # ============================================================================

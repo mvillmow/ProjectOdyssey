@@ -285,7 +285,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Error: If key exists but type is not list
         """
         if key not in self.data:
-            return List[String]()
+            return List[String]()^
 
         var val = self.data[key]
         if val.value_type != "list":
@@ -295,7 +295,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 + "': expected list but got "
                 + val.value_type
             )
-        return val.list_val
+        return val.list_val^
 
     fn get(self, key: String) -> ConfigValue:
         """Get raw configuration value by key.
