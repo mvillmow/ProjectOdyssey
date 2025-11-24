@@ -33,6 +33,7 @@ from typing import List, Dict, Optional, Tuple
 # Try to import tqdm for progress bars, fall back to simple counter if not available
 try:
     from tqdm import tqdm
+
     HAS_TQDM = True
 except ImportError:
     HAS_TQDM = False
@@ -41,28 +42,28 @@ except ImportError:
 
 # ANSI color codes for terminal output
 class Colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
     @staticmethod
     def disable():
         """Disable colors for non-terminal output"""
-        Colors.HEADER = ''
-        Colors.OKBLUE = ''
-        Colors.OKCYAN = ''
-        Colors.OKGREEN = ''
-        Colors.WARNING = ''
-        Colors.FAIL = ''
-        Colors.ENDC = ''
-        Colors.BOLD = ''
-        Colors.UNDERLINE = ''
+        Colors.HEADER = ""
+        Colors.OKBLUE = ""
+        Colors.OKCYAN = ""
+        Colors.OKGREEN = ""
+        Colors.WARNING = ""
+        Colors.FAIL = ""
+        Colors.ENDC = ""
+        Colors.BOLD = ""
+        Colors.UNDERLINE = ""
 
 
 def check_github_rate_limit() -> Tuple[int, float]:
@@ -76,12 +77,7 @@ def check_github_rate_limit() -> Tuple[int, float]:
         RuntimeError: If unable to check rate limit
     """
     try:
-        result = subprocess.run(
-            ["gh", "api", "rate_limit"],
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        result = subprocess.run(["gh", "api", "rate_limit"], capture_output=True, text=True, check=True)
         data = json.loads(result.stdout)
         remaining = data["resources"]["core"]["remaining"]
         reset_time = data["resources"]["core"]["reset"]
@@ -111,10 +107,7 @@ def smart_rate_limit_sleep() -> None:
         wait_time = max(0, reset_time - time.time())
         if wait_time > 0:
             actual_wait = min(wait_time, 60)
-            logging.warning(
-                f"Rate limit critical ({remaining} remaining), "
-                f"waiting {actual_wait:.0f}s until reset"
-            )
+            logging.warning(f"Rate limit critical ({remaining} remaining), waiting {actual_wait:.0f}s until reset")
             time.sleep(actual_wait)
     elif remaining <= 100:
         # Low - exponential backoff based on remaining calls
@@ -130,6 +123,7 @@ def smart_rate_limit_sleep() -> None:
 @dataclass
 class Issue:
     """Represents a GitHub issue to be created"""
+
     title: str
     labels: List[str]
     body: str
@@ -144,6 +138,7 @@ class Issue:
 @dataclass
 class Statistics:
     """Statistics about issues to be created"""
+
     total_files: int = 0
     total_issues: int = 0
     by_section: Dict[str, int] = None
@@ -159,19 +154,18 @@ class Statistics:
 class IssueParser:
     """Parses github_issue.md files to extract issue information"""
 
-    ISSUE_TYPES = ['Plan', 'Test', 'Implementation', 'Packaging', 'Cleanup']
+    ISSUE_TYPES = ["Plan", "Test", "Implementation", "Packaging", "Cleanup"]
 
     # Pattern to match issue sections - multiple formats
     # Format 1: ## Plan Issue
     # Format 2: **Plan Issue**:
     ISSUE_SECTION_PATTERN = re.compile(
-        r'^(?:##\s+|\*\*)(Plan|Test|Implementation|Packaging|Cleanup) Issue(?:\s*$|\*\*:)',
-        re.MULTILINE
+        r"^(?:##\s+|\*\*)(Plan|Test|Implementation|Packaging|Cleanup) Issue(?:\s*$|\*\*:)", re.MULTILINE
     )
 
     def __init__(self, file_path: Path):
         self.file_path = file_path
-        self.content = file_path.read_text(encoding='utf-8')
+        self.content = file_path.read_text(encoding="utf-8")
 
     def parse(self) -> List[Issue]:
         """Parse all issues from the file"""
@@ -190,11 +184,7 @@ class IssueParser:
                 issue_type = sections[i].strip()
                 issue_content = sections[i + 1]
 
-                issue = self._parse_issue_section(
-                    issue_type,
-                    issue_content,
-                    section_name
-                )
+                issue = self._parse_issue_section(issue_type, issue_content, section_name)
                 if issue:
                     issues.append(issue)
 
@@ -205,29 +195,24 @@ class IssueParser:
         # Get relative path from notes/plan/
         parts = self.file_path.parts
         try:
-            plan_idx = parts.index('plan')
+            plan_idx = parts.index("plan")
             section = parts[plan_idx + 1]
             return section
         except (ValueError, IndexError):
-            return 'unknown'
+            return "unknown"
 
-    def _parse_issue_section(
-        self,
-        issue_type: str,
-        content: str,
-        section_name: str
-    ) -> Optional[Issue]:
+    def _parse_issue_section(self, issue_type: str, content: str, section_name: str) -> Optional[Issue]:
         """Parse a single issue section"""
 
         # Extract title - try multiple formats
         # Format 1: **Title**: `[Plan] ...`
-        title_match = re.search(r'\*\*Title\*\*:\s*`([^`]+)`', content)
+        title_match = re.search(r"\*\*Title\*\*:\s*`([^`]+)`", content)
         if not title_match:
             # Format 2: **Title**: [Plan] ...
-            title_match = re.search(r'\*\*Title\*\*:\s*(.+?)(?:\n|$)', content)
+            title_match = re.search(r"\*\*Title\*\*:\s*(.+?)(?:\n|$)", content)
         if not title_match:
             # Format 3: - Title: [Plan] ...
-            title_match = re.search(r'^-\s*Title:\s*(.+?)(?:\n|$)', content, re.MULTILINE)
+            title_match = re.search(r"^-\s*Title:\s*(.+?)(?:\n|$)", content, re.MULTILINE)
 
         if not title_match:
             return None
@@ -235,69 +220,39 @@ class IssueParser:
 
         # Extract labels - try different formats
         # Format 1: **Labels**: `label1`, `label2`
-        labels_match = re.search(
-            r'\*\*Labels\*\*:\s*`([^`]+)`(?:,\s*`([^`]+)`)*',
-            content
-        )
+        labels_match = re.search(r"\*\*Labels\*\*:\s*`([^`]+)`(?:,\s*`([^`]+)`)*", content)
         if not labels_match:
             # Format 2: **Labels**: label1, label2
-            labels_match = re.search(
-                r'\*\*Labels\*\*:\s*(.+?)(?:\n\n|\*\*|-)',
-                content
-            )
+            labels_match = re.search(r"\*\*Labels\*\*:\s*(.+?)(?:\n\n|\*\*|-)", content)
             if labels_match:
                 labels_text = labels_match.group(1)
-                labels = [
-                    label.strip('` \t')
-                    for label in re.findall(r'`([^`]+)`', labels_text)
-                ]
+                labels = [label.strip("` \t") for label in re.findall(r"`([^`]+)`", labels_text)]
                 # If no labels with backticks found, try comma-separated
                 if not labels:
-                    labels = [
-                        label.strip()
-                        for label in labels_text.split(',')
-                    ]
+                    labels = [label.strip() for label in labels_text.split(",")]
             else:
                 # Format 3: - Labels: label1, label2
-                labels_match = re.search(
-                    r'^-\s*Labels:\s*(.+?)(?:\n|$)',
-                    content,
-                    re.MULTILINE
-                )
+                labels_match = re.search(r"^-\s*Labels:\s*(.+?)(?:\n|$)", content, re.MULTILINE)
                 if labels_match:
                     labels_text = labels_match.group(1)
-                    labels = [label.strip() for label in labels_text.split(',')]
+                    labels = [label.strip() for label in labels_text.split(",")]
                 else:
                     labels = []
         else:
-            labels = [
-                label.strip('` \t')
-                for label in labels_match.groups()
-                if label
-            ]
+            labels = [label.strip("` \t") for label in labels_match.groups() if label]
 
         # Extract body - try different formats
         # Format 1: **Body**: with code block
-        body_match = re.search(
-            r'\*\*Body\*\*:\s*\n```\n(.+?)\n```',
-            content,
-            re.DOTALL
-        )
+        body_match = re.search(r"\*\*Body\*\*:\s*\n```\n(.+?)\n```", content, re.DOTALL)
 
         if not body_match:
             # Format 2: - Body: with code block
-            body_match = re.search(
-                r'^-\s*Body:\s*\n```\n(.+?)\n```',
-                content,
-                re.MULTILINE | re.DOTALL
-            )
+            body_match = re.search(r"^-\s*Body:\s*\n```\n(.+?)\n```", content, re.MULTILINE | re.DOTALL)
 
         if not body_match:
             # Format 3: **Body**: without code block
             body_match = re.search(
-                r'\*\*Body\*\*:\s*\n\n(.+?)\n\n\*\*(?:GitHub Issue URL|URL)\*\*:',
-                content,
-                re.DOTALL
+                r"\*\*Body\*\*:\s*\n\n(.+?)\n\n\*\*(?:GitHub Issue URL|URL)\*\*:", content, re.DOTALL
             )
 
         if not body_match:
@@ -305,15 +260,12 @@ class IssueParser:
         body = body_match.group(1).strip()
 
         # Check if issue already created - try both URL formats
-        url_match = re.search(
-            r'(?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*(.+?)(?:\n|$)',
-            content
-        )
+        url_match = re.search(r"(?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*(.+?)(?:\n|$)", content)
         issue_url = None
         created = False
         if url_match:
             url_text = url_match.group(1).strip()
-            if url_text and url_text not in ['[To be created]', '[to be filled]']:
+            if url_text and url_text not in ["[To be created]", "[to be filled]"]:
                 issue_url = url_text
                 created = True
 
@@ -325,20 +277,14 @@ class IssueParser:
             section_name=section_name,
             issue_type=issue_type,
             issue_url=issue_url,
-            created=created
+            created=created,
         )
 
 
 class IssueCreator:
     """Creates GitHub issues and updates markdown files"""
 
-    def __init__(
-        self,
-        repo: str,
-        dry_run: bool = False,
-        max_retries: int = 3,
-        logger: Optional[logging.Logger] = None
-    ):
+    def __init__(self, repo: str, dry_run: bool = False, max_retries: int = 3, logger: Optional[logging.Logger] = None):
         self.repo = repo
         self.dry_run = dry_run
         self.max_retries = max_retries
@@ -351,38 +297,22 @@ class IssueCreator:
             return True
 
         # Create temporary file for body
-        with tempfile.NamedTemporaryFile(
-            mode='w',
-            suffix='.md',
-            delete=False,
-            encoding='utf-8'
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as f:
             f.write(issue.body)
             body_file = f.name
 
         try:
             # Build gh command
-            cmd = [
-                'gh', 'issue', 'create',
-                '--title', issue.title,
-                '--body-file', body_file,
-                '--repo', self.repo
-            ]
+            cmd = ["gh", "issue", "create", "--title", issue.title, "--body-file", body_file, "--repo", self.repo]
 
             # Add labels
             for label in issue.labels:
-                cmd.extend(['--label', label])
+                cmd.extend(["--label", label])
 
             # Retry logic
             for attempt in range(self.max_retries):
                 try:
-                    result = subprocess.run(
-                        cmd,
-                        capture_output=True,
-                        text=True,
-                        check=True,
-                        timeout=30
-                    )
+                    result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=30)
 
                     # Extract issue URL from output
                     issue_url = result.stdout.strip()
@@ -393,18 +323,13 @@ class IssueCreator:
                     return True
 
                 except subprocess.TimeoutExpired:
-                    self.logger.warning(
-                        f"Timeout on attempt {attempt + 1}/{self.max_retries}"
-                    )
+                    self.logger.warning(f"Timeout on attempt {attempt + 1}/{self.max_retries}")
                     if attempt == self.max_retries - 1:
                         issue.error = "Timeout creating issue"
                         return False
 
                 except subprocess.CalledProcessError as e:
-                    self.logger.error(
-                        f"Error creating issue (attempt {attempt + 1}/"
-                        f"{self.max_retries}): {e.stderr}"
-                    )
+                    self.logger.error(f"Error creating issue (attempt {attempt + 1}/{self.max_retries}): {e.stderr}")
                     if attempt == self.max_retries - 1:
                         issue.error = e.stderr
                         return False
@@ -427,36 +352,32 @@ class IssueCreator:
 
         try:
             file_path = Path(issue.file_path)
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
 
             # Find the issue section - try both formats
-            issue_section_start = content.find(f'## {issue.issue_type} Issue')
+            issue_section_start = content.find(f"## {issue.issue_type} Issue")
             if issue_section_start == -1:
                 # Try bold format
-                issue_section_start = content.find(f'**{issue.issue_type} Issue**:')
+                issue_section_start = content.find(f"**{issue.issue_type} Issue**:")
                 if issue_section_start == -1:
-                    self.logger.error(
-                        f"Could not find issue section for {issue.issue_type}"
-                    )
+                    self.logger.error(f"Could not find issue section for {issue.issue_type}")
                     return False
 
             # Find the URL line within this section - handle multiple formats
             url_line_pattern = re.compile(
-                r'((?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*)\[(?:To be created|to be filled)\]',
-                re.MULTILINE
+                r"((?:\*\*)?(?:GitHub Issue URL|URL)(?:\*\*)?:\s*)\[(?:To be created|to be filled)\]", re.MULTILINE
             )
 
             # Also handle bullet format
             url_bullet_pattern = re.compile(
-                r'(^-\s*(?:URL|GitHub Issue URL):\s*)\[(?:To be created|to be filled)\]',
-                re.MULTILINE
+                r"(^-\s*(?:URL|GitHub Issue URL):\s*)\[(?:To be created|to be filled)\]", re.MULTILINE
             )
 
             # Search from the issue section onwards
             section_content = content[issue_section_start:]
             # Find next section - try both ## and **
-            next_section_hash = section_content.find('\n## ', 1)
-            next_section_bold = section_content.find('\n**', 1)
+            next_section_hash = section_content.find("\n## ", 1)
+            next_section_bold = section_content.find("\n**", 1)
 
             # Use whichever comes first (or -1 if neither found)
             if next_section_hash == -1:
@@ -470,32 +391,22 @@ class IssueCreator:
                 section_content = section_content[:next_section]
 
             # Try to replace with both patterns
-            new_section = url_line_pattern.sub(
-                f'\\1{issue.issue_url}',
-                section_content,
-                count=1
-            )
+            new_section = url_line_pattern.sub(f"\\1{issue.issue_url}", section_content, count=1)
 
             # If that didn't work, try bullet pattern
             if new_section == section_content:
-                new_section = url_bullet_pattern.sub(
-                    f'\\1{issue.issue_url}',
-                    section_content,
-                    count=1
-                )
+                new_section = url_bullet_pattern.sub(f"\\1{issue.issue_url}", section_content, count=1)
 
             # Reconstruct the full content
             if next_section != -1:
                 new_content = (
-                    content[:issue_section_start] +
-                    new_section +
-                    content[issue_section_start + next_section:]
+                    content[:issue_section_start] + new_section + content[issue_section_start + next_section :]
                 )
             else:
                 new_content = content[:issue_section_start] + new_section
 
             # Write back
-            file_path.write_text(new_content, encoding='utf-8')
+            file_path.write_text(new_content, encoding="utf-8")
             self.logger.info(f"Updated {file_path}")
             return True
 
@@ -514,24 +425,21 @@ class StateManager:
     def save_state(self, issues: List[Issue]):
         """Save current state"""
         state = {
-            'timestamp': datetime.now().isoformat(),
-            'issues': [
+            "timestamp": datetime.now().isoformat(),
+            "issues": [
                 {
-                    'file_path': issue.file_path,
-                    'issue_type': issue.issue_type,
-                    'title': issue.title,
-                    'created': issue.created,
-                    'issue_url': issue.issue_url,
-                    'error': issue.error
+                    "file_path": issue.file_path,
+                    "issue_type": issue.issue_type,
+                    "title": issue.title,
+                    "created": issue.created,
+                    "issue_url": issue.issue_url,
+                    "error": issue.error,
                 }
                 for issue in issues
-            ]
+            ],
         }
 
-        self.state_file.write_text(
-            json.dumps(state, indent=2),
-            encoding='utf-8'
-        )
+        self.state_file.write_text(json.dumps(state, indent=2), encoding="utf-8")
 
     def load_state(self) -> Optional[Dict]:
         """Load saved state"""
@@ -539,7 +447,7 @@ class StateManager:
             return None
 
         try:
-            return json.loads(self.state_file.read_text(encoding='utf-8'))
+            return json.loads(self.state_file.read_text(encoding="utf-8"))
         except Exception as e:
             print(f"Error loading state: {e}")
             return None
@@ -550,10 +458,7 @@ class StateManager:
             self.state_file.unlink()
 
 
-def find_all_issue_files(
-    plan_dir: Path,
-    section_filter: Optional[str] = None
-) -> List[Path]:
+def find_all_issue_files(plan_dir: Path, section_filter: Optional[str] = None) -> List[Path]:
     """Find all github_issue.md files"""
 
     if section_filter:
@@ -564,14 +469,11 @@ def find_all_issue_files(
     else:
         search_dir = plan_dir
 
-    files = sorted(search_dir.rglob('github_issue.md'))
+    files = sorted(search_dir.rglob("github_issue.md"))
     return files
 
 
-def parse_all_issues(
-    files: List[Path],
-    resume_state: Optional[Dict] = None
-) -> Tuple[List[Issue], Statistics]:
+def parse_all_issues(files: List[Path], resume_state: Optional[Dict] = None) -> Tuple[List[Issue], Statistics]:
     """Parse all issues from files"""
 
     all_issues = []
@@ -582,8 +484,8 @@ def parse_all_issues(
     # Build resume lookup
     resume_lookup = {}
     if resume_state:
-        for issue_data in resume_state.get('issues', []):
-            key = (issue_data['file_path'], issue_data['issue_type'])
+        for issue_data in resume_state.get("issues", []):
+            key = (issue_data["file_path"], issue_data["issue_type"])
             resume_lookup[key] = issue_data
 
     print(f"\n{Colors.OKCYAN}Parsing issue files...{Colors.ENDC}")
@@ -602,9 +504,9 @@ def parse_all_issues(
             key = (issue.file_path, issue.issue_type)
             if key in resume_lookup:
                 resume_data = resume_lookup[key]
-                issue.created = resume_data.get('created', False)
-                issue.issue_url = resume_data.get('issue_url')
-                issue.error = resume_data.get('error')
+                issue.created = resume_data.get("created", False)
+                issue.issue_url = resume_data.get("issue_url")
+                issue.error = resume_data.get("error")
 
         all_issues.extend(issues)
 
@@ -620,9 +522,9 @@ def parse_all_issues(
 def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: int = 5):
     """Print detailed dry-run summary"""
 
-    print(f"\n{Colors.BOLD}{'='*60}{Colors.ENDC}")
+    print(f"\n{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
     print(f"{Colors.WARNING}{Colors.BOLD}DRY RUN MODE - No issues will be created{Colors.ENDC}")
-    print(f"{Colors.BOLD}{'='*60}{Colors.ENDC}\n")
+    print(f"{Colors.BOLD}{'=' * 60}{Colors.ENDC}\n")
 
     print(f"Found {Colors.BOLD}{stats.total_files}{Colors.ENDC} github_issue.md files")
     print(f"Total issues to create: {Colors.BOLD}{stats.total_issues:,}{Colors.ENDC}\n")
@@ -632,10 +534,7 @@ def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: in
     for section in sorted(stats.by_section.keys()):
         count = stats.by_section[section]
         # Count unique files in this section
-        files_in_section = len(set(
-            issue.file_path for issue in issues
-            if issue.section_name == section
-        ))
+        files_in_section = len(set(issue.file_path for issue in issues if issue.section_name == section))
         print(f"  - {section}: {count} issues ({files_in_section} components)")
 
     # Breakdown by type
@@ -648,18 +547,20 @@ def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: in
     print(f"\n{Colors.OKBLUE}Example issues (first {show_limit}):{Colors.ENDC}\n")
 
     for idx, issue in enumerate(issues[:show_limit], 1):
-        print(f"{Colors.OKCYAN}[{idx}/{stats.total_issues}]{Colors.ENDC} "
-              f"Creating issue in {Path(issue.file_path).relative_to(Path.cwd())}")
+        print(
+            f"{Colors.OKCYAN}[{idx}/{stats.total_issues}]{Colors.ENDC} "
+            f"Creating issue in {Path(issue.file_path).relative_to(Path.cwd())}"
+        )
         print(f"  Title: {Colors.BOLD}{issue.title}{Colors.ENDC}")
         print(f"  Labels: {', '.join(issue.labels)}")
 
-        body_lines = issue.body.count('\n') + 1
+        body_lines = issue.body.count("\n") + 1
         print(f"  Body: ({body_lines} lines)")
 
         # Show command that would be executed
-        labels_str = ','.join(issue.labels)
+        labels_str = ",".join(issue.labels)
         print(f"  {Colors.OKBLUE}Command:{Colors.ENDC} gh issue create \\")
-        print(f"           --title \"{issue.title}\" \\")
+        print(f'           --title "{issue.title}" \\')
         print("           --body-file /tmp/issue_body_xxx.md \\")
         print(f"           --label {labels_str} \\")
         print("           --repo <repo>")
@@ -671,10 +572,7 @@ def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: in
 
 
 def create_all_issues(
-    issues: List[Issue],
-    creator: IssueCreator,
-    state_manager: StateManager,
-    dry_run: bool = False
+    issues: List[Issue], creator: IssueCreator, state_manager: StateManager, dry_run: bool = False
 ) -> Tuple[int, int]:
     """Create all issues and track progress"""
 
@@ -690,11 +588,7 @@ def create_all_issues(
     success_count = 0
     error_count = 0
 
-    iterator = (
-        tqdm(to_create, desc="Creating issues", unit="issue")
-        if HAS_TQDM
-        else to_create
-    )
+    iterator = tqdm(to_create, desc="Creating issues", unit="issue") if HAS_TQDM else to_create
 
     for idx, issue in enumerate(iterator, 1):
         if not HAS_TQDM:
@@ -728,11 +622,7 @@ def create_all_issues(
 
 
 def create_all_issues_concurrent(
-    issues: List[Issue],
-    creator: IssueCreator,
-    state_manager: StateManager,
-    dry_run: bool = False,
-    max_workers: int = 5
+    issues: List[Issue], creator: IssueCreator, state_manager: StateManager, dry_run: bool = False, max_workers: int = 5
 ) -> Tuple[int, int]:
     """Create all issues concurrently using ThreadPoolExecutor"""
 
@@ -773,14 +663,12 @@ def create_all_issues_concurrent(
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Submit all tasks
         future_to_issue = {
-            executor.submit(create_single_issue, issue, idx): issue
-            for idx, issue in enumerate(to_create, 1)
+            executor.submit(create_single_issue, issue, idx): issue for idx, issue in enumerate(to_create, 1)
         }
 
         # Use tqdm if available
         iterator = (
-            tqdm(as_completed(future_to_issue), total=len(to_create),
-                 desc="Creating issues", unit="issue")
+            tqdm(as_completed(future_to_issue), total=len(to_create), desc="Creating issues", unit="issue")
             if HAS_TQDM
             else as_completed(future_to_issue)
         )
@@ -815,16 +703,13 @@ def setup_logging(log_dir: Path) -> logging.Logger:
 
     log_dir.mkdir(exist_ok=True)
 
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    log_file = log_dir / f'create_issues_{timestamp}.log'
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = log_dir / f"create_issues_{timestamp}.log"
 
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file),
-            logging.StreamHandler(sys.stdout)
-        ]
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[logging.FileHandler(log_file), logging.StreamHandler(sys.stdout)],
     )
 
     logger = logging.getLogger(__name__)
@@ -836,23 +721,18 @@ def setup_logging(log_dir: Path) -> logging.Logger:
 def get_repo_name() -> str:
     """Get the GitHub repository name from git remote"""
     try:
-        result = subprocess.run(
-            ['git', 'remote', 'get-url', 'origin'],
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True, check=True)
 
         remote_url = result.stdout.strip()
 
         # Parse repo from URL
         # Handle both HTTPS and SSH formats
-        if remote_url.startswith('git@'):
+        if remote_url.startswith("git@"):
             # SSH: git@github.com:user/repo.git
-            match = re.search(r'git@github\.com:(.+?/.+?)(?:\.git)?$', remote_url)
+            match = re.search(r"git@github\.com:(.+?/.+?)(?:\.git)?$", remote_url)
         else:
             # HTTPS: https://github.com/user/repo.git
-            match = re.search(r'github\.com/(.+?/.+?)(?:\.git)?$', remote_url)
+            match = re.search(r"github\.com/(.+?/.+?)(?:\.git)?$", remote_url)
 
         if match:
             return match.group(1)
@@ -869,52 +749,28 @@ def main():
     """Main entry point"""
 
     parser = argparse.ArgumentParser(
-        description='Create GitHub issues from markdown files',
+        description="Create GitHub issues from markdown files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
 
-    parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Show what would be done without creating issues'
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without creating issues")
+
+    parser.add_argument("--section", type=str, help="Only process a specific section (e.g., 01-foundation)")
+
+    parser.add_argument("--file", type=str, help="Process a single github_issue.md file (for testing)")
+
+    parser.add_argument("--resume", action="store_true", help="Resume from saved state")
+
+    parser.add_argument("--repo", type=str, help="GitHub repository (default: auto-detect from git remote)")
+
+    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
 
     parser.add_argument(
-        '--section',
-        type=str,
-        help='Only process a specific section (e.g., 01-foundation)'
-    )
-
-    parser.add_argument(
-        '--file',
-        type=str,
-        help='Process a single github_issue.md file (for testing)'
-    )
-
-    parser.add_argument(
-        '--resume',
-        action='store_true',
-        help='Resume from saved state'
-    )
-
-    parser.add_argument(
-        '--repo',
-        type=str,
-        help='GitHub repository (default: auto-detect from git remote)'
-    )
-
-    parser.add_argument(
-        '--no-color',
-        action='store_true',
-        help='Disable colored output'
-    )
-
-    parser.add_argument(
-        '--workers',
+        "--workers",
         type=int,
         default=1,
-        help='Number of concurrent workers for issue creation (default: 1, use 5 for concurrent)'
+        help="Number of concurrent workers for issue creation (default: 1, use 5 for concurrent)",
     )
 
     args = parser.parse_args()
@@ -931,12 +787,12 @@ def main():
     # Setup paths
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent  # Go up one level from scripts/ to repo root
-    plan_dir = repo_root / 'notes' / 'plan'
-    log_dir = repo_root / 'logs'
+    plan_dir = repo_root / "notes" / "plan"
+    log_dir = repo_root / "logs"
 
     # Create timestamped state file in logs directory
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    state_file = log_dir / f'.issue_creation_state_{timestamp}.json'
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    state_file = log_dir / f".issue_creation_state_{timestamp}.json"
 
     if not plan_dir.exists():
         print(f"{Colors.FAIL}Error: Plan directory not found: {plan_dir}{Colors.ENDC}")
@@ -951,14 +807,16 @@ def main():
 
     print(f"\n{Colors.BOLD}GitHub Issues Creator{Colors.ENDC}")
     print(f"Repository: {Colors.OKCYAN}{repo}{Colors.ENDC}")
-    print(f"Mode: {Colors.WARNING if args.dry_run else Colors.OKGREEN}"
-          f"{'DRY RUN' if args.dry_run else 'LIVE'}{Colors.ENDC}")
+    print(
+        f"Mode: {Colors.WARNING if args.dry_run else Colors.OKGREEN}"
+        f"{'DRY RUN' if args.dry_run else 'LIVE'}{Colors.ENDC}"
+    )
 
     # Load resume state if requested
     resume_state = None
     if args.resume:
         # Find the latest state file in logs directory
-        state_files = sorted(log_dir.glob('.issue_creation_state_*.json'))
+        state_files = sorted(log_dir.glob(".issue_creation_state_*.json"))
         if state_files:
             latest_state_file = state_files[-1]
             state_manager = StateManager(latest_state_file)
@@ -966,7 +824,9 @@ def main():
             if resume_state:
                 print(f"{Colors.OKGREEN}Resuming from saved state: {latest_state_file.name}{Colors.ENDC}")
             else:
-                print(f"{Colors.WARNING}Could not load state from {latest_state_file.name}, starting fresh{Colors.ENDC}")
+                print(
+                    f"{Colors.WARNING}Could not load state from {latest_state_file.name}, starting fresh{Colors.ENDC}"
+                )
                 state_manager = StateManager(state_file)
         else:
             print(f"{Colors.WARNING}No saved state files found in logs/, starting fresh{Colors.ENDC}")
@@ -981,7 +841,7 @@ def main():
         if not file_path.exists():
             print(f"{Colors.FAIL}Error: File not found: {args.file}{Colors.ENDC}")
             sys.exit(1)
-        if not file_path.name == 'github_issue.md':
+        if not file_path.name == "github_issue.md":
             print(f"{Colors.WARNING}Warning: File is not named 'github_issue.md'{Colors.ENDC}")
         issue_files = [file_path]
         print(f"{Colors.OKCYAN}Processing single file: {file_path}{Colors.ENDC}\n")
@@ -998,8 +858,7 @@ def main():
     # Show dry-run summary
     if args.dry_run:
         print_dry_run_summary(issues, stats)
-        print(f"\n{Colors.OKGREEN}Dry run complete. "
-              f"Run without --dry-run to create issues.{Colors.ENDC}")
+        print(f"\n{Colors.OKGREEN}Dry run complete. Run without --dry-run to create issues.{Colors.ENDC}")
         return
 
     # Create issues
@@ -1008,32 +867,22 @@ def main():
     # Choose sequential or concurrent based on workers argument
     if args.workers > 1:
         success_count, error_count = create_all_issues_concurrent(
-            issues,
-            creator,
-            state_manager,
-            args.dry_run,
-            max_workers=args.workers
+            issues, creator, state_manager, args.dry_run, max_workers=args.workers
         )
     else:
-        success_count, error_count = create_all_issues(
-            issues,
-            creator,
-            state_manager,
-            args.dry_run
-        )
+        success_count, error_count = create_all_issues(issues, creator, state_manager, args.dry_run)
 
     # Print summary
-    print(f"\n{Colors.BOLD}{'='*60}{Colors.ENDC}")
+    print(f"\n{Colors.BOLD}{'=' * 60}{Colors.ENDC}")
     print(f"{Colors.BOLD}Summary{Colors.ENDC}")
-    print(f"{Colors.BOLD}{'='*60}{Colors.ENDC}\n")
+    print(f"{Colors.BOLD}{'=' * 60}{Colors.ENDC}\n")
 
     print(f"Total issues: {stats.total_issues}")
     print(f"{Colors.OKGREEN}Successfully created: {success_count}{Colors.ENDC}")
 
     if error_count > 0:
         print(f"{Colors.FAIL}Errors: {error_count}{Colors.ENDC}")
-        print(f"\n{Colors.WARNING}Some issues failed. "
-              f"Check logs and use --resume to retry.{Colors.ENDC}")
+        print(f"\n{Colors.WARNING}Some issues failed. Check logs and use --resume to retry.{Colors.ENDC}")
     else:
         print(f"\n{Colors.OKGREEN}All issues created successfully!{Colors.ENDC}")
         # Clear state on success
@@ -1042,15 +891,15 @@ def main():
     print(f"\nLogs saved to: {log_dir}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print(f"\n\n{Colors.WARNING}Interrupted by user. "
-              f"Use --resume to continue later.{Colors.ENDC}")
+        print(f"\n\n{Colors.WARNING}Interrupted by user. Use --resume to continue later.{Colors.ENDC}")
         sys.exit(1)
     except Exception as e:
         print(f"\n{Colors.FAIL}Unexpected error: {e}{Colors.ENDC}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

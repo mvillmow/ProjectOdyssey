@@ -10,6 +10,7 @@ Adds Delegation sections to:
 import re
 from pathlib import Path
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent))
 from common import get_agents_dir
 
@@ -55,35 +56,36 @@ For standard delegation patterns, escalation rules, and skip-level guidelines, s
 - [CI/CD Orchestrator](./cicd-orchestrator.md) - Integration with automated reviews
 """
 
+
 def add_delegation_section(file_path: Path, delegation_content: str, dry_run: bool = False) -> bool:
     """Add Delegation section to agent file if missing."""
     content = file_path.read_text()
 
     # Check if Delegation section already exists
-    if re.search(r'^## Delegation', content, re.MULTILINE):
+    if re.search(r"^## Delegation", content, re.MULTILINE):
         print(f"  ✓ {file_path.name} already has Delegation section")
         return False
 
     # Find insertion point (before Examples section if it exists, otherwise before final separator)
-    examples_match = re.search(r'\n## Examples', content)
+    examples_match = re.search(r"\n## Examples", content)
     if examples_match:
         insertion_point = examples_match.start()
-        new_content = content[:insertion_point] + '\n' + delegation_content + content[insertion_point:]
+        new_content = content[:insertion_point] + "\n" + delegation_content + content[insertion_point:]
     else:
         # Look for final separator
-        final_separator_match = re.search(r'\n---\n\*[^\*]+\*\s*$', content)
+        final_separator_match = re.search(r"\n---\n\*[^\*]+\*\s*$", content)
         if final_separator_match:
             insertion_point = final_separator_match.start()
-            new_content = content[:insertion_point] + '\n' + delegation_content + content[insertion_point:]
+            new_content = content[:insertion_point] + "\n" + delegation_content + content[insertion_point:]
         else:
             # Look for **Configuration File**: pattern
-            config_match = re.search(r'\n---\n\n\*\*Configuration File\*\*:', content)
+            config_match = re.search(r"\n---\n\n\*\*Configuration File\*\*:", content)
             if config_match:
                 insertion_point = config_match.start()
-                new_content = content[:insertion_point] + '\n' + delegation_content + content[insertion_point:]
+                new_content = content[:insertion_point] + "\n" + delegation_content + content[insertion_point:]
             else:
                 # Insert before end
-                new_content = content.rstrip() + '\n\n' + delegation_content + '\n'
+                new_content = content.rstrip() + "\n\n" + delegation_content + "\n"
 
     if dry_run:
         print(f"  Would add Delegation to {file_path.name}")
@@ -92,6 +94,7 @@ def add_delegation_section(file_path: Path, delegation_content: str, dry_run: bo
         file_path.write_text(new_content)
         print(f"  ✅ Added Delegation to {file_path.name}")
         return True
+
 
 def main():
     import sys
@@ -136,6 +139,7 @@ def main():
             modified_count += 1
 
     print(f"\n{'Would modify' if dry_run else 'Modified'} {modified_count} files")
+
 
 if __name__ == "__main__":
     main()

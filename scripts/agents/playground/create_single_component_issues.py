@@ -22,34 +22,36 @@ from common import LABEL_COLORS
 
 def parse_github_issue_file(file_path):
     """Parse a github_issue.md file and extract all 5 issues."""
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         content = f.read()
 
     issues = []
 
     # Split into sections by "## <Type> Issue"
-    issue_sections = re.split(r'\n---\n', content)
+    issue_sections = re.split(r"\n---\n", content)
 
-    issue_types = ['Plan', 'Test', 'Implementation', 'Packaging', 'Cleanup']
+    issue_types = ["Plan", "Test", "Implementation", "Packaging", "Cleanup"]
 
     for section in issue_sections:
         # Check which type this is
         for issue_type in issue_types:
-            if f'## {issue_type} Issue' in section:
+            if f"## {issue_type} Issue" in section:
                 # Extract title
-                title_match = re.search(r'\*\*Title\*\*:\s*`([^`]+)`', section)
+                title_match = re.search(r"\*\*Title\*\*:\s*`([^`]+)`", section)
                 # Extract labels
-                labels_match = re.search(r'\*\*Labels\*\*:\s*`([^`]+)`', section)
+                labels_match = re.search(r"\*\*Labels\*\*:\s*`([^`]+)`", section)
                 # Extract body (everything after "**Body**:" until "**GitHub Issue URL**:")
-                body_match = re.search(r'\*\*Body\*\*:\s*\n\n(.*?)\n\n\*\*GitHub Issue URL\*\*:', section, re.DOTALL)
+                body_match = re.search(r"\*\*Body\*\*:\s*\n\n(.*?)\n\n\*\*GitHub Issue URL\*\*:", section, re.DOTALL)
 
                 if title_match and labels_match and body_match:
-                    issues.append({
-                        'type': issue_type,
-                        'title': title_match.group(1).strip(),
-                        'labels': labels_match.group(1).strip(),
-                        'body': body_match.group(1).strip()
-                    })
+                    issues.append(
+                        {
+                            "type": issue_type,
+                            "title": title_match.group(1).strip(),
+                            "labels": labels_match.group(1).strip(),
+                            "body": body_match.group(1).strip(),
+                        }
+                    )
                 break
 
     return issues
@@ -59,24 +61,24 @@ def get_repo_name():
     """Auto-detect repository name from git."""
     try:
         result = subprocess.run(
-            ['gh', 'repo', 'view', '--json', 'nameWithOwner', '-q', '.nameWithOwner'],
+            ["gh", "repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         return result.stdout.strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
-        return 'mvillmow/ml-odyssey'  # Fallback
+        return "mvillmow/ml-odyssey"  # Fallback
 
 
 def create_label_if_needed(label, repo=None):
     """Create a label if it doesn't exist."""
     if repo is None:
         repo = get_repo_name()
-    color = LABEL_COLORS.get(label, '000000')
+    color = LABEL_COLORS.get(label, "000000")
 
     # Try to create label (will fail silently if it exists)
-    cmd = ['gh', 'label', 'create', label, '--color', color, '--repo', repo]
+    cmd = ["gh", "label", "create", label, "--color", color, "--repo", repo]
     subprocess.run(cmd, capture_output=True, text=True)
 
 
@@ -85,23 +87,17 @@ def create_github_issue(title, labels, body, repo=None):
     if repo is None:
         repo = get_repo_name()
     # Ensure labels exist
-    for label in labels.split(','):
+    for label in labels.split(","):
         create_label_if_needed(label.strip(), repo)
 
     # Write body to temp file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
         f.write(body)
         temp_file = f.name
 
     try:
         # Create issue
-        cmd = [
-            'gh', 'issue', 'create',
-            '--title', title,
-            '--body-file', temp_file,
-            '--label', labels,
-            '--repo', repo
-        ]
+        cmd = ["gh", "issue", "create", "--title", title, "--body-file", temp_file, "--label", labels, "--repo", repo]
 
         print(f"\nCreating issue: {title}")
         print(f"Labels: {labels}")
@@ -126,28 +122,28 @@ def create_github_issue(title, labels, body, repo=None):
 
 def update_github_issue_file(file_path, issue_urls):
     """Update the github_issue.md file with created issue URLs."""
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         content = f.read()
 
     # Map issue types to their URLs
     issue_map = {
-        'Plan': issue_urls[0] if len(issue_urls) > 0 else None,
-        'Test': issue_urls[1] if len(issue_urls) > 1 else None,
-        'Implementation': issue_urls[2] if len(issue_urls) > 2 else None,
-        'Packaging': issue_urls[3] if len(issue_urls) > 3 else None,
-        'Cleanup': issue_urls[4] if len(issue_urls) > 4 else None,
+        "Plan": issue_urls[0] if len(issue_urls) > 0 else None,
+        "Test": issue_urls[1] if len(issue_urls) > 1 else None,
+        "Implementation": issue_urls[2] if len(issue_urls) > 2 else None,
+        "Packaging": issue_urls[3] if len(issue_urls) > 3 else None,
+        "Cleanup": issue_urls[4] if len(issue_urls) > 4 else None,
     }
 
     # Update each issue URL
     for issue_type, url in issue_map.items():
         if url:
             # Pattern to find and replace the URL line for this issue type
-            pattern = rf'(## {issue_type} Issue.*?\*\*GitHub Issue URL\*\*:)\s*\[To be created\]'
-            replacement = rf'\1 {url}'
+            pattern = rf"(## {issue_type} Issue.*?\*\*GitHub Issue URL\*\*:)\s*\[To be created\]"
+            replacement = rf"\1 {url}"
             content = re.sub(pattern, replacement, content, flags=re.DOTALL)
 
     # Write back
-    with open(file_path, 'w') as f:
+    with open(file_path, "w") as f:
         f.write(content)
 
     print(f"\n✅ Updated {file_path} with issue URLs")
@@ -157,7 +153,9 @@ def main() -> None:
     if len(sys.argv) < 2:
         print("Usage: python scripts/create_single_component_issues.py <path-to-github_issue.md>")
         print("\nExample:")
-        print("  python scripts/create_single_component_issues.py notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md")
+        print(
+            "  python scripts/create_single_component_issues.py notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md"
+        )
         sys.exit(1)
 
     file_path = sys.argv[1]
@@ -182,11 +180,7 @@ def main() -> None:
     issue_urls = []
     for i, issue in enumerate(issues, 1):
         print(f"\n[{i}/{len(issues)}] {issue['type']} Issue")
-        url = create_github_issue(
-            title=issue['title'],
-            labels=issue['labels'],
-            body=issue['body']
-        )
+        url = create_github_issue(title=issue["title"], labels=issue["labels"], body=issue["body"])
         if url:
             issue_urls.append(url)
         else:
@@ -203,5 +197,5 @@ def main() -> None:
         print(f"  {i}. {url}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

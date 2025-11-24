@@ -82,10 +82,7 @@ def check_required_sections(readme_path: Path, sections: List[str]) -> Tuple[boo
     missing = []
     for section in required:
         # Check for exact match or case-insensitive partial match
-        found = any(
-            section.lower() in existing.lower()
-            for existing in sections
-        )
+        found = any(section.lower() in existing.lower() for existing in sections)
         if not found:
             missing.append(section)
 

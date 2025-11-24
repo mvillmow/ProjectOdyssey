@@ -18,15 +18,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 def run_command(cmd: list, cwd: Path = None, check: bool = True, capture_output: bool = True):
     """Run a shell command and return the result."""
-    result = subprocess.run(
-        cmd,
-        cwd=cwd,
-        capture_output=capture_output,
-        text=True,
-        check=False
-    )
+    result = subprocess.run(cmd, cwd=cwd, capture_output=capture_output, text=True, check=False)
 
     if check and result.returncode != 0:
         print(f"❌ Command failed: {' '.join(cmd)}")
@@ -36,15 +31,11 @@ def run_command(cmd: list, cwd: Path = None, check: bool = True, capture_output:
 
     return result
 
+
 def main():
     """Main merge workflow."""
     # Get repository root dynamically (secure - no hardcoded paths)
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
+    result = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True, check=True)
     repo_root = Path(result.stdout.strip())
     worktree_path = repo_root / "worktrees" / "backward-tests"
 
@@ -74,7 +65,7 @@ def main():
         print("⚠️  Worktree has uncommitted changes:")
         print(result.stdout)
         response = input("Continue anyway? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             sys.exit(1)
     else:
         print("✅ Worktree is clean")
@@ -91,7 +82,7 @@ def main():
         print("⚠️  Main repository has uncommitted changes:")
         print(result.stdout)
         response = input("Continue anyway? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             sys.exit(1)
     else:
         print("✅ Main repository is clean")
@@ -105,17 +96,11 @@ def main():
 
     # Step 5: Check for divergence
     print("Step 5: Checking for branch divergence...")
-    result = run_command(
-        ["git", "log", "main..backward-tests", "--oneline"],
-        cwd=repo_root
-    )
-    commits_ahead = result.stdout.strip().split('\n') if result.stdout.strip() else []
+    result = run_command(["git", "log", "main..backward-tests", "--oneline"], cwd=repo_root)
+    commits_ahead = result.stdout.strip().split("\n") if result.stdout.strip() else []
 
-    result = run_command(
-        ["git", "log", "backward-tests..main", "--oneline"],
-        cwd=repo_root
-    )
-    commits_behind = result.stdout.strip().split('\n') if result.stdout.strip() else []
+    result = run_command(["git", "log", "backward-tests..main", "--oneline"], cwd=repo_root)
+    commits_behind = result.stdout.strip().split("\n") if result.stdout.strip() else []
 
     print(f"Commits in backward-tests not in main: {len(commits_ahead)}")
     if commits_ahead:
@@ -147,7 +132,7 @@ def main():
     print(f"  Commits to merge: {len(commits_ahead)}")
     print()
     response = input("Proceed with merge? (y/n): ")
-    if response.lower() != 'y':
+    if response.lower() != "y":
         print("Merge cancelled")
         sys.exit(0)
     print()
@@ -191,7 +176,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
         ["git", "merge", "--no-ff", "backward-tests", "-m", commit_msg],
         cwd=repo_root,
         check=False,
-        capture_output=False
+        capture_output=False,
     )
 
     if result.returncode != 0:
@@ -256,6 +241,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
     print("  3. Verify CI passes")
     print("  4. Cleanup worktree if needed: git worktree remove worktrees/backward-tests")
     print()
+
 
 if __name__ == "__main__":
     main()

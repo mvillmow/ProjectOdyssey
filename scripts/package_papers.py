@@ -72,9 +72,7 @@ def main() -> int:
     Returns:
         0 on success, 1 on failure
     """
-    parser = argparse.ArgumentParser(
-        description="Package papers/ directory into a distributable tarball"
-    )
+    parser = argparse.ArgumentParser(description="Package papers/ directory into a distributable tarball")
     parser.add_argument(
         "--output",
         type=Path,
@@ -105,6 +103,7 @@ def main() -> int:
     except Exception as e:
         print(f"UNEXPECTED ERROR: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 

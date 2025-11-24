@@ -24,6 +24,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
@@ -36,48 +37,66 @@ except ImportError:
 
 # Required fields and their types
 REQUIRED_FIELDS = {
-    'name': str,
-    'description': str,
-    'tools': str,
-    'model': str,
+    "name": str,
+    "description": str,
+    "tools": str,
+    "model": str,
 }
 
 # Valid model names
-VALID_MODELS = {'sonnet', 'opus', 'haiku', 'claude-3-5-sonnet', 'claude-3-opus', 'claude-3-haiku'}
+VALID_MODELS = {"sonnet", "opus", "haiku", "claude-3-5-sonnet", "claude-3-opus", "claude-3-haiku"}
 
 # Valid tool names (based on common Claude Code tools)
 VALID_TOOLS = {
-    'Read', 'Write', 'Edit', 'Grep', 'Glob', 'Bash',
-    'WebFetch', 'WebSearch', 'TodoWrite', 'SlashCommand',
-    'AskUserQuestion', 'NotebookEdit', 'BashOutput', 'KillShell'
+    "Read",
+    "Write",
+    "Edit",
+    "Grep",
+    "Glob",
+    "Bash",
+    "WebFetch",
+    "WebSearch",
+    "TodoWrite",
+    "SlashCommand",
+    "AskUserQuestion",
+    "NotebookEdit",
+    "BashOutput",
+    "KillShell",
 }
 
 # Required sections in agent markdown files
 REQUIRED_SECTIONS = {
-    'Role',
-    'Scope',
-    'Responsibilities',
-    'Mojo-Specific Guidelines',
-    'Workflow',
-    'Constraints',
+    "Role",
+    "Scope",
+    "Responsibilities",
+    "Mojo-Specific Guidelines",
+    "Workflow",
+    "Constraints",
 }
 
 # Sections that should mention delegation
 DELEGATION_SECTIONS = {
-    'Delegation',
-    'Delegates To',
-    'Coordinates With',
-    'No Delegation',  # For junior engineers
+    "Delegation",
+    "Delegates To",
+    "Coordinates With",
+    "No Delegation",  # For junior engineers
 }
 
 # Mojo-specific keywords to check for
 MOJO_KEYWORDS = [
-    'mojo', 'Mojo',
-    'owned', 'borrowed', 'inout',
-    '@parameter', '@value',
-    'struct', 'fn',
-    'SIMD', 'tensor',
-    '.mojo', '.🔥',
+    "mojo",
+    "Mojo",
+    "owned",
+    "borrowed",
+    "inout",
+    "@parameter",
+    "@value",
+    "struct",
+    "fn",
+    "SIMD",
+    "tensor",
+    ".mojo",
+    ".🔥",
 ]
 
 
@@ -116,7 +135,7 @@ def extract_frontmatter(content: str) -> Optional[Tuple[str, Dict]]:
     Returns:
         Tuple of (frontmatter_text, parsed_dict) or None if extraction fails
     """
-    pattern = r'^---\s*\n(.*?\n)---\s*\n'
+    pattern = r"^---\s*\n(.*?\n)---\s*\n"
     match = re.match(pattern, content, re.DOTALL)
 
     if not match:
@@ -150,39 +169,31 @@ def validate_frontmatter(frontmatter: Dict, result: ValidationResult):
         else:
             value = frontmatter[field]
             if not isinstance(value, expected_type):
-                result.add_error(
-                    f"Field '{field}' should be {expected_type.__name__}, "
-                    f"got {type(value).__name__}"
-                )
+                result.add_error(f"Field '{field}' should be {expected_type.__name__}, got {type(value).__name__}")
 
     # Validate model
-    if 'model' in frontmatter:
-        model = frontmatter['model']
+    if "model" in frontmatter:
+        model = frontmatter["model"]
         if model not in VALID_MODELS:
-            result.add_error(
-                f"Invalid model '{model}'. Valid models: {', '.join(sorted(VALID_MODELS))}"
-            )
+            result.add_error(f"Invalid model '{model}'. Valid models: {', '.join(sorted(VALID_MODELS))}")
 
     # Validate name format
-    if 'name' in frontmatter:
-        name = frontmatter['name']
-        if not re.match(r'^[a-z][a-z0-9-]*$', name):
-            result.add_error(
-                f"Name '{name}' should be lowercase with hyphens (e.g., 'chief-architect')"
-            )
+    if "name" in frontmatter:
+        name = frontmatter["name"]
+        if not re.match(r"^[a-z][a-z0-9-]*$", name):
+            result.add_error(f"Name '{name}' should be lowercase with hyphens (e.g., 'chief-architect')")
 
     # Validate tools
-    if 'tools' in frontmatter:
-        tools_str = frontmatter['tools']
+    if "tools" in frontmatter:
+        tools_str = frontmatter["tools"]
         if not tools_str.strip():
             result.add_error("Tools field cannot be empty")
         else:
-            tools = [t.strip() for t in tools_str.split(',')]
+            tools = [t.strip() for t in tools_str.split(",")]
             invalid_tools = [t for t in tools if t not in VALID_TOOLS]
             if invalid_tools:
                 result.add_warning(
-                    f"Unknown tools: {', '.join(invalid_tools)}. "
-                    f"Valid tools: {', '.join(sorted(VALID_TOOLS))}"
+                    f"Unknown tools: {', '.join(invalid_tools)}. Valid tools: {', '.join(sorted(VALID_TOOLS))}"
                 )
 
 
@@ -197,7 +208,7 @@ def extract_sections(content: str) -> Set[str]:
         Set of section header texts (without ## prefix)
     """
     # Match level 2 headers (##)
-    pattern = r'^##\s+(.+)$'
+    pattern = r"^##\s+(.+)$"
     headers = re.findall(pattern, content, re.MULTILINE)
     return set(headers)
 
@@ -235,13 +246,10 @@ def validate_mojo_content(content: str, result: ValidationResult):
     mojo_mentions = sum(1 for keyword in MOJO_KEYWORDS if keyword in content)
 
     if mojo_mentions == 0:
-        result.add_warning(
-            "No Mojo-specific content found. Agents should include Mojo guidelines."
-        )
+        result.add_warning("No Mojo-specific content found. Agents should include Mojo guidelines.")
     elif mojo_mentions < 3:
         result.add_warning(
-            f"Limited Mojo-specific content ({mojo_mentions} mentions). "
-            "Consider adding more Mojo-specific guidelines."
+            f"Limited Mojo-specific content ({mojo_mentions} mentions). Consider adding more Mojo-specific guidelines."
         )
 
 
@@ -254,23 +262,23 @@ def validate_delegation_patterns(content: str, frontmatter: Dict, result: Valida
         frontmatter: Parsed frontmatter
         result: ValidationResult to add errors/warnings to
     """
-    agent_name = frontmatter.get('name', '')
+    agent_name = frontmatter.get("name", "")
 
     # Junior engineers should have "No Delegation"
-    if 'junior' in agent_name.lower():
-        if 'No Delegation' not in content and 'no delegation' not in content.lower():
+    if "junior" in agent_name.lower():
+        if "No Delegation" not in content and "no delegation" not in content.lower():
             result.add_warning("Junior engineers should explicitly state 'No Delegation'")
         return
 
     # Other agents should have delegation information
-    delegation_keywords = ['Delegates To', 'delegates to', 'Coordinates With', 'coordinates with']
+    delegation_keywords = ["Delegates To", "delegates to", "Coordinates With", "coordinates with"]
     has_delegation = any(keyword in content for keyword in delegation_keywords)
 
-    if not has_delegation and 'orchestrator' in agent_name.lower():
+    if not has_delegation and "orchestrator" in agent_name.lower():
         result.add_warning("Orchestrators should define delegation patterns")
 
     # Check for markdown links to other agents
-    agent_links = re.findall(r'\[([^\]]+)\]\(\./([^)]+)\.md\)', content)
+    agent_links = re.findall(r"\[([^\]]+)\]\(\./([^)]+)\.md\)", content)
     if agent_links:
         # Validate linked files exist
         agents_dir = result.file_path.parent
@@ -288,19 +296,17 @@ def validate_workflow_phase(content: str, result: ValidationResult):
         content: The markdown file content
         result: ValidationResult to add errors/warnings to
     """
-    workflow_phases = ['Plan', 'Test', 'Implementation', 'Packaging', 'Cleanup']
+    workflow_phases = ["Plan", "Test", "Implementation", "Packaging", "Cleanup"]
 
     # Check for "Workflow Phase" section
-    if 'Workflow Phase' not in content and '## Workflow' not in content:
+    if "Workflow Phase" not in content and "## Workflow" not in content:
         result.add_warning("No 'Workflow Phase' section found")
         return
 
     # Check if at least one workflow phase is mentioned
     mentioned_phases = [phase for phase in workflow_phases if phase in content]
     if not mentioned_phases:
-        result.add_warning(
-            f"No workflow phases mentioned. Expected one of: {', '.join(workflow_phases)}"
-        )
+        result.add_warning(f"No workflow phases mentioned. Expected one of: {', '.join(workflow_phases)}")
 
 
 def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
@@ -318,7 +324,7 @@ def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
 
     # Read file
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         result.add_error(f"Failed to read file: {e}")
         return result
@@ -345,17 +351,17 @@ def validate_file(file_path: Path, verbose: bool = False) -> ValidationResult:
     validate_workflow_phase(content, result)
 
     # Check file length (should be substantive)
-    lines = content.split('\n')
+    lines = content.split("\n")
     if len(lines) < 50:
         result.add_warning(f"File is short ({len(lines)} lines). Consider adding more detail.")
 
     # Check for Skills section
     if verbose:
-        if 'Skills to Use' not in content and 'Skills' not in content:
+        if "Skills to Use" not in content and "Skills" not in content:
             result.add_warning("No 'Skills to Use' section found")
 
         # Check for Error Handling section
-        if 'Error Handling' not in content:
+        if "Error Handling" not in content:
             result.add_warning("No 'Error Handling' section found")
 
     return result
@@ -385,18 +391,14 @@ Examples:
 
     # Show warnings as well as errors
     python scripts/agents/validate_agents.py --verbose
-        """
+        """,
     )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Show verbose output including warnings")
     parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='Show verbose output including warnings'
-    )
-    parser.add_argument(
-        '--agents-dir',
+        "--agents-dir",
         type=Path,
         default=None,  # Will use get_agents_dir() if not specified
-        help='Path to agents directory (default: .claude/agents)'
+        help="Path to agents directory (default: .claude/agents)",
     )
 
     args = parser.parse_args()
@@ -407,7 +409,7 @@ Examples:
     # Find repository root
     repo_root = Path.cwd()
     while repo_root != repo_root.parent:
-        if (repo_root / '.claude').exists():
+        if (repo_root / ".claude").exists():
             break
         repo_root = repo_root.parent
     else:
@@ -425,7 +427,7 @@ Examples:
         return 1
 
     # Find all markdown files
-    agent_files = sorted(agents_dir.glob('*.md'))
+    agent_files = sorted(agents_dir.glob("*.md"))
 
     if not agent_files:
         print(f"Error: No .md files found in {agents_dir}", file=sys.stderr)
@@ -481,5 +483,5 @@ Examples:
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

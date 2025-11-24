@@ -31,6 +31,7 @@ from typing import Tuple
 
 try:
     import numpy as np
+
     HAS_NUMPY = True
 except ImportError:
     HAS_NUMPY = False
@@ -52,11 +53,11 @@ EMNIST_URLS = [EMNIST_PRIMARY_URL] + EMNIST_FALLBACK_URLS
 # Available splits
 EMNIST_SPLITS = [
     "balanced",  # 131,600 chars, 47 balanced classes (recommended)
-    "byclass",   # 814,255 chars, 62 unbalanced classes
-    "bymerge",   # 814,255 chars, 47 unbalanced classes
-    "digits",    # 280,000 chars, 10 balanced classes
-    "letters",   # 145,600 chars, 26 balanced classes
-    "mnist",     # 70,000 chars, 10 balanced classes
+    "byclass",  # 814,255 chars, 62 unbalanced classes
+    "bymerge",  # 814,255 chars, 47 unbalanced classes
+    "digits",  # 280,000 chars, 10 balanced classes
+    "letters",  # 145,600 chars, 26 balanced classes
+    "mnist",  # 70,000 chars, 10 balanced classes
 ]
 
 
@@ -74,22 +75,14 @@ def download_file(url: str, output_path: Path) -> None:
     print(f"Downloading {url}...")
 
     # Try wget first
-    result = subprocess.run(
-        ["wget", "-q", "-O", str(output_path), url],
-        capture_output=True
-    )
+    result = subprocess.run(["wget", "-q", "-O", str(output_path), url], capture_output=True)
 
     if result.returncode != 0:
         # Fall back to curl
-        result = subprocess.run(
-            ["curl", "-s", "-L", "-o", str(output_path), url],
-            capture_output=True
-        )
+        result = subprocess.run(["curl", "-s", "-L", "-o", str(output_path), url], capture_output=True)
 
         if result.returncode != 0:
-            raise RuntimeError(
-                f"Failed to download {url}. Install wget or curl."
-            )
+            raise RuntimeError(f"Failed to download {url}. Install wget or curl.")
 
     print(f"Downloaded to {output_path}")
 
@@ -99,10 +92,7 @@ def extract_gzip(gzip_path: Path, output_dir: Path) -> None:
     print(f"Extracting {gzip_path}...")
 
     # First unzip the .zip file
-    result = subprocess.run(
-        ["unzip", "-q", "-o", str(gzip_path), "-d", str(output_dir)],
-        capture_output=True
-    )
+    result = subprocess.run(["unzip", "-q", "-o", str(gzip_path), "-d", str(output_dir)], capture_output=True)
 
     if result.returncode != 0:
         raise RuntimeError(f"Failed to extract {gzip_path}")
@@ -112,9 +102,9 @@ def extract_gzip(gzip_path: Path, output_dir: Path) -> None:
     if gzip_dir.exists():
         for gz_file in gzip_dir.glob("*.gz"):
             print(f"Extracting {gz_file.name}...")
-            with gzip.open(gz_file, 'rb') as f_in:
+            with gzip.open(gz_file, "rb") as f_in:
                 output_file = output_dir / gz_file.stem
-                with open(output_file, 'wb') as f_out:
+                with open(output_file, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
 
     print(f"Extracted to {output_dir}")
@@ -125,12 +115,12 @@ def read_idx_labels(filename: Path):
     if not HAS_NUMPY:
         raise ImportError("NumPy is required for dataset verification. Install with: pip install numpy")
 
-    with open(filename, 'rb') as f:
-        magic = struct.unpack('>I', f.read(4))[0]
+    with open(filename, "rb") as f:
+        magic = struct.unpack(">I", f.read(4))[0]
         if magic != 2049:  # Label file magic number
             raise ValueError(f"Invalid magic number in {filename}")
 
-        num_items = struct.unpack('>I', f.read(4))[0]
+        num_items = struct.unpack(">I", f.read(4))[0]
         labels = np.frombuffer(f.read(), dtype=np.uint8)
 
         if len(labels) != num_items:
@@ -144,14 +134,14 @@ def read_idx_images(filename: Path):
     if not HAS_NUMPY:
         raise ImportError("NumPy is required for dataset verification. Install with: pip install numpy")
 
-    with open(filename, 'rb') as f:
-        magic = struct.unpack('>I', f.read(4))[0]
+    with open(filename, "rb") as f:
+        magic = struct.unpack(">I", f.read(4))[0]
         if magic != 2051:  # Image file magic number
             raise ValueError(f"Invalid magic number in {filename}")
 
-        num_images = struct.unpack('>I', f.read(4))[0]
-        num_rows = struct.unpack('>I', f.read(4))[0]
-        num_cols = struct.unpack('>I', f.read(4))[0]
+        num_images = struct.unpack(">I", f.read(4))[0]
+        num_rows = struct.unpack(">I", f.read(4))[0]
+        num_cols = struct.unpack(">I", f.read(4))[0]
 
         images = np.frombuffer(f.read(), dtype=np.uint8)
         images = images.reshape(num_images, num_rows, num_cols)
@@ -195,21 +185,15 @@ def verify_dataset(data_dir: Path, split: str) -> Tuple[int, int, int]:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Download and extract EMNIST dataset"
-    )
+    parser = argparse.ArgumentParser(description="Download and extract EMNIST dataset")
     parser.add_argument(
-        "--split",
-        type=str,
-        default="balanced",
-        choices=EMNIST_SPLITS,
-        help="EMNIST split to use (default: balanced)"
+        "--split", type=str, default="balanced", choices=EMNIST_SPLITS, help="EMNIST split to use (default: balanced)"
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path(__file__).parent.parent / "datasets" / "emnist",
-        help="Output directory for dataset (default: datasets/emnist/)"
+        help="Output directory for dataset (default: datasets/emnist/)",
     )
 
     args = parser.parse_args()

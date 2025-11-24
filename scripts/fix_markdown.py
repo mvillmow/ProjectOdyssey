@@ -65,7 +65,7 @@ class MarkdownFixer:
             Tuple of (file_was_modified, error_count_fixed)
         """
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             print(f"Error reading {file_path}: {e}", file=sys.stderr)
             return False, 0
@@ -87,8 +87,8 @@ class MarkdownFixer:
         fixes += fix_count
 
         # Ensure file ends with single newline
-        if content and not content.endswith('\n'):
-            content += '\n'
+        if content and not content.endswith("\n"):
+            content += "\n"
             fixes += 1
 
         # Write back if changed
@@ -98,7 +98,7 @@ class MarkdownFixer:
                 return True, fixes
 
             try:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 if self.verbose:
                     print(f"Fixed {file_path}: {fixes} issues")
                 return True, fixes
@@ -113,8 +113,8 @@ class MarkdownFixer:
     def _fix_md012_multiple_blank_lines(self, content: str) -> Tuple[str, int]:
         """Fix MD012: Remove multiple consecutive blank lines."""
         fixes = 0
-        while '\n\n\n' in content:
-            content = content.replace('\n\n\n', '\n\n')
+        while "\n\n\n" in content:
+            content = content.replace("\n\n\n", "\n\n")
             fixes += 1
         return content, fixes
 
@@ -123,31 +123,31 @@ class MarkdownFixer:
         fixes = 0
         # Find ``` without a language tag
         new_content = re.sub(
-            r'^```\s*\n',  # ``` followed by optional whitespace and newline
-            '```text\n',   # Add 'text' language tag
+            r"^```\s*\n",  # ``` followed by optional whitespace and newline
+            "```text\n",  # Add 'text' language tag
             content,
-            flags=re.MULTILINE
+            flags=re.MULTILINE,
         )
         if new_content != content:
-            fixes = content.count('```\n') - new_content.count('```\n')
+            fixes = content.count("```\n") - new_content.count("```\n")
         return new_content, fixes
 
     def _fix_md026_heading_punctuation(self, content: str) -> Tuple[str, int]:
         """Fix MD026: Remove trailing punctuation from headings."""
         fixes = 0
-        lines = content.split('\n')
+        lines = content.split("\n")
         fixed_lines = []
 
         for line in lines:
             # Remove trailing colons, periods, etc. from headings
-            if re.match(r'^#{1,6}\s+', line):
+            if re.match(r"^#{1,6}\s+", line):
                 original_line = line
-                line = re.sub(r'[:.,;!?]+\s*$', '', line)
+                line = re.sub(r"[:.,;!?]+\s*$", "", line)
                 if line != original_line:
                     fixes += 1
             fixed_lines.append(line)
 
-        return '\n'.join(fixed_lines), fixes
+        return "\n".join(fixed_lines), fixes
 
     def _fix_structural_issues(self, content: str) -> Tuple[str, int]:
         """
@@ -159,51 +159,51 @@ class MarkdownFixer:
         - MD029: Ordered list numbering
         - MD036: Bold text as headings
         """
-        lines = content.split('\n')
+        lines = content.split("\n")
         fixed_lines = []
         fixes = 0
         i = 0
 
         while i < len(lines):
             line = lines[i]
-            prev_line = fixed_lines[-1] if fixed_lines else ''
-            next_line = lines[i + 1] if i + 1 < len(lines) else ''
+            prev_line = fixed_lines[-1] if fixed_lines else ""
+            next_line = lines[i + 1] if i + 1 < len(lines) else ""
 
             # MD036: Convert **Bold:** to heading
-            if re.match(r'^\*\*[^*]+\*\*:?\s*$', line.strip()):
-                text = re.sub(r'\*\*([^*]+)\*\*:?', r'\1', line.strip())
+            if re.match(r"^\*\*[^*]+\*\*:?\s*$", line.strip()):
+                text = re.sub(r"\*\*([^*]+)\*\*:?", r"\1", line.strip())
                 # Check if this looks like a heading (short, no lowercase middle)
                 if len(text) < 50 and text[0].isupper():
                     fixes += 1
-                    if prev_line.strip() != '':
-                        fixed_lines.append('')
-                    fixed_lines.append(f'### {text}')
-                    if next_line.strip() != '':
-                        fixed_lines.append('')
+                    if prev_line.strip() != "":
+                        fixed_lines.append("")
+                    fixed_lines.append(f"### {text}")
+                    if next_line.strip() != "":
+                        fixed_lines.append("")
                     i += 1
                     continue
 
             # MD022: Headings should be surrounded by blank lines
-            if re.match(r'^#{1,6}\s+', line):
+            if re.match(r"^#{1,6}\s+", line):
                 # Add blank line before heading (except at start)
-                if fixed_lines and prev_line.strip() != '':
-                    fixed_lines.append('')
+                if fixed_lines and prev_line.strip() != "":
+                    fixed_lines.append("")
                     fixes += 1
 
                 fixed_lines.append(line)
                 i += 1
 
                 # Add blank line after heading
-                if next_line.strip() != '' and not re.match(r'^#{1,6}\s+', next_line):
-                    fixed_lines.append('')
+                if next_line.strip() != "" and not re.match(r"^#{1,6}\s+", next_line):
+                    fixed_lines.append("")
                     fixes += 1
                 continue
 
             # MD031: Code blocks should be surrounded by blank lines
-            if line.strip().startswith('```'):
+            if line.strip().startswith("```"):
                 # Add blank line before code block
-                if fixed_lines and prev_line.strip() != '':
-                    fixed_lines.append('')
+                if fixed_lines and prev_line.strip() != "":
+                    fixed_lines.append("")
                     fixes += 1
 
                 # Add opening fence
@@ -211,7 +211,7 @@ class MarkdownFixer:
                 i += 1
 
                 # Copy code block content
-                while i < len(lines) and not lines[i].strip().startswith('```'):
+                while i < len(lines) and not lines[i].strip().startswith("```"):
                     fixed_lines.append(lines[i])
                     i += 1
 
@@ -221,18 +221,18 @@ class MarkdownFixer:
                     i += 1
 
                 # Add blank line after code block
-                next_line = lines[i] if i < len(lines) else ''
-                if next_line.strip() != '':
-                    fixed_lines.append('')
+                next_line = lines[i] if i < len(lines) else ""
+                if next_line.strip() != "":
+                    fixed_lines.append("")
                     fixes += 1
                 continue
 
             # MD032: Lists should be surrounded by blank lines
             # MD029: Ordered lists should use 1. for all items
-            if re.match(r'^\s*[-*+]\s+', line) or re.match(r'^\s*\d+\.\s+', line):
+            if re.match(r"^\s*[-*+]\s+", line) or re.match(r"^\s*\d+\.\s+", line):
                 # Add blank line before list
-                if fixed_lines and prev_line.strip() != '' and not self._is_list_item(prev_line):
-                    fixed_lines.append('')
+                if fixed_lines and prev_line.strip() != "" and not self._is_list_item(prev_line):
+                    fixed_lines.append("")
                     fixes += 1
 
                 # Process list items
@@ -253,17 +253,17 @@ class MarkdownFixer:
                     # List item or continuation
                     if self._is_list_item(curr_line):
                         # MD029: Fix ordered list numbering
-                        if re.match(r'^\s*\d+\.\s+', curr_line):
+                        if re.match(r"^\s*\d+\.\s+", curr_line):
                             indent = len(curr_line) - len(curr_line.lstrip())
-                            rest = re.sub(r'^\s*\d+\.', '', curr_line)
-                            fixed_line = ' ' * indent + '1.' + rest
+                            rest = re.sub(r"^\s*\d+\.", "", curr_line)
+                            fixed_line = " " * indent + "1." + rest
                             if fixed_line != curr_line:
                                 fixes += 1
                             fixed_lines.append(fixed_line)
                         else:
                             fixed_lines.append(curr_line)
                         i += 1
-                    elif curr_line.startswith(' ' * (list_indent + 2)):
+                    elif curr_line.startswith(" " * (list_indent + 2)):
                         # Continuation of list item (indented)
                         fixed_lines.append(curr_line)
                         i += 1
@@ -271,8 +271,8 @@ class MarkdownFixer:
                         break
 
                 # Add blank line after list
-                if i < len(lines) and lines[i].strip() != '':
-                    fixed_lines.append('')
+                if i < len(lines) and lines[i].strip() != "":
+                    fixed_lines.append("")
                     fixes += 1
                 continue
 
@@ -280,11 +280,11 @@ class MarkdownFixer:
             fixed_lines.append(line)
             i += 1
 
-        return '\n'.join(fixed_lines), fixes
+        return "\n".join(fixed_lines), fixes
 
     def _is_list_item(self, line: str) -> bool:
         """Check if line is a list item."""
-        return bool(re.match(r'^\s*[-*+]\s+', line) or re.match(r'^\s*\d+\.\s+', line))
+        return bool(re.match(r"^\s*[-*+]\s+", line) or re.match(r"^\s*\d+\.\s+", line))
 
     def process_path(self, path: Path) -> Tuple[int, int]:
         """
@@ -302,18 +302,15 @@ class MarkdownFixer:
 
         files_to_fix = []
         if path.is_file():
-            if path.suffix == '.md':
+            if path.suffix == ".md":
                 files_to_fix.append(path)
             else:
                 print(f"Warning: {path} is not a markdown file", file=sys.stderr)
                 return 0, 0
         else:
             # Exclude certain directories
-            exclude_patterns = {'node_modules', '.git', 'venv', '__pycache__', '.tox'}
-            files_to_fix = [
-                f for f in path.rglob('*.md')
-                if not any(part in exclude_patterns for part in f.parts)
-            ]
+            exclude_patterns = {"node_modules", ".git", "venv", "__pycache__", ".tox"}
+            files_to_fix = [f for f in path.rglob("*.md") if not any(part in exclude_patterns for part in f.parts)]
 
         if not files_to_fix:
             print(f"No markdown files found in {path}")
@@ -336,25 +333,13 @@ class MarkdownFixer:
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Fix common markdown linting errors automatically',
+        description="Fix common markdown linting errors automatically",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__
+        epilog=__doc__,
     )
-    parser.add_argument(
-        'path',
-        type=Path,
-        help='Path to markdown file or directory'
-    )
-    parser.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help='Enable verbose output'
-    )
-    parser.add_argument(
-        '-n', '--dry-run',
-        action='store_true',
-        help='Show what would be fixed without making changes'
-    )
+    parser.add_argument("path", type=Path, help="Path to markdown file or directory")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("-n", "--dry-run", action="store_true", help="Show what would be fixed without making changes")
 
     args = parser.parse_args()
 
@@ -371,5 +356,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

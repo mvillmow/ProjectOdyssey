@@ -34,11 +34,11 @@ For comprehensive error handling, recovery strategies, and escalation protocols,
 def remove_skip_level_delegation(content: str) -> Tuple[str, bool]:
     """Remove Skip-Level Delegation section and replace with reference."""
     # Pattern to match the entire Skip-Level Delegation section
-    pattern = r'## Skip-Level Delegation\n\n.*?(?=\n## )'
+    pattern = r"## Skip-Level Delegation\n\n.*?(?=\n## )"
 
     match = re.search(pattern, content, re.DOTALL)
     if match:
-        new_content = re.sub(pattern, SKIP_LEVEL_REPLACEMENT + '\n\n', content, flags=re.DOTALL)
+        new_content = re.sub(pattern, SKIP_LEVEL_REPLACEMENT + "\n\n", content, flags=re.DOTALL)
         return new_content, True
     return content, False
 
@@ -46,11 +46,11 @@ def remove_skip_level_delegation(content: str) -> Tuple[str, bool]:
 def remove_error_handling(content: str) -> Tuple[str, bool]:
     """Remove Error Handling & Recovery section and replace with reference."""
     # Pattern to match the entire Error Handling section
-    pattern = r'## Error Handling & Recovery\n\n.*?(?=\n## )'
+    pattern = r"## Error Handling & Recovery\n\n.*?(?=\n## )"
 
     match = re.search(pattern, content, re.DOTALL)
     if match:
-        new_content = re.sub(pattern, ERROR_HANDLING_REPLACEMENT + '\n\n', content, flags=re.DOTALL)
+        new_content = re.sub(pattern, ERROR_HANDLING_REPLACEMENT + "\n\n", content, flags=re.DOTALL)
         return new_content, True
     return content, False
 
@@ -62,26 +62,21 @@ def count_lines_removed(original: str, modified: str) -> int:
 
 def process_file(filepath: Path, process_skip_level: bool = True, process_error_handling: bool = False) -> Dict:
     """Process a single agent file."""
-    result = {
-        'file': filepath.name,
-        'skip_level_removed': False,
-        'error_handling_removed': False,
-        'lines_removed': 0
-    }
+    result = {"file": filepath.name, "skip_level_removed": False, "error_handling_removed": False, "lines_removed": 0}
 
     content = filepath.read_text()
     original_content = content
 
     if process_skip_level:
         content, changed = remove_skip_level_delegation(content)
-        result['skip_level_removed'] = changed
+        result["skip_level_removed"] = changed
 
     if process_error_handling:
         content, changed = remove_error_handling(content)
-        result['error_handling_removed'] = changed
+        result["error_handling_removed"] = changed
 
     if content != original_content:
-        result['lines_removed'] = count_lines_removed(original_content, content)
+        result["lines_removed"] = count_lines_removed(original_content, content)
         filepath.write_text(content)
 
     return result
@@ -92,31 +87,31 @@ def main() -> None:
 
     # Files with Skip-Level Delegation sections
     skip_level_files = [
-        'cicd-orchestrator.md',
-        'chief-architect.md',
-        'implementation-specialist.md',
-        'integration-design.md',
-        'architecture-design.md',
-        'tooling-orchestrator.md',
-        'test-specialist.md',
-        'papers-orchestrator.md',
-        'performance-specialist.md',
-        'security-design.md',
-        'security-specialist.md',
-        'shared-library-orchestrator.md',
-        'documentation-specialist.md',
+        "cicd-orchestrator.md",
+        "chief-architect.md",
+        "implementation-specialist.md",
+        "integration-design.md",
+        "architecture-design.md",
+        "tooling-orchestrator.md",
+        "test-specialist.md",
+        "papers-orchestrator.md",
+        "performance-specialist.md",
+        "security-design.md",
+        "security-specialist.md",
+        "shared-library-orchestrator.md",
+        "documentation-specialist.md",
         # foundation-orchestrator.md already processed
-        'agentic-workflows-orchestrator.md',
+        "agentic-workflows-orchestrator.md",
     ]
 
     # Orchestrators that should have Error Handling sections removed
     orchestrator_files = [
-        'cicd-orchestrator.md',
+        "cicd-orchestrator.md",
         # 'foundation-orchestrator.md', # already processed
-        'tooling-orchestrator.md',
-        'papers-orchestrator.md',
-        'shared-library-orchestrator.md',
-        'agentic-workflows-orchestrator.md',
+        "tooling-orchestrator.md",
+        "papers-orchestrator.md",
+        "shared-library-orchestrator.md",
+        "agentic-workflows-orchestrator.md",
     ]
 
     results = []
@@ -133,10 +128,10 @@ def main() -> None:
             results.append(result)
 
             status = []
-            if result['skip_level_removed']:
-                status.append('Skip-Level')
-            if result['error_handling_removed']:
-                status.append('Error Handling')
+            if result["skip_level_removed"]:
+                status.append("Skip-Level")
+            if result["error_handling_removed"]:
+                status.append("Error Handling")
 
             if status:
                 print(f"✓ {filename:45} | Removed: {', '.join(status):30} | Lines: {result['lines_removed']:3}")
@@ -151,5 +146,5 @@ def main() -> None:
     print(f"  Total lines removed: {sum(r['lines_removed'] for r in results)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from common import get_repo_root
 
 # Base path for issues documentation
-ISSUES_PATH = get_repo_root() / 'notes' / 'issues'
+ISSUES_PATH = get_repo_root() / "notes" / "issues"
 
 
 def ensure_dir(path):
@@ -85,7 +85,6 @@ development environments.
 
 Configuration planning focused on reproducible development environments with clear documentation.
 """,
-
     149: """# Issue #149: [Test] Configuration Files - Write Tests
 
 ## Objective
@@ -140,7 +139,6 @@ Testing strategy leverages existing pre-commit infrastructure:
 
 Following YAGNI principle - using existing tools (pre-commit) rather than creating custom test suite.
 """,
-
     150: """# Issue #150: [Impl] Configuration Files - Implementation
 
 ## Objective
@@ -229,7 +227,6 @@ files are actually needed (see notes/issues/138-142 for detailed rationale).
 All configuration files are properly documented with inline comments explaining non-obvious choices.
 Follows Mojo best practices and coding standards.
 """,
-
     151: """# Issue #151: [Package] Configuration Files - Integration and Packaging
 
 ## Objective
@@ -301,7 +298,6 @@ Configuration files packaged and integrated into development workflow:
 Configuration packaging focused on ease of use and reproducibility across different development
 environments.
 """,
-
     152: """# Issue #152: [Cleanup] Configuration Files - Refactor and Finalize
 
 ## Objective
@@ -377,7 +373,6 @@ Cleanup activities completed for all configuration files:
 Configuration cleanup focused on maintainability and clear documentation for future contributors.
 All files follow KISS and DRY principles.
 """,
-
     # Write Overview (153-157)
     153: """# Issue #153: [Plan] Write Overview - Design and Documentation
 
@@ -452,7 +447,6 @@ Planned the README overview section following requirements from
 
 Overview planning focused on creating an engaging first impression while remaining concise.
 """,
-
     154: """# Issue #154: [Test] Write Overview - Write Tests
 
 ## Objective
@@ -523,7 +517,6 @@ Manual validation ensures:
 
 Following YAGNI - using existing markdown linting rather than custom tests.
 """,
-
     155: """# Issue #155: [Impl] Write Overview - Implementation
 
 ## Objective
@@ -602,7 +595,6 @@ Content accessible to:
 Overview successfully communicates project value while remaining concise. Follows Mojo best
 practices in tone and technical accuracy.
 """,
-
     156: """# Issue #156: [Package] Write Overview - Integration and Packaging
 
 ## Objective
@@ -677,7 +669,6 @@ Links to related documentation:
 Integration ensures overview works well with complete README structure and guides users naturally
 to next sections.
 """,
-
     157: """# Issue #157: [Cleanup] Write Overview - Refactor and Finalize
 
 ## Objective

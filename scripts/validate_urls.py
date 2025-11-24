@@ -34,8 +34,8 @@ SKIP_URLS = {
 
 # URL pattern to match HTTP/HTTPS URLs
 URL_PATTERN = re.compile(
-    r'https?://[a-zA-Z0-9][-a-zA-Z0-9@:%._\+~#=]{0,256}'
-    r'\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_\+.~#?&/=]*'
+    r"https?://[a-zA-Z0-9][-a-zA-Z0-9@:%._\+~#=]{0,256}"
+    r"\.[a-zA-Z0-9()]{1,6}\b[-a-zA-Z0-9()@:%_\+.~#?&/=]*"
 )
 
 
@@ -44,12 +44,12 @@ def extract_urls(file_path: Path) -> Set[str]:
     urls = set()
 
     try:
-        content = file_path.read_text(encoding='utf-8', errors='ignore')
+        content = file_path.read_text(encoding="utf-8", errors="ignore")
         raw_urls = URL_PATTERN.findall(content)
         # Strip trailing ) from URLs (common in markdown links)
         for url in raw_urls:
             # Remove trailing ) that may have been captured from markdown [text](url)
-            cleaned_url = url.rstrip(')')
+            cleaned_url = url.rstrip(")")
             urls.add(cleaned_url)
     except Exception as e:
         print(f"Warning: Could not read {file_path}: {e}", file=sys.stderr)
@@ -69,10 +69,7 @@ def check_url(url: str) -> Tuple[bool, str]:
 
     try:
         # Set timeout and user agent
-        req = urllib.request.Request(
-            url,
-            headers={'User-Agent': 'Mozilla/5.0 (pre-commit hook)'}
-        )
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (pre-commit hook)"})
 
         with urllib.request.urlopen(req, timeout=5) as response:
             status = response.getcode()
@@ -101,7 +98,7 @@ def validate_files(file_paths: List[str]) -> int:
     # Collect all unique URLs
     for file_path_str in file_paths:
         file_path = Path(file_path_str)
-        if file_path.suffix == '.py':
+        if file_path.suffix == ".py":
             urls = extract_urls(file_path)
             all_urls.update(urls)
 

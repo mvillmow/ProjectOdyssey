@@ -23,10 +23,7 @@ from common import get_repo_root
 
 # Setup logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(levelname)s: %(message)s'
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
 def find_markdown_files(directory: Path) -> List[Path]:
@@ -44,7 +41,7 @@ def extract_links(content: str, file_path: Path) -> List[Tuple[str, int, str]]:
     links = []
 
     # Match markdown links: [text](url)
-    link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+    link_pattern = r"\[([^\]]+)\]\(([^)]+)\)"
 
     for line_num, line in enumerate(content.split("\n"), 1):
         for match in re.finditer(link_pattern, line):
@@ -136,12 +133,14 @@ def validate_links(file_path: Path, repo_root: Path, verbose: bool = False) -> D
             if is_valid:
                 result["valid_links"] += 1
             else:
-                result["broken_links"].append({
-                    "line": line_num,
-                    "text": link_text,
-                    "target": link_target,
-                    "error": error,
-                })
+                result["broken_links"].append(
+                    {
+                        "line": line_num,
+                        "text": link_text,
+                        "target": link_target,
+                        "error": error,
+                    }
+                )
 
     except Exception as e:
         result["error"] = str(e)

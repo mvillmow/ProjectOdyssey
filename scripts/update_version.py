@@ -37,10 +37,7 @@ def parse_version(version: str) -> Tuple[int, int, int]:
     """
     match = re.match(r"^(\d+)\.(\d+)\.(\d+)$", version)
     if not match:
-        raise ValueError(
-            f"Invalid version format: {version}. "
-            "Expected format: MAJOR.MINOR.PATCH (e.g., 0.1.0)"
-        )
+        raise ValueError(f"Invalid version format: {version}. Expected format: MAJOR.MINOR.PATCH (e.g., 0.1.0)")
 
     major = int(match.group(1))
     minor = int(match.group(2))
@@ -86,28 +83,12 @@ def update_version_mojo(repo_root: Path, version: str, major: int, minor: int, p
     content = version_mojo.read_text()
 
     # Update version string
-    content = re.sub(
-        r'alias VERSION = "[^"]+"',
-        f'alias VERSION = "{version}"',
-        content
-    )
+    content = re.sub(r'alias VERSION = "[^"]+"', f'alias VERSION = "{version}"', content)
 
     # Update version components
-    content = re.sub(
-        r'alias VERSION_MAJOR = \d+',
-        f'alias VERSION_MAJOR = {major}',
-        content
-    )
-    content = re.sub(
-        r'alias VERSION_MINOR = \d+',
-        f'alias VERSION_MINOR = {minor}',
-        content
-    )
-    content = re.sub(
-        r'alias VERSION_PATCH = \d+',
-        f'alias VERSION_PATCH = {patch}',
-        content
-    )
+    content = re.sub(r"alias VERSION_MAJOR = \d+", f"alias VERSION_MAJOR = {major}", content)
+    content = re.sub(r"alias VERSION_MINOR = \d+", f"alias VERSION_MINOR = {minor}", content)
+    content = re.sub(r"alias VERSION_PATCH = \d+", f"alias VERSION_PATCH = {patch}", content)
 
     version_mojo.write_text(content)
     print(f"  ✓ Updated VERSION = {version}")
@@ -167,18 +148,9 @@ def main() -> int:
     Returns:
         0 on success, 1 on failure
     """
-    parser = argparse.ArgumentParser(
-        description="Update ML Odyssey version across all version files"
-    )
-    parser.add_argument(
-        "version",
-        help="New version string (format: MAJOR.MINOR.PATCH, e.g., 0.1.0)"
-    )
-    parser.add_argument(
-        "--verify-only",
-        action="store_true",
-        help="Only verify version consistency, don't update"
-    )
+    parser = argparse.ArgumentParser(description="Update ML Odyssey version across all version files")
+    parser.add_argument("version", help="New version string (format: MAJOR.MINOR.PATCH, e.g., 0.1.0)")
+    parser.add_argument("--verify-only", action="store_true", help="Only verify version consistency, don't update")
 
     args = parser.parse_args()
 
@@ -218,6 +190,7 @@ def main() -> int:
     except Exception as e:
         print(f"UNEXPECTED ERROR: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 
