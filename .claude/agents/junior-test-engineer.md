@@ -50,6 +50,21 @@ Level 5 Junior Engineer responsible for simple testing tasks, test boilerplate, 
 
 See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation organization.
 
+## Mojo Test Patterns
+
+**IMPORTANT**: Follow these comprehensive patterns when writing or fixing tests:
+
+- [agents/guides/mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) - Common test patterns and fixes
+
+### Quick Checklist for Simple Tests
+
+- [ ] Test file has `fn main() raises:` entry point
+- [ ] Main function calls all test functions
+- [ ] Boolean literals use `True`/`False` (not `true`/`false`)
+- [ ] Functions that can raise have `raises` keyword
+- [ ] All needed assertion functions are imported
+- [ ] Python interop uses correct syntax (e.g., `environ["VAR"] = "value"`)
+
 ## Mojo-Specific Guidelines
 
 ### Function Definitions
@@ -58,11 +73,12 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 - Use `def` for prototyping or Python interop
 - Default to `fn` unless flexibility is needed
 
-### Memory Management
+### Memory Management (Mojo v0.25.7+)
 
-- Use `owned` for ownership transfer
-- Use `borrowed` for read-only access
-- Use `inout` for mutable references
+- Use `var` for owned values (ownership transfer)
+- Use `read` (default) for immutable references
+- Use `mut` for mutable references (replaces `inout`)
+- Use `ref` for parametric references (advanced)
 - Prefer value semantics (struct) over reference semantics (class)
 
 ### Performance
@@ -71,7 +87,8 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 - Use `@parameter` for compile-time constants
 - Avoid unnecessary copies with move semantics (`^`)
 
-See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines and
+[mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) for test-specific patterns.
 
 ### Mojo Language Patterns
 
