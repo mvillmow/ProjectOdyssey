@@ -54,7 +54,7 @@ fn benchmark_operation(name, size, scalar_fn, simd_fn, dtype, iterations)
     - Measures wall-clock time for both implementations
     - Reports speedup factor (SIMD / scalar)
     - Tests multiple tensor sizes (small, medium, large)
-```
+```text
 
 **Results Summary**:
 
@@ -86,17 +86,17 @@ fn test_linear_gradient() raises
 fn test_conv2d_gradient() raises
 fn test_composite_operations() raises
 fn test_edge_cases() raises
-```
+```text
 
 **Algorithm**:
 
-```
+```text
 For each parameter:
     1. Compute analytical gradient (backward pass)
     2. Compute numerical gradient: [f(x+ε) - f(x-ε)] / (2ε)
     3. Compare: |analytical - numerical| < tolerance
     4. Report max difference and location if failed
-```
+```text
 
 **Results**:
 
@@ -143,7 +143,7 @@ fn demo_use_cases() raises
     - When to use TypedTensor vs ExTensor
     - Best practices and recommendations
     - Real-world examples
-```
+```text
 
 **Performance Results**:
 
@@ -181,7 +181,7 @@ benchmark-simd:
     - Runs SIMD benchmarks on PRs
     - Comments results on PR
     - Verifies correctness before merge
-```
+```text
 
 **Triggers**:
 
@@ -193,7 +193,7 @@ on:
       - 'shared/core/**/activation.mojo'
       - 'shared/core/**/arithmetic.mojo'
       - 'shared/training/**/*.mojo'
-```
+```text
 
 **Lessons Learned**:
 
@@ -243,7 +243,7 @@ from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd
 
 var update = multiply_simd(lr_tensor, gradients)  # 4x faster
 var new_params = subtract_simd(params, update)     # 4x faster
-```
+```text
 
 **Adam Optimizer**:
 
@@ -264,7 +264,7 @@ var denominator = add_simd(v_hat_sqrt, epsilon_tensor)          # SIMD
 var update_direction = divide_simd(m_hat, denominator)          # SIMD
 var update = multiply_simd(lr_tensor, update_direction)         # SIMD
 var new_params = subtract_simd(params, update)                  # SIMD
-```
+```text
 
 #### Performance Impact
 
@@ -320,7 +320,7 @@ struct TypedLinearLayer[dtype: DType, //]:
         var bias_shape = List[Int](1)
         bias_shape.append(out_features)
         self.bias = TypedTensor[dtype](bias_shape)
-```
+```text
 
 **Type Aliases for Convenience**:
 
@@ -330,35 +330,35 @@ alias LinearLayerF64 = TypedLinearLayer[DType.float64]
 
 # Usage:
 var layer = LinearLayerF32(784, 128)  # Clean, type-safe
-```
+```text
 
 #### Performance Impact
 
 **Forward Pass Benchmark** (batch_size=128):
 
-```
+```text
 ExTensor Linear Layer:    1.87 ms/batch
 TypedTensor Linear Layer: 1.42 ms/batch
 Speedup: 1.32x (32% improvement) ✅
-```
+```text
 
 **Backward Pass Benchmark**:
 
-```
+```text
 ExTensor Linear Layer:    2.31 ms/batch
 TypedTensor Linear Layer: 1.78 ms/batch
 Speedup: 1.30x (30% improvement) ✅
-```
+```text
 
 **Full Training Epoch** (50,000 samples, 128 batch size):
 
-```
+```text
 ExTensor: 183 seconds/epoch
 TypedTensor: 139 seconds/epoch
 Speedup: 1.32x (32% faster) ✅
 Time saved per epoch: 44 seconds
 Time saved per 100 epochs: 1.2 hours
-```
+```text
 
 **Lessons Learned**:
 
@@ -390,7 +390,7 @@ alias Kernel5x5_f32 = FixedTensor[5, 5, DType.float32]
 
 # 7×7 kernels (ResNet initial conv)
 alias Kernel7x7_f32 = FixedTensor[7, 7, DType.float32]
-```
+```text
 
 **Optimized 3×3 Convolution**:
 
@@ -408,7 +408,7 @@ fn conv2d_fixed_3x3[dtype: DType, //](
     - Compile-time loop unrolling (9 ops → 9 inline multiply-adds)
     - Better cache locality
     """
-```
+```text
 
 **Bottleneck Pattern** (ResNet, MobileNet):
 
@@ -424,33 +424,33 @@ struct BottleneckConv[dtype: DType, //]:
         var reduced = pointwise_conv2d_fixed_1x1[dtype](input, self.reduce_kernel)
         var depthwise = depthwise_conv2d_fixed_3x3[dtype](reduced, ...)
         return pointwise_conv2d_fixed_1x1[dtype](depthwise, self.expand_kernel)
-```
+```text
 
 #### Performance Impact
 
 **3×3 Convolution Benchmark** (32×32 feature map, 64 channels):
 
-```
+```text
 Dynamic ExTensor 3×3:  1.23 ms/layer
 Fixed FixedTensor 3×3: 0.67 ms/layer
 Speedup: 1.84x (46% improvement) ✅
-```
+```text
 
 **ResNet-18 Full Forward Pass**:
 
-```
+```text
 All dynamic kernels: 28.7 ms/image
 All fixed kernels:   17.2 ms/image
 Speedup: 1.67x (40% improvement) ✅
-```
+```text
 
 **MobileNet-V2 Full Forward Pass**:
 
-```
+```text
 All dynamic kernels: 15.3 ms/image
 All fixed kernels:   9.1 ms/image
 Speedup: 1.68x (41% improvement) ✅
-```
+```text
 
 **Lessons Learned**:
 
@@ -504,7 +504,7 @@ struct ReLULayer(Differentiable):
 
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         return relu_backward(grad_output, self.last_input)
-```
+```text
 
 **2. Parameterized Trait** (Parameters/Gradients):
 
@@ -524,7 +524,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
     fn zero_grad(inout self) raises:
         self.grad_weights.fill(0.0)
         self.grad_bias.fill(0.0)
-```
+```text
 
 **3. Full-Featured Layer** (All Traits):
 
@@ -549,7 +549,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     fn train()                       # Trainable
     fn eval()                        # Trainable
     fn is_training() -> Bool         # Trainable
-```
+```text
 
 #### Benefits Realized
 
@@ -561,7 +561,7 @@ struct MyLayer(Differentiable):  # Must implement forward() and backward()
     fn forward(...) -> ExTensor:  # ✓ Implemented
         ...
     # ERROR: Missing backward() method!  ← Compile-time error ✅
-```
+```text
 
 **2. Generic Functions with Trait Bounds**:
 
@@ -578,7 +578,7 @@ fn train_one_epoch[T: Differentiable & Parameterized](
         var loss = criterion(output, batch.target)
         var grad = loss.backward()
         optimizer.step(model.parameters(), model.gradients())
-```
+```text
 
 **3. Composability**:
 
@@ -591,11 +591,11 @@ var model = Sequential(
 )
 
 var output = model.forward(input)  # Calls all three in sequence
-```
+```text
 
 **4. Zero Runtime Overhead**:
 
-```
+```text
 Trait dispatch: Compile-time (static)
 Virtual dispatch: Runtime (dynamic, vtable lookup)
 
@@ -603,7 +603,7 @@ Benchmark: 10,000 calls to forward()
 Trait-based:   1.23 ms  ✅
 Virtual-based: 1.87 ms  (52% slower)
 Speedup: 1.52x (zero overhead confirmed!)
-```
+```text
 
 #### Code Quality Improvements
 
@@ -616,7 +616,7 @@ struct MyLayer:
     fn backward(self, grad: ExTensor) -> ExTensor: ...
     fn get_params(self) -> List[ExTensor]: ...  # Inconsistent naming
     fn get_grads(self) -> List[ExTensor]: ...   # Inconsistent naming
-```
+```text
 
 **After Traits**:
 
@@ -628,7 +628,7 @@ struct MyLayer(Differentiable, Parameterized):
     fn parameters(self) raises -> List[ExTensor]: ...  # Trait-enforced
     fn gradients(self) raises -> List[ExTensor]: ...   # Trait-enforced
     fn zero_grad(inout self) raises: ...               # Trait-enforced
-```
+```text
 
 **Lessons Learned**:
 
@@ -668,21 +668,21 @@ struct MyLayer(Differentiable, Parameterized):
 
 **Composite Speedup** (typical CNN training):
 
-```
+```text
 Training step = Optimizer + Forward + Backward
 Before: 2.87s + 28.7ms + 31.2ms = 2.93s/step
 After:  0.94s + 17.2ms + 21.5ms = 0.98s/step
 Overall speedup: 2.99x (199% improvement!) ✅
-```
+```text
 
 **Estimated Training Time Savings**:
 
-```
+```text
 ImageNet training (90 epochs, 1.28M images):
 Before: ~120 hours
 After:  ~40 hours
 Time saved: 80 hours (3.3 days) ✅
-```
+```text
 
 ### Code Quality Improvements
 
@@ -698,7 +698,7 @@ Time saved: 80 hours (3.3 days) ✅
 
 **Created** (11 files, 3,600+ lines):
 
-```
+```text
 Week 1 (Testing):
 ✓ benchmarks/bench_simd.mojo (400 lines)
 ✓ tests/shared/core/test_gradient_checking.mojo (350 lines)
@@ -715,14 +715,14 @@ Week 2-4 (Integration):
 Week 5-6 (Architecture):
 ✓ examples/trait_based_layer.mojo (486 lines)
 ✓ shared/core/traits.mojo (400 lines) [created earlier]
-```
+```text
 
 **Modified** (2 files, 75 lines):
 
-```
+```text
 ✓ shared/training/optimizers/sgd.mojo (35 lines changed)
 ✓ shared/training/optimizers/adam.mojo (40 lines changed)
-```
+```text
 
 ---
 
@@ -786,12 +786,12 @@ Week 5-6 (Architecture):
 
 1. **Always Test First**
 
-   ```
+   ```text
    ✓ Write gradient check
    ✓ Write benchmark
    ✓ Validate correctness
    ✓ Then integrate
-   ```
+   ```text
 
 2. **Use Type Aliases for Clarity**
 
@@ -802,7 +802,7 @@ Week 5-6 (Architecture):
 
    # Verbose
    var layer = TypedLinearLayer[DType.float32](784, 128)
-   ```
+   ```text
 
 3. **SIMD Fallback Pattern**
 
@@ -812,7 +812,7 @@ Week 5-6 (Architecture):
            return add_simd(a, b)  # Fast path
        else:
            return add(a, b)  # Safe fallback
-   ```
+   ```text
 
 4. **Trait Combinations**
 
@@ -824,7 +824,7 @@ Week 5-6 (Architecture):
    # Production models also need these
    struct MyModel(Differentiable, Parameterized, Serializable, Trainable):
        ...
-   ```
+   ```text
 
 ---
 
