@@ -4,7 +4,6 @@ Create comprehensive documentation for all 70 foundation issues (#148-217).
 Maps existing files to issues and creates proper documentation.
 """
 
-import os
 import sys
 from pathlib import Path
 
@@ -858,7 +857,7 @@ def create_all_documentation():
             created.append(doc)
 
     print(f"\n✅ Created documentation for {len(created)} issues")
-    print(f"✅ All 70 foundation issues (#148-217) documented")
+    print("✅ All 70 foundation issues (#148-217) documented")
     return created
 
 

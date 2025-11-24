@@ -91,7 +91,7 @@ def main() -> int:
         # Create tarball
         tarball_path = create_papers_tarball(repo_root, args.output)
 
-        print(f"\nPackaging complete!")
+        print("\nPackaging complete!")
         print(f"Tarball: {tarball_path}")
         return 0
 

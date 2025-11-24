@@ -25,7 +25,7 @@ import tempfile
 import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
@@ -660,9 +660,9 @@ def print_dry_run_summary(issues: List[Issue], stats: Statistics, show_limit: in
         labels_str = ','.join(issue.labels)
         print(f"  {Colors.OKBLUE}Command:{Colors.ENDC} gh issue create \\")
         print(f"           --title \"{issue.title}\" \\")
-        print(f"           --body-file /tmp/issue_body_xxx.md \\")
+        print("           --body-file /tmp/issue_body_xxx.md \\")
         print(f"           --label {labels_str} \\")
-        print(f"           --repo <repo>")
+        print("           --repo <repo>")
         print(f"  {Colors.OKGREEN}Would update:{Colors.ENDC} {issue.file_path}")
         print()
 

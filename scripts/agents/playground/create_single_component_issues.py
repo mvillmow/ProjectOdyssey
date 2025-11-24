@@ -14,7 +14,6 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -116,7 +115,7 @@ def create_github_issue(title, labels, body, repo=None):
             print(f"✅ Created: {issue_url}")
             return issue_url
         else:
-            print(f"❌ Failed to create issue")
+            print("❌ Failed to create issue")
             print(f"Error: {result.stderr}")
             return None
 

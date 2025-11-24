@@ -11,7 +11,6 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent))
 from common import get_agents_dir
-from typing import Dict
 
 # Agent-specific examples based on role patterns
 EXAMPLES_BY_PATTERN = {

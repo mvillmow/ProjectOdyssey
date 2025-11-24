@@ -48,16 +48,16 @@ def check_coverage(threshold: float, path: str, coverage_file: Path) -> bool:
 
     if coverage is None:
         print(f"❌ ERROR: Failed to parse coverage report: {coverage_file}")
-        print(f"   Make sure tests were run with --coverage flag")
+        print("   Make sure tests were run with --coverage flag")
         return False
 
-    print(f"\n📊 Coverage Report")
+    print("\n📊 Coverage Report")
     print(f"   Path: {path}")
     print(f"   Coverage: {coverage:.2f}%")
     print(f"   Threshold: {threshold:.2f}%")
 
     if coverage >= threshold:
-        print(f"   ✅ PASSED - Coverage meets threshold")
+        print("   ✅ PASSED - Coverage meets threshold")
         return True
     else:
         gap = threshold - coverage
@@ -97,7 +97,7 @@ def main():
     args = parser.parse_args()
 
     if args.verbose:
-        print(f"Checking coverage with settings:")
+        print("Checking coverage with settings:")
         print(f"  Threshold: {args.threshold}%")
         print(f"  Path: {args.path}")
         print(f"  Coverage file: {args.coverage_file}")
@@ -105,19 +105,19 @@ def main():
     # Check if coverage file exists
     if not args.coverage_file.exists():
         print(f"\n⚠️  WARNING: Coverage file not found: {args.coverage_file}")
-        print(f"   Coverage checking is not yet implemented for Mojo.")
-        print(f"   This check will be enabled once Mojo coverage tools are available.")
-        print(f"\n   For now, assuming coverage meets threshold...")
+        print("   Coverage checking is not yet implemented for Mojo.")
+        print("   This check will be enabled once Mojo coverage tools are available.")
+        print("\n   For now, assuming coverage meets threshold...")
         sys.exit(0)  # Don't fail CI until Mojo coverage is available
 
     # Check coverage
     success = check_coverage(args.threshold, args.path, args.coverage_file)
 
     if not success:
-        print(f"\n💡 Tips for improving coverage:")
-        print(f"   - Add tests for uncovered functions")
-        print(f"   - Test edge cases and error paths")
-        print(f"   - Check for untested branches in conditionals")
+        print("\n💡 Tips for improving coverage:")
+        print("   - Add tests for uncovered functions")
+        print("   - Test edge cases and error paths")
+        print("   - Check for untested branches in conditionals")
         sys.exit(1)
 
     sys.exit(0)

@@ -6,7 +6,6 @@ This script consolidates the functionality of all legacy issue update scripts
 and can regenerate all github_issue.md files dynamically from plan.md sources.
 """
 
-import os
 import sys
 from pathlib import Path
 import re
@@ -448,7 +447,7 @@ Examples:
     if args.dry_run:
         print("\nDRY RUN COMPLETE - No files were modified", file=sys.stderr)
     else:
-        print(f"\nRegeneration complete!", file=sys.stderr)
+        print("\nRegeneration complete!", file=sys.stderr)
 
     # Exit with error code if there were errors
     return 1 if error_count > 0 else 0

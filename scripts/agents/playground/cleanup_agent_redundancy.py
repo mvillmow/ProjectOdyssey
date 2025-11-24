@@ -11,7 +11,7 @@ This script:
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -144,7 +144,7 @@ def main() -> None:
                 print(f"○ {filename:45} | No changes needed")
 
     print("=" * 80)
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files processed: {len(results)}")
     print(f"  Skip-Level sections removed: {sum(1 for r in results if r['skip_level_removed'])}")
     print(f"  Error Handling sections removed: {sum(1 for r in results if r['error_handling_removed'])}")

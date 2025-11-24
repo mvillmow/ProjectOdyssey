@@ -36,7 +36,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 
 class MarkdownFixer:
@@ -361,12 +361,12 @@ def main():
     fixer = MarkdownFixer(verbose=args.verbose, dry_run=args.dry_run)
     files_modified, total_fixes = fixer.process_path(args.path)
 
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files modified: {files_modified}")
     print(f"  Total fixes: {total_fixes}")
 
     if args.dry_run:
-        print(f"\n[DRY RUN] No files were actually modified")
+        print("\n[DRY RUN] No files were actually modified")
 
     return 0
 

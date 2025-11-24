@@ -6,7 +6,6 @@ This module provides common functionality used across multiple scripts to avoid 
 """
 
 from pathlib import Path
-from typing import Optional
 
 
 # Label colors for GitHub issues (5-phase development workflow)

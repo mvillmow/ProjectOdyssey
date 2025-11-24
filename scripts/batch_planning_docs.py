@@ -10,7 +10,7 @@ import sys
 import subprocess
 import json
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict
 
 def get_issue_details(issue_number: int) -> Dict:
     """Get issue title and body using gh CLI."""
@@ -161,7 +161,7 @@ def main():
             failed += 1
 
     print(f"\n{'='*60}")
-    print(f"Summary:")
+    print("Summary:")
     print(f"  Created: {created}")
     print(f"  Failed: {failed}")
     print(f"  Total: {created + failed}")

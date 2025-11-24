@@ -22,13 +22,12 @@ References:
 
 import argparse
 import gzip
-import os
 import shutil
 import struct
 import subprocess
 import sys
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple
 
 try:
     import numpy as np
@@ -184,7 +183,7 @@ def verify_dataset(data_dir: Path, split: str) -> Tuple[int, int, int]:
 
     num_classes = len(np.unique(np.concatenate([train_lbls, test_lbls])))
 
-    print(f"\nDataset verification successful:")
+    print("\nDataset verification successful:")
     print(f"  Split: {split}")
     print(f"  Training samples: {len(train_imgs)}")
     print(f"  Test samples: {len(test_imgs)}")
@@ -247,12 +246,12 @@ def main():
             continue
 
     if not download_success:
-        print(f"Error: All download URLs failed.", file=sys.stderr)
+        print("Error: All download URLs failed.", file=sys.stderr)
         print(f"Last error: {last_error}", file=sys.stderr)
-        print(f"\nTroubleshooting:", file=sys.stderr)
-        print(f"  1. Check your internet connection", file=sys.stderr)
-        print(f"  2. Verify wget or curl is installed", file=sys.stderr)
-        print(f"  3. Try downloading manually from:", file=sys.stderr)
+        print("\nTroubleshooting:", file=sys.stderr)
+        print("  1. Check your internet connection", file=sys.stderr)
+        print("  2. Verify wget or curl is installed", file=sys.stderr)
+        print("  3. Try downloading manually from:", file=sys.stderr)
         for url in EMNIST_URLS:
             print(f"     - {url}", file=sys.stderr)
         return 1
@@ -270,9 +269,9 @@ def main():
             shutil.rmtree(gzip_dir)
 
         print(f"\nDataset successfully downloaded to {args.output_dir}")
-        print(f"\nUsage:")
-        print(f"  Training: examples/lenet-emnist/train.mojo")
-        print(f"  Inference: examples/lenet-emnist/inference.mojo")
+        print("\nUsage:")
+        print("  Training: examples/lenet-emnist/train.mojo")
+        print("  Inference: examples/lenet-emnist/inference.mojo")
 
         return 0
 

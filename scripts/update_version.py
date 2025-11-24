@@ -143,7 +143,7 @@ def verify_version_files(repo_root: Path, version: str) -> bool:
             print(f"  ✗ VERSION: {content} (expected {version})")
             success = False
     else:
-        print(f"  ✗ VERSION file not found")
+        print("  ✗ VERSION file not found")
         success = False
 
     # Check version.mojo
@@ -152,10 +152,10 @@ def verify_version_files(repo_root: Path, version: str) -> bool:
         if f'alias VERSION = "{version}"' in content:
             print(f"  ✓ shared/version.mojo: {version}")
         else:
-            print(f"  ✗ shared/version.mojo: version mismatch")
+            print("  ✗ shared/version.mojo: version mismatch")
             success = False
     else:
-        print(f"  ⚠️  shared/version.mojo not found (optional)")
+        print("  ⚠️  shared/version.mojo not found (optional)")
 
     return success
 

@@ -15,7 +15,7 @@ Exit codes:
 import sys
 import re
 from pathlib import Path
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict
 
 from common import get_repo_root
 

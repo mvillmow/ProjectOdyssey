@@ -170,7 +170,7 @@ def main() -> None:
                 print(f"✓ {filename:50} | Short reference | Lines: {result['lines_removed']:3}")
 
     print("=" * 90)
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files processed: {len(results)}")
     print(f"  Kept full: {sum(1 for r in results if r['action'] == 'kept_full')}")
     print(f"  Condensed to brief: {sum(1 for r in results if r['action'] == 'condensed_to_brief')}")

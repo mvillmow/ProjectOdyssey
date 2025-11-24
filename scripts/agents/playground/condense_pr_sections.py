@@ -82,7 +82,7 @@ def main() -> None:
             print(f"○ {result['file']:50} | No PR section found")
 
     print("=" * 80)
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files processed: {len(results)}")
     print(f"  PR sections replaced: {sum(1 for r in results if r['pr_section_replaced'])}")
     print(f"  Total lines removed: {sum(r['lines_removed'] for r in results)}")

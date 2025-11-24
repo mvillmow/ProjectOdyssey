@@ -153,7 +153,7 @@ def main():
         else:
             total_errors += 1
 
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files modified: {total_modified}")
     if total_errors:
         print(f"  Errors: {total_errors}")

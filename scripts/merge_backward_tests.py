@@ -71,7 +71,7 @@ def main():
     print("Step 2: Checking worktree for uncommitted changes...")
     result = run_command(["git", "status", "--porcelain"], cwd=worktree_path)
     if result.stdout.strip():
-        print(f"⚠️  Worktree has uncommitted changes:")
+        print("⚠️  Worktree has uncommitted changes:")
         print(result.stdout)
         response = input("Continue anyway? (y/n): ")
         if response.lower() != 'y':
@@ -88,7 +88,7 @@ def main():
 
     result = run_command(["git", "status", "--porcelain"], cwd=repo_root)
     if result.stdout.strip():
-        print(f"⚠️  Main repository has uncommitted changes:")
+        print("⚠️  Main repository has uncommitted changes:")
         print(result.stdout)
         response = input("Continue anyway? (y/n): ")
         if response.lower() != 'y':
@@ -142,8 +142,8 @@ def main():
 
     # Step 7: Confirm merge
     print("Step 7: Ready to merge")
-    print(f"  From: backward-tests branch")
-    print(f"  To: main branch")
+    print("  From: backward-tests branch")
+    print("  To: main branch")
     print(f"  Commits to merge: {len(commits_ahead)}")
     print()
     response = input("Proceed with merge? (y/n): ")

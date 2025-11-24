@@ -10,7 +10,7 @@ This script merges them properly.
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -105,7 +105,7 @@ def main() -> None:
             print(f"✓ {result['file']:50} | Fixed")
 
     print("=" * 80)
-    print(f"\nSummary:")
+    print("\nSummary:")
     print(f"  Files processed: {len(results)}")
     print(f"  Files fixed: {sum(1 for r in results if r['fixed'])}")
 
