@@ -60,7 +60,7 @@ fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int
 # ============================================================================
 
 
-trait Transform:
+trait Transform(Copyable, Movable):
     """Base interface for all transforms.
 
     Transforms modify data in-place or return transformed copies.
@@ -94,7 +94,7 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
 
     var transforms: List[T]
 
-    fn __init__(mut self, var transforms: List[T]):
+    fn __init__(out self, var transforms: List[T]):
         """Create composition of transforms.
 
         Args:
@@ -169,7 +169,7 @@ struct Normalize(Transform, Copyable, Movable):
     var mean: Float64
     var std: Float64
 
-    fn __init__(mut self, mean: Float64 = 0.0, std: Float64 = 1.0):
+    fn __init__(out self, mean: Float64 = 0.0, std: Float64 = 1.0):
         """Create normalize transform.
 
         Args:
@@ -217,7 +217,7 @@ struct Reshape(Transform, Copyable, Movable):
 
     var target_shape: List[Int]
 
-    fn __init__(mut self, var target_shape: List[Int]):
+    fn __init__(out self, var target_shape: List[Int]):
         """Create reshape transform.
 
         Args:
@@ -335,7 +335,7 @@ struct CenterCrop(Transform, Copyable, Movable):
 
     var size: Tuple[Int, Int]
 
-    fn __init__(mut self, size: Tuple[Int, Int]):
+    fn __init__(out self, size: Tuple[Int, Int]):
         """Create center crop transform.
 
         Args:
@@ -398,7 +398,7 @@ struct RandomCrop(Transform, Copyable, Movable):
     var size: Tuple[Int, Int]
     var padding: Optional[Int]
 
-    fn __init__(mut self, size: Tuple[Int, Int], padding: Optional[Int] = None):
+    fn __init__(out self, size: Tuple[Int, Int], padding: Optional[Int] = None):
         """Create random crop transform.
 
         Args:
@@ -435,7 +435,7 @@ struct RandomCrop(Transform, Copyable, Movable):
         var padded_height = height
         var padded_width = width
         if self.padding:
-            var pad = self.padding.value()[]
+            var pad = self.padding.value()
             padded_height = height + 2 * pad
             padded_width = width + 2 * pad
 
@@ -456,7 +456,7 @@ struct RandomCrop(Transform, Copyable, Movable):
         var actual_top = top
         var actual_left = left
         if self.padding:
-            var pad = self.padding.value()[]
+            var pad = self.padding.value()
             actual_top = top - pad
             actual_left = left - pad
 
@@ -492,7 +492,7 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
 
     var p: Float64
 
-    fn __init__(mut self, p: Float64 = 0.5):
+    fn __init__(out self, p: Float64 = 0.5):
         """Create random horizontal flip transform.
 
         Args:
@@ -555,7 +555,7 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
 
     var p: Float64
 
-    fn __init__(mut self, p: Float64 = 0.5):
+    fn __init__(out self, p: Float64 = 0.5):
         """Create random vertical flip transform.
 
         Args:
