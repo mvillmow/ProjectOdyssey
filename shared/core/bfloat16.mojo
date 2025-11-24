@@ -46,7 +46,7 @@ struct BFloat16:
     # Constructors
     # ========================================================================
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize BFloat16 to zero."""
         self.bits = 0
 
