@@ -16,13 +16,18 @@ Testing strategy:
 - Gradient verification: Numerical gradient checking (future)
 """
 
-from testing import assert_true, assert_false, assert_equal, assert_almost_equal
+from testing import assert_true, assert_false, assert_equal
+from tests.shared.conftest import assert_almost_equal
 from math import exp, sqrt, tanh as math_tanh
 from shared.core import (
     ExTensor, zeros, ones, full, arange,
     relu, leaky_relu, prelu,
     sigmoid, tanh,
-    softmax, gelu
+    softmax, gelu,
+    relu_backward, leaky_relu_backward, prelu_backward,
+    sigmoid_backward, tanh_backward,
+    softmax_backward, gelu_backward,
+    GradientPair
 )
 
 
