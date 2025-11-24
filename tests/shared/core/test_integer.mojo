@@ -129,11 +129,11 @@ fn test_int8_arithmetic() raises:
 fn test_int8_string_representation() raises:
     """Test Int8 string representation."""
     var i1 = Int8(42)
-    assert_equal(str(i1), "42")
+    assert_equal(String(i1), "42")
     assert_equal(repr(i1), "Int8(42)")
 
     var i2 = Int8(-100)
-    assert_equal(str(i2), "-100")
+    assert_equal(String(i2), "-100")
 
     print("✓ test_int8_string_representation passed")
 

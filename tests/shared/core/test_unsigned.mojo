@@ -118,11 +118,11 @@ fn test_uint8_arithmetic() raises:
 fn test_uint8_string_representation() raises:
     """Test UInt8 string representation."""
     var u1 = UInt8(42)
-    assert_equal(str(u1), "42")
+    assert_equal(String(u1), "42")
     assert_equal(repr(u1), "UInt8(42)")
 
     var u2 = UInt8(200)
-    assert_equal(str(u2), "200")
+    assert_equal(String(u2), "200")
 
     print("✓ test_uint8_string_representation passed")
 

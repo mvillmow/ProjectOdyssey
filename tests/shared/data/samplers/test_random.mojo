@@ -170,7 +170,7 @@ fn test_random_sampler_no_duplicates() raises:
 
     for i in range(len(indices)):
         var idx = indices[i]
-        assert_true(not seen[idx], "Index " + str(idx) + " appears twice")
+        assert_true(not seen[idx], "Index " + String(idx) + " appears twice")
         seen[idx] = True
 
     assert_equal(len(indices), 50)

@@ -239,7 +239,7 @@ fn test_arange_basic() raises:
 
     # Check values: [0, 1, 2, ..., 9]
     for i in range(10):
-        assert_value_at(t, i, Float64(i), 1e-6, "arange value at index " + str(i))
+        assert_value_at(t, i, Float64(i), 1e-6, "arange value at index " + String(i))
 
 
 fn test_arange_step_2() raises:
@@ -374,7 +374,7 @@ fn test_linspace_basic() raises:
 
     # Check values: [0, 1, 2, ..., 10]
     for i in range(11):
-        assert_value_at(t, i, Float64(i), 1e-6, "linspace value at index " + str(i))
+        assert_value_at(t, i, Float64(i), 1e-6, "linspace value at index " + String(i))
 
 
 fn test_linspace_negative_range() raises:
