@@ -110,9 +110,9 @@ fn test_relu_shape() raises:
 
     var y = relu(x)
 
-    assert_equal(y.shape[0], 2)
-    assert_equal(y.shape[1], 3)
-    assert_equal(y.shape[2], 4)
+    assert_equal(y.shape()[0], 2)
+    assert_equal(y.shape()[1], 3)
+    assert_equal(y.shape()[2], 4)
 
 
 # ============================================================================

@@ -11,7 +11,8 @@
 
 ### Overall Status
 
-The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear success in tooling/infrastructure and critical blockers in examples and architecture implementations.
+The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear success in tooling/infrastructure
+and critical blockers in examples and architecture implementations.
 
 ### Key Statistics
 
@@ -25,10 +26,11 @@ The ML Odyssey codebase is in a **PARTIALLY FUNCTIONAL** state with clear succes
 
 ### Critical Findings (Priority Ranked)
 
-1. **CRITICAL: Tuple Return Type Syntax** - All 6 CIFAR-10 architectures + broadcasting fail with `raises -> (Type1, Type2)` syntax errors
-2. **CRITICAL: Self Parameter Syntax** - 100+ method definition errors using `inout self`/`borrowed self`
+1. **CRITICAL: Tuple Return Type Syntax** - All 6 CIFAR-10 architectures + broadcasting fail with
+   `raises -> (Type1, Type2)` syntax errors
+2. **CRITICAL: Self Parameter Syntax** - 100+ method definition errors using `inout self` or `borrowed self`
 3. **CRITICAL: Missing DynamicVector** - 4+ architectures cannot import from collections.vector
-4. **CRITICAL: ExTensor Trait Violations** - Cannot store ExTensor in collections (not Copyable/Movable)
+4. **CRITICAL: ExTensor Trait Violations** - Cannot store ExTensor in collections (not Copyable or Movable)
 5. **HIGH: Missing Initializer Functions** - `he_uniform`, `xavier_uniform` not implemented
 6. **HIGH: Missing Loss Functions** - `cross_entropy_loss` and gradient variants not implemented
 7. **MEDIUM: F-String Limitations** - Mojo doesn't support f-string syntax (4 architectures)
@@ -352,7 +354,8 @@ fn forward(inout self, borrowed input: ExTensor) raises -> ExTensor:
 - LeNet-EMNIST test files
 - Shared library modules with classes/structs
 
-**Root Cause**: Mojo `fn` syntax doesn't support ownership qualifiers on `self` parameter in method definitions. The correct syntax uses implicit ownership rules.
+**Root Cause**: Mojo `fn` syntax doesn't support ownership qualifiers on `self` parameter in method definitions.
+The correct syntax uses implicit ownership rules.
 
 **Solution**:
 Remove qualifiers from self parameter. Mojo automatically determines ownership:
@@ -462,7 +465,8 @@ fn compute_gradients() raises -> List[ExTensor]:
 - `examples/lenet-emnist/test_gradients.mojo:89` - compute_gradients_with_capture()
 - `examples/lenet-emnist/test_weight_updates.mojo:120` - copy_weights()
 
-**Root Cause**: ExTensor struct doesn't implement Copyable and Movable traits, preventing it from being stored in collections.
+**Root Cause**: ExTensor struct doesn't implement Copyable and Movable traits, preventing it from being
+stored in collections.
 
 **Solution Options**:
 
@@ -957,7 +961,7 @@ Paper Examples (10):
 
 ## Dependencies Between Fixes
 
-```
+```text
 Phase 1.1 (Tuple Syntax)
     ↓
 Phase 1.2 (Self Parameter)

@@ -9,10 +9,10 @@
 
 ## Executive Summary
 
-Successfully completed comprehensive integration of HIGH and MEDIUM priority optimizations
-from the Mojo codebase review. All Week 1-6 milestones achieved, with production-ready
-implementations of SIMD optimizations, compile-time type specialization, and trait-based
-architecture improvements.
+Successfully completed comprehensive integration of HIGH and MEDIUM priority optimizations from
+the Mojo codebase review. All Week 1-6 milestones achieved, with production-ready implementations
+of SIMD optimizations, compile-time type specialization, and trait-based architecture
+improvements.
 
 **Key Achievements**:
 
@@ -33,8 +33,8 @@ architecture improvements.
 
 ### Objective
 
-Establish comprehensive testing, benchmarking, and demonstration infrastructure
-before integration to ensure correctness and measure performance gains.
+Establish comprehensive testing, benchmarking, and demonstration infrastructure before integration
+to ensure correctness and measure performance gains.
 
 ### Deliverables Created
 
@@ -44,7 +44,7 @@ before integration to ensure correctness and measure performance gains.
 
 **Key Functions**:
 
-```mojo
+```text
 fn verify_correctness() raises -> Bool
     - Ensures SIMD produces identical results to scalar
     - Validates add, multiply, subtract, divide operations
@@ -78,7 +78,7 @@ fn benchmark_operation(name, size, scalar_fn, simd_fn, dtype, iterations)
 
 **Coverage**:
 
-```mojo
+```text
 fn test_relu_gradient() raises
 fn test_sigmoid_gradient() raises
 fn test_tanh_gradient() raises
@@ -118,7 +118,7 @@ For each parameter:
 
 **Demonstrations**:
 
-```mojo
+```text
 fn demo_basic_usage() raises
     - Creating typed tensors with compile-time dtype
     - Element access with type safety
@@ -309,16 +309,16 @@ struct TypedLinearLayer[dtype: DType, //]:
     var in_features: Int
     var out_features: Int
 
-    fn __init__(inout self, in_features: Int, out_features: Int) raises:
+    fn __init__(mut self, in_features: Int, out_features: Int) raises:
         # Weights: (out_features, in_features)
-        var weight_shape = DynamicVector[Int](2)
-        weight_shape.push_back(out_features)
-        weight_shape.push_back(in_features)
+        var weight_shape = List[Int](2)
+        weight_shape.append(out_features)
+        weight_shape.append(in_features)
         self.weights = TypedTensor[dtype](weight_shape)
 
         # Bias: (out_features,)
-        var bias_shape = DynamicVector[Int](1)
-        bias_shape.push_back(out_features)
+        var bias_shape = List[Int](1)
+        bias_shape.append(out_features)
         self.bias = TypedTensor[dtype](bias_shape)
 ```
 

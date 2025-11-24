@@ -108,7 +108,7 @@ jobs:
             # Run Mojo benchmarks
             elif [ -f "$SUITE_PATH/run_benchmark.mojo" ]; then
               echo "Running Mojo benchmark..."
-              pixi run mojo "$SUITE_PATH/run_benchmark.mojo" --output benchmark-results/${{ matrix.benchmark-suite }}.json
+              pixi run mojo -I . "$SUITE_PATH/run_benchmark.mojo" --output benchmark-results/${{ matrix.benchmark-suite }}.json
             else
               echo "⚠️  No benchmark runner found in $SUITE_PATH"
               mkdir -p benchmark-results

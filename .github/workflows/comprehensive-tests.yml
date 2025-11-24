@@ -161,7 +161,7 @@ jobs:
               echo "=================================================="
               test_count=$((test_count + 1))
 
-              if pixi run mojo "$test_file"; then
+              if pixi run mojo -I . "$test_file"; then
                 echo "✅ PASSED: $test_file"
                 passed_count=$((passed_count + 1))
               else

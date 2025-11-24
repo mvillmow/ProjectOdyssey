@@ -102,12 +102,14 @@ alias LICENSE = "MIT"
 # ============================================================================
 # Public API
 # ============================================================================
-# NOTE: Mojo does not support __all__ lists like Python does.
-# In Mojo, all public symbols (those not prefixed with _) are automatically
-# exported when the module is imported. Users can import specific items:
-#   from shared import Linear, Conv2D, ReLU
-# Or import the module:
-#   import shared
+# Mojo module exports for convenience imports.
+# While Mojo does not support __all__ lists like Python (all public symbols
+# are automatically exported), we document the public API here for clarity.
+#
+# Users can import in multiple ways:
+#   from shared import core, training, data, utils  # Import modules
+#   from shared.core.layers import Linear           # Import specific items
+#   import shared                                     # Import whole package
 #
 # The following components will be available once implementation completes:
 #
@@ -124,15 +126,40 @@ alias LICENSE = "MIT"
 # Data - Datasets: TensorDataset, ImageDataset, DataLoader
 # Data - Transforms: Normalize, ToTensor, Compose
 # Utils: Logger, plot_training_curves
+# Autograd: Automatic differentiation utilities (when available)
+# Testing: Test utilities and fixtures
 
 # ============================================================================
 # Convenience: Make subpackages accessible
 # ============================================================================
 # This allows users to do: from shared import core, training, data, utils
 # Then access via: shared.core.layers.Linear, shared.training.optimizers.SGD
-
+#
+# NOTE: Mojo v0.25.7+ does not support __all__ module-level assignments.
+# In Mojo, all public symbols (those not prefixed with _) are automatically
+# exported when the module is imported. The public API documentation below
+# describes what should be exposed at this package level:
+#
+# Public API (modules and symbols exposed at package level):
+# - VERSION, AUTHOR, LICENSE - Package metadata
+# - core - Core neural network components
+# - training - Training infrastructure and optimizers
+# - data - Data loading and transformation utilities
+# - utils - Helper utilities
+# - autograd - Automatic differentiation (when available)
+# - testing - Test utilities and fixtures
+#
+# Once implementations are available, users will be able to import:
+#   from shared import core, training, data, utils
+#   from shared import VERSION, AUTHOR, LICENSE
+#
+# For implementation of component-level imports when core modules
+# are fully implemented, see test_packaging.mojo
+#
 # NOTE: These imports will be uncommented during implementation
 # from . import core
 # from . import training
 # from . import data
 # from . import utils
+# from . import autograd
+# from . import testing
