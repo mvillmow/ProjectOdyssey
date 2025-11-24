@@ -55,7 +55,7 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
     var labels: ExTensor
     var _len: Int
 
-    fn __init__(out self, var data: ExTensor, var labels: ExTensor) raises:
+    fn __init__(mut self, var data: ExTensor, var labels: ExTensor) raises:
         """Create dataset from tensors.
 
         Args:.            `data`: Data tensor of shape (N, ...).
@@ -124,7 +124,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         mut self,
         var file_paths: List[String],
         var labels: List[Int],
-        `cache`: Bool = False,
+        cache: Bool = False,
     ) raises:
         """Create dataset from file paths.
 
