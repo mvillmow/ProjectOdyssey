@@ -1,11 +1,13 @@
-"""Tests for weight initialization functions.
+"""Comprehensive test suite for weight initialization functions.
 
-Tests cover:
-- Xavier initialization (uniform and normal)
-- Kaiming/He initialization (uniform and normal)
-- Uniform and normal distributions
-- Constant initialization
-- Statistical properties (mean, variance, range)
+Merged from non-legacy and legacy test files to provide complete coverage of:
+- Xavier/Glorot initialization (uniform and normal variants)
+- Kaiming/He initialization (uniform and normal variants, fan_in/fan_out modes)
+- Basic distributions (uniform, normal, constant)
+- Statistical validation (mean, variance, range)
+- Reproducibility with seed control
+- Dtype support (float16, float32, float64)
+- Edge cases (small/large dimensions, rectangular matrices)
 
 All tests use pure functional API.
 """
@@ -48,6 +50,10 @@ fn compute_mean(tensor: ExTensor) -> Float64:
         var ptr = tensor._data.bitcast[Float64]()
         for i in range(size):
             sum += ptr[i]
+    elif tensor.dtype() == DType.float16:
+        var ptr = tensor._data.bitcast[Float16]()
+        for i in range(size):
+            sum += Float64(ptr[i])
 
     return sum / Float64(size)
 
@@ -66,6 +72,11 @@ fn compute_variance(tensor: ExTensor, mean: Float64) -> Float64:
         var ptr = tensor._data.bitcast[Float64]()
         for i in range(size):
             var diff = ptr[i] - mean
+            sum_sq_diff += diff * diff
+    elif tensor.dtype() == DType.float16:
+        var ptr = tensor._data.bitcast[Float16]()
+        for i in range(size):
+            var diff = Float64(ptr[i]) - mean
             sum_sq_diff += diff * diff
 
     return sum_sq_diff / Float64(size)
@@ -94,6 +105,14 @@ fn compute_min_max(tensor: ExTensor) -> Tuple[Float64, Float64]:
         var ptr = tensor._data.bitcast[Float64]()
         for i in range(size):
             var val = ptr[i]
+            if val < min_val:
+                min_val = val
+            if val > max_val:
+                max_val = val
+    elif tensor.dtype() == DType.float16:
+        var ptr = tensor._data.bitcast[Float16]()
+        for i in range(size):
+            var val = Float64(ptr[i])
             if val < min_val:
                 min_val = val
             if val > max_val:
@@ -162,7 +181,7 @@ fn test_xavier_uniform_variance() raises:
     var mean = compute_mean(W)
     var std_dev = compute_std(W, mean)
 
-    # For uniform distribution U(-a, a): variance = a�/3
+    # For uniform distribution U(-a, a): variance = a²/3
     # Xavier limit: a = sqrt(6 / (fan_in + fan_out))
     # Expected std = a / sqrt(3) = sqrt(6 / (fan_in + fan_out)) / sqrt(3)
     #                             = sqrt(2 / (fan_in + fan_out))
@@ -170,6 +189,45 @@ fn test_xavier_uniform_variance() raises:
 
     # Allow 10% tolerance for statistical variation
     assert_almost_equal(Float32(std_dev), Float32(expected_std), tolerance=Float32(expected_std) * 0.1)
+
+
+fn test_xavier_uniform_reproducibility() raises:
+    """Test Xavier uniform with fixed seed is reproducible."""
+    var fan_in = 50
+    var fan_out = 100
+    var shape = List[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=999)
+    var w2 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=999)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
+
+
+fn test_xavier_uniform_different_seeds() raises:
+    """Test Xavier uniform with different seeds produces different results."""
+    var fan_in = 50
+    var fan_out = 100
+    var shape = List[Int](fan_in, fan_out)
+
+    # Generate with different seeds
+    var w1 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=111)
+    var w2 = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=222)
+
+    # Should be different (at least some values)
+    var differences = 0
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        if val1 != val2:
+            differences += 1
+
+    # Expect most values to be different (allow some coincidental matches)
+    assert_true(differences > w1.numel() // 2)
 
 
 # ============================================================================
@@ -215,6 +273,59 @@ fn test_xavier_normal_std() raises:
 
     # Allow 10% tolerance
     assert_almost_equal(Float32(std_dev), Float32(expected_std), tolerance=Float32(expected_std) * 0.1)
+
+
+fn test_xavier_normal_reproducibility() raises:
+    """Test Xavier normal with fixed seed is reproducible."""
+    var fan_in = 50
+    var fan_out = 100
+    var shape = List[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=555)
+    var w2 = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=555)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
+
+
+fn test_xavier_configurations() raises:
+    """Test Xavier initialization with various fan configurations."""
+    # Test several configurations
+    var configs = List[Tuple[Int, Int]]()
+    configs.append((10, 10))     # Square
+    configs.append((100, 50))    # Wide
+    configs.append((50, 100))    # Tall
+    configs.append((784, 128))   # Typical NN layer
+    configs.append((1, 1000))    # Extreme aspect ratio
+
+    for idx in range(len(configs)):
+        var fan_in = configs[idx][0]
+        var fan_out = configs[idx][1]
+        var shape = List[Int](fan_in, fan_out)
+
+        # Test uniform
+        var w_uniform = xavier_uniform(fan_in, fan_out, shape, DType.float32, seed_val=42)
+        var bound = sqrt(6.0 / Float64(fan_in + fan_out))
+
+        # Check bounds
+        for i in range(w_uniform.numel()):
+            var val = Float64(w_uniform._data.bitcast[Float32]()[i])
+            assert_true(val >= -bound and val <= bound)
+
+        # Test normal
+        var w_normal = xavier_normal(fan_in, fan_out, shape, DType.float32, seed_val=42)
+        var expected_var = 2.0 / Float64(fan_in + fan_out)
+        var mean = compute_mean(w_normal)
+        var actual_var = compute_variance(w_normal, mean)
+
+        # Variance should be reasonable (within 25% for smaller samples)
+        var tolerance = expected_var * 0.25
+        var diff = abs(actual_var - expected_var)
+        assert_true(diff < tolerance)
 
 
 # ============================================================================
@@ -264,8 +375,8 @@ fn test_kaiming_uniform_mean() raises:
     assert_almost_equal(Float32(mean), Float32(0.0), tolerance=0.01)
 
 
-fn test_kaiming_uniform_variance() raises:
-    """Test Kaiming uniform has approximately correct variance."""
+fn test_kaiming_uniform_variance_fan_in() raises:
+    """Test Kaiming uniform has correct variance with fan_in mode."""
     var fan_in = 2000
     var fan_out = 2000
     var shape = List[Int](fan_in, fan_out)
@@ -279,6 +390,41 @@ fn test_kaiming_uniform_variance() raises:
 
     # Allow 10% tolerance
     assert_almost_equal(Float32(std_dev), Float32(expected_std), tolerance=Float32(expected_std) * 0.1)
+
+
+fn test_kaiming_uniform_variance_fan_out() raises:
+    """Test Kaiming uniform has correct variance with fan_out mode."""
+    var fan_in = 100
+    var fan_out = 50
+    var shape = List[Int](fan_in, fan_out)
+    var weights = kaiming_uniform(fan_in, fan_out, shape, "fan_out", DType.float32, seed_val=42)
+
+    # Expected variance: 2/fan_out = 2/50 = 0.04
+    var expected_var = 2.0 / Float64(fan_out)
+    var mean = compute_mean(weights)
+    var actual_var = compute_variance(weights, mean)
+
+    var tolerance = expected_var * 0.1
+    var diff = abs(actual_var - expected_var)
+
+    assert_true(diff < tolerance)
+
+
+fn test_kaiming_uniform_reproducibility() raises:
+    """Test Kaiming uniform with fixed seed is reproducible."""
+    var fan_in = 50
+    var fan_out = 100
+    var shape = List[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = kaiming_uniform(fan_in, fan_out, shape, "fan_in", DType.float32, seed_val=999)
+    var w2 = kaiming_uniform(fan_in, fan_out, shape, "fan_in", DType.float32, seed_val=999)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
 
 
 # ============================================================================
@@ -324,6 +470,23 @@ fn test_kaiming_normal_std() raises:
 
     # Allow 10% tolerance
     assert_almost_equal(Float32(std_dev), Float32(expected_std), tolerance=Float32(expected_std) * 0.1)
+
+
+fn test_kaiming_normal_reproducibility() raises:
+    """Test Kaiming normal with fixed seed is reproducible."""
+    var fan_in = 50
+    var fan_out = 100
+    var shape = List[Int](fan_in, fan_out)
+
+    # Generate with same seed twice
+    var w1 = kaiming_normal(fan_in, fan_out, shape, "fan_in", DType.float32, seed_val=555)
+    var w2 = kaiming_normal(fan_in, fan_out, shape, "fan_in", DType.float32, seed_val=555)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
 
 
 # ============================================================================
@@ -376,6 +539,21 @@ fn test_uniform_mean() raises:
     assert_almost_equal(Float32(mean), Float32(expected_mean), tolerance=0.05)
 
 
+fn test_uniform_reproducibility() raises:
+    """Test uniform with fixed seed is reproducible."""
+    var shape = List[Int](50, 50)
+
+    # Generate with same seed twice
+    var w1 = uniform(shape, -0.2, 0.2, DType.float32, seed_val=999)
+    var w2 = uniform(shape, -0.2, 0.2, DType.float32, seed_val=999)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
+
+
 # ============================================================================
 # Normal Distribution Tests
 # ============================================================================
@@ -421,6 +599,21 @@ fn test_normal_std() raises:
 
     # Allow 10% tolerance for sampling variability
     assert_almost_equal(Float32(actual_std), Float32(target_std), tolerance=Float32(target_std) * 0.1)
+
+
+fn test_normal_reproducibility() raises:
+    """Test normal with fixed seed is reproducible."""
+    var shape = List[Int](50, 50)
+
+    # Generate with same seed twice
+    var w1 = normal(shape, 0.0, 0.05, DType.float32, seed_val=555)
+    var w2 = normal(shape, 0.0, 0.05, DType.float32, seed_val=555)
+
+    # Should be identical
+    for i in range(w1.numel()):
+        var val1 = w1._data.bitcast[Float32]()[i]
+        var val2 = w2._data.bitcast[Float32]()[i]
+        assert_equal(val1, val2)
 
 
 # ============================================================================
@@ -475,6 +668,23 @@ fn test_constant_negative() raises:
         assert_almost_equal(W._data.bitcast[Float32]()[i], Float32(value), tolerance=1e-5)
 
 
+fn test_constant_ones_and_zeros() raises:
+    """Test constant can create ones and zeros."""
+    var shape = List[Int](5, 5)
+
+    # Test ones
+    var ones_tensor = constant(shape, 1.0, DType.float32)
+    for i in range(ones_tensor.numel()):
+        var val = Float64(ones_tensor._data.bitcast[Float32]()[i])
+        assert_equal(val, 1.0)
+
+    # Test zeros
+    var zeros_tensor = constant(shape, 0.0, DType.float32)
+    for i in range(zeros_tensor.numel()):
+        var val = Float64(zeros_tensor._data.bitcast[Float32]()[i])
+        assert_equal(val, 0.0)
+
+
 # ============================================================================
 # Dtype Support Tests
 # ============================================================================
@@ -491,6 +701,30 @@ fn test_xavier_uniform_float64() raises:
     assert_equal(W.shape()[0], 100)
     assert_equal(W.shape()[1], 50)
 
+    # Verify variance
+    var expected_var = 2.0 / Float64(fan_in + fan_out)
+    var mean = compute_mean(W)
+    var actual_var = compute_variance(W, mean)
+    var tolerance = expected_var * 0.1
+    assert_true(abs(actual_var - expected_var) < tolerance)
+
+
+fn test_xavier_normal_float16() raises:
+    """Test Xavier normal with float16 dtype."""
+    var fan_in = 100
+    var fan_out = 50
+    var shape = List[Int](fan_in, fan_out)
+    var W = xavier_normal(fan_in, fan_out, shape, DType.float16, seed_val=42)
+
+    assert_equal(W._dtype, DType.float16)
+
+    # Check variance for float16 (with looser tolerance)
+    var expected_var = 2.0 / Float64(fan_in + fan_out)
+    var mean = compute_mean(W)
+    var actual_var = compute_variance(W, mean)
+    var tolerance = expected_var * 0.15  # Float16 has less precision
+    assert_true(abs(actual_var - expected_var) < tolerance)
+
 
 fn test_kaiming_normal_float64() raises:
     """Test Kaiming normal with float64 dtype."""
@@ -502,6 +736,34 @@ fn test_kaiming_normal_float64() raises:
     assert_true(W._dtype == DType.float64, "Kaiming normal should have float64 dtype")
     assert_equal(W.shape()[0], 100)
     assert_equal(W.shape()[1], 50)
+
+    # Check variance for float64
+    var expected_var = 2.0 / Float64(fan_in)
+    var mean = compute_mean(W)
+    var actual_var = compute_variance(W, mean)
+    var tolerance = expected_var * 0.1
+    assert_true(abs(actual_var - expected_var) < tolerance)
+
+
+fn test_uniform_float64() raises:
+    """Test uniform with float64 dtype."""
+    var shape = List[Int](50, 50)
+    var weights = uniform(shape, -1.0, 1.0, DType.float64, seed_val=42)
+
+    assert_equal(weights._dtype, DType.float64)
+
+    # Check bounds
+    for i in range(weights.numel()):
+        var val = weights._data.bitcast[Float64]()[i]
+        assert_true(val >= -1.0 and val <= 1.0)
+
+
+fn test_normal_float64() raises:
+    """Test normal with float64 dtype."""
+    var shape = List[Int](50, 50)
+    var weights = normal(shape, 0.0, 0.1, DType.float64, seed_val=42)
+
+    assert_equal(weights._dtype, DType.float64)
 
 
 fn test_constant_float64() raises:
