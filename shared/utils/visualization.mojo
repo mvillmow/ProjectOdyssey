@@ -29,7 +29,7 @@ struct PlotData(Copyable, Movable):
     var y_data: List[Float32]
     var label: String
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create empty plot data."""
         self.title = ""
         self.xlabel = ""
@@ -47,7 +47,7 @@ struct PlotSeries(Copyable, Movable):
     var ylabel: String
     var series_data: List[PlotData]
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create empty plot with multiple series."""
         self.title = ""
         self.xlabel = ""
@@ -68,7 +68,7 @@ struct ConfusionMatrixData(Copyable, Movable):
     var precision: Float32
     var recall: Float32
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create empty confusion matrix."""
         self.class_names = List[String]()
         self.matrix = List[List[Int]]()

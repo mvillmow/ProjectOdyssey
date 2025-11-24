@@ -22,7 +22,7 @@ Example:.    from shared.core.layers import Linear, ReLU
         var relu: ReLU
         var fc2: Linear
 
-        fn __init__(out self):
+        fn __init__(mut self):
             self.fc1 = Linear(784, 128)
             self.relu = ReLU()
             self.fc2 = Linear(128, 10)

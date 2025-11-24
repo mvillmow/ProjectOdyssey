@@ -114,7 +114,7 @@ struct RandomSwap(TextTransform, Copyable, Movable):
     var p: Float64  # Probability of performing swap
     var n: Int  # Number of swaps to perform
 
-    fn __init__(out self, p: Float64 = 0.15, n: Int = 2):
+    fn __init__(mut self, p: Float64 = 0.15, n: Int = 2):
         """Create random swap transform.
 
         Args:.            `p`: Probability of performing each swap (0.0 to 1.0).
@@ -172,7 +172,7 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
 
     var p: Float64  # Probability of deleting each word
 
-    fn __init__(out self, p: Float64 = 0.1):
+    fn __init__(mut self, p: Float64 = 0.1):
         """Create random deletion transform.
 
         Args:.            `p`: Probability of deleting each word (0.0 to 1.0).
@@ -232,7 +232,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     var n: Int  # Number of words to insert
     var vocabulary: List[String]  # Words to insert from
 
-    fn __init__(out self, p: Float64 = 0.1, n: Int = 1, var vocabulary: List[String]):
+    fn __init__(mut self, p: Float64 = 0.1, n: Int = 1, var vocabulary: List[String]):
         """Create random insertion transform.
 
         Args:.            `p`: Probability of performing insertion (0.0 to 1.0).
@@ -302,7 +302,7 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     var p: Float64  # Probability of replacing each word
     var synonyms: Dict[String, List[String]]  # Synonym dictionary
 
-    fn __init__(out self, p: Float64 = 0.2, var synonyms: Dict[String, List[String]]):
+    fn __init__(mut self, p: Float64 = 0.2, var synonyms: Dict[String, List[String]]):
         """Create random synonym replacement transform.
 
         Args:.            `p`: Probability of replacing each word (0.0 to 1.0).
@@ -366,7 +366,7 @@ struct TextCompose(TextTransform, Copyable, Movable):
 
     var transforms: List[TextTransform]
 
-    fn __init__(out self, var transforms: List[TextTransform]):
+    fn __init__(mut self, var transforms: List[TextTransform]):
         """Create composition of text transforms.
 
         Args:.            `transforms`: List of text transforms to apply in order.

@@ -65,7 +65,7 @@ struct TrainerConfig(Copyable, Movable):
     var gradient_clip_norm: Float32  # Clip gradients by norm (0 = no clipping)
 
     fn __init__(
-        out self,
+        mut self,
         num_epochs: Int = 10,
         batch_size: Int = 32,
         learning_rate: Float64 = 0.001,
@@ -108,7 +108,7 @@ struct TrainingMetrics(Copyable, Movable):
     var best_val_accuracy: Float64
     var best_epoch: Int
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Initialize training metrics with defaults."""
         self.current_epoch = 0
         self.current_batch = 0
@@ -226,7 +226,7 @@ struct DataBatch(Copyable, Movable):
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
 
-    fn __init__(out self, var data: ExTensor, var labels: ExTensor):
+    fn __init__(mut self, var data: ExTensor, var labels: ExTensor):
         """Initialize data batch.
 
         Args:.            `data`: Input features tensor (ownership transferred).
@@ -251,7 +251,7 @@ struct DataLoader(Copyable, Movable):
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(out self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
+    fn __init__(mut self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
         """Initialize data loader.
 
         Args:.            `data`: Full dataset features (ownership transferred).

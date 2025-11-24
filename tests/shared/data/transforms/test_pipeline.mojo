@@ -22,7 +22,7 @@ struct StubData:
 
     var value: Float32
 
-    fn __init__(out self, value: Float32):
+    fn __init__(mut self, value: Float32):
         self.value = value
 
 
@@ -32,7 +32,7 @@ struct StubPipeline:
 
     var num_transforms: Int
 
-    fn __init__(out self, num_transforms: Int):
+    fn __init__(mut self, num_transforms: Int):
         self.num_transforms = num_transforms
 
     fn apply(self, data: StubData) -> StubData:

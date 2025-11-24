@@ -67,7 +67,7 @@ struct GradientScaler:
     var min_scale: Float32
     var max_scale: Float32
 
-    fn __init__(out self,
+    fn __init__(mut self,
                 initial_scale: Float32 = 65536.0,
                 growth_factor: Float32 = 2.0,
                 backoff_factor: Float32 = 0.5,

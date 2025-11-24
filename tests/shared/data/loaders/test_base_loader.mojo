@@ -17,7 +17,7 @@ struct StubDataset:
 
     var size: Int
 
-    fn __init__(out self, size: Int):
+    fn __init__(mut self, size: Int):
         self.size = size
 
     fn __len__(self) -> Int:
@@ -34,10 +34,10 @@ struct StubBatch:
 
     var batch_size: Int
 
-    fn __init__(out self, capacity: Int):
+    fn __init__(mut self, capacity: Int):
         self.batch_size = capacity
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(mut self, owned existing: Self):
         """Move initializer."""
         self.batch_size = existing.batch_size
 
@@ -57,7 +57,7 @@ struct StubDataLoader:
     var num_batches: Int
 
     fn __init__(
-        out self,
+        mut self,
         dataset: StubDataset,
         batch_size: Int,
         drop_last: Bool = False,

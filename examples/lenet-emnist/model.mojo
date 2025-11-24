@@ -60,7 +60,7 @@ struct LeNet5:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(out self, num_classes: Int = 47) raises:
+    fn __init__(mut self, num_classes: Int = 47) raises:
         """Initialize LeNet-5 model with random weights.
 
         Args:

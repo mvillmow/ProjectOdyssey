@@ -18,7 +18,7 @@ struct PReLU(Module):
     """
     var alpha: Tensor  # Learnable slope for negative values
 
-    fn __init__(out self, num_features: Int = 1, init_value: Float64 = 0.25):
+    fn __init__(mut self, num_features: Int = 1, init_value: Float64 = 0.25):
         """Initialize PReLU.
 
         Args:

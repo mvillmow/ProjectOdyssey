@@ -228,7 +228,7 @@ struct LossAndGrad:
     var loss: ExTensor
     var grad: ExTensor
 
-    fn __init__(out self, var loss: ExTensor, var grad: ExTensor):
+    fn __init__(mut self, var loss: ExTensor, var grad: ExTensor):
         """Initialize loss and gradient pair.
 
         Args:

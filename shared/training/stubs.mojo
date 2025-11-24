@@ -34,7 +34,7 @@ struct MockTrainer(Copyable, Movable):
     var epoch_count: Int
     var should_fail: Bool
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Initialize mock trainer."""
         self.epoch_count = 0
         self.should_fail = False
@@ -90,7 +90,6 @@ struct MockTrainer(Copyable, Movable):
 # ============================================================================
 
 
-@value
 struct MockStepLR(LRScheduler):
     """Stub StepLR scheduler for testing.
 
@@ -101,7 +100,7 @@ struct MockStepLR(LRScheduler):
     var step_size: Int
     var gamma: Float64
 
-    fn __init__(out self, base_lr: Float64, step_size: Int, gamma: Float64):
+    fn __init__(mut self, base_lr: Float64, step_size: Int, gamma: Float64):
         """Initialize StepLR scheduler.
 
         Args:
@@ -131,7 +130,6 @@ struct MockStepLR(LRScheduler):
         return self.base_lr * decay_factor
 
 
-@value
 struct MockCosineAnnealingLR(LRScheduler):
     """Stub Cosine Annealing scheduler for testing.
 
@@ -143,7 +141,7 @@ struct MockCosineAnnealingLR(LRScheduler):
     var eta_min: Float64
 
     fn __init__(
-        out self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0
+        mut self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0
     ):
         """Initialize Cosine Annealing scheduler.
 
@@ -177,7 +175,6 @@ struct MockCosineAnnealingLR(LRScheduler):
         return self.eta_min + (self.base_lr - self.eta_min) * factor
 
 
-@value
 struct MockWarmupScheduler(LRScheduler):
     """Stub Warmup scheduler for testing.
 
@@ -187,7 +184,7 @@ struct MockWarmupScheduler(LRScheduler):
     var base_lr: Float64
     var warmup_epochs: Int
 
-    fn __init__(out self, base_lr: Float64, warmup_epochs: Int):
+    fn __init__(mut self, base_lr: Float64, warmup_epochs: Int):
         """Initialize Warmup scheduler.
 
         Args:
@@ -223,7 +220,6 @@ struct MockWarmupScheduler(LRScheduler):
 # ============================================================================
 
 
-@value
 struct MockEarlyStopping(Callback):
     """Stub Early Stopping callback for testing."""
 
@@ -235,7 +231,7 @@ struct MockEarlyStopping(Callback):
     var stopped: Bool
 
     fn __init__(
-        out self,
+        mut self,
         monitor: String = "val_loss",
         patience: Int = 5,
         min_delta: Float64 = 0.0,
@@ -316,14 +312,13 @@ struct MockEarlyStopping(Callback):
         return self.stopped
 
 
-@value
 struct MockCheckpoint(Callback):
     """Stub Checkpoint callback for testing."""
 
     var save_path: String
     var save_count: Int
 
-    fn __init__(out self, save_path: String = "checkpoint.pt"):
+    fn __init__(mut self, save_path: String = "checkpoint.pt"):
         """Initialize checkpoint callback.
 
         Args:.            `save_path`: Path template for saving checkpoints.
@@ -365,14 +360,13 @@ struct MockCheckpoint(Callback):
         return CONTINUE
 
 
-@value
 struct MockLoggingCallback(Callback):
     """Stub Logging callback for testing."""
 
     var log_interval: Int
     var log_count: Int
 
-    fn __init__(out self, log_interval: Int = 1):
+    fn __init__(mut self, log_interval: Int = 1):
         """Initialize logging callback.
 
         Args:.            `log_interval`: Log every N epochs.

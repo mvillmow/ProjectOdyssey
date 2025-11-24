@@ -15,8 +15,8 @@ FIXME: This example does not compile. Issues:
 2. Type issue: Imports Tensor from shared.core.types but actual export is
    ExTensor from shared.core.extensor
 
-3. Syntax error: Uses incorrect `inout self` parameter syntax. Mojo requires
-   either `inout self: Self` or just `self` for methods. The parameters on
+3. Syntax error: Uses incorrect `mut self` parameter syntax. Mojo requires
+   either `mut self: Self` or just `self` for methods. The parameters on
    lines 20, 37, 41 are invalid.
 
 4. Missing import: Uses List type without importing it
@@ -36,7 +36,7 @@ struct DigitClassifier:
 
     var model: Sequential
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create a 3-layer network: 784 -> 128 -> 64 -> 10."""
 
         # Input: 784 pixels (28x28 flattened)

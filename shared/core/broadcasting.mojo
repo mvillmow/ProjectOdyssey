@@ -161,7 +161,7 @@ struct BroadcastIterator:
     var position: Int
 
     fn __init__(
-        out self,
+        mut self,
         var shape: List[Int],
         var strides1: List[Int],
         var strides2: List[Int],

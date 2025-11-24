@@ -86,7 +86,7 @@ struct ExTensor(Copyable, Movable):
     var _refcount: UnsafePointer[Int, origin=MutAnyOrigin]  # Shared reference count (fixes MOJO-003)
     var _original_numel_quantized: Int  # Metadata for quantization: -1 if not quantized, original numel if quantized (fixes DATA-001)
 
-    fn __init__(out self, shape: List[Int], dtype: DType) raises:
+    fn __init__(mut self, shape: List[Int], dtype: DType) raises:
         """Initialize a new ExTensor with given shape and dtype.
 
         Args:.            `shape`: The shape of the tensor as a vector of dimension sizes.
@@ -146,7 +146,7 @@ struct ExTensor(Copyable, Movable):
         self._refcount = alloc[Int](1)
         self._refcount[] = 1  # Start with 1 reference
 
-    fn __copyinit__(out self, existing: Self):
+    fn __copyinit__(mut self, existing: Self):
         """Copy constructor - creates shared ownership with reference counting.
 
         Creates a new reference to the same underlying data.

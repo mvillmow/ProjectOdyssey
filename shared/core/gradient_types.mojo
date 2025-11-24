@@ -30,7 +30,7 @@ struct GradientPair(Copyable, Movable):
     var grad_a: ExTensor
     var grad_b: ExTensor
 
-    fn __init__(out self, owned grad_a: ExTensor, owned grad_b: ExTensor):
+    fn __init__(mut self, owned grad_a: ExTensor, owned grad_b: ExTensor):
         """Initialize gradient pair.
 
         Args:
@@ -64,7 +64,7 @@ struct GradientTriple(Copyable, Movable):
     var grad_bias: ExTensor
 
     fn __init__(
-        out self,
+        mut self,
         owned grad_input: ExTensor,
         owned grad_weights: ExTensor,
         owned grad_bias: ExTensor,

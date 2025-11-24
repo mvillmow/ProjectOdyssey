@@ -56,14 +56,14 @@ struct MetricResult(Copyable, Movable):
     var scalar_value: Float64
     var tensor_value: ExTensor
 
-    fn __init__(out self, name: String, value: Float64):
+    fn __init__(mut self, name: String, value: Float64):
         """Create scalar metric result."""
         self.name = name
         self.is_scalar = True
         self.scalar_value = value
         self.tensor_value = ExTensor(List[Int]())  # Placeholder
 
-    fn __init__(out self, name: String, var value: ExTensor):
+    fn __init__(mut self, name: String, var value: ExTensor):
         """Create tensor metric result (ownership transferred)."""
         self.name = name
         self.is_scalar = False
@@ -120,7 +120,7 @@ struct MetricCollection:
     var metric_names: List[String]
     var num_metrics: Int
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Initialize empty metric collection."""
         self.metric_names = List[String]()
         self.num_metrics = 0
@@ -217,7 +217,7 @@ struct MetricLogger:
     var num_metrics: Int
     var num_epochs: Int
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Initialize empty metric logger."""
         self.metric_names = List[String]()
         self.metric_history = List[List[Float64]]()

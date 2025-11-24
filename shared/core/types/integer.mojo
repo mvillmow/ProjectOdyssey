@@ -36,7 +36,7 @@ struct Int8(Stringable, Representable, Copyable, Movable):
     # Constructors
     # ===----------------------------------------------------------------------===#
 
-    fn __init__(out self, value: Int8):
+    fn __init__(mut self, value: Int8):
         """Initialize from Int8 value.
 
         Args:
@@ -44,7 +44,7 @@ struct Int8(Stringable, Representable, Copyable, Movable):
         """
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping.
 
         Args:
@@ -321,11 +321,11 @@ struct Int16(Stringable, Representable, Copyable, Movable):
 
     var value: Int16
 
-    fn __init__(out self, value: Int16):
+    fn __init__(mut self, value: Int16):
         """Initialize from Int16 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping."""
         self.value = Self._clamp_int16(value)
 
@@ -424,11 +424,11 @@ struct Int32(Stringable, Representable, Copyable, Movable):
 
     var value: Int32
 
-    fn __init__(out self, value: Int32):
+    fn __init__(mut self, value: Int32):
         """Initialize from Int32 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping."""
         self.value = Self._clamp_int32(value)
 
@@ -527,11 +527,11 @@ struct Int64(Stringable, Representable, Copyable, Movable):
 
     var value: Int64
 
-    fn __init__(out self, value: Int64):
+    fn __init__(mut self, value: Int64):
         """Initialize from Int64 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value."""
         self.value = Int64(value)
 

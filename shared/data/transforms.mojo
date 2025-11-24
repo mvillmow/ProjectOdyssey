@@ -94,7 +94,7 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
 
     var transforms: List[T]
 
-    fn __init__(out self, var transforms: List[T]):
+    fn __init__(mut self, var transforms: List[T]):
         """Create composition of transforms.
 
         Args:.            `transforms`: List of transforms to apply in order.
@@ -168,7 +168,7 @@ struct Normalize(Transform, Copyable, Movable):
     var mean: Float64
     var std: Float64
 
-    fn __init__(out self, mean: Float64 = 0.0, std: Float64 = 1.0):
+    fn __init__(mut self, mean: Float64 = 0.0, std: Float64 = 1.0):
         """Create normalize transform.
 
         Args:
@@ -216,7 +216,7 @@ struct Reshape(Transform, Copyable, Movable):
 
     var target_shape: List[Int]
 
-    fn __init__(out self, var target_shape: List[Int]):
+    fn __init__(mut self, var target_shape: List[Int]):
         """Create reshape transform.
 
         Args:
@@ -278,7 +278,7 @@ struct Resize(Transform, Copyable, Movable):
     var interpolation: String
 
     fn __init__(
-        out self, size: Tuple[Int, Int], interpolation: String = "bilinear"
+        mut self, size: Tuple[Int, Int], interpolation: String = "bilinear"
     ):
         """Create resize transform.
 
@@ -334,7 +334,7 @@ struct CenterCrop(Transform, Copyable, Movable):
 
     var size: Tuple[Int, Int]
 
-    fn __init__(out self, size: Tuple[Int, Int]):
+    fn __init__(mut self, size: Tuple[Int, Int]):
         """Create center crop transform.
 
         Args:
@@ -397,7 +397,7 @@ struct RandomCrop(Transform, Copyable, Movable):
     var size: Tuple[Int, Int]
     var padding: Optional[Int]
 
-    fn __init__(out self, size: Tuple[Int, Int], padding: Optional[Int] = None):
+    fn __init__(mut self, size: Tuple[Int, Int], padding: Optional[Int] = None):
         """Create random crop transform.
 
         Args:
@@ -491,7 +491,7 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
 
     var p: Float64
 
-    fn __init__(out self, p: Float64 = 0.5):
+    fn __init__(mut self, p: Float64 = 0.5):
         """Create random horizontal flip transform.
 
         Args:
@@ -554,7 +554,7 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
 
     var p: Float64
 
-    fn __init__(out self, p: Float64 = 0.5):
+    fn __init__(mut self, p: Float64 = 0.5):
         """Create random vertical flip transform.
 
         Args:
@@ -619,7 +619,7 @@ struct RandomRotation(Transform, Copyable, Movable):
     var fill_value: Float64
 
     fn __init__(
-        out self, degrees: Tuple[Float64, Float64], fill_value: Float64 = 0.0
+        mut self, degrees: Tuple[Float64, Float64], fill_value: Float64 = 0.0
     ):
         """Create random rotation transform.
 
@@ -722,7 +722,7 @@ struct RandomErasing(Transform, Copyable, Movable):
     var value: Float64  # Fill value (0 for black, can be random)
 
     fn __init__(
-        out self,
+        mut self,
         `p`: Float64 = 0.5,
         `scale`: Tuple[Float64, Float64] = (0.02, 0.33),
         `ratio`: Tuple[Float64, Float64] = (0.3, 3.3),

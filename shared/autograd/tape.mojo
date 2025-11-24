@@ -97,7 +97,7 @@ struct TapeNode(Copyable, Movable):
     # For now, we'll rely on the backward functions in shared/core/ which take
     # the necessary inputs directly
 
-    fn __init__(out self, op_type: String, input_ids: List[Int], output_id: Int):
+    fn __init__(mut self, op_type: String, input_ids: List[Int], output_id: Int):
         """Initialize a tape node.
 
         Args:
@@ -141,7 +141,7 @@ struct GradientTape:
     var nodes: List[TapeNode]
     var enabled: Bool
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Initialize an empty gradient tape."""
         self.nodes = List[TapeNode]()
         self.enabled = False

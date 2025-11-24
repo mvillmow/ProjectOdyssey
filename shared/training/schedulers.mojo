@@ -45,7 +45,7 @@ struct StepLR(LRScheduler, Copyable, Movable):
     var gamma: Float64
 
     fn __init__(
-        out self, base_lr: Float64, step_size: Int, gamma: Float64
+        mut self, base_lr: Float64, step_size: Int, gamma: Float64
     ):
         """Initialize StepLR scheduler.
 
@@ -108,7 +108,7 @@ struct CosineAnnealingLR(LRScheduler, Copyable, Movable):
     var eta_min: Float64
 
     fn __init__(
-        out self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0
+        mut self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0
     ):
         """Initialize Cosine Annealing scheduler.
 
@@ -173,7 +173,7 @@ struct WarmupLR(LRScheduler, Copyable, Movable):
     var base_lr: Float64
     var warmup_epochs: Int
 
-    fn __init__(out self, base_lr: Float64, warmup_epochs: Int):
+    fn __init__(mut self, base_lr: Float64, warmup_epochs: Int):
         """Initialize Warmup scheduler.
 
         Args:.            `base_lr`: Target learning rate after warmup.

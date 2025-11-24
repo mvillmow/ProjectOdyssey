@@ -59,7 +59,7 @@ struct Variable:
     var requires_grad: Bool
     # TODO: Add grad_fn field once we implement backward functions
 
-    fn __init__(out self, var data: ExTensor, requires_grad: Bool = False):
+    fn __init__(mut self, var data: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable from an ExTensor.
 
         Args:
@@ -74,7 +74,7 @@ struct Variable:
         self.grad = None
         self.requires_grad = requires_grad
 
-    fn __init__(out self, var data: ExTensor, var grad: ExTensor, requires_grad: Bool = False):
+    fn __init__(mut self, var data: ExTensor, var grad: ExTensor, requires_grad: Bool = False):
         """Initialize a Variable with explicit gradient.
 
         Args:

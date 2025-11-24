@@ -37,7 +37,7 @@ struct UInt8(Stringable, Representable, Copyable, Movable):
     # Constructors
     # ===----------------------------------------------------------------------===#
 
-    fn __init__(out self, value: UInt8):
+    fn __init__(mut self, value: UInt8):
         """Initialize from UInt8 value.
 
         Args:
@@ -45,7 +45,7 @@ struct UInt8(Stringable, Representable, Copyable, Movable):
         """
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping.
 
         Args:
@@ -309,17 +309,16 @@ struct UInt8(Stringable, Representable, Copyable, Movable):
         return Self(Int(self.value) % Int(other.value))
 
 
-@value
 struct UInt16(Stringable, Representable):
     """16-bit unsigned integer type (0 to 65535)."""
 
     var value: UInt16
 
-    fn __init__(out self, value: UInt16):
+    fn __init__(mut self, value: UInt16):
         """Initialize from UInt16 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping."""
         self.value = Self._clamp_uint16(value)
 
@@ -410,17 +409,16 @@ struct UInt16(Stringable, Representable):
         return Self(Int(self.value) % Int(other.value))
 
 
-@value
 struct UInt32(Stringable, Representable):
     """32-bit unsigned integer type (0 to 4294967295)."""
 
     var value: UInt32
 
-    fn __init__(out self, value: UInt32):
+    fn __init__(mut self, value: UInt32):
         """Initialize from UInt32 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping."""
         self.value = Self._clamp_uint32(value)
 
@@ -511,17 +509,16 @@ struct UInt32(Stringable, Representable):
         return Self(Int(self.value) % Int(other.value))
 
 
-@value
 struct UInt64(Stringable, Representable):
     """64-bit unsigned integer type (0 to 18446744073709551615)."""
 
     var value: UInt64
 
-    fn __init__(out self, value: UInt64):
+    fn __init__(mut self, value: UInt64):
         """Initialize from UInt64 value."""
         self.value = value
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize from Int value with clamping."""
         self.value = Self._clamp_uint64(value)
 

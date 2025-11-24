@@ -40,7 +40,7 @@ struct InferenceConfig:
     var weights_dir: String
     var data_dir: String
 
-    fn __init__(out self, weights_dir: String, data_dir: String):
+    fn __init__(mut self, weights_dir: String, data_dir: String):
         self.weights_dir = weights_dir
         self.data_dir = data_dir
 
@@ -50,7 +50,7 @@ struct PredictionResult:
     var predicted_class: Int
     var confidence: Float32
 
-    fn __init__(out self, predicted_class: Int, confidence: Float32):
+    fn __init__(mut self, predicted_class: Int, confidence: Float32):
         self.predicted_class = predicted_class
         self.confidence = confidence
 
@@ -61,7 +61,7 @@ struct EvaluationResult:
     var num_correct: Int
     var num_total: Int
 
-    fn __init__(out self, accuracy: Float32, num_correct: Int, num_total: Int):
+    fn __init__(mut self, accuracy: Float32, num_correct: Int, num_total: Int):
         self.accuracy = accuracy
         self.num_correct = num_correct
         self.num_total = num_total

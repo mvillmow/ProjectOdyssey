@@ -26,7 +26,7 @@ struct CallbackSignal(Copyable, Movable):
 
     var value: Int
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Initialize callback signal.
 
         Args:.            `value`: Signal value (0=CONTINUE, 1=STOP).
@@ -67,7 +67,7 @@ struct TrainingState(Copyable, Movable):
     var should_stop: Bool
 
     fn __init__(
-        out self,
+        mut self,
         epoch: Int = 0,
         batch: Int = 0,
         learning_rate: Float64 = 0.0,

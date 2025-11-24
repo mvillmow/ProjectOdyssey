@@ -25,7 +25,7 @@ struct MultiHeadAttention(Module):
     var v_proj: Linear  # Value projection
     var out_proj: Linear  # Output projection
 
-    fn __init__(out self, embed_dim: Int, num_heads: Int):
+    fn __init__(mut self, embed_dim: Int, num_heads: Int):
         """Initialize multi-head attention.
 
         Args:

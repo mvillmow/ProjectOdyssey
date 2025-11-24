@@ -21,8 +21,7 @@ Example:.    from shared.utils import Logger, StreamHandler, FileHandler
 # ============================================================================
 
 
-@value
-struct LogLevel:
+struct LogLevel(Copyable, Movable):
     """Log level enumeration with numeric values for comparison.
 
     Levels are ordered from least (DEBUG) to most (CRITICAL) severe.
@@ -55,7 +54,7 @@ struct LogRecord(Copyable, Movable):
     var timestamp: String
 
     fn __init__(
-        out self,
+        mut self,
         logger_name: String,
         level: Int,
         message: String,
@@ -222,7 +221,7 @@ struct StreamHandler(Handler):
 
     var formatter: SimpleFormatter
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create stream handler with default formatter."""
         self.formatter = SimpleFormatter()
 
@@ -238,7 +237,7 @@ struct FileHandler(Handler):
     var filepath: String
     var formatter: TimestampFormatter
 
-    fn __init__(out self, filepath: String):
+    fn __init__(mut self, filepath: String):
         """Create file handler that writes to given file.
 
         Args:.            `filepath`: Path to log file to write to.
@@ -288,7 +287,7 @@ struct Logger:
     var level: Int
     var handlers: List[StreamHandler]  # For now just StreamHandler
 
-    fn __init__(out self, name: String, level: Int = LogLevel.INFO):
+    fn __init__(mut self, name: String, level: Int = LogLevel.INFO):
         """Create logger with name and optional level.
 
         Args:

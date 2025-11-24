@@ -19,8 +19,7 @@ from python import Python
 # ============================================================================
 
 
-@value
-struct ConfigValue:
+struct ConfigValue(Copyable, Movable):
     """Union type to hold different configuration value types.
 
     Supports common types needed for ML configurations: integers, floats,
@@ -34,7 +33,7 @@ struct ConfigValue:
     var bool_val: Bool
     var list_val: List[String]
 
-    fn __init__(out self, value: Int):
+    fn __init__(mut self, value: Int):
         """Create ConfigValue from Int."""
         self.value_type = "int"
         self.int_val = value
@@ -43,7 +42,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(out self, value: Float64):
+    fn __init__(mut self, value: Float64):
         """Create ConfigValue from Float64."""
         self.value_type = "float"
         self.int_val = 0
@@ -52,7 +51,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(out self, value: String):
+    fn __init__(mut self, value: String):
         """Create ConfigValue from String."""
         self.value_type = "string"
         self.int_val = 0
@@ -61,7 +60,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = List[String]()
 
-    fn __init__(out self, value: Bool):
+    fn __init__(mut self, value: Bool):
         """Create ConfigValue from Bool."""
         self.value_type = "bool"
         self.int_val = 0
@@ -70,7 +69,7 @@ struct ConfigValue:
         self.bool_val = value
         self.list_val = List[String]()
 
-    fn __init__(out self, value: List[String]):
+    fn __init__(mut self, value: List[String]):
         """Create ConfigValue from List[String]."""
         self.value_type = "list"
         self.int_val = 0
@@ -79,7 +78,7 @@ struct ConfigValue:
         self.bool_val = False
         self.list_val = value
 
-    fn __init__(out self, value: List[Int]):
+    fn __init__(mut self, value: List[Int]):
         """Create ConfigValue from List[Int]."""
         self.value_type = "list"
         self.int_val = 0
@@ -97,8 +96,7 @@ struct ConfigValue:
 # ============================================================================
 
 
-@value
-struct Config:
+struct Config(Copyable, Movable):
     """Configuration container with nested access and validation.
 
     Stores configuration as key-value pairs with support for nested.
@@ -107,7 +105,7 @@ struct Config:
 
     var data: Dict[String, ConfigValue]
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create empty configuration."""
         self.data = Dict[String, ConfigValue]()
 
@@ -867,7 +865,7 @@ struct ConfigValidator:
     var required_keys: List[String]
     var allowed_keys: Dict[String, String]  # key -> type name
 
-    fn __init__(out self):
+    fn __init__(mut self):
         """Create empty validator."""
         self.required_keys = List[String]()
         self.allowed_keys = Dict[String, String]()
