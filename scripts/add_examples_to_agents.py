@@ -9,12 +9,13 @@ based on the agent's role type.
 import re
 from pathlib import Path
 import sys
+
 sys.path.insert(0, str(Path(__file__).parent))
 from common import get_agents_dir
 
 # Agent-specific examples based on role patterns
 EXAMPLES_BY_PATTERN = {
-    'orchestrator': """## Examples
+    "orchestrator": """## Examples
 
 ### Example 1: Coordinating Multi-Phase Workflow
 
@@ -41,7 +42,7 @@ EXAMPLES_BY_PATTERN = {
 
 **Outcome**: Unified interface with both components working correctly
 """,
-    'design': """## Examples
+    "design": """## Examples
 
 ### Example 1: Module Architecture Design
 
@@ -69,7 +70,7 @@ EXAMPLES_BY_PATTERN = {
 
 **Outcome**: Cleaner API with improved developer experience
 """,
-    'specialist': """## Examples
+    "specialist": """## Examples
 
 ### Example 1: Component Implementation Planning
 
@@ -97,7 +98,7 @@ EXAMPLES_BY_PATTERN = {
 
 **Outcome**: Maintainable code following single responsibility principle
 """,
-    'engineer': """## Examples
+    "engineer": """## Examples
 
 ### Example 1: Implementing Convolution Layer
 
@@ -125,7 +126,7 @@ EXAMPLES_BY_PATTERN = {
 
 **Outcome**: Correct gradient computation with all tests passing
 """,
-    'review-specialist': """## Examples
+    "review-specialist": """## Examples
 
 ### Example 1: Code Review for Numerical Stability
 
@@ -152,52 +153,54 @@ EXAMPLES_BY_PATTERN = {
 5. Group similar issues into single review comment
 
 **Outcome**: Actionable feedback leading to better architecture
-"""
+""",
 }
+
 
 def get_agent_type(filename: str) -> str:
     """Determine agent type from filename."""
-    if 'orchestrator' in filename:
-        return 'orchestrator'
-    elif 'design' in filename:
-        return 'design'
-    elif 'review-specialist' in filename:
-        return 'review-specialist'
-    elif 'specialist' in filename:
-        return 'specialist'
-    elif 'engineer' in filename:
-        return 'engineer'
+    if "orchestrator" in filename:
+        return "orchestrator"
+    elif "design" in filename:
+        return "design"
+    elif "review-specialist" in filename:
+        return "review-specialist"
+    elif "specialist" in filename:
+        return "specialist"
+    elif "engineer" in filename:
+        return "engineer"
     else:
-        return 'specialist'  # default
+        return "specialist"  # default
+
 
 def add_examples_section(file_path: Path, dry_run: bool = False) -> bool:
     """Add Examples section to agent file if missing."""
     content = file_path.read_text()
 
     # Check if Examples section already exists
-    if re.search(r'^## Examples', content, re.MULTILINE):
+    if re.search(r"^## Examples", content, re.MULTILINE):
         print(f"  ✓ {file_path.name} already has Examples section")
         return False
 
     # Determine agent type and get appropriate examples
     agent_type = get_agent_type(file_path.name)
-    examples = EXAMPLES_BY_PATTERN.get(agent_type, EXAMPLES_BY_PATTERN['specialist'])
+    examples = EXAMPLES_BY_PATTERN.get(agent_type, EXAMPLES_BY_PATTERN["specialist"])
 
     # Find insertion point (before final separator or end)
     # Look for final --- separator
-    final_separator_match = re.search(r'\n---\n\*[^\*]+\*\s*$', content)
+    final_separator_match = re.search(r"\n---\n\*[^\*]+\*\s*$", content)
     if final_separator_match:
         insertion_point = final_separator_match.start()
-        new_content = content[:insertion_point] + '\n' + examples + content[insertion_point:]
+        new_content = content[:insertion_point] + "\n" + examples + content[insertion_point:]
     else:
         # Look for **Configuration File**: pattern
-        config_match = re.search(r'\n---\n\n\*\*Configuration File\*\*:', content)
+        config_match = re.search(r"\n---\n\n\*\*Configuration File\*\*:", content)
         if config_match:
             insertion_point = config_match.start()
-            new_content = content[:insertion_point] + '\n' + examples + content[insertion_point:]
+            new_content = content[:insertion_point] + "\n" + examples + content[insertion_point:]
         else:
             # Insert at end
-            new_content = content.rstrip() + '\n\n' + examples + '\n'
+            new_content = content.rstrip() + "\n\n" + examples + "\n"
 
     if dry_run:
         print(f"  Would add Examples to {file_path.name} (type: {agent_type})")
@@ -206,6 +209,7 @@ def add_examples_section(file_path: Path, dry_run: bool = False) -> bool:
         file_path.write_text(new_content)
         print(f"  ✅ Added Examples to {file_path.name} (type: {agent_type})")
         return True
+
 
 def main():
     import sys
@@ -224,6 +228,7 @@ def main():
             modified_count += 1
 
     print(f"\n{'Would modify' if dry_run else 'Modified'} {modified_count} files")
+
 
 if __name__ == "__main__":
     main()

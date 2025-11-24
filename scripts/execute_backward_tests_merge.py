@@ -35,17 +35,13 @@ TEST_FILES = [
     "tests/shared/core/test_reduction_backward.mojo",
 ]
 
+
 def run_git(args: list, cwd: Optional[Path] = None, check: bool = True) -> subprocess.CompletedProcess:
     """Run a git command and return the result."""
     if cwd is None:
         cwd = REPO_ROOT
 
-    result = subprocess.run(
-        ["git"] + args,
-        cwd=cwd,
-        capture_output=True,
-        text=True
-    )
+    result = subprocess.run(["git"] + args, cwd=cwd, capture_output=True, text=True)
 
     if check and result.returncode != 0:
         print(f"❌ Git command failed: git {' '.join(args)}")
@@ -53,6 +49,7 @@ def run_git(args: list, cwd: Optional[Path] = None, check: bool = True) -> subpr
         sys.exit(1)
 
     return result
+
 
 def print_section(title: str):
     """Print a section header."""
@@ -62,11 +59,13 @@ def print_section(title: str):
     print("=" * 80)
     print()
 
+
 def print_step(num: int, title: str):
     """Print a step header."""
     print()
     print(f"Step {num}: {title}")
     print("-" * 80)
+
 
 def verify_test_files(base_path: Path, location: str) -> bool:
     """Verify all test files exist and print their stats."""
@@ -84,6 +83,7 @@ def verify_test_files(base_path: Path, location: str) -> bool:
             all_exist = False
 
     return all_exist
+
 
 def main():
     """Execute the merge workflow."""
@@ -117,7 +117,7 @@ def main():
         print(result.stdout)
         if not auto_mode:
             response = input("Continue anyway? (y/n): ")
-            if response.lower() != 'y':
+            if response.lower() != "y":
                 sys.exit(1)
         else:
             print("❌ Cannot proceed in auto mode with uncommitted changes")
@@ -149,7 +149,7 @@ def main():
         print(result.stdout)
         if not auto_mode:
             response = input("Continue anyway? (y/n): ")
-            if response.lower() != 'y':
+            if response.lower() != "y":
                 sys.exit(1)
         else:
             print("❌ Cannot proceed in auto mode with uncommitted changes")
@@ -163,10 +163,10 @@ def main():
     run_git(["fetch", "origin"], check=False)
 
     result = run_git(["log", "main..backward-tests", "--oneline"])
-    commits_ahead = [c for c in result.stdout.strip().split('\n') if c]
+    commits_ahead = [c for c in result.stdout.strip().split("\n") if c]
 
     result = run_git(["log", "backward-tests..main", "--oneline"])
-    commits_behind = [c for c in result.stdout.strip().split('\n') if c]
+    commits_behind = [c for c in result.stdout.strip().split("\n") if c]
 
     print(f"Commits in backward-tests not in main: {len(commits_ahead)}")
     if commits_ahead:
@@ -205,7 +205,7 @@ def main():
 
     if not auto_mode:
         response = input("Proceed with merge? (y/n): ")
-        if response.lower() != 'y':
+        if response.lower() != "y":
             print("Merge cancelled")
             sys.exit(0)
 
@@ -242,10 +242,7 @@ Closes #1857
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
 
-    result = run_git(
-        ["merge", "--no-ff", "backward-tests", "-m", commit_msg],
-        check=False
-    )
+    result = run_git(["merge", "--no-ff", "backward-tests", "-m", commit_msg], check=False)
 
     if result.returncode != 0:
         print()
@@ -299,6 +296,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"""
 
     return 0
 
+
 if __name__ == "__main__":
     try:
         sys.exit(main())
@@ -309,5 +307,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"❌ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

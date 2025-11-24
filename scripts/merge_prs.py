@@ -13,6 +13,7 @@ Flags:
   --dry-run    Print git and API actions without executing them.
   --push-all   Push every PR head branch to origin before attempting merge, even when CI/CD is not successful.
 """
+
 import os
 import sys
 import argparse
@@ -100,12 +101,16 @@ def handle_merge_result(result, pr_number, base_branch):
 def main():
     parser = argparse.ArgumentParser(description="Merge open PRs with successful CI/CD into main (rebase via PR API).")
     parser.add_argument("--dry-run", action="store_true", help="Print commands and API actions without executing.")
-    parser.add_argument("--push-all", action="store_true", help="Push all PR head branches to origin even if CI/CD failed.")
+    parser.add_argument(
+        "--push-all", action="store_true", help="Push all PR head branches to origin even if CI/CD failed."
+    )
     args = parser.parse_args()
 
     token = os.getenv("GITHUB_TOKEN")
     if not token:
-        print("Error: Please set GITHUB_TOKEN environment variable with a token that has 'repo' scope.", file=sys.stderr)
+        print(
+            "Error: Please set GITHUB_TOKEN environment variable with a token that has 'repo' scope.", file=sys.stderr
+        )
         sys.exit(1)
 
     gh = Github(token)
@@ -137,7 +142,7 @@ def main():
             print("  No check runs found; falling back to legacy status contexts:")
             state = legacy_status_and_print(commit)
             print(f"  Legacy combined state: {state}")
-            ci_success = (state == "success")
+            ci_success = state == "success"
         else:
             ci_success = bool(success)
 

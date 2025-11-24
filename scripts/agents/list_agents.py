@@ -19,6 +19,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
@@ -34,10 +35,10 @@ class AgentInfo:
 
     def __init__(self, file_path: Path, frontmatter: Dict):
         self.file_path = file_path
-        self.name = frontmatter.get('name', 'unknown')
-        self.description = frontmatter.get('description', 'No description')
-        self.tools = frontmatter.get('tools', '')
-        self.model = frontmatter.get('model', 'unknown')
+        self.name = frontmatter.get("name", "unknown")
+        self.description = frontmatter.get("description", "No description")
+        self.tools = frontmatter.get("tools", "")
+        self.model = frontmatter.get("model", "unknown")
         self.level = self._infer_level(frontmatter)
 
     def _infer_level(self, frontmatter: Dict) -> int:
@@ -53,25 +54,25 @@ class AgentInfo:
         - 5: Junior Engineers
         """
         # Check if level is explicitly specified
-        if 'level' in frontmatter:
-            return frontmatter['level']
+        if "level" in frontmatter:
+            return frontmatter["level"]
 
         # Infer from name
         name = self.name.lower()
 
-        if 'chief-architect' in name:
+        if "chief-architect" in name:
             return 0
-        elif 'orchestrator' in name:
+        elif "orchestrator" in name:
             return 1
-        elif 'design' in name:
+        elif "design" in name:
             return 2
-        elif 'specialist' in name:
+        elif "specialist" in name:
             return 3
-        elif 'senior' in name:
+        elif "senior" in name:
             return 4
-        elif 'junior' in name:
+        elif "junior" in name:
             return 5
-        elif 'engineer' in name:
+        elif "engineer" in name:
             # Default engineers to level 4 unless junior
             return 4
         else:
@@ -82,7 +83,7 @@ class AgentInfo:
         """Get list of tool names."""
         if not self.tools:
             return []
-        return [t.strip() for t in self.tools.split(',')]
+        return [t.strip() for t in self.tools.split(",")]
 
     def __repr__(self):
         return f"AgentInfo(level={self.level}, name={self.name})"
@@ -98,7 +99,7 @@ def extract_frontmatter(content: str) -> Optional[str]:
     Returns:
         Frontmatter text or None if not found
     """
-    pattern = r'^---\s*\n(.*?\n)---\s*\n'
+    pattern = r"^---\s*\n(.*?\n)---\s*\n"
     match = re.match(pattern, content, re.DOTALL)
     return match.group(1) if match else None
 
@@ -114,7 +115,7 @@ def load_agent(file_path: Path) -> Optional[AgentInfo]:
         AgentInfo object or None if loading failed
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         print(f"Warning: Failed to read {file_path.name}: {e}", file=sys.stderr)
         return None
@@ -147,7 +148,7 @@ def load_all_agents(agents_dir: Path) -> List[AgentInfo]:
     Returns:
         List of AgentInfo objects
     """
-    agent_files = sorted(agents_dir.glob('*.md'))
+    agent_files = sorted(agents_dir.glob("*.md"))
     agents = []
 
     for file_path in agent_files:
@@ -204,15 +205,15 @@ def format_description(description: str, max_width: int = 60, indent: int = 0) -
             current_length += len(word) + 1
         else:
             if current_line:
-                lines.append(' '.join(current_line))
+                lines.append(" ".join(current_line))
             current_line = [word]
             current_length = len(word)
 
     if current_line:
-        lines.append(' '.join(current_line))
+        lines.append(" ".join(current_line))
 
-    indent_str = ' ' * indent
-    return ('\n' + indent_str).join(lines)
+    indent_str = " " * indent
+    return ("\n" + indent_str).join(lines)
 
 
 def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter: Optional[int] = None):
@@ -252,11 +253,11 @@ def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter:
 
         print(f"\n{'=' * 70}")
         print(f"{level_name} ({len(agents_list)} agents)")
-        print('=' * 70)
+        print("=" * 70)
 
         for agent in agents_list:
             print(f"\n{agent.name}")
-            print('-' * len(agent.name))
+            print("-" * len(agent.name))
 
             if verbose:
                 # Verbose mode: show all details
@@ -269,7 +270,7 @@ def display_agents(agents: List[AgentInfo], verbose: bool = False, level_filter:
                 print(f"{format_description(agent.description, max_width=70)}")
                 tools = agent.get_tools_list()
                 if tools:
-                    tools_display = ', '.join(tools[:5])
+                    tools_display = ", ".join(tools[:5])
                     if len(tools) > 5:
                         tools_display += f", ... ({len(tools)} total)"
                     print(f"Tools: {tools_display}")
@@ -301,24 +302,17 @@ Examples:
 
     # List only level 5 agents (Junior Engineers)
     python scripts/agents/list_agents.py --level 5 --verbose
-        """
+        """,
+    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed information for each agent")
+    parser.add_argument(
+        "--level", "-l", type=int, choices=[0, 1, 2, 3, 4, 5], help="Show only agents at this level (0-5)"
     )
     parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='Show detailed information for each agent'
-    )
-    parser.add_argument(
-        '--level', '-l',
-        type=int,
-        choices=[0, 1, 2, 3, 4, 5],
-        help='Show only agents at this level (0-5)'
-    )
-    parser.add_argument(
-        '--agents-dir',
+        "--agents-dir",
         type=Path,
         default=None,  # Will use get_agents_dir() if not specified
-        help='Path to agents directory (default: .claude/agents)'
+        help="Path to agents directory (default: .claude/agents)",
     )
 
     args = parser.parse_args()
@@ -329,7 +323,7 @@ Examples:
     # Find repository root
     repo_root = Path.cwd()
     while repo_root != repo_root.parent:
-        if (repo_root / '.claude').exists():
+        if (repo_root / ".claude").exists():
             break
         repo_root = repo_root.parent
     else:
@@ -359,5 +353,5 @@ Examples:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

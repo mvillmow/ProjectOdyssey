@@ -19,38 +19,38 @@ from common import get_plan_dir
 
 def read_plan_file(plan_path):
     """Read and parse a plan.md file to extract all sections."""
-    with open(plan_path, 'r') as f:
+    with open(plan_path, "r") as f:
         content = f.read()
 
     sections = {}
 
     # Extract title (first h1)
-    title_match = re.search(r'^# (.+)$', content, re.MULTILINE)
-    sections['title'] = title_match.group(1) if title_match else "Unknown"
+    title_match = re.search(r"^# (.+)$", content, re.MULTILINE)
+    sections["title"] = title_match.group(1) if title_match else "Unknown"
 
     # Extract overview
-    overview_match = re.search(r'## Overview\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['overview'] = overview_match.group(1).strip() if overview_match else ""
+    overview_match = re.search(r"## Overview\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["overview"] = overview_match.group(1).strip() if overview_match else ""
 
     # Extract inputs
-    inputs_match = re.search(r'## Inputs\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['inputs'] = inputs_match.group(1).strip() if inputs_match else ""
+    inputs_match = re.search(r"## Inputs\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["inputs"] = inputs_match.group(1).strip() if inputs_match else ""
 
     # Extract outputs
-    outputs_match = re.search(r'## Outputs\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['outputs'] = outputs_match.group(1).strip() if outputs_match else ""
+    outputs_match = re.search(r"## Outputs\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["outputs"] = outputs_match.group(1).strip() if outputs_match else ""
 
     # Extract steps
-    steps_match = re.search(r'## Steps\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['steps'] = steps_match.group(1).strip() if steps_match else ""
+    steps_match = re.search(r"## Steps\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["steps"] = steps_match.group(1).strip() if steps_match else ""
 
     # Extract success criteria
-    criteria_match = re.search(r'## Success Criteria\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['success_criteria'] = criteria_match.group(1).strip() if criteria_match else ""
+    criteria_match = re.search(r"## Success Criteria\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["success_criteria"] = criteria_match.group(1).strip() if criteria_match else ""
 
     # Extract notes
-    notes_match = re.search(r'## Notes\n(.+?)(?=\n## |$)', content, re.DOTALL)
-    sections['notes'] = notes_match.group(1).strip() if notes_match else ""
+    notes_match = re.search(r"## Notes\n(.+?)(?=\n## |$)", content, re.DOTALL)
+    sections["notes"] = notes_match.group(1).strip() if notes_match else ""
 
     return sections
 
@@ -58,7 +58,7 @@ def read_plan_file(plan_path):
 def generate_plan_body(sections):
     """Generate the Plan issue body."""
     body = f"""## Overview
-{sections['overview']}
+{sections["overview"]}
 
 ## Objectives
 This planning phase will:
@@ -68,23 +68,23 @@ This planning phase will:
 - Create comprehensive design documentation
 
 ## Inputs
-{sections['inputs']}
+{sections["inputs"]}
 
 ## Expected Outputs
-{sections['outputs']}
+{sections["outputs"]}
 
 ## Success Criteria
-{sections['success_criteria']}
+{sections["success_criteria"]}
 
 ## Additional Notes
-{sections['notes']}"""
+{sections["notes"]}"""
     return body
 
 
 def generate_test_body(sections):
     """Generate the Test issue body."""
     body = f"""## Overview
-{sections['overview']}
+{sections["overview"]}
 
 ## Testing Objectives
 This phase focuses on:
@@ -95,23 +95,23 @@ This phase focuses on:
 
 ## What to Test
 Based on the expected outputs:
-{sections['outputs']}
+{sections["outputs"]}
 
 ## Test Success Criteria
-{sections['success_criteria']}
+{sections["success_criteria"]}
 
 ## Implementation Steps
-{sections['steps']}
+{sections["steps"]}
 
 ## Notes
-{sections['notes']}"""
+{sections["notes"]}"""
     return body
 
 
 def generate_implementation_body(sections):
     """Generate the Implementation issue body."""
     body = f"""## Overview
-{sections['overview']}
+{sections["overview"]}
 
 ## Implementation Goals
 - Implement the functionality to pass all tests
@@ -120,26 +120,26 @@ def generate_implementation_body(sections):
 - Meet all requirements specified in the plan
 
 ## Required Inputs
-{sections['inputs']}
+{sections["inputs"]}
 
 ## Expected Outputs
-{sections['outputs']}
+{sections["outputs"]}
 
 ## Implementation Steps
-{sections['steps']}
+{sections["steps"]}
 
 ## Success Criteria
-{sections['success_criteria']}
+{sections["success_criteria"]}
 
 ## Notes
-{sections['notes']}"""
+{sections["notes"]}"""
     return body
 
 
 def generate_packaging_body(sections):
     """Generate the Packaging issue body."""
     body = f"""## Overview
-{sections['overview']}
+{sections["overview"]}
 
 ## Packaging Objectives
 - Integrate the implementation with existing codebase
@@ -149,23 +149,23 @@ def generate_packaging_body(sections):
 
 ## Integration Requirements
 Based on outputs:
-{sections['outputs']}
+{sections["outputs"]}
 
 ## Integration Steps
-{sections['steps']}
+{sections["steps"]}
 
 ## Success Criteria
-{sections['success_criteria']}
+{sections["success_criteria"]}
 
 ## Notes
-{sections['notes']}"""
+{sections["notes"]}"""
     return body
 
 
 def generate_cleanup_body(sections):
     """Generate the Cleanup issue body."""
     body = f"""## Overview
-{sections['overview']}
+{sections["overview"]}
 
 ## Cleanup Objectives
 - Refactor code for optimal quality and maintainability
@@ -180,16 +180,16 @@ def generate_cleanup_body(sections):
 - Final testing and validation
 
 ## Success Criteria
-{sections['success_criteria']}
+{sections["success_criteria"]}
 
 ## Notes
-{sections['notes']}"""
+{sections["notes"]}"""
     return body
 
 
 def generate_github_issue_content(plan_sections):
     """Generate the complete github_issue.md file content."""
-    title = plan_sections['title']
+    title = plan_sections["title"]
 
     # Generate all issue bodies
     plan_body = generate_plan_body(plan_sections)
@@ -251,10 +251,10 @@ def generate_github_issue_content(plan_sections):
 
 def save_state(state_data, logs_dir):
     """Save processing state to logs directory with timestamp."""
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    state_file = logs_dir / f'.issue_creation_state_{timestamp}.json'
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    state_file = logs_dir / f".issue_creation_state_{timestamp}.json"
 
-    with open(state_file, 'w') as f:
+    with open(state_file, "w") as f:
         json.dump(state_data, f, indent=2)
 
     return state_file
@@ -262,7 +262,7 @@ def save_state(state_data, logs_dir):
 
 def load_latest_state(logs_dir):
     """Load the most recent state file from logs directory."""
-    state_files = sorted(logs_dir.glob('.issue_creation_state_*.json'))
+    state_files = sorted(logs_dir.glob(".issue_creation_state_*.json"))
 
     if not state_files:
         return None
@@ -270,7 +270,7 @@ def load_latest_state(logs_dir):
     latest_state_file = state_files[-1]
 
     try:
-        with open(latest_state_file, 'r') as f:
+        with open(latest_state_file, "r") as f:
             return json.load(f)
     except Exception as e:
         print(f"Warning: Could not load state file {latest_state_file}: {e}", file=sys.stderr)
@@ -291,7 +291,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
         Tuple of (success_count, error_count, errors_list)
     """
     plan_path = Path(plan_dir)
-    logs_dir = plan_path.parent.parent / 'logs'
+    logs_dir = plan_path.parent.parent / "logs"
     logs_dir.mkdir(exist_ok=True)
 
     # Load resume state if requested
@@ -299,7 +299,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
     if resume:
         state = load_latest_state(logs_dir)
         if state:
-            processed_files = set(state.get('processed', []))
+            processed_files = set(state.get("processed", []))
             print(f"Resuming from previous state: {len(processed_files)} files already processed", file=sys.stderr)
 
     # Find all plan.md files
@@ -307,7 +307,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
         pattern = f"{section}/**/plan.md"
         plan_files = sorted(plan_path.glob(pattern))
     else:
-        plan_files = sorted(plan_path.rglob('plan.md'))
+        plan_files = sorted(plan_path.rglob("plan.md"))
 
     total = len(plan_files)
     success_count = 0
@@ -328,7 +328,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
         if plan_file_str in processed_files:
             continue
 
-        issue_file = plan_file.parent / 'github_issue.md'
+        issue_file = plan_file.parent / "github_issue.md"
 
         try:
             # Read and parse plan
@@ -341,7 +341,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
                 print(f"[{i}/{total}] Would update: {issue_file}", file=sys.stderr)
             else:
                 # Write the file
-                with open(issue_file, 'w') as f:
+                with open(issue_file, "w") as f:
                     f.write(issue_content)
 
                 success_count += 1
@@ -353,7 +353,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
 
                 # Save state periodically (every 50 files)
                 if success_count % 50 == 0:
-                    state_file = save_state({'processed': list(processed_files)}, logs_dir)
+                    state_file = save_state({"processed": list(processed_files)}, logs_dir)
                     print(f"State saved to: {state_file}", file=sys.stderr)
 
         except Exception as e:
@@ -364,7 +364,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
 
     # Save final state
     if not dry_run and success_count > 0:
-        state_file = save_state({'processed': list(processed_files), 'completed': True}, logs_dir)
+        state_file = save_state({"processed": list(processed_files), "completed": True}, logs_dir)
         print(f"\nFinal state saved to: {state_file}", file=sys.stderr)
 
     return success_count, error_count, errors
@@ -373,7 +373,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
 def main():
     """Main execution function."""
     parser = argparse.ArgumentParser(
-        description='Regenerate all github_issue.md files from plan.md files',
+        description="Regenerate all github_issue.md files from plan.md files",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -388,18 +388,18 @@ Examples:
 
   # Process all files
   python regenerate_github_issues.py
-        """
+        """,
     )
 
-    parser.add_argument('--dry-run', action='store_true',
-                        help='Show what would be done without making changes')
-    parser.add_argument('--section', type=str,
-                        help='Process only one section (e.g., 01-foundation)')
-    parser.add_argument('--resume', action='store_true',
-                        help='Resume from last saved state')
-    parser.add_argument('--plan-dir', type=str,
-                        default=None,
-                        help='Path to plan directory (default: auto-detected from repository root)')
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
+    parser.add_argument("--section", type=str, help="Process only one section (e.g., 01-foundation)")
+    parser.add_argument("--resume", action="store_true", help="Resume from last saved state")
+    parser.add_argument(
+        "--plan-dir",
+        type=str,
+        default=None,
+        help="Path to plan directory (default: auto-detected from repository root)",
+    )
 
     args = parser.parse_args()
 
@@ -425,10 +425,7 @@ Examples:
 
     # Process files
     success_count, error_count, errors = process_plan_directory(
-        args.plan_dir,
-        section=args.section,
-        dry_run=args.dry_run,
-        resume=args.resume
+        args.plan_dir, section=args.section, dry_run=args.dry_run, resume=args.resume
     )
 
     # Print summary
@@ -453,5 +450,5 @@ Examples:
     return 1 if error_count > 0 else 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

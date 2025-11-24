@@ -15,17 +15,19 @@ import sys
 from pathlib import Path
 from typing import Tuple
 
+
 def fix_system_path_links(content: str) -> Tuple[str, int]:
     """
     Fix links with full system paths like /home/mvillmow/ml-odyssey-manual/...
 
     These should be converted to relative paths without the system path prefix.
     """
-    pattern = r'\]\(/home/mvillmow/ml-odyssey-manual/([^)]+)\)'
-    replacement = r'](\1)'
+    pattern = r"\]\(/home/mvillmow/ml-odyssey-manual/([^)]+)\)"
+    replacement = r"](\1)"
 
     new_content, count = re.subn(pattern, replacement, content)
     return new_content, count
+
 
 def fix_absolute_path_links(content: str, file_path: Path) -> Tuple[str, int]:
     """
@@ -36,14 +38,15 @@ def fix_absolute_path_links(content: str, file_path: Path) -> Tuple[str, int]:
     # Count slashes in file path to determine directory depth
     # e.g., notes/issues/863/README.md -> depth 3, need ../../../
     depth = len(file_path.parent.parts)
-    prefix = '../' * depth if depth > 0 else ''
+    prefix = "../" * depth if depth > 0 else ""
 
     # Fix links starting with / (but not //)
-    pattern = r'\]\(/(?!/)'
-    replacement = f']({prefix}'
+    pattern = r"\]\(/(?!/)"
+    replacement = f"]({prefix}"
 
     new_content, count = re.subn(pattern, replacement, content)
     return new_content, count
+
 
 def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
     """
@@ -53,7 +56,7 @@ def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
         Tuple of (system_path_fixes, absolute_path_fixes)
     """
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
 
         # Fix system path links
         content, system_fixes = fix_system_path_links(content)
@@ -67,7 +70,7 @@ def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
             if dry_run:
                 print(f"Would fix {file_path}: {system_fixes} system paths, {absolute_fixes} absolute paths")
             else:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 print(f"Fixed {file_path}: {system_fixes} system paths, {absolute_fixes} absolute paths")
 
         return system_fixes, absolute_fixes
@@ -76,9 +79,10 @@ def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
         print(f"Error processing {file_path}: {e}", file=sys.stderr)
         return 0, 0
 
+
 def main():
     """Main entry point."""
-    dry_run = '--dry-run' in sys.argv
+    dry_run = "--dry-run" in sys.argv
 
     if dry_run:
         print("DRY RUN MODE - No files will be modified\n")
@@ -86,14 +90,11 @@ def main():
     repo_root = Path(__file__).parent.parent
 
     # Find all markdown files
-    md_files = list(repo_root.glob('**/*.md'))
+    md_files = list(repo_root.glob("**/*.md"))
 
     # Filter out excluded directories
-    excluded_dirs = {'.git', 'node_modules', '.pixi', 'venv', '__pycache__'}
-    md_files = [
-        f for f in md_files
-        if not any(excluded in f.parts for excluded in excluded_dirs)
-    ]
+    excluded_dirs = {".git", "node_modules", ".pixi", "venv", "__pycache__"}
+    md_files = [f for f in md_files if not any(excluded in f.parts for excluded in excluded_dirs)]
 
     print(f"Found {len(md_files)} markdown files\n")
 
@@ -113,5 +114,6 @@ def main():
     print(f"  - Absolute path links: {total_absolute_fixes}")
     print(f"  - Total fixes: {total_system_fixes + total_absolute_fixes}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

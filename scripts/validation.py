@@ -15,10 +15,7 @@ from typing import List, Optional, Set, Tuple
 logger = logging.getLogger(__name__)
 
 
-def find_markdown_files(
-    directory: Path,
-    exclude_dirs: Optional[Set[str]] = None
-) -> List[Path]:
+def find_markdown_files(directory: Path, exclude_dirs: Optional[Set[str]] = None) -> List[Path]:
     """
     Find all markdown files in a directory recursively.
 
@@ -30,13 +27,10 @@ def find_markdown_files(
         List of Path objects for markdown files
     """
     if exclude_dirs is None:
-        exclude_dirs = {
-            'node_modules', '.git', 'venv', '__pycache__',
-            '.pytest_cache', 'dist', 'build', '.tox'
-        }
+        exclude_dirs = {"node_modules", ".git", "venv", "__pycache__", ".pytest_cache", "dist", "build", ".tox"}
 
     markdown_files = []
-    for md_file in directory.rglob('*.md'):
+    for md_file in directory.rglob("*.md"):
         # Check if any parent directory is in exclude list
         if any(part in exclude_dirs for part in md_file.parts):
             continue
@@ -72,9 +66,7 @@ def validate_directory_exists(dir_path: Path) -> bool:
 
 
 def check_required_sections(
-    content: str,
-    required_sections: List[str],
-    file_path: Optional[Path] = None
+    content: str, required_sections: List[str], file_path: Optional[Path] = None
 ) -> Tuple[bool, List[str]]:
     """
     Check if markdown content has all required sections.
@@ -92,7 +84,7 @@ def check_required_sections(
     for section in required_sections:
         # Match heading at various levels (##, ###, etc.)
         # Note: Double braces {{}} are needed in f-strings to create literal braces for regex
-        pattern = rf'^#{{1,6}}\s+{re.escape(section)}\s*$'
+        pattern = rf"^#{{1,6}}\s+{re.escape(section)}\s*$"
         if not re.search(pattern, content, re.MULTILINE):
             missing.append(section)
             if file_path:
@@ -112,22 +104,18 @@ def extract_markdown_links(content: str) -> List[Tuple[str, int]]:
         List of (link_target, line_number) tuples
     """
     links = []
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     for line_num, line in enumerate(lines, 1):
         # Match [text](link) format
-        for match in re.finditer(r'\[([^\]]+)\]\(([^\)]+)\)', line):
+        for match in re.finditer(r"\[([^\]]+)\]\(([^\)]+)\)", line):
             link_target = match.group(2)
             links.append((link_target, line_num))
 
     return links
 
 
-def validate_relative_link(
-    link: str,
-    source_file: Path,
-    repo_root: Path
-) -> Tuple[bool, Optional[str]]:
+def validate_relative_link(link: str, source_file: Path, repo_root: Path) -> Tuple[bool, Optional[str]]:
     """
     Validate a relative markdown link.
 
@@ -140,16 +128,16 @@ def validate_relative_link(
         Tuple of (is_valid, error_message)
     """
     # Skip external links
-    if link.startswith(('http://', 'https://', 'mailto:')):
+    if link.startswith(("http://", "https://", "mailto:")):
         return True, None
 
     # Skip anchors within same file
-    if link.startswith('#'):
+    if link.startswith("#"):
         return True, None
 
     # Split link and anchor
-    if '#' in link:
-        file_part, _anchor = link.split('#', 1)
+    if "#" in link:
+        file_part, _anchor = link.split("#", 1)
     else:
         file_part, _anchor = link, None
 
@@ -180,33 +168,28 @@ def count_markdown_issues(content: str) -> dict:
     Returns:
         Dictionary of issue counts
     """
-    issues = {
-        'multiple_blank_lines': 0,
-        'missing_language_tags': 0,
-        'long_lines': 0,
-        'trailing_whitespace': 0
-    }
+    issues = {"multiple_blank_lines": 0, "missing_language_tags": 0, "long_lines": 0, "trailing_whitespace": 0}
 
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     # Check for multiple consecutive blank lines
     blank_count = 0
     for line in lines:
-        if line.strip() == '':
+        if line.strip() == "":
             blank_count += 1
             if blank_count > 1:
-                issues['multiple_blank_lines'] += 1
+                issues["multiple_blank_lines"] += 1
         else:
             blank_count = 0
 
     # Check for code blocks without language tags
     in_code_block = False
     for line in lines:
-        if line.strip().startswith('```'):
+        if line.strip().startswith("```"):
             if not in_code_block:
                 # Starting code block
-                if line.strip() == '```':
-                    issues['missing_language_tags'] += 1
+                if line.strip() == "```":
+                    issues["missing_language_tags"] += 1
                 in_code_block = True
             else:
                 # Ending code block
@@ -216,22 +199,18 @@ def count_markdown_issues(content: str) -> dict:
     for line in lines:
         if len(line) > 120:
             # Skip lines that are URLs or code
-            if not (line.strip().startswith('http') or line.strip().startswith('`')):
-                issues['long_lines'] += 1
+            if not (line.strip().startswith("http") or line.strip().startswith("`")):
+                issues["long_lines"] += 1
 
     # Check for trailing whitespace
     for line in lines:
         if line and line != line.rstrip():
-            issues['trailing_whitespace'] += 1
+            issues["trailing_whitespace"] += 1
 
     return issues
 
 
-def setup_logger(
-    name: str,
-    level: int = logging.INFO,
-    log_file: Optional[Path] = None
-) -> logging.Logger:
+def setup_logger(name: str, level: int = logging.INFO, log_file: Optional[Path] = None) -> logging.Logger:
     """
     Setup a logger with consistent formatting.
 
@@ -253,9 +232,7 @@ def setup_logger(
     # Console handler
     console_handler = logging.StreamHandler()
     console_handler.setLevel(level)
-    formatter = logging.Formatter(
-        '%(levelname)s: %(message)s'
-    )
+    formatter = logging.Formatter("%(levelname)s: %(message)s")
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
@@ -263,9 +240,7 @@ def setup_logger(
     if log_file:
         file_handler = logging.FileHandler(log_file)
         file_handler.setLevel(level)
-        file_formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        )
+        file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 

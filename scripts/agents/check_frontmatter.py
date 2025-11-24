@@ -19,6 +19,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from common import get_agents_dir
 
@@ -31,21 +32,21 @@ except ImportError:
 
 # Required fields and their expected types
 REQUIRED_FIELDS = {
-    'name': str,
-    'description': str,
-    'tools': str,
-    'model': str,
+    "name": str,
+    "description": str,
+    "tools": str,
+    "model": str,
 }
 
 # Optional fields and their expected types
 OPTIONAL_FIELDS = {
-    'level': int,
-    'section': str,
-    'workflow_phase': str,
+    "level": int,
+    "section": str,
+    "workflow_phase": str,
 }
 
 # Valid model names
-VALID_MODELS = {'sonnet', 'opus', 'haiku', 'claude-3-5-sonnet', 'claude-3-opus', 'claude-3-haiku'}
+VALID_MODELS = {"sonnet", "opus", "haiku", "claude-3-5-sonnet", "claude-3-opus", "claude-3-haiku"}
 
 
 def extract_frontmatter(content: str) -> Optional[Tuple[str, int, int]]:
@@ -59,7 +60,7 @@ def extract_frontmatter(content: str) -> Optional[Tuple[str, int, int]]:
         Tuple of (frontmatter_text, start_line, end_line) or None if no frontmatter found
     """
     # Match YAML frontmatter between --- delimiters
-    pattern = r'^---\s*\n(.*?\n)---\s*\n'
+    pattern = r"^---\s*\n(.*?\n)---\s*\n"
     match = re.match(pattern, content, re.DOTALL)
 
     if not match:
@@ -67,7 +68,7 @@ def extract_frontmatter(content: str) -> Optional[Tuple[str, int, int]]:
 
     frontmatter_text = match.group(1)
     start_line = 1
-    end_line = content[:match.end()].count('\n')
+    end_line = content[: match.end()].count("\n")
 
     return frontmatter_text, start_line, end_line
 
@@ -120,20 +121,20 @@ def validate_frontmatter(frontmatter: Dict, file_path: Path, verbose: bool = Fal
                 errors.append(error)
 
     # Validate model field value
-    if 'model' in frontmatter:
-        model = frontmatter['model']
+    if "model" in frontmatter:
+        model = frontmatter["model"]
         if model not in VALID_MODELS:
             errors.append(f"Invalid model '{model}'. Valid models: {', '.join(sorted(VALID_MODELS))}")
 
     # Validate name field format (should be lowercase with hyphens)
-    if 'name' in frontmatter:
-        name = frontmatter['name']
-        if not re.match(r'^[a-z][a-z0-9-]*$', name):
+    if "name" in frontmatter:
+        name = frontmatter["name"]
+        if not re.match(r"^[a-z][a-z0-9-]*$", name):
             errors.append(f"Name '{name}' should be lowercase with hyphens (e.g., 'chief-architect')")
 
     # Validate tools field (should be comma-separated list)
-    if 'tools' in frontmatter:
-        tools = frontmatter['tools']
+    if "tools" in frontmatter:
+        tools = frontmatter["tools"]
         if not tools.strip():
             errors.append("Tools field cannot be empty")
 
@@ -161,7 +162,7 @@ def check_file(file_path: Path, verbose: bool = False) -> Tuple[bool, List[str]]
     errors = []
 
     try:
-        content = file_path.read_text(encoding='utf-8')
+        content = file_path.read_text(encoding="utf-8")
     except Exception as e:
         return False, [f"Failed to read file: {e}"]
 
@@ -202,18 +203,14 @@ Examples:
 
     # Check with verbose output
     python scripts/agents/check_frontmatter.py --verbose
-        """
+        """,
     )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Show verbose output including warnings")
     parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='Show verbose output including warnings'
-    )
-    parser.add_argument(
-        '--agents-dir',
+        "--agents-dir",
         type=Path,
         default=None,  # Will use get_agents_dir() if not specified
-        help='Path to agents directory (default: .claude/agents)'
+        help="Path to agents directory (default: .claude/agents)",
     )
 
     args = parser.parse_args()
@@ -224,7 +221,7 @@ Examples:
     # Find repository root (directory containing .claude)
     repo_root = Path.cwd()
     while repo_root != repo_root.parent:
-        if (repo_root / '.claude').exists():
+        if (repo_root / ".claude").exists():
             break
         repo_root = repo_root.parent
     else:
@@ -242,7 +239,7 @@ Examples:
         return 1
 
     # Find all markdown files
-    agent_files = sorted(agents_dir.glob('*.md'))
+    agent_files = sorted(agents_dir.glob("*.md"))
 
     if not agent_files:
         print(f"Error: No .md files found in {agents_dir}", file=sys.stderr)
@@ -276,5 +273,5 @@ Examples:
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

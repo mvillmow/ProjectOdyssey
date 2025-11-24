@@ -67,32 +67,20 @@ def check_coverage(threshold: float, path: str, coverage_file: Path) -> bool:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Check test coverage against threshold"
+    parser = argparse.ArgumentParser(description="Check test coverage against threshold")
+    parser.add_argument(
+        "--threshold", type=float, default=90.0, help="Minimum required coverage percentage (default: 90.0)"
     )
     parser.add_argument(
-        "--threshold",
-        type=float,
-        default=90.0,
-        help="Minimum required coverage percentage (default: 90.0)"
-    )
-    parser.add_argument(
-        "--path",
-        type=str,
-        default="shared/",
-        help="Path to source code being tested (default: shared/)"
+        "--path", type=str, default="shared/", help="Path to source code being tested (default: shared/)"
     )
     parser.add_argument(
         "--coverage-file",
         type=Path,
         default=Path("coverage.xml"),
-        help="Path to coverage report file (default: coverage.xml)"
+        help="Path to coverage report file (default: coverage.xml)",
     )
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Enable verbose output"
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
 

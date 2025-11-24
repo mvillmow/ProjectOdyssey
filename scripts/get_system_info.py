@@ -30,12 +30,7 @@ def run_command(cmd: list, capture_output: bool = True) -> Tuple[bool, str]:
         Tuple of (success: bool, output: str)
     """
     try:
-        result = subprocess.run(
-            cmd,
-            capture_output=capture_output,
-            text=True,
-            timeout=5
-        )
+        result = subprocess.run(cmd, capture_output=capture_output, text=True, timeout=5)
         return (result.returncode == 0, result.stdout.strip())
     except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
         return (False, "")
@@ -94,8 +89,9 @@ def get_os_info() -> str:
         return f"{system} (unknown)"
 
 
-def get_tool_info(tool_name: str, version_flag: str = "--version",
-                  version_extract: Optional[callable] = None) -> Tuple[str, str]:
+def get_tool_info(
+    tool_name: str, version_flag: str = "--version", version_extract: Optional[callable] = None
+) -> Tuple[str, str]:
     """
     Get version and path information for a tool.
 
@@ -166,10 +162,7 @@ def main():
 
     # Pixi version
     print("Pixi:")
-    pixi_version, pixi_path = get_tool_info(
-        "pixi",
-        version_extract=lambda x: extract_version_word(x, 1)
-    )
+    pixi_version, pixi_path = get_tool_info("pixi", version_extract=lambda x: extract_version_word(x, 1))
     if pixi_path:
         print(f"  Version: {pixi_version}")
         print(f"  Path: {pixi_path}")
@@ -179,10 +172,7 @@ def main():
 
     # Git version
     print("Git:")
-    git_version, git_path = get_tool_info(
-        "git",
-        version_extract=lambda x: extract_version_word(x, 2)
-    )
+    git_version, git_path = get_tool_info("git", version_extract=lambda x: extract_version_word(x, 2))
     if git_path:
         print(f"  Version: {git_version}")
         print(f"  Path: {git_path}")

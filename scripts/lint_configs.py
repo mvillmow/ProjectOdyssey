@@ -91,7 +91,7 @@ class ConfigLinter:
             print(f"Linting: {filepath}")
 
         try:
-            with open(filepath, 'r') as f:
+            with open(filepath, "r") as f:
                 content = f.read()
         except Exception as e:
             self.errors.append(f"Failed to read file: {e}")
@@ -130,24 +130,22 @@ class ConfigLinter:
         """
         try:
             # Simple YAML validation
-            lines = content.split('\n')
+            lines = content.split("\n")
             brace_count = 0
             bracket_count = 0
 
             for i, line in enumerate(lines):
                 # Skip comments
-                stripped = line.split('#')[0]
+                stripped = line.split("#")[0]
 
                 # Count braces and brackets
-                brace_count += stripped.count('{') - stripped.count('}')
-                bracket_count += stripped.count('[') - stripped.count(']')
+                brace_count += stripped.count("{") - stripped.count("}")
+                bracket_count += stripped.count("[") - stripped.count("]")
 
                 # Check for common issues
-                if ':' in stripped and not re.match(r'^\s*[\w\-]+:', stripped):
-                    if '://' not in stripped:  # Not a URL
-                        self.warnings.append(
-                            f"{filepath}:{i+1} - Possible malformed key"
-                        )
+                if ":" in stripped and not re.match(r"^\s*[\w\-]+:", stripped):
+                    if "://" not in stripped:  # Not a URL
+                        self.warnings.append(f"{filepath}:{i + 1} - Possible malformed key")
 
             if brace_count != 0:
                 self.errors.append(f"{filepath} - Unmatched braces")
@@ -170,31 +168,25 @@ class ConfigLinter:
             content: File content
             filepath: Path to file
         """
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         for i, line in enumerate(lines):
             # Skip empty lines and comments
-            if not line.strip() or line.strip().startswith('#'):
+            if not line.strip() or line.strip().startswith("#"):
                 continue
 
             # Check indentation (should be 2 spaces)
             indent = len(line) - len(line.lstrip())
             if indent > 0 and indent % 2 != 0:
-                self.warnings.append(
-                    f"{filepath}:{i+1} - Odd indentation ({indent} spaces)"
-                )
+                self.warnings.append(f"{filepath}:{i + 1} - Odd indentation ({indent} spaces)")
 
             # Check for tabs
-            if '\t' in line:
-                self.errors.append(
-                    f"{filepath}:{i+1} - Tab found (use 2 spaces)"
-                )
+            if "\t" in line:
+                self.errors.append(f"{filepath}:{i + 1} - Tab found (use 2 spaces)")
 
             # Check for trailing whitespace
             if line.rstrip() != line:
-                self.warnings.append(
-                    f"{filepath}:{i+1} - Trailing whitespace"
-                )
+                self.warnings.append(f"{filepath}:{i + 1} - Trailing whitespace")
 
     def _parse_yaml(self, content: str) -> Optional[Dict]:
         """Parse YAML content into dictionary.
@@ -209,19 +201,19 @@ class ConfigLinter:
             # Simple YAML parser
             result = {}
             current_section = None
-            lines = content.split('\n')
+            lines = content.split("\n")
 
             for line in lines:
                 stripped = line.strip()
 
                 # Skip comments and empty lines
-                if not stripped or stripped.startswith('#'):
+                if not stripped or stripped.startswith("#"):
                     continue
 
                 # Check for section header
-                if not line.startswith(' ') and ':' in stripped:
-                    key = stripped.split(':')[0].strip()
-                    value = stripped.split(':', 1)[1].strip()
+                if not line.startswith(" ") and ":" in stripped:
+                    key = stripped.split(":")[0].strip()
+                    value = stripped.split(":", 1)[1].strip()
 
                     if not value:
                         current_section = key
@@ -231,9 +223,9 @@ class ConfigLinter:
                         current_section = None
 
                 # Check for nested key
-                elif current_section and ':' in stripped:
-                    key = stripped.split(':')[0].strip()
-                    value = stripped.split(':', 1)[1].strip()
+                elif current_section and ":" in stripped:
+                    key = stripped.split(":")[0].strip()
+                    value = stripped.split(":", 1)[1].strip()
                     if isinstance(result[current_section], dict):
                         result[current_section][key] = self._parse_value(value)
 
@@ -255,27 +247,26 @@ class ConfigLinter:
         value = value.strip()
 
         # Boolean
-        if value.lower() in ['true', 'yes']:
+        if value.lower() in ["true", "yes"]:
             return True
-        if value.lower() in ['false', 'no']:
+        if value.lower() in ["false", "no"]:
             return False
 
         # List
-        if value.startswith('[') and value.endswith(']'):
-            items = value[1:-1].split(',')
+        if value.startswith("[") and value.endswith("]"):
+            items = value[1:-1].split(",")
             return [self._parse_value(item.strip()) for item in items]
 
         # Number
         try:
-            if '.' in value:
+            if "." in value:
                 return float(value)
             return int(value)
         except ValueError:
             pass
 
         # String (remove quotes if present)
-        if (value.startswith('"') and value.endswith('"')) or \
-           (value.startswith("'") and value.endswith("'")):
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
             return value[1:-1]
 
         return value
@@ -289,10 +280,7 @@ class ConfigLinter:
         """
         for old_key, new_key in self.deprecated_keys.items():
             if self._has_nested_key(config, old_key):
-                self.warnings.append(
-                    f"{filepath} - Deprecated key '{old_key}' "
-                    f"(use '{new_key}' instead)"
-                )
+                self.warnings.append(f"{filepath} - Deprecated key '{old_key}' (use '{new_key}' instead)")
 
     def _check_required_keys(self, config: Dict, filepath: Path):
         """Check for required keys based on config type.
@@ -306,10 +294,7 @@ class ConfigLinter:
             if section in config:
                 for key in required:
                     if key not in config.get(section, {}):
-                        self.warnings.append(
-                            f"{filepath} - Missing required key "
-                            f"'{section}.{key}'"
-                        )
+                        self.warnings.append(f"{filepath} - Missing required key '{section}.{key}'")
 
     def _check_duplicate_values(self, config: Dict, filepath: Path):
         """Check for duplicate values that might be errors.
@@ -320,7 +305,7 @@ class ConfigLinter:
         """
         seen_values: Dict[str, List[str]] = {}
 
-        def collect_values(obj, prefix=''):
+        def collect_values(obj, prefix=""):
             if isinstance(obj, dict):
                 for key, value in obj.items():
                     new_prefix = f"{prefix}.{key}" if prefix else key
@@ -334,14 +319,11 @@ class ConfigLinter:
         collect_values(config)
 
         # Report duplicates (excluding common values)
-        common_values = {'true', 'false', '0', '1', ''}
+        common_values = {"true", "false", "0", "1", ""}
         for value, keys in seen_values.items():
             if len(keys) > 2 and value not in common_values:
                 if len(value) > 3:  # Skip short values
-                    self.suggestions.append(
-                        f"{filepath} - Value '{value}' appears in: "
-                        f"{', '.join(keys[:3])}..."
-                    )
+                    self.suggestions.append(f"{filepath} - Value '{value}' appears in: {', '.join(keys[:3])}...")
 
     def _check_performance(self, config: Dict, filepath: Path):
         """Check for performance-related configuration issues.
@@ -355,28 +337,18 @@ class ConfigLinter:
         if batch_size is not None:
             min_bs, max_bs = self.perf_thresholds["batch_size"]
             if batch_size < min_bs:
-                self.suggestions.append(
-                    f"{filepath} - Small batch_size ({batch_size}) "
-                    f"may be inefficient"
-                )
+                self.suggestions.append(f"{filepath} - Small batch_size ({batch_size}) may be inefficient")
             elif batch_size > max_bs:
-                self.warnings.append(
-                    f"{filepath} - Large batch_size ({batch_size}) "
-                    f"may cause OOM"
-                )
+                self.warnings.append(f"{filepath} - Large batch_size ({batch_size}) may cause OOM")
 
         # Check learning rate
         lr = self._get_nested_value(config, "optimizer.learning_rate")
         if lr is not None:
             min_lr, max_lr = self.perf_thresholds["learning_rate"]
             if lr < min_lr:
-                self.warnings.append(
-                    f"{filepath} - Very small learning_rate ({lr})"
-                )
+                self.warnings.append(f"{filepath} - Very small learning_rate ({lr})")
             elif lr > max_lr:
-                self.warnings.append(
-                    f"{filepath} - Very large learning_rate ({lr})"
-                )
+                self.warnings.append(f"{filepath} - Very large learning_rate ({lr})")
 
     def _check_unused_parameters(self, config: Dict, filepath: Path):
         """Check for potentially unused parameters.
@@ -388,9 +360,7 @@ class ConfigLinter:
         # Known unused patterns
         if "debug" in config and config.get("debug"):
             if "production" in str(filepath).lower():
-                self.warnings.append(
-                    f"{filepath} - Debug mode enabled in production config"
-                )
+                self.warnings.append(f"{filepath} - Debug mode enabled in production config")
 
     def _has_nested_key(self, config: Dict, key_path: str) -> bool:
         """Check if nested key exists in config.
@@ -402,7 +372,7 @@ class ConfigLinter:
         Returns:
             True if key exists
         """
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         current = config
         for key in keys:
             if isinstance(current, dict) and key in current:
@@ -421,7 +391,7 @@ class ConfigLinter:
         Returns:
             Value if found, None otherwise
         """
-        keys = key_path.split('.')
+        keys = key_path.split(".")
         current = config
         for key in keys:
             if isinstance(current, dict) and key in current:
@@ -453,24 +423,10 @@ class ConfigLinter:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Lint configuration files for ML Odyssey"
-    )
-    parser.add_argument(
-        "paths",
-        nargs="+",
-        help="Configuration files or directories to lint"
-    )
-    parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Enable verbose output"
-    )
-    parser.add_argument(
-        "--remove-unused",
-        action="store_true",
-        help="Remove unused parameters (not implemented)"
-    )
+    parser = argparse.ArgumentParser(description="Lint configuration files for ML Odyssey")
+    parser.add_argument("paths", nargs="+", help="Configuration files or directories to lint")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("--remove-unused", action="store_true", help="Remove unused parameters (not implemented)")
 
     args = parser.parse_args()
 
@@ -479,11 +435,11 @@ def main():
     for path_str in args.paths:
         path = Path(path_str)
         if path.is_file():
-            if path.suffix in ['.yaml', '.yml']:
+            if path.suffix in [".yaml", ".yml"]:
                 files_to_lint.append(path)
         elif path.is_dir():
-            files_to_lint.extend(path.rglob('*.yaml'))
-            files_to_lint.extend(path.rglob('*.yml'))
+            files_to_lint.extend(path.rglob("*.yaml"))
+            files_to_lint.extend(path.rglob("*.yml"))
         else:
             print(f"Warning: Path not found: {path}")
 

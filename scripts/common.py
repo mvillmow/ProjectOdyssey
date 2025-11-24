@@ -11,14 +11,14 @@ from pathlib import Path
 # Label colors for GitHub issues (5-phase development workflow)
 # Used by: create_issues.py, create_single_component_issues.py
 LABEL_COLORS = {
-    'planning': 'd4c5f9',       # Light purple
-    'documentation': '0075ca',  # Blue
-    'testing': 'fbca04',        # Yellow
-    'tdd': 'fbca04',           # Yellow
-    'implementation': '1d76db', # Dark blue
-    'packaging': 'c2e0c6',      # Light green
-    'integration': 'c2e0c6',    # Light green
-    'cleanup': 'd93f0b'         # Red
+    "planning": "d4c5f9",  # Light purple
+    "documentation": "0075ca",  # Blue
+    "testing": "fbca04",  # Yellow
+    "tdd": "fbca04",  # Yellow
+    "implementation": "1d76db",  # Dark blue
+    "packaging": "c2e0c6",  # Light green
+    "integration": "c2e0c6",  # Light green
+    "cleanup": "d93f0b",  # Red
 }
 
 
@@ -39,7 +39,7 @@ def get_repo_root() -> Path:
 
     # Search upward for .git directory
     while current != current.parent:
-        if (current / '.git').exists():
+        if (current / ".git").exists():
             return current
         current = current.parent
 
@@ -57,7 +57,7 @@ def get_agents_dir() -> Path:
         RuntimeError: If agents directory doesn't exist
     """
     repo_root = get_repo_root()
-    agents_dir = repo_root / '.claude' / 'agents'
+    agents_dir = repo_root / ".claude" / "agents"
 
     if not agents_dir.exists():
         raise RuntimeError(f"Agents directory not found: {agents_dir}")
@@ -76,7 +76,7 @@ def get_plan_dir() -> Path:
         RuntimeError: If plan directory doesn't exist
     """
     repo_root = get_repo_root()
-    plan_dir = repo_root / 'notes' / 'plan'
+    plan_dir = repo_root / "notes" / "plan"
 
     if not plan_dir.exists():
         raise RuntimeError(f"Plan directory not found: {plan_dir}")

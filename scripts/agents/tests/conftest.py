@@ -16,6 +16,7 @@ import pytest
 # Path Configuration
 # ============================================================================
 
+
 @pytest.fixture(scope="session")
 def repo_root() -> Path:
     """Get repository root directory."""
@@ -43,6 +44,7 @@ def docs_agents_dir(repo_root: Path) -> Path:
 # ============================================================================
 # Agent File Discovery
 # ============================================================================
+
 
 @pytest.fixture(scope="session")
 def all_agent_files(agents_dir: Path) -> List[Path]:
@@ -72,6 +74,7 @@ def all_doc_files(docs_agents_dir: Path) -> List[Path]:
 # YAML Frontmatter Parsing
 # ============================================================================
 
+
 def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str]:
     """
     Parse YAML frontmatter from markdown content.
@@ -84,7 +87,7 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str]:
         Returns (None, content) if no frontmatter found
     """
     # Match YAML frontmatter pattern: ---\n...\n---
-    pattern = r'^---\s*\n(.*?\n)---\s*\n(.*)$'
+    pattern = r"^---\s*\n(.*?\n)---\s*\n(.*)$"
     match = re.match(pattern, content, re.DOTALL)
 
     if not match:
@@ -106,6 +109,7 @@ def parse_agent_file(agents_dir: Path):
     Returns:
         Function that takes a filename and returns (frontmatter, body)
     """
+
     def _parse(filename: str) -> Tuple[Optional[Dict], str]:
         filepath = agents_dir / filename
         if not filepath.exists():
@@ -121,10 +125,9 @@ def parse_agent_file(agents_dir: Path):
 # Validation Helpers
 # ============================================================================
 
+
 def validate_frontmatter_keys(
-    frontmatter: Dict,
-    required_keys: List[str],
-    optional_keys: Optional[List[str]] = None
+    frontmatter: Dict, required_keys: List[str], optional_keys: Optional[List[str]] = None
 ) -> List[str]:
     """
     Validate that frontmatter contains required keys.
@@ -165,7 +168,7 @@ def extract_links(content: str) -> List[str]:
         List of link targets (URLs or paths)
     """
     # Match [text](link) pattern
-    pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+    pattern = r"\[([^\]]+)\]\(([^)]+)\)"
     matches = re.findall(pattern, content)
     return [link for _, link in matches]
 
@@ -183,7 +186,7 @@ def extract_skill_references(content: str) -> List[str]:
         List of skill reference paths
     """
     # Match skill reference pattern
-    pattern = r'\[`([^`]+)`\]\(([^)]+/SKILL\.md)\)'
+    pattern = r"\[`([^`]+)`\]\(([^)]+/SKILL\.md)\)"
     matches = re.findall(pattern, content)
     return [link for _, link in matches]
 
@@ -201,7 +204,7 @@ def extract_agent_references(content: str) -> List[str]:
         List of agent reference paths
     """
     # Match agent reference pattern
-    pattern = r'\[([^\]]+)\]\((\./[^)]+\.md|\.\.\/agents\/[^)]+\.md)\)'
+    pattern = r"\[([^\]]+)\]\((\./[^)]+\.md|\.\.\/agents\/[^)]+\.md)\)"
     matches = re.findall(pattern, content)
     return [link for _, link in matches]
 
@@ -218,9 +221,9 @@ def resolve_relative_path(base_path: Path, relative_path: str) -> Path:
         Resolved absolute path
     """
     # Handle relative paths
-    if relative_path.startswith('./'):
+    if relative_path.startswith("./"):
         return (base_path.parent / relative_path[2:]).resolve()
-    elif relative_path.startswith('../'):
+    elif relative_path.startswith("../"):
         return (base_path.parent / relative_path).resolve()
     else:
         return Path(relative_path).resolve()
@@ -234,13 +237,14 @@ def validate_link_exists(repo_root: Path):
     Returns:
         Function that takes (source_file, link) and returns bool
     """
+
     def _validate(source_file: Path, link: str) -> bool:
         # Skip external URLs
-        if link.startswith(('http://', 'https://', 'mailto:')):
+        if link.startswith(("http://", "https://", "mailto:")):
             return True
 
         # Skip anchors
-        if link.startswith('#'):
+        if link.startswith("#"):
             return True
 
         # Resolve relative path
@@ -254,25 +258,19 @@ def validate_link_exists(repo_root: Path):
 # Test Markers
 # ============================================================================
 
+
 def pytest_configure(config):
     """Register custom markers."""
-    config.addinivalue_line(
-        "markers", "integration: mark test as integration test"
-    )
-    config.addinivalue_line(
-        "markers", "documentation: mark test as documentation test"
-    )
-    config.addinivalue_line(
-        "markers", "scripts: mark test as script validation test"
-    )
-    config.addinivalue_line(
-        "markers", "slow: mark test as slow running"
-    )
+    config.addinivalue_line("markers", "integration: mark test as integration test")
+    config.addinivalue_line("markers", "documentation: mark test as documentation test")
+    config.addinivalue_line("markers", "scripts: mark test as script validation test")
+    config.addinivalue_line("markers", "slow: mark test as slow running")
 
 
 # ============================================================================
 # Test Data Helpers
 # ============================================================================
+
 
 @pytest.fixture
 def sample_valid_frontmatter() -> Dict:
@@ -281,7 +279,7 @@ def sample_valid_frontmatter() -> Dict:
         "name": "test-agent",
         "description": "Test agent for validation",
         "tools": "Read,Write,Edit,Bash,Grep,Glob",
-        "model": "sonnet"
+        "model": "sonnet",
     }
 
 
@@ -314,6 +312,7 @@ Test agent for validation.
 # ============================================================================
 # Parametrization Helpers
 # ============================================================================
+
 
 def generate_agent_test_ids(agent_files: List[Path]) -> List[str]:
     """Generate test IDs from agent file paths."""
