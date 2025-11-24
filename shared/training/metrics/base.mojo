@@ -56,12 +56,12 @@ struct MetricResult(Copyable, Movable):
     var scalar_value: Float64
     var tensor_value: ExTensor
 
-    fn __init__(out self, name: String, value: Float64):
+    fn __init__(out self, name: String, value: Float64) raises:
         """Create scalar metric result."""
         self.name = name
         self.is_scalar = True
         self.scalar_value = value
-        self.tensor_value = ExTensor(List[Int]())  # Placeholder
+        self.tensor_value = ExTensor(List[Int](), DType.float32)  # Placeholder
 
     fn __init__(out self, name: String, var value: ExTensor):
         """Create tensor metric result (ownership transferred)."""
@@ -90,8 +90,8 @@ struct MetricResult(Copyable, Movable):
         """
         if self.is_scalar:
             raise Error("Metric '" + self.name + "' is not tensor")
-        # Return copy of tensor value
-        return ExTensor(self.tensor_value)
+        # Return reference to tensor value
+        return self.tensor_value
 
 
 struct MetricCollection:
@@ -190,14 +190,14 @@ fn create_metric_summary(results: List[MetricResult]) -> String:
     var summary = "Metrics Summary:\n"
 
     for i in range(len(results)):
-        var result = results[i]
-        summary = summary + "  " + result.name + ": "
+        # Access by reference to avoid implicit copy
+        summary = summary + "  " + results[i].name + ": "
 
-        if result.is_scalar:
-            summary = summary + String(result.scalar_value) + "\n"
+        if results[i].is_scalar:
+            summary = summary + String(results[i].scalar_value) + "\n"
         else:
             summary = summary + "[tensor shape: "
-            var shape = result.tensor_value.shape()
+            var shape = results[i].tensor_value.shape()
             for j in range(len(shape)):
                 summary = summary + String(shape[j])
                 if j < len(shape) - 1:
@@ -260,7 +260,7 @@ struct MetricLogger:
         for i in range(self.num_metrics):
             if self.metric_names[i] == metric_name:
                 # Explicit copy of the history list
-                return List[Float64](self.metric_history[i])^
+                return List[Float64](self.metric_history[i])
 
         raise Error("Metric '" + metric_name + "' not found in logger")
 

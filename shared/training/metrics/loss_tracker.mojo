@@ -160,7 +160,7 @@ struct ComponentTracker(Copyable, Movable):
         var stats = Statistics()
 
         if self.count == 0:
-            return stats
+            return stats^
 
         stats.mean = Float32(self.mean)
         stats.count = self.count
@@ -174,7 +174,7 @@ struct ComponentTracker(Copyable, Movable):
         else:
             stats.std = 0.0
 
-        return stats
+        return stats^
 
     fn reset(mut self):
         """Reset all statistics and buffer."""
@@ -333,6 +333,7 @@ struct LossTracker:
         """Get list of all tracked components.
 
         Returns:
-            Vector of component names
+            Vector of component names (copy)
         """
-        return self.components^
+        # Create a copy of the components list
+        return List[String](self.components)
