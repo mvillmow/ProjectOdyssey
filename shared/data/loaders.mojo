@@ -30,7 +30,7 @@ struct Batch(Copyable, Movable):
         var data: ExTensor,
         var labels: ExTensor,
         var indices: List[Int],
-    ):
+    ) raises:
         """Create a batch.
 
         Args:.            `data`: Batch data tensor.
@@ -67,11 +67,13 @@ struct BaseLoader(Copyable, Movable):
     ) raises:
         """Create base loader.
 
-        Args:.            `dataset`: Dataset to load from.
-            `batch_size`: Number of samples per batch.
-            `drop_last`: Whether to drop the last incomplete batch.
+        Args:
+            dataset: Dataset to load from.
+            batch_size: Number of samples per batch.
+            drop_last: Whether to drop the last incomplete batch.
 
-        Raises:.            Error if batch_size is invalid.
+        Raises:
+            Error if batch_size is invalid.
         """
         if batch_size <= 0:
             raise Error("Batch size must be positive, got: " + String(batch_size))
@@ -192,8 +194,8 @@ struct BatchLoader(Copyable, Movable):
                 batch_labels.append(sample[1])
 
             # Stack into batch tensors
-            var data_tensor = self._stack_tensors(batch_data)^
-            var labels_tensor = self._stack_tensors(batch_labels)^
+            var data_tensor = self._stack_tensors(batch_data)
+            var labels_tensor = self._stack_tensors(batch_labels)
 
             batches.append(Batch(data_tensor^, labels_tensor^, batch_indices^))
             batch_start = batch_end
