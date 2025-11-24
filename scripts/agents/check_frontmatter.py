@@ -213,7 +213,7 @@ Examples:
     parser.add_argument(
         '--agents-dir',
         type=Path,
-        default=None  # Will use get_agents_dir() if not specified,
+        default=None,  # Will use get_agents_dir() if not specified
         help='Path to agents directory (default: .claude/agents)'
     )
 

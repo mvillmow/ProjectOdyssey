@@ -54,8 +54,8 @@ fn test_linear_initialization() raises:
     var bias = zeros(bias_shape, DType.float32)
 
     # Verify shapes
-    var w_shape = weights.shape
-    var b_shape = bias.shape
+    var w_shape = weights.shape()
+    var b_shape = bias.shape()
     assert_equal(w_shape[0], out_features)
     assert_equal(w_shape[1], in_features)
     assert_equal(b_shape[0], out_features)
@@ -102,7 +102,7 @@ fn test_linear_forward() raises:
     var output = linear(input, weights, bias)
 
     # Check output shape
-    var out_shape = output.shape
+    var out_shape = output.shape()
     assert_equal(out_shape[0], batch_size)
     assert_equal(out_shape[1], out_features)
 
@@ -141,7 +141,7 @@ fn test_linear_no_bias() raises:
     var output = linear_no_bias(input, weights)
 
     # Check output shape
-    var out_shape = output.shape
+    var out_shape = output.shape()
     assert_equal(out_shape[0], 1)
     assert_equal(out_shape[1], out_features)
 
@@ -315,8 +315,8 @@ fn test_sigmoid_range() raises:
     # All outputs should be in (0, 1)
     for i in range(5):
         var val = output._data.bitcast[Float32]()[i]
-        assert_less(0.0, val)  # Greater than 0
-        assert_less(val, 1.0)  # Less than 1
+        assert_true(0.0 < val, "Value must be greater than 0")
+        assert_true(val < 1.0, "Value must be less than 1")
 
     # Check sigmoid(0) = 0.5
     assert_almost_equal(output._data.bitcast[Float32]()[2], 0.5, tolerance=1e-6)
@@ -346,8 +346,8 @@ fn test_tanh_range() raises:
     # All outputs should be in (-1, 1)
     for i in range(5):
         var val = output._data.bitcast[Float32]()[i]
-        assert_less(-1.0, val)  # Greater than -1
-        assert_less(val, 1.0)  # Less than 1
+        assert_true(-1.0 < val, "Value must be greater than -1")
+        assert_true(val < 1.0, "Value must be less than 1")
 
     # Check tanh(0) = 0.0
     assert_almost_equal(output._data.bitcast[Float32]()[2], 0.0, tolerance=1e-6)

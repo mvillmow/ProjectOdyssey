@@ -253,7 +253,7 @@ jobs:
 
               # Run Mojo tests if they exist
               if [ -n "$(find "$paper_dir/tests" -name 'test_*.mojo' 2>/dev/null)" ]; then
-                pixi run mojo test "$paper_dir/tests" --verbose || true
+                pixi run mojo test -I . "$paper_dir/tests" --verbose || true
               fi
             fi
           done
@@ -309,7 +309,7 @@ jobs:
             if [ -f "$paper_dir/train.py" ]; then
               pixi run python "$paper_dir/train.py" --quick-validation --epochs 1 || true
             elif [ -f "$paper_dir/train.mojo" ]; then
-              pixi run mojo "$paper_dir/train.mojo" --quick-validation --epochs 1 || true
+              pixi run mojo -I . "$paper_dir/train.mojo" --quick-validation --epochs 1 || true
             fi
           done
 

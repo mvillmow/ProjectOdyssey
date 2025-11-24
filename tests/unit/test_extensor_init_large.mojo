@@ -145,23 +145,23 @@ fn test_extensor_stride_preallocate() raises:
     # Various shapes to test the loop
     var s1 = List[Int]()
     s1.append(2)
-    shapes.append(s1)
+    shapes.append(s1.copy())
 
     var s2 = List[Int]()
     s2.append(2)
     s2.append(3)
-    shapes.append(s2)
+    shapes.append(s2.copy())
 
     var s3 = List[Int]()
     s3.append(2)
     s3.append(3)
     s3.append(4)
-    shapes.append(s3)
+    shapes.append(s3.copy())
 
     var s4 = List[Int]()
     s4.append(2)
     s4.append(47)  # Exact crash case
-    shapes.append(s4)
+    shapes.append(s4.copy())
 
     for i in range(len(shapes)):
         var shape = shapes[i]

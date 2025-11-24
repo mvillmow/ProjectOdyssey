@@ -80,7 +80,7 @@ jobs:
                 for file in tests/integration/*.mojo; do
                   if [ -f "$file" ]; then
                     echo "Running $file..."
-                    pixi run mojo "$file" || EXIT_CODE=$?
+                    pixi run mojo -I . "$file" || EXIT_CODE=$?
                   fi
                 done
                 exit $EXIT_CODE
@@ -114,7 +114,7 @@ jobs:
                 for file in tests/shared/integration/*.mojo; do
                   if [ -f "$file" ]; then
                     echo "Running $file..."
-                    pixi run mojo "$file" || EXIT_CODE=$?
+                    pixi run mojo -I . "$file" || EXIT_CODE=$?
                   fi
                 done
                 exit $EXIT_CODE

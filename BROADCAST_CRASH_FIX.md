@@ -33,7 +33,8 @@ The crash occurred during linear layer bias addition when broadcasting a 1D bias
 
 ### The Bug
 
-The index calculation in `_broadcast_binary()` incorrectly computed multi-dimensional coordinates when processing dimensions right-to-left.
+The index calculation in `_broadcast_binary()` incorrectly computed multi-dimensional coordinates when
+processing dimensions right-to-left.
 
 **Buggy Code (Lines 66-75):**
 
@@ -70,7 +71,9 @@ result_idx=4 -> bias_idx = 4 ✗ (out of bounds!)
 result_idx=5 -> bias_idx = 5 ✗ (out of bounds!)
 ```
 
-**Problem:** Processing dimensions right-to-left caused `stride_prod=1` for the rightmost dimension, making `coord = temp_idx`, which led to accumulating the entire flat index instead of extracting per-dimension coordinates.
+**Problem:** Processing dimensions right-to-left caused `stride_prod=1` for the rightmost dimension, making
+`coord = temp_idx`, which led to accumulating the entire flat index instead of extracting per-dimension
+coordinates.
 
 ## The Fix
 
@@ -174,7 +177,8 @@ Results:
 Inference complete!
 ```
 
-**Note:** 0% accuracy is due to a separate evaluation loop issue (breaks after first iteration), not the broadcasting fix.
+**Note:** 0% accuracy is due to a separate evaluation loop issue (breaks after first iteration), not the
+broadcasting fix.
 
 ## Files Changed
 
@@ -196,7 +200,8 @@ This fix resolves the same class of bugs that were previously fixed in:
 - `broadcasting.mojo::compute_broadcast_strides()` - List[Int] constructor issue
 - `matrix.mojo::transpose()` - List[Int] constructor issue
 
-The pattern: **Any code that manually computes multi-dimensional indices from flat indices must use precomputed strides, not on-the-fly stride products.**
+The pattern: **Any code that manually computes multi-dimensional indices from flat indices must use
+precomputed strides, not on-the-fly stride products.**
 
 ## Testing Recommendations
 
@@ -218,4 +223,6 @@ When modifying broadcasting or indexing code:
 
 ## Conclusion
 
-The broadcasting crash was caused by an algorithmic error in multi-dimensional index calculation. The fix precomputes row-major strides and processes dimensions left-to-right, correctly extracting coordinates and computing source indices. All broadcasting scenarios now work correctly, and inference runs without crashes.
+The broadcasting crash was caused by an algorithmic error in multi-dimensional index calculation. The fix
+precomputes row-major strides and processes dimensions left-to-right, correctly extracting coordinates and
+computing source indices. All broadcasting scenarios now work correctly, and inference runs without crashes.

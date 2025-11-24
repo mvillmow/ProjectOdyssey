@@ -36,30 +36,30 @@ jobs:
       - name: Run Dataset Tests
         run: |
           echo "Running base dataset tests..."
-          pixi run mojo tests/shared/data/datasets/test_base_dataset.mojo
+          pixi run mojo -I . tests/shared/data/datasets/test_base_dataset.mojo
 
           echo "Running tensor dataset tests..."
-          pixi run mojo tests/shared/data/datasets/test_tensor_dataset.mojo
+          pixi run mojo -I . tests/shared/data/datasets/test_tensor_dataset.mojo
 
       - name: Run Loader Tests
         run: |
           echo "Running base loader tests..."
-          pixi run mojo tests/shared/data/loaders/test_base_loader.mojo
+          pixi run mojo -I . tests/shared/data/loaders/test_base_loader.mojo
 
       - name: Run Transform Tests
         run: |
           echo "Running transform pipeline tests..."
-          pixi run mojo tests/shared/data/transforms/test_pipeline.mojo
+          pixi run mojo -I . tests/shared/data/transforms/test_pipeline.mojo
 
       - name: Run Sampler Tests
         run: |
           echo "Running sequential sampler tests..."
-          pixi run mojo tests/shared/data/samplers/test_sequential.mojo
+          pixi run mojo -I . tests/shared/data/samplers/test_sequential.mojo
 
       - name: Run All Data Tests
         run: |
           echo "Running complete data utilities test suite..."
-          pixi run mojo tests/shared/data/run_all_tests.mojo
+          pixi run mojo -I . tests/shared/data/run_all_tests.mojo
 
       - name: Report Results
         if: always()
