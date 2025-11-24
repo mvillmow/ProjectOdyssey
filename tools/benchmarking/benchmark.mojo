@@ -9,7 +9,7 @@ from time import now
 from tensor import Tensor, TensorShape
 
 
-struct BenchmarkResult:
+struct BenchmarkResult(Copyable, Movable):
     """Results from a benchmark run."""
 
     var name: String
@@ -46,7 +46,7 @@ struct BenchmarkResult:
         print("  Memory:", self.memory_mb, "MB")
 
 
-struct ModelBenchmark:
+struct ModelBenchmark(Copyable, Movable):
     """Benchmark framework for ML models."""
 
     var name: String
@@ -119,7 +119,7 @@ struct ModelBenchmark:
         ModelType: AnyType
     ](
         self,
-        inout model: ModelType,
+        mut model: ModelType,
         borrowed input: Tensor[DType.float32],
         borrowed target: Tensor[DType.float32],
         batch_size: Int = 1

@@ -8,7 +8,7 @@ Language: Mojo (required for type safety and model compatibility)
 from tensor import Tensor, TensorShape
 
 
-struct SimpleCNN:
+struct SimpleCNN(Copyable, Movable):
     """
     Minimal CNN for testing purposes.
 
@@ -65,7 +65,7 @@ struct SimpleCNN:
         return output
 
 
-struct LinearModel:
+struct LinearModel(Copyable, Movable):
     """
     Simple linear model for testing.
 
@@ -75,7 +75,7 @@ struct LinearModel:
     var in_features: Int
     var out_features: Int
 
-    fn __init__(out self, in_features: Int, out_features: Int):
+    fn __init__(mut self, in_features: Int, out_features: Int):
         """
         Initialize linear model.
 
