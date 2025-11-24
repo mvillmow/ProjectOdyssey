@@ -24,7 +24,7 @@ fn step_lr(
     epoch: Int,
     step_size: Int = 30,
     gamma: Float32 = 0.1
-) -> Float32:
+) raises -> Float32:
     """Compute learning rate with step decay.
 
     Args:.        `initial_lr`: Initial learning rate at epoch 0.
@@ -76,7 +76,7 @@ fn multistep_lr(
     epoch: Int,
     milestones: List[Int],
     gamma: Float32 = 0.1
-) -> Float32:
+) raises -> Float32:
     """Compute learning rate with decay at specific milestone epochs.
 
     Decays learning rate by gamma at each milestone epoch.
@@ -113,8 +113,8 @@ fn multistep_lr(
 
     # Count how many milestones have been passed
     var num_decays = 0
-    for milestone in milestones:
-        if epoch >= milestone[]:
+    for i in range(len(milestones)):
+        if epoch >= milestones[i]:
             num_decays += 1
 
     # Apply decay for each milestone passed
@@ -129,7 +129,7 @@ fn exponential_lr(
     initial_lr: Float32,
     epoch: Int,
     gamma: Float32 = 0.95
-) -> Float32:
+) raises -> Float32:
     """Compute learning rate with exponential decay.
 
     Decays learning rate by gamma every epoch (exponential decay).
