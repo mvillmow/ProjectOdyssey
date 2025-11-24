@@ -10,7 +10,7 @@ from tensor import Tensor, TensorShape
 from memory import memset_zero
 
 
-struct TensorGenerator:
+struct TensorGenerator(Copyable, Movable):
     """Generate test tensors with various patterns and distributions."""
 
     fn __init__(mut self):
