@@ -216,7 +216,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
         from shared.core import ExTensor, global_avgpool2d
 
         # Pure function call
-        var pooled = global_avgpool2d(input)  # (B, C, H, W) -> (B, C, 1, 1)
+        var pooled = global_avgpool2d(input)  # (B, C, H, W) -> Tuple[B, C, 1, 1]
 
         # Or select implementation method
         var pooled = global_avgpool2d(input, method="direct")

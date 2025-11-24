@@ -142,7 +142,7 @@ fn linear_backward(
     var grad_input = matmul(grad_output, weights)
 
     # grad_weights = grad_output^T @ x
-    # grad_output: (batch, out_features) -> transpose -> (out_features, batch)
+    # grad_output: (batch, out_features) -> transpose -> Tuple[out_features, batch]
     # x: (batch, in_features)
     # result: (out_features, in_features)
     var grad_weights = matmul(transpose(grad_output), x)

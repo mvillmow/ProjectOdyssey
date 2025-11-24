@@ -108,17 +108,17 @@ struct LogRecord(Copyable, Movable):
         # Format as YYYY-MM-DD HH:MM:SS using string concatenation
         # (Mojo may not support all Python string formatting features)
         return (
-            str(year)
+            String(year)
             + "-"
-            + str(month).zfill(2)
+            + String(month).zfill(2)
             + "-"
-            + str(day).zfill(2)
+            + String(day).zfill(2)
             + " "
-            + str(hours).zfill(2)
+            + String(hours).zfill(2)
             + ":"
-            + str(minutes).zfill(2)
+            + String(minutes).zfill(2)
             + ":"
-            + str(seconds).zfill(2)
+            + String(seconds).zfill(2)
         )
 
     fn level_name(self) -> String:

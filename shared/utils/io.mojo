@@ -416,7 +416,7 @@ fn create_backup(filepath: String) -> Bool:
         # If backup exists, rotate it
         var rotation_num = 1
         while file_exists(backup_path):
-            backup_path = filepath + ".bak." + str(rotation_num)
+            backup_path = filepath + ".bak." + String(rotation_num)
             rotation_num += 1
 
         # Write backup
@@ -554,7 +554,7 @@ fn expand_path(filepath: String) -> String:
     try:
         var python = Python.import_module("os.path")
         var expanded = python.expanduser(filepath)
-        return str(expanded)
+        return String(expanded)
     except:
         # Fall back to returning original path if Python interop fails
         return filepath

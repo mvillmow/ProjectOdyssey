@@ -104,7 +104,7 @@ fn get_global_seed() -> Int:
     Returns:.        Current seed value.
 
     Example:.        var seed = get_global_seed()
-        print("Using seed: " + str(seed))
+        print("Using seed: " + String(seed))
 
     Note:
         Current implementation returns default seed (42).

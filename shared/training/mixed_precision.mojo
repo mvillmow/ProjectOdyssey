@@ -261,7 +261,7 @@ fn update_model_from_master(mut model_params: ExTensor,
     if model_params._numel != master_params._numel:
         raise Error("Parameter and master weight sizes must match")
     if master_params.dtype() != DType.float32:
-        raise Error("Master params must be Float32, got: " + str(master_params.dtype()))
+        raise Error("Master params must be Float32, got: " + String(master_params.dtype()))
 
     var size = model_params._numel
 

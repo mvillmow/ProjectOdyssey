@@ -12,7 +12,7 @@ Example:.    from shared.utils import Timer, profile_function, memory_usage
 
     # Get memory usage
     var mem = memory_usage()
-    print("Memory: " + str(mem.used_mb) + "MB / " + str(mem.peak_mb) + "MB")
+    print("Memory: " + String(mem.used_mb) + "MB / " + String(mem.peak_mb) + "MB")
 """
 
 
@@ -166,9 +166,9 @@ struct Timer(Copyable, Movable):
         self.end_ns = self._get_time_ns()
         var elapsed_ms = (self.end_ns - self.start_ns) / 1_000_000.0
         if self.name:
-            print(self.name + ": " + str(elapsed_ms) + "ms")
+            print(self.name + ": " + String(elapsed_ms) + "ms")
         else:
-            print("Elapsed: " + str(elapsed_ms) + "ms")
+            print("Elapsed: " + String(elapsed_ms) + "ms")
 
     fn _get_time_ns(self) -> Int:
         """Get current time in nanoseconds."""
@@ -207,8 +207,8 @@ fn memory_usage() -> MemoryStats:
     Returns:.        Memory statistics.
 
     Example:.        var mem = memory_usage()
-        print("Allocated: " + str(mem.allocated_mb()) + "MB")
-        print("Peak: " + str(mem.peak_mb()) + "MB")
+        print("Allocated: " + String(mem.allocated_mb()) + "MB")
+        print("Peak: " + String(mem.peak_mb()) + "MB")
     """
     var stats = MemoryStats()
     # TODO: Implement memory tracking

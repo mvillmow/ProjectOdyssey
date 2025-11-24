@@ -88,7 +88,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.list_val = List[String]()
         # Convert int list to string list for storage
         for i in range(len(value)):
-            self.list_val.append(str(value[i]))
+            self.list_val.append(String(value[i]))
 
 
 # ============================================================================
@@ -600,13 +600,13 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                     var val = item.value
 
                     if val.value_type == "int":
-                        _ = f.write(key + ": " + str(val.int_val) + "\n")
+                        _ = f.write(key + ": " + String(val.int_val) + "\n")
                     elif val.value_type == "float":
-                        _ = f.write(key + ": " + str(val.float_val) + "\n")
+                        _ = f.write(key + ": " + String(val.float_val) + "\n")
                     elif val.value_type == "string":
                         _ = f.write(key + ': "' + val.str_val + '"\n')
                     elif val.value_type == "bool":
-                        _ = f.write(key + ": " + str(val.bool_val) + "\n")
+                        _ = f.write(key + ": " + String(val.bool_val) + "\n")
                     elif val.value_type == "list":
                         _ = f.write(key + ": [")
                         for i in range(len(val.list_val)):
@@ -640,13 +640,13 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                     _ = f.write('  "' + key + '": ')
 
                     if val.value_type == "int":
-                        _ = f.write(str(val.int_val))
+                        _ = f.write(String(val.int_val))
                     elif val.value_type == "float":
-                        _ = f.write(str(val.float_val))
+                        _ = f.write(String(val.float_val))
                     elif val.value_type == "string":
                         _ = f.write('"' + val.str_val + '"')
                     elif val.value_type == "bool":
-                        _ = f.write(str(val.bool_val))
+                        _ = f.write(String(val.bool_val))
                     elif val.value_type == "list":
                         _ = f.write("[")
                         for i in range(len(val.list_val)):
@@ -730,7 +730,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             try:
                 var python = Python.import_module("os")
                 var py_value = python.getenv(var_name, default_value)
-                env_value = str(py_value)
+                env_value = String(py_value)
             except:
                 # If Python interop fails, use default value
                 pass

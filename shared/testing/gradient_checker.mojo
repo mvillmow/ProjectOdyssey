@@ -245,7 +245,7 @@ fn check_gradients_verbose(
                 )
 
         if input.numel() > 20:
-            print("... (" + str(input.numel() - 20) + " more elements)")
+            print("... (" + String(input.numel() - 20) + " more elements)")
 
         print("=" * 60)
 
