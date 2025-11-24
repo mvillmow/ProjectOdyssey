@@ -350,6 +350,6 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     # Unsqueeze each tensor and concatenate
     var unsqueezed = List[ExTensor]()
     for i in range(num_tensors):
-        unsqueezed[i] = unsqueeze(tensors[i], actual_axis)
+        unsqueezed.append(unsqueeze(tensors[i], actual_axis))
 
     return concatenate(unsqueezed, actual_axis)

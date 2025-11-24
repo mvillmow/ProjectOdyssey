@@ -64,7 +64,7 @@ struct GradientTriple(Copyable, Movable):
     var grad_bias: ExTensor
 
     fn __init__(
-        mut self,
+        out self,
         var grad_input: ExTensor,
         var grad_weights: ExTensor,
         var grad_bias: ExTensor,

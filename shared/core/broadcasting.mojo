@@ -172,15 +172,15 @@ struct BroadcastIterator:
             `strides1`: Broadcast strides for first tensor.
             `strides2`: Broadcast strides for second tensor.
         """
-        self.shape() = shape^
+        self.shape = shape^
         self.strides1 = strides1^
         self.strides2 = strides2^
         self.position = 0
 
         # Calculate total size
         self.size = 1
-        for i in range(len(self.shape())):
-            self.size *= self.shape()[i]
+        for i in range(len(self.shape)):
+            self.size *= self.shape[i]
 
     fn __iter__(self) -> Self:
         """Return iterator."""
@@ -203,8 +203,8 @@ struct BroadcastIterator:
         var idx1 = 0
         var idx2 = 0
 
-        for i in range(len(self.shape())):
-            var dim_size = self.shape()[i]
+        for i in range(len(self.shape)):
+            var dim_size = self.shape[i]
             var coord = remaining // self.size  # TODO: Fix this calculation
             remaining = remaining % dim_size
 
