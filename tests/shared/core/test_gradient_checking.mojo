@@ -31,10 +31,10 @@ fn test_relu_gradient() raises:
 
     var input = full(shape, 2.0, DType.float32)  # Positive inputs
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
     var passed = check_gradients(forward, backward, input)
@@ -52,10 +52,10 @@ fn test_relu_negative_inputs() raises:
 
     var input = full(shape, -2.0, DType.float32)  # Negative inputs
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
     var passed = check_gradients(forward, backward, input)
@@ -78,10 +78,10 @@ fn test_relu_mixed_inputs() raises:
     input._set_float64(2, 2.0)
     input._set_float64(3, -2.0)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
     var passed = check_gradients(forward, backward, input)
@@ -99,10 +99,10 @@ fn test_sigmoid_gradient() raises:
 
     var input = full(shape, 0.5, DType.float32)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return sigmoid(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         var output = sigmoid(x)
         return sigmoid_backward(grad_out, output)
 
@@ -121,10 +121,10 @@ fn test_tanh_gradient() raises:
 
     var input = full(shape, 0.5, DType.float32)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return tanh(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         var output = tanh(x)
         return tanh_backward(grad_out, output)
 
@@ -150,12 +150,12 @@ fn test_add_gradient() raises:
     var input_b = ones(shape, DType.float32)
 
     # For add, we test gradient w.r.t. first input
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return add(x, input_b)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
-        var (grad_a, _) = add_backward(grad_out, x, input_b)
-        return grad_a
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var grads = add_backward(grad_out, x.shape(), input_b.shape())
+        return grads.grad_a
 
     var passed = check_gradients(forward, backward, input_a)
     assert_true(passed, "Add gradient check failed")
@@ -174,12 +174,12 @@ fn test_multiply_gradient() raises:
     var input_b = full(shape, 3.0, DType.float32)
 
     # Test gradient w.r.t. first input
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return multiply(x, input_b)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
-        var (grad_a, _) = multiply_backward(grad_out, x, input_b)
-        return grad_a
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var grads = multiply_backward(grad_out, x, input_b)
+        return grads.grad_a
 
     var passed = check_gradients(forward, backward, input_a)
     assert_true(passed, "Multiply gradient check failed")
@@ -202,11 +202,11 @@ fn test_composite_relu_multiply() raises:
     var input_a = full(shape, 2.0, DType.float32)
     var input_b = full(shape, 3.0, DType.float32)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         var mul_result = multiply(x, input_b)
         return relu(mul_result)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         # Forward to get intermediate
         var mul_result = multiply(x, input_b)
         var relu_result = relu(mul_result)
@@ -215,8 +215,8 @@ fn test_composite_relu_multiply() raises:
         var grad_relu = relu_backward(grad_out, mul_result)
 
         # Backward through multiply
-        var (grad_mul, _) = multiply_backward(grad_relu, x, input_b)
-        return grad_mul
+        var grads = multiply_backward(grad_relu, x, input_b)
+        return grads.grad_a
 
     var passed = check_gradients(forward, backward, input_a)
     assert_true(passed, "Composite gradient check failed")
@@ -238,10 +238,10 @@ fn test_gradient_at_zero() raises:
 
     var input = zeros(shape, DType.float32)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
     # Use larger tolerance for zero region
@@ -260,10 +260,10 @@ fn test_gradient_small_tensor() raises:
 
     var input = full(shape, 2.0, DType.float32)
 
-    fn forward(x: ExTensor) -> ExTensor:
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
 
-    fn backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
+    fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
     var passed = check_gradients(forward, backward, input)

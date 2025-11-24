@@ -42,8 +42,8 @@ from shared.core.reduction import sum as tensor_sum
 
 
 fn check_gradients(
-    forward_fn: fn(ExTensor) -> ExTensor,
-    backward_fn: fn(ExTensor, ExTensor) -> ExTensor,
+    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
+    backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
     input: ExTensor,
     epsilon: Float64 = 1e-5,
     tolerance: Float64 = 1e-3
@@ -117,12 +117,14 @@ fn check_gradients(
         # f(x + ε)
         input_copy_plus._set_float64(i, original_val + epsilon)
         var output_plus = forward_fn(input_copy_plus)
-        var sum_plus = tensor_sum(output_plus)
+        var sum_plus_tensor = tensor_sum(output_plus)
+        var sum_plus = sum_plus_tensor._get_float64(0)
 
         # f(x - ε)
         input_copy_minus._set_float64(i, original_val - epsilon)
         var output_minus = forward_fn(input_copy_minus)
-        var sum_minus = tensor_sum(output_minus)
+        var sum_minus_tensor = tensor_sum(output_minus)
+        var sum_minus = sum_minus_tensor._get_float64(0)
 
         # Numerical gradient: [f(x+ε) - f(x-ε)] / (2ε)
         var numerical = (sum_plus - sum_minus) / (2.0 * epsilon)
@@ -159,8 +161,8 @@ fn check_gradients(
 
 
 fn check_gradients_verbose(
-    forward_fn: fn(ExTensor) -> ExTensor,
-    backward_fn: fn(ExTensor, ExTensor) -> ExTensor,
+    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
+    backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
     input: ExTensor,
     epsilon: Float64 = 1e-5,
     tolerance: Float64 = 1e-3,
@@ -193,7 +195,7 @@ fn check_gradients_verbose(
 
     if print_all or not passed:
         print("\n=== Gradient Check Details ===")
-        print("Input shape:", input.shape())
+        print("Input shape:", String(input.numel()), "elements")
         print("Epsilon:", epsilon)
         print("Tolerance:", tolerance)
 
@@ -213,11 +215,13 @@ fn check_gradients_verbose(
 
             input_copy_plus._set_float64(i, original_val + epsilon)
             var output_plus = forward_fn(input_copy_plus)
-            var sum_plus = tensor_sum(output_plus)
+            var sum_plus_tensor = tensor_sum(output_plus)
+            var sum_plus = sum_plus_tensor._get_float64(0)
 
             input_copy_minus._set_float64(i, original_val - epsilon)
             var output_minus = forward_fn(input_copy_minus)
-            var sum_minus = tensor_sum(output_minus)
+            var sum_minus_tensor = tensor_sum(output_minus)
+            var sum_minus = sum_minus_tensor._get_float64(0)
 
             var numerical = (sum_plus - sum_minus) / (2.0 * epsilon)
             numerical_grad._set_float64(i, numerical)
