@@ -196,7 +196,8 @@ Tests advanced documentation (Tier 3):
 
 Tests core documentation (Tier 2):
 
-- project-structure.md, shared-library.md, paper-implementation.md, testing-strategy.md, mojo-patterns.md, agent-system.md, workflow.md, configuration.md
+- project-structure.md, shared-library.md, paper-implementation.md, testing-strategy.md, mojo-patterns.md
+agent-system.md, workflow.md, configuration.md
 - Content and structure validation
 
 **Key Tests**:
@@ -475,7 +476,8 @@ rm -rf /home/mvillmow/ml-odyssey/docs/extensor/
 # - If implementation detail -> move to dev/
 ```text
 
-**Why**: Tests expect exactly 5 tier directories in the documentation structure. These extra directories break the documentation tier hierarchy.
+**Why**: Tests expect exactly 5 tier directories in the documentation structure. These extra directories break the
+documentation tier hierarchy.
 
 **Impact on Tests**:
 

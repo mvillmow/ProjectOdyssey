@@ -183,7 +183,8 @@ elif param.dtype() == DType.float64:
 | `adam_step` | ✅ Yes | ✅ Yes | ❌ No |
 | `sgd_momentum_update_inplace` | ❌ No | ✅ Yes | ✅ Yes |
 
-**Observation:** Our implementation is the only one without SIMD optimization, but that's because it's the only in-place function. However, SIMD can still be applied to in-place operations.
+**Observation:** Our implementation is the only one without SIMD optimization
+but that's because it's the only in-place function. However, SIMD can still be applied to in-place operations.
 
 ---
 
@@ -195,4 +196,5 @@ The current implementation is **correct and functional**, but could benefit from
 2. **Test relocation** - Simple organizational improvement
 3. **Minor safety checks** - Better error messages
 
-The implementation successfully adds float64 support and is ready for use, but consider the SIMD optimization for production workloads.
+The implementation successfully adds float64 support and is ready for use
+but consider the SIMD optimization for production workloads.

@@ -176,7 +176,8 @@ All 4 example files need FIXME markers and corrections:
 
 2. **For each example, choose approach**:
    - **Option A (Recommended)**: Keep examples simple and match actual functional API
-   - **Option B**: Build high-level OOP abstractions first (Layer, Sequential, Trainer classes), then examples reference those
+   - **Option B**: Build high-level OOP abstractions first (Layer, Sequential, Trainer classes)
+then examples reference those
    - **Option C**: Combine - low-level functional examples + high-level OOP examples
 
 3. **MLP example** (most complete):

@@ -1,16 +1,19 @@
 # ResNet-18 on CIFAR-10 Example
 
-A complete implementation of ResNet-18 (Residual Network) for CIFAR-10 image classification, demonstrating the power of skip connections and deep networks.
+A complete implementation of ResNet-18 (Residual Network) for CIFAR-10 image classification
+demonstrating the power of skip connections and deep networks.
 
 ## Overview
 
-This example shows how to build, train, and run inference with the ResNet-18 architecture using ML Odyssey's shared library.
+This example shows how to build, train
+and run inference with the ResNet-18 architecture using ML Odyssey's shared library.
 
 **Architecture**: ResNet-18 (He et al., 2015) - Deep Residual Learning
 
 **Dataset**: CIFAR-10 (10 classes of RGB images: airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck)
 
-**Status**: ⚠️ **Forward pass complete** - Training requires `batch_norm2d_backward` (see [GAP_ANALYSIS.md](GAP_ANALYSIS.md))
+**Status**: ⚠️ **Forward pass complete**
+Training requires `batch_norm2d_backward` (see [GAP_ANALYSIS.md](GAP_ANALYSIS.md))
 
 ## Quick Start
 
@@ -39,7 +42,8 @@ mojo run examples/resnet18-cifar10/inference.mojo --weights-dir resnet18_weights
 
 ## Key Innovation: Residual Learning
 
-ResNet introduced **skip connections** (residual learning) to enable training very deep networks without vanishing gradients.
+ResNet introduced **skip connections** (residual learning) to enable training very deep networks without vanishing
+gradients.
 
 ### The Residual Block
 
@@ -228,7 +232,9 @@ examples/resnet18-cifar10/
   - See [GAP_ANALYSIS.md](GAP_ANALYSIS.md) for implementation details
   - Estimated: 4-6 hours of development time
 
-**Current Limitation**: The forward pass is complete and functional, but training is blocked by the missing batch normalization backward pass. Once `batch_norm2d_backward` is implemented in `shared/core/normalization.mojo`, the training script can be completed.
+**Current Limitation**: The forward pass is complete and functional, but training is blocked by the missing batch
+normalization backward pass. Once `batch_norm2d_backward` is implemented in `shared/core/normalization.mojo`, the
+training script can be completed.
 
 ## Expected Performance
 

@@ -1,6 +1,7 @@
 # ResNet-18 Implementation Gap Analysis
 
-This document identifies the gaps between the current ML Odyssey shared library and the requirements for a fully functional ResNet-18 implementation.
+This document identifies the gaps between the current ML Odyssey shared library and the requirements for a fully
+functional ResNet-18 implementation.
 
 ## Status
 
@@ -219,15 +220,19 @@ Once `batch_norm2d_backward` is available:
 
 ### Batch Normalization
 
-- **Original Paper**: Ioffe, S., & Szegedy, C. (2015). Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift. *ICML 2015*. [arXiv:1502.03167](https://arxiv.org/abs/1502.03167)
+- **Original Paper**: Ioffe, S., & Szegedy, C. (2015). Batch Normalization: Accelerating Deep Network Training by
+Reducing Internal Covariate Shift. *ICML 2015*. [arXiv:1502.03167](https://arxiv.org/abs/1502.03167)
 
-- **PyTorch Implementation**: [Normalization.cpp](https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/Normalization.cpp)
+- **PyTorch Implementation**:
+[Normalization.cpp](https://github.com/pytorch/pytorch/blob/main/aten/src/ATen/native/Normalization.cpp)
 
-- **Gradient Derivation**: [Understanding the Backward Pass through Batch Normalization Layer](https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html)
+- **Gradient Derivation**: [Understanding the Backward Pass through Batch Normalization
+Layer](https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html)
 
 ### ResNet Architecture
 
-- **Original Paper**: He, K., Zhang, X., Ren, S., & Sun, J. (2015). Deep Residual Learning for Image Recognition. *CVPR 2016*. [arXiv:1512.03385](https://arxiv.org/abs/1512.03385)
+- **Original Paper**: He, K., Zhang, X., Ren, S., & Sun, J. (2015). Deep Residual Learning for Image Recognition. *CVPR
+2016*. [arXiv:1512.03385](https://arxiv.org/abs/1512.03385)
 
 ## Next Steps
 
@@ -243,4 +248,5 @@ ResNet-18 implementation is **98% complete**. Only one critical component is mis
 
 - ❌ `batch_norm2d_backward` (blocks all training)
 
-Once this function is implemented, ResNet-18 will be fully functional and can be trained on CIFAR-10 to achieve ~94% accuracy (expected based on literature).
+Once this function is implemented, ResNet-18 will be fully functional and can be trained on CIFAR-10 to achieve ~94%
+accuracy (expected based on literature).

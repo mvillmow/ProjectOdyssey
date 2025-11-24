@@ -6,7 +6,8 @@
 
 ## Executive Summary
 
-All six CIFAR-10 model implementations fail compilation with consistent, systematic errors. The failures are NOT due to model logic issues but rather stem from:
+All six CIFAR-10 model implementations fail compilation with consistent
+systematic errors. The failures are NOT due to model logic issues but rather stem from:
 
 1. **Tuple return type syntax errors** - Invalid tuple initialization patterns
 2. **Missing module imports** - `DynamicVector` not available in Mojo collections.vector
@@ -232,7 +233,8 @@ All six CIFAR-10 model implementations fail compilation with consistent, systema
 - `fn save_weights(borrowed self, ...)`
 - `fn load_weights(inout self, ...)`
 
-**Root Cause:** Mojo syntax changed for self parameter - `self` should not use `inout`/`borrowed` keywords in method definitions
+**Root Cause:** Mojo syntax changed for self parameter
+`self` should not use `inout`/`borrowed` keywords in method definitions
 
 **Fix Required:** Remove inout/borrowed from self parameter:
 
@@ -470,7 +472,9 @@ Once Priority 1 fixes are applied:
 - Architecture-specific: 1-2 hours per architecture (cascading fixes from core)
 - Testing & validation: 1-2 hours
 
-**Root Cause:** Codebase was written for Mojo language version not yet implemented or has language version drift. The patterns used are syntactically valid Python-like syntax but not valid current Mojo syntax. This suggests code may have been generated or written before Mojo solidified its self parameter handling and tuple return type patterns.
+**Root Cause:** Codebase was written for Mojo language version not yet implemented or has language version drift. The
+patterns used are syntactically valid Python-like syntax but not valid current Mojo syntax. This suggests code may have
+been generated or written before Mojo solidified its self parameter handling and tuple return type patterns.
 
 ## Appendix: Error Location Map
 

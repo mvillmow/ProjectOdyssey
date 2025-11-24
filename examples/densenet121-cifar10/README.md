@@ -1,10 +1,12 @@
 # DenseNet-121 on CIFAR-10 Example
 
-A complete implementation of DenseNet-121 for CIFAR-10 image classification, demonstrating dense connectivity and efficient feature reuse.
+A complete implementation of DenseNet-121 for CIFAR-10 image classification
+demonstrating dense connectivity and efficient feature reuse.
 
 ## Overview
 
-This example shows how to build, train, and run inference with the DenseNet-121 architecture using ML Odyssey's shared library.
+This example shows how to build, train
+and run inference with the DenseNet-121 architecture using ML Odyssey's shared library.
 
 **Architecture**: DenseNet-121 (Huang et al., 2016) - Densely Connected Convolutional Networks
 
@@ -36,7 +38,8 @@ mojo run examples/densenet121-cifar10/inference.mojo --weights-dir densenet121_w
 
 ## Key Innovation: Dense Connectivity
 
-DenseNet introduced **dense connectivity** - a pattern where each layer receives feature maps from ALL previous layers and passes its own to ALL subsequent layers.
+DenseNet introduced **dense connectivity**
+a pattern where each layer receives feature maps from ALL previous layers and passes its own to ALL subsequent layers.
 
 ### Dense Connectivity Pattern
 

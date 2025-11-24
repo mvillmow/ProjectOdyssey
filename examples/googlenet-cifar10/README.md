@@ -1,10 +1,12 @@
 # GoogLeNet (Inception-v1) on CIFAR-10 Example
 
-A complete implementation of GoogLeNet/Inception-v1 for CIFAR-10 image classification, demonstrating the power of multi-scale feature extraction and efficient architecture design.
+A complete implementation of GoogLeNet/Inception-v1 for CIFAR-10 image classification
+demonstrating the power of multi-scale feature extraction and efficient architecture design.
 
 ## Overview
 
-This example shows how to build, train, and run inference with the GoogLeNet (Inception-v1) architecture using ML Odyssey's shared library.
+This example shows how to build, train
+and run inference with the GoogLeNet (Inception-v1) architecture using ML Odyssey's shared library.
 
 **Architecture**: GoogLeNet/Inception-v1 (Szegedy et al., 2014) - Going Deeper with Convolutions
 
@@ -36,11 +38,13 @@ mojo run examples/googlenet-cifar10/inference.mojo --weights-dir googlenet_weigh
 
 ## Key Innovation: Inception Module
 
-GoogLeNet introduced **Inception modules** - a revolutionary approach to multi-scale feature extraction that processes input at different scales simultaneously.
+GoogLeNet introduced **Inception modules**
+a revolutionary approach to multi-scale feature extraction that processes input at different scales simultaneously.
 
 ### The Inception Module
 
-Traditional CNNs use a single kernel size per layer. Inception modules process the input with multiple kernel sizes in parallel:
+Traditional CNNs use a single kernel size per layer. Inception modules process the input with multiple kernel sizes in
+parallel:
 
 ```text
                     Input
@@ -434,7 +438,8 @@ mojo run examples/googlenet-cifar10/inference.mojo \
 ### Related Resources
 
 - **Papers with Code - GoogLeNet**: <https://paperswithcode.com/method/googlenet>
-- **Inception Explained**: <https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202>
+- **Inception Explained**:
+<https://towardsdatascience.com/a-simple-guide-to-the-versions-of-the-inception-network-7fc52b863202>
 - **1×1 Convolutions**: <https://d2l.ai/chapter_convolutional-modern/nin.html>
 
 ## Contributing

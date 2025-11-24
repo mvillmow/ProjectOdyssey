@@ -307,7 +307,8 @@ All 97 tests pass. The implementation is complete and correct.
 
 ## Conclusion
 
-The test suite for the tooling components is **comprehensive, well-structured, and fully passing**. All implementations meet the test requirements:
+The test suite for the tooling components is **comprehensive, well-structured
+and fully passing**. All implementations meet the test requirements:
 
 - Paper filtering: Fully functional
 - User prompts: Fully functional

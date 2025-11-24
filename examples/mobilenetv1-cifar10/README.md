@@ -1,10 +1,12 @@
 # MobileNetV1 on CIFAR-10 Example
 
-A complete implementation of MobileNetV1 for CIFAR-10 image classification, demonstrating efficient neural network design for mobile and embedded devices.
+A complete implementation of MobileNetV1 for CIFAR-10 image classification
+demonstrating efficient neural network design for mobile and embedded devices.
 
 ## Overview
 
-This example shows how to build, train, and run inference with the MobileNetV1 architecture using ML Odyssey's shared library.
+This example shows how to build, train
+and run inference with the MobileNetV1 architecture using ML Odyssey's shared library.
 
 **Architecture**: MobileNetV1 (Howard et al., 2017) - Efficient Convolutional Neural Networks
 
@@ -36,7 +38,8 @@ mojo run examples/mobilenetv1-cifar10/inference.mojo --weights-dir mobilenetv1_w
 
 ## Key Innovation: Depthwise Separable Convolutions
 
-MobileNetV1 introduced **depthwise separable convolutions** - a revolutionary factorization that reduces computation by 8-9× compared to standard convolutions.
+MobileNetV1 introduced **depthwise separable convolutions**
+a revolutionary factorization that reduces computation by 8-9× compared to standard convolutions.
 
 ### Standard Convolution
 
@@ -440,7 +443,8 @@ mojo run examples/mobilenetv1-cifar10/inference.mojo \
 
 - **Papers with Code - MobileNets**: <https://paperswithcode.com/method/mobilenetv1>
 - **MobileNetV1 Explained**: <https://towardsdatascience.com/the-tiny-giant-mobilenetv1/>
-- **Depthwise Separable Convolutions**: <https://eli.thegreenplace.net/2018/depthwise-separable-convolutions-for-machine-learning/>
+- **Depthwise Separable Convolutions**:
+<https://eli.thegreenplace.net/2018/depthwise-separable-convolutions-for-machine-learning/>
 
 ## Contributing
 
