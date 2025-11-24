@@ -198,6 +198,93 @@ var scalar_b = tensor_b.item()
 var ratio = scalar_a / scalar_b
 ```
 
+### Pattern: Ownership Transfer with var Parameters
+
+**Problem**: Non-copyable types (List, Dict) need ownership transfer in constructors and methods.
+
+**Wrong**:
+
+```mojo
+fn __init__(out self, value: List[String]):
+    self.list_val = value  # Error: cannot copy List
+```
+
+**Correct**:
+
+```mojo
+fn __init__(out self, var value: List[String]):
+    self.list_val = value^  # Transfer ownership with ^
+```
+
+**When to Use**:
+- Parameters of type List, Dict, or other non-copyable types
+- Methods that take ownership of data structures
+- Constructors that initialize non-copyable fields
+
+### Pattern: Explicit Copy Constructors
+
+**Problem**: Structs with `ImplicitlyCopyable` trait containing non-copyable fields need explicit `__copyinit__`.
+
+**Wrong**:
+
+```mojo
+struct Config(Copyable, Movable, ImplicitlyCopyable):
+    var data: Dict[String, Value]  # Non-copyable type
+
+    fn __init__(out self):
+        self.data = Dict[String, Value]()
+    # Missing __copyinit__ - will fail at copy sites
+```
+
+**Correct**:
+
+```mojo
+struct Config(Copyable, Movable, ImplicitlyCopyable):
+    var data: Dict[String, Value]
+
+    fn __init__(out self):
+        self.data = Dict[String, Value]()
+
+    fn __copyinit__(out self, existing: Self):
+        """Explicit copy constructor."""
+        self.data = existing.data.copy()
+```
+
+**When to Use**:
+- Structs with `ImplicitlyCopyable` trait
+- Structs containing List, Dict, or other non-copyable types
+- Any struct that needs custom copy semantics
+
+### Pattern: StringSlice to String Conversion
+
+**Problem**: String methods like `split()` and `strip()` return `StringSlice` in Mojo v0.25.7+.
+
+**Wrong**:
+
+```mojo
+var parts = line.split(":")
+var key = parts[0].strip()  # Returns StringSlice, not String
+self.data[key] = value  # Error: Dict expects String key
+```
+
+**Correct**:
+
+```mojo
+var parts = line.split(":")
+var key = String(parts[0].strip())  # Convert to String
+self.data[key] = value  # Now works
+```
+
+**Common Operations Returning StringSlice**:
+- `split()` - Returns list of StringSlice
+- `strip()`, `lstrip()`, `rstrip()` - Returns StringSlice
+- String slicing - `string[0:5]` returns StringSlice
+
+**When to Use**:
+- When using string manipulation results as Dict keys
+- When passing to functions expecting String
+- When storing in String fields
+
 ## Assertion Import Pattern
 
 ### Pattern: Complete Assertion Set
@@ -273,6 +360,9 @@ When fixing test files, check these items:
 - [ ] Functions passed as arguments have `escaping` if needed
 - [ ] Struct return values use field access (not tuple unpacking)
 - [ ] All required assertion functions imported
+- [ ] StringSlice converted to String when needed (`String(...)`)
+- [ ] Non-copyable parameters use `var` with ownership transfer (`^`)
+- [ ] Structs with non-copyable fields have `__copyinit__`
 - [ ] Markdown code blocks have language tags
 - [ ] Markdown lines don't exceed 120 characters
 
@@ -287,6 +377,9 @@ When fixing test files, check these items:
 5. **Import paths** (5 instances) - Fix absolute imports
 6. **Assertion imports** (5 instances) - Add missing assertions
 7. **Function signatures** (10+ instances) - Add `raises` keyword
+8. **StringSlice conversion** (5+ instances) - `String(parts[0].strip())`
+9. **Ownership transfer** (3+ instances) - `var` parameters + `value^`
+10. **Copy constructors** (2+ instances) - Add `__copyinit__` for non-copyable fields
 
 ## References
 

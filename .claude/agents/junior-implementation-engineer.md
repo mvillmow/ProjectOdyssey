@@ -59,12 +59,18 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 - Use `def` for prototyping or Python interop
 - Default to `fn` unless flexibility is needed
 
-### Memory Management
+### Memory Management (Mojo v0.25.7+)
 
-- Use `owned` for ownership transfer
-- Use `borrowed` for read-only access
-- Use `inout` for mutable references
+- Use `var` for owned values (ownership transfer)
+- Use `read` (default) for immutable references
+- Use `mut` for mutable references (replaces `inout`)
 - Prefer value semantics (struct) over reference semantics (class)
+
+**Key Patterns for Simple Tasks**:
+
+- **Ownership transfer**: Use `var` + `^` for List/Dict parameters
+- **String conversion**: Use `String(...)` for split/strip results
+- **Copy structs**: Add `__copyinit__` if struct has List/Dict fields
 
 ### Performance
 
@@ -72,7 +78,8 @@ See [CLAUDE.md](../../CLAUDE.md#documentation-rules) for complete documentation 
 - Use `@parameter` for compile-time constants
 - Avoid unnecessary copies with move semantics (`^`)
 
-See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines and
+[mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) for additional patterns.
 
 ### Mojo Language Patterns
 

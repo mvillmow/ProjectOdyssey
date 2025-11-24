@@ -105,12 +105,36 @@ See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selec
 - Use `def` for prototyping or Python interop
 - Default to `fn` unless flexibility is needed
 
-### Memory Management
+### Memory Management (Mojo v0.25.7+)
 
-- Use `owned` for ownership transfer
-- Use `borrowed` for read-only access
-- Use `inout` for mutable references
+- Use `var` for owned values (ownership transfer)
+- Use `read` (default) for immutable references
+- Use `mut` for mutable references (replaces `inout`)
+- Use `ref` for parametric references (advanced)
 - Prefer value semantics (struct) over reference semantics (class)
+
+**Ownership Transfer**: Use `var` parameters with `^` operator for non-copyable types:
+
+```mojo
+fn __init__(out self, var data: List[String]):
+    self.data = data^  # Transfer ownership
+```
+
+**Copy Constructors**: Structs with `ImplicitlyCopyable` + non-copyable fields need `__copyinit__`:
+
+```mojo
+struct Config(Copyable, Movable, ImplicitlyCopyable):
+    var data: Dict[String, Value]
+
+    fn __copyinit__(out self, existing: Self):
+        self.data = existing.data.copy()
+```
+
+**StringSlice Conversion**: Convert `split()` and `strip()` results to String:
+
+```mojo
+var key = String(parts[0].strip())  # StringSlice → String
+```
 
 ### Performance
 
@@ -118,7 +142,8 @@ See [CLAUDE.md](../../CLAUDE.md#language-preference) for complete language selec
 - Use `@parameter` for compile-time constants
 - Avoid unnecessary copies with move semantics (`^`)
 
-See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines.
+See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) for comprehensive guidelines and
+[mojo-test-patterns.md](../../agents/guides/mojo-test-patterns.md) for additional patterns.
 
 ### Mojo Language Patterns
 
