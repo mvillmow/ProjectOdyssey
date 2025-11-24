@@ -169,6 +169,10 @@ Relevant links:
 
 See `/agents/README.md` for complete agent documentation and `/agents/hierarchy.md` for visual hierarchy.
 
+## Delegation to Agent Hub
+
+.claude/ is the centralized location for agentic descriptions and SKILLs. Sub-agents reference `.claude/agents/*.md` and `.claude/skills/*.md` for roles, capabilities, and prod fix learnings.
+
 ### Mojo Syntax Standards (v0.25.7+)
 
 **CRITICAL**: Always use current Mojo syntax. The following patterns are DEPRECATED or INCORRECT:

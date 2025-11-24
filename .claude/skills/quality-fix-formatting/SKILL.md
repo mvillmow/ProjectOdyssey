@@ -319,6 +319,19 @@ If CI fails, fix locally and push.
 1. **Commit separately** - Formatting changes in separate commit
 1. **Don't bypass** - Don't use `--no-verify` to skip formatting
 
+## Prod Fix Learnings (ML Odyssey)
+
+**List Constructor Anti-Pattern** (8 bugs fixed):
+
+- **Never**: `List[Int](n)` then `list[i] = val` (undefined size → crash).
+- **Always**: `List[Int]()` + `.append(val)`.
+
+Affected: shape.mojo (reshape/squeeze/unsqueeze/concat 4x), accuracy/confusion/DataLoader.
+
+Add lint rule in pre-commit.
+
+See [docs/learnings.md](../docs/learnings.md#list-constructor-bugs-8-instances).
+
 ## Auto-Fix Summary
 
 | Tool | Auto-Fix | Manual Needed |

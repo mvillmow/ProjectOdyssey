@@ -94,4 +94,15 @@ let c = a + Float32(b)
 - [ ] No implicit type conversions
 - [ ] Compile-time validation where possible
 
+## Prod Fix Learnings (ML Odyssey)
+
+From List constructor & transpose bugs:
+
+- **List[Int](n)**: Creates undefined size (not n elems); index crashes (shape.mojo, accuracy, DataLoader 8x).
+- **Fix**: ALWAYS `List[Int]()` empty + `.append()`; build/reverse safely.
+
+- **Transpose Indexing**: Precompute strides; left-to-right coord extract.
+
+See [docs/learnings.md](../docs/learnings.md#list-constructor-bugs-8-instances), [#transpose-memory-corruption](../docs/learnings.md#transpose-memory-corruption).
+
 See Mojo type system documentation.

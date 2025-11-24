@@ -141,3 +141,7 @@ git commit --no-verify
 - [scripts/README.md](scripts/README.md) - Scripts documentation
 - [agents/README.md](agents/README.md) - Agent system documentation
 - [notes/review/](notes/review/) - Architectural decisions and comprehensive specs
+
+## Agent Hub
+
+.claude/ is the centralized location for agentic descriptions and SKILLs. Sub-agents reference `.claude/agents/*.md` and `.claude/skills/*.md` for roles, capabilities, and prod fix learnings.

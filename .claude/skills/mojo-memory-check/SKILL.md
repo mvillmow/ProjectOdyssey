@@ -98,4 +98,14 @@ fn no_alias(inout a: Tensor, borrowed b: Tensor):
 - [ ] Proper lifetime management
 - [ ] Ownership clear and documented
 
+## Prod Fix Learnings (ML Odyssey)
+
+From memory leaks in ExTensor views:
+
+- **Refcounting**: Add `var _refcount: UnsafePointer[Int]`; `__copyinit__` increments, `__del__` decrements/free if 0.
+- **Dummy Alloc Leaks**: In reshape/slice: `result._data.free()` before `result._data = self._data`; set `_is_view = True`.
+- **Views**: Copy-based for safe shape/strides update, no orphan allocs.
+
+See [docs/learnings.md](../docs/learnings.md#memory-leaks-reshapeslice) for details.
+
 See Mojo ownership documentation for details.
