@@ -272,7 +272,7 @@ struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composab
     var first: F
     var second: S
 
-    fn __init__(mut self, var first: F, var second: S):
+    fn __init__(out self, var first: F, var second: S):
         """Create composed operation.
 
         Args:.            `first`: First operation.

@@ -173,7 +173,7 @@ struct WarmupLR(LRScheduler, Copyable, Movable):
     var base_lr: Float64
     var warmup_epochs: Int
 
-    fn __init__(mut self, base_lr: Float64, warmup_epochs: Int):
+    fn __init__(out self, base_lr: Float64, warmup_epochs: Int):
         """Initialize Warmup scheduler.
 
         Args:.            `base_lr`: Target learning rate after warmup.

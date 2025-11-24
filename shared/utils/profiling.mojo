@@ -28,7 +28,7 @@ struct TimingRecord(Copyable, Movable):
     var elapsed_ms: Float32
     var call_count: Int
 
-    fn __init__(mut self, name: String, elapsed_ms: Float32):
+    fn __init__(out self, name: String, elapsed_ms: Float32):
         """Create timing record."""
         self.name = name
         self.elapsed_ms = elapsed_ms
@@ -148,7 +148,7 @@ struct Timer(Copyable, Movable):
     var start_ns: Int
     var end_ns: Int
 
-    fn __init__(mut self, name: String = ""):
+    fn __init__(out self, name: String = ""):
         """Create timer with optional name.
 
         Args:.            `name`: Timer name for display.
@@ -287,7 +287,7 @@ struct CallStackEntry(Copyable, Movable):
     var elapsed_ms: Float32
     var memory_delta_bytes: Int
 
-    fn __init__(mut self, name: String):
+    fn __init__(out self, name: String):
         """Create call stack entry."""
         self.function_name = name
         self.elapsed_ms = 0.0

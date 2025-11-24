@@ -226,7 +226,7 @@ struct DataBatch(Copyable, Movable):
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
 
-    fn __init__(mut self, var data: ExTensor, var labels: ExTensor):
+    fn __init__(out self, var data: ExTensor, var labels: ExTensor):
         """Initialize data batch.
 
         Args:.            `data`: Input features tensor (ownership transferred).
@@ -251,7 +251,7 @@ struct DataLoader(Copyable, Movable):
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(mut self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
+    fn __init__(out self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
         """Initialize data loader.
 
         Args:.            `data`: Full dataset features (ownership transferred).

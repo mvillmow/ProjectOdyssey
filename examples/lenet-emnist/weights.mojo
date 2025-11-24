@@ -29,7 +29,7 @@ struct LoadedTensor:
     var name: String
     var tensor: ExTensor
 
-    fn __init__(mut self, name: String, var tensor: ExTensor):
+    fn __init__(out self, name: String, var tensor: ExTensor):
         self.name = name
         self.tensor = tensor^
 

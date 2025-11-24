@@ -127,7 +127,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
     var last_input: ExTensor
     var last_output: ExTensor
 
-    fn __init__(mut self, in_features: Int, out_features: Int) raises:
+    fn __init__(out self, in_features: Int, out_features: Int) raises:
         """Initialize fully connected layer.
 
         Args:
@@ -278,7 +278,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     var momentum: Float64
     var epsilon: Float64
 
-    fn __init__(mut self, num_features: Int) raises:
+    fn __init__(out self, num_features: Int) raises:
         """Initialize batch normalization layer.
 
         Args:

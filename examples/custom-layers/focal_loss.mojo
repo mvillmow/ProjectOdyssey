@@ -22,7 +22,7 @@ struct FocalLoss:
     var alpha: Float64  # Weighting factor
     var gamma: Float64  # Focusing parameter
 
-    fn __init__(mut self, alpha: Float64 = 0.25, gamma: Float64 = 2.0):
+    fn __init__(out self, alpha: Float64 = 0.25, gamma: Float64 = 2.0):
         self.alpha = alpha
         self.gamma = gamma
 

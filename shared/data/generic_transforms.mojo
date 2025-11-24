@@ -81,7 +81,7 @@ struct LambdaTransform(Transform, Copyable, Movable):
 
     var func: fn (Float32) -> Float32
 
-    fn __init__(mut self, func: fn (Float32) -> Float32):
+    fn __init__(out self, func: fn (Float32) -> Float32):
         """Create lambda transform.
 
         Args:.            `func`: Function to apply element-wise.
@@ -176,7 +176,7 @@ struct ClampTransform(Transform, Copyable, Movable):
     var min_val: Float32
     var max_val: Float32
 
-    fn __init__(mut self, min_val: Float32, max_val: Float32):
+    fn __init__(out self, min_val: Float32, max_val: Float32):
         """Create clamp transform.
 
         Args:.            `min_val`: Minimum allowed value.
@@ -234,7 +234,7 @@ struct DebugTransform(Transform, Copyable, Movable):
 
     var name: String
 
-    fn __init__(mut self, name: String):
+    fn __init__(out self, name: String):
         """Create debug transform.
 
         Args:.            `name`: Name to display in debug output.
@@ -298,7 +298,7 @@ struct SequentialTransform[T: Transform & Copyable & Movable](Transform, Copyabl
 
     var transforms: List[T]
 
-    fn __init__(mut self, var transforms: List[T]):
+    fn __init__(out self, var transforms: List[T]):
         """Create sequential composition.
 
         Args:.            `transforms`: List of transforms to apply in order.
@@ -344,7 +344,7 @@ struct BatchTransform[T: Transform & Copyable & Movable](Copyable, Movable):
 
     var transform: T
 
-    fn __init__(mut self, var transform: T):
+    fn __init__(out self, var transform: T):
         """Create batch transform.
 
         Args:.            `transform`: Transform to apply to each tensor in batch.

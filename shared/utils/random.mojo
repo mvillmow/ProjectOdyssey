@@ -219,7 +219,7 @@ struct SeedContext(Copyable, Movable):
     var saved_seed: Int
     var new_seed: Int
 
-    fn __init__(mut self, seed: Int):
+    fn __init__(out self, seed: Int):
         """Create context manager with new seed.
 
         Args:.            `seed`: Seed to use within context.

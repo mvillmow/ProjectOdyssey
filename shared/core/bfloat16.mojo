@@ -50,7 +50,7 @@ struct BFloat16:
         """Initialize BFloat16 to zero."""
         self.bits = 0
 
-    fn __init__(mut self, bits: UInt16):
+    fn __init__(out self, bits: UInt16):
         """Initialize BFloat16 from raw bits.
 
         Args:

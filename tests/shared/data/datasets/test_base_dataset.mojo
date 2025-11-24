@@ -22,7 +22,7 @@ struct StubDataset:
     var size: Int
     var data: List[Float32]
 
-    fn __init__(mut self, size: Int):
+    fn __init__(out self, size: Int):
         """Create stub dataset with specified size.
 
         Args:

@@ -36,7 +36,7 @@ struct TrainConfig:
     var data_dir: String
     var weights_dir: String
 
-    fn __init__(mut self, epochs: Int, batch_size: Int, learning_rate: Float32, data_dir: String, weights_dir: String):
+    fn __init__(out self, epochs: Int, batch_size: Int, learning_rate: Float32, data_dir: String, weights_dir: String):
         self.epochs = epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate

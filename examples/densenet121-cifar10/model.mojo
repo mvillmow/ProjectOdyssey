@@ -115,7 +115,7 @@ struct DenseLayer:
     var conv2_weights: ExTensor
     var conv2_bias: ExTensor
 
-    fn __init__(mut self, in_channels: Int, growth_rate: Int) raises:
+    fn __init__(out self, in_channels: Int, growth_rate: Int) raises:
         """Initialize dense layer.
 
         Args:
@@ -196,7 +196,7 @@ struct DenseBlock:
     var growth_rate: Int
     var layers: List[DenseLayer]
 
-    fn __init__(mut self, num_layers: Int, in_channels: Int, growth_rate: Int) raises:
+    fn __init__(out self, num_layers: Int, in_channels: Int, growth_rate: Int) raises:
         """Initialize dense block.
 
         Args:
@@ -258,7 +258,7 @@ struct TransitionLayer:
     var conv_weights: ExTensor
     var conv_bias: ExTensor
 
-    fn __init__(mut self, in_channels: Int, out_channels: Int) raises:
+    fn __init__(out self, in_channels: Int, out_channels: Int) raises:
         """Initialize transition layer.
 
         Args:
@@ -337,7 +337,7 @@ struct DenseNet121:
     var fc_weights: ExTensor
     var fc_bias: ExTensor
 
-    fn __init__(mut self, num_classes: Int = 10, growth_rate: Int = 32) raises:
+    fn __init__(out self, num_classes: Int = 10, growth_rate: Int = 32) raises:
         """Initialize DenseNet-121 model.
 
         Args:

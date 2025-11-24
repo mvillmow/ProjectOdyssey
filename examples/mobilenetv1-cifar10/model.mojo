@@ -285,7 +285,7 @@ struct MobileNetV1:
     var fc_weights: ExTensor
     var fc_bias: ExTensor
 
-    fn __init__(mut self, num_classes: Int = 10) raises:
+    fn __init__(out self, num_classes: Int = 10) raises:
         """Initialize MobileNetV1 model.
 
         Args:

@@ -363,7 +363,7 @@ struct LoggingCallback(Callback, Copyable, Movable):
     var log_interval: Int
     var log_count: Int
 
-    fn __init__(mut self, log_interval: Int = 1):
+    fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
 
         Args:.            `log_interval`: Log every N epochs.

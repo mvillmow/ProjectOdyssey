@@ -100,7 +100,7 @@ struct MockStepLR(LRScheduler):
     var step_size: Int
     var gamma: Float64
 
-    fn __init__(mut self, base_lr: Float64, step_size: Int, gamma: Float64):
+    fn __init__(out self, base_lr: Float64, step_size: Int, gamma: Float64):
         """Initialize StepLR scheduler.
 
         Args:
@@ -184,7 +184,7 @@ struct MockWarmupScheduler(LRScheduler):
     var base_lr: Float64
     var warmup_epochs: Int
 
-    fn __init__(mut self, base_lr: Float64, warmup_epochs: Int):
+    fn __init__(out self, base_lr: Float64, warmup_epochs: Int):
         """Initialize Warmup scheduler.
 
         Args:
@@ -318,7 +318,7 @@ struct MockCheckpoint(Callback):
     var save_path: String
     var save_count: Int
 
-    fn __init__(mut self, save_path: String = "checkpoint.pt"):
+    fn __init__(out self, save_path: String = "checkpoint.pt"):
         """Initialize checkpoint callback.
 
         Args:.            `save_path`: Path template for saving checkpoints.
@@ -366,7 +366,7 @@ struct MockLoggingCallback(Callback):
     var log_interval: Int
     var log_count: Int
 
-    fn __init__(mut self, log_interval: Int = 1):
+    fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
 
         Args:.            `log_interval`: Log every N epochs.

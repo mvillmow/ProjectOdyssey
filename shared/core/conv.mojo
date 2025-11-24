@@ -21,7 +21,7 @@ struct Conv2dBackwardResult(Movable):
     var grad_kernel: ExTensor
     var grad_bias: ExTensor
 
-    fn __init__(mut self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
         """Initialize the result struct with the three gradients."""
         self.grad_input = grad_input^
         self.grad_kernel = grad_kernel^
@@ -349,7 +349,7 @@ struct Conv2dNoBiasBackwardResult(Movable):
     var grad_input: ExTensor
     var grad_kernel: ExTensor
 
-    fn __init__(mut self, var grad_input: ExTensor, var grad_kernel: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
         """Initialize the result struct with the two gradients."""
         self.grad_input = grad_input^
         self.grad_kernel = grad_kernel^

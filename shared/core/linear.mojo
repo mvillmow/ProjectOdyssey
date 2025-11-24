@@ -19,7 +19,7 @@ struct LinearBackwardResult(Movable):
     var grad_weights: ExTensor
     var grad_bias: ExTensor
 
-    fn __init__(mut self, var grad_input: ExTensor, var grad_weights: ExTensor, var grad_bias: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor, var grad_bias: ExTensor):
         """Initialize the result struct with the three gradients."""
         self.grad_input = grad_input^
         self.grad_weights = grad_weights^
@@ -40,7 +40,7 @@ struct LinearNoBiasBackwardResult(Movable):
     var grad_input: ExTensor
     var grad_weights: ExTensor
 
-    fn __init__(mut self, var grad_input: ExTensor, var grad_weights: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor):
         """Initialize the result struct with the two gradients."""
         self.grad_input = grad_input^
         self.grad_weights = grad_weights^

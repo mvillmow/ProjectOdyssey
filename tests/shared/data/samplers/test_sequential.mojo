@@ -21,7 +21,7 @@ struct StubSequentialSampler:
 
     var size: Int
 
-    fn __init__(mut self, size: Int):
+    fn __init__(out self, size: Int):
         """Create sequential sampler.
 
         Args:

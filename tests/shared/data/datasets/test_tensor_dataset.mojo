@@ -29,7 +29,7 @@ struct StubTensorDataset:
     var labels: List[Int]
     var size: Int
 
-    fn __init__(mut self, data: List[Float32], labels: List[Int]) raises:
+    fn __init__(out self, data: List[Float32], labels: List[Int]) raises:
         """Create tensor dataset from data and labels.
 
         Args:
