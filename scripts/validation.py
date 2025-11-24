@@ -149,9 +149,9 @@ def validate_relative_link(
 
     # Split link and anchor
     if '#' in link:
-        file_part, anchor = link.split('#', 1)
+        file_part, _anchor = link.split('#', 1)
     else:
-        file_part, anchor = link, None
+        file_part, _anchor = link, None
 
     # Skip empty links
     if not file_part:

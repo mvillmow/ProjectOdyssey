@@ -54,7 +54,6 @@ def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
     """
     try:
         content = file_path.read_text(encoding='utf-8')
-        original_content = content
 
         # Fix system path links
         content, system_fixes = fix_system_path_links(content)

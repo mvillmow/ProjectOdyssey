@@ -75,7 +75,6 @@ def process_file(filepath: Path) -> Dict:
     }
 
     content = filepath.read_text()
-    original_content = content
 
     new_content, changed = fix_duplicate_delegation(content)
     result['fixed'] = changed

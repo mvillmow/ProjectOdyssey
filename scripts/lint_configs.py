@@ -386,7 +386,7 @@ class ConfigLinter:
             filepath: Path to file
         """
         # Known unused patterns
-        if "debug" in config and config.get("debug") == True:
+        if "debug" in config and config.get("debug"):
             if "production" in str(filepath).lower():
                 self.warnings.append(
                     f"{filepath} - Debug mode enabled in production config"
