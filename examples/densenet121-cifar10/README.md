@@ -479,6 +479,7 @@ mojo run examples/densenet121-cifar10/inference.mojo \
 ### Related Resources
 
 - **Papers with Code - DenseNet**: <https://paperswithcode.com/method/densenet>
+- **DenseNet Explained**: Understanding and visualizing DenseNets | by Pablo Ruiz | TDS Archive | Medium
 - **Dense Connectivity**: <https://d2l.ai/chapter_convolutional-modern/densenet.html>
 
 ## Contributing

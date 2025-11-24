@@ -272,12 +272,13 @@ Key issues related to Mojo language changes:
    - `@value` replaced with `@fieldwise_init`
    - Need explicit trait conformances
 
-3. **Move Semantics**: <https://docs.modular.com/mojo/manual/values/ownership>
+3. **Move Semantics & Lifetimes**: <https://docs.modular.com/mojo/manual/values/lifetimes>
    - Use `^` operator to transfer ownership
    - List[T] requires T to be Copyable
+   - See also: [Ownership](https://docs.modular.com/mojo/manual/values/ownership)
 
-4. **Collections**: <https://docs.modular.com/mojo/stdlib/>
-   - Check if DynamicVector is in a different location
+4. **Collections**: <https://docs.modular.com/mojo/stdlib/collections/list/List/>
+   - DynamicVector has been replaced with List
 
 ## Next Steps
 
