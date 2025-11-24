@@ -47,7 +47,7 @@ fn create_temp_dir(prefix: String = "ml_odyssey_test_") -> String:
         in test teardown or try/finally block.
     """
     # Generate unique directory name with timestamp
-    var timestamp = int(now())
+    var timestamp = Int(now())
     var dir_name = prefix + String(timestamp)
 
     # Use /tmp on Unix-like systems

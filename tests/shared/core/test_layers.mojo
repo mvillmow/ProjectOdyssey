@@ -315,8 +315,8 @@ fn test_sigmoid_range() raises:
     # All outputs should be in (0, 1)
     for i in range(5):
         var val = output._data.bitcast[Float32]()[i]
-        assert_true(0.0 < val, "Value must be greater than 0")
-        assert_true(val < 1.0, "Value must be less than 1")
+        assert_true(Float32(0.0) < val, "Value must be greater than 0")
+        assert_true(val < Float32(1.0), "Value must be less than 1")
 
     # Check sigmoid(0) = 0.5
     assert_almost_equal(output._data.bitcast[Float32]()[2], 0.5, tolerance=1e-6)
@@ -346,8 +346,8 @@ fn test_tanh_range() raises:
     # All outputs should be in (-1, 1)
     for i in range(5):
         var val = output._data.bitcast[Float32]()[i]
-        assert_true(-1.0 < val, "Value must be greater than -1")
-        assert_true(val < 1.0, "Value must be less than 1")
+        assert_true(Float32(-1.0) < val, "Value must be greater than -1")
+        assert_true(val < Float32(1.0), "Value must be less than 1")
 
     # Check tanh(0) = 0.0
     assert_almost_equal(output._data.bitcast[Float32]()[2], 0.0, tolerance=1e-6)

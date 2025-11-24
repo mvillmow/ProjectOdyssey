@@ -384,9 +384,9 @@ fn test_to_int32_truncates() raises:
 
     var result = converter(data)
 
-    assert_equal(int(result[0]), 1)
-    assert_equal(int(result[1]), 2)
-    assert_equal(int(result[2]), 3)
+    assert_equal(Int(result[0]), 1)
+    assert_equal(Int(result[1]), 2)
+    assert_equal(Int(result[2]), 3)
 
 
 fn test_to_int32_negative() raises:
@@ -396,9 +396,9 @@ fn test_to_int32_negative() raises:
 
     var result = converter(data)
 
-    assert_equal(int(result[0]), -1)
-    assert_equal(int(result[1]), -2)
-    assert_equal(int(result[2]), -3)
+    assert_equal(Int(result[0]), -1)
+    assert_equal(Int(result[1]), -2)
+    assert_equal(Int(result[2]), -3)
 
 
 fn test_to_int32_zero() raises:
@@ -408,9 +408,9 @@ fn test_to_int32_zero() raises:
 
     var result = converter(data)
 
-    assert_equal(int(result[0]), 0)
-    assert_equal(int(result[1]), 0)
-    assert_equal(int(result[2]), 0)
+    assert_equal(Int(result[0]), 0)
+    assert_equal(Int(result[1]), 0)
+    assert_equal(Int(result[2]), 0)
 
 
 # ============================================================================

@@ -140,7 +140,7 @@ fn test_nvfp4_block_roundtrip_mixed_signs() raises:
         var expected = (1.0 if i % 2 == 0 else -1.0) * Float32(i) * 0.1
         var expected_sign = 1.0 if expected >= 0 else -1.0
         var decoded_sign = 1.0 if decoded[i] >= 0 else -1.0
-        assert_equal(int(expected_sign), int(decoded_sign))
+        assert_equal(Int(expected_sign), Int(decoded_sign))
 
 
 # ============================================================================

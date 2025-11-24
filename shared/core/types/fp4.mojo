@@ -60,7 +60,7 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
     """
     var value: UInt8  # Only lower 4 bits are used
 
-    fn __init__(mut self, value: UInt8 = 0):
+    fn __init__(out self, value: UInt8 = 0):
         """Initialize FP4_E2M1 from raw 4-bit value.
 
         Args:.            `value`: Raw 4-bit representation (only lower 4 bits used)

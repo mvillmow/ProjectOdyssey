@@ -1,0 +1,289 @@
+================================================================================
+                         ERROR DETAILS - QUICK REFERENCE
+================================================================================
+
+ERROR PATTERN 1: __init__ METHOD MISSING RETURN TYPE (17 errors - 44%)
+================================================================================
+
+Error Message:  __init__ method must return Self type with 'out' argument
+Severity:       CRITICAL - Blocks all compilation
+Fix Time:       30 minutes
+Files:          7 (5 test files + 2 implementation files)
+
+AFFECTED LOCATIONS:
+  1. tests/shared/data/datasets/test_base_dataset.mojo:25
+  2. tests/shared/data/datasets/test_tensor_dataset.mojo:32
+  3. tests/shared/data/loaders/test_base_loader.mojo:20
+  4. tests/shared/data/transforms/test_pipeline.mojo:25
+  5. tests/shared/data/transforms/test_pipeline.mojo:35
+  6. shared/data/transforms.mojo:621 (RandomRotation.__init__)
+  7. shared/data/transforms.mojo:400 (RandomCrop.__init__)
+  (Plus 10+ more in other implementation files)
+
+PATTERN EXAMPLE:
+  WRONG:   fn __init__(mut self, size: Int):
+               self.size = size
+  
+  CORRECT: fn __init__(mut self, size: Int) -> Self:
+               return Self(size=size)
+
+ROOT CAUSE:   Mojo v0.25.7+ requires explicit -> Self return type annotation
+FIX EFFORT:   LOW - Systematic pattern replacement across all __init__ methods
+
+================================================================================
+
+ERROR PATTERN 2: EXTENSOR OWNERSHIP VIOLATIONS (11 errors - 28%)
+================================================================================
+
+Error Message:  value of type 'ExTensor' cannot be implicitly copied, it does
+                not conform to 'ImplicitlyCopyable'
+Severity:       CRITICAL - Breaks transform functions
+Fix Time:       15 minutes
+Files:          1 (shared/data/transforms.mojo)
+
+AFFECTED LOCATIONS:
+  1. shared/data/transforms.mojo:523  (RandomRotation.__call__)
+  2. shared/data/transforms.mojo:769  (RandomErasing.__call__ - path 1)
+  3. shared/data/transforms.mojo:806  (RandomErasing.__call__ - path 2)
+  4. shared/data/transforms.mojo:814  (RandomErasing.__call__ - path 3)
+  (Plus 7+ cascading issues in variable assignments)
+
+PATTERN EXAMPLE:
+  WRONG:   fn __call__(self, data: ExTensor) raises -> ExTensor:
+               # ... process data ...
+               return data
+  
+  CORRECT: fn __call__(self, data: ExTensor) raises -> ExTensor:
+               # ... process data ...
+               return data^
+
+ROOT CAUSE:   ExTensor doesn't conform to ImplicitlyCopyable trait. Requires
+              explicit ownership transfer with ^ operator.
+FIX EFFORT:   LOW - Add ^ to 4 return statements
+
+================================================================================
+
+ERROR PATTERN 3: MISSING TENSOR IMPORT (1 import issue - 17 usages - 20%)
+================================================================================
+
+Error Message:  use of unknown declaration 'Tensor'
+Severity:       CRITICAL - Breaks augmentation tests
+Fix Time:       10 minutes
+Files:          1 (tests/shared/data/transforms/test_augmentations.mojo)
+
+AFFECTED LOCATIONS:
+  File: tests/shared/data/transforms/test_augmentations.mojo
+  
+  Usage locations (lines): 37, 63, 67, 97, 116, 140, 164, 168, 187, 215, 242,
+                            263, 288, 313, 346, 372
+  
+  Current import (line 19):
+    WRONG:   from shared.core.extensor import ExTensor
+  
+  Fixed import:
+    CORRECT: from shared.core.extensor import ExTensor, Tensor
+
+PATTERN EXAMPLE:
+  WRONG:   from shared.core.extensor import ExTensor
+           # ... later in code ...
+           var data = Tensor(data_list^)  # ERROR: Tensor not imported
+  
+  CORRECT: from shared.core.extensor import ExTensor, Tensor
+           # ... later in code ...
+           var data = Tensor(data_list^)  # OK: Tensor imported
+
+ROOT CAUSE:   Test file uses Tensor type without importing it from
+              shared.core.extensor module.
+FIX EFFORT:   LOW - Single import addition
+
+================================================================================
+
+ERROR PATTERN 4: INVALID OPTIONAL SUBSCRIPTING (1 error - 2%)
+================================================================================
+
+Error Message:  'Int' is not subscriptable, it does not implement the
+                '__getitem__'/'__setitem__' methods
+Severity:       HIGH - Breaks RandomCrop transform
+Fix Time:       5 minutes
+Files:          1 (shared/data/transforms.mojo)
+
+AFFECTED LOCATION:
+  File: shared/data/transforms.mojo
+  Line: 458
+
+PATTERN EXAMPLE:
+  WRONG:   if self.padding:
+               var pad = self.padding.value()[]  # ERROR: Extra []
+               actual_top = top - pad
+  
+  CORRECT: if self.padding:
+               var pad = self.padding.value()  # OK: No subscript needed
+               actual_top = top - pad
+
+ROOT CAUSE:   self.padding is Optional[Int]. Calling value() returns Int.
+              Int is not subscriptable with []. Syntax error in code.
+FIX EFFORT:   LOW - Remove [] subscript operator from value() call
+
+================================================================================
+
+ERROR PATTERN 5: MISSING TRAIT CONFORMANCES (9 cascading errors - 23%)
+================================================================================
+
+Error Message:  value cannot be implicitly copied (cascading errors from
+                various loop and assignment operations)
+Severity:       MEDIUM - Indirect cascading effects
+Fix Time:       20 minutes
+Files:          4 test files
+
+AFFECTED STRUCT DEFINITIONS:
+  1. tests/shared/data/datasets/test_base_dataset.mojo:15
+     Struct: StubDataset
+  
+  2. tests/shared/data/datasets/test_tensor_dataset.mojo
+     Struct: TestTensorDataset
+  
+  3. tests/shared/data/loaders/test_base_loader.mojo
+     Struct: SimpleDataLoader
+  
+  4. tests/shared/data/transforms/test_pipeline.mojo
+     Structs: SimpleTransform, SimpleDataLoader
+
+PATTERN EXAMPLE:
+  WRONG:   struct StubDataset:
+               var size: Int
+               var data: List[Float32]
+  
+  CORRECT: @fieldwise_init
+           struct StubDataset(Copyable, Movable):
+               var size: Int
+               var data: List[Float32]
+
+ROOT CAUSE:   Mojo v0.25.7+ requires structs to declare trait conformance
+              for copy/move semantics. Missing (Copyable, Movable) traits
+              causes implicit copy operations to fail.
+FIX EFFORT:   MEDIUM - Add decorator and traits to 4 struct definitions
+
+================================================================================
+                            FIX PRIORITY MATRIX
+================================================================================
+
+Priority  Pattern                    Count  Severity  Time   Impact
+--------  ----------------------     -----  --------  -----  ---------
+1         __init__ return type       17     CRITICAL  30min  Blocks ALL
+2         ExTensor ownership         11     CRITICAL  15min  Blocks transforms
+3         Tensor import              1      CRITICAL  10min  Blocks augment
+4         Optional syntax            1      HIGH      5min   Breaks crop
+5         Trait conformances         9      MEDIUM    20min  Type safety
+
+TOTAL EFFORT: 80 minutes
+
+================================================================================
+                        FIX SEQUENCE & VERIFICATION
+================================================================================
+
+FIX STEP 1: __init__ Return Types (30 min)
+  Files: 7 files (test_base_dataset, test_tensor_dataset, test_base_loader,
+                  test_pipeline, test_augmentations, transforms.mojo, ...)
+  Action: Add -> Self return type to all fn __init__(...) methods
+  Verify: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Result: Different error messages, but no __init__ errors
+
+FIX STEP 2: ExTensor Ownership (15 min)
+  Files: 1 file (shared/data/transforms.mojo)
+  Action: Add ^ to return data statements at lines 523, 769, 806, 814
+  Verify: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Result: Fewer compilation errors
+
+FIX STEP 3: Tensor Import (10 min)
+  Files: 1 file (tests/shared/data/transforms/test_augmentations.mojo)
+  Action: Change line 19 import to add Tensor
+  Verify: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Result: No compilation errors; tests execute
+
+FIX STEP 4: Optional Syntax (5 min)
+  Files: 1 file (shared/data/transforms.mojo)
+  Action: Remove [] from self.padding.value()[] at line 458
+  Verify: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Result: RandomCrop syntax corrected
+
+FIX STEP 5: Trait Conformances (20 min)
+  Files: 4 files (test_base_dataset, test_tensor_dataset, test_base_loader,
+                  test_pipeline)
+  Action: Add @fieldwise_init + (Copyable, Movable) to 4 struct definitions
+  Verify: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Result: All 43 tests execute (may have runtime failures)
+
+FINAL VERIFICATION:
+  Command: pixi run mojo -I . tests/shared/data/run_all_tests.mojo
+  Expected Output:
+    Total Tests:  43
+    Passed:       X
+    Failed:       Y
+  Status: PASS (no compilation errors)
+
+================================================================================
+                          MOJO SYNTAX REFERENCE
+================================================================================
+
+PATTERN: __init__ Return Type
+
+Mojo v0.25.7+ Requirement:
+  fn __init__(mut self, args...) -> Self:
+      return Self(...)
+
+PATTERN: Ownership Transfer
+
+Non-copyable Type Return:
+  fn method(self, data: NonCopyable) -> NonCopyable:
+      return data^  # Explicit ownership transfer
+
+PATTERN: Optional Value Extraction
+
+Getting Value from Optional:
+  var opt: Optional[Int] = 42
+  if opt:
+      var val = opt.value()  # Returns Int, not subscriptable
+      # var val = opt.value()[]  # ERROR
+
+PATTERN: Struct Trait Conformance
+
+Full Type Definition:
+  @fieldwise_init
+  struct MyStruct(Copyable, Movable):
+      var field: Type
+
+PATTERN: Default Traits
+
+Mojo v0.25.7+ Requirement:
+  Copyable   - Can be implicitly copied
+  Movable    - Can be moved (transferred)
+  Stringable - Implements __str__()
+
+================================================================================
+                            SUCCESS CHECKLIST
+================================================================================
+
+After ALL fixes complete:
+
+COMPILATION:
+  ☐ No error output from pixi run mojo command
+  ☐ No "__init__ method must return Self" errors
+  ☐ No "ExTensor cannot be implicitly copied" errors
+  ☐ No "use of unknown declaration 'Tensor'" errors
+  ☐ No "'Int' is not subscriptable" errors
+
+TEST EXECUTION:
+  ☐ All 43 tests listed in output
+  ☐ Output shows: "Total Tests: 43"
+  ☐ Output shows: "Passed: X" and "Failed: Y"
+  ☐ Test runner completes without crashes
+
+TYPE SAFETY:
+  ☐ All __init__ methods return Self
+  ☐ All ExTensor returns use ^ operator
+  ☐ All structs have Copyable, Movable traits
+  ☐ All imports properly declared
+
+STATUS: READY FOR IMPLEMENTATION
+
+================================================================================

@@ -62,7 +62,7 @@ struct E4M3Scale(Stringable, Representable, Copyable, Movable):
     """
     var value: UInt8  # Only lower 7 bits are used
 
-    fn __init__(mut self, value: UInt8 = 0x38):
+    fn __init__(out self, value: UInt8 = 0x38):
         """Initialize E4M3 scale from raw 7-bit value.
 
         Args:.            value: 7-bit representation (default = 0x38 = exp:7, mantissa:0 = 1.0)
@@ -91,7 +91,7 @@ struct E4M3Scale(Stringable, Representable, Copyable, Movable):
             if scale < 0.0078125:
                 return E4M3Scale(0)  # Zero
             # Subnormal: exp=0, encode in mantissa
-            var mantissa = int(scale * 512.0)
+            var mantissa = Int(scale * 512.0)
             if mantissa > 7:
                 mantissa = 7
             return E4M3Scale(mantissa.cast[DType.uint8]())
@@ -120,7 +120,7 @@ struct E4M3Scale(Stringable, Representable, Copyable, Movable):
 
         # Extract mantissa (3 bits)
         var mantissa_val = scaled - 1.0  # Now in [0, 1)
-        var mantissa = int(mantissa_val * 8.0)  # Scale to 3-bit range [0, 7]
+        var mantissa = Int(mantissa_val * 8.0)  # Scale to 3-bit range [0, 7]
         if mantissa > 7:
             mantissa = 7
 
@@ -200,7 +200,7 @@ struct NVFP4(Stringable, Representable, Copyable, Movable):
     var value: FP4_E2M1
     var scale: E4M3Scale
 
-    fn __init__(mut self, value: FP4_E2M1 = FP4_E2M1(), scale: E4M3Scale = E4M3Scale()):
+    fn __init__(out self, value: FP4_E2M1 = FP4_E2M1(), scale: E4M3Scale = E4M3Scale()):
         """Initialize NVFP4 from E2M1 value and E4M3 scale.
 
         Args:.            `value`: E2M1 encoded value.
@@ -522,12 +522,12 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
     var data: SIMD[DType.uint8, 8]  # 16 E2M1 values (2 per byte)
     var scale: E4M3Scale  # Shared E4M3 scale
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize NVFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 8](0)
         self.scale = E4M3Scale(0x38)  # Scale = 1.0
 
-    fn __init__(mut self, data: SIMD[DType.uint8, 8], scale: E4M3Scale):
+    fn __init__(out self, data: SIMD[DType.uint8, 8], scale: E4M3Scale):
         """Initialize NVFP4Block from packed data and scale.
 
         Args:

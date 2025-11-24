@@ -322,23 +322,23 @@ fn test_fp4_bit_patterns() raises:
     """Test specific bit patterns for representable values."""
     # 0.0 should have exp=0, mantissa=0 (bits: 0b0000)
     var fp4_zero = FP4_E2M1.from_float32(0.0, scale=1.0)
-    assert_equal(int(fp4_zero.value), 0)
+    assert_equal(Int(fp4_zero.value), 0)
 
     # 1.0 should have exp=1, mantissa=0 (bits: 0b0010)
     var fp4_one = FP4_E2M1.from_float32(1.0, scale=1.0)
-    assert_equal(int(fp4_one.value), 0b0010)
+    assert_equal(Int(fp4_one.value), 0b0010)
 
     # 1.5 should have exp=1, mantissa=1 (bits: 0b0011)
     var fp4_onefive = FP4_E2M1.from_float32(1.5, scale=1.0)
-    assert_equal(int(fp4_onefive.value), 0b0011)
+    assert_equal(Int(fp4_onefive.value), 0b0011)
 
     # 6.0 should have exp=3, mantissa=1 (bits: 0b0111)
     var fp4_six = FP4_E2M1.from_float32(6.0, scale=1.0)
-    assert_equal(int(fp4_six.value), 0b0111)
+    assert_equal(Int(fp4_six.value), 0b0111)
 
     # -1.0 should have sign=1, exp=1, mantissa=0 (bits: 0b1010)
     var fp4_neg_one = FP4_E2M1.from_float32(-1.0, scale=1.0)
-    assert_equal(int(fp4_neg_one.value), 0b1010)
+    assert_equal(Int(fp4_neg_one.value), 0b1010)
 
 
 fn main() raises:

@@ -36,7 +36,7 @@ struct Statistics(Copyable, Movable):
     var max: Float32
     var count: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize with zero values."""
         self.mean = 0.0
         self.std = 0.0
@@ -44,7 +44,7 @@ struct Statistics(Copyable, Movable):
         self.max = 0.0
         self.count = 0
 
-    fn __init__(mut self, mean: Float32, std: Float32, min_val: Float32, max_val: Float32, count: Int):
+    fn __init__(out self, mean: Float32, std: Float32, min_val: Float32, max_val: Float32, count: Int):
         """Initialize with specific values."""
         self.mean = mean
         self.std = std
@@ -81,7 +81,7 @@ struct ComponentTracker(Copyable, Movable):
     var max_value: Float32
     var last_value: Float32
 
-    fn __init__(mut self, window_size: Int):
+    fn __init__(out self, window_size: Int):
         """Initialize tracker with specified window size.
 
         Args:.            `window_size`: Number of values to keep for moving average.
@@ -228,7 +228,7 @@ struct LossTracker:
     var components: List[String]
     var trackers: List[ComponentTracker]
 
-    fn __init__(mut self, window_size: Int = 100):
+    fn __init__(out self, window_size: Int = 100):
         """Initialize loss tracker.
 
         Args:

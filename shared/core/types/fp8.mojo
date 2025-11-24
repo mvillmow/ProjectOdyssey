@@ -33,7 +33,7 @@ struct FP8(Stringable, Representable, Copyable, Movable):
     """
     var value: UInt8
 
-    fn __init__(mut self, value: UInt8 = 0):
+    fn __init__(out self, value: UInt8 = 0):
         """Initialize FP8 from raw UInt8 bits.
 
         Args:.            `value`: Raw 8-bit representation.
@@ -84,7 +84,7 @@ struct FP8(Stringable, Representable, Copyable, Movable):
             if abs_x < 0.0078125:  # Below subnormal range
                 return FP8(sign << 7)  # Zero
             # Subnormal handling: exp=0, encode in mantissa
-            var mantissa = int(abs_x * 128.0)  # Scale to 3-bit range
+            var mantissa = Int(abs_x * 128.0)  # Scale to 3-bit range
             if mantissa > 7:
                 mantissa = 7
             var bits = (sign << 7) | mantissa.cast[DType.uint8]()
@@ -117,7 +117,7 @@ struct FP8(Stringable, Representable, Copyable, Movable):
         # Extract mantissa (3 bits)
         # scaled is in [1, 2), we want the fractional part
         var mantissa_val = scaled - 1.0  # Now in [0, 1)
-        var mantissa = int(mantissa_val * 8.0)  # Scale to 3-bit range [0, 7]
+        var mantissa = Int(mantissa_val * 8.0)  # Scale to 3-bit range [0, 7]
         if mantissa > 7:
             mantissa = 7
 

@@ -272,7 +272,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     @always_inline
     fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Floor division: floor(x / y)
-        # For correct negative handling, use: int(div) if div >= 0 else int(div) - 1
+        # For correct negative handling, use: Int(div) if div >= 0 else Int(div) - 1
         var div_result = x / y
         var as_int = Int(div_result)
         var floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)

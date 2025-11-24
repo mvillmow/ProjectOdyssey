@@ -54,7 +54,7 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
     """
     var exponent: UInt8
 
-    fn __init__(mut self, exponent: UInt8 = 127):
+    fn __init__(out self, exponent: UInt8 = 127):
         """Initialize E8M0 scale from raw exponent.
 
         Args:.            exponent: 8-bit exponent value (bias = 127)
@@ -150,7 +150,7 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
     var value: FP4_E2M1
     var scale: E8M0Scale
 
-    fn __init__(mut self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
+    fn __init__(out self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
         Args:.            `value`: E2M1 encoded value.
@@ -471,12 +471,12 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
     var data: SIMD[DType.uint8, 16]  # 32 E2M1 values (2 per byte)
     var scale: E8M0Scale  # Shared E8M0 scale
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize MXFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 16](0)
         self.scale = E8M0Scale(127)  # Scale = 1.0
 
-    fn __init__(mut self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
+    fn __init__(out self, data: SIMD[DType.uint8, 16], scale: E8M0Scale):
         """Initialize MXFP4Block from packed data and scale.
 
         Args:

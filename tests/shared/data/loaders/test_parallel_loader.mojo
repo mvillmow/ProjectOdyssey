@@ -86,7 +86,7 @@ fn test_parallel_loader_all_samples():
     # var seen_indices = Set[Int]()
     # for batch in loader:
     #     for i in range(batch.size()):
-    #         seen_indices.add(int(batch.data[i, 0]))
+    #         seen_indices.add(Int(batch.data[i, 0]))
     #
     # assert_equal(len(seen_indices), 100)
     pass

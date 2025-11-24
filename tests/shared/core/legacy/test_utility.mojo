@@ -296,7 +296,7 @@ fn test_int_conversion() raises:
     var shape = List[Int]()
     vart = full(shape, 42.5, DType.float32)
 
-    # varval = int(t)  # TODO: Implement __int__
+    # varval = Int(t)  # TODO: Implement __int__
     # assert_equal_int(val, 42, "__int__ should convert to int")
     pass  # Placeholder
 
