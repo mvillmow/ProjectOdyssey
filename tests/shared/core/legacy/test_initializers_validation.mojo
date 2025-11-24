@@ -15,7 +15,13 @@ Validation strategy:
 - Integration (interoperability with ExTensor)
 """
 
-from testing import assert_true, assert_false, assert_equal, assert_almost_equal
+from ..helpers.assertions import (
+    assert_true,
+    assert_false,
+    assert_equal_int,
+    assert_equal_float,
+    assert_close_float,
+)
 from math import sqrt
 from shared.core import (
     ExTensor,

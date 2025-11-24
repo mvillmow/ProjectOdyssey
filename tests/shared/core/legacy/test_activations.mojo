@@ -16,8 +16,13 @@ Testing strategy:
 - Gradient verification: Numerical gradient checking (future)
 """
 
-from testing import assert_true, assert_false, assert_equal
-from tests.shared.conftest import assert_almost_equal
+from ..helpers.assertions import (
+    assert_true,
+    assert_false,
+    assert_equal_int,
+    assert_equal_float,
+    assert_close_float,
+)
 from math import exp, sqrt, tanh as math_tanh
 from shared.core import (
     ExTensor, zeros, ones, full, arange,

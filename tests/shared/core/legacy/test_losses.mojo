@@ -5,10 +5,12 @@ This module tests the loss functions and their backward passes:
 - Mean Squared Error (MSE)
 """
 
-from tests.shared.conftest import (
+from ..helpers.assertions import (
     assert_true,
-    assert_equal,
-    assert_almost_equal,
+    assert_false,
+    assert_equal_int,
+    assert_equal_float,
+    assert_close_float,
 )
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.loss import binary_cross_entropy, binary_cross_entropy_backward

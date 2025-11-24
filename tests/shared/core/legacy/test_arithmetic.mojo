@@ -7,12 +7,16 @@ modulo, power, and matmul with same-shape tensors, broadcasting, and edge cases.
 # Import ExTensor and arithmetic operations
 from shared.core import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
 
-# Import test helpers from conftest
-from tests.shared.conftest import (
+# Import test helpers
+from ..helpers.assertions import (
     assert_true,
     assert_false,
-    assert_equal,
-    assert_almost_equal,
+    assert_equal_int,
+    assert_close_float,
+    assert_dtype,
+    assert_numel,
+    assert_dim,
+    assert_all_values,
 )
 
 
