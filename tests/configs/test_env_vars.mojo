@@ -24,7 +24,7 @@ fn test_substitute_simple_env_var() raises:
     """
     # Set environment variable
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("TEST_VAR", "test_value")
+    python.environ["TEST_VAR"] = "test_value"
 
     var config = Config()
     config.set("path", "${TEST_VAR}")
@@ -43,8 +43,8 @@ fn test_substitute_multiple_env_vars() raises:
     Verifies multiple ${VAR} patterns are replaced.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("BASE_DIR", "/home/user")
-    _ = python.environ.__setitem__("DATA_FOLDER", "datasets")
+    python.environ["BASE_DIR"] = "/home/user"
+    python.environ["DATA_FOLDER"] = "datasets"
 
     var config = Config()
     config.set("data_path", "${BASE_DIR}/${DATA_FOLDER}")
@@ -66,7 +66,7 @@ fn test_substitute_env_var_in_middle() raises:
     Verifies ${VAR} can appear anywhere in value.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("MODEL_NAME", "lenet5")
+    python.environ["MODEL_NAME"] = "lenet5"
 
     var config = Config()
     config.set("path", "/models/${MODEL_NAME}/checkpoint.mojo")
@@ -112,7 +112,7 @@ fn test_substitute_with_default_when_var_exists() raises:
     Verifies actual value is used when variable is set.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("DATA_DIR", "/actual/data")
+    python.environ["DATA_DIR"] = "/actual/data"
 
     var config = Config()
     config.set("data_path", "${DATA_DIR:-/default/data}")
@@ -174,7 +174,7 @@ fn test_substitute_from_file() raises:
     Verifies environment variables in YAML files are substituted.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("DATA_DIR", "/actual/data")
+    python.environ["DATA_DIR"] = "/actual/data"
 
     var config = load_config("tests/configs/fixtures/env_vars.yaml")
     var substituted = config.substitute_env_vars()
@@ -207,7 +207,7 @@ fn test_substitute_preserves_non_string_values() raises:
     config.set("path", "${HOME}/data")
 
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("HOME", "/home/user")
+    python.environ["HOME"] = "/home/user"
 
     var substituted = config.substitute_env_vars()
 
@@ -312,8 +312,8 @@ fn test_load_and_substitute_training_config() raises:
     Verifies end-to-end workflow with environment variables.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("EXPERIMENT_NAME", "baseline_001")
-    _ = python.environ.__setitem__("OUTPUT_PATH", "/results")
+    python.environ["EXPERIMENT_NAME"] = "baseline_001"
+    python.environ["OUTPUT_PATH"] = "/results"
 
     # Create config with env vars
     var config = Config()
@@ -344,7 +344,7 @@ fn test_substitute_with_merge() raises:
     Verifies substitution works correctly after merging configs.
     """
     var python = Python.import_module("os")
-    _ = python.environ.__setitem__("BASE_LR", "0.01")
+    python.environ["BASE_LR"] = "0.01"
 
     var defaults = Config()
     defaults.set("learning_rate", "${BASE_LR:-0.001}")
