@@ -298,7 +298,7 @@ fn test_fp4_comparison_equality() raises:
 fn test_fp4_string_representation() raises:
     """Test __str__ method."""
     var fp4_val = FP4_E2M1.from_float32(3.0, scale=1.0)
-    var str_repr = str(fp4_val)
+    var str_repr = String(fp4_val)
 
     # Should contain "FP4_E2M1" and the value
     assert_true(len(str_repr) > 0, "String representation should not be empty")

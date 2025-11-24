@@ -101,7 +101,7 @@ fn test_file_dataset_lazy_loading() raises:
     var labels = List[Int](capacity=10000)
 
     for i in range(10000):
-        file_paths.append("/path/to/image_" + str(i) + ".jpg")
+        file_paths.append("/path/to/image_" + String(i) + ".jpg")
         labels.append(i % 10)
 
     var dataset = FileDataset(file_paths^, labels^)
@@ -166,7 +166,7 @@ fn test_file_dataset_memory_efficiency() raises:
     var labels = List[Int](capacity=10000)
 
     for i in range(10000):
-        file_paths.append("/images/img" + str(i) + ".jpg")
+        file_paths.append("/images/img" + String(i) + ".jpg")
         labels.append(i % 100)
 
     var dataset = FileDataset(file_paths^, labels^, cache=False)
