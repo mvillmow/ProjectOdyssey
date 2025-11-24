@@ -217,6 +217,7 @@ fn __init__(out self, var value: List[String]):
 ```
 
 **When to Use**:
+
 - Parameters of type List, Dict, or other non-copyable types
 - Methods that take ownership of data structures
 - Constructors that initialize non-copyable fields
@@ -251,6 +252,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
 ```
 
 **When to Use**:
+
 - Structs with `ImplicitlyCopyable` trait
 - Structs containing List, Dict, or other non-copyable types
 - Any struct that needs custom copy semantics
@@ -276,11 +278,13 @@ self.data[key] = value  # Now works
 ```
 
 **Common Operations Returning StringSlice**:
+
 - `split()` - Returns list of StringSlice
 - `strip()`, `lstrip()`, `rstrip()` - Returns StringSlice
 - String slicing - `string[0:5]` returns StringSlice
 
 **When to Use**:
+
 - When using string manipulation results as Dict keys
 - When passing to functions expecting String
 - When storing in String fields
