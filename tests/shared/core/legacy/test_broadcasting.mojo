@@ -4,8 +4,6 @@ Tests NumPy-style broadcasting rules for different shaped tensors,
 including scalar broadcasting, vector-to-matrix, and complex multi-dimensional cases.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, add, multiply
 

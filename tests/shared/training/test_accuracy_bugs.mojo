@@ -11,8 +11,6 @@ Bugs tested:
 - Line 348: per_class_accuracy() - var result_shape = List[Int]()
 """
 
-from memory import DType
-
 # Import ExTensor and metrics
 from shared.core import ExTensor, ones, zeros
 from shared.training.metrics.accuracy import top1_accuracy, per_class_accuracy

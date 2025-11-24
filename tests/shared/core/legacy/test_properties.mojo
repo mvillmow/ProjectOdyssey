@@ -4,8 +4,6 @@ Tests fundamental ExTensor properties including shape, dtype, numel, strides,
 contiguity, and basic tensor operations that should work with current implementation.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, eye
 

@@ -4,8 +4,6 @@ Tests all tensor creation functions including zeros, ones, full, arange,
 from_array, eye, linspace, and empty with various shapes and dtypes.
 """
 
-from memory import DType
-
 # Import ExTensor and creation operations
 from shared.core import ExTensor, zeros, ones, full, empty, arange, eye, linspace
 

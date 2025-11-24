@@ -5,7 +5,6 @@ This module tests the loss functions and their backward passes:
 - Mean Squared Error (MSE)
 """
 
-from memory import DType
 from tests.shared.conftest import (
     assert_true,
     assert_equal,

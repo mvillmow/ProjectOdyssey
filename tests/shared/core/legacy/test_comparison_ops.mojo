@@ -5,8 +5,6 @@ equal, not_equal, less, less_equal, greater, greater_equal.
 All operations return boolean tensors (DType.bool).
 """
 
-from memory import DType
-
 # Import ExTensor and comparison operations
 from shared.core import ExTensor, full, ones, zeros, equal, not_equal, less, less_equal, greater, greater_equal
 

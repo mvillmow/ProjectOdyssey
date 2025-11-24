@@ -4,8 +4,6 @@ Tests matrix operations including matmul, transpose, dot, outer, inner,
 and tensordot with various shapes and dimensions.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, eye
 from shared.core import matmul, transpose, dot, outer

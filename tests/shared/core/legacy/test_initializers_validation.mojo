@@ -15,7 +15,6 @@ Validation strategy:
 - Integration (interoperability with ExTensor)
 """
 
-from memory import DType
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from math import sqrt
 from shared.core import (

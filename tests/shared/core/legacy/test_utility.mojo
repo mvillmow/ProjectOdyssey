@@ -4,8 +4,6 @@ Tests utility functions including copy, clone, properties, conversions,
 and helper methods like numel, dim, size, stride, is_contiguous.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange
 

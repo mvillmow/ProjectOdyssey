@@ -4,8 +4,6 @@ Tests reduction operations following the Array API Standard:
 sum, mean, max_reduce, min_reduce with all-elements reduction (axis=-1).
 """
 
-from memory import DType
-
 # Import ExTensor and reduction operations
 from shared.core import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
 

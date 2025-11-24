@@ -4,7 +4,6 @@ Tests edge cases including empty tensors, 0D scalars, very large tensors,
 NaN handling, infinity handling, overflow, underflow, and numerical stability.
 """
 
-from memory import DType
 from math import isnan, isinf
 
 # Import ExTensor and operations

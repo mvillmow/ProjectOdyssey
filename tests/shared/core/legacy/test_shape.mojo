@@ -4,8 +4,6 @@ Tests shape manipulation including reshape, squeeze, unsqueeze, expand_dims,
 flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
 

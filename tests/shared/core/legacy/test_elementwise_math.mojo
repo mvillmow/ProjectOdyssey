@@ -4,8 +4,6 @@ Tests transcendental functions (exp, log, sqrt), trigonometric functions (sin, c
 and utility functions (abs, sign, clip) following Array API Standard.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
 

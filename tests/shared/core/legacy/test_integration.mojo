@@ -4,8 +4,6 @@ Tests combinations of multiple operations working together, realistic usage patt
 and end-to-end workflows using currently implemented functionality.
 """
 
-from memory import DType
-
 # Import ExTensor and operations
 from shared.core import ExTensor, zeros, ones, full, arange, eye, linspace, add, subtract, multiply
 

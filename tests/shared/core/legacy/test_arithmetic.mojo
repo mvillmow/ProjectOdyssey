@@ -4,8 +4,6 @@ Tests arithmetic operations including add, subtract, multiply, divide, floor_div
 modulo, power, and matmul with same-shape tensors, broadcasting, and edge cases.
 """
 
-from memory import DType
-
 # Import ExTensor and arithmetic operations
 from shared.core import ExTensor, zeros, ones, full, add, subtract, multiply, divide, floor_divide, modulo, power
 
