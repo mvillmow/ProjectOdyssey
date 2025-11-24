@@ -74,7 +74,7 @@ fn assert_equal_float(a: Float64, b: Float64, tolerance: Float64 = 1e-8, message
     Raises:
         Error if floats differ beyond tolerance
     """
-    vardiff = abs(a - b)
+    var diff = abs(a - b)
     if diff > tolerance:
         var msg = "Expected " + String(a) + " ≈ " + String(b) + " (diff=" + String(diff) + ")"
         if message:
@@ -104,10 +104,10 @@ fn assert_close_float(
         Error if floats differ beyond tolerance
     """
     # Handle NaN and inf
-    vara_is_nan = isnan(a)
-    varb_is_nan = isnan(b)
-    vara_is_inf = isinf(a)
-    varb_is_inf = isinf(b)
+    var a_is_nan = isnan(a)
+    var b_is_nan = isnan(b)
+    var a_is_inf = isinf(a)
+    var b_is_inf = isinf(b)
 
     if a_is_nan and b_is_nan:
         return  # Both NaN, considered equal
@@ -127,8 +127,8 @@ fn assert_close_float(
         return
 
     # Check numeric closeness
-    vardiff = abs(a - b)
-    varthreshold = atol + rtol * abs(b)
+    var diff = abs(a - b)
+    var threshold = atol + rtol * abs(b)
 
     if diff > threshold:
         var msg = (
@@ -157,7 +157,7 @@ fn assert_shape[T: AnyType](tensor: T, expected: List[Int], message: String = ""
         Error if shapes don't match
     """
     # Get actual shape
-    varactual_shape = tensor.shape()
+    var actual_shape = tensor.shape()
 
     # Check dimensions match
     if len(actual_shape) != len(expected):
@@ -186,7 +186,7 @@ fn assert_dtype[T: AnyType](tensor: T, expected_dtype: DType, message: String = 
     Raises:
         Error if dtypes don't match
     """
-    varactual_dtype = tensor.dtype()
+    var actual_dtype = tensor.dtype()
     if actual_dtype != expected_dtype:
         var msg = "DType mismatch: expected " + String(expected_dtype) + ", got " + String(actual_dtype)
         if message:
@@ -205,7 +205,7 @@ fn assert_numel[T: AnyType](tensor: T, expected_numel: Int, message: String = ""
     Raises:
         Error if numel doesn't match
     """
-    varactual_numel = tensor.numel()
+    var actual_numel = tensor.numel()
     if actual_numel != expected_numel:
         var msg = "Element count mismatch: expected " + String(expected_numel) + ", got " + String(actual_numel)
         if message:
@@ -224,7 +224,7 @@ fn assert_dim[T: AnyType](tensor: T, expected_dim: Int, message: String = "") ra
     Raises:
         Error if dimensions don't match
     """
-    varactual_dim = len(tensor.shape())
+    var actual_dim = len(tensor.shape())
     if actual_dim != expected_dim:
         var msg = "Dimension count mismatch: expected " + String(expected_dim) + ", got " + String(actual_dim)
         if message:
@@ -245,8 +245,8 @@ fn assert_value_at[T: AnyType](tensor: T, index: Int, expected_value: Float64, t
     Raises:
         Error if value doesn't match
     """
-    varactual_value = tensor._get_float64(index)
-    vardiff = math_abs(actual_value - expected_value)
+    var actual_value = tensor._get_float64(index)
+    var diff = math_abs(actual_value - expected_value)
 
     if diff > tolerance:
         var msg = "Value mismatch at index " + String(index) + ": expected " + String(expected_value) + ", got " + String(actual_value) + " (diff=" + String(diff) + ")"
@@ -267,10 +267,10 @@ fn assert_all_values[T: AnyType](tensor: T, expected_value: Float64, tolerance: 
     Raises:
         Error if any value doesn't match
     """
-    varnumel = tensor.numel()
+    var numel = tensor.numel()
     for i in range(numel):
-        varactual_value = tensor._get_float64(i)
-        vardiff = abs(actual_value - expected_value)
+        var actual_value = tensor._get_float64(i)
+        var diff = abs(actual_value - expected_value)
 
         if diff > tolerance:
             var msg = "Value mismatch at index " + String(i) + ": expected " + String(expected_value) + ", got " + String(actual_value)
@@ -301,8 +301,8 @@ fn assert_all_close[T: AnyType](
         Error if shapes don't match or values differ beyond tolerance
     """
     # Check shapes match
-    varshape_a = a.shape()
-    varshape_b = b.shape()
+    var shape_a = a.shape()
+    var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
         raise Error("Shape dimension mismatch: " + String(len(shape_a)) + " vs " + String(len(shape_b)))
@@ -312,10 +312,10 @@ fn assert_all_close[T: AnyType](
             raise Error("Shape mismatch at dim " + String(i) + ": " + String(shape_a[i]) + " vs " + String(shape_b[i]))
 
     # Check all values
-    varnumel = a.numel()
+    var numel = a.numel()
     for i in range(numel):
-        varval_a = a._get_float64(i)
-        varval_b = b._get_float64(i)
+        var val_a = a._get_float64(i)
+        var val_b = b._get_float64(i)
 
         # Handle NaN
         if isnan(val_a) and isnan(val_b):
@@ -337,8 +337,8 @@ fn assert_all_close[T: AnyType](
             continue
 
         # Check numeric closeness
-        vardiff = math_abs(val_a - val_b)
-        varthreshold = atol + rtol * abs(val_b)
+        var diff = math_abs(val_a - val_b)
+        var threshold = atol + rtol * abs(val_b)
 
         if diff > threshold:
             var msg = "Value mismatch at index " + String(i) + ": " + String(val_a) + " vs " + String(val_b) + " (diff=" + String(diff) + ", threshold=" + String(threshold) + ")"
