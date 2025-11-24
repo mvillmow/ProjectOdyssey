@@ -72,13 +72,13 @@ This comprehensive review evaluated the ML Odyssey Mojo-based AI research platfo
 
 ```mojo
 var mantissa = int(scale * 128.0)  # ❌ Off by factor of 4
-```
+```text
 
 **Expected (Paper Spec)**:
 
 ```mojo
 var mantissa = int(scale * 512.0)  # ✅ Correct per paper formula
-```
+```text
 
 **Impact**:
 
@@ -108,13 +108,13 @@ var mantissa = int(scale * 512.0)  # ✅ Correct per paper formula
 ```mojo
 var random_val = Float32(rng_state.cast[DType.uint64]()) / Float32(0xFFFFFFFF)
 # ^^^ Unnecessary uint64 cast, divisor off-by-1
-```
+```text
 
 **Expected (Standard Practice)**:
 
 ```mojo
 var random_val = Float32(rng_state >> 8) / Float32(16777216.0)  # Use upper 24 bits
-```
+```text
 
 **Issues**:
 
@@ -138,13 +138,13 @@ var random_val = Float32(rng_state >> 8) / Float32(16777216.0)  # Use upper 24 b
 ```mojo
 for _ in range(exponent):
     result *= 2.0  # Accumulates error, O(|exponent|)
-```
+```text
 
 **Expected**:
 
 ```mojo
 return pow(2.0, Float32(exponent))  # Exact, O(1)
-```
+```text
 
 **Impact**: Relative error ~1.5e-5 for large exponents, affects precision.
 
@@ -217,7 +217,7 @@ struct ExTensor(Movable):
     fn to_fp8(self) -> ExTensor:
         from .tensor.conversions.fp8 import to_fp8
         return ExTensor(to_fp8(self._storage))
-```
+```text
 
 **Benefits**:
 
@@ -240,14 +240,14 @@ struct ExTensor(Movable):
 [Parent](../../README.md)     # Some files
 [Parent](../plan.md)           # Other files
 None (top-level)               # Top-level sections
-```
+```text
 
 **Expected**:
 
 ```markdown
 # Top-level (Sections 01-06): None (top-level)
 # All subsections: [../plan.md](../plan.md)
-```
+```text
 
 **Impact**: Navigation breaks, tooling fails, contributor confusion.
 
@@ -323,7 +323,7 @@ fn test_fp4_e2m1_all_representable_values() raises:
         var fp4 = FP4_E2M1(bits)
         var decoded = fp4.to_float32(scale=1.0)
         assert_almost_equal(decoded, expected[bits], tolerance=1e-5)
-```
+```text
 
 ---
 
@@ -360,7 +360,7 @@ fn test_fp4_e2m1_all_representable_values() raises:
 var scale_val = max_abs / 6.0
 if scale_val < 1e-10:
     scale_val = 1.0  # Fallback - is this tested?
-```
+```text
 
 ---
 
@@ -466,11 +466,11 @@ if scale_val < 1e-10:
 
 **Data Corruption Example**:
 
-```
+```text
 Original: [1.0, 2.0, ..., 33rd_value] (33 elements)
 to_mxfp4(): Pads to 64 elements (2 blocks × 32)
 from_mxfp4(): Returns 64 elements (original size LOST!)
-```
+```text
 
 ### Major Issues (P1)
 
@@ -659,7 +659,7 @@ tests/core/types/test_nvfp4_arithmetic.mojo  # TEST-011 partial (4 hours, NEW)
 
 // Day 11-12: Plan standardization
 notes/plan/**/*.md                        # ARCH-002 (3 hours)
-```
+```text
 
 ### Week 3-6: Architecture Refactoring
 
@@ -669,7 +669,7 @@ shared/core/tensor/storage.mojo           # ARCH-001 (new module)
 shared/core/tensor/shape_ops.mojo         # ARCH-001 (new module)
 shared/core/tensor/conversions/           # ARCH-001, ARCH-005 (new dir)
 shared/core/extensor.mojo                 # ARCH-001 (refactor to facade)
-```
+```text
 
 ---
 

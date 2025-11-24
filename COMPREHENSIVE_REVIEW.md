@@ -55,7 +55,7 @@ var residual = conv1x1(x) + bn(...)  # Match dimensions
 var out = conv → bn → relu → conv → bn
 out = add(out, residual)
 out = relu(out)
-```
+```text
 
 **Innovations Implemented**:
 
@@ -110,7 +110,7 @@ struct InceptionModule:
         var b3 = conv1x1_3(x) → conv5x5(...)
         var b4 = maxpool(x) → conv1x1_4(...)
         return concatenate_depthwise(b1, b2, b3, b4)
-```
+```text
 
 **Innovations Implemented**:
 
@@ -176,7 +176,7 @@ struct DepthwiseSeparableBlock:
         out = conv2d(out, pw_weights, kernel=1x1)
         out = bn + relu
         return out
-```
+```text
 
 **Innovations Implemented**:
 
@@ -200,7 +200,7 @@ struct DepthwiseSeparableBlock:
 
 **Efficiency Analysis**:
 
-```
+```text
 Standard convolution:
   Operations: H × W × C_in × C_out × K²
   Example (32×32, 64→128, 3×3): 75,497,472 ops
@@ -211,7 +211,7 @@ Depthwise separable:
   Example: 589,824 + 8,388,608 = 8,978,432 ops
 
 Reduction: 8.4× fewer operations!
-```
+```text
 
 ---
 
@@ -251,7 +251,7 @@ struct DenseBlock:
             var layer_out = layer.forward(concat_input)
             features.append(layer_out)  # Add to list
         return concatenate(features)  # All features!
-```
+```text
 
 **Innovations Implemented**:
 
@@ -277,7 +277,7 @@ struct DenseBlock:
 
 **Connectivity Analysis**:
 
-```
+```text
 Dense Block with L layers:
   Layer 1: receives 1 input (c channels)
   Layer 2: receives 2 inputs (c + k channels)
@@ -291,7 +291,7 @@ DenseNet-121 total connections:
   Block 3: 24×25/2 = 300
   Block 4: 16×17/2 = 136
   Total: 549 connections!
-```
+```text
 
 ---
 
@@ -327,7 +327,7 @@ fn batch_norm2d_backward(
     else:
         # Use running statistics (simpler)
         # grad_input = grad_output * gamma / sqrt(var + eps)
-```
+```text
 
 **Why This Was Critical**:
 
@@ -501,7 +501,7 @@ fn batch_norm2d_backward(
 
 ### 5.1 Directory Structure
 
-```
+```text
 examples/
 ├── resnet18-cifar10/          ✅ Complete
 │   ├── README.md              (726 lines - architecture guide)
@@ -549,7 +549,7 @@ shared/core/
 
 tests/integration/             ✨ NEW
 └── test_all_architectures.mojo (comprehensive test harness)
-```
+```text
 
 ### 5.2 Lines of Code Summary
 
@@ -639,7 +639,7 @@ mojo run examples/densenet121-cifar10/test_model.mojo
 
 # Test all at once
 mojo run tests/integration/test_all_architectures.mojo
-```
+```text
 
 ### 6.3 Expected Test Results
 
