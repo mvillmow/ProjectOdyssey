@@ -17,8 +17,8 @@ Validation strategy:
 
 from tests.shared.conftest import (
     assert_close_float,
+    assert_dtype_equal,
     assert_equal,
-    assert_equal_float,
     assert_equal_int,
     assert_false,
     assert_true,
@@ -347,13 +347,13 @@ fn test_all_initializers_support_dtypes() raises:
         var n = normal(shape, dtype=dt)
         var c = constant(shape, 0.5, dtype=dt)
 
-        assert_equal(xu.dtype, dt, "Xavier uniform dtype: " + name)
-        assert_equal(xn.dtype, dt, "Xavier normal dtype: " + name)
-        assert_equal(ku.dtype, dt, "Kaiming uniform dtype: " + name)
-        assert_equal(kn.dtype, dt, "Kaiming normal dtype: " + name)
-        assert_equal(u.dtype, dt, "Uniform dtype: " + name)
-        assert_equal(n.dtype, dt, "Normal dtype: " + name)
-        assert_equal(c.dtype, dt, "Constant dtype: " + name)
+        assert_dtype_equal(xu.dtype, dt, "Xavier uniform dtype: " + name)
+        assert_dtype_equal(xn.dtype, dt, "Xavier normal dtype: " + name)
+        assert_dtype_equal(ku.dtype, dt, "Kaiming uniform dtype: " + name)
+        assert_dtype_equal(kn.dtype, dt, "Kaiming normal dtype: " + name)
+        assert_dtype_equal(u.dtype, dt, "Uniform dtype: " + name)
+        assert_dtype_equal(n.dtype, dt, "Normal dtype: " + name)
+        assert_dtype_equal(c.dtype, dt, "Constant dtype: " + name)
 
     print("  ✓ All initializers support float16, float32, float64")
 
