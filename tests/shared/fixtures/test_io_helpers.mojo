@@ -462,3 +462,9 @@ fn get_models_dir() -> String:
 fn get_reference_dir() -> String:
     """Get path to reference outputs directory."""
     return get_fixtures_dir() + "reference/"
+
+
+fn main() raises:
+    print("test_io_helpers.mojo - This is a HELPER MODULE, not a test file")
+    print("It provides utilities for file I/O in tests")
+    print("No tests are executed from this file")
