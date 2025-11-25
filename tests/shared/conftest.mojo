@@ -8,6 +8,7 @@ This module provides:
 
 from memory import memset_zero
 from random import seed, randn, randint
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -153,6 +154,22 @@ fn assert_greater(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
+fn assert_greater(a: Float64, b: Float64, message: String = "") raises:
+    """Assert a > b for Float64 values.
+
+    Args:
+        a: First value.
+        b: Second value.
+        message: Optional error message.
+
+    Raises:
+        Error if a <= b.
+    """
+    if a <= b:
+        var error_msg = message if message else String(a) + " <= " + String(b)
+        raise Error(error_msg)
+
+
 fn assert_less(a: Float32, b: Float32, message: String = "") raises:
     """Assert a < b.
 
@@ -193,6 +210,48 @@ fn assert_shape_equal(shape1: List[Int], shape2: List[Int], message: String = ""
                 String(shape1[i]) + " vs " + String(shape2[i])
             )
             raise Error(error_msg)
+
+
+fn assert_not_equal_tensor(a: ExTensor, b: ExTensor, message: String = "") raises:
+    """Assert two tensors are not equal element-wise.
+
+    Verifies that at least one element differs between the two tensors.
+    Useful for tests verifying that weights have been updated during training.
+
+    Args:
+        a: First tensor.
+        b: Second tensor.
+        message: Optional error message.
+
+    Raises:
+        Error if all elements are equal or if shapes differ.
+    """
+    # Check shapes match
+    var shape_a = a.shape()
+    var shape_b = b.shape()
+
+    if len(shape_a) != len(shape_b):
+        raise Error("Cannot compare tensors with different dimensions")
+
+    for i in range(len(shape_a)):
+        if shape_a[i] != shape_b[i]:
+            raise Error("Cannot compare tensors with different shapes")
+
+    # Check if all elements are equal
+    var numel = a.numel()
+    var all_equal = True
+
+    for i in range(numel):
+        var val_a = a._get_float64(i)
+        var val_b = b._get_float64(i)
+
+        if val_a != val_b:
+            all_equal = False
+            break
+
+    if all_equal:
+        var error_msg = message if message else "Tensors are equal but should not be"
+        raise Error(error_msg)
 
 
 # ============================================================================
