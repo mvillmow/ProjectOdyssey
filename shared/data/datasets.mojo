@@ -226,3 +226,12 @@ struct FileDataset(Dataset, Copyable, Movable):
         dummy_data.append(Float32(0.0))
 
         return ExTensor(dummy_data^)
+
+
+# ============================================================================
+# Type Aliases
+# ============================================================================
+
+
+# Type alias for backwards compatibility
+alias TensorDataset = ExTensorDataset
