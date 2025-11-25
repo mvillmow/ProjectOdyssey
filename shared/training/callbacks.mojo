@@ -133,10 +133,10 @@ struct EarlyStopping(Callback, Copyable, Movable):
         var improved: Bool
         if self.mode == "max":
             # For maximization (e.g., accuracy): current > best
-            improved = (current_value - self.best_value) > self.min_delta
+            improved = (current_value - self.best_value) >= self.min_delta
         else:  # mode == "min" (default)
             # For minimization (e.g., loss): best > current
-            improved = (self.best_value - current_value) > self.min_delta
+            improved = (self.best_value - current_value) >= self.min_delta
 
         if improved:
             self.best_value = current_value
