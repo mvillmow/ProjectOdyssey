@@ -211,12 +211,12 @@ fn test_dropout_backward_gradient() raises:
     var grad_out = ones_like(output)
 
     # Forward function wrapper - dropout doesn't need input after forward pass
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        var (out, _) = dropout(inp, p=0.3, training=True, seed=42)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        var (out, _) = dropout(x, p=0.3, training=True, seed=42)
         return out
 
     # Backward function wrapper - use stored mask instead of regenerating
-    fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         # Use the mask from forward pass to ensure consistency
         return dropout_backward(grad, mask, p=0.3)
 
@@ -341,12 +341,12 @@ fn test_dropout2d_backward_gradient() raises:
     var grad_out = ones_like(output)
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        var (out, _) = dropout2d(inp, p=0.2, training=True, seed=42)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        var (out, _) = dropout2d(x, p=0.2, training=True, seed=42)
         return out
 
     # Backward function wrapper - use stored mask instead of regenerating
-    fn backward(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         # Use the mask from forward pass to ensure consistency
         return dropout2d_backward(grad, mask, p=0.2)
 

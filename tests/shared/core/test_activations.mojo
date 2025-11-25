@@ -114,14 +114,18 @@ fn test_relu_backward() raises:
     x._data.bitcast[Float32]()[3] = 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return relu(inp)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return relu(x)
 
     var y = relu(x)
     var grad_out = ones_like(y)
 
+    # Backward function wrapper
+    fn backward_wrapper(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return relu_backward(grad, x)
+
     # Use numerical gradient checking (gold standard)
-    check_gradient(forward, relu_backward, x, grad_out, rtol=1e-4, atol=1e-7)
+    check_gradient(forward, backward_wrapper, x, grad_out, rtol=1e-4, atol=1e-7)
 
 
 fn test_relu_shape() raises:
@@ -242,15 +246,15 @@ fn test_leaky_relu_backward() raises:
     x._data.bitcast[Float32]()[1] = 1.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return leaky_relu(inp, alpha=0.1)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return leaky_relu(x, alpha=0.1)
 
     var y = leaky_relu(x, alpha=0.1)
     var grad_out = ones_like(y)
 
     # Use numerical gradient checking (gold standard)
-    fn backward_wrapper(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return leaky_relu_backward(grad, inp, alpha=0.1)
+    fn backward_wrapper(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return leaky_relu_backward(grad, x, alpha=0.1)
 
     check_gradient(forward, backward_wrapper, x, grad_out, rtol=1e-4, atol=1e-7)
 
@@ -346,15 +350,15 @@ fn test_prelu_backward() raises:
     alpha._data.bitcast[Float32]()[1] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return prelu(inp, alpha)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return prelu(x, alpha)
 
     var y = prelu(x, alpha)
     var grad_out = ones_like(y)
 
     # Validate gradient w.r.t. input using numerical checking
-    fn backward_input(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var result = prelu_backward(grad, inp, alpha)
+    fn backward_input(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var result = prelu_backward(grad, x, alpha)
         return result.grad_a
 
     check_gradient(forward, backward_input, x, grad_out, rtol=1e-4, atol=1e-7)
@@ -394,15 +398,15 @@ fn test_sigmoid_backward() raises:
     x._data.bitcast[Float32]()[2] = 1.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return sigmoid(inp)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return sigmoid(x)
 
     var y = sigmoid(x)
     var grad_out = ones_like(y)
 
     # Note: sigmoid_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var out = sigmoid(inp)  # Recompute output inside wrapper
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var out = sigmoid(x)  # Recompute output inside wrapper
         return sigmoid_backward(grad, out)
 
     # Use numerical gradient checking (gold standard)
@@ -541,15 +545,15 @@ fn test_tanh_backward() raises:
     x._data.bitcast[Float32]()[2] = 1.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return tanh(inp)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return tanh(x)
 
     var y = tanh(x)
     var grad_out = ones_like(y)
 
     # Note: tanh_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var out = tanh(inp)  # Recompute output inside wrapper
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var out = tanh(x)  # Recompute output inside wrapper
         return tanh_backward(grad, out)
 
     # Use numerical gradient checking (gold standard)
@@ -684,15 +688,15 @@ fn test_softmax_backward() raises:
     x._data.bitcast[Float32]()[5] = 1.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return softmax(inp, axis=1)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return softmax(x, axis=1)
 
     var y = softmax(x, axis=1)
     var grad_out = ones_like(y)
 
     # Note: softmax_backward takes output y, not input x
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var out = softmax(inp, axis=1)  # Recompute output inside wrapper
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        var out = softmax(x, axis=1)  # Recompute output inside wrapper
         return softmax_backward(grad, out, axis=1)
 
     # Use numerical gradient checking (gold standard)
@@ -856,15 +860,15 @@ fn test_gelu_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return gelu(inp, approximate=False)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return gelu(x, approximate=False)
 
     var y = gelu(x, approximate=False)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return gelu_backward(grad, inp, approximate=False)
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return gelu_backward(grad, x, approximate=False)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -915,15 +919,15 @@ fn test_swish_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return swish(inp)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return swish(x)
 
     var y = swish(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return swish_backward(grad, inp)
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return swish_backward(grad, x)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -975,15 +979,15 @@ fn test_mish_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return mish(inp)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return mish(x)
 
     var y = mish(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return mish_backward(grad, inp)
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return mish_backward(grad, x)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
@@ -1025,15 +1029,15 @@ fn test_elu_backward() raises:
     x._data.bitcast[Float32]()[2] = 1.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
-        return elu(inp, alpha=1.0)
+    fn forward(x: ExTensor) raises escaping -> ExTensor:
+        return elu(x, alpha=1.0)
 
     var y = elu(x, alpha=1.0)
     var grad_out = ones_like(y)
 
     # Note: elu_backward takes x, y, and alpha
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
-        return elu_backward(grad, inp, alpha=1.0)
+    fn backward_fn(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+        return elu_backward(grad, x, alpha=1.0)
 
     # Use numerical gradient checking (gold standard)
     check_gradient(forward, backward_fn, x, grad_out, rtol=1e-4, atol=1e-7)

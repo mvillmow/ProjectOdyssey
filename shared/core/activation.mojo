@@ -481,7 +481,7 @@ fn _relu_backward_op[T: DType](grad: Scalar[T], x: Scalar[T]) -> Scalar[T]:
     return grad if x > Scalar[T](0) else Scalar[T](0)
 
 
-fn relu_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+fn relu_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
     """Compute gradient of ReLU activation.
 
     ReLU gradient: ∂L/∂x = ∂L/∂y * (x > 0)
@@ -524,7 +524,7 @@ fn _leaky_relu_backward_impl[dtype: DType](
         result_ptr[i] = grad if x_val > Scalar[dtype](0) else grad * alpha_typed
 
 
-fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
+fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises escaping -> ExTensor:
     """Compute gradient of Leaky ReLU activation.
 
     Leaky ReLU gradient: ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
@@ -593,7 +593,7 @@ fn _prelu_backward_impl[dtype: DType](
             grad_alpha_ptr[alpha_idx] += grad * x_val
 
 
-fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises -> GradientPair:
+fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises escaping -> GradientPair:
     """Compute gradients of PReLU activation.
 
     PReLU gradients:
@@ -634,7 +634,7 @@ fn _sigmoid_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     return grad * y * (Scalar[T](1.0) - y)
 
 
-fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> ExTensor:
     """Compute gradient of sigmoid activation.
 
     Sigmoid gradient: ∂L/∂x = ∂L/∂y * y * (1 - y)
@@ -664,7 +664,7 @@ fn _tanh_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     return grad * (Scalar[T](1.0) - y * y)
 
 
-fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
+fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> ExTensor:
     """Compute gradient of tanh activation.
 
     Tanh gradient: ∂L/∂x = ∂L/∂y * (1 - y²)
@@ -686,7 +686,7 @@ fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises -> ExTensor:
     return dispatch_float_binary[_tanh_backward_op](grad_output, output)
 
 
-fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) raises -> ExTensor:
+fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) raises escaping -> ExTensor:
     """Compute gradient of GELU activation.
 
     GELU gradient (exact): ∂L/∂x = ∂L/∂y * [Φ(x) + x*φ(x)]
@@ -799,7 +799,7 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
     return result
 
 
-fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) raises -> ExTensor:
+fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) raises escaping -> ExTensor:
     """Compute gradient of softmax activation.
 
     Softmax gradient (along axis):
@@ -1105,7 +1105,7 @@ fn exp_scalar_f64(x: Float64) -> Float64:
 # ============================================================================
 
 
-fn swish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+fn swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
     """Backward pass for Swish activation.
 
     The derivative of swish is:
@@ -1139,7 +1139,7 @@ fn swish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     return multiply(grad_output, derivative)
 
 
-fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
+fn mish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
     """Backward pass for Mish activation.
 
     The derivative involves the derivative of tanh(softplus(x)).
@@ -1189,7 +1189,7 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     return multiply(grad_output, derivative)
 
 
-fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
+fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises escaping -> ExTensor:
     """Backward pass for ELU activation.
 
     The derivative is:

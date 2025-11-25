@@ -206,11 +206,14 @@ fn check_gradient(
             var x = ExTensor(List[Int](), DType.float32)
             # ... initialize x with test values ...
 
-            fn forward(inp: ExTensor) raises -> ExTensor:
+            fn forward(inp: ExTensor) raises escaping -> ExTensor:
                 return relu(inp)
 
+            fn backward_wrapper(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+                return relu_backward(grad, x)
+
             var grad_out = ones_like(relu(x))
-            check_gradient(forward, relu_backward, x, grad_out)
+            check_gradient(forward, backward_wrapper, x, grad_out)
     """
     # Compute analytical gradient
     var analytical = backward_fn(grad_output, x)
