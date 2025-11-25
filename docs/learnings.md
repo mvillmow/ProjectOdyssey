@@ -1,6 +1,7 @@
 # ML Odyssey Learnings from Production Fixes
 
-Generalized lessons extracted from root-level fix documents. These inform best practices for Mojo tensor ops, memory management, and debugging.
+Generalized lessons extracted from root-level fix documents. These inform
+best practices for Mojo tensor ops, memory management, and debugging.
 
 ## Key Learnings Table
 
@@ -13,6 +14,7 @@ Generalized lessons extracted from root-level fix documents. These inform best p
 | **Tensor Refcounting (Phase 2)** | Missing lifetime tracking; double-free/use-after-free in views. | Add `_refcount: UnsafePointer[Int]`; `__copyinit__` incr, `__del__` decr/free if 0. | `PHASE2_MEMORY_SAFETY_SUMMARY.md` | `.claude/agents/performance-specialist.md`, memory skills |
 
 ## Best Practices
+
 - **TDD Isolation**: Start broad (full train), narrow (forward), isolate layer/op, reproduce minimal test.
 - **Mojo Lists**: Append-only; test List behaviors explicitly.
 - **Memory Profiling**: Stress loops (10k iters); monitor tcmalloc/Valgrind.

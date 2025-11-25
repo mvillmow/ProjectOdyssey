@@ -14,8 +14,11 @@ from tests.shared.conftest import (
     assert_true,
     assert_false,
     assert_equal,
+    create_simple_model,
     TestFixtures,
 )
+from shared.training import TrainingLoop, SGD, MSELoss
+from shared.core.extensor import ExTensor
 
 
 # ============================================================================
@@ -258,8 +261,8 @@ fn test_numerical_safety_handles_zero_gradients() raises:
     var initial_weights = model.get_weights().copy()
     #
     # Training step with zero gradients
-    var inputs = Tensor.zeros(4, 10, DType.float32)
-    var targets = Tensor.zeros(4, 1, DType.float32)
+    var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
+    var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
     var loss = training_loop.step(inputs, targets)
     #
     # Weights should be unchanged
@@ -285,8 +288,8 @@ fn test_numerical_safety_loss_computation_stable() raises:
     from shared.core.loss import CrossEntropyLoss
     #
     # Create large logits (could overflow in naive softmax)
-    var large_logits = Tensor.fill(10, 1000.0)
-    var targets = Tensor.fill(10, 0)
+    var large_logits = ExTensor.full(List[Int](10), 1000.0, DType.float32)
+    var targets = ExTensor.full(List[Int](10), 0.0, DType.float32)
     #
     var loss_fn = CrossEntropyLoss()
     var loss = loss_fn(large_logits, targets)
@@ -312,7 +315,7 @@ fn test_numerical_safety_optimizer_step_stable() raises:
     #
     # Set large gradients
     for param in model.parameters():
-        param.grad = Tensor.fill(param.shape(), 100.0)
+        param.grad = ExTensor.full(param.shape(), 100.0, DType.float32)
     #
     # Get initial weights
     var initial_weights = model.parameters()[0].data.copy()

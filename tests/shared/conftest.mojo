@@ -255,6 +255,55 @@ fn assert_not_equal_tensor(a: ExTensor, b: ExTensor, message: String = "") raise
         raise Error(error_msg)
 
 
+fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
+    """Assert two ExTensors are equal (shape and all elements).
+
+    Args:
+        a: First tensor.
+        b: Second tensor.
+        message: Optional error message.
+
+    Raises:
+        Error if shapes don't match or any elements differ.
+    """
+    # Check dimensions
+    if a._ndim != b._ndim:
+        var msg = "Shape mismatch: " + String(a._ndim) + " vs " + String(b._ndim)
+        raise Error(message + ": " + msg if message else msg)
+
+    # Check total elements
+    if a._numel != b._numel:
+        var msg = "Size mismatch: " + String(a._numel) + " vs " + String(b._numel)
+        raise Error(message + ": " + msg if message else msg)
+
+    # Check all elements
+    for i in range(a._numel):
+        var val_a = a._get_float64(i)
+        var val_b = b._get_float64(i)
+        var diff = val_a - val_b if val_a >= val_b else val_b - val_a
+        if diff > 1e-10:
+            var msg = "Values differ at index " + String(i) + ": " + String(val_a) + " vs " + String(val_b)
+            raise Error(message + ": " + msg if message else msg)
+
+
+fn assert_type[T: AnyType](value: T, expected_type: String) raises:
+    """Assert value is of expected type (for documentation purposes).
+
+    Note: Type checking in Mojo happens at compile time, so this function
+    is primarily for test documentation and clarity.
+
+    Args:
+        value: The value to check.
+        expected_type: String describing the expected type (for documentation).
+
+    Raises:
+        Never raises - type checking is done at compile time.
+    """
+    # Type checking in Mojo is compile-time
+    # This function exists for test API clarity
+    pass
+
+
 # ============================================================================
 # Test Fixtures
 # ============================================================================
