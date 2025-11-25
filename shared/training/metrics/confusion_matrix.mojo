@@ -306,7 +306,7 @@ struct ConfusionMatrix:
 
 
 # Helper function for argmax (same as in accuracy.mojo, but duplicated for independence)
-fn argmax(tensor: ExTensor) raises -> ExTensor:
+fn argmax(var tensor: ExTensor) raises -> ExTensor:
     """Compute argmax along last axis for 2D tensor.
 
     Args:
