@@ -69,6 +69,7 @@ from .samplers import (
 from .transforms import (
     Transform,  # Base transform trait
     Compose,  # Compose multiple transforms
+    Pipeline,  # Type alias for Compose
     ToExTensor,  # Convert to tensor
     Normalize,  # Normalize data
     Reshape,  # Reshape tensor

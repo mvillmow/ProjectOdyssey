@@ -129,8 +129,8 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
         self.transforms.append(transform)
 
 
-# Note: Pipeline is now generic - use Pipeline[T] where T is a Transform type
-# Example: Pipeline[Normalize] or Pipeline[ToExTensor]
+# Type alias for Pipeline as Compose
+alias Pipeline[T: Transform & Copyable & Movable] = Compose[T]
 
 
 # ============================================================================
