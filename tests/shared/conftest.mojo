@@ -8,6 +8,7 @@ This module provides:
 
 from memory import memset_zero
 from random import seed, randn, randint
+from math import isnan, isinf
 from shared.core.extensor import ExTensor
 from tests.shared.fixtures.mock_models import SimpleMLP
 
@@ -136,6 +137,80 @@ fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
     """
     if a != b:
         var error_msg = message if message else "DTypes are not equal"
+        raise Error(error_msg)
+
+
+fn assert_equal_int(a: Int, b: Int, message: String = "") raises:
+    """Assert two integers are equal.
+
+    Args:
+        a: First integer.
+        b: Second integer.
+        message: Optional error message.
+
+    Raises:
+        Error if integers are not equal.
+    """
+    if a != b:
+        var error_msg = message if message else (
+            "Expected " + String(a) + " == " + String(b)
+        )
+        raise Error(error_msg)
+
+
+fn assert_close_float(
+    a: Float64,
+    b: Float64,
+    rtol: Float64 = 1e-5,
+    atol: Float64 = 1e-8,
+    message: String = ""
+) raises:
+    """Assert two floats are numerically close.
+
+    Uses the formula: |a - b| <= atol + rtol * |b|
+
+    Args:
+        a: First float.
+        b: Second float.
+        rtol: Relative tolerance.
+        atol: Absolute tolerance.
+        message: Optional error message.
+
+    Raises:
+        Error if floats differ beyond tolerance.
+    """
+    # Handle NaN and inf
+    var a_is_nan = isnan(a)
+    var b_is_nan = isnan(b)
+    var a_is_inf = isinf(a)
+    var b_is_inf = isinf(a)
+
+    if a_is_nan and b_is_nan:
+        return  # Both NaN, considered equal
+
+    if a_is_nan or b_is_nan:
+        var error_msg = message if message else (
+            "NaN mismatch: " + String(a) + " vs " + String(b)
+        )
+        raise Error(error_msg)
+
+    if a_is_inf or b_is_inf:
+        if a != b:
+            var error_msg = message if message else (
+                "Infinity mismatch: " + String(a) + " vs " + String(b)
+            )
+            raise Error(error_msg)
+        return
+
+    # Check numeric closeness
+    var diff = a - b if a >= b else b - a
+    var threshold = atol + rtol * (b if b >= 0 else -b)
+
+    if diff > threshold:
+        var error_msg = message if message else (
+            "Values differ: " + String(a) + " vs " + String(b) +
+            " (diff=" + String(diff) + ", threshold=" + String(threshold) + ")"
+        )
         raise Error(error_msg)
 
 
@@ -284,6 +359,202 @@ fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
         if diff > 1e-10:
             var msg = "Values differ at index " + String(i) + ": " + String(val_a) + " vs " + String(val_b)
             raise Error(message + ": " + msg if message else msg)
+
+
+fn assert_shape(tensor: ExTensor, expected: List[Int], message: String = "") raises:
+    """Assert tensor has expected shape.
+
+    Args:
+        tensor: ExTensor to check.
+        expected: Expected shape as List.
+        message: Optional error message.
+
+    Raises:
+        Error if shapes don't match.
+    """
+    # Get actual shape
+    var actual_shape = tensor.shape()
+
+    # Check dimensions match
+    if len(actual_shape) != len(expected):
+        var error_msg = message if message else (
+            "Shape dimension mismatch: expected " + String(len(expected)) +
+            " dims, got " + String(len(actual_shape))
+        )
+        raise Error(error_msg)
+
+    # Check each dimension
+    for i in range(len(expected)):
+        if actual_shape[i] != expected[i]:
+            var error_msg = message if message else (
+                "Shape mismatch at dim " + String(i) + ": expected " +
+                String(expected[i]) + ", got " + String(actual_shape[i])
+            )
+            raise Error(error_msg)
+
+
+fn assert_dtype(tensor: ExTensor, expected: DType, message: String = "") raises:
+    """Assert tensor has expected dtype.
+
+    Args:
+        tensor: ExTensor to check.
+        expected: Expected DType.
+        message: Optional error message.
+
+    Raises:
+        Error if dtype doesn't match.
+    """
+    var actual = tensor.dtype()
+    if actual != expected:
+        var error_msg = message if message else (
+            "Expected dtype " + String(expected) + ", got " + String(actual)
+        )
+        raise Error(error_msg)
+
+
+fn assert_numel(tensor: ExTensor, expected: Int, message: String = "") raises:
+    """Assert tensor has expected number of elements.
+
+    Args:
+        tensor: ExTensor to check.
+        expected: Expected total element count.
+        message: Optional error message.
+
+    Raises:
+        Error if numel doesn't match.
+    """
+    var actual = tensor.numel()
+    if actual != expected:
+        var error_msg = message if message else (
+            "Expected numel " + String(expected) + ", got " + String(actual)
+        )
+        raise Error(error_msg)
+
+
+fn assert_dim(tensor: ExTensor, expected: Int, message: String = "") raises:
+    """Assert tensor has expected number of dimensions.
+
+    Args:
+        tensor: ExTensor to check.
+        expected: Expected dimension count.
+        message: Optional error message.
+
+    Raises:
+        Error if dim doesn't match.
+    """
+    var actual = len(tensor.shape())
+    if actual != expected:
+        var error_msg = message if message else (
+            "Expected " + String(expected) + " dimensions, got " + String(actual)
+        )
+        raise Error(error_msg)
+
+
+fn assert_value_at(
+    tensor: ExTensor,
+    index: Int,
+    expected: Float64,
+    tolerance: Float64 = 1e-6,
+    message: String = ""
+) raises:
+    """Assert tensor value at flat index matches expected value.
+
+    Args:
+        tensor: ExTensor to check.
+        index: Flat index to check.
+        expected: Expected value.
+        tolerance: Acceptable difference (default: 1e-6).
+        message: Optional error message.
+
+    Raises:
+        Error if value doesn't match within tolerance.
+    """
+    if index < 0 or index >= tensor.numel():
+        raise Error("Index out of bounds: " + String(index))
+
+    var actual = tensor._get_float64(index)
+    var diff = actual - expected if actual >= expected else expected - actual
+
+    if diff > tolerance:
+        var error_msg = message if message else (
+            "Expected value " + String(expected) + " at index " + String(index) +
+            ", got " + String(actual) + " (diff: " + String(diff) + ")"
+        )
+        raise Error(error_msg)
+
+
+fn assert_all_values(
+    tensor: ExTensor,
+    expected: Float64,
+    tolerance: Float64 = 1e-6,
+    message: String = ""
+) raises:
+    """Assert all tensor values match expected constant.
+
+    Args:
+        tensor: ExTensor to check.
+        expected: Expected constant value.
+        tolerance: Acceptable difference (default: 1e-6).
+        message: Optional error message.
+
+    Raises:
+        Error if any value doesn't match within tolerance.
+    """
+    var n = tensor.numel()
+    for i in range(n):
+        var actual = tensor._get_float64(i)
+        var diff = actual - expected if actual >= expected else expected - actual
+
+        if diff > tolerance:
+            var error_msg = message if message else (
+                "Expected all values to be " + String(expected) +
+                ", but index " + String(i) + " is " + String(actual)
+            )
+            raise Error(error_msg)
+
+
+fn assert_all_close(
+    a: ExTensor,
+    b: ExTensor,
+    tolerance: Float64 = 1e-6,
+    message: String = ""
+) raises:
+    """Assert two tensors are element-wise close.
+
+    Args:
+        a: First tensor.
+        b: Second tensor.
+        tolerance: Acceptable difference (default: 1e-6).
+        message: Optional error message.
+
+    Raises:
+        Error if shapes don't match or values differ beyond tolerance.
+    """
+    # Check shapes match
+    var shape_a = a.shape()
+    var shape_b = b.shape()
+
+    if len(shape_a) != len(shape_b):
+        raise Error("Shape dimension mismatch: " + String(len(shape_a)) + " vs " + String(len(shape_b)))
+
+    for i in range(len(shape_a)):
+        if shape_a[i] != shape_b[i]:
+            raise Error("Shape mismatch at dim " + String(i) + ": " + String(shape_a[i]) + " vs " + String(shape_b[i]))
+
+    # Check all values
+    var n = a.numel()
+    for i in range(n):
+        var val_a = a._get_float64(i)
+        var val_b = b._get_float64(i)
+        var diff = val_a - val_b if val_a >= val_b else val_b - val_a
+
+        if diff > tolerance:
+            var error_msg = message if message else (
+                "Tensors differ at index " + String(i) + ": " +
+                String(val_a) + " vs " + String(val_b) +
+                " (diff: " + String(diff) + ")"
+            )
+            raise Error(error_msg)
 
 
 fn assert_type[T: AnyType](value: T, expected_type: String) raises:

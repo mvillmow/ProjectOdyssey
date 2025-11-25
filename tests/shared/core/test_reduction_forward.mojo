@@ -8,7 +8,7 @@ sum, mean, max_reduce, min_reduce with all-elements reduction (axis=-1).
 from shared.core import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_dim,

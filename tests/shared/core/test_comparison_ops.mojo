@@ -9,7 +9,7 @@ All operations return boolean tensors (DType.bool).
 from shared.core import ExTensor, full, ones, zeros, equal, not_equal, less, less_equal, greater, greater_equal
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_value_at,

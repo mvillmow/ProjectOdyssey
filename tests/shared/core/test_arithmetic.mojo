@@ -13,7 +13,7 @@ Tests cover:
 All tests use pure functional API.
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_all_values,
     assert_almost_equal,
     assert_close_float,

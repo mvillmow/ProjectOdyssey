@@ -8,7 +8,7 @@ from_array, eye, linspace, and empty with various shapes and dtypes.
 from shared.core import ExTensor, zeros, ones, full, empty, arange, eye, linspace
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_true,
     assert_false,
     assert_equal_int,

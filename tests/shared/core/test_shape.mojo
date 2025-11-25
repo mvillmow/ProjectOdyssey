@@ -8,7 +8,7 @@ flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_dim,

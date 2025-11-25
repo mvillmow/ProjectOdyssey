@@ -14,7 +14,7 @@ from shared.core import (
 )
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_dim,

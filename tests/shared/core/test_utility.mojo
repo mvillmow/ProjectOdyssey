@@ -8,7 +8,7 @@ and helper methods like numel, dim, size, stride, is_contiguous.
 from shared.core import ExTensor, zeros, ones, full, arange
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_dim,

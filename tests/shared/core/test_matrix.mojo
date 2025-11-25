@@ -14,7 +14,7 @@ Tests cover:
 All tests use pure functional API with comprehensive gradient checking.
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_all_close,
     assert_all_values,
     assert_almost_equal,

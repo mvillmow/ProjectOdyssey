@@ -9,7 +9,7 @@ Tests cover:
 - Edge cases and boundary values
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_almost_equal,
     assert_close_float,
     assert_equal,
