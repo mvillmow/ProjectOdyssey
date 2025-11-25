@@ -9,6 +9,7 @@ This module provides:
 from memory import memset_zero
 from random import seed, randn, randint
 from shared.core.extensor import ExTensor
+from tests.shared.fixtures.mock_models import SimpleMLP
 
 
 # ============================================================================
@@ -312,7 +313,7 @@ struct TestFixtures:
 # ============================================================================
 
 
-struct BenchmarkResult:
+struct BenchmarkResult(Copyable, Movable):
     """Results from a performance benchmark.
 
     Attributes:
@@ -328,7 +329,7 @@ struct BenchmarkResult:
     var memory_mb: Float64
 
     fn __init__(
-        mut self,
+        out self,
         name: String,
         duration_ms: Float64,
         throughput: Float64,
@@ -363,8 +364,8 @@ fn print_benchmark_results(results: List[BenchmarkResult]):
         results: List of benchmark results to print.
     """
     print("\n=== Benchmark Results ===")
-    for result in results:
-        result[].print_result()
+    for i in range(len(results)):
+        results[i].print_result()
         print()
 
 
@@ -466,3 +467,187 @@ fn create_sequential_vector(size: Int, start: Float32 = 0.0) -> List[Float32]:
     for i in range(size):
         vec.append(start + Float32(i))
     return vec^
+
+
+# ============================================================================
+# Training Test Fixtures
+# ============================================================================
+
+
+fn create_simple_model() -> SimpleMLP:
+    """Create a simple 2-layer neural network for testing training loops.
+
+    Returns a mock neural network with:
+    - Input dimension: 10
+    - Hidden dimension: 5
+    - Output dimension: 1
+    - Uses ReLU activation between layers
+
+    The model uses constant initialization for predictable testing behavior.
+
+    Returns:
+        SimpleMLP instance configured for testing.
+
+    Example:
+        ```mojo
+        var model = create_simple_model()
+        var input = create_test_vector(10, value=1.0)
+        var output = model.forward(input)
+        ```
+    """
+    var model = SimpleMLP(
+        input_dim=10,
+        hidden_dim=5,
+        output_dim=1,
+        num_hidden_layers=1,
+        init_value=0.1
+    )
+    return model
+
+
+fn create_simple_dataset(
+    n_samples: Int = 100,
+    input_dim: Int = 10,
+    output_dim: Int = 1,
+    seed_value: Int = 42
+) -> List[Tuple[List[Float32], List[Float32]]]:
+    """Create a simple dataset for testing data loading.
+
+    Generates synthetic data with:
+    - Configurable number of samples
+    - Configurable input and output dimensions
+    - Deterministic seeding for reproducible tests
+
+    Returns a list of (input, output) tuples for each sample.
+
+    Args:
+        n_samples: Number of samples in dataset (default: 100).
+        input_dim: Dimension of input features (default: 10).
+        output_dim: Dimension of output labels (default: 1).
+        seed_value: Random seed for reproducibility (default: 42).
+
+    Returns:
+        List of tuples containing (data, label) for each sample.
+
+    Example:
+        ```mojo
+        var dataset = create_simple_dataset(n_samples=50, input_dim=10, output_dim=5)
+        var (data, label) = dataset[0]
+        ```
+    """
+    # Set seed for reproducibility
+    seed(seed_value)
+
+    var samples = List[Tuple[List[Float32], List[Float32]]](capacity=n_samples)
+
+    # Generate samples
+    for i in range(n_samples):
+        var item_seed = seed_value + i
+
+        # Generate input features
+        var input_features = List[Float32](capacity=input_dim)
+        for j in range(input_dim):
+            # Use deterministic values based on seed and index
+            var val = Float32((seed_value + i + j) % 100) / 100.0
+            input_features.append(val)
+
+        # Generate output labels
+        var output_labels = List[Float32](capacity=output_dim)
+        for j in range(output_dim):
+            # Use deterministic values based on seed and index
+            var val = Float32((seed_value + i + j + 1000) % 100) / 100.0
+            output_labels.append(val)
+
+        samples.append((input_features^, output_labels^))
+
+    return samples^
+
+
+struct MockDataLoader(Copyable, Movable):
+    """Mock data loader for testing training loops.
+
+    Provides a simple data loader that yields batches of data.
+
+    Attributes:
+        samples: List of (input, output) tuples.
+        batch_size: Number of samples per batch.
+        shuffle: Whether to shuffle samples.
+    """
+
+    var samples: List[Tuple[List[Float32], List[Float32]]]
+    var batch_size: Int
+    var shuffle: Bool
+
+    fn __init__(
+        out self,
+        var samples: List[Tuple[List[Float32], List[Float32]]],
+        batch_size: Int = 32,
+        shuffle: Bool = False
+    ):
+        """Initialize mock data loader.
+
+        Args:
+            samples: List of (input, output) tuples.
+            batch_size: Samples per batch (default: 32).
+            shuffle: Whether to shuffle (default: False).
+        """
+        self.samples = samples^
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+
+    fn __len__(self) -> Int:
+        """Get number of batches."""
+        var n_samples = len(self.samples)
+        return (n_samples + self.batch_size - 1) // self.batch_size
+
+
+fn create_mock_dataloader(
+    n_batches: Int = 10,
+    batch_size: Int = 32,
+    n_samples: Int = 320,
+    input_dim: Int = 10,
+    output_dim: Int = 1,
+    seed_value: Int = 42,
+    shuffle: Bool = False
+) -> MockDataLoader:
+    """Create mock data loader with specified number of batches.
+
+    Generates a synthetic dataset and wraps it in a MockDataLoader
+    for testing training loops and data pipelines.
+
+    Args:
+        n_batches: Desired number of batches (default: 10).
+        batch_size: Samples per batch (default: 32).
+        n_samples: Total number of samples (default: 320 = 10 batches * 32).
+        input_dim: Input feature dimension (default: 10).
+        output_dim: Output label dimension (default: 1).
+        seed_value: Random seed (default: 42).
+        shuffle: Whether to shuffle data (default: False).
+
+    Returns:
+        MockDataLoader with synthetic samples.
+
+    Example:
+        ```mojo
+        var loader = create_mock_dataloader(n_batches=5, batch_size=32)
+        var num_batches = loader.__len__()
+        ```
+
+    Note:
+        - If n_samples != n_batches * batch_size, the last batch may be partial.
+        - All data is synthetically generated and deterministic.
+    """
+    # Create the simple dataset
+    var dataset = create_simple_dataset(
+        n_samples=n_samples,
+        input_dim=input_dim,
+        output_dim=output_dim,
+        seed_value=seed_value
+    )
+
+    # Create and return mock loader
+    return MockDataLoader(
+        dataset^,
+        batch_size=batch_size,
+        shuffle=shuffle
+    )
