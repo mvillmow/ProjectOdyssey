@@ -67,7 +67,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
     var stopped: Bool
 
     fn __init__(
-        mut self,
+        out self,
         monitor: String = "val_loss",
         patience: Int = 5,
         min_delta: Float64 = 0.0,
@@ -114,7 +114,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
         """Check for improvement and decide whether to stop.
 
         Args:
@@ -221,7 +221,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
     var error_count: Int
 
     fn __init__(
-        mut self,
+        out self,
         `filepath`: String = "checkpoint.pt",
         `monitor`: String = "val_loss",
         `save_best_only`: Bool = False,
@@ -264,7 +264,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
         """Save checkpoint at end of epoch with error handling.
 
         Attempts to save checkpoint based on configuration:
@@ -383,7 +383,7 @@ struct LoggingCallback(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
         """Log metrics at end of epoch.
 
         Args:
