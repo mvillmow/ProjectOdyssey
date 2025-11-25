@@ -445,7 +445,7 @@ fn batch_norm2d_backward(
     var x_shape = x.shape()
     var grad_shape = grad_output.shape()
 
-    if x_shape.size != 4 or grad_shape.size != 4:
+    if len(x_shape) != 4 or len(grad_shape) != 4:
         raise Error("batch_norm2d_backward requires 4D inputs (batch, channels, height, width)")
 
     var batch = x_shape[0]

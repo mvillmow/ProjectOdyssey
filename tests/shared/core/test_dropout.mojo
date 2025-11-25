@@ -232,10 +232,10 @@ fn test_dropout_backward_gradient() raises:
 fn test_dropout2d_shapes() raises:
     """Test that dropout2d returns correct output and mask shapes."""
     var shape = List[Int]()
-    shape.append(2  # batch)
-    shape.append(3  # channels)
-    shape.append(4  # height)
-    shape.append(4  # width)
+    shape.append(2)  # batch
+    shape.append(3)  # channels
+    shape.append(4)  # height
+    shape.append(4)  # width
     var x = ones(shape, DType.float32)
 
     # Training mode
@@ -251,10 +251,10 @@ fn test_dropout2d_shapes() raises:
 fn test_dropout2d_channel_level() raises:
     """Test that dropout2d drops entire channels (all spatial positions)."""
     var shape = List[Int]()
-    shape.append(1  # batch)
-    shape.append(4  # channels)
-    shape.append(3  # height)
-    shape.append(3  # width)
+    shape.append(1)  # batch
+    shape.append(4)  # channels
+    shape.append(3)  # height
+    shape.append(3)  # width
     var x = ones(shape, DType.float32)
 
     var (output, mask) = dropout2d(x, p=0.5, training=True, seed=42)
