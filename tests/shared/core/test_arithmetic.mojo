@@ -14,15 +14,16 @@ All tests use pure functional API.
 """
 
 from ..helpers.assertions import (
-    assert_true,
-    assert_false,
-    assert_equal_int,
-    assert_close_float,
-    assert_shape,
-    assert_dtype,
-    assert_numel,
-    assert_dim,
     assert_all_values,
+    assert_almost_equal,
+    assert_close_float,
+    assert_dim,
+    assert_dtype,
+    assert_equal_int,
+    assert_false,
+    assert_numel,
+    assert_shape,
+    assert_true,
 )
 from tests.shared.conftest import TestFixtures
 from shared.core.extensor import ExTensor, zeros, ones, full

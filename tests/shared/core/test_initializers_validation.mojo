@@ -16,11 +16,12 @@ Validation strategy:
 """
 
 from ..helpers.assertions import (
-    assert_true,
-    assert_false,
-    assert_equal_int,
-    assert_equal_float,
     assert_close_float,
+    assert_equal,
+    assert_equal_float,
+    assert_equal_int,
+    assert_false,
+    assert_true,
 )
 from math import sqrt
 from shared.core import (

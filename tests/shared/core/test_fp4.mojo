@@ -10,9 +10,11 @@ Tests cover:
 """
 
 from ..helpers.assertions import (
-    assert_true,
-    assert_equal_int,
+    assert_almost_equal,
     assert_close_float,
+    assert_equal,
+    assert_equal_int,
+    assert_true,
 )
 from shared.core.types.fp4 import FP4_E2M1
 from math import isnan, isinf

@@ -13,9 +13,11 @@ Tests cover:
 """
 
 from ..helpers.assertions import (
-    assert_true,
-    assert_equal_int,
+    assert_almost_equal,
     assert_close_float,
+    assert_equal,
+    assert_equal_int,
+    assert_true,
 )
 from shared.core.types.nvfp4 import NVFP4, E4M3Scale
 from math import isnan, isinf
