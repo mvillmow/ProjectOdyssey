@@ -513,7 +513,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                     if ":" in line:
                         var parts = line.split(":")
                         if len(parts) >= 2:
-                            var key = parts[0].strip()
+                            var key = String(parts[0].strip())
                             var value_str = parts[1].strip()
 
                             # Try to parse as number
@@ -576,7 +576,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                     if ":" in pair:
                         var parts = pair.split(":")
                         if len(parts) >= 2:
-                            var key = parts[0].strip()
+                            var key = String(parts[0].strip())
                             var value_str = parts[1].strip()
 
                             # Try to parse as number
