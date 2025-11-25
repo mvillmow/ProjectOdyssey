@@ -90,7 +90,7 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     return Float64(correct) / Float64(pred_classes._numel)
 
 
-fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
+fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Compute argmax along specified axis.
 
     Args:.        `tensor`: Input tensor.
