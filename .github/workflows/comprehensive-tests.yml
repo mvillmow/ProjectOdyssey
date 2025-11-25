@@ -182,7 +182,7 @@ jobs:
           echo ""
 
           # Save results
-          result_file="../../test-results/${{ matrix.test-group.name }}.txt"
+          result_file="../../../test-results/${{ matrix.test-group.name }}.txt"
           echo "Test Group: ${{ matrix.test-group.name }}" > "$result_file"
           echo "Total: $test_count tests run, $passed_count passed, $failed_count failed" >> "$result_file"
           if [ $failed_count -gt 0 ]; then
