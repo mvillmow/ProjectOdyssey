@@ -7,7 +7,7 @@ Dropout randomly zeros some elements of the input tensor with probability p duri
 This helps prevent overfitting by randomly "dropping out" neurons.
 """
 
-from .extensor import ExTensor, zeros_like, ones_like
+from .extensor import ExTensor, zeros, zeros_like, ones_like
 from .arithmetic import multiply, divide
 from .extensor import full_like
 import random
@@ -75,7 +75,7 @@ fn dropout(
     if x.dtype() == DType.float32:
         for i in range(size):
             var rand_val = Float32(random.random_float64())
-            mask_ptr.bitcast[Float32]()[i] = 1.0 if rand_val > Float32(p) else 0.0
+            mask_ptr.bitcast[Float32]()[i] = Float32(1.0) if rand_val > Float32(p) else Float32(0.0)
     elif x.dtype() == DType.float64:
         for i in range(size):
             var rand_val = random.random_float64()
@@ -167,7 +167,7 @@ fn dropout2d(
             for c in range(channels):
                 var rand_val = Float32(random.random_float64())
                 var idx = b * channels + c
-                mask_ptr.bitcast[Float32]()[idx] = 1.0 if rand_val > Float32(p) else 0.0
+                mask_ptr.bitcast[Float32]()[idx] = Float32(1.0) if rand_val > Float32(p) else Float32(0.0)
     elif x.dtype() == DType.float64:
         for b in range(batch):
             for c in range(channels):
