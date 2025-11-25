@@ -9,13 +9,13 @@ from tests.shared.conftest import (
     assert_true,
     assert_false,
     assert_equal_int,
-    assert_equal_float,
+    assert_almost_equal,
     assert_close_float,
 )
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.loss import binary_cross_entropy, binary_cross_entropy_backward
 from shared.core.loss import mean_squared_error, mean_squared_error_backward
-from shared.core.extensor import mean
+from shared.core.reduction import mean
 from tests.helpers.gradient_checking import check_gradient
 
 
