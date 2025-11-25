@@ -738,8 +738,70 @@ Additional context
 
 ### Branch Naming
 
-- `main` - Production branch
-- `<issue-number>-<description>` - Feature/fix branches (e.g., `2-plan-create-base-directory`)
+- `main` - Production branch (protected, requires PR)
+- `<issue-number>-<description>` - Feature/fix branches (e.g., `1928-consolidate-test-assertions`)
+
+### Development Workflow
+
+**IMPORTANT:** The `main` branch is protected. All changes must go through a pull request.
+
+#### Creating a PR (Standard Workflow)
+
+1. **Create a feature branch:**
+
+   ```bash
+   git checkout -b <issue-number>-<description>
+   ```
+
+1. **Make your changes and commit:**
+
+   ```bash
+   git add <files>
+   git commit -m "$(cat <<'EOF'
+   type(scope): Brief description
+
+   Detailed explanation of changes.
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+   Co-Authored-By: Claude <noreply@anthropic.com>
+   EOF
+   )"
+   ```
+
+1. **Push the feature branch:**
+
+   ```bash
+   git push -u origin <branch-name>
+   ```
+
+1. **Create pull request:**
+
+   ```bash
+   gh pr create \
+     --title "[Type] Brief description" \
+     --body "Closes #<issue-number>" \
+     --label "appropriate-label"
+   ```
+
+#### Never Push Directly to Main
+
+❌ **NEVER DO THIS:**
+
+```bash
+git checkout main
+git commit -m "changes"
+git push origin main  # Will be rejected - main is protected
+```
+
+✅ **ALWAYS DO THIS:**
+
+```bash
+git checkout -b <issue-number>-description
+git commit -m "changes"
+git push -u origin <issue-number>-description
+gh pr create --title "..." --body "Closes #<issue>" --label "..."
+```
 
 ### Commit Message Format
 
