@@ -8,7 +8,7 @@ and utility functions (abs, sign, clip) following Array API Standard.
 from shared.core import ExTensor, zeros, ones, full, arange, abs, sign, exp, log, sqrt, sin, cos, tanh, clip
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dtype,
     assert_numel,
     assert_dim,

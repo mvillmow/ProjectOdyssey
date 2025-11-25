@@ -15,7 +15,7 @@ Validation strategy:
 - Integration (interoperability with ExTensor)
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_close_float,
     assert_equal,
     assert_equal_float,

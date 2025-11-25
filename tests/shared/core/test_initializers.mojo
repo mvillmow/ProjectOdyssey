@@ -12,7 +12,7 @@ Merged from non-legacy and legacy test files to provide complete coverage of:
 All tests use pure functional API.
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_almost_equal,
     assert_close_float,
     assert_equal,

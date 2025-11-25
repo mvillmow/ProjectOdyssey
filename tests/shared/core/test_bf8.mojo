@@ -9,7 +9,7 @@ Tests cover:
 - Round-trip conversion accuracy
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_almost_equal,
     assert_close_float,
     assert_equal,

@@ -19,7 +19,7 @@ from shared.core import ExTensor, ones, zeros, arange
 from shared.core.shape() import reshape, squeeze, unsqueeze, flatten, concatenate
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_dim,
     assert_numel,
     assert_value_at,

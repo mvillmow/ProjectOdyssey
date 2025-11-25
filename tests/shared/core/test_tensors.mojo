@@ -9,7 +9,7 @@ Tests cover:
 All tests use pure functional API.
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_true,
     assert_equal_int,
     assert_close_float,

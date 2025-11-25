@@ -9,7 +9,7 @@ Usage:
 Expected: All tests should pass (gradients match within tolerance)
 """
 
-from ..helpers.assertions import assert_true, assert_equal_int
+from tests.shared.conftest import assert_true, assert_equal_int
 from shared.testing import check_gradients, check_gradients_verbose
 from shared.core import ExTensor, zeros, ones, full
 from shared.core.activation import relu, relu_backward, sigmoid, sigmoid_backward, tanh, tanh_backward

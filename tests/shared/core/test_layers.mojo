@@ -13,7 +13,7 @@ Note: Tests have been adapted from class-based API to pure functional API
 as per architecture decision to use functional design throughout shared library.
 """
 
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_almost_equal,
     assert_close_float,
     assert_equal,

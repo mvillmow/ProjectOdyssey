@@ -8,7 +8,7 @@ contiguity, and basic tensor operations that should work with current implementa
 from shared.core import ExTensor, zeros, ones, full, arange, eye
 
 # Import test helpers
-from ..helpers.assertions import (
+from tests.shared.conftest import (
     assert_true,
     assert_false,
     assert_dtype,
