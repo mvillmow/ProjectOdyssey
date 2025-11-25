@@ -67,7 +67,7 @@ struct TrainingState(Copyable, Movable):
     var should_stop: Bool
 
     fn __init__(
-        mut self,
+        out self,
         epoch: Int = 0,
         batch: Int = 0,
         learning_rate: Float64 = 0.0,
@@ -113,7 +113,7 @@ trait Callback:
         - Multiple callbacks: first STOP signal takes precedence
 
     Example:.        struct MyCallback(Callback):
-            fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
+            fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
                 print("Epoch", state.epoch, "loss:", state.metrics["train_loss"])
                 return CONTINUE
     """
@@ -145,7 +145,7 @@ trait Callback:
         """
         ...
 
-    fn on_epoch_end(mut self, mut state: TrainingState) -> CallbackSignal:
+    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
         """Called at the end of each epoch (after validation).
 
         Args:.            `state`: Training state with current epoch metrics (train_loss, val_loss, etc.).

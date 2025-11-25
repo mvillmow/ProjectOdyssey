@@ -42,7 +42,10 @@ from .base import (
 from .schedulers import StepLR, CosineAnnealingLR, WarmupLR
 
 # Export callback implementations
-from .callbacks import EarlyStopping, ModelCheckpoint, LoggingCallback
+# NOTE: Callbacks must be imported directly from submodules due to Mojo limitations:
+#   from shared.training.callbacks import EarlyStopping
+# NOT from shared.training import EarlyStopping
+# from .callbacks import EarlyStopping, ModelCheckpoint, LoggingCallback
 
 # ============================================================================
 # Core Training Components (Issue #1939)
