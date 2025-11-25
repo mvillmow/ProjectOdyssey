@@ -89,7 +89,7 @@ module imports). Will be resolved in follow-up work.
 
 Closes #1857
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code
+🤖 Generated with [Claude Code](https://claude.com/product/claude-code
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 EOF

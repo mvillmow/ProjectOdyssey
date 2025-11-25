@@ -601,6 +601,6 @@ The project uses Mojo v0.25.7+ which has strict requirements for:
 
 ### Documentation
 
-- [Mojo Manual: Types](https://docs.modular.com/mojo/manual/types)
-- [Mojo Manual: Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+- [Mojo Manual: Types](https://docs.modular.com/mojo/manual/types/)
+- [Mojo Manual: Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 - [CLAUDE.md: Mojo Syntax Standards v0.25.7+](../../CLAUDE.md#mojo-syntax-standards-v0257)

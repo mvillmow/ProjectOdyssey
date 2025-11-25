@@ -352,7 +352,7 @@ When reviewing or writing Mojo code:
 - [ ] Use `read` (default), `mut`, `var`, or `ref` for parameter conventions
 - [ ] Add explicit trait conformances: `(Copyable, Movable)` at minimum
 
-**Reference**: [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types) | [Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+**Reference**: [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types/) | [Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 
 ## Environment Setup
 

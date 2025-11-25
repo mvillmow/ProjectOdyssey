@@ -90,7 +90,6 @@ native-recipe:
 ## References
 
 - [Just Manual](https://just.systems/man/en/)
-- [ProjectKeystone Reference](https://github.com/mvillmow/ProjectKeystone)
 - Issue #1943: https://github.com/mvillmow/ml-odyssey/issues/1943
 
 ## Testing

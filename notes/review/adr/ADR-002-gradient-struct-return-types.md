@@ -201,9 +201,9 @@ All 6 test functions in `test_backward.mojo` updated:
 
 ## References
 
-- Mojo Language: Struct Types (<https://docs.modular.com/mojo/manual/lifecycle.html>)
+- Mojo Language: Struct Types (<https://docs.modular.com/mojo/manual/lifecycle/>)
 - Zero-Cost Abstractions: (<https://en.cppreference.com/w/cpp/language/Zero-overhead_principle>)
-- Comparison with PyTorch tuple returns: <https://pytorch.org/docs/stable/generated/torch.autograd.backward.html>
+- Comparison with PyTorch tuple returns: <https://docs.pytorch.org/docs/stable/generated/torch.autograd.backward.html>
 
 ## Related Issues
 

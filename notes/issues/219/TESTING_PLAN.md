@@ -836,6 +836,6 @@ Add 30-50% buffer for:
 
 - [Python Array API Standard 2023.12](https://data-apis.org/array-api/latest/)
 - [NumPy Testing Guidelines](https://numpy.org/doc/stable/reference/testing.html)
-- [PyTorch Testing Best Practices](https://github.com/pytorch/pytorch/wiki/Testing-Best-Practices)
+- [PyTorch Testing Best Practices](https://github.com/pytorch/pytorch/wiki/)
 - Test files location: `tests/extensor/*.mojo`
 - Test helpers: `tests/helpers/assertions.mojo`

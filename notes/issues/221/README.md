@@ -244,7 +244,7 @@ fn main():
 
 - [ExTensors Implementation Prompt](../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md)
 - [Issue #220: Implementation](../../../../../../../home/user/ml-odyssey/notes/issues/220/README.md)
-- [Mojo Package Documentation](https://docs.modular.com/mojo/)
+- [Mojo Package Documentation](https://docs.modular.com/mojo/manual/)
 
 ## Packaging Notes
 

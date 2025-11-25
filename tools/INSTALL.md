@@ -8,7 +8,7 @@ Complete setup guide for ML Odyssey development tools.
 
 - **Operating System**: Linux, macOS, or WSL2 (Windows)
 - **Python**: 3.8 or higher
-- **Mojo**: Latest stable version (check [Modular docs](https://docs.modular.com/mojo/))
+- **Mojo**: Latest stable version (check [Modular docs](https://docs.modular.com/mojo/manual/))
 - **Git**: For version control
 - **Disk Space**: ~500 MB for tools and dependencies
 
@@ -444,7 +444,7 @@ Add to `.vscode/settings.json`:
 - [Tools README](./README.md) - Overview and purpose
 - [INTEGRATION.md](./INTEGRATION.md) - Integration guide
 - [CATALOG.md](./CATALOG.md) - Tool catalog
-- [Modular Documentation](https://docs.modular.com/mojo/) - Mojo installation
+- [Modular Documentation](https://docs.modular.com/mojo/manual/) - Mojo installation
 - [Python Documentation](https://www.python.org/downloads/) - Python installation
 
 ---

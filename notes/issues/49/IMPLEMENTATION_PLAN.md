@@ -1113,7 +1113,7 @@ fn sum_vectorized(input: Tensor) -> Float32:
 - **Shared Library README**: `/home/mvillmow/ml-odyssey/worktrees/issue-49-impl-shared/shared/README.md`
 - **Core README**: `/home/mvillmow/ml-odyssey/worktrees/issue-49-impl-shared/shared/core/README.md`
 - **Training README**: `/home/mvillmow/ml-odyssey/worktrees/issue-49-impl-shared/shared/training/README.md`
-- **Mojo Language Guide**: [Mojo Documentation](https://docs.modular.com/mojo/)
+- **Mojo Language Guide**: [Mojo Documentation](https://docs.modular.com/mojo/manual/)
 
 ## Appendix: Component Complexity Ratings
 

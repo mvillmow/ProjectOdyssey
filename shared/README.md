@@ -345,7 +345,7 @@ When a component proves reusable:
 
 ## References
 
-- [Mojo Language Documentation](https://docs.modular.com/mojo/)
+- [Mojo Language Documentation](https://docs.modular.com/mojo/manual/)
 - [Papers Directory](../../../../../papers/README.md) - Paper-specific implementations
 - [Project Architecture](../notes/review/agent-architecture-review.md) - Overall design
 - [Contribution Guidelines](../../../../../CONTRIBUTING.md) - How to contribute

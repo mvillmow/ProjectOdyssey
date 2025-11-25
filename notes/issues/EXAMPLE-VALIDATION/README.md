@@ -275,7 +275,7 @@ Key issues related to Mojo language changes:
 3. **Move Semantics & Lifetimes**: <https://docs.modular.com/mojo/manual/values/lifetimes>
    - Use `^` operator to transfer ownership
    - List[T] requires T to be Copyable
-   - See also: [Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+   - See also: [Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 
 4. **Collections**: <https://docs.modular.com/mojo/stdlib/collections/list/List/>
    - DynamicVector has been replaced with List

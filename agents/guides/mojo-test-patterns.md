@@ -388,7 +388,7 @@ When fixing test files, check these items:
 ## References
 
 - [CLAUDE.md - Mojo Syntax Standards](../../CLAUDE.md#mojo-syntax-standards-v0257)
-- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 - [Mojo Manual - Python Integration](https://docs.modular.com/mojo/manual/python/)
 
 ## Related Documentation

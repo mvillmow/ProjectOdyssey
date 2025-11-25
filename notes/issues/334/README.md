@@ -321,7 +321,7 @@ var warmup = WarmupLR(base_lr=0.1, warmup_epochs=10)
 
 ## References
 
-- [PyTorch LinearLR](https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LinearLR.html)
+- [PyTorch LinearLR](https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.LinearLR.html)
 - **BERT**: *BERT: Pre-training of Deep Bidirectional Transformers* (Devlin et al., 2018)
 - **ImageNet in 1 Hour**: *Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour* (Goyal et al., 2017)
 - **Transformer**: *Attention Is All You Need* (Vaswani et al., 2017)

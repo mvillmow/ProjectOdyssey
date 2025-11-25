@@ -146,8 +146,8 @@ The following patterns were verified as **correct** in Mojo v0.25.7+ and left un
 
 ## References
 
-- [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types)
-- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+- [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types/)
+- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 - Mojo v0.25.7+ Syntax Standards documented in `/CLAUDE.md`
 
 ## Next Steps

@@ -468,8 +468,8 @@ For each operation, verify:
 
 - [Python Array API Standard 2023.12](https://data-apis.org/array-api/latest/)
 - [NumPy API Reference](https://numpy.org/doc/stable/reference/)
-- [PyTorch Tensor API](https://pytorch.org/docs/stable/tensors.html)
-- [Mojo Standard Library](https://docs.modular.com/mojo/lib.html)
+- [PyTorch Tensor API](https://docs.pytorch.org/docs/stable/tensors.html)
+- [Mojo Standard Library](https://docs.modular.com/mojo/lib/)
 
 ## Notes
 

@@ -236,7 +236,7 @@ coverage_gates:
 ### External Documentation
 
 - [pytest-cov documentation](https://pytest-cov.readthedocs.io/)
-- [Coverage.py](https://coverage.readthedocs.io/)
+- [Coverage.py](https://coverage.readthedocs.io/en/7.12.0/)
 - [Codecov documentation](https://docs.codecov.com/)
 - [Shields.io badges](https://shields.io/)
 

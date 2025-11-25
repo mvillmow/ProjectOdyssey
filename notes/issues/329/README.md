@@ -318,7 +318,7 @@ fn load_state_dict(inout self, state: Dict[String, Variant]):
 ## References
 
 - [SGDR: Stochastic Gradient Descent with Warm Restarts (Loshchilov & Hutter, 2016)](https://arxiv.org/abs/1608.03983) - Introduced cosine annealing
-- [PyTorch CosineAnnealingLR](https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.CosineAnnealingLR.html)
+- [PyTorch CosineAnnealingLR](https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.CosineAnnealingLR.html)
 - [Keras CosineDecay](https://www.tensorflow.org/api_docs/python/tf/keras/optimizers/schedules/CosineDecay)
 - Papers using cosine annealing:
   - ResNet variants (He et al.)

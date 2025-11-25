@@ -255,7 +255,7 @@ fn load_state_dict(inout self, state: Dict[String, Variant]):
 
 ## References
 
-- [PyTorch StepLR](https://pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.StepLR.html)
+- [PyTorch StepLR](https://docs.pytorch.org/docs/stable/generated/torch.optim.lr_scheduler.StepLR.html)
 - [Keras Step Decay](https://keras.io/api/optimizers/learning_rate_schedules/exponential_decay/)
 - Classic papers using step decay:
   - AlexNet (Krizhevsky et al., 2012)

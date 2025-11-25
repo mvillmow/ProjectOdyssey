@@ -184,7 +184,7 @@ Conducted comprehensive investigation of all scripts in the `/scripts` directory
 - **Issue:** NIST server temporarily unavailable (not script issue)
 - **Impact:** Documentation reference only, doesn't affect script functionality
 
-### 2. <http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST>
+### 2. <https://www.nist.gov/itl>
 
 - **Status:** ⚠️ 302 Redirect to <https://www.nist.gov/itl/>
 - **Used In:** scripts/download_emnist.py (EMNIST_BASE_URL)
@@ -198,7 +198,7 @@ Conducted comprehensive investigation of all scripts in the `/scripts` directory
 - **Used In:** scripts/document_foundation_issues.py (documentation reference)
 - **Result:** Repository accessible, 598 stars, actively maintained
 
-### 4. <https://claude.com/claude-code>
+### 4. <https://claude.com/product/claude-code>
 
 - **Status:** ✅ WORKING
 - **Used In:** Generated code comments in merge scripts

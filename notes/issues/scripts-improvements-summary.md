@@ -52,14 +52,14 @@ pre-commit run validate-urls --all-files
 **Before:**
 
 ```python
-EMNIST_BASE_URL = "http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST"
+EMNIST_BASE_URL = "https://www.nist.gov/itl"
 EMNIST_GZIP_URL = f"{EMNIST_BASE_URL}/gzip.zip"
 ```
 
 **After:**
 
 ```python
-EMNIST_PRIMARY_URL = "http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST/gzip.zip"
+EMNIST_PRIMARY_URL = "https://www.nist.gov/itl/gzip.zip"
 EMNIST_FALLBACK_URLS = [
     "http://biometrics.nist.gov/cs_links/EMNIST/gzip.zip",
 ]

@@ -227,7 +227,7 @@ Based on the planning phase:
 
 ### External References
 
-- [coverage.py Documentation](https://coverage.readthedocs.io/) - Standard Python coverage tool
+- [coverage.py Documentation](https://coverage.readthedocs.io/en/7.12.0/) - Standard Python coverage tool
 - [Code Coverage Best Practices](https://en.wikipedia.org/wiki/Code_coverage) - General concepts
 - [TDD Principles](../../../../../../../CLAUDE.md#key-development-principles) - Test-driven development approach
 

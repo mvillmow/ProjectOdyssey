@@ -189,8 +189,8 @@ fn gelu[dtype: DType](
 - **External References**:
   - GELU Paper: "Gaussian Error Linear Units (GELUs)" - Hendrycks & Gimpel (2016)
   - Softmax: Standard in "Deep Learning" - Goodfellow, Bengio, Courville
-  - PyTorch Softmax: [torch.nn.functional.softmax](https://pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html)
-  - PyTorch GELU: [torch.nn.functional.gelu](https://pytorch.org/docs/stable/generated/torch.nn.functional.gelu.html)
+  - PyTorch Softmax: [torch.nn.functional.softmax](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.softmax.html)
+  - PyTorch GELU: [torch.nn.functional.gelu](https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.gelu.html)
 
 ## Implementation Notes
 

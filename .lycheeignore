@@ -4,6 +4,9 @@
 # Ignore plan directory (in .gitignore, will cause 404s)
 notes/plan/
 
+# Ignore issues directory (contains issue-specific notes, not public docs)
+notes/issues/
+
 # Ignore file:// URLs (local file system references)
 file:///
 

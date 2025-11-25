@@ -97,7 +97,7 @@ correctness of all activation function gradients.
 
 Functions validated: relu, leaky_relu, prelu, sigmoid, tanh, softmax, elu
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code
+🤖 Generated with [Claude Code](https://claude.com/product/claude-code
 
 Co-Authored-By: Claude <noreply@anthropic.com>"
 

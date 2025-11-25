@@ -167,8 +167,8 @@ All modified files passed verification:
 
 ## References
 
-- [Mojo Manual - String Type](https://docs.modular.com/mojo/manual/types)
-- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+- [Mojo Manual - String Type](https://docs.modular.com/mojo/manual/types/)
+- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 - [CLAUDE.md - Mojo Syntax Standards](../../CLAUDE.md#mojo-syntax-standards-v0257)
 - [Migration Summary](../../MOJO_V0257_MIGRATION_SUMMARY.md)
 

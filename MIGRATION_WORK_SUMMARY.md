@@ -154,8 +154,8 @@ Comprehensive analysis and fixes for all Mojo files in the `shared/` directory t
 
 ## References
 
-- [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types)
-- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
+- [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types/)
+- [Mojo Manual - Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
 - [ML Odyssey CLAUDE.md - Mojo Syntax Standards](./CLAUDE.md#mojo-syntax-standards-v0257)
 
 ## Summary

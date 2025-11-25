@@ -274,7 +274,7 @@ Design and document the architecture for ExTensors (Extensible Tensors), a compr
 ### External Standards and Documentation
 
 - [Array API Standard 2024](https://data-apis.org/array-api/2024.12/) - API specification reference
-- [Mojo Type System](https://docs.modular.com/mojo/manual/types) - Language reference for structs, parametric types, traits
+- [Mojo Type System](https://docs.modular.com/mojo/manual/types/) - Language reference for structs, parametric types, traits
 - [NumPy Broadcasting Rules](https://numpy.org/doc/stable/user/basics.broadcasting.html) - Broadcasting semantics
 
 ### ML Odyssey Documentation

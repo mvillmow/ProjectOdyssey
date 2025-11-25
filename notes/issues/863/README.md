@@ -590,7 +590,7 @@ After completing this packaging phase:
 ### Mojo Documentation
 
 - [Mojo Packaging](https://docs.modular.com/mojo/manual/packages/)
-- [MAX SDK](https://docs.modular.com/max/)
+- [MAX SDK](https://docs.modular.com/)
 
 ### Related Issues
 

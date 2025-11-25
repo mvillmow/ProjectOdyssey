@@ -876,7 +876,7 @@ production-ready performance.
 
 - [Mojo Manual](https://docs.modular.com/mojo/manual/)
 - [Python Array API Standard](https://data-apis.org/array-api/latest/)
-- [Mojo Changelog](https://docs.modular.com/mojo/changelog)
+- [Mojo Changelog](https://docs.modular.com/mojo/changelog/)
 - Project version: Mojo >=0.25.7.0.dev2025110405
 
 **Reviewed by:** Claude Code (AI Assistant)

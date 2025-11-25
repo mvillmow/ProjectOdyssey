@@ -357,7 +357,7 @@ CoverageTestRunner
 
 ### External Resources
 
-- [coverage.py Documentation](https://coverage.readthedocs.io/)
+- [coverage.py Documentation](https://coverage.readthedocs.io/en/7.12.0/)
 - [Coverage Data Format](https://coverage.readthedocs.io/en/latest/data.html)
 - [Standard Coverage Formats](https://en.wikipedia.org/wiki/Code_coverage)
 

@@ -259,9 +259,9 @@ Step 4: Commit changes
 
 ### External References
 
-- [Mojo Manual: Types](https://docs.modular.com/mojo/manual/types)
-- [Mojo Manual: Value Ownership](https://docs.modular.com/mojo/manual/values/ownership)
-- [Mojo Changelog v0.25.7](https://docs.modular.com/mojo/changelog)
+- [Mojo Manual: Types](https://docs.modular.com/mojo/manual/types/)
+- [Mojo Manual: Value Ownership](https://docs.modular.com/mojo/manual/values/ownership/)
+- [Mojo Changelog v0.25.7](https://docs.modular.com/mojo/changelog/)
 
 ---
 

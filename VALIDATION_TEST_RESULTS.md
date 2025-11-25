@@ -402,7 +402,7 @@ The following legitimate URLs are correctly skipped (cannot validate due to serv
 - `http://example.com` - Test/example placeholder
 - `https://arxiv.org/abs/1234.5678` - Example arxiv link
 - `https://github.com/user/repo.git` - Example GitHub repo
-- `http://www.itl.nist.gov/iaui/vip/cs_links/EMNIST` - NIST server issues
+- `https://www.nist.gov/itl` - NIST server issues
 - `https://www.nist.gov/itl/products-and-services/emnist-dataset` - NIST server issues
 
 ---

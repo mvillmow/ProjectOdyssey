@@ -169,7 +169,7 @@ This means **minimal changes** to existing code - we're building on top, not rew
 
 **References:**
 
-- PyTorch Autograd: <https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html>
+- PyTorch Autograd: <https://docs.pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html>
 - Micrograd (minimal autograd): <https://github.com/karpathy/micrograd>
 - Existing backward passes: `/home/user/ml-odyssey/shared/core/` (arithmetic.mojo, matrix.mojo, etc.)
 - Gradient documentation: `/home/user/ml-odyssey/docs/backward-passes/README.md`

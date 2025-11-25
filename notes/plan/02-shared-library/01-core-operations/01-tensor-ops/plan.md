@@ -113,4 +113,4 @@ Note: The original child plans (01-basic-arithmetic, 02-matrix-ops, 03-reduction
 
 - [ExTensors Implementation Prompt](../../../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md) - Comprehensive design specification
 - [Array API Standard 2024](https://data-apis.org/array-api/2024.12/) - API reference
-- [Mojo Type System](https://docs.modular.com/mojo/manual/types) - Language reference
+- [Mojo Type System](https://docs.modular.com/mojo/manual/types/) - Language reference

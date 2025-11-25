@@ -573,7 +573,7 @@ mojo test tests/extensor/benchmark_simd.mojo
 
 - [ExTensors Implementation Prompt](../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md)
 - [Array API Standard 2024 Test Suite](https://data-apis.org/array-api/latest/API_specification/index.html)
-- [Mojo Testing Documentation](https://docs.modular.com/mojo/)
+- [Mojo Testing Documentation](https://docs.modular.com/mojo/manual/)
 
 ## Implementation Notes
 

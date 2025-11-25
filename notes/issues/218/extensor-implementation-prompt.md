@@ -622,7 +622,7 @@ Please provide your deliverables in this structure:
 
 ### Mojo Documentation
 
-- [Mojo Type System](https://docs.modular.com/mojo/manual/types)
+- [Mojo Type System](https://docs.modular.com/mojo/manual/types/)
 - [Mojo Structs](https://docs.modular.com/mojo/manual/basics/)
 - [Mojo Parametric Types](https://docs.modular.com/mojo/manual/)
 - [Mojo Traits](https://docs.modular.com/mojo/manual/)

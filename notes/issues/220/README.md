@@ -200,7 +200,7 @@ For each operation category (following test file order):
 
 - [ExTensors Implementation Prompt](../../../../../../../home/user/ml-odyssey/notes/issues/218/extensor-implementation-prompt.md)
 - [Array API Standard 2024](https://data-apis.org/array-api/2024.12/)
-- [Mojo Type System](https://docs.modular.com/mojo/manual/types)
+- [Mojo Type System](https://docs.modular.com/mojo/manual/types/)
 - [Issue #219: Test Specification](../../../../../../../home/user/ml-odyssey/notes/issues/219/README.md)
 
 ## Implementation Notes

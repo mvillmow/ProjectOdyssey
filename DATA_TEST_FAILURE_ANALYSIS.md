@@ -460,7 +460,7 @@ struct StubDataset(Copyable, Movable):
 4. Value ownership semantics strictly enforced
 5. Non-copyable types require explicit `^` transfer
 
-**Reference**: [Mojo Manual - Types and Ownership](https://docs.modular.com/mojo/manual/types)
+**Reference**: [Mojo Manual - Types and Ownership](https://docs.modular.com/mojo/manual/types/)
 
 ---
 
