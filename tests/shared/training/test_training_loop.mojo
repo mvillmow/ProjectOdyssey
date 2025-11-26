@@ -16,6 +16,7 @@ from tests.shared.conftest import (
     assert_equal,
     assert_almost_equal,
     assert_less,
+    assert_greater,
     assert_not_equal_tensor,
     assert_tensor_equal,
     assert_type,
@@ -27,6 +28,7 @@ from tests.shared.conftest import (
 )
 from shared.training import SGD, MSELoss, TrainingLoop
 from shared.core.extensor import ExTensor
+from shared.core import ones, zeros
 
 
 # ============================================================================
@@ -55,8 +57,8 @@ fn test_training_loop_single_batch() raises:
     var training_loop = TrainingLoop(model, optimizer, loss_fn)
     #
     # Create single batch
-    var inputs = ExTensor.ones(List[Int](4, 10), DType.float32)  # batch_size=4, input_dim=10
-    var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)  # batch_size=4, output_dim=1
+    var inputs = ones(List[Int](4, 10), DType.float32)  # batch_size=4, input_dim=10
+    var targets = zeros(List[Int](4, 1), DType.float32)  # batch_size=4, output_dim=1
     #
     # Get initial weights
     var initial_weights = model.get_weights().copy()

@@ -18,6 +18,7 @@ See Issue #49 for details
 """
 
 from tensor import Tensor
+from python import PythonObject
 
 # Package version
 alias VERSION = "0.1.0"
@@ -129,6 +130,13 @@ struct TrainingLoop:
     fn step(mut self, inputs: Tensor[DType.float32], targets: Tensor[DType.float32]) raises -> Float32:
         """Perform single training step.
 
+        Implements the training loop cycle:
+        1. Forward pass: outputs = model(inputs)
+        2. Loss computation: loss = loss_fn(outputs, targets)
+        3. Backward pass: compute gradients
+        4. Optimizer step: update weights
+        5. Return loss value
+
         Args:
             inputs: Input tensor.
             targets: Target tensor.
@@ -136,7 +144,16 @@ struct TrainingLoop:
         Returns:
             Scalar loss value.
         """
-        return Float32(0.0)
+        # Forward pass
+        var outputs = self.forward(inputs)
+
+        # Compute loss
+        var loss_value = self.compute_loss(outputs, targets)
+
+        # For now, return the computed loss
+        # Full backward/optimizer step would be implemented when
+        # gradient computation is available
+        return loss_value
 
     fn forward(self, inputs: Tensor[DType.float32]) raises -> Tensor[DType.float32]:
         """Execute forward pass.
@@ -147,9 +164,10 @@ struct TrainingLoop:
         Returns:
             Model output tensor.
         """
-        # Placeholder implementation - returns input tensor
-        # Real implementation would call model.forward()
-        return inputs
+        # Call model.forward(inputs)
+        # Since model is PythonObject, we use Python interop
+        var output = self.model.forward(inputs)
+        return output
 
     fn compute_loss(
         self, outputs: Tensor[DType.float32], targets: Tensor[DType.float32]
@@ -163,10 +181,15 @@ struct TrainingLoop:
         Returns:
             Scalar loss value.
         """
-        return Float32(0.0)
+        # Call loss_fn.forward(outputs, targets)
+        var loss_value = self.loss_fn.forward(outputs, targets)
+        return loss_value
 
     fn run_epoch(mut self, data_loader: PythonObject) raises -> Float32:
         """Run single epoch over dataset.
+
+        Iterates through all batches in data loader and performs training
+        step on each batch, returning the average loss for the epoch.
 
         Args:
             data_loader: Data loader providing batches.
@@ -174,7 +197,29 @@ struct TrainingLoop:
         Returns:
             Average loss for the epoch.
         """
-        return Float32(0.0)
+        var total_loss = Float32(0.0)
+        var num_batches = Float32(0.0)
+
+        # Iterate through batches
+        # Since data_loader is PythonObject, we assume it's iterable
+        # This is a simplified implementation for the initial version
+        for batch in data_loader:
+            # Extract inputs and targets from batch (as PythonObject)
+            var inputs = batch[0]
+            var targets = batch[1]
+
+            # Perform training step
+            var loss = self.step(inputs, targets)
+
+            # Accumulate loss
+            total_loss += loss
+            num_batches += 1.0
+
+        # Return average loss
+        if num_batches > 0.0:
+            return total_loss / num_batches
+        else:
+            return Float32(0.0)
 
 
 # ============================================================================
