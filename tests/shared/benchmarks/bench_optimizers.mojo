@@ -83,7 +83,7 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
             memory_mb=0.0,
         )
     )
-    return results
+    return results^
 
 
 fn bench_sgd_momentum_overhead() raises -> BenchmarkResult:
@@ -190,7 +190,7 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
             memory_mb=0.0,
         )
     )
-    return results
+    return results^
 
 
 fn bench_adam_memory_usage() raises -> BenchmarkResult:
@@ -303,7 +303,7 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
             memory_mb=0.0,
         )
     )
-    return results
+    return results^
 
 
 # ============================================================================
