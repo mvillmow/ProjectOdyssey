@@ -193,7 +193,7 @@ fn train_mlp() raises:
         var grad_loss = ones(grad_loss_shape, DType.float32)  # scalar 1.0
 
         # Backprop through mean
-        var grad_loss_val = mean_backward(grad_loss, loss_val.shape())
+        var grad_loss_val = mean_backward(grad_loss, loss_val)
 
         # Backprop through BCE
         var grad_pred = binary_cross_entropy_backward(grad_loss_val, pred, y_sample)

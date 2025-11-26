@@ -97,7 +97,7 @@ fn simple_linear_regression() raises:
 
         # Gradient of mean: ∂loss/∂squared_errors
         var grad_squared_errors = mean_backward(
-            grad_loss, squared_errors.shape(), axis=-1
+            grad_loss, squared_errors, axis=-1
         )
 
         # Gradient of MSE: ∂squared_errors/∂predictions

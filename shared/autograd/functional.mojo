@@ -271,7 +271,7 @@ fn mse_loss_and_grad(
 
     # Backward pass
     var grad_loss = ones(loss.shape(), loss.dtype())
-    var grad_squared_errors = mean_backward(grad_loss, squared_errors.shape(), axis=-1)
+    var grad_squared_errors = mean_backward(grad_loss, squared_errors, axis=-1)
     var grad_predictions = mean_squared_error_backward(
         grad_squared_errors, predictions, targets
     )
@@ -311,7 +311,7 @@ fn bce_loss_and_grad(
 
     # Backward pass
     var grad_loss = ones(loss.shape(), loss.dtype())
-    var grad_bce = mean_backward(grad_loss, bce_per_sample.shape(), axis=-1)
+    var grad_bce = mean_backward(grad_loss, bce_per_sample, axis=-1)
     var grad_predictions = binary_cross_entropy_backward(
         grad_bce, predictions, targets, epsilon
     )

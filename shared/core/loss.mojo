@@ -112,12 +112,13 @@ fn binary_cross_entropy_backward(
     Returns:.        Gradient with respect to predictions, same shape as predictions.
 
     Example:.        # Forward.
-        var loss = mean(binary_cross_entropy(predictions, targets))
+        var bce_loss = binary_cross_entropy(predictions, targets)
+        var loss = mean(bce_loss)
 
         # Backward
         var grad_loss = ones_like(loss)
-        var grad_mean = mean_backward(grad_loss, loss_shape)
-        var grad_pred = binary_cross_entropy_backward(grad_mean, predictions, targets)
+        var grad_bce = mean_backward(grad_loss, bce_loss)
+        var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
     """
     # Simplified gradient: (predictions - targets)
     # This is the standard form used in most ML frameworks
@@ -176,12 +177,13 @@ fn mean_squared_error_backward(
     Returns:.        Gradient with respect to predictions, same shape as predictions.
 
     Example:.        # Forward.
-        var loss = mean(mean_squared_error(predictions, targets))
+        var squared_error = mean_squared_error(predictions, targets)
+        var loss = mean(squared_error)
 
         # Backward
         var grad_loss = ones_like(loss)
-        var grad_mean = mean_backward(grad_loss, squared_error_shape)
-        var grad_pred = mean_squared_error_backward(grad_mean, predictions, targets)
+        var grad_squared_error = mean_backward(grad_loss, squared_error)
+        var grad_pred = mean_squared_error_backward(grad_squared_error, predictions, targets)
     """
     # Gradient: 2 * (predictions - targets)
     var diff = subtract(predictions, targets)
