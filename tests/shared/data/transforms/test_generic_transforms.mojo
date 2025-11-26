@@ -35,7 +35,7 @@ from shared.data.generic_transforms import (
 
 fn test_identity_basic() raises:
     """Test identity transform returns input unchanged."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
     var identity = IdentityTransform()
 
     var result = identity(data)
@@ -48,7 +48,7 @@ fn test_identity_basic() raises:
 
 fn test_identity_preserves_values() raises:
     """Test identity preserves all values exactly."""
-    var data = Tensor(List[Float32](0.0, -1.5, 42.0, 100.5))
+    var data = ExTensor(List[Float32](0.0, -1.5, 42.0, 100.5))
     var identity = IdentityTransform()
 
     var result = identity(data)
@@ -59,7 +59,7 @@ fn test_identity_preserves_values() raises:
 
 fn test_identity_empty_tensor() raises:
     """Test identity handles empty tensor."""
-    var data = Tensor(List[Float32]())
+    var data = ExTensor(List[Float32]())
     var identity = IdentityTransform()
 
     var result = identity(data)
@@ -74,7 +74,7 @@ fn test_identity_empty_tensor() raises:
 
 fn test_lambda_double_values() raises:
     """Test lambda transform doubles all values."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -89,7 +89,7 @@ fn test_lambda_double_values() raises:
 
 fn test_lambda_add_constant() raises:
     """Test lambda transform adds constant."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     fn add_ten(value: Float32) -> Float32:
         return value + 10.0
@@ -104,7 +104,7 @@ fn test_lambda_add_constant() raises:
 
 fn test_lambda_square_values() raises:
     """Test lambda transform squares values."""
-    var data = Tensor(List[Float32](2.0, 3.0, 4.0))
+    var data = ExTensor(List[Float32](2.0, 3.0, 4.0))
 
     fn square(value: Float32) -> Float32:
         return value * value
@@ -119,7 +119,7 @@ fn test_lambda_square_values() raises:
 
 fn test_lambda_negative_values() raises:
     """Test lambda transform with negative values."""
-    var data = Tensor(List[Float32](-1.0, -2.0, -3.0))
+    var data = ExTensor(List[Float32](-1.0, -2.0, -3.0))
 
     fn abs_value(value: Float32) -> Float32:
         return abs(value)
@@ -139,9 +139,9 @@ fn test_lambda_negative_values() raises:
 
 fn test_conditional_always_apply() raises:
     """Test conditional transform with always-true predicate."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
-    fn always_true(tensor: Tensor) -> Bool:
+    fn always_true(tensor: ExTensor) -> Bool:
         return True
 
     fn double_fn(value: Float32) -> Float32:
@@ -160,9 +160,9 @@ fn test_conditional_always_apply() raises:
 
 fn test_conditional_never_apply() raises:
     """Test conditional transform with always-false predicate."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
-    fn always_false(tensor: Tensor) -> Bool:
+    fn always_false(tensor: ExTensor) -> Bool:
         return False
 
     fn double_fn(value: Float32) -> Float32:
@@ -181,10 +181,10 @@ fn test_conditional_never_apply() raises:
 
 fn test_conditional_based_on_size() raises:
     """Test conditional transform based on tensor size."""
-    var small_data = Tensor(List[Float32](1.0, 2.0))
-    var large_data = Tensor(List[Float32](1.0, 2.0, 3.0, 4.0))
+    var small_data = ExTensor(List[Float32](1.0, 2.0))
+    var large_data = ExTensor(List[Float32](1.0, 2.0, 3.0, 4.0))
 
-    fn is_large(tensor: Tensor) -> Bool:
+    fn is_large(tensor: ExTensor) -> Bool:
         return tensor.num_elements() > 3
 
     fn double_fn(value: Float32) -> Float32:
@@ -207,10 +207,10 @@ fn test_conditional_based_on_size() raises:
 
 fn test_conditional_based_on_values() raises:
     """Test conditional transform based on tensor values."""
-    var positive_data = Tensor(List[Float32](1.0, 2.0, 3.0))
-    var mixed_data = Tensor(List[Float32](-1.0, 2.0, 3.0))
+    var positive_data = ExTensor(List[Float32](1.0, 2.0, 3.0))
+    var mixed_data = ExTensor(List[Float32](-1.0, 2.0, 3.0))
 
-    fn all_positive(tensor: Tensor) -> Bool:
+    fn all_positive(tensor: ExTensor) -> Bool:
         for i in range(tensor.num_elements()):
             if tensor[i] < 0.0:
                 return False
@@ -239,7 +239,7 @@ fn test_conditional_based_on_values() raises:
 
 fn test_clamp_basic() raises:
     """Test clamp limits values to range."""
-    var data = Tensor(List[Float32](0.0, 0.5, 1.0, 1.5, 2.0))
+    var data = ExTensor(List[Float32](0.0, 0.5, 1.0, 1.5, 2.0))
     var clamp = ClampTransform(0.3, 1.2)
 
     var result = clamp(data)
@@ -253,7 +253,7 @@ fn test_clamp_basic() raises:
 
 fn test_clamp_all_below_min() raises:
     """Test clamp when all values below minimum."""
-    var data = Tensor(List[Float32](-5.0, -2.0, 0.0))
+    var data = ExTensor(List[Float32](-5.0, -2.0, 0.0))
     var clamp = ClampTransform(1.0, 10.0)
 
     var result = clamp(data)
@@ -265,7 +265,7 @@ fn test_clamp_all_below_min() raises:
 
 fn test_clamp_all_above_max() raises:
     """Test clamp when all values above maximum."""
-    var data = Tensor(List[Float32](15.0, 20.0, 25.0))
+    var data = ExTensor(List[Float32](15.0, 20.0, 25.0))
     var clamp = ClampTransform(1.0, 10.0)
 
     var result = clamp(data)
@@ -277,7 +277,7 @@ fn test_clamp_all_above_max() raises:
 
 fn test_clamp_all_in_range() raises:
     """Test clamp when all values already in range."""
-    var data = Tensor(List[Float32](2.0, 5.0, 8.0))
+    var data = ExTensor(List[Float32](2.0, 5.0, 8.0))
     var clamp = ClampTransform(1.0, 10.0)
 
     var result = clamp(data)
@@ -289,7 +289,7 @@ fn test_clamp_all_in_range() raises:
 
 fn test_clamp_negative_range() raises:
     """Test clamp with negative range."""
-    var data = Tensor(List[Float32](-10.0, -5.0, 0.0, 5.0))
+    var data = ExTensor(List[Float32](-10.0, -5.0, 0.0, 5.0))
     var clamp = ClampTransform(-8.0, -2.0)
 
     var result = clamp(data)
@@ -302,7 +302,7 @@ fn test_clamp_negative_range() raises:
 
 fn test_clamp_zero_crossing() raises:
     """Test clamp range crossing zero."""
-    var data = Tensor(List[Float32](-5.0, -1.0, 0.0, 1.0, 5.0))
+    var data = ExTensor(List[Float32](-5.0, -1.0, 0.0, 1.0, 5.0))
     var clamp = ClampTransform(-2.0, 2.0)
 
     var result = clamp(data)
@@ -321,7 +321,7 @@ fn test_clamp_zero_crossing() raises:
 
 fn test_debug_passthrough() raises:
     """Test debug transform passes data through unchanged."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
     var debug = DebugTransform("test")
 
     var result = debug(data)
@@ -335,7 +335,7 @@ fn test_debug_passthrough() raises:
 
 fn test_debug_with_empty_tensor() raises:
     """Test debug transform with empty tensor."""
-    var data = Tensor(List[Float32]())
+    var data = ExTensor(List[Float32]())
     var debug = DebugTransform("empty_test")
 
     var result = debug(data)
@@ -349,7 +349,7 @@ fn test_debug_with_large_tensor() raises:
     for i in range(100):
         values.append(Float32(i))
 
-    var data = Tensor(values^)
+    var data = ExTensor(values^)
     var debug = DebugTransform("large_test")
 
     var result = debug(data)
@@ -367,7 +367,7 @@ fn test_debug_with_large_tensor() raises:
 
 fn test_to_float32_preserves_values() raises:
     """Test ToFloat32 preserves float values."""
-    var data = Tensor(List[Float32](1.5, 2.5, 3.5))
+    var data = ExTensor(List[Float32](1.5, 2.5, 3.5))
     var converter = ToFloat32()
 
     var result = converter(data)
@@ -379,7 +379,7 @@ fn test_to_float32_preserves_values() raises:
 
 fn test_to_int32_truncates() raises:
     """Test ToInt32 truncates float values."""
-    var data = Tensor(List[Float32](1.9, 2.5, 3.1))
+    var data = ExTensor(List[Float32](1.9, 2.5, 3.1))
     var converter = ToInt32()
 
     var result = converter(data)
@@ -391,7 +391,7 @@ fn test_to_int32_truncates() raises:
 
 fn test_to_int32_negative() raises:
     """Test ToInt32 handles negative values."""
-    var data = Tensor(List[Float32](-1.9, -2.5, -3.1))
+    var data = ExTensor(List[Float32](-1.9, -2.5, -3.1))
     var converter = ToInt32()
 
     var result = converter(data)
@@ -403,7 +403,7 @@ fn test_to_int32_negative() raises:
 
 fn test_to_int32_zero() raises:
     """Test ToInt32 handles zero."""
-    var data = Tensor(List[Float32](0.0, 0.1, -0.1))
+    var data = ExTensor(List[Float32](0.0, 0.1, -0.1))
     var converter = ToInt32()
 
     var result = converter(data)
@@ -420,7 +420,7 @@ fn test_to_int32_zero() raises:
 
 fn test_sequential_basic() raises:
     """Test sequential application of transforms."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -443,7 +443,7 @@ fn test_sequential_basic() raises:
 
 fn test_sequential_single_transform() raises:
     """Test sequential with single transform."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -461,7 +461,7 @@ fn test_sequential_single_transform() raises:
 
 fn test_sequential_empty() raises:
     """Test sequential with no transforms."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     var transforms = List[Transform]()
     var sequential = SequentialTransform(transforms^)
@@ -476,7 +476,7 @@ fn test_sequential_empty() raises:
 
 fn test_sequential_with_clamp() raises:
     """Test sequential including clamp transform."""
-    var data = Tensor(List[Float32](0.5, 1.5, 2.5))
+    var data = ExTensor(List[Float32](0.5, 1.5, 2.5))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -495,7 +495,7 @@ fn test_sequential_with_clamp() raises:
 
 fn test_sequential_deterministic() raises:
     """Test sequential produces same result on repeated calls."""
-    var data = Tensor(List[Float32](1.0, 2.0, 3.0))
+    var data = ExTensor(List[Float32](1.0, 2.0, 3.0))
 
     fn triple(value: Float32) -> Float32:
         return value * 3.0
@@ -522,9 +522,9 @@ fn test_sequential_deterministic() raises:
 fn test_batch_transform_basic() raises:
     """Test batch transform applies to multiple tensors."""
     var tensors = List[Tensor]()
-    tensors.append(Tensor(List[Float32](1.0, 2.0)))
-    tensors.append(Tensor(List[Float32](3.0, 4.0)))
-    tensors.append(Tensor(List[Float32](5.0, 6.0)))
+    tensors.append(ExTensor(List[Float32](1.0, 2.0)))
+    tensors.append(ExTensor(List[Float32](3.0, 4.0)))
+    tensors.append(ExTensor(List[Float32](5.0, 6.0)))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -565,7 +565,7 @@ fn test_batch_transform_empty_list() raises:
 fn test_batch_transform_single_tensor() raises:
     """Test batch transform with single tensor."""
     var tensors = List[Tensor]()
-    tensors.append(Tensor(List[Float32](1.0, 2.0, 3.0)))
+    tensors.append(ExTensor(List[Float32](1.0, 2.0, 3.0)))
 
     fn add_ten(value: Float32) -> Float32:
         return value + 10.0
@@ -584,9 +584,9 @@ fn test_batch_transform_single_tensor() raises:
 fn test_batch_transform_different_sizes() raises:
     """Test batch transform with different sized tensors."""
     var tensors = List[Tensor]()
-    tensors.append(Tensor(List[Float32](1.0)))
-    tensors.append(Tensor(List[Float32](2.0, 3.0)))
-    tensors.append(Tensor(List[Float32](4.0, 5.0, 6.0)))
+    tensors.append(ExTensor(List[Float32](1.0)))
+    tensors.append(ExTensor(List[Float32](2.0, 3.0)))
+    tensors.append(ExTensor(List[Float32](4.0, 5.0, 6.0)))
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
@@ -615,8 +615,8 @@ fn test_batch_transform_different_sizes() raises:
 fn test_batch_transform_with_clamp() raises:
     """Test batch transform with clamp."""
     var tensors = List[Tensor]()
-    tensors.append(Tensor(List[Float32](0.0, 5.0, 10.0)))
-    tensors.append(Tensor(List[Float32](15.0, 20.0, 25.0)))
+    tensors.append(ExTensor(List[Float32](0.0, 5.0, 10.0)))
+    tensors.append(ExTensor(List[Float32](15.0, 20.0, 25.0)))
 
     var base_transform = ClampTransform(2.0, 18.0)
     var batch = BatchTransform(base_transform)
@@ -641,7 +641,7 @@ fn test_batch_transform_with_clamp() raises:
 
 fn test_integration_preprocessing_pipeline() raises:
     """Test typical preprocessing pipeline."""
-    var data = Tensor(List[Float32](-5.0, 0.0, 5.0, 10.0, 15.0))
+    var data = ExTensor(List[Float32](-5.0, 0.0, 5.0, 10.0, 15.0))
 
     fn normalize(value: Float32) -> Float32:
         # Scale to [0, 1]
@@ -665,10 +665,10 @@ fn test_integration_preprocessing_pipeline() raises:
 
 fn test_integration_conditional_augmentation() raises:
     """Test conditional augmentation pipeline."""
-    var large_data = Tensor(List[Float32](1.0, 2.0, 3.0, 4.0))
-    var small_data = Tensor(List[Float32](1.0, 2.0))
+    var large_data = ExTensor(List[Float32](1.0, 2.0, 3.0, 4.0))
+    var small_data = ExTensor(List[Float32](1.0, 2.0))
 
-    fn is_large_enough(tensor: Tensor) -> Bool:
+    fn is_large_enough(tensor: ExTensor) -> Bool:
         return tensor.num_elements() >= 3
 
     fn augment(value: Float32) -> Float32:
@@ -692,8 +692,8 @@ fn test_integration_conditional_augmentation() raises:
 fn test_integration_batch_preprocessing() raises:
     """Test batch preprocessing pipeline."""
     var batch = List[Tensor]()
-    batch.append(Tensor(List[Float32](100.0, 200.0)))
-    batch.append(Tensor(List[Float32](300.0, 400.0)))
+    batch.append(ExTensor(List[Float32](100.0, 200.0)))
+    batch.append(ExTensor(List[Float32](300.0, 400.0)))
 
     fn scale_down(value: Float32) -> Float32:
         return value / 100.0
@@ -718,7 +718,7 @@ fn test_integration_batch_preprocessing() raises:
 
 fn test_integration_type_conversion_pipeline() raises:
     """Test type conversion in pipeline."""
-    var data = Tensor(List[Float32](1.9, 2.5, 3.1))
+    var data = ExTensor(List[Float32](1.9, 2.5, 3.1))
 
     var transforms = List[Transform]()
     transforms.append(ToInt32())               # Convert to int (truncate)
@@ -741,7 +741,7 @@ fn test_integration_type_conversion_pipeline() raises:
 
 fn test_edge_case_very_large_values() raises:
     """Test transforms with very large values."""
-    var data = Tensor(List[Float32](1e6, 1e7, 1e8))
+    var data = ExTensor(List[Float32](1e6, 1e7, 1e8))
     var clamp = ClampTransform(0.0, 1e9)
 
     var result = clamp(data)
@@ -753,7 +753,7 @@ fn test_edge_case_very_large_values() raises:
 
 fn test_edge_case_very_small_values() raises:
     """Test transforms with very small values."""
-    var data = Tensor(List[Float32](1e-6, 1e-7, 1e-8))
+    var data = ExTensor(List[Float32](1e-6, 1e-7, 1e-8))
     var clamp = ClampTransform(1e-9, 1.0)
 
     var result = clamp(data)
@@ -765,7 +765,7 @@ fn test_edge_case_very_small_values() raises:
 
 fn test_edge_case_all_zeros() raises:
     """Test transforms with all zeros."""
-    var data = Tensor(List[Float32](0.0, 0.0, 0.0))
+    var data = ExTensor(List[Float32](0.0, 0.0, 0.0))
 
     fn add_one(value: Float32) -> Float32:
         return value + 1.0
@@ -780,7 +780,7 @@ fn test_edge_case_all_zeros() raises:
 
 fn test_edge_case_single_element() raises:
     """Test transforms with single element."""
-    var data = Tensor(List[Float32](42.0))
+    var data = ExTensor(List[Float32](42.0))
 
     var transforms = List[Transform]()
     transforms.append(ClampTransform(0.0, 100.0))

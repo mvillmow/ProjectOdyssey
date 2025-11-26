@@ -626,7 +626,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # First pass: find max
             for k in range(axis_size):
-                var test_coords = coords
+                var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = 0
                 for i in range(ndim):
@@ -637,7 +637,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # Second pass: count max elements
             for k in range(axis_size):
-                var test_coords = coords
+                var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = 0
                 for i in range(ndim):
@@ -760,7 +760,7 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # First pass: find min
             for k in range(axis_size):
-                var test_coords = coords
+                var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = 0
                 for i in range(ndim):
@@ -771,7 +771,7 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # Second pass: count min elements
             for k in range(axis_size):
-                var test_coords = coords
+                var test_coords = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = 0
                 for i in range(ndim):

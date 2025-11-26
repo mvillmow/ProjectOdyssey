@@ -37,13 +37,13 @@ fn compute_mean(tensor: ExTensor) -> Float64:
     var sum = Float64(0.0)
     var size = tensor.numel()
 
-    if tensor.dtype == DType.float32:
+    if tensor.dtype() == DType.float32:
         for i in range(size):
             sum += Float64(tensor._data.bitcast[Float32]()[i])
-    elif tensor.dtype == DType.float64:
+    elif tensor.dtype() == DType.float64:
         for i in range(size):
             sum += tensor._data.bitcast[Float64]()[i]
-    elif tensor.dtype == DType.float16:
+    elif tensor.dtype() == DType.float16:
         for i in range(size):
             sum += Float64(tensor._data.bitcast[Float16]()[i])
 
@@ -55,17 +55,17 @@ fn compute_variance(tensor: ExTensor, mean: Float64) -> Float64:
     var sum_sq = Float64(0.0)
     var size = tensor.numel()
 
-    if tensor.dtype == DType.float32:
+    if tensor.dtype() == DType.float32:
         for i in range(size):
             var val = Float64(tensor._data.bitcast[Float32]()[i])
             var diff = val - mean
             sum_sq += diff * diff
-    elif tensor.dtype == DType.float64:
+    elif tensor.dtype() == DType.float64:
         for i in range(size):
             var val = tensor._data.bitcast[Float64]()[i]
             var diff = val - mean
             sum_sq += diff * diff
-    elif tensor.dtype == DType.float16:
+    elif tensor.dtype() == DType.float16:
         for i in range(size):
             var val = Float64(tensor._data.bitcast[Float16]()[i])
             var diff = val - mean
@@ -347,13 +347,13 @@ fn test_all_initializers_support_dtypes() raises:
         var n = normal(shape, dtype=dt)
         var c = constant(shape, 0.5, dtype=dt)
 
-        assert_dtype_equal(xu.dtype, dt, "Xavier uniform dtype: " + name)
-        assert_dtype_equal(xn.dtype, dt, "Xavier normal dtype: " + name)
-        assert_dtype_equal(ku.dtype, dt, "Kaiming uniform dtype: " + name)
-        assert_dtype_equal(kn.dtype, dt, "Kaiming normal dtype: " + name)
-        assert_dtype_equal(u.dtype, dt, "Uniform dtype: " + name)
-        assert_dtype_equal(n.dtype, dt, "Normal dtype: " + name)
-        assert_dtype_equal(c.dtype, dt, "Constant dtype: " + name)
+        assert_dtype_equal(xu.dtype()(), dt, "Xavier uniform dtype: " + name)
+        assert_dtype_equal(xn.dtype()(), dt, "Xavier normal dtype: " + name)
+        assert_dtype_equal(ku.dtype()(), dt, "Kaiming uniform dtype: " + name)
+        assert_dtype_equal(kn.dtype()(), dt, "Kaiming normal dtype: " + name)
+        assert_dtype_equal(u.dtype(), dt, "Uniform dtype: " + name)
+        assert_dtype_equal(n.dtype(), dt, "Normal dtype: " + name)
+        assert_dtype_equal(c.dtype(), dt, "Constant dtype: " + name)
 
     print("  ✓ All initializers support float16, float32, float64")
 

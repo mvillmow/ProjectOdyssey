@@ -718,7 +718,7 @@ fn test_xavier_normal_float16() raises:
     var shape = List[Int](fan_in, fan_out)
     var W = xavier_normal(fan_in, fan_out, shape, DType.float16, seed_val=42)
 
-    assert_equal(W._dtype, DType.float16)
+    assert_true(W._dtype == DType.float16, "Xavier normal should have float16 dtype")
 
     # Check variance for float16 (with looser tolerance)
     var expected_var = 2.0 / Float64(fan_in + fan_out)
@@ -752,7 +752,7 @@ fn test_uniform_float64() raises:
     var shape = List[Int](50, 50)
     var weights = uniform(shape, -1.0, 1.0, DType.float64, seed_val=42)
 
-    assert_equal(weights._dtype, DType.float64)
+    assert_true(weights._dtype == DType.float64, "Uniform should have float64 dtype")
 
     # Check bounds
     for i in range(weights.numel()):
@@ -765,7 +765,7 @@ fn test_normal_float64() raises:
     var shape = List[Int](50, 50)
     var weights = normal(shape, 0.0, 0.1, DType.float64, seed_val=42)
 
-    assert_equal(weights._dtype, DType.float64)
+    assert_true(weights._dtype == DType.float64, "Normal should have float64 dtype")
 
 
 fn test_constant_float64() raises:
