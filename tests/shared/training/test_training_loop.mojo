@@ -30,6 +30,16 @@ from shared.training import SGD, MSELoss, TrainingLoop
 from shared.core.extensor import ExTensor
 from shared.core import ones, zeros
 
+# NOTE: TrainingLoop is now generic with trait bounds (Issue #34 Track 2)
+# Generic instantiation pattern:
+#   var training_loop = TrainingLoop[SimpleMLP, MSELoss, SGD](model, optimizer, loss_fn)
+#
+# Type parameters:
+#   [M: Model, L: Loss, O: Optimizer]
+#
+# This provides compile-time type safety - wrong types are rejected at compile time.
+# Once Track 3 (SimpleMLP trait impl) merges, these tests will fully compile.
+
 
 # ============================================================================
 # Training Loop Core Tests

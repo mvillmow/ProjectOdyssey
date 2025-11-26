@@ -356,3 +356,137 @@ trait Trainable:
         Returns:.            True if training, False if evaluating.
         """
         ...
+
+# ============================================================================
+# Training Loop Traits (Issue #34)
+# ============================================================================
+
+
+trait Model:
+    """Neural network model interface for generic TrainingLoop.
+
+    Defines the contract for models that can be trained using TrainingLoop.
+    All neural network models should implement this trait.
+
+    Required Methods:
+        `forward`: Execute forward pass
+        `parameters`: Return trainable parameters
+        `zero_grad`: Reset parameter gradients
+
+    Example:
+        struct SimpleMLP(Model):
+            fn forward(mut self, input: ExTensor) raises -> ExTensor:
+                # ... layer computations ...
+                return output^
+
+            fn parameters(self) raises -> List[ExTensor]:
+                return [self.layer1_weights, self.layer1_bias, ...]^
+
+            fn zero_grad(mut self) raises:
+                # Reset all gradient accumulators
+    """
+
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
+        """Execute forward pass through the model.
+
+        Args:
+            input: Input tensor (batch_size, input_dim)
+
+        Returns:
+            Output tensor (batch_size, output_dim)
+
+        Raises:
+            Error: If input shape is invalid
+        """
+        ...
+
+    fn parameters(self) raises -> List[ExTensor]:
+        """Return list of all trainable parameters.
+
+        Returns:
+            List of parameter tensors
+
+        Note:
+            Used by optimizers to update weights
+        """
+        ...
+
+    fn zero_grad(mut self) raises:
+        """Reset all parameter gradients to zero.
+
+        Note:
+            Should be called before each backward pass
+        """
+        ...
+
+
+trait Loss:
+    """Loss function interface for generic TrainingLoop.
+
+    Defines the contract for loss functions that measure prediction error.
+
+    Required Methods:
+        `compute`: Calculate loss between predictions and targets
+
+    Example:
+        struct MSELoss(Loss):
+            fn compute(self, pred: ExTensor, target: ExTensor) raises -> ExTensor:
+                var diff = subtract(pred, target)
+                return mean(multiply(diff, diff))
+    """
+
+    fn compute(self, pred: ExTensor, target: ExTensor) raises -> ExTensor:
+        """Compute loss between predictions and targets.
+
+        Args:
+            pred: Model predictions (batch_size, ...)
+            target: Ground truth targets (batch_size, ...)
+
+        Returns:
+            Scalar loss value
+
+        Raises:
+            Error: If shapes are incompatible
+        """
+        ...
+
+
+trait Optimizer:
+    """Optimizer interface for generic TrainingLoop.
+
+    Defines the contract for optimization algorithms that update parameters.
+
+    Required Methods:
+        `step`: Update parameters based on gradients
+        `zero_grad`: Reset optimizer state
+
+    Example:
+        struct SGD(Optimizer):
+            var learning_rate: Float32
+
+            fn step(mut self, params: List[ExTensor]) raises:
+                for param in params:
+                    param -= self.learning_rate * param.grad
+
+            fn zero_grad(mut self) raises:
+                # Clear any optimizer-specific state
+    """
+
+    fn step(mut self, params: List[ExTensor]) raises:
+        """Update parameters using computed gradients.
+
+        Args:
+            params: List of parameter tensors to update
+
+        Note:
+            Assumes gradients are already computed
+        """
+        ...
+
+    fn zero_grad(mut self) raises:
+        """Reset optimizer state.
+
+        Note:
+            May be called before parameter zero_grad()
+        """
+        ...
