@@ -18,6 +18,7 @@ from tests.shared.fixtures.mock_tensors import (
     create_ones_tensor,
 )
 from shared.core import zeros_like, zeros, ExTensor
+from shared.core.traits import Model
 
 
 # ============================================================================
@@ -329,7 +330,7 @@ struct Parameter(Copyable, Movable):
 # ============================================================================
 
 
-struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable):
+struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
     """Simple multi-layer perceptron (2-3 layers).
 
     Provides a minimal MLP for testing multi-layer forward passes,
@@ -504,6 +505,46 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable):
             )
             return output
 
+    fn forward(mut self, input: ExTensor) raises -> ExTensor:
+        """Forward pass through MLP with ExTensor input.
+
+        Args:
+            input: Input ExTensor.
+
+        Returns:
+            Output ExTensor.
+
+        Raises:
+            Error: If tensor conversion fails.
+
+        Example:
+            ```mojo
+            var mlp = SimpleMLP(10, 20, 5)
+            var input = zeros(List[Int](10), DType.float32)
+            var output = mlp.forward(input)
+            # output has shape [5]
+            ```
+
+        Note:
+            This is the Model trait implementation that accepts ExTensor.
+            Uses ReLU activation between layers: ReLU(x) = max(0, x)
+        """
+        # Extract Float32 values from ExTensor
+        var input_list = List[Float32]()
+        var input_numel = input.numel()
+        for i in range(input_numel):
+            input_list.append(input._get_float32(i))
+
+        # Call existing forward with List[Float32]
+        var output_list = self.forward(input_list)
+
+        # Convert back to ExTensor
+        var output = zeros(List[Int](len(output_list)), DType.float32)
+        for i in range(len(output_list)):
+            output._set_float32(i, output_list[i])
+
+        return output^
+
     fn _linear_forward(
         self,
         input: List[Float32],
@@ -664,6 +705,9 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable):
             var mlp = SimpleMLP(10, 20, 5)
             var state = mlp.state_dict()
             ```
+
+        Note:
+            Returns owned Dict with ownership transfer to avoid copy errors.
         """
         var state = Dict[String, ExTensor]()
 
@@ -713,7 +757,7 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable):
                 b3_tensor._set_float32(i, self.layer3_bias[i])
             state["layer3_bias"] = b3_tensor
 
-        return state
+        return state^
 
     fn load_state_dict(mut self, state: Dict[String, ExTensor]):
         """Load weights from state dictionary.
