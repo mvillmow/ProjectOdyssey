@@ -26,7 +26,7 @@ struct Batch(Copyable, Movable):
     var indices: List[Int]
 
     fn __init__(
-        mut self,
+        out self,
         var data: ExTensor,
         var labels: ExTensor,
         var indices: List[Int],
@@ -60,7 +60,7 @@ struct BaseLoader(Copyable, Movable):
     var _len: Int
 
     fn __init__(
-        mut self,
+        out self,
         var dataset: Dataset,
         batch_size: Int = 1,
         drop_last: Bool = False,
@@ -113,7 +113,7 @@ struct BatchLoader(Copyable, Movable):
     var shuffle: Bool
 
     fn __init__(
-        mut self,
+        out self,
         var dataset: Dataset,
         batch_size: Int = 32,
         shuffle: Bool = False,
