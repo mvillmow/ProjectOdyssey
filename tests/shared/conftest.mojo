@@ -278,6 +278,22 @@ fn assert_less(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
+fn assert_less(a: Float64, b: Float64, message: String = "") raises:
+    """Assert a < b for Float64 values.
+
+    Args:
+        a: First value.
+        b: Second value.
+        message: Optional error message.
+
+    Raises:
+        Error if a >= b.
+    """
+    if a >= b:
+        var error_msg = message if message else String(a) + " >= " + String(b)
+        raise Error(error_msg)
+
+
 fn assert_greater_or_equal(a: Float32, b: Float32, message: String = "") raises:
     """Assert a >= b for Float32 values.
 

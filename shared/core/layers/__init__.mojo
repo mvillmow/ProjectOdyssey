@@ -29,7 +29,7 @@ Example:.    from shared.core.layers import Linear, ReLU
 """
 
 # Layer exports will be added here as components are implemented
-# from .linear import Linear
+from .linear import Linear
 # from .conv import Conv2D
 # from .activation import ReLU, Sigmoid, Tanh
 # from .normalization import BatchNorm, LayerNorm
