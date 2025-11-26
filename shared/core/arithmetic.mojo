@@ -398,7 +398,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
     return result
 
 
-fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) raises -> GradientPair:
+fn add_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
     """Compute gradients for element-wise addition.
 
     For C = A + B, given ∂L/∂C, computes:
@@ -409,8 +409,8 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
     is summed back to the original input shape.
 
     Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
-        `a_shape`: Original shape of first input (A)
-        `b_shape`: Original shape of second input (B)
+        `a`: First input from forward pass (A)
+        `b`: Second input from forward pass (B)
 
     Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
@@ -420,7 +420,7 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
         var b = ones(List[Int](), DType.float32)
         var c = add(a, b)
         var grad_c = ones(List[Int](), DType.float32)
-        var grads = add_backward(grad_c, a.shape(), b.shape())
+        var grads = add_backward(grad_c, a, b)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
 
@@ -429,17 +429,17 @@ fn add_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) r
         var y = ones(List[Int](), DType.float32)
         var z = add(x, y)  # Shape (3, 4)
         var grad_z = ones(List[Int](), DType.float32)
-        var grads = add_backward(grad_z, x.shape(), y.shape())
+        var grads = add_backward(grad_z, x, y)
         # grads.grad_a will be shape (3, 1) - summed over broadcast dimension
     """
     # For addition, gradient passes through but must be reduced for broadcasting
-    var grad_a = _reduce_broadcast_dims(grad_output, a_shape)
-    var grad_b = _reduce_broadcast_dims(grad_output, b_shape)
+    var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
+    var grad_b = _reduce_broadcast_dims(grad_output, b.shape())
 
     return GradientPair(grad_a^, grad_b^)
 
 
-fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[Int]) raises -> GradientPair:
+fn subtract_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
     """Compute gradients for element-wise subtraction.
 
     For C = A - B, given ∂L/∂C, computes:
@@ -449,13 +449,13 @@ fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[In
     The gradient for B is negated since ∂(A-B)/∂B = -1.
 
     Args:.        `grad_output`: Gradient from upstream (∂L/∂C)
-        `a_shape`: Original shape of first input (A)
-        `b_shape`: Original shape of second input (B)
+        `a`: First input from forward pass (A)
+        `b`: Second input from forward pass (B)
 
     Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
-    var grad_a = _reduce_broadcast_dims(grad_output, a_shape)
+    var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
 
     # Gradient for B is negated
     # Create a tensor of -1s with same shape as grad_output
@@ -464,7 +464,7 @@ fn subtract_backward(grad_output: ExTensor, a_shape: List[Int], b_shape: List[In
         neg_grad._set_float64(i, -grad_output._get_float64(i))
 
     # Reduce for broadcasting
-    var grad_b = _reduce_broadcast_dims(neg_grad, b_shape)
+    var grad_b = _reduce_broadcast_dims(neg_grad, b.shape())
 
     return GradientPair(grad_a^, grad_b^)
 

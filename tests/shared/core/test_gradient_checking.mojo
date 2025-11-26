@@ -154,7 +154,7 @@ fn test_add_gradient() raises:
         return add(x, input_b)
 
     fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
-        var grads = add_backward(grad_out, x.shape(), input_b.shape())
+        var grads = add_backward(grad_out, x, input_b)
         return grads.grad_a
 
     var passed = check_gradients(forward, backward, input_a)

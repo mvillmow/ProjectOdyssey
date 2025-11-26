@@ -375,7 +375,7 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
 # ============================================================================
 
 
-fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) raises -> ExTensor:
+fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
     """Compute gradient for sum reduction.
 
     For Y = sum(X, axis), given ∂L/∂Y, computes:
@@ -385,7 +385,7 @@ fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) r
     Each element of the input contributes equally to the sum, so gradient is 1.
 
     Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
-        `input_shape`: Original shape of input before reduction.
+        `x`: Original input tensor before reduction.
         `axis`: Axis along which sum was computed (-1 for all axes)
 
     Returns:.        Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
@@ -395,15 +395,16 @@ fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) r
         var x = ones(List[Int](3, 4), DType.float32)
         var y = sum(x, axis=-1)  # Scalar
         var grad_y = ones(List[Int](), DType.float32)  # Scalar gradient
-        var grad_x = sum_backward(grad_y, x.shape(), axis=-1)  # Shape (3, 4)
+        var grad_x = sum_backward(grad_y, x, axis=-1)  # Shape (3, 4)
 
         # Sum along specific axis
         var x2 = ones(List[Int](3, 4), DType.float32)
         var y2 = sum(x2, axis=1)  # Shape (3,)
         var grad_y2 = ones(List[Int](), DType.float32)
-        var grad_x2 = sum_backward(grad_y2, x2.shape(), axis=1)  # Shape (3, 4)
+        var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
     """
     # Create result tensor with input shape
+    var input_shape = x.shape()
     var result = ExTensor(input_shape, grad_output.dtype())
 
     if axis == -1:
@@ -464,7 +465,7 @@ fn sum_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) r
     return result
 
 
-fn mean_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) raises -> ExTensor:
+fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
     """Compute gradient for mean reduction.
 
     For Y = mean(X, axis), given ∂L/∂Y, computes:
@@ -476,7 +477,7 @@ fn mean_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) 
     contributes 1/N to the mean.
 
     Args:.        `grad_output`: Gradient from upstream (∂L/∂Y) - reduced tensor.
-        `input_shape`: Original shape of input before reduction.
+        `x`: Original input tensor before reduction.
         `axis`: Axis along which mean was computed (-1 for all axes)
 
     Returns:.        Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
@@ -485,13 +486,14 @@ fn mean_backward(grad_output: ExTensor, input_shape: List[Int], axis: Int = -1) 
         var x = ones(List[Int](3, 4), DType.float32)
         var y = mean(x, axis=-1)  # Scalar mean
         var grad_y = ones(List[Int](), DType.float32)
-        var grad_x = mean_backward(grad_y, x.shape(), axis=-1)
+        var grad_x = mean_backward(grad_y, x, axis=-1)
         # Each element gets gradient / 12
     """
     # First get the sum backward (broadcasts gradient)
-    var grad_sum = sum_backward(grad_output, input_shape, axis)
+    var grad_sum = sum_backward(grad_output, x, axis)
 
     # Compute number of elements that were averaged
+    var input_shape = x.shape()
     var n: Int = 0
     if axis == -1:
         # Mean over all elements

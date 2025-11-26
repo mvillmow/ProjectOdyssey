@@ -87,7 +87,7 @@ fn test_add_backward() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Call add_backward - passing shapes as per function signature
-    var grads = add_backward(grad_output, a.shape(), b.shape())
+    var grads = add_backward(grad_output, a, b)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -128,7 +128,7 @@ fn test_add_scalar_backward() raises:
     var grad_output = ones(grad_output_shape, DType.float32)
 
     # Call add_backward
-    var grads = add_backward(grad_output, a_shape, b_shape)
+    var grads = add_backward(grad_output, a, b_scalar)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -159,7 +159,7 @@ fn test_subtract_backward() raises:
     var b = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var grads = subtract_backward(grad_output, a.shape(), b.shape())
+    var grads = subtract_backward(grad_output, a, b)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -199,7 +199,7 @@ fn test_subtract_scalar_backward() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grads = subtract_backward(grad_output, a_shape, b_shape)
+    var grads = subtract_backward(grad_output, a, b_scalar)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -394,7 +394,7 @@ fn test_add_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grads = add_backward(grad_output, a_shape, b_shape)
+    var grads = add_backward(grad_output, a, b_scalar)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -429,7 +429,7 @@ fn test_subtract_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grads = subtract_backward(grad_output, a_shape, b_shape)
+    var grads = subtract_backward(grad_output, a, b_scalar)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -546,7 +546,7 @@ fn test_add_backward_gradient() raises:
         return add(inp, b)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, inp.shape(), b.shape())
+        var grads = add_backward(grad_out, inp, b)
         return grads.grad_a
 
     var output = forward(a)
@@ -578,7 +578,7 @@ fn test_subtract_backward_gradient() raises:
         return subtract(inp, b)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = subtract_backward(grad_out, inp.shape(), b.shape())
+        var grads = subtract_backward(grad_out, inp, b)
         return grads.grad_a
 
     var output = forward(a)
@@ -676,7 +676,7 @@ fn test_add_backward_b_gradient() raises:
         return add(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, a.shape(), inp.shape())
+        var grads = add_backward(grad_out, a, inp)
         return grads.grad_b
 
     var output = forward(b)
@@ -708,7 +708,7 @@ fn test_subtract_backward_b_gradient() raises:
         return subtract(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = subtract_backward(grad_out, a.shape(), inp.shape())
+        var grads = subtract_backward(grad_out, a, inp)
         return grads.grad_b
 
     var output = forward(b)
@@ -808,7 +808,7 @@ fn test_add_backward_broadcast_gradient() raises:
         return add(a, inp)
 
     fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
-        var grads = add_backward(grad_out, a_shape, inp.shape())
+        var grads = add_backward(grad_out, a, inp)
         return grads.grad_b
 
     var output = forward(b)
