@@ -344,8 +344,25 @@ fn test_linear_forward():
 fn test_sgd_parameter_update():
     """Test SGD updates parameters correctly."""
     # Initial parameters
-    var params = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3))
-    var grads = Tensor(List[Float32](0.1, 0.2, 0.3), Shape(3))
+    var params_list = List[Float32]()
+    params_list.append(1.0)
+    params_list.append(2.0)
+    params_list.append(3.0)
+    var params_shape = List[Int]()
+    params_shape.append(3)
+    var params = ExTensor(params_shape, DType.float32)
+    for i in range(len(params_list)):
+        params._set_float32(i, params_list[i])
+
+    var grads_list = List[Float32]()
+    grads_list.append(0.1)
+    grads_list.append(0.2)
+    grads_list.append(0.3)
+    var grads_shape = List[Int]()
+    grads_shape.append(3)
+    var grads = ExTensor(grads_shape, DType.float32)
+    for i in range(len(grads_list)):
+        grads._set_float32(i, grads_list[i])
 
     # Create optimizer
     var optimizer = SGD(lr=0.1)

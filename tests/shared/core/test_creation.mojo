@@ -326,7 +326,7 @@ fn test_eye_square() raises:
     # Check diagonal is 1, off-diagonal is 0
     for i in range(5):
         for j in range(5):
-            varflat_idx = i * 5 + j
+            var flat_idx = i * 5 + j
             if i == j:
                 assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
             else:
@@ -344,7 +344,7 @@ fn test_eye_rectangular() raises:
     # Check diagonal is 1 where i==j, rest is 0
     for i in range(3):
         for j in range(5):
-            varflat_idx = i * 5 + j
+            var flat_idx = i * 5 + j
             if i == j:
                 assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
             else:

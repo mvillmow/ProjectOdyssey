@@ -67,8 +67,24 @@ fn test_batch_loader_partial_last_batch() raises:
     With 100 samples and batch_size=32, last batch should have only 4 samples
     unless drop_last=True.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
+
     var dataset = TensorDataset(data^, labels^)
 
     # Without drop_last
@@ -76,8 +92,24 @@ fn test_batch_loader_partial_last_batch() raises:
     assert_equal(loader.__len__(), 4)  # Includes partial batch
 
     # With drop_last
-    var data2 = Tensor([Float32(i) for i in range(100)])
-    var labels2 = Tensor([Int(i) for i in range(100)])
+    var data_list2 = List[Float32]()
+    for i in range(100):
+        data_list2.append(Float32(i))
+    var data_shape2 = List[Int]()
+    data_shape2.append(100)
+    var data2 = ExTensor(data_shape2, DType.float32)
+    for i in range(len(data_list2)):
+        data2._set_float32(i, data_list2[i])
+
+    var labels_list2 = List[Int]()
+    for i in range(100):
+        labels_list2.append(i)
+    var labels_shape2 = List[Int]()
+    labels_shape2.append(100)
+    var labels2 = ExTensor(labels_shape2, DType.int32)
+    for i in range(len(labels_list2)):
+        labels2._set_int32(i, Int32(labels_list2[i]))
+
     var dataset2 = TensorDataset(data2^, labels2^)
     var loader2 = BatchLoader(dataset2^, batch_size=32, shuffle=False, drop_last=True)
     assert_equal(loader2.__len__(), 3)  # Drops partial batch
@@ -89,8 +121,24 @@ fn test_batch_loader_tensor_stacking() raises:
     Note: _stack_tensors may not be fully implemented,
     but we can test that the API structure is correct.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
+
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 
@@ -109,8 +157,22 @@ fn test_batch_loader_no_shuffle() raises:
     Batches should contain samples in dataset order: batch 0 has indices [0-31],
     batch 1 has indices [32-63], etc.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 
@@ -124,8 +186,22 @@ fn test_batch_loader_shuffle() raises:
     Consecutive batches should not contain consecutive dataset indices,
     improving training by preventing order-dependent biases.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
 
@@ -139,8 +215,22 @@ fn test_batch_loader_shuffle_deterministic() raises:
     Loader creation with shuffle parameter should work,
     enabling reproducible experiments with fixed seed in sampler.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
 
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
@@ -153,8 +243,22 @@ fn test_batch_loader_shuffle_per_epoch() raises:
     Loader API should support iteration multiple times,
     which is needed for multi-epoch training.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
 
@@ -172,8 +276,22 @@ fn test_batch_loader_all_samples_per_epoch() raises:
     Each epoch should yield correct number of batches
     covering all samples.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(100)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(100)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
 
@@ -193,8 +311,22 @@ fn test_batch_loader_efficient_batching() raises:
     BatchLoader should efficiently manage batches,
     creating them on-demand during iteration.
     """
-    var data = Tensor([Float32(i) for i in range(1000)])
-    var labels = Tensor([Int(i) for i in range(1000)])
+    var data_list = List[Float32]()
+    for i in range(1000):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(1000)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(1000):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(1000)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 
@@ -208,8 +340,22 @@ fn test_batch_loader_iteration_speed() raises:
     Should calculate batch count correctly for efficient iteration,
     as this is done every training epoch.
     """
-    var data = Tensor([Float32(i) for i in range(3200)])
-    var labels = Tensor([Int(i) for i in range(3200)])
+    var data_list = List[Float32]()
+    for i in range(3200):
+        data_list.append(Float32(i))
+    var data_shape = List[Int]()
+    data_shape.append(3200)
+    var data = ExTensor(data_shape, DType.float32)
+    for i in range(len(data_list)):
+        data._set_float32(i, data_list[i])
+    var labels_list = List[Int]()
+    for i in range(3200):
+        labels_list.append(i)
+    var labels_shape = List[Int]()
+    labels_shape.append(3200)
+    var labels = ExTensor(labels_shape, DType.int32)
+    for i in range(len(labels_list)):
+        labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 

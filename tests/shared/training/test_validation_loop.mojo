@@ -198,8 +198,27 @@ fn test_validation_loop_computes_loss() raises:
     var validation_loop = ValidationLoop(model, loss_fn)
     #
     # Known outputs and targets
-    var outputs = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3, 1))
-    var targets = Tensor(List[Float32](0.0, 0.0, 0.0), Shape(3, 1))
+    var outputs_list = List[Float32]()
+    outputs_list.append(1.0)
+    outputs_list.append(2.0)
+    outputs_list.append(3.0)
+    var outputs_shape = List[Int]()
+    outputs_shape.append(3)
+    outputs_shape.append(1)
+    var outputs = ExTensor(outputs_shape, DType.float32)
+    for i in range(len(outputs_list)):
+        outputs._set_float32(i, outputs_list[i])
+
+    var targets_list = List[Float32]()
+    targets_list.append(0.0)
+    targets_list.append(0.0)
+    targets_list.append(0.0)
+    var targets_shape = List[Int]()
+    targets_shape.append(3)
+    targets_shape.append(1)
+    var targets = ExTensor(targets_shape, DType.float32)
+    for i in range(len(targets_list)):
+        targets._set_float32(i, targets_list[i])
     #
     # Compute loss
     var loss = validation_loop.compute_loss(outputs, targets)

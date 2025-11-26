@@ -25,9 +25,9 @@ fn test_equal_same_values() raises:
     """Test equal with identical values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 2.0, DType.float32)
-    varc = equal(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 2.0, DType.float32)
+    var c = equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     assert_numel(c, 5, "Result should have 5 elements")
@@ -40,9 +40,9 @@ fn test_equal_different_values() raises:
     """Test equal with different values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = equal(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     # All values should be False (0)
@@ -54,9 +54,9 @@ fn test_equal_with_dunder() raises:
     """Test equal using == operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 2.0, DType.float32)
-    varc = a == b
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 2.0, DType.float32)
+    var c = a == b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -71,9 +71,9 @@ fn test_not_equal_same_values() raises:
     """Test not_equal with identical values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 2.0, DType.float32)
-    varc = not_equal(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 2.0, DType.float32)
+    var c = not_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     # All values should be False (0)
@@ -85,9 +85,9 @@ fn test_not_equal_different_values() raises:
     """Test not_equal with different values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = not_equal(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = not_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     # All values should be True (1)
@@ -99,9 +99,9 @@ fn test_not_equal_with_dunder() raises:
     """Test not_equal using != operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = a != b
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = a != b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -116,9 +116,9 @@ fn test_less_true() raises:
     """Test less when first tensor has smaller values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = less(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = less(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     # All values should be True (1)
@@ -130,9 +130,9 @@ fn test_less_false() raises:
     """Test less when first tensor has larger values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 5.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = less(a, b)
+    var a = full(shape, 5.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = less(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     # All values should be False (0)
@@ -144,9 +144,9 @@ fn test_less_with_dunder() raises:
     """Test less using < operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = a < b
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = a < b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -161,9 +161,9 @@ fn test_less_equal_true_less() raises:
     """Test less_equal when values are less."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = less_equal(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = less_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -174,9 +174,9 @@ fn test_less_equal_true_equal() raises:
     """Test less_equal when values are equal."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 3.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = less_equal(a, b)
+    var a = full(shape, 3.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = less_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -187,9 +187,9 @@ fn test_less_equal_with_dunder() raises:
     """Test less_equal using <= operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = a <= b
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = a <= b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -204,9 +204,9 @@ fn test_greater_true() raises:
     """Test greater when first tensor has larger values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 5.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = greater(a, b)
+    var a = full(shape, 5.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = greater(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -217,9 +217,9 @@ fn test_greater_false() raises:
     """Test greater when first tensor has smaller values."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 2.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = greater(a, b)
+    var a = full(shape, 2.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = greater(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -230,9 +230,9 @@ fn test_greater_with_dunder() raises:
     """Test greater using > operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 5.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = a > b
+    var a = full(shape, 5.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = a > b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -247,9 +247,9 @@ fn test_greater_equal_true_greater() raises:
     """Test greater_equal when values are greater."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 5.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = greater_equal(a, b)
+    var a = full(shape, 5.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = greater_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -260,9 +260,9 @@ fn test_greater_equal_true_equal() raises:
     """Test greater_equal when values are equal."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 3.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = greater_equal(a, b)
+    var a = full(shape, 3.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = greater_equal(a, b)
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -273,9 +273,9 @@ fn test_greater_equal_with_dunder() raises:
     """Test greater_equal using >= operator."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 5.0, DType.float32)
-    varb = full(shape, 3.0, DType.float32)
-    varc = a >= b
+    var a = full(shape, 5.0, DType.float32)
+    var b = full(shape, 3.0, DType.float32)
+    var c = a >= b
 
     assert_dtype(c, DType.bool, "Result should be bool dtype")
     for i in range(5):
@@ -291,16 +291,16 @@ fn test_comparison_with_negatives() raises:
     var shape = List[Int]()
     shape.append(5)
 
-    vara = full(shape, -2.0, DType.float32)
-    varb = full(shape, -5.0, DType.float32)
+    var a = full(shape, -2.0, DType.float32)
+    var b = full(shape, -5.0, DType.float32)
 
     # -2.0 > -5.0 should be True
-    varc_greater = greater(a, b)
+    var c_greater = greater(a, b)
     for i in range(5):
         assert_value_at(c_greater, i, 1.0, 1e-6, "-2.0 > -5.0 should be True")
 
     # -2.0 < -5.0 should be False
-    varc_less = less(a, b)
+    var c_less = less(a, b)
     for i in range(5):
         assert_value_at(c_less, i, 0.0, 1e-6, "-2.0 < -5.0 should be False")
 

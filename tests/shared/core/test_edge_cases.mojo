@@ -135,9 +135,9 @@ fn test_nan_propagation_add() raises:
     """Test that NaN propagates through addition."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, Float32.nan, DType.float32)  # TODO: Create NaN tensor
-    # varb = ones(shape, DType.float32)
-    # varc = add(a, b)
+    # var a = full(shape, Float32.nan, DType.float32)  # TODO: Create NaN tensor
+    # var b = ones(shape, DType.float32)
+    # var c = add(a, b)
 
     # NaN + x = NaN
     # for i in range(3):
@@ -150,9 +150,9 @@ fn test_nan_propagation_multiply() raises:
     """Test that NaN propagates through multiplication."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, Float32.nan, DType.float32)
-    # varb = full(shape, 0.0, DType.float32)
-    # varc = multiply(a, b)
+    # var a = full(shape, Float32.nan, DType.float32)
+    # var b = full(shape, 0.0, DType.float32)
+    # var c = multiply(a, b)
 
     # NaN * 0 = NaN (not 0!)
     # for i in range(3):
@@ -165,9 +165,9 @@ fn test_nan_equality() raises:
     """Test NaN equality (NaN != NaN per IEEE 754)."""
     var shape = List[Int]()
     shape.append(1)
-    # vara = full(shape, Float32.nan, DType.float32)
-    # varb = full(shape, Float32.nan, DType.float32)
-    # varc = equal(a, b)  # TODO: Implement equal()
+    # var a = full(shape, Float32.nan, DType.float32)
+    # var b = full(shape, Float32.nan, DType.float32)
+    # var c = equal(a, b)  # TODO: Implement equal()
 
     # IEEE 754: NaN != NaN
     # assert_value_at(c, 0, 0.0, 1e-8, "NaN != NaN should be False")
@@ -182,9 +182,9 @@ fn test_inf_arithmetic() raises:
     """Test arithmetic with infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, Float32.infinity, DType.float32)
-    # varb = full(shape, 1.0, DType.float32)
-    # varc = add(a, b)
+    # var a = full(shape, Float32.infinity, DType.float32)
+    # var b = full(shape, 1.0, DType.float32)
+    # var c = add(a, b)
 
     # inf + 1 = inf
     # for i in range(3):
@@ -197,9 +197,9 @@ fn test_inf_multiplication() raises:
     """Test infinity multiplication."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, Float32.infinity, DType.float32)
-    # varb = full(shape, 2.0, DType.float32)
-    # varc = multiply(a, b)
+    # var a = full(shape, Float32.infinity, DType.float32)
+    # var b = full(shape, 2.0, DType.float32)
+    # var c = multiply(a, b)
 
     # inf * 2 = inf
     # for i in range(3):
@@ -212,9 +212,9 @@ fn test_inf_times_zero() raises:
     """Test infinity times zero (should give NaN)."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, Float32.infinity, DType.float32)
-    # varb = zeros(shape, DType.float32)
-    # varc = multiply(a, b)
+    # var a = full(shape, Float32.infinity, DType.float32)
+    # var b = zeros(shape, DType.float32)
+    # var c = multiply(a, b)
 
     # inf * 0 = NaN (indeterminate form)
     # for i in range(3):
@@ -227,9 +227,9 @@ fn test_negative_inf() raises:
     """Test negative infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, -Float32.infinity, DType.float32)
-    # varb = full(shape, 1.0, DType.float32)
-    # varc = add(a, b)
+    # var a = full(shape, -Float32.infinity, DType.float32)
+    # var b = full(shape, 1.0, DType.float32)
+    # var c = add(a, b)
 
     # -inf + 1 = -inf
     # for i in range(3):
@@ -242,9 +242,9 @@ fn test_inf_comparison() raises:
     """Test comparison with infinity."""
     var shape = List[Int]()
     shape.append(3)
-    # vara = full(shape, 1000000.0, DType.float32)
-    # varb = full(shape, Float32.infinity, DType.float32)
-    # varc = less(a, b)  # TODO: Implement less()
+    # var a = full(shape, 1000000.0, DType.float32)
+    # var b = full(shape, Float32.infinity, DType.float32)
+    # var c = less(a, b)  # TODO: Implement less()
 
     # 1e6 < inf should be True
     # assert_all_values(c, 1.0, 1e-8, "Finite < inf should be True")
@@ -260,9 +260,9 @@ fn test_overflow_float32() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create values close to float32 max
-    # vara = full(shape, 1e38, DType.float32)
-    # varb = full(shape, 1e38, DType.float32)
-    # varc = add(a, b)
+    # var a = full(shape, 1e38, DType.float32)
+    # var b = full(shape, 1e38, DType.float32)
+    # var c = add(a, b)
 
     # Result should be infinity
     # for i in range(2):
@@ -276,9 +276,9 @@ fn test_overflow_int32() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create values close to int32 max
-    # vara = full(shape, 2147483647.0, DType.int32)  # INT32_MAX
-    # varb = ones(shape, DType.int32)
-    # varc = add(a, b)
+    # var a = full(shape, 2147483647.0, DType.int32)  # INT32_MAX
+    # var b = ones(shape, DType.int32)
+    # var c = add(a, b)
 
     # Integer overflow behavior: wraps around or saturates depending on implementation
     # TODO: Document expected behavior
@@ -294,9 +294,9 @@ fn test_underflow_float64() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create very small values
-    # vara = full(shape, 1e-300, DType.float64)
-    # varb = full(shape, 1e-100, DType.float64)
-    # varc = multiply(a, b)
+    # var a = full(shape, 1e-300, DType.float64)
+    # var b = full(shape, 1e-100, DType.float64)
+    # var c = multiply(a, b)
 
     # Result may underflow to 0 (gradual underflow)
     # assert_all_values(c, 0.0, 1e-320, "Underflow should give 0")
@@ -330,7 +330,7 @@ fn test_divide_by_zero_int() raises:
     shape.append(3)
     var a = full(shape, 10.0, DType.int32)
     var b = zeros(shape, DType.int32)
-    # varc = divide(a, b)  # TODO: Implement divide()
+    # var c = divide(a, b)  # TODO: Implement divide()
 
     # Integer division by zero: undefined behavior (should error or saturate)
     # TODO: Document expected behavior and test
@@ -570,9 +570,9 @@ fn test_subnormal_numbers() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create subnormal float32 value (~1e-40)
-    # vara = full(shape, 1e-40, DType.float32)
-    # varb = full(shape, 1.0, DType.float32)
-    # varc = add(a, b)
+    # var a = full(shape, 1e-40, DType.float32)
+    # var b = full(shape, 1.0, DType.float32)
+    # var c = add(a, b)
 
     # a + 1 should be approximately 1 (subnormal is tiny)
     # assert_all_values(c, 1.0, 1e-6, "1e-40 + 1 ≈ 1")
@@ -588,9 +588,9 @@ fn test_catastrophic_cancellation() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create two very close values
-    # vara = full(shape, 1.0000000001, DType.float64)
-    # varb = full(shape, 1.0, DType.float64)
-    # varc = subtract(a, b)
+    # var a = full(shape, 1.0000000001, DType.float64)
+    # var b = full(shape, 1.0, DType.float64)
+    # var c = subtract(a, b)
 
     # Result should be approximately 1e-10 but may lose precision
     # TODO: Test precision loss
@@ -602,9 +602,9 @@ fn test_associativity_loss() raises:
     var shape = List[Int]()
     shape.append(3)
     # Create specific values to demonstrate associativity loss
-    # vara = full(shape, 1e20, DType.float32)
-    # varb = full(shape, 1.0, DType.float32)
-    # varc = full(shape, -1e20, DType.float32)
+    # var a = full(shape, 1e20, DType.float32)
+    # var b = full(shape, 1.0, DType.float32)
+    # var c = full(shape, -1e20, DType.float32)
 
     # (a + b) + c != a + (b + c) in floating point
     # varresult1 = add(add(a, b), c)
@@ -626,7 +626,7 @@ fn test_bool_dtype_operations() raises:
     var b = zeros(shape, DType.bool)  # All False
 
     # TODO: Test bool-specific operations (and, or, xor, not)
-    # varc = bitwise_and(a, b)  # Should be all False
+    # var c = bitwise_and(a, b)  # Should be all False
     # assert_all_values(c, 0.0, 1e-8, "True AND False should be False")
     pass  # Placeholder
 
@@ -636,8 +636,8 @@ fn test_int8_range() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create values at int8 boundaries
-    # vara = full(shape, 127.0, DType.int8)  # INT8_MAX
-    # varb = full(shape, -128.0, DType.int8)  # INT8_MIN
+    # var a = full(shape, 127.0, DType.int8)  # INT8_MAX
+    # var b = full(shape, -128.0, DType.int8)  # INT8_MIN
 
     # Verify values are stored correctly
     # assert_value_at(a, 0, 127.0, 1e-6, "INT8_MAX should be 127")
@@ -650,8 +650,8 @@ fn test_uint8_range() raises:
     var shape = List[Int]()
     shape.append(2)
     # Create values at uint8 boundaries
-    # vara = full(shape, 255.0, DType.uint8)  # UINT8_MAX
-    # varb = zeros(shape, DType.uint8)  # UINT8_MIN
+    # var a = full(shape, 255.0, DType.uint8)  # UINT8_MAX
+    # var b = zeros(shape, DType.uint8)  # UINT8_MIN
 
     # Verify values are stored correctly
     # assert_value_at(a, 0, 255.0, 1e-6, "UINT8_MAX should be 255")

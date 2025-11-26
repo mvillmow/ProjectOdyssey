@@ -25,8 +25,8 @@ fn test_copy_independence() raises:
     """Test that copy creates independent tensor."""
     var shape = List[Int]()
     shape.append(5)
-    vara = full(shape, 3.0, DType.float32)
-    # varb = copy(a)  # TODO: Implement copy()
+    var a = full(shape, 3.0, DType.float32)
+    # var b = copy(a)  # TODO: Implement copy()
 
     # Modify a, b should not change
     # a[0] = 99.0  # TODO: Implement __setitem__
@@ -39,9 +39,9 @@ fn test_clone_identical() raises:
     var shape = List[Int]()
     shape.append(3)
     shape.append(4)
-    vara = arange(0.0, 12.0, 1.0, DType.float32)
+    var a = arange(0.0, 12.0, 1.0, DType.float32)
     # Reshape to 3x4 first
-    # varb = clone(a)  # TODO: Implement clone()
+    # var b = clone(a)  # TODO: Implement clone()
 
     # Should have same values
     # for i in range(12):

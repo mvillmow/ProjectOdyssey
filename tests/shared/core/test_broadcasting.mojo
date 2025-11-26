@@ -28,9 +28,9 @@ fn test_broadcast_scalar_to_1d() raises:
     shape_vec.append(5)
     var shape_scalar = List[Int]()
 
-    vara = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
-    varb = full(shape_scalar, 2.0, DType.float32)  # scalar 2
-    varc = add(a, b)  # Expected: [5, 5, 5, 5, 5]
+    var a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
+    var b = full(shape_scalar, 2.0, DType.float32)  # scalar 2
+    var c = add(a, b)  # Expected: [5, 5, 5, 5, 5]
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_all_values(c, 5.0, 1e-6, "3 + 2 should broadcast to [5, 5, 5, 5, 5]")
@@ -43,9 +43,9 @@ fn test_broadcast_scalar_to_2d() raises:
     shape_mat.append(4)
     var shape_scalar = List[Int]()
 
-    vara = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
-    varb = full(shape_scalar, 5.0, DType.float32)  # scalar 5
-    varc = multiply(a, b)  # Expected: 3x4 matrix of fives
+    var a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
+    var b = full(shape_scalar, 5.0, DType.float32)  # scalar 5
+    var c = multiply(a, b)  # Expected: 3x4 matrix of fives
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_all_values(c, 5.0, 1e-6, "1 * 5 should broadcast to all 5s")
@@ -59,9 +59,9 @@ fn test_broadcast_scalar_to_3d() raises:
     shape_3d.append(4)
     var shape_scalar = List[Int]()
 
-    vara = full(shape_3d, 2.0, DType.float32)  # 2x3x4 tensor
-    varb = full(shape_scalar, 3.0, DType.float32)  # scalar 3
-    varc = add(a, b)  # Expected: 2x3x4 tensor of fives
+    var a = full(shape_3d, 2.0, DType.float32)  # 2x3x4 tensor
+    var b = full(shape_scalar, 3.0, DType.float32)  # scalar 3
+    var c = add(a, b)  # Expected: 2x3x4 tensor of fives
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 5.0, 1e-6, "2 + 3 should broadcast to all 5s")
@@ -80,9 +80,9 @@ fn test_broadcast_vector_to_matrix_row() raises:
     shape_vec.append(1)
     shape_vec.append(4)
 
-    vara = ones(shape_mat, DType.float32)  # 3x4 matrix
-    varb = full(shape_vec, 2.0, DType.float32)  # 1x4 vector
-    varc = add(a, b)  # Expected: 3x4 matrix, each row is [3, 3, 3, 3]
+    var a = ones(shape_mat, DType.float32)  # 3x4 matrix
+    var b = full(shape_vec, 2.0, DType.float32)  # 1x4 vector
+    var c = add(a, b)  # Expected: 3x4 matrix, each row is [3, 3, 3, 3]
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_all_values(c, 3.0, 1e-6, "Broadcasting 1x4 vector to 3x4 matrix")
@@ -97,9 +97,9 @@ fn test_broadcast_vector_to_matrix_column() raises:
     shape_vec.append(3)
     shape_vec.append(1)
 
-    vara = ones(shape_mat, DType.float32)  # 3x4 matrix
-    varb = full(shape_vec, 2.0, DType.float32)  # 3x1 vector
-    varc = multiply(a, b)  # Expected: 3x4 matrix, each column multiplied by 2
+    var a = ones(shape_mat, DType.float32)  # 3x4 matrix
+    var b = full(shape_vec, 2.0, DType.float32)  # 3x1 vector
+    var c = multiply(a, b)  # Expected: 3x4 matrix, each column multiplied by 2
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_all_values(c, 2.0, 1e-6, "Broadcasting 3x1 vector to 3x4 matrix")
@@ -113,9 +113,9 @@ fn test_broadcast_1d_to_2d() raises:
     var shape_vec = List[Int]()
     shape_vec.append(4)
 
-    vara = ones(shape_mat, DType.float32)  # 3x4 matrix
-    varb = full(shape_vec, 3.0, DType.float32)  # 4-element vector
-    varc = add(a, b)  # Expected: 3x4 matrix, each row is [4, 4, 4, 4]
+    var a = ones(shape_mat, DType.float32)  # 3x4 matrix
+    var b = full(shape_vec, 3.0, DType.float32)  # 4-element vector
+    var c = add(a, b)  # Expected: 3x4 matrix, each row is [4, 4, 4, 4]
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_all_values(c, 4.0, 1e-6, "Broadcasting 1D(4) to 2D(3,4)")
@@ -136,9 +136,9 @@ fn test_broadcast_size_one_dim_leading() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = full(shape_a, 2.0, DType.float32)  # 1x3x4
-    varb = ones(shape_b, DType.float32)  # 2x3x4
-    varc = add(a, b)  # Expected: 2x3x4, all 3s
+    var a = full(shape_a, 2.0, DType.float32)  # 1x3x4
+    var b = ones(shape_b, DType.float32)  # 2x3x4
+    var c = add(a, b)  # Expected: 2x3x4, all 3s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 3.0, 1e-6, "Broadcasting 1x3x4 to 2x3x4")
@@ -155,9 +155,9 @@ fn test_broadcast_size_one_dim_middle() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = full(shape_a, 5.0, DType.float32)  # 2x1x4
-    varb = ones(shape_b, DType.float32)  # 2x3x4
-    varc = multiply(a, b)  # Expected: 2x3x4, all 5s
+    var a = full(shape_a, 5.0, DType.float32)  # 2x1x4
+    var b = ones(shape_b, DType.float32)  # 2x3x4
+    var c = multiply(a, b)  # Expected: 2x3x4, all 5s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 5.0, 1e-6, "Broadcasting 2x1x4 to 2x3x4")
@@ -174,9 +174,9 @@ fn test_broadcast_size_one_dim_trailing() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = full(shape_a, 3.0, DType.float32)  # 2x3x1
-    varb = full(shape_b, 2.0, DType.float32)  # 2x3x4
-    varc = add(a, b)  # Expected: 2x3x4, all 5s
+    var a = full(shape_a, 3.0, DType.float32)  # 2x3x1
+    var b = full(shape_b, 2.0, DType.float32)  # 2x3x4
+    var c = add(a, b)  # Expected: 2x3x4, all 5s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 5.0, 1e-6, "Broadcasting 2x3x1 to 2x3x4")
@@ -195,9 +195,9 @@ fn test_broadcast_missing_leading_dims() raises:
     var shape_1d = List[Int]()
     shape_1d.append(4)
 
-    vara = ones(shape_3d, DType.float32)  # 2x3x4
-    varb = full(shape_1d, 2.0, DType.float32)  # (4,) -> broadcasts to (1,1,4) -> (2,3,4)
-    varc = multiply(a, b)  # Expected: 2x3x4, all 2s
+    var a = ones(shape_3d, DType.float32)  # 2x3x4
+    var b = full(shape_1d, 2.0, DType.float32)  # (4,) -> broadcasts to (1,1,4) -> (2,3,4)
+    var c = multiply(a, b)  # Expected: 2x3x4, all 2s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 2.0, 1e-6, "Broadcasting (4,) to (2,3,4)")
@@ -213,9 +213,9 @@ fn test_broadcast_2d_to_3d() raises:
     shape_2d.append(3)
     shape_2d.append(4)
 
-    vara = ones(shape_3d, DType.float32)  # 2x3x4
-    varb = full(shape_2d, 3.0, DType.float32)  # 3x4 -> broadcasts to (1,3,4) -> (2,3,4)
-    varc = add(a, b)  # Expected: 2x3x4, all 4s
+    var a = ones(shape_3d, DType.float32)  # 2x3x4
+    var b = full(shape_2d, 3.0, DType.float32)  # 3x4 -> broadcasts to (1,3,4) -> (2,3,4)
+    var c = add(a, b)  # Expected: 2x3x4, all 4s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 4.0, 1e-6, "Broadcasting (3,4) to (2,3,4)")
@@ -236,9 +236,9 @@ fn test_broadcast_3d_complex() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = full(shape_a, 2.0, DType.float32)  # 2x1x4
-    varb = full(shape_b, 3.0, DType.float32)  # 1x3x4
-    varc = add(a, b)  # Expected: 2x3x4, all 5s
+    var a = full(shape_a, 2.0, DType.float32)  # 2x1x4
+    var b = full(shape_b, 3.0, DType.float32)  # 1x3x4
+    var c = add(a, b)  # Expected: 2x3x4, all 5s
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 5.0, 1e-6, "Broadcasting (2,1,4) + (1,3,4) to (2,3,4)")
@@ -257,9 +257,9 @@ fn test_broadcast_4d() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = ones(shape_a, DType.float32)  # 2x1x3x4
-    varb = full(shape_b, 2.0, DType.float32)  # 1x5x3x4
-    varc = multiply(a, b)  # Expected: 2x5x3x4, all 2s
+    var a = ones(shape_a, DType.float32)  # 2x1x3x4
+    var b = full(shape_b, 2.0, DType.float32)  # 1x5x3x4
+    var c = multiply(a, b)  # Expected: 2x5x3x4, all 2s
 
     assert_numel(c, 120, "Result should have 120 elements (2*5*3*4)")
     assert_all_values(c, 2.0, 1e-6, "Broadcasting (2,1,3,4) * (1,5,3,4) to (2,5,3,4)")
@@ -276,15 +276,15 @@ fn test_broadcast_incompatible_shapes_different_sizes() raises:
     shape_a.append(4)
     var shape_b = List[Int]()
     shape_b.append(3)
-    shape_b.append(5  # Incompatible: 4 != 5 and neither is 1)
+    shape_b.append(5)  # Incompatible: 4 != 5 and neither is 1
 
-    vara = ones(shape_a, DType.float32)
-    varb = ones(shape_b, DType.float32)
+    var a = ones(shape_a, DType.float32)
+    var b = ones(shape_b, DType.float32)
 
     # Verify this raises an error
     var error_raised = False
     try:
-        varc = add(a, b)
+        var c = add(a, b)
     except:
         error_raised = True
 
@@ -300,16 +300,16 @@ fn test_broadcast_incompatible_inner_dims() raises:
     shape_a.append(4)
     var shape_b = List[Int]()
     shape_b.append(2)
-    shape_b.append(5  # Incompatible: 3 != 5 and neither is 1)
+    shape_b.append(5)  # Incompatible: 3 != 5 and neither is 1)
     shape_b.append(4)
 
-    vara = ones(shape_a, DType.float32)
-    varb = ones(shape_b, DType.float32)
+    var a = ones(shape_a, DType.float32)
+    var b = ones(shape_b, DType.float32)
 
     # Verify this raises an error
     var error_raised = False
     try:
-        varc = add(a, b)
+        var c = add(a, b)
     except:
         error_raised = True
 
@@ -327,9 +327,9 @@ fn test_broadcast_output_shape_scalar_1d() raises:
     shape_vec.append(5)
     var shape_scalar = List[Int]()
 
-    vara = ones(shape_vec, DType.float32)
-    varb = ones(shape_scalar, DType.float32)
-    varc = add(a, b)
+    var a = ones(shape_vec, DType.float32)
+    var b = ones(shape_scalar, DType.float32)
+    var c = add(a, b)
 
     assert_dim(c, 1, "Output should be 1D")
     assert_numel(c, 5, "Output should have 5 elements")
@@ -343,9 +343,9 @@ fn test_broadcast_output_shape_1d_2d() raises:
     var shape_1d = List[Int]()
     shape_1d.append(4)
 
-    vara = ones(shape_2d, DType.float32)
-    varb = ones(shape_1d, DType.float32)
-    varc = add(a, b)
+    var a = ones(shape_2d, DType.float32)
+    var b = ones(shape_1d, DType.float32)
+    var c = add(a, b)
 
     assert_dim(c, 2, "Output should be 2D")
     assert_numel(c, 12, "Output should have 12 elements")
@@ -362,9 +362,9 @@ fn test_broadcast_output_shape_3d_complex() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = ones(shape_a, DType.float32)
-    varb = ones(shape_b, DType.float32)
-    varc = add(a, b)
+    var a = ones(shape_a, DType.float32)
+    var b = ones(shape_b, DType.float32)
+    var c = add(a, b)
 
     assert_dim(c, 3, "Output should be 3D")
     assert_numel(c, 24, "Output should have 24 elements (2*3*4)")
@@ -382,9 +382,9 @@ fn test_broadcast_preserves_dtype() raises:
     var shape_b = List[Int]()
     shape_b.append(4)
 
-    vara = ones(shape_a, DType.float64)
-    varb = ones(shape_b, DType.float64)
-    varc = add(a, b)
+    var a = ones(shape_a, DType.float64)
+    var b = ones(shape_b, DType.float64)
+    var c = add(a, b)
 
     assert_dtype(c, DType.float64, "Broadcast should preserve float64 dtype")
 
@@ -401,9 +401,9 @@ fn test_broadcast_with_comparison_scalar() raises:
     shape_vec.append(5)
     var shape_scalar = List[Int]()
 
-    vara = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
-    varb = full(shape_scalar, 2.0, DType.float32)  # scalar 2
-    varc = greater(a, b)  # Should broadcast: [True, True, True, True, True]
+    var a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
+    var b = full(shape_scalar, 2.0, DType.float32)  # scalar 2
+    var c = greater(a, b)  # Should broadcast: [True, True, True, True, True]
 
     assert_numel(c, 5, "Result should have 5 elements")
     assert_dtype(c, DType.bool, "Comparison should return bool dtype")
@@ -421,9 +421,9 @@ fn test_broadcast_with_comparison_vector_matrix() raises:
     var shape_vec = List[Int]()
     shape_vec.append(4)
 
-    vara = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
-    varb = full(shape_vec, 2.0, DType.float32)  # vector [2, 2, 2, 2]
-    varc = less_equal(a, b)  # 1 <= 2 broadcasts to 3x4
+    var a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
+    var b = full(shape_vec, 2.0, DType.float32)  # vector [2, 2, 2, 2]
+    var c = less_equal(a, b)  # 1 <= 2 broadcasts to 3x4
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_dtype(c, DType.bool, "Comparison should return bool dtype")
@@ -438,12 +438,12 @@ fn test_broadcast_chained_operations() raises:
     shape_mat.append(3)
     var shape_scalar = List[Int]()
 
-    vara = full(shape_mat, 5.0, DType.float32)  # 2x3 matrix
-    varb = full(shape_scalar, 2.0, DType.float32)  # scalar
-    varc = full(shape_scalar, 3.0, DType.float32)  # scalar
+    var a = full(shape_mat, 5.0, DType.float32)  # 2x3 matrix
+    var b = full(shape_scalar, 2.0, DType.float32)  # scalar
+    var c = full(shape_scalar, 3.0, DType.float32)  # scalar
 
     # (a + b) * c = (5 + 2) * 3 = 7 * 3 = 21
-    varresult = multiply(add(a, b), c)
+    var result = multiply(add(a, b), c)
 
     assert_numel(result, 6, "Result should have 6 elements")
     assert_all_values(result, 21.0, 1e-6, "(5 + 2) * 3 should be 21")
@@ -459,9 +459,9 @@ fn test_broadcast_with_subtract() raises:
     var shape_1d = List[Int]()
     shape_1d.append(4)
 
-    vara = full(shape_2d, 10.0, DType.float32)  # 3x4 matrix of 10s
-    varb = full(shape_1d, 3.0, DType.float32)  # vector [3, 3, 3, 3]
-    varc = subtract(a, b)  # 10 - 3 = 7, broadcast to 3x4
+    var a = full(shape_2d, 10.0, DType.float32)  # 3x4 matrix of 10s
+    var b = full(shape_1d, 3.0, DType.float32)  # vector [3, 3, 3, 3]
+    var c = subtract(a, b)  # 10 - 3 = 7, broadcast to 3x4
 
     assert_numel(c, 12, "Result should have 12 elements")
     assert_all_values(c, 7.0, 1e-6, "10 - 3 should broadcast to all 7s")
@@ -476,9 +476,9 @@ fn test_broadcast_with_divide() raises:
     shape_mat.append(5)
     var shape_scalar = List[Int]()
 
-    vara = full(shape_mat, 20.0, DType.float32)  # 2x5 matrix of 20s
-    varb = full(shape_scalar, 4.0, DType.float32)  # scalar 4
-    varc = divide(a, b)  # 20 / 4 = 5, broadcast
+    var a = full(shape_mat, 20.0, DType.float32)  # 2x5 matrix of 20s
+    var b = full(shape_scalar, 4.0, DType.float32)  # scalar 4
+    var c = divide(a, b)  # 20 / 4 = 5, broadcast
 
     assert_numel(c, 10, "Result should have 10 elements")
     assert_all_values(c, 5.0, 1e-6, "20 / 4 should broadcast to all 5s")
@@ -495,9 +495,9 @@ fn test_broadcast_complex_3d_with_multiply() raises:
     shape_b.append(3)
     shape_b.append(4)
 
-    vara = full(shape_a, 3.0, DType.float32)  # 2x1x4
-    varb = full(shape_b, 4.0, DType.float32)  # 1x3x4
-    varc = multiply(a, b)  # 3 * 4 = 12, broadcast to 2x3x4
+    var a = full(shape_a, 3.0, DType.float32)  # 2x1x4
+    var b = full(shape_b, 4.0, DType.float32)  # 1x3x4
+    var c = multiply(a, b)  # 3 * 4 = 12, broadcast to 2x3x4
 
     assert_numel(c, 24, "Result should have 24 elements")
     assert_all_values(c, 12.0, 1e-6, "3 * 4 should broadcast to all 12s")

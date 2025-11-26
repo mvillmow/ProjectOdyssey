@@ -485,10 +485,10 @@ fn test_maxpool2d_backward_gradient() raises:
     """Test maxpool2d backward with numerical gradient checking."""
     # Create input with non-uniform values
     var input_shape = List[Int]()
-    input_shape.append(1  # batch)
-    input_shape.append(2  # channels)
-    input_shape.append(4  # height)
-    input_shape.append(4  # width)
+    input_shape.append(1)  # batch)
+    input_shape.append(2)  # channels)
+    input_shape.append(4)  # height)
+    input_shape.append(4)  # width)
     var x = zeros(input_shape, DType.float32)
 
     # Initialize with non-uniform values
@@ -514,10 +514,10 @@ fn test_avgpool2d_backward_gradient() raises:
     """Test avgpool2d backward with numerical gradient checking."""
     # Create input with non-uniform values
     var input_shape = List[Int]()
-    input_shape.append(1  # batch)
-    input_shape.append(2  # channels)
-    input_shape.append(4  # height)
-    input_shape.append(4  # width)
+    input_shape.append(1)  # batch)
+    input_shape.append(2)  # channels)
+    input_shape.append(4)  # height)
+    input_shape.append(4)  # width)
     var x = zeros(input_shape, DType.float32)
 
     # Initialize with non-uniform values
