@@ -24,7 +24,7 @@ Usage:
 """
 
 from algorithm import vectorize
-from sys.info import simdwidthof
+from sys import simdwidthof
 from .extensor import ExTensor
 
 

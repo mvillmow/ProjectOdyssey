@@ -32,7 +32,7 @@ Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 
 from collections import List
 from memory import UnsafePointer, memset_zero, alloc
-from sys.info import simdwidthof
+from sys import simdwidthof
 from math import ceildiv
 
 # Memory safety constants
