@@ -26,8 +26,14 @@ fn test_batch_loader_fixed_batch_size() raises:
     Should group consecutive samples into batches of batch_size,
     with proper tensor stacking for efficient GPU processing.
     """
-    var data = Tensor([Float32(i) for i in range(100)])
-    var labels = Tensor([Int(i) for i in range(100)])
+    var data_list = List[Float32]()
+    for i in range(100):
+        data_list.append(Float32(i))
+    var data = ExTensor(data_list^)
+    var labels_list = List[Int]()
+    for i in range(100):
+        labels_list.append(i)
+    var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 
@@ -41,8 +47,14 @@ fn test_batch_loader_perfect_division() raises:
     With 96 samples and batch_size=32, should create exactly 3 batches
     of equal size with no partial batch.
     """
-    var data = Tensor([Float32(i) for i in range(96)])
-    var labels = Tensor([Int(i) for i in range(96)])
+    var data_list = List[Float32]()
+    for i in range(96):
+        data_list.append(Float32(i))
+    var data = ExTensor(data_list^)
+    var labels_list = List[Int]()
+    for i in range(96):
+        labels_list.append(i)
+    var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
     var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
 
