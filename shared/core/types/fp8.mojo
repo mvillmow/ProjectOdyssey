@@ -87,7 +87,7 @@ struct FP8(Stringable, Representable, Copyable, Movable):
             var mantissa = Int(abs_x * 128.0)  # Scale to 3-bit range
             if mantissa > 7:
                 mantissa = 7
-            var bits = (sign << 7) | mantissa.cast[DType.uint8]()
+            var bits = (sign << 7) | UInt8(mantissa)
             return FP8(bits)
 
         # Normal number encoding

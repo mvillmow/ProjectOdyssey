@@ -100,7 +100,7 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
         elif biased_exp > 255:
             biased_exp = 255
 
-        return E8M0Scale(biased_exp.cast[DType.uint8]())
+        return E8M0Scale(UInt8(biased_exp))
 
     fn to_float32(self) -> Float32:
         """Convert E8M0 scale to Float32.
