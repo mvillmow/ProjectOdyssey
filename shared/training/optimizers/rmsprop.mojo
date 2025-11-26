@@ -199,7 +199,7 @@ fn rmsprop_step_simple(
     var (new_params, new_square_avg, _) = rmsprop_step(
         params, gradients, square_avg, 1,  # t=1 (not used without momentum/wd)
         learning_rate, alpha, epsilon,
-        weight_decay=0.0, momentum=0.0, buf=None
+        0.0, 0.0, None
     )
 
     return (new_params, new_square_avg)
