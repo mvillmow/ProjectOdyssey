@@ -87,7 +87,9 @@ fn test_add_backward() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Call add_backward - passing shapes as per function signature
-    var (grad_a, grad_b) = add_backward(grad_output, a.shape(), b.shape())
+    var grads = add_backward(grad_output, a.shape(), b.shape())
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # For addition, gradients should just pass through (equal to grad_output)
     for i in range(6):
@@ -126,7 +128,9 @@ fn test_add_scalar_backward() raises:
     var grad_output = ones(grad_output_shape, DType.float32)
 
     # Call add_backward
-    var (grad_a, grad_b) = add_backward(grad_output, a_shape, b_shape)
+    var grads = add_backward(grad_output, a_shape, b_shape)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
@@ -155,7 +159,9 @@ fn test_subtract_backward() raises:
     var b = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = subtract_backward(grad_output, a.shape(), b.shape())
+    var grads = subtract_backward(grad_output, a.shape(), b.shape())
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should be positive (1.0)
     for i in range(6):
@@ -193,7 +199,9 @@ fn test_subtract_scalar_backward() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = subtract_backward(grad_output, a_shape, b_shape)
+    var grads = subtract_backward(grad_output, a_shape, b_shape)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3] with value 1.0
     assert_equal(grad_a.shape()[0], 2)
@@ -225,7 +233,9 @@ fn test_multiply_backward() raises:
 
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = multiply_backward(grad_output, a, b)
+    var grads = multiply_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a = grad_output * b = 1.0 * 2.0 = 2.0
     for i in range(6):
@@ -264,7 +274,9 @@ fn test_multiply_scalar_backward() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = multiply_backward(grad_output, a, b_scalar)
+    var grads = multiply_backward(grad_output, a, b_scalar)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
@@ -301,7 +313,9 @@ fn test_divide_backward() raises:
 
     var grad_output = ones(shape, DType.float32)
 
-    var (grad_a, grad_b) = divide_backward(grad_output, a, b)
+    var grads = divide_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a = grad_output / b = 1.0 / 2.0 = 0.5
     for i in range(6):
@@ -343,7 +357,9 @@ fn test_divide_scalar_backward() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = divide_backward(grad_output, a, b_scalar)
+    var grads = divide_backward(grad_output, a, b_scalar)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
@@ -378,7 +394,9 @@ fn test_add_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = add_backward(grad_output, a_shape, b_shape)
+    var grads = add_backward(grad_output, a_shape, b_shape)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
@@ -411,7 +429,9 @@ fn test_subtract_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = subtract_backward(grad_output, a_shape, b_shape)
+    var grads = subtract_backward(grad_output, a_shape, b_shape)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3] with value 1.0
     assert_equal(grad_a.shape()[0], 2)
@@ -445,7 +465,9 @@ fn test_multiply_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = multiply_backward(grad_output, a, b)
+    var grads = multiply_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
@@ -483,7 +505,9 @@ fn test_divide_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var (grad_a, grad_b) = divide_backward(grad_output, a, b)
+    var grads = divide_backward(grad_output, a, b)
+    var grad_a = grads.grad_a
+    var grad_b = grads.grad_b
 
     # grad_a should match shape [2, 3]
     assert_equal(grad_a.shape()[0], 2)
