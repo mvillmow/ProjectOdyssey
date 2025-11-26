@@ -146,6 +146,70 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         self._refcount = alloc[Int](1)
         self._refcount[] = 1  # Start with 1 reference
 
+    fn __init__(out self, value: IntLiteral) raises:
+        """Create a scalar ExTensor from an integer literal.
+
+        Enables implicit conversion from integer literals to ExTensor.
+        Creates a 0D (scalar) tensor with Int64 dtype.
+
+        Args:
+            value: Integer literal to convert
+
+        Example:
+            var x: ExTensor = 42  # Implicit conversion from IntLiteral
+        """
+        var shape = List[Int]()
+        self.__init__(shape, DType.int64)
+        self._data.bitcast[Int64]()[] = Int64(value)
+
+    fn __init__(out self, value: FloatLiteral) raises:
+        """Create a scalar ExTensor from a float literal.
+
+        Enables implicit conversion from float literals to ExTensor.
+        Creates a 0D (scalar) tensor with Float64 dtype.
+
+        Args:
+            value: Float literal to convert
+
+        Example:
+            var x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
+        """
+        var shape = List[Int]()
+        self.__init__(shape, DType.float64)
+        self._data.bitcast[Float64]()[] = Float64(value)
+
+    fn __init__(out self, value: Int) raises:
+        """Create a scalar ExTensor from an Int.
+
+        Enables implicit conversion from Int to ExTensor.
+        Creates a 0D (scalar) tensor with Int64 dtype.
+
+        Args:
+            value: Int value to convert
+
+        Example:
+            var x: ExTensor = Int(42)
+        """
+        var shape = List[Int]()
+        self.__init__(shape, DType.int64)
+        self._data.bitcast[Int64]()[] = Int64(value)
+
+    fn __init__(out self, value: Float64) raises:
+        """Create a scalar ExTensor from a Float64.
+
+        Enables implicit conversion from Float64 to ExTensor.
+        Creates a 0D (scalar) tensor with Float64 dtype.
+
+        Args:
+            value: Float64 value to convert
+
+        Example:
+            var x: ExTensor = Float64(3.14)
+        """
+        var shape = List[Int]()
+        self.__init__(shape, DType.float64)
+        self._data.bitcast[Float64]()[] = value
+
     fn __copyinit__(out self, existing: Self):
         """Copy constructor - creates shared ownership with reference counting.
 
