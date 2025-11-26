@@ -102,9 +102,9 @@ fn test_numerical_safety_valid_gradients() raises:
     """
     from shared.training.base import clip_gradients
 
-    Test that gradient clipping accepts valid gradients
+    # Test that gradient clipping accepts valid gradients
     var valid_grads = List[Float64](0.1, -0.2, 0.3, -0.4)
-    var result = clip_gradients(valid_grads, max_norm=1.0)
+    var result = clip_gradients(valid_grads^, max_norm=1.0)
 
     Verify list is returned
     assert_equal(len(result), 4)
@@ -158,7 +158,7 @@ fn test_numerical_safety_gradient_clipping_basic() raises:
     from shared.training.base import clip_gradients
 
     var large_grads = List[Float64](10.0, 20.0, 30.0)
-    var clipped = clip_gradients(large_grads, max_norm=1.0)
+    var clipped = clip_gradients(large_grads^, max_norm=1.0)
 
     Verify stub returns gradients (currently unchanged)
     Real implementation will clip to max_norm
@@ -176,10 +176,10 @@ fn test_numerical_safety_gradient_clipping_preserves_direction() raises:
     from shared.training.base import clip_gradients
     #
     var original = List[Float64](3.0, 4.0)  # Norm = 5.0
-    var clipped = clip_gradients(original, max_norm=1.0)
+    var original_ratio = original[0] / original[1]  # 3/4 = 0.75 (calculate before transfer)
+    var clipped = clip_gradients(original^, max_norm=1.0)
     #
     # Direction should be preserved (ratio of components)
-    var original_ratio = original[0] / original[1]  # 3/4 = 0.75
     var clipped_ratio = clipped[0] / clipped[1]
     assert_almost_equal(original_ratio, clipped_ratio)
 
@@ -194,11 +194,12 @@ fn test_numerical_safety_gradient_clipping_no_op_when_below_threshold() raises:
     from shared.training.base import clip_gradients
     #
     var small_grads = List[Float64](0.1, 0.2)  # Norm ≈ 0.22
-    var clipped = clip_gradients(small_grads, max_norm=1.0)
+    var small_grads_copy = List[Float64](0.1, 0.2)  # Copy for comparison
+    var clipped = clip_gradients(small_grads^, max_norm=1.0)
     #
     # Should be unchanged
-    for i in range(len(small_grads)):
-        assert_equal(clipped[i], small_grads[i])
+    for i in range(len(small_grads_copy)):
+        assert_equal(clipped[i], small_grads_copy[i])
 
 
 # ============================================================================

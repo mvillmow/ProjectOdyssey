@@ -55,7 +55,7 @@ from .schedulers import StepLR, CosineAnnealingLR, WarmupLR
 # ============================================================================
 
 # SGD Optimizer
-struct SGD(Optimizer):
+struct SGD(Optimizer, Movable):
     """Stochastic Gradient Descent optimizer.
 
     Implements the Optimizer trait for use with generic TrainingLoop.
@@ -95,7 +95,7 @@ struct SGD(Optimizer):
 
 
 # MSELoss - Mean Squared Error Loss
-struct MSELoss(Loss):
+struct MSELoss(Loss, Movable):
     """Mean Squared Error loss function for regression.
 
     Implements the Loss trait for use with generic TrainingLoop.
@@ -157,7 +157,7 @@ struct MSELoss(Loss):
 
 
 # TrainingLoop - Main training orchestrator (Generic with Trait Bounds)
-struct TrainingLoop[M: Model, L: Loss, O: Optimizer]:
+struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movable]:
     """Orchestrates training with forward/backward/optimize cycle.
 
     Generic training loop with compile-time type safety via trait bounds.

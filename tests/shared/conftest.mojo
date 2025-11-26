@@ -954,7 +954,7 @@ fn create_simple_model() -> SimpleMLP:
         num_hidden_layers=1,
         init_value=0.1
     )
-    return model
+    return model^
 
 
 fn create_simple_dataset(

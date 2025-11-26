@@ -101,7 +101,7 @@ struct MockLayer:
             for _ in range(self.input_dim, self.output_dim):
                 output.append(0.0)
 
-        return output
+        return output^
 
     fn num_parameters(self) -> Int:
         """Get number of trainable parameters.
@@ -330,7 +330,7 @@ struct Parameter(Copyable, Movable):
 # ============================================================================
 
 
-struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
+struct SimpleMLP(Copyable, Movable, Model):
     """Simple multi-layer perceptron (2-3 layers).
 
     Provides a minimal MLP for testing multi-layer forward passes,
@@ -483,7 +483,7 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
                 self.output_dim,
                 self.hidden_dim,
             )
-            return output
+            return output^
         else:
             # hidden -> hidden
             var hidden2 = self._linear_forward(
@@ -503,7 +503,7 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
                 self.output_dim,
                 self.hidden_dim,
             )
-            return output
+            return output^
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass through MLP with ExTensor input.
@@ -564,15 +564,15 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
             sum += bias[i]
             output.append(sum)
 
-        return output
+        return output^
 
     fn _relu(self, input: List[Float32]) -> List[Float32]:
         """ReLU activation: max(0, x)."""
         var output = List[Float32](capacity=len(input))
         for i in range(len(input)):
             var val = input[i]
-            output.append(max(0.0, val))
-        return output
+            output.append(max(Float32(0.0), val))
+        return output^
 
     fn num_parameters(self) -> Int:
         """Get total number of parameters.
@@ -681,7 +681,7 @@ struct SimpleMLP(Copyable, Movable, ImplicitlyCopyable, Model):
 
         return param_list^
 
-    fn zero_grad(mut self):
+    fn zero_grad(mut self) raises:
         """Zero all gradients.
 
         Example:

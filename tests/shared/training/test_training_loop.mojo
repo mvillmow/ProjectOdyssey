@@ -64,7 +64,7 @@ fn test_training_loop_single_batch() raises:
     var model = create_simple_model()
     var optimizer = SGD(learning_rate=0.01)
     var loss_fn = MSELoss()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Create single batch
     var inputs = ones(List[Int](4, 10), DType.float32)  # batch_size=4, input_dim=10
@@ -97,7 +97,7 @@ fn test_training_loop_full_epoch() raises:
     var model = create_simple_model()
     var optimizer = SGD(learning_rate=0.01)
     var loss_fn = MSELoss()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Create data loader with 10 batches
     var data_loader = create_mock_dataloader(n_batches=10)
@@ -122,7 +122,7 @@ fn test_training_loop_multiple_epochs() raises:
     var model = create_simple_model()
     var optimizer = SGD(learning_rate=0.1)
     var loss_fn = MSELoss()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     var data_loader = create_simple_dataset()
     #
@@ -152,7 +152,7 @@ fn test_training_loop_forward_pass() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](8, 10), DType.float32)  # batch_size=8
     #
@@ -171,7 +171,7 @@ fn test_training_loop_forward_batches_independently() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Create batch
     # TODO(ExTensor): Implement randn - var batch_input = ExTensor.zeros(List[Int](4, 10), DType.float32)
@@ -201,7 +201,7 @@ fn test_training_loop_computes_loss() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var loss_fn = MSELoss()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Known outputs and targets
     var outputs = Tensor(List[Float32](1.0, 2.0, 3.0), Shape(3, 1))
@@ -222,7 +222,7 @@ fn test_training_loop_loss_scalar() raises:
         (average over batch or sum, depending on loss function).
     """
     # TODO(#34): Implement when TrainingLoop is available
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](10, 5), DType.float32)
     # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](10, 1), DType.float32)
@@ -251,7 +251,7 @@ fn test_training_loop_backward_pass() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
     # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
@@ -277,7 +277,7 @@ fn test_training_loop_gradient_accumulation() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
     # TODO(ExTensor): Implement randn - var targets = ExTensor.zeros(List[Int](4, 1), DType.float32)
@@ -320,7 +320,7 @@ fn test_training_loop_updates_weights() raises:
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
     var optimizer = SGD(learning_rate=0.1)
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Get initial weights
     var initial_weights = model.parameters()[0].data.copy()
@@ -355,8 +355,8 @@ fn test_training_loop_respects_learning_rate() raises:
     var optimizer1 = SGD(learning_rate=0.01)
     var optimizer2 = SGD(learning_rate=0.1)  # 10x larger
     #
-    var loop1 = TrainingLoop(model1, optimizer1, loss_fn)
-    var loop2 = TrainingLoop(model2, optimizer2, loss_fn)
+    var loop1 = TrainingLoop(model1^, optimizer1^, loss_fn)
+    var loop2 = TrainingLoop(model2^, optimizer2^, loss_fn^)
     #
     # Same inputs/targets
     # TODO(ExTensor): Implement randn with seed=42 - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
@@ -390,7 +390,7 @@ fn test_training_loop_processes_variable_batch_sizes() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Test different batch sizes
     for batch_size in [1, 4, 16, 64, 128]:
@@ -411,7 +411,8 @@ fn test_training_loop_averages_loss_over_batch() raises:
     """
     # TODO(#34): Implement when TrainingLoop is available
     var model = create_simple_model()
-    var training_loop = TrainingLoop(model, optimizer, MSELoss(reduction="mean"))
+    var optimizer = SGD(learning_rate=0.01)
+    var training_loop = TrainingLoop(model^, optimizer^, MSELoss(reduction="mean"))
     #
     # Create batch
     # TODO(ExTensor): Implement randn - var batch_inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
@@ -451,7 +452,7 @@ fn test_training_loop_property_loss_decreases_on_simple_problem() raises:
     # Simple problem: learn to map inputs to sum(inputs)
     var model = Linear(in_features=10, out_features=1)
     var optimizer = SGD(learning_rate=0.01)
-    var training_loop = TrainingLoop(model, optimizer, MSELoss())
+    var training_loop = TrainingLoop(model^, optimizer^, MSELoss())
     #
     # Generate simple dataset
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](100, 10), DType.float32)

@@ -340,7 +340,7 @@ fn test_validation_loop_independent_of_training() raises:
     # Train for a few steps (but don't change weights for this test)
     # Just to potentially modify internal state
     var optimizer = SGD(learning_rate=0.0)  # LR=0 means no weight change
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     training_loop.run_epoch(create_mock_dataloader())
     #
     # Validate after training
@@ -389,7 +389,8 @@ fn test_validation_loop_property_loss_matches_training() raises:
     # TODO(#34): Implement when both loops available
     var model = create_simple_model()
     var loss_fn = MSELoss()
-    var training_loop = TrainingLoop(model, optimizer, loss_fn)
+    var optimizer = SGD(learning_rate=0.01)
+    var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     var validation_loop = ValidationLoop(model, loss_fn)
     #
     # TODO(ExTensor): Implement randn with seed=42 - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)

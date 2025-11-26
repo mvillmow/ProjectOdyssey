@@ -245,7 +245,7 @@ fn is_valid_loss(loss: Float64) -> Bool:
     return True
 
 
-fn clip_gradients(gradients: List[Float64], max_norm: Float64) -> List[Float64]:
+fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float64]:
     """Clip gradients by global norm to prevent exploding gradients.
 
     Args:.        `gradients`: List of gradient values.
