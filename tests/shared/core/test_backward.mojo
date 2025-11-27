@@ -68,7 +68,7 @@ fn test_linear_backward_shapes() raises:
     assert_equal(gi_shape[0], batch)
     assert_equal(gi_shape[1], in_features)
 
-    var gw_shape = grads.grad_weights.shape()
+    var gw_shape = grads.grad_kernel.shape()
     assert_equal(gw_shape[0], out_features)
     assert_equal(gw_shape[1], in_features)
 
@@ -145,7 +145,7 @@ fn test_linear_backward_batch() raises:
 
     # Verify shapes
     assert_equal(grads.grad_input.shape()[0], batch)
-    assert_equal(grads.grad_weights.shape()[0], out_features)
+    assert_equal(grads.grad_kernel.shape()[0], out_features)
     assert_equal(grads.grad_bias.shape()[0], out_features)
 
 

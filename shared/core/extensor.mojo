@@ -32,7 +32,7 @@ Reference: https://data-apis.org/array-api/latest/API_specification/index.html
 
 from collections import List
 from memory import UnsafePointer, memset_zero, alloc
-from sys.info import simdwidthof
+from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from random import random_float64
 

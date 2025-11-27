@@ -24,7 +24,7 @@ Usage:
 """
 
 from algorithm import vectorize
-from sys.info import simdwidthof
+from sys.info import simd_width_of
 from .extensor import ExTensor
 
 
@@ -89,7 +89,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 @always_inline
 fn _add_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD addition for float32 tensors."""
-    alias simd_width = simdwidthof[DType.float32]()
+    alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float32]()
@@ -108,7 +108,7 @@ fn _add_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
 @always_inline
 fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD addition for float64 tensors."""
-    alias simd_width = simdwidthof[DType.float64]()
+    alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float64]()
@@ -162,7 +162,7 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 @always_inline
 fn _subtract_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD subtraction for float32 tensors."""
-    alias simd_width = simdwidthof[DType.float32]()
+    alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float32]()
@@ -181,7 +181,7 @@ fn _subtract_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 @always_inline
 fn _subtract_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD subtraction for float64 tensors."""
-    alias simd_width = simdwidthof[DType.float64]()
+    alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float64]()
@@ -235,7 +235,7 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 @always_inline
 fn _multiply_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD multiplication for float32 tensors."""
-    alias simd_width = simdwidthof[DType.float32]()
+    alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float32]()
@@ -254,7 +254,7 @@ fn _multiply_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 @always_inline
 fn _multiply_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD multiplication for float64 tensors."""
-    alias simd_width = simdwidthof[DType.float64]()
+    alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float64]()
@@ -308,7 +308,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 @always_inline
 fn _divide_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD division for float32 tensors."""
-    alias simd_width = simdwidthof[DType.float32]()
+    alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float32]()
@@ -327,7 +327,7 @@ fn _divide_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
 @always_inline
 fn _divide_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
     """SIMD division for float64 tensors."""
-    alias simd_width = simdwidthof[DType.float64]()
+    alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
 
     var a_ptr = a._data.bitcast[Float64]()
