@@ -16,19 +16,19 @@ struct LinearBackwardResult(Movable):
     Holds the three gradient tensors returned by the backward pass.
     """
     var grad_input: ExTensor
-    var grad_weights: ExTensor
+    var grad_kernel: ExTensor
     var grad_bias: ExTensor
 
-    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor, var grad_bias: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
         """Initialize the result struct with the three gradients."""
         self.grad_input = grad_input^
-        self.grad_weights = grad_weights^
+        self.grad_kernel = grad_kernel^
         self.grad_bias = grad_bias^
 
     fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
         self.grad_input = existing.grad_input^
-        self.grad_weights = existing.grad_weights^
+        self.grad_kernel = existing.grad_kernel^
         self.grad_bias = existing.grad_bias^
 
 
@@ -38,17 +38,17 @@ struct LinearNoBiasBackwardResult(Movable):
     Holds the two gradient tensors (input and weights only).
     """
     var grad_input: ExTensor
-    var grad_weights: ExTensor
+    var grad_kernel: ExTensor
 
-    fn __init__(out self, var grad_input: ExTensor, var grad_weights: ExTensor):
+    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
         """Initialize the result struct with the two gradients."""
         self.grad_input = grad_input^
-        self.grad_weights = grad_weights^
+        self.grad_kernel = grad_kernel^
 
     fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
         self.grad_input = existing.grad_input^
-        self.grad_weights = existing.grad_weights^
+        self.grad_kernel = existing.grad_kernel^
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
@@ -109,7 +109,7 @@ fn linear_backward(
     Math:
         Given: y = xW^T + b.
         grad_input = grad_output @ W
-        grad_weights = grad_output^T @ x
+        grad_kernel = grad_output^T @ x
         grad_bias = sum(grad_output, axis=0)
 
     Args:.        `grad_output`: Gradient of loss w.r.t. output, shape (batch_size, out_features)
@@ -118,7 +118,7 @@ fn linear_backward(
 
     Returns:.        LinearBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
-            - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
+            - grad_kernel: Gradient w.r.t. weights, shape (out_features, in_features)
             - grad_bias: Gradient w.r.t. bias, shape (out_features,)
 
     Example:.        ```mojo.
@@ -131,7 +131,7 @@ fn linear_backward(
         # Backward pass
         var result = linear_backward(grad_output, x, weights)
         var grad_x = result.grad_input
-        var grad_w = result.grad_weights
+        var grad_w = result.grad_kernel
         var grad_b = result.grad_bias
         ```
 
@@ -141,17 +141,17 @@ fn linear_backward(
     # weights is (out_features, in_features), so we use it directly
     var grad_input = matmul(grad_output, weights)
 
-    # grad_weights = grad_output^T @ x
+    # grad_kernel = grad_output^T @ x
     # grad_output: (batch, out_features) -> transpose -> Tuple[out_features, batch]
     # x: (batch, in_features)
     # result: (out_features, in_features)
-    var grad_weights = matmul(transpose(grad_output), x)
+    var grad_kernel = matmul(transpose(grad_output), x)
 
     # grad_bias = sum(grad_output, axis=0)
     # Sum over batch dimension to get (out_features,)
     var grad_bias = sum(grad_output, axis=0)
 
-    return LinearBackwardResult(grad_input^, grad_weights^, grad_bias^)
+    return LinearBackwardResult(grad_input^, grad_kernel^, grad_bias^)
 
 
 fn linear_no_bias_backward(
@@ -169,14 +169,14 @@ fn linear_no_bias_backward(
 
     Returns:.        LinearNoBiasBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch_size, in_features)
-            - grad_weights: Gradient w.r.t. weights, shape (out_features, in_features)
+            - grad_kernel: Gradient w.r.t. weights, shape (out_features, in_features)
 
     Raises:.        Error if tensor shapes are incompatible.
     """
     # grad_input = grad_output @ W
     var grad_input = matmul(grad_output, weights)
 
-    # grad_weights = grad_output^T @ x
-    var grad_weights = matmul(transpose(grad_output), x)
+    # grad_kernel = grad_output^T @ x
+    var grad_kernel = matmul(transpose(grad_output), x)
 
-    return LinearNoBiasBackwardResult(grad_input^, grad_weights^)
+    return LinearNoBiasBackwardResult(grad_input^, grad_kernel^)
