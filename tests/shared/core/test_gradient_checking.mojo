@@ -237,14 +237,22 @@ fn test_composite_relu_multiply() raises:
 
 
 fn test_gradient_at_zero() raises:
-    """Test gradient checking at zero (potential numerical issues)."""
-    print("Testing gradient at zero...")
+    """Test gradient checking near zero (potential numerical issues).
+
+    Note: We use small non-zero values instead of exact zeros because
+    ReLU has a discontinuity at x=0 where finite difference methods
+    produce incorrect gradients (numerical: 0.5, analytical: 0.0).
+    Testing at exact zero would always fail, so we test near zero instead.
+    """
+    print("Testing gradient near zero...")
 
     var shape = List[Int]()
     shape.append(2)
     shape.append(2)
 
-    var input = zeros(shape, DType.float32)
+    # Use small positive values instead of exact zeros
+    # This avoids the ReLU discontinuity at x=0 while still testing near-zero behavior
+    var input = full(shape, 0.01, DType.float32)
 
     fn forward(x: ExTensor) raises escaping -> ExTensor:
         return relu(x)
@@ -252,10 +260,10 @@ fn test_gradient_at_zero() raises:
     fn backward(grad_out: ExTensor, x: ExTensor) raises escaping -> ExTensor:
         return relu_backward(grad_out, x)
 
-    # Use larger tolerance for zero region
-    var passed = check_gradients(forward, backward, input, tolerance=1e-2)
-    assert_true(passed, "Gradient at zero check failed")
-    print("  ✓ Gradient at zero correct")
+    # Use standard tolerance since we're not at the discontinuity
+    var passed = check_gradients(forward, backward, input)
+    assert_true(passed, "Gradient near zero check failed")
+    print("  ✓ Gradient near zero correct")
 
 
 fn test_gradient_small_tensor() raises:
