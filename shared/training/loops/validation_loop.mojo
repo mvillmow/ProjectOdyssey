@@ -148,14 +148,15 @@ struct ValidationLoop:
     var num_classes: Int
 
     fn __init__(
-        mut self,
+        out self,
         compute_accuracy: Bool = True,
         compute_confusion: Bool = False,
         num_classes: Int = 10
     ):
         """Initialize validation loop.
 
-        Args:.            `compute_accuracy`: Whether to compute accuracy.
+        Args:
+            `compute_accuracy`: Whether to compute accuracy.
             `compute_confusion`: Whether to compute confusion matrix.
             `num_classes`: Number of classes (for confusion matrix)
         """

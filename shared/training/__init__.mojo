@@ -291,6 +291,38 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
             return Float32(0.0)
 
 
+# Export validation loop
+from .loops.validation_loop import ValidationLoop
+
+# Export CrossEntropyLoss wrapper (wraps core.loss.cross_entropy)
+struct CrossEntropyLoss(Loss, Movable):
+    """Cross entropy loss function for classification.
+
+    Implements the Loss trait for use with generic TrainingLoop.
+    """
+    var reduction: String
+
+    fn __init__(out self, reduction: String = "mean"):
+        """Initialize cross entropy loss.
+
+        Args:
+            reduction: Type of reduction ('mean' or 'sum').
+        """
+        self.reduction = reduction
+
+    fn compute(self, pred: ExTensor, target: ExTensor) raises -> ExTensor:
+        """Compute cross entropy loss between predictions and targets.
+
+        Args:
+            pred: Model predictions (logits)
+            target: Ground truth targets (class indices or one-hot)
+
+        Returns:
+            Scalar loss value as ExTensor
+        """
+        from shared.core.loss import cross_entropy
+        return cross_entropy(pred, target)
+
 # ============================================================================
 # Public API
 # ============================================================================
