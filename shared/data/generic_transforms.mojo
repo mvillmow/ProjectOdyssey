@@ -131,7 +131,7 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyab
     var transform: T
 
     fn __init__(
-        mut self,
+        out self,
         predicate: fn (ExTensor) -> Bool,
         var transform: T,
     ):
@@ -178,7 +178,7 @@ struct ClampTransform(Transform, Copyable, Movable):
     var min_val: Float32
     var max_val: Float32
 
-    fn __init__(out self, min_val: Float32, max_val: Float32):
+    fn __init__(out self, min_val: Float32, max_val: Float32) raises:
         """Create clamp transform.
 
         Args:
@@ -280,11 +280,122 @@ struct DebugTransform(Transform, Copyable, Movable):
 
 
 # ============================================================================
+# Type-Erased Transform Wrapper
+# ============================================================================
+
+
+struct AnyTransform(Transform, Copyable, Movable):
+    """Type-erased wrapper for any Transform type.
+
+    Allows storing different transform types in the same list.
+    Uses trait object pattern to enable runtime polymorphism.
+    """
+
+    # Internal storage using trait object pattern
+    # We store the transform as a variant that can hold different types
+    var _lambda: Optional[LambdaTransform]
+    var _clamp: Optional[ClampTransform]
+    var _identity: Optional[IdentityTransform]
+    var _debug: Optional[DebugTransform]
+    var _to_float32: Optional[ToFloat32]
+    var _to_int32: Optional[ToInt32]
+    var _sequential: Optional[SequentialTransform]
+
+    fn __init__(out self, transform: LambdaTransform):
+        """Create from LambdaTransform."""
+        self._lambda = transform
+        self._clamp = None
+        self._identity = None
+        self._debug = None
+        self._to_float32 = None
+        self._to_int32 = None
+        self._sequential = None
+
+    fn __init__(out self, transform: ClampTransform) raises:
+        """Create from ClampTransform."""
+        self._lambda = None
+        self._clamp = transform
+        self._identity = None
+        self._debug = None
+        self._to_float32 = None
+        self._to_int32 = None
+        self._sequential = None
+
+    fn __init__(out self, transform: IdentityTransform):
+        """Create from IdentityTransform."""
+        self._lambda = None
+        self._clamp = None
+        self._identity = transform
+        self._debug = None
+        self._to_float32 = None
+        self._to_int32 = None
+        self._sequential = None
+
+    fn __init__(out self, transform: DebugTransform):
+        """Create from DebugTransform."""
+        self._lambda = None
+        self._clamp = None
+        self._identity = None
+        self._debug = transform
+        self._to_float32 = None
+        self._to_int32 = None
+        self._sequential = None
+
+    fn __init__(out self, transform: ToFloat32):
+        """Create from ToFloat32."""
+        self._lambda = None
+        self._clamp = None
+        self._identity = None
+        self._debug = None
+        self._to_float32 = transform
+        self._to_int32 = None
+        self._sequential = None
+
+    fn __init__(out self, transform: ToInt32):
+        """Create from ToInt32."""
+        self._lambda = None
+        self._clamp = None
+        self._identity = None
+        self._debug = None
+        self._to_float32 = None
+        self._to_int32 = transform
+        self._sequential = None
+
+    fn __init__(out self, transform: SequentialTransform):
+        """Create from SequentialTransform."""
+        self._lambda = None
+        self._clamp = None
+        self._identity = None
+        self._debug = None
+        self._to_float32 = None
+        self._to_int32 = None
+        self._sequential = transform
+
+    fn __call__(self, data: ExTensor) raises -> ExTensor:
+        """Apply the wrapped transform."""
+        if self._lambda:
+            return self._lambda.value()(data)
+        if self._clamp:
+            return self._clamp.value()(data)
+        if self._identity:
+            return self._identity.value()(data)
+        if self._debug:
+            return self._debug.value()(data)
+        if self._to_float32:
+            return self._to_float32.value()(data)
+        if self._to_int32:
+            return self._to_int32.value()(data)
+        if self._sequential:
+            return self._sequential.value()(data)
+        raise Error("AnyTransform: No transform set")
+
+
+# ============================================================================
 # Sequential Transform
 # ============================================================================
 
 
-struct SequentialTransform[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
+struct SequentialTransform(Transform, Copyable, Movable):
     """Apply transforms sequentially in order.
 
     Chains multiple transforms together, applying them in sequence.
@@ -293,17 +404,17 @@ struct SequentialTransform[T: Transform & Copyable & Movable](Transform, Copyabl
     Time Complexity: O(sum of all transform costs).
     Space Complexity: O(n) for intermediate results.
 
-    Example:.        >>> var transforms = List[Transform]()
-        >>> transforms.append(normalize)
-        >>> transforms.append(clamp)
+    Example:.        >>> var transforms = List[AnyTransform]()
+        >>> transforms.append(AnyTransform(normalize))
+        >>> transforms.append(AnyTransform(clamp))
         >>>
         >>> var pipeline = SequentialTransform(transforms^)
         >>> var result = pipeline(data)
     """
 
-    var transforms: List[T]
+    var transforms: List[AnyTransform]
 
-    fn __init__(out self, var transforms: List[T]):
+    fn __init__(out self, var transforms: List[AnyTransform]):
         """Create sequential composition.
 
         Args:
@@ -332,7 +443,7 @@ struct SequentialTransform[T: Transform & Copyable & Movable](Transform, Copyabl
 # ============================================================================
 
 
-struct BatchTransform[T: Transform & Copyable & Movable](Copyable, Movable):
+struct BatchTransform(Copyable, Movable):
     """Apply transform to a batch of tensors.
 
     Applies the same transform to each tensor in a list,
@@ -344,13 +455,13 @@ struct BatchTransform[T: Transform & Copyable & Movable](Copyable, Movable):
     Example:.        >>> var batch = List[ExTensor]()
         >>> # ... fill batch ...
         >>>
-        >>> var transform = BatchTransform(normalize)
+        >>> var transform = BatchTransform(AnyTransform(normalize))
         >>> var results = transform(batch)
     """
 
-    var transform: T
+    var transform: AnyTransform
 
-    fn __init__(out self, var transform: T):
+    fn __init__(out self, var transform: AnyTransform):
         """Create batch transform.
 
         Args:
@@ -471,7 +582,7 @@ fn apply_to_tensor(
     return transform(data)
 
 
-fn compose_transforms[T: Transform & Copyable & Movable](var transforms: List[T]) raises -> SequentialTransform[T]:
+fn compose_transforms(var transforms: List[AnyTransform]) raises -> SequentialTransform:
     """Create sequential composition of transforms.
 
     Convenience function for building transform pipelines.
@@ -480,7 +591,7 @@ fn compose_transforms[T: Transform & Copyable & Movable](var transforms: List[T]
 
     Returns:.        SequentialTransform that applies all transforms in order.
 
-    Example:.        >>> var pipeline = compose_transforms(List(norm, clamp, debug))
+    Example:.        >>> var pipeline = compose_transforms(List(AnyTransform(norm), AnyTransform(clamp)))
         >>> var result = pipeline(data)
     """
-    return SequentialTransform[T](transforms^)
+    return SequentialTransform(transforms^)
