@@ -121,14 +121,14 @@ fn test_abs_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 1.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return abs(inp)
 
     var y = abs(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return abs_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -226,14 +226,14 @@ fn test_exp_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return exp(inp)
 
     var y = exp(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return exp_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -305,14 +305,14 @@ fn test_log_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return log(inp)
 
     var y = log(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return log_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -349,14 +349,14 @@ fn test_log10_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return log10(inp)
 
     var y = log10(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return log10_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -393,14 +393,14 @@ fn test_log2_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return log2(inp)
 
     var y = log2(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return log2_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -475,14 +475,14 @@ fn test_sqrt_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return sqrt(inp)
 
     var y = sqrt(x)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return sqrt_backward(grad, inp)
 
     # Use numerical gradient checking (gold standard)
@@ -605,14 +605,14 @@ fn test_clip_backward_gradient() raises:
     x._data.bitcast[Float32]()[2] = 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return clip(inp, min_val=-1.0, max_val=1.0)
 
     var y = clip(x, min_val=-1.0, max_val=1.0)
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_fn(grad: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward_fn(grad: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return clip_backward(grad, inp, min_val=-1.0, max_val=1.0)
 
     # Use numerical gradient checking (gold standard)
