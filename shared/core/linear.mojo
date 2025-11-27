@@ -25,11 +25,11 @@ struct LinearBackwardResult(Movable):
         self.grad_weights = grad_weights^
         self.grad_bias = grad_bias^
 
-    fn __moveinit__(mut self, deinit other: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
-        self.grad_input = other.grad_input^
-        self.grad_weights = other.grad_weights^
-        self.grad_bias = other.grad_bias^
+        self.grad_input = existing.grad_input^
+        self.grad_weights = existing.grad_weights^
+        self.grad_bias = existing.grad_bias^
 
 
 struct LinearNoBiasBackwardResult(Movable):
@@ -45,10 +45,10 @@ struct LinearNoBiasBackwardResult(Movable):
         self.grad_input = grad_input^
         self.grad_weights = grad_weights^
 
-    fn __moveinit__(mut self, deinit other: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
-        self.grad_input = other.grad_input^
-        self.grad_weights = other.grad_weights^
+        self.grad_input = existing.grad_input^
+        self.grad_weights = existing.grad_weights^
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
