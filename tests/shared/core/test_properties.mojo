@@ -29,7 +29,7 @@ fn test_shape_1d() raises:
     shape.append(10)
     var t = ones(shape, DType.float32)
 
-    vars = t.shape()
+    var s = t.shape()
     assert_equal_int(len(s), 1, "1D tensor should have 1 dimension in shape")
     assert_equal_int(s[0], 10, "First dimension should be 10")
 
@@ -41,7 +41,7 @@ fn test_shape_2d() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    vars = t.shape()
+    var s = t.shape()
     assert_equal_int(len(s), 2, "2D tensor should have 2 dimensions")
     assert_equal_int(s[0], 3, "First dimension should be 3")
     assert_equal_int(s[1], 4, "Second dimension should be 4")
@@ -55,7 +55,7 @@ fn test_shape_3d() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    vars = t.shape()
+    var s = t.shape()
     assert_equal_int(len(s), 3, "3D tensor should have 3 dimensions")
     assert_equal_int(s[0], 2, "Dim 0 should be 2")
     assert_equal_int(s[1], 3, "Dim 1 should be 3")
@@ -67,7 +67,7 @@ fn test_shape_scalar() raises:
     var shape = List[Int]()
     var t = full(shape, 42.0, DType.float32)
 
-    vars = t.shape()
+    var s = t.shape()
     assert_equal_int(len(s), 0, "Scalar tensor should have 0 dimensions")
 
 
@@ -181,7 +181,7 @@ fn test_strides_1d() raises:
     shape.append(10)
     var t = ones(shape, DType.float32)
 
-    varstrides = t._strides
+    var strides = t._strides
     assert_equal_int(len(strides), 1, "1D tensor should have 1 stride")
     assert_equal_int(strides[0], 1, "1D stride should be 1")
 
@@ -193,7 +193,7 @@ fn test_strides_2d_row_major() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    varstrides = t._strides
+    var strides = t._strides
     assert_equal_int(len(strides), 2, "2D tensor should have 2 strides")
     assert_equal_int(strides[0], 4, "Outer stride should be 4 (row length)")
     assert_equal_int(strides[1], 1, "Inner stride should be 1")
@@ -207,7 +207,7 @@ fn test_strides_3d_row_major() raises:
     shape.append(4)
     var t = ones(shape, DType.float32)
 
-    varstrides = t._strides
+    var strides = t._strides
     assert_equal_int(len(strides), 3, "3D tensor should have 3 strides")
     assert_equal_int(strides[0], 12, "Stride 0 should be 12 (3*4)")
     assert_equal_int(strides[1], 4, "Stride 1 should be 4")
@@ -379,7 +379,7 @@ fn test_eye_identity_pattern() raises:
 
     for i in range(4):
         for j in range(4):
-            varidx = i * 4 + j
+            var idx = i * 4 + j
             if i == j:
                 assert_value_at(t, idx, 1.0, 1e-6, "Diagonal should be 1")
             else:
@@ -410,7 +410,7 @@ fn test_dtype_size_float32() raises:
     shape.append(1)
     var t = ones(shape, DType.float32)
 
-    varsize = t._get_dtype_size()
+    var size = t._get_dtype_size()
     assert_equal_int(size, 4, "float32 should be 4 bytes")
 
 
@@ -420,7 +420,7 @@ fn test_dtype_size_float64() raises:
     shape.append(1)
     var t = ones(shape, DType.float64)
 
-    varsize = t._get_dtype_size()
+    var size = t._get_dtype_size()
     assert_equal_int(size, 8, "float64 should be 8 bytes")
 
 
@@ -430,7 +430,7 @@ fn test_dtype_size_int32() raises:
     shape.append(1)
     var t = zeros(shape, DType.int32)
 
-    varsize = t._get_dtype_size()
+    var size = t._get_dtype_size()
     assert_equal_int(size, 4, "int32 should be 4 bytes")
 
 
