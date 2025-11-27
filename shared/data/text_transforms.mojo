@@ -149,8 +149,8 @@ struct RandomSwap(TextTransform, Copyable, Movable):
                 continue
 
             # Pick two random positions
-            var idx1 = Int(random_si64(0, len(words)))
-            var idx2 = Int(random_si64(0, len(words)))
+            var idx1 = Int(random_si64(0, len(words) - 1))
+            var idx2 = Int(random_si64(0, len(words) - 1))
 
             # Ensure different positions
             if idx1 != idx2:
@@ -215,7 +215,7 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
         # Ensure at least one word remains
         if len(kept_words) == 0:
             # Keep a random word
-            var idx = Int(random_si64(0, len(words)))
+            var idx = Int(random_si64(0, len(words) - 1))
             kept_words.append(words[idx])
 
         return join_words(kept_words)
@@ -271,7 +271,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
                 continue
 
             # Pick random word from vocabulary
-            var vocab_idx = Int(random_si64(0, len(self.vocabulary)))
+            var vocab_idx = Int(random_si64(0, len(self.vocabulary) - 1))
             var word_to_insert = self.vocabulary[vocab_idx]
 
             # Pick random position to insert (0 to len(words) inclusive)
@@ -288,7 +288,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
             if insert_pos == len(words):
                 new_words.append(word_to_insert)
 
-            words = new_words
+            words = new_words^
 
         return join_words(words)
 
@@ -341,10 +341,10 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
             var rand_val = random_float()
             if rand_val < self.p and word in self.synonyms:
                 # Get synonyms for this word
-                var syns = self.synonyms[word]
+                var syns = self.synonyms[word].copy()
                 if len(syns) > 0:
                     # Pick random synonym
-                    var syn_idx = Int(random_si64(0, len(syns)))
+                    var syn_idx = Int(random_si64(0, len(syns) - 1))
                     result_words.append(syns[syn_idx])
                 else:
                     # No synonyms available, keep original
@@ -360,50 +360,53 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
 # Text Pipeline (Compose)
 # ============================================================================
 
+# COMMENTED OUT: Issue #2086 - Mojo trait storage limitation prevents List[TextTransform]
+# This will need to be refactored to use a different approach (e.g., union of concrete types,
+# or wait for Mojo to support trait objects in collections)
 
-struct TextCompose(TextTransform, Copyable, Movable):
-    """Compose multiple text transforms sequentially.
-
-    Applies text transforms in order, passing output of each to the next.
-    Similar to the Compose transform for tensors but works with strings.
-    """
-
-    var transforms: List[TextTransform]
-
-    fn __init__(out self, var transforms: List[TextTransform]):
-        """Create composition of text transforms.
-
-        Args:
-            transforms: List of text transforms to apply in order.
-        """
-        self.transforms = transforms^
-
-    fn __call__(self, text: String) raises -> String:
-        """Apply all text transforms sequentially.
-
-        Args:.            `text`: Input text.
-
-        Returns:.            Transformed text after all transforms.
-
-        Raises:.            Error if any transform cannot be applied.
-        """
-        var result = text
-        for t in self.transforms:
-            result = t(result)
-        return result
-
-    fn __len__(self) -> Int:
-        """Return number of transforms."""
-        return len(self.transforms)
-
-    fn append(mut self, transform: TextTransform):
-        """Add a transform to the pipeline.
-
-        Args:
-            transform: Text transform to add.
-        """
-        self.transforms.append(transform)
-
-
-# Type alias for more intuitive naming
-alias TextPipeline = TextCompose
+# struct TextCompose(TextTransform, Copyable, Movable):
+#     """Compose multiple text transforms sequentially.
+#
+#     Applies text transforms in order, passing output of each to the next.
+#     Similar to the Compose transform for tensors but works with strings.
+#     """
+#
+#     var transforms: List[TextTransform]
+#
+#     fn __init__(out self, var transforms: List[TextTransform]):
+#         """Create composition of text transforms.
+#
+#         Args:
+#             transforms: List of text transforms to apply in order.
+#         """
+#         self.transforms = transforms^
+#
+#     fn __call__(self, text: String) raises -> String:
+#         """Apply all text transforms sequentially.
+#
+#         Args:.            `text`: Input text.
+#
+#         Returns:.            Transformed text after all transforms.
+#
+#         Raises:.            Error if any transform cannot be applied.
+#         """
+#         var result = text
+#         for t in self.transforms:
+#             result = t(result)
+#         return result
+#
+#     fn __len__(self) -> Int:
+#         """Return number of transforms."""
+#         return len(self.transforms)
+#
+#     fn append(mut self, transform: TextTransform):
+#         """Add a transform to the pipeline.
+#
+#         Args:
+#             transform: Text transform to add.
+#         """
+#         self.transforms.append(transform)
+#
+#
+# # Type alias for more intuitive naming
+# alias TextPipeline = TextCompose
