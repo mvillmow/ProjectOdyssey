@@ -25,7 +25,14 @@ from tests.shared.conftest import (
     assert_true,
 )
 from tests.shared.conftest import TestFixtures
-from shared.core.extensor import ExTensor, zeros, ones, ones_like, zeros_like, full
+from shared.core.extensor import (
+    ExTensor,
+    zeros,
+    ones,
+    ones_like,
+    zeros_like,
+    full,
+)
 from shared.core.arithmetic import (
     add,
     subtract,
@@ -36,7 +43,10 @@ from shared.core.arithmetic import (
     multiply_backward,
     divide_backward,
 )
-from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient
+from tests.helpers.gradient_checking import (
+    check_gradient,
+    compute_numerical_gradient,
+)
 
 
 # ============================================================================
@@ -44,27 +54,27 @@ from tests.helpers.gradient_checking import check_gradient, compute_numerical_gr
 # ============================================================================
 
 
-fn create_shape_vec(dims: VariadicList[Int]) -> List[Int]:
+fn create_shape_vec(*dims: Int) -> List[Int]:
     """Create a List[Int] from variadic arguments.
 
     Args:
-        dims: Variable number of dimension sizes
+        dims: Variable number of dimension sizes.
 
     Returns:
-        List[Int] with specified dimensions
+        List[Int] with specified dimensions.
     """
     var shape = List[Int]()
-    for dim in dims:
-        shape.append(dim)
-    return shape
+    for i in range(len(dims)):
+        shape.append(dims[i])
+    return shape^
 
 
 fn fill_tensor_sequential(tensor: ExTensor, start_val: Float32 = 1.0) -> None:
     """Fill tensor with sequential values starting from start_val.
 
     Args:
-        tensor: ExTensor to fill
-        start_val: Starting value for sequence
+        tensor: ExTensor to fill.
+        start_val: Starting value for sequence.
     """
     for i in range(tensor.numel()):
         tensor._data.bitcast[Float32]()[i] = start_val + Float32(i)
@@ -94,14 +104,10 @@ fn test_add_backward() raises:
     # For addition, gradients should just pass through (equal to grad_output)
     for i in range(6):
         assert_almost_equal(
-            grad_a._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-5
+            grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
         )
         assert_almost_equal(
-            grad_b._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-5
+            grad_b._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
         )
 
 
@@ -140,7 +146,9 @@ fn test_add_scalar_backward() raises:
     assert_equal(grad_b.shape()[0], 1)
 
     # grad_b should contain sum of 6 ones = 6.0
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5)
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5
+    )
 
 
 # ============================================================================
@@ -166,17 +174,13 @@ fn test_subtract_backward() raises:
     # grad_a should be positive (1.0)
     for i in range(6):
         assert_almost_equal(
-            grad_a._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-5
+            grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
         )
 
     # grad_b should be negative (-1.0)
     for i in range(6):
         assert_almost_equal(
-            grad_b._data.bitcast[Float32]()[i],
-            Float32(-1.0),
-            tolerance=1e-5
+            grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-5
         )
 
 
@@ -209,7 +213,9 @@ fn test_subtract_scalar_backward() raises:
 
     # grad_b should be reduced to shape [1] with value -6.0 (sum of -ones)
     assert_equal(grad_b.shape()[0], 1)
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(-6.0), tolerance=1e-5)
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(-6.0), tolerance=1e-5
+    )
 
 
 # ============================================================================
@@ -240,17 +246,13 @@ fn test_multiply_backward() raises:
     # grad_a = grad_output * b = 1.0 * 2.0 = 2.0
     for i in range(6):
         assert_almost_equal(
-            grad_a._data.bitcast[Float32]()[i],
-            Float32(2.0),
-            tolerance=1e-5
+            grad_a._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5
         )
 
     # grad_b = grad_output * a = 1.0 * 1.0 = 1.0
     for i in range(6):
         assert_almost_equal(
-            grad_b._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-5
+            grad_b._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
         )
 
 
@@ -283,12 +285,16 @@ fn test_multiply_scalar_backward() raises:
     assert_equal(grad_a.shape()[1], 3)
     # grad_a = grad_output * b = 1.0 * 2.0 = 2.0
     for i in range(6):
-        assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_a._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5
+        )
 
     # grad_b should be reduced to shape [1]
     assert_equal(grad_b.shape()[0], 1)
     # grad_b = sum(grad_output * a) = sum(1.0 * 1.0) = 6.0
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5)
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(6.0), tolerance=1e-5
+    )
 
 
 # ============================================================================
@@ -320,17 +326,13 @@ fn test_divide_backward() raises:
     # grad_a = grad_output / b = 1.0 / 2.0 = 0.5
     for i in range(6):
         assert_almost_equal(
-            grad_a._data.bitcast[Float32]()[i],
-            Float32(0.5),
-            tolerance=1e-4
+            grad_a._data.bitcast[Float32]()[i], Float32(0.5), tolerance=1e-4
         )
 
     # grad_b = -grad_output * a / b² = -1.0 * 2.0 / 4.0 = -0.5
     for i in range(6):
         assert_almost_equal(
-            grad_b._data.bitcast[Float32]()[i],
-            Float32(-0.5),
-            tolerance=1e-4
+            grad_b._data.bitcast[Float32]()[i], Float32(-0.5), tolerance=1e-4
         )
 
 
@@ -366,12 +368,16 @@ fn test_divide_scalar_backward() raises:
     assert_equal(grad_a.shape()[1], 3)
     # grad_a = grad_output / b = 1.0 / 2.0 = 0.5
     for i in range(6):
-        assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(0.5), tolerance=1e-4)
+        assert_almost_equal(
+            grad_a._data.bitcast[Float32]()[i], Float32(0.5), tolerance=1e-4
+        )
 
     # grad_b should be reduced to shape [1]
     assert_equal(grad_b.shape()[0], 1)
     # grad_b = sum(-grad_output * a / b²) = sum(-1.0 * 2.0 / 4.0) = 6 * (-0.5) = -3.0
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(-3.0), tolerance=1e-4)
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(-3.0), tolerance=1e-4
+    )
 
 
 # ============================================================================
@@ -394,7 +400,7 @@ fn test_add_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grads = add_backward(grad_output, a, b_scalar)
+    var grads = add_backward(grad_output, a, b)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -407,7 +413,9 @@ fn test_add_broadcast() raises:
 
     # grad_b should contain sum over first dimension (2 ones = 2.0)
     for i in range(3):
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5
+        )
 
 
 # ============================================================================
@@ -429,7 +437,7 @@ fn test_subtract_broadcast() raises:
     var grad_output_shape = create_shape_vec(2, 3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grads = subtract_backward(grad_output, a, b_scalar)
+    var grads = subtract_backward(grad_output, a, b)
     var grad_a = grads.grad_a
     var grad_b = grads.grad_b
 
@@ -440,7 +448,9 @@ fn test_subtract_broadcast() raises:
     # grad_b should be reduced to shape [3] with value -2.0 (sum of -ones)
     assert_equal(grad_b.shape()[0], 3)
     for i in range(3):
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(-2.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(-2.0), tolerance=1e-5
+        )
 
 
 # ============================================================================
@@ -477,7 +487,9 @@ fn test_multiply_broadcast() raises:
     assert_equal(grad_b.shape()[0], 3)
     # grad_b[i] = sum(grad_output * a) = sum(1.0 * 1.0) over first dim = 2.0
     for i in range(3):
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(2.0), tolerance=1e-5
+        )
 
 
 # ============================================================================
@@ -518,7 +530,9 @@ fn test_divide_broadcast() raises:
     # grad_b[i] = sum(-grad_output * a / b²) = sum(-1.0 * 2.0 / 4.0) over first dim
     #           = 2 * (-0.5) = -1.0
     for i in range(3):
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-4)
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-4
+        )
 
 
 # ============================================================================
