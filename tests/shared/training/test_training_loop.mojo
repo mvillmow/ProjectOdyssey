@@ -294,8 +294,8 @@ fn test_training_loop_backward_pass() raises:
     #
     # Check gradients are computed
     for param in model.parameters():
-        assert_not_none(param.grad)
-        assert_shape_equal(param.grad, param.shape())
+        assert_not_none(param._grad)
+        assert_shape_equal(param._grad, param.shape())
 
 
 @skip("Issue #2057 - Incomplete implementation")
@@ -316,11 +316,11 @@ fn test_training_loop_gradient_accumulation() raises:
     # First backward (gradients zeroed initially)
     model.zero_grad()
     var loss1 = training_loop.step(inputs, targets)
-    var grad_after_first = model.parameters()[0].grad.copy()
+    var grad_after_first = model.parameters()[0]._grad.copy()
     #
     # Second backward without zeroing
     var loss2 = training_loop.step(inputs, targets)
-    var grad_after_second = model.parameters()[0].grad
+    var grad_after_second = model.parameters()[0]._grad
     #
     # Gradients should be approximately 2x first gradients
     # (assuming same inputs/targets)
@@ -355,7 +355,7 @@ fn test_training_loop_updates_weights() raises:
     var training_loop = TrainingLoop(model^, optimizer^, loss_fn^)
     #
     # Get initial weights
-    var initial_weights = model.parameters()[0].data.copy()
+    var initial_weights = model.parameters()[0]._data.copy()
     #
     # Training step
     # TODO(ExTensor): Implement randn - var inputs = ExTensor.zeros(List[Int](4, 10), DType.float32)
@@ -363,7 +363,7 @@ fn test_training_loop_updates_weights() raises:
     var loss = training_loop.step(inputs, targets)
     #
     # Get updated weights
-    var updated_weights = model.parameters()[0].data
+    var updated_weights = model.parameters()[0]._data
     #
     # Weights should change
     assert_not_equal_tensor(initial_weights, updated_weights)
@@ -400,8 +400,8 @@ fn test_training_loop_respects_learning_rate() raises:
     loop2.step(inputs, targets)
     #
     # Weight changes
-    var change1 = (model1.parameters()[0].data - initial_weights).abs().sum()
-    var change2 = (model2.parameters()[0].data - initial_weights).abs().sum()
+    var change1 = (model1.parameters()[0]._data - initial_weights).abs().sum()
+    var change2 = (model2.parameters()[0]._data - initial_weights).abs().sum()
     #
     # Change2 should be ~10x larger
     assert_almost_equal(change2 / change1, 10.0, tolerance=0.5)
