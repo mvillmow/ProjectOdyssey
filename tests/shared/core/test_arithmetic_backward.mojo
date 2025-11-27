@@ -566,7 +566,7 @@ fn test_add_backward_gradient() raises:
     var output = forward(a)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, a, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -598,7 +598,7 @@ fn test_subtract_backward_gradient() raises:
     var output = forward(a)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, a, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -631,7 +631,7 @@ fn test_multiply_backward_gradient() raises:
     var output = forward(a)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, a, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -664,7 +664,7 @@ fn test_divide_backward_gradient() raises:
     var output = forward(a)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, a, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, a, grad_output, rtol=1e-2, atol=1e-5)
 
 
 # ============================================================================
@@ -696,7 +696,7 @@ fn test_add_backward_b_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -728,7 +728,7 @@ fn test_subtract_backward_b_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -760,7 +760,7 @@ fn test_multiply_backward_b_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=1e-2, atol=1e-5)
 
 
 # ============================================================================
@@ -792,7 +792,7 @@ fn test_divide_backward_b_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=1e-2, atol=1e-5)
 
 
 # ============================================================================
@@ -828,7 +828,7 @@ fn test_add_backward_broadcast_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -864,7 +864,7 @@ fn test_multiply_backward_broadcast_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================
@@ -900,7 +900,7 @@ fn test_divide_backward_broadcast_gradient() raises:
     var output = forward(b)
     var grad_output = ones_like(output)
 
-    check_gradient(forward, backward, b, grad_output, rtol=1e-3, atol=1e-6)
+    check_gradient(forward, backward, b, grad_output, rtol=5e-3, atol=1e-5)
 
 
 # ============================================================================

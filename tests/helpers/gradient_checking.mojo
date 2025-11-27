@@ -175,6 +175,28 @@ fn assert_gradients_close(
             raise Error(message + ": gradient mismatch at index " + String(i))
 
 
+fn _deep_copy(tensor: ExTensor) raises -> ExTensor:
+    """Create a deep copy of a tensor with independent data buffer.
+
+    ExTensor's __copyinit__ creates shallow copies (shared data via reference counting).
+    This function creates a true deep copy with separate memory allocation.
+
+    Args:
+        tensor: Tensor to deep copy
+
+    Returns:
+        New tensor with copied data (independent memory allocation)
+    """
+    # Create new tensor with same shape and dtype
+    var result = ExTensor(tensor.shape(), tensor._dtype)
+
+    # Copy all data elements
+    for i in range(tensor._numel):
+        result._set_float64(i, tensor._get_float64(i))
+
+    return result^
+
+
 fn check_gradient(
     forward_fn: fn(ExTensor) raises escaping -> ExTensor,
     backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
@@ -224,8 +246,9 @@ fn check_gradient(
     var grad = zeros_like(x)
 
     for i in range(x._numel):
-        # Forward perturbation
-        var x_plus = x
+        # Create deep copies to avoid corrupting original x
+        # (ExTensor.__copyinit__ creates shallow copies with shared data)
+        var x_plus = _deep_copy(x)
         var old_val = x._get_float64(i)
         x_plus._set_float64(i, old_val + epsilon)
         var out_plus = forward_fn(x_plus)
@@ -234,7 +257,7 @@ fn check_gradient(
             loss_plus += out_plus._get_float64(j) * grad_output._get_float64(j)
 
         # Backward perturbation
-        var x_minus = x
+        var x_minus = _deep_copy(x)
         x_minus._set_float64(i, old_val - epsilon)
         var out_minus = forward_fn(x_minus)
         var loss_minus: Float64 = 0.0
