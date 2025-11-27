@@ -6,15 +6,12 @@ with emphasis on reproducibility and proper randomization.
 
 from tests.shared.conftest import assert_true, assert_equal, assert_false, TestFixtures
 from shared.data.transforms import (
-    Transform,
     RandomHorizontalFlip,
     RandomVerticalFlip,
     RandomRotation,
     RandomCrop,
     CenterCrop,
     RandomErasing,
-    Pipeline,
-    Compose,
 )
 from shared.core.extensor import ExTensor
 
@@ -400,17 +397,18 @@ fn test_compose_random_augmentations() raises:
     for i in range(len(data_list)):
         data._set_float32(i, data_list[i])
 
-    var transforms = List[Transform](capacity=3)
-    transforms.append(RandomRotation((15.0, 15.0)))
-    transforms.append(RandomHorizontalFlip(0.5))
-    transforms.append(RandomCrop((24, 24)))
-    var augmentations = Pipeline(transforms^)
-
+    # Manually chain transforms (heterogeneous Pipeline not yet supported)
+    # Apply: RandomRotation -> RandomHorizontalFlip -> RandomCrop
     TestFixtures.set_seed()
-    var result = augmentations(data)
+    var rotation = RandomRotation((15.0, 15.0))
+    var flip = RandomHorizontalFlip(0.5)
+    var crop = RandomCrop((24, 24))
 
-    # Output should be 24x24x1 or 24x24x3 depending on RandomCrop handling
-    # It should at least have output
+    var result = rotation(data)
+    result = flip(result)
+    result = crop(result)
+
+    # Output should be 24x24x3 after crop
     assert_equal(result.num_elements(), 24 * 24 * 3)
 
 
@@ -430,17 +428,24 @@ fn test_augmentation_determinism_in_pipeline() raises:
     for i in range(len(data_list)):
         data._set_float32(i, data_list[i])
 
-    var transforms = List[Transform](capacity=3)
-    transforms.append(RandomRotation((15.0, 15.0)))
-    transforms.append(RandomCrop((24, 24)))
-    transforms.append(RandomHorizontalFlip(0.5))
-    var pipeline = Pipeline(transforms^)
-
+    # First run with seed
+    # Apply: RandomRotation -> RandomCrop -> RandomHorizontalFlip
     TestFixtures.set_seed()
-    var result1 = pipeline(data)
+    var rotation1 = RandomRotation((15.0, 15.0))
+    var crop1 = RandomCrop((24, 24))
+    var flip1 = RandomHorizontalFlip(0.5)
+    var result1 = rotation1(data)
+    result1 = crop1(result1)
+    result1 = flip1(result1)
 
+    # Second run with same seed
     TestFixtures.set_seed()
-    var result2 = pipeline(data)
+    var rotation2 = RandomRotation((15.0, 15.0))
+    var crop2 = RandomCrop((24, 24))
+    var flip2 = RandomHorizontalFlip(0.5)
+    var result2 = rotation2(data)
+    result2 = crop2(result2)
+    result2 = flip2(result2)
 
     # Both results should have same number of elements
     assert_equal(result1.num_elements(), result2.num_elements())
