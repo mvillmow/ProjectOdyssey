@@ -497,7 +497,7 @@ fn test_creation_high_dimensional() raises:
     """Test creating tensor with many dimensions (e.g., 8D)."""
     var shape = List[Int]()
     for i in range(8):
-        shape[i] = 2
+        shape.append(2)
     var t = zeros(shape, DType.float32)
 
     assert_dim(t, 8, "8D tensor should have 8 dimensions")
