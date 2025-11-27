@@ -794,11 +794,11 @@ fn test_transpose_backward_gradient() raises:
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.15 - 2.0
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return transpose(inp)
 
     # Backward function wrapper
-    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return transpose_backward(grad_out)
 
     var output = forward(x)

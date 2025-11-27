@@ -496,11 +496,11 @@ fn test_maxpool2d_backward_gradient() raises:
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.6
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return maxpool2d(inp, kernel_size=2, stride=2, padding=0)
 
     # Backward function wrapper (only return grad_input)
-    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return maxpool2d_backward(grad_out, inp, kernel_size=2, stride=2, padding=0)
 
     var output = forward(x)
@@ -525,11 +525,11 @@ fn test_avgpool2d_backward_gradient() raises:
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 1.6
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return avgpool2d(inp, kernel_size=2, stride=2, padding=0)
 
     # Backward function wrapper (only return grad_input)
-    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         return avgpool2d_backward(grad_out, inp, kernel_size=2, stride=2, padding=0)
 
     var output = forward(x)
