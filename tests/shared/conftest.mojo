@@ -9,6 +9,7 @@ This module provides:
 from memory import memset_zero
 from random import seed, randn, randint
 from math import isnan, isinf
+from collections.optional import Optional
 from shared.core.extensor import ExTensor
 from tests.shared.fixtures.mock_models import SimpleMLP
 
@@ -77,6 +78,21 @@ fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
         var error_msg = (
             message if message else "Values are equal but should not be"
         )
+        raise Error(error_msg)
+
+
+fn assert_not_none[T: Copyable & Movable](value: Optional[T], message: String = "") raises:
+    """Assert that an Optional value is not None.
+
+    Args:
+        value: The Optional value to check.
+        message: Optional error message.
+
+    Raises:
+        Error if value is None.
+    """
+    if not value:
+        var error_msg = message if message else "Value is None but should not be"
         raise Error(error_msg)
 
 
