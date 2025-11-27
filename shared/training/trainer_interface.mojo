@@ -65,7 +65,7 @@ struct TrainerConfig(Copyable, Movable):
     var gradient_clip_norm: Float32  # Clip gradients by norm (0 = no clipping)
 
     fn __init__(
-        mut self,
+        out self,
         num_epochs: Int = 10,
         batch_size: Int = 32,
         learning_rate: Float64 = 0.001,
@@ -108,7 +108,7 @@ struct TrainingMetrics(Copyable, Movable):
     var best_val_accuracy: Float64
     var best_epoch: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize training metrics with defaults."""
         self.current_epoch = 0
         self.current_batch = 0
@@ -297,11 +297,11 @@ struct DataLoader(Copyable, Movable):
         var batch_data_shape = List[Int](2)
         batch_data_shape[0] = actual_batch_size
         batch_data_shape[1] = self.data.shape()[1]
-        var batch_data = ExTensor(batch_data_shape, self.data.dtype)
+        var batch_data = ExTensor(batch_data_shape, self.data.dtype())
 
         var batch_labels_shape = List[Int](1)
         batch_labels_shape[0] = actual_batch_size
-        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype)
+        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype())
 
         # Copy data (simplified - real implementation would use slicing)
         # For now, we'll just create placeholders

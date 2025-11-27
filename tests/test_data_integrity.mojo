@@ -27,7 +27,7 @@ fn test_mxfp4_aligned_roundtrip() raises:
     var decoded = encoded.from_mxfp4()
 
     # Should restore to original size (32 elements)
-    assert decoded.numel() == 32, "Decoded size should be 32"
+    assert_equal_int(decoded.numel(), 32, "Decoded size should be 32")
     print("  ✓ Aligned MXFP4 round-trip: 32 → 32 elements")
 
 
