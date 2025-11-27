@@ -170,8 +170,13 @@ fn assert_gradients_close(
                 max_rel_diff = rel_diff
 
         if abs_diff > tolerance:
-            # Build error message without str() function
-            raise Error(message + ": gradient mismatch at index " + String(i))
+            # Build error message with detailed values
+            var msg = message + ": gradient mismatch at index " + String(i)
+            msg += "\n  Analytical: " + String(a)
+            msg += "\n  Numerical:  " + String(n)
+            msg += "\n  Difference: " + String(abs_diff)
+            msg += "\n  Tolerance:  " + String(tolerance)
+            raise Error(msg)
 
 
 fn _deep_copy(tensor: ExTensor) raises -> ExTensor:

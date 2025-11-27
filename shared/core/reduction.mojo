@@ -462,7 +462,7 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
             var grad_val = grad_output._get_float64(grad_idx)
             result._set_float64(result_idx, grad_val)
 
-    return result
+    return result^
 
 
 fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
@@ -510,7 +510,7 @@ fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> E
         var val = grad_sum._get_float64(i)
         grad_sum._set_float64(i, val * scale)
 
-    return grad_sum
+    return grad_sum^
 
 
 fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
@@ -652,7 +652,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var grad_val = grad_output._get_float64(grad_idx)
                 result._set_float64(result_idx, grad_val / Float64(count))
 
-    return result
+    return result^
 
 
 fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
@@ -786,4 +786,4 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
                 var grad_val = grad_output._get_float64(grad_idx)
                 result._set_float64(result_idx, grad_val / Float64(count))
 
-    return result
+    return result^
