@@ -17,6 +17,12 @@ from math import trunc as math_trunc
 from memory import UnsafePointer
 
 
+@always_inline
+fn math_round[T: DType](x: Scalar[T]) -> Scalar[T]:
+    """Round to nearest integer (banker's rounding)."""
+    return math_floor(x + Scalar[T](0.5))
+
+
 # ============================================================================
 # Unary Operations (Element-wise)
 # ============================================================================
@@ -319,9 +325,9 @@ fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Round operation."""
     @parameter
     if T == DType.float16 or T == DType.float32:
-        return Scalar[T](round(Float32(x)))
+        return Scalar[T](math_round(Float32(x)))
     else:
-        return Scalar[T](round(Float64(x)))
+        return Scalar[T](math_round(Float64(x)))
 
 
 fn round(tensor: ExTensor) raises -> ExTensor:
