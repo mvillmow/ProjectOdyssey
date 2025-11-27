@@ -19,6 +19,8 @@ from tests.shared.conftest import (
     assert_less,
     assert_greater,
     assert_not_equal_tensor,
+    assert_not_none,
+    assert_shape_equal,
     assert_tensor_equal,
     assert_type,
     create_simple_model,
