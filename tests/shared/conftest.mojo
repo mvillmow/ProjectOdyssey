@@ -174,6 +174,24 @@ fn assert_equal_int(a: Int, b: Int, message: String = "") raises:
         raise Error(error_msg)
 
 
+fn assert_equal_float(a: Float32, b: Float32, message: String = "") raises:
+    """Assert exact equality of two Float32 values.
+
+    Args:
+        a: First float value.
+        b: Second float value.
+        message: Optional error message.
+
+    Raises:
+        Error if floats are not exactly equal.
+    """
+    if a != b:
+        var error_msg = message if message else (
+            "Float values not equal: " + String(a) + " != " + String(b)
+        )
+        raise Error(error_msg)
+
+
 fn assert_close_float(
     a: Float64,
     b: Float64,

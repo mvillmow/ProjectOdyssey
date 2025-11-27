@@ -379,9 +379,9 @@ fn test_batch_norm2d_backward_shapes() raises:
     )
 
     # Validate shapes
-    assert_shape_equal(grad_input, x, "grad_input should match input shape")
-    assert_shape_equal(grad_gamma, gamma, "grad_gamma should match gamma shape")
-    assert_shape_equal(grad_beta, gamma, "grad_beta should match beta shape")
+    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
+    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
+    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
 
     # Check specific dimensions
     assert_equal(grad_input.shape()[0], 3, "batch dimension")
