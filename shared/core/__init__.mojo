@@ -313,5 +313,20 @@ from .dtype_dispatch import (
     dispatch_float_scalar,
 )
 
+# ============================================================================
+# Reduction Operations
+# ============================================================================
+
+from .reduction import (
+    sum,
+    mean,
+    max_reduce,
+    min_reduce,
+    sum_backward,
+    mean_backward,
+    max_reduce_backward,
+    min_reduce_backward,
+)
+
 # Note: Mojo does not support Python's __all__ mechanism.
 # All imported symbols are automatically available to package consumers.
