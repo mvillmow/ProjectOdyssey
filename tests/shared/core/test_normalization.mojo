@@ -17,6 +17,7 @@ from tests.shared.conftest import (
     assert_equal,
     assert_equal_int,
     assert_shape,
+    assert_shape_equal,
     assert_true,
 )
 from tests.shared.conftest import TestFixtures
