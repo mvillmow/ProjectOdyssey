@@ -223,7 +223,33 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         var shape = List[Int]()
         shape.append(len(data))
-        _ = self.__init__(shape, DType.float32)
+
+        # Initialize fields manually (delegating constructor doesn't satisfy compiler)
+        self._shape = List[Int]()
+        self._shape.append(len(data))
+        self._dtype = DType.float32
+        self._is_view = False
+        self._original_numel_quantized = -1
+
+        # Calculate numel
+        self._numel = len(data)
+
+        # Calculate strides
+        self._strides = List[Int]()
+        self._strides.append(1)
+
+        # Allocate memory
+        var dtype_size = ExTensor._get_dtype_size_static(DType.float32)
+        var total_bytes = self._numel * dtype_size
+
+        if total_bytes > MAX_TENSOR_BYTES:
+            raise Error("Tensor too large: " + String(total_bytes) + " bytes exceeds maximum " + String(MAX_TENSOR_BYTES) + " bytes")
+
+        self._data = alloc[UInt8](total_bytes)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
+
+        # Copy data
         for i in range(len(data)):
             self._set_float32(i, data[i])
 
@@ -239,7 +265,33 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         var shape = List[Int]()
         shape.append(len(data))
-        _ = self.__init__(shape, DType.int64)
+
+        # Initialize fields manually (delegating constructor doesn't satisfy compiler)
+        self._shape = List[Int]()
+        self._shape.append(len(data))
+        self._dtype = DType.int64
+        self._is_view = False
+        self._original_numel_quantized = -1
+
+        # Calculate numel
+        self._numel = len(data)
+
+        # Calculate strides
+        self._strides = List[Int]()
+        self._strides.append(1)
+
+        # Allocate memory
+        var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
+        var total_bytes = self._numel * dtype_size
+
+        if total_bytes > MAX_TENSOR_BYTES:
+            raise Error("Tensor too large: " + String(total_bytes) + " bytes exceeds maximum " + String(MAX_TENSOR_BYTES) + " bytes")
+
+        self._data = alloc[UInt8](total_bytes)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
+
+        # Copy data
         for i in range(len(data)):
             self._data.bitcast[Int64]()[i] = Int64(data[i])
 
