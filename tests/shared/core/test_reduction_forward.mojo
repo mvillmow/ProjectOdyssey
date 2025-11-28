@@ -180,7 +180,7 @@ fn test_max_with_keepdims() raises:
     var shape2d = List[Int]()
     shape2d.append(3)
     shape2d.append(4)
-    vara2d = full(shape2d, 9.0, DType.float32)
+    var a2d = full(shape2d, 9.0, DType.float32)
     var b = max_reduce(a2d, keepdims=True)
 
     assert_dim(b, 2, "keepdims should preserve dimensions")

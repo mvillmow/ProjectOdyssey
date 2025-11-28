@@ -604,6 +604,112 @@ Before committing Mojo code, verify:
 **See**: [Complete Mojo Failure Patterns](notes/review/mojo-test-failure-learnings.md) for detailed
 examples and prevention strategies.
 
+### Zero-Warnings Policy
+
+**CRITICAL**: This project enforces a zero-warnings policy for ALL Mojo code to maintain code quality and catch
+potential bugs early.
+
+#### Why We Enforce This
+
+- **Catch bugs early**: Many warnings indicate potential runtime errors or logic bugs
+- **Prevent warning accumulation**: Small warnings compound over time and become harder to fix
+- **Enforce consistency**: Ensures all code follows the same quality standards
+- **Make failures explicit**: Code with warnings will not be merged
+
+#### How It Works
+
+**Note**: Mojo doesn't support a `-Werror` flag (as of v0.25.7). Instead, we enforce zero warnings through:
+
+1. **Code review**: PRs with warnings are rejected
+2. **CI monitoring**: Warnings are visible in CI logs and must be addressed
+3. **Developer discipline**: Fix warnings immediately, don't accumulate them
+
+**pixi.toml tasks**: Standard Mojo commands (warnings visible in output)
+
+```toml
+[tasks]
+build = "mojo build"  # Warnings must be fixed, not suppressed
+run = "mojo run"      # Warnings must be fixed, not suppressed
+test = "mojo test"    # Warnings must be fixed, not suppressed
+format = "mojo format"
+```
+
+#### Common Warning Patterns to Avoid
+
+**1. Unused Variables**
+
+```mojo
+# ❌ WRONG - Unused loop variable
+for i in range(10):
+    list.append(0)
+
+# ✅ CORRECT - Use underscore for unused variables
+for _ in range(10):
+    list.append(0)
+```
+
+**2. Unused Function Parameters**
+
+```mojo
+# ❌ WRONG - Unused parameter
+fn process(data: ExTensor, unused_param: Int):
+    return data
+
+# ✅ CORRECT - Remove unused parameter or prefix with underscore
+fn process(data: ExTensor, _debug_level: Int):
+    return data
+```
+
+**3. Mutating Method on Immutable Reference**
+
+```mojo
+# ❌ WRONG - Calling mutating method on read-only reference
+fn iterate(loader: BatchLoader):
+    var batches = loader.__iter__()  # Error: __iter__ needs mut self
+
+# ✅ CORRECT - Use mutable reference
+fn iterate(mut loader: BatchLoader):
+    var batches = loader.__iter__()
+```
+
+**4. Missing Transfer Operator for Non-Copyable Types**
+
+```mojo
+# ❌ WRONG - List/Dict/String fields need transfer operator
+fn get_strides(self) -> List[Int]:
+    return self._strides  # Warning: implicit copy of non-copyable type
+
+# ✅ CORRECT - Use transfer operator
+fn get_strides(self) -> List[Int]:
+    return self._strides^
+```
+
+#### Verification
+
+Before committing, verify your code compiles without warnings:
+
+```bash
+# Test individual file
+pixi run mojo -I . tests/shared/core/test_example.mojo
+
+# Build and check for warnings in output
+pixi run mojo build -I . shared/core/extensor.mojo
+
+# Run all tests and verify no warnings
+pixi run mojo test -I . tests/
+```
+
+**Check the output carefully**: If you see any warnings, fix them before committing.
+
+#### When You See a Warning
+
+1. **Read the warning message carefully** - Mojo warnings are specific and actionable
+2. **Fix the root cause** - Don't suppress or work around warnings
+3. **Test the fix** - Verify the warning is gone and code still works
+4. **Document if unusual** - Add comments if the fix is non-obvious
+
+**Remember**: If the Mojo compiler warns about it, there's usually a good reason. Fix it, don't ignore it.
+
 ## Environment Setup
 
 This project uses Pixi for environment management:

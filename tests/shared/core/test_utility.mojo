@@ -117,7 +117,7 @@ fn test_stride_row_major() raises:
     var t = ones(shape, DType.float32)  # Shape (2, 3, 4)
 
     # Row-major strides for (2,3,4): [12, 4, 1]
-    var strides = t._strides
+    var strides = t._strides^
     assert_equal_int(strides[0], 12, "Stride for dim 0 should be 12")
     assert_equal_int(strides[1], 4, "Stride for dim 1 should be 4")
     assert_equal_int(strides[2], 1, "Stride for dim 2 should be 1")

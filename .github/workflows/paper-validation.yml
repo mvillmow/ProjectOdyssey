@@ -253,7 +253,7 @@ jobs:
 
               # Run Mojo tests if they exist
               if [ -n "$(find "$paper_dir/tests" -name 'test_*.mojo' 2>/dev/null)" ]; then
-                pixi run mojo test -I . "$paper_dir/tests" --verbose || true
+                pixi run mojo test -Werror -I . "$paper_dir/tests" --verbose || true
               fi
             fi
           done

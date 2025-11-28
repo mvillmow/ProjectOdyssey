@@ -164,7 +164,7 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
         """Return number of batches."""
         return self._len
 
-    fn __iter__(self) raises -> List[Batch]:
+    fn __iter__(mut self) raises -> List[Batch]:
         """Iterate over batches.
 
         Returns:

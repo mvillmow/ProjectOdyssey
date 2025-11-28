@@ -117,7 +117,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         self._strides = List[Int]()
         var stride = 1
         # Pre-allocate strides list with correct forward iteration
-        for i in range(len(self._shape)):
+        for _ in range(len(self._shape)):
             self._strides.append(0)
         # Now fill strides in backward order
         for i in range(len(self._shape) - 1, -1, -1):
