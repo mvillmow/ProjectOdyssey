@@ -165,7 +165,7 @@ fn test_random_sampler_no_duplicates() raises:
 
     # Check for duplicates by counting occurrences
     var seen = List[Bool](capacity=50)
-    for i in range(50):
+    for _ in range(50):
         seen.append(False)
 
     for i in range(len(indices)):
