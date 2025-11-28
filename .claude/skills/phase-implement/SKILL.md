@@ -1,253 +1,132 @@
 ---
 name: phase-implement
-description: Coordinate implementation phase by delegating tasks to engineers, monitoring progress, and ensuring code quality. Use during the implementation phase of the 5-phase development workflow.
+description: "Coordinate implementation phase by delegating tasks and ensuring code quality. Use during implementation phase to manage engineer tasks."
+category: phase
+phase: Impl
 ---
 
-# Implementation Phase Coordination Skill
+# Implementation Coordination Skill
 
-This skill coordinates the implementation phase by delegating tasks and ensuring quality.
+Coordinate implementation phase by breaking down work, delegating to engineers, and maintaining quality standards.
 
 ## When to Use
 
-- User asks to coordinate implementation (e.g., "coordinate implementation phase")
-- Implementation phase of 5-phase workflow
+- Starting implementation phase (after Plan completes)
+- Running in parallel with Test and Package phases
 - Need to delegate implementation tasks
-- Managing multiple implementation tasks
+- Managing multiple engineering tasks simultaneously
 
-## 5-Phase Workflow Context
-
-**Workflow**: Plan → [Test | Implementation | Package] → Cleanup
-
-Implementation phase runs in parallel with Test and Package phases after Plan completes.
-
-## Coordination Workflow
-
-### 1. Review Plan Specifications
+## Quick Reference
 
 ```bash
-# Read plan documentation
-cat notes/plan/<section>/<subsection>/plan.md
+# Break down plan into implementation tasks
+grep "## Steps" -A 20 notes/plan/<section>/<component>/plan.md
 
-# Review success criteria
-grep "Success Criteria" -A 10 plan.md
-```text
+# Verify code quality
+pixi run mojo test -I . tests/
+pixi run mojo build -I . <module>
+pre-commit run --all-files
 
-### 2. Break Down Implementation
+# Check for warnings (zero-warnings policy)
+# Any output = fix before committing
+```
 
-```bash
-# Generate implementation tasks
-./scripts/create_implementation_tasks.sh <component-name>
+## Workflow
 
-# This creates
-# - Task list with priorities
-# - Delegation assignments
-# - Dependencies between tasks
-```text
+1. **Review plan specifications** - Understand deliverables and success criteria
+2. **Break into tasks** - Create granular implementation work items
+3. **Delegate by complexity**:
+   - **Senior Engineer**: Complex algorithms, SIMD, memory management
+   - **Engineer**: Standard implementations, business logic
+   - **Junior Engineer**: Boilerplate, simple helpers, type definitions
+4. **Monitor progress** - Check completion status, unblock issues
+5. **Code review** - Verify quality, standards, tests, documentation
+6. **Final checks** - Format, lint, test coverage, no warnings
 
-### 3. Delegate to Engineers
+## Delegation Matrix
 
-Delegate based on complexity:
+| Complexity | Task | Engineer |
+|------------|------|----------|
+| High | Complex algorithms, SIMD optimizations | Senior |
+| High | Memory management, ownership patterns | Senior |
+| Medium | Standard functions, business logic | Standard |
+| Medium | Data structures, operations | Standard |
+| Low | Boilerplate, type aliases | Junior |
+| Low | Simple helpers, constants | Junior |
 
-**Complex** → Senior Implementation Engineer
+## Mojo Implementation Standards
 
-- Algorithms
-- Performance-critical code
-- SIMD optimizations
-
-**Standard** → Implementation Engineer
-
-- Standard functions
-- Business logic
-- Data structures
-
-**Simple** → Junior Implementation Engineer
-
-- Boilerplate
-- Simple helpers
-- Type definitions
-
-### 4. Monitor Progress
-
-```bash
-# Check implementation status
-./scripts/check_implementation_status.sh
-
-# Shows
-# - Completed tasks
-# - In-progress tasks
-# - Blocked tasks
-# - Quality metrics
-```text
-
-### 5. Code Review
-
-Review all implementations for:
-
-- **Quality** - Clean, maintainable code
-- **Standards** - Follows Mojo guidelines
-- **Tests** - Adequate coverage
-- **Documentation** - Clear comments
-- **Performance** - Meets requirements
-
-## Implementation Standards
-
-### Mojo-Specific
-
-#### Function Definitions
+**Function definitions**:
 
 ```mojo
-# Use fn for performance-critical code
-fn add_vectors[dtype: DType](
-    a: Tensor[dtype],
-    b: Tensor[dtype]
-) -> Tensor[dtype]:
-    """Add two tensors element-wise with SIMD optimization."""
-    # Implementation
+# High-performance critical
+fn simd_add[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]) -> Tensor[dtype]:
+    """SIMD-optimized addition."""
     pass
 
-# Use def for flexibility
-def helper_function(data: String):
-    # Implementation
+# Flexible/Python interop
+def load_model(path: String) -> PythonObject:
     pass
-```text
+```
 
-#### Memory Management
+**Memory management**:
 
 ```mojo
-# Use owned for ownership transfer
+# Transfer ownership
 fn process(owned data: Tensor) -> Tensor:
-    return data^  # Move ownership
+    return data^
 
-# Use borrowed for read-only access
-fn read_only(borrowed data: Tensor):
-    # Can't modify data
+# Read-only access
+fn analyze(borrowed data: Tensor):
     pass
 
-# Use inout for mutable references
-fn modify(inout data: Tensor):
-    # Can modify data
+# Mutable access (Mojo v0.25.7+)
+fn modify(mut data: Tensor):
     pass
-```text
+```
 
-#### SIMD Optimization
+## Quality Checklist
 
-```mojo
-from sys.info import simdwidthof
+Before code review approval:
 
-fn simd_add[dtype: DType](a: Tensor[dtype], b: Tensor[dtype]):
-    """SIMD-optimized element-wise addition."""
-    alias simd_width = simdwidthof[dtype]()
-    # Use SIMD operations
-    pass
-```text
+- [ ] All tests passing
+- [ ] 80% test coverage minimum
+- [ ] No compiler warnings (zero-warnings policy)
+- [ ] `mojo format` applied
+- [ ] Docstrings complete
+- [ ] No TODOs/FIXMEs (or documented)
+- [ ] Performance meets requirements
+- [ ] Follows Mojo syntax standards (Mojo v0.25.7+)
 
-## Delegation Examples
+## Phase Dependencies
 
-### Example 1: Tensor Operations
+- **Input from**: Plan phase (specifications and deliverables)
+- **Parallel with**: Test phase (TDD) and Package phase
+- **Precedes**: Cleanup phase (after parallel phases complete)
 
-```markdown
-**Component**: Tensor Operations
-**Complexity**: High
+## Output Location
 
-**Delegation**:
-- Tensor struct → Senior Engineer (complex ownership)
-- add function → Engineer (standard SIMD)
-- multiply function → Engineer (standard SIMD)
-- matmul function → Senior Engineer (complex algorithm)
-- Type aliases → Junior Engineer (boilerplate)
-```text
-
-### Example 2: Data Loaders
-
-```markdown
-**Component**: Data Loaders
-**Complexity**: Medium
-
-**Delegation**:
-- Loader interface → Engineer (standard)
-- File reading → Engineer (IO operations)
-- Preprocessing → Senior Engineer (performance-critical)
-- Batching → Engineer (standard logic)
-```text
-
-## Quality Checks
-
-Before marking implementation complete:
-
-```bash
-# Format code
-mojo format src/**/*.mojo
-
-# Run tests
-mojo test tests/
-
-# Check coverage
-./scripts/check_coverage.sh
-
-# Run linters
-./scripts/run_linters.sh
-
-# Verify performance
-./scripts/benchmark.sh
-```text
+- **Implementation**: `/shared/<module>/`, `/examples/`, `/tooling/`
+- **Documentation**: `/notes/issues/<issue-number>/README.md`
+- **Issue updates**: Track progress, blockers, learnings
 
 ## Error Handling
 
-### Implementation Blockers
+| Blocker | Resolution |
+|---------|-----------|
+| Unclear requirements | Escalate to Design for clarification |
+| Performance issues | Consult Performance Specialist |
+| Test failures | Debug with Test Specialist |
+| Missing dependencies | Update Plan, communicate status |
+| Compiler warnings | Fix immediately (zero-warnings policy) |
 
-- **Unclear requirements**: Escalate to design agent
-- **Performance issues**: Consult performance specialist
-- **Test failures**: Coordinate with test specialist
-- **Missing dependencies**: Update plan and communicate
+## References
 
-### Quality Issues
+- `CLAUDE.md` - "Mojo Syntax Standards" (current v0.25.7+ patterns)
+- `CLAUDE.md` - "Critical Pre-Flight Checklist" (before committing)
+- `CLAUDE.md` - "Common Mistakes to Avoid" (64+ test failure learnings)
+- `notes/review/mojo-test-failure-learnings.md` - Real implementation patterns
 
-- **Code smells**: Require refactoring before merge
-- **No tests**: Reject until tests added
-- **Poor documentation**: Require improvement
-- **Performance regression**: Investigate and fix
+---
 
-## Examples
-
-### Start implementation phase:
-
-```bash
-./scripts/start_implementation.sh tensor-operations
-```text
-
-### Delegate task:
-
-```bash
-./scripts/delegate_task.sh "implement matmul" senior-engineer
-```text
-
-### Check status:
-
-```bash
-./scripts/check_implementation_status.sh
-```text
-
-## Scripts Available
-
-- `scripts/create_implementation_tasks.sh` - Break down into tasks
-- `scripts/delegate_task.sh` - Assign task to engineer
-- `scripts/check_implementation_status.sh` - Monitor progress
-- `scripts/review_implementation.sh` - Code quality review
-
-## Integration with Other Phases
-
-- **After Plan** - Receives specifications
-- **Parallel with Test** - Coordinates TDD
-- **Parallel with Package** - Provides modules for packaging
-- **Before Cleanup** - Completes before cleanup starts
-
-## Success Criteria
-
-- [ ] All implementation tasks completed
-- [ ] Code quality meets standards
-- [ ] Tests passing
-- [ ] Performance requirements met
-- [ ] Documentation complete
-- [ ] Code reviewed and approved
-
-See CLAUDE.md for complete 5-phase workflow documentation.
+**Key Principle**: Implement to make tests pass, not the other way around.

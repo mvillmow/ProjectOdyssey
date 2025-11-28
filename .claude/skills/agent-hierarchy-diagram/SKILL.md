@@ -1,47 +1,48 @@
 ---
 name: agent-hierarchy-diagram
-description: Generate visual hierarchy diagrams of the agent system showing levels and delegation. Use for documentation or understanding agent relationships.
+description: "Generate visual hierarchy diagrams of agent system showing levels and delegation. Use for documentation or onboarding."
+category: agent
 ---
 
-# Agent Hierarchy Diagram Skill
+# Agent Hierarchy Diagram
 
-Generate visual diagrams of agent hierarchy.
+Generate visual diagrams showing agent system structure and relationships.
 
 ## When to Use
 
-- Documenting agent system
+- Documenting agent system for team
 - Understanding delegation structure
 - Onboarding new contributors
-- Visualizing agent relationships
+- Visualizing agent relationships for presentations
 
-## Usage
+## Quick Reference
 
 ```bash
-# Generate ASCII diagram
+# Generate ASCII tree diagram
 ./scripts/generate_hierarchy_diagram.sh
 
-# Output to file
+# Generate Mermaid diagram
+./scripts/generate_mermaid_diagram.sh > hierarchy.mmd
+
+# Save to documentation
 ./scripts/generate_hierarchy_diagram.sh > agents/hierarchy-visual.txt
+```
 
-# Generate mermaid diagram
-./scripts/generate_mermaid_diagram.sh > agents/hierarchy.mmd
-```text
+## ASCII Tree Format
 
-## Diagram Format
-
-```text
+```
 Chief Architect (L0)
 ├── Foundation Orchestrator (L1)
 │   ├── Repository Design (L2)
 │   │   ├── Directory Specialist (L3)
-│   │   │   └── Junior Engineer (L4)
+│   │   │   └── Junior Engineer (L5)
 │   │   └── Config Specialist (L3)
 │   └── Config Design (L2)
 ├── Shared Library Orchestrator (L1)
 │   └── Tensor Module Design (L2)
 │       └── Tensor Specialist (L3)
-└── ...
-```text
+└── Tooling Orchestrator (L1)
+```
 
 ## Mermaid Format
 
@@ -50,13 +51,27 @@ graph TD
     A[Chief Architect L0] --> B[Foundation Orchestrator L1]
     B --> C[Repository Design L2]
     C --> D[Directory Specialist L3]
-```text
+    D --> E[Junior Engineer L5]
+```
 
 ## Use Cases
 
-- Add to `/agents/hierarchy.md`
-- Include in documentation
-- Presentation materials
-- Understanding delegation
+- Add to `/agents/hierarchy.md` for reference
+- Include in onboarding documentation
+- Create presentation materials
+- Understand delegation chains
+- Communicate structure to stakeholders
 
-See `/agents/hierarchy.md` for existing diagram.
+## Output Formats
+
+**ASCII**: Human-readable in terminals, copy-pasteable in docs
+
+**Mermaid**: Renders in GitHub markdown, editable in Mermaid editor
+
+**GraphML**: Import into diagram tools (yEd, Graphviz)
+
+## References
+
+- `/agents/hierarchy.md` - Existing hierarchy documentation
+- `agent-test-delegation` - Validate diagram accuracy
+- `.claude/agents/` - Agent configuration source

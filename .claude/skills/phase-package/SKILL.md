@@ -1,175 +1,141 @@
 ---
 name: phase-package
-description: Create distributable packages including .mojopkg files, archives, and installation procedures. Use during package phase to prepare components for distribution and reuse.
+description: "Create distributable packages including .mojopkg files and archives. Use during package phase to prepare components for distribution."
+category: phase
+phase: Package
 ---
 
 # Package Phase Coordination Skill
 
-This skill coordinates the package phase to create distributable artifacts.
+Create distributable packages including Mojo packages (.mojopkg), archives, and installation procedures.
 
 ## When to Use
 
-- User asks to package components (e.g., "create package for tensor module")
-- Package phase of 5-phase workflow
-- Preparing for distribution
-- Creating reusable components
+- Starting package phase (after Plan completes)
+- Running in parallel with Test and Implementation phases
+- Preparing components for distribution and reuse
+- Creating installable packages or release artifacts
 
-## Package Types
-
-### 1. Mojo Packages (.mojopkg)
-
-Compiled Mojo modules:
+## Quick Reference
 
 ```bash
-./scripts/package_mojo_module.sh tensor
-# Creates: packages/tensor.mojopkg
-```text
+# Build Mojo package
+pixi run mojo build -o packages/module.mojopkg shared/module/
 
-### 2. Distribution Archives
+# Create distribution archive
+tar -czf dist/ml-odyssey-v0.1.0.tar.gz packages/ examples/ README.md
 
-Tar/zip archives for tooling and documentation:
-
-```bash
-./scripts/create_distribution.sh ml-odyssey-v0.1.0
-# Creates: dist/ml-odyssey-v0.1.0.tar.gz
-```text
-
-### 3. Installation Procedures
-
-Scripts and documentation for installation:
-
-```bash
-./scripts/create_installer.sh tensor
-# Creates: install_tensor.sh, INSTALL.md
-```text
+# Test installation
+pixi run mojo run -I packages test_import.mojo
+```
 
 ## Workflow
 
-### 1. Build Packages
-
-```bash
-# Build all Mojo packages
-./scripts/build_all_packages.sh
-
-# Build specific package
-./scripts/build_package.sh tensor
-```text
-
-### 2. Create Archives
-
-```bash
-# Create distribution archive
-./scripts/create_archive.sh v0.1.0
-
-# Includes
-# - packages/*.mojopkg
-# - README.md
-# - LICENSE
-# - INSTALL.md
-# - examples/
-```text
-
-### 3. Test Installation
-
-```bash
-# Test in clean environment
-./scripts/test_installation.sh packages/tensor.mojopkg
-
-# Verifies
-# - Package can be imported
-# - Dependencies resolved
-# - Examples work
-```text
-
-### 4. Create CI Workflow
-
-```bash
-# Generate packaging workflow
-./scripts/create_packaging_workflow.sh
-
-# Creates: .github/workflows/package.yml
-```text
+1. **Build packages** - Compile Mojo modules to `.mojopkg` files
+2. **Create archives** - Package distributions (tar.gz, zip)
+3. **Write installation docs** - Document setup procedures
+4. **Test installation** - Verify in clean environment
+5. **Create CI workflow** - Automate packaging in GitHub Actions
+6. **Generate metadata** - Version info, dependencies, etc.
 
 ## Package Structure
 
-### Mojo Package Layout
+**Input (module source)**:
 
-```text
-src/tensor/
-├── __init__.mojo      # Package entry point
-├── ops.mojo           # Operations module
-└── types.mojo         # Type definitions
+```
+shared/tensor/
+├── __init__.mojo
+├── ops.mojo
+└── types.mojo
+```
 
-# Builds to
-packages/tensor.mojopkg
-```text
+**Output (packaged module)**:
 
-### Distribution Archive Layout
+```
+packages/
+├── tensor.mojopkg
+├── nn.mojopkg
+└── utils.mojopkg
+```
 
-```text
+**Distribution archive**:
+
+```
 ml-odyssey-v0.1.0/
 ├── packages/
-│   ├── tensor.mojopkg
-│   ├── nn.mojopkg
-│   └── utils.mojopkg
 ├── examples/
-│   ├── tensor_demo.mojo
-│   └── nn_demo.mojo
+├── docs/
 ├── README.md
 ├── LICENSE
 └── INSTALL.md
-```text
+```
 
-## Quality Checks
+## Build Configuration
 
-Before finalizing package:
+**Mojo package build**:
 
-- [ ] Package builds successfully
-- [ ] Can be imported in clean environment
+```bash
+# Single module
+mojo build -o packages/tensor.mojopkg shared/tensor/
+
+# All modules (in loop or script)
+for module in shared/*/; do
+    mojo build -o packages/$(basename $module).mojopkg "$module"
+done
+```
+
+**Archive creation**:
+
+```bash
+# Tar.gz (Linux/Mac)
+tar -czf dist/ml-odyssey-v0.1.0.tar.gz packages/ examples/ docs/
+
+# Zip (cross-platform)
+zip -r dist/ml-odyssey-v0.1.0.zip packages/ examples/ docs/
+```
+
+## Quality Checklist
+
+Before marking package complete:
+
+- [ ] All modules compile without warnings
+- [ ] Package can be imported in test script
 - [ ] Examples run correctly
-- [ ] Documentation included
-- [ ] License file present
+- [ ] README and INSTALL.md included
+- [ ] LICENSE file present
 - [ ] Version tagged correctly
+- [ ] No compilation warnings
+- [ ] Dependencies documented
+
+## Phase Dependencies
+
+- **Input from**: Plan phase (deliverables and success criteria)
+- **Parallel with**: Test phase (TDD) and Implementation phase
+- **Precedes**: Cleanup phase (after parallel phases complete)
+
+## Output Location
+
+- **Packages**: `/packages/<module>.mojopkg`
+- **Archives**: `/dist/<version>.tar.gz`, `.zip`
+- **Documentation**: `/notes/issues/<issue-number>/README.md`
+- **Release artifacts**: GitHub releases section (after cleanup)
 
 ## Error Handling
 
-- **Build failures**: Fix source code issues
-- **Import errors**: Check **init**.mojo exports
-- **Missing dependencies**: Document in package metadata
-- **Installation failures**: Test and fix installer
+| Error | Fix |
+|-------|-----|
+| Build fails | Check syntax, verify all files in module |
+| Import fails | Verify `__init__.mojo` exports, check paths |
+| Archive corrupted | Recreate archive, verify contents |
+| Installation fails | Check permissions, test script paths |
+| Missing files | Verify all deliverables before packaging |
 
-## Examples
+## References
 
-### Package Mojo module:
+- `CLAUDE.md` - "Package Phase" in 5-phase workflow
+- `.github/workflows/` - Example CI workflows
+- `pixi.toml` - Build configuration and tasks
 
-```bash
-./scripts/package_mojo_module.sh tensor
-```text
+---
 
-### Create distribution:
-
-```bash
-./scripts/create_distribution.sh v0.1.0
-```text
-
-### Test package:
-
-```bash
-./scripts/test_package.sh tensor.mojopkg
-```text
-
-## Scripts Available
-
-- `scripts/package_mojo_module.sh` - Build Mojo package
-- `scripts/create_distribution.sh` - Create archive
-- `scripts/create_installer.sh` - Generate installer
-- `scripts/test_installation.sh` - Test package
-- `scripts/create_packaging_workflow.sh` - Generate CI workflow
-
-## Templates
-
-- `templates/package_readme.md` - Package README template
-- `templates/install_instructions.md` - Installation guide
-- `templates/package_workflow.yml` - CI workflow template
-
-See CLAUDE.md for package phase requirements and 5-phase workflow.
+**Key Principle**: Package only what's been tested and approved. No untested code in releases.

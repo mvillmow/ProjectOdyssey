@@ -1,21 +1,41 @@
 ---
 name: quality-fix-formatting
-description: Automatically fix code formatting issues using mojo format, markdownlint --fix, and pre-commit hooks. Use when formatting checks fail or before committing code.
+description: Automatically fix code formatting issues using mojo format, markdownlint, and pre-commit hooks. Use when formatting checks fail or before committing code.
+category: quality
 ---
 
 # Fix Formatting Skill
 
-This skill automatically fixes code formatting issues across all file types.
+Automatically fix code formatting issues across file types.
 
 ## When to Use
 
-- User asks to fix formatting (e.g., "fix all formatting issues")
 - Pre-commit checks fail due to formatting
 - Before committing code
 - After writing new code
 - CI formatting checks fail
 
+## Quick Reference
+
+```bash
+# Fix everything
+./scripts/fix_all_formatting.sh
+
+# Fix specific types
+mojo format src/**/*.mojo
+npx markdownlint-cli2 --fix "**/*.md"
+pre-commit run --all-files
+```
+
 ## Auto-Fix Capabilities
+
+| Tool | Coverage | Manual Fixes |
+|------|----------|--------------|
+| mojo format | 100% | None |
+| markdownlint | 70% | Language tags, line length |
+| pre-commit | 100% | None |
+
+## Formatting Tools
 
 ### Mojo Code (100% auto-fix)
 
@@ -23,12 +43,14 @@ This skill automatically fixes code formatting issues across all file types.
 # Format all Mojo files
 mojo format src/**/*.mojo
 
-# Automatically fixes
-# - Indentation
-# - Spacing around operators
-# - Line wrapping
-# - Blank lines
-```text
+# Format single file
+mojo format src/tensor.mojo
+
+# Check without fixing
+mojo format --check src/**/*.mojo
+```
+
+Fixes: indentation, spacing, line wrapping, blank lines
 
 ### Markdown (Partial auto-fix)
 
@@ -36,75 +58,29 @@ mojo format src/**/*.mojo
 # Fix markdown issues
 npx markdownlint-cli2 --fix "**/*.md"
 
-# Auto-fixes
-# - Some blank line issues
-# - Some spacing issues
-#
-# Manual fixes needed for
-# - Missing language in code blocks
-# - Line length (need to reflow text)
-```text
+# Check only
+npx markdownlint-cli2 "**/*.md"
+```
+
+Auto-fixes: blank lines, spacing
+Manual fixes: language tags, line length
 
 ### Pre-commit Hooks (100% auto-fix)
 
 ```bash
-# Run all pre-commit hooks
+# Run all hooks
 pre-commit run --all-files
 
-# Auto-fixes
-# - Trailing whitespace
-# - Missing final newline
-# - Mixed line endings
-# - YAML formatting
-```text
+# Run specific hook
+pre-commit run trailing-whitespace --all-files
+```
 
-## Usage
-
-### Fix Everything
-
-```bash
-# Run all formatters
-./scripts/fix_all_formatting.sh
-
-# This
-# 1. Formats all Mojo files
-# 2. Fixes markdown issues
-# 3. Runs pre-commit hooks
-# 4. Reports what was fixed
-```text
-
-### Fix Specific File Type
-
-```bash
-# Mojo only
-./scripts/fix_formatting.sh --mojo
-
-# Markdown only
-./scripts/fix_formatting.sh --markdown
-
-# Pre-commit only
-./scripts/fix_formatting.sh --precommit
-```text
-
-### Fix Specific File
-
-```bash
-# Fix single Mojo file
-mojo format src/tensor.mojo
-
-# Fix single markdown file
-npx markdownlint-cli2 --fix README.md
-
-# Fix by pre-commit
-pre-commit run --files src/tensor.mojo
-```text
+Auto-fixes: trailing whitespace, missing newlines, line endings, YAML
 
 ## Workflow
 
-### When Formatting Fails
-
 ```bash
-# 1. Run fix-all
+# 1. Fix all formatting
 ./scripts/fix_all_formatting.sh
 
 # 2. Review changes
@@ -115,96 +91,60 @@ git add .
 
 # 4. Commit
 git commit -m "fix: apply code formatting"
-```text
-
-### Before Committing
-
-```bash
-# 1. Fix formatting proactively
-./scripts/fix_all_formatting.sh
-
-# 2. Add files
-git add .
-
-# 3. Commit (pre-commit will run)
-git commit -m "feat: new feature"
-```text
-
-### After CI Failure
-
-```bash
-# 1. Pull latest changes
-git pull
-
-# 2. Fix formatting
-./scripts/fix_all_formatting.sh
-
-# 3. Commit and push
-git add .
-git commit --amend --no-edit
-git push --force-with-lease
-```text
+```
 
 ## Common Fixes
 
-### Mojo Formatting
-
-### Before
+### Before/After: Mojo
 
 ```mojo
+# Before
 fn add(x:Int,y:Int)->Int:
     return x+y
-```text
 
-### After
-
-```mojo
+# After
 fn add(x: Int, y: Int) -> Int:
     return x + y
-```text
+```
 
-### Markdown Formatting
+### Before/After: Markdown
 
-### Before
+```markdown
+# Before
+Some text.
+```python
+code
+```
 
-````markdown
-Some text before.
-```text
+More text.
 
-code block
+# After
 
-```text
-Some text after.
-````
+Some text.
 
-### After
+```python
+code
+```
 
-````markdown
-Some text before.
+More text.
 
-```text
+```
 
-code block
+### Before/After: Whitespace
 
-```text
-Some text after.
-````
+```
 
-### Trailing Whitespace
+# Before
 
-### Before
-
-```text
 line with trailing spaces
 another line
-```text
 
-### After
+# After
 
-```text
 line with trailing spaces
 another line
-```text
+
+```
 
 ## Manual Fixes Required
 
@@ -212,93 +152,39 @@ Some issues need manual intervention:
 
 ### Markdown Language Tags
 
-````markdown
-# Before (need to add manually)
-```text
+```markdown
+# Must add manually
+```
 
 code here
 
-```text
-# After
+```
+
+# Should be
 ```python
 
 code here
 
-```text
-````
+```
+
+```
 
 ### Line Length
 
 ```markdown
-# Before (too long)
-This is a very long line that exceeds the 120 character limit and should be broken into multiple lines.
-
-# After (manually break)
-This is a very long line that exceeds the 120 character limit and should be
-broken into multiple lines.
-```text
-
-## Error Handling
-
-### Syntax Errors
-
-```text
-Error: Cannot format file.mojo due to syntax error
-```text
-
-**Fix**: Correct syntax errors before formatting
-
-### Permission Denied
-
-```text
-Error: Permission denied: file.mojo
-```text
-
-**Fix**: Check file permissions
-
-### Merge Conflicts
-
-```text
-Error: File contains merge conflict markers
-```text
-
-**Fix**: Resolve merge conflicts first
-
-## Examples
-
-### Fix all formatting:
-
-```bash
-./scripts/fix_all_formatting.sh
-```text
-
-### Fix only Mojo:
-
-```bash
-mojo format src/**/*.mojo
-```text
-
-### Fix only markdown:
-
-```bash
-npx markdownlint-cli2 --fix "**/*.md"
-```text
-
-### Fix and commit:
-
-```bash
-./scripts/fix_all_formatting.sh
-git add .
-git commit -m "fix: apply code formatting"
-```text
+# Too long (break manually at 120 chars)
+This is a very long line that exceeds 120 characters and should be
+manually broken into multiple lines for readability.
+```
 
 ## Scripts Available
 
-- `scripts/fix_all_formatting.sh` - Fix all formatting
-- `scripts/fix_formatting.sh` - Fix specific types
-- `scripts/check_formatting.sh` - Check without fixing
+- `scripts/fix_all_formatting.sh` - Fix everything
+- `scripts/fix_formatting.sh --mojo` - Mojo only
+- `scripts/fix_formatting.sh --markdown` - Markdown only
+- `scripts/fix_formatting.sh --precommit` - Pre-commit only
 
-## Integration with CI
+## CI Integration
 
 CI checks formatting but doesn't fix:
 
@@ -307,37 +193,28 @@ CI checks formatting but doesn't fix:
   run: |
     mojo format --check src/**/*.mojo
     npx markdownlint-cli2 "**/*.md"
-```text
+```
 
-If CI fails, fix locally and push.
+Fix locally and push if CI fails.
+
+## Error Handling
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Syntax error" | Invalid Mojo code | Fix syntax before formatting |
+| "Permission denied" | File permissions | Check file ownership |
+| "Merge conflict" | Merge markers present | Resolve conflicts first |
 
 ## Best Practices
 
 1. **Fix before commit** - Always format before committing
-1. **Use pre-commit** - Let hooks auto-fix on commit
-1. **Review changes** - Check what was formatted
-1. **Commit separately** - Formatting changes in separate commit
-1. **Don't bypass** - Don't use `--no-verify` to skip formatting
+2. **Use pre-commit hooks** - Let hooks auto-fix
+3. **Review changes** - Check what was formatted
+4. **Separate commits** - Format in separate commit if large changes
+5. **Don't bypass** - Don't use `--no-verify` to skip
 
-## Prod Fix Learnings (ML Odyssey)
+## References
 
-**List Constructor Anti-Pattern** (8 bugs fixed):
-
-- **Never**: `List[Int](n)` then `list[i] = val` (undefined size → crash).
-- **Always**: `List[Int]()` + `.append(val)`.
-
-Affected: shape.mojo (reshape/squeeze/unsqueeze/concat 4x), accuracy/confusion/DataLoader.
-
-Add lint rule in pre-commit.
-
-See [docs/learnings.md](../docs/learnings.md#list-constructor-bugs-8-instances).
-
-## Auto-Fix Summary
-
-| Tool | Auto-Fix | Manual Needed |
-|------|----------|---------------|
-| mojo format | 100% | None |
-| markdownlint | 70% | Language tags, line length |
-| pre-commit | 100% | None |
-
-See `.pre-commit-config.yaml` for formatting configuration.
+- Configuration: `.pre-commit-config.yaml`, `.markdownlint.yaml`
+- Related skill: `ci-run-precommit` for pre-commit hooks
+- Related skill: `quality-run-linters` for complete linting

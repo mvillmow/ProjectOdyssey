@@ -1,11 +1,12 @@
 ---
 name: ci-fix-failures
 description: Diagnose and fix CI/CD failures by analyzing logs, reproducing locally, and applying fixes. Use when CI checks fail on pull requests.
+category: ci
 ---
 
 # Fix CI Failures Skill
 
-Diagnose and fix CI/CD failures systematically.
+Diagnose and fix CI failures systematically.
 
 ## When to Use
 
@@ -14,127 +15,78 @@ Diagnose and fix CI/CD failures systematically.
 - Tests pass locally but fail in CI
 - Need to debug CI issues
 
-## Diagnosis Workflow
-
-### 1. Check CI Status
+## Quick Reference
 
 ```bash
 # View PR checks
 gh pr checks <pr-number>
 
-# View specific run
-gh run view <run-id>
-
-# Get failed logs
+# View specific run details
 gh run view <run-id> --log-failed
-```text
 
-### 2. Identify Failure
-
-```bash
-# Download logs
-gh run download <run-id>
-
-# Or view online
-gh run view <run-id> --web
-```text
-
-### 3. Reproduce Locally
-
-```bash
-# Run same commands as CI
+# Reproduce locally
 ./scripts/reproduce_ci.sh <run-id>
-```text
+```
+
+## Workflow
+
+1. **Check status** - View failed PR checks
+2. **Get logs** - Download or view failure details
+3. **Reproduce** - Run same commands locally
+4. **Fix issue** - Apply necessary changes
+5. **Verify** - Test passes locally
+6. **Push** - Commit and push fix
+7. **Monitor** - Check CI passes
 
 ## Common Failures
 
-### 1. Pre-commit Failures
+| Failure | Command | Fix |
+|---------|---------|-----|
+| Trailing whitespace | `pre-commit run --all-files` | Stage and re-commit |
+| Test failure | `mojo test tests/` | Fix code, re-run tests |
+| Markdown lint | `npx markdownlint-cli2 --fix "**/*.md"` | Commit fixes |
+| Build error | Check imports/deps | Update and rebuild |
 
-```text
-Trailing whitespace....Failed
-```text
-
-### Fix:
-
-```bash
-pre-commit run --all-files
-git add .
-git commit --amend --no-edit
-git push --force-with-lease
-```text
-
-### 2. Test Failures
-
-```text
-test_tensor_add....FAILED
-```text
-
-### Fix:
+## Diagnosis Workflow
 
 ```bash
-# Run tests locally
-mojo test tests/
+# 1. View CI status
+gh pr checks 123
 
-# Fix failing test
-# Re-run to verify
-# Push fix
-```text
+# 2. Get failure details
+gh run view <run-id> --log-failed
 
-### 3. Linting Failures
+# 3. Download logs for analysis
+gh run download <run-id>
 
-```text
-Markdown lint....Failed
-```text
+# 4. Reproduce issue locally
+./scripts/reproduce_ci.sh <run-id>
 
-### Fix:
+# 5. Fix the issue
+# ... make changes ...
 
-```bash
-npx markdownlint-cli2 --fix "**/*.md"
-git add .
-git commit -m "fix: markdown linting"
-git push
-```text
-
-### 4. Build Failures
-
-```text
-Error: Cannot find module
-```text
-
-### Fix:
-
-```bash
-# Check dependencies
-# Update imports
-# Re-build locally
-# Push fix
-```text
-
-## Fixing Workflow
-
-```bash
-# 1. Get failure logs
-./scripts/get_ci_logs.sh <pr-number>
-
-# 2. Reproduce locally
-./scripts/reproduce_ci_failure.sh
-
-# 3. Fix issue
-# ... make changes
-
-# 4. Verify fix
+# 6. Verify locally
 ./scripts/run_ci_locally.sh
 
-# 5. Push fix
+# 7. Push fix
 git add .
 git commit -m "fix: address CI failure"
 git push
 
-# 6. Verify CI passes
-gh pr checks <pr-number> --watch
-```text
+# 8. Monitor CI
+gh pr checks 123 --watch
+```
 
-## Scripts
+## Error Handling
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Cannot find module" | Missing import or broken path | Fix import, check file structure |
+| "Syntax error" | Invalid code | Correct syntax, test compile |
+| "Test failed" | Logic error | Debug test, fix implementation |
+| "Hook failed" | Formatting/whitespace | Run formatters, re-commit |
+
+## Scripts Available
 
 - `scripts/get_ci_logs.sh` - Download CI logs
 - `scripts/reproduce_ci_failure.sh` - Reproduce locally
@@ -145,7 +97,11 @@ gh pr checks <pr-number> --watch
 
 - Run pre-commit before pushing
 - Run tests locally
-- Check formatting
+- Check formatting before commit
 - Review CI logs regularly
 
-See `.github/workflows/` for workflow definitions.
+## References
+
+- Related skill: `quality-run-linters` for linting
+- Related skill: `ci-run-precommit` for pre-commit hooks
+- Workflow configuration: `.github/workflows/`

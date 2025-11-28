@@ -1,79 +1,83 @@
 ---
 name: worktree-switch
-description: Switch between git worktrees for parallel development on multiple branches. Use when working on multiple issues simultaneously.
+description: "Switch between git worktrees for parallel development. Use when working on multiple issues simultaneously."
+category: worktree
 ---
 
-# Worktree Switch Skill
+# Worktree Switch
 
-Switch between git worktrees efficiently.
+Navigate between isolated worktree directories quickly.
 
 ## When to Use
 
 - Working on multiple issues
-- Need to context switch
-- Testing different branches
+- Need to context switch without stashing
+- Testing different branches side-by-side
 - Comparing implementations
 
-## Usage
-
-### List Worktrees
+## Quick Reference
 
 ```bash
-# See all worktrees
+# List all worktrees
 git worktree list
 
-# Example output
-# /home/user/ml-odyssey              abc1234 [main]
-# /home/user/ml-odyssey-42-feature   def5678 [42-feature]
-# /home/user/ml-odyssey-73-bugfix    ghi9012 [73-bugfix]
-```text
-
-### Switch Worktree
-
-```bash
-# Just cd to different worktree
+# Switch worktree (simple cd)
 cd ../ml-odyssey-42-feature
 
 # Verify current worktree
 git worktree list | grep "*"
-```text
 
-### Quick Switch Script
-
-```bash
-# Switch by issue number
+# Switch by issue number (script)
 ./scripts/switch_worktree.sh 42
-# Changes to worktree for issue #42
-```text
+```
 
-## Tips
+## Workflow
 
-### Use Shell Aliases
+1. **List worktrees** - See all available worktrees and their paths
+2. **Navigate** - `cd` to desired worktree directory
+3. **Verify** - Check `git branch` to confirm you're on right branch
+4. **Work** - Make changes, commit normally
+5. **Switch** - Move to different worktree with simple `cd`
+
+## Common Patterns
+
+### Terminal Aliases
 
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
 alias wt='git worktree list'
 alias wtcd='cd $(git worktree list | fzf | awk "{print \$1}")'
-```text
+```
 
-### Terminal Multiplexer
-
-Use tmux/screen for persistent sessions per worktree:
+### Tmux Sessions
 
 ```bash
-# Session per worktree
-tmux new -s issue-42
-cd ../ml-odyssey-42-feature
+# Create persistent session per worktree
+tmux new -s issue-42 -c ../ml-odyssey-42-feature
 
 # Switch sessions
 tmux attach -t issue-42
-```text
+
+# List sessions
+tmux list-sessions
+```
 
 ## Best Practices
 
-- One worktree per issue
-- Clear naming (issue-number-description)
-- Keep worktrees organized
-- Clean up when done
+- One worktree per issue (don't share branches)
+- Use clear naming: `<issue-number>-<description>`
+- Keep worktrees organized in parent directory
+- Use terminal multiplexer (tmux/screen) for persistent sessions
+- Clean up completed worktrees (see `worktree-cleanup` skill)
 
-See `worktree-create` and `worktree-cleanup` skills.
+## Limitations
+
+- Each branch can only be checked out in ONE worktree
+- Cannot be in worktree while removing it
+- All worktrees share the same `.git` directory (some operations affect all)
+
+## References
+
+- See `worktree-create` skill for creating worktrees
+- See `worktree-cleanup` skill for removing worktrees
+- [worktree-strategy.md](../../../notes/review/worktree-strategy.md)

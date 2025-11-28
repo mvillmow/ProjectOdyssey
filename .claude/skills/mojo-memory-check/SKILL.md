@@ -1,111 +1,61 @@
 ---
 name: mojo-memory-check
-description: Verify memory safety in Mojo code including ownership, borrowing, and lifetime management. Use when reviewing code or debugging memory issues.
+description: "Verify memory safety in Mojo code including ownership, borrowing, and lifetime management. Use when reviewing code or debugging memory issues."
+category: mojo
 ---
 
 # Memory Safety Check Skill
 
-Verify Mojo code follows memory safety rules.
+Validate Mojo ownership and borrowing rules.
 
 ## When to Use
 
 - Reviewing code for memory safety
-- Debugging memory issues
+- Debugging memory or segfault issues
 - Before merging code
-- Performance testing reveals issues
+- Performance testing reveals corruption
 
-## Memory Ownership
-
-### Owned Parameters
+## Quick Reference
 
 ```mojo
-fn consume(owned data: Tensor):
-    # Takes ownership, original is invalidated
-    process(data)
-    # data is destroyed here
-```text
+# Owned parameter - takes ownership
+fn consume(var data: Tensor):
+    process(data)  # data moved here
 
-### Borrowed Parameters
+# Borrowed parameter - read-only reference
+fn read_only(data: Tensor):
+    let value = data[0]  # OK: read-only
 
-```mojo
-fn read_only(borrowed data: Tensor):
-    # Read-only access, no ownership transfer
-    let value = data[0]
-    # data still valid in caller
-```text
+# Mutable reference - in-place modification
+fn modify(mut data: Tensor):
+    data[0] = 42  # Mutate in caller's variable
+```
 
-### Inout Parameters
+## Workflow
 
-```mojo
-fn modify(inout data: Tensor):
-    # Mutable reference
-    data[0] = 42
-    # Changes visible in caller
-```text
+1. **Trace ownership** - Which function owns each value
+2. **Check borrows** - Are references short-lived
+3. **Verify moves** - Use `^` operator for ownership transfer
+4. **Test lifetimes** - Compile and run with memory checks
+5. **Debug issues** - Identify use-after-move or dangling refs
 
-## Common Issues
+## Mojo-Specific Notes
 
-### 1. Use After Move
+- Use `^` operator ONLY when transferring ownership
+- `mut self` for mutating methods (NOT `out self`)
+- `out self` ONLY for constructors (`__init__`)
+- List/Dict/String are non-copyable - must use `^` when returning
 
-```mojo
-# ❌ Wrong
-fn bad():
-    let data = Tensor()
-    consume(data^)  # Move ownership
-    print(data[0])  # Error: data moved!
+## Error Handling
 
-# ✅ Correct
-fn good():
-    let data = Tensor()
-    let copy = data  # Copy if needed
-    consume(data^)
-    print(copy[0])  # OK
-```text
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `Use after move` | Variable used after ownership transfer | Create copy or don't move |
+| `Dangling reference` | Reference to local variable | Return owned value with `^` |
+| `Mutable aliasing` | Multiple mutable refs to same data | Ensure single mutable reference |
+| `Type not copyable` | Missing `^` on non-copyable return | Add transfer operator `^` |
 
-### 2. Lifetime Issues
+## References
 
-```mojo
-# ❌ Wrong
-fn return_dangling() -> borrowed Tensor:
-    let local = Tensor()
-    return local  # Returns reference to local!
-
-# ✅ Correct
-fn return_owned() -> Tensor:
-    let local = Tensor()
-    return local^  # Move ownership
-```text
-
-### 3. Mutable Aliasing
-
-```mojo
-# ❌ Wrong
-fn alias_problem(inout a: Tensor, borrowed b: Tensor):
-    a[0] = b[0]  # If a and b alias, undefined!
-
-# ✅ Correct
-fn no_alias(inout a: Tensor, borrowed b: Tensor):
-    # Ensure a and b don't alias
-    if a.ptr() != b.ptr():
-        a[0] = b[0]
-```text
-
-## Checklist
-
-- [ ] No use-after-move
-- [ ] No dangling references
-- [ ] No mutable aliasing
-- [ ] Proper lifetime management
-- [ ] Ownership clear and documented
-
-## Prod Fix Learnings (ML Odyssey)
-
-From memory leaks in ExTensor views:
-
-- **Refcounting**: Add `var _refcount: UnsafePointer[Int]`; `__copyinit__` increments, `__del__` decrements/free if 0.
-- **Dummy Alloc Leaks**: In reshape/slice: `result._data.free()` before `result._data = self._data`; set `_is_view = True`.
-- **Views**: Copy-based for safe shape/strides update, no orphan allocs.
-
-See [docs/learnings.md](../docs/learnings.md#memory-leaks-reshapeslice) for details.
-
-See Mojo ownership documentation for details.
+- `.claude/shared/mojo-anti-patterns.md` - Ownership violations section
+- `.claude/shared/mojo-guidelines.md` - Parameter conventions table

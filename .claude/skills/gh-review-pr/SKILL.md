@@ -1,89 +1,108 @@
 ---
 name: gh-review-pr
-description: Comprehensively review a pull request including code changes, CI status, test coverage, and adherence to project standards. Use when asked to review a PR or when evaluating pull requests.
+description: "Comprehensively review a pull request including code changes, CI status, and adherence to project standards. Use when asked to review a PR."
+category: github
+mcp_fallback: github
 ---
 
-# GitHub PR Review Skill
+# Review Pull Request
 
-This skill provides comprehensive pull request review capabilities following ML Odyssey project standards.
+Evaluate PR quality and provide structured feedback.
 
 ## When to Use
 
-- User asks to review a PR (e.g., "review PR #123")
-- Evaluating pull request quality
-- Checking adherence to coding standards
-- Validating CI status and test coverage
+- Reviewing a PR before merge
+- Evaluating code quality and standards
+- Checking CI status and test coverage
+- Providing feedback to contributors
 
-## Review Process
-
-### 1. Get PR Information
+## Quick Reference
 
 ```bash
-# Get PR details
-gh pr view <pr-number>
+# View PR details
+gh pr view <pr>
 
-# Get PR diff
-gh pr diff <pr-number>
+# Check diff
+gh pr diff <pr> | less
 
-# Check PR status
-gh pr checks <pr-number>
-```text
+# View CI status
+gh pr checks <pr>
 
-### 2. Review Checklist
+# See review comments
+gh api repos/OWNER/REPO/pulls/PR/comments
+```
 
-Use the review checklist from reference.md to ensure thorough evaluation:
+## Review Checklist
 
-- [ ] Code changes follow project standards
-- [ ] CI passes all checks
+- [ ] Code follows project standards (CLAUDE.md)
+- [ ] All CI checks passing
 - [ ] Tests are present and passing
-- [ ] PR is linked to an issue
+- [ ] PR is linked to issue
 - [ ] Commit messages follow conventional commits
-- [ ] No security vulnerabilities introduced
+- [ ] No security vulnerabilities
 - [ ] Documentation updated if needed
 - [ ] No unintended files included
 
-### 3. Analyze Code Changes
+## Workflow
 
-Focus on:
+1. **Get PR info**: `gh pr view <pr>`
+2. **Review diff**: `gh pr diff <pr>`
+3. **Check CI**: `gh pr checks <pr>`
+4. **Analyze code**: Focus on quality, standards, tests
+5. **Assess security**: Look for vulnerabilities
+6. **Verify docs**: Check if documentation updated
+7. **Provide feedback**: Comment with findings
 
-- **Quality**: Clean, readable, maintainable code
-- **Standards**: Follows CLAUDE.md guidelines
-- **Security**: No vulnerabilities or unsafe patterns
-- **Tests**: Adequate coverage for changes
-- **Documentation**: Updated as needed
+## Review Focus Areas
 
-### 4. Generate Review
+**Code Quality**:
 
-Use the review comment template from templates/review_comment.md to provide structured feedback.
+- Clean, readable, maintainable
+- Follows CLAUDE.md guidelines
+- Proper error handling
+- No code duplication
 
-## Error Handling
+**Testing**:
 
-- If PR number is invalid: Report error and ask for correct number
-- If gh CLI fails: Check authentication with `gh auth status`
-- If CI is pending: Note that review is based on current state
+- Tests present for new code
+- Tests passing
+- Adequate coverage
+- Edge cases covered
+
+**Documentation**:
+
+- API documentation updated
+- Complex logic explained
+- README updated if needed
+- Examples provided if applicable
+
+**Standards Compliance**:
+
+- Mojo syntax correct (for Mojo code)
+- No warnings or unused variables
+- Proper formatting
+- Conventional commit messages
 
 ## Output Format
 
-Provide review as markdown with sections:
+Provide review with sections:
 
 1. **Summary** - Overall assessment
-1. **Strengths** - What's done well
-1. **Issues** - Problems that must be fixed
-1. **Suggestions** - Optional improvements
-1. **Verdict** - Approve / Request Changes / Comment
+2. **Strengths** - What's done well
+3. **Issues** - Problems that must be fixed
+4. **Suggestions** - Optional improvements
+5. **Verdict** - Approve / Request Changes / Comment
 
-## Examples
+## Error Handling
 
-### Good usage:
+| Problem | Solution |
+|---------|----------|
+| PR not found | Verify PR number |
+| Auth failure | Check `gh auth status` |
+| CI pending | Note review based on current state |
 
-- "Review PR #42"
-- "Check if PR #15 is ready to merge"
-- "Evaluate the quality of pull request 7"
+## References
 
-### Scripts Available:
-
-- `scripts/check_pr_status.sh` - Check CI and review status
-- `scripts/analyze_changes.sh` - Analyze code changes
-- `scripts/validate_tests.sh` - Validate test coverage
-
-See reference.md for detailed review standards and criteria.
+- See CLAUDE.md for project standards
+- See CLAUDE.md for Mojo syntax requirements
+- See CLAUDE.md for zero-warnings policy

@@ -1,187 +1,57 @@
 ---
 name: mojo-format
-description: Format Mojo code files using the mojo format command to ensure consistent code style. Use when preparing code for commit or when code formatting checks fail.
+description: "Format Mojo code using mojo format command. Use when preparing code for commit or when formatting checks fail."
+category: mojo
 ---
 
 # Mojo Format Skill
 
-This skill formats Mojo code files using the official `mojo format` command.
+Format Mojo code files to ensure consistent style.
 
 ## When to Use
 
-- User asks to format Mojo code (e.g., "format the Mojo files")
+- Preparing code for commit
 - Pre-commit hook reports formatting issues
-- Before committing Mojo code
 - Code review requests formatting fixes
+- Verifying formatting compliance
 
-## Usage
-
-### Format Single File
+## Quick Reference
 
 ```bash
-# Format a specific file
+# Format single file
 mojo format path/to/file.mojo
 
-# Format with check-only (no changes)
-mojo format --check path/to/file.mojo
-```text
-
-### Format Multiple Files
-
-```bash
-# Format all Mojo files in directory
+# Format directory
 ./scripts/format_mojo.sh src/
 
-# Format all Mojo files in project
-./scripts/format_mojo.sh .
+# Check without modifying
+mojo format --check path/to/file.mojo
+```
 
-# Check formatting without changes
-./scripts/format_mojo.sh --check .
-```text
+## Workflow
 
-### Pre-commit Integration
+1. **Identify files** - Single file or directory
+2. **Run formatter** - `mojo format <path>`
+3. **Verify changes** - Review formatted output
+4. **Commit** - Stage and commit formatted code
 
-The project uses pre-commit hooks to automatically format Mojo files:
+## Mojo-Specific Notes
 
-```bash
-# Pre-commit will auto-format on commit
-git commit -m "message"
-
-# Run pre-commit manually
-pre-commit run mojo-format --all-files
-```text
-
-## Mojo Format Behavior
-
-### What It Formats
-
-- **Indentation** - Consistent 4-space indentation
-- **Line length** - Wraps long lines
-- **Spacing** - Consistent spacing around operators
-- **Blank lines** - Standardizes blank line usage
-- **Comments** - Preserves comments, formats spacing
-
-### What It Doesn't Change
-
-- **Logic** - No semantic changes
-- **Names** - Variable/function names unchanged
-- **Comments content** - Only spacing adjusted
-
-## Format Standards
-
-### Function Definitions
-
-```mojo
-# Before formatting
-fn add(x:Int,y:Int)->Int:
-    return x+y
-
-# After formatting
-fn add(x: Int, y: Int) -> Int:
-    return x + y
-```text
-
-### Struct Definitions
-
-```mojo
-# Before formatting
-struct Tensor[dtype:DType,rank:Int]:
-    var data:DTypePointer[dtype]
-
-# After formatting
-struct Tensor[dtype: DType, rank: Int]:
-    var data: DTypePointer[dtype]
-```text
-
-## Scripted Formatting
-
-### Format All Mojo Files
-
-```bash
-./scripts/format_mojo.sh
-
-# This finds and formats all .mojo and .🔥 files
-```text
-
-### Check Formatting (CI)
-
-```bash
-# Check if files need formatting (exit code 1 if changes needed)
-./scripts/format_mojo.sh --check
-
-# Used in CI to verify formatting
-```text
+- Formats indentation (4 spaces), line length, spacing around operators
+- Does NOT change logic, variable names, or comment content
+- Preserves all comments, only adjusts spacing
+- Safe to run multiple times (idempotent)
 
 ## Error Handling
 
-- **Syntax errors**: `mojo format` will report but not fix syntax errors
-- **File not found**: Verify file path is correct
-- **Permission denied**: Check file permissions
-- **Mojo not installed**: Install Mojo via `pixi` or Magic
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `Syntax error` | Invalid Mojo syntax | Fix syntax before formatting |
+| `File not found` | Wrong path | Verify file exists |
+| `Permission denied` | File permissions | Check `chmod` settings |
+| `Mojo not installed` | Missing Mojo | Install via `pixi` or Magic |
 
-## Integration with Workflow
+## References
 
-### Before Commit
-
-```bash
-# Format all changed Mojo files
-git diff --name-only --cached | grep '\.mojo$' | xargs -r mojo format
-
-# Or let pre-commit handle it
-git commit -m "message"  # pre-commit auto-formats
-```text
-
-### CI Validation
-
-Pre-commit CI workflow checks formatting:
-
-```yaml
-- repo: local
-  hooks:
-    - id: mojo-format
-      name: Mojo Format
-      entry: mojo format
-      language: system
-      files: \.(mojo|🔥)$
-```text
-
-## Examples
-
-### Format single file:
-
-```bash
-mojo format src/tensor.mojo
-```text
-
-### Format directory:
-
-```bash
-./scripts/format_mojo.sh src/
-```text
-
-### Check formatting:
-
-```bash
-./scripts/format_mojo.sh --check .
-```text
-
-### Format changed files:
-
-```bash
-git diff --name-only | grep '\.mojo$' | xargs -r mojo format
-```text
-
-## Scripts Available
-
-- `scripts/format_mojo.sh` - Format all Mojo files
-- `scripts/check_mojo_format.sh` - Check formatting without changes
-
-## Best Practices
-
-1. **Format before commit** - Run formatting before every commit
-1. **Use pre-commit** - Let hooks handle formatting automatically
-1. **Check in CI** - Verify formatting in CI pipeline
-1. **Consistent style** - Don't manually reformat after `mojo format`
-1. **Trust the formatter** - Accept formatter's decisions
-
-See `.pre-commit-config.yaml` for pre-commit hook configuration.
+- `.claude/shared/mojo-guidelines.md` - Mojo syntax standards
+- `.pre-commit-config.yaml` - Pre-commit hook configuration

@@ -1,87 +1,88 @@
 ---
 name: worktree-sync
-description: Sync git worktrees with remote and main branch changes. Use to keep worktrees up-to-date during long-running development.
+description: "Sync git worktrees with remote and main branch changes. Use to keep long-running feature branches up-to-date."
+category: worktree
 ---
 
-# Worktree Sync Skill
+# Worktree Sync
 
 Keep worktrees synchronized with remote changes.
 
 ## When to Use
 
 - Long-running feature branches
-- Main branch has updates
-- Need latest changes
-- Before creating PR
+- Main branch has new commits
+- Before creating/updating PR
+- Resolving merge conflicts
+- Feature branch is diverged from main
 
-## Sync Workflow
-
-### 1. Fetch Latest
+## Quick Reference
 
 ```bash
-# In any worktree
+# Fetch latest from remote (works in any worktree)
 git fetch origin
-```text
 
-### 2. Update Main Worktree
+# Update main worktree
+cd ../ml-odyssey && git pull origin main
 
-```bash
-# Switch to main worktree
-cd ../ml-odyssey
+# Update feature worktree (rebase approach)
+cd ../ml-odyssey-42-feature && git rebase origin/main
 
-# Pull latest
-git pull origin main
-```text
+# Update feature worktree (merge approach)
+cd ../ml-odyssey-42-feature && git merge origin/main
 
-### 3. Update Feature Worktree
-
-```bash
-# Switch to feature worktree
-cd ../ml-odyssey-42-feature
-
-# Rebase on main
-git rebase origin/main
-
-# Or merge if preferred
-git merge origin/main
-```text
-
-### Sync Script
-
-```bash
-# Sync all worktrees
+# Auto-sync all worktrees
 ./scripts/sync_all_worktrees.sh
+```
 
-# This
-# 1. Fetches from remote
-# 2. Updates main worktree
-# 3. Offers to rebase feature worktrees
-```text
+## Workflow
+
+1. **Fetch remote** - `git fetch origin` (any worktree)
+2. **Update main** - Navigate to main worktree, `git pull origin main`
+3. **Update feature** - Navigate to feature worktree, `git rebase origin/main` or `git merge`
+4. **Resolve conflicts** - If conflicts occur, fix files and `git rebase --continue`
+5. **Verify** - Check `git log` to confirm main branch changes are included
+
+## Rebase vs Merge
+
+| Approach | Use When | Command |
+|----------|----------|---------|
+| Rebase | Linear history preferred | `git rebase origin/main` |
+| Merge | Preserving branch history | `git merge origin/main` |
+
+## Error Handling
+
+| Error | Solution |
+|-------|----------|
+| Conflicts during rebase | Run `git status`, fix files, `git add .`, `git rebase --continue` |
+| Diverged branches | Use `git pull --rebase origin main` |
+| Uncommitted changes | Commit or stash before syncing |
+| Detached HEAD | Check `git status` and `git checkout <branch>` |
+
+## Conflict Resolution
+
+```bash
+# If conflicts occur
+git status  # See conflicted files
+
+# Edit files to resolve conflicts
+# Then continue
+git add .
+git rebase --continue
+
+# Or abort if something went wrong
+git rebase --abort
+```
 
 ## Best Practices
 
-- Fetch regularly
-- Sync before creating PR
-- Resolve conflicts promptly
-- Keep feature branches short-lived
+- Fetch regularly to catch conflicts early
+- Sync before creating PR to avoid merge conflicts
+- Keep feature branches short-lived (2-3 days max)
+- Resolve conflicts immediately
+- Use rebase for linear history (preferred for this project)
 
-## Common Issues
+## References
 
-### Rebase Conflicts
-
-```bash
-# If conflicts during rebase
-git status  # See conflicts
-# Fix conflicts
-git add .
-git rebase --continue
-```text
-
-### Diverged Branches
-
-```bash
-# If branch has diverged
-git pull --rebase origin main
-```text
-
-See `worktree-create` for creating worktrees.
+- See `worktree-create` skill for creating worktrees
+- [worktree-strategy.md](../../../notes/review/worktree-strategy.md)

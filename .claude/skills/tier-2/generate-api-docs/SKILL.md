@@ -1,19 +1,57 @@
-# generate_api_docs
+---
+name: generate-api-docs
+description: "Create API reference documentation from docstrings. Use when documenting public module interfaces."
+category: generation
+tier: 2
+---
 
-**Status**: Planned for Issue #511-514
-**Implementation**: Coming soon
+# Generate API Docs
 
-## Purpose
+Extract docstrings from functions and classes to automatically generate API reference documentation.
 
-Generate API documentation
+## When to Use
 
-## Planned Capabilities
+- Documenting public module interfaces
+- Creating reference guides for libraries
+- Generating HTML API documentation
+- Maintaining up-to-date API specs
 
-- [ ] Core functionality to be implemented
-- [ ] Integration with agent hierarchy
-- [ ] Mojo-specific optimizations
-- [ ] Documentation and examples
+## Quick Reference
 
-## Notes
+```bash
+# Python with pdoc
+pdoc --html module_name -o docs/
 
-This is a placeholder file. The actual skill implementation will be added in a future PR.
+# Python with Sphinx
+sphinx-quickstart docs/
+make -C docs html
+
+# Extract docstrings
+python3 -c "import module; help(module.function)"
+```
+
+## Workflow
+
+1. **Ensure docstrings**: Verify all public functions/classes have docstrings
+2. **Validate format**: Check docstring format (Google, NumPy, or reStructuredText)
+3. **Extract metadata**: Parse function signatures, parameter types, return types
+4. **Generate documentation**: Create HTML or Markdown API reference
+5. **Validate output**: Verify links work and examples are correct
+
+## Output Format
+
+API documentation:
+
+- Module overview
+- Function/class signatures with type hints
+- Parameter documentation (type, description, default)
+- Return value documentation
+- Raises/exceptions
+- Code examples
+- Cross-references to related APIs
+
+## References
+
+- See `generate-docstrings` skill for creating docstrings
+- See CLAUDE.md > Documentation for standards
+- See `doc-issue-readme` skill for issue documentation

@@ -16,12 +16,23 @@ method for completing tasks.
 
 ### Agent Hierarchy Quick Reference
 
-- **Level 0**: Chief Architect - Strategic decisions and architecture
-- **Level 1**: Orchestrators - Section coordination (foundation, shared-library, tooling, first-paper, ci-cd, agentic-workflows)
-- **Level 2**: Design/Orchestrators - Module design and code review coordination
-- **Level 3**: Specialists - Component-level work
-- **Level 4**: Engineers - Implementation tasks
-- **Level 5**: Junior Engineers - Simple, well-defined tasks
+| Level | Role | Model | Examples |
+|-------|------|-------|----------|
+| **0** | Chief Architect | Opus | Strategic decisions, architecture |
+| **1** | Orchestrators | Sonnet | foundation, shared-library, tooling, papers, ci-cd, agentic-workflows |
+| **2** | Design/Coordinators | Sonnet | architecture-design, security-design, integration-design, code-review-orchestrator |
+| **3** | Specialists | Sonnet | All review specialists, test-specialist, implementation-specialist, performance-specialist |
+| **4** | Engineers | Haiku | implementation-engineer, test-engineer, documentation-engineer, log-analyzer |
+| **5** | Junior Engineers | Haiku | junior-implementation-engineer, junior-test-engineer, junior-documentation-engineer |
+
+### New Agents (v2.0)
+
+- **numerical-stability-specialist** (L3) - ML numerical accuracy issues
+- **mojo-syntax-validator** (L3) - Mojo v0.25.7+ syntax validation
+- **ci-failure-analyzer** (L3) - CI failure root cause analysis
+- **pr-cleanup-specialist** (L3) - PR squashing, rebasing, cleanup
+- **test-flakiness-specialist** (L3) - Flaky test identification
+- **log-analyzer** (L4) - Log parsing and pattern extraction
 
 ### Key Agent Principles
 
@@ -78,20 +89,21 @@ Background automation: `ci-run-precommit` (runs automatically)
 Foreground tasks: `gh-create-pr-linked` (invoke explicitly)
 ```text
 
-**Available Skills** (43 total across 9 categories):
+**Available Skills** (82 total across 11 categories):
 
-- **GitHub**: gh-review-pr, gh-fix-pr-feedback, gh-create-pr-linked, gh-check-ci-status, gh-implement-issue
+- **GitHub**: gh-review-pr, gh-fix-pr-feedback, gh-create-pr-linked, gh-check-ci-status, gh-implement-issue, gh-reply-review-comment, gh-get-review-comments, gh-batch-merge-by-labels, verify-pr-ready
 - **Worktree**: worktree-create, worktree-cleanup, worktree-switch, worktree-sync
 - **Phase Workflow**: phase-plan-generate, phase-test-tdd, phase-implement, phase-package, phase-cleanup
-- **Mojo**: mojo-format, mojo-test-runner, mojo-build-package, mojo-simd-optimize, mojo-memory-check
-- **Agent System**: agent-validate-config, agent-test-delegation, agent-run-orchestrator, agent-coverage-check
+- **Mojo**: mojo-format, mojo-test-runner, mojo-build-package, mojo-simd-optimize, mojo-memory-check, mojo-type-safety, mojo-lint-syntax, validate-mojo-patterns, check-memory-safety, analyze-simd-usage
+- **Agent System**: agent-validate-config, agent-test-delegation, agent-run-orchestrator, agent-coverage-check, agent-hierarchy-diagram
 - **Documentation**: doc-generate-adr, doc-issue-readme, doc-validate-markdown, doc-update-blog
-- **CI/CD**: ci-run-precommit, ci-validate-workflow, ci-fix-failures, ci-package-workflow
+- **CI/CD**: ci-run-precommit, ci-validate-workflow, ci-fix-failures, ci-package-workflow, ci-analyze-failure-logs, build-run-local
 - **Plan**: plan-regenerate-issues, plan-validate-structure, plan-create-component
-- **Quality**: quality-run-linters, quality-fix-formatting, quality-security-scan, quality-coverage-report
+- **Quality**: quality-run-linters, quality-fix-formatting, quality-security-scan, quality-coverage-report, quality-complexity-check
+- **Testing & Analysis**: test-diff-analyzer, extract-test-failures, generate-fix-suggestions, track-implementation-progress
+- **Review**: review-pr-changes, create-review-checklist
 
-See `.claude/skills/` for complete implementations and `notes/review/skills-agents-integration-complete.md` for
-integration details.
+See `.claude/skills/` for complete implementations. Skills use YAML frontmatter with `mcp_fallback` for MCP integration.
 
 ### Key Development Principles
 
@@ -172,6 +184,23 @@ See `/agents/README.md` for complete agent documentation and `/agents/hierarchy.
 ## Delegation to Agent Hub
 
 .claude/ is the centralized location for agentic descriptions and SKILLs. Sub-agents reference `.claude/agents/*.md` and `.claude/skills/*.md` for roles, capabilities, and prod fix learnings.
+
+### Shared Reference Files
+
+All agents and skills reference these shared files to avoid duplication:
+
+| File | Purpose |
+|------|---------|
+| `.claude/shared/common-constraints.md` | Minimal changes principle, scope discipline |
+| `.claude/shared/documentation-rules.md` | Output locations, before-starting checklist |
+| `.claude/shared/pr-workflow.md` | PR creation, verification, review responses |
+| `.claude/shared/mojo-guidelines.md` | Mojo v0.25.7+ syntax, parameter conventions |
+| `.claude/shared/mojo-anti-patterns.md` | 64+ test failure patterns from PRs |
+| `.claude/shared/error-handling.md` | Retry strategy, timeout handling, escalation |
+
+### MCP Integration
+
+Skills with `mcp_fallback: github` in their YAML frontmatter automatically fall back to the GitHub MCP server when available. MCP servers are configured in `.claude/settings.local.json`.
 
 ### Mojo Syntax Standards (v0.25.7+)
 

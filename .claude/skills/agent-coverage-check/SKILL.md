@@ -1,72 +1,64 @@
 ---
 name: agent-coverage-check
-description: Check agent configuration coverage across hierarchy levels and phases. Use to ensure complete agent system coverage.
+description: "Check agent configuration coverage across hierarchy levels and phases. Use to ensure complete agent system coverage."
+category: agent
 ---
 
-# Agent Coverage Check Skill
+# Agent Coverage Check
 
-Verify complete agent system coverage.
+Verify complete agent system coverage across all dimensions.
 
 ## When to Use
 
-- After adding new agents
-- Validating agent system
+- After adding new agents to system
+- Validating agent system completeness
 - Finding gaps in coverage
-- Ensuring all phases covered
+- Ensuring all development phases covered
+
+## Quick Reference
+
+```bash
+# Check all coverage dimensions
+./scripts/check_agent_coverage.sh
+
+# Check specific dimension
+./scripts/check_level_coverage.sh
+./scripts/check_phase_coverage.sh
+./scripts/check_section_coverage.sh
+```
 
 ## Coverage Dimensions
 
-### 1. Hierarchy Levels
+**Hierarchy Levels**:
 
-```bash
-# Check all levels have agents
-./scripts/check_level_coverage.sh
+- L0: Chief Architect (1)
+- L1: Section Orchestrators (6)
+- L2: Design Agents (per section)
+- L3: Specialists (per module)
+- L4: Engineers
+- L5: Junior Engineers
 
-# Expected
-# L0: Chief Architect
-# L1: 6 orchestrators
-# L2: Design agents per section
-# L3: Specialists per module
-# L4: Engineers
-# L5: Junior engineers
-```text
+**Development Phases**:
 
-### 2. Phase Coverage
+- Plan
+- Test
+- Implementation
+- Package
+- Cleanup
 
-```bash
-# Check phase coverage
-./scripts/check_phase_coverage.sh
+**Sections**:
 
-# Expected phases
-# - Plan
-# - Test
-# - Implementation
-# - Package
-# - Cleanup
-```text
+- Foundation
+- Shared Library
+- Tooling
+- First Paper
+- CI/CD
+- Agentic Workflows
 
-### 3. Section Coverage
+## Coverage Report Format
 
-```bash
-# Check section coverage
-./scripts/check_section_coverage.sh
-
-# Expected sections
-# - Foundation
-# - Shared Library
-# - Tooling
-# - First Paper
-# - CI/CD
-# - Agentic Workflows
-```text
-
-## Reports
-
-```text
-Coverage Report
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Hierarchy:
+```
+Hierarchy Coverage:
   L0: ✅ 1 agent
   L1: ✅ 6 agents
   L2: ✅ 12 agents
@@ -84,7 +76,18 @@ Phases:
 Sections:
   Foundation: ✅ Orchestrator + agents
   Shared Library: ✅ Orchestrator + agents
-  ...
-```text
+```
 
-See `agent-validate-config` for validation.
+## Gap Patterns
+
+**Missing level**: Any level with 0 agents
+
+**Missing phase**: Phase not assigned to any agent
+
+**Missing section**: Section without orchestrator
+
+## References
+
+- `agent-validate-config` - Validate individual agent configs
+- `agent-test-delegation` - Test delegation completeness
+- `.claude/agents/` - All agent configurations

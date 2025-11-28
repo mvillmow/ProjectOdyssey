@@ -1,169 +1,133 @@
 ---
 name: phase-test-tdd
-description: Generate test files and coordinate test-driven development following ML Odyssey TDD principles. Use when creating tests before implementation or when asked to write tests first.
+description: "Generate test files and coordinate test-driven development (TDD). Use when creating tests before implementation or during test phase."
+category: phase
+phase: Test
 ---
 
 # Test-Driven Development Skill
 
-This skill generates test files and coordinates TDD workflow for ML Odyssey components.
+Coordinate test-driven development by writing tests first, then implementing to make them pass.
 
 ## When to Use
 
-- User asks to write tests (e.g., "create tests for X")
-- Starting test phase of development
-- Before implementation (TDD principle)
-- Need to generate test templates
+- Creating tests before implementation (TDD workflow)
+- Starting test phase of 5-phase workflow
+- Writing unit, integration, or performance tests
+- Need test files following Mojo or Python patterns
 
-## TDD Workflow
-
-### 1. Write Tests First
+## Quick Reference
 
 ```bash
-# Generate test file from template
-./scripts/generate_test.sh <component-name> <test-type>
+# TDD Cycle: Write test → Run (fail) → Implement → Run (pass) → Refactor
 
-# Example: Generate unit test for tensor operations
-./scripts/generate_test.sh "tensor_ops" "unit"
-```text
+# Generate test file
+cat > tests/test_component.mojo << 'EOF'
+from testing import assert_equal
 
-### 2. Run Tests (Red)
+fn test_basic_behavior() raises:
+    """Test basic functionality."""
+    let result = function_under_test()
+    assert_equal(result, expected_value)
+EOF
 
-```bash
-# Run tests - should fail initially
-mojo test tests/<test-file>
+# Run test (should fail initially)
+mojo test tests/test_component.mojo
 
-# Or use Python for test infrastructure
-pytest tests/<test-file>
-```text
+# Implement code to make test pass
+# Re-run test (should pass)
+mojo test tests/test_component.mojo
+```
 
-### 3. Implement Code (Green)
+## Workflow
 
-Implement minimal code to make tests pass.
-
-### 4. Refactor (Refactor)
-
-Improve code while keeping tests passing.
+1. **Write test first** - Define expected behavior before implementation
+2. **Run test** (Red phase) - Test fails because code doesn't exist yet
+3. **Implement code** (Green phase) - Write minimal code to make test pass
+4. **Refactor** (Refactor phase) - Clean up while keeping tests passing
+5. **Repeat** - Add next test and repeat cycle
 
 ## Test Types
 
-### Unit Tests
+| Type | Location | Purpose |
+|------|----------|---------|
+| Unit | `tests/unit/` | Test individual functions in isolation |
+| Integration | `tests/integration/` | Test component interactions |
+| Performance | `tests/performance/` | Benchmark SIMD and critical paths |
 
-- Test individual functions/classes
-- Fast execution
-- Isolated from dependencies
-- Location: `tests/unit/`
-
-### Integration Tests
-
-- Test component interactions
-- May use real dependencies
-- Location: `tests/integration/`
-
-### Performance Tests
-
-- Benchmark critical operations
-- Verify SIMD optimizations
-- Location: `tests/performance/`
-
-## Mojo Test Structure
+## Mojo Test Pattern
 
 ```mojo
 from testing import assert_equal, assert_true
 
-fn test_function_name() raises:
-    """Test description."""
+fn test_add() raises:
+    """Test addition operation."""
     # Arrange
-    let input = setup_test_data()
+    var a = 1
+    var b = 2
 
     # Act
-    let result = function_under_test(input)
+    var result = add(a, b)
 
     # Assert
-    assert_equal(result, expected_value)
+    assert_equal(result, 3)
+```
 
-fn test_edge_case() raises:
-    """Test edge case description."""
-    # Test implementation
-    pass
-```text
-
-## Python Test Structure
+## Python Test Pattern
 
 ```python
 import pytest
 
-class TestComponentName:
-    """Test suite for ComponentName."""
+class TestComponent:
+    """Test suite for component."""
 
-    def test_basic_functionality(self):
+    def test_basic(self):
         """Test basic functionality."""
         # Arrange
-        input_data = setup_data()
+        data = prepare_data()
 
         # Act
-        result = component.process(input_data)
+        result = process(data)
 
         # Assert
         assert result == expected
-
-    def test_edge_case(self):
-        """Test edge case."""
-        # Implementation
-        pass
-```text
+```
 
 ## Test Coverage Requirements
 
-- **Minimum coverage**: 80% for new code
-- **Critical paths**: 100% coverage
-- **Edge cases**: Must be tested
-- **Error handling**: Must be tested
+- **Minimum**: 80% for new code
+- **Critical paths**: 100% coverage required
+- **Edge cases**: Must be tested (null, empty, boundary values)
+- **Error handling**: All error paths tested
+
+## Phase Dependencies
+
+- **Precedes**: Implementation phase (tests drive implementation)
+- **Parallel with**: Implementation and Package phases (all run after Plan)
+- **Receives input from**: Plan phase (specifications, acceptance criteria)
+- **Produces for**: Implementation phase (test contracts for code)
+
+## Output Location
+
+- **Test files**: `/tests/<type>/<module>_test.mojo` or `.py`
+- **Test documentation**: `/notes/issues/<issue-number>/README.md`
+- **Coverage reports**: `coverage/` directory
 
 ## Error Handling
 
-- **Test fails unexpectedly**: Check test setup
-- **Test timeout**: Optimize or increase timeout
-- **Import errors**: Verify dependencies installed
-- **Mojo test failures**: Check type safety and memory management
+| Error | Fix |
+|-------|-----|
+| Test import fails | Check file path and module structure |
+| Test timeout | Optimize code or increase timeout |
+| Flaky tests | Add setup/teardown, check for randomness |
+| Low coverage | Add tests for uncovered branches |
 
-## Examples
+## References
 
-### Generate unit test:
+- `CLAUDE.md` - "Key Development Principles" (TDD section)
+- `CLAUDE.md` - "Common Mistakes to Avoid" (test failure patterns)
+- `notes/review/mojo-test-failure-learnings.md` - Real test failure solutions
 
-```bash
-./scripts/generate_test.sh "matrix_multiply" "unit"
-```text
+---
 
-### Generate integration test:
-
-```bash
-./scripts/generate_test.sh "neural_network" "integration"
-```text
-
-### Run specific test:
-
-```bash
-./scripts/run_test.sh "test_matrix_multiply"
-```text
-
-## Scripts Available
-
-- `scripts/generate_test.sh` - Generate test file from template
-- `scripts/run_test.sh` - Run specific test file
-- `scripts/check_coverage.sh` - Check test coverage
-
-## Templates
-
-- `templates/unit_test_mojo.mojo` - Mojo unit test template
-- `templates/unit_test_python.py` - Python unit test template
-- `templates/integration_test.py` - Integration test template
-
-## TDD Principles
-
-1. **Write test first** - Before any implementation
-1. **Red-Green-Refactor** - Fail → Pass → Improve
-1. **Small steps** - One test at a time
-1. **Fast feedback** - Tests should run quickly
-1. **Comprehensive** - Cover edge cases and errors
-
-See CLAUDE.md for development principles including TDD requirements.
+**Key Principle**: Red → Green → Refactor. Don't skip the red phase.

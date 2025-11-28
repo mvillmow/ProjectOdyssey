@@ -1,199 +1,106 @@
 ---
 name: gh-check-ci-status
-description: Check the CI/CD status of a pull request including workflow runs, test results, and check statuses. Use when verifying if PR checks are passing or investigating CI failures.
+description: "Check CI/CD status of a pull request including workflow runs and test results. Use when verifying if PR checks are passing or investigating CI failures."
+category: github
+mcp_fallback: github
 ---
 
-# Check CI Status Skill
+# Check CI Status
 
-This skill checks the CI/CD status of a pull request to verify all checks are passing.
+Verify CI/CD status of a pull request and investigate failures.
 
 ## When to Use
 
-- User asks to check CI status (e.g., "check CI for PR #42")
 - Verifying PR is ready to merge
 - Investigating CI failures
 - Monitoring long-running CI jobs
-
-## Usage
-
-### Basic CI Check
-
-```bash
-# Check CI status for a PR
-gh pr checks <pr-number>
-
-# Example output
-# ✓ build          success  2m 34s
-# ✗ test           failure  1m 12s
-# ○ lint           pending  0m 45s
-```text
-
-### Detailed Status
-
-```bash
-# Get detailed check information
-gh pr view <pr-number> --json statusCheckRollup
-
-# View specific workflow run
-gh run view <run-id>
-
-# Get logs for failed check
-gh run view <run-id> --log-failed
-```text
-
-### Watch CI Progress
-
-```bash
-# Watch CI status (updates in real-time)
-gh pr checks <pr-number> --watch
-
-# Or check every 30 seconds
-while true; do
-  clear
-  gh pr checks <pr-number>
-  sleep 30
-done
-```text
-
-## CI Check Types
-
-### GitHub Actions Workflows
-
-Common workflows in ML Odyssey:
-
-- **test-agents** - Agent configuration validation
-- **pre-commit** - Code formatting and linting
-- **test-mojo** - Mojo unit tests (future)
-- **validate-links** - Markdown link validation
-
-### Status Indicators
-
-- `✓` (checkmark) - Passing
-- `✗` (x) - Failed
-- `○` (circle) - Pending/In progress
-- `-` - Skipped
-
-## Common CI Failures
-
-### Pre-commit Failures
-
-```bash
-# View pre-commit logs
-gh run view <run-id> --log-failed
-
-# Common issues
-# - Trailing whitespace
-# - Missing newline at EOF
-# - Markdown linting errors
-# - mojo format needed
-```text
-
-### Fix:
-
-```bash
-pre-commit run --all-files
-git add .
-git commit --amend --no-edit
-git push --force-with-lease
-```text
-
-### Test Failures
-
-```bash
-# View test logs
-gh run view <run-id> --log-failed
-
-# Run tests locally
-pytest tests/
-mojo test tests/
-```text
-
-### Workflow Validation
-
-```bash
-# Check workflow syntax
-gh workflow view <workflow-name>
-
-# Re-run failed workflow
-gh run rerun <run-id>
-```text
-
-## Error Handling
-
-- **No checks found**: PR may not trigger CI (check workflow conditions)
-- **Pending forever**: Check workflow logs for stuck jobs
-- **Auth error**: Verify `gh auth status`
-- **API rate limit**: Wait or use authenticated requests
-
-## Verification Before Merge
-
-Checklist:
-
-- [ ] All required checks passing
-- [ ] No pending checks
-- [ ] Latest commit has checks
-- [ ] Branch is up-to-date with base
-
-```bash
-# Complete verification
-gh pr checks <pr-number>      # All checks passing?
-gh pr view <pr-number>         # Up-to-date with base?
-gh pr diff <pr-number>         # Changes look correct?
-```text
-
-## Examples
-
-### Check PR status:
-
-```bash
-gh pr checks 42
-```text
-
-### Watch CI progress:
-
-```bash
-gh pr checks 42 --watch
-```text
-
-### View failed logs:
-
-```bash
-# Get run ID
-gh pr checks 42
-
-# View logs
-gh run view 123456789 --log-failed
-```text
-
-### Rerun failed checks:
-
-```bash
-gh run rerun <run-id>
-```text
-
-## Integration with Other Skills
-
-- **gh-fix-pr-feedback** - After addressing feedback, check CI
-- **gh-create-pr-linked** - After creating PR, verify CI starts
-- **quality-run-linters** - Run locally before pushing to avoid CI failures
+- Checking before pushing changes
 
 ## Quick Reference
 
 ```bash
-# Status overview
+# Check PR CI status
 gh pr checks <pr>
 
-# Detailed JSON
-gh pr view <pr> --json statusCheckRollup
-
-# Watch live
+# Watch CI in real-time
 gh pr checks <pr> --watch
 
-# Failed logs
+# Get detailed status
+gh pr view <pr> --json statusCheckRollup
+
+# View failed logs
 gh run view <run-id> --log-failed
 
-# Rerun
+# Rerun failed checks
 gh run rerun <run-id>
-```text
+```
 
-See `.github/workflows/` for complete CI configuration.
+## Workflow
+
+1. **Check status**: Run `gh pr checks <pr>` to see all checks
+2. **Identify failures**: Look for ✗ (failed) or ○ (pending)
+3. **View logs**: Use `gh run view` to see failure details
+4. **Fix locally**: Reproduce issue locally and test
+5. **Push fix**: Commit and push changes
+6. **Verify**: Watch CI with `--watch` flag
+
+## Common CI Failures
+
+**Pre-commit issues** (formatting/linting):
+
+```bash
+pre-commit run --all-files  # Fix locally
+git add . && git commit --amend --no-edit
+git push --force-with-lease
+```
+
+**Test failures**:
+
+```bash
+mojo test tests/          # Run locally
+pytest tests/             # Python tests
+# Fix code and retest
+```
+
+**Workflow validation**:
+
+```bash
+gh workflow view <name>   # Check syntax
+gh run rerun <run-id>     # Rerun failed
+```
+
+## Status Indicators
+
+- `✓` - Passing
+- `✗` - Failed
+- `○` - Pending/In progress
+- `-` - Skipped
+
+## Error Handling
+
+| Problem | Solution |
+|---------|----------|
+| No checks found | PR may not trigger CI (check workflow) |
+| Pending forever | Check logs for stuck jobs |
+| Auth error | Verify `gh auth status` |
+| API rate limit | Wait or authenticate properly |
+
+## Pre-Merge Verification
+
+Before merging:
+
+- [ ] All required checks passing
+- [ ] No pending checks
+- [ ] Latest commit has checks
+- [ ] Branch up-to-date with base
+
+```bash
+gh pr checks <pr>          # All passing?
+gh pr view <pr>            # Up-to-date?
+gh pr diff <pr>            # Changes correct?
+```
+
+## References
+
+- See `.github/workflows/` for CI configuration
+- See CLAUDE.md for development workflow

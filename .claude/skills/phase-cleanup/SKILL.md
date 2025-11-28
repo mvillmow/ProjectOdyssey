@@ -1,220 +1,168 @@
 ---
 name: phase-cleanup
-description: Refactor and finalize code after parallel phases complete, addressing technical debt and ensuring consistency. Use in cleanup phase to polish implementation before merge.
+description: "Refactor and finalize code after parallel phases complete, addressing technical debt. Use in cleanup phase to polish code before merge."
+category: phase
+phase: Cleanup
 ---
 
 # Cleanup Phase Coordination Skill
 
-This skill coordinates the cleanup phase to refactor and finalize code.
+Refactor and finalize code after all parallel phases (Test, Implementation, Package) are complete.
 
 ## When to Use
 
-- User asks to clean up code (e.g., "run cleanup phase")
-- Cleanup phase of 5-phase workflow (runs after parallel phases)
-- Addressing technical debt
-- Finalizing before merge
+- After Test, Implementation, and Package phases complete
+- Addressing technical debt and code quality issues
+- Finalizing code before merge to main
+- Consolidating and polishing parallel phase outputs
 
-## Cleanup Workflow
-
-### 1. Collect Issues
-
-Gather issues discovered during parallel phases:
+## Quick Reference
 
 ```bash
-# Review implementation notes
-grep "TODO\|FIXME\|HACK" -r src/
-
-# Check test feedback
-cat notes/issues/<number>/test-feedback.md
-
-# Review package integration issues
-cat notes/issues/<number>/package-issues.md
-```text
-
-### 2. Refactor Code
-
-Address code quality issues:
-
-### Remove duplication:
-
-```bash
-./scripts/detect_duplication.sh
-# Refactor duplicated code into shared functions
-```text
-
-### Improve naming:
-
-```bash
-./scripts/check_naming.sh
-# Rename unclear variables/functions
-```text
-
-### Simplify complexity:
-
-```bash
-./scripts/check_complexity.sh
-# Break down complex functions
-```text
-
-### 3. Update Documentation
-
-Ensure documentation is accurate and complete:
-
-```bash
-# Update README if needed
-# Add/update docstrings
-# Create/update ADRs
-# Update examples
-```text
-
-### 4. Final Quality Checks
-
-```bash
-# Format all code
-mojo format src/**/*.mojo
-
-# Run all tests
-mojo test tests/
-
-# Run linters
+# Check for code quality issues
+grep -r "TODO\|FIXME\|HACK" src/
 pre-commit run --all-files
+pixi run mojo test -I . tests/
 
-# Check coverage
-./scripts/check_coverage.sh
+# Format and clean
+pixi run mojo format src/**/*.mojo
+pixi run mojo format tests/**/*.mojo
 
-# Verify no TODOs remain
-grep -r "TODO" src/ || echo "✅ No TODOs"
-```text
+# Verify no warnings
+pixi run mojo build -I . shared/ 2>&1 | grep -i "warning" && echo "⚠️ Warnings found" || echo "✅ No warnings"
+```
 
-## Refactoring Guidelines
+## Workflow
 
-### KISS - Keep It Simple
+1. **Collect issues** - Gather TODOs, FIXMEs, and bugs from parallel phases
+2. **Refactor code** - Remove duplication, simplify complexity, improve naming
+3. **Update documentation** - Ensure all docs match implementation
+4. **Final quality checks** - Format, lint, test, coverage
+5. **Verify ready for merge** - All quality gates passing
+
+## Refactoring Principles
+
+**KISS - Keep It Simple**:
 
 ```mojo
-# Before: Overly complex
+# Before: Over-engineered
 fn process(data: Tensor) -> Tensor:
-    let intermediate1 = transform1(data)
-    let intermediate2 = transform2(intermediate1)
-    let intermediate3 = transform3(intermediate2)
-    return finalize(intermediate3)
+    let step1 = stage1(data)
+    let step2 = stage2(step1)
+    let step3 = stage3(step2)
+    return finalize(step3)
 
-# After: Simplified
+# After: Simple pipeline
 fn process(data: Tensor) -> Tensor:
-    return pipeline(data, [transform1, transform2, transform3])
-```text
+    return pipeline(data)
+```
 
-### DRY - Don't Repeat Yourself
+**DRY - Don't Repeat Yourself**:
 
 ```mojo
 # Before: Duplication
 fn add_f32(a: Float32, b: Float32) -> Float32:
     return a + b
-
 fn add_f64(a: Float64, b: Float64) -> Float64:
     return a + b
 
 # After: Generic
 fn add[dtype: DType](a: Scalar[dtype], b: Scalar[dtype]) -> Scalar[dtype]:
     return a + b
-```text
+```
 
-### Single Responsibility
+**SOLID - Single Responsibility**:
 
 ```mojo
-# Before: Multiple responsibilities
-fn load_and_process_data(path: String) -> Tensor:
-    let data = load_file(path)
-    let cleaned = remove_outliers(data)
-    let normalized = normalize(cleaned)
-    return normalized
+# Before: Mixed responsibilities
+fn load_and_process(path: String) -> Tensor:
+    let raw = load_file(path)
+    let cleaned = remove_outliers(raw)
+    return normalize(cleaned)
 
-# After: Separate responsibilities
+# After: Separate
 fn load_data(path: String) -> RawData:
     return load_file(path)
 
 fn preprocess_data(data: RawData) -> Tensor:
-    let cleaned = remove_outliers(data)
-    return normalize(cleaned)
-```text
+    return normalize(remove_outliers(data))
+```
 
-## Cleanup Checklist
+## Quality Checklist
 
-- [ ] All TODOs/FIXMEs addressed or documented
-- [ ] Code duplication removed
-- [ ] Complex functions simplified
-- [ ] Naming is clear and consistent
+- [ ] No TODOs/FIXMEs (or documented in issue)
+- [ ] Code duplication removed (DRY)
+- [ ] Complex functions simplified (KISS)
+- [ ] Naming clear and consistent
 - [ ] Documentation updated
 - [ ] All tests passing
-- [ ] Code formatted
-- [ ] No linting errors
-- [ ] Performance requirements met
+- [ ] Code formatted (`mojo format`)
+- [ ] No compiler warnings (zero-warnings policy)
+- [ ] Test coverage ≥ 80%
 - [ ] Ready for review
 
 ## Common Cleanup Tasks
 
-### 1. Remove Dead Code
+1. **Remove dead code** - Unused functions, imports, variables
+2. **Consolidate imports** - Organize by module
+3. **Standardize errors** - Consistent error handling patterns
+4. **Add missing tests** - Cover gaps in coverage
+5. **Update comments** - Ensure accuracy after changes
+6. **Review variable names** - Use clear, descriptive names
+
+## Phase Dependencies
+
+- **Input from**: Test, Implementation, and Package phases (all parallel outputs)
+- **Precedes**: Merge to main (final polishing gate)
+- **Must complete before**: PR approval and merge
+
+## Output Location
+
+- **Refactored code**: Same locations as implementation (in-place)
+- **Updated docs**: `/notes/issues/<issue-number>/README.md`
+- **Final artifacts**: Ready for merge to `main` branch
+
+## Error Handling
+
+| Issue | Action |
+|-------|--------|
+| TODOs remain | Document in issue or remove code |
+| Tests fail | Revert changes, debug, try again |
+| Coverage low | Add tests for uncovered lines |
+| Warnings | Fix immediately (zero-warnings policy) |
+| Merge conflicts | Resolve with implementation team |
+
+## Verification Checklist
+
+Before marking cleanup complete:
 
 ```bash
-# Find unused functions
-./scripts/find_unused_code.sh
+# 1. Format
+pixi run mojo format src/**/*.mojo tests/**/*.mojo
 
-# Remove after verification
-```text
+# 2. Test
+pixi run mojo test -I . tests/
 
-### 2. Consolidate Imports
+# 3. No warnings
+pixi run mojo build -I . shared/ 2>&1 | tee /tmp/build.log
+grep -i "warning" /tmp/build.log && echo "❌ Warnings found" || echo "✅ Clean"
 
-```mojo
-# Before: Scattered imports
-from module1 import func1
-from module2 import func2
-from module1 import func3
+# 4. No TODOs
+grep -r "TODO\|FIXME" src/ && echo "❌ TODOs found" || echo "✅ Clean"
 
-# After: Organized
-from module1 import func1, func3
-from module2 import func2
-```text
+# 5. Pre-commit
+pre-commit run --all-files
 
-### 3. Standardize Error Handling
+# 6. Final confirmation
+git status  # No uncommitted changes
+```
 
-```mojo
-# Ensure consistent error handling patterns
-fn safe_operation() raises -> Result:
-    # Proper error handling
-    pass
-```text
+## References
 
-### 4. Add Missing Tests
+- `CLAUDE.md` - "Key Development Principles" (KISS, DRY, SOLID, YAGNI)
+- `CLAUDE.md` - "Zero-Warnings Policy" (enforcement guidelines)
+- `CLAUDE.md` - "Common Mistakes to Avoid" (patterns from 64+ test failures)
 
-```bash
-# Check coverage
-./scripts/check_coverage.sh
+---
 
-# Add tests for uncovered code
-./scripts/generate_missing_tests.sh
-```text
-
-## Integration with Workflow
-
-### Cleanup runs after:
-
-- Test phase completes
-- Implementation phase completes
-- Package phase completes
-
-### Cleanup produces:
-
-- Refactored, clean code
-- Updated documentation
-- Passing quality checks
-- Merge-ready state
-
-## Success Criteria
-
-- [ ] No critical code smells
-- [ ] Test coverage > 80%
-- [ ] All quality checks pass
-- [ ] Documentation complete
-- [ ] Code reviewed and approved
-- [ ] Ready to merge
-
-See CLAUDE.md for development principles (KISS, DRY, SOLID) and cleanup guidelines.
+**Key Principle**: Cleanup completes the 5-phase workflow. Code must be merge-ready.

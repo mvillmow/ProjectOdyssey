@@ -1,6 +1,7 @@
 ---
 name: quality-coverage-report
 description: Generate test coverage reports showing which code paths are tested. Use to identify untested code and improve test coverage.
+category: quality
 ---
 
 # Test Coverage Report Skill
@@ -14,12 +15,10 @@ Generate and analyze test coverage reports.
 - Identifying untested code
 - Improving test coverage
 
-## Usage
-
-### Python Coverage
+## Quick Reference
 
 ```bash
-# Run tests with coverage
+# Python coverage
 pytest --cov=src --cov-report=html tests/
 
 # View report
@@ -27,49 +26,42 @@ open htmlcov/index.html
 
 # Terminal report
 pytest --cov=src --cov-report=term-missing tests/
-```text
-
-### Mojo Coverage (Future)
-
-```bash
-# When Mojo coverage tools available
-mojo test --coverage tests/
-```text
+```
 
 ## Coverage Metrics
 
 ### Line Coverage
 
-Percentage of lines executed:
+Percentage of code lines executed by tests:
 
-```text
+```
 src/module.mojo
   Lines: 45/50 (90%)
   Missing: 12, 18, 23, 35, 41
-```text
+```
 
 ### Branch Coverage
 
 Percentage of decision branches taken:
 
-```text
+```
 Branches: 8/10 (80%)
-Missing branches: 12->15, 18->20
-```text
+Missing branches: line 12->15, line 18->20
+```
 
 ## Coverage Goals
 
-- **Minimum**: 80% line coverage
-- **Target**: 90% line coverage
-- **Critical paths**: 100% coverage
-- **Edge cases**: Must be tested
+| Category | Minimum | Target | Critical |
+|----------|---------|--------|----------|
+| Line coverage | 80% | 90% | 100% |
+| Branch coverage | 70% | 85% | 95% |
+| Critical paths | - | - | 100% |
 
 ## Coverage Report
 
 ```text
 Coverage Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
 File                Lines    Missing    Coverage
 ────────────────────────────────────────────────
 src/tensor.mojo       150         5      96.7%
@@ -78,17 +70,37 @@ src/utils.mojo        50        10      80.0%
 ────────────────────────────────────────────────
 TOTAL                400        45      88.8%
 
-Critical paths: 100% ✅
 Minimum coverage: 80% ✅
 Target coverage: 90% ❌
-```text
+Critical paths: 100% ✅
+```
 
 ## Improving Coverage
 
-1. **Identify gaps**: Find uncovered lines
-1. **Add tests**: Write tests for gaps
-1. **Re-run**: Verify coverage improved
-1. **Repeat**: Until targets met
+1. **Identify gaps** - Find uncovered lines in report
+2. **Write tests** - Add tests for untested code
+3. **Re-run** - Generate new report
+4. **Verify** - Check coverage improved
+5. **Repeat** - Until targets met
+
+## Coverage Workflow
+
+```bash
+# 1. Run tests with coverage
+pytest --cov=src --cov-report=html --cov-report=term-missing tests/
+
+# 2. Identify missing coverage
+# Review "Missing" column in output
+
+# 3. Write tests for gaps
+# ... create test files ...
+
+# 4. Re-run
+pytest --cov=src --cov-report=html tests/
+
+# 5. Check improvement
+# Compare htmlcov/index.html
+```
 
 ## CI Integration
 
@@ -97,6 +109,18 @@ Target coverage: 90% ❌
   run: |
     pytest --cov=src --cov-report=xml
     codecov -f coverage.xml
-```text
+```
 
-See `phase-test-tdd` for test generation.
+## Error Handling
+
+| Error | Fix |
+|-------|-----|
+| "No module named pytest" | Install: `pip install pytest-cov` |
+| "Cannot find tests/" | Verify test directory exists |
+| No coverage report | Ensure tests ran successfully |
+
+## References
+
+- Related skill: `phase-test-tdd` for test generation
+- Related skill: `quality-run-linters` for complete quality check
+- Pytest docs: <https://pytest.readthedocs.io/>

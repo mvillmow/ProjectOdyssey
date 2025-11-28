@@ -1,100 +1,86 @@
 ---
 name: gh-create-pr-linked
-description: Create a pull request that is properly linked to a GitHub issue using gh pr create --issue flag. Use when creating a PR that implements or addresses a specific issue to ensure automatic linking.
+description: "Create a pull request properly linked to a GitHub issue using gh pr create --issue. Use when creating a PR that implements or addresses a specific issue."
+category: github
+mcp_fallback: github
 ---
 
-# Create PR Linked to Issue Skill
+# Create PR Linked to Issue
 
-This skill creates a pull request with automatic issue linking using the GitHub CLI.
+Create a pull request with automatic issue linking.
 
 ## When to Use
 
-- User asks to create a PR (e.g., "create a PR for issue #42")
 - After completing implementation work
-- When ready to submit changes for review
-- Need to link PR to GitHub issue automatically
+- Ready to submit changes for review
+- Need to link PR to GitHub issue
+- Starting from a feature branch
 
-## Usage
-
-### Basic PR Creation
+## Quick Reference
 
 ```bash
-# Create PR linked to issue (preferred method)
+# Create PR linked to issue (preferred)
 gh pr create --issue <issue-number>
 
-# Create PR with title and body
-gh pr create --title "Title" --body "$(cat <<'EOF'
-## Summary
-- Brief description
+# With custom title and body
+gh pr create --title "Title" --body "Closes #<issue-number>"
 
-## Changes
-- List of changes
+# Verify link appears
+gh issue view <issue-number>  # Check Development section
+```
 
-Closes #<issue-number>
-EOF
-)"
-```text
+## Workflow
 
-### Workflow
-
-1. **Verify changes are committed and pushed**
-1. **Check current branch tracks remote** (use `git status`)
-1. **Push branch if needed**: `git push -u origin branch-name`
-1. **Create PR with issue link**: `gh pr create --issue <number>`
-1. **Verify link appears in issue** (check issue's Development section)
+1. **Verify changes committed**: `git status` shows clean
+2. **Push branch**: `git push -u origin branch-name`
+3. **Create PR**: `gh pr create --issue <number>`
+4. **Verify link**: Check issue's Development section on GitHub
+5. **Monitor CI**: Watch checks with `gh pr checks`
 
 ## PR Requirements
 
 - ✅ PR must be linked to GitHub issue
 - ✅ All changes committed and pushed
-- ✅ CI checks should be passing
-- ✅ Title should be clear and descriptive
-- ✅ Description should summarize changes
-- ❌ Do NOT create PR without linking to issue
+- ✅ Branch has upstream tracking
+- ✅ Clear, descriptive title
+- ✅ Summary in description
+- ❌ Do NOT create PR without issue link
 
 ## Error Handling
 
-- **No upstream branch**: Run `git push -u origin branch-name` first
-- **Issue not found**: Verify issue number exists
-- **Auth failure**: Check `gh auth status` and refresh if needed
-- **Link not appearing**: Add "Closes #<issue-number>" to PR description
+| Problem | Solution |
+|---------|----------|
+| No upstream branch | `git push -u origin branch-name` |
+| Issue not found | Verify issue number exists |
+| Auth failure | Run `gh auth status` |
+| Link not appearing | Add "Closes #<issue>" to body |
 
 ## Verification
 
-After creating PR, verify:
+After creating PR:
 
 ```bash
-# Check PR was created
+# View PR details
 gh pr view <pr-number>
 
 # Check CI status
 gh pr checks <pr-number>
 
-# Verify issue link (check Development section in issue)
-gh issue view <issue-number>
-```text
+# Verify issue link
+gh issue view <issue-number>  # Look for "Development" section
+```
 
-## Examples
+## Branch Naming Convention
 
-### Create PR linked to issue:
+Format: `<issue-number>-<description>`
 
-```bash
-./scripts/create_linked_pr.sh 42
-```text
+Examples:
 
-### Create PR with custom body:
+- `42-add-tensor-ops`
+- `73-fix-memory-leak`
+- `105-update-docs`
 
-```bash
-./scripts/create_linked_pr.sh 42 "Custom description of changes"
-```text
+## References
 
-## Scripts Available
-
-- `scripts/create_linked_pr.sh` - Create PR with issue linking
-- `scripts/verify_pr_link.sh` - Verify PR is linked to issue
-
-## Templates
-
-- `templates/pr_body.md` - Standard PR description template
-
-See CLAUDE.md for complete PR creation workflow and requirements.
+- See CLAUDE.md for complete git workflow
+- See CLAUDE.md for PR submission requirements

@@ -1,329 +1,60 @@
 ---
 name: mojo-test-runner
-description: Run Mojo test files and test suites using mojo test command with reporting and filtering capabilities. Use when executing Mojo tests or verifying test coverage.
+description: "Run Mojo tests using mojo test command. Use when executing tests or verifying test coverage."
+category: mojo
 ---
 
 # Mojo Test Runner Skill
 
-This skill runs Mojo tests using the `mojo test` command with various filtering and reporting options.
+Execute Mojo tests with filtering and reporting.
 
 ## When to Use
 
-- User asks to run tests (e.g., "run the Mojo tests")
+- Running Mojo test suites
 - Verifying implementation correctness
-- Running TDD red-green-refactor cycle
-- Checking test coverage
-- CI/CD test execution
+- TDD red-green-refactor cycle
+- Checking test coverage before PR
 
-## Usage
-
-### Run All Tests
+## Quick Reference
 
 ```bash
-# Run all tests in tests/ directory
+# Run all tests
 mojo test tests/
 
-# Run specific test file
+# Run specific file
 mojo test tests/test_tensor.mojo
 
 # Run with verbose output
 mojo test -v tests/
-```text
-
-### Run Specific Tests
-
-```bash
-# Run single test file
-./scripts/run_tests.sh test_tensor
 
 # Run tests matching pattern
 ./scripts/run_tests.sh tensor
+```
 
-# Run unit tests only
-./scripts/run_tests.sh --unit
+## Workflow
 
-# Run integration tests only
-./scripts/run_tests.sh --integration
+1. **Run tests** - Execute `mojo test` or script
+2. **Review output** - Check pass/fail summary
+3. **Fix failures** - Address failing tests
+4. **Re-run tests** - Verify all pass
 
-# Run tests for specific paper
-./scripts/run_tests.sh --paper lenet-5
+## Mojo-Specific Notes
 
-# Run tests for paper (partial match)
-./scripts/run_tests.sh --paper lenet
-
-# Run tests for paper with type filter
-./scripts/run_tests.sh --paper bert --unit
-```text
-
-### Test Output
-
-```text
-Running tests from: tests/test_tensor.mojo
-test_tensor_creation ... ok
-test_tensor_addition ... ok
-test_tensor_multiplication ... ok
-test_edge_case_empty ... ok
-
-4 tests, 4 passed, 0 failed
-```text
-
-## Test Types
-
-### Unit Tests
-
-Location: `tests/unit/`
-
-Fast, isolated tests for individual functions/classes:
-
-```bash
-mojo test tests/unit/
-```text
-
-### Integration Tests
-
-Location: `tests/integration/`
-
-Tests for component interactions:
-
-```bash
-mojo test tests/integration/
-```text
-
-### Performance Tests
-
-Location: `tests/performance/`
-
-Benchmarks and performance validation:
-
-```bash
-mojo test tests/performance/
-```text
-
-## Test Discovery
-
-Mojo discovers tests by:
-
-- Files matching `test_*.mojo` or `*_test.mojo`
-- Functions starting with `test_`
-- In specified directory or file
-
-```mojo
-# This function will be discovered and run
-fn test_my_feature() raises:
-    assert_equal(result, expected)
-
-# This won't be discovered (no test_ prefix)
-fn my_helper_function():
-    pass
-```text
-
-## Paper-Specific Testing
-
-Run tests for a specific paper implementation:
-
-### Usage
-
-```bash
-# Run all tests for a paper (exact name)
-./scripts/run_tests.sh --paper lenet-5
-
-# Run tests for paper (partial match)
-./scripts/run_tests.sh --paper lenet  # Finds lenet-5
-
-# Combine with test type filters
-./scripts/run_tests.sh --paper bert --unit
-./scripts/run_tests.sh --paper gpt-2 --integration
-```text
-
-### Features
-
-- **Exact matching**: `--paper lenet-5` finds `papers/lenet-5/`
-- **Partial matching**: `--paper lenet` finds `papers/lenet-5/`
-- **Case-insensitive**: `--paper BERT` finds `papers/bert/`
-- **Error handling**: Shows available papers if not found
-- **Multiple matches**: Asks user to be more specific
-
-### Examples
-
-```bash
-# Test a specific paper's implementation
-$ ./scripts/run_tests.sh --paper lenet-5
-Running tests for paper: lenet-5
-Test directory: papers/lenet-5/tests
-
-# Paper not found - helpful error
-$ ./scripts/run_tests.sh --paper nonexistent
-Error: Paper 'nonexistent' not found
-
-Available papers:
-  lenet-5
-  bert
-  gpt-2
-
-# Multiple matches - be more specific
-$ ./scripts/run_tests.sh --paper le
-Error: Multiple papers match 'le':
-  papers/lenet-5
-  papers/lenet-7
-
-Please be more specific.
-```text
-
-### Use Cases
-
-- Test a paper after making changes
-- Verify paper implementation before PR
-- Run paper tests in CI/CD for specific changes
-- Develop and test papers independently
+- Test functions must start with `test_`
+- Test files must match `test_*.mojo` or `*_test.mojo`
+- Tests run independently - no shared state between tests
+- Use `raises` keyword for exception testing
 
 ## Error Handling
 
-### Test Failures
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `Import error` | Module not found | Verify `-I` include paths |
+| `Syntax error` | Invalid test code | Fix syntax before testing |
+| `Timeout` | Test too slow | Optimize or increase timeout |
+| `Memory error` | Ownership issue | Check ownership and borrowing |
 
-```text
-Running tests from: tests/test_tensor.mojo
-test_tensor_creation ... ok
-test_tensor_addition ... FAILED
+## References
 
-Failures:
-test_tensor_addition
-  Expected: 5
-  Got: 4
-
-1 test failed, 1 passed
-```text
-
-### Actions:
-
-1. Review failure message
-1. Fix code or test
-1. Re-run tests
-1. Verify passing
-
-### Common Issues
-
-- **Import errors**: Check module paths and dependencies
-- **Syntax errors**: Fix before running tests
-- **Memory errors**: Check ownership and lifetimes
-- **Timeout**: Optimize or increase timeout
-
-## Test Reporting
-
-### Basic Report
-
-```bash
-mojo test tests/
-# Shows pass/fail summary
-```text
-
-### Verbose Report
-
-```bash
-mojo test -v tests/
-# Shows detailed output for each test
-```text
-
-### Coverage Report (Future)
-
-```bash
-# When coverage tooling available
-./scripts/run_tests.sh --coverage
-```text
-
-## CI Integration
-
-Tests run automatically in CI:
-
-```yaml
-- name: Run Mojo Tests
-  run: mojo test tests/
-```text
-
-## TDD Workflow
-
-1. **Write failing test** (Red)
-
-   ```bash
-   mojo test tests/test_feature.mojo  # Fails
-   ```text
-
-1. **Implement minimal code** (Green)
-
-   ```bash
-   mojo test tests/test_feature.mojo  # Passes
-   ```text
-
-1. **Refactor** (Refactor)
-
-   ```bash
-   mojo test tests/test_feature.mojo  # Still passes
-   ```text
-
-## Examples
-
-### Run all tests
-
-```bash
-./scripts/run_tests.sh
-```text
-
-### Run specific file:
-
-```bash
-./scripts/run_tests.sh test_tensor
-```text
-
-### Run unit tests only:
-
-```bash
-./scripts/run_tests.sh --unit
-```text
-
-### Watch mode (re-run on changes):
-
-```bash
-./scripts/run_tests.sh --watch
-```text
-
-## Scripts Available
-
-- `scripts/run_tests.sh` - Run tests with filtering
-- `scripts/test_watch.sh` - Watch mode for continuous testing
-- `scripts/test_coverage.sh` - Coverage reporting (future)
-
-## Best Practices
-
-1. **Run tests frequently** - After each small change
-1. **Test first** - Write tests before implementation (TDD)
-1. **Fast tests** - Keep unit tests fast (< 1s each)
-1. **Isolated tests** - No dependencies between tests
-1. **Clear names** - Test names describe what they test
-1. **Edge cases** - Test boundaries and error conditions
-
-## Performance Testing
-
-### Benchmark Tests
-
-```mojo
-from benchmark import Benchmark
-
-fn test_performance_simd() raises:
-    """Benchmark SIMD operation performance."""
-    let b = Benchmark()
-
-    fn work():
-        # SIMD operation to benchmark
-        pass
-
-    let result = b.run(work)
-    # Assert performance requirements
-    assert_true(result.mean < 1000)  # Must be < 1000ns
-```text
-
-## Integration with Other Skills
-
-- **phase-test-tdd** - Generate test files
-- **mojo-format** - Format test files
-- **gh-check-ci-status** - Verify tests pass in CI
-
-See testing documentation in `/notes/review/` for comprehensive testing strategy.
+- `.claude/shared/mojo-anti-patterns.md` - Common test mistakes
+- `/notes/review/` - Testing strategy documentation

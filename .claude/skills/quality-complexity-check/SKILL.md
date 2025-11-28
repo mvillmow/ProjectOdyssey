@@ -1,6 +1,7 @@
 ---
 name: quality-complexity-check
 description: Analyze code complexity metrics including cyclomatic complexity and nesting depth. Use to identify code that needs refactoring.
+category: quality
 ---
 
 # Complexity Check Skill
@@ -14,71 +15,130 @@ Analyze and report code complexity metrics.
 - Maintaining code quality
 - Before major releases
 
-## Complexity Metrics
-
-### 1. Cyclomatic Complexity
-
-Measures decision points (if, for, while):
-
-- **1-10**: Simple, easy to test
-- **11-20**: Moderate, consider refactoring
-- **21+**: Complex, needs refactoring
-
-### 2. Nesting Depth
-
-Maximum levels of nesting:
-
-- **1-3**: Good
-- **4-5**: Consider flattening
-- **6+**: Needs refactoring
-
-### 3. Function Length
-
-Lines of code in function:
-
-- **1-20**: Good
-- **21-50**: Acceptable
-- **51+**: Consider splitting
-
-## Usage
+## Quick Reference
 
 ```bash
 # Analyze Python code
 ./scripts/check_complexity.py
 
-# Analyze Mojo code (when tools available)
-./scripts/check_mojo_complexity.sh
-
-# Generate report
+# Generate full report
 ./scripts/complexity_report.sh > complexity.txt
-```text
 
-## Refactoring Strategies
+# Check Mojo code
+./scripts/check_mojo_complexity.sh
+```
 
-### High Complexity
+## Complexity Metrics
+
+### Cyclomatic Complexity (CC)
+
+Measures decision points (if, for, while):
+
+| CC Range | Assessment | Action |
+|----------|------------|--------|
+| 1-10 | Simple | Keep as is |
+| 11-20 | Moderate | Consider refactoring |
+| 21+ | Complex | Needs refactoring |
+
+### Nesting Depth
+
+Maximum levels of nesting in function:
+
+| Depth | Assessment | Action |
+|-------|------------|--------|
+| 1-3 | Good | Keep as is |
+| 4-5 | High | Consider flattening |
+| 6+ | Very High | Refactor required |
+
+### Function Length
+
+Lines of code in function:
+
+| LOC | Assessment | Action |
+|-----|------------|--------|
+| 1-20 | Good | Keep as is |
+| 21-50 | Acceptable | Monitor |
+| 51+ | Too long | Consider splitting |
+
+## Refactoring Patterns
+
+### Extract Function (High CC)
 
 ```python
-# ❌ Complex (CC: 15)
+# Before (CC: 15)
 def process(data):
     if condition1:
         if condition2:
             if condition3:
-                # nested logic
                 for item in data:
                     if item.valid:
-                        # more nesting
-                        pass
+                        # process
 
-# ✅ Refactored (CC: 5)
+# After (CC: 5)
 def process(data):
     if not is_valid(data):
         return
     filtered = filter_valid_items(data)
     return process_items(filtered)
-```text
+```
 
-### Deep Nesting
+### Flatten Nesting
 
-Extract functions to reduce nesting depth.
+Replace nested ifs with early returns:
 
-See `phase-cleanup` for refactoring guidelines.
+```python
+# Before (depth: 5)
+fn process(data):
+    if check1(data):
+        if check2(data):
+            if check3(data):
+                # complex logic
+
+# After (depth: 2)
+fn process(data):
+    if not check1(data): return
+    if not check2(data): return
+    if not check3(data): return
+    # complex logic
+```
+
+## Workflow
+
+```bash
+# 1. Analyze code
+./scripts/check_complexity.py
+
+# 2. Review high-complexity functions
+grep "CC:" complexity.txt | grep -E "CC: [2-9][0-9]|CC: [1-9][0-9]{2}"
+
+# 3. Plan refactoring
+# ... extract functions, flatten nesting ...
+
+# 4. Re-analyze
+./scripts/check_complexity.py
+
+# 5. Verify improved
+git diff complexity.txt
+```
+
+## Error Handling
+
+| Issue | Fix |
+|-------|-----|
+| Script not found | Check `scripts/` directory |
+| Syntax errors | Fix code syntax before analyzing |
+| No output | Verify source files exist |
+
+## Thresholds
+
+Project thresholds:
+
+- Max CC per function: 15
+- Max nesting depth: 4
+- Max function length: 50 LOC
+- Minimum test coverage: 80%
+
+## References
+
+- Related skill: `phase-cleanup` for refactoring guidelines
+- Related skill: `quality-run-linters` for complete quality check
