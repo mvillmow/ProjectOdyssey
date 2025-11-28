@@ -92,8 +92,8 @@ struct ConfusionMatrix:
             # Logits - need argmax
             pred_classes = argmax(predictions)
         elif len(pred_shape) == 1:
-            # Already class indices - transfer ownership
-            pred_classes = predictions^
+            # Already class indices - copy (ImplicitlyCopyable - creates shared reference)
+            pred_classes = predictions
         else:
             raise Error("ConfusionMatrix.update: predictions must be 1D or 2D")
 

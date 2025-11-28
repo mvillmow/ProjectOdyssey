@@ -395,8 +395,8 @@ struct AccuracyMetric:
         if len(pred_shape) == 2:
             pred_classes = argmax(predictions, axis=1)
         elif len(pred_shape) == 1:
-            # Transfer ownership - predictions won't be used after this
-            pred_classes = predictions^
+            # Copy predictions (ImplicitlyCopyable - creates shared reference)
+            pred_classes = predictions
         else:
             raise Error("AccuracyMetric.update: invalid predictions shape")
 
