@@ -260,7 +260,7 @@ Before committing:
 
 Skills are located at:
 
-```
+```text
 .claude/skills/
 ├── skill-name/
 │   ├── SKILL.md          # Main skill file (this structure)
@@ -299,4 +299,5 @@ yamllint SKILL.md                # Valid YAML
 
 ---
 
-This template serves as both a format guide and a working example of the new optimized skill format. When creating new skills, use this as a reference for structure, length, and content organization.
+This template serves as both a format guide and a working example of the new optimized skill format.
+When creating new skills, use this as a reference for structure, length, and content organization.
