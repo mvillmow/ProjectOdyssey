@@ -48,20 +48,23 @@ struct Batch(Copyable, Movable):
 # ============================================================================
 
 
-struct BaseLoader(Copyable, Movable):
+struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
     """Base data loader with core functionality.
 
     Provides the foundation for all data loading operations.
+
+    Parameters:
+        D: Dataset type that conforms to the Dataset trait and is Copyable & Movable.
     """
 
-    var dataset: Dataset
+    var dataset: D
     var batch_size: Int
     var drop_last: Bool
     var _len: Int
 
     fn __init__(
         out self,
-        var dataset: Dataset,
+        var dataset: D,
         batch_size: Int = 1,
         drop_last: Bool = False,
     ) raises:
@@ -99,35 +102,39 @@ struct BaseLoader(Copyable, Movable):
 # ============================================================================
 
 
-struct BatchLoader(Copyable, Movable):
+struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Movable](Copyable, Movable):
     """Data loader with batching and optional shuffling.
 
     Loads data in batches, optionally shuffling the order of samples.
+
+    Parameters:
+        D: Dataset type that conforms to the Dataset trait and is Copyable & Movable.
+        S: Sampler type that conforms to the Sampler trait and is Copyable & Movable.
     """
 
-    var dataset: Dataset
+    var dataset: D
     var batch_size: Int
     var drop_last: Bool
     var _len: Int
-    var sampler: Sampler
+    var sampler: S
     var shuffle: Bool
 
     fn __init__(
         out self,
-        var dataset: Dataset,
+        var dataset: D,
+        var sampler: S,
         batch_size: Int = 32,
         shuffle: Bool = False,
         drop_last: Bool = False,
-        var sampler: Optional[Sampler] = None,
     ) raises:
         """Create batch loader.
 
         Args:
             dataset: Dataset to load from.
+            sampler: Sampler to use for generating indices.
             batch_size: Number of samples per batch.
-            shuffle: Whether to shuffle data.
+            shuffle: Whether to shuffle data (informational, sampler controls actual behavior).
             drop_last: Whether to drop the last incomplete batch.
-            sampler: Custom sampler (overrides shuffle).
 
         Raises:
             Error if batch_size is invalid.
@@ -151,18 +158,13 @@ struct BatchLoader(Copyable, Movable):
         self.shuffle = shuffle
 
         # Set up sampler
-        if sampler:
-            self.sampler = sampler.value()^
-        elif shuffle:
-            self.sampler = RandomSampler(self.dataset.__len__())
-        else:
-            self.sampler = SequentialSampler(self.dataset.__len__())
+        self.sampler = sampler^
 
     fn __len__(self) -> Int:
         """Return number of batches."""
         return self._len
 
-    fn __iter__(self) -> List[Batch]:
+    fn __iter__(self) raises -> List[Batch]:
         """Iterate over batches.
 
         Returns:
@@ -189,7 +191,7 @@ struct BatchLoader(Copyable, Movable):
             var batch_labels = List[ExTensor](capacity=len(batch_indices))
 
             for idx in batch_indices:
-                var sample = self.dataset.__getitem__(idx[])
+                var sample = self.dataset.__getitem__(idx)
                 batch_data.append(sample[0])
                 batch_labels.append(sample[1])
 
@@ -200,7 +202,7 @@ struct BatchLoader(Copyable, Movable):
             batches.append(Batch(data_tensor^, labels_tensor^, batch_indices^))
             batch_start = batch_end
 
-        return batches
+        return batches^
 
     fn _stack_tensors(self, tensors: List[ExTensor]) raises -> ExTensor:
         """Stack list of tensors into a batch tensor.
@@ -233,16 +235,16 @@ struct BatchLoader(Copyable, Movable):
             var all_values = List[Float32](capacity=batch_size * first_shape[0])
 
             # Collect all values from each tensor
-            for tensor in tensors:
+            for i in range(len(tensors)):
                 # Verify shape compatibility
-                if len(tensor[].shape()) != len(first_shape):
+                if len(tensors[i].shape()) != len(first_shape):
                     raise Error("All tensors must have same number of dimensions")
-                if tensor[].shape()[0] != first_shape[0]:
+                if tensors[i].shape()[0] != first_shape[0]:
                     raise Error("All tensors must have same shape")
 
                 # Copy values from this tensor
-                for i in range(tensor[].shape()[0]):
-                    all_values.append(Float32(tensor[][i]))
+                for j in range(tensors[i].shape()[0]):
+                    all_values.append(Float32(tensors[i][j]))
 
             # Create and return the stacked tensor
             # Shape: [batch_size * tensor_size]
