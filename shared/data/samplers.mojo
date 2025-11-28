@@ -139,7 +139,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
         if self.replacement:
             # Sample with replacement
             for _ in range(self.num_samples):
-                indices.append(Int(random_si64(0, self.data_source_len)))
+                indices.append(Int(random_si64(0, self.data_source_len - 1)))
         else:
             # Create shuffled indices
             var all_indices = List[Int](capacity=self.data_source_len)
@@ -148,7 +148,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
 
             # Fisher-Yates shuffle
             for i in range(self.data_source_len - 1, 0, -1):
-                var j = Int(random_si64(0, i + 1))
+                var j = Int(random_si64(0, i))
                 var temp = all_indices[i]
                 all_indices[i] = all_indices[j]
                 all_indices[j] = temp
