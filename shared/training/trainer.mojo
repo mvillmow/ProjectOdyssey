@@ -23,7 +23,7 @@ from shared.training.trainer_interface import (
 )
 from shared.training.loops.training_loop import TrainingLoop
 from shared.training.loops.validation_loop import ValidationLoop
-from shared.training.metrics import MetricLogger
+from shared.training.metrics import MetricLogger, MetricResult
 from shared.training.mixed_precision import (
     GradientScaler, check_gradients_finite, clip_gradients_by_norm
 )
@@ -65,7 +65,7 @@ struct BaseTrainer(Trainer):
 
         Args:.            `config`: Trainer configuration.
         """
-        self.config = config
+        self.config = config.copy()
         self.metrics = TrainingMetrics()
         self.metric_logger = MetricLogger()
         self.training_loop = TrainingLoop(log_interval=config.log_interval)
@@ -102,8 +102,8 @@ struct BaseTrainer(Trainer):
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         optimizer_step: fn() raises -> None,
         zero_gradients: fn() raises -> None,
-        train_loader: DataLoader,
-        val_loader: DataLoader
+        mut train_loader: DataLoader,
+        mut val_loader: DataLoader
     ) raises:
         """Train model with periodic validation.
 
@@ -216,7 +216,7 @@ struct BaseTrainer(Trainer):
 
         Returns:.            Current metrics.
         """
-        return self.metrics
+        return self.metrics.copy()
 
     fn get_best_checkpoint_epoch(self) -> Int:
         """Get epoch with best validation loss.

@@ -310,7 +310,7 @@ struct MetricLogger:
 
         for i in range(self.num_metrics):
             var name = self.metric_names[i]
-            var history = self.metric_history[i]
+            var history = self.metric_history[i].copy()
 
             if len(history) == 0:
                 continue

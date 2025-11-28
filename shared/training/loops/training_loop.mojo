@@ -144,7 +144,7 @@ struct TrainingLoop:
     var max_grad_norm: Float64
 
     fn __init__(
-        mut self,
+        out self,
         log_interval: Int = 10,
         clip_gradients: Bool = False,
         max_grad_norm: Float64 = 1.0
@@ -165,7 +165,7 @@ struct TrainingLoop:
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         optimizer_step: fn() raises -> None,
         zero_gradients: fn() raises -> None,
-        train_loader: DataLoader,
+        mut train_loader: DataLoader,
         mut metrics: TrainingMetrics
     ) raises:
         """Run one training epoch.

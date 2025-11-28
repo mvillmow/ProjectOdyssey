@@ -52,7 +52,7 @@ fn validation_step(
 fn validate(
     model_forward: fn(ExTensor) raises -> ExTensor,
     compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-    val_loader: DataLoader,
+    mut val_loader: DataLoader,
     compute_accuracy: Bool = True,
     compute_confusion: Bool = False,
     num_classes: Int = 10
@@ -168,7 +168,7 @@ struct ValidationLoop:
         self,
         model_forward: fn(ExTensor) raises -> ExTensor,
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-        val_loader: DataLoader,
+        mut val_loader: DataLoader,
         mut metrics: TrainingMetrics
     ) raises -> Float64:
         """Run validation loop.

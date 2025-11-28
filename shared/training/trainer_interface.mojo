@@ -294,13 +294,13 @@ struct DataLoader(Copyable, Movable):
         var actual_batch_size = end_idx - start_idx
 
         # Extract batch slice
-        var batch_data_shape = List[Int](2)
-        batch_data_shape[0] = actual_batch_size
-        batch_data_shape[1] = self.data.shape()[1]
+        var batch_data_shape = List[Int]()
+        batch_data_shape.append(actual_batch_size)
+        batch_data_shape.append(self.data.shape()[1])
         var batch_data = ExTensor(batch_data_shape, self.data.dtype())
 
-        var batch_labels_shape = List[Int](1)
-        batch_labels_shape[0] = actual_batch_size
+        var batch_labels_shape = List[Int]()
+        batch_labels_shape.append(actual_batch_size)
         var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype())
 
         # Copy data (simplified - real implementation would use slicing)
