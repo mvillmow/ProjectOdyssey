@@ -31,6 +31,7 @@ fn test_top1_accuracy_perfect() raises:
 
     # Labels: 0, 1, 2, 3, 4, 0, 1, 2, 3, 4
     var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     for i in range(batch_size):
@@ -64,6 +65,7 @@ fn test_top1_accuracy_half_correct() raises:
     var logits = ExTensor(logits_shape, DType.float32)
 
     var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # First 5 correct, last 5 incorrect
@@ -80,10 +82,11 @@ fn test_top1_accuracy_half_correct() raises:
                 else:
                     logits._data.bitcast[Float32]()[idx] = 0.0
         else:
-            # Incorrect prediction (predict class 0 when true is != 0)
+            # Incorrect prediction (predict wrong class)
+            var wrong_class = (true_class + 1) % num_classes
             for c in range(num_classes):
                 var idx = i * num_classes + c
-                if c == 0:
+                if c == wrong_class:
                     logits._data.bitcast[Float32]()[idx] = 10.0
                 else:
                     logits._data.bitcast[Float32]()[idx] = 0.0
@@ -104,10 +107,13 @@ fn test_top1_accuracy_with_indices() raises:
 
     # Predicted classes
     var preds_shape = List[Int]()
+    preds_shape.append(batch_size)
     var preds = ExTensor(preds_shape, DType.int32)
 
     # True labels
-    var labels = ExTensor(preds_shape, DType.int32)
+    var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
+    var labels = ExTensor(labels_shape, DType.int32)
 
     # Set up: first 4 correct, last 4 incorrect
     for i in range(batch_size):
@@ -137,6 +143,7 @@ fn test_topk_accuracy_k1() raises:
     var logits = ExTensor(logits_shape, DType.float32)
 
     var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Perfect predictions
@@ -173,6 +180,7 @@ fn test_topk_accuracy_k3() raises:
     var logits = ExTensor(logits_shape, DType.float32)
 
     var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Sample 0: true=0, scores=[5, 4, 3, 2, 1] -> top-3=[0,1,2] -> correct
@@ -181,22 +189,28 @@ fn test_topk_accuracy_k3() raises:
     # Sample 3: true=4, scores=[5, 4, 3, 2, 1] -> top-3=[0,1,2] -> incorrect
     # Expected: 2/4 = 0.5
 
-    var scores = List[List[Float32]](batch_size)
-    scores.append(List[Float32]())
-    scores[0].append(5.0); scores[0].append(4.0); scores[0].append(3.0)
-    scores[0].append(2.0); scores[0].append(1.0)
+    # Create 2D array of scores using direct indexing
+    var scores = List[List[Float32]]()
 
-    scores.append(List[Float32]())
-    scores[1].append(1.0); scores[1].append(2.0); scores[1].append(5.0)
-    scores[1].append(4.0); scores[1].append(3.0)
+    # Sample 0
+    var s0 = List[Float32]()
+    s0.append(5.0); s0.append(4.0); s0.append(3.0); s0.append(2.0); s0.append(1.0)
+    scores.append(s0^)
 
-    scores.append(List[Float32]())
-    scores[2].append(3.0); scores[2].append(4.0); scores[2].append(5.0)
-    scores[2].append(1.0); scores[2].append(2.0)
+    # Sample 1
+    var s1 = List[Float32]()
+    s1.append(1.0); s1.append(2.0); s1.append(5.0); s1.append(4.0); s1.append(3.0)
+    scores.append(s1^)
 
-    scores.append(List[Float32]())
-    scores[3].append(5.0); scores[3].append(4.0); scores[3].append(3.0)
-    scores[3].append(2.0); scores[3].append(1.0)
+    # Sample 2
+    var s2 = List[Float32]()
+    s2.append(3.0); s2.append(4.0); s2.append(5.0); s2.append(1.0); s2.append(2.0)
+    scores.append(s2^)
+
+    # Sample 3
+    var s3 = List[Float32]()
+    s3.append(5.0); s3.append(4.0); s3.append(3.0); s3.append(2.0); s3.append(1.0)
+    scores.append(s3^)
 
     # Fill logits
     for i in range(batch_size):
@@ -229,6 +243,7 @@ fn test_per_class_accuracy() raises:
     var logits = ExTensor(logits_shape, DType.float32)
 
     var labels_shape = List[Int]()
+    labels_shape.append(batch_size)
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Class 0: 4 samples, 3 correct -> 75%
@@ -285,6 +300,7 @@ fn test_accuracy_metric_incremental() raises:
     var logits1_shape = List[Int](batch1_size, 3)
     var logits1 = ExTensor(logits1_shape, DType.float32)
     var labels1_shape = List[Int]()
+    labels1_shape.append(batch1_size)
     var labels1 = ExTensor(labels1_shape, DType.int32)
 
     for i in range(batch1_size):
@@ -313,6 +329,7 @@ fn test_accuracy_metric_incremental() raises:
     var logits2_shape = List[Int](batch2_size, 3)
     var logits2 = ExTensor(logits2_shape, DType.float32)
     var labels2_shape = List[Int]()
+    labels2_shape.append(batch2_size)
     var labels2 = ExTensor(labels2_shape, DType.int32)
 
     for i in range(batch2_size):
