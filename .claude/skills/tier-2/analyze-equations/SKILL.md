@@ -8,7 +8,8 @@ tier: 2
 
 # Analyze Equations
 
-Extract and parse mathematical equations from research papers to understand computational requirements and implementation details.
+Extract and parse mathematical equations from research papers to understand computational requirements
+and implementation details.
 
 ## When to Use
 

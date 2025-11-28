@@ -53,7 +53,7 @@ gh issue view <issue-number>  # Check Development section
 | No upstream branch | `git push -u origin branch-name` |
 | Issue not found | Verify issue number exists |
 | Auth failure | Run `gh auth status` |
-| Link not appearing | Add "Closes #<issue>" to body |
+| Link not appearing | Add "Closes #ISSUE-NUMBER" to body |
 
 ## Verification
 

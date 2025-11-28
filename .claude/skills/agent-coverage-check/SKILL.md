@@ -58,7 +58,7 @@ Verify complete agent system coverage across all dimensions.
 
 ## Coverage Report Format
 
-```
+```text
 Hierarchy Coverage:
   L0: ✅ 1 agent
   L1: ✅ 6 agents
