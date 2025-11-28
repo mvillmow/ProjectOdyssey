@@ -94,24 +94,26 @@ fn binary_cross_entropy_backward(
     Computes gradient of BCE loss with respect to predictions.
 
     Formula:
-        ∂BCE/∂p = -(y/p - (1-y)/(1-p))
+        ∂BCE/∂p = -y/p + (1-y)/(1-p)
 
-    For numerical stability, this can be simplified to:
+    Which simplifies to:
+        ∂BCE/∂p = (-y(1-p) + (1-y)p) / (p(1-p))
+        ∂BCE/∂p = (p - y) / (p(1-p))
+
+    For numerical stability, we add epsilon to the denominator:
         ∂BCE/∂p = (p - y) / (p(1-p) + epsilon)
 
-    However, in practice, the simplified form is often used:
-        ∂BCE/∂p ≈ (p - y)
-
-    This implementation uses the simplified form for efficiency and stability.
-
-    Args:.        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+    Args:
+        `grad_output`: Gradient from upstream (e.g., from mean_backward)
         `predictions`: Original predictions passed to forward pass.
         `targets`: Original targets passed to forward pass.
-        `epsilon`: Small constant for numerical stability (unused in simplified form)
+        `epsilon`: Small constant for numerical stability (default: 1e-7)
 
-    Returns:.        Gradient with respect to predictions, same shape as predictions.
+    Returns:
+        Gradient with respect to predictions, same shape as predictions.
 
-    Example:.        # Forward.
+    Example:
+        # Forward
         var bce_loss = binary_cross_entropy(predictions, targets)
         var loss = mean(bce_loss)
 
@@ -120,9 +122,31 @@ fn binary_cross_entropy_backward(
         var grad_bce = mean_backward(grad_loss, bce_loss)
         var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
     """
-    # Simplified gradient: (predictions - targets)
-    # This is the standard form used in most ML frameworks
-    var grad = subtract(predictions, targets)
+    # Gradient formula: (p - y) / (p(1-p) + epsilon)
+    var one = ExTensor(predictions.shape(), predictions.dtype())
+    for i in range(one.numel()):
+        one._set_float64(i, 1.0)
+
+    # Numerator: (predictions - targets)
+    var numerator = subtract(predictions, targets)
+
+    # Denominator: p(1-p) + epsilon
+    # First compute: (1 - predictions)
+    var one_minus_pred = subtract(one, predictions)
+
+    # Then compute: predictions * (1 - predictions)
+    var pred_times_one_minus_pred = multiply(predictions, one_minus_pred)
+
+    # Create epsilon tensor
+    var epsilon_tensor = ExTensor(predictions.shape(), predictions.dtype())
+    for i in range(epsilon_tensor.numel()):
+        epsilon_tensor._set_float64(i, epsilon)
+
+    # Compute: p(1-p) + epsilon
+    var denominator = add(pred_times_one_minus_pred, epsilon_tensor)
+
+    # Compute gradient: (p - y) / (p(1-p) + epsilon)
+    var grad = divide(numerator, denominator)
 
     # Chain rule: multiply by upstream gradient
     return multiply(grad_output, grad)

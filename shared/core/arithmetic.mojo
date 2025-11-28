@@ -260,6 +260,12 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
 
+    Note:
+        Division by zero follows IEEE 754 semantics for floating-point types:
+        - x // 0.0 where x > 0 -> +inf
+        - x // 0.0 where x < 0 -> -inf
+        - 0.0 // 0.0 -> NaN
+
     Examples:
         var a = full(List[Int](), 7.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
@@ -272,6 +278,13 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """
     @always_inline
     fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        # Check for division by zero - return inf per IEEE 754 (for floating-point types)
+        @parameter
+        if T.is_floating_point():
+            if y == Scalar[T](0):
+                # For floating point, follow IEEE 754: x / 0 = inf or -inf based on sign
+                return x / y  # Let hardware handle the division by zero
+
         # Floor division: floor(x / y)
         # For correct negative handling, use: Int(div) if div >= 0 else Int(div) - 1
         var div_result = x / y

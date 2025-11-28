@@ -439,7 +439,9 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         return GradientPair(grad_a, grad_b)
 
     # Handle 2D @ 2D and batched cases
-    # Standard: grad_a = grad_output @ B^T, grad_b = A^T @ grad_output
+    # For C = A @ B, the gradients are:
+    # grad_a = grad_output @ B^T
+    # grad_b = A^T @ grad_output
     var b_t = transpose(b)
     var a_t = transpose(a)
 

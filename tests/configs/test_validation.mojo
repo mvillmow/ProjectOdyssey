@@ -430,13 +430,13 @@ fn test_validate_model_config() raises:
 
     # Validate required model fields
     var required = List[String]()
-    required.append("name")
-    required.append("num_classes")
+    required.append("model.name")
+    required.append("model.output_classes")
 
     config.validate(required)
 
-    # Validate num_classes is reasonable
-    config.validate_range("num_classes", 2.0, 1000.0)
+    # Validate output_classes is reasonable
+    config.validate_range("model.output_classes", 2.0, 1000.0)
 
     print("✓ test_validate_model_config passed")
 
