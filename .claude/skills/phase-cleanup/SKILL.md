@@ -1,6 +1,7 @@
 ---
 name: phase-cleanup
 description: "Refactor and finalize code after parallel phases complete, addressing technical debt. Use in cleanup phase to polish code before merge."
+mcp_fallback: none
 category: phase
 phase: Cleanup
 ---

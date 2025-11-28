@@ -1,6 +1,7 @@
 ---
 name: phase-implement
 description: "Coordinate implementation phase by delegating tasks and ensuring code quality. Use during implementation phase to manage engineer tasks."
+mcp_fallback: none
 category: phase
 phase: Impl
 ---

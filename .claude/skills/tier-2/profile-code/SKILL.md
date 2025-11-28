@@ -1,6 +1,7 @@
 ---
 name: profile-code
 description: "Measure execution time and memory usage of code. Use when analyzing performance characteristics."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

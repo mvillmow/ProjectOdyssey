@@ -1,6 +1,7 @@
 ---
 name: doc-generate-adr
 description: Generate Architecture Decision Records (ADRs) to document significant architectural decisions. Use when making important technical decisions that need documentation.
+mcp_fallback: none
 category: doc
 ---
 

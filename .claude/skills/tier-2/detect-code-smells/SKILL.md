@@ -1,6 +1,7 @@
 ---
 name: detect-code-smells
 description: "Identify code quality issues and anti-patterns. Use when reviewing code for maintainability problems."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

@@ -1,6 +1,7 @@
 ---
 name: generate-api-docs
 description: "Create API reference documentation from docstrings. Use when documenting public module interfaces."
+mcp_fallback: none
 category: generation
 tier: 2
 ---

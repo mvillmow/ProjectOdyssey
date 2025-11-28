@@ -1,6 +1,7 @@
 ---
 name: validate-inputs
 description: "Check function inputs for correctness and safety. Use when implementing defensive programming."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

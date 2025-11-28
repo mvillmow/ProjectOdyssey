@@ -1,6 +1,7 @@
 ---
 name: lint-code
 description: "Check code for style and quality issues. Use when validating code before commits."
+mcp_fallback: none
 category: analysis
 tier: 1
 ---

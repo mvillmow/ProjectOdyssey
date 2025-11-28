@@ -78,4 +78,4 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References:** [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#markdown-standards)
+**References**: [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#markdown-standards)

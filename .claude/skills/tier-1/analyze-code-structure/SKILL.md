@@ -1,6 +1,7 @@
 ---
 name: analyze-code-structure
 description: "Examine code organization and identify structural patterns. Use when reviewing module design."
+mcp_fallback: none
 category: analysis
 tier: 1
 ---

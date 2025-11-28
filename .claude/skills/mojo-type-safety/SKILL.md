@@ -1,6 +1,7 @@
 ---
 name: mojo-type-safety
 description: "Validate type safety in Mojo code including parametric types and trait constraints. Use during code review or when type errors occur."
+mcp_fallback: none
 category: mojo
 ---
 

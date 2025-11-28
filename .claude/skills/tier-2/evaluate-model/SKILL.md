@@ -1,6 +1,7 @@
 ---
 name: evaluate-model
 description: "Measure model performance on test datasets. Use when assessing accuracy, precision, recall, and other metrics."
+mcp_fallback: none
 category: ml
 tier: 2
 ---

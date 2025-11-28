@@ -1,6 +1,7 @@
 ---
 name: phase-test-tdd
 description: "Generate test files and coordinate test-driven development (TDD). Use when creating tests before implementation or during test phase."
+mcp_fallback: none
 category: phase
 phase: Test
 ---

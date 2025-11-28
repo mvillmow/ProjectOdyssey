@@ -1,6 +1,7 @@
 ---
 name: quality-security-scan
 description: Scan code for security vulnerabilities and unsafe patterns. Use before committing sensitive code or in security reviews.
+mcp_fallback: none
 category: quality
 ---
 

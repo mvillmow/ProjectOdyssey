@@ -1,6 +1,7 @@
 ---
 name: doc-update-blog
 description: Update development blog with implementation milestones, learnings, and progress. Use after completing major milestones or phases.
+mcp_fallback: none
 category: doc
 ---
 

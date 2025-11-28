@@ -1,6 +1,7 @@
 ---
 name: agent-coverage-check
 description: "Check agent configuration coverage across hierarchy levels and phases. Use to ensure complete agent system coverage."
+mcp_fallback: none
 category: agent
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: plan-validate-structure
 description: Validate plan directory structure and file format compliance with Template 1 (9-section format). Use before committing plan changes or creating issues.
+mcp_fallback: none
 category: plan
 ---
 

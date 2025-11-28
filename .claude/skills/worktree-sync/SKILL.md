@@ -1,6 +1,7 @@
 ---
 name: worktree-sync
 description: "Sync git worktrees with remote and main branch changes. Use to keep long-running feature branches up-to-date."
+mcp_fallback: none
 category: worktree
 ---
 

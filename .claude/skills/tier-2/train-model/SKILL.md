@@ -1,6 +1,7 @@
 ---
 name: train-model
 description: "Execute model training with optimization algorithms. Use when running training loops on datasets."
+mcp_fallback: none
 category: ml
 tier: 2
 ---

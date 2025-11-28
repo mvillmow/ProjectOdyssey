@@ -1,6 +1,7 @@
 ---
 name: ci-run-precommit
 description: Run pre-commit hooks locally or in CI to validate code quality before committing. Use to ensure commits meet quality standards and CI will pass.
+mcp_fallback: none
 category: ci
 ---
 

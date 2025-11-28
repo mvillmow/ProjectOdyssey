@@ -1,6 +1,7 @@
 ---
 name: worktree-switch
 description: "Switch between git worktrees for parallel development. Use when working on multiple issues simultaneously."
+mcp_fallback: none
 category: worktree
 ---
 

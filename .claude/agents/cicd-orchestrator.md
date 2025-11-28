@@ -2,7 +2,7 @@
 name: cicd-orchestrator
 description: "CI/CD pipeline coordinator. Select for testing infrastructure, deployment pipelines, quality gates, monitoring, or continuous integration setup."
 level: 1
-phase: Packaging
+phase: Package
 tools: Read,Grep,Glob,Task
 model: sonnet
 delegates_to: [test-specialist, security-specialist, performance-specialist]

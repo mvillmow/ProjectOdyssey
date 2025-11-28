@@ -1,6 +1,7 @@
 ---
 name: agent-validate-config
 description: "Validate agent YAML frontmatter and configuration. Use before committing agent changes or in CI."
+mcp_fallback: none
 category: agent
 ---
 
@@ -33,6 +34,7 @@ Required YAML frontmatter fields:
 ---
 name: agent-name              # kebab-case identifier
 description: "Brief desc"     # One sentence purpose
+mcp_fallback: none
 category: agent               # Classification
 level: 0-5                    # Hierarchy level
 phase: Plan|Test|Implementation|Package|Cleanup

@@ -1,6 +1,7 @@
 ---
 name: worktree-cleanup
 description: "Remove merged or stale git worktrees. Use after PRs are merged or when worktrees are no longer needed."
+mcp_fallback: none
 category: worktree
 ---
 

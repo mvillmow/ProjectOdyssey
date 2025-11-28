@@ -1,6 +1,7 @@
 ---
 name: identify-architecture
 description: "Analyze ML model architecture from papers and code. Use when understanding model structure for implementation."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

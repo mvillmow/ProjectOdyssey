@@ -1,6 +1,7 @@
 ---
 name: ci-fix-failures
 description: Diagnose and fix CI/CD failures by analyzing logs, reproducing locally, and applying fixes. Use when CI checks fail on pull requests.
+mcp_fallback: none
 category: ci
 ---
 

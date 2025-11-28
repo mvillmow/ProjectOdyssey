@@ -79,4 +79,4 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References:** [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#mojo-syntax-standards-v0257)
+**References**: [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#mojo-syntax-standards-v0257)

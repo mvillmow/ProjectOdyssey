@@ -1,6 +1,7 @@
 ---
 name: agent-test-delegation
 description: "Test agent delegation patterns to verify hierarchy and escalation paths. Use after modifying agent structure."
+mcp_fallback: none
 category: agent
 ---
 

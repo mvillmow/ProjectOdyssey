@@ -1,6 +1,7 @@
 ---
 name: analyze-equations
 description: "Parse and interpret mathematical equations from research papers. Use when extracting formulas for implementation."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

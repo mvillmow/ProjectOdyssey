@@ -1,6 +1,7 @@
 ---
 name: agent-hierarchy-diagram
 description: "Generate visual hierarchy diagrams of agent system showing levels and delegation. Use for documentation or onboarding."
+mcp_fallback: none
 category: agent
 ---
 

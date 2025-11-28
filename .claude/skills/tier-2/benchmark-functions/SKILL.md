@@ -1,6 +1,7 @@
 ---
 name: benchmark-functions
 description: "Measure function performance and compare implementations. Use when optimizing critical code paths."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

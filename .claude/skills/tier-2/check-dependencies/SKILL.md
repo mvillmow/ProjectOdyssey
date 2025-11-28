@@ -1,6 +1,7 @@
 ---
 name: check-dependencies
 description: "Validate and verify dependencies are available and compatible. Use when setting up environments."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

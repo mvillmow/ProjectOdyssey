@@ -87,4 +87,4 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References:** [Common Constraints](../shared/common-constraints.md), [Documentation Rules](../shared/documentation-rules.md)
+**References**: [Common Constraints](../shared/common-constraints.md), [Documentation Rules](../shared/documentation-rules.md)

@@ -1,6 +1,7 @@
 ---
 name: refactor-code
 description: "Restructure code for improved clarity and maintainability. Use when addressing code smells or technical debt."
+mcp_fallback: none
 category: generation
 tier: 2
 ---

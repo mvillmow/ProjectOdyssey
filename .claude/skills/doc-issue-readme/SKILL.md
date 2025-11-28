@@ -1,6 +1,7 @@
 ---
 name: doc-issue-readme
 description: Generate issue-specific documentation in /notes/issues/<number>/README.md. Use when starting work on an issue to create proper documentation structure.
+mcp_fallback: none
 category: doc
 ---
 

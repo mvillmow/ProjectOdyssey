@@ -1,6 +1,7 @@
 ---
 name: doc-validate-markdown
 description: Validate markdown files for formatting, links, and style compliance using markdownlint. Use before committing documentation changes.
+mcp_fallback: none
 category: doc
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: suggest-optimizations
 description: "Identify performance optimization opportunities. Use when improving code efficiency."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

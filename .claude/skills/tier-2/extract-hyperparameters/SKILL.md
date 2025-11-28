@@ -1,6 +1,7 @@
 ---
 name: extract-hyperparameters
 description: "Identify and document model hyperparameters from papers. Use when setting up training configurations."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

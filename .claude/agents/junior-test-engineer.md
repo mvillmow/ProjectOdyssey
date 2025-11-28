@@ -79,4 +79,4 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References:** [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Mojo Guidelines](../shared/mojo-guidelines.md), [CLAUDE.md](../../CLAUDE.md#mojo-test-patterns)
+**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Mojo Guidelines](../shared/mojo-guidelines.md), [CLAUDE.md](../../CLAUDE.md#mojo-test-patterns)

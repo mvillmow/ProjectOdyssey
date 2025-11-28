@@ -6,7 +6,7 @@ phase: Plan
 tools: Read,Write,Grep,Glob,Task
 model: sonnet
 delegates_to: [implementation-specialist, test-specialist, performance-specialist]
-receives_from: [section-orchestrator]
+receives_from: [foundation-orchestrator, shared-library-orchestrator, tooling-orchestrator, papers-orchestrator, cicd-orchestrator, agentic-workflows-orchestrator]
 ---
 
 # Architecture Design Agent

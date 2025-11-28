@@ -1,6 +1,7 @@
 ---
 name: plan-regenerate-issues
 description: Regenerate github_issue.md files from plan.md after modifying plans. Use after editing plan.md files to update issue descriptions.
+mcp_fallback: none
 category: plan
 ---
 

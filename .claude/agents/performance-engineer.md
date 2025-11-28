@@ -77,4 +77,4 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References:** [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md)
+**References**: [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md)

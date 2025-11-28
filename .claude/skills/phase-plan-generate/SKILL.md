@@ -1,6 +1,7 @@
 ---
 name: phase-plan-generate
 description: "Generate comprehensive plan documentation following Template 1 format. Use when creating plan.md files for new components or subsections."
+mcp_fallback: none
 category: phase
 phase: Plan
 ---

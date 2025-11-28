@@ -1,6 +1,7 @@
 ---
 name: mojo-test-runner
 description: "Run Mojo tests using mojo test command. Use when executing tests or verifying test coverage."
+mcp_fallback: none
 category: mojo
 ---
 

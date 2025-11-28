@@ -1,6 +1,7 @@
 ---
 name: quality-fix-formatting
 description: Automatically fix code formatting issues using mojo format, markdownlint, and pre-commit hooks. Use when formatting checks fail or before committing code.
+mcp_fallback: none
 category: quality
 ---
 

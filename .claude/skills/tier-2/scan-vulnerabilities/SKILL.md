@@ -1,6 +1,7 @@
 ---
 name: scan-vulnerabilities
 description: "Detect security vulnerabilities in code and dependencies. Use when auditing security."
+mcp_fallback: none
 category: security
 tier: 2
 ---

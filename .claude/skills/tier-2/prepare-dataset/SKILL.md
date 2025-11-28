@@ -1,6 +1,7 @@
 ---
 name: prepare-dataset
 description: "Process and validate datasets for training. Use when setting up data pipelines."
+mcp_fallback: none
 category: ml
 tier: 2
 ---

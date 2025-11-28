@@ -2,7 +2,7 @@
 name: documentation-specialist
 description: "Level 3 Component Specialist. Select for component documentation. Creates READMEs, API docs, usage examples, and tutorials."
 level: 3
-phase: Packaging,Cleanup
+phase: Package,Cleanup
 tools: Read,Write,Edit,Grep,Glob,Task
 model: sonnet
 delegates_to: [documentation-engineer, junior-documentation-engineer]

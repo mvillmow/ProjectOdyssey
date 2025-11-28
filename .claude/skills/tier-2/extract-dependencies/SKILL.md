@@ -1,6 +1,7 @@
 ---
 name: extract-dependencies
 description: "Analyze imports and identify all module dependencies. Use when mapping project structure."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

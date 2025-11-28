@@ -1,6 +1,7 @@
 ---
 name: generate-tests
 description: "Create test cases for functions and modules. Use when implementing TDD or improving coverage."
+mcp_fallback: none
 category: testing
 tier: 2
 ---

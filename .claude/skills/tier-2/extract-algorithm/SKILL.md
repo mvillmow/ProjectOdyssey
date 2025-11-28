@@ -1,6 +1,7 @@
 ---
 name: extract-algorithm
 description: "Parse and document algorithm pseudocode from research papers. Use when preparing for implementation."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

@@ -1,6 +1,7 @@
 ---
 name: generate-boilerplate
 description: "Create starter code from templates. Use when setting up new modules or test files."
+mcp_fallback: none
 category: generation
 tier: 1
 ---

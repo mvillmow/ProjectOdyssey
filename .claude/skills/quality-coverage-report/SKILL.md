@@ -1,6 +1,7 @@
 ---
 name: quality-coverage-report
 description: Generate test coverage reports showing which code paths are tested. Use to identify untested code and improve test coverage.
+mcp_fallback: none
 category: quality
 ---
 

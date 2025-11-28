@@ -1,6 +1,7 @@
 ---
 name: quality-complexity-check
 description: Analyze code complexity metrics including cyclomatic complexity and nesting depth. Use to identify code that needs refactoring.
+mcp_fallback: none
 category: quality
 ---
 

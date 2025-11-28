@@ -1,6 +1,7 @@
 ---
 name: run-tests
 description: "Execute test suites and report results. Use when validating code functionality."
+mcp_fallback: none
 category: testing
 tier: 1
 ---

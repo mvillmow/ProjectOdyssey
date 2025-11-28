@@ -1,6 +1,7 @@
 ---
 name: phase-package
 description: "Create distributable packages including .mojopkg files and archives. Use during package phase to prepare components for distribution."
+mcp_fallback: none
 category: phase
 phase: Package
 ---

@@ -1,6 +1,7 @@
 ---
 name: generate-changelog
 description: "Create changelog from git commits. Use when preparing release notes."
+mcp_fallback: none
 category: generation
 tier: 2
 ---

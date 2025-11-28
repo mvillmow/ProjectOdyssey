@@ -1,6 +1,7 @@
 ---
 name: calculate-coverage
 description: "Measure test coverage and identify untested code. Use when assessing test completeness."
+mcp_fallback: none
 category: analysis
 tier: 2
 ---

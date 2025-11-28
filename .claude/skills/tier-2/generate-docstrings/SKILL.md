@@ -1,6 +1,7 @@
 ---
 name: generate-docstrings
 description: "Create docstrings for functions and classes. Use when documenting code APIs."
+mcp_fallback: none
 category: generation
 tier: 2
 ---

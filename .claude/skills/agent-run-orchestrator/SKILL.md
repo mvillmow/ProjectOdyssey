@@ -1,6 +1,7 @@
 ---
 name: agent-run-orchestrator
 description: "Run section orchestrators to coordinate multi-component workflows. Use when starting work on a section."
+mcp_fallback: none
 category: agent
 ---
 

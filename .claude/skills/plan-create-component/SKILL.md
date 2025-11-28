@@ -1,6 +1,7 @@
 ---
 name: plan-create-component
 description: Create new component plans following Template 1 format and integrate into hierarchy. Use when adding new components to the plan structure.
+mcp_fallback: none
 category: plan
 ---
 

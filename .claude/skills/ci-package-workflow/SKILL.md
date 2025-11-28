@@ -1,6 +1,7 @@
 ---
 name: ci-package-workflow
 description: Create GitHub Actions workflows for automated package building and distribution. Use in package phase to automate .mojopkg building and release creation.
+mcp_fallback: none
 category: ci
 ---
 
