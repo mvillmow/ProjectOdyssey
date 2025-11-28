@@ -163,11 +163,11 @@ fn test_tensor_dataset_negative_indexing() raises:
     var dataset = TensorDataset(data^, labels^)
 
     var last_sample = dataset[-1]
-    assert_almost_equal(last_sample[0][0], Float32(3.0))
+    assert_almost_equal(last_sample[0][0], Float64(3.0))
     assert_equal(last_sample[1][0], 2)
 
     var second_last_sample = dataset[-2]
-    assert_almost_equal(second_last_sample[0][0], Float32(2.0))
+    assert_almost_equal(second_last_sample[0][0], Float64(2.0))
     assert_equal(second_last_sample[1][0], 1)
 
 
@@ -208,7 +208,7 @@ fn test_tensor_dataset_iteration_consistency() raises:
     """
     var data_list = List[Float32](Float32(1.0), Float32(2.0))
     var data = ExTensor(data_list^)
-    var labels_list = List[Int](0)
+    var labels_list = List[Int](0, 1)
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
 
@@ -241,12 +241,12 @@ fn test_tensor_dataset_no_copy_on_access() raises:
     var sample = dataset[0]
 
     # Verify we get the correct data (view behavior is implicit in implementation)
-    assert_almost_equal(sample[0][0], Float32(1.0))
+    assert_almost_equal(sample[0][0], Float64(1.0))
     assert_equal(sample[1][0], 0)
 
     # Access second sample to verify independent views
     var sample2 = dataset[1]
-    assert_almost_equal(sample2[0][0], Float32(2.0))
+    assert_almost_equal(sample2[0][0], Float64(2.0))
     assert_equal(sample2[1][0], 1)
 
 
@@ -273,15 +273,15 @@ fn test_tensor_dataset_memory_efficiency() raises:
 
     # Spot check a few samples to verify data integrity
     var first = dataset[0]
-    assert_almost_equal(first[0][0], Float32(0.0))
+    assert_almost_equal(first[0][0], Float64(0.0))
     assert_equal(first[1][0], 0)
 
     var mid = dataset[500]
-    assert_almost_equal(mid[0][0], Float32(500.0))
+    assert_almost_equal(mid[0][0], Float64(500.0))
     assert_equal(mid[1][0], 500)
 
     var last = dataset[999]
-    assert_almost_equal(last[0][0], Float32(999.0))
+    assert_almost_equal(last[0][0], Float64(999.0))
     assert_equal(last[1][0], 999)
 
 
