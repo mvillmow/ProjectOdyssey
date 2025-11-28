@@ -144,7 +144,7 @@ fn test_github_actions_annotations() raises:
     # Test GitHub Actions annotations
     var annotations_created = True
     var visible_in_pr = True
-    var includes_benchmark_name = True
+    var _ = True
 
     # Create annotation example
     var annotation = "::error::Regression detected in matrix_op: +15% slowdown"
@@ -186,9 +186,9 @@ fn test_historical_tracking() raises:
     """
     # Test historical tracking
     var results_stored = True
-    var queryable = True
+    var _ = True
     var trends_calculable = True
-    var long_term_enabled = True
+    var __ = True
 
     # Create historical data structure
     var historical_data = List[Float64](capacity=5)
@@ -241,7 +241,7 @@ fn test_manual_benchmark_trigger() raises:
     # Test manual benchmark triggering
     var workflow_dispatch_enabled = True
     var manual_trigger_supported = True
-    var options_supported = True
+    var ___ = True
 
     # Test example with options
     var trigger_options = List[String](capacity=2)
