@@ -631,7 +631,11 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                         var parts = pair.split(":")
                         if len(parts) >= 2:
                             var key = String(parts[0].strip())
-                            var value_str = parts[1].strip()
+                            # Join all parts after the first with ":" to handle values with colons
+                            var value_parts = List[String]()
+                            for j in range(1, len(parts)):
+                                value_parts.append(String(parts[j]))
+                            var value_str = String(":").join(value_parts).strip()
 
                             # Try to parse as number
                             if "." in value_str:
