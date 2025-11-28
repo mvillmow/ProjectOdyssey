@@ -76,7 +76,7 @@ Why not chosen.
 
 ## Storage Location
 
-```
+```text
 notes/review/adr/
 ├── ADR-001-language-selection.md
 ├── ADR-002-testing-strategy.md

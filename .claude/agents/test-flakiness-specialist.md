@@ -13,7 +13,9 @@ receives_from: [test-specialist]
 
 ## Identity
 
-Level 3 specialist responsible for identifying, analyzing, and remediating flaky tests. Focuses exclusively on root cause analysis of nondeterministic test behavior, environmental dependencies, and implementation-level flakiness sources.
+Level 3 specialist responsible for identifying, analyzing, and remediating flaky tests. Focuses
+exclusively on root cause analysis of nondeterministic test behavior, environmental dependencies,
+and implementation-level flakiness sources.
 
 ## Scope
 
@@ -203,7 +205,7 @@ fn test_increment_1():
 
 **Failure Rate Calculation**:
 
-```
+```text
 Failure Rate = (Number of Failures / Total Runs) * 100%
 
 - 0-1%: Rare, hard to diagnose (100+ runs needed)
@@ -224,4 +226,5 @@ Failure Rate = (Number of Failures / Total Runs) * 100%
 
 ---
 
-*Test Flakiness Specialist eliminates nondeterministic test failures, ensuring reliable CI/CD pipelines and confident code merges.*
+*Test Flakiness Specialist eliminates nondeterministic test failures, ensuring reliable CI/CD pipelines
+and confident code merges.*

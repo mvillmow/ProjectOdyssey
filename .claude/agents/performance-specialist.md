@@ -13,7 +13,9 @@ receives_from: [architecture-design, implementation-specialist]
 
 ## Identity
 
-Level 3 Component Specialist responsible for ensuring component performance meets requirements. Primary responsibility: define performance baselines, design benchmarks, profile code, identify optimizations. Position: works with Implementation Specialist to optimize components.
+Level 3 Component Specialist responsible for ensuring component performance meets requirements.
+Primary responsibility: define performance baselines, design benchmarks, profile code, identify optimizations.
+Position: works with Implementation Specialist to optimize components.
 
 ## Scope
 
@@ -67,8 +69,11 @@ See [mojo-guidelines.md](../shared/mojo-guidelines.md) for Mojo memory and perfo
 
 **Component**: Matrix multiplication (required: >100 GFLOPS for 1024x1024)
 
-**Plan**: Design benchmarks for various sizes, profile naive implementation, identify cache misses and SIMD opportunities. Delegate optimization (tiling, SIMD vectorization) to Performance Engineer. Validate final version meets throughput requirement without accuracy loss.
+**Plan**: Design benchmarks for various sizes, profile naive implementation, identify cache misses
+and SIMD opportunities. Delegate optimization (tiling, SIMD vectorization) to Performance Engineer.
+Validate final version meets throughput requirement without accuracy loss.
 
 ---
 
-**References**: [shared/common-constraints](../shared/common-constraints.md), [shared/mojo-guidelines](../shared/mojo-guidelines.md), [shared/documentation-rules](../shared/documentation-rules.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[mojo-guidelines](../shared/mojo-guidelines.md), [documentation-rules](../shared/documentation-rules.md)

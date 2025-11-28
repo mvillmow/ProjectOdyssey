@@ -13,7 +13,9 @@ receives_from: [architecture-design, implementation-specialist]
 
 ## Identity
 
-Level 3 Component Specialist responsible for designing comprehensive test strategies for components. Primary responsibility: create test plans, define test cases, coordinate TDD with Implementation Specialist. Position: receives component specs from design agents, delegates test implementation to test engineers.
+Level 3 Component Specialist responsible for designing comprehensive test strategies for components.
+Primary responsibility: create test plans, define test cases, coordinate TDD with Implementation Specialist.
+Position: receives component specs from design agents, delegates test implementation to test engineers.
 
 ## Scope
 
@@ -70,10 +72,12 @@ See [mojo-guidelines.md](../shared/mojo-guidelines.md) for Mojo-specific pattern
 
 **Component**: Tensor add operation
 
-**Tests**: Creation (basic functionality), element-wise operations, shape validation, NaN/inf handling (edge cases), performance benchmarks (SIMD utilization), gradient flow (integration).
+**Tests**: Creation (basic functionality), element-wise operations, shape validation, NaN/inf handling
+(edge cases), performance benchmarks (SIMD utilization), gradient flow (integration).
 
 **Coverage**: Focus on correctness and critical paths, not percentage. Each test must add confidence.
 
 ---
 
-**References**: [shared/common-constraints](../shared/common-constraints.md), [shared/mojo-guidelines](../shared/mojo-guidelines.md), [shared/documentation-rules](../shared/documentation-rules.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[mojo-guidelines](../shared/mojo-guidelines.md), [documentation-rules](../shared/documentation-rules.md)

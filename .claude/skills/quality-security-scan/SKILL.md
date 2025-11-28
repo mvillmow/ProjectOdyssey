@@ -71,7 +71,7 @@ Looks for:
 
 Ensure sensitive files ignored:
 
-```
+```text
 .env
 .env.local
 *.key

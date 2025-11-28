@@ -33,43 +33,23 @@ npx markdownlint-cli2 --fix "**/*.md"
 
 ### MD040: Code blocks need language
 
-```markdown
-# ❌ Wrong
-```
+**❌ Wrong** - missing language:
 
+```text
 code here
-
 ```
 
-# ✅ Correct
+**✅ Correct** - has language:
+
 ```python
 code here
-```
-
 ```
 
 ### MD031: Blank lines around blocks
 
-```markdown
-# ❌ Wrong
-Text before
-```python
-code
-```
+**❌ Wrong** - no blank lines between text and code block.
 
-Text after
-
-# ✅ Correct
-
-Text before
-
-```python
-code
-```
-
-Text after
-
-```
+**✅ Correct** - add one blank line before the opening fence and one after the closing fence.
 
 ### MD013: Line too long
 

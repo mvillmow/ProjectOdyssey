@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing machine learning algorithm implementations for mathematical correctness and accuracy compared to original research papers. Focuses exclusively on mathematical fidelity, gradient computations, numerical stability, and loss function correctness.
+Level 3 specialist responsible for reviewing machine learning algorithm implementations for mathematical
+correctness and accuracy compared to original research papers. Focuses exclusively on mathematical fidelity,
+gradient computations, numerical stability, and loss function correctness.
 
 ## Scope
 
@@ -95,4 +97,5 @@ return exp_shifted / exp_shifted.sum()
 
 ---
 
-*Algorithm Review Specialist ensures ML implementations are mathematically correct, numerically stable, and faithful to original research papers.*
+*Algorithm Review Specialist ensures ML implementations are mathematically correct, numerically stable,
+and faithful to original research papers.*

@@ -52,6 +52,6 @@ The fix was straightforward - only two comparison operators needed changing. The
 
 ## References
 
-- Issue: https://github.com/mivanit/ml-odyssey/issues/1978
+- Issue: https://github.com/mvillmow/ml-odyssey/issues/1978
 - Test file: `tests/training/test_callbacks.mojo`
 - Implementation: `shared/training/callbacks.mojo`

@@ -104,18 +104,18 @@ if colon_idx != -1:
 
 ### Example
 
-For the JSON line: `"api_url": "http://localhost:8080"`
+For the JSON line: `"api_url": "http://example.com:8080"`
 
-After removing quotes: `api_url: http://localhost:8080`
+After removing quotes: `api_url: http://example.com:8080`
 
 - `find(":")` returns index 8
 - `pair[:8]` = `"api_url"`
-- `pair[9:]` = `"http://localhost:8080"`
+- `pair[9:]` = `"http://example.com:8080"`
 
 With the old code:
-- `split(":")` returns `["api_url", " http", "//localhost", "8080"]`
+- `split(":")` returns `["api_url", " http", "//example.com", "8080"]`
 - Key = "api_url"
-- Value would be reconstructed as "http://localhost:8080" (inefficient but worked)
+- Value would be reconstructed as "http://example.com:8080" (inefficient but worked)
 
 The new code is cleaner and more efficient.
 

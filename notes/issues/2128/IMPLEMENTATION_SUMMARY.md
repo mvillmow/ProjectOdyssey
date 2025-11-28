@@ -41,8 +41,8 @@ if colon_idx != -1:
 
 1. **`tests/configs/fixtures/urls.json`**
    - Test fixture with various colon-containing values
-   - HTTP URLs: "http://localhost:8080"
-   - Database URLs: "postgresql://user:pass@localhost:5432/db"
+   - HTTP URLs: "http://example.com:8080"
+   - Database URLs: "postgresql://user:pass@example.com:5432/db"
    - HTTPS URLs: "https://models.example.com/lenet5.bin"
    - Timestamps: "12:30:45"
    - Numeric values: ports and floats

@@ -37,7 +37,7 @@ Invoke section orchestrators to coordinate complex development workflows.
 
 ## Hierarchy
 
-```
+```text
 Section Orchestrator (L1)
   ↓ delegates to
 Module Design Agent (L2)
@@ -64,7 +64,8 @@ Implementation Engineer (L4)
 
 ## Agent Hierarchy Context
 
-Orchestrators are the coordination hub between high-level planning and implementation teams. They decompose work from section level to component level, enabling parallel development.
+Orchestrators are the coordination hub between high-level planning and implementation teams.
+They decompose work from section level to component level, enabling parallel development.
 
 ## References
 

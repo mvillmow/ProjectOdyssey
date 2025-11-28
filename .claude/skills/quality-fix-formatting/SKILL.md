@@ -110,41 +110,24 @@ fn add(x: Int, y: Int) -> Int:
 
 ### Before/After: Markdown
 
-```markdown
-# Before
-Some text.
-```python
-code
-```
+**Before**: Code block immediately follows text without blank line.
 
-More text.
-
-# After
-
-Some text.
-
-```python
-code
-```
-
-More text.
-
-```
+**After**: Add blank line before opening fence and after closing fence.
 
 ### Before/After: Whitespace
 
+**Before** (trailing spaces):
+
+```text
+line with trailing spaces
+another line
 ```
 
-# Before
+**After** (no trailing spaces):
 
+```text
 line with trailing spaces
 another line
-
-# After
-
-line with trailing spaces
-another line
-
 ```
 
 ## Manual Fixes Required
@@ -153,22 +136,21 @@ Some issues need manual intervention:
 
 ### Markdown Language Tags
 
-```markdown
-# Must add manually
-```
+**Before** (no language tag):
 
+````text
+```
 code here
-
 ```
+````
 
-# Should be
+**After** (with language tag):
+
+````text
 ```python
-
 code here
-
 ```
-
-```
+````
 
 ### Line Length
 

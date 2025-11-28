@@ -7,12 +7,14 @@ Shared constraints for all agents. Reference this file instead of duplicating.
 Make the SMALLEST change that solves the problem.
 
 **DO:**
+
 - Touch ONLY files directly related to the issue requirements
 - Make focused changes that directly address the issue
 - Prefer 10-line fixes over 100-line refactors
 - Keep scope strictly within issue requirements
 
 **DO NOT:**
+
 - Refactor unrelated code
 - Add features beyond issue requirements
 - "Improve" code outside the issue scope
@@ -37,5 +39,6 @@ Make the SMALLEST change that solves the problem.
 ## Work Without Issue Number
 
 **STOP** - Do not start work without a GitHub issue number.
+
 - Request issue creation first
 - All work must be tracked

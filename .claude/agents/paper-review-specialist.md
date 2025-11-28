@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing academic paper quality, writing clarity, citation practices, results presentation, and adherence to machine learning research standards. Focuses exclusively on the academic writing and presentation aspects of research papers.
+Level 3 specialist responsible for reviewing academic paper quality, writing clarity, citation practices,
+results presentation, and adherence to machine learning research standards. Focuses exclusively on
+the academic writing and presentation aspects of research papers.
 
 ## Scope
 
@@ -71,7 +73,7 @@ Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to
 
 **Solution**: Add error bars or confidence intervals to all metrics
 
-```
+```text
 Table 1: Accuracy Results
 
 Model | Accuracy | 95% CI

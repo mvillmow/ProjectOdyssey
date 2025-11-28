@@ -43,7 +43,7 @@ pixi run mojo run -I packages test_import.mojo
 
 **Input (module source)**:
 
-```
+```text
 shared/tensor/
 ├── __init__.mojo
 ├── ops.mojo
@@ -52,7 +52,7 @@ shared/tensor/
 
 **Output (packaged module)**:
 
-```
+```text
 packages/
 ├── tensor.mojopkg
 ├── nn.mojopkg
@@ -61,7 +61,7 @@ packages/
 
 **Distribution archive**:
 
-```
+```text
 ml-odyssey-v0.1.0/
 ├── packages/
 ├── examples/

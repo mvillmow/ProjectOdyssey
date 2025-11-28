@@ -79,7 +79,7 @@ EOF
 
 ### Metrics Format
 
-```
+```text
 - Lines of code: 250 (tensor operations)
 - Test coverage: 94% (up from 87%)
 - Performance: 3x speedup on matmul (cache optimization)
@@ -87,7 +87,7 @@ EOF
 
 ### Challenge Documentation
 
-```
+```text
 **Problem**: Matrix alignment causing segfaults
 **Solution**: Added padding to align rows to SIMD width
 **Lessons**: Always validate memory layout for SIMD operations

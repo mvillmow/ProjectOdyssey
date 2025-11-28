@@ -70,7 +70,7 @@ Fixed List initialization in the `argmax()` helper function:
 
 - Issue: #1977
 - Related test failures: Training: Loops & Metrics test group
-- Language documentation: [Mojo Manual - Collections](https://docs.modular.com/mojo/manual/collections/)
+- Language documentation: [Mojo Manual - Types](https://docs.modular.com/mojo/manual/types/)
 
 ## Notes
 
