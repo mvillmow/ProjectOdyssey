@@ -106,7 +106,7 @@ fn test_malformed_json() raises:
     - Points to problematic line if possible
     """
     # Test detection of malformed JSON
-    var malformed_content = '{"name": "test", "duration": }'  # Missing value
+    var _ = '{"name": "test", "duration": }'  # Missing value
     var error_message = "JSON parsing error at line 1"
 
     # Verify error message indicates parsing problem
@@ -145,8 +145,8 @@ fn test_baseline_version_compatibility() raises:
     - Warning for minor version mismatch
     """
     # Test version compatibility checks
-    var compatible_version = "1.0.0"
-    var incompatible_version = "2.0.0"
+    var _ = "1.0.0"
+    var _ = "2.0.0"
     var current_major = 1
     var incoming_major = 2
 
