@@ -21,7 +21,7 @@ trait Sampler:
         """Return the number of samples."""
         ...
 
-    fn __iter__(self) -> List[Int]:
+    fn __iter__(mut self) -> List[Int]:
         """Return an iterator over sample indices.
 
         Returns:
@@ -70,7 +70,7 @@ struct SequentialSampler(Sampler, Copyable, Movable):
         """Return number of samples."""
         return self.end_index - self.start_index
 
-    fn __iter__(self) -> List[Int]:
+    fn __iter__(mut self) -> List[Int]:
         """Return sequential indices.
 
         Returns:.            List of indices from start to end.
@@ -124,7 +124,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
         """Return number of samples."""
         return self.num_samples
 
-    fn __iter__(self) -> List[Int]:
+    fn __iter__(mut self) -> List[Int]:
         """Return random indices.
 
         Returns:
@@ -220,7 +220,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
         """Return number of samples."""
         return self.num_samples
 
-    fn __iter__(self) -> List[Int]:
+    fn __iter__(mut self) -> List[Int]:
         """Return weighted random indices.
 
         Returns:.            List of indices sampled according to weights.
@@ -240,7 +240,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
 
         # Sample indices
         for _ in range(self.num_samples):
-            var r = random_si64(0, 1000000) / 1000000.0  # Random [0, 1)
+            var r = Float64(random_si64(0, 1000000)) / 1000000.0  # Random [0, 1)
 
             # Binary search for index
             var idx = 0
@@ -256,16 +256,16 @@ struct WeightedSampler(Sampler, Copyable, Movable):
                 self.weights[idx] = 0
                 # Renormalize remaining weights
                 total = Float64(0)
-                for w in self.weights:
-                    total += w[]
+                for i in range(len(self.weights)):
+                    total += self.weights[i]
                 if total > 0:
                     for i in range(len(self.weights)):
                         self.weights[i] = self.weights[i] / total
                     # Rebuild cumsum
                     cumsum.clear()
                     total = Float64(0)
-                    for w in self.weights:
-                        total += w[]
+                    for i in range(len(self.weights)):
+                        total += self.weights[i]
                         cumsum.append(total)
 
         return indices^
