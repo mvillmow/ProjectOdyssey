@@ -76,15 +76,15 @@ fn test_load_lenet5_model_config() raises:
     """
     var config = load_config("configs/papers/lenet5/model.yaml")
 
-    # Verify model name
-    assert_true(config.has("name"), "Should have model name")
-    var name = config.get_string("name")
-    assert_equal(name, "LeNet-5", "Model name should be LeNet-5")
+    # Verify model name (nested under model.name)
+    assert_true(config.has("model.name"), "Should have model.name")
+    var name = config.get_string("model.name")
+    assert_equal(name, "lenet5", "Model name should be lenet5")
 
-    # Verify architecture details
-    assert_true(config.has("num_classes"), "Should have num_classes")
-    var num_classes = config.get_int("num_classes")
-    assert_equal(num_classes, 10, "LeNet-5 should have 10 classes")
+    # Verify architecture details (output_classes at model.output_classes)
+    assert_true(config.has("model.output_classes"), "Should have model.output_classes")
+    var num_classes = config.get_int("model.output_classes")
+    assert_equal(num_classes, 10, "LeNet-5 should have 10 output classes")
 
     print("✓ test_load_lenet5_model_config passed")
 
@@ -196,7 +196,7 @@ fn test_load_missing_file() raises:
     var error_raised = False
 
     try:
-        var config = load_config("configs/nonexistent/file.yaml")
+        _ = load_config("configs/nonexistent/file.yaml")
     except:
         error_raised = True
 
@@ -216,7 +216,7 @@ fn test_load_empty_file() raises:
 
     var error_raised = False
     try:
-        var config = load_config("tests/configs/fixtures/empty.yaml")
+        _ = load_config("tests/configs/fixtures/empty.yaml")
     except:
         error_raised = True
 
@@ -233,7 +233,7 @@ fn test_load_invalid_format() raises:
     var error_raised = False
 
     try:
-        var config = load_config("configs/test.txt")
+        _ = load_config("configs/test.txt")
     except:
         error_raised = True
 
