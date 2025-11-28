@@ -176,14 +176,14 @@ fn test_conditional_always_apply() raises:
     values.append(3.0)
     var data = ExTensor(values^)
 
-    fn always_true(tensor: ExTensor) -> Bool:
+    fn always_true(tensor: ExTensor) raises -> Bool:
         return True
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var conditional = ConditionalTransform[LambdaTransform](always_true, base_transform)
+    var conditional = ConditionalTransform[LambdaTransform](always_true, base_transform^)
 
     var result = conditional(data)
 
@@ -201,14 +201,14 @@ fn test_conditional_never_apply() raises:
     values.append(3.0)
     var data = ExTensor(values^)
 
-    fn always_false(tensor: ExTensor) -> Bool:
+    fn always_false(tensor: ExTensor) raises -> Bool:
         return False
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var conditional = ConditionalTransform[LambdaTransform](always_false, base_transform)
+    var conditional = ConditionalTransform[LambdaTransform](always_false, base_transform^)
 
     var result = conditional(data)
 
@@ -231,14 +231,14 @@ fn test_conditional_based_on_size() raises:
     large_values.append(4.0)
     var large_data = ExTensor(large_values^)
 
-    fn is_large(tensor: ExTensor) -> Bool:
+    fn is_large(tensor: ExTensor) raises -> Bool:
         return tensor.num_elements() > 3
 
     fn double_fn(value: Float32) -> Float32:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var conditional = ConditionalTransform[LambdaTransform](is_large, base_transform)
+    var conditional = ConditionalTransform[LambdaTransform](is_large, base_transform^)
 
     var result_small = conditional(small_data)
     var result_large = conditional(large_data)
@@ -265,7 +265,7 @@ fn test_conditional_based_on_values() raises:
     mixed_values.append(3.0)
     var mixed_data = ExTensor(mixed_values^)
 
-    fn all_positive(tensor: ExTensor) -> Bool:
+    fn all_positive(tensor: ExTensor) raises -> Bool:
         for i in range(tensor.num_elements()):
             if tensor[i] < 0.0:
                 return False
@@ -275,7 +275,7 @@ fn test_conditional_based_on_values() raises:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var conditional = ConditionalTransform[LambdaTransform](all_positive, base_transform)
+    var conditional = ConditionalTransform[LambdaTransform](all_positive, base_transform^)
 
     var result_positive = conditional(positive_data)
     var result_mixed = conditional(mixed_data)
@@ -446,7 +446,8 @@ fn test_debug_with_large_tensor() raises:
     # Should pass through unchanged
     assert_equal(result.num_elements(), 100)
     for i in range(100):
-        assert_almost_equal(result[i], Float32(i), tolerance=1e-5)
+        var expected = Float32(i)
+        assert_almost_equal(Float32(result[i]), expected)
 
 
 # ============================================================================
@@ -665,7 +666,7 @@ fn test_batch_transform_basic() raises:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var batch = BatchTransform(AnyTransform(base_transform))
+    var batch = BatchTransform(AnyTransform(base_transform^))
 
     var results = batch(tensors)
 
@@ -690,7 +691,7 @@ fn test_batch_transform_empty_list() raises:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var batch = BatchTransform(AnyTransform(base_transform))
+    var batch = BatchTransform(AnyTransform(base_transform^))
 
     var results = batch(tensors)
 
@@ -711,7 +712,7 @@ fn test_batch_transform_single_tensor() raises:
         return value + 10.0
 
     var base_transform = LambdaTransform(add_ten)
-    var batch = BatchTransform(AnyTransform(base_transform))
+    var batch = BatchTransform(AnyTransform(base_transform^))
 
     var results = batch(tensors)
 
@@ -742,7 +743,7 @@ fn test_batch_transform_different_sizes() raises:
         return value * 2.0
 
     var base_transform = LambdaTransform(double_fn)
-    var batch = BatchTransform(AnyTransform(base_transform))
+    var batch = BatchTransform(AnyTransform(base_transform^))
 
     var results = batch(tensors)
 
@@ -778,7 +779,7 @@ fn test_batch_transform_with_clamp() raises:
     tensors.append(ExTensor(values2^))
 
     var base_transform = ClampTransform(2.0, 18.0)
-    var batch = BatchTransform(AnyTransform(base_transform))
+    var batch = BatchTransform(AnyTransform(base_transform^))
 
     var results = batch(tensors)
 
@@ -841,14 +842,14 @@ fn test_integration_conditional_augmentation() raises:
     small_values.append(2.0)
     var small_data = ExTensor(small_values^)
 
-    fn is_large_enough(tensor: ExTensor) -> Bool:
+    fn is_large_enough(tensor: ExTensor) raises -> Bool:
         return tensor.num_elements() >= 3
 
     fn augment(value: Float32) -> Float32:
         return value * 1.5
 
     var base_transform = LambdaTransform(augment)
-    var conditional = ConditionalTransform[LambdaTransform](is_large_enough, base_transform)
+    var conditional = ConditionalTransform[LambdaTransform](is_large_enough, base_transform^)
 
     var result_large = conditional(large_data)
     var result_small = conditional(small_data)
@@ -883,7 +884,7 @@ fn test_integration_batch_preprocessing() raises:
     transforms.append(AnyTransform(ClampTransform(0.0, 5.0)))
 
     var pipeline = SequentialTransform(transforms^)
-    var batch_transform = BatchTransform(AnyTransform(pipeline))
+    var batch_transform = BatchTransform(AnyTransform(pipeline^))
 
     var results = batch_transform(batch)
 

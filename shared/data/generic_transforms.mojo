@@ -47,6 +47,10 @@ struct IdentityTransform(Transform, Copyable, Movable):
         >>> var result = identity(data)  # result == data
     """
 
+    fn __init__(out self):
+        """Create identity transform."""
+        pass
+
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply identity transform (passthrough).
 
@@ -99,7 +103,7 @@ struct LambdaTransform(Transform, Copyable, Movable):
         var result_values = List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
-            var value = data[i]
+            var value = Float32(data[i])
             var transformed = self.func(value)
             result_values.append(transformed)
 
@@ -127,12 +131,12 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyab
         >>> var result = transform(data)  # Only augments large tensors
     """
 
-    var predicate: fn (ExTensor) -> Bool
+    var predicate: fn (ExTensor) raises -> Bool
     var transform: T
 
     fn __init__(
         out self,
-        predicate: fn (ExTensor) -> Bool,
+        predicate: fn (ExTensor) raises -> Bool,
         var transform: T,
     ):
         """Create conditional transform.
@@ -204,7 +208,7 @@ struct ClampTransform(Transform, Copyable, Movable):
         var result_values = List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
-            var value = data[i]
+            var value = Float32(data[i])
 
             # Clamp to range
             if value < self.min_val:
@@ -258,12 +262,12 @@ struct DebugTransform(Transform, Copyable, Movable):
 
         # Compute basic statistics if tensor is non-empty
         if data.num_elements() > 0:
-            var min_val = data[0]
-            var max_val = data[0]
+            var min_val = Float32(data[0])
+            var max_val = Float32(data[0])
             var sum_val: Float32 = 0.0
 
             for i in range(data.num_elements()):
-                var val = data[i]
+                var val = Float32(data[i])
                 if val < min_val:
                     min_val = val
                 if val > max_val:
@@ -301,9 +305,9 @@ struct AnyTransform(Transform, Copyable, Movable):
     var _to_int32: Optional[ToInt32]
     var _sequential: Optional[SequentialTransform]
 
-    fn __init__(out self, transform: LambdaTransform):
+    fn __init__(out self, var transform: LambdaTransform):
         """Create from LambdaTransform."""
-        self._lambda = transform
+        self._lambda = transform^
         self._clamp = None
         self._identity = None
         self._debug = None
@@ -311,57 +315,57 @@ struct AnyTransform(Transform, Copyable, Movable):
         self._to_int32 = None
         self._sequential = None
 
-    fn __init__(out self, transform: ClampTransform) raises:
+    fn __init__(out self, var transform: ClampTransform) raises:
         """Create from ClampTransform."""
         self._lambda = None
-        self._clamp = transform
+        self._clamp = transform^
         self._identity = None
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
         self._sequential = None
 
-    fn __init__(out self, transform: IdentityTransform):
+    fn __init__(out self, var transform: IdentityTransform):
         """Create from IdentityTransform."""
         self._lambda = None
         self._clamp = None
-        self._identity = transform
+        self._identity = transform^
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
         self._sequential = None
 
-    fn __init__(out self, transform: DebugTransform):
+    fn __init__(out self, var transform: DebugTransform):
         """Create from DebugTransform."""
         self._lambda = None
         self._clamp = None
         self._identity = None
-        self._debug = transform
+        self._debug = transform^
         self._to_float32 = None
         self._to_int32 = None
         self._sequential = None
 
-    fn __init__(out self, transform: ToFloat32):
+    fn __init__(out self, var transform: ToFloat32):
         """Create from ToFloat32."""
         self._lambda = None
         self._clamp = None
         self._identity = None
         self._debug = None
-        self._to_float32 = transform
+        self._to_float32 = transform^
         self._to_int32 = None
         self._sequential = None
 
-    fn __init__(out self, transform: ToInt32):
+    fn __init__(out self, var transform: ToInt32):
         """Create from ToInt32."""
         self._lambda = None
         self._clamp = None
         self._identity = None
         self._debug = None
         self._to_float32 = None
-        self._to_int32 = transform
+        self._to_int32 = transform^
         self._sequential = None
 
-    fn __init__(out self, transform: SequentialTransform):
+    fn __init__(out self, var transform: SequentialTransform):
         """Create from SequentialTransform."""
         self._lambda = None
         self._clamp = None
@@ -369,7 +373,7 @@ struct AnyTransform(Transform, Copyable, Movable):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = transform
+        self._sequential = transform^
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the wrapped transform."""
@@ -482,7 +486,7 @@ struct BatchTransform(Copyable, Movable):
             var transformed = self.transform(batch[i])
             results.append(transformed)
 
-        return results
+        return results^
 
 
 # ============================================================================
@@ -502,6 +506,10 @@ struct ToFloat32(Transform, Copyable, Movable):
     Example:.        >>> var converter = ToFloat32()
         >>> var result = converter(int_tensor)
     """
+
+    fn __init__(out self):
+        """Create ToFloat32 converter."""
+        pass
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Float32.
@@ -533,6 +541,10 @@ struct ToInt32(Transform, Copyable, Movable):
     Example:.        >>> var converter = ToInt32()
         >>> var result = converter(float_tensor)  # Truncates decimals
     """
+
+    fn __init__(out self):
+        """Create ToInt32 converter."""
+        pass
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Int32 (truncate).
