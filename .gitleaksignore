@@ -1,3 +1,7 @@
 fb5c26eb271ec822be5e05d71085f806d7eda54c:configs/BEST_PRACTICES.md:generic-api-key:21
 457a94f70d274f5c3301df6ee328f46109467edd:configs/BEST_PRACTICES.md:generic-api-key:21
 666b22b6ce7da601c689162723e9c4ebe530aa75:configs/BEST_PRACTICES.md:generic-api-key:21
+# False positive: Example showing what NOT to do in security documentation
+b54cf79584dbb3aef0c5c9df524a300d5963f113:.claude/agents/security-review-specialist.md:generic-api-key:78
+61bfd040ca12d7a83ef9c11035fcad77fa4e51e0:.claude/agents/security-review-specialist.md:generic-api-key:78
+9d3e871381c55deed24efc1ed7ff3ce5ba673e6a:.claude/agents/security-review-specialist.md:generic-api-key:80
