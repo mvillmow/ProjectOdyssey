@@ -142,7 +142,7 @@ jobs:
             # Build all Mojo packages
             find src -name "*.mojo" -o -name "*.🔥" | while read -r file; do
               echo "Building: $file"
-              pixi run mojo build -I . "$file" -o "dist/mojo/$(basename "$file" .mojo)"
+              pixi run mojo build -Werror -I . "$file" -o "dist/mojo/$(basename "$file" .mojo)"
             done
 
             echo "✅ Mojo packages built successfully"
@@ -254,7 +254,7 @@ jobs:
           # Run Mojo tests if they exist
           if [ -d "tests/unit" ] && [ -n "$(find tests/unit -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
             echo "Running Mojo unit tests..."
-            pixi run mojo test -I . tests/unit/ --verbose
+            pixi run mojo test -Werror -I . tests/unit/ --verbose
           fi
 
           # Run Python tests if they exist
@@ -271,7 +271,7 @@ jobs:
           if [ -d "tests/integration" ]; then
             if [ -n "$(find tests/integration -name '*.mojo' -o -name '*.🔥' 2>/dev/null)" ]; then
               echo "Running Mojo integration tests..."
-              pixi run mojo test -I . tests/integration/ --verbose
+              pixi run mojo test -Werror -I . tests/integration/ --verbose
             fi
 
             if [ -n "$(find tests/integration -name 'test_*.py' 2>/dev/null)" ]; then

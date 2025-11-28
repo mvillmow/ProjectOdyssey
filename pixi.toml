@@ -5,6 +5,14 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
+# Mojo build (warnings must be fixed, not suppressed)
+build = "mojo build"
+# Mojo run (warnings must be fixed, not suppressed)
+run = "mojo run"
+# Mojo test (warnings must be fixed, not suppressed)
+test = "mojo test"
+# Mojo format
+format = "mojo format"
 
 [dependencies]
 mojo = ">=0.25.7.0.dev2025110405,<0.26"

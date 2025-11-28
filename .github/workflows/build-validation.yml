@@ -56,7 +56,7 @@ jobs:
             # Compile all Mojo files to check for syntax errors
             find src -name "*.mojo" -o -name "*.🔥" | while read -r file; do
               echo "Checking: $file"
-              pixi run mojo build -I . "$file" -o "/tmp/$(basename "$file" .mojo)" || exit 1
+              pixi run mojo build -Werror -I . "$file" -o "/tmp/$(basename "$file" .mojo)" || exit 1
             done
 
             echo "✅ All Mojo files compiled successfully"
@@ -72,7 +72,7 @@ jobs:
           # Check if smoke tests exist
           if [ -d "tests/smoke" ]; then
             echo "Running smoke tests..."
-            pixi run mojo test -I . tests/smoke/ --verbose || true
+            pixi run mojo test -Werror -I . tests/smoke/ --verbose || true
           else
             echo "⚠️  No smoke tests found yet (tests/smoke/)"
           fi

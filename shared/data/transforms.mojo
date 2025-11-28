@@ -772,7 +772,6 @@ struct RandomErasing(Transform, Copyable, Movable):
         # Step 2: Infer image dimensions
         var dims = infer_image_dimensions(data, 3)
         var height = dims[0]
-        var width = dims[1]
         var channels = dims[2]
         var total_elements = data.num_elements()
         var image_size = height  # Height = width for square image
