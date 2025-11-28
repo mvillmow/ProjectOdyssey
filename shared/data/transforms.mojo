@@ -36,23 +36,37 @@ fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int
     """Infer image dimensions from flattened tensor.
 
     Assumes square images: H = W = sqrt(num_elements / channels).
+    Auto-detects channels if default doesn't work (tries 3, then 1).
 
-    Args:.        `data`: Flattened image tensor.
-        `channels`: Number of channels (default: 3 for RGB).
+    Args:
+        `data`: Flattened image tensor.
+        `channels`: Number of channels (default: 3 for RGB, auto-detects if mismatch).
 
-    Returns:.        Tuple of (height, width, channels).
+    Returns:
+        Tuple of (height, width, channels).
 
-    Raises:.        Error if dimensions don't work out to square image.
+    Raises:
+        Error if dimensions don't work out to square image with any supported channel count.
     """
     var total_elements = data.num_elements()
+
+    # Try the provided channels first
     var pixels = total_elements // channels
     var size = Int(sqrt(Float64(pixels)))
 
-    # Validate it's actually a square image
-    if size * size * channels != total_elements:
-        raise Error("ExTensor size doesn't match square image assumption")
+    if size * size * channels == total_elements:
+        return (size, size, channels)
 
-    return (size, size, channels)
+    # If that didn't work, try grayscale (1 channel)
+    if channels != 1:
+        pixels = total_elements
+        size = Int(sqrt(Float64(pixels)))
+
+        if size * size == total_elements:
+            return (size, size, 1)
+
+    # Neither worked - raise error
+    raise Error("ExTensor size doesn't match square image assumption")
 
 
 # ============================================================================
@@ -775,8 +789,7 @@ struct RandomErasing(Transform, Copyable, Movable):
         var width = dims[1]
         var channels = dims[2]
         var total_elements = data.num_elements()
-        var image_size = height  # Height = width for square image
-        var area = image_size * image_size
+        var area = height * width
 
         # Step 3: Randomly select erased region size
         # Target area as fraction of image
@@ -799,16 +812,16 @@ struct RandomErasing(Transform, Copyable, Movable):
         var erase_w = Int(sqrt(target_area * aspect_ratio))
 
         # Ensure within image bounds
-        erase_h = min(erase_h, image_size)
-        erase_w = min(erase_w, image_size)
+        erase_h = min(erase_h, height)
+        erase_w = min(erase_w, width)
 
         # Skip if region is too small
         if erase_h <= 0 or erase_w <= 0:
             return data
 
         # Step 4: Randomly select top-left position
-        var max_top = image_size - erase_h
-        var max_left = image_size - erase_w
+        var max_top = height - erase_h
+        var max_left = width - erase_w
 
         # Handle edge case where erased region equals image size
         if max_top < 0 or max_left < 0:
@@ -829,7 +842,7 @@ struct RandomErasing(Transform, Copyable, Movable):
             for col in range(left, left + erase_w):
                 # Set all channels to fill value
                 for c in range(channels):
-                    var index = (row * image_size + col) * channels + c
+                    var index = (row * width + col) * channels + c
                     result[index] = Float32(self.value)
 
         return ExTensor(result^)
