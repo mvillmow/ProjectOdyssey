@@ -4,6 +4,7 @@ Implements element-wise arithmetic operations following NumPy-style broadcasting
 """
 
 from collections import List
+from math import nan
 from .extensor import ExTensor
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
 from .gradient_types import GradientPair
@@ -303,6 +304,12 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """
     @always_inline
     fn _mod_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        # Check for modulo by zero - return NaN per IEEE 754 (for floating-point types)
+        @parameter
+        if T.is_floating_point():
+            if y == Scalar[T](0):
+                return Scalar[T](nan[T]())
+
         # Modulo: a % b = a - floor(a/b) * b
         var div_result = x / y
         var as_int = Int(div_result)
