@@ -54,7 +54,9 @@ fn test_metric_result_tensor() raises:
     """Test MetricResult with tensor values."""
     print("Testing MetricResult tensor...")
 
-    var tensor = ExTensor(List[Int](), DType.float32)
+    var tensor_shape = List[Int]()
+    tensor_shape.append(3)
+    var tensor = ExTensor(tensor_shape, DType.float32)
     tensor._data.bitcast[Float32]()[0] = 0.9
     tensor._data.bitcast[Float32]()[1] = 0.8
     tensor._data.bitcast[Float32]()[2] = 0.95
@@ -130,8 +132,12 @@ fn test_accuracy_metric_interface_compliance() raises:
     var metric = AccuracyMetric()
 
     # Create test data
-    var preds = ExTensor(List[Int](), DType.int32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var preds_shape = List[Int]()
+    preds_shape.append(4)
+    var preds = ExTensor(preds_shape, DType.int32)
+    var labels_shape = List[Int]()
+    labels_shape.append(4)
+    var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
     preds._data.bitcast[Int32]()[1] = 1  # ✓
@@ -164,8 +170,12 @@ fn test_confusion_matrix_integration() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds = ExTensor(List[Int](), DType.int32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var preds_shape = List[Int]()
+    preds_shape.append(5)
+    var preds = ExTensor(preds_shape, DType.int32)
+    var labels_shape = List[Int]()
+    labels_shape.append(5)
+    var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
@@ -340,8 +350,12 @@ fn test_multi_metric_training_simulation() raises:
         # Simulate 5 batches per epoch
         for batch in range(5):
             # Create fake batch data
-            var preds = ExTensor(List[Int](), DType.int32)
-            var labels = ExTensor(List[Int](), DType.int32)
+            var preds_shape = List[Int]()
+            preds_shape.append(4)
+            var preds = ExTensor(preds_shape, DType.int32)
+            var labels_shape = List[Int]()
+            labels_shape.append(4)
+            var labels = ExTensor(labels_shape, DType.int32)
 
             for i in range(4):
                 var pred_class = (i + batch + epoch) % 3
@@ -382,8 +396,12 @@ fn test_metric_interface_consistency() raises:
     var confusion = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds = ExTensor(List[Int](), DType.int32)
-    var labels = ExTensor(List[Int](), DType.int32)
+    var preds_shape = List[Int]()
+    preds_shape.append(2)
+    var preds = ExTensor(preds_shape, DType.int32)
+    var labels_shape = List[Int]()
+    labels_shape.append(2)
+    var labels = ExTensor(labels_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
     labels._data.bitcast[Int32]()[0] = 0

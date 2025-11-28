@@ -15,6 +15,8 @@ Issues covered:
 
 from collections import List
 from math import sqrt
+from .base import Metric
+from shared.core import ExTensor
 # min and max are now builtins in Mojo - no import needed
 
 
@@ -196,7 +198,7 @@ struct ComponentTracker(Copyable, Movable):
 # ============================================================================
 
 
-struct LossTracker:
+struct LossTracker(Metric):
     """Track loss values with statistics and moving averages.
 
     Supports multi-component loss tracking (e.g., total, reconstruction, regularization)
@@ -337,3 +339,25 @@ struct LossTracker:
         """
         # Create a copy of the components list
         return List[String](self.components)
+
+    # Metric trait implementation (for coordination interface)
+    fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
+        """Update metric with predictions and labels (Metric trait).
+
+        Note: LossTracker doesn't use predictions/labels directly.
+        This method exists for trait compliance but should not be called.
+        Use update(loss: Float32, component: String) instead.
+
+        Raises:
+            Error indicating this method should not be used
+        """
+        raise Error("LossTracker.update(predictions, labels) not applicable - use update(loss, component) instead")
+
+    fn reset(mut self):
+        """Reset all components (Metric trait version).
+
+        Resets statistics for all tracked components.
+        """
+        # Reset all components
+        for i in range(len(self.trackers)):
+            self.trackers[i].reset()

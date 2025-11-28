@@ -17,6 +17,7 @@ Issues covered:
 
 from shared.core import ExTensor
 from collections import List
+from .base import Metric
 
 
 # ============================================================================
@@ -355,7 +356,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
 # ============================================================================
 
 
-struct AccuracyMetric:
+struct AccuracyMetric(Metric):
     """Incremental accuracy metric for efficient accumulation across batches.
 
     Maintains running count of correct predictions and total samples,

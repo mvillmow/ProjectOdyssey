@@ -94,7 +94,7 @@ struct MetricResult(Copyable, Movable):
         return self.tensor_value
 
 
-struct MetricCollection:
+struct MetricCollection(Sized):
     """Collection of metrics for training/evaluation.
 
     Manages multiple metrics with a unified interface:
@@ -141,6 +141,14 @@ struct MetricCollection:
         self.metric_names.append(name)
         self.num_metrics += 1
 
+    fn __len__(self) -> Int:
+        """Get number of metrics in collection (Sized trait).
+
+        Returns:
+            Number of metrics
+        """
+        return self.num_metrics
+
     fn size(self) -> Int:
         """Get number of metrics in collection.
 
@@ -153,9 +161,9 @@ struct MetricCollection:
         """Get names of all metrics.
 
         Returns:
-            Vector of metric names
+            Copy of metric names vector
         """
-        return self.metric_names^
+        return List[String](self.metric_names)
 
     fn contains(self, name: String) -> Bool:
         """Check if metric exists in collection.

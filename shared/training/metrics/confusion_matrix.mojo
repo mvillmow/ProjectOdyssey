@@ -16,6 +16,7 @@ Issues covered:
 from shared.core import ExTensor
 from collections import List
 from math import sqrt
+from .base import Metric
 
 
 # ============================================================================
@@ -23,7 +24,7 @@ from math import sqrt
 # ============================================================================
 
 
-struct ConfusionMatrix:
+struct ConfusionMatrix(Metric):
     """Confusion matrix for classification analysis.
 
     Maintains an NxN matrix where matrix[i, j] represents the count of samples.
