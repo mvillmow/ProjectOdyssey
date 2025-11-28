@@ -1,137 +1,136 @@
 ---
 name: phase-plan-generate
-description: Generate comprehensive plan documentation following the 9-section Template 1 format for ML Odyssey planning phase. Use when creating new plan.md files or when asked to generate planning documentation.
+description: "Generate comprehensive plan documentation following Template 1 format. Use when creating plan.md files for new components or subsections."
+category: phase
+phase: Plan
 ---
 
 # Plan Generation Skill
 
-This skill generates plan documentation following ML Odyssey's standard 9-section format (Template 1).
+Generate plan documentation following ML Odyssey's standard 9-section Template 1 format.
 
 ## When to Use
 
-- User asks to create a plan (e.g., "generate a plan for X")
-- Starting a new component or subsection
-- Creating planning phase documentation
-- Need to follow Template 1 format
+- Creating new `plan.md` files for components or subsections
+- Starting planning phase documentation
+- Generating planning specifications before implementation
+- Need to follow Template 1 format with all 9 sections
 
-## Plan Format (Template 1)
-
-All plan.md files must include these 9 sections:
-
-1. **Title** - Component name
-1. **Overview** - Brief description (2-3 sentences)
-1. **Parent Plan** - Link to parent or "None (top-level)"
-1. **Child Plans** - Links to child plans or "None (leaf node)"
-1. **Inputs** - Prerequisites and dependencies
-1. **Outputs** - Deliverables and artifacts
-1. **Steps** - Ordered implementation steps
-1. **Success Criteria** - Measurable completion criteria
-1. **Notes** - Additional context and considerations
-
-## Usage
-
-### Generate Plan
+## Quick Reference
 
 ```bash
-# Generate plan from template
-./scripts/generate_plan.sh <component-name> <parent-path>
+# Validate existing plan has all 9 sections
+grep -E "^## (Overview|Parent Plan|Child Plans|Inputs|Outputs|Steps|Success Criteria|Notes)" plan.md
 
-# Example: Create plan for new subsection
-./scripts/generate_plan.sh "authentication-module" "notes/plan/02-shared-library"
-```text
+# Generate from template
+cat > plan.md << 'EOF'
+# Component Name
 
-### Key Principles
+## Overview
+Brief description (2-3 sentences)
 
-- **Use relative paths** for links (e.g., `../plan.md`)
-- **Maintain hierarchy** (parent/child relationships)
-- **Be specific** in Inputs/Outputs
-- **Measurable** Success Criteria
-- **Actionable** Steps
+## Parent Plan
+[Link or "None (top-level)"]
 
-## Plan Structure
+## Child Plans
+[Links or "None (leaf node)"]
+
+## Inputs
+- Prerequisite 1
+
+## Outputs
+- Deliverable 1
+
+## Steps
+1. Step 1
+
+## Success Criteria
+- [ ] Criterion 1
+
+## Notes
+Additional context
+EOF
+```
+
+## Workflow
+
+1. **Create plan.md** with all 9 required sections
+2. **Use relative paths** for links (e.g., `../plan.md`, not absolute)
+3. **Make inputs specific** (list dependencies clearly)
+4. **Make outputs measurable** (actual deliverables, not vague goals)
+5. **Make steps actionable** (numbered, clear sequence)
+6. **Make criteria verifiable** (checkboxes with specific outcomes)
+7. **Update parent plan's** "Child Plans" section after creation
+8. **Regenerate GitHub issues**: `python3 scripts/regenerate_github_issues.py --section <section>`
+
+## Template 1 Format (9 Sections)
 
 ```markdown
 # Component Name
 
 ## Overview
-
-Brief description of the component (2-3 sentences).
+Brief description (2-3 sentences) of what this component does.
 
 ## Parent Plan
-
-[../plan.md](../plan.md)
+[../parent/plan.md](../parent/plan.md)
+Or: "None (top-level)" for section-level plans
 
 ## Child Plans
-
 - [child1/plan.md](child1/plan.md)
 - [child2/plan.md](child2/plan.md)
-
-Or: "None (leaf node)" for level 4
+Or: "None (leaf node)" for lowest-level plans
 
 ## Inputs
-
 - Prerequisite 1
 - Prerequisite 2
+- Dependency 3
 
 ## Outputs
-
-- Deliverable 1
-- Deliverable 2
+- Deliverable file/artifact 1
+- Deliverable file/artifact 2
+- Test files or documentation
 
 ## Steps
-
-1. Step 1
-2. Step 2
-3. Step 3
+1. First step
+2. Second step
+3. Third step
 
 ## Success Criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] Criterion 1 (verifiable outcome)
+- [ ] Criterion 2 (measurable result)
 
 ## Notes
+Additional context, assumptions, or considerations.
+```
 
-Additional context, considerations, or references.
-```text
+## Phase Dependencies
 
-## After Creating Plan
+- **Precedes**: Test, Implementation, Package phases (plan must complete first)
+- **Receives input from**: Design phase (specifications, architecture decisions)
+- **Produces for**: All subsequent phases (implementation specifications)
 
-1. **Update parent plan's** "Child Plans" section
-1. **Regenerate GitHub issues**: `python3 scripts/regenerate_github_issues.py --section <section>`
-1. **Verify links** work correctly (relative paths)
-1. **Test issue creation** (dry-run first)
+## Output Location
+
+- **Plan files**: `/notes/plan/<section>/<subsection>/plan.md`
+- **Issue tracking**: `/notes/issues/<issue-number>/README.md`
+- **Regenerated**: `github_issue.md` files (auto-generated from plan.md)
 
 ## Error Handling
 
-- **Missing sections**: All 9 sections required
-- **Invalid links**: Use relative paths only
-- **Hierarchy broken**: Verify parent/child relationships
-- **Success criteria not measurable**: Add specific checkboxes
+| Error | Fix |
+|-------|-----|
+| Missing sections | Add all 9 sections from template |
+| Broken links | Use relative paths (`../` notation) |
+| Vague inputs/outputs | Make specific and measurable |
+| No success criteria | Add verifiable checkboxes |
+| Broken hierarchy | Verify parent/child links exist |
 
-## Examples
+## References
 
-### Generate new component plan:
+- `CLAUDE.md` - "Plan File Format (Template 1)" section
+- `.claude/skills/plan-regenerate-issues/` - GitHub issue generation from plans
+- `notes/plan/` - Example plan files in repository
 
-```bash
-./scripts/generate_plan.sh "tensor-operations" "notes/plan/02-shared-library/01-core"
-```text
+---
 
-### Validate existing plan:
-
-```bash
-./scripts/validate_plan.sh "notes/plan/02-shared-library/01-core/plan.md"
-```text
-
-## Scripts Available
-
-- `scripts/generate_plan.sh` - Generate plan from template
-- `scripts/validate_plan.sh` - Validate plan format
-- `scripts/update_parent_links.sh` - Update parent plan child links
-
-## Templates
-
-- `templates/plan_template.md` - Complete Template 1 format
-- `templates/subsection_plan.md` - Subsection-level template
-- `templates/component_plan.md` - Component-level template
-
-See CLAUDE.md section "Plan File Format (Template 1)" for complete specification.
+**Template location**: `templates/plan_template.md` in skill directory (if available)

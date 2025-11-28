@@ -1,85 +1,132 @@
 ---
 name: plan-create-component
-description: Create new component plan following Template 1 format and integrate into hierarchy. Use when adding new components to the plan structure.
+description: Create new component plans following Template 1 format and integrate into hierarchy. Use when adding new components to the plan structure.
+category: plan
 ---
 
 # Create Component Plan Skill
 
-Create new component plans in hierarchy.
+Create new component plans and integrate into hierarchy.
 
 ## When to Use
 
-- Adding new component
+- Adding new component to plan
 - Extending existing section
 - New subsection needed
 - Modifying plan structure
 
-## Workflow
-
-### 1. Create Plan
+## Quick Reference
 
 ```bash
-# Use plan generator
 ./scripts/create_component_plan.sh "Component Name" "parent/path"
-
 # Example
 ./scripts/create_component_plan.sh "Tensor Operations" "notes/plan/02-shared-library/01-core"
-```text
+```
 
-### 2. Edit Plan
+## Workflow
+
+1. **Create plan** - Run generator script with component name
+2. **Edit plan** - Fill in 9-section template
+3. **Update parent** - Add to parent's Child Plans section
+4. **Regenerate issues** - Update github_issue.md files
+5. **Validate structure** - Verify format compliance
+
+## Template 1 Format (9 Sections)
+
+All plans must have these sections in order:
+
+1. **Title** - `# Component Name`
+2. **Overview** - 2-3 sentence description
+3. **Parent Plan** - Link to parent or "None (top-level)"
+4. **Child Plans** - Links to children or "None (leaf node)"
+5. **Inputs** - Prerequisites and dependencies
+6. **Outputs** - Deliverables and results
+7. **Steps** - Numbered implementation steps
+8. **Success Criteria** - Measurable checkboxes
+9. **Notes** - Additional context
+
+## Creation Workflow
 
 ```bash
-# Edit generated plan
-vim notes/plan/02-shared-library/01-core/02-tensor-ops/plan.md
+# 1. Generate plan
+./scripts/create_component_plan.sh "New Component" "notes/plan/section"
 
-# Fill in
-# - Overview
-# - Inputs/Outputs
-# - Steps
-# - Success Criteria
-```text
+# 2. Edit generated file
+vim notes/plan/section/new-component/plan.md
 
-### 3. Update Parent
+# 3. Update parent's Child Plans
+vim notes/plan/section/plan.md
+# Add: - [new-component/plan.md](new-component/plan.md)
 
-```bash
-# Update parent's Child Plans section
-vim notes/plan/02-shared-library/01-core/plan.md
+# 4. Regenerate issues
+python3 scripts/regenerate_github_issues.py --section section
 
-# Add
-# - [02-tensor-ops/plan.md](02-tensor-ops/plan.md)
-```text
+# 5. Validate
+./scripts/validate_plan.sh notes/plan/section/new-component/plan.md
+```
 
-### 4. Regenerate Issues
+## Plan Structure Example
 
-```bash
-# Regenerate GitHub issues
-python3 scripts/regenerate_github_issues.py --section 02-shared-library
-```text
+```markdown
+# Component Name
 
-## Template 1 Format
+## Overview
+2-3 sentence description of what this component does.
 
-All components must follow 9-section format:
+## Parent Plan
+[../plan.md](../plan.md) or "None (top-level)"
 
-1. Title
-1. Overview
-1. Parent Plan
-1. Child Plans
-1. Inputs
-1. Outputs
-1. Steps
-1. Success Criteria
-1. Notes
+## Child Plans
+- [child1/plan.md](child1/plan.md)
+- [child2/plan.md](child2/plan.md)
+Or "None (leaf node)"
 
-See `phase-plan-generate` for complete template.
+## Inputs
+- Input 1: Description
+- Input 2: Description
+
+## Outputs
+- Output 1: Description
+- Output 2: Description
+
+## Steps
+1. Step 1: Description
+2. Step 2: Description
+3. Step 3: Description
+
+## Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+- [ ] Criterion 3
+
+## Notes
+Additional context and considerations.
+```
+
+## Error Handling
+
+| Issue | Fix |
+|-------|-----|
+| Script not found | Check script exists in `scripts/` |
+| Parent path wrong | Verify parent directory structure |
+| Template incomplete | Ensure all 9 sections present |
+| Links broken | Use relative paths (../plan.md) |
 
 ## Validation
 
 ```bash
-# Validate new plan
-./scripts/validate_plan.sh notes/plan/.../plan.md
+# Validate single plan
+./scripts/validate_plan.sh notes/plan/path/plan.md
+
+# Validate all plans in section
+./scripts/validate_plans.sh notes/plan/section/
 
 # Check hierarchy
 ./scripts/validate_plan_hierarchy.sh
-```text
+```
 
-See `plan-validate-structure` for validation details.
+## References
+
+- Template 1 format: CLAUDE.md
+- Related skill: `plan-regenerate-issues` for issue creation
+- Related skill: `plan-validate-structure` for validation

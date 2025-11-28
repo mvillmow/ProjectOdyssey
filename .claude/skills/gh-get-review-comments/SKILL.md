@@ -1,69 +1,93 @@
 ---
 name: gh-get-review-comments
-description: Retrieve all open review comments from a pull request using the GitHub API. Use when you need to see what feedback has been provided on a PR or when checking for unresolved review comments.
+description: "Retrieve all review comments from a pull request using the GitHub API. Use when you need to see what feedback has been provided on a PR."
+category: github
+mcp_fallback: github
 ---
 
-# Get PR Review Comments Skill
+# Get PR Review Comments
 
-This skill retrieves all review comments from a pull request, including both resolved and unresolved comments.
+Retrieve and analyze all review comments from a pull request.
 
 ## When to Use
 
-- User asks to get review comments (e.g., "get all comments on PR #42")
 - Checking for unresolved review feedback
-- Analyzing reviewer feedback
-- Before fixing PR issues
+- Analyzing reviewer feedback before fixing
+- Verifying all comments have been addressed
+- Getting comment IDs for replies
 
-## Usage
+## Quick Reference
 
 ```bash
-# Get all review comments for a PR
-gh api repos/{owner}/{repo}/pulls/{pr-number}/comments
+# Get all review comments
+gh api repos/OWNER/REPO/pulls/PR/comments
 
-# Get comments filtered by reviewer
-gh api repos/{owner}/{repo}/pulls/{pr-number}/comments --jq '.[] | select(.user.login == "username")'
+# Get comments with formatting
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | {id: .id, path: .path, body: .body}'
+
+# Filter by reviewer
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.user.login == "username")'
 
 # Get only unresolved comments
-gh api repos/{owner}/{repo}/pulls/{pr-number}/comments --jq '.[] | select(.in_reply_to_id == null)'
-```text
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.in_reply_to_id == null)'
+```
+
+## Workflow
+
+1. **Fetch comments**: Use API to list all comments
+2. **Parse output**: Extract IDs and feedback
+3. **Analyze feedback**: Understand what needs fixing
+4. **Plan fixes**: Decide how to address each comment
+5. **Apply fixes**: Make the requested changes
 
 ## Output Format
 
-Comments are returned with:
+Comments include:
 
-- `id` - Comment ID
-- `path` - File path
-- `line` - Line number
+- `id` - Comment ID (use for replies)
+- `path` - File where comment was made
+- `line` - Line number of comment
 - `body` - Comment text
 - `user` - Reviewer username
 - `in_reply_to_id` - Parent comment ID (null if top-level)
 
 ## Error Handling
 
-- If PR not found: Report error with PR number
-- If auth fails: Check `gh auth status`
-- If no comments: Return empty result, not an error
+| Problem | Solution |
+|---------|----------|
+| PR not found | Verify PR number |
+| Auth failure | Check `gh auth status` |
+| No comments | API returns empty array (not an error) |
+| Permission denied | Check authentication scopes |
 
-## Examples
+## Filtering Examples
 
-### Get all comments:
-
-```bash
-./scripts/fetch_comments.sh 42
-```text
-
-### Filter by reviewer:
+**Comments on specific file**:
 
 ```bash
-./scripts/fetch_comments.sh 42 reviewer-username
-```text
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.path == "src/file.mojo")'
+```
 
-### Get unresolved only:
+**Comments by specific reviewer**:
 
 ```bash
-./scripts/fetch_comments.sh 42 --unresolved
-```text
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.user.login == "reviewer")'
+```
 
-## Script
+**Only top-level comments** (not replies):
 
-Use `scripts/fetch_comments.sh` for structured comment retrieval.
+```bash
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.in_reply_to_id == null)'
+```
+
+## References
+
+- See gh-reply-review-comment skill for replying to comments
+- See gh-fix-pr-feedback skill for workflow to address feedback
+- GitHub API docs: <https://docs.github.com/en/rest/pulls/comments>

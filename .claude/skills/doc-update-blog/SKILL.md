@@ -1,18 +1,37 @@
 ---
 name: doc-update-blog
-description: Update progress blog with implementation milestones and learnings. Use after completing major milestones or phases.
+description: Update development blog with implementation milestones, learnings, and progress. Use after completing major milestones or phases.
+category: doc
 ---
 
 # Update Progress Blog Skill
 
-Document progress and learnings in blog format.
+Document progress and technical learnings in blog format.
 
 ## When to Use
 
 - Completed major milestone
 - Finished implementation phase
 - Learned something significant
-- Want to document progress
+- Major refactoring or optimization completed
+
+## Quick Reference
+
+```bash
+cat > notes/blog/progress/YYYY-MM-DD-title.md << 'EOF'
+# Progress Update: YYYY-MM-DD
+
+## What Was Accomplished
+- Item 1
+- Item 2
+
+## Technical Highlights
+- Implementation detail or optimization
+
+## Next Steps
+- Upcoming work
+EOF
+```
 
 ## Blog Structure
 
@@ -20,47 +39,69 @@ Document progress and learnings in blog format.
 # Progress Update: YYYY-MM-DD
 
 ## What Was Accomplished
-
 - Completed X
 - Implemented Y
 - Achieved Z
 
 ## Challenges Faced
-
 - Challenge 1 and how it was solved
 - Challenge 2 and lessons learned
 
 ## Technical Highlights
-
 - Interesting implementation detail
-- Performance optimization
-- Novel approach
-
-## Next Steps
-
-- Upcoming work
-- Planned improvements
+- Performance optimization achieved
 
 ## Metrics
-
 - Lines of code: X
 - Test coverage: Y%
 - Performance: Z% improvement
-```text
 
-## Location
+## Next Steps
+- Upcoming work
+- Planned improvements
+```
 
-Progress blog entries go in:
+## Blog Locations
 
-- `notes/blog/progress/YYYY-MM-DD-title.md`
-- `notes/blog/technical/topic-name.md`
+- `notes/blog/progress/YYYY-MM-DD-title.md` - Milestone updates
+- `notes/blog/technical/topic-name.md` - Technical deep dives
 
 ## Best Practices
 
-- Write regularly (weekly/milestone)
+- Write regularly (weekly or per milestone)
 - Be specific with metrics
-- Document learnings
+- Document learnings and challenges
 - Link to relevant code/issues
-- Keep concise
+- Keep entries focused (one milestone per entry)
 
-See `doc-generate-adr` for architectural decisions.
+## Content Tips
+
+### Metrics Format
+
+```
+- Lines of code: 250 (tensor operations)
+- Test coverage: 94% (up from 87%)
+- Performance: 3x speedup on matmul (cache optimization)
+```
+
+### Challenge Documentation
+
+```
+**Problem**: Matrix alignment causing segfaults
+**Solution**: Added padding to align rows to SIMD width
+**Lessons**: Always validate memory layout for SIMD operations
+```
+
+## Error Handling
+
+| Issue | Fix |
+|-------|-----|
+| No metrics | Measure before/after with specific numbers |
+| Vague accomplishments | List specific implementations or fixes |
+| Missing learnings | Add what was discovered/surprised you |
+| No next steps | Plan immediate next work |
+
+## References
+
+- Related skill: `doc-generate-adr` for architectural decisions
+- See existing blog posts in `/notes/blog/` for examples

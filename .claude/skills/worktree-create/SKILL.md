@@ -1,157 +1,74 @@
 ---
 name: worktree-create
-description: Create and manage git worktrees for parallel development across multiple branches. Use when working on multiple issues simultaneously or when isolating work environments.
+description: "Create isolated git worktrees for parallel development. Use when working on multiple issues simultaneously."
+category: worktree
 ---
 
-# Git Worktree Creation Skill
+# Worktree Create
 
-This skill creates and manages git worktrees for parallel development on multiple branches.
+Create separate working directories on different branches without stashing changes.
 
 ## When to Use
 
-- User asks to create a worktree (e.g., "create worktree for issue #42")
-- Need to work on multiple issues simultaneously
-- Want to isolate development environments
+- Starting work on a new issue
+- Need to work on multiple issues in parallel
+- Want to avoid stashing/context switching overhead
 - Testing changes across different branches
 
-## What are Worktrees
-
-Git worktrees allow multiple working directories from the same repository, each on a different branch.
-
-### Benefits
-
-- Work on multiple branches simultaneously
-- No need to stash/commit when switching contexts
-- Isolated environments for each issue
-- Faster context switching
-
-## Usage
-
-### Create Worktree
+## Quick Reference
 
 ```bash
 # Create worktree for new branch
 ./scripts/create_worktree.sh <issue-number> <description>
 
-# Example: Create worktree for issue #42
+# Example
 ./scripts/create_worktree.sh 42 "implement-tensor-ops"
-```text
+# Creates: ../ml-odyssey-42-implement-tensor-ops/
 
-This creates:
-
-- Branch: `42-implement-tensor-ops`
-- Directory: `../ml-odyssey-42-implement-tensor-ops/`
-
-### List Worktrees
-
-```bash
 # List all worktrees
 git worktree list
 
-# Example output
-# /home/user/ml-odyssey        abc1234 [main]
-# /home/user/ml-odyssey-42     def5678 [42-implement-tensor-ops]
-```text
-
-### Switch Between Worktrees
-
-```bash
-# Just cd to different worktree
+# Switch worktrees
 cd ../ml-odyssey-42-implement-tensor-ops
-```text
+```
 
-### Remove Worktree
+## Workflow
 
-```bash
-# Remove worktree when done
-./scripts/remove_worktree.sh <issue-number>
-
-# Or manually
-git worktree remove ../ml-odyssey-42-implement-tensor-ops
-```text
-
-## Directory Structure
-
-```text
-parent-directory/
-├── ml-odyssey/                    # Main worktree (main branch)
-├── ml-odyssey-42-feature/         # Worktree for issue #42
-├── ml-odyssey-73-bugfix/          # Worktree for issue #73
-└── ml-odyssey-dev-experiment/     # Worktree for experimentation
-```text
-
-## Best Practices
-
-1. **One worktree per issue** - Keep work isolated
-1. **Descriptive names** - Use issue number + description
-1. **Clean up when done** - Remove merged worktrees
-1. **Shared git directory** - All worktrees share same .git
-1. **Independent branches** - Each worktree on different branch
-
-## Workflow Example
-
-```bash
-# Create worktree for issue #42
-./scripts/create_worktree.sh 42 "add-tensor-ops"
-
-# Work in new worktree
-cd ../ml-odyssey-42-add-tensor-ops
-# Make changes, commit, push
-
-# Meanwhile, switch to another issue
-cd ../ml-odyssey-73-fix-bug
-# Work on different issue without conflicts
-
-# Return to original worktree
-cd ../ml-odyssey
-```text
+1. **Create worktree** - Run create script with issue number and description
+2. **Navigate** - `cd` to new worktree directory (parallel to main)
+3. **Work normally** - Make changes, commit, push as usual
+4. **Switch back** - `cd` to different worktree or main directory
+5. **Clean up** - Remove worktree after PR merge (see `worktree-cleanup` skill)
 
 ## Error Handling
 
-- **Branch already exists**: Use different branch name or delete old branch
-- **Directory exists**: Choose different location or remove directory
-- **Worktree already exists**: Use `git worktree list` to find it
-- **Cannot remove worktree**: Ensure no uncommitted changes
+| Error | Solution |
+|-------|----------|
+| Branch already exists | Use different branch name or delete old branch |
+| Directory exists | Choose different location or remove directory |
+| Cannot switch away | Ensure all changes are committed |
+| Permission denied | Check directory permissions |
 
-## Limitations
+## Directory Structure
 
-- **Cannot checkout same branch** in multiple worktrees
-- **Shared .git directory** - Some operations affect all worktrees
-- **Disk space** - Each worktree uses disk space
+```
+parent-directory/
+├── ml-odyssey/                    # Main worktree (main branch)
+├── ml-odyssey-42-tensor-ops/      # Issue #42 worktree
+├── ml-odyssey-73-bugfix/          # Issue #73 worktree
+└── ml-odyssey-99-experiment/      # Experimental worktree
+```
 
-## Examples
+## Best Practices
 
-### Create worktree for new feature:
+- One worktree per issue (don't share branches)
+- Use descriptive names: `<issue-number>-<description>`
+- All worktrees share same `.git` directory
+- Clean up after PR merge
+- Each branch can only be checked out in ONE worktree
 
-```bash
-./scripts/create_worktree.sh 42 "tensor-operations"
-# Creates: ../ml-odyssey-42-tensor-operations/
-```text
+## References
 
-### Create worktree with custom location:
-
-```bash
-./scripts/create_worktree.sh 42 "bugfix" "/tmp/worktrees"
-# Creates: /tmp/worktrees/ml-odyssey-42-bugfix/
-```text
-
-### List all worktrees:
-
-```bash
-git worktree list
-```text
-
-### Clean up merged worktrees:
-
-```bash
-./scripts/cleanup_worktrees.sh
-```text
-
-## Scripts Available
-
-- `scripts/create_worktree.sh` - Create new worktree
-- `scripts/remove_worktree.sh` - Remove worktree safely
-- `scripts/list_worktrees.sh` - List all worktrees
-- `scripts/cleanup_worktrees.sh` - Remove merged worktrees
-
-See [worktree-strategy.md](../../../../../../../notes/review/worktree-strategy.md) for comprehensive worktree workflow documentation.
+- [worktree-strategy.md](../../../notes/review/worktree-strategy.md)
+- `scripts/create_worktree.sh` implementation
+- See `worktree-cleanup` skill for removing worktrees

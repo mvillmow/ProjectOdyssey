@@ -1,11 +1,12 @@
 ---
 name: plan-validate-structure
 description: Validate plan directory structure and file format compliance with Template 1 (9-section format). Use before committing plan changes or creating issues.
+category: plan
 ---
 
 # Plan Structure Validation Skill
 
-Validate plan structure follows Template 1 format.
+Validate plans follow Template 1 format and hierarchy rules.
 
 ## When to Use
 
@@ -14,30 +15,7 @@ Validate plan structure follows Template 1 format.
 - Before creating GitHub issues
 - Troubleshooting plan errors
 
-## Validation Checks
-
-### 1. Structure
-
-- All 9 sections present
-- Sections in correct order
-- Proper markdown formatting
-- Links use relative paths
-
-### 2. Hierarchy
-
-- Parent/child links valid
-- No circular references
-- Correct level nesting
-- All references exist
-
-### 3. Content
-
-- Title present (# heading)
-- Overview not empty
-- Steps numbered correctly
-- Success criteria have checkboxes
-
-## Usage
+## Quick Reference
 
 ```bash
 # Validate all plans
@@ -48,53 +26,113 @@ Validate plan structure follows Template 1 format.
 
 # Validate single plan
 ./scripts/validate_plan.sh notes/plan/01-foundation/plan.md
-```text
+```
+
+## Validation Checks
+
+### 1. Template Format
+
+- All 9 sections present
+- Sections in correct order
+- Proper markdown formatting
+- No empty mandatory sections
+
+### 2. Hierarchy
+
+- Parent/child links valid
+- No circular references
+- Correct nesting level
+- All referenced files exist
+
+### 3. Content
+
+- Title present (# heading)
+- Overview is 2-3 sentences
+- Steps numbered correctly
+- Success criteria have checkboxes
+
+### 4. Links
+
+- All use relative paths
+- Links point to existing files
+- No broken references
+
+## Template 1 Sections
+
+Required sections in order:
+
+1. Title - `# Component Name`
+2. Overview - Description of component
+3. Parent Plan - Link or "None (top-level)"
+4. Child Plans - Links or "None (leaf node)"
+5. Inputs - Prerequisites
+6. Outputs - Deliverables
+7. Steps - Numbered steps
+8. Success Criteria - Checkboxes
+9. Notes - Additional context
 
 ## Common Issues
 
-### Missing Sections
+| Issue | Error | Fix |
+|-------|-------|-----|
+| Missing section | "Missing section: ## Steps" | Add missing section |
+| Wrong order | Section ordering error | Reorder sections correctly |
+| Broken link | "Broken link: ../bad.md" | Fix or create referenced file |
+| No checkboxes | "Success criteria must use - [ ]" | Convert to checkbox format |
 
-```text
-❌ Missing section: ## Success Criteria
-```text
+## Validation Workflow
 
-**Fix:** Add missing section to plan.md
+```bash
+# 1. Edit plan
+vim notes/plan/section/component/plan.md
 
-### Invalid Links
+# 2. Validate locally
+./scripts/validate_plan.sh notes/plan/section/component/plan.md
 
-```text
-❌ Broken link: [../nonexistent.md](../nonexistent.md)
-```text
+# 3. If errors, fix them
+# ... edit plan.md ...
 
-**Fix:** Correct link path or create referenced file
+# 4. Re-validate
+./scripts/validate_plan.sh notes/plan/section/component/plan.md
 
-### Wrong Format
+# 5. If passing, commit
+git add notes/plan/section/component/plan.md
+git commit -m "docs: add component plan"
+```
 
-```text
-❌ Success criteria must use checkboxes (- [ ])
-```text
+## Format Checklist
 
-### Fix:
+- [ ] Title is `# Heading` (single #)
+- [ ] Overview is 2-3 sentences
+- [ ] Parent Plan link is correct
+- [ ] Child Plans links exist
+- [ ] All 5 Inputs listed
+- [ ] All 5 Outputs listed
+- [ ] Steps are numbered 1, 2, 3...
+- [ ] Success Criteria use `- [ ]`
+- [ ] Notes section present
+- [ ] All links use relative paths
+- [ ] No broken references
+- [ ] No empty sections
 
-```markdown
-## Success Criteria
+## Error Handling
 
-- [ ] Criterion 1
-- [ ] Criterion 2
-```text
+| Error | Solution |
+|-------|----------|
+| Script not found | Verify script in `scripts/` |
+| Permission denied | Run: `chmod +x scripts/*.sh` |
+| Invalid path | Use absolute or correct relative path |
+| File not found | Create referenced file or fix path |
 
-## Template 1 Format
+## Validation Scripts
 
-Required sections:
+- `scripts/validate_all_plans.sh` - Validate everything
+- `scripts/validate_plans.sh <dir>` - Validate directory
+- `scripts/validate_plan.sh <file>` - Validate single plan
+- `scripts/validate_plan_hierarchy.sh` - Check hierarchy
 
-1. Title (# heading)
-1. Overview
-1. Parent Plan
-1. Child Plans
-1. Inputs
-1. Outputs
-1. Steps
-1. Success Criteria
-1. Notes
+## References
 
-See `phase-plan-generate` skill for complete template.
+- Template 1 format: CLAUDE.md
+- Related skill: `plan-create-component` for creating plans
+- Related skill: `plan-regenerate-issues` for issue generation

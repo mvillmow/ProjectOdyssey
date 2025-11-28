@@ -1,19 +1,56 @@
-# generate_changelog
+---
+name: generate-changelog
+description: "Create changelog from git commits. Use when preparing release notes."
+category: generation
+tier: 2
+---
 
-**Status**: Planned for Issue #511-514
-**Implementation**: Coming soon
+# Generate Changelog
 
-## Purpose
+Automatically extract commit messages and generate formatted changelog entries for release notes and version history.
 
-Generate changelog from commits
+## When to Use
 
-## Planned Capabilities
+- Preparing release notes
+- Documenting version history
+- Creating user-facing change summaries
+- Generating development notes
 
-- [ ] Core functionality to be implemented
-- [ ] Integration with agent hierarchy
-- [ ] Mojo-specific optimizations
-- [ ] Documentation and examples
+## Quick Reference
 
-## Notes
+```bash
+# Extract commits since last tag
+git log v1.0.0..HEAD --pretty=format:"%h - %s (%an) %d"
 
-This is a placeholder file. The actual skill implementation will be added in a future PR.
+# Group by conventional commit type
+git log --pretty=format:"%h %s" | grep -E "^[a-f0-9]+ (feat|fix|docs|refactor|test):"
+
+# Generate markdown changelog
+git log --reverse --pretty=format:"- %s (%h)" > CHANGELOG.md
+```
+
+## Workflow
+
+1. **Extract commits**: Get commit messages since last release
+2. **Parse convention**: Identify conventional commit types (feat, fix, docs, etc.)
+3. **Categorize changes**: Group into sections (Features, Fixes, Documentation, etc.)
+4. **Format output**: Create readable markdown or text format
+5. **Add context**: Include version number, date, and links
+
+## Output Format
+
+Changelog entry:
+
+- Version number and release date
+- Features section (new capabilities)
+- Fixes section (bug fixes)
+- Documentation section (doc updates)
+- Breaking changes (if any)
+- Contributors
+- Version links (GitHub compare)
+
+## References
+
+- See `doc-update-blog` skill for blog post updates
+- See git documentation for commit message conventions
+- See <https://keepachangelog.com/> for changelog format standards

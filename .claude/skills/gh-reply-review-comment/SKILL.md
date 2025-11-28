@@ -1,77 +1,91 @@
 ---
 name: gh-reply-review-comment
-description: Reply to PR review comments using the correct GitHub API (not gh pr comment). Use when responding to inline code review feedback or marking review comments as resolved.
+description: "Reply to PR review comments using the correct GitHub API endpoint. Use when responding to inline code review feedback (not gh pr comment)."
+category: github
+mcp_fallback: github
 ---
 
-# Reply to PR Review Comments Skill
+# Reply to Review Comments
 
-This skill provides the **correct** way to reply to PR review comments using the GitHub API, not `gh pr comment`.
-
-## Critical Information
-
-**NEVER use `gh pr comment`** - that creates a general PR comment, not a reply to review comments.
-
-### CORRECT approach
-
-Use the GitHub API to reply directly to review comment threads.
+Reply to PR review comments using the correct GitHub API.
 
 ## When to Use
 
-- Responding to review feedback
-- Marking review comments as addressed
-- Providing status updates on fixes
-- Confirming changes have been made
+- Responding to inline code review feedback
+- Addressing specific review comments
+- Confirming fixes have been implemented
+- Updating reviewers on progress
 
-## Correct API Usage
+## Critical: Two Types of Comments
 
-### Reply to a Review Comment
+**DO NOT confuse these**:
+
+1. **PR-level comments** (general timeline): `gh pr comment`
+2. **Review comment replies** (inline code): GitHub API (see below)
+
+## Quick Reference
 
 ```bash
-# Step 1: Get comment ID
-gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | {id: .id, path: .path, body: .body}'
+# 1. Get comment ID
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | {id: .id, path: .path, body: .body}'
 
-# Step 2: Reply to the comment
-gh api repos/{owner}/{repo}/pulls/{pr}/comments/{comment-id}/replies \
-  --method POST \
-  -f body="✅ Fixed - [brief description]"
+# 2. Reply to comment
+gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
+  --method POST -f body="✅ Fixed - brief description"
 
-# Step 3: Verify reply posted
-gh api repos/{owner}/{repo}/pulls/{pr}/comments --jq '.[] | select(.in_reply_to_id)'
-```text
+# 3. Verify reply posted
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.in_reply_to_id)'
+```
+
+## Workflow
+
+1. **Get comment IDs**: List all review comments
+2. **Apply fixes**: Make the requested changes
+3. **Reply to EACH comment**: Respond individually to each
+4. **Verify replies**: Check they all posted successfully
+5. **Monitor CI**: Ensure changes pass CI
 
 ## Reply Format
 
-Keep responses **SHORT and CONCISE** (1 line preferred):
+Keep responses SHORT and CONCISE (1 line preferred):
 
-### Good examples:
+**Good examples**:
 
 - `✅ Fixed - Updated conftest.py to use real repository root`
 - `✅ Fixed - Deleted test file as requested`
 - `✅ Fixed - Removed markdown linting section`
 
-### Bad examples:
+**Bad examples**:
 
-- Long explanations (unless specifically asked)
+- Long explanations
 - Defensive responses
 - Multiple paragraphs
 
-## Workflow
-
-1. **Get review comment IDs** - Use script to list all comments
-1. **Apply fixes** - Make the requested changes
-1. **Reply to EACH comment** - Individually respond to each piece of feedback
-1. **Verify replies posted** - Check that all replies succeeded
-1. **Check CI status** - Ensure changes pass CI
-
 ## Error Handling
 
-- If comment ID invalid: Check that you're using the correct ID
-- If permission denied: Check `gh auth status`
-- If reply fails: Verify PR and comment exist
+| Problem | Solution |
+|---------|----------|
+| Comment ID invalid | Verify using API call |
+| Permission denied | Check `gh auth status` |
+| Reply fails | Verify PR and comment exist |
+| Comment not found | Double-check ID format |
 
-## Scripts
+## Verification
 
-- `scripts/reply_to_comment.sh` - Reply to a specific comment
-- `scripts/reply_to_all.sh` - Reply to multiple comments at once
+After replying:
 
-See reference.md for detailed API documentation and examples.
+```bash
+# Check replies appeared
+gh api repos/OWNER/REPO/pulls/PR/comments \
+  --jq '.[] | select(.in_reply_to_id) | {id: .id, body: .body}'
+
+# Verify CI status
+gh pr checks PR
+```
+
+## References
+
+- See CLAUDE.md for complete PR workflow
+- See `/agents/guides/github-review-comments.md` for detailed guide

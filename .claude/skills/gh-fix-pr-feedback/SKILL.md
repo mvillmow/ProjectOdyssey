@@ -1,131 +1,87 @@
 ---
 name: gh-fix-pr-feedback
-description: Automatically address PR review feedback by making requested changes and replying to all review comments. Use when a PR has review comments that need to be addressed.
+description: "Address PR review feedback by making changes and replying to comments. Use when a PR has open review comments needing responses."
+category: github
+mcp_fallback: github
 ---
 
-# Fix PR Review Feedback Skill
+# Fix PR Review Feedback
 
-This skill automates the process of addressing PR review feedback by making changes and replying to comments.
+Address PR review comments by implementing fixes and responding to each comment.
 
 ## When to Use
 
-- User asks to fix PR feedback (e.g., "address review comments on PR #42")
-- PR has open review comments that need responses
-- Need to implement reviewer's requested changes
-- Ready to push fixes and notify reviewers
+- PR has open review comments requiring responses
+- Ready to implement reviewer's requested changes
+- Need to notify reviewers of fixes
+- PR is blocked on feedback
+
+## Quick Reference
+
+```bash
+# 1. Get all review comments
+gh api repos/OWNER/REPO/pulls/PR/comments --jq '.[] | {id: .id, path: .path, body: .body}'
+
+# 2. Make fixes to code
+# [edit files, test, format]
+
+# 3. Commit changes
+git add . && git commit -m "fix: address PR review feedback"
+
+# 4. Reply to EACH comment
+gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
+  --method POST -f body="✅ Fixed - [brief description]"
+
+# 5. Push and verify
+git push
+gh pr checks PR
+```
 
 ## Workflow
 
-### 1. Get Review Comments
-
-```bash
-# Fetch all review comments
-./scripts/get_feedback.sh <pr-number>
-
-# This retrieves
-# - Comment ID
-# - File path
-# - Line number
-# - Comment text
-# - Reviewer username
-```text
-
-### 2. Make Changes
-
-Address each review comment by:
-
-- Fixing code issues
-- Implementing suggestions
-- Refactoring as requested
-- Adding/updating tests
-
-### 3. Reply to Comments
-
-```bash
-# Reply to all comments after fixing
-./scripts/reply_to_feedback.sh <pr-number> "✅ Fixed - [description]"
-
-# Or reply to specific comment
-gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
-  --method POST \
-  -f body="✅ Fixed - Updated logic as suggested"
-```text
-
-### 4. Verify and Push
-
-```bash
-# Commit changes
-git add .
-git commit -m "fix: address PR review feedback"
-
-# Push changes
-git push
-
-# Verify CI passes
-./scripts/check_ci.sh <pr-number>
-```text
+1. **Fetch review comments**: List all comments requiring response
+2. **Analyze feedback**: Understand all requested changes
+3. **Make changes**: Edit code to address each comment
+4. **Run tests**: Verify fixes pass locally
+5. **Commit changes**: Create single focused commit
+6. **Reply to comments**: Reply to EACH comment individually (critical!)
+7. **Push and verify**: Push changes and check CI status
 
 ## Reply Format
 
-Always use concise, clear replies:
-
-### Good replies:
+Keep responses SHORT and CONCISE (1 line preferred):
 
 - `✅ Fixed - Updated conftest.py to use real repository root`
 - `✅ Fixed - Removed duplicate test file`
 - `✅ Fixed - Added error handling for edge case`
-- `✅ Done - Renamed variable for clarity`
 
-### Bad replies:
+## Critical: Two Types of Comments
 
-- "Done" (not specific)
-- Long explanations (keep it brief)
-- Defensive responses (be constructive)
-
-## CRITICAL: Two Types of Comments
-
-### 1. PR-level Comments
-
-General comments in PR timeline:
+**PR-level comments** (general timeline):
 
 ```bash
-gh pr comment <pr-number> --body "Response"
-```text
+gh pr comment <pr> --body "Response"
+```
 
-### 2. Review Comment Replies
-
-Inline code review comment replies:
+**Review comment replies** (inline code feedback):
 
 ```bash
 gh api repos/OWNER/REPO/pulls/PR/comments/COMMENT_ID/replies \
-  --method POST \
-  -f body="✅ Fixed - description"
-```text
+  --method POST -f body="✅ Fixed - description"
+```
 
-**DO NOT confuse these!** Use the correct API for review comments.
-
-## Complete Workflow Script
-
-```bash
-# Complete workflow to fix PR feedback
-./scripts/fix_all_feedback.sh <pr-number>
-
-# This script
-# 1. Gets all review comments
-# 2. Displays them for review
-# 3. Waits for you to make fixes
-# 4. Helps you reply to each comment
-# 5. Verifies CI status
-```text
+NEVER confuse these - use the correct API for review comments.
 
 ## Error Handling
 
-- **Comment not found**: Verify comment ID is correct
-- **Auth failure**: Check `gh auth status`
-- **CI fails after push**: Check logs and fix issues
-- **Reply not appearing**: Verify using correct API endpoint
+| Problem | Solution |
+|---------|----------|
+| Comment ID invalid | Verify ID using API |
+| Auth failure | Run `gh auth status` |
+| Reply not appearing | Check API endpoint syntax |
+| CI fails after push | Review logs and fix issues |
 
-## Verification Checklist
+## Verification
 
 After addressing feedback:
 
@@ -133,37 +89,8 @@ After addressing feedback:
 - [ ] Changes committed and pushed
 - [ ] CI checks passing
 - [ ] No new issues introduced
-- [ ] Replies are visible on GitHub
 
-## Examples
+## References
 
-### Fix all feedback:
-
-```bash
-./scripts/fix_all_feedback.sh 42
-```text
-
-### Reply to specific comment:
-
-```bash
-./scripts/reply_to_comment.sh 42 123456 "✅ Fixed - Added validation"
-```text
-
-### Check if all comments addressed:
-
-```bash
-./scripts/check_feedback_status.sh 42
-```text
-
-## Scripts Available
-
-- `scripts/get_feedback.sh` - Get all review comments
-- `scripts/reply_to_feedback.sh` - Reply to comments
-- `scripts/fix_all_feedback.sh` - Complete workflow
-- `scripts/check_feedback_status.sh` - Verify all addressed
-
-## Templates
-
-- `templates/reply_template.txt` - Standard reply format
-
-See `/agents/guides/github-review-comments.md` for detailed guide on handling review comments.
+- See CLAUDE.md for complete PR workflow
+- See `/agents/guides/github-review-comments.md` for detailed guide

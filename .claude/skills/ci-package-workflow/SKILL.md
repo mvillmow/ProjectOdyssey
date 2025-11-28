@@ -1,11 +1,12 @@
 ---
 name: ci-package-workflow
 description: Create GitHub Actions workflows for automated package building and distribution. Use in package phase to automate .mojopkg building and release creation.
+category: ci
 ---
 
 # CI Package Workflow Skill
 
-Create CI workflows for automated packaging.
+Create GitHub Actions workflows for automated packaging.
 
 ## When to Use
 
@@ -14,11 +15,10 @@ Create CI workflows for automated packaging.
 - Building distributable packages
 - Creating GitHub releases
 
-## Workflow Structure
+## Quick Reference
 
 ```yaml
 name: Build Packages
-
 on:
   push:
     tags:
@@ -30,36 +30,57 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Mojo
-        run: |
-          # Install Mojo
-
       - name: Build Packages
         run: ./scripts/build_all_packages.sh
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v1
         with:
           files: packages/*.mojopkg
-```text
+```
 
-## Common Workflows
+## Workflow Structure
 
-### 1. Build on Tag
-
-Trigger on version tags:
+### Triggers
 
 ```yaml
 on:
   push:
     tags:
-      - 'v*.*.*'
-```text
+      - 'v*.*.*'  # Semantic versioning
+  workflow_dispatch:    # Manual trigger
+```
+
+### Jobs
+
+```yaml
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Mojo
+        run: # Install Mojo environment
+      - name: Build Packages
+        run: ./scripts/build_all_packages.sh
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+```
+
+## Workflow Types
+
+### 1. Build on Tag Release
+
+Automatically build when version tag created:
+
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
 
 ### 2. Build on PR
 
-Validate packaging on PR:
+Validate packaging on pull requests:
 
 ```yaml
 on:
@@ -67,11 +88,11 @@ on:
     paths:
       - 'src/**'
       - 'scripts/build_*.sh'
-```text
+```
 
 ### 3. Manual Trigger
 
-Allow manual workflow runs:
+Allow on-demand builds with parameters:
 
 ```yaml
 on:
@@ -80,14 +101,28 @@ on:
       version:
         description: 'Version to build'
         required: true
-```text
+```
 
 ## Best Practices
 
-- Cache dependencies
-- Upload artifacts
-- Create GitHub releases
-- Tag with version
-- Test installation
+- Cache dependencies between runs
+- Upload artifacts for inspection
+- Create GitHub releases with notes
+- Test installation in clean environment
+- Tag releases with semantic versioning
+- Document build requirements
 
-See `.github/workflows/` for examples.
+## Error Handling
+
+| Error | Fix |
+|-------|-----|
+| Action version invalid | Use latest stable version (v4, not @main) |
+| Missing environment | Add setup step before build |
+| Build script not found | Verify script path and permissions |
+| Artifact not uploaded | Check build produces expected files |
+
+## References
+
+- Related skill: `ci-validate-workflow` for syntax validation
+- Workflow examples: `.github/workflows/`
+- GitHub Actions docs: <https://docs.github.com/en/actions>

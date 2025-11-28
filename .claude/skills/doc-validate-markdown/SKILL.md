@@ -1,11 +1,12 @@
 ---
 name: doc-validate-markdown
 description: Validate markdown files for formatting, links, and style compliance using markdownlint. Use before committing documentation changes.
+category: doc
 ---
 
 # Validate Markdown Skill
 
-Validate markdown files for formatting and style.
+Validate markdown formatting and style compliance.
 
 ## When to Use
 
@@ -14,48 +15,47 @@ Validate markdown files for formatting and style.
 - Creating new documentation
 - Updating existing docs
 
-## Usage
+## Quick Reference
 
 ```bash
-# Validate all markdown
+# Check all markdown
 npx markdownlint-cli2 "**/*.md"
 
-# Validate specific file
+# Check specific file
 npx markdownlint-cli2 README.md
 
 # Fix auto-fixable issues
 npx markdownlint-cli2 --fix "**/*.md"
-```text
+```
 
-## Common Issues
+## Common Issues & Fixes
 
 ### MD040: Code blocks need language
 
-````markdown
+```markdown
 # ❌ Wrong
-```text
+```
 
 code here
 
-```text
+```
+
 # ✅ Correct
 ```python
-
 code here
+```
 
-```text
-````
+```
 
-### MD031: Blank lines around code blocks
+### MD031: Blank lines around blocks
 
-````markdown
+```markdown
 # ❌ Wrong
 Text before
 ```python
-
 code
+```
 
-```text
 Text after
 
 # ✅ Correct
@@ -63,16 +63,16 @@ Text after
 Text before
 
 ```python
-
 code
+```
 
-```text
 Text after
-````
+
+```
 
 ### MD013: Line too long
 
-Break lines at 120 characters.
+Keep lines under 120 characters. Break long sentences at natural boundaries (clauses, lists).
 
 ## Configuration
 
@@ -83,6 +83,48 @@ line-length:
   line_length: 120
   code_blocks: false
   tables: false
-```text
+```
 
-See `quality-run-linters` for complete linting workflow.
+## Validation Checklist
+
+- [ ] All code blocks have language specified (` ```python `)
+- [ ] All code blocks have blank lines before and after
+- [ ] All lists have blank lines before and after
+- [ ] All headings have blank lines before and after
+- [ ] No lines exceed 120 characters
+- [ ] File ends with newline
+- [ ] No trailing whitespace
+
+## Error Handling
+
+| Error | Fix |
+|-------|-----|
+| MD040: Missing language tag | Add language: ` ```mojo ` |
+| MD031: Missing blank lines | Add blank line before/after block |
+| MD013: Line too long | Break line at 120 characters |
+| MD022: Heading spacing | Add blank line before/after heading |
+
+## Workflow
+
+```bash
+# 1. Validate your changes
+npx markdownlint-cli2 "**/*.md"
+
+# 2. If issues, fix auto-fixable ones
+npx markdownlint-cli2 --fix "**/*.md"
+
+# 3. Manually fix remaining issues
+
+# 4. Verify no errors
+npx markdownlint-cli2 "**/*.md"
+
+# 5. Commit
+git add .
+git commit -m "docs: update documentation"
+```
+
+## References
+
+- Related skill: `quality-run-linters` for complete linting
+- Configuration: `.markdownlint.yaml`
+- Markdown standards: CLAUDE.md

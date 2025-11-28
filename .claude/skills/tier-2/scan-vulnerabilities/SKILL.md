@@ -1,19 +1,60 @@
-# scan_vulnerabilities
+---
+name: scan-vulnerabilities
+description: "Detect security vulnerabilities in code and dependencies. Use when auditing security."
+category: security
+tier: 2
+---
 
-**Status**: Planned for Issue #511-514
-**Implementation**: Coming soon
+# Scan Vulnerabilities
 
-## Purpose
+Systematically scan code for security vulnerabilities including unsafe patterns, known CVEs, and potential exploits.
 
-Scan for security vulnerabilities
+## When to Use
 
-## Planned Capabilities
+- Regular security audits
+- Before releasing code to production
+- When updating dependencies
+- In CI/CD security checks
 
-- [ ] Core functionality to be implemented
-- [ ] Integration with agent hierarchy
-- [ ] Mojo-specific optimizations
-- [ ] Documentation and examples
+## Quick Reference
 
-## Notes
+```bash
+# Python security scanning
+pip install bandit safety
 
-This is a placeholder file. The actual skill implementation will be added in a future PR.
+# Scan code for security issues
+bandit -r . -ll
+
+# Check for known vulnerabilities in dependencies
+safety check
+
+# Advanced: SAST scanning
+python3 -m pip install semgrep
+semgrep --config=p/security-audit --json .
+```
+
+## Workflow
+
+1. **Scan code for issues**: Identify unsafe patterns (SQL injection, exec, hardcoded secrets)
+2. **Check dependencies**: Scan for known vulnerabilities (CVEs)
+3. **Review findings**: Analyze severity and exploitability
+4. **Prioritize fixes**: Address critical/high severity issues first
+5. **Document fixes**: Record how vulnerabilities were resolved
+
+## Output Format
+
+Security scan report:
+
+- Vulnerability type (SQL injection, hardcoded secret, etc.)
+- Location (file, line number)
+- Severity (critical/high/medium/low)
+- CVSS score (if applicable)
+- Vulnerable dependency version (if applicable)
+- Recommended fix
+- Fixed version (if dependency)
+
+## References
+
+- See CLAUDE.md > Security standards for security guidelines
+- See `quality-security-scan` skill for automated CI scanning
+- OWASP Top 10 for common vulnerability categories

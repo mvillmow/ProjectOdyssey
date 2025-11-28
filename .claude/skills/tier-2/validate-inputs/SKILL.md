@@ -1,19 +1,59 @@
-# validate_inputs
+---
+name: validate-inputs
+description: "Check function inputs for correctness and safety. Use when implementing defensive programming."
+category: analysis
+tier: 2
+---
 
-**Status**: Planned for Issue #511-514
-**Implementation**: Coming soon
+# Validate Inputs
 
-## Purpose
+Implement input validation to ensure functions receive correct data types, shapes, ranges, and formats.
 
-Validate function inputs
+## When to Use
 
-## Planned Capabilities
+- Adding defensive checks to functions
+- Improving error messages for bad inputs
+- Ensuring tensor shape/dtype correctness
+- Validating configuration parameters
 
-- [ ] Core functionality to be implemented
-- [ ] Integration with agent hierarchy
-- [ ] Mojo-specific optimizations
-- [ ] Documentation and examples
+## Quick Reference
 
-## Notes
+```python
+# Input validation pattern
+def validate_tensor(tensor):
+    assert tensor is not None, "Tensor cannot be None"
+    assert isinstance(tensor, ExTensor), "Must be ExTensor type"
+    assert len(tensor.shape) > 0, "Tensor shape cannot be empty"
+    assert tensor.dtype() in [DType.float32, DType.float64], "Invalid dtype"
+    return True
 
-This is a placeholder file. The actual skill implementation will be added in a future PR.
+# Usage with context
+try:
+    validate_tensor(input_data)
+except AssertionError as e:
+    raise ValueError(f"Invalid input: {e}")
+```
+
+## Workflow
+
+1. **Document expectations**: Specify types, shapes, ranges for inputs
+2. **Implement checks**: Add validation before processing
+3. **Provide error messages**: Clear messages for validation failures
+4. **Test edge cases**: Verify validation catches invalid inputs
+5. **Document behavior**: Note what validation is performed
+
+## Output Format
+
+Input validation specification:
+
+- Parameter name and type
+- Constraints (shape, range, valid values)
+- Error handling strategy
+- Error messages returned
+- Test cases for invalid inputs
+
+## References
+
+- See `generate-tests` skill for validation test cases
+- See CLAUDE.md > Defensive Programming for best practices
+- See `scan-vulnerabilities` skill for security validation

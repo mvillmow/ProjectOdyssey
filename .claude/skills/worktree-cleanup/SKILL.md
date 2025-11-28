@@ -1,72 +1,69 @@
 ---
 name: worktree-cleanup
-description: Clean up merged or stale git worktrees to free disk space and maintain organization. Use after merging PRs or when worktrees are no longer needed.
+description: "Remove merged or stale git worktrees. Use after PRs are merged or when worktrees are no longer needed."
+category: worktree
 ---
 
-# Worktree Cleanup Skill
+# Worktree Cleanup
 
-Clean up git worktrees after work is complete.
+Remove worktrees safely to free disk space and maintain organization.
 
 ## When to Use
 
-- After PR is merged
+- PR has been merged
 - Worktree no longer needed
 - Free disk space
 - Maintain clean worktree list
 
-## Usage
-
-### Remove Single Worktree
+## Quick Reference
 
 ```bash
-# Remove specific worktree
+# Remove single worktree by issue number
 ./scripts/remove_worktree.sh 42
 
 # Or by path
 git worktree remove ../ml-odyssey-42-feature
-```text
 
-### Clean Up Merged Worktrees
-
-```bash
-# Remove all merged worktrees
+# Auto-clean all merged worktrees
 ./scripts/cleanup_merged_worktrees.sh
 
-# This
-# 1. Checks which branches are merged
-# 2. Finds worktrees for merged branches
-# 3. Removes them (with confirmation)
-```text
-
-### Force Remove
-
-```bash
-# Force remove (if has uncommitted changes)
+# Force remove (with uncommitted changes)
 git worktree remove --force ../ml-odyssey-42-feature
-```text
+```
+
+## Workflow
+
+1. **Verify state** - Check no uncommitted changes: `cd ../ml-odyssey-42 && git status`
+2. **Switch away** - Don't be in the worktree you're removing
+3. **Remove worktree** - Use removal script or git command
+4. **Verify** - Run `git worktree list` to confirm removal
+5. **Delete branch** - Optionally delete remote branch after cleanup
 
 ## Safety Checks
 
-Before removing, verify:
+Before removing a worktree:
 
-- Branch is merged or no longer needed
-- No uncommitted changes (or backed up)
-- Not currently in worktree
+- Branch is merged to main (check GitHub PR status)
+- No uncommitted changes (run `git status` in worktree)
+- Not currently using the worktree (be in different directory)
+- PR is actually merged (check "Development" section on issue)
 
-```bash
-# Check status before removing
-cd ../ml-odyssey-42-feature
-git status
-cd ../ml-odyssey
+## Error Handling
 
-# Then remove
-git worktree remove ../ml-odyssey-42-feature
-```text
+| Error | Solution |
+|-------|----------|
+| "Worktree has uncommitted changes" | Commit/stash changes or use `--force` |
+| "Not a worktree" | Verify path with `git worktree list` |
+| "Worktree is main" | Don't remove primary worktree |
+| Directory still exists | Manually remove with `rm -rf` after `git worktree remove` |
 
-## Scripts
+## Scripts Available
 
-- `scripts/cleanup_merged_worktrees.sh` - Auto-clean merged
-- `scripts/list_stale_worktrees.sh` - Find old worktrees
 - `scripts/remove_worktree.sh` - Remove single worktree
+- `scripts/cleanup_merged_worktrees.sh` - Auto-clean merged worktrees
+- `scripts/list_stale_worktrees.sh` - Find old/stale worktrees
 
-See `worktree-create` skill for creating worktrees.
+## References
+
+- See `worktree-create` skill for creating worktrees
+- [worktree-strategy.md](../../../notes/review/worktree-strategy.md)

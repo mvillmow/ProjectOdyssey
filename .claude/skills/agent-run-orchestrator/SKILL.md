@@ -1,28 +1,56 @@
 ---
 name: agent-run-orchestrator
-description: Run section orchestrators to coordinate multi-component development workflows. Use when starting work on a section or coordinating parallel tasks.
+description: "Run section orchestrators to coordinate multi-component workflows. Use when starting work on a section."
+category: agent
 ---
 
-# Run Orchestrator Skill
+# Run Orchestrator
 
-Run section orchestrators to coordinate complex workflows.
+Invoke section orchestrators to coordinate complex development workflows.
 
 ## When to Use
 
 - Starting work on new section
-- Coordinating multiple components
-- Managing parallel development
-- Need hierarchical coordination
+- Coordinating multiple parallel components
+- Managing complex workflows
+- Need hierarchical task coordination
+
+## Quick Reference
+
+```bash
+# Run orchestrator for section
+./scripts/run_orchestrator.sh foundation
+
+# Monitor section progress
+./scripts/monitor_section_progress.sh
+```
+
+## Orchestrator Workflow
+
+1. **Review Plans** - Understand section specifications
+2. **Break Down** - Divide into manageable components
+3. **Delegate** - Assign to appropriate design/specialist agents
+4. **Monitor** - Track progress and blockers
+5. **Integrate** - Coordinate results
+6. **Escalate** - Handle blocking issues
+
+## Hierarchy
+
+```
+Section Orchestrator (L1)
+  ↓ delegates to
+Module Design Agent (L2)
+  ↓ delegates to
+Component Specialist (L3)
+  ↓ delegates to
+Implementation Engineer (L4)
+```
 
 ## Orchestrator Levels
 
-### Level 0: Chief Architect
+**L0**: Chief Architect - Strategic architecture decisions
 
-Top-level strategic decisions and architecture.
-
-### Level 1: Section Orchestrators
-
-Coordinate entire sections:
+**L1**: Section Orchestrators
 
 - Foundation Orchestrator
 - Shared Library Orchestrator
@@ -31,50 +59,14 @@ Coordinate entire sections:
 - CI/CD Orchestrator
 - Agentic Workflows Orchestrator
 
-### Level 2: Design/Module Orchestrators
+**L2**: Module Design Agents - Coordinate modules within sections
 
-Coordinate modules within sections.
+## Agent Hierarchy Context
 
-## Usage
+Orchestrators are the coordination hub between high-level planning and implementation teams. They decompose work from section level to component level, enabling parallel development.
 
-### Start Section Work
+## References
 
-```bash
-# Invoke orchestrator for section
-./scripts/run_orchestrator.sh foundation
-
-# This
-# 1. Loads orchestrator configuration
-# 2. Reviews section plan
-# 3. Breaks into components
-# 4. Delegates to design agents
-# 5. Monitors progress
-```text
-
-### Orchestrator Workflow
-
-1. **Review Plans** - Read section specifications
-1. **Break Down** - Divide into manageable components
-1. **Delegate** - Assign to appropriate agents
-1. **Monitor** - Track progress
-1. **Integrate** - Coordinate results
-1. **Escalate** - Handle blockers
-
-## Delegation Pattern
-
-```text
-Section Orchestrator (L1)
-  ↓ delegates to
-Module Design Agent (L2)
-  ↓ delegates to
-Component Specialist (L3)
-  ↓ delegates to
-Implementation Engineer (L4)
-```text
-
-## Scripts
-
-- `scripts/run_orchestrator.sh` - Run orchestrator
-- `scripts/monitor_section_progress.sh` - Monitor progress
-
-See `/agents/hierarchy.md` for complete orchestrator structure.
+- `/agents/hierarchy.md` - Complete orchestrator structure
+- `/agents/delegation-rules.md` - Coordination patterns
+- `.claude/agents/` - Orchestrator configurations

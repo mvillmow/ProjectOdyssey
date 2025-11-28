@@ -1,111 +1,63 @@
 ---
 name: ci-run-precommit
 description: Run pre-commit hooks locally or in CI to validate code quality before committing. Use to ensure commits meet quality standards and CI will pass.
+category: ci
 ---
 
 # Run Pre-commit Hooks Skill
 
-This skill runs pre-commit hooks to validate code quality before committing.
+Validate code quality with pre-commit hooks before committing.
 
 ## When to Use
 
-- User asks to run pre-commit (e.g., "run pre-commit hooks")
 - Before committing code
 - Testing if CI will pass
 - After making code changes
 - Troubleshooting commit failures
 
-## Pre-commit Hooks
-
-Configured in `.pre-commit-config.yaml`:
-
-### 1. Mojo Format
-
-```yaml
-- id: mojo-format
-  name: Mojo Format
-  entry: mojo format
-  language: system
-  files: \.(mojo|🔥)$
-```text
-
-### 2. Trailing Whitespace
-
-```yaml
-- id: trailing-whitespace
-  name: Trim Trailing Whitespace
-```text
-
-### 3. End of File Fixer
-
-```yaml
-- id: end-of-file-fixer
-  name: Fix End of Files
-```text
-
-### 4. YAML Check
-
-```yaml
-- id: check-yaml
-  name: Check YAML
-```text
-
-### 5. Large Files Check
-
-```yaml
-- id: check-added-large-files
-  name: Check for Large Files
-  args: ['--maxkb=1000']
-```text
-
-### 6. Mixed Line Ending
-
-```yaml
-- id: mixed-line-ending
-  name: Fix Mixed Line Endings
-```text
-
-### 7. Markdownlint (Disabled Currently)
-
-```yaml
-# Will enable after fixing existing files
-- id: markdownlint-cli2
-  name: Markdown Lint
-```text
-
-## Usage
-
-### Run All Hooks
+## Quick Reference
 
 ```bash
-# Run all hooks on all files
-pre-commit run --all-files
-
-# Run all hooks on staged files only
-pre-commit run
-
-# Automatically runs on commit
-git commit -m "message"
-```text
-
-### Run Specific Hook
-
-```bash
-# Run specific hook
-pre-commit run trailing-whitespace --all-files
-
-# Run on specific file
-pre-commit run --files src/tensor.mojo
-```text
-
-### Install Hooks
-
-```bash
-# Install pre-commit hooks (one-time setup)
+# Install hooks (one-time)
 pre-commit install
 
-# Now hooks run automatically on git commit
-```text
+# Run on all files
+pre-commit run --all-files
+
+# Run on staged files
+pre-commit run
+
+# Skip hooks (emergency only)
+git commit --no-verify
+```
+
+## Configured Hooks
+
+| Hook | Purpose | Auto-Fix |
+|------|---------|----------|
+| `mojo-format` | Format Mojo code | Yes |
+| `trailing-whitespace` | Remove trailing spaces | Yes |
+| `end-of-file-fixer` | Add final newline | Yes |
+| `check-yaml` | Validate YAML syntax | No |
+| `check-added-large-files` | Prevent large files | No |
+| `mixed-line-ending` | Fix line endings | Yes |
+
+## Workflow
+
+```bash
+# 1. Make changes
+# ... edit files ...
+
+# 2. Run hooks on staged files
+pre-commit run
+
+# 3. If hooks auto-fixed files
+git add .              # Stage fixed files
+git commit -m "feat: feature name"
+
+# 4. If hooks reported errors
+# Fix issues manually, then re-commit
+```
 
 ## Hook Behavior
 
@@ -113,40 +65,54 @@ pre-commit install
 
 These hooks fix issues automatically:
 
-- `trailing-whitespace` - Removes trailing spaces
-- `end-of-file-fixer` - Adds final newline
-- `mixed-line-ending` - Fixes line endings
-- `mojo-format` - Formats Mojo code
-
-### Workflow when auto-fix runs:
-
 ```bash
 git commit -m "message"
-# Hooks run, fix files, commit aborts
+# Hooks run, fix files, abort commit
 # Files are fixed but not staged
 
-git add .  # Stage the fixes
+git add .              # Stage fixes
 git commit -m "message"  # Commit again
-```text
+```
 
 ### Check-Only Hooks
 
-These hooks check but don't fix:
+These hooks report but don't fix:
 
-- `check-yaml` - Reports YAML errors
-- `check-added-large-files` - Reports large files
+```bash
+git commit -m "message"
+# check-yaml fails - fix manually
 
-**If these fail:** Fix manually and re-commit
+# Fix YAML syntax
+git add .
+git commit -m "message"
+```
+
+## Common Issues
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| "Trailing whitespace" | Spaces at line end | Run hooks again (auto-fixed) |
+| "Check YAML failed" | Invalid YAML syntax | Fix YAML manually |
+| "Large file rejected" | File > 1MB | Use Git LFS or remove file |
+| "Mixed line ending" | Inconsistent line endings | Run hooks again (auto-fixed) |
+
+## Setup
+
+```bash
+# Install pre-commit (first time)
+pip install pre-commit
+
+# Install hooks (first time)
+pre-commit install
+
+# Hooks now run automatically on commit
+```
 
 ## CI Integration
 
-Pre-commit runs in CI:
+Pre-commit runs in GitHub Actions:
 
 ```yaml
-name: Pre-commit Checks
-
-on: [push, pull_request]
-
 jobs:
   pre-commit:
     runs-on: ubuntu-latest
@@ -155,161 +121,35 @@ jobs:
       - uses: actions/setup-python@v5
       - run: pip install pre-commit
       - run: pre-commit run --all-files
-```text
+```
 
-## Common Issues
-
-### Hooks Fail on Commit
+## Advanced Usage
 
 ```bash
-$ git commit -m "message"
-Trim Trailing Whitespace....Failed
-- hook id: trailing-whitespace
-- exit code: 1
-- files were modified by this hook
+# Run specific hook only
+pre-commit run trailing-whitespace --all-files
 
-Files were modified by this hook. Additional output:
+# Run on specific file
+pre-commit run --files src/tensor.mojo
 
-Fixing file.md
-```text
-
-### Fix:
-
-```bash
-# Files were fixed, just stage and re-commit
-git add .
-git commit -m "message"
-```text
-
-### YAML Validation Fails
-
-```text
-Check YAML...Failed
-- hook id: check-yaml
-- exit code: 1
-
-Syntax error in .github/workflows/test.yml
-```text
-
-**Fix:** Correct YAML syntax
-
-### Large File Detected
-
-```text
-Check for Large Files...Failed
-- hook id: check-added-large-files
-- exit code: 1
-
-large_file.bin (1500 KB) exceeds 1000 KB
-```text
-
-### Fix:
-
-- Don't commit large files
-- Use Git LFS if needed
-- Add to `.gitignore`
-
-## Skipping Hooks
-
-### Only when necessary:
-
-```bash
-# Skip all hooks (not recommended)
-git commit --no-verify -m "message"
-
-# Skip specific hook
-SKIP=trailing-whitespace git commit -m "message"
-```text
-
-### When to skip:
-
-- Emergency hotfix
-- Hook has bug
-- False positive
-
-**Don't skip** to bypass quality checks!
-
-## Examples
-
-### Run all hooks:
-
-```bash
-pre-commit run --all-files
-```text
-
-### Run before committing:
-
-```bash
-# Check if commit will pass
-pre-commit run
-
-# If passing, commit
-git commit -m "message"
-```text
-
-### Install hooks:
-
-```bash
-pre-commit install
-```text
-
-### Update hooks:
-
-```bash
+# Update hook versions
 pre-commit autoupdate
-```text
 
-## Scripts Available
+# Skip all hooks (emergency only)
+git commit --no-verify -m "message"
+```
 
-- `scripts/run_precommit.sh` - Run all hooks
-- `scripts/install_precommit.sh` - Install hooks
-- `scripts/update_precommit.sh` - Update hook versions
+## Error Handling
 
-## Best Practices
+| Issue | Solution |
+|-------|----------|
+| Hooks not installed | Run `pre-commit install` |
+| Hooks not running | Verify `.pre-commit-config.yaml` exists |
+| All files modified after hook | Stage fixes and re-commit |
+| Need to skip hook | Use `SKIP=hook-id git commit` |
 
-1. **Install hooks** - Run `pre-commit install` once
-1. **Let hooks fix** - Don't bypass, let them auto-fix
-1. **Run before push** - Verify CI will pass
-1. **Don't skip** - Only skip in emergencies
-1. **Keep updated** - Run `pre-commit autoupdate` periodically
+## References
 
-## Workflow Integration
-
-### First Time Setup
-
-```bash
-# Install pre-commit
-pip install pre-commit
-
-# Install hooks
-pre-commit install
-
-# Test
-pre-commit run --all-files
-```text
-
-### Daily Workflow
-
-```bash
-# Make changes
-#
-
-# Commit (hooks run automatically)
-git commit -m "feat: new feature"
-
-# If hooks fix files
-git add .
-git commit -m "feat: new feature"
-```text
-
-### Before PR
-
-```bash
-# Verify all files pass
-pre-commit run --all-files
-
-# If passing, create PR
-gh pr create --issue 42
-```text
-
-See `.pre-commit-config.yaml` for complete hook configuration.
+- Configuration: `.pre-commit-config.yaml`
+- Related skill: `quality-fix-formatting` for manual fixes
+- Related skill: `quality-run-linters` for all linters
