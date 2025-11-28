@@ -17,6 +17,7 @@ fn test_sgd_step_simple_basic() raises:
     print("Testing basic SGD step...")
 
     var shape = List[Int]()
+    shape.append(3)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -30,7 +31,7 @@ fn test_sgd_step_simple_basic() raises:
     gradients._set_float64(1, 0.2)
     gradients._set_float64(2, 0.3)
 
-    varlearning_rate = 0.1
+    var learning_rate = 0.1
 
     # Update: params = params - lr * gradients
     # Expected: [1 - 0.1*0.1, 2 - 0.1*0.2, 3 - 0.1*0.3]
@@ -38,9 +39,9 @@ fn test_sgd_step_simple_basic() raises:
 
     var updated = sgd_step_simple(params, gradients, learning_rate)
 
-    varp0 = updated._get_float64(0)
-    varp1 = updated._get_float64(1)
-    varp2 = updated._get_float64(2)
+    var p0 = updated._get_float64(0)
+    var p1 = updated._get_float64(1)
+    var p2 = updated._get_float64(2)
 
     print("  Original params: [1.0, 2.0, 3.0]")
     print("  Gradients: [0.1, 0.2, 0.3]")
@@ -63,6 +64,7 @@ fn test_sgd_step_zero_gradients() raises:
     print("Testing SGD with zero gradients...")
 
     var shape = List[Int]()
+    shape.append(3)
     var params = ExTensor(shape, DType.float32)
     var gradients = zeros(shape, DType.float32)
 
@@ -71,14 +73,14 @@ fn test_sgd_step_zero_gradients() raises:
     params._set_float64(1, 2.0)
     params._set_float64(2, 3.0)
 
-    varlearning_rate = 0.1
+    var learning_rate = 0.1
 
     # With zero gradients, params should not change
     var updated = sgd_step_simple(params, gradients, learning_rate)
 
-    varp0 = updated._get_float64(0)
-    varp1 = updated._get_float64(1)
-    varp2 = updated._get_float64(2)
+    var p0 = updated._get_float64(0)
+    var p1 = updated._get_float64(1)
+    var p2 = updated._get_float64(2)
 
     print("  Original params: [1.0, 2.0, 3.0]")
     print("  Zero gradients applied")
@@ -100,6 +102,7 @@ fn test_sgd_step_large_learning_rate() raises:
     print("Testing SGD with large learning rate...")
 
     var shape = List[Int]()
+    shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -111,13 +114,13 @@ fn test_sgd_step_large_learning_rate() raises:
     gradients._set_float64(0, 1.0)
     gradients._set_float64(1, 2.0)
 
-    varlearning_rate = 5.0  # Large LR
+    var learning_rate = 5.0  # Large LR
 
     # Update: [10 - 5*1, 20 - 5*2] = [5, 10]
     var updated = sgd_step_simple(params, gradients, learning_rate)
 
-    varp0 = updated._get_float64(0)
-    varp1 = updated._get_float64(1)
+    var p0 = updated._get_float64(0)
+    var p1 = updated._get_float64(1)
 
     print("  Large learning rate:", learning_rate)
     print("  Updated params: [", p0, ",", p1, "]")
@@ -135,6 +138,7 @@ fn test_sgd_step_negative_gradients() raises:
     print("Testing SGD with negative gradients...")
 
     var shape = List[Int]()
+    shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
 
@@ -146,13 +150,13 @@ fn test_sgd_step_negative_gradients() raises:
     gradients._set_float64(0, -1.0)
     gradients._set_float64(1, -2.0)
 
-    varlearning_rate = 0.1
+    var learning_rate = 0.1
 
     # Update: [1 - 0.1*(-1), 2 - 0.1*(-2)] = [1.1, 2.2]
     var updated = sgd_step_simple(params, gradients, learning_rate)
 
-    varp0 = updated._get_float64(0)
-    varp1 = updated._get_float64(1)
+    var p0 = updated._get_float64(0)
+    var p1 = updated._get_float64(1)
 
     print("  Negative gradients: [-1.0, -2.0]")
     print("  Updated params: [", p0, ",", p1, "]")
@@ -171,6 +175,7 @@ fn test_sgd_step_with_weight_decay() raises:
     print("Testing SGD with weight decay...")
 
     var shape = List[Int]()
+    shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)  # Not used, but required
@@ -183,18 +188,19 @@ fn test_sgd_step_with_weight_decay() raises:
     gradients._set_float64(0, 0.0)
     gradients._set_float64(1, 0.0)
 
-    varlearning_rate = 0.1
-    varmomentum = 0.0
-    varweight_decay = 0.01
+    var learning_rate = 0.1
+    var momentum = 0.0
+    var weight_decay = 0.01
 
     # With weight decay: effective_grad = grad + weight_decay * params
     # = [0 + 0.01*1, 0 + 0.01*2] = [0.01, 0.02]
     # Update: [1 - 0.1*0.01, 2 - 0.1*0.02] = [0.999, 1.998]
 
-    var updated = sgd_step(params, gradients, learning_rate, momentum, weight_decay, velocity)
+    var result = sgd_step(params, gradients, velocity, learning_rate, momentum, weight_decay)
+    var updated = result[0]
 
-    varp0 = updated._get_float64(0)
-    varp1 = updated._get_float64(1)
+    var p0 = updated._get_float64(0)
+    var p1 = updated._get_float64(1)
 
     print("  Weight decay:", weight_decay)
     print("  Updated params: [", p0, ",", p1, "]")
@@ -213,12 +219,13 @@ fn test_sgd_multi_step_convergence() raises:
     print("Testing multi-step SGD convergence...")
 
     var shape = List[Int]()
+    shape.append(1)
     var params = ExTensor(shape, DType.float32)
 
     # Start at params = 10, try to reach target = 0
     params._set_float64(0, 10.0)
-    vartarget = 0.0
-    varlearning_rate = 0.1
+    var target = 0.0
+    var learning_rate = 0.1
 
     print("  Initial param:", params._get_float64(0))
 
@@ -226,8 +233,8 @@ fn test_sgd_multi_step_convergence() raises:
     for step in range(20):
         # Gradient = 2 * (params - target) (MSE gradient)
         var current = params._get_float64(0)
-        varerror = current - target
-        vargrad = 2.0 * error
+        var error = current - target
+        var grad = 2.0 * error
 
         var gradients = ExTensor(shape, DType.float32)
         gradients._set_float64(0, grad)
@@ -235,7 +242,7 @@ fn test_sgd_multi_step_convergence() raises:
         # Update
         params = sgd_step_simple(params, gradients, learning_rate)
 
-    varfinal_param = params._get_float64(0)
+    var final_param = params._get_float64(0)
     print("  Final param after 20 steps:", final_param)
 
     # Should be much closer to 0
