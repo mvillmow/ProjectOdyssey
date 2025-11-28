@@ -119,17 +119,11 @@ fn test_early_stopping_min_delta() raises:
     _ = early_stop.on_epoch_end(state)
     assert_false(early_stop.should_stop())
 
-    # Another small non-improvement
+    # Another small non-improvement - Patience exhausted (2 epochs without significant improvement)
     state.epoch = 3
     state.metrics["val_loss"] = 0.496
     _ = early_stop.on_epoch_end(state)
-    assert_false(early_stop.should_stop())
-
-    # Patience exhausted (2 epochs without significant improvement)
-    state.epoch = 4
-    state.metrics["val_loss"] = 0.496
-    _ = early_stop.on_epoch_end(state)
-    assert_true(early_stop.should_stop())
+    assert_true(early_stop.should_stop())  # wait_count=2 >= patience=2
 
 
 fn test_early_stopping_min_delta_large_improvement() raises:
@@ -150,14 +144,17 @@ fn test_early_stopping_min_delta_large_improvement() raises:
     assert_false(early_stop.should_stop())
     assert_equal(early_stop.wait_count, 0)  # Reset
 
-    # Can continue for another patience epochs
+    # No improvement for 1 epoch - within patience
     state.epoch = 3
     state.metrics["val_loss"] = 0.49
     _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())  # wait_count=1 < patience=2
+
+    # No improvement for 2 epochs - patience exhausted
     state.epoch = 4
     state.metrics["val_loss"] = 0.49
     _ = early_stop.on_epoch_end(state)
-    assert_false(early_stop.should_stop())
+    assert_true(early_stop.should_stop())  # wait_count=2 >= patience=2
 
 
 # ============================================================================
@@ -183,23 +180,20 @@ fn test_early_stopping_monitor_accuracy() raises:
     assert_false(early_stop.should_stop())
     assert_equal(early_stop.wait_count, 0)
 
-    # No improvement: 0.5 < 0.6
+    # No improvement: 0.5 < 0.6 (epochs 3, 4)
     state.epoch = 3
     state.metrics["val_accuracy"] = 0.5
     _ = early_stop.on_epoch_end(state)
     state.epoch = 4
     state.metrics["val_accuracy"] = 0.5
     _ = early_stop.on_epoch_end(state)
+    assert_false(early_stop.should_stop())  # wait_count=2 < patience=3
+
+    # Patience exhausted after 3 epochs without improvement
     state.epoch = 5
     state.metrics["val_accuracy"] = 0.5
     _ = early_stop.on_epoch_end(state)
-    assert_false(early_stop.should_stop())
-
-    # Patience exhausted
-    state.epoch = 6
-    state.metrics["val_accuracy"] = 0.5
-    _ = early_stop.on_epoch_end(state)
-    assert_true(early_stop.should_stop())
+    assert_true(early_stop.should_stop())  # wait_count=3 >= patience=3
 
 
 fn test_early_stopping_mode_min() raises:
