@@ -164,7 +164,7 @@ fn test_multiple_metric_comparison() raises:
 
     var throughput_baseline = 1000.0
     var throughput_current_good = 1100.0
-    var throughput_current_bad = 850.0
+    var _ = 850.0  # throughput_current_bad - intentionally unused
 
     # Duration: lower is better (negative % change is good)
     var duration_pct_good = ((duration_current_good - duration_baseline) / duration_baseline) * 100.0
