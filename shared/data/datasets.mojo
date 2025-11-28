@@ -98,8 +98,9 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
                 + String(self._len)
             )
 
-        # Return views into the data
-        return (self.data[idx], self.labels[idx])
+        # Return slices into the data
+        # For 1D tensors with shape [N], slice(idx, idx+1) gives shape [1]
+        return (self.data.slice(idx, idx + 1, axis=0), self.labels.slice(idx, idx + 1, axis=0))
 
 
 # ============================================================================

@@ -12,6 +12,7 @@ from tests.shared.conftest import (
 )
 from shared.data.datasets import TensorDataset
 from shared.data.loaders import BatchLoader
+from shared.data.samplers import SequentialSampler, RandomSampler
 from shared.core.extensor import ExTensor
 
 
@@ -35,7 +36,9 @@ fn test_batch_loader_fixed_batch_size() raises:
         labels_list.append(i)
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     # Loader should calculate correct number of batches
     assert_equal(loader.__len__(), 4)  # 100 / 32 = 3.125 -> 4 batches
@@ -56,7 +59,9 @@ fn test_batch_loader_perfect_division() raises:
         labels_list.append(i)
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     assert_equal(loader.__len__(), 3)  # 96 / 32 = 3 exactly
 
@@ -88,7 +93,9 @@ fn test_batch_loader_partial_last_batch() raises:
     var dataset = TensorDataset(data^, labels^)
 
     # Without drop_last
-    var loader = BatchLoader(dataset.copy(), batch_size=32, shuffle=False, drop_last=False)
+    var dataset_len = dataset.__len__()
+    var sampler1 = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset.copy(), sampler1^, batch_size=32, shuffle=False, drop_last=False)
     assert_equal(loader.__len__(), 4)  # Includes partial batch
 
     # With drop_last
@@ -111,7 +118,9 @@ fn test_batch_loader_partial_last_batch() raises:
         labels2._set_int32(i, Int32(labels_list2[i]))
 
     var dataset2 = TensorDataset(data2^, labels2^)
-    var loader2 = BatchLoader(dataset2^, batch_size=32, shuffle=False, drop_last=True)
+    var dataset2_len = dataset2.__len__()
+    var sampler2 = SequentialSampler(dataset2_len)
+    var loader2 = BatchLoader(dataset2^, sampler2^, batch_size=32, shuffle=False, drop_last=True)
     assert_equal(loader2.__len__(), 3)  # Drops partial batch
 
 
@@ -140,7 +149,9 @@ fn test_batch_loader_tensor_stacking() raises:
         labels._set_int32(i, Int32(labels_list[i]))
 
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     # Test that loader was created successfully
     assert_equal(loader.__len__(), 4)
@@ -174,7 +185,9 @@ fn test_batch_loader_no_shuffle() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     # With shuffle=False, loader should use SequentialSampler
     assert_equal(loader.__len__(), 4)
@@ -203,7 +216,9 @@ fn test_batch_loader_shuffle() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
+    var dataset_len = dataset.__len__()
+    var sampler = RandomSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=True)
 
     # With shuffle=True, loader should use RandomSampler
     assert_equal(loader.__len__(), 4)
@@ -232,8 +247,9 @@ fn test_batch_loader_shuffle_deterministic() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
+    var dataset_len = dataset.__len__()
+    var sampler = RandomSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=True)
     assert_equal(loader.__len__(), 4)
 
 
@@ -260,7 +276,9 @@ fn test_batch_loader_shuffle_per_epoch() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
+    var dataset_len = dataset.__len__()
+    var sampler = RandomSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=True)
 
     # Loader can be iterated multiple times (each call to __iter__)
     var batches1 = loader.__iter__()
@@ -293,7 +311,9 @@ fn test_batch_loader_all_samples_per_epoch() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=True)
+    var dataset_len = dataset.__len__()
+    var sampler = RandomSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=True)
 
     var batches = loader.__iter__()
     # Should have 4 batches (ceil(100/32) = 4)
@@ -328,7 +348,9 @@ fn test_batch_loader_efficient_batching() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     # Should create appropriate number of batches
     assert_equal(loader.__len__(), 32)  # ceil(1000/32) = 32
@@ -357,7 +379,9 @@ fn test_batch_loader_iteration_speed() raises:
     for i in range(len(labels_list)):
         labels._set_int32(i, Int32(labels_list[i]))
     var dataset = TensorDataset(data^, labels^)
-    var loader = BatchLoader(dataset^, batch_size=32, shuffle=False)
+    var dataset_len = dataset.__len__()
+    var sampler = SequentialSampler(dataset_len)
+    var loader = BatchLoader(dataset^, sampler^, batch_size=32, shuffle=False)
 
     # Should have exactly 100 batches
     assert_equal(loader.__len__(), 100)

@@ -746,6 +746,18 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             var ptr = (self._data + offset).bitcast[Bool]()
             ptr[] = value != 0
 
+    fn _set_int32(self, index: Int, value: Int32):
+        """Internal: Set value at index as Int32 (assumes integer-compatible dtype).
+
+        Args:
+            index: Flat index to set value at
+            value: Int32 value to store
+
+        Note:
+            Delegates to _set_int64 after casting to Int64.
+        """
+        self._set_int64(index, value.cast[DType.int64]())
+
     fn _fill_zero(mut self):
         """Internal: Fill tensor with zeros (works for all dtypes)."""
         var dtype_size = self._get_dtype_size()
