@@ -13,7 +13,8 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing architectural design, module structure, separation of concerns, interfaces, and system-level design patterns. Focuses exclusively on high-level design and system organization.
+Level 3 specialist responsible for reviewing architectural design, module structure, separation of concerns,
+interfaces, and system-level design patterns. Focuses exclusively on high-level design and system organization.
 
 ## Scope
 
@@ -76,7 +77,7 @@ Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to
 
 **Solution**: Extract shared validation to separate module, acyclic dependency flow
 
-```
+```text
 Domain (defines interfaces)
     ↑
     ├── Application (depends on domain)

@@ -52,7 +52,7 @@ cd ../ml-odyssey-42-implement-tensor-ops
 
 ## Directory Structure
 
-```
+```text
 parent-directory/
 ├── ml-odyssey/                    # Main worktree (main branch)
 ├── ml-odyssey-42-tensor-ops/      # Issue #42 worktree

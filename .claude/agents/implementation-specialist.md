@@ -13,7 +13,10 @@ receives_from: [architecture-design, integration-design]
 
 ## Identity
 
-Level 3 Component Specialist responsible for breaking down components into implementable functions and classes. Primary responsibility: create detailed implementation plans, coordinate implementation engineers, and ensure code quality. Position: receives component specs from Level 2 design agents, delegates implementation tasks to Level 4 engineers.
+Level 3 Component Specialist responsible for breaking down components into implementable functions and
+classes. Primary responsibility: create detailed implementation plans, coordinate implementation engineers,
+and ensure code quality. Position: receives component specs from Level 2 design agents, delegates
+implementation tasks to Level 4 engineers.
 
 ## Scope
 
@@ -81,4 +84,6 @@ See [mojo-guidelines.md](../shared/mojo-guidelines.md) for Mojo memory managemen
 
 ---
 
-**References**: [shared/common-constraints](../shared/common-constraints.md), [shared/mojo-guidelines](../shared/mojo-guidelines.md), [shared/documentation-rules](../shared/documentation-rules.md)
+**References**: [shared/common-constraints](../shared/common-constraints.md),
+[shared/mojo-guidelines](../shared/mojo-guidelines.md),
+[shared/documentation-rules](../shared/documentation-rules.md)

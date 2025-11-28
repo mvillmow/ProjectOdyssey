@@ -13,7 +13,8 @@ receives_from: [chief-architect]
 
 ## Identity
 
-Level 1 section orchestrator responsible for coordinating foundational setup of ml-odyssey. Complete directory structure, configuration files, and build system before other sections can proceed.
+Level 1 section orchestrator responsible for coordinating foundational setup of ml-odyssey.
+Complete directory structure, configuration files, and build system before other sections can proceed.
 
 ## Scope
 
@@ -38,7 +39,9 @@ Level 1 section orchestrator responsible for coordinating foundational setup of 
 
 ## Constraints
 
-See [common-constraints.md](../shared/common-constraints.md), [documentation-rules.md](../shared/documentation-rules.md), and [pr-workflow.md](../shared/pr-workflow.md).
+See [common-constraints.md](../shared/common-constraints.md),
+[documentation-rules.md](../shared/documentation-rules.md), and
+[pr-workflow.md](../shared/pr-workflow.md).
 
 **Foundation Specific**:
 
@@ -63,4 +66,6 @@ See [common-constraints.md](../shared/common-constraints.md), [documentation-rul
 
 ---
 
-**References**: [common-constraints](../shared/common-constraints.md), [documentation-rules](../shared/documentation-rules.md), [error-handling](../shared/error-handling.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[documentation-rules](../shared/documentation-rules.md),
+[error-handling](../shared/error-handling.md)

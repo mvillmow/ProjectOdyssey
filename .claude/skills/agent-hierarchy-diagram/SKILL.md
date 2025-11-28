@@ -31,7 +31,7 @@ Generate visual diagrams showing agent system structure and relationships.
 
 ## ASCII Tree Format
 
-```
+```text
 Chief Architect (L0)
 ├── Foundation Orchestrator (L1)
 │   ├── Repository Design (L2)

@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing Mojo-specific language features, patterns, and optimizations. Focuses exclusively on Mojo language idioms, ownership semantics, compile-time features, and SIMD utilization.
+Level 3 specialist responsible for reviewing Mojo-specific language features, patterns, and
+optimizations. Focuses exclusively on Mojo language idioms, ownership semantics, compile-time features,
+and SIMD utilization.
 
 ## Scope
 
@@ -121,4 +123,5 @@ See [notes/review/mojo-test-failure-learnings.md](../../notes/review/mojo-test-f
 
 ---
 
-*Mojo Language Review Specialist ensures code leverages Mojo's unique features: zero-cost abstractions, compile-time optimization, SIMD vectorization, and safe ownership semantics.*
+*Mojo Language Review Specialist ensures code leverages Mojo's unique features: zero-cost abstractions,
+compile-time optimization, SIMD vectorization, and safe ownership semantics.*

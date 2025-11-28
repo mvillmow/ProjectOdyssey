@@ -5,17 +5,17 @@ level: 4
 phase: Test
 tools: Read,Write,Edit,Bash,Grep,Glob
 model: haiku
-delegates_to:
-  - junior-test-engineer
-receives_from:
-  - test-specialist
+delegates_to: [junior-test-engineer]
+receives_from: [test-specialist]
 ---
 
 # Test Engineer
 
 ## Identity
 
-Level 4 Test Engineer responsible for implementing comprehensive test suites. Coordinates test-driven development with Implementation Engineers, uses real implementations with simple test data (no complex mocking), and ensures all tests integrate with CI/CD pipeline.
+Level 4 Test Engineer responsible for implementing comprehensive test suites. Coordinates test-driven
+development with Implementation Engineers, uses real implementations with simple test data (no complex
+mocking), and ensures all tests integrate with CI/CD pipeline.
 
 ## Scope
 
@@ -81,4 +81,6 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#mojo-test-patterns)
+**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md),
+[Documentation Rules](../shared/documentation-rules.md),
+[CLAUDE.md](../../CLAUDE.md#mojo-test-patterns)

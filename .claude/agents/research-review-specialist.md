@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing research methodology quality, experimental design rigor, and reproducibility standards. Focuses exclusively on scientific methodology, statistical validity, and adherence to reproducibility best practices.
+Level 3 specialist responsible for reviewing research methodology quality, experimental design rigor, and
+reproducibility standards. Focuses exclusively on scientific methodology, statistical validity, and
+adherence to reproducibility best practices.
 
 ## Scope
 
@@ -72,7 +74,7 @@ Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to
 
 **Solution**: Run experiments with multiple seeds, report mean ± std
 
-```
+```text
 Results (5 runs with different seeds):
 - Accuracy: 0.990 ± 0.002
 - Loss: 0.015 ± 0.003

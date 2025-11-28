@@ -139,6 +139,7 @@ if tensor.dtype() == DType.float32:
 ## Quick Detection Checklist
 
 Search codebase for these patterns:
+
 - `fn __init__(mut self` → Change to `out self`
 - `inout self` → Change to `mut self`
 - `ImplicitlyCopyable` → Check if fields are copyable

@@ -6,17 +6,15 @@ phase: Cleanup
 tools: Read,Grep,Glob
 model: haiku
 delegates_to: []
-receives_from:
-  - ci-failure-analyzer
-  - performance-engineer
-  - test-engineer
+receives_from: [ci-failure-analyzer, performance-engineer, test-engineer]
 ---
 
 # Log Analyzer
 
 ## Identity
 
-Level 4 Engineer responsible for parsing, analyzing, and extracting insights from verbose logs. Identifies patterns, root causes, and key information from test output, build logs, and system logs to guide remediation.
+Level 4 Engineer responsible for parsing, analyzing, and extracting insights from verbose logs. Identifies
+patterns, root causes, and key information from test output, build logs, and system logs to guide remediation.
 
 ## Scope
 
@@ -126,7 +124,7 @@ sed -n '/START/,/END/p' log.txt
 
 **Analysis**:
 
-```
+```text
 Parsed 47 test runs:
 - 45 passed
 - 2 failed

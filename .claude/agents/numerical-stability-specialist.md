@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing ML code for numerical stability issues. Focuses exclusively on floating point precision, gradient computation stability, numerical edge cases, loss function behavior, and prevention of NaN/Inf propagation.
+Level 3 specialist responsible for reviewing ML code for numerical stability issues. Focuses exclusively
+on floating point precision, gradient computation stability, numerical edge cases, loss function behavior,
+and prevention of NaN/Inf propagation.
 
 ## Scope
 
@@ -132,4 +134,5 @@ fn clip_gradients(mut grad: Tensor, max_norm: Float32):
 
 ---
 
-*Numerical Stability Specialist ensures ML code handles edge cases gracefully, prevents NaN/Inf propagation, and maintains precision through computation chains.*
+*Numerical Stability Specialist ensures ML code handles edge cases gracefully, prevents NaN/Inf
+propagation, and maintains precision through computation chains.*

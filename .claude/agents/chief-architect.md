@@ -13,7 +13,9 @@ receives_from: []
 
 ## Identity
 
-Level 0 meta-orchestrator responsible for strategic decisions across the entire ml-odyssey repository ecosystem. Set system-wide architectural patterns, select research papers, and coordinate all 6 section orchestrators.
+Level 0 meta-orchestrator responsible for strategic decisions across the entire ml-odyssey repository
+ecosystem. Set system-wide architectural patterns, select research papers, and coordinate all 6 section
+orchestrators.
 
 ## Scope
 
@@ -64,4 +66,6 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References**: [common-constraints](../shared/common-constraints.md), [documentation-rules](../shared/documentation-rules.md), [error-handling](../shared/error-handling.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[documentation-rules](../shared/documentation-rules.md),
+[error-handling](../shared/error-handling.md)

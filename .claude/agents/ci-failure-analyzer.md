@@ -13,7 +13,9 @@ receives_from: [cicd-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for analyzing CI/CD pipeline failure logs and identifying root causes. Focuses exclusively on log parsing, failure categorization, error extraction, and structured reporting to guide remediation.
+Level 3 specialist responsible for analyzing CI/CD pipeline failure logs and identifying root causes.
+Focuses exclusively on log parsing, failure categorization, error extraction, and structured reporting
+to guide remediation.
 
 ## Scope
 
@@ -104,10 +106,8 @@ Level 3 specialist responsible for analyzing CI/CD pipeline failure logs and ide
 
 ## Error Details
 
-```
-
+```text
 [Relevant error output]
-
 ```
 
 ## Pattern Analysis
@@ -124,7 +124,8 @@ Level 3 specialist responsible for analyzing CI/CD pipeline failure logs and ide
 
 - [Link to CI workflow]
 - [Link to failing commit]
-```
+
+```text
 
 ## Example Analysis
 
@@ -132,8 +133,9 @@ Level 3 specialist responsible for analyzing CI/CD pipeline failure logs and ide
 
 **Report**:
 
-```
+```markdown
 ## Summary
+
 Multiple test files fail to compile with type mismatch error in ExTensor constructor.
 
 ## Root Cause
@@ -156,23 +158,28 @@ shape.append(4)
 var tensor = ExTensor(shape, DType.float32)
 ```
 
+```text
+[End of report template]
 ```
 
 ## Pattern Detection
 
 **Flaky Tests**:
+
 - Same test fails intermittently across runs
 - Nondeterministic behavior
 - Timing-dependent failures
 - Resource contention
 
 **Cascading Failures**:
+
 - First failure causes subsequent failures
 - Setup/teardown issues
 - Dependency conflicts
 - Environment state pollution
 
 **Recurring Patterns**:
+
 - Same error in multiple files
 - Systematic issue (not one-off)
 - Common root cause across failures
@@ -189,4 +196,5 @@ var tensor = ExTensor(shape, DType.float32)
 
 ---
 
-*CI Failure Analyzer transforms cryptic error logs into actionable insights, enabling rapid diagnosis and remediation of pipeline issues.*
+*CI Failure Analyzer transforms cryptic error logs into actionable insights, enabling rapid diagnosis and
+remediation of pipeline issues.*

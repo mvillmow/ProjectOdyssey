@@ -14,6 +14,7 @@ gh pr create --title "[Type] Description" --body "Closes #{issue}"
 ## Verification
 
 After creating PR:
+
 1. **Verify** the PR is linked to the issue (check issue page in GitHub)
 2. **Confirm** link appears in issue's "Development" section
 3. **If link missing**: Edit PR description to add "Closes #{number}"
@@ -44,6 +45,7 @@ gh api repos/OWNER/REPO/pulls/PR/comments --jq '.[] | select(.in_reply_to_id)'
 ## Response Format
 
 Keep responses SHORT and CONCISE (1 line preferred):
+
 - `Fixed - Updated conftest.py to use real repository root`
 - `Fixed - Deleted redundant test file`
 - `Fixed - Removed deprecated section from README`

@@ -13,7 +13,9 @@ receives_from: []
 
 ## Identity
 
-Level 2 orchestrator responsible for coordinating comprehensive code reviews across the ml-odyssey project. Analyzes pull requests and routes different aspects to specialized reviewers, ensuring thorough coverage without overlap. Prevents redundant reviews while ensuring all critical dimensions are covered.
+Level 2 orchestrator responsible for coordinating comprehensive code reviews across the ml-odyssey project.
+Analyzes pull requests and routes different aspects to specialized reviewers, ensuring thorough coverage
+without overlap. Prevents redundant reviews while ensuring all critical dimensions are covered.
 
 ## Scope
 
@@ -67,7 +69,8 @@ Level 2 orchestrator responsible for coordinating comprehensive code reviews acr
 
 See [CLAUDE.md](../../CLAUDE.md#handling-pr-review-comments) for complete protocol.
 
-**For Specialists**: Batch similar issues into single comments, count occurrences, list file:line locations, provide actionable fixes.
+**For Specialists**: Batch similar issues into single comments, count occurrences, list file:line
+locations, provide actionable fixes.
 
 **For Engineers**: Reply to EACH comment with ✅ Brief description of fix.
 
@@ -91,7 +94,8 @@ All 13 specialists:
 
 ## Escalates To
 
-- [Chief Architect](./chief-architect.md) - When specialist recommendations conflict architecturally or major architectural review needed
+- [Chief Architect](./chief-architect.md) - When specialist recommendations conflict architecturally or
+  major architectural review needed
 
 ## Coordinates With
 
@@ -99,4 +103,5 @@ All 13 specialists:
 
 ---
 
-*Code Review Orchestrator ensures comprehensive, non-overlapping reviews across all dimensions of code quality, security, performance, and correctness.*
+*Code Review Orchestrator ensures comprehensive, non-overlapping reviews across all dimensions of
+code quality, security, performance, and correctness.*

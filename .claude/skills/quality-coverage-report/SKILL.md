@@ -35,7 +35,7 @@ pytest --cov=src --cov-report=term-missing tests/
 
 Percentage of code lines executed by tests:
 
-```
+```text
 src/module.mojo
   Lines: 45/50 (90%)
   Missing: 12, 18, 23, 35, 41
@@ -45,7 +45,7 @@ src/module.mojo
 
 Percentage of decision branches taken:
 
-```
+```text
 Branches: 8/10 (80%)
 Missing branches: line 12->15, line 18->20
 ```

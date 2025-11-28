@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing data pipeline quality, correctness, and ML data engineering best practices. Focuses exclusively on data preparation, preprocessing, augmentation, train/val/test splits, data loaders, and data validation.
+Level 3 specialist responsible for reviewing data pipeline quality, correctness, and ML data engineering
+best practices. Focuses exclusively on data preparation, preprocessing, augmentation, train/val/test splits,
+data loaders, and data validation.
 
 ## Scope
 
@@ -71,7 +73,7 @@ Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to
 
 **Solution**: Compute statistics only from training set, apply to test set separately
 
-```
+```python
 mean, std = train_set.compute_statistics()
 train_normalized = (train_set - mean) / std
 test_normalized = (test_set - mean) / std  # Use train statistics
@@ -88,4 +90,5 @@ test_normalized = (test_set - mean) / std  # Use train statistics
 
 ---
 
-*Data Engineering Review Specialist ensures data quality, correctness, and proper separation of train/val/test sets without leakage.*
+*Data Engineering Review Specialist ensures data quality, correctness, and proper separation of
+train/val/test sets without leakage.*

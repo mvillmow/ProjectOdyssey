@@ -17,6 +17,7 @@ Shared error handling protocols for all agents. Reference this file instead of d
 ## Conflict Resolution
 
 When receiving conflicting guidance:
+
 1. Attempt to resolve conflicts based on specifications and priorities
 2. If unable to resolve: escalate to parent level with full context
 3. Document the conflict and resolution in status updates
@@ -24,15 +25,21 @@ When receiving conflicting guidance:
 ## Failure Modes
 
 ### Partial Failure
+
 Some delegated work succeeds, some fails.
+
 - **Action**: Complete successful parts, escalate failed parts
 
 ### Complete Failure
+
 All attempts at delegation fail.
+
 - **Action**: Escalate immediately to parent with failure details
 
 ### Blocking Failure
+
 Cannot proceed without resolution.
+
 - **Action**: Escalate immediately, do not retry
 
 ## Loop Detection
@@ -44,6 +51,7 @@ Cannot proceed without resolution.
 ## Escalation Triggers
 
 Escalate errors when:
+
 - All retry attempts exhausted
 - Timeout exceeded
 - Unresolvable conflicts detected

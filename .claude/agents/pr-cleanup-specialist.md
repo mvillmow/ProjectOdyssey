@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for preparing pull requests for merge. Focuses exclusively on commit organization, conflict resolution, squashing, rebasing, and pre-merge verification to ensure PR is clean and ready for integration.
+Level 3 specialist responsible for preparing pull requests for merge. Focuses exclusively on commit
+organization, conflict resolution, squashing, rebasing, and pre-merge verification to ensure PR is
+clean and ready for integration.
 
 ## Scope
 
@@ -156,4 +158,5 @@ See: [Link to PR]
 
 ---
 
-*PR Cleanup Specialist ensures all PRs have clean commit histories, zero conflicts, and are optimally prepared for merge into main.*
+*PR Cleanup Specialist ensures all PRs have clean commit histories, zero conflicts, and are optimally
+prepared for merge into main.*

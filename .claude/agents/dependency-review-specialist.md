@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing dependency management practices, version constraints, environment reproducibility, and license compatibility. Focuses exclusively on external dependencies and their management.
+Level 3 specialist responsible for reviewing dependency management practices, version constraints,
+environment reproducibility, and license compatibility. Focuses exclusively on external dependencies
+and their management.
 
 ## Scope
 
@@ -72,7 +74,7 @@ Severity: 🔴 CRITICAL (must fix), 🟠 MAJOR (should fix), 🟡 MINOR (nice to
 
 **Solution**: Pin to compatible range with tested version
 
-```
+```toml
 numpy = ">=1.20,<2.0"  # Tested with 1.24.x
 scipy = ">=1.8,<1.10"  # Compatible with numpy constraint
 ```

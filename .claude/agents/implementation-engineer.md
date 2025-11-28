@@ -5,17 +5,17 @@ level: 4
 phase: Implementation
 tools: Read,Write,Edit,Grep,Glob
 model: haiku
-delegates_to:
-  - junior-implementation-engineer
-receives_from:
-  - implementation-specialist
+delegates_to: [junior-implementation-engineer]
+receives_from: [implementation-specialist]
 ---
 
 # Implementation Engineer
 
 ## Identity
 
-Level 4 Implementation Engineer responsible for standard functions and classes following specifications and coding standards. Works within established patterns and coordinates with Test Engineer on test-driven development.
+Level 4 Implementation Engineer responsible for standard functions and classes following specifications
+and coding standards. Works within established patterns and coordinates with Test Engineer on test-driven
+development.
 
 ## Scope
 

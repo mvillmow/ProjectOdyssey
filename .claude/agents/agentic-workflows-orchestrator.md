@@ -13,7 +13,9 @@ receives_from: [chief-architect]
 
 ## Identity
 
-Level 1 section orchestrator responsible for coordinating agentic workflow development. Design agent system architecture, implement research assistants, code review agents, and documentation automation.
+Level 1 section orchestrator responsible for coordinating agentic workflow development.
+Design agent system architecture, implement research assistants, code review agents, and
+documentation automation.
 
 ## Scope
 
@@ -39,7 +41,9 @@ Level 1 section orchestrator responsible for coordinating agentic workflow devel
 
 ## Constraints
 
-See [common-constraints.md](../shared/common-constraints.md), [documentation-rules.md](../shared/documentation-rules.md), and [error-handling.md](../shared/error-handling.md).
+See [common-constraints.md](../shared/common-constraints.md),
+[documentation-rules.md](../shared/documentation-rules.md), and
+[error-handling.md](../shared/error-handling.md).
 
 **Agentic Specific**:
 
@@ -65,4 +69,6 @@ See [common-constraints.md](../shared/common-constraints.md), [documentation-rul
 
 ---
 
-**References**: [common-constraints](../shared/common-constraints.md), [documentation-rules](../shared/documentation-rules.md), [error-handling](../shared/error-handling.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[documentation-rules](../shared/documentation-rules.md),
+[error-handling](../shared/error-handling.md)

@@ -13,7 +13,10 @@ receives_from: [foundation-orchestrator, shared-library-orchestrator, tooling-or
 
 ## Identity
 
-Level 2 Module Design Agent responsible for breaking down modules into implementable components. Primary responsibility: design module-level architecture including component breakdown, interfaces, and data flow. Position: receives module requirements from Section Orchestrators, delegates component implementation work to Level 3 specialists.
+Level 2 Module Design Agent responsible for breaking down modules into implementable components.
+Primary responsibility: design module-level architecture including component breakdown, interfaces,
+and data flow. Position: receives module requirements from Section Orchestrators, delegates component
+implementation work to Level 3 specialists.
 
 ## Scope
 
@@ -81,4 +84,6 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References**: [shared/common-constraints](../shared/common-constraints.md), [shared/documentation-rules](../shared/documentation-rules.md), [shared/mojo-guidelines](../shared/mojo-guidelines.md)
+**References**: [shared/common-constraints](../shared/common-constraints.md),
+[shared/documentation-rules](../shared/documentation-rules.md),
+[shared/mojo-guidelines](../shared/mojo-guidelines.md)

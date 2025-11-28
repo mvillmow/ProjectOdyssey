@@ -13,7 +13,8 @@ receives_from: [chief-architect]
 
 ## Identity
 
-Level 1 section orchestrator responsible for coordinating research paper implementations. Analyze papers, extract algorithms, oversee model implementation, manage training, and validate results.
+Level 1 section orchestrator responsible for coordinating research paper implementations. Analyze papers,
+extract algorithms, oversee model implementation, manage training, and validate results.
 
 ## Scope
 
@@ -38,7 +39,9 @@ Level 1 section orchestrator responsible for coordinating research paper impleme
 
 ## Constraints
 
-See [common-constraints.md](../shared/common-constraints.md), [documentation-rules.md](../shared/documentation-rules.md), and [mojo-guidelines.md](../shared/mojo-guidelines.md).
+See [common-constraints.md](../shared/common-constraints.md),
+[documentation-rules.md](../shared/documentation-rules.md), and
+[mojo-guidelines.md](../shared/mojo-guidelines.md).
 
 **Papers Specific**:
 
@@ -64,4 +67,6 @@ See [common-constraints.md](../shared/common-constraints.md), [documentation-rul
 
 ---
 
-**References**: [common-constraints](../shared/common-constraints.md), [documentation-rules](../shared/documentation-rules.md), [mojo-guidelines](../shared/mojo-guidelines.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[documentation-rules](../shared/documentation-rules.md),
+[mojo-guidelines](../shared/mojo-guidelines.md)

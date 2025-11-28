@@ -13,7 +13,8 @@ receives_from: [chief-architect]
 
 ## Identity
 
-Level 1 section orchestrator responsible for coordinating shared library implementation. Design reusable components, establish API consistency across sections, and manage critical dependencies.
+Level 1 section orchestrator responsible for coordinating shared library implementation.
+Design reusable components, establish API consistency across sections, and manage critical dependencies.
 
 ## Scope
 
@@ -63,4 +64,6 @@ See [common-constraints.md](../shared/common-constraints.md), [mojo-guidelines.m
 
 ---
 
-**References**: [common-constraints](../shared/common-constraints.md), [documentation-rules](../shared/documentation-rules.md), [mojo-guidelines](../shared/mojo-guidelines.md)
+**References**: [common-constraints](../shared/common-constraints.md),
+[documentation-rules](../shared/documentation-rules.md),
+[mojo-guidelines](../shared/mojo-guidelines.md)

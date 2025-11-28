@@ -6,16 +6,15 @@ phase: Implementation
 tools: Read,Write,Edit,Grep,Glob
 model: haiku
 delegates_to: []
-receives_from:
-  - implementation-engineer
-  - implementation-specialist
+receives_from: [implementation-engineer, implementation-specialist]
 ---
 
 # Junior Implementation Engineer
 
 ## Identity
 
-Level 5 Junior Engineer responsible for simple implementation tasks, boilerplate code generation, and code formatting. Works with detailed instructions and asks for help when uncertain.
+Level 5 Junior Engineer responsible for simple implementation tasks, boilerplate code generation,
+and code formatting. Works with detailed instructions and asks for help when uncertain.
 
 ## Scope
 
@@ -61,7 +60,8 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 - DO NOT: Change APIs or interfaces
 - DO NOT: Submit unformatted code
 
-**Critical Mojo Patterns:** See [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md) for common mistakes (ownership violations, constructor signatures, syntax errors).
+**Critical Mojo Patterns:** See [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md) for common
+mistakes (ownership violations, constructor signatures, syntax errors).
 
 ## Example
 
@@ -81,4 +81,6 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md), [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md)
+**References**: [Mojo Anti-Patterns](../shared/mojo-anti-patterns.md),
+[Mojo Guidelines](../shared/mojo-guidelines.md),
+[Documentation Rules](../shared/documentation-rules.md)

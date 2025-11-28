@@ -13,7 +13,10 @@ receives_from: [architecture-design, implementation-specialist]
 
 ## Identity
 
-Level 3 Component Specialist responsible for creating comprehensive documentation for components. Primary responsibility: document APIs, create usage examples, write tutorials. Position: receives component specs and implementations from designers/implementers, delegates documentation tasks to documentation engineers.
+Level 3 Component Specialist responsible for creating comprehensive documentation for components.
+Primary responsibility: document APIs, create usage examples, write tutorials. Position: receives
+component specs and implementations from designers/implementers, delegates documentation tasks to
+documentation engineers.
 
 ## Scope
 
@@ -69,8 +72,12 @@ See [documentation-rules.md](../shared/documentation-rules.md) for documentation
 
 **Component**: Tensor operations API
 
-**Documentation**: Overview and features, installation/import guide, quick start examples, complete API reference (with types and error handling), advanced usage patterns, performance characteristics, migration guide.
+**Documentation**: Overview and features, installation/import guide, quick start examples, complete API
+reference (with types and error handling), advanced usage patterns, performance characteristics,
+migration guide.
 
 ---
 
-**References**: [shared/common-constraints](../shared/common-constraints.md), [shared/documentation-rules](../shared/documentation-rules.md), [shared/pr-workflow](../shared/pr-workflow.md)
+**References**: [shared/common-constraints](../shared/common-constraints.md),
+[shared/documentation-rules](../shared/documentation-rules.md),
+[shared/pr-workflow](../shared/pr-workflow.md)

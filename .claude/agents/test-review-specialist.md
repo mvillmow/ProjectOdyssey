@@ -13,7 +13,8 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for reviewing test code quality, coverage completeness, assertion strength, test organization, and edge case handling. Focuses exclusively on testing practices and test code quality.
+Level 3 specialist responsible for reviewing test code quality, coverage completeness, assertion strength,
+test organization, and edge case handling. Focuses exclusively on testing practices and test code quality.
 
 ## Scope
 

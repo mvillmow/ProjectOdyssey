@@ -13,7 +13,9 @@ receives_from: [architecture-design, foundation-orchestrator, shared-library-orc
 
 ## Identity
 
-Level 2 Module Design Agent responsible for designing security measures and threat mitigation for modules. Primary responsibility: identify threats, define security requirements, and specify prevention strategies. Position: works with Architecture Design Agent to integrate security into module design.
+Level 2 Module Design Agent responsible for designing security measures and threat mitigation for modules.
+Primary responsibility: identify threats, define security requirements, and specify prevention strategies.
+Position: works with Architecture Design Agent to integrate security into module design.
 
 ## Scope
 
@@ -70,7 +72,8 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 **Threats**: Malformed input data, path traversal attacks, memory exhaustion from large files
 
-**Design**: Validate all input paths, bounds-check file sizes, use Mojo's type system to prevent unsafe operations, design error messages that don't leak sensitive info.
+**Design**: Validate all input paths, bounds-check file sizes, use Mojo's type system to prevent
+unsafe operations, design error messages that don't leak sensitive info.
 
 ---
 

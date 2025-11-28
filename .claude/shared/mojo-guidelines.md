@@ -37,12 +37,14 @@ Shared Mojo language guidelines for all agents. Reference this file instead of d
 ### Function Definitions
 
 **Use `fn`** for:
+
 - Performance-critical code (compile-time optimization)
 - Functions with explicit type annotations
 - SIMD/vectorized operations
 - Production APIs
 
 **Use `def`** for:
+
 - Python-compatible functions
 - Quick prototypes
 - Dynamic typing needed

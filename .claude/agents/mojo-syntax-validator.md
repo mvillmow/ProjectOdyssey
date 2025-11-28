@@ -13,7 +13,9 @@ receives_from: [code-review-orchestrator]
 
 ## Identity
 
-Level 3 specialist responsible for validating Mojo v0.25.7+ syntax patterns and catching deprecated or incorrect syntax. Focuses exclusively on syntactic correctness, parameter conventions, constructor signatures, and deprecated pattern detection.
+Level 3 specialist responsible for validating Mojo v0.25.7+ syntax patterns and catching deprecated or
+incorrect syntax. Focuses exclusively on syntactic correctness, parameter conventions, constructor signatures,
+and deprecated pattern detection.
 
 ## Scope
 
@@ -160,4 +162,5 @@ mojo build /tmp/test_syntax.mojo
 
 ---
 
-*Mojo Syntax Validator ensures all code follows Mojo v0.25.7+ conventions and rejects deprecated patterns before they cause compilation failures.*
+*Mojo Syntax Validator ensures all code follows Mojo v0.25.7+ conventions and rejects deprecated patterns
+before they cause compilation failures.*

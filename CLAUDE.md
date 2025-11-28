@@ -17,6 +17,7 @@ method for completing tasks.
 ### Agent Hierarchy
 
 See [agents/hierarchy.md](agents/hierarchy.md) for the complete agent hierarchy including:
+
 - 6-level hierarchy (L0 Chief Architect → L5 Junior Engineers)
 - Model assignments (Opus, Sonnet, Haiku)
 - All 44 agents with roles and responsibilities

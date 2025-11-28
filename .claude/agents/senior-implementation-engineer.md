@@ -5,18 +5,16 @@ level: 4
 phase: Implementation
 tools: Read,Write,Edit,Grep,Glob
 model: haiku
-delegates_to:
-  - implementation-engineer
-  - junior-implementation-engineer
-receives_from:
-  - implementation-specialist
+delegates_to: [implementation-engineer, junior-implementation-engineer]
+receives_from: [implementation-specialist]
 ---
 
 # Senior Implementation Engineer
 
 ## Identity
 
-Level 4 Implementation Engineer responsible for complex, performance-critical functions and classes in Mojo. Handles advanced algorithm implementation, SIMD optimization, and mentoring other engineers.
+Level 4 Implementation Engineer responsible for complex, performance-critical functions and classes
+in Mojo. Handles advanced algorithm implementation, SIMD optimization, and mentoring other engineers.
 
 ## Scope
 
@@ -79,4 +77,6 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 ---
 
-**References**: [Mojo Guidelines](../shared/mojo-guidelines.md), [Documentation Rules](../shared/documentation-rules.md), [CLAUDE.md](../../CLAUDE.md#mojo-syntax-standards-v0257)
+**References**: [Mojo Guidelines](../shared/mojo-guidelines.md),
+[Documentation Rules](../shared/documentation-rules.md),
+[CLAUDE.md](../../CLAUDE.md#mojo-syntax-standards-v0257)

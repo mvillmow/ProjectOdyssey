@@ -13,7 +13,10 @@ receives_from: [architecture-design, foundation-orchestrator, shared-library-orc
 
 ## Identity
 
-Level 2 Module Design Agent responsible for designing how components integrate within and across modules. Primary responsibility: create module-level integration architecture including APIs, integration points, and dependency management. Position: receives component specs from Architecture Design Agent, delegates implementation to Test and Documentation Specialists.
+Level 2 Module Design Agent responsible for designing how components integrate within and across modules.
+Primary responsibility: create module-level integration architecture including APIs, integration points, and
+dependency management. Position: receives component specs from Architecture Design Agent, delegates
+implementation to Test and Documentation Specialists.
 
 ## Scope
 
@@ -68,9 +71,11 @@ See [common-constraints.md](../shared/common-constraints.md) for minimal changes
 
 **Scenario**: Tensor library module with multiple components
 
-**API Design**: Define public functions for tensor creation, operations, and access. Design clear contracts for dtype conversion, shape validation, error handling across module boundaries.
+**API Design**: Define public functions for tensor creation, operations, and access. Design clear contracts
+for dtype conversion, shape validation, error handling across module boundaries.
 
-**Integration**: Plan integration with external data loading, specify Python interop boundaries, version API to support future changes.
+**Integration**: Plan integration with external data loading, specify Python interop boundaries, version API
+to support future changes.
 
 ---
 
