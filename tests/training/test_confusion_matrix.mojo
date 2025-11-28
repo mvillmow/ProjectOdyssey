@@ -32,6 +32,7 @@ fn test_confusion_matrix_basic() raises:
     # Sample 4: true=1, pred=2 ✗
 
     var preds_shape = List[Int]()
+    preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
@@ -39,7 +40,9 @@ fn test_confusion_matrix_basic() raises:
     preds._data.bitcast[Int32]()[3] = 1  # Wrong
     preds._data.bitcast[Int32]()[4] = 2  # Wrong
 
-    var labels = ExTensor(preds_shape, DType.int32)
+    var labels_shape = List[Int]()
+    labels_shape.append(5)  # 5 samples
+    var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 0
     labels._data.bitcast[Int32]()[1] = 1
     labels._data.bitcast[Int32]()[2] = 2
@@ -85,8 +88,10 @@ fn test_confusion_matrix_perfect() raises:
 
     # All predictions correct
     var preds_shape = List[Int]()
+    preds_shape.append(6)  # 6 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(6)  # 6 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     for i in range(6):
@@ -132,8 +137,10 @@ fn test_confusion_matrix_normalize_row() raises:
     # Class 0: 2 samples, 1 correct (50%)
     # Class 1: 2 samples, 2 correct (100%)
     var preds_shape = List[Int]()
+    preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
@@ -170,8 +177,10 @@ fn test_confusion_matrix_normalize_column() raises:
     # Predicted as class 0: 1 sample, 1 correct (100%)
     # Predicted as class 1: 3 samples, 2 correct (67%)
     var preds_shape = List[Int]()
+    preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
@@ -213,8 +222,10 @@ fn test_confusion_matrix_normalize_total() raises:
 
     # 4 total samples
     var preds_shape = List[Int]()
+    preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0
@@ -253,8 +264,10 @@ fn test_confusion_matrix_precision() raises:
     # Class 1: predicted 2 times, 2 correct -> 100%
     # Class 2: predicted 1 time, 1 correct -> 100%
     var preds_shape = List[Int]()
+    preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(5)  # 5 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
@@ -290,8 +303,10 @@ fn test_confusion_matrix_recall() raises:
     # Class 1: 3 samples, 2 correct -> 67%
     # Class 2: 1 sample, 1 correct -> 100%
     var preds_shape = List[Int]()
+    preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(5)  # 5 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
@@ -327,11 +342,14 @@ fn test_confusion_matrix_f1_score() raises:
 
     var cm = ConfusionMatrix(num_classes=2)
 
-    # Class 0: precision=0.5, recall=1.0 -> F1=0.667
-    # Class 1: precision=1.0, recall=0.5 -> F1=0.667
+    # Matrix: [[1, 1], [1, 1]]
+    # Class 0: precision=0.5 (1/2), recall=0.5 (1/2) -> F1=0.5
+    # Class 1: precision=0.5 (1/2), recall=0.5 (1/2) -> F1=0.5
     var preds_shape = List[Int]()
+    preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     preds._data.bitcast[Int32]()[0] = 0  # ✓
@@ -349,15 +367,11 @@ fn test_confusion_matrix_f1_score() raises:
     var f1 = cm.get_f1_score()
 
     # F1 = 2 * (P * R) / (P + R)
-    # Class 0: 2 * (0.5 * 1.0) / (0.5 + 1.0) = 1.0 / 1.5 = 0.667
-    # Class 1: 2 * (1.0 * 0.5) / (1.0 + 0.5) = 1.0 / 1.5 = 0.667
+    # Class 0: 2 * (0.5 * 0.5) / (0.5 + 0.5) = 0.5 / 1.0 = 0.5
+    # Class 1: 2 * (0.5 * 0.5) / (0.5 + 0.5) = 0.5 / 1.0 = 0.5
 
-    var expected_f1 = 2.0 / 3.0
-    var diff0 = abs(f1._data.bitcast[Float64]()[0] - expected_f1)
-    var diff1 = abs(f1._data.bitcast[Float64]()[1] - expected_f1)
-
-    assert_true(diff0 < 0.01, "F1 class 0 should be ~0.667")
-    assert_true(diff1 < 0.01, "F1 class 1 should be ~0.667")
+    assert_equal(f1._data.bitcast[Float64]()[0], 0.5, "F1 class 0 should be 0.5")
+    assert_equal(f1._data.bitcast[Float64]()[1], 0.5, "F1 class 1 should be 0.5")
 
     print("  ✓ F1-score test passed")
 
@@ -371,6 +385,7 @@ fn test_confusion_matrix_with_logits() raises:
     # Create logits [batch_size=4, num_classes=3]
     var logits = ExTensor(List[Int](4, 3), DType.float32)
     var labels_shape = List[Int]()
+    labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
     # Sample 0: true=0, logits=[10, 0, 0] -> pred=0 ✓
@@ -418,8 +433,10 @@ fn test_confusion_matrix_reset() raises:
 
     # Add some data
     var preds_shape = List[Int]()
+    preds_shape.append(2)  # 2 samples
     var preds = ExTensor(preds_shape, DType.int32)
     var labels_shape = List[Int]()
+    labels_shape.append(2)  # 2 samples
     var labels = ExTensor(labels_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
     preds._data.bitcast[Int32]()[1] = 1
