@@ -11,7 +11,7 @@ Example:.    from shared.utils import Config
     var batch_size = config.get_int("batch_size")
 """
 
-from python import Python
+from python import Python, PythonObject
 
 
 # ============================================================================
@@ -480,11 +480,18 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
     fn from_yaml(filepath: String) raises -> Config:
         """Load configuration from YAML file with validation.
 
-        NOTE: Current implementation only supports flat key-value pairs.
-        Nested objects and arrays are not yet supported. For complex configs,
-        use flattened keys (e.g., "model.learning_rate" instead of nested
-        "model: {learning_rate: 0.001}") or consider using Python's PyYAML
-        for parsing and converting to Config.
+        Uses Python's PyYAML library to parse nested YAML structures and
+        flattens them into dot-notation keys for easy access.
+
+        Example:
+            YAML:
+                optimizer:
+                  name: "sgd"
+                  learning_rate: 0.01
+
+            Results in keys:
+                "optimizer.name" = "sgd"
+                "optimizer.learning_rate" = 0.01
 
         Args:
             filepath: Path to YAML file
@@ -495,48 +502,91 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         Raises:
             Error if file not found, empty, or invalid YAML
         """
-        # NOTE: Current implementation supports flat key-value pairs.
-        # Full nested YAML parsing can be added as needed. Using basic parsing.
         var config = Config()
 
         try:
+            # Use Python's PyYAML for proper nested YAML parsing
+            var yaml_module = Python.import_module("yaml")
+
+            # Read file content
+            var content: String
             with open(filepath, "r") as f:
-                var content = f.read()
+                content = f.read()
 
-                # Validate: Check for empty file
-                if len(content.strip()) == 0:
-                    raise Error("Config file is empty: " + filepath)
+            # Validate: Check for empty file
+            if len(content.strip()) == 0:
+                raise Error("Config file is empty: " + filepath)
 
-                var lines = content.split("\n")
+            # Parse YAML using PyYAML
+            var py_data = yaml_module.safe_load(content)
 
-                for i in range(len(lines)):
-                    var line = lines[i].strip()
-                    if len(line) == 0 or line.startswith("#"):
-                        continue
+            # Flatten nested dict to dot-notation and populate config
+            Config._flatten_dict(config, py_data, "")
 
-                    if ":" in line:
-                        var parts = line.split(":")
-                        if len(parts) >= 2:
-                            var key = String(parts[0].strip())
-                            var value_str = parts[1].strip()
-
-                            # Try to parse as number
-                            if "." in value_str:
-                                try:
-                                    var float_val = Float64(atof(value_str))
-                                    config.set(key, float_val)
-                                except:
-                                    config.set(key, value_str)
-                            else:
-                                try:
-                                    var int_val = atol(value_str)
-                                    config.set(key, int_val)
-                                except:
-                                    config.set(key, value_str)
         except e:
             raise Error("Failed to load YAML file: " + String(e))
 
         return config
+
+    @staticmethod
+    fn _flatten_dict(mut config: Config, py_obj: PythonObject, prefix: String) raises:
+        """Recursively flatten a Python dict into dot-notation keys.
+
+        Args:
+            config: Config object to populate
+            py_obj: Python object (dict, list, or primitive)
+            prefix: Current key prefix (empty for root level)
+        """
+        try:
+            var builtins = Python.import_module("builtins")
+
+            # Check if it's a dict
+            if builtins.isinstance(py_obj, builtins.dict):
+                var items = py_obj.items()
+                for item in items:
+                    var key = String(item[0])
+                    var full_key = prefix + "." + key if len(prefix) > 0 else key
+                    Config._flatten_dict(config, item[1], full_key)
+
+            # Check if it's a list
+            elif builtins.isinstance(py_obj, builtins.list):
+                # Store lists as string representations for now
+                var list_items = List[String]()
+                for item in py_obj:
+                    list_items.append(String(item))
+                config.set(prefix, list_items^)
+
+            # Check if it's a bool (must check before int, as bool is subclass of int in Python)
+            elif builtins.isinstance(py_obj, builtins.bool):
+                # Convert to string and check value
+                var str_repr = String(py_obj)
+                var bool_val = str_repr == "True"
+                config.set(prefix, bool_val)
+
+            # Check if it's an int
+            elif builtins.isinstance(py_obj, builtins.int):
+                # Convert to string then parse to Int
+                var str_repr = String(py_obj)
+                var int_val = atol(str_repr)
+                config.set(prefix, int_val)
+
+            # Check if it's a float
+            elif builtins.isinstance(py_obj, builtins.float):
+                # Convert to string then parse to Float64
+                var str_repr = String(py_obj)
+                var float_val = Float64(atof(str_repr))
+                config.set(prefix, float_val)
+
+            # Otherwise treat as string
+            else:
+                var str_val = String(py_obj)
+                # Remove quotes if present
+                if str_val.startswith('"') and str_val.endswith('"'):
+                    str_val = str_val[1:-1]
+                config.set(prefix, str_val)
+
+        except e:
+            raise Error("Failed to flatten dict: " + String(e))
 
     @staticmethod
     fn from_json(filepath: String) raises -> Config:
