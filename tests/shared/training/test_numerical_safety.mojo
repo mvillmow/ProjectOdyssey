@@ -40,14 +40,14 @@ fn test_numerical_safety_valid_loss() raises:
     """
     from shared.training.base import is_valid_loss
 
-    Valid losses
+    # Valid losses
     assert_true(is_valid_loss(0.0))
     assert_true(is_valid_loss(0.5))
     assert_true(is_valid_loss(1.0))
     assert_true(is_valid_loss(100.0))
 
     # TODO(#34): Add NaN/Inf detection when implemented
-    Currently stub always returns True
+    # Currently stub always returns True
     assert_false(is_valid_loss(Float64(0.0) / Float64(0.0)))  # NaN
     assert_false(is_valid_loss(Float64(1.0) / Float64(0.0)))  # +Inf
     assert_false(is_valid_loss(-Float64(1.0) / Float64(0.0)))  # -Inf
@@ -106,7 +106,7 @@ fn test_numerical_safety_valid_gradients() raises:
     var valid_grads = List[Float64](0.1, -0.2, 0.3, -0.4)
     var result = clip_gradients(valid_grads^, max_norm=1.0)
 
-    Verify list is returned
+    # Verify list is returned
     assert_equal(len(result), 4)
 
 
@@ -160,8 +160,8 @@ fn test_numerical_safety_gradient_clipping_basic() raises:
     var large_grads = List[Float64](10.0, 20.0, 30.0)
     var clipped = clip_gradients(large_grads^, max_norm=1.0)
 
-    Verify stub returns gradients (currently unchanged)
-    Real implementation will clip to max_norm
+    # Verify stub returns gradients (currently unchanged)
+    # Real implementation will clip to max_norm
     assert_equal(len(clipped), 3)
 
 

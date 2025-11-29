@@ -68,7 +68,6 @@ fn test_rmsprop_simple_shapes() raises:
 
     var (new_params, new_square_avg) = rmsprop_step_simple(
         params, gradients, square_avg,
-        t=1,
         learning_rate=0.01,
         alpha=0.99,
         epsilon=1e-8
@@ -141,7 +140,6 @@ fn test_rmsprop_simple_parameter_update() raises:
 
     var (new_params, new_square_avg) = rmsprop_step_simple(
         params, gradients, square_avg,
-        t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8
@@ -387,9 +385,9 @@ fn test_rmsprop_batch_update() raises:
     var params = ones(shape, DType.float32)
     var gradients = ones(shape, DType.float32)
 
-    # Set different gradient values
+    # Set different gradient values (non-zero to ensure parameter updates)
     for i in range(50):
-        gradients._data.bitcast[Float32]()[i] = Float32(i) * 0.01
+        gradients._data.bitcast[Float32]()[i] = Float32(i + 1) * 0.01
 
     var square_avg = zeros(shape, DType.float32)
     var buf = zeros(shape, DType.float32)

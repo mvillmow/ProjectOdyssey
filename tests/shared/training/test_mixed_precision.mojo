@@ -4,6 +4,7 @@ Tests gradient scaling, loss scaling, and numerical stability for FP16 training.
 """
 
 from shared.core import ExTensor
+from shared.core.extensor import full
 from shared.training.mixed_precision import (
     GradientScaler,
     convert_to_fp32_master,
@@ -38,13 +39,13 @@ fn test_loss_scaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create a simple loss tensor (scalar)
-    var loss = ExTensor.full(List[Int](), 0.5, DType.float32)
+    var loss = full(List[Int](1), 0.5, DType.float32)
 
     # Scale the loss
     var scaled_loss = scaler.scale_loss(loss)
 
     # Check scaled value (0.5 * 1024 = 512)
-    var scaled_val = scaled_loss.item()
+    var scaled_val = scaled_loss._get_float64(0)
     assert_true(abs(scaled_val - 512.0) < 1e-5, "Scaled loss should be 512.0")
 
     print("✓ Loss scaling test passed")
@@ -57,13 +58,13 @@ fn test_gradient_unscaling() raises:
     var scaler = GradientScaler(initial_scale=1024.0)
 
     # Create scaled gradients
-    var scaled_grads = ExTensor.full(List[Int](), 2048.0, DType.float32)
+    var scaled_grads = full(List[Int](1), 2048.0, DType.float32)
 
     # Unscale the gradients (2048 / 1024 = 2.0)
     var unscaled_grads = scaler.unscale_gradients(scaled_grads)
 
     # Check unscaled value
-    var val = unscaled_grads.item()
+    var val = unscaled_grads._get_float64(0)
     assert_true(abs(val - 2.0) < 1e-5, "Unscaled gradient should be 2.0")
 
     print("✓ Gradient unscaling test passed")
@@ -150,16 +151,16 @@ fn test_fp32_master_conversion() raises:
     """Test converting FP16 parameters to FP32 master weights."""
     print("Testing FP32 master conversion...")
 
-    # Create FP16 parameters
-    var fp16_params = ExTensor.full(List[Int](), 0.5, DType.float16)
+    # Create FP16 parameters (100 elements)
+    var fp16_params = full(List[Int](100), 0.5, DType.float16)
 
     # Convert to FP32 master weights
     var master_params = convert_to_fp32_master(fp16_params)
 
-    assert_equal(master_params.dtype(), DType.float32, "Master params should be FP32")
+    assert_true(master_params.dtype() == DType.float32, "Master params should be FP32")
     assert_equal(master_params._numel, 100, "Master params should have same size")
 
-    var val = master_params.item()
+    var val = master_params._get_float64(0)
     assert_true(abs(val - 0.5) < 1e-5, "Master params should have same values")
 
     print("✓ FP32 master conversion test passed")
@@ -169,16 +170,15 @@ fn test_update_model_from_master() raises:
     """Test updating FP16 model params from FP32 master weights."""
     print("Testing model update from master...")
 
-    # Create FP16 model params and FP32 master weights
-    var shape = List[Int]()
-    var fp16_params = ExTensor.full(shape, 1.0, DType.float16)
-    var master_params = ExTensor.full(shape, 2.0, DType.float32)
+    # Create FP16 model params and FP32 master weights (100 elements)
+    var fp16_params = full(List[Int](100), 1.0, DType.float16)
+    var master_params = full(List[Int](100), 2.0, DType.float32)
 
     # Update model from master
     update_model_from_master(fp16_params, master_params)
 
     # Check that FP16 params now have value 2.0
-    var val = fp16_params.item()
+    var val = fp16_params._get_float64(0)
     assert_true(abs(val - 2.0) < 1e-3, "FP16 params should be updated to 2.0")
 
     print("✓ Update model from master test passed")
@@ -188,8 +188,8 @@ fn test_check_gradients_finite() raises:
     """Test checking for finite gradients."""
     print("Testing gradient finite check...")
 
-    # Create finite gradients
-    var finite_grads = ExTensor.full(List[Int](), 1.0, DType.float32)
+    # Create finite gradients (10 elements)
+    var finite_grads = full(List[Int](10), 1.0, DType.float32)
     assert_true(check_gradients_finite(finite_grads), "Finite gradients should return True")
 
     # TODO: Test with NaN/Inf gradients when we can create them
@@ -202,8 +202,8 @@ fn test_clip_gradients_by_value() raises:
     """Test clipping gradients by value range."""
     print("Testing gradient clipping by value...")
 
-    # Create gradients with various values
-    var shape = List[Int]()
+    # Create gradients with various values (5 elements)
+    var shape = List[Int](5)
     var grads = ExTensor(shape, DType.float32)
 
     # Set some values manually
@@ -230,8 +230,8 @@ fn test_clip_gradients_by_norm() raises:
     """Test clipping gradients by global norm."""
     print("Testing gradient clipping by norm...")
 
-    # Create gradients with known norm
-    var shape = List[Int]()
+    # Create gradients with known norm (3 elements)
+    var shape = List[Int](3)
     var grads = ExTensor(shape, DType.float32)
 
     # Set values: [3.0, 4.0, 0.0] -> norm = sqrt(9 + 16) = 5.0
@@ -258,23 +258,23 @@ fn test_fp16_operations() raises:
     """Test basic FP16 tensor operations."""
     print("Testing FP16 operations...")
 
-    # Create FP16 tensors
-    var a = ExTensor.full(List[Int](), 2.0, DType.float16)
-    var b = ExTensor.full(List[Int](), 3.0, DType.float16)
+    # Create FP16 tensors (10 elements each)
+    var a = full(List[Int](10), 2.0, DType.float16)
+    var b = full(List[Int](10), 3.0, DType.float16)
 
     # Test addition
     var c = a + b
-    var val_add = c.item()
+    var val_add = c._get_float64(0)
     assert_true(abs(val_add - 5.0) < 1e-2, "FP16 addition: 2 + 3 = 5")
 
     # Test multiplication
     var d = a * b
-    var val_mul = d.item()
+    var val_mul = d._get_float64(0)
     assert_true(abs(val_mul - 6.0) < 1e-2, "FP16 multiplication: 2 * 3 = 6")
 
     # Test division
     var e = b / a
-    var val_div = e.item()
+    var val_div = e._get_float64(0)
     assert_true(abs(val_div - 1.5) < 1e-2, "FP16 division: 3 / 2 = 1.5")
 
     print("✓ FP16 operations test passed")

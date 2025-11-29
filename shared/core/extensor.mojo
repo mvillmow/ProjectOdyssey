@@ -2253,7 +2253,7 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
     ):
         print(
             "Warning: randn() is designed for floating-point types, got",
-            str(dtype),
+            String(dtype),
         )
 
     var tensor = ExTensor(shape, dtype)

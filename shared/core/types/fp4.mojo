@@ -122,11 +122,10 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
             return FP4_E2M1(sign << 3)
 
         # Find best representation
-        var exp: UInt8 = 0
-        var mantissa: UInt8 = 0
-
         # Quantize to nearest representable value
         # Representable values: 0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0
+        var exp: UInt8
+        var mantissa: UInt8
         if abs_scaled < 1.25:
             exp = 1
             mantissa = 0  # 1.0
@@ -167,9 +166,10 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
             return Float32(0.0) if sign == 0 else Float32(-0.0)
 
         # Compute unscaled value
-        # E2M1: value = 2^(exp-1) * (1 + mantissa)
+        # E2M1: value = 2^(exp-1) * (1 + mantissa/2)
+        # With 1-bit mantissa, the fractional part is mantissa * 0.5
         var exponent = exp.cast[DType.int32]() - 1
-        var base = Float32(1.0) + Float32(mantissa.cast[DType.float32]())
+        var base = Float32(1.0) + Float32(mantissa.cast[DType.float32]()) * Float32(0.5)
 
         # Compute 2^exponent
         var unscaled = base

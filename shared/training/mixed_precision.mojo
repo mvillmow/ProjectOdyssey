@@ -23,7 +23,7 @@ Usage:
 See mixed precision training examples in examples/mixed_precision/
 """
 
-from ..core.extensor import ExTensor
+from ..core.extensor import ExTensor, full
 from ..core.numerical_safety import has_nan, has_inf
 from math import log2
 
@@ -110,8 +110,8 @@ struct GradientScaler:
         if self.scale <= 0.0:
             raise Error("Scale factor must be positive, got: " + String(self.scale))
 
-        # Create a scalar tensor with the scale value and multiply
-        var scale_tensor = ExTensor.full(loss.shape(), Float64(self.scale), loss.dtype())
+        # Create a tensor with the scale value and multiply
+        var scale_tensor = full(loss.shape(), Float64(self.scale), loss.dtype())
         return loss * scale_tensor
 
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
@@ -132,8 +132,8 @@ struct GradientScaler:
         if self.scale == 0.0:
             raise Error("Cannot unscale with zero scale factor")
 
-        # Create a scalar tensor with the scale value and divide
-        var scale_tensor = ExTensor.full(gradients.shape(), Float64(self.scale), gradients.dtype())
+        # Create a tensor with the scale value and divide
+        var scale_tensor = full(gradients.shape(), Float64(self.scale), gradients.dtype())
         return gradients / scale_tensor
 
     fn step(mut self):
@@ -151,7 +151,10 @@ struct GradientScaler:
         # Increase scale if growth interval reached
         if self._steps_since_growth >= self.growth_interval:
             var new_scale = self.scale * self.growth_factor
-            if new_scale <= self.max_scale:
+            # Cap at max_scale if growth would exceed it
+            if new_scale > self.max_scale:
+                self.scale = self.max_scale
+            else:
                 self.scale = new_scale
             self._steps_since_growth = 0
 
@@ -336,13 +339,13 @@ fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTe
     var sum_squared = tensor_sum(grad_squared)
 
     # Get scalar value from tensor
-    var sum_val = sum_squared.item()
+    var sum_val = sum_squared._get_float64(0)
     var grad_norm = math_sqrt(sum_val)
 
     # Clip if norm exceeds max_norm
     if grad_norm > Float64(max_norm):
         var scale_factor = Float64(max_norm) / grad_norm
-        var scale_tensor = ExTensor.full(gradients.shape(), scale_factor, gradients.dtype())
+        var scale_tensor = full(gradients.shape(), scale_factor, gradients.dtype())
         return gradients * scale_tensor
     else:
         return gradients

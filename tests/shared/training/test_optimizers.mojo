@@ -40,7 +40,7 @@ fn test_sgd_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that sgd_step accepts all hyperparameters
-    var shape = List[Int]()
+    var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)
@@ -70,7 +70,7 @@ fn test_sgd_basic_update() raises:
     This is a CRITICAL test that defines the core SGD behavior.
     """
     # Initial parameters: [1.0, 2.0, 3.0]
-    var shape = List[Int]()
+    var shape = List[Int](3)
     var params = ones(shape, DType.float32)
 
     # Manually set values: [1.0, 2.0, 3.0]
@@ -90,9 +90,9 @@ fn test_sgd_basic_update() raises:
     # Expected: new_params = params - lr * grads
     # [1.0 - 0.1*0.1, 2.0 - 0.1*0.2, 3.0 - 0.1*0.3]
     # = [0.99, 1.98, 2.97]
-    assert_almost_equal(new_params._data.bitcast[Float32]()[0], 0.99, tolerance=1e-6)
-    assert_almost_equal(new_params._data.bitcast[Float32]()[1], 1.98, tolerance=1e-6)
-    assert_almost_equal(new_params._data.bitcast[Float32]()[2], 2.97, tolerance=1e-6)
+    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6)
+    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[1]), 1.98, tolerance=1e-6)
+    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[2]), 2.97, tolerance=1e-6)
 
 
 fn test_sgd_momentum_accumulation() raises:
@@ -107,7 +107,7 @@ fn test_sgd_momentum_accumulation() raises:
 
     This is a CRITICAL test for momentum-based training.
     """
-    var shape = List[Int]()
+    var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -123,7 +123,7 @@ fn test_sgd_momentum_accumulation() raises:
     params = result[0]
     velocity = result[1]
 
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.99, tolerance=1e-6)
+    assert_almost_equal(Float64(params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6)
 
     # Step 2: velocity = 0.9 * 0.1 + 0.1 = 0.19
     # update = 0.1 * 0.19 = 0.019
@@ -132,7 +132,7 @@ fn test_sgd_momentum_accumulation() raises:
     params = result[0]
     velocity = result[1]
 
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.971, tolerance=1e-5)
+    assert_almost_equal(Float64(params._data.bitcast[Float32]()[0]), 0.971, tolerance=1e-5)
 
 
 fn test_sgd_weight_decay() raises:
@@ -143,7 +143,7 @@ fn test_sgd_weight_decay() raises:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update
     """
-    var shape = List[Int]()
+    var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -162,7 +162,7 @@ fn test_sgd_weight_decay() raises:
     )
     var new_params = result[0]
 
-    assert_almost_equal(new_params._data.bitcast[Float32]()[0], 0.989, tolerance=1e-6)
+    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[0]), 0.989, tolerance=1e-6)
 
 
 fn test_sgd_nesterov_momentum() raises:

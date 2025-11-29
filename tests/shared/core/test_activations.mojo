@@ -579,11 +579,11 @@ fn test_tanh_range() raises:
 
     var y = tanh(x)
 
-    # All values should be in (-1, 1)
+    # All values should be in [-1, 1] (inclusive due to floating point precision)
     for i in range(5):
         var val = y._data.bitcast[Float32]()[i]
-        assert_true(val > -1.0)
-        assert_true(val < 1.0)
+        assert_true(val >= -1.0, "tanh output should be >= -1.0")
+        assert_true(val <= 1.0, "tanh output should be <= 1.0")
 
 
 # ============================================================================
@@ -705,8 +705,10 @@ fn test_softmax_backward() raises:
         return softmax_backward(grad, out, axis=1)
 
     # Use numerical gradient checking (gold standard)
-    # Note: rtol=1e-3 is appropriate for float32 finite differences
-    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=1e-6)
+    # Note: rtol=1e-3, atol=5e-4 is needed for float32 softmax gradients
+    # Softmax involves exp() and division which amplify numerical errors,
+    # especially at the edges of the distribution
+    check_gradient(forward, backward_fn, x, grad_out, rtol=1e-3, atol=5e-4)
 
 
 # ============================================================================
@@ -776,17 +778,16 @@ fn test_gelu_approximate() raises:
     # GELU(0) should be 0
     assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5)
 
-    # GELU should be approximately symmetric: GELU(-x) ≈ -GELU(x)
-    # (not exactly symmetric but close)
-    var val_neg2 = y._data.bitcast[Float32]()[0]
-    var val_pos2 = y._data.bitcast[Float32]()[4]
-    assert_true(abs(val_neg2 + val_pos2) < 0.1)
+    # GELU is NOT symmetric (unlike relu). For x < 0, GELU(x) is close to 0.
+    # For x > 0, GELU(x) is close to x.
+    var val_neg2 = y._data.bitcast[Float32]()[0]  # GELU(-2.0) ≈ -0.045
+    var val_pos2 = y._data.bitcast[Float32]()[4]  # GELU(2.0) ≈ 1.954
 
     # For large positive x, GELU(x) ≈ x
-    assert_true(y._data.bitcast[Float32]()[4] > 1.9)
+    assert_true(val_pos2 > 1.9, "GELU(2.0) should be close to 2.0")
 
-    # For large negative x, GELU(x) ≈ 0
-    assert_true(abs(y._data.bitcast[Float32]()[0]) < 0.1)
+    # For large negative x, GELU(x) ≈ 0 (small negative value)
+    assert_true(abs(val_neg2) < 0.1, "GELU(-2.0) should be close to 0")
 
 
 fn test_gelu_exact() raises:

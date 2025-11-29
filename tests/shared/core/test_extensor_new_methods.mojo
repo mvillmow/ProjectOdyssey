@@ -11,6 +11,7 @@ Following TDD principles - these tests verify the Track 1 API extensions.
 from shared.core.extensor import ExTensor, zeros, ones, randn
 from shared.core import zeros as core_zeros
 from tests.shared.conftest import assert_true, assert_almost_equal, assert_equal
+from math import sqrt
 
 
 # ============================================================================
