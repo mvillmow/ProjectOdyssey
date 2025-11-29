@@ -262,7 +262,7 @@ fn test_substitute_malformed_pattern() raises:
     config.set("value2", "$MISSING}")  # Missing opening brace
     config.set("value3", "${}")        # Empty variable name
 
-    var substituted = config.substitute_env_vars()
+    _ = config.substitute_env_vars()
 
     # Malformed patterns should be left as-is
     # Implementation may vary - this tests expected behavior
@@ -278,7 +278,7 @@ fn test_substitute_nested_variables() raises:
     var config = Config()
     config.set("path", "${BASE_${LEVEL}}")
 
-    var substituted = config.substitute_env_vars()
+    _ = config.substitute_env_vars()
 
     # Nested variables typically not supported - should leave as-is
     # This test documents expected behavior

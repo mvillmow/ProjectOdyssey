@@ -98,27 +98,26 @@ jobs:
 
           # Save repository root for imports
           REPO_ROOT="$(pwd)"
+          TEST_PATH="${{ matrix.test-group.path }}"
 
-          cd "${{ matrix.test-group.path }}" || exit 1
-
-          # Expand pattern into actual files
+          # Expand pattern into actual files (from repo root)
           test_files=""
           for pattern in ${{ matrix.test-group.pattern }}; do
             # Check if pattern contains wildcards or is a direct path
             if [[ "$pattern" == *"*"* ]]; then
-              # Glob pattern - expand it
-              for file in $pattern; do
+              # Glob pattern - expand it with TEST_PATH prefix
+              for file in $TEST_PATH/$pattern; do
                 if [ -f "$file" ]; then
                   test_files="$test_files $file"
                 fi
               done
             else
               # Direct file or subdirectory pattern
-              if [ -f "$pattern" ]; then
-                test_files="$test_files $pattern"
+              if [ -f "$TEST_PATH/$pattern" ]; then
+                test_files="$test_files $TEST_PATH/$pattern"
               elif [[ "$pattern" == *"/"* ]]; then
                 # Subdirectory pattern like "datasets/test_*.mojo"
-                for file in $pattern; do
+                for file in $TEST_PATH/$pattern; do
                   if [ -f "$file" ]; then
                     test_files="$test_files $file"
                   fi
