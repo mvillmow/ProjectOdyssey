@@ -79,12 +79,14 @@ User: "Use the architecture design agent to plan the auth module"
 - Code Review Orchestrator
 - Coordinates 13 specialized review agents
 
-### Level 3: Component Specialists
+### Level 3: Component Specialists & Review Specialists
 
-### Implementation Specialists
+**Implementation/Execution Specialists** (11 agents):
 
 - Implementation, Test, Documentation, Performance, Security Specialists
-- Handle specific component aspects
+- Blog Writer, Numerical Stability, Test Flakiness, PR Cleanup Specialists
+- Mojo Syntax Validator, CI Failure Analyzer
+- Handle specific component aspects and execution planning
 
 **Code Review Specialists** (13 agents):
 
@@ -92,8 +94,7 @@ User: "Use the architecture design agent to plan the auth module"
 - Security, Safety Review Specialists
 - Mojo Language, Performance Review Specialists
 - Algorithm, Architecture Review Specialists
-- Data Engineering Review Specialist
-- Paper, Research Review Specialists
+- Data Engineering, Paper, Research Review Specialists
 - Dependency Review Specialist
 
 ### Level 4: Implementation Engineers
@@ -305,7 +306,7 @@ model: sonnet
 
 ## Operational Agents
 
-The operational agent configurations are in `.claude/agents/` (23 agents total):
+The operational agent configurations are in `.claude/agents/` (44 agents total):
 
 ### Level 0: Meta-Orchestrator (1 agent)
 
@@ -320,27 +321,58 @@ The operational agent configurations are in `.claude/agents/` (23 agents total):
 - `cicd-orchestrator.md` - Section 05 (testing, deployment pipelines)
 - `agentic-workflows-orchestrator.md` - Section 06 (research assistant, code review, documentation agents)
 
-### Level 2: Module Design Agents (3 agents)
+### Level 2: Module Design Agents & Review Orchestrators (4 agents)
+
+**Design Agents:**
 
 - `architecture-design.md` - Component breakdown, interface design, data flow
 - `integration-design.md` - Cross-component APIs, integration testing, Python-Mojo interop
 - `security-design.md` - Threat modeling, security requirements, vulnerability prevention
 
-### Level 3: Component Specialists (5 agents)
+**Review Orchestrators:**
+
+- `code-review-orchestrator.md` - Routes PR changes to 13 specialist reviewers, consolidates feedback
+
+### Level 3: Component Specialists & Review Specialists (24 agents)
+
+**Implementation/Execution Specialists:**
 
 - `implementation-specialist.md` - Break components into functions/classes, coordinate implementation
 - `test-specialist.md` - Test planning, test case definition, coverage requirements
 - `documentation-specialist.md` - Component READMEs, API docs, usage examples
 - `performance-specialist.md` - Performance requirements, benchmarking, optimization
 - `security-specialist.md` - Security implementation, testing, vulnerability remediation
+- `blog-writer-specialist.md` - Development blog posts in narrative cycle format
+- `numerical-stability-specialist.md` - Numerical precision and stability analysis for ML code
+- `test-flakiness-specialist.md` - Analyzes and fixes flaky tests
+- `pr-cleanup-specialist.md` - Handles PR cleanup and final polish before merge
+- `mojo-syntax-validator.md` - Validates Mojo syntax and patterns
+- `ci-failure-analyzer.md` - Analyzes CI failure logs and identifies root causes
 
-### Level 4: Implementation Engineers (5 agents)
+**Code Review Specialists (13 agents):**
+
+- `implementation-review-specialist.md` - Code correctness, logic, maintainability
+- `documentation-review-specialist.md` - Markdown, comments, docstrings, API docs
+- `test-review-specialist.md` - Test coverage, quality, assertions
+- `security-review-specialist.md` - Vulnerabilities, OWASP top 10, input validation
+- `safety-review-specialist.md` - Memory safety, type safety, undefined behavior
+- `mojo-language-review-specialist.md` - Ownership, SIMD, fn vs def, traits
+- `performance-review-specialist.md` - Algorithmic complexity, cache efficiency
+- `algorithm-review-specialist.md` - ML algorithm correctness, numerical stability
+- `architecture-review-specialist.md` - System design, modularity, patterns
+- `data-engineering-review-specialist.md` - Data pipelines, preprocessing
+- `paper-review-specialist.md` - Academic writing, citations
+- `research-review-specialist.md` - Experimental design, reproducibility
+- `dependency-review-specialist.md` - Version management, licenses
+
+### Level 4: Implementation Engineers (6 agents)
 
 - `senior-implementation-engineer.md` - Complex functions, performance-critical code, SIMD optimization
 - `implementation-engineer.md` - Standard functions and classes, following specifications
 - `test-engineer.md` - Unit and integration tests, test fixtures, test maintenance
 - `documentation-engineer.md` - Docstrings, code examples, README updates
 - `performance-engineer.md` - Benchmark code, profiling, optimization implementation
+- `log-analyzer.md` - Parses build, test, and execution logs to extract diagnostic information
 
 ### Level 5: Junior Engineers (3 agents)
 

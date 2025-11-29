@@ -255,7 +255,7 @@ cat .claude/agents/chief-architect.md
 ### Learn More
 
 1. **Complete System Overview**: Read [onboarding.md](onboarding.md) for comprehensive introduction
-1. **Agent Catalog**: Browse [agent-catalog.md](agent-catalog.md) to see all 23 agent types
+1. **Agent Catalog**: Browse [agent-catalog.md](agent-catalog.md) to see all 44 agent types
 1. **Troubleshooting**: Check [troubleshooting.md](troubleshooting.md) for detailed problem solving
 1. **Visual Hierarchy**: See [../hierarchy.md](../hierarchy.md) for the complete visual diagram
 

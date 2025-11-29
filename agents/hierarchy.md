@@ -26,33 +26,37 @@
          └────────────────────┼─────────────────────┘
                               ▼
             ┌─────────────────────────────────────┐
-            │      Level 2: Module Design Agents  │
+            │   Level 2: Design & Review Agents   │
             ├─────────────────────────────────────┤
             │  • Architecture Design Agent        │
             │  • Integration Design Agent         │
             │  • Security Design Agent            │
+            │  • Code Review Orchestrator         │
             └──────────────────┬──────────────────┘
                                │
                                ▼
             ┌─────────────────────────────────────┐
-            │   Level 3: Component Specialists     │
+            │   Level 3: Specialists (24 agents)   │
             ├──────────────────────────────────────┤
-            │  • Senior Implementation Specialist  │
-            │  • Test Design Specialist            │
+            │  • Implementation Specialist         │
+            │  • Test Specialist                   │
             │  • Documentation Specialist          │
             │  • Performance Specialist            │
-            │  • Security Implementation Specialist│
+            │  • Blog Writer Specialist            │
+            │  • 13 Code Review Specialists        │
+            │  • 4 Additional Specialists          │
             └──────────────────┬──────────────────┘
                                │
                                ▼
             ┌─────────────────────────────────────┐
-            │   Level 4: Implementation Engineers  │
+            │   Level 4: Engineers (6 agents)      │
             ├──────────────────────────────────────┤
             │  • Senior Implementation Engineer    │
             │  • Implementation Engineer           │
             │  • Test Engineer                     │
-            │  • Documentation Writer              │
+            │  • Documentation Engineer            │
             │  • Performance Engineer              │
+            │  • Log Analyzer                      │
             └──────────────────┬──────────────────┘
                                │
                                ▼
@@ -83,26 +87,29 @@
 - **Phase**: Plan
 - **Language Context**: Coordinates Mojo implementation across sections
 
-### Level 2: Module Design Agents
+### Level 2: Module Design & Review Agents
 
-- **Agents**: 3 core types (Architecture, Integration, Security)
-- **Scope**: Modules within sections
-- **Decisions**: Module structure, interfaces, security
-- **Phase**: Plan
-- **Language Context**: Designs Mojo module structures, leverages Mojo features (SIMD, traits, structs)
+- **Agents**: 4 total (3 design agents + 1 review orchestrator)
+  - Design Agents: Architecture, Integration, Security
+  - Code Review Orchestrator: Routes PR changes to 13 specialist reviewers
+- **Scope**: Modules within sections and overall PR review coordination
+- **Decisions**: Module structure, interfaces, security, and code review routing
+- **Phase**: Plan (design) and Cleanup (code review)
+- **Language Context**: Designs Mojo module structures, leverages Mojo features (SIMD, traits, structs); coordinates review across all code dimensions
 
-### Level 3: Component Specialists
+### Level 3: Specialists & Review Specialists
 
-- **Agents**: 5 types (Implementation, Test, Docs, Performance, Security)
-- **Scope**: Components within modules
-- **Decisions**: Component implementation approach
-- **Phase**: Plan, Test, Implementation, Package
-- **Language Context**: Chooses Mojo patterns (fn vs def, struct vs class, SIMD usage)
+- **Agents**: 24 total (11 implementation/execution specialists + 13 code review specialists)
+- **Scope**: Components within modules and PR review dimensions
+- **Decisions**: Component implementation approach and code review assessment
+- **Phase**: Plan, Test, Implementation, Package, Cleanup
+- **Language Context**: Chooses Mojo patterns (fn vs def, struct vs class, SIMD usage); reviews for language correctness, safety, and idioms
 - **Package Phase**: Design packaging strategy, specify .mojopkg requirements, plan CI/CD workflows
+- **Review Specialties**: Implementation, documentation, test, security, safety, Mojo language, performance, algorithm, architecture, data engineering, paper, research, dependency review
 
 ### Level 4: Implementation Engineers
 
-- **Agents**: 5 types (Senior, Standard, Test, Docs, Performance)
+- **Agents**: 6 (Senior Implementation, Implementation, Test, Documentation, Performance, Log Analyzer)
 - **Scope**: Functions and classes
 - **Decisions**: Implementation details
 - **Phase**: Test, Implementation, Package
@@ -193,19 +200,23 @@ Project Health (Level 1)
 Strategic Alignment (Level 0)
 ```text
 
-## Agent Count Estimates
+## Agent Count
 
-| Level | Types | Per Paper | Total (6 sections) |
-|-------|-------|-----------|-------------------|
-| 0     | 1     | 1         | 1                 |
-| 1     | 6     | 6         | 6                 |
-| 2     | 3     | 18        | 18                |
-| 3     | 5     | 30        | 30                |
-| 4     | 5     | 50        | 50                |
-| 5     | 3     | 30        | 30                |
-| **Total** | **23 types** | **135** | **135** |
+| Level | Name | Current Count |
+|-------|------|---|
+| 0     | Meta-Orchestrator | 1 |
+| 1     | Section Orchestrators | 6 |
+| 2     | Module Design & Review Orchestrators | 4 |
+| 3     | Specialists (Implementation + Code Review) | 24 |
+| 4     | Implementation Engineers | 6 |
+| 5     | Junior Engineers | 3 |
+| **Total** | **All Agents** | **44** |
 
-*Note: These are estimates. Actual count depends on project complexity.*
+**Level 3 Breakdown:**
+- Implementation/Execution Specialists: 11 (implementation, test, documentation, performance, security, blog writer, numerical stability, test flakiness, PR cleanup, mojo syntax validator, CI failure analyzer)
+- Code Review Specialists: 13 (implementation, documentation, test, security, safety, mojo language, performance, algorithm, architecture, data engineering, paper, research, dependency)
+
+*Historical Note: Initial planning estimated 23 agent types. Actual implementation has expanded to 44 specialized agents to handle emerging needs (blog writing, CI analysis, numerical stability, test flakiness, PR cleanup, mojo validation).*
 
 ## Quick Reference
 

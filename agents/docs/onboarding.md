@@ -1449,7 +1449,7 @@ For security-critical components:
 ### Immediate Actions
 
 1. **Try the tutorial**: Implement a simple function end-to-end
-1. **Browse agent catalog**: See all 23 agents in [agent-catalog.md](agent-catalog.md)
+1. **Browse agent catalog**: See all 44 agents in [agent-catalog.md](agent-catalog.md)
 1. **Study real examples**: Check `.claude/agents/` for actual configurations
 
 ### Deepening Understanding
