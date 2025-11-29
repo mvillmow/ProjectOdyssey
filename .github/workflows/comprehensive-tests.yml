@@ -56,7 +56,7 @@ jobs:
             pattern: "test_*.mojo"
           - name: "Top-Level Tests"
             path: "tests"
-            pattern: "test_*.mojo training/test_*.mojo unit/test_*.mojo"
+            pattern: "test_*.mojo training/test_*.mojo unit/test_*.mojo integration/test_*.mojo"
           - name: "Debug"
             path: "tests/debug"
             pattern: "test_*.mojo"
