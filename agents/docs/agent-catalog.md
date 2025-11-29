@@ -16,7 +16,7 @@
 
 ## Overview
 
-This catalog lists all 23 agent types in the ML Odyssey hierarchical agent system. Each entry includes:
+This catalog lists all 44 agents in the ML Odyssey hierarchical agent system. Each entry includes:
 
 - **Name**: Agent identifier
 - **Description**: What the agent does
@@ -24,9 +24,11 @@ This catalog lists all 23 agent types in the ML Odyssey hierarchical agent syste
 - **Capabilities**: What it can do
 - **Example Use Cases**: Concrete scenarios
 
-**Total Agents**: 23 types across 6 levels
+**Total Agents**: 44 agents across 6 levels (1 L0 + 6 L1 + 4 L2 + 24 L3 + 6 L4 + 3 L5)
 
 ## Quick Reference Table
+
+Representative sample of 44 agents (see detailed sections below for complete list):
 
 | Level | Agent Name | Primary Focus | Scope |
 |-------|-----------|---------------|-------|
@@ -40,16 +42,22 @@ This catalog lists all 23 agent types in the ML Odyssey hierarchical agent syste
 | **2** | Architecture Design Agent | Module architecture | Module design |
 | **2** | Integration Design Agent | Cross-module integration | Module integration |
 | **2** | Security Design Agent | Security architecture | Security design |
+| **2** | Code Review Orchestrator | PR review coordination | Code review |
 | **3** | Implementation Specialist | Implementation coordination | Component implementation |
 | **3** | Test Specialist | Test coordination | Component testing |
 | **3** | Documentation Specialist | Documentation coordination | Component docs |
 | **3** | Performance Specialist | Performance optimization | Component performance |
-| **3** | Security Specialist | Security implementation | Component security |
+| **3** | Blog Writer Specialist | Development blog posts | Narrative content |
+| **3** | Implementation Review Specialist | Code correctness review | PR dimensions |
+| **3** | Safety Review Specialist | Memory safety review | PR dimensions |
+| **3** | Mojo Language Review Specialist | Language patterns review | PR dimensions |
+| **3** | *+ 11 more Level 3 specialists* | *Various review dimensions* | *PR reviews* |
 | **4** | Senior Implementation Engineer | Complex code | Complex functions |
 | **4** | Implementation Engineer | Standard code | Standard functions |
 | **4** | Test Engineer | Test implementation | Unit/integration tests |
-| **4** | Documentation Writer | Documentation writing | API docs, examples |
+| **4** | Documentation Engineer | Documentation writing | API docs, examples |
 | **4** | Performance Engineer | Performance tuning | Benchmarks, profiling |
+| **4** | Log Analyzer | Log parsing & analysis | Diagnostic info |
 | **5** | Junior Implementation Engineer | Simple code | Boilerplate, simple functions |
 | **5** | Junior Test Engineer | Simple tests | Test boilerplate |
 | **5** | Junior Documentation Engineer | Simple docs | Docstrings, formatting |
@@ -1276,6 +1284,6 @@ cat .claude/agents/architecture-design.md
 
 ---
 
-**Total Agent Types**: 23 across 6 levels
+**Total Agent Types**: 44 across 6 levels (1 L0 + 6 L1 + 4 L2 + 24 L3 + 6 L4 + 3 L5)
 
 **Remember**: Trust the hierarchy, communicate clearly, and let agents work at their appropriate level!
