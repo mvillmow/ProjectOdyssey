@@ -242,43 +242,57 @@ jobs:
           echo "**Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> benchmark-report.md
           echo "" >> benchmark-report.md
 
-          # List benchmark suites
-          echo "## Benchmark Suites" >> benchmark-report.md
-          echo "" >> benchmark-report.md
+          BENCHMARK_RESULT="${{ needs.benchmark-execution.result }}"
 
-          for suite in tensor-ops model-training data-loading; do
-            RESULT_FILE="all-results/benchmark-results-$suite/$suite.json"
-
-            if [ -f "$RESULT_FILE" ]; then
-              # Check if benchmark was implemented
-              if grep -q "not_implemented\|not_found" "$RESULT_FILE"; then
-                echo "- ⚠️  **$suite**: Not yet implemented" >> benchmark-report.md
-              else
-                echo "- ✅ **$suite**: Completed" >> benchmark-report.md
-              fi
-            else
-              echo "- ❌ **$suite**: Failed or did not run" >> benchmark-report.md
-            fi
-          done
-
-          echo "" >> benchmark-report.md
-
-          # Regression summary
-          echo "## Regression Analysis" >> benchmark-report.md
-          echo "" >> benchmark-report.md
-          echo "⚠️  Baseline comparison not yet implemented" >> benchmark-report.md
-          echo "" >> benchmark-report.md
-          echo "Future: Performance regression detection against main branch baseline" >> benchmark-report.md
-          echo "" >> benchmark-report.md
-
-          # Status
-          echo "## Status" >> benchmark-report.md
-          echo "" >> benchmark-report.md
-
-          if [ "${{ needs.benchmark-execution.result }}" = "success" ]; then
-            echo "✅ **Benchmark execution completed successfully**" >> benchmark-report.md
+          # Check if benchmarks were skipped (no 'benchmark' label on PR)
+          if [ "$BENCHMARK_RESULT" = "skipped" ]; then
+            echo "## Status" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+            echo "⏭️ **Benchmarks skipped** - Add the \`benchmark\` label to run performance benchmarks." >> benchmark-report.md
+            echo "" >> benchmark-report.md
+            echo "Benchmarks only run when:" >> benchmark-report.md
+            echo "- The \`benchmark\` label is added to the PR" >> benchmark-report.md
+            echo "- Manually triggered via workflow dispatch" >> benchmark-report.md
+            echo "- Scheduled nightly run" >> benchmark-report.md
           else
-            echo "❌ **Some benchmarks failed**" >> benchmark-report.md
+            # List benchmark suites
+            echo "## Benchmark Suites" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+
+            for suite in tensor-ops model-training data-loading; do
+              RESULT_FILE="all-results/benchmark-results-$suite/$suite.json"
+
+              if [ -f "$RESULT_FILE" ]; then
+                # Check if benchmark was implemented
+                if grep -q "not_implemented\|not_found" "$RESULT_FILE"; then
+                  echo "- ⚠️  **$suite**: Not yet implemented" >> benchmark-report.md
+                else
+                  echo "- ✅ **$suite**: Completed" >> benchmark-report.md
+                fi
+              else
+                echo "- ❌ **$suite**: Failed or did not run" >> benchmark-report.md
+              fi
+            done
+
+            echo "" >> benchmark-report.md
+
+            # Regression summary
+            echo "## Regression Analysis" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+            echo "⚠️  Baseline comparison not yet implemented" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+            echo "Future: Performance regression detection against main branch baseline" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+
+            # Status
+            echo "## Status" >> benchmark-report.md
+            echo "" >> benchmark-report.md
+
+            if [ "$BENCHMARK_RESULT" = "success" ]; then
+              echo "✅ **Benchmark execution completed successfully**" >> benchmark-report.md
+            else
+              echo "❌ **Some benchmarks failed**" >> benchmark-report.md
+            fi
           fi
 
           # Display report

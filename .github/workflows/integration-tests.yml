@@ -177,12 +177,10 @@ jobs:
           echo "**Workflow Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> integration-report.md
           echo "" >> integration-report.md
 
-          # Count results
-          TOTAL_SUITES=3
-          PASSED_SUITES=0
-          FAILED_SUITES=0
+          # Get the overall job result - this is the source of truth
+          JOB_RESULT="${{ needs.test-integration.result }}"
 
-          # Check each test suite result
+          # Check each test suite for details
           for suite in mojo-integration python-integration shared-integration; do
             echo "## Test Suite: \`$suite\`" >> integration-report.md
 
@@ -191,31 +189,30 @@ jobs:
             if [ -d "$RESULT_DIR" ]; then
               if grep -q "No.*integration tests found" "$RESULT_DIR"/*.txt 2>/dev/null; then
                 echo "⚠️  No tests implemented yet" >> integration-report.md
-                PASSED_SUITES=$((PASSED_SUITES + 1))
               else
                 echo "✅ Tests passed" >> integration-report.md
-                PASSED_SUITES=$((PASSED_SUITES + 1))
               fi
             else
-              echo "❌ Tests failed or did not run" >> integration-report.md
-              FAILED_SUITES=$((FAILED_SUITES + 1))
+              # No artifact directory - could be pass (no tests) or fail
+              # Trust the job result for the actual status
+              if [ "$JOB_RESULT" = "success" ]; then
+                echo "⚠️  No tests implemented yet" >> integration-report.md
+              else
+                echo "❌ Tests failed - check workflow logs for details" >> integration-report.md
+              fi
             fi
 
             echo "" >> integration-report.md
           done
 
-          # Summary
+          # Summary based on job result (source of truth)
           echo "## Summary" >> integration-report.md
           echo "" >> integration-report.md
-          echo "- **Total Suites**: $TOTAL_SUITES" >> integration-report.md
-          echo "- **Passed**: $PASSED_SUITES" >> integration-report.md
-          echo "- **Failed**: $FAILED_SUITES" >> integration-report.md
-          echo "" >> integration-report.md
 
-          # Check for failures
-          AGENT_RESULT="${{ needs.test-integration.result }}"
-          if [ "$AGENT_RESULT" = "success" ]; then
+          if [ "$JOB_RESULT" = "success" ]; then
             echo "✅ **All integration tests passed!**" >> integration-report.md
+          elif [ "$JOB_RESULT" = "skipped" ]; then
+            echo "⏭️ **Integration tests were skipped.**" >> integration-report.md
           else
             echo "❌ **Some integration tests failed. Please review the logs.**" >> integration-report.md
           fi
