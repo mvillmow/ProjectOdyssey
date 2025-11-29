@@ -192,12 +192,22 @@ struct PrecisionConfig:
 
         Args:
             initial_scale: Initial loss scale (default: 2^16).
+                          BF16 has wider range than FP16, so slightly lower
+                          initial scale can be used, but 2^16 is safe default.
 
         Returns:
             PrecisionConfig with BF16 settings.
 
         Note:
-            Currently uses FP16 as BF16 is not natively supported in Mojo.
+            Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7.
+            When Mojo adds native BF16 support, this will automatically use it
+            via the bfloat16_dtype alias in dtype_utils.mojo.
+
+        BF16 Characteristics (when natively supported):
+            - 1 sign + 8 exponent + 7 mantissa = 16 bits
+            - Range: ~1e-38 to 3.4e38 (same as FP32)
+            - Precision: ~2 decimal digits (less than FP16)
+            - Better for large models due to wider exponent range
         """
         # NOTE: bfloat16_dtype aliases to float16_dtype until Mojo supports BF16
         return PrecisionConfig(
@@ -212,17 +222,33 @@ struct PrecisionConfig:
     fn fp8(initial_scale: Float32 = 65536.0) -> PrecisionConfig:
         """Create FP8 (quarter precision) configuration.
 
-        FP8 has very limited range, requires aggressive scaling.
+        FP8 has very limited range, requires aggressive scaling and monitoring.
         Uses FP16 for storage to reduce quantization noise.
 
         Args:
-            initial_scale: Initial loss scale (default: 2^16).
+            initial_scale: Initial loss scale (default: 2^16 = 65536.0).
+                          FP8 has much smaller range than FP16, so gradient
+                          overflows are more likely. Higher initial scale (2^16+)
+                          is recommended to prevent early overflows.
 
         Returns:
             PrecisionConfig with FP8 settings.
 
         Note:
-            FP8 compute is experimental. Uses FP16 storage for stability.
+            FP8 compute is experimental and currently uses FP16 as a fallback.
+            When Mojo adds native FP8 support, this will use true FP8 compute.
+
+        FP8 Characteristics (E4M3 format when available):
+            - 1 sign + 4 exponent + 3 mantissa = 8 bits
+            - Range: ~1.5e-4 to 448 (very limited)
+            - Precision: ~1 decimal digit (very low)
+            - Requires: Aggressive gradient scaling, tight clipping, lower LR
+            - Use Cases: Very large models (>1GB), memory-constrained training
+
+        Current Implementation:
+            - Compute: FP16 (fallback, will use FP8 when available)
+            - Storage: FP16 (reduces quantization noise vs pure FP8)
+            - Scaling: Recommended initial_scale >= 2^16 for stability
         """
         # FP8 for compute, FP16 for storage (reduces quantization noise)
         return PrecisionConfig(
