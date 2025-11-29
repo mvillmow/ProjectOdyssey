@@ -87,7 +87,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
             var mantissa = Int(abs_x * 16384.0)  # Scale to 2-bit range
             if mantissa > 3:
                 mantissa = 3
-            var bits = (sign << 7) | mantissa.cast[DType.uint8]()
+            var bits = (sign << 7) | UInt8(mantissa)
             return BF8(bits)
 
         # Normal number encoding
@@ -122,7 +122,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
             mantissa = 3
 
         # Combine: sign(1) | exponent(5) | mantissa(2)
-        var bits = (sign << 7) | (biased_exp.cast[DType.uint8]() << 2) | mantissa.cast[DType.uint8]()
+        var bits = (sign << 7) | (UInt8(biased_exp) << 2) | UInt8(mantissa)
         return BF8(bits)
 
     fn to_float32(self) -> Float32:

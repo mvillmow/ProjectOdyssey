@@ -21,7 +21,7 @@ Usage:
     print(bf16)  # BFloat16(3.140625)
 """
 
-from memory import UnsafePointer, Pointer
+from memory import bitcast
 from math import isnan, isinf
 
 
@@ -85,10 +85,8 @@ struct BFloat16:
         if isinf(value):
             return BFloat16._inf() if value > 0 else BFloat16._neg_inf()
 
-        # Get bit representation of Float32 using stack allocation
-        var f32_val = value
-        var ptr_addr = Pointer.address_of(f32_val)
-        var bits32 = ptr_addr.bitcast[UInt32]()[]
+        # Get bit representation of Float32 using SIMD bitcast
+        var bits32 = bitcast[DType.uint32, 1](SIMD[DType.float32, 1](value))[0]
 
         # Extract components from Float32 (32 bits)
         # Float32: [sign:1][exponent:8][mantissa:23]
@@ -97,9 +95,9 @@ struct BFloat16:
         var mantissa23 = bits32 & 0x7FFFFF
 
         # Round to nearest even (RNE)
-        # Check bit 16 (first truncated bit) and bits 15:0 for rounding
-        var rounding_bit = (bits32 >> 16) & 0x1
-        var sticky_bits = bits32 & 0xFFFF
+        # BF16 keeps bits 31-16, so bit 15 is the rounding bit, bits 14-0 are sticky
+        var rounding_bit = (bits32 >> 15) & 0x1
+        var sticky_bits = bits32 & 0x7FFF
 
         # Extract top 7 bits of mantissa for BF16
         var mantissa7 = (mantissa23 >> 16) & 0x7F
@@ -139,10 +137,8 @@ struct BFloat16:
         Example:
             var bf16 = BFloat16.from_float32_truncate(3.14159)
         """
-        # Get bit representation using stack allocation
-        var f32_val = value
-        var ptr_addr = Pointer.address_of(f32_val)
-        var bits32 = ptr_addr.bitcast[UInt32]()[]
+        # Get bit representation using SIMD bitcast
+        var bits32 = bitcast[DType.uint32, 1](SIMD[DType.float32, 1](value))[0]
 
         # Simply take upper 16 bits (truncate lower 16)
         var bits16 = UInt16(bits32 >> 16)
@@ -173,10 +169,8 @@ struct BFloat16:
         # We just zero-pad the lower 16 bits of mantissa
         var bits32 = UInt32(self.bits) << 16
 
-        # Convert bits to Float32 using stack allocation
-        var u32_val = bits32
-        var ptr_addr = Pointer.address_of(u32_val)
-        var result = ptr_addr.bitcast[Float32]()[]
+        # Convert bits to Float32 using SIMD bitcast
+        var result = bitcast[DType.float32, 1](SIMD[DType.uint32, 1](bits32))[0]
 
         return result
 

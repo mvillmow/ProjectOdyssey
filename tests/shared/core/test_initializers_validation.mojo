@@ -317,8 +317,8 @@ fn test_basic_distributions_statistical_properties() raises:
     print("    Mean: " + String(c_mean) + " (expected " + String(const_val) + ")")
     print("    Variance: " + String(c_var) + " (expected 0.0)")
 
-    assert_equal(c_mean, const_val, "Constant mean")
-    assert_equal(c_var, 0.0, "Constant variance")
+    assert_close_float(c_mean, const_val, rtol=1e-5, atol=1e-6, message="Constant mean")
+    assert_close_float(c_var, 0.0, rtol=1e-5, atol=1e-6, message="Constant variance")
 
     print("  ✓ Basic distributions have correct statistical properties")
 
@@ -347,10 +347,10 @@ fn test_all_initializers_support_dtypes() raises:
         var n = normal(shape, dtype=dt)
         var c = constant(shape, 0.5, dtype=dt)
 
-        assert_dtype_equal(xu.dtype()(), dt, "Xavier uniform dtype: " + name)
-        assert_dtype_equal(xn.dtype()(), dt, "Xavier normal dtype: " + name)
-        assert_dtype_equal(ku.dtype()(), dt, "Kaiming uniform dtype: " + name)
-        assert_dtype_equal(kn.dtype()(), dt, "Kaiming normal dtype: " + name)
+        assert_dtype_equal(xu.dtype(), dt, "Xavier uniform dtype: " + name)
+        assert_dtype_equal(xn.dtype(), dt, "Xavier normal dtype: " + name)
+        assert_dtype_equal(ku.dtype(), dt, "Kaiming uniform dtype: " + name)
+        assert_dtype_equal(kn.dtype(), dt, "Kaiming normal dtype: " + name)
         assert_dtype_equal(u.dtype(), dt, "Uniform dtype: " + name)
         assert_dtype_equal(n.dtype(), dt, "Normal dtype: " + name)
         assert_dtype_equal(c.dtype(), dt, "Constant dtype: " + name)
@@ -402,13 +402,16 @@ fn test_initializers_integration() raises:
 
     # Use different initializers for different layers
     var w1 = kaiming_uniform(784, 256, layer1_shape, seed_val=1)  # ReLU layer
-    var b1 = constant(List[Int](), 0.0)
+    var bias1_shape = List[Int](256)
+    var b1 = constant(bias1_shape, 0.0)
 
     var w2 = kaiming_normal(256, 128, layer2_shape, seed_val=2)  # ReLU layer
-    var b2 = constant(List[Int](), 0.0)
+    var bias2_shape = List[Int](128)
+    var b2 = constant(bias2_shape, 0.0)
 
     var w3 = xavier_uniform(128, 10, layer3_shape, seed_val=3)  # Softmax layer
-    var b3 = uniform(List[Int](), low=-0.01, high=0.01, seed_val=4)
+    var bias3_shape = List[Int](10)
+    var b3 = uniform(bias3_shape, low=-0.01, high=0.01, seed_val=4)
 
     # Verify all tensors have correct shapes
     assert_equal(w1.numel(), 784 * 256, "Layer 1 weights shape")

@@ -129,7 +129,8 @@ fn rmsprop_step(
     var alpha_tensor = full_like(square_avg, alpha)
     var one_minus_alpha = full_like(square_avg, 1.0 - alpha)
 
-    var grad_squared = power(effective_gradients, 2.0)
+    var exponent_tensor = full_like(effective_gradients, 2.0)
+    var grad_squared = power(effective_gradients, exponent_tensor)
     var avg_term1 = multiply(alpha_tensor, square_avg)
     var avg_term2 = multiply(one_minus_alpha, grad_squared)
     var new_square_avg = add(avg_term1, avg_term2)
