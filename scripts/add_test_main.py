@@ -32,7 +32,7 @@ def find_test_functions(file_content: str) -> List[str]:
     """
     # Pattern to match function definitions starting with 'test_'
     # Matches: fn test_name(...) raises:
-    pattern = r'^fn\s+(test_\w+)\s*\([^)]*\)\s*(?:raises\s*)?:'
+    pattern = r"^fn\s+(test_\w+)\s*\([^)]*\)\s*(?:raises\s*)?:"
 
     test_functions = []
     for line in file_content.splitlines():
@@ -52,7 +52,7 @@ def has_main_function(file_content: str) -> bool:
     Returns:
         True if main() function exists, False otherwise
     """
-    pattern = r'^fn\s+main\s*\([^)]*\)\s*(?:raises\s*)?:'
+    pattern = r"^fn\s+main\s*\([^)]*\)\s*(?:raises\s*)?:"
 
     for line in file_content.splitlines():
         if re.match(pattern, line.strip()):
@@ -97,29 +97,33 @@ def generate_main_function(test_functions: List[str], file_path: str) -> str:
 
     # Add each test
     for test_func in test_functions:
-        main_code.extend([
-            "    # " + test_func,
-            "    total += 1",
-            "    try:",
-            f"        {test_func}()",
-            "        passed += 1",
-            f'        print("  ✓ {test_func}")',
-            "    except e:",
-            "        failed += 1",
-            f'        print("  ✗ {test_func}:", e)',
-            "",
-        ])
+        main_code.extend(
+            [
+                "    # " + test_func,
+                "    total += 1",
+                "    try:",
+                f"        {test_func}()",
+                "        passed += 1",
+                f'        print("  ✓ {test_func}")',
+                "    except e:",
+                "        failed += 1",
+                f'        print("  ✗ {test_func}:", e)',
+                "",
+            ]
+        )
 
     # Add summary
-    main_code.extend([
-        '    # Summary',
-        '    print("\\n" + "=" * 70)',
-        '    print("Results:", passed, "/", total, "passed,", failed, "failed")',
-        '    print("=" * 70)',
-        "",
-        "    if failed > 0:",
-        '        raise Error("Tests failed")',
-    ])
+    main_code.extend(
+        [
+            "    # Summary",
+            '    print("\\n" + "=" * 70)',
+            '    print("Results:", passed, "/", total, "passed,", failed, "failed")',
+            '    print("=" * 70)',
+            "",
+            "    if failed > 0:",
+            '        raise Error("Tests failed")',
+        ]
+    )
 
     return "\n".join(main_code)
 
@@ -188,21 +192,12 @@ Examples:
 
     # Process all test files in a directory
     python scripts/add_test_main.py tests/shared/core/test_*.mojo
-        """
+        """,
     )
 
-    parser.add_argument(
-        "files",
-        nargs="+",
-        type=Path,
-        help="Mojo test files to process"
-    )
+    parser.add_argument("files", nargs="+", type=Path, help="Mojo test files to process")
 
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be done without modifying files"
-    )
+    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without modifying files")
 
     args = parser.parse_args()
 

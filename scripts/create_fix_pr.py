@@ -19,13 +19,7 @@ def run_command(cmd, description):
     print(f"[*] {description}")
     print(f"    Command: {' '.join(cmd)}")
     try:
-        result = subprocess.run(
-            cmd,
-            cwd="/home/mvillmow/ml-odyssey",
-            capture_output=True,
-            text=True,
-            check=True
-        )
+        result = subprocess.run(cmd, cwd="/home/mvillmow/ml-odyssey", capture_output=True, text=True, check=True)
         if result.stdout:
             print(f"    Output: {result.stdout.strip()}")
         return result
@@ -46,22 +40,15 @@ def main():
     # Step 1: Create feature branch
     try:
         run_command(
-            ["git", "checkout", "-b", "fix-floor-divide-edge"],
-            "Creating feature branch 'fix-floor-divide-edge'..."
+            ["git", "checkout", "-b", "fix-floor-divide-edge"], "Creating feature branch 'fix-floor-divide-edge'..."
         )
     except subprocess.CalledProcessError:
         # Branch might already exist, try to switch to it
         print("    Branch may already exist, attempting to switch...")
-        run_command(
-            ["git", "checkout", "fix-floor-divide-edge"],
-            "Switching to existing branch..."
-        )
+        run_command(["git", "checkout", "fix-floor-divide-edge"], "Switching to existing branch...")
 
     # Step 2: Stage changes
-    run_command(
-        ["git", "add", "shared/core/arithmetic.mojo"],
-        "Staging arithmetic.mojo changes..."
-    )
+    run_command(["git", "add", "shared/core/arithmetic.mojo"], "Staging arithmetic.mojo changes...")
 
     # Step 3: Commit
     commit_message = """fix(arithmetic): Handle division by zero in floor_divide operation
@@ -81,26 +68,17 @@ Generated with Claude Code (Senior Implementation Engineer)
 
 Co-Authored-By: Claude <noreply@anthropic.com>"""
 
-    run_command(
-        ["git", "commit", "-m", commit_message],
-        "Committing fix..."
-    )
+    run_command(["git", "commit", "-m", commit_message], "Committing fix...")
 
     # Step 4: Push branch
-    run_command(
-        ["git", "push", "-u", "origin", "fix-floor-divide-edge"],
-        "Pushing branch to origin..."
-    )
+    run_command(["git", "push", "-u", "origin", "fix-floor-divide-edge"], "Pushing branch to origin...")
 
     # Step 5: Create PR
     pr_title = "fix(arithmetic): Handle division by zero in floor_divide"
     pr_body = "Closes #2057"
 
     try:
-        result = run_command(
-            ["gh", "pr", "create", "--title", pr_title, "--body", pr_body],
-            "Creating pull request..."
-        )
+        result = run_command(["gh", "pr", "create", "--title", pr_title, "--body", pr_body], "Creating pull request...")
         print()
         print("=" * 70)
         print("SUCCESS: Pull request created!")
