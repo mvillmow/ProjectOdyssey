@@ -323,10 +323,10 @@ cd .. && rm -rf ml-odyssey
 
 ## Additional Resources
 
-- **Documentation**: See [README.md](README.md) for project overview
-- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines
-- **Agent System**: See [agents/README.md](agents/README.md) for agent documentation
-- **Language Strategy**: See [notes/review/adr/ADR-001-language-selection-tooling.md](notes/review/adr/ADR-001-language-selection-tooling.md)
+- **Documentation**: See [README.md](https://github.com/mvillmow/ml-odyssey/blob/main/README.md) for project overview
+- **Contributing**: See [CONTRIBUTING.md](https://github.com/mvillmow/ml-odyssey/blob/main/CONTRIBUTING.md) for contribution guidelines
+- **Agent System**: See [agents/README.md](https://github.com/mvillmow/ml-odyssey/blob/main/agents/README.md) for agent documentation
+- **Language Strategy**: See [ADR-001](https://github.com/mvillmow/ml-odyssey/blob/main/notes/review/adr/ADR-001-language-selection-tooling.md) for language selection strategy
 - **Issue Tracking**: [GitHub Issues](https://github.com/mvillmow/ml-odyssey/issues)
 
 ## Support
