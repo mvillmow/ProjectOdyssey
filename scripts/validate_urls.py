@@ -30,6 +30,8 @@ SKIP_URLS = {
     "http://example.com",  # Used in test files
     "https://arxiv.org/abs/1234.5678",  # Example URL in documentation
     "https://github.com/user/repo.git",  # Example in comments
+    # Template URLs (contain placeholders)
+    "https://github.com/modularml/mojo/issues/",  # Template in batch_planning_docs.py
 }
 
 # URL pattern to match HTTP/HTTPS URLs
