@@ -33,6 +33,14 @@ repos:
         files: \.py$
         types: [python]
         pass_filenames: true
+      - id: ruff-format-scripts
+        name: Ruff Format Scripts
+        description: Format Python files in scripts/ using pixi run ruff format
+        entry: pixi run ruff format scripts/
+        language: system
+        files: ^scripts/.*\.py$
+        types: [python]
+        pass_filenames: false
 
   # Markdown linting
   - repo: https://github.com/DavidAnson/markdownlint-cli2
