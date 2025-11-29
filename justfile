@@ -162,6 +162,45 @@ native-format:
     @NATIVE=1 just format
 
 # ==============================================================================
+# Model Training and Inference
+# ==============================================================================
+
+# Train a model (default: LeNet-5 on EMNIST)
+train model="lenet5" precision="fp32" epochs="10" batch_size="32" lr="0.001":
+    @echo "Training {{model}} with precision={{precision}}, epochs={{epochs}}"
+    @NATIVE=1 pixi run mojo run examples/{{model}}-emnist/run_train.mojo \
+        --epochs {{epochs}} \
+        --batch-size {{batch_size}} \
+        --lr {{lr}} \
+        --precision {{precision}}
+
+# Run inference on test set
+infer model="lenet5" checkpoint="lenet5_weights":
+    @echo "Running inference for {{model}} with checkpoint={{checkpoint}}"
+    @NATIVE=1 pixi run mojo run examples/{{model}}-emnist/run_infer.mojo \
+        --checkpoint {{checkpoint}} \
+        --test-set
+
+# Run inference on single image
+infer-image model="lenet5" checkpoint image_path:
+    @echo "Running inference on {{image_path}}"
+    @NATIVE=1 pixi run mojo run examples/{{model}}-emnist/run_infer.mojo \
+        --checkpoint {{checkpoint}} \
+        --image {{image_path}}
+
+# List available models
+list-models:
+    @echo "Available models:"
+    @ls -d examples/*/ 2>/dev/null | xargs -I{} basename {} | sed 's/-.*//g' | sort -u || echo "No models found"
+
+# Native training variants (no Docker)
+native-train model="lenet5" precision="fp32" epochs="10":
+    @NATIVE=1 just train {{model}} {{precision}} {{epochs}}
+
+native-infer model="lenet5" checkpoint="lenet5_weights":
+    @NATIVE=1 just infer {{model}} {{checkpoint}}
+
+# ==============================================================================
 # Development
 # ==============================================================================
 
@@ -233,6 +272,8 @@ help:
     @echo "Docker mode (default):  just <recipe>"
     @echo "Native mode:            just native-<recipe>"
     @echo ""
+    @echo "Training:  train [model] [precision] [epochs], infer [model] [checkpoint]"
+    @echo "           list-models, infer-image [model] [checkpoint] [image_path]"
     @echo "Build:     build, build-debug, build-release, build-all"
     @echo "Test:      test, test-python, test-coverage, test-integration"
     @echo "Lint:      lint, lint-python, lint-markdown, format"
@@ -240,6 +281,11 @@ help:
     @echo "Dev:       dev, shell, docs, docs-serve"
     @echo "CI:        ci, ci-full, pre-commit, validate"
     @echo "Utility:   help, status, clean, version"
+    @echo ""
+    @echo "Examples:"
+    @echo "  just train                          # Train LeNet-5 with defaults"
+    @echo "  just train lenet5 fp16 20           # Train with FP16, 20 epochs"
+    @echo "  just infer lenet5 ./weights         # Evaluate on test set"
     @echo ""
     @echo "For more: just --list"
 

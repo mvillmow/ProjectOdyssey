@@ -25,11 +25,12 @@ from shared.core.pooling import maxpool2d, maxpool2d_backward
 from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.initializers import kaiming_uniform, xavier_uniform
+from shared.core.traits import Model
 from collections import List
 from weights import save_tensor, load_tensor
 
 
-struct LeNet5:
+struct LeNet5(Model, Movable):
     """LeNet-5 model for EMNIST classification.
 
     Attributes:
@@ -269,6 +270,42 @@ struct LeNet5:
         _sgd_update(self.fc2_bias, grad_fc2_bias, learning_rate)
         _sgd_update(self.fc3_weights, grad_fc3_weights, learning_rate)
         _sgd_update(self.fc3_bias, grad_fc3_bias, learning_rate)
+
+
+    fn parameters(self) raises -> List[ExTensor]:
+        """Return all trainable parameters.
+
+        Returns:
+            List of parameter tensors (10 total: conv1/2 kernel/bias, fc1/2/3 weights/bias)
+
+        Note:
+            This method copies the parameter tensors. For in-place updates,
+            use update_parameters() instead.
+        """
+        var params = List[ExTensor]()
+        params.append(self.conv1_kernel)
+        params.append(self.conv1_bias)
+        params.append(self.conv2_kernel)
+        params.append(self.conv2_bias)
+        params.append(self.fc1_weights)
+        params.append(self.fc1_bias)
+        params.append(self.fc2_weights)
+        params.append(self.fc2_bias)
+        params.append(self.fc3_weights)
+        params.append(self.fc3_bias)
+        return params^
+
+    fn zero_grad(mut self) raises:
+        """Reset all parameter gradients to zero.
+
+        Note:
+            LeNet5 uses manual gradient computation in compute_gradients().
+            Gradients are computed fresh each forward/backward pass, so this
+            is a no-op. Included for Model trait conformance.
+        """
+        # Gradients are computed fresh each batch in compute_gradients()
+        # No persistent gradient accumulators to reset
+        pass
 
 
 fn _sgd_update(mut param: ExTensor, grad: ExTensor, lr: Float32) raises:

@@ -1,0 +1,31 @@
+# LeNet-5 EMNIST Training Configuration - FP32 (Full Precision)
+# Default configuration for highest numerical stability
+
+[model]
+name = "lenet5"
+num_classes = 47
+
+[training]
+epochs = 10
+batch_size = 32
+learning_rate = 0.001
+precision = "fp32"
+
+[precision]
+mode = "fp32"
+compute_dtype = "float32"
+storage_dtype = "float32"
+use_gradient_scaler = false
+# No gradient scaling needed for FP32
+
+[data]
+data_dir = "datasets/emnist"
+train_images = "emnist-balanced-train-images-idx3-ubyte"
+train_labels = "emnist-balanced-train-labels-idx1-ubyte"
+test_images = "emnist-balanced-test-images-idx3-ubyte"
+test_labels = "emnist-balanced-test-labels-idx1-ubyte"
+
+[output]
+weights_dir = "lenet5_weights_fp32"
+save_every_epoch = true
+save_best = true

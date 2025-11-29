@@ -1,0 +1,49 @@
+# LeNet-5 EMNIST Training Configuration - BF16 (Brain Float)
+# Mixed precision training with wider exponent range than FP16
+# Note: Currently uses FP16 as BF16 is not natively supported in Mojo v0.25.7
+
+[model]
+name = "lenet5"
+num_classes = 47
+
+[training]
+epochs = 10
+batch_size = 64  # Larger batch size possible with reduced precision
+learning_rate = 0.001
+precision = "bf16"
+
+[precision]
+mode = "bf16"
+# BF16 format: 1 sign + 8 exponent + 7 mantissa = 16 bits
+# Wider range than FP16, reduced precision
+# Range: ~1e-38 to 3.4e38 (same as FP32)
+compute_dtype = "bfloat16"  # Currently aliases to float16
+storage_dtype = "bfloat16"  # Currently aliases to float16
+master_dtype = "float32"
+use_gradient_scaler = true
+
+[precision.gradient_scaler]
+# BF16 has wider range, so overflow is less likely
+# Can use more aggressive scaling
+initial_scale = 65536.0
+growth_factor = 2.0
+backoff_factor = 0.5
+growth_interval = 1000  # Faster growth than FP16
+min_scale = 1.0
+max_scale = 65536.0
+
+[precision.gradient_clipping]
+enabled = true
+max_norm = 1.0
+
+[data]
+data_dir = "datasets/emnist"
+train_images = "emnist-balanced-train-images-idx3-ubyte"
+train_labels = "emnist-balanced-train-labels-idx1-ubyte"
+test_images = "emnist-balanced-test-images-idx3-ubyte"
+test_labels = "emnist-balanced-test-labels-idx1-ubyte"
+
+[output]
+weights_dir = "lenet5_weights_bf16"
+save_every_epoch = true
+save_best = true

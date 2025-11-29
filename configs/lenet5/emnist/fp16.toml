@@ -1,0 +1,44 @@
+# LeNet-5 EMNIST Training Configuration - FP16 (Half Precision)
+# Mixed precision training with gradient scaling for memory efficiency
+
+[model]
+name = "lenet5"
+num_classes = 47
+
+[training]
+epochs = 10
+batch_size = 64  # Larger batch size possible with FP16
+learning_rate = 0.001
+precision = "fp16"
+
+[precision]
+mode = "fp16"
+compute_dtype = "float16"
+storage_dtype = "float16"
+master_dtype = "float32"  # Always FP32 for optimizer stability
+use_gradient_scaler = true
+
+[precision.gradient_scaler]
+# Dynamic loss scaling to prevent gradient underflow
+initial_scale = 65536.0  # 2^16
+growth_factor = 2.0
+backoff_factor = 0.5
+growth_interval = 2000
+min_scale = 1.0
+max_scale = 65536.0
+
+[precision.gradient_clipping]
+enabled = true
+max_norm = 1.0  # Clip gradients by L2 norm
+
+[data]
+data_dir = "datasets/emnist"
+train_images = "emnist-balanced-train-images-idx3-ubyte"
+train_labels = "emnist-balanced-train-labels-idx1-ubyte"
+test_images = "emnist-balanced-test-images-idx3-ubyte"
+test_labels = "emnist-balanced-test-labels-idx1-ubyte"
+
+[output]
+weights_dir = "lenet5_weights_fp16"
+save_every_epoch = true
+save_best = true

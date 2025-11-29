@@ -294,6 +294,19 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
 # Export validation loop
 from .loops.validation_loop import ValidationLoop
 
+# Export mixed precision training utilities
+from .mixed_precision import (
+    GradientScaler,
+    convert_to_fp32_master,
+    update_model_from_master,
+    check_gradients_finite,
+    clip_gradients_by_norm,
+    clip_gradients_by_value,
+)
+
+# Export precision configuration
+from .precision_config import PrecisionConfig, PrecisionMode
+
 # Export CrossEntropyLoss wrapper (wraps core.loss.cross_entropy)
 struct CrossEntropyLoss(Loss, Movable):
     """Cross entropy loss function for classification.

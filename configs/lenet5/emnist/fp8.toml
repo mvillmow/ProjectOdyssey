@@ -1,0 +1,54 @@
+# LeNet-5 EMNIST Training Configuration - FP8 (Quarter Precision)
+# Experimental: Aggressive quantization for maximum memory efficiency
+# Note: FP8 compute not yet available in Mojo, uses FP16 storage for stability
+
+[model]
+name = "lenet5"
+num_classes = 47
+
+[training]
+epochs = 10
+batch_size = 128  # Much larger batch size possible with FP8
+learning_rate = 0.0005  # Lower learning rate for stability
+precision = "fp8"
+
+[precision]
+mode = "fp8"
+# FP8 E4M3 format: 1 sign + 4 exponent + 3 mantissa = 8 bits
+# Very limited precision and range
+# Range: ~1.5e-4 to 448 (E4M3)
+compute_dtype = "float8"  # Currently uses FP16 as fallback
+storage_dtype = "float16"  # FP16 for reduced quantization noise
+master_dtype = "float32"
+use_gradient_scaler = true
+
+[precision.gradient_scaler]
+# FP8 requires aggressive scaling due to limited range
+initial_scale = 65536.0
+growth_factor = 2.0
+backoff_factor = 0.25  # More aggressive backoff for FP8
+growth_interval = 500   # Faster adaptation needed
+min_scale = 1.0
+max_scale = 131072.0  # Higher max scale for FP8
+
+[precision.gradient_clipping]
+enabled = true
+max_norm = 0.5  # Tighter clipping for FP8 stability
+
+[precision.fp8_specific]
+# FP8 format selection
+format = "e4m3"  # E4M3 (wider range) or E5M2 (higher precision)
+# E4M3: 4 exponent bits, 3 mantissa bits - better for activations
+# E5M2: 5 exponent bits, 2 mantissa bits - better for weights
+
+[data]
+data_dir = "datasets/emnist"
+train_images = "emnist-balanced-train-images-idx3-ubyte"
+train_labels = "emnist-balanced-train-labels-idx1-ubyte"
+test_images = "emnist-balanced-test-images-idx3-ubyte"
+test_labels = "emnist-balanced-test-labels-idx1-ubyte"
+
+[output]
+weights_dir = "lenet5_weights_fp8"
+save_every_epoch = true
+save_best = true
