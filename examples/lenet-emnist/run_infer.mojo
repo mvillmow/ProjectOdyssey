@@ -51,7 +51,7 @@ fn get_class_label(class_idx: Int) -> String:
             return "?"
 
 
-struct InferConfig:
+struct InferConfig(Movable):
     """Inference configuration."""
     var checkpoint_dir: String
     var image_path: String
@@ -65,6 +65,13 @@ struct InferConfig:
         self.run_test_set = False
         self.data_dir = "datasets/emnist"
         self.top_k = 5
+
+    fn __moveinit__(out self, owned other: Self):
+        self.checkpoint_dir = other.checkpoint_dir^
+        self.image_path = other.image_path^
+        self.run_test_set = other.run_test_set
+        self.data_dir = other.data_dir^
+        self.top_k = other.top_k
 
 
 fn parse_args() raises -> InferConfig:
@@ -92,7 +99,7 @@ fn parse_args() raises -> InferConfig:
         else:
             i += 1
 
-    return config
+    return config^
 
 
 fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Float32]]:

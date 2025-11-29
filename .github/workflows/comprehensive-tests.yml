@@ -60,6 +60,12 @@ jobs:
           - name: "Debug"
             path: "tests/debug"
             pattern: "test_*.mojo"
+          - name: "LeNet-5 Examples"
+            path: "examples/lenet-emnist"
+            # Only run tests that don't require EMNIST dataset (test_lenet5.mojo, test_model.mojo)
+            # Other tests (test_gradients, test_loss_decrease, test_predictions, etc.) require:
+            #   datasets/emnist/ which must be downloaded separately
+            pattern: "test_lenet5.mojo test_model.mojo"
 
     name: "${{ matrix.test-group.name }}"
 

@@ -61,12 +61,12 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
     return result
 
 
-fn hex_to_bytes(hex_str: String, mut output: UnsafePointer[UInt8]) raises:
-    """Convert hexadecimal string to bytes.
+fn hex_to_bytes_into_tensor(hex_str: String, mut tensor: ExTensor) raises:
+    """Convert hexadecimal string to bytes and write into tensor.
 
     Args:
         hex_str: Hex string (e.g., "3f800000")
-        output: Output buffer (must be pre-allocated)
+        tensor: Tensor to write bytes into (must be pre-allocated)
 
     Raises:
         Error: If hex string is invalid
@@ -79,8 +79,9 @@ fn hex_to_bytes(hex_str: String, mut output: UnsafePointer[UInt8]) raises:
         var high = _hex_char_to_int(String(hex_str[i]))
         var low = _hex_char_to_int(String(hex_str[i + 1]))
         var offset = i // 2
-        var ptr = output + offset
-        ptr[] = UInt8((high << 4) | low)
+        var byte_value = UInt8((high << 4) | low)
+        # Write directly to tensor's data pointer
+        tensor._data.bitcast[UInt8]()[offset] = byte_value
 
 
 fn _hex_char_to_int(c: String) raises -> Int:
@@ -164,7 +165,7 @@ fn load_tensor(filepath: String) raises -> ExTensor:
     if len(lines) < 3:
         raise Error("Invalid weight file format")
 
-    var name = String(lines[0])
+    var _ = String(lines[0])  # Name not used in loading
     var metadata = String(lines[1])
     var hex_data = String(lines[2])
 
@@ -184,10 +185,8 @@ fn load_tensor(filepath: String) raises -> ExTensor:
     # Create tensor
     var tensor = zeros(shape, dtype)
 
-    # Convert hex to bytes
-    var dtype_size = _get_dtype_size(dtype)
-    var total_bytes = tensor.numel() * dtype_size
-    hex_to_bytes(hex_data, tensor._data)
+    # Convert hex to bytes directly into tensor
+    hex_to_bytes_into_tensor(hex_data, tensor)
 
     return tensor^
 
