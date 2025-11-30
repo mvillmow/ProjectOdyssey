@@ -30,7 +30,7 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
     # We need to find consecutive lines where shape[N] = value
 
     # Split into lines for processing
-    lines = content.split('\n')
+    lines = content.split("\n")
     modified_lines = []
     fixes = 0
 
@@ -39,7 +39,7 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
         line = lines[i]
 
         # Check if this line creates a List
-        list_match = re.match(r'(\s+)var (\w+) = List\[Int\]\(\)\s*$', line)
+        list_match = re.match(r"(\s+)var (\w+) = List\[Int\]\(\)\s*$", line)
 
         if list_match:
             indent = list_match.group(1)
@@ -50,13 +50,13 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
             # Look ahead for pattern: var_name[N] = value
             while i < len(lines):
                 next_line = lines[i]
-                index_match = re.match(rf'{indent}{var_name}\[(\d+)\] = (.+)$', next_line)
+                index_match = re.match(rf"{indent}{var_name}\[(\d+)\] = (.+)$", next_line)
 
                 if index_match:
                     index = index_match.group(1)
                     value = index_match.group(2)
                     # Replace with append
-                    modified_lines.append(f'{indent}{var_name}.append({value})')
+                    modified_lines.append(f"{indent}{var_name}.append({value})")
                     fixes += 1
                     i += 1
                 else:
@@ -66,7 +66,7 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
             modified_lines.append(line)
             i += 1
 
-    new_content = '\n'.join(modified_lines)
+    new_content = "\n".join(modified_lines)
     was_modified = new_content != original_content
 
     if was_modified:
@@ -77,10 +77,10 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
 
 def main():
     """Fix all test files."""
-    test_dir = Path('/home/mvillmow/ml-odyssey/tests')
+    test_dir = Path("/home/mvillmow/ml-odyssey/tests")
 
     # Find all .mojo files
-    mojo_files = list(test_dir.rglob('*.mojo'))
+    mojo_files = list(test_dir.rglob("*.mojo"))
 
     total_fixes = 0
     modified_files = []
@@ -103,5 +103,5 @@ def main():
             print(f"   - {file_path.relative_to(test_dir.parent)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

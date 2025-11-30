@@ -48,8 +48,7 @@ online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders
-responsible for enforcement at <ml-odyssey-conduct@protonmail.com>. All complaints will be reviewed and investigated
-promptly and fairly.
+responsible for enforcement at <4211002+mvillmow@users.noreply.github.com>. All complaints will be reviewed and investigated.
 
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 

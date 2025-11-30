@@ -1,18 +1,20 @@
 """Linear regression example using functional autograd helpers.
 
-This example demonstrates practical gradient computation using the
-mse_loss_and_grad helper function, which computes both loss and gradients
-in a single call without manual backward pass chaining.
+This example demonstrates the clean, concise API enabled by:
+1. mse_loss_and_grad() - Compute loss and gradient in one call
+2. multiply_scalar() - Efficient scalar-tensor multiplication
+3. apply_gradient() - Clean parameter updates
 
 Model: y = w * x + b
 
 Training: Learn w and b to fit the data y = 2x + 1
 """
 
-from shared.autograd import mse_loss_and_grad, SGD
+from shared.autograd import mse_loss_and_grad, apply_gradient, multiply_scalar
 from shared.core.extensor import ExTensor
-from shared.core.creation import zeros, ones
-from shared.core.arithmetic import add, multiply, subtract
+from shared.core.creation import zeros
+from shared.core.arithmetic import add, multiply
+from shared.core.reduction import sum as tensor_sum
 
 
 fn linear_regression_functional() raises:
@@ -56,15 +58,13 @@ fn linear_regression_functional() raises:
     # Training loop
     for epoch in range(num_epochs):
         # Forward pass: predictions = w * X + b
-        var w_expanded = ExTensor(List[Int](), DType.float32)
-        for i in range(5):
-            w_expanded._set_float64(i, w._get_float64(0))
+        var w_val = w._get_float64(0)
+        var b_val = b._get_float64(0)
 
-        var b_expanded = ExTensor(List[Int](), DType.float32)
+        var predictions = ExTensor(List[Int](), DType.float32)
         for i in range(5):
-            b_expanded._set_float64(i, b._get_float64(0))
-
-        var predictions = add(multiply(w_expanded, X), b_expanded)
+            var pred = w_val * X._get_float64(i) + b_val
+            predictions._set_float64(i, pred)
 
         # Compute loss and gradient in one call!
         var result = mse_loss_and_grad(predictions, Y)
@@ -72,29 +72,16 @@ fn linear_regression_functional() raises:
         var grad_predictions = result.grad
 
         # Compute gradients w.r.t. parameters
-        # ∂loss/∂w = sum(∂loss/∂predictions * ∂predictions/∂w)
-        #          = sum(grad_predictions * X)
-        var grad_w_expanded = multiply(grad_predictions, X)
-        var grad_w_sum = ExTensor(List[Int](), DType.float32)
-        var grad_w_val: Float64 = 0.0
-        for i in range(5):
-            grad_w_val += grad_w_expanded._get_float64(i)
-        grad_w_sum._set_float64(0, grad_w_val)
+        # ∂loss/∂w = sum(grad_predictions * X)
+        var grad_w_elements = multiply(grad_predictions, X)
+        var grad_w = tensor_sum(grad_w_elements, axis=-1, keepdims=False)
 
-        # ∂loss/∂b = sum(∂loss/∂predictions * ∂predictions/∂b)
-        #          = sum(grad_predictions)
-        var grad_b_sum = ExTensor(List[Int](), DType.float32)
-        var grad_b_val: Float64 = 0.0
-        for i in range(5):
-            grad_b_val += grad_predictions._get_float64(i)
-        grad_b_sum._set_float64(0, grad_b_val)
+        # ∂loss/∂b = sum(grad_predictions)
+        var grad_b = tensor_sum(grad_predictions, axis=-1, keepdims=False)
 
-        # Update parameters: param = param - lr * gradient
-        var lr_tensor = ExTensor(List[Int](), DType.float32)
-        lr_tensor._set_float64(0, learning_rate)
-
-        w = subtract(w, multiply(lr_tensor, grad_w_sum))
-        b = subtract(b, multiply(lr_tensor, grad_b_sum))
+        # Update parameters using helper functions
+        w = apply_gradient(w, grad_w, learning_rate)
+        b = apply_gradient(b, grad_b, learning_rate)
 
         # Print progress every 10 epochs
         if (epoch + 1) % 10 == 0:
