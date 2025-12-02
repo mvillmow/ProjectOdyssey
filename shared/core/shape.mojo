@@ -11,12 +11,15 @@ from .extensor import ExTensor
 fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
     """Reshape tensor to new shape.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
         `new_shape`: Target shape (must have same total number of elements)
 
-    Returns:.        A new tensor with the specified shape.
+    Returns:
+        A new tensor with the specified shape.
 
-    Raises:.        Error if new shape has different number of elements.
+    Raises:
+        Error if new shape has different number of elements.
 
     Examples:
         # Reshape 1D to 2D
@@ -83,12 +86,15 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
 fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
     """Remove size-1 dimensions.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
         `dim`: Specific dimension to squeeze (optional, default squeezes all size-1 dims)
 
-    Returns:.        Tensor with size-1 dimensions removed.
+    Returns:
+        Tensor with size-1 dimensions removed.
 
-    Raises:.        Error if specified dim is not size 1.
+    Raises:
+        Error if specified dim is not size 1.
 
     Examples:
         # Squeeze all size-1 dims
@@ -141,10 +147,12 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
 fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     """Add a size-1 dimension at specified position.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
         `dim`: Position to insert new dimension (supports negative indexing)
 
-    Returns:.        Tensor with additional size-1 dimension.
+    Returns:
+        Tensor with additional size-1 dimension.
 
     Examples:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
@@ -178,10 +186,12 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
 fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
     """Alias for unsqueeze(). Add a size-1 dimension at specified position.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
         `dim`: Position to insert new dimension.
 
-    Returns:.        Tensor with additional size-1 dimension.
+    Returns:
+        Tensor with additional size-1 dimension.
     """
     return unsqueeze(tensor, dim)
 
@@ -189,9 +199,11 @@ fn expand_dims(tensor: ExTensor, dim: Int) raises -> ExTensor:
 fn flatten(tensor: ExTensor) raises -> ExTensor:
     """Flatten tensor to 1D.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
 
-    Returns:.        1D tensor with all elements in row-major (C) order.
+    Returns:
+        1D tensor with all elements in row-major (C) order.
 
     Examples:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
@@ -211,9 +223,11 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
     Note: In NumPy, ravel can return a view. Our implementation always copies.
     TODO: Implement zero-copy views with strides.
 
-    Args:.        `tensor`: Input tensor.
+    Args:
+        `tensor`: Input tensor.
 
-    Returns:.        1D tensor with all elements.
+    Returns:
+        1D tensor with all elements.
     """
     return flatten(tensor)
 
@@ -221,12 +235,15 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
 fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Concatenate tensors along an existing axis.
 
-    Args:.        `tensors`: Vector of tensors to concatenate.
+    Args:
+        `tensors`: Vector of tensors to concatenate.
         `axis`: Axis along which to concatenate (default 0)
 
-    Returns:.        Concatenated tensor.
+    Returns:
+        Concatenated tensor.
 
-    Raises:.        Error if tensors have incompatible shapes.
+    Raises:
+        Error if tensors have incompatible shapes.
 
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
@@ -303,12 +320,15 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     """Stack tensors along a new axis.
 
-    Args:.        `tensors`: Vector of tensors to stack (must have identical shapes)
+    Args:
+        `tensors`: Vector of tensors to stack (must have identical shapes)
         `axis`: Position of new axis (default 0)
 
-    Returns:.        Stacked tensor with one additional dimension.
+    Returns:
+        Stacked tensor with one additional dimension.
 
-    Raises:.        Error if tensors have different shapes.
+    Raises:
+        Error if tensors have different shapes.
 
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
