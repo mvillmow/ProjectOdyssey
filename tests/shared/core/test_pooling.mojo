@@ -360,10 +360,10 @@ fn test_global_avgpool2d_backward_uniform_distribution() raises:
     var grad_input = global_avgpool2d_backward(grad_output, input)
 
     var grad_data = grad_input._data.bitcast[Float32]()
-    var expected_value = 1.0 / 16.0
+    var expected_value = Float32(1.0 / 16.0)
 
     for i in range(16):
-        assert_almost_equal(grad_data[i], expected_value, tolerance=1e-6)
+        assert_almost_equal(grad_data[i], expected_value, Float32(1e-6))
 
 
 fn test_global_avgpool2d_backward_batch_independence() raises:
@@ -494,11 +494,11 @@ fn test_global_avgpool2d_backward_forward_backward_consistency() raises:
     var grad_data = grad_input._data.bitcast[Float32]()
 
     # Each spatial position should get 1.0 / (2*2) = 0.25
-    var expected_per_position = 1.0 / 4.0
+    var expected_per_position = Float32(1.0 / 4.0)
     var total_elements = 2 * 3 * 2 * 2
 
     for i in range(total_elements):
-        assert_almost_equal(grad_data[i], expected_per_position, tolerance=1e-6)
+        assert_almost_equal(grad_data[i], expected_per_position, Float32(1e-6))
 
 
 fn test_avgpool2d_backward_output_shape() raises:
