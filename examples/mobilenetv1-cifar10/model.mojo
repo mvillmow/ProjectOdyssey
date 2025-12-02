@@ -31,6 +31,7 @@ from shared.core import (
     xavier_normal,
     constant,
 )
+from shared.core.shape import conv2d_output_shape
 
 
 fn depthwise_conv2d(
@@ -66,9 +67,8 @@ fn depthwise_conv2d(
     var kernel_h = weights.shape()[2]
     var kernel_w = weights.shape()[3]
 
-    # Calculate output dimensions
-    var out_h = (height + 2 * padding - kernel_h) // stride + 1
-    var out_w = (width + 2 * padding - kernel_w) // stride + 1
+    # Calculate output dimensions using shared shape function
+    var out_h, out_w = conv2d_output_shape(height, width, kernel_h, kernel_w, stride, padding)
 
     # Create output tensor
     var output = zeros(

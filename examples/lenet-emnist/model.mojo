@@ -25,6 +25,7 @@ from shared.core.pooling import maxpool2d, maxpool2d_backward
 from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.initializers import kaiming_uniform, xavier_uniform
+from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.core.traits import Model
 from collections import List
 from weights import save_tensor, load_tensor
@@ -68,40 +69,6 @@ alias FC1_OUT_FEATURES = 120
 alias FC2_OUT_FEATURES = 84
 
 
-# ============================================================================
-# Dimension Computation Helpers
-# ============================================================================
-
-fn conv_output_size(input_size: Int, kernel_size: Int, stride: Int, padding: Int) -> Int:
-    """Compute output dimension after a convolution operation.
-
-    Args:
-        input_size: Input spatial dimension (height or width)
-        kernel_size: Convolution kernel size
-        stride: Convolution stride
-        padding: Padding applied to input
-
-    Returns:
-        Output spatial dimension
-    """
-    return (input_size + 2 * padding - kernel_size) // stride + 1
-
-
-fn pool_output_size(input_size: Int, kernel_size: Int, stride: Int, padding: Int) -> Int:
-    """Compute output dimension after a pooling operation.
-
-    Args:
-        input_size: Input spatial dimension (height or width)
-        kernel_size: Pool kernel size
-        stride: Pool stride
-        padding: Padding applied to input
-
-    Returns:
-        Output spatial dimension
-    """
-    return (input_size + 2 * padding - kernel_size) // stride + 1
-
-
 fn compute_flattened_size() -> Int:
     """Compute the flattened feature size after all conv/pool layers.
 
@@ -110,21 +77,19 @@ fn compute_flattened_size() -> Int:
     Returns:
         Number of features after flattening (channels * height * width)
     """
-    # After conv1: (INPUT - KERNEL + 2*PAD) / STRIDE + 1
-    var h1 = conv_output_size(INPUT_HEIGHT, CONV1_KERNEL_SIZE, CONV1_STRIDE, CONV1_PADDING)
-    var w1 = conv_output_size(INPUT_WIDTH, CONV1_KERNEL_SIZE, CONV1_STRIDE, CONV1_PADDING)
+    # After conv1: Use shared conv2d_output_shape
+    var h1, w1 = conv2d_output_shape(INPUT_HEIGHT, INPUT_WIDTH, CONV1_KERNEL_SIZE, CONV1_KERNEL_SIZE,
+                                      CONV1_STRIDE, CONV1_PADDING)
 
-    # After pool1
-    var h2 = pool_output_size(h1, POOL1_KERNEL_SIZE, POOL1_STRIDE, POOL1_PADDING)
-    var w2 = pool_output_size(w1, POOL1_KERNEL_SIZE, POOL1_STRIDE, POOL1_PADDING)
+    # After pool1: Use shared pool_output_shape
+    var h2, w2 = pool_output_shape(h1, w1, POOL1_KERNEL_SIZE, POOL1_STRIDE, POOL1_PADDING)
 
     # After conv2
-    var h3 = conv_output_size(h2, CONV2_KERNEL_SIZE, CONV2_STRIDE, CONV2_PADDING)
-    var w3 = conv_output_size(w2, CONV2_KERNEL_SIZE, CONV2_STRIDE, CONV2_PADDING)
+    var h3, w3 = conv2d_output_shape(h2, w2, CONV2_KERNEL_SIZE, CONV2_KERNEL_SIZE,
+                                      CONV2_STRIDE, CONV2_PADDING)
 
     # After pool2
-    var h4 = pool_output_size(h3, POOL2_KERNEL_SIZE, POOL2_STRIDE, POOL2_PADDING)
-    var w4 = pool_output_size(w3, POOL2_KERNEL_SIZE, POOL2_STRIDE, POOL2_PADDING)
+    var h4, w4 = pool_output_shape(h3, w3, POOL2_KERNEL_SIZE, POOL2_STRIDE, POOL2_PADDING)
 
     return CONV2_OUT_CHANNELS * h4 * w4
 
