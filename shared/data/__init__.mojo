@@ -36,7 +36,9 @@ from .formats import (
     load_idx_labels,        # Load IDX label file
     load_idx_images,        # Load IDX grayscale images
     load_idx_images_rgb,    # Load IDX RGB images
-    normalize_images_rgb,   # Normalize RGB images
+    normalize_images,       # Normalize uint8 images to [0, 1] float32
+    normalize_images_rgb,   # Normalize RGB images with ImageNet parameters
+    one_hot_encode,         # One-hot encode integer labels
     load_cifar10_batch,     # Load single CIFAR-10 batch
 )
 
@@ -49,18 +51,13 @@ from .datasets import (
     Dataset,                # Base dataset interface
     ExTensorDataset,        # In-memory tensor dataset wrapper
     FileDataset,            # File-based lazy-loading dataset
+    CIFAR10Dataset,         # CIFAR-10 dataset with train/test splits
+    load_cifar10_train,     # Load CIFAR-10 training set
+    load_cifar10_test,      # Load CIFAR-10 test set
     EMNISTDataset,          # EMNIST dataset with multiple splits
     load_emnist_train,      # Load EMNIST training set
     load_emnist_test,       # Load EMNIST test set
 )
-
-# TODO: CIFAR-10 and other utilities will be implemented in future tasks
-# from .datasets import (
-#     load_cifar10_train,     # Load CIFAR-10 training set
-#     load_cifar10_test,      # Load CIFAR-10 test set
-#     normalize_images,       # Normalize grayscale images to [0, 1]
-#     one_hot_encode,         # Convert labels to one-hot encoding
-# )
 
 # ============================================================================
 # Public API

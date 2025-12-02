@@ -17,7 +17,7 @@ References:
 """
 
 from model import LeNet5
-from data_loader import load_idx_labels, load_idx_images, normalize_images
+from shared.data import load_idx_labels, load_idx_images, normalize_images
 from shared.core import ExTensor, zeros
 from sys import argv
 from collections import List

@@ -24,7 +24,7 @@ from model import (
     POOL1_KERNEL_SIZE, POOL1_STRIDE, POOL1_PADDING,
     POOL2_KERNEL_SIZE, POOL2_STRIDE, POOL2_PADDING,
 )
-from data_loader import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
+from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward

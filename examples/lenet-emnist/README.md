@@ -121,7 +121,6 @@ examples/lenet-emnist/
 ├── model.mojo          # LeNet-5 model with save/load
 ├── train.mojo          # Training with manual backward passes
 ├── inference.mojo      # Inference with weight loading
-├── data_loader.mojo    # IDX file format loading
 ├── weights.mojo        # Hex-based weight serialization
 └── run_example.sh      # Complete workflow script
 ```text
@@ -169,7 +168,7 @@ pixi run mojo run -I . examples/lenet-emnist/inference.mojo \
 
 - [x] Dataset download script with IDX format support (Python)
 - [x] LeNet-5 model architecture with functional ops
-- [x] IDX file loading in Mojo (data_loader.mojo)
+- [x] IDX file loading via shared.data module (replace local data_loader.mojo)
 - [x] Manual backward pass implementation (no autograd)
 - [x] Hex-based weight serialization/deserialization
 - [x] Training loop with SGD optimizer
@@ -177,6 +176,7 @@ pixi run mojo run -I . examples/lenet-emnist/inference.mojo \
 - [x] Tensor slicing for mini-batch processing
 - [x] Full train → save → load → inference workflow
 - [x] Comprehensive documentation
+- [x] Migrate to shared data loaders (normalize_images, one_hot_encode)
 
 ### 🔄 Future Optimizations
 

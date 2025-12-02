@@ -18,7 +18,7 @@ Arguments:
 """
 
 from model import LeNet5
-from data_loader import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
+from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward

@@ -202,3 +202,157 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
         images_data[i] = data_bytes[20 + i]
 
     return images^
+
+
+fn normalize_images(mut images: ExTensor) raises -> ExTensor:
+    """Normalize uint8 images to float32 in range [0, 1].
+
+    Args:
+        images: Input images as uint8 ExTensor
+
+    Returns:
+        Normalized images as float32 ExTensor
+
+    Note:
+        Converts pixel values from [0, 255] to [0.0, 1.0]
+    """
+    var shape = images.shape()
+    var normalized = zeros(shape, DType.float32)
+
+    var num_elements = images.numel()
+    var src_data = images._data
+    var dst_data = normalized._data.bitcast[Float32]()
+
+    for i in range(num_elements):
+        dst_data[i] = Float32(src_data[i]) / 255.0
+
+    return normalized^
+
+
+fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
+    """Convert integer labels to one-hot encoded float32 tensor.
+
+    Args:
+        labels: Integer labels as uint8 ExTensor, shape (num_samples,)
+        num_classes: Total number of classes
+
+    Returns:
+        One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
+
+    Example:
+        labels = [0, 2, 1]  # 3 samples, 3 classes
+        one_hot = one_hot_encode(labels, 3)
+        # Result shape: (3, 3)
+        # [[1.0, 0.0, 0.0],
+        #  [0.0, 0.0, 1.0],
+        #  [0.0, 1.0, 0.0]]
+    """
+    var num_samples = labels.shape()[0]
+
+    # Create output tensor (num_samples, num_classes)
+    var shape = List[Int]()
+    shape.append(num_samples)
+    shape.append(num_classes)
+    var one_hot = zeros(shape, DType.float32)
+
+    # Fill one-hot encoding
+    var labels_data = labels._data
+    var one_hot_data = one_hot._data.bitcast[Float32]()
+
+    for i in range(num_samples):
+        var label_idx = Int(labels_data[i])
+        if label_idx < 0 or label_idx >= num_classes:
+            raise Error("Label index out of range: " + String(label_idx))
+
+        # Set the corresponding class to 1.0
+        var offset = i * num_classes + label_idx
+        one_hot_data[offset] = 1.0
+
+    return one_hot^
+
+
+fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
+    """Normalize uint8 RGB images to float32 with ImageNet normalization.
+
+    Args:
+        images: Input images as uint8 ExTensor of shape (N, 3, H, W)
+
+    Returns:
+        Normalized images as float32 ExTensor
+
+    Note:
+        Applies ImageNet normalization:
+        - mean=[0.485, 0.456, 0.406] for RGB channels
+        - std=[0.229, 0.224, 0.225] for RGB channels
+        - Converts pixel values from [0, 255] to normalized float
+    """
+    # ImageNet normalization parameters (R, G, B)
+    var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
+    var std = (Float32(0.229), Float32(0.224), Float32(0.225))
+
+    var shape = images.shape()
+    var normalized = zeros(shape, DType.float32)
+
+    var batch_size = shape[0]
+    var channels = shape[1]
+    var height = shape[2]
+    var width = shape[3]
+
+    var src_data = images._data
+    var dst_data = normalized._data.bitcast[Float32]()
+
+    for n in range(batch_size):
+        for c in range(channels):
+            var mean_val = Float32(0.0)
+            var std_val = Float32(1.0)
+
+            if c == 0:  # Red channel
+                mean_val = mean.0
+                std_val = std.0
+            elif c == 1:  # Green channel
+                mean_val = mean.1
+                std_val = std.1
+            else:  # Blue channel
+                mean_val = mean.2
+                std_val = std.2
+
+            for h in range(height):
+                for w in range(width):
+                    var src_idx = ((n * channels + c) * height + h) * width + w
+                    var pixel_val = Float32(src_data[src_idx]) / 255.0
+                    var normalized_val = (pixel_val - mean_val) / std_val
+                    dst_data[src_idx] = normalized_val
+
+    return normalized^
+
+
+fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> Tuple[ExTensor, ExTensor]:
+    """Load a single CIFAR-10 batch (images and labels) from IDX format.
+
+    Args:
+        batch_dir: Directory containing CIFAR-10 IDX files
+        batch_name: Batch name without extension (e.g., "train_batch_1", "test_batch")
+
+    Returns:
+        Tuple of (images, labels):
+        - images: ExTensor of shape (N, 3, 32, 32) normalized float32
+        - labels: ExTensor of shape (N,) uint8
+
+    Raises:
+        Error: If batch files cannot be read
+
+    Note:
+        Images are loaded from IDX RGB format and normalized using ImageNet parameters.
+        Labels are kept as uint8 (class indices 0-9).
+    """
+    var images_path = batch_dir + "/" + batch_name + "_images.idx"
+    var labels_path = batch_dir + "/" + batch_name + "_labels.idx"
+
+    # Load raw images and labels
+    var images_raw = load_idx_images_rgb(images_path)
+    var labels = load_idx_labels(labels_path)
+
+    # Normalize images
+    var images_normalized = normalize_images_rgb(images_raw)
+
+    return (images_normalized^, labels^)
