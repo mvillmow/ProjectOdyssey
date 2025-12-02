@@ -25,8 +25,8 @@ from datetime import datetime
 import json
 import argparse
 
-# Import shared utilities
-from common import get_plan_dir
+# NOTE: get_plan_dir() removed - planning now done through GitHub issues
+# See .claude/shared/github-issue-workflow.md for the new workflow
 
 
 def read_plan_file(plan_path):
@@ -419,11 +419,14 @@ Examples:
     if args.plan_dir:
         plan_dir = Path(args.plan_dir)
     else:
-        try:
-            plan_dir = get_plan_dir()
-        except RuntimeError as e:
-            print(f"ERROR: {e}", file=sys.stderr)
-            return 1
+        print("ERROR: This script is DEPRECATED.", file=sys.stderr)
+        print("The notes/plan/ directory has been removed.", file=sys.stderr)
+        print("Planning is now done directly through GitHub issues.", file=sys.stderr)
+        print("See .claude/shared/github-issue-workflow.md for the new workflow.", file=sys.stderr)
+        print("", file=sys.stderr)
+        print("To update issues, use the GitHub CLI directly:", file=sys.stderr)
+        print("    gh issue edit <number> --title '...' --body '...'", file=sys.stderr)
+        return 1
 
     # Validate plan directory exists
     if not plan_dir.exists():

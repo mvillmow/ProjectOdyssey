@@ -72,7 +72,6 @@ scripts/
 - `LABEL_COLORS` - Standard GitHub label colors for 5-phase workflow
 - `get_repo_root()` - Portable repository root detection
 - `get_agents_dir()` - Get .claude/agents directory path
-- `get_plan_dir()` - Get notes/plan directory path
 
 **Usage**: Imported by other scripts to avoid code duplication.
 
