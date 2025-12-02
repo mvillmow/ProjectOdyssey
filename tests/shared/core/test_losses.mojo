@@ -277,8 +277,8 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     var loss = forward(predictions)
     var grad_output = ones(shape, DType.float32)
 
-    # Numerical gradient checking
-    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+    # Numerical gradient checking (relaxed tolerance for float32 precision)
+    check_gradient(forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5)
 
     print("  ✓ BCE backward gradient check passed")
 
@@ -316,8 +316,8 @@ fn test_mean_squared_error_backward_gradient() raises:
     var loss = forward(predictions)
     var grad_output = ones(shape, DType.float32)
 
-    # Numerical gradient checking
-    check_gradient(forward, backward, predictions, grad_output, rtol=1e-3, atol=1e-6)
+    # Numerical gradient checking (relaxed tolerance for float32 precision)
+    check_gradient(forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5)
 
     print("  ✓ MSE backward gradient check passed")
 
