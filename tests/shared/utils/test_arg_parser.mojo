@@ -12,7 +12,7 @@ from testing import assert_true, assert_equal
 from shared.utils import ArgumentParser, ArgumentSpec, ParsedArgs
 
 
-fn test_argument_spec_creation():
+fn test_argument_spec_creation() raises:
     """Test creating argument specifications."""
     var spec = ArgumentSpec(
         name="epochs", arg_type="int", default_value="100", is_flag=False
@@ -24,7 +24,7 @@ fn test_argument_spec_creation():
     print("PASS: test_argument_spec_creation")
 
 
-fn test_parsed_args_string():
+fn test_parsed_args_string() raises:
     """Test ParsedArgs string getter."""
     var args = ParsedArgs()
     args.set("output", "model.weights")
@@ -33,7 +33,7 @@ fn test_parsed_args_string():
     print("PASS: test_parsed_args_string")
 
 
-fn test_parsed_args_int():
+fn test_parsed_args_int() raises:
     """Test ParsedArgs integer getter."""
     var args = ParsedArgs()
     args.set("epochs", "100")
@@ -42,7 +42,7 @@ fn test_parsed_args_int():
     print("PASS: test_parsed_args_int")
 
 
-fn test_parsed_args_float():
+fn test_parsed_args_float() raises:
     """Test ParsedArgs float getter."""
     var args = ParsedArgs()
     args.set("lr", "0.001")
@@ -53,7 +53,7 @@ fn test_parsed_args_float():
     print("PASS: test_parsed_args_float")
 
 
-fn test_parsed_args_bool():
+fn test_parsed_args_bool() raises:
     """Test ParsedArgs boolean flag getter."""
     var args = ParsedArgs()
     args.set("verbose", "true")
@@ -62,7 +62,7 @@ fn test_parsed_args_bool():
     print("PASS: test_parsed_args_bool")
 
 
-fn test_parsed_args_has():
+fn test_parsed_args_has() raises:
     """Test ParsedArgs has() method."""
     var args = ParsedArgs()
     args.set("epochs", "100")
@@ -71,7 +71,7 @@ fn test_parsed_args_has():
     print("PASS: test_parsed_args_has")
 
 
-fn test_argument_parser_creation():
+fn test_argument_parser_creation() raises:
     """Test creating an argument parser."""
     var parser = ArgumentParser()
     parser.add_argument("epochs", "int", "100")
@@ -105,8 +105,7 @@ fn test_argument_parser_add_flag() raises:
     assert_true("verbose" in parser.arguments)
     assert_true("debug" in parser.arguments)
 
-    var spec = parser.arguments["verbose"]
-    assert_true(spec.is_flag)
+    assert_true(parser.arguments["verbose"].is_flag)
     print("PASS: test_argument_parser_add_flag")
 
 
@@ -117,12 +116,12 @@ fn test_argument_parser_invalid_type() raises:
         parser.add_argument("bad", "invalid_type", "0")
         # Should raise error
         assert_true(False)
-    except Error as e:
+    except:
         assert_true(True)  # Expected error
         print("PASS: test_argument_parser_invalid_type")
 
 
-fn test_argument_defaults():
+fn test_argument_defaults() raises:
     """Test that defaults are applied."""
     var parser = ArgumentParser()
     parser.add_argument("epochs", "int", "100")
@@ -131,18 +130,13 @@ fn test_argument_defaults():
 
     # Note: In a real test, we would call parse() with empty argv
     # For now, we just verify defaults are stored
-    var spec_epochs = parser.arguments["epochs"]
-    assert_equal(spec_epochs.default_value, "100")
-
-    var spec_lr = parser.arguments["lr"]
-    assert_equal(spec_lr.default_value, "0.001")
-
-    var spec_output = parser.arguments["output"]
-    assert_equal(spec_output.default_value, "model.weights")
+    assert_equal(parser.arguments["epochs"].default_value, "100")
+    assert_equal(parser.arguments["lr"].default_value, "0.001")
+    assert_equal(parser.arguments["output"].default_value, "model.weights")
     print("PASS: test_argument_defaults")
 
 
-fn test_parsed_args_multiple_values():
+fn test_parsed_args_multiple_values() raises:
     """Test handling multiple argument values."""
     var args = ParsedArgs()
     args.set("epochs", "100")
