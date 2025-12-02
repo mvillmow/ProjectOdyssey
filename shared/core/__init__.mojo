@@ -85,6 +85,9 @@ from .shape import (
     ravel,
     concatenate,
     stack,
+    conv2d_output_shape,
+    pool_output_shape,
+    flatten_size,
 )
 
 # ============================================================================

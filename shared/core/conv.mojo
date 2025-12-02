@@ -8,6 +8,7 @@ The caller manages all state (kernels, biases).
 from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
+from .shape import conv2d_output_shape
 from collections import List
 # max is now a builtin in Mojo - no import needed
 
@@ -93,9 +94,10 @@ fn conv2d(
     if kernel_in_channels != in_channels:
         raise Error("Kernel in_channels must match input in_channels")
 
-    # Compute output dimensions
-    var out_height = (in_height + 2 * padding - kH) // stride + 1
-    var out_width = (in_width + 2 * padding - kW) // stride + 1
+    # Compute output dimensions using shape computation helper
+    var out_h, var out_w = conv2d_output_shape(in_height, in_width, kH, kW, stride, padding)
+    var out_height = out_h
+    var out_width = out_w
 
     # Create output tensor
     var out_shape = List[Int]()

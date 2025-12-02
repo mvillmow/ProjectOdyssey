@@ -353,3 +353,111 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         unsqueezed.append(unsqueeze(tensors[i], actual_axis))
 
     return concatenate(unsqueezed, actual_axis)
+
+
+# ============================================================================
+# Shape Computation Functions for Neural Network Layers
+# ============================================================================
+
+fn conv2d_output_shape(
+    input_h: Int, input_w: Int,
+    kernel_h: Int, kernel_w: Int,
+    stride: Int, padding: Int,
+    dilation: Int = 1
+) -> Tuple[Int, Int]:
+    """Compute output dimensions for 2D convolution.
+
+    Calculates the spatial output dimensions (height, width) of a 2D convolution
+    operation given input dimensions, kernel size, stride, padding, and dilation.
+
+    Args:
+        `input_h`: Input height in pixels
+        `input_w`: Input width in pixels
+        `kernel_h`: Kernel height in pixels
+        `kernel_w`: Kernel width in pixels
+        `stride`: Convolution stride (same for both dimensions)
+        `padding`: Zero-padding added to input (same for all sides)
+        `dilation`: Dilation factor for kernel (default: 1 for standard convolution)
+
+    Returns:
+        Tuple of (output_height, output_width)
+
+    Formula:
+        output_h = (input_h + 2*padding - dilation*(kernel_h - 1) - 1) // stride + 1
+        output_w = (input_w + 2*padding - dilation*(kernel_w - 1) - 1) // stride + 1
+
+    Examples:
+        # Standard 3x3 convolution with stride=1, padding=1
+        var out_h, out_w = conv2d_output_shape(224, 224, 3, 3, 1, 1)  # (224, 224)
+
+        # 5x5 convolution with stride=2, padding=2
+        var out_h, out_w = conv2d_output_shape(224, 224, 5, 5, 2, 2)  # (112, 112)
+
+        # Dilated convolution (dilation=2)
+        var out_h, out_w = conv2d_output_shape(224, 224, 3, 3, 1, 1, dilation=2)  # (222, 222)
+    """
+    var out_h = (input_h + 2 * padding - dilation * (kernel_h - 1) - 1) // stride + 1
+    var out_w = (input_w + 2 * padding - dilation * (kernel_w - 1) - 1) // stride + 1
+    return Tuple[Int, Int](out_h, out_w)
+
+
+fn pool_output_shape(
+    input_h: Int, input_w: Int,
+    kernel_size: Int,
+    stride: Int, padding: Int
+) -> Tuple[Int, Int]:
+    """Compute output dimensions for 2D pooling.
+
+    Calculates the spatial output dimensions (height, width) of a 2D pooling
+    operation given input dimensions, kernel size, stride, and padding.
+
+    Args:
+        `input_h`: Input height in pixels
+        `input_w`: Input width in pixels
+        `kernel_size`: Pooling window size (square, same for both dimensions)
+        `stride`: Pooling stride (same for both dimensions)
+        `padding`: Zero-padding added to input (same for all sides)
+
+    Returns:
+        Tuple of (output_height, output_width)
+
+    Formula:
+        output_h = (input_h + 2*padding - kernel_size) // stride + 1
+        output_w = (input_w + 2*padding - kernel_size) // stride + 1
+
+    Examples:
+        # 2x2 max pooling with stride=2, no padding
+        var out_h, out_w = pool_output_shape(224, 224, 2, 2, 0)  # (112, 112)
+
+        # 3x3 pooling with stride=1, padding=1 (same spatial dims)
+        var out_h, out_w = pool_output_shape(224, 224, 3, 1, 1)  # (224, 224)
+    """
+    var out_h = (input_h + 2 * padding - kernel_size) // stride + 1
+    var out_w = (input_w + 2 * padding - kernel_size) // stride + 1
+    return Tuple[Int, Int](out_h, out_w)
+
+
+fn flatten_size(height: Int, width: Int, channels: Int) -> Int:
+    """Compute flattened size for fully connected layer input.
+
+    Calculates the total number of elements in a flattened tensor from
+    4D spatial dimensions. Used to determine input size for dense/linear layers
+    following convolutional or pooling layers.
+
+    Args:
+        `height`: Spatial height dimension
+        `width`: Spatial width dimension
+        `channels`: Number of channels
+
+    Returns:
+        Total number of elements: height * width * channels
+
+    Examples:
+        # After final pooling layer in CNN
+        var fc_input_size = flatten_size(7, 7, 512)  # 25088 for 7x7x512 feature map
+        var fc_weight_shape = [4096, 25088]  # Common dense layer size
+
+        # After initial conv layer
+        var fc_input_size = flatten_size(112, 112, 64)  # 802816 elements
+    """
+    return height * width * channels

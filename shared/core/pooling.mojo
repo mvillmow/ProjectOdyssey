@@ -5,6 +5,7 @@ All operations are stateless - caller provides all inputs.
 """
 
 from .extensor import ExTensor, zeros
+from .shape import pool_output_shape
 from collections import List
 # max and min are now builtins in Mojo - no import needed
 
@@ -61,9 +62,10 @@ fn maxpool2d(
     # Determine actual stride
     var actual_stride = stride if stride > 0 else kernel_size
 
-    # Compute output dimensions
-    var out_height = (in_height + 2 * padding - kernel_size) // actual_stride + 1
-    var out_width = (in_width + 2 * padding - kernel_size) // actual_stride + 1
+    # Compute output dimensions using shape computation helper
+    var out_h, var out_w = pool_output_shape(in_height, in_width, kernel_size, actual_stride, padding)
+    var out_height = out_h
+    var out_width = out_w
 
     # Create output tensor
     var out_shape = List[Int]()
@@ -154,9 +156,10 @@ fn avgpool2d(
     # Determine actual stride
     var actual_stride = stride if stride > 0 else kernel_size
 
-    # Compute output dimensions
-    var out_height = (in_height + 2 * padding - kernel_size) // actual_stride + 1
-    var out_width = (in_width + 2 * padding - kernel_size) // actual_stride + 1
+    # Compute output dimensions using shape computation helper
+    var out_h, var out_w = pool_output_shape(in_height, in_width, kernel_size, actual_stride, padding)
+    var out_height = out_h
+    var out_width = out_w
 
     # Create output tensor
     var out_shape = List[Int]()
