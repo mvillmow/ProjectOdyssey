@@ -50,7 +50,7 @@ struct Checkpoint(Copyable, Movable):
     var accuracy: Float32
     var metadata: Dict[String, String]
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty checkpoint."""
         self.model_state = Dict[String, String]()
         self.optimizer_state = Dict[String, String]()
@@ -471,7 +471,7 @@ struct TensorMetadata(Copyable, Movable):
     var shape: List[Int]
     var size_bytes: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty metadata."""
         self.dtype = ""
         self.shape = List[Int]()
@@ -484,7 +484,7 @@ struct SerializedTensor(Copyable, Movable):
     var metadata: TensorMetadata
     var data: List[String]  # Simplified: list of string representations
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
         self.data = List[String]()

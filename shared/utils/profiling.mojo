@@ -46,7 +46,7 @@ struct TimingStats(Copyable, Movable):
     var max_ms: Float32
     var std_dev: Float32
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty timing stats."""
         self.name = ""
         self.total_ms = 0.0
@@ -69,7 +69,7 @@ struct MemoryStats(Copyable, Movable):
     var peak_bytes: Int
     var available_bytes: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty memory stats."""
         self.allocated_bytes = 0
         self.peak_bytes = 0
@@ -101,7 +101,7 @@ struct ProfilingReport(Copyable, Movable):
     var memory_end: MemoryStats
     var total_time_ms: Float32
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty profiling report."""
         self.timing_stats = Dict[String, TimingStats]()
         self.memory_start = MemoryStats()
@@ -301,7 +301,7 @@ struct CallStack(Copyable, Movable):
     var entries: List[CallStackEntry]
     var depth: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty call stack."""
         self.root = CallStackEntry("root")
         self.entries = List[CallStackEntry]()
@@ -403,7 +403,7 @@ struct BaselineMetrics(Copyable, Movable):
     var peak_memory_mb: Float32
     var threshold_percent: Float32  # Warn if slower than this
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty baseline."""
         self.name = ""
         self.avg_time_ms = 0.0

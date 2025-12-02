@@ -38,7 +38,7 @@ struct RandomState(Copyable, Movable):
     var state_data: List[UInt64]
     var seed_used: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty random state."""
         self.state_data = List[UInt64]()
         self.seed_used = 0
@@ -315,7 +315,7 @@ struct DistributionStats(Copyable, Movable):
     var max_val: Float32
     var sample_count: Int
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create empty statistics."""
         self.mean = 0.0
         self.std_dev = 0.0

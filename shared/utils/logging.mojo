@@ -221,7 +221,7 @@ struct StreamHandler(Handler):
 
     var formatter: SimpleFormatter
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Create stream handler with default formatter."""
         self.formatter = SimpleFormatter()
 
