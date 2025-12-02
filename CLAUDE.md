@@ -25,7 +25,7 @@ See [agents/hierarchy.md](agents/hierarchy.md) for the complete agent hierarchy 
 ### Key Agent Principles
 
 1. **Always start with orchestrators** for new section work
-1. **All outputs** must go to `/notes/issues/<issue-number>/README.md`
+1. **All outputs** must be posted as comments on the GitHub issue
 1. **Link all PRs** to issues using `gh pr create --issue <number>` or "Closes #123" in description
 1. **Minimal changes only** - smallest change that solves the problem
 1. **No scope creep** - focus only on issue requirements
@@ -117,10 +117,11 @@ Relevant links:
 
 ### Documentation Rules
 
-- **Issue-specific outputs**: `/notes/issues/<issue-number>/README.md`
+- **Issue-specific outputs**: Post as comments on the GitHub issue using `gh issue comment <number>`
 - **Comprehensive specs**: `/notes/review/` (architectural decisions, design docs)
 - **Team guides**: `/agents/` (quick start, hierarchy, templates)
 - **Never duplicate** documentation across locations - link instead
+- See `.claude/shared/github-issue-workflow.md` for GitHub issue read/write patterns
 
 ### Language Preference
 
@@ -1038,17 +1039,6 @@ ml-odyssey/
 │   ├── delegation-rules.md      # Coordination patterns
 │   └── templates/               # Agent configuration templates
 ├── notes/
-│   ├── plan/                    # 4-level hierarchical plans
-│   │   ├── 01-foundation/       # Repository structure and config
-│   │   ├── 02-shared-library/   # Core reusable components
-│   │   ├── 03-tooling/          # Development and testing tools
-│   │   ├── 04-first-paper/      # LeNet-5 (proof of concept)
-│   │   ├── 05-ci-cd/            # CI/CD pipelines
-│   │   └── 06-agentic-workflows/# Claude-powered automation
-│   ├── issues/                  # Issue-specific documentation
-│   │   ├── 62/README.md         # Issue #62: [Plan] Agents
-│   │   ├── 63/README.md         # Issue #63: [Test] Agents
-│   │   └── ...                  # One directory per issue
 │   └── review/                  # Comprehensive specs & architectural decisions
 │       ├── agent-architecture-review.md
 │       ├── skills-design.md
@@ -1060,12 +1050,14 @@ ml-odyssey/
 
 ### Planning Hierarchy
 
-**4 Levels** (in `notes/plan/` directory):
+**4 Levels** (managed through GitHub issues):
 
 1. **Section** (e.g., 01-foundation) - Major area of work
 1. **Subsection** (e.g., 01-directory-structure) - Logical grouping
 1. **Component** (e.g., 01-create-papers-dir) - Specific deliverable
 1. **Subcomponent** (e.g., 01-create-base-dir) - Atomic task
+
+All planning documentation is tracked in GitHub issues. Use `gh issue view <number>` to read plans.
 
 ### Documentation Organization
 
@@ -1097,46 +1089,51 @@ The repository uses three separate locations for documentation to avoid duplicat
 
 **When to Use**: Writing detailed specifications, architectural decisions, or comprehensive guides.
 
-#### 3. Issue-Specific Documentation (`/notes/issues/<issue-number>/`)
+#### 3. Issue-Specific Documentation (GitHub Issue Comments)
 
 **Purpose**: Implementation notes, findings, and decisions specific to a single GitHub issue.
 
-**Structure**: Each issue gets its own directory with a focused README.md:
+**Location**: Post directly to the GitHub issue as comments using `gh issue comment`.
 
-```markdown
+**Reading Issue Context**:
 
-# Issue #XX: [Phase] Component Name
+```bash
+# Get issue details and body
+gh issue view <number>
 
-## Objective
+# Get all comments (implementation history)
+gh issue view <number> --comments
 
-What this specific issue accomplishes (1-2 sentences)
+# Get structured data
+gh issue view <number> --json title,body,comments,labels,state
+```
 
-## Deliverables
+**Writing to Issues**:
 
-- List of files/changes this issue creates
-
-## Success Criteria
-
-- Checklist of completion criteria
-
-## References
-
-- Links to shared documentation in /agents/ and /notes/review/
-- NO duplication of comprehensive docs
-
+```bash
+# Post implementation notes
+gh issue comment <number> --body "$(cat <<'EOF'
 ## Implementation Notes
 
-- Notes discovered during implementation
-- Initially empty, filled as work progresses
+### Summary
+[What was implemented]
 
-```text
+### Files Changed
+- path/to/file.mojo
+
+### Verification
+- [x] Tests pass
+EOF
+)"
+```
 
 ### Important Rules
 
+- ✅ DO: Post issue-specific findings and decisions as comments
 - ✅ DO: Link to comprehensive docs in `/agents/` and `/notes/review/`
-- ✅ DO: Add issue-specific findings and decisions
+- ✅ DO: Reference related issues with `#<number>` format
 - ❌ DON'T: Duplicate comprehensive documentation
-- ❌ DON'T: Create shared specifications here (use `/notes/review/` instead)
+- ❌ DON'T: Create local files for issue tracking
 
 ### 5-Phase Development Workflow
 
@@ -1164,83 +1161,76 @@ Every component follows a hierarchical workflow with clear dependencies:
 - Cleanup collects issues discovered during the parallel phases
 - Each phase has a separate GitHub issue with detailed instructions
 
-## Plan File Format (Template 1)
+## GitHub Issue Structure
 
-**Note**: Plan files are task-relative and stored in `notes/plan/`.
+All planning is done through GitHub issues with clear structure:
 
-All plan.md files follow this 9-section format:
+### Issue Body Format
 
 ```markdown
-
-# Component Name
-
-## Overview
-
+## Objective
 Brief description (2-3 sentences)
 
-## Parent Plan
-
-[../plan.md](../plan.md) or "None (top-level)"
-
-## Child Plans
-
-- [child1/plan.md](child1/plan.md)
-
-Or "None (leaf node)" for level 4
-
-## Inputs
-
-- Prerequisite 1
-
-## Outputs
-
-- Deliverable 1
-
-## Steps
-
-1. Step 1
+## Deliverables
+- [ ] Deliverable 1
+- [ ] Deliverable 2
 
 ## Success Criteria
-
 - [ ] Criterion 1
+- [ ] Criterion 2
+
+## Dependencies
+- Depends on #<parent-issue>
+- Related: #<sibling-issue>
 
 ## Notes
-
 Additional context
-```text
+```
 
-**Important**: When modifying plans:
+### Issue Labels
 
-- Maintain all 9 sections consistently
-- Use relative paths for links (e.g., `../plan.md`, not absolute paths)
-- After editing plan.md, regenerate github_issue.md files using `scripts/regenerate_github_issues.py`
-- NEVER edit github_issue.md files manually - they are dynamically generated
+- `planning` - Design phase
+- `testing` - Test development
+- `implementation` - Code implementation
+- `packaging` - Distribution packages
+- `cleanup` - Finalization
 
-## Working with Plans
+### Linking Issues
 
-**Important**: Plan files are task-relative and kept in `notes/plan/`.
+- Reference in body: `Depends on #123`
+- Reference in commits: `Implements #123`
+- Close via PR: `Closes #123`
 
-### Creating a New Component
+## Working with GitHub Issues
 
-1. Create directory structure under `notes/plan/`
-1. Create `plan.md` following Template 1 format (9 sections)
-1. Update parent plan's "Child Plans" section
-1. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py --section <section>`
-1. Test issue creation: `python3 scripts/create_single_component_issues.py notes/plan/.../github_issue.md`
+All planning and documentation is managed through GitHub issues directly.
 
-### Modifying Existing Plans
+### Creating New Work Items
 
-1. Edit the `plan.md` file (maintain Template 1 format)
-1. Regenerate github_issue.md: `python3 scripts/regenerate_github_issues.py`
-1. If issues were already created, update them manually in GitHub
+1. Create a GitHub issue with clear description and acceptance criteria
+2. Use appropriate labels (planning, testing, implementation, packaging, cleanup)
+3. Link related issues using `#<number>` references
+
+### Tracking Implementation
+
+1. Read issue context: `gh issue view <number> --comments`
+2. Post progress updates as issue comments
+3. Link PRs to issues: `gh pr create --body "Closes #<number>"`
+
+### Documentation Workflow
+
+1. **Read context first**: `gh issue view <number> --comments`
+2. **Post updates**: `gh issue comment <number> --body "..."`
+3. **Reference in commits**: "Implements #<number>" or "Closes #<number>"
+
+See `.claude/shared/github-issue-workflow.md` for complete workflow patterns.
 
 ### File Locations
 
-- **Plans**: `notes/plan/<section>/<subsection>/.../plan.md`
 - **Scripts**: `scripts/*.py`
-- **Logs**: `logs/create_issues_*.log`
-- **State**: `logs/.issue_creation_state_*.json`
-- **Tracked Docs**: `notes/issues/<issue-number>/`, `notes/review/`, `agents/` (reference these in commits)
+- **Logs**: `logs/*.log`
+- **Tracked Docs**: `notes/review/`, `agents/` (reference these in commits)
+- **Issue Docs**: GitHub issue comments (not local files)
 
 ## Git Workflow
 
@@ -1521,36 +1511,11 @@ npx markdownlint-cli2 path/to/file.md 2>&1
 ### Check Logs
 
 ```bash
-
-# View most recent log
-
-tail -100 logs/create_issues_*.log | tail -100
+# View script logs
+tail -100 logs/*.log
 
 # View specific log
-
-cat logs/create_issues_20251107_180746.log
-```text
-
-### Check State Files
-
-```bash
-
-# View saved state (for resume capability)
-
-cat logs/.issue_creation_state_*.json
-```text
-
-### Test Parsing
-
-```bash
-
-# Dry-run to test without creating issues
-
-python3 scripts/create_issues.py --dry-run
-
-# Test single component
-
-python3 scripts/create_single_component_issues.py notes/plan/01-foundation/github_issue.md
+cat logs/<script>_*.log
 ```text
 
 ## Troubleshooting
@@ -1558,28 +1523,18 @@ python3 scripts/create_single_component_issues.py notes/plan/01-foundation/githu
 ### GitHub CLI Issues
 
 ```bash
-
 # Check authentication
-
 gh auth status
 
 # If missing scopes, refresh authentication
-
 gh auth refresh -h github.com
 ```text
 
-### Issue Creation Failures
+### Issue Access Problems
 
 - Check GitHub CLI auth: `gh auth status`
-- Verify repository access
-- Check logs: `tail -100 logs/create_issues_*.log`
-- Use `--resume` to continue from interruption
-
-### Broken Links in Plans
-
-- Use relative paths: `../plan.md` not absolute
-- Verify files exist at referenced paths
-- Update links if files are moved
+- Verify repository access: `gh repo view`
+- Test issue access: `gh issue list`
 
 ### Script Errors
 
@@ -1590,7 +1545,7 @@ gh auth refresh -h github.com
 ## Important Files
 
 - `.clinerules` - Comprehensive Claude Code conventions
-- `notes/README.md` - GitHub issues creation plan
 - `notes/review/README.md` - PR review guidelines and 5-phase workflow explanation
 - `scripts/README.md` - Complete scripts documentation
 - `README.md` - Main project documentation
+- `.claude/shared/github-issue-workflow.md` - GitHub issue read/write patterns

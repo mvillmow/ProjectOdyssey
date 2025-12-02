@@ -1,6 +1,18 @@
 #!/usr/bin/env python3
 """
+DEPRECATED: This script is no longer used.
+
+The notes/plan/ directory has been removed. Planning is now done directly
+through GitHub issues. See .claude/shared/github-issue-workflow.md for the
+new workflow.
+
+To update issues, use the GitHub CLI directly:
+    gh issue edit <number> --title "..." --body "..."
+
+---
+
 Regenerate all github_issue.md files from their corresponding plan.md files.
+(DEPRECATED)
 
 This script consolidates the functionality of all legacy issue update scripts
 and can regenerate all github_issue.md files dynamically from plan.md sources.

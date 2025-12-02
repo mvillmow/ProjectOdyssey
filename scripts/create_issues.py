@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """
-GitHub Issues Creator
+DEPRECATED: This script is no longer used.
+
+The notes/plan/ directory has been removed. Planning is now done directly
+through GitHub issues. See .claude/shared/github-issue-workflow.md for the
+new workflow.
+
+To create issues, use the GitHub CLI directly:
+    gh issue create --title "..." --body "..." --label "..."
+
+---
+
+GitHub Issues Creator (DEPRECATED)
 
 This script automatically creates GitHub issues from github_issue.md files
 in the notes/plan directory structure. It supports dry-run mode, resuming

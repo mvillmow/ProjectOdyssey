@@ -1,11 +1,26 @@
 ---
 name: plan-validate-structure
-description: Validate plan directory structure and file format compliance with Template 1 (9-section format). Use before committing plan changes or creating issues.
+description: "DEPRECATED: The notes/plan/ directory has been removed. Planning is now done directly through GitHub issues. See gh-read-issue-context and gh-post-issue-update skills instead."
 mcp_fallback: none
 category: plan
+deprecated: true
 ---
 
-# Plan Structure Validation Skill
+# Plan Structure Validation Skill (DEPRECATED)
+
+**DEPRECATED**: This skill is no longer used. The `notes/plan/` directory has been removed.
+Planning is now done directly through GitHub issues.
+
+See `.claude/shared/github-issue-workflow.md` for the new workflow.
+
+## Replacement Skills
+
+- `gh-read-issue-context` - Read context from GitHub issues
+- `gh-post-issue-update` - Post structured updates to GitHub issues
+
+---
+
+## Legacy Documentation (for reference only)
 
 Validate plans follow Template 1 format and hierarchy rules.
 

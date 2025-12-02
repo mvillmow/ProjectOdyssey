@@ -42,14 +42,16 @@ gh pr create --issue <issue>
 
 ## Workflow
 
-1. **Read issue**: Understand requirements and acceptance criteria
+1. **Read issue context**: `gh issue view <issue> --comments` - understand requirements, prior context
 2. **Create branch**: `git checkout -b <issue>-<description>`
-3. **Write tests first**: TDD approach - tests drive implementation
-4. **Implement code**: Build functionality to pass tests
-5. **Quality check**: Format code and run pre-commit
-6. **Commit**: Create focused commit with issue reference
-7. **Push and PR**: Create PR linked to issue
-8. **Monitor CI**: Verify all checks pass
+3. **Post start comment**: Document approach on the issue
+4. **Write tests first**: TDD approach - tests drive implementation
+5. **Implement code**: Build functionality to pass tests
+6. **Quality check**: Format code and run pre-commit
+7. **Commit**: Create focused commit with issue reference
+8. **Push and PR**: Create PR linked to issue
+9. **Post completion**: Document summary on the issue
+10. **Monitor CI**: Verify all checks pass
 
 ## Branch Naming Convention
 
@@ -98,23 +100,38 @@ Before creating PR:
 
 ## Documentation Requirements
 
-Every issue should have `/notes/issues/<issue>/README.md`:
+Post documentation directly to the GitHub issue:
 
-```markdown
-# Issue #42: Add Tensor Operations
+```bash
+# Post implementation started
+gh issue comment <issue> --body "$(cat <<'EOF'
+## Implementation Started
 
-## Objective
-What this issue accomplishes
+**Branch**: `<branch-name>`
 
-## Deliverables
-- List of files/changes
+### Approach
+[Brief description of implementation approach]
 
-## Success Criteria
-- [ ] Tests passing
-- [ ] Documentation complete
+### Files to Modify
+- `path/to/file1.mojo`
+- `path/to/file2.mojo`
+EOF
+)"
 
-## Implementation Notes
-- Notes discovered during work
+# Post completion summary
+gh issue comment <issue> --body "$(cat <<'EOF'
+## Implementation Complete
+
+**PR**: #<pr-number>
+
+### Summary
+[What was implemented]
+
+### Verification
+- [x] Tests pass
+- [x] Pre-commit passes
+EOF
+)"
 ```
 
 ## References

@@ -1,11 +1,41 @@
 ---
 name: plan-regenerate-issues
-description: Regenerate github_issue.md files from plan.md after modifying plans. Use after editing plan.md files to update issue descriptions.
+description: "DEPRECATED: The notes/plan/ directory has been removed. Planning is now done directly through GitHub issues. See gh-read-issue-context and gh-post-issue-update skills instead."
 mcp_fallback: none
 category: plan
+deprecated: true
 ---
 
-# Regenerate GitHub Issues Skill
+# Regenerate GitHub Issues Skill (DEPRECATED)
+
+**DEPRECATED**: This skill is no longer used. The `notes/plan/` directory has been removed.
+Planning is now done directly through GitHub issues.
+
+See `.claude/shared/github-issue-workflow.md` for the new workflow.
+
+## Replacement Skills
+
+- `gh-read-issue-context` - Read context from GitHub issues
+- `gh-post-issue-update` - Post structured updates to GitHub issues
+
+## To Update Issues
+
+Use the GitHub CLI directly:
+
+```bash
+# Update issue title
+gh issue edit <number> --title "New title"
+
+# Update issue body
+gh issue edit <number> --body "New body content"
+
+# Add comment
+gh issue comment <number> --body "Update message"
+```
+
+---
+
+## Legacy Documentation (for reference only)
 
 Regenerate issue descriptions from updated plans.
 

@@ -65,20 +65,5 @@ def get_agents_dir() -> Path:
     return agents_dir
 
 
-def get_plan_dir() -> Path:
-    """
-    Get the notes/plan directory path.
-
-    Returns:
-        Path to notes/plan directory
-
-    Raises:
-        RuntimeError: If plan directory doesn't exist
-    """
-    repo_root = get_repo_root()
-    plan_dir = repo_root / "notes" / "plan"
-
-    if not plan_dir.exists():
-        raise RuntimeError(f"Plan directory not found: {plan_dir}")
-
-    return plan_dir
+# NOTE: get_plan_dir() removed - planning now done through GitHub issues
+# See .claude/shared/github-issue-workflow.md for the new workflow

@@ -490,10 +490,10 @@ The operational agent configurations are in `.claude/agents/` (44 agents total):
 - **agent-skills-overview.md** - System overview
 - **agent-skills-implementation-summary.md** - Implementation summary and lessons learned
 
-### In notes/issues/
+### In GitHub Issues
 
-- **62/** through **67/** - Individual issue documentation for agents
-- **510/** through **514/** - Individual issue documentation for skills
+Issue-specific documentation is posted directly to GitHub issues as comments.
+See issues #62 through #67 (agents) and #510 through #514 (skills).
 
 ## References
 
@@ -527,7 +527,7 @@ For questions or issues:
 
 1. Review documentation in this directory
 1. Check `/notes/review/` for detailed specs and architectural reviews
-1. Check `/notes/issues/` for individual issue documentation
+1. Check GitHub issues for individual issue documentation
 1. Consult Claude Code documentation
 1. Ask in team channels
 
@@ -545,4 +545,4 @@ For questions or issues:
 
 - Planning Complete: Issues #62, #67, #510 ✅
 - Ready for Implementation: Issues #63-66 (Agents), #511-514 (Skills)
-- See individual issue directories in `/notes/issues/` for specific implementation plans
+- See individual GitHub issues for specific implementation details

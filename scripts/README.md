@@ -6,16 +6,21 @@ This directory contains Python automation scripts for the Mojo AI Research Repos
 
 These scripts automate repository management tasks:
 
-- Creating GitHub issues from plan files (files in `notes/plan/`)
-- Regenerating github_issue.md files dynamically from plan.md files (local, task-relative)
 - Markdown and link validation
 - Repository structure validation
 - Agent system utilities and validation
 - Shared utilities and validation framework
+- Migration utilities
 
-**Important**: Plan files in `notes/plan/` are task-relative.
-They are used for local planning and GitHub issue generation. For tracked team documentation,
-see `notes/issues/`, `notes/review/`, and `agents/`.
+**Note**: Planning is now done directly through GitHub issues.
+See `.claude/shared/github-issue-workflow.md` for the workflow.
+
+### Deprecated Scripts
+
+The following scripts are deprecated and kept for historical reference:
+
+- `create_issues.py` - Was used with notes/plan/ directory (removed)
+- `regenerate_github_issues.py` - Was used with notes/plan/ directory (removed)
 
 ## Directory Structure
 

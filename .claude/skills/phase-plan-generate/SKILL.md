@@ -112,9 +112,9 @@ Additional context, assumptions, or considerations.
 
 ## Output Location
 
-- **Plan files**: `/notes/plan/<section>/<subsection>/plan.md`
-- **Issue tracking**: `/notes/issues/<issue-number>/README.md`
-- **Regenerated**: `github_issue.md` files (auto-generated from plan.md)
+- **Planning**: GitHub issue body and comments
+- **Specifications**: `/notes/review/` for architectural decisions
+- **Issue tracking**: GitHub issue comments
 
 ## Error Handling
 
@@ -128,9 +128,9 @@ Additional context, assumptions, or considerations.
 
 ## References
 
-- `CLAUDE.md` - "Plan File Format (Template 1)" section
-- `.claude/skills/plan-regenerate-issues/` - GitHub issue generation from plans
-- `notes/plan/` - Example plan files in repository
+- `CLAUDE.md` - "GitHub Issue Structure" section
+- `.claude/shared/github-issue-workflow.md` - GitHub issue workflow
+- `/notes/review/` - Example specifications in repository
 
 ---
 

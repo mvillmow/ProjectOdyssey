@@ -1,11 +1,46 @@
 ---
 name: plan-create-component
-description: Create new component plans following Template 1 format and integrate into hierarchy. Use when adding new components to the plan structure.
+description: "DEPRECATED: The notes/plan/ directory has been removed. Planning is now done directly through GitHub issues. See gh-read-issue-context and gh-post-issue-update skills instead."
 mcp_fallback: none
 category: plan
+deprecated: true
 ---
 
-# Create Component Plan Skill
+# Create Component Plan Skill (DEPRECATED)
+
+**DEPRECATED**: This skill is no longer used. The `notes/plan/` directory has been removed.
+Planning is now done directly through GitHub issues.
+
+See `.claude/shared/github-issue-workflow.md` for the new workflow.
+
+## Replacement Workflow
+
+To create a new component, create a GitHub issue directly:
+
+```bash
+gh issue create --title "[Plan] Component Name" --body "$(cat <<'EOF'
+## Overview
+Brief description
+
+## Objectives
+- Objective 1
+- Objective 2
+
+## Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+EOF
+)"
+```
+
+## Replacement Skills
+
+- `gh-read-issue-context` - Read context from GitHub issues
+- `gh-post-issue-update` - Post structured updates to GitHub issues
+
+---
+
+## Legacy Documentation (for reference only)
 
 Create new component plans and integrate into hierarchy.
 

@@ -20,8 +20,8 @@ Coordinate implementation phase by breaking down work, delegating to engineers, 
 ## Quick Reference
 
 ```bash
-# Break down plan into implementation tasks
-grep "## Steps" -A 20 notes/plan/<section>/<component>/plan.md
+# Review GitHub issue for implementation tasks
+gh issue view <number> --json body --jq '.body'
 
 # Verify code quality
 pixi run mojo test -I . tests/
@@ -108,8 +108,8 @@ Before code review approval:
 ## Output Location
 
 - **Implementation**: `/shared/<module>/`, `/examples/`, `/tooling/`
-- **Documentation**: `/notes/issues/<issue-number>/README.md`
-- **Issue updates**: Track progress, blockers, learnings
+- **Documentation**: GitHub issue comments
+- **Issue updates**: Track progress, blockers, learnings via `gh issue comment`
 
 ## Error Handling
 

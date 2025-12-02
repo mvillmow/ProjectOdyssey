@@ -284,9 +284,10 @@ Comprehensive documentation lives in two locations:
 
 Quick start guides and visual references for team onboarding.
 
-### Issue-Specific Documentation (`/notes/issues/<issue-number>/`)
+### Issue-Specific Documentation (GitHub Issues)
 
-Implementation notes and decisions specific to GitHub issues.
+Implementation notes and decisions are posted directly to GitHub issues as comments.
+See `.claude/shared/github-issue-workflow.md` for the workflow.
 
 When writing documentation:
 

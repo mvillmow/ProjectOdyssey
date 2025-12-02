@@ -12,7 +12,7 @@ from pathlib import Path
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from common import get_repo_root, get_agents_dir, get_plan_dir, LABEL_COLORS
+from common import get_repo_root, get_agents_dir, LABEL_COLORS
 
 
 class TestCommonUtilities(unittest.TestCase):
@@ -79,25 +79,10 @@ class TestCommonUtilities(unittest.TestCase):
             "Agents dir should be .claude/agents"
         )
 
-    def test_get_plan_dir_returns_path(self):
-        """Test that get_plan_dir returns a Path object."""
-        plan_dir = get_plan_dir()
 
-        self.assertIsInstance(plan_dir, Path)
-        # Note: plan_dir might not exist in all environments
-        # Just verify it's a Path with the right structure
-
-    def test_get_plan_dir_relative_to_root(self):
-        """Test that plan_dir is notes/plan relative to repo root."""
-        repo_root = get_repo_root()
-        plan_dir = get_plan_dir()
-
-        expected = repo_root / "notes" / "plan"
-        self.assertEqual(
-            plan_dir.resolve(),
-            expected.resolve(),
-            "Plan dir should be notes/plan"
-        )
+# NOTE: TestGetPlanDir removed - get_plan_dir() function removed
+# Planning is now done through GitHub issues
+# See .claude/shared/github-issue-workflow.md
 
 
 class TestLabelColors(unittest.TestCase):

@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Add scripts directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.common import LABEL_COLORS, get_repo_root, get_agents_dir, get_plan_dir
+from scripts.common import LABEL_COLORS, get_repo_root, get_agents_dir
 
 
 class TestLabelColors:
@@ -91,28 +91,9 @@ class TestGetAgentsDir:
             pass
 
 
-class TestGetPlanDir:
-    """Test get_plan_dir() function"""
-
-    def test_get_plan_dir_returns_path(self):
-        """Test that get_plan_dir returns a Path object"""
-        # This may fail if notes/plan doesn't exist
-        try:
-            plan_dir = get_plan_dir()
-            assert isinstance(plan_dir, Path)
-        except RuntimeError:
-            # Expected if plan directory doesn't exist
-            pass
-
-    def test_get_plan_dir_points_to_notes_plan(self):
-        """Test that plan dir is under notes/plan"""
-        try:
-            plan_dir = get_plan_dir()
-            assert plan_dir.name == 'plan'
-            assert plan_dir.parent.name == 'notes'
-        except RuntimeError:
-            # Expected if plan directory doesn't exist
-            pass
+# NOTE: TestGetPlanDir removed - get_plan_dir() function removed
+# Planning is now done through GitHub issues
+# See .claude/shared/github-issue-workflow.md
 
 
 if __name__ == '__main__':

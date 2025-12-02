@@ -120,7 +120,7 @@ fn preprocess_data(data: RawData) -> Tensor:
 ## Output Location
 
 - **Refactored code**: Same locations as implementation (in-place)
-- **Updated docs**: `/notes/issues/<issue-number>/README.md`
+- **Updated docs**: GitHub issue comments
 - **Final artifacts**: Ready for merge to `main` branch
 
 ## Error Handling

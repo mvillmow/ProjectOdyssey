@@ -346,7 +346,7 @@ You're successful when:
 
 #### Project Resources
 
-- Component specification in local plan.md or tracked docs in notes/issues/
+- Component specification in GitHub issue or tracked docs in /notes/review/
 - Test files in test worktree
 - Style guide in project docs
 
@@ -356,14 +356,14 @@ You're successful when:
 
 1. **Team Docs** (`/agents/`) - Quick references and templates (read for guidance)
 1. **Comprehensive Specs** (`/notes/review/`) - Architectural decisions (read for context)
-1. **Issue-Specific** (`/notes/issues/<issue-number>/README.md`) - Implementation notes
+1. **Issue-Specific** (GitHub issue comments) - Implementation notes
 
 ### When documenting your work
 
-- ✅ Add implementation notes to `/notes/issues/<your-issue>/README.md`
+- ✅ Add implementation notes as comments on the GitHub issue
 - ✅ Link to comprehensive docs in `/agents/` and `/notes/review/`
 - ❌ DON'T duplicate comprehensive documentation
-- ❌ DON'T create specifications in `/notes/issues/` (use `/notes/review/` instead)
+- ❌ DON'T create specifications in issue comments (use `/notes/review/` instead)
 
 ### Notes
 

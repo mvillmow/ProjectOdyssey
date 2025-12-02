@@ -1,111 +1,178 @@
 ---
 name: doc-issue-readme
-description: Generate issue-specific documentation in /notes/issues/<number>/README.md. Use when starting work on an issue to create proper documentation structure.
-mcp_fallback: none
+description: Post structured documentation to GitHub issue as a comment. Use when starting work on an issue to document approach and track progress.
+mcp_fallback: github
 category: doc
 ---
 
-# Issue README Generation Skill
+# Issue Documentation Skill
 
-Create issue-specific documentation following ML Odyssey standards.
+Post structured documentation to GitHub issues following ML Odyssey standards.
 
 ## When to Use
 
 - Starting work on a GitHub issue
-- Need structured documentation for issue tracking
+- Documenting implementation approach
 - Tracking implementation progress
 - Consolidating findings and decisions
 
 ## Quick Reference
 
 ```bash
-mkdir -p notes/issues/42
-cp .claude/skills/doc-issue-readme/templates/issue_readme.md notes/issues/42/README.md
-# Edit to fill in details
+# Post documentation to issue
+gh issue comment <number> --body "$(cat <<'EOF'
+## Issue Documentation
+
+### Objective
+[What this issue accomplishes]
+
+### Approach
+[Implementation approach]
+
+### Files to Modify
+- path/to/file1
+- path/to/file2
+
+### Success Criteria
+- [ ] Criterion 1
+- [ ] Criterion 2
+EOF
+)"
 ```
 
-## README Format
+## Documentation Format
 
-```markdown
-# Issue #XX: [Phase] Component Name
+### Starting Work
 
-## Objective
-What this issue accomplishes (1-2 sentences)
+```bash
+gh issue comment <number> --body "$(cat <<'EOF'
+## Implementation Started
 
-## Deliverables
-- Specific files/changes
-- Measurable outputs
+**Branch**: `<branch-name>`
 
-## Success Criteria
+### Objective
+[1-2 sentence description of what this issue accomplishes]
+
+### Approach
+[Brief description of implementation approach]
+
+### Files to Create/Modify
+- [ ] `path/to/file1.mojo` - [purpose]
+- [ ] `path/to/file2.mojo` - [purpose]
+
+### Success Criteria
 - [ ] Criterion 1
 - [ ] Criterion 2
 
-## References
-- Links to /agents/ and /notes/review/ documentation
-- Related issues
+### References
+- Related: #[other-issue]
+- Design: [link to relevant docs]
+EOF
+)"
+```
 
-## Implementation Notes
-Discoveries during implementation (fill as work progresses)
+### Progress Update
 
-## Testing Notes
-Test results and coverage (if applicable)
+```bash
+gh issue comment <number> --body "$(cat <<'EOF'
+## Progress Update
 
-## Review Feedback
-PR review feedback and resolutions
+### Completed
+- [x] Item 1
+- [x] Item 2
+
+### In Progress
+- [ ] Item 3 (70%)
+
+### Blockers
+None / [describe blockers]
+
+### Notes
+[Any findings or decisions made]
+EOF
+)"
+```
+
+### Completion Summary
+
+```bash
+gh issue comment <number> --body "$(cat <<'EOF'
+## Implementation Complete
+
+**PR**: #<pr-number>
+
+### Summary
+[What was implemented]
+
+### Files Changed
+- `path/to/file1.mojo` - [change description]
+- `path/to/file2.mojo` - [change description]
+
+### Testing
+- All tests pass
+- Coverage: X%
+
+### Verification
+- [x] `pixi run test` passes
+- [x] `pre-commit run --all-files` passes
+EOF
+)"
 ```
 
 ## Workflow
 
-1. **Create directory** - `mkdir -p notes/issues/<number>`
-2. **Create README** - Copy template or fetch issue details
-3. **Populate sections** - Fill Objective, Deliverables, Success Criteria
-4. **Add references** - Link to shared docs (don't duplicate)
-5. **Track progress** - Update notes as work continues
-6. **Update before PR** - Verify all sections complete
+1. **Read issue context**: `gh issue view <number> --comments`
+2. **Post documentation**: Use templates above to document approach
+3. **Update as work progresses**: Post progress updates
+4. **Summarize on completion**: Post completion summary with PR link
 
 ## Documentation Rules
 
 ### DO
 
 - Keep issue-specific
-- Link to comprehensive docs (don't duplicate)
+- Reference related issues and docs
 - Update as work progresses
 - Be specific and measurable
 
 ### DON'T
 
-- Duplicate comprehensive docs from /notes/review/
-- Create shared specifications here
-- Leave sections empty long-term
-- Forget to update during work
+- Post overly long updates (split if needed)
+- Duplicate content across issues
+- Leave work undocumented
+- Forget completion summary
 
 ## Common Sections
 
 ### Objective
 
-Good: "Implement tensor operations (add, multiply, matmul) with SIMD"
+Good: "Implement tensor operations (add, multiply, matmul) with SIMD optimization"
 Bad: "Work on tensors"
 
-### Deliverables
+### Approach
 
-Good: Specific file paths and outputs
-Bad: "Various improvements"
+Good: "Use SIMD for vectorized operations, implement lazy evaluation for chain operations"
+Bad: "Code stuff"
 
 ### Success Criteria
 
-Must be measurable checkboxes - "Tests passing >90% coverage"
+Must be measurable checkboxes:
+
+- "All 15 unit tests pass"
+- "Coverage > 90%"
+- "No new warnings"
 
 ## Error Handling
 
 | Issue | Fix |
 |-------|-----|
-| Missing Objective | Add specific 1-2 sentence description |
-| Vague Deliverables | List exact files and outputs |
-| Non-measurable criteria | Add percentages, counts, or concrete outcomes |
-| Duplicated docs | Link instead, or move to /notes/review/ |
+| Issue locked | Contact maintainer |
+| Rate limited | Wait and retry |
+| Content too long | Split into multiple comments |
+| Missing context | Run `gh issue view <number> --comments` first |
 
 ## References
 
-- See `/notes/issues/*/README.md` for examples
-- Documentation rules: CLAUDE.md
-- Skill: `doc-validate-markdown` for formatting
+- See `.claude/shared/github-issue-workflow.md` for workflow patterns
+- See `gh-read-issue-context` skill for reading issue context
+- See `gh-post-issue-update` skill for posting updates

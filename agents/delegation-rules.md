@@ -130,8 +130,8 @@ Orchestrator
 
 ### Documentation Location
 
-All work, even trivial fixes, must document outputs in `/notes/issues/<issue-number>/README.md`. Always verify
-the GitHub issue exists before starting work.
+All work, even trivial fixes, must document outputs as comments on the GitHub issue. Always verify
+the GitHub issue exists before starting work. See `.claude/shared/github-issue-workflow.md` for details.
 
 ## Mojo-Specific Delegation
 
@@ -311,7 +311,7 @@ git merge --no-commit <branch>
 
 **Option 3**: Coordinate via specs
 
-- Document in specifications (local plan.md or tracked notes/issues/)
+- Document in specifications (GitHub issue comments)
 - Implement independently
 - Merge during packaging phase
 
@@ -333,8 +333,8 @@ git merge --no-commit <branch>
 - Memory constraints
 - Parallelization strategy
 
-**Note**: Use local plan.md files for task-relative planning, or tracked documentation in
-`notes/issues/` for team-wide specifications.
+**Note**: Post task-specific documentation as GitHub issue comments, or use
+`/notes/review/` for team-wide specifications.
 
 ### Mojo Style Consistency
 
@@ -380,7 +380,7 @@ git merge --no-commit <branch>
 
 ### Package phase is NOT complete if
 
-❌ Only documentation files created (README.md, notes/issues/XX/README.md)
+❌ Only documentation files created (README.md, issue comments)
 ❌ Only `__init__.mojo` files exist without binary package
 ❌ No actual artifacts in `dist/` directory
 ❌ No installation testing performed

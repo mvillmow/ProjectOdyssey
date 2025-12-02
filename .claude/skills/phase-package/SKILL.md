@@ -118,7 +118,7 @@ Before marking package complete:
 
 - **Packages**: `/packages/<module>.mojopkg`
 - **Archives**: `/dist/<version>.tar.gz`, `.zip`
-- **Documentation**: `/notes/issues/<issue-number>/README.md`
+- **Documentation**: GitHub issue comments
 - **Release artifacts**: GitHub releases section (after cleanup)
 
 ## Error Handling
