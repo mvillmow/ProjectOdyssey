@@ -85,7 +85,7 @@ struct ParsedArgs(Copyable, Movable):
         """
         return name in self.values
 
-    fn get_string(self, name: String, default: String = "") -> String:
+    fn get_string(self, name: String, default: String = "") raises -> String:
         """Get argument value as string.
 
         Args:
@@ -99,7 +99,7 @@ struct ParsedArgs(Copyable, Movable):
             return self.values[name]
         return default
 
-    fn get_int(self, name: String, default: Int = 0) -> Int:
+    fn get_int(self, name: String, default: Int = 0) raises -> Int:
         """Get argument value as integer.
 
         Args:
@@ -122,7 +122,7 @@ struct ParsedArgs(Copyable, Movable):
                 + name + "'"
             )
 
-    fn get_float(self, name: String, default: Float64 = 0.0) -> Float64:
+    fn get_float(self, name: String, default: Float64 = 0.0) raises -> Float64:
         """Get argument value as float.
 
         Args:
@@ -210,7 +210,7 @@ struct ArgumentParser(Copyable, Movable):
         var spec = ArgumentSpec(
             name=name, arg_type=arg_type, default_value=default, is_flag=False
         )
-        self.arguments[name] = spec
+        self.arguments[name] = spec^
 
     fn add_flag(mut self, name: String):
         """Add a boolean flag argument.
@@ -223,7 +223,7 @@ struct ArgumentParser(Copyable, Movable):
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
         )
-        self.arguments[name] = spec
+        self.arguments[name] = spec^
 
     fn parse(self) raises -> ParsedArgs:
         """Parse command-line arguments from sys.argv.
