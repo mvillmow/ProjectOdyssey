@@ -117,10 +117,10 @@ fn test_stride_row_major() raises:
     var t = ones(shape, DType.float32)  # Shape (2, 3, 4)
 
     # Row-major strides for (2,3,4): [12, 4, 1]
-    var strides = t._strides^
-    assert_equal_int(strides[0], 12, "Stride for dim 0 should be 12")
-    assert_equal_int(strides[1], 4, "Stride for dim 1 should be 4")
-    assert_equal_int(strides[2], 1, "Stride for dim 2 should be 1")
+    # Access strides directly without transferring ownership
+    assert_equal_int(t._strides[0], 12, "Stride for dim 0 should be 12")
+    assert_equal_int(t._strides[1], 4, "Stride for dim 1 should be 4")
+    assert_equal_int(t._strides[2], 1, "Stride for dim 2 should be 1")
 
 
 # ============================================================================
@@ -136,7 +136,7 @@ fn test_is_contiguous_true() raises:
 
     # TODO: assert_contiguous(t)
     # For now, just test the method exists
-    var contig = t.is_contiguous()
+    var _ = t.is_contiguous()
     # Should be True for newly created tensor
     pass  # Placeholder
 
