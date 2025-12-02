@@ -12,15 +12,15 @@ Architecture:
     - All data is returned as ExTensor for consistency with core library
 
 Example:
-    from shared.data import load_cifar10_train, load_cifar10_test, load_emnist_train, load_emnist_test
+    from shared.data import load_emnist_train, load_emnist_test
 
-    # Load CIFAR-10
-    images, labels = load_cifar10_train("/path/to/cifar10")
+    # Load EMNIST
+    images, labels = load_emnist_train("/path/to/emnist", split="balanced")
 
-    # Load EMNIST with normalization
-    images_raw, labels = load_emnist_train("/path/to/emnist")
-    images_norm = normalize_images(images_raw)
-    labels_onehot = one_hot_encode(labels, 62)  # 62 EMNIST classes
+    # Or use the EMNISTDataset class directly
+    from shared.data import EMNISTDataset
+    dataset = EMNISTDataset("/path/to/emnist", split="balanced", train=True)
+    sample_img, sample_label = dataset[0]
 """
 
 # Package version
@@ -44,15 +44,23 @@ from .formats import (
 # Dataset Loaders (High-Level Interfaces)
 # ============================================================================
 
-# CIFAR-10 dataset
+# Dataset classes and loaders
 from .datasets import (
-    load_cifar10_train,     # Load CIFAR-10 training set
-    load_cifar10_test,      # Load CIFAR-10 test set
+    Dataset,                # Base dataset interface
+    ExTensorDataset,        # In-memory tensor dataset wrapper
+    FileDataset,            # File-based lazy-loading dataset
+    EMNISTDataset,          # EMNIST dataset with multiple splits
     load_emnist_train,      # Load EMNIST training set
     load_emnist_test,       # Load EMNIST test set
-    normalize_images,       # Normalize grayscale images to [0, 1]
-    one_hot_encode,         # Convert labels to one-hot encoding
 )
+
+# TODO: CIFAR-10 and other utilities will be implemented in future tasks
+# from .datasets import (
+#     load_cifar10_train,     # Load CIFAR-10 training set
+#     load_cifar10_test,      # Load CIFAR-10 test set
+#     normalize_images,       # Normalize grayscale images to [0, 1]
+#     one_hot_encode,         # Convert labels to one-hot encoding
+# )
 
 # ============================================================================
 # Public API
@@ -62,9 +70,9 @@ from .datasets import (
 # All imported symbols are automatically available to package consumers.
 #
 # High-level usage:
-#   from shared.data import load_cifar10_train, load_emnist_test
-#   images, labels = load_cifar10_train("/path/to/data")
+#   from shared.data import load_emnist_train, EMNISTDataset
+#   images, labels = load_emnist_train("/path/to/emnist", split="balanced")
 #
 # Low-level usage:
-#   from shared.data import load_idx_images_rgb, read_uint32_be
-#   images = load_idx_images_rgb("/path/to/custom.idx")
+#   from shared.data import load_idx_images, load_idx_labels, read_uint32_be
+#   images = load_idx_images("/path/to/custom-images-idx3-ubyte")
