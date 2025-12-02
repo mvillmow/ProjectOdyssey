@@ -463,7 +463,7 @@ fn avgpool2d_backward(
                                 var grad_in_idx = b * (channels * in_height * in_width) + c * (in_height * in_width) + in_h * in_width + in_w
                                 grad_input._data.bitcast[Float32]()[grad_in_idx] += grad_per_position
 
-    return grad_input
+    return grad_input^
 
 
 fn global_avgpool2d_backward(
@@ -528,4 +528,4 @@ fn global_avgpool2d_backward(
                     var grad_in_idx = b * (channels * height * width) + c * (height * width) + h * width + w
                     grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_per_position
 
-    return grad_input
+    return grad_input^
