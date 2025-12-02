@@ -374,11 +374,11 @@ fn test_matmul_backward_gradient_a() raises:
         b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 - 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return matmul(inp, b)
 
     # Backward function wrapper for grad_a
-    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         var grads = matmul_backward(grad_out, inp, b)
         return grads.grad_a
 
@@ -419,11 +419,11 @@ fn test_matmul_backward_gradient_b() raises:
         b._data.bitcast[Float32]()[i] = Float32(i) * 0.2 - 0.5
 
     # Forward function wrapper
-    fn forward(inp: ExTensor) raises -> ExTensor:
+    fn forward(inp: ExTensor) raises escaping -> ExTensor:
         return matmul(a, inp)
 
     # Backward function wrapper for grad_b
-    fn backward(grad_out: ExTensor, inp: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, inp: ExTensor) raises escaping -> ExTensor:
         var grads = matmul_backward(grad_out, a, inp)
         return grads.grad_b
 

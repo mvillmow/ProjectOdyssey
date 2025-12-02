@@ -1,17 +1,17 @@
-"""
-Learning Rate Schedulers
+"""Learning Rate Schedulers
 
 Scheduler implementations for adjusting learning rates during training.
 
 Includes:
-- step_lr: Step decay scheduler (decay every N epochs)
-- multistep_lr: Multi-step decay at specific milestones
-- exponential_lr: Exponential decay per epoch
-- constant_lr: No decay (baseline)
+- StepLR: Step decay scheduler (decay every N epochs)
+- CosineAnnealingLR: Cosine annealing scheduler
+- WarmupLR: Linear warmup scheduler
 
-All schedulers are pure functions - caller passes epoch and gets learning rate.
-Future: Add cosine annealing and warmup schedulers.
+All schedulers are struct-based implementations of the LRScheduler trait.
 """
 
 # Export scheduler implementations
+from .lr_schedulers import StepLR, CosineAnnealingLR, WarmupLR
+
+# Also export pure function implementations for backward compatibility
 from .step_decay import step_lr, multistep_lr, exponential_lr, constant_lr

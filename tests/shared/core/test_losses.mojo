@@ -267,11 +267,11 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     targets._set_float64(3, 0.0)
 
     # Forward function wrapper
-    fn forward(pred: ExTensor) raises -> ExTensor:
+    fn forward(pred: ExTensor) raises escaping -> ExTensor:
         return binary_cross_entropy(pred, targets)
 
     # Backward function wrapper
-    fn backward(grad_out: ExTensor, pred: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, pred: ExTensor) raises escaping -> ExTensor:
         return binary_cross_entropy_backward(grad_out, pred, targets)
 
     var loss = forward(predictions)
@@ -306,11 +306,11 @@ fn test_mean_squared_error_backward_gradient() raises:
     targets._set_float64(4, 0.8)
 
     # Forward function wrapper
-    fn forward(pred: ExTensor) raises -> ExTensor:
+    fn forward(pred: ExTensor) raises escaping -> ExTensor:
         return mean_squared_error(pred, targets)
 
     # Backward function wrapper
-    fn backward(grad_out: ExTensor, pred: ExTensor) raises -> ExTensor:
+    fn backward(grad_out: ExTensor, pred: ExTensor) raises escaping -> ExTensor:
         return mean_squared_error_backward(grad_out, pred, targets)
 
     var loss = forward(predictions)

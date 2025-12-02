@@ -294,7 +294,11 @@ fn test_batch_norm2d_backward_gradient_input() raises:
             training=True, epsilon=1e-5
         )
         # Sum output to get scalar (gradient checking requires scalar loss)
-        return reduce_sum(out, axis=-1, keepdims=False)
+        # Reduce all dimensions by repeatedly summing along each axis
+        var result = out
+        while result.dim() > 0:
+            result = reduce_sum(result, axis=0, keepdims=False)
+        return result
 
     var numerical_grad = compute_numerical_gradient(forward_for_grad, x, epsilon=1e-4)
 

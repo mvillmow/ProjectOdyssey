@@ -206,8 +206,8 @@ struct NVFP4(Stringable, Representable, Copyable, Movable):
         Args:.            `value`: E2M1 encoded value.
             `scale`: E4M3 scale factor.
         """
-        self.value = value
-        self.scale = scale
+        self.value = value.copy()
+        self.scale = scale.copy()
 
     @staticmethod
     fn from_float32(x: Float32) -> Self:
