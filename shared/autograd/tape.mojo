@@ -141,7 +141,7 @@ struct GradientTape:
     var nodes: List[TapeNode]
     var enabled: Bool
 
-    fn __init__(mut self):
+    fn __init__(out self):
         """Initialize an empty gradient tape."""
         self.nodes = List[TapeNode]()
         self.enabled = False
