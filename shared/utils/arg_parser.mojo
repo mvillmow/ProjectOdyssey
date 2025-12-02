@@ -114,11 +114,12 @@ struct ParsedArgs(Copyable, Movable):
         """
         if name not in self.values:
             return default
+        var value = self.values[name]
         try:
-            return Int(self.values[name])
+            return Int(value)
         except:
             raise Error(
-                "Cannot parse '" + self.values[name] + "' as integer for argument '"
+                "Cannot parse '" + value + "' as integer for argument '"
                 + name + "'"
             )
 
@@ -137,11 +138,12 @@ struct ParsedArgs(Copyable, Movable):
         """
         if name not in self.values:
             return default
+        var value = self.values[name]
         try:
-            return Float64(self.values[name])
+            return Float64(value)
         except:
             raise Error(
-                "Cannot parse '" + self.values[name] + "' as float for argument '"
+                "Cannot parse '" + value + "' as float for argument '"
                 + name + "'"
             )
 
