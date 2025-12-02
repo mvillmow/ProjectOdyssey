@@ -7,7 +7,7 @@ Usage:
 """
 
 from shared.core import ExTensor, zeros
-from data_loader import load_cifar10_batch
+from shared.data.formats import load_cifar10_batch
 from model import VGG16
 
 

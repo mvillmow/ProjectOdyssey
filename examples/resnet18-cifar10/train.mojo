@@ -29,9 +29,9 @@ from shared.core.activation import relu, relu_backward
 from shared.core.normalization import batch_norm2d, batch_norm2d_backward
 from shared.core.arithmetic import add, add_backward
 from shared.data import extract_batch_pair, compute_num_batches
+from shared.data.datasets import load_cifar10_train, load_cifar10_test
 from shared.training.optimizers import sgd_momentum_update_inplace
 from model import ResNet18
-from data_loader import load_cifar10_train, load_cifar10_test
 
 
 fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) raises -> Float32:

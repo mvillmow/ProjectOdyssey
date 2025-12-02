@@ -18,8 +18,8 @@ Features:
 
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches
+from shared.data.datasets import load_cifar10_test
 from model import ResNet18
-from data_loader import load_cifar10_test
 
 
 # CIFAR-10 class names

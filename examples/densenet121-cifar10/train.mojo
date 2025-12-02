@@ -13,8 +13,8 @@ Full implementation would require ~3000 lines. Consider automatic differentiatio
 
 from shared.core import ExTensor, zeros, cross_entropy
 from shared.data import extract_batch_pair, compute_num_batches
+from shared.data.datasets import load_cifar10_train
 from model import DenseNet121
-from data_loader import load_cifar10_train
 
 fn main() raises:
     print("=" * 60)

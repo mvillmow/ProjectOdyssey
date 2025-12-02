@@ -16,7 +16,7 @@ References:
 """
 
 from model import AlexNet
-from data_loader import load_cifar10_test
+from shared.data.datasets import load_cifar10_test
 from shared.core import ExTensor
 from sys import argv
 
