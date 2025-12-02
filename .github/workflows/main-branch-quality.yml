@@ -1,22 +1,16 @@
 name: Main Branch Quality
 
-# Extended quality checks for main branch and scheduled runs
+# Extended quality checks for main branch only
 # These complement the existing comprehensive-tests.yml with additional analysis
+# Runs on: pushes to main, manual dispatch
 
 on:
-  # Run on pushes to main
+  # Run only on pushes to main
   push:
     branches:
       - main
 
-  # Run on all PRs (to ensure quality before merge)
-  pull_request:
-
-  # Scheduled nightly comprehensive run (2 AM UTC)
-  schedule:
-    - cron: '0 2 * * *'
-
-  # Manual trigger
+  # Manual trigger for ad-hoc runs
   workflow_dispatch:
     inputs:
       run_extended:
@@ -295,7 +289,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     name: "Code Quality Analysis"
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
 
     steps:
       - name: Checkout code
@@ -405,7 +399,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     name: "SIMD Analysis"
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run_extended == 'true')
+    if: github.event_name == 'workflow_dispatch' && inputs.run_extended == 'true'
 
     steps:
       - name: Checkout code
@@ -520,43 +514,3 @@ jobs:
           name: main-branch-quality-report
           path: quality-report.md
           retention-days: 90
-
-      - name: Comment on PR (if applicable)
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v8
-        with:
-          script: |
-            const fs = require('fs');
-
-            try {
-              const report = fs.readFileSync('quality-report.md', 'utf8');
-
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-              });
-
-              const botComment = comments.find(comment =>
-                comment.user.type === 'Bot' &&
-                comment.body.includes('📊 Main Branch Quality Report')
-              );
-
-              if (botComment) {
-                await github.rest.issues.updateComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  comment_id: botComment.id,
-                  body: report
-                });
-              } else {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.issue.number,
-                  body: report
-                });
-              }
-            } catch (error) {
-              console.error('Failed to comment:', error);
-            }
