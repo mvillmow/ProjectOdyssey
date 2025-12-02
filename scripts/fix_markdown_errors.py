@@ -10,7 +10,6 @@ Usage:
 import json
 import subprocess
 import sys
-from pathlib import Path
 from collections import defaultdict
 
 
@@ -92,7 +91,7 @@ def main():
 
     errors_by_type, errors_by_file = parse_errors(stdout)
 
-    print(f"\n=== ERRORS BY TYPE ===")
+    print("\n=== ERRORS BY TYPE ===")
     for error_type in sorted(errors_by_type.keys()):
         count = len(errors_by_type[error_type])
         print(f"{error_type}: {count} errors")
@@ -103,7 +102,7 @@ def main():
         if count > 3:
             print(f"    ... and {count - 3} more")
 
-    print(f"\n=== SUMMARY ===")
+    print("\n=== SUMMARY ===")
     total_errors = sum(len(v) for v in errors_by_type.values())
     print(f"Total errors: {total_errors}")
     print(f"Total files with errors: {len(errors_by_file)}")

@@ -12,7 +12,6 @@ With:
 """
 
 import re
-import sys
 from pathlib import Path
 
 
@@ -53,7 +52,7 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
                 index_match = re.match(rf"{indent}{var_name}\[(\d+)\] = (.+)$", next_line)
 
                 if index_match:
-                    index = index_match.group(1)
+                    _index = index_match.group(1)  # Unused but extracted for pattern matching
                     value = index_match.group(2)
                     # Replace with append
                     modified_lines.append(f"{indent}{var_name}.append({value})")
@@ -93,12 +92,12 @@ def main():
             modified_files.append(file_path)
             total_fixes += fixes
 
-    print(f"\n📊 Summary:")
+    print("\n📊 Summary:")
     print(f"   Total files modified: {len(modified_files)}")
     print(f"   Total fixes: {total_fixes}")
 
     if modified_files:
-        print(f"\n📝 Modified files:")
+        print("\n📝 Modified files:")
         for file_path in modified_files:
             print(f"   - {file_path.relative_to(test_dir.parent)}")
 
