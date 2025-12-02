@@ -273,7 +273,7 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
     """Load collection of named tensors from directory.
 
     Reads all .weights files from directory and reconstructs
-    NamedTensor objects. Files are loaded in sorted order.
+    NamedTensor objects. Files are loaded in directory order.
 
     Args:
         dirpath: Directory containing .weights files
@@ -298,7 +298,7 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
         var python = Python.import_module("os")
         var pathlib = Python.import_module("pathlib")
         var p = pathlib.Path(dirpath)
-        var weight_files = sorted(p.glob("*.weights"))
+        var weight_files = list(p.glob("*.weights"))
 
         # Load each weights file
         for file in weight_files:
@@ -377,7 +377,7 @@ fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[S
         var (tensors, metadata) = load_checkpoint("checkpoints/model/")
         for i in range(len(tensors)):
             print(tensors[i].name)
-        if metadata.contains("epoch"):
+        if "epoch" in metadata:
             print("Epoch: " + metadata["epoch"])
     """
     # Load all named tensors
@@ -396,7 +396,7 @@ fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[S
         # Metadata file not found, return empty metadata
         pass
 
-    return Tuple[List[NamedTensor], Dict[String, String]](tensors^, metadata)
+    return Tuple[List[NamedTensor], Dict[String, String]](tensors^, metadata^)
 
 
 fn _serialize_metadata(metadata: Dict[String, String]) -> String:
@@ -412,9 +412,9 @@ fn _serialize_metadata(metadata: Dict[String, String]) -> String:
     """
     var lines = List[String]()
 
-    for item in metadata.items():
-        var key = item[].key
-        var value = item[].value
+    for entry in metadata.items():
+        var key = entry[0]
+        var value = entry[1]
         lines.append(key + "=" + value)
 
     # Join lines

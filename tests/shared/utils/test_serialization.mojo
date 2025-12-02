@@ -257,10 +257,10 @@ fn test_load_named_checkpoint_with_metadata() raises:
 
         # Verify metadata
         assert_true(
-            loaded_metadata.contains("epoch"), "Metadata should have epoch"
+            "epoch" in loaded_metadata, "Metadata should have epoch"
         )
         assert_true(
-            loaded_metadata.contains("loss"), "Metadata should have loss"
+            "loss" in loaded_metadata, "Metadata should have loss"
         )
         assert_equal(
             loaded_metadata["epoch"], "20", "Epoch value should match"
@@ -344,15 +344,15 @@ fn test_checkpoint_round_trip() raises:
 
         # Verify first tensor
         assert_equal(
-            loaded_tensors[0].shape()[0], 4, "First tensor dim 0"
+            loaded_tensors[0].tensor.shape()[0], 4, "First tensor dim 0"
         )
         assert_equal(
-            loaded_tensors[0].shape()[1], 5, "First tensor dim 1"
+            loaded_tensors[0].tensor.shape()[1], 5, "First tensor dim 1"
         )
 
         # Verify second tensor
         assert_equal(
-            loaded_tensors[1].shape()[0], 10, "Second tensor dim 0"
+            loaded_tensors[1].tensor.shape()[0], 10, "Second tensor dim 0"
         )
 
         # Verify metadata
@@ -398,7 +398,7 @@ fn test_checkpoint_with_many_tensors() raises:
         # Verify shapes are preserved
         for i in range(len(loaded_tensors)):
             assert_equal(
-                loaded_tensors[i].shape()[0], i + 1,
+                loaded_tensors[i].tensor.shape()[0], i + 1,
                 "Shape should be preserved for tensor " + String(i)
             )
 
