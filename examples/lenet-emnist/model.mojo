@@ -26,8 +26,8 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.initializers import kaiming_uniform, xavier_uniform
 from shared.core.traits import Model
+from shared.utils.serialization import save_tensor, load_tensor
 from collections import List
-from weights import save_tensor, load_tensor
 
 
 # ============================================================================
@@ -293,16 +293,16 @@ struct LeNet5(Model, Movable):
             - etc.
         """
         # Save each parameter to its own file
-        save_tensor(self.conv1_kernel, "conv1_kernel", weights_dir + "/conv1_kernel.weights")
-        save_tensor(self.conv1_bias, "conv1_bias", weights_dir + "/conv1_bias.weights")
-        save_tensor(self.conv2_kernel, "conv2_kernel", weights_dir + "/conv2_kernel.weights")
-        save_tensor(self.conv2_bias, "conv2_bias", weights_dir + "/conv2_bias.weights")
-        save_tensor(self.fc1_weights, "fc1_weights", weights_dir + "/fc1_weights.weights")
-        save_tensor(self.fc1_bias, "fc1_bias", weights_dir + "/fc1_bias.weights")
-        save_tensor(self.fc2_weights, "fc2_weights", weights_dir + "/fc2_weights.weights")
-        save_tensor(self.fc2_bias, "fc2_bias", weights_dir + "/fc2_bias.weights")
-        save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
-        save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
+        save_tensor(self.conv1_kernel, weights_dir + "/conv1_kernel.weights", "conv1_kernel")
+        save_tensor(self.conv1_bias, weights_dir + "/conv1_bias.weights", "conv1_bias")
+        save_tensor(self.conv2_kernel, weights_dir + "/conv2_kernel.weights", "conv2_kernel")
+        save_tensor(self.conv2_bias, weights_dir + "/conv2_bias.weights", "conv2_bias")
+        save_tensor(self.fc1_weights, weights_dir + "/fc1_weights.weights", "fc1_weights")
+        save_tensor(self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias")
+        save_tensor(self.fc2_weights, weights_dir + "/fc2_weights.weights", "fc2_weights")
+        save_tensor(self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias")
+        save_tensor(self.fc3_weights, weights_dir + "/fc3_weights.weights", "fc3_weights")
+        save_tensor(self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias")
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
