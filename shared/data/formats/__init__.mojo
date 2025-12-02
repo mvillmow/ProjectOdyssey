@@ -13,6 +13,10 @@ from .idx_loader import (
     load_idx_labels,
     load_idx_images,
     load_idx_images_rgb,
+    normalize_images,
+    normalize_images_rgb,
+    one_hot_encode,
+    load_cifar10_batch,
 )
 
 # CIFAR Binary Format Loaders
