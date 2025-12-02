@@ -26,7 +26,7 @@ from tests.helpers.gradient_checking import (
     assert_gradients_close,
 )
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
-from shared.core.normalization import batch_norm2d, batch_norm2d_backward, layer_norm
+from shared.core.normalization import batch_norm2d, batch_norm2d_backward, layer_norm, layer_norm_backward
 from shared.core.arithmetic import add, subtract, multiply
 from shared.core.reduction import sum as reduce_sum
 
@@ -560,6 +560,134 @@ fn test_layer_norm_zero_variance() raises:
 
 
 # ============================================================================
+# Layer Normalization Backward Pass Tests
+# ============================================================================
+
+
+fn test_layer_norm_backward_shapes_2d() raises:
+    """Test that layer_norm_backward returns correct gradient shapes for 2D input."""
+    var shape = List[Int]()
+    shape.append(4)  # batch
+    shape.append(10)  # features
+    var x = ones(shape, DType.float32)
+    var grad_output = ones(shape, DType.float32)
+
+    var param_shape = List[Int]()
+    param_shape.append(10)
+    var gamma = ones(param_shape, DType.float32)
+
+    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+        grad_output, x, gamma, epsilon=1e-5
+    )
+
+    # Validate shapes
+    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
+    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
+    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
+
+    # Check specific dimensions
+    assert_equal(grad_input.shape()[0], 4, "batch dimension")
+    assert_equal(grad_input.shape()[1], 10, "features dimension")
+    assert_equal(grad_gamma.shape()[0], 10, "gamma features")
+    assert_equal(grad_beta.shape()[0], 10, "beta features")
+
+
+fn test_layer_norm_backward_shapes_4d() raises:
+    """Test that layer_norm_backward returns correct gradient shapes for 4D input."""
+    var shape = List[Int]()
+    shape.append(2)  # batch
+    shape.append(3)  # channels
+    shape.append(4)  # height
+    shape.append(4)  # width
+    var x = ones(shape, DType.float32)
+    var grad_output = ones(shape, DType.float32)
+
+    # For 4D input, gamma has shape (C * H * W)
+    var normalized_size = 3 * 4 * 4  # 48
+    var param_shape = List[Int]()
+    param_shape.append(normalized_size)
+    var gamma = ones(param_shape, DType.float32)
+
+    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+        grad_output, x, gamma, epsilon=1e-5
+    )
+
+    # Validate shapes
+    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
+    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
+    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
+
+
+fn test_layer_norm_backward_grad_beta() raises:
+    """Test that layer_norm_backward grad_beta equals sum of grad_output over batch."""
+    var shape = List[Int]()
+    shape.append(3)  # batch
+    shape.append(4)  # features
+    var x = zeros(shape, DType.float32)
+
+    # Set varying input values
+    for i in range(12):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1
+
+    var param_shape = List[Int]()
+    param_shape.append(4)
+    var gamma = ones(param_shape, DType.float32)
+
+    # Create varying grad_output
+    var grad_output = zeros(shape, DType.float32)
+    for b in range(3):
+        for f in range(4):
+            var idx = b * 4 + f
+            grad_output._data.bitcast[Float32]()[idx] = Float32(b + 1) * Float32(f + 1) * 0.1
+
+    var (_, _, grad_beta) = layer_norm_backward(
+        grad_output, x, gamma, epsilon=1e-5
+    )
+
+    # grad_beta should be sum over batch dimension
+    # For each feature f: grad_beta[f] = sum over b of grad_output[b, f]
+    for f in range(4):
+        var expected_sum = Float32(0.0)
+        for b in range(3):
+            expected_sum += Float32(b + 1) * Float32(f + 1) * 0.1
+        assert_almost_equal(
+            grad_beta._data.bitcast[Float32]()[f],
+            expected_sum,
+            tolerance=1e-4
+        )
+
+
+fn test_layer_norm_backward_zero_input() raises:
+    """Test layer_norm_backward with zero input (edge case)."""
+    var shape = List[Int]()
+    shape.append(2)  # batch
+    shape.append(4)  # features
+    var x = zeros(shape, DType.float32)  # All zeros - zero variance
+
+    var param_shape = List[Int]()
+    param_shape.append(4)
+    var gamma = ones(param_shape, DType.float32)
+    var grad_output = ones(shape, DType.float32)
+
+    # Should not crash with zero variance
+    var (grad_input, grad_gamma, grad_beta) = layer_norm_backward(
+        grad_output, x, gamma, epsilon=1e-5
+    )
+
+    # All gradients should be finite
+    for i in range(8):
+        var val = grad_input._data.bitcast[Float32]()[i]
+        assert_true(val == val, "grad_input should not be NaN")
+        assert_true(val > -1e10 and val < 1e10, "grad_input should be finite")
+
+    for i in range(4):
+        var val_gamma = grad_gamma._data.bitcast[Float32]()[i]
+        var val_beta = grad_beta._data.bitcast[Float32]()[i]
+        assert_true(val_gamma == val_gamma, "grad_gamma should not be NaN")
+        assert_true(val_beta == val_beta, "grad_beta should not be NaN")
+
+
+# ============================================================================
 # Main Test Runner
 # ============================================================================
 
@@ -611,5 +739,18 @@ fn main() raises:
 
     test_layer_norm_zero_variance()
     print("✓ test_layer_norm_zero_variance")
+
+    # Layer normalization backward pass tests
+    test_layer_norm_backward_shapes_2d()
+    print("✓ test_layer_norm_backward_shapes_2d")
+
+    test_layer_norm_backward_shapes_4d()
+    print("✓ test_layer_norm_backward_shapes_4d")
+
+    test_layer_norm_backward_grad_beta()
+    print("✓ test_layer_norm_backward_grad_beta")
+
+    test_layer_norm_backward_zero_input()
+    print("✓ test_layer_norm_backward_zero_input")
 
     print("\nAll normalization tests passed!")
