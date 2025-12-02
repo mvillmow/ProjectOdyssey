@@ -62,7 +62,7 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform
 from shared.training.optimizers import sgd_momentum_update_inplace
-from weights import save_tensor, load_tensor
+from shared.utils.serialization import save_tensor, load_tensor
 
 
 struct VGG16:
@@ -418,48 +418,48 @@ struct VGG16:
             - conv1_1_kernel.weights, conv1_1_bias.weights, etc.
         """
         # Save Block 1
-        save_tensor(self.conv1_1_kernel, "conv1_1_kernel", weights_dir + "/conv1_1_kernel.weights")
-        save_tensor(self.conv1_1_bias, "conv1_1_bias", weights_dir + "/conv1_1_bias.weights")
-        save_tensor(self.conv1_2_kernel, "conv1_2_kernel", weights_dir + "/conv1_2_kernel.weights")
-        save_tensor(self.conv1_2_bias, "conv1_2_bias", weights_dir + "/conv1_2_bias.weights")
+        save_tensor(self.conv1_1_kernel, weights_dir + "/conv1_1_kernel.weights", "conv1_1_kernel")
+        save_tensor(self.conv1_1_bias, weights_dir + "/conv1_1_bias.weights", "conv1_1_bias")
+        save_tensor(self.conv1_2_kernel, weights_dir + "/conv1_2_kernel.weights", "conv1_2_kernel")
+        save_tensor(self.conv1_2_bias, weights_dir + "/conv1_2_bias.weights", "conv1_2_bias")
 
         # Save Block 2
-        save_tensor(self.conv2_1_kernel, "conv2_1_kernel", weights_dir + "/conv2_1_kernel.weights")
-        save_tensor(self.conv2_1_bias, "conv2_1_bias", weights_dir + "/conv2_1_bias.weights")
-        save_tensor(self.conv2_2_kernel, "conv2_2_kernel", weights_dir + "/conv2_2_kernel.weights")
-        save_tensor(self.conv2_2_bias, "conv2_2_bias", weights_dir + "/conv2_2_bias.weights")
+        save_tensor(self.conv2_1_kernel, weights_dir + "/conv2_1_kernel.weights", "conv2_1_kernel")
+        save_tensor(self.conv2_1_bias, weights_dir + "/conv2_1_bias.weights", "conv2_1_bias")
+        save_tensor(self.conv2_2_kernel, weights_dir + "/conv2_2_kernel.weights", "conv2_2_kernel")
+        save_tensor(self.conv2_2_bias, weights_dir + "/conv2_2_bias.weights", "conv2_2_bias")
 
         # Save Block 3
-        save_tensor(self.conv3_1_kernel, "conv3_1_kernel", weights_dir + "/conv3_1_kernel.weights")
-        save_tensor(self.conv3_1_bias, "conv3_1_bias", weights_dir + "/conv3_1_bias.weights")
-        save_tensor(self.conv3_2_kernel, "conv3_2_kernel", weights_dir + "/conv3_2_kernel.weights")
-        save_tensor(self.conv3_2_bias, "conv3_2_bias", weights_dir + "/conv3_2_bias.weights")
-        save_tensor(self.conv3_3_kernel, "conv3_3_kernel", weights_dir + "/conv3_3_kernel.weights")
-        save_tensor(self.conv3_3_bias, "conv3_3_bias", weights_dir + "/conv3_3_bias.weights")
+        save_tensor(self.conv3_1_kernel, weights_dir + "/conv3_1_kernel.weights", "conv3_1_kernel")
+        save_tensor(self.conv3_1_bias, weights_dir + "/conv3_1_bias.weights", "conv3_1_bias")
+        save_tensor(self.conv3_2_kernel, weights_dir + "/conv3_2_kernel.weights", "conv3_2_kernel")
+        save_tensor(self.conv3_2_bias, weights_dir + "/conv3_2_bias.weights", "conv3_2_bias")
+        save_tensor(self.conv3_3_kernel, weights_dir + "/conv3_3_kernel.weights", "conv3_3_kernel")
+        save_tensor(self.conv3_3_bias, weights_dir + "/conv3_3_bias.weights", "conv3_3_bias")
 
         # Save Block 4
-        save_tensor(self.conv4_1_kernel, "conv4_1_kernel", weights_dir + "/conv4_1_kernel.weights")
-        save_tensor(self.conv4_1_bias, "conv4_1_bias", weights_dir + "/conv4_1_bias.weights")
-        save_tensor(self.conv4_2_kernel, "conv4_2_kernel", weights_dir + "/conv4_2_kernel.weights")
-        save_tensor(self.conv4_2_bias, "conv4_2_bias", weights_dir + "/conv4_2_bias.weights")
-        save_tensor(self.conv4_3_kernel, "conv4_3_kernel", weights_dir + "/conv4_3_kernel.weights")
-        save_tensor(self.conv4_3_bias, "conv4_3_bias", weights_dir + "/conv4_3_bias.weights")
+        save_tensor(self.conv4_1_kernel, weights_dir + "/conv4_1_kernel.weights", "conv4_1_kernel")
+        save_tensor(self.conv4_1_bias, weights_dir + "/conv4_1_bias.weights", "conv4_1_bias")
+        save_tensor(self.conv4_2_kernel, weights_dir + "/conv4_2_kernel.weights", "conv4_2_kernel")
+        save_tensor(self.conv4_2_bias, weights_dir + "/conv4_2_bias.weights", "conv4_2_bias")
+        save_tensor(self.conv4_3_kernel, weights_dir + "/conv4_3_kernel.weights", "conv4_3_kernel")
+        save_tensor(self.conv4_3_bias, weights_dir + "/conv4_3_bias.weights", "conv4_3_bias")
 
         # Save Block 5
-        save_tensor(self.conv5_1_kernel, "conv5_1_kernel", weights_dir + "/conv5_1_kernel.weights")
-        save_tensor(self.conv5_1_bias, "conv5_1_bias", weights_dir + "/conv5_1_bias.weights")
-        save_tensor(self.conv5_2_kernel, "conv5_2_kernel", weights_dir + "/conv5_2_kernel.weights")
-        save_tensor(self.conv5_2_bias, "conv5_2_bias", weights_dir + "/conv5_2_bias.weights")
-        save_tensor(self.conv5_3_kernel, "conv5_3_kernel", weights_dir + "/conv5_3_kernel.weights")
-        save_tensor(self.conv5_3_bias, "conv5_3_bias", weights_dir + "/conv5_3_bias.weights")
+        save_tensor(self.conv5_1_kernel, weights_dir + "/conv5_1_kernel.weights", "conv5_1_kernel")
+        save_tensor(self.conv5_1_bias, weights_dir + "/conv5_1_bias.weights", "conv5_1_bias")
+        save_tensor(self.conv5_2_kernel, weights_dir + "/conv5_2_kernel.weights", "conv5_2_kernel")
+        save_tensor(self.conv5_2_bias, weights_dir + "/conv5_2_bias.weights", "conv5_2_bias")
+        save_tensor(self.conv5_3_kernel, weights_dir + "/conv5_3_kernel.weights", "conv5_3_kernel")
+        save_tensor(self.conv5_3_bias, weights_dir + "/conv5_3_bias.weights", "conv5_3_bias")
 
         # Save FC layers
-        save_tensor(self.fc1_weights, "fc1_weights", weights_dir + "/fc1_weights.weights")
-        save_tensor(self.fc1_bias, "fc1_bias", weights_dir + "/fc1_bias.weights")
-        save_tensor(self.fc2_weights, "fc2_weights", weights_dir + "/fc2_weights.weights")
-        save_tensor(self.fc2_bias, "fc2_bias", weights_dir + "/fc2_bias.weights")
-        save_tensor(self.fc3_weights, "fc3_weights", weights_dir + "/fc3_weights.weights")
-        save_tensor(self.fc3_bias, "fc3_bias", weights_dir + "/fc3_bias.weights")
+        save_tensor(self.fc1_weights, weights_dir + "/fc1_weights.weights", "fc1_weights")
+        save_tensor(self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias")
+        save_tensor(self.fc2_weights, weights_dir + "/fc2_weights.weights", "fc2_weights")
+        save_tensor(self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias")
+        save_tensor(self.fc3_weights, weights_dir + "/fc3_weights.weights", "fc3_weights")
+        save_tensor(self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias")
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
