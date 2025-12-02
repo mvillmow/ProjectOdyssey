@@ -17,7 +17,7 @@ References:
 """
 
 from model import AlexNet
-from data_loader import load_cifar10_train, load_cifar10_test
+from shared.data.datasets import load_cifar10_train, load_cifar10_test
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward

@@ -44,8 +44,8 @@ from shared.core import (
     cross_entropy_backward,
 )
 from shared.data import extract_batch_pair, compute_num_batches
+from shared.data.datasets import load_cifar10_train
 from model import MobileNetV1
-from data_loader import load_cifar10_train
 
 
 fn compute_learning_rate(initial_lr: Float32, epoch: Int) -> Float32:
