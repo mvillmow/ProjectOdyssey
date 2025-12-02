@@ -30,29 +30,22 @@ Available Loss+Grad Helpers:
 Backward Functions (Unified API from shared.core):
 
 NOTE: Backward function implementations are in progress. See TODO.md for current status.
-Once implemented, the following backward passes will be available:
 
-Activation: relu_backward, leaky_relu_backward, prelu_backward, sigmoid_backward, tanh_backward,
-gelu_backward, softmax_backward, swish_backward, mish_backward, elu_backward
+Currently Available:
+- Pooling: maxpool2d_backward, avgpool2d_backward, global_avgpool2d_backward
+- Dropout: dropout_backward, dropout2d_backward
 
-Loss: binary_cross_entropy_backward, mean_squared_error_backward, cross_entropy_backward
-
-Matrix Ops: matmul_backward, transpose_backward
-
-Arithmetic: add_backward, subtract_backward, multiply_backward, divide_backward
-
-Element-wise: exp_backward, log_backward, log10_backward, log2_backward, sqrt_backward,
-abs_backward, clip_backward
-
-Reduction: sum_backward, mean_backward, max_reduce_backward, min_reduce_backward
-
-Network Layers: linear_backward, linear_no_bias_backward, conv2d_backward, conv2d_no_bias_backward
-
-Pooling: maxpool2d_backward, avgpool2d_backward, global_avgpool2d_backward
-
-Normalization: batch_norm2d_backward
-
-Dropout: dropout_backward, dropout2d_backward
+Coming Soon:
+- Activation: relu_backward, leaky_relu_backward, prelu_backward, sigmoid_backward, tanh_backward,
+  gelu_backward, softmax_backward, swish_backward, mish_backward, elu_backward
+- Loss: binary_cross_entropy_backward, mean_squared_error_backward, cross_entropy_backward
+- Matrix Ops: matmul_backward, transpose_backward
+- Arithmetic: add_backward, subtract_backward, multiply_backward, divide_backward
+- Element-wise: exp_backward, log_backward, log10_backward, log2_backward, sqrt_backward,
+  abs_backward, clip_backward
+- Reduction: sum_backward, mean_backward, max_reduce_backward, min_reduce_backward
+- Network Layers: linear_backward, linear_no_bias_backward, conv2d_backward, conv2d_no_bias_backward
+- Normalization: batch_norm2d_backward
 
 Design Philosophy:
     YAGNI + KISS: Provide practical helpers for common patterns rather than
@@ -64,6 +57,7 @@ Status:
     ✅ SGD optimizer
     ✅ Variable/Tape foundation (for future full autograd)
     ✅ Unified backward function API (Issue #2196)
+    ✅ Pooling backward passes (Issue #2198)
     🔮 Full automatic differentiation (future, see DESIGN.md)
 
 References:
@@ -161,12 +155,12 @@ from .functional import (
 #     conv2d_no_bias_backward,
 # )
 
-# # Pooling backward passes
-# from ..core.pooling import (
-#     maxpool2d_backward,
-#     avgpool2d_backward,
-#     global_avgpool2d_backward,
-# )
+# Pooling backward passes
+from ..core.pooling import (
+    maxpool2d_backward,
+    avgpool2d_backward,
+    global_avgpool2d_backward,
+)
 
 # # Normalization backward passes
 # from ..core.normalization import batch_norm2d_backward

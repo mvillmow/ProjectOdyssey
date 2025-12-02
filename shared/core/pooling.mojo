@@ -515,7 +515,8 @@ fn global_avgpool2d_backward(
     # For each batch and channel
     for b in range(batch):
         for c in range(channels):
-            # Get grad_output value
+            # Get grad_output value at position (b, c, 0, 0)
+            # Since grad_output shape is (B, C, 1, 1), linear index is b*C + c
             var grad_out_idx = b * channels + c
             var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
 

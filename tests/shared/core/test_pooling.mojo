@@ -22,7 +22,9 @@ from shared.core.pooling import (
     maxpool2d,
     maxpool2d_backward,
     avgpool2d,
+    avgpool2d_backward,
     global_avgpool2d,
+    global_avgpool2d_backward,
 )
 
 
@@ -305,6 +307,223 @@ fn test_pooling_dtype_preservation() raises:
     assert_true(output_avg.dtype() == DType.float32, "AvgPool dtype preserved")
 
 
+# ============================================================================
+# Global AvgPool2D Backward Tests
+# ============================================================================
+
+
+fn test_global_avgpool2d_backward_output_shape() raises:
+    """Test global_avgpool2d_backward produces correct gradient shape.
+
+    Forward: (B, C, H, W) -> (B, C, 1, 1)
+    Backward: (B, C, 1, 1) -> (B, C, H, W)
+    """
+    var input_shape = List[Int]()
+    input_shape.append(2)  # batch
+    input_shape.append(3)  # channels
+    input_shape.append(4)  # height
+    input_shape.append(4)  # width
+    var input = ones(input_shape, DType.float32)
+
+    var output = global_avgpool2d(input)
+
+    var grad_output_shape = output.shape()
+    var grad_output = ones(grad_output_shape, DType.float32)
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_shape = grad_input.shape()
+    assert_equal(grad_shape[0], 2, "Batch size mismatch")
+    assert_equal(grad_shape[1], 3, "Channels mismatch")
+    assert_equal(grad_shape[2], 4, "Gradient height mismatch")
+    assert_equal(grad_shape[3], 4, "Gradient width mismatch")
+
+
+fn test_global_avgpool2d_backward_uniform_distribution() raises:
+    """Test global_avgpool2d_backward distributes gradient uniformly.
+
+    For input of shape (1, 1, 4, 4) and grad_output of 1.0,
+    each position in grad_input should receive 1.0 / (4 * 4) = 1.0 / 16
+    """
+    var input_shape = List[Int]()
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(4)
+    input_shape.append(4)
+    var input = ones(input_shape, DType.float32)
+
+    var output = global_avgpool2d(input)
+
+    var grad_output_shape = output.shape()
+    var grad_output = ones(grad_output_shape, DType.float32)
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_data = grad_input._data.bitcast[Float32]()
+    var expected_value = 1.0 / 16.0
+
+    for i in range(16):
+        assert_almost_equal(grad_data[i], expected_value, tolerance=1e-6)
+
+
+fn test_global_avgpool2d_backward_batch_independence() raises:
+    """Test that gradients for different batch samples are independent.
+
+    Two batch samples with grad_output values [2.0, 3.0] should produce
+    different gradients for each batch element.
+    """
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(1)
+    input_shape.append(2)
+    input_shape.append(2)
+    var input = ones(input_shape, DType.float32)
+
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(2)
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, DType.float32)
+
+    var grad_out_data = grad_output._data.bitcast[Float32]()
+    grad_out_data[0] = 2.0  # First batch
+    grad_out_data[1] = 3.0  # Second batch
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_data = grad_input._data.bitcast[Float32]()
+    var spatial_size = 4  # 2 * 2
+
+    # First batch: 2.0 / 4 = 0.5
+    var expected_batch0 = 2.0 / Float32(spatial_size)
+    for i in range(4):
+        assert_almost_equal(grad_data[i], expected_batch0, tolerance=1e-6)
+
+    # Second batch: 3.0 / 4 = 0.75
+    var expected_batch1 = 3.0 / Float32(spatial_size)
+    for i in range(4, 8):
+        assert_almost_equal(grad_data[i], expected_batch1, tolerance=1e-6)
+
+
+fn test_global_avgpool2d_backward_channel_independence() raises:
+    """Test that gradients for different channels are independent.
+
+    Multiple channels should each receive their own gradients distributed
+    uniformly across spatial positions.
+    """
+    var input_shape = List[Int]()
+    input_shape.append(1)
+    input_shape.append(2)
+    input_shape.append(2)
+    input_shape.append(2)
+    var input = ones(input_shape, DType.float32)
+
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(1)
+    grad_output_shape.append(2)
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, DType.float32)
+
+    var grad_out_data = grad_output._data.bitcast[Float32]()
+    grad_out_data[0] = 2.0  # Channel 0
+    grad_out_data[1] = 4.0  # Channel 1
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_data = grad_input._data.bitcast[Float32]()
+    var spatial_size = 4  # 2 * 2
+
+    # Channel 0: 2.0 / 4 = 0.5
+    var expected_ch0 = 2.0 / Float32(spatial_size)
+    for i in range(4):
+        assert_almost_equal(grad_data[i], expected_ch0, tolerance=1e-6)
+
+    # Channel 1: 4.0 / 4 = 1.0
+    var expected_ch1 = 4.0 / Float32(spatial_size)
+    for i in range(4, 8):
+        assert_almost_equal(grad_data[i], expected_ch1, tolerance=1e-6)
+
+
+fn test_global_avgpool2d_backward_zero_gradient() raises:
+    """Test that zero gradient produces zero output."""
+    var input_shape = List[Int]()
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(3)
+    input_shape.append(3)
+    var input = ones(input_shape, DType.float32)
+
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, DType.float32)
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_data = grad_input._data.bitcast[Float32]()
+    for i in range(9):
+        assert_almost_equal(grad_data[i], 0.0, tolerance=1e-6)
+
+
+fn test_global_avgpool2d_backward_forward_backward_consistency() raises:
+    """Test consistency between forward and backward passes.
+
+    Forward: x -> global_avgpool2d -> y
+    Backward: grad_y -> global_avgpool2d_backward -> grad_x
+
+    The sum of grad_x should equal grad_y (gradient conservation).
+    """
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(3)
+    input_shape.append(2)
+    input_shape.append(2)
+    var input = full(input_shape, 2.0, DType.float32)
+
+    var output = global_avgpool2d(input)
+
+    var grad_output_shape = output.shape()
+    var grad_output = full(grad_output_shape, 1.0, DType.float32)
+
+    var grad_input = global_avgpool2d_backward(grad_output, input)
+
+    var grad_data = grad_input._data.bitcast[Float32]()
+
+    # Each spatial position should get 1.0 / (2*2) = 0.25
+    var expected_per_position = 1.0 / 4.0
+    var total_elements = 2 * 3 * 2 * 2
+
+    for i in range(total_elements):
+        assert_almost_equal(grad_data[i], expected_per_position, tolerance=1e-6)
+
+
+fn test_avgpool2d_backward_output_shape() raises:
+    """Test avgpool2d_backward produces correct gradient shape."""
+    var input_shape = List[Int]()
+    input_shape.append(1)
+    input_shape.append(1)
+    input_shape.append(4)
+    input_shape.append(4)
+    var input = ones(input_shape, DType.float32)
+
+    var output = avgpool2d(input, kernel_size=2, stride=2, padding=0)
+
+    var grad_output_shape = output.shape()
+    var grad_output = ones(grad_output_shape, DType.float32)
+
+    var grad_input = avgpool2d_backward(grad_output, input, kernel_size=2, stride=2, padding=0)
+
+    var grad_shape = grad_input.shape()
+    assert_equal(grad_shape[0], 1, "Batch size mismatch")
+    assert_equal(grad_shape[1], 1, "Channels mismatch")
+    assert_equal(grad_shape[2], 4, "Gradient height mismatch")
+    assert_equal(grad_shape[3], 4, "Gradient width mismatch")
+
+
 fn main() raises:
     """Run all pooling tests."""
     print("Running pooling tests...")
@@ -344,5 +563,26 @@ fn main() raises:
 
     test_pooling_dtype_preservation()
     print("✓ test_pooling_dtype_preservation")
+
+    test_global_avgpool2d_backward_output_shape()
+    print("✓ test_global_avgpool2d_backward_output_shape")
+
+    test_global_avgpool2d_backward_uniform_distribution()
+    print("✓ test_global_avgpool2d_backward_uniform_distribution")
+
+    test_global_avgpool2d_backward_batch_independence()
+    print("✓ test_global_avgpool2d_backward_batch_independence")
+
+    test_global_avgpool2d_backward_channel_independence()
+    print("✓ test_global_avgpool2d_backward_channel_independence")
+
+    test_global_avgpool2d_backward_zero_gradient()
+    print("✓ test_global_avgpool2d_backward_zero_gradient")
+
+    test_global_avgpool2d_backward_forward_backward_consistency()
+    print("✓ test_global_avgpool2d_backward_forward_backward_consistency")
+
+    test_avgpool2d_backward_output_shape()
+    print("✓ test_avgpool2d_backward_output_shape")
 
     print("\nAll pooling tests passed!")
