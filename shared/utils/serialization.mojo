@@ -68,10 +68,15 @@ struct NamedTensor(Copyable, Movable):
         self.name = name
         self.tensor = tensor
 
-    fn __moveinit__(out self, owned other: Self):
+    fn __moveinit__(out self, deinit other: Self):
         """Move constructor for ownership transfer."""
         self.name = other.name^
         self.tensor = other.tensor^
+
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor."""
+        self.name = existing.name
+        self.tensor = existing.tensor
 
 
 # ============================================================================
@@ -170,7 +175,7 @@ fn load_tensor(filepath: String) raises -> ExTensor:
     var tensor = zeros(shape, dtype)
 
     # Convert hex to bytes and write into tensor
-    hex_to_bytes(hex_data, tensor._data)
+    hex_to_bytes(hex_data, tensor)
 
     return tensor^
 
@@ -224,7 +229,7 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
     var tensor = zeros(shape, dtype)
 
     # Convert hex to bytes
-    hex_to_bytes(hex_data, tensor._data)
+    hex_to_bytes(hex_data, tensor)
 
     return Tuple[String, ExTensor](name, tensor^)
 
@@ -262,11 +267,10 @@ fn save_named_tensors(
 
     # Save each tensor
     for i in range(len(tensors)):
-        var named = tensors[i]
-        var filename = named.name + ".weights"
+        var filename = tensors[i].name + ".weights"
         var filepath = dirpath + "/" + filename
 
-        save_tensor(named.tensor, filepath, named.name)
+        save_tensor(tensors[i].tensor, filepath, tensors[i].name)
 
 
 fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
@@ -295,10 +299,10 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
 
     try:
         # Use Python to list directory contents
-        var python = Python.import_module("os")
+        var _ = Python.import_module("os")
         var pathlib = Python.import_module("pathlib")
         var p = pathlib.Path(dirpath)
-        var weight_files = list(p.glob("*.weights"))
+        var weight_files = p.glob("*.weights")
 
         # Load each weights file
         for file in weight_files:
@@ -399,7 +403,7 @@ fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[S
     return Tuple[List[NamedTensor], Dict[String, String]](tensors^, metadata^)
 
 
-fn _serialize_metadata(metadata: Dict[String, String]) -> String:
+fn _serialize_metadata(metadata: Dict[String, String]) raises -> String:
     """Serialize metadata dictionary to text format.
 
     Format: one key=value pair per line
@@ -412,10 +416,10 @@ fn _serialize_metadata(metadata: Dict[String, String]) -> String:
     """
     var lines = List[String]()
 
-    for entry in metadata.items():
-        var key = entry[0]
-        var value = entry[1]
-        lines.append(key + "=" + value)
+    for key_ref in metadata.keys():
+        var k = String(key_ref)
+        var v = String(metadata[k])
+        lines.append(k + "=" + v)
 
     # Join lines
     var result = String("")
@@ -452,11 +456,11 @@ fn _deserialize_metadata(content: String) raises -> Dict[String, String]:
         if eq_pos == -1:
             continue  # Skip malformed lines
 
-        var key = line[:eq_pos]
-        var value = line[eq_pos + 1 :]
+        var key = String(line[:eq_pos])
+        var value = String(line[eq_pos + 1:])
         metadata[key] = value
 
-    return metadata
+    return metadata^
 
 
 # ============================================================================
@@ -494,33 +498,34 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
     return result
 
 
-fn hex_to_bytes(hex_str: String, output: UnsafePointer[UInt8]) raises:
-    """Convert hexadecimal string to bytes.
+fn hex_to_bytes(hex_str: String, tensor: ExTensor) raises:
+    """Convert hexadecimal string to bytes and store in tensor.
 
     Decodes hex string back to bytes. Validates that hex string
     has even length (pairs of hex digits).
 
     Args:
         hex_str: Hex string (e.g., "3f800000")
-        output: Output buffer pointer (must be pre-allocated)
+        tensor: Tensor to store decoded bytes in
 
     Raises:
         Error: If hex string has odd length or contains invalid characters
 
     Example:
         var hex_str = "3f800000"
-        hex_to_bytes(hex_str, tensor._data)
+        var tensor = zeros(shape, DType.float32)
+        hex_to_bytes(hex_str, tensor)
     """
     var length = len(hex_str)
     if length % 2 != 0:
         raise Error("Hex string must have even length")
 
+    var output = tensor._data
     for i in range(0, length, 2):
         var high = _hex_char_to_int(String(hex_str[i]))
         var low = _hex_char_to_int(String(hex_str[i + 1]))
         var offset = i // 2
-        var ptr = output + offset
-        ptr[] = UInt8((high << 4) | low)
+        output[offset] = UInt8((high << 4) | low)
 
 
 fn _hex_char_to_int(c: String) raises -> Int:

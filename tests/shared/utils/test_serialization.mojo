@@ -20,11 +20,11 @@ from testing import assert_true, assert_equal
 # ============================================================================
 
 
-fn create_test_dir(base: String) -> String:
+fn create_test_dir(base: String) raises -> String:
     """Create a unique test directory."""
     from python import Python
     var uuid = Python.import_module("uuid")
-    var test_id = String(uuid.uuid4())[:8]
+    var test_id = String(String(uuid.uuid4())[:8])
     var test_dir = base + "/test_checkpoint_" + test_id
     return test_dir
 
@@ -95,7 +95,7 @@ fn test_save_load_single_named_tensor() raises:
 
         # Create list with single tensor
         var tensors = List[NamedTensor]()
-        tensors.append(named)
+        tensors.append(named^)
 
         # Save
         save_named_tensors(tensors, test_dir)
@@ -214,7 +214,7 @@ fn test_save_named_checkpoint_with_metadata() raises:
         metadata["learning_rate"] = "0.001"
 
         # Save with metadata - should not raise
-        save_named_checkpoint(tensors, test_dir, metadata)
+        save_named_checkpoint(tensors, test_dir, metadata^)
 
         # If we reach here, save succeeded
         assert_true(True, "Checkpoint save with metadata should succeed")
@@ -242,31 +242,31 @@ fn test_load_named_checkpoint_with_metadata() raises:
         metadata["loss"] = "0.32"
 
         # Save
-        save_named_checkpoint(tensors, test_dir, metadata)
+        save_named_checkpoint(tensors, test_dir, metadata^)
 
         # Load
-        var (loaded_tensors, loaded_metadata) = load_named_checkpoint(test_dir)
+        var result = load_named_checkpoint(test_dir)
 
         # Verify tensors
         assert_equal(
-            len(loaded_tensors), 1, "Should load 1 tensor"
+            len(result[0]), 1, "Should load 1 tensor"
         )
         assert_equal(
-            loaded_tensors[0].name, "weights", "Tensor name should match"
+            result[0][0].name, "weights", "Tensor name should match"
         )
 
         # Verify metadata
         assert_true(
-            "epoch" in loaded_metadata, "Metadata should have epoch"
+            "epoch" in result[1], "Metadata should have epoch"
         )
         assert_true(
-            "loss" in loaded_metadata, "Metadata should have loss"
+            "loss" in result[1], "Metadata should have loss"
         )
         assert_equal(
-            loaded_metadata["epoch"], "20", "Epoch value should match"
+            result[1]["epoch"], "20", "Epoch value should match"
         )
         assert_equal(
-            loaded_metadata["loss"], "0.32", "Loss value should match"
+            result[1]["loss"], "0.32", "Loss value should match"
         )
 
     finally:
@@ -290,16 +290,16 @@ fn test_load_named_checkpoint_without_metadata_file() raises:
         save_named_checkpoint(tensors, test_dir)
 
         # Load should still work with empty metadata
-        var (loaded_tensors, loaded_metadata) = load_named_checkpoint(test_dir)
+        var result = load_named_checkpoint(test_dir)
 
         # Verify tensors loaded
         assert_equal(
-            len(loaded_tensors), 1, "Should load 1 tensor"
+            len(result[0]), 1, "Should load 1 tensor"
         )
 
         # Verify metadata is empty but not error
         assert_equal(
-            len(loaded_metadata), 0, "Metadata should be empty"
+            len(result[1]), 0, "Metadata should be empty"
         )
 
     finally:
@@ -332,38 +332,41 @@ fn test_checkpoint_round_trip() raises:
         metadata["model"] = "test_model"
 
         # Save checkpoint
-        save_named_checkpoint(tensors, test_dir, metadata)
+        save_named_checkpoint(tensors, test_dir, metadata^)
 
         # Load checkpoint
-        var (loaded_tensors, loaded_meta) = load_named_checkpoint(test_dir)
+        var result = load_named_checkpoint(test_dir)
 
         # Verify tensor count
         assert_equal(
-            len(loaded_tensors), 2, "Should have 2 tensors"
+            len(result[0]), 2, "Should have 2 tensors"
         )
 
-        # Verify first tensor
-        assert_equal(
-            loaded_tensors[0].tensor.shape()[0], 4, "First tensor dim 0"
-        )
-        assert_equal(
-            loaded_tensors[0].tensor.shape()[1], 5, "First tensor dim 1"
-        )
-
-        # Verify second tensor
-        assert_equal(
-            loaded_tensors[1].tensor.shape()[0], 10, "Second tensor dim 0"
-        )
+        # Verify tensors are loaded (order may vary due to glob)
+        # Just check we have one 2D tensor and one 1D tensor
+        var has_2d = False
+        var has_1d = False
+        for i in range(len(result[0])):
+            var tensor = result[0][i].tensor
+            if len(tensor.shape()) == 2:
+                assert_equal(tensor.shape()[0], 4, "2D tensor dim 0")
+                assert_equal(tensor.shape()[1], 5, "2D tensor dim 1")
+                has_2d = True
+            elif len(tensor.shape()) == 1:
+                assert_equal(tensor.shape()[0], 10, "1D tensor dim 0")
+                has_1d = True
+        assert_true(has_2d, "Should have 2D tensor")
+        assert_true(has_1d, "Should have 1D tensor")
 
         # Verify metadata
         assert_equal(
-            loaded_meta["epoch"], "100", "Epoch should match"
+            result[1]["epoch"], "100", "Epoch should match"
         )
         assert_equal(
-            loaded_meta["best_loss"], "0.001", "Best loss should match"
+            result[1]["best_loss"], "0.001", "Best loss should match"
         )
         assert_equal(
-            loaded_meta["model"], "test_model", "Model should match"
+            result[1]["model"], "test_model", "Model should match"
         )
 
     finally:
@@ -388,19 +391,75 @@ fn test_checkpoint_with_many_tensors() raises:
         save_named_checkpoint(tensors, test_dir)
 
         # Load
-        var (loaded_tensors, _) = load_named_checkpoint(test_dir)
+        var result = load_named_checkpoint(test_dir)
 
         # Verify all tensors loaded
         assert_equal(
-            len(loaded_tensors), 10, "Should load 10 tensors"
+            len(result[0]), 10, "Should load 10 tensors"
         )
 
-        # Verify shapes are preserved
-        for i in range(len(loaded_tensors)):
-            assert_equal(
-                loaded_tensors[i].tensor.shape()[0], i + 1,
-                "Shape should be preserved for tensor " + String(i)
+        # Verify all expected shapes are present (order may vary)
+        var found_shapes = List[Bool]()
+        for _ in range(10):
+            found_shapes.append(False)
+
+        for i in range(len(result[0])):
+            var shape_dim = result[0][i].tensor.shape()[0]
+            if shape_dim >= 1 and shape_dim <= 10:
+                found_shapes[shape_dim - 1] = True
+
+        for i in range(10):
+            assert_true(
+                found_shapes[i],
+                "Shape " + String(i + 1) + " should be present"
             )
 
     finally:
         _ = cleanup_test_dir(test_dir)
+
+
+fn main() raises:
+    """Run all serialization tests."""
+    print("Running serialization tests...")
+
+    print("  test_named_tensor_creation...")
+    test_named_tensor_creation()
+    print("  ✓ passed")
+
+    print("  test_named_tensor_multiple_dtypes...")
+    test_named_tensor_multiple_dtypes()
+    print("  ✓ passed")
+
+    print("  test_save_load_single_named_tensor...")
+    test_save_load_single_named_tensor()
+    print("  ✓ passed")
+
+    print("  test_save_load_multiple_named_tensors...")
+    test_save_load_multiple_named_tensors()
+    print("  ✓ passed")
+
+    print("  test_save_named_checkpoint_without_metadata...")
+    test_save_named_checkpoint_without_metadata()
+    print("  ✓ passed")
+
+    print("  test_save_named_checkpoint_with_metadata...")
+    test_save_named_checkpoint_with_metadata()
+    print("  ✓ passed")
+
+    print("  test_load_named_checkpoint_with_metadata...")
+    test_load_named_checkpoint_with_metadata()
+    print("  ✓ passed")
+
+    print("  test_load_named_checkpoint_without_metadata_file...")
+    test_load_named_checkpoint_without_metadata_file()
+    print("  ✓ passed")
+
+    print("  test_checkpoint_round_trip...")
+    test_checkpoint_round_trip()
+    print("  ✓ passed")
+
+    print("  test_checkpoint_with_many_tensors...")
+    test_checkpoint_with_many_tensors()
+    print("  ✓ passed")
+
+    print("\nAll serialization tests passed!")
