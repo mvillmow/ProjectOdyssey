@@ -43,16 +43,28 @@ jobs:
         id: find-scripts
         run: |
           echo "Discovering Python scripts in scripts/ directory..."
-          find scripts -name "*.py" -type f | tee /tmp/scripts_list.txt
-          SCRIPT_COUNT=$(wc -l < /tmp/scripts_list.txt)
+          if [ -d "scripts" ]; then
+            find scripts -name "*.py" -type f | tee /tmp/scripts_list.txt
+            SCRIPT_COUNT=$(wc -l < /tmp/scripts_list.txt)
+          else
+            echo "⚠️  scripts/ directory does not exist"
+            SCRIPT_COUNT=0
+            > /tmp/scripts_list.txt
+          fi
           echo "Found $SCRIPT_COUNT Python scripts"
           echo "script_count=$SCRIPT_COUNT" >> $GITHUB_OUTPUT
 
       - name: Syntax validation
         run: |
           echo "Validating Python syntax for all scripts..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to validate"
+            exit 0
+          fi
           EXIT_CODE=0
           while IFS= read -r script; do
+            [ -z "$script" ] && continue
             echo "Checking: $script"
             if ! python3 -m py_compile "$script"; then
               echo "❌ Syntax error in: $script"
@@ -70,6 +82,15 @@ jobs:
       - name: Lint with ruff
         run: |
           echo "Running ruff linter on all scripts..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to lint"
+            exit 0
+          fi
+          if [ ! -d "scripts" ]; then
+            echo "⚠️  scripts/ directory does not exist"
+            exit 0
+          fi
           pixi run ruff check scripts/ --output-format=github || {
             echo "❌ Linting issues found"
             echo ""
@@ -84,6 +105,15 @@ jobs:
       - name: Check script formatting
         run: |
           echo "Checking code formatting with ruff..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to check formatting"
+            exit 0
+          fi
+          if [ ! -d "scripts" ]; then
+            echo "⚠️  scripts/ directory does not exist"
+            exit 0
+          fi
           pixi run ruff format --check scripts/ || {
             echo "❌ Formatting issues found"
             echo ""
@@ -96,10 +126,16 @@ jobs:
       - name: Validate imports
         run: |
           echo "Validating import statements..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to validate imports"
+            exit 0
+          fi
           EXIT_CODE=0
 
           # Check for common import issues
           while IFS= read -r script; do
+            [ -z "$script" ] && continue
             # Skip __pycache__ and other non-script files
             if [[ "$script" == *"__pycache__"* ]]; then
               continue
@@ -129,10 +165,16 @@ jobs:
       - name: Run executable scripts with --help
         run: |
           echo "Testing executable scripts with --help flag..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to test"
+            exit 0
+          fi
           EXIT_CODE=0
           TESTED=0
 
           while IFS= read -r script; do
+            [ -z "$script" ] && continue
             # Skip test files and playground scripts
             if [[ "$script" == *"/tests/"* ]] || [[ "$script" == *"/playground/"* ]]; then
               continue
@@ -161,9 +203,15 @@ jobs:
       - name: Validate script shebangs
         run: |
           echo "Checking shebang lines..."
+          SCRIPT_COUNT=${{ steps.find-scripts.outputs.script_count }}
+          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+            echo "⚠️  No scripts to validate shebangs"
+            exit 0
+          fi
           EXIT_CODE=0
 
           while IFS= read -r script; do
+            [ -z "$script" ] && continue
             if head -n1 "$script" | grep -q "^#!/usr/bin/env python3"; then
               echo "✓ $script has correct shebang"
             elif head -n1 "$script" | grep -q "^#!"; then
@@ -178,6 +226,10 @@ jobs:
       - name: Check for common issues
         run: |
           echo "Checking for common code issues..."
+          if [ ! -d "scripts" ]; then
+            echo "⚠️  scripts/ directory does not exist"
+            exit 0
+          fi
           EXIT_CODE=0
 
           # Check for print() without file= in error messages
