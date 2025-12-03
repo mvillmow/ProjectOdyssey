@@ -58,6 +58,11 @@ Available Loss+Grad Helpers:
 - bce_loss_and_grad: Binary cross-entropy (binary classification)
 - ce_loss_and_grad: Cross-entropy with softmax (multi-class classification)
 
+Gradient Clipping Utilities:
+- clip_grad_value_: Clip each gradient element to [-max_value, max_value]
+- clip_grad_norm_: Clip gradient L2 norm per parameter
+- clip_grad_global_norm_: Clip based on global L2 norm across all parameters
+
 Design Philosophy:
     The autograd module provides two APIs:
     1. Tape-based autograd: Full automatic differentiation with computation graph
@@ -69,6 +74,7 @@ Status:
     ✅ NoGradContext for inference mode
     ✅ Functional gradient helpers (mse, bce, ce)
     ✅ SGD optimizer
+    ✅ Gradient clipping utilities (value, norm, global norm)
 
 References:
     - Tape implementation: tape.mojo
@@ -123,6 +129,12 @@ from .optimizers import SGD, Adam
 from .schedulers import (
     StepLR,
     ExponentialLR,
+)
+
+from .grad_utils import (
+    clip_grad_value_,
+    clip_grad_norm_,
+    clip_grad_global_norm_,
 )
 
 from .functional import (
