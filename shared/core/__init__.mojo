@@ -210,6 +210,8 @@ from .normalization import (
     batch_norm2d_backward,
     layer_norm,
     layer_norm_backward,
+    group_norm,
+    group_norm_backward,
 )
 
 # ============================================================================
