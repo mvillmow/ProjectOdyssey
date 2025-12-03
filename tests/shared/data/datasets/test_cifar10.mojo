@@ -143,7 +143,7 @@ fn test_cifar10_get_class_name_all_classes() raises:
         assert_equal(name, expected_names[i], "Class name mismatch at index " + String(i))
 
 
-fn main():
+fn main() raises:
     """Run all CIFAR-10 dataset tests."""
     test_cifar10_initialization()
     test_cifar10_initialization_empty_path()

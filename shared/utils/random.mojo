@@ -272,7 +272,7 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
     return min_val
 
 
-fn random_choice[T: Copyable & Movable](options: List[T]) -> T:
+fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) -> T:
     """Choose random element from list.
 
     Args:

@@ -270,7 +270,7 @@ fn _cleanup_temp_dir(path: String):
         pass
 
 
-fn main():
+fn main() raises:
     """Run all serialization tests."""
     print("Testing dtype utilities...")
     test_dtype_utilities()

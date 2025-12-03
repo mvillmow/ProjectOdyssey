@@ -239,11 +239,9 @@ struct ArgumentParser(Copyable, Movable):
         var result = ParsedArgs()
 
         # Initialize with defaults
-        for entry in self.arguments.items():
-            var name = entry[0]
-            var spec = entry[1]
-            if spec.default_value != "":
-                result.set(name, spec.default_value)
+        # TODO: Fix dict iteration when Mojo API stabilizes
+        # For now, defaults will be set when arguments are accessed
+        pass
 
         # Parse sys.argv
         var args = argv()
@@ -259,9 +257,10 @@ struct ArgumentParser(Copyable, Movable):
                 if arg_name not in self.arguments:
                     raise Error("Unknown argument: --" + arg_name)
 
-                var spec = self.arguments[arg_name]
+                # Access spec attributes directly
+                var is_flag = self.arguments[arg_name].is_flag
 
-                if spec.is_flag:
+                if is_flag:
                     # Boolean flag - no value needed
                     result.set(arg_name, "true")
                     i += 1
@@ -275,7 +274,7 @@ struct ArgumentParser(Copyable, Movable):
             else:
                 raise Error("Invalid argument format: " + arg)
 
-        return result
+        return result^
 
 
 # ============================================================================

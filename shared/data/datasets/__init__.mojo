@@ -32,4 +32,3 @@ from .._datasets_core import (
 
 # CIFAR-10 dataset
 from .cifar10 import CIFAR10Dataset, get_cifar10_classes
-from .cifar10_loaders import load_cifar10_train, load_cifar10_test

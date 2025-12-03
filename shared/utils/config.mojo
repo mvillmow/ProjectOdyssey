@@ -299,9 +299,13 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 + "': expected list but got "
                 + val.value_type
             )
-        return val.list_val^
+        # Copy list_val before returning to avoid partial destruction of val
+        var list_copy = List[String]()
+        for i in range(len(val.list_val)):
+            list_copy.append(val.list_val[i])
+        return list_copy^
 
-    fn get(self, key: String) -> ConfigValue:
+    fn get(self, key: String) raises -> ConfigValue:
         """Get raw configuration value by key.
 
         Args:
@@ -309,35 +313,80 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:
             Configuration value or default ConfigValue if not found
+
+        Raises:
+            Error if key access fails
         """
         if key in self.data:
             return self.data[key]
         return ConfigValue("")  # Default to empty string
 
-    fn get_with_default[T: AnyType](self, key: String, default: T) -> T:
-        """Get configuration value with default.
+    fn get_int_with_default(self, key: String, default: Int) -> Int:
+        """Get integer configuration value with default.
 
         Args:
             key: Configuration key
             default: Default value to return if key not found
 
         Returns:
-            Value or default
+            Integer value or default
         """
         if not self.has(key):
             return default
-
-        # Type-specific retrieval
-        @parameter
-        if _type_is_eq[T, Int]():
+        try:
             return self.get_int(key, default)
-        elif _type_is_eq[T, Float64]():
+        except:
+            return default
+
+    fn get_float_with_default(self, key: String, default: Float64) -> Float64:
+        """Get float configuration value with default.
+
+        Args:
+            key: Configuration key
+            default: Default value to return if key not found
+
+        Returns:
+            Float value or default
+        """
+        if not self.has(key):
+            return default
+        try:
             return self.get_float(key, default)
-        elif _type_is_eq[T, String]():
+        except:
+            return default
+
+    fn get_string_with_default(self, key: String, default: String) -> String:
+        """Get string configuration value with default.
+
+        Args:
+            key: Configuration key
+            default: Default value to return if key not found
+
+        Returns:
+            String value or default
+        """
+        if not self.has(key):
+            return default
+        try:
             return self.get_string(key, default)
-        elif _type_is_eq[T, Bool]():
+        except:
+            return default
+
+    fn get_bool_with_default(self, key: String, default: Bool) -> Bool:
+        """Get boolean configuration value with default.
+
+        Args:
+            key: Configuration key
+            default: Default value to return if key not found
+
+        Returns:
+            Bool value or default
+        """
+        if not self.has(key):
+            return default
+        try:
             return self.get_bool(key, default)
-        else:
+        except:
             return default
 
     fn merge(self, other: Config) -> Config:

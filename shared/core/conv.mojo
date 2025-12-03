@@ -382,7 +382,10 @@ fn conv2d_no_bias_backward(
     Raises:.        Error if tensor shapes are incompatible.
     """
     var result = conv2d_backward(grad_output, x, kernel, stride, padding)
-    return Conv2dNoBiasBackwardResult(result.grad_input^, result.grad_kernel^)
+    # Copy needed fields before result is destroyed (ExTensor is ImplicitlyCopyable)
+    var grad_input_copy = result.grad_input
+    var grad_kernel_copy = result.grad_kernel
+    return Conv2dNoBiasBackwardResult(grad_input_copy^, grad_kernel_copy^)
 
 
 struct DepthwiseConv2dBackwardResult(Movable):
@@ -732,7 +735,10 @@ fn depthwise_conv2d_no_bias_backward(
         Error if tensor shapes are incompatible.
     """
     var result = depthwise_conv2d_backward(grad_output, x, kernel, stride, padding)
-    return DepthwiseConv2dNoBiasBackwardResult(result.grad_input^, result.grad_kernel^)
+    # Copy needed fields before result is destroyed (ExTensor is ImplicitlyCopyable)
+    var grad_input_copy = result.grad_input
+    var grad_kernel_copy = result.grad_kernel
+    return DepthwiseConv2dNoBiasBackwardResult(grad_input_copy^, grad_kernel_copy^)
 
 
 # ============================================================================

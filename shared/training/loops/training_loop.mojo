@@ -195,7 +195,7 @@ struct TrainingLoop:
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
         optimizer_step: fn() raises -> None,
         zero_gradients: fn() raises -> None,
-        train_loader: DataLoader,
+        mut train_loader: DataLoader,
         num_epochs: Int,
         mut metrics: TrainingMetrics
     ) raises:
@@ -205,7 +205,7 @@ struct TrainingLoop:
             `compute_loss`: Loss computation function.
             `optimizer_step`: Weight update function.
             `zero_gradients`: Gradient zeroing function.
-            `train_loader`: Training data loader.
+            `train_loader`: Training data loader (mutable for iteration).
             `num_epochs`: Number of epochs to train.
             `metrics`: Training metrics to update.
 

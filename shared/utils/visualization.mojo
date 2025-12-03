@@ -54,9 +54,9 @@ struct PlotSeries(Copyable, Movable):
         self.ylabel = ""
         self.series_data = List[PlotData]()
 
-    fn add_series(mut self, series: PlotData):
+    fn add_series(mut self, owned series: PlotData):
         """Add data series to plot."""
-        self.series_data.append(series)
+        self.series_data.append(series^)
 
 
 struct ConfusionMatrixData(Copyable, Movable):

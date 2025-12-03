@@ -159,8 +159,17 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Example:
             var x: ExTensor = 42  # Implicit conversion from IntLiteral
         """
-        var shape = List[Int]()
-        _ = self.__init__(shape, DType.int64)
+        # Initialize scalar tensor (0D shape)
+        self._shape = List[Int]()
+        self._strides = List[Int]()
+        self._dtype = DType.int64
+        self._numel = 1
+        self._is_view = False
+        self._original_numel_quantized = -1
+        var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
+        self._data = alloc[UInt8](dtype_size)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
         self._data.bitcast[Int64]()[] = Int64(value)
 
     fn __init__(out self, value: FloatLiteral) raises:
@@ -175,8 +184,17 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Example:
             var x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
         """
-        var shape = List[Int]()
-        _ = self.__init__(shape, DType.float64)
+        # Initialize scalar tensor (0D shape)
+        self._shape = List[Int]()
+        self._strides = List[Int]()
+        self._dtype = DType.float64
+        self._numel = 1
+        self._is_view = False
+        self._original_numel_quantized = -1
+        var dtype_size = ExTensor._get_dtype_size_static(DType.float64)
+        self._data = alloc[UInt8](dtype_size)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
         self._data.bitcast[Float64]()[] = Float64(value)
 
     fn __init__(out self, value: Int) raises:
@@ -191,8 +209,17 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Example:
             var x: ExTensor = Int(42)
         """
-        var shape = List[Int]()
-        _ = self.__init__(shape, DType.int64)
+        # Initialize scalar tensor (0D shape)
+        self._shape = List[Int]()
+        self._strides = List[Int]()
+        self._dtype = DType.int64
+        self._numel = 1
+        self._is_view = False
+        self._original_numel_quantized = -1
+        var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
+        self._data = alloc[UInt8](dtype_size)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
         self._data.bitcast[Int64]()[] = Int64(value)
 
     fn __init__(out self, value: Float64) raises:
@@ -207,8 +234,17 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Example:
             var x: ExTensor = Float64(3.14)
         """
-        var shape = List[Int]()
-        _ = self.__init__(shape, DType.float64)
+        # Initialize scalar tensor (0D shape)
+        self._shape = List[Int]()
+        self._strides = List[Int]()
+        self._dtype = DType.float64
+        self._numel = 1
+        self._is_view = False
+        self._original_numel_quantized = -1
+        var dtype_size = ExTensor._get_dtype_size_static(DType.float64)
+        self._data = alloc[UInt8](dtype_size)
+        self._refcount = alloc[Int](1)
+        self._refcount[] = 1
         self._data.bitcast[Float64]()[] = value
 
     fn __init__(out self, var data: List[Float32]) raises:

@@ -200,7 +200,7 @@ struct ValidationLoop:
         self,
         model_forward: fn(ExTensor) raises -> ExTensor,
         compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-        val_loader: DataLoader,
+        mut val_loader: DataLoader,
         max_batches: Int,
         mut metrics: TrainingMetrics
     ) raises -> Float64:
@@ -210,7 +210,7 @@ struct ValidationLoop:
 
         Args:.            `model_forward`: Forward pass function.
             `compute_loss`: Loss computation function.
-            `val_loader`: Validation data loader.
+            `val_loader`: Validation data loader (mutable for iteration).
             `max_batches`: Maximum number of batches to evaluate.
             `metrics`: Training metrics to update.
 

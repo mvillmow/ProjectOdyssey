@@ -88,13 +88,13 @@ alias OP_LOG = "log"
 alias OP_SQRT = "sqrt"
 
 
-struct SavedTensors(Movable):
+struct SavedTensors(Copyable, Movable):
     """Container for tensors saved during forward pass for backward computation.
 
     Different operations need different tensors saved:
     - Binary ops (add, mul): Need both inputs and output
     - Unary ops (relu, exp): Need input and output
-    - Reductions (sum, mean): Need input shape for broadcasting back
+    - Reductions (sum, mean): Need input tensor for gradient computation
     """
 
     var tensors: List[ExTensor]
@@ -106,6 +106,28 @@ struct SavedTensors(Movable):
         self.tensors = List[ExTensor]()
         self.shapes = List[List[Int]]()
         self.scalars = List[Float64]()
+
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor - explicitly copy lists."""
+        # Initialize empty lists
+        self.tensors = List[ExTensor]()
+        self.shapes = List[List[Int]]()
+        self.scalars = List[Float64]()
+
+        # Copy tensors (ExTensor is Copyable)
+        for i in range(len(existing.tensors)):
+            self.tensors.append(existing.tensors[i])
+
+        # Copy shapes (List[Int] needs explicit copy)
+        for i in range(len(existing.shapes)):
+            var shape_copy = List[Int]()
+            for j in range(len(existing.shapes[i])):
+                shape_copy.append(existing.shapes[i][j])
+            self.shapes.append(shape_copy^)
+
+        # Copy scalars
+        for i in range(len(existing.scalars)):
+            self.scalars.append(existing.scalars[i])
 
     fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
@@ -198,6 +220,28 @@ struct TapeNode(Copyable, Movable):
         self.output_id = existing.output_id
         self.saved = existing.saved^
 
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor - explicitly copy lists."""
+        self.op_type = existing.op_type
+        self.output_id = existing.output_id
+
+        # Explicitly initialize and copy SavedTensors
+        self.saved = SavedTensors()
+        for i in range(len(existing.saved.tensors)):
+            self.saved.tensors.append(existing.saved.tensors[i])
+        for i in range(len(existing.saved.shapes)):
+            var shape_copy = List[Int]()
+            for j in range(len(existing.saved.shapes[i])):
+                shape_copy.append(existing.saved.shapes[i][j])
+            self.saved.shapes.append(shape_copy^)
+        for i in range(len(existing.saved.scalars)):
+            self.saved.scalars.append(existing.saved.scalars[i])
+
+        # Copy input_ids list
+        self.input_ids = List[Int]()
+        for i in range(len(existing.input_ids)):
+            self.input_ids.append(existing.input_ids[i])
+
 
 struct VariableRegistry:
     """Registry mapping variable IDs to their gradient tensors.
@@ -267,7 +311,7 @@ struct VariableRegistry:
             self.grads[id] = grad_copy^
             self.has_grad[id] = True
 
-    fn get_grad(self, id: Int) -> ExTensor:
+    fn get_grad(self, id: Int) raises -> ExTensor:
         """Get gradient for a variable.
 
         Args:
@@ -445,48 +489,53 @@ struct GradientTape:
         # Set the gradient of the output
         self.registry.set_grad(output_id, output_grad)
 
-        # Traverse nodes in reverse order
+        # Traverse nodes in reverse order to apply chain rule
         var num_nodes = len(self.nodes)
-        for rev_i in range(num_nodes):
-            var i = num_nodes - 1 - rev_i
-            var node = self.nodes[i]
+        for idx in range(num_nodes):
+            # Process in reverse: node at (num_nodes - 1 - idx)
+            var node_idx = num_nodes - 1 - idx
 
-            # Skip if output doesn't have gradient yet
-            if not self.registry.has_gradient(node.output_id):
+            # Get the output gradient for this node
+            var node_output_id = self.nodes[node_idx].output_id
+            if not self.registry.has_gradient(node_output_id):
                 continue
 
-            var grad_output = self.registry.get_grad(node.output_id)
+            var grad_output = self.registry.get_grad(node_output_id)
+            var op_type = self.nodes[node_idx].op_type
 
-            # Dispatch to appropriate backward function based on op_type
-            if node.op_type == OP_ADD:
-                self._backward_add(node, grad_output)
-            elif node.op_type == OP_SUBTRACT:
-                self._backward_subtract(node, grad_output)
-            elif node.op_type == OP_MULTIPLY:
-                self._backward_multiply(node, grad_output)
-            elif node.op_type == OP_DIVIDE:
-                self._backward_divide(node, grad_output)
-            elif node.op_type == OP_SUM:
-                self._backward_sum(node, grad_output)
-            elif node.op_type == OP_MEAN:
-                self._backward_mean(node, grad_output)
-            elif node.op_type == OP_MATMUL:
-                self._backward_matmul(node, grad_output)
-            elif node.op_type == OP_RELU:
-                self._backward_relu(node, grad_output)
-            elif node.op_type == OP_SIGMOID:
-                self._backward_sigmoid(node, grad_output)
-            elif node.op_type == OP_TANH:
-                self._backward_tanh(node, grad_output)
-            elif node.op_type == OP_NEG:
-                self._backward_neg(node, grad_output)
+            # Dispatch to appropriate backward function
+            if op_type == OP_ADD:
+                self._backward_add_by_idx(node_idx, grad_output)
+            elif op_type == OP_SUBTRACT:
+                self._backward_subtract_by_idx(node_idx, grad_output)
+            elif op_type == OP_MULTIPLY:
+                self._backward_multiply_by_idx(node_idx, grad_output)
+            elif op_type == OP_DIVIDE:
+                self._backward_divide_by_idx(node_idx, grad_output)
+            elif op_type == OP_SUM:
+                self._backward_sum_by_idx(node_idx, grad_output)
+            elif op_type == OP_MEAN:
+                self._backward_mean_by_idx(node_idx, grad_output)
+            elif op_type == OP_MATMUL:
+                self._backward_matmul_by_idx(node_idx, grad_output)
+            elif op_type == OP_RELU:
+                self._backward_relu_by_idx(node_idx, grad_output)
+            elif op_type == OP_SIGMOID:
+                self._backward_sigmoid_by_idx(node_idx, grad_output)
+            elif op_type == OP_TANH:
+                self._backward_tanh_by_idx(node_idx, grad_output)
             # Add more operations as needed
 
     fn _backward_add(mut self, node: TapeNode, grad_output: ExTensor) raises:
         """Backward pass for addition: d(a+b)/da = 1, d(a+b)/db = 1."""
         # grad_input = grad_output (gradient flows unchanged)
         # Use add_backward from shared.core
-        var result = add_backward(grad_output)
+        if len(node.saved.tensors) < 2:
+            return
+
+        var a = node.saved.tensors[0]
+        var b = node.saved.tensors[1]
+        var result = add_backward(grad_output, a, b)
 
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], result.grad_a)
@@ -495,7 +544,12 @@ struct GradientTape:
 
     fn _backward_subtract(mut self, node: TapeNode, grad_output: ExTensor) raises:
         """Backward pass for subtraction: d(a-b)/da = 1, d(a-b)/db = -1."""
-        var result = subtract_backward(grad_output)
+        if len(node.saved.tensors) < 2:
+            return
+
+        var a = node.saved.tensors[0]
+        var b = node.saved.tensors[1]
+        var result = subtract_backward(grad_output, a, b)
 
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], result.grad_a)
@@ -532,30 +586,30 @@ struct GradientTape:
 
     fn _backward_sum(mut self, node: TapeNode, grad_output: ExTensor) raises:
         """Backward pass for sum reduction."""
-        if len(node.saved.shapes) < 1:
+        if len(node.saved.tensors) < 1:
             return
 
-        var input_shape = node.saved.shapes[0]
+        var x = node.saved.tensors[0]
         var axis = -1  # Default: full reduction
         if len(node.saved.scalars) >= 1:
             axis = Int(node.saved.scalars[0])
 
-        var grad_input = sum_backward(grad_output, input_shape, axis)
+        var grad_input = sum_backward(grad_output, x, axis)
 
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], grad_input)
 
     fn _backward_mean(mut self, node: TapeNode, grad_output: ExTensor) raises:
         """Backward pass for mean reduction."""
-        if len(node.saved.shapes) < 1:
+        if len(node.saved.tensors) < 1:
             return
 
-        var input_shape = node.saved.shapes[0]
+        var x = node.saved.tensors[0]
         var axis = -1  # Default: full reduction
         if len(node.saved.scalars) >= 1:
             axis = Int(node.saved.scalars[0])
 
-        var grad_input = mean_backward(grad_output, input_shape, axis)
+        var grad_input = mean_backward(grad_output, x, axis)
 
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], grad_input)
@@ -620,7 +674,7 @@ struct GradientTape:
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], grad_input^)
 
-    fn get_grad(self, var_id: Int) -> ExTensor:
+    fn get_grad(self, var_id: Int) raises -> ExTensor:
         """Get the computed gradient for a variable.
 
         Args:
@@ -628,8 +682,123 @@ struct GradientTape:
 
         Returns:
             The gradient tensor
+
+        Raises:
+            Error if gradient not found for variable
         """
         return self.registry.get_grad(var_id)
+
+    # Index-based backward helpers (avoid TapeNode copying)
+    fn _backward_add_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for addition by node index."""
+        if len(self.nodes[idx].saved.tensors) < 2:
+            return
+        var a = self.nodes[idx].saved.tensors[0]
+        var b = self.nodes[idx].saved.tensors[1]
+        var result = add_backward(grad_output, a, b)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], result.grad_a)
+        if len(self.nodes[idx].input_ids) >= 2:
+            self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
+
+    fn _backward_subtract_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for subtraction by node index."""
+        if len(self.nodes[idx].saved.tensors) < 2:
+            return
+        var a = self.nodes[idx].saved.tensors[0]
+        var b = self.nodes[idx].saved.tensors[1]
+        var result = subtract_backward(grad_output, a, b)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], result.grad_a)
+        if len(self.nodes[idx].input_ids) >= 2:
+            self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
+
+    fn _backward_multiply_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for multiplication by node index."""
+        if len(self.nodes[idx].saved.tensors) < 2:
+            return
+        var a = self.nodes[idx].saved.tensors[0]
+        var b = self.nodes[idx].saved.tensors[1]
+        var result = multiply_backward(grad_output, a, b)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], result.grad_a)
+        if len(self.nodes[idx].input_ids) >= 2:
+            self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
+
+    fn _backward_divide_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for division by node index."""
+        if len(self.nodes[idx].saved.tensors) < 2:
+            return
+        var a = self.nodes[idx].saved.tensors[0]
+        var b = self.nodes[idx].saved.tensors[1]
+        var result = divide_backward(grad_output, a, b)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], result.grad_a)
+        if len(self.nodes[idx].input_ids) >= 2:
+            self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
+
+    fn _backward_sum_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for sum reduction by node index."""
+        if len(self.nodes[idx].saved.tensors) < 1:
+            return
+        var x = self.nodes[idx].saved.tensors[0]
+        var axis = -1
+        if len(self.nodes[idx].saved.scalars) >= 1:
+            axis = Int(self.nodes[idx].saved.scalars[0])
+        var grad_input = sum_backward(grad_output, x, axis)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
+
+    fn _backward_mean_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for mean reduction by node index."""
+        if len(self.nodes[idx].saved.tensors) < 1:
+            return
+        var x = self.nodes[idx].saved.tensors[0]
+        var axis = -1
+        if len(self.nodes[idx].saved.scalars) >= 1:
+            axis = Int(self.nodes[idx].saved.scalars[0])
+        var grad_input = mean_backward(grad_output, x, axis)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
+
+    fn _backward_matmul_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for matmul by node index."""
+        if len(self.nodes[idx].saved.tensors) < 2:
+            return
+        var a = self.nodes[idx].saved.tensors[0]
+        var b = self.nodes[idx].saved.tensors[1]
+        var result = matmul_backward(grad_output, a, b)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], result.grad_a)
+        if len(self.nodes[idx].input_ids) >= 2:
+            self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
+
+    fn _backward_relu_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for ReLU by node index."""
+        if len(self.nodes[idx].saved.tensors) < 1:
+            return
+        var x = self.nodes[idx].saved.tensors[0]
+        var grad_input = relu_backward(grad_output, x)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
+
+    fn _backward_sigmoid_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for sigmoid by node index."""
+        if len(self.nodes[idx].saved.tensors) < 1:
+            return
+        var output = self.nodes[idx].saved.tensors[0]
+        var grad_input = sigmoid_backward(grad_output, output)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
+
+    fn _backward_tanh_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+        """Backward pass for tanh by node index."""
+        if len(self.nodes[idx].saved.tensors) < 1:
+            return
+        var output = self.nodes[idx].saved.tensors[0]
+        var grad_input = tanh_backward(grad_output, output)
+        if len(self.nodes[idx].input_ids) >= 1:
+            self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
 
 
 # TODO: NoGradContext requires UnsafePointer with parametric mutability

@@ -134,13 +134,13 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
         """Return number of transforms."""
         return len(self.transforms)
 
-    fn append(mut self, transform: T):
+    fn append(mut self, owned transform: T):
         """Add a transform to the pipeline.
 
         Args:
             transform: Transform to add.
         """
-        self.transforms.append(transform)
+        self.transforms.append(transform^)
 
 
 # Type alias for Pipeline as Compose

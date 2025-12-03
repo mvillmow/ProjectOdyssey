@@ -9,7 +9,7 @@ Key components:
   Implements: y = xW + b
 """
 
-from shared.core.extensor import ExTensor, zeros, randn
+from shared.core.extensor import ExTensor, zeros, randn, zeros_like
 
 
 struct Linear:
@@ -95,11 +95,14 @@ struct Linear:
                 DType.float32
             )
 
-    fn parameters(self) -> List[ExTensor]:
+    fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
 
         Returns:
             List containing [weight, bias] tensors.
+
+        Raises:
+            Error if tensor copying fails.
 
         Example:
             ```mojo
@@ -109,6 +112,15 @@ struct Linear:
             ```
         """
         var params = List[ExTensor]()
-        params.append(self.weight)
-        params.append(self.bias)
+        # Create copies of weight and bias tensors
+        var weight_copy = zeros_like(self.weight)
+        var bias_copy = zeros_like(self.bias)
+        var weight_size = self.weight.numel()
+        var bias_size = self.bias.numel()
+        for i in range(weight_size):
+            weight_copy._data[i] = self.weight._data[i]
+        for i in range(bias_size):
+            bias_copy._data[i] = self.bias._data[i]
+        params.append(weight_copy^)
+        params.append(bias_copy^)
         return params^

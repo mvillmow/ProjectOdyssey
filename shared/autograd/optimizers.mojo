@@ -35,6 +35,8 @@ Design Note:
 from ..core.extensor import ExTensor
 from ..core.arithmetic import subtract, multiply
 from .variable import Variable
+from .tape import GradientTape
+from .functional import multiply_scalar, subtract_scalar
 
 
 struct SGD:
@@ -86,77 +88,67 @@ struct SGD:
         self.learning_rate = learning_rate
         self.momentum = momentum
 
-    fn step(self, mut parameters: List[Variable]) raises:
-        """Update parameters using their gradients.
+    fn step(self, mut parameters: List[Variable], mut tape: GradientTape) raises:
+        """Update parameters using their gradients from the tape.
 
         Performs one step of gradient descent:
             parameter = parameter - learning_rate * gradient
 
         Args:
             parameters: List of Variables to update (model parameters)
+            tape: The gradient tape containing computed gradients
 
         Note:
             This assumes gradients have already been computed via backward().
-            Parameters without gradients (grad=None) are skipped.
+            Parameters without gradients in the tape are skipped.
 
         Raises:
             Error if any parameter has incompatible gradient shape
 
         Examples:
             # After backward pass
-            loss.backward()
+            loss.backward(tape)
 
             # Update all parameters
-            optimizer.step(model.parameters())
+            optimizer.step(model.parameters(), tape)
         """
         for i in range(len(parameters)):
-            var param = parameters[i]
-
             # Skip parameters that don't require gradients
-            if not param.requires_grad:
+            if not parameters[i].requires_grad:
                 continue
 
-            # Skip parameters without computed gradients
-            if param.grad is None:
+            # Skip if no gradient has been computed
+            var param_id = parameters[i].id
+            if not tape.registry.has_gradient(param_id):
                 continue
 
-            # Get gradient
-            var grad = param.grad.value()
+            # Get the gradient for this parameter
+            var grad = tape.registry.get_grad(param_id)
 
-            # Verify gradient shape matches parameter shape
-            if grad.shape() != param.data.shape():
-                raise Error("Gradient shape mismatch with parameter shape")
+            # Update: param.data = param.data - learning_rate * grad
+            # scaled_grad = learning_rate * grad
+            var scaled_grad = multiply_scalar(grad, self.learning_rate)
+            # new_data = param.data - scaled_grad
+            var new_data = subtract(parameters[i].data, scaled_grad)
 
-            # Create learning rate tensor
-            var lr_tensor = ExTensor(grad.shape(), grad.dtype())
-            for j in range(lr_tensor.numel()):
-                lr_tensor._set_float64(j, self.learning_rate)
+            # Update the parameter's data
+            parameters[i].data = new_data^
 
-            # Compute update: lr * gradient
-            var update = multiply(lr_tensor, grad)
-
-            # Apply update: parameter = parameter - lr * gradient
-            param.data = subtract(param.data, update)
-
-    fn zero_grad(self, mut parameters: List[Variable]):
-        """Reset all parameter gradients to None.
+    fn zero_grad(self, mut tape: GradientTape):
+        """Reset all gradients in the tape.
 
         Should be called after each optimizer step to clear gradients before
         the next backward pass.
 
         Args:
-            parameters: List of Variables whose gradients to reset
+            tape: The gradient tape to clear
 
         Examples:
             # Clear gradients before next iteration
-            optimizer.zero_grad(model.parameters())
-
-            # Or call on individual parameters
-            for param in model.parameters():
-                param.zero_grad()
+            optimizer.zero_grad(tape)
         """
-        for i in range(len(parameters)):
-            parameters[i].zero_grad()
+        # Clear the gradient registry
+        tape.registry.clear()
 
 
 # Placeholder for future optimizers

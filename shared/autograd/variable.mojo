@@ -59,7 +59,7 @@ from .tape import (
 )
 
 
-struct Variable:
+struct Variable(Copyable, Movable):
     """Tensor wrapper with automatic differentiation support.
 
     Variable extends ExTensor with gradient tracking capabilities. Each Variable
@@ -91,7 +91,7 @@ struct Variable:
         owned data: ExTensor,
         requires_grad: Bool,
         mut tape: GradientTape,
-    ):
+    ) raises:
         """Initialize a Variable and register it with the tape.
 
         Args:
@@ -106,6 +106,18 @@ struct Variable:
         self.data = data^
         self.requires_grad = requires_grad
         self.id = tape.register_variable(requires_grad)
+
+    fn __copyinit__(out self, existing: Self):
+        """Copy constructor."""
+        self.data = existing.data
+        self.id = existing.id
+        self.requires_grad = existing.requires_grad
+
+    fn __moveinit__(out self, deinit existing: Self):
+        """Move constructor."""
+        self.data = existing.data^
+        self.id = existing.id
+        self.requires_grad = existing.requires_grad
 
     fn __init__(
         out self,

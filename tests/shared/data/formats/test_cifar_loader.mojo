@@ -227,7 +227,7 @@ fn test_image_shape_cifar10() raises:
     expected_shape.append(32)  # Height
     expected_shape.append(32)  # Width
 
-    assert_equal(expected_shape.size(), 4, "Shape should have 4 dimensions")
+    assert_equal(len(expected_shape), 4, "Shape should have 4 dimensions")
     assert_equal(expected_shape[0], 10, "Batch size should be 10")
     assert_equal(expected_shape[1], 3, "Channels should be 3")
     assert_equal(expected_shape[2], 32, "Height should be 32")
@@ -268,7 +268,7 @@ fn test_label_shape_cifar10() raises:
     var shape = List[Int]()
     shape.append(num_images)
 
-    assert_equal(shape.size(), 1, "CIFAR-10 labels should be 1D")
+    assert_equal(len(shape), 1, "CIFAR-10 labels should be 1D")
     assert_equal(shape[0], 10, "Should have 10 labels")
 
     print("  ✓ CIFAR-10 label shape correct")
@@ -284,7 +284,7 @@ fn test_label_shape_cifar100() raises:
     shape.append(num_images)
     shape.append(2)  # coarse + fine
 
-    assert_equal(shape.size(), 2, "CIFAR-100 labels should be 2D")
+    assert_equal(len(shape), 2, "CIFAR-100 labels should be 2D")
     assert_equal(shape[0], 10, "Should have 10 images")
     assert_equal(shape[1], 2, "Should have 2 labels per image")
 
@@ -309,7 +309,7 @@ fn test_validate_cifar10_file_size() raises:
         try:
             loader._validate_file_size(size)
         except e:
-            raise Error("Valid size " + str(size) + " was rejected")
+            raise Error("Valid size " + String(size) + " was rejected")
 
     print("  ✓ Valid CIFAR-10 sizes accepted")
 
@@ -337,7 +337,7 @@ fn test_validate_cifar100_file_size() raises:
         try:
             loader._validate_file_size(size)
         except e:
-            raise Error("Valid size " + str(size) + " was rejected")
+            raise Error("Valid size " + String(size) + " was rejected")
 
     print("  ✓ Valid CIFAR-100 sizes accepted")
 

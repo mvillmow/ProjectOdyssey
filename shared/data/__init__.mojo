@@ -52,12 +52,13 @@ from .datasets import (
     ExTensorDataset,        # In-memory tensor dataset wrapper
     FileDataset,            # File-based lazy-loading dataset
     CIFAR10Dataset,         # CIFAR-10 dataset with train/test splits
-    load_cifar10_train,     # Load CIFAR-10 training set
-    load_cifar10_test,      # Load CIFAR-10 test set
-    # TODO: EMNISTDataset not yet implemented
-    # EMNISTDataset,          # EMNIST dataset with multiple splits
-    # load_emnist_train,      # Load EMNIST training set
-    # load_emnist_test,       # Load EMNIST test set
+)
+
+# EMNIST dataset is defined in _datasets_core.mojo
+from ._datasets_core import (
+    EMNISTDataset,          # EMNIST dataset with multiple splits
+    load_emnist_train,      # Load EMNIST training set
+    load_emnist_test,       # Load EMNIST test set
 )
 
 # ============================================================================
