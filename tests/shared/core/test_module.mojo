@@ -6,6 +6,7 @@ a simple module implementation.
 
 from shared.core.module import Module
 from shared.core.extensor import ExTensor, zeros
+from tests.shared.conftest import assert_true, assert_equal_int
 
 
 struct DummyModule:
@@ -68,11 +69,11 @@ fn test_module_interface() raises:
         len(output.shape()) == 2,
         "Output should be 2D"
     )
-    assert_equal(output.shape()[1], 10, "Output size should match")
+    assert_equal_int(output.shape()[1], 10, "Output size should match")
 
     # Test parameters
     var params = module.parameters()
-    assert_equal(len(params), 0, "Should have no parameters")
+    assert_equal_int(len(params), 0, "Should have no parameters")
 
     # Test training mode
     module.train()
