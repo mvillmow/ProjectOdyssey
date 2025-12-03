@@ -5,7 +5,7 @@ flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 """
 
 # Import ExTensor and operations
-from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack
+from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack, flatten_to_2d
 
 # Import test helpers
 from tests.shared.conftest import (
@@ -401,6 +401,54 @@ fn test_reshape_preserves_dtype() raises:
 
 
 # ============================================================================
+# Test flatten_to_2d()
+# ============================================================================
+
+fn test_flatten_to_2d_basic() raises:
+    """Test basic flatten_to_2d functionality."""
+    # Create 4D tensor: (batch=2, channels=3, height=4, width=4)
+    var shape = List[Int](2, 3, 4, 4)
+    var a = ones(shape, DType.float32)
+
+    var b = flatten_to_2d(a)
+
+    # Should be (2, 48) where 48 = 3 * 4 * 4
+    assert_dim(b, 2, "flatten_to_2d should produce 2D tensor")
+    assert_numel(b, 96, "flatten_to_2d should preserve element count")
+
+    var out_shape = b.shape()
+    if out_shape[0] != 2:
+        raise Error("Batch dimension should be preserved (expected 2, got " + String(out_shape[0]) + ")")
+    if out_shape[1] != 48:
+        raise Error("Flattened dimension should be 48 (3*4*4), got " + String(out_shape[1]))
+
+
+fn test_flatten_to_2d_single_batch() raises:
+    """Test flatten_to_2d with batch size 1."""
+    var shape = List[Int](1, 64, 7, 7)
+    var a = ones(shape, DType.float32)
+
+    var b = flatten_to_2d(a)
+
+    var out_shape = b.shape()
+    if out_shape[0] != 1:
+        raise Error("Batch dimension should be 1, got " + String(out_shape[0]))
+    if out_shape[1] != 3136:
+        raise Error("Flattened dimension should be 3136 (64*7*7), got " + String(out_shape[1]))
+
+
+fn test_flatten_to_2d_preserves_dtype() raises:
+    """Test that flatten_to_2d preserves dtype."""
+    var shape = List[Int](2, 3, 4, 4)
+    var a = ones(shape, DType.float64)
+
+    var b = flatten_to_2d(a)
+
+    if b.dtype() != DType.float64:
+        raise Error("flatten_to_2d should preserve dtype")
+
+
+# ============================================================================
 # Main test runner
 # ============================================================================
 
@@ -466,5 +514,11 @@ fn main() raises:
     # Dtype preservation
     print("  Testing dtype preservation...")
     test_reshape_preserves_dtype()
+
+    # flatten_to_2d() tests
+    print("  Testing flatten_to_2d()...")
+    test_flatten_to_2d_basic()
+    test_flatten_to_2d_single_batch()
+    test_flatten_to_2d_preserves_dtype()
 
     print("All shape manipulation tests completed!")
