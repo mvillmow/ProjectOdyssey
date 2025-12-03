@@ -1,13 +1,12 @@
-"""Tests for Variable.backward() method - simplified API for backpropagation.
+"""Tests for Variable.backward() method for backpropagation.
 
-This module tests the new simplified backward() API that stores the tape
-in Variable and allows calling backward() without explicitly passing the tape.
+This module tests the backward() API for automatic differentiation.
 
 Tests cover:
 - Basic scalar loss backward pass
 - Gradient flow to input variables
 - Gradient accumulation across multiple operations
-- Backward compatibility with explicit tape parameter
+- Chain rule gradient computation
 """
 
 from tests.shared.conftest import (
@@ -30,7 +29,7 @@ fn create_shape_1d(size: Int) -> List[Int]:
     """Create a 1D shape list."""
     var shape = List[Int]()
     shape.append(size)
-    return shape
+    return shape^
 
 
 fn create_shape_2d(rows: Int, cols: Int) -> List[Int]:
@@ -38,7 +37,7 @@ fn create_shape_2d(rows: Int, cols: Int) -> List[Int]:
     var shape = List[Int]()
     shape.append(rows)
     shape.append(cols)
-    return shape
+    return shape^
 
 
 # ============================================================================
@@ -47,7 +46,7 @@ fn create_shape_2d(rows: Int, cols: Int) -> List[Int]:
 
 
 fn test_variable_backward_scalar_loss() raises:
-    """Test backward() on a scalar loss without explicit tape parameter."""
+    """Test backward() on a scalar loss."""
     # Create tape and enable recording
     var tape = GradientTape()
     tape.enable()
@@ -59,12 +58,12 @@ fn test_variable_backward_scalar_loss() raises:
 
     var x = Variable(x_data, True, tape)
 
-    # Forward pass: compute loss = x * 2
+    # Forward pass: compute loss = x * x
     var y = variable_multiply(x, x, tape)
     var loss = variable_sum(y, tape)
 
-    # Backward pass using simplified API (no tape parameter)
-    loss.backward()
+    # Backward pass
+    loss.backward(tape)
 
     # Check gradients were computed
     var grad_x = tape.get_grad(x.id)
@@ -98,8 +97,8 @@ fn test_variable_backward_multiple_variables() raises:
     var z = variable_add(x, y, tape)
     var loss = variable_sum(z, tape)
 
-    # Backward pass using simplified API
-    loss.backward()
+    # Backward pass
+    loss.backward(tape)
 
     # Check gradients for both inputs
     var grad_x = tape.get_grad(x.id)
@@ -129,13 +128,13 @@ fn test_variable_backward_chain_rule() raises:
 
     var x = Variable(x_data, True, tape)
 
-    # Forward pass: loss = (x * x) * 2
+    # Forward pass: loss = (x * x) * (x * x) = x^4
     var y = variable_multiply(x, x, tape)
     var z = variable_multiply(y, y, tape)
     var loss = variable_sum(z, tape)
 
-    # Backward pass using simplified API
-    loss.backward()
+    # Backward pass
+    loss.backward(tape)
 
     # Check gradient at x
     var grad_x = tape.get_grad(x.id)
@@ -146,9 +145,9 @@ fn test_variable_backward_chain_rule() raises:
     assert_almost_equal(grad_val, 108.0, tolerance=1e-3)
 
 
-fn test_variable_backward_explicit_vs_implicit() raises:
-    """Test that explicit backward(tape) and implicit backward() produce same results."""
-    # Test case 1: explicit tape parameter
+fn test_variable_backward_independent_tapes() raises:
+    """Test that independent tapes produce consistent results."""
+    # Test case 1: first tape
     var tape1 = GradientTape()
     tape1.enable()
 
@@ -161,10 +160,10 @@ fn test_variable_backward_explicit_vs_implicit() raises:
     var y1 = variable_multiply(x1, x1, tape1)
     var loss1 = variable_sum(y1, tape1)
 
-    # Explicit backward
+    # Backward with tape1
     loss1.backward(tape1)
 
-    # Test case 2: implicit tape parameter
+    # Test case 2: second tape with same computation
     var tape2 = GradientTape()
     tape2.enable()
 
@@ -176,10 +175,10 @@ fn test_variable_backward_explicit_vs_implicit() raises:
     var y2 = variable_multiply(x2, x2, tape2)
     var loss2 = variable_sum(y2, tape2)
 
-    # Implicit backward
-    loss2.backward()
+    # Backward with tape2
+    loss2.backward(tape2)
 
-    # Compare gradients
+    # Compare gradients - should be identical
     var grad1_x1 = tape1.get_grad(x1.id)
     var grad2_x2 = tape2.get_grad(x2.id)
 
@@ -214,8 +213,8 @@ fn test_variable_backward_no_gradients_required() raises:
     var y = variable_multiply(x, c, tape)
     var loss = variable_sum(y, tape)
 
-    # Backward pass using simplified API
-    loss.backward()
+    # Backward pass
+    loss.backward(tape)
 
     # Check gradient for x exists
     var grad_x = tape.get_grad(x.id)
@@ -224,3 +223,32 @@ fn test_variable_backward_no_gradients_required() raises:
     # Gradient should be c = 5
     var grad_val = grad_x._data.bitcast[Float32]()[0]
     assert_almost_equal(grad_val, 5.0, tolerance=1e-5)
+
+
+# ============================================================================
+# Main
+# ============================================================================
+
+
+fn main() raises:
+    """Run all Variable backward tests."""
+    print("Running Variable backward tests...")
+    print("")
+
+    test_variable_backward_scalar_loss()
+    print("✓ test_variable_backward_scalar_loss")
+
+    test_variable_backward_multiple_variables()
+    print("✓ test_variable_backward_multiple_variables")
+
+    test_variable_backward_chain_rule()
+    print("✓ test_variable_backward_chain_rule")
+
+    test_variable_backward_independent_tapes()
+    print("✓ test_variable_backward_independent_tapes")
+
+    test_variable_backward_no_gradients_required()
+    print("✓ test_variable_backward_no_gradients_required")
+
+    print("")
+    print("All Variable backward tests passed!")

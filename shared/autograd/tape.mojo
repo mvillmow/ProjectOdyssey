@@ -137,11 +137,11 @@ struct SavedTensors(Copyable, Movable):
 
     fn add_tensor(mut self, tensor: ExTensor) raises:
         """Save a tensor for backward pass."""
-        # Create a copy of the tensor
+        # Create a copy of the tensor using typed access for float32
         var copy = zeros_like(tensor)
         var size = tensor.numel()
         for i in range(size):
-            copy._data[i] = tensor._data[i]
+            copy._data.bitcast[Float32]()[i] = tensor._data.bitcast[Float32]()[i]
         self.tensors.append(copy^)
 
     fn add_shape(mut self, shape: List[Int]):
@@ -295,19 +295,20 @@ struct VariableRegistry:
         if id >= len(self.grads):
             return
 
+        var size = grad.numel()
         if self.has_grad[id]:
-            # Accumulate gradients
+            # Accumulate gradients - use typed access for float32
             var existing = self.grads[id]
-            var size = grad.numel()
             for i in range(size):
-                existing._data[i] = existing._data[i] + grad._data[i]
+                var existing_val = existing._data.bitcast[Float32]()[i]
+                var grad_val = grad._data.bitcast[Float32]()[i]
+                existing._data.bitcast[Float32]()[i] = existing_val + grad_val
             self.grads[id] = existing^
         else:
-            # First gradient - copy it
+            # First gradient - copy it using typed access
             var grad_copy = zeros_like(grad)
-            var size = grad.numel()
             for i in range(size):
-                grad_copy._data[i] = grad._data[i]
+                grad_copy._data.bitcast[Float32]()[i] = grad._data.bitcast[Float32]()[i]
             self.grads[id] = grad_copy^
             self.has_grad[id] = True
 
