@@ -7,6 +7,7 @@ Core Components:
 - GradientTape: Operation recording and backward pass execution
 - NoGradContext: Context for disabling gradient computation
 - SGD: Stochastic gradient descent optimizer
+- StepLR, ExponentialLR: Learning rate schedulers for adaptive decay
 - Variable operations: Tape-integrated ops (add, multiply, matmul, etc.)
 - Functional helpers: Practical gradient computation for common patterns
 
@@ -118,6 +119,11 @@ from .tape import (
 )
 
 from .optimizers import SGD
+
+from .schedulers import (
+    StepLR,
+    ExponentialLR,
+)
 
 from .functional import (
     LossAndGrad,
