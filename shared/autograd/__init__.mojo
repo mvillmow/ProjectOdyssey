@@ -3,13 +3,37 @@
 This module provides gradient computation capabilities for training neural networks.
 
 Core Components:
-- Variable: Tensor wrapper with gradient tracking (foundation)
-- GradientTape: Operation recording structure (foundation)
+- Variable: Tensor wrapper with gradient tracking
+- GradientTape: Operation recording and backward pass execution
+- NoGradContext: Context for disabling gradient computation
 - SGD: Stochastic gradient descent optimizer
+- Variable operations: Tape-integrated ops (add, multiply, matmul, etc.)
 - Functional helpers: Practical gradient computation for common patterns
-- Backward functions: Unified API for all gradient computations
 
-Recommended API (Functional Helpers):
+Tape-Based Autograd API (Recommended for full automatic differentiation):
+    from shared.autograd import Variable, GradientTape
+    from shared.autograd import variable_add, variable_multiply, variable_sum
+
+    # Create gradient tape
+    var tape = GradientTape()
+    tape.enable()
+
+    # Create variables with gradient tracking
+    var x = Variable(data, requires_grad=True, tape)
+    var y = Variable(weights, requires_grad=True, tape)
+
+    # Perform operations (automatically recorded)
+    var z = variable_multiply(x, y, tape)
+    var loss = variable_sum(z, tape)
+
+    # Compute gradients automatically
+    loss.backward(tape)
+
+    # Access gradients
+    var grad_x = tape.get_grad(x.id)
+    var grad_y = tape.get_grad(y.id)
+
+Functional Helpers API (For simple gradient patterns):
     from shared.autograd import mse_loss_and_grad, SGD
 
     # Compute loss and gradient in one call
@@ -20,55 +44,81 @@ Recommended API (Functional Helpers):
     # Update parameters using optimizer
     var optimizer = SGD(learning_rate=0.01)
     optimizer.step(parameters)
-    optimizer.zero_grad(parameters)
+
+Available Variable Operations:
+- variable_add, variable_subtract, variable_multiply, variable_divide
+- variable_matmul
+- variable_sum, variable_mean
+- variable_relu, variable_sigmoid, variable_tanh
+- variable_neg
 
 Available Loss+Grad Helpers:
 - mse_loss_and_grad: Mean squared error (regression)
 - bce_loss_and_grad: Binary cross-entropy (binary classification)
 - ce_loss_and_grad: Cross-entropy with softmax (multi-class classification)
 
-Backward Functions (Unified API from shared.core):
-
-NOTE: Backward function implementations are in progress. See TODO.md for current status.
-
-Currently Available:
-- Pooling: maxpool2d_backward, avgpool2d_backward, global_avgpool2d_backward
-- Dropout: dropout_backward, dropout2d_backward
-
-Coming Soon:
-- Activation: relu_backward, leaky_relu_backward, prelu_backward, sigmoid_backward, tanh_backward,
-  gelu_backward, softmax_backward, swish_backward, mish_backward, elu_backward
-- Loss: binary_cross_entropy_backward, mean_squared_error_backward, cross_entropy_backward
-- Matrix Ops: matmul_backward, transpose_backward
-- Arithmetic: add_backward, subtract_backward, multiply_backward, divide_backward
-- Element-wise: exp_backward, log_backward, log10_backward, log2_backward, sqrt_backward,
-  abs_backward, clip_backward
-- Reduction: sum_backward, mean_backward, max_reduce_backward, min_reduce_backward
-- Network Layers: linear_backward, linear_no_bias_backward, conv2d_backward, conv2d_no_bias_backward
-- Normalization: batch_norm2d_backward
-
 Design Philosophy:
-    YAGNI + KISS: Provide practical helpers for common patterns rather than
-    complex computation graph autograd. This works today with current Mojo
-    constraints and covers 90% of real use cases.
+    The autograd module provides two APIs:
+    1. Tape-based autograd: Full automatic differentiation with computation graph
+    2. Functional helpers: Simple loss+gradient helpers for common patterns
 
 Status:
+    ✅ GradientTape with backward() implementation
+    ✅ Variable operations with tape recording
+    ✅ NoGradContext for inference mode
     ✅ Functional gradient helpers (mse, bce, ce)
     ✅ SGD optimizer
-    ✅ Variable/Tape foundation (for future full autograd)
-    ✅ Unified backward function API (Issue #2196)
-    ✅ Pooling backward passes (Issue #2198)
-    🔮 Full automatic differentiation (future, see DESIGN.md)
 
 References:
+    - Tape implementation: tape.mojo
+    - Variable operations: variable.mojo
     - Gradient helpers: functional.mojo
     - Design rationale: DESIGN.md
-    - Backward functions: ../core/ modules
 """
 
-from .variable import Variable
-from .tape import GradientTape, TapeNode
+# Core autograd components
+from .variable import (
+    Variable,
+    variable_add,
+    variable_subtract,
+    variable_multiply,
+    variable_divide,
+    variable_matmul,
+    variable_sum,
+    variable_mean,
+    variable_relu,
+    variable_sigmoid,
+    variable_tanh,
+    variable_neg,
+)
+
+from .tape import (
+    GradientTape,
+    TapeNode,
+    SavedTensors,
+    VariableRegistry,
+    NoGradContext,
+    # Operation type aliases
+    OP_ADD,
+    OP_SUBTRACT,
+    OP_MULTIPLY,
+    OP_DIVIDE,
+    OP_MATMUL,
+    OP_SUM,
+    OP_MEAN,
+    OP_RELU,
+    OP_SIGMOID,
+    OP_TANH,
+    OP_NEG,
+    OP_POWER,
+    OP_SOFTMAX,
+    OP_EXP,
+    OP_LOG,
+    OP_SQRT,
+)
+
 from .optimizers import SGD
+
 from .functional import (
     LossAndGrad,
     mse_loss_and_grad,
@@ -84,76 +134,9 @@ from .functional import (
 )
 
 # ============================================================================
-# Re-export Backward Functions from shared.core (Issue #2196)
+# Re-export Backward Functions from shared.core
 # ============================================================================
-# NOTE: Backward function implementations are in progress.
-# These imports are commented out until the functions are available.
-# See TODO.md for current status.
-
-# # Activation backward passes
-# from ..core.activation import (
-#     relu_backward,
-#     leaky_relu_backward,
-#     prelu_backward,
-#     sigmoid_backward,
-#     tanh_backward,
-#     gelu_backward,
-#     softmax_backward,
-#     swish_backward,
-#     mish_backward,
-#     elu_backward,
-# )
-
-# # Loss backward passes
-# from ..core.loss import (
-#     binary_cross_entropy_backward,
-#     mean_squared_error_backward,
-#     cross_entropy_backward,
-# )
-
-# # Matrix operation backward passes
-# from ..core.matrix import (
-#     matmul_backward,
-#     transpose_backward,
-# )
-
-# # Arithmetic backward passes
-# from ..core.arithmetic import (
-#     add_backward,
-#     subtract_backward,
-#     multiply_backward,
-#     divide_backward,
-# )
-
-# # Element-wise backward passes
-# from ..core.elementwise import (
-#     exp_backward,
-#     log_backward,
-#     log10_backward,
-#     log2_backward,
-#     sqrt_backward,
-#     abs_backward,
-#     clip_backward,
-# )
-
-# # Reduction backward passes
-# from ..core.reduction import (
-#     sum_backward,
-#     mean_backward,
-#     max_reduce_backward,
-#     min_reduce_backward,
-# )
-
-# # Network layer backward passes
-# from ..core.linear import (
-#     linear_backward,
-#     linear_no_bias_backward,
-# )
-
-# from ..core.conv import (
-#     conv2d_backward,
-#     conv2d_no_bias_backward,
-# )
+# These are the underlying backward implementations used by the tape.
 
 # Pooling backward passes
 from ..core.pooling import (
@@ -161,9 +144,6 @@ from ..core.pooling import (
     avgpool2d_backward,
     global_avgpool2d_backward,
 )
-
-# # Normalization backward passes
-# from ..core.normalization import batch_norm2d_backward
 
 # Dropout backward passes
 from ..core.dropout import (
