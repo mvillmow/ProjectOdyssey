@@ -26,7 +26,7 @@ from tests.shared.conftest import (
 fn test_mxfp4_tensor_conversion_exact_size() raises:
     """Test MXFP4 conversion for tensor with exact block size."""
     # Create tensor with exactly 64 elements (2 blocks of 32)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](64), DType.float32)
 
     # Fill with test values
     for i in range(64):
@@ -61,7 +61,7 @@ fn test_mxfp4_tensor_conversion_exact_size() raises:
 fn test_mxfp4_tensor_conversion_padding() raises:
     """Test MXFP4 conversion handles padding correctly."""
     # Create tensor with 50 elements (requires 2 blocks, 14 padding zeros)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](50), DType.float32)
 
     # Fill with test values
     for i in range(50):
@@ -89,7 +89,7 @@ fn test_mxfp4_tensor_conversion_padding() raises:
     # Verify padding values (last 14) are zeros
     for i in range(50, 64):
         var decoded = restored._data.bitcast[Float32]()[i]
-        assert_almost_equal(decoded, 0.0, tolerance=0.1)
+        assert_almost_equal(decoded, 0.0, rtol=1e-5, atol=0.1)
 
 
 fn test_mxfp4_tensor_conversion_multidim() raises:
@@ -123,7 +123,7 @@ fn test_mxfp4_tensor_conversion_multidim() raises:
 fn test_nvfp4_tensor_conversion_exact_size() raises:
     """Test NVFP4 conversion for tensor with exact block size."""
     # Create tensor with exactly 64 elements (4 blocks of 16)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](64), DType.float32)
 
     # Fill with test values
     for i in range(64):
@@ -158,7 +158,7 @@ fn test_nvfp4_tensor_conversion_exact_size() raises:
 fn test_nvfp4_tensor_conversion_padding() raises:
     """Test NVFP4 conversion handles padding correctly."""
     # Create tensor with 50 elements (requires 4 blocks, 14 padding zeros)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](50), DType.float32)
 
     # Fill with test values
     for i in range(50):
@@ -186,7 +186,7 @@ fn test_nvfp4_tensor_conversion_padding() raises:
     # Verify padding values (last 14) are zeros
     for i in range(50, 64):
         var decoded = restored._data.bitcast[Float32]()[i]
-        assert_almost_equal(decoded, 0.0, tolerance=0.1)
+        assert_almost_equal(decoded, 0.0, rtol=1e-5, atol=0.1)
 
 
 fn test_nvfp4_tensor_conversion_multidim() raises:
@@ -220,7 +220,7 @@ fn test_nvfp4_tensor_conversion_multidim() raises:
 fn test_mxfp4_memory_efficiency() raises:
     """Verify MXFP4 provides expected compression."""
     # Create tensor with 320 elements (10 blocks)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](320), DType.float32)
 
     # Original size: 320 * 4 bytes = 1280 bytes
     # MXFP4 size: 10 blocks * 17 bytes = 170 bytes
@@ -243,7 +243,7 @@ fn test_mxfp4_memory_efficiency() raises:
 fn test_nvfp4_memory_efficiency() raises:
     """Verify NVFP4 provides expected compression."""
     # Create tensor with 320 elements (20 blocks)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](320), DType.float32)
 
     # Original size: 320 * 4 bytes = 1280 bytes
     # NVFP4 size: 20 blocks * 9 bytes = 180 bytes
@@ -270,7 +270,7 @@ fn test_nvfp4_memory_efficiency() raises:
 
 fn test_mxfp4_conversion_requires_float() raises:
     """Test MXFP4 conversion requires floating-point tensor."""
-    var t = zeros(List[Int](), DType.int32)
+    var t = zeros(List[Int](1), DType.int32)
 
     try:
         var mxfp4_t = t.to_mxfp4()
@@ -282,7 +282,7 @@ fn test_mxfp4_conversion_requires_float() raises:
 
 fn test_nvfp4_conversion_requires_float() raises:
     """Test NVFP4 conversion requires floating-point tensor."""
-    var t = zeros(List[Int](), DType.int32)
+    var t = zeros(List[Int](1), DType.int32)
 
     try:
         var nvfp4_t = t.to_nvfp4()
@@ -294,7 +294,7 @@ fn test_nvfp4_conversion_requires_float() raises:
 
 fn test_mxfp4_decoding_requires_uint8() raises:
     """Test MXFP4 decoding requires uint8 tensor."""
-    var t = zeros(List[Int](), DType.int32)
+    var t = zeros(List[Int](1), DType.int32)
 
     try:
         var restored = t.from_mxfp4()
@@ -306,7 +306,7 @@ fn test_mxfp4_decoding_requires_uint8() raises:
 
 fn test_nvfp4_decoding_requires_uint8() raises:
     """Test NVFP4 decoding requires uint8 tensor."""
-    var t = zeros(List[Int](), DType.int32)
+    var t = zeros(List[Int](1), DType.int32)
 
     try:
         var restored = t.from_nvfp4()
@@ -318,7 +318,7 @@ fn test_nvfp4_decoding_requires_uint8() raises:
 
 fn test_mxfp4_decoding_requires_block_alignment() raises:
     """Test MXFP4 decoding requires block-aligned size."""
-    var t = zeros(List[Int](), DType.uint8)  # Not a multiple of 17
+    var t = zeros(List[Int](1), DType.uint8)  # Not a multiple of 17
 
     try:
         var restored = t.from_mxfp4()
@@ -330,7 +330,7 @@ fn test_mxfp4_decoding_requires_block_alignment() raises:
 
 fn test_nvfp4_decoding_requires_block_alignment() raises:
     """Test NVFP4 decoding requires block-aligned size."""
-    var t = zeros(List[Int](), DType.uint8)  # Not a multiple of 9
+    var t = zeros(List[Int](1), DType.uint8)  # Not a multiple of 9
 
     try:
         var restored = t.from_nvfp4()
@@ -348,7 +348,7 @@ fn test_nvfp4_decoding_requires_block_alignment() raises:
 fn test_mxfp4_roundtrip_large_tensor() raises:
     """Test MXFP4 round-trip for large tensor."""
     # Create large tensor (1000 elements)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](1000), DType.float32)
 
     # Fill with test pattern
     for i in range(1000):
@@ -374,7 +374,7 @@ fn test_mxfp4_roundtrip_large_tensor() raises:
 fn test_nvfp4_roundtrip_large_tensor() raises:
     """Test NVFP4 round-trip for large tensor."""
     # Create large tensor (1000 elements)
-    var t = zeros(List[Int](), DType.float32)
+    var t = zeros(List[Int](1000), DType.float32)
 
     # Fill with test pattern
     for i in range(1000):

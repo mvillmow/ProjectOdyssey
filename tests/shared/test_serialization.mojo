@@ -82,7 +82,7 @@ fn test_hex_encoding():
         assert_almost_equal(v1, v2, tolerance=1e-6, msg="Hex decode mismatch")
 
 
-fn test_single_tensor_serialization():
+fn test_single_tensor_serialization() raises:
     """Test saving and loading single tensor."""
     # Create test tensor
     var shape = List[Int](2, 3)
@@ -119,7 +119,7 @@ fn test_single_tensor_serialization():
             os.remove(tmpfile)
 
 
-fn test_tensor_with_name():
+fn test_tensor_with_name() raises:
     """Test loading tensor with name preservation."""
     # Create test tensor
     var shape = List[Int](2, 2)
@@ -145,7 +145,7 @@ fn test_tensor_with_name():
             os.remove(tmpfile)
 
 
-fn test_named_tensor_collection():
+fn test_named_tensor_collection() raises:
     """Test saving and loading NamedTensor collections."""
     # Create directory for test
     var tmpdir = "test_named_tensors_dir"
@@ -195,7 +195,7 @@ fn test_named_tensor_collection():
         _cleanup_temp_dir(tmpdir)
 
 
-fn test_different_dtypes():
+fn test_different_dtypes() raises:
     """Test serialization with different data types."""
     var tmpdir = "test_dtype_serialization"
     _create_temp_dir(tmpdir)

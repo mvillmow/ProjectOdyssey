@@ -117,7 +117,7 @@ fn test_emnist_len() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        var length = len(dataset)
+        var length = dataset.__len__()
         assert_true(length > 0, "Dataset length should be positive")
     except e:
         print("Test data not available - skipping length test")
@@ -149,7 +149,7 @@ fn test_emnist_getitem_negative_index() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        var length = len(dataset)
+        var length = dataset.__len__()
         var last_sample_data, last_sample_label = dataset.__getitem__(-1)
 
         # Verify we got a valid sample
@@ -166,7 +166,7 @@ fn test_emnist_getitem_out_of_bounds() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        var length = len(dataset)
+        var length = dataset.__len__()
 
         var error_raised = False
         try:
@@ -285,7 +285,7 @@ fn test_emnist_get_train_data() raises:
         var tensor_dataset = dataset.get_train_data()
 
         # Verify it's a valid ExTensorDataset
-        var length = len(tensor_dataset)
+        var length = tensor_dataset.__len__()
         assert_true(length > 0, "ExTensorDataset should have samples")
     except e:
         print("Test data not available - skipping get_train_data test")
@@ -301,7 +301,7 @@ fn test_emnist_get_test_data() raises:
         var tensor_dataset = dataset.get_test_data()
 
         # Verify it's a valid ExTensorDataset
-        var length = len(tensor_dataset)
+        var length = tensor_dataset.__len__()
         assert_true(length > 0, "ExTensorDataset should have samples")
     except e:
         print("Test data not available - skipping get_test_data test")
@@ -316,8 +316,8 @@ fn test_emnist_train_vs_test_sizes() raises:
         var train_dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
         var test_dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=False)
 
-        var train_len = len(train_dataset)
-        var test_len = len(test_dataset)
+        var train_len = train_dataset.__len__()
+        var test_len = test_dataset.__len__()
 
         # Train should typically have more samples than test
         assert_true(train_len > 0, "Train set should have samples")
@@ -387,7 +387,7 @@ fn test_emnist_performance_random_access() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        var length = len(dataset)
+        var length = dataset.__len__()
 
         if length > 0:
             # Access first, middle, and last samples

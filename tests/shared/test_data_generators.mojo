@@ -346,3 +346,96 @@ fn test_integration_classification_data_shapes_match() raises:
         "Features first dimension should match num_samples"
     )
     assert_equal_int(y.shape()[0], num_samples, "Labels should match num_samples")
+
+
+fn main() raises:
+    """Run all data generator tests."""
+    print("Running data generator tests...")
+
+    # random_tensor tests
+    test_random_tensor_shape_1d()
+    print("✓ random_tensor 1D shape")
+
+    test_random_tensor_shape_2d()
+    print("✓ random_tensor 2D shape")
+
+    test_random_tensor_shape_3d()
+    print("✓ random_tensor 3D shape")
+
+    test_random_tensor_dtype_float32()
+    print("✓ random_tensor float32 dtype")
+
+    test_random_tensor_dtype_float64()
+    print("✓ random_tensor float64 dtype")
+
+    test_random_tensor_dtype_int32()
+    print("✓ random_tensor int32 dtype")
+
+    test_random_tensor_values_in_range()
+    print("✓ random_tensor values in range")
+
+    test_random_tensor_default_dtype()
+    print("✓ random_tensor default dtype")
+
+    # random_uniform tests
+    test_random_uniform_shape()
+    print("✓ random_uniform shape")
+
+    test_random_uniform_range_0_to_1()
+    print("✓ random_uniform range [0, 1)")
+
+    test_random_uniform_range_negative_to_positive()
+    print("✓ random_uniform range [-1, 1)")
+
+    test_random_uniform_dtype()
+    print("✓ random_uniform dtype")
+
+    # random_normal tests
+    test_random_normal_shape()
+    print("✓ random_normal shape")
+
+    test_random_normal_dtype_float32()
+    print("✓ random_normal float32 dtype")
+
+    test_random_normal_dtype_float64()
+    print("✓ random_normal float64 dtype")
+
+    test_random_normal_mean_and_std()
+    print("✓ random_normal mean and std")
+
+    test_random_normal_distribution_sanity()
+    print("✓ random_normal distribution sanity")
+
+    # synthetic_classification_data tests
+    test_synthetic_classification_data_shape_features()
+    print("✓ synthetic_classification_data feature shape")
+
+    test_synthetic_classification_data_shape_labels()
+    print("✓ synthetic_classification_data label shape")
+
+    test_synthetic_classification_data_dtype_features()
+    print("✓ synthetic_classification_data feature dtype")
+
+    test_synthetic_classification_data_dtype_labels()
+    print("✓ synthetic_classification_data label dtype")
+
+    test_synthetic_classification_data_label_values()
+    print("✓ synthetic_classification_data label values")
+
+    test_synthetic_classification_data_single_sample()
+    print("✓ synthetic_classification_data single sample")
+
+    test_synthetic_classification_data_many_classes()
+    print("✓ synthetic_classification_data many classes")
+
+    test_synthetic_classification_data_high_dimensions()
+    print("✓ synthetic_classification_data high dimensions")
+
+    # Integration tests
+    test_integration_random_tensor_and_normal()
+    print("✓ integration random tensor and normal")
+
+    test_integration_classification_data_shapes_match()
+    print("✓ integration classification data shapes match")
+
+    print("\nAll data generator tests passed!")
