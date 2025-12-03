@@ -15,7 +15,7 @@ Example:
     print_benchmark_report(result, "Expensive Operation")
 """
 
-from time import now
+from time import perf_counter_ns
 from math import sqrt
 from collections import List
 from .result import BenchmarkResult as LowLevelBenchmarkResult
@@ -143,7 +143,7 @@ fn _get_time_ns() -> Int:
     Returns:
         Time in nanoseconds as Int
     """
-    return now()
+    return Int(perf_counter_ns())
 
 
 fn _ns_to_ms(ns: Int) -> Float64:
