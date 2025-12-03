@@ -89,6 +89,9 @@ from .shape import (
     pool_output_shape,
     flatten_size,
     flatten_to_2d,
+    transposed_conv2d_output_shape,
+    global_avgpool_output_shape,
+    linear_output_shape,
 )
 
 # ============================================================================
