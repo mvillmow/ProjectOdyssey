@@ -354,3 +354,453 @@ fn create_causal_mask(seq_len: Int, dtype: DType = DType.float32) raises -> ExTe
         raise Error("create_causal_mask: only float32/64 supported")
 
     return mask
+
+
+# ============================================================================
+# Multi-Head Attention
+# ============================================================================
+
+
+struct MultiHeadAttentionWeights(Movable):
+    """Container for multi-head attention weight matrices.
+
+    Holds the projection matrices for Q, K, V and output projection.
+    """
+
+    var wq: ExTensor  # Query projection: (d_model, d_model)
+    var wk: ExTensor  # Key projection: (d_model, d_model)
+    var wv: ExTensor  # Value projection: (d_model, d_model)
+    var wo: ExTensor  # Output projection: (d_model, d_model)
+
+    fn __init__(
+        out self,
+        wq: ExTensor,
+        wk: ExTensor,
+        wv: ExTensor,
+        wo: ExTensor,
+    ):
+        self.wq = wq
+        self.wk = wk
+        self.wv = wv
+        self.wo = wo
+
+    fn __moveinit__(out self, owned existing: Self):
+        self.wq = existing.wq^
+        self.wk = existing.wk^
+        self.wv = existing.wv^
+        self.wo = existing.wo^
+
+
+struct MultiHeadAttentionResult(Movable):
+    """Result container for multi_head_attention.
+
+    Contains output and attention weights for visualization/analysis.
+    """
+
+    var output: ExTensor
+    var attention_weights: ExTensor
+
+    fn __init__(out self, output: ExTensor, attention_weights: ExTensor):
+        self.output = output
+        self.attention_weights = attention_weights
+
+    fn __moveinit__(out self, owned existing: Self):
+        self.output = existing.output^
+        self.attention_weights = existing.attention_weights^
+
+
+fn multi_head_attention(
+    query: ExTensor,
+    key: ExTensor,
+    value: ExTensor,
+    weights: MultiHeadAttentionWeights,
+    num_heads: Int,
+    mask: ExTensor = ExTensor(),
+) raises -> MultiHeadAttentionResult:
+    """Multi-head attention mechanism.
+
+    Projects inputs through multiple attention heads in parallel, then
+    concatenates and projects the results. This is the core mechanism in
+    transformer architectures.
+
+    Args:
+        `query`: Query tensor of shape (batch, seq_len, d_model)
+        `key`: Key tensor of shape (batch, seq_len, d_model)
+        `value`: Value tensor of shape (batch, seq_len, d_model)
+        `weights`: MultiHeadAttentionWeights containing Wq, Wk, Wv, Wo
+        `num_heads`: Number of attention heads
+        `mask`: Optional attention mask
+
+    Returns:
+        MultiHeadAttentionResult containing:
+            - output: Attended output of shape (batch, seq_len, d_model)
+            - attention_weights: Attention weights for visualization
+
+    Example:
+        ```mojo
+        from shared.core import multi_head_attention, MultiHeadAttentionWeights
+
+        # Initialize weights (normally from model)
+        var weights = MultiHeadAttentionWeights(wq, wk, wv, wo)
+
+        # Compute multi-head attention
+        var result = multi_head_attention(
+            query, key, value, weights, num_heads=8
+        )
+        var output = result.output
+        ```
+
+    Formula:
+        MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * Wo
+        where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i)
+
+    Note:
+        - d_model must be divisible by num_heads
+        - Each head operates on d_k = d_model / num_heads dimensions
+    """
+    var q_shape = query.shape()
+    if len(q_shape) != 3:
+        raise Error("multi_head_attention: query must be 3D (batch, seq, d_model)")
+
+    var batch = q_shape[0]
+    var seq_len = q_shape[1]
+    var d_model = q_shape[2]
+
+    if d_model % num_heads != 0:
+        raise Error("multi_head_attention: d_model must be divisible by num_heads")
+
+    var d_k = d_model // num_heads
+
+    # Project Q, K, V through weight matrices
+    # (batch, seq, d_model) @ (d_model, d_model) -> (batch, seq, d_model)
+    var q_proj = matmul(query, weights.wq)
+    var k_proj = matmul(key, weights.wk)
+    var v_proj = matmul(value, weights.wv)
+
+    # Reshape to (batch, seq, num_heads, d_k) then transpose to (batch, num_heads, seq, d_k)
+    var q_heads = _reshape_for_heads(q_proj, batch, seq_len, num_heads, d_k)
+    var k_heads = _reshape_for_heads(k_proj, batch, seq_len, num_heads, d_k)
+    var v_heads = _reshape_for_heads(v_proj, batch, seq_len, num_heads, d_k)
+
+    # Apply scaled dot-product attention per head
+    # Note: scaled_dot_product_attention handles 4D tensors (batch, heads, seq, d_k)
+    var scale = Float64(1.0) / sqrt(Float64(d_k))
+
+    # Compute attention scores: (batch, heads, seq, d_k) @ (batch, heads, d_k, seq)
+    var k_heads_t = transpose(k_heads)
+    var scores = matmul(q_heads, k_heads_t)
+
+    # Scale scores
+    var scale_tensor = zeros_like(scores)
+    var scale_ptr = scale_tensor._data
+    var numel = scores.numel()
+
+    if scores.dtype() == DType.float32:
+        var scale_f32 = Float32(scale)
+        for i in range(numel):
+            scale_ptr.bitcast[Float32]()[i] = scale_f32
+    else:
+        for i in range(numel):
+            scale_ptr.bitcast[Float64]()[i] = scale
+
+    var scaled_scores = multiply(scores, scale_tensor)
+
+    # Apply mask if provided
+    var mask_shape = mask.shape()
+    if len(mask_shape) > 0 and mask.numel() > 0:
+        scaled_scores = add(scaled_scores, mask)
+
+    # Softmax over last dimension
+    var attention_weights = softmax(scaled_scores)
+
+    # Apply attention to values
+    var attended = matmul(attention_weights, v_heads)
+
+    # Reshape back: (batch, heads, seq, d_k) -> (batch, seq, d_model)
+    var concat_heads = _reshape_from_heads(attended, batch, seq_len, num_heads, d_k)
+
+    # Final output projection
+    var output = matmul(concat_heads, weights.wo)
+
+    return MultiHeadAttentionResult(output, attention_weights)
+
+
+fn _reshape_for_heads(
+    x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
+) raises -> ExTensor:
+    """Reshape from (batch, seq, d_model) to (batch, num_heads, seq, d_k).
+
+    Internal helper for multi-head attention.
+    """
+    # x shape: (batch, seq_len, d_model) where d_model = num_heads * d_k
+    # Target: (batch, num_heads, seq_len, d_k)
+    var d_model = num_heads * d_k
+
+    var out_shape = List[Int]()
+    out_shape.append(batch)
+    out_shape.append(num_heads)
+    out_shape.append(seq_len)
+    out_shape.append(d_k)
+
+    var result = zeros(out_shape, x.dtype())
+    var x_ptr = x._data
+    var result_ptr = result._data
+
+    if x.dtype() == DType.float32:
+        for b in range(batch):
+            for s in range(seq_len):
+                for h in range(num_heads):
+                    for k in range(d_k):
+                        # Source: (b, s, h * d_k + k)
+                        var src_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        # Dest: (b, h, s, k)
+                        var dst_idx = (
+                            b * (num_heads * seq_len * d_k)
+                            + h * (seq_len * d_k)
+                            + s * d_k
+                            + k
+                        )
+                        result_ptr.bitcast[Float32]()[dst_idx] = (
+                            x_ptr.bitcast[Float32]()[src_idx]
+                        )
+    else:
+        for b in range(batch):
+            for s in range(seq_len):
+                for h in range(num_heads):
+                    for k in range(d_k):
+                        var src_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        var dst_idx = (
+                            b * (num_heads * seq_len * d_k)
+                            + h * (seq_len * d_k)
+                            + s * d_k
+                            + k
+                        )
+                        result_ptr.bitcast[Float64]()[dst_idx] = (
+                            x_ptr.bitcast[Float64]()[src_idx]
+                        )
+
+    return result
+
+
+fn _reshape_from_heads(
+    x: ExTensor, batch: Int, seq_len: Int, num_heads: Int, d_k: Int
+) raises -> ExTensor:
+    """Reshape from (batch, num_heads, seq, d_k) to (batch, seq, d_model).
+
+    Internal helper for multi-head attention.
+    """
+    # x shape: (batch, num_heads, seq_len, d_k)
+    # Target: (batch, seq_len, d_model) where d_model = num_heads * d_k
+    var d_model = num_heads * d_k
+
+    var out_shape = List[Int]()
+    out_shape.append(batch)
+    out_shape.append(seq_len)
+    out_shape.append(d_model)
+
+    var result = zeros(out_shape, x.dtype())
+    var x_ptr = x._data
+    var result_ptr = result._data
+
+    if x.dtype() == DType.float32:
+        for b in range(batch):
+            for s in range(seq_len):
+                for h in range(num_heads):
+                    for k in range(d_k):
+                        # Source: (b, h, s, k)
+                        var src_idx = (
+                            b * (num_heads * seq_len * d_k)
+                            + h * (seq_len * d_k)
+                            + s * d_k
+                            + k
+                        )
+                        # Dest: (b, s, h * d_k + k)
+                        var dst_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        result_ptr.bitcast[Float32]()[dst_idx] = (
+                            x_ptr.bitcast[Float32]()[src_idx]
+                        )
+    else:
+        for b in range(batch):
+            for s in range(seq_len):
+                for h in range(num_heads):
+                    for k in range(d_k):
+                        var src_idx = (
+                            b * (num_heads * seq_len * d_k)
+                            + h * (seq_len * d_k)
+                            + s * d_k
+                            + k
+                        )
+                        var dst_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        result_ptr.bitcast[Float64]()[dst_idx] = (
+                            x_ptr.bitcast[Float64]()[src_idx]
+                        )
+
+    return result
+
+
+struct MultiHeadAttentionBackwardResult(Movable):
+    """Result container for multi_head_attention_backward.
+
+    Contains gradients for all inputs and weight matrices.
+    """
+
+    var grad_query: ExTensor
+    var grad_key: ExTensor
+    var grad_value: ExTensor
+    var grad_wq: ExTensor
+    var grad_wk: ExTensor
+    var grad_wv: ExTensor
+    var grad_wo: ExTensor
+
+    fn __init__(
+        out self,
+        grad_query: ExTensor,
+        grad_key: ExTensor,
+        grad_value: ExTensor,
+        grad_wq: ExTensor,
+        grad_wk: ExTensor,
+        grad_wv: ExTensor,
+        grad_wo: ExTensor,
+    ):
+        self.grad_query = grad_query
+        self.grad_key = grad_key
+        self.grad_value = grad_value
+        self.grad_wq = grad_wq
+        self.grad_wk = grad_wk
+        self.grad_wv = grad_wv
+        self.grad_wo = grad_wo
+
+    fn __moveinit__(out self, owned existing: Self):
+        self.grad_query = existing.grad_query^
+        self.grad_key = existing.grad_key^
+        self.grad_value = existing.grad_value^
+        self.grad_wq = existing.grad_wq^
+        self.grad_wk = existing.grad_wk^
+        self.grad_wv = existing.grad_wv^
+        self.grad_wo = existing.grad_wo^
+
+
+fn multi_head_attention_backward(
+    grad_output: ExTensor,
+    query: ExTensor,
+    key: ExTensor,
+    value: ExTensor,
+    weights: MultiHeadAttentionWeights,
+    attention_weights: ExTensor,
+    num_heads: Int,
+) raises -> MultiHeadAttentionBackwardResult:
+    """Backward pass for multi-head attention.
+
+    Computes gradients with respect to all inputs and weight matrices.
+
+    Args:
+        `grad_output`: Gradient w.r.t. output (batch, seq_len, d_model)
+        `query`: Original query tensor (batch, seq_len, d_model)
+        `key`: Original key tensor (batch, seq_len, d_model)
+        `value`: Original value tensor (batch, seq_len, d_model)
+        `weights`: MultiHeadAttentionWeights used in forward pass
+        `attention_weights`: Attention weights from forward pass
+        `num_heads`: Number of attention heads
+
+    Returns:
+        MultiHeadAttentionBackwardResult containing gradients for all inputs/weights.
+
+    Note:
+        Caller must save attention_weights from forward pass.
+        Pure functional: returns new tensors, does not modify inputs.
+    """
+    var q_shape = query.shape()
+    var batch = q_shape[0]
+    var seq_len = q_shape[1]
+    var d_model = q_shape[2]
+    var d_k = d_model // num_heads
+
+    # Recompute projections for backward
+    var q_proj = matmul(query, weights.wq)
+    var k_proj = matmul(key, weights.wk)
+    var v_proj = matmul(value, weights.wv)
+
+    var q_heads = _reshape_for_heads(q_proj, batch, seq_len, num_heads, d_k)
+    var k_heads = _reshape_for_heads(k_proj, batch, seq_len, num_heads, d_k)
+    var v_heads = _reshape_for_heads(v_proj, batch, seq_len, num_heads, d_k)
+
+    # Gradient through output projection: output = concat_heads @ Wo
+    # grad_concat_heads = grad_output @ Wo^T
+    var wo_t = transpose(weights.wo)
+    var grad_concat = matmul(grad_output, wo_t)
+
+    # grad_Wo = concat_heads^T @ grad_output
+    var attended = matmul(attention_weights, v_heads)
+    var concat_heads = _reshape_from_heads(attended, batch, seq_len, num_heads, d_k)
+    var concat_heads_t = transpose(concat_heads)
+    var grad_wo = matmul(concat_heads_t, grad_output)
+
+    # Reshape gradient for heads
+    var grad_attended = _reshape_for_heads(grad_concat, batch, seq_len, num_heads, d_k)
+
+    # Gradient through attention: attended = attention_weights @ v_heads
+    # grad_v_heads = attention_weights^T @ grad_attended
+    var attention_weights_t = transpose(attention_weights)
+    var grad_v_heads = matmul(attention_weights_t, grad_attended)
+
+    # grad_attention_weights = grad_attended @ v_heads^T
+    var v_heads_t = transpose(v_heads)
+    var grad_attn_weights = matmul(grad_attended, v_heads_t)
+
+    # Gradient through softmax
+    var grad_scaled_scores = _softmax_backward(grad_attn_weights, attention_weights)
+
+    # Gradient through scaling
+    var scale = Float64(1.0) / sqrt(Float64(d_k))
+    var scale_tensor = zeros_like(grad_scaled_scores)
+    var scale_ptr = scale_tensor._data
+    var numel = grad_scaled_scores.numel()
+
+    if grad_scaled_scores.dtype() == DType.float32:
+        var scale_f32 = Float32(scale)
+        for i in range(numel):
+            scale_ptr.bitcast[Float32]()[i] = scale_f32
+    else:
+        for i in range(numel):
+            scale_ptr.bitcast[Float64]()[i] = scale
+
+    var grad_scores = multiply(grad_scaled_scores, scale_tensor)
+
+    # Gradient through matmul: scores = q_heads @ k_heads^T
+    # grad_q_heads = grad_scores @ k_heads
+    var grad_q_heads = matmul(grad_scores, k_heads)
+
+    # grad_k_heads = grad_scores^T @ q_heads
+    var grad_scores_t = transpose(grad_scores)
+    var grad_k_heads = matmul(grad_scores_t, q_heads)
+
+    # Reshape gradients back to (batch, seq, d_model)
+    var grad_q_proj = _reshape_from_heads(grad_q_heads, batch, seq_len, num_heads, d_k)
+    var grad_k_proj = _reshape_from_heads(grad_k_heads, batch, seq_len, num_heads, d_k)
+    var grad_v_proj = _reshape_from_heads(grad_v_heads, batch, seq_len, num_heads, d_k)
+
+    # Gradient through input projections
+    # grad_query = grad_q_proj @ Wq^T
+    var wq_t = transpose(weights.wq)
+    var grad_query = matmul(grad_q_proj, wq_t)
+
+    var wk_t = transpose(weights.wk)
+    var grad_key = matmul(grad_k_proj, wk_t)
+
+    var wv_t = transpose(weights.wv)
+    var grad_value = matmul(grad_v_proj, wv_t)
+
+    # Gradient w.r.t. weight matrices
+    # grad_Wq = query^T @ grad_q_proj
+    var query_t = transpose(query)
+    var grad_wq = matmul(query_t, grad_q_proj)
+
+    var key_t = transpose(key)
+    var grad_wk = matmul(key_t, grad_k_proj)
+
+    var value_t = transpose(value)
+    var grad_wv = matmul(value_t, grad_v_proj)
+
+    return MultiHeadAttentionBackwardResult(
+        grad_query, grad_key, grad_value, grad_wq, grad_wk, grad_wv, grad_wo
+    )

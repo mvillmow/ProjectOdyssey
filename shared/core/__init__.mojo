@@ -234,6 +234,11 @@ from .attention import (
     scaled_dot_product_attention_backward,
     ScaledDotProductAttentionBackwardResult,
     create_causal_mask,
+    multi_head_attention,
+    multi_head_attention_backward,
+    MultiHeadAttentionWeights,
+    MultiHeadAttentionResult,
+    MultiHeadAttentionBackwardResult,
 )
 
 # ============================================================================
