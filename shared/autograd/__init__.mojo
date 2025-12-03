@@ -7,6 +7,8 @@ Core Components:
 - GradientTape: Operation recording and backward pass execution
 - NoGradContext: Context for disabling gradient computation
 - SGD: Stochastic gradient descent optimizer
+- Adam: Adaptive Moment Estimation optimizer
+- AdaGrad: Adaptive gradient descent optimizer
 - StepLR, ExponentialLR: Learning rate schedulers for adaptive decay
 - Variable operations: Tape-integrated ops (add, multiply, matmul, etc.)
 - Functional helpers: Practical gradient computation for common patterns
@@ -74,6 +76,8 @@ Status:
     ✅ NoGradContext for inference mode
     ✅ Functional gradient helpers (mse, bce, ce)
     ✅ SGD optimizer
+    ✅ Adam optimizer
+    ✅ AdaGrad optimizer
     ✅ Gradient clipping utilities (value, norm, global norm)
 
 References:
@@ -124,7 +128,7 @@ from .tape import (
     OP_SQRT,
 )
 
-from .optimizers import SGD, Adam
+from .optimizers import SGD, Adam, AdaGrad
 
 from .schedulers import (
     StepLR,

@@ -6,6 +6,7 @@ Each optimizer updates model parameters based on their gradients.
 Implemented optimizers:
 - SGD (Stochastic Gradient Descent): Basic gradient descent with optional momentum
 - Adam: Adaptive learning rate optimizer (Adaptive Moment Estimation)
+- AdaGrad: Adaptive Gradient optimizer with per-parameter learning rates
 - RMSprop: Root Mean Square Propagation (TODO)
 
 Usage Pattern:
@@ -35,7 +36,8 @@ Design Note:
 """
 
 from ..core.extensor import ExTensor
-from ..core.arithmetic import subtract, multiply, divide
+from ..core.arithmetic import subtract, multiply, divide, add
+from ..core.elementwise import sqrt
 from .variable import Variable
 from .tape import GradientTape
 from .functional import multiply_scalar, subtract_scalar, add_scalar
@@ -418,6 +420,181 @@ struct Adam:
         tape.registry.clear()
 
 
+struct AdaGrad:
+    """AdaGrad (Adaptive Gradient) optimizer.
+
+    Implements adaptive learning rate optimization based on accumulated squared
+    gradients:
+        G_t = G_{t-1} + g_t²              # Accumulated squared gradients
+        θ_t = θ_{t-1} - α * g_t / (√G_t + ε)  # Parameter update
+
+    Attributes:
+        learning_rate: Initial step size for parameter updates
+        epsilon: Small constant for numerical stability (default: 1e-10)
+        weight_decay: L2 regularization coefficient (default: 0.0)
+        G_buffers: Accumulated squared gradients for each parameter
+
+    Examples:
+        # Basic AdaGrad
+        var optimizer = AdaGrad(learning_rate=0.01)
+
+        # AdaGrad with weight decay
+        var optimizer = AdaGrad(learning_rate=0.01, weight_decay=1e-4)
+
+        # Training step
+        optimizer.step(parameters, tape)
+        optimizer.zero_grad(tape)
+    """
+
+    var learning_rate: Float64
+    var epsilon: Float64
+    var weight_decay: Float64
+    var G_buffers: Dict[Int, ExTensor]
+
+    fn __init__(
+        out self,
+        learning_rate: Float64,
+        epsilon: Float64 = 1e-10,
+        weight_decay: Float64 = 0.0,
+    ):
+        """Initialize AdaGrad optimizer.
+
+        Args:
+            learning_rate: Step size for parameter updates (α in literature)
+                          Typical values: 0.01, 0.001
+            epsilon: Small constant added to accumulated gradient for numerical
+                    stability (prevents division by zero)
+                    Default: 1e-10
+            weight_decay: L2 regularization coefficient
+                         0.0 = no weight decay
+                         1e-4 = typical value for regularization
+                         Default: 0.0
+
+        Examples:
+            var opt = AdaGrad(learning_rate=0.01)
+            var opt_reg = AdaGrad(learning_rate=0.01, weight_decay=1e-4)
+        """
+        self.learning_rate = learning_rate
+        self.epsilon = epsilon
+        self.weight_decay = weight_decay
+        self.G_buffers = Dict[Int, ExTensor]()
+
+    fn step(
+        self, mut parameters: List[Variable], mut tape: GradientTape
+    ) raises:
+        """Update parameters using AdaGrad adaptive learning rates.
+
+        Performs one step of AdaGrad optimization:
+            G_t = G_{t-1} + g_t²
+            θ_t = θ_{t-1} - α * g_t / (√G_t + ε)
+
+        Args:
+            parameters: List of Variables to update (model parameters)
+            tape: The gradient tape containing computed gradients
+
+        Note:
+            This method accumulates squared gradients in G_buffers.
+            Parameters without gradients in the tape are skipped.
+            The G_buffers are not reset by zero_grad() - they persist
+            across optimization steps.
+
+        Raises:
+            Error if any parameter has incompatible gradient shape
+
+        Examples:
+            # After backward pass
+            loss.backward(tape)
+
+            # Update all parameters with adaptive learning rates
+            optimizer.step(model.parameters(), tape)
+        """
+        for i in range(len(parameters)):
+            # Skip parameters that don't require gradients
+            if not parameters[i].requires_grad:
+                continue
+
+            # Skip if no gradient has been computed
+            var param_id = parameters[i].id
+            if not tape.registry.has_gradient(param_id):
+                continue
+
+            # Get the gradient for this parameter
+            var grad = tape.registry.get_grad(param_id)
+
+            # Initialize or retrieve accumulated gradient buffer
+            var G = ExTensor(
+                parameters[i].data.shape(), parameters[i].data.dtype()
+            )
+            if i in self.G_buffers:
+                G = self.G_buffers[i]
+
+            # Accumulate squared gradient: G_t = G_{t-1} + g_t²
+            # grad_squared = grad * grad
+            var grad_squared = multiply(grad, grad)
+            # G = G + grad_squared
+            G = add(G, grad_squared)
+
+            # Store updated G buffer
+            self.G_buffers[i] = G^
+
+            # Compute adaptive learning rate: sqrt(G_t) + epsilon
+            # sqrt_g = sqrt(G)
+            var sqrt_g = sqrt(G)
+            # denominator = sqrt(G) + epsilon
+            var denominator = add_scalar(sqrt_g, self.epsilon)
+
+            # Compute scaled gradient: g_t / (√G_t + ε)
+            # adaptive_grad = grad / denominator
+            var adaptive_grad = divide(grad, denominator)
+
+            # Apply learning rate: lr * (g_t / (√G_t + ε))
+            var scaled_grad = multiply_scalar(adaptive_grad, self.learning_rate)
+
+            # Apply weight decay if specified
+            if self.weight_decay > 0.0:
+                var decay_term = multiply_scalar(
+                    parameters[i].data, self.weight_decay
+                )
+                scaled_grad = add(scaled_grad, decay_term)
+
+            # Update parameter: θ_t = θ_{t-1} - scaled_grad
+            var new_data = subtract(parameters[i].data, scaled_grad)
+
+            # Update the parameter's data
+            parameters[i].data = new_data^
+
+    fn zero_grad(self, mut tape: GradientTape):
+        """Reset all gradients in the tape.
+
+        Should be called after each optimizer step to clear gradients before
+        the next backward pass.
+
+        Note:
+            This does NOT clear the G_buffers (accumulated squared gradients).
+            AdaGrad maintains these accumulators across optimization steps.
+
+        Args:
+            tape: The gradient tape to clear
+
+        Examples:
+            # Clear gradients before next iteration
+            optimizer.zero_grad(tape)
+        """
+        # Clear the gradient registry
+        tape.registry.clear()
+
+    fn reset_accumulators(mut self):
+        """Reset accumulated squared gradient buffers.
+
+        Call this to clear the accumulated gradients if needed (e.g., when
+        starting a new training phase or to reduce numerical drift).
+
+        Examples:
+            # Clear accumulators before new training phase
+            optimizer.reset_accumulators()
+        """
+        self.G_buffers.clear()
+
+
 # Placeholder for future optimizers
 # TODO: Implement RMSprop optimizer
-# TODO: Implement AdaGrad optimizer
