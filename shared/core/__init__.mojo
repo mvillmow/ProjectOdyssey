@@ -377,5 +377,11 @@ from .reduction import (
     min_reduce_backward,
 )
 
+# ============================================================================
+# Module Interface for Layer Composition
+# ============================================================================
+
+from .module import Module
+
 # Note: Mojo does not support Python's __all__ mechanism.
 # All imported symbols are automatically available to package consumers.
