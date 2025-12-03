@@ -61,8 +61,82 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform
+from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.training.optimizers import sgd_momentum_update_inplace
 from shared.utils.serialization import save_tensor, load_tensor
+
+
+# ============================================================================
+# Architecture Hyperparameters
+# ============================================================================
+# All architecture dimensions are defined here for easy modification.
+# VGG-16 uses uniform 3x3 convolutions with padding=1 (preserving size),
+# followed by 2x2 max pooling with stride=2 (halving size).
+
+# Input dimensions (CIFAR-10)
+alias INPUT_HEIGHT = 32
+alias INPUT_WIDTH = 32
+alias INPUT_CHANNELS = 3
+
+# VGG-16 uses uniform conv parameters: 3x3 kernel, stride=1, padding=1
+alias CONV_KERNEL_SIZE = 3
+alias CONV_STRIDE = 1
+alias CONV_PADDING = 1
+
+# VGG-16 uses uniform pool parameters: 2x2 kernel, stride=2, padding=0
+alias POOL_KERNEL_SIZE = 2
+alias POOL_STRIDE = 2
+alias POOL_PADDING = 0
+
+# Block 1 channel sizes
+alias BLOCK1_CHANNELS = 64
+
+# Block 2 channel sizes
+alias BLOCK2_CHANNELS = 128
+
+# Block 3 channel sizes
+alias BLOCK3_CHANNELS = 256
+
+# Block 4 channel sizes
+alias BLOCK4_CHANNELS = 512
+
+# Block 5 channel sizes
+alias BLOCK5_CHANNELS = 512
+
+# Fully connected layer sizes
+alias FC1_OUT_FEATURES = 512
+alias FC2_OUT_FEATURES = 512
+
+
+fn compute_flattened_size() -> Int:
+    """Compute the flattened feature size after all conv/pool layers.
+
+    VGG-16 uses 5 pooling layers, each halving spatial dimensions:
+    32 -> 16 -> 8 -> 4 -> 2 -> 1
+
+    Returns:
+        Number of features after flattening (channels * height * width)
+    """
+    # VGG-16: Each block has 3x3 convs with padding=1 (size preserved)
+    # followed by 2x2 pool with stride=2 (size halved)
+    var h, w = INPUT_HEIGHT, INPUT_WIDTH
+
+    # After Block 1 pool: 32 -> 16
+    h, w = pool_output_shape(h, w, POOL_KERNEL_SIZE, POOL_STRIDE, POOL_PADDING)
+
+    # After Block 2 pool: 16 -> 8
+    h, w = pool_output_shape(h, w, POOL_KERNEL_SIZE, POOL_STRIDE, POOL_PADDING)
+
+    # After Block 3 pool: 8 -> 4
+    h, w = pool_output_shape(h, w, POOL_KERNEL_SIZE, POOL_STRIDE, POOL_PADDING)
+
+    # After Block 4 pool: 4 -> 2
+    h, w = pool_output_shape(h, w, POOL_KERNEL_SIZE, POOL_STRIDE, POOL_PADDING)
+
+    # After Block 5 pool: 2 -> 1
+    h, w = pool_output_shape(h, w, POOL_KERNEL_SIZE, POOL_STRIDE, POOL_PADDING)
+
+    return BLOCK5_CHANNELS * h * w
 
 
 struct VGG16:
@@ -148,7 +222,9 @@ struct VGG16:
     var fc3_weights: ExTensor
     var fc3_bias: ExTensor
 
-    fn __init__(out self, num_classes: Int = 10, dropout_rate: Float32 = 0.5) raises:
+    fn __init__(
+        out self, num_classes: Int = 10, dropout_rate: Float32 = 0.5
+    ) raises:
         """Initialize VGG-16 model with random weights.
 
         Args:
@@ -158,58 +234,170 @@ struct VGG16:
         self.num_classes = num_classes
         self.dropout_rate = dropout_rate
 
-        # Block 1: Input channels=3 (RGB), output channels=64
-        self.conv1_1_kernel = he_uniform(List[Int](64, 3, 3, 3), DType.float32)
-        self.conv1_1_bias = zeros(List[Int](64), DType.float32)
-        self.conv1_2_kernel = he_uniform(List[Int](64, 64, 3, 3), DType.float32)
-        self.conv1_2_bias = zeros(List[Int](64), DType.float32)
+        # Compute derived dimensions using shared shape utilities
+        var flattened_size = compute_flattened_size()
 
-        # Block 2: Input channels=64, output channels=128
-        self.conv2_1_kernel = he_uniform(List[Int](128, 64, 3, 3), DType.float32)
-        self.conv2_1_bias = zeros(List[Int](128), DType.float32)
-        self.conv2_2_kernel = he_uniform(List[Int](128, 128, 3, 3), DType.float32)
-        self.conv2_2_bias = zeros(List[Int](128), DType.float32)
+        # Block 1: INPUT_CHANNELS -> BLOCK1_CHANNELS
+        self.conv1_1_kernel = he_uniform(
+            List[Int](
+                BLOCK1_CHANNELS,
+                INPUT_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv1_1_bias = zeros(List[Int](BLOCK1_CHANNELS), DType.float32)
+        self.conv1_2_kernel = he_uniform(
+            List[Int](
+                BLOCK1_CHANNELS,
+                BLOCK1_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv1_2_bias = zeros(List[Int](BLOCK1_CHANNELS), DType.float32)
 
-        # Block 3: Input channels=128, output channels=256
-        self.conv3_1_kernel = he_uniform(List[Int](256, 128, 3, 3), DType.float32)
-        self.conv3_1_bias = zeros(List[Int](256), DType.float32)
-        self.conv3_2_kernel = he_uniform(List[Int](256, 256, 3, 3), DType.float32)
-        self.conv3_2_bias = zeros(List[Int](256), DType.float32)
-        self.conv3_3_kernel = he_uniform(List[Int](256, 256, 3, 3), DType.float32)
-        self.conv3_3_bias = zeros(List[Int](256), DType.float32)
+        # Block 2: BLOCK1_CHANNELS -> BLOCK2_CHANNELS
+        self.conv2_1_kernel = he_uniform(
+            List[Int](
+                BLOCK2_CHANNELS,
+                BLOCK1_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv2_1_bias = zeros(List[Int](BLOCK2_CHANNELS), DType.float32)
+        self.conv2_2_kernel = he_uniform(
+            List[Int](
+                BLOCK2_CHANNELS,
+                BLOCK2_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv2_2_bias = zeros(List[Int](BLOCK2_CHANNELS), DType.float32)
 
-        # Block 4: Input channels=256, output channels=512
-        self.conv4_1_kernel = he_uniform(List[Int](512, 256, 3, 3), DType.float32)
-        self.conv4_1_bias = zeros(List[Int](512), DType.float32)
-        self.conv4_2_kernel = he_uniform(List[Int](512, 512, 3, 3), DType.float32)
-        self.conv4_2_bias = zeros(List[Int](512), DType.float32)
-        self.conv4_3_kernel = he_uniform(List[Int](512, 512, 3, 3), DType.float32)
-        self.conv4_3_bias = zeros(List[Int](512), DType.float32)
+        # Block 3: BLOCK2_CHANNELS -> BLOCK3_CHANNELS
+        self.conv3_1_kernel = he_uniform(
+            List[Int](
+                BLOCK3_CHANNELS,
+                BLOCK2_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv3_1_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
+        self.conv3_2_kernel = he_uniform(
+            List[Int](
+                BLOCK3_CHANNELS,
+                BLOCK3_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv3_2_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
+        self.conv3_3_kernel = he_uniform(
+            List[Int](
+                BLOCK3_CHANNELS,
+                BLOCK3_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv3_3_bias = zeros(List[Int](BLOCK3_CHANNELS), DType.float32)
 
-        # Block 5: Input channels=512, output channels=512
-        self.conv5_1_kernel = he_uniform(List[Int](512, 512, 3, 3), DType.float32)
-        self.conv5_1_bias = zeros(List[Int](512), DType.float32)
-        self.conv5_2_kernel = he_uniform(List[Int](512, 512, 3, 3), DType.float32)
-        self.conv5_2_bias = zeros(List[Int](512), DType.float32)
-        self.conv5_3_kernel = he_uniform(List[Int](512, 512, 3, 3), DType.float32)
-        self.conv5_3_bias = zeros(List[Int](512), DType.float32)
+        # Block 4: BLOCK3_CHANNELS -> BLOCK4_CHANNELS
+        self.conv4_1_kernel = he_uniform(
+            List[Int](
+                BLOCK4_CHANNELS,
+                BLOCK3_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv4_1_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
+        self.conv4_2_kernel = he_uniform(
+            List[Int](
+                BLOCK4_CHANNELS,
+                BLOCK4_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv4_2_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
+        self.conv4_3_kernel = he_uniform(
+            List[Int](
+                BLOCK4_CHANNELS,
+                BLOCK4_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv4_3_bias = zeros(List[Int](BLOCK4_CHANNELS), DType.float32)
 
-        # After all conv blocks + pools: 32 -> 16 -> 8 -> 4 -> 2 -> 1
-        # Flattened size: 512 * 1 * 1 = 512
+        # Block 5: BLOCK4_CHANNELS -> BLOCK5_CHANNELS
+        self.conv5_1_kernel = he_uniform(
+            List[Int](
+                BLOCK5_CHANNELS,
+                BLOCK4_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv5_1_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
+        self.conv5_2_kernel = he_uniform(
+            List[Int](
+                BLOCK5_CHANNELS,
+                BLOCK5_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv5_2_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
+        self.conv5_3_kernel = he_uniform(
+            List[Int](
+                BLOCK5_CHANNELS,
+                BLOCK5_CHANNELS,
+                CONV_KERNEL_SIZE,
+                CONV_KERNEL_SIZE,
+            ),
+            DType.float32,
+        )
+        self.conv5_3_bias = zeros(List[Int](BLOCK5_CHANNELS), DType.float32)
 
-        # FC1: 512 -> 512
-        self.fc1_weights = he_uniform(List[Int](512, 512), DType.float32)
-        self.fc1_bias = zeros(List[Int](512), DType.float32)
+        # FC1: flattened_size -> FC1_OUT_FEATURES (derived from conv/pool layers)
+        self.fc1_weights = he_uniform(
+            List[Int](FC1_OUT_FEATURES, flattened_size), DType.float32
+        )
+        self.fc1_bias = zeros(List[Int](FC1_OUT_FEATURES), DType.float32)
 
-        # FC2: 512 -> 512
-        self.fc2_weights = he_uniform(List[Int](512, 512), DType.float32)
-        self.fc2_bias = zeros(List[Int](512), DType.float32)
+        # FC2: FC1_OUT_FEATURES -> FC2_OUT_FEATURES
+        self.fc2_weights = he_uniform(
+            List[Int](FC2_OUT_FEATURES, FC1_OUT_FEATURES), DType.float32
+        )
+        self.fc2_bias = zeros(List[Int](FC2_OUT_FEATURES), DType.float32)
 
-        # FC3: 512 -> num_classes
-        self.fc3_weights = he_uniform(List[Int](num_classes, 512), DType.float32)
+        # FC3: FC2_OUT_FEATURES -> num_classes
+        self.fc3_weights = he_uniform(
+            List[Int](num_classes, FC2_OUT_FEATURES), DType.float32
+        )
         self.fc3_bias = zeros(List[Int](num_classes), DType.float32)
 
-    fn forward(mut self, input: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(
+        mut self, input: ExTensor, training: Bool = True
+    ) raises -> ExTensor:
         """Forward pass through VGG-16.
 
         Args:
@@ -220,45 +408,148 @@ struct VGG16:
             Output logits of shape (batch, num_classes)
         """
         # Block 1: Conv -> ReLU -> Conv -> ReLU -> MaxPool
-        var conv1_1 = conv2d(input, self.conv1_1_kernel, self.conv1_1_bias, stride=1, padding=1)
+        var conv1_1 = conv2d(
+            input,
+            self.conv1_1_kernel,
+            self.conv1_1_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu1_1 = relu(conv1_1)
-        var conv1_2 = conv2d(relu1_1, self.conv1_2_kernel, self.conv1_2_bias, stride=1, padding=1)
+        var conv1_2 = conv2d(
+            relu1_1,
+            self.conv1_2_kernel,
+            self.conv1_2_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu1_2 = relu(conv1_2)
-        var pool1 = maxpool2d(relu1_2, kernel_size=2, stride=2, padding=0)  # 32x32 -> 16x16
+        var pool1 = maxpool2d(
+            relu1_2,
+            kernel_size=POOL_KERNEL_SIZE,
+            stride=POOL_STRIDE,
+            padding=POOL_PADDING,
+        )  # 32x32 -> 16x16
 
         # Block 2: Conv -> ReLU -> Conv -> ReLU -> MaxPool
-        var conv2_1 = conv2d(pool1, self.conv2_1_kernel, self.conv2_1_bias, stride=1, padding=1)
+        var conv2_1 = conv2d(
+            pool1,
+            self.conv2_1_kernel,
+            self.conv2_1_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu2_1 = relu(conv2_1)
-        var conv2_2 = conv2d(relu2_1, self.conv2_2_kernel, self.conv2_2_bias, stride=1, padding=1)
+        var conv2_2 = conv2d(
+            relu2_1,
+            self.conv2_2_kernel,
+            self.conv2_2_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu2_2 = relu(conv2_2)
-        var pool2 = maxpool2d(relu2_2, kernel_size=2, stride=2, padding=0)  # 16x16 -> 8x8
+        var pool2 = maxpool2d(
+            relu2_2,
+            kernel_size=POOL_KERNEL_SIZE,
+            stride=POOL_STRIDE,
+            padding=POOL_PADDING,
+        )  # 16x16 -> 8x8
 
         # Block 3: Conv -> ReLU -> Conv -> ReLU -> Conv -> ReLU -> MaxPool
-        var conv3_1 = conv2d(pool2, self.conv3_1_kernel, self.conv3_1_bias, stride=1, padding=1)
+        var conv3_1 = conv2d(
+            pool2,
+            self.conv3_1_kernel,
+            self.conv3_1_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu3_1 = relu(conv3_1)
-        var conv3_2 = conv2d(relu3_1, self.conv3_2_kernel, self.conv3_2_bias, stride=1, padding=1)
+        var conv3_2 = conv2d(
+            relu3_1,
+            self.conv3_2_kernel,
+            self.conv3_2_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu3_2 = relu(conv3_2)
-        var conv3_3 = conv2d(relu3_2, self.conv3_3_kernel, self.conv3_3_bias, stride=1, padding=1)
+        var conv3_3 = conv2d(
+            relu3_2,
+            self.conv3_3_kernel,
+            self.conv3_3_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu3_3 = relu(conv3_3)
-        var pool3 = maxpool2d(relu3_3, kernel_size=2, stride=2, padding=0)  # 8x8 -> 4x4
+        var pool3 = maxpool2d(
+            relu3_3,
+            kernel_size=POOL_KERNEL_SIZE,
+            stride=POOL_STRIDE,
+            padding=POOL_PADDING,
+        )  # 8x8 -> 4x4
 
         # Block 4: Conv -> ReLU -> Conv -> ReLU -> Conv -> ReLU -> MaxPool
-        var conv4_1 = conv2d(pool3, self.conv4_1_kernel, self.conv4_1_bias, stride=1, padding=1)
+        var conv4_1 = conv2d(
+            pool3,
+            self.conv4_1_kernel,
+            self.conv4_1_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu4_1 = relu(conv4_1)
-        var conv4_2 = conv2d(relu4_1, self.conv4_2_kernel, self.conv4_2_bias, stride=1, padding=1)
+        var conv4_2 = conv2d(
+            relu4_1,
+            self.conv4_2_kernel,
+            self.conv4_2_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu4_2 = relu(conv4_2)
-        var conv4_3 = conv2d(relu4_2, self.conv4_3_kernel, self.conv4_3_bias, stride=1, padding=1)
+        var conv4_3 = conv2d(
+            relu4_2,
+            self.conv4_3_kernel,
+            self.conv4_3_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu4_3 = relu(conv4_3)
-        var pool4 = maxpool2d(relu4_3, kernel_size=2, stride=2, padding=0)  # 4x4 -> 2x2
+        var pool4 = maxpool2d(
+            relu4_3,
+            kernel_size=POOL_KERNEL_SIZE,
+            stride=POOL_STRIDE,
+            padding=POOL_PADDING,
+        )  # 4x4 -> 2x2
 
         # Block 5: Conv -> ReLU -> Conv -> ReLU -> Conv -> ReLU -> MaxPool
-        var conv5_1 = conv2d(pool4, self.conv5_1_kernel, self.conv5_1_bias, stride=1, padding=1)
+        var conv5_1 = conv2d(
+            pool4,
+            self.conv5_1_kernel,
+            self.conv5_1_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu5_1 = relu(conv5_1)
-        var conv5_2 = conv2d(relu5_1, self.conv5_2_kernel, self.conv5_2_bias, stride=1, padding=1)
+        var conv5_2 = conv2d(
+            relu5_1,
+            self.conv5_2_kernel,
+            self.conv5_2_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu5_2 = relu(conv5_2)
-        var conv5_3 = conv2d(relu5_2, self.conv5_3_kernel, self.conv5_3_bias, stride=1, padding=1)
+        var conv5_3 = conv2d(
+            relu5_2,
+            self.conv5_3_kernel,
+            self.conv5_3_bias,
+            stride=CONV_STRIDE,
+            padding=CONV_PADDING,
+        )
         var relu5_3 = relu(conv5_3)
-        var pool5 = maxpool2d(relu5_3, kernel_size=2, stride=2, padding=0)  # 2x2 -> 1x1
+        var pool5 = maxpool2d(
+            relu5_3,
+            kernel_size=POOL_KERNEL_SIZE,
+            stride=POOL_STRIDE,
+            padding=POOL_PADDING,
+        )  # 2x2 -> 1x1
 
         # Flatten: (batch, 512, 1, 1) -> (batch, 512)
         var pool5_shape = pool5.shape()
@@ -273,16 +564,18 @@ struct VGG16:
         # FC1 + ReLU + Dropout
         var fc1 = linear(flattened, self.fc1_weights, self.fc1_bias)
         var relu_fc1 = relu(fc1)
-        var drop1 = relu_fc1  # Will be replaced by dropout in training
-        if training:
-            drop1 = dropout(relu_fc1, self.dropout_rate)
+        var drop1_result = dropout(
+            relu_fc1, Float64(self.dropout_rate), training
+        )
+        var drop1 = drop1_result[0]
 
         # FC2 + ReLU + Dropout
         var fc2 = linear(drop1, self.fc2_weights, self.fc2_bias)
         var relu_fc2 = relu(fc2)
-        var drop2 = relu_fc2  # Will be replaced by dropout in training
-        if training:
-            drop2 = dropout(relu_fc2, self.dropout_rate)
+        var drop2_result = dropout(
+            relu_fc2, Float64(self.dropout_rate), training
+        )
+        var drop2 = drop2_result[0]
 
         # FC3 (output logits)
         var output = linear(drop2, self.fc3_weights, self.fc3_bias)
@@ -323,130 +616,246 @@ struct VGG16:
             - conv1_1_kernel.weights, conv1_1_bias.weights, etc.
         """
         # Save Block 1
-        save_tensor(self.conv1_1_kernel, weights_dir + "/conv1_1_kernel.weights", "conv1_1_kernel")
-        save_tensor(self.conv1_1_bias, weights_dir + "/conv1_1_bias.weights", "conv1_1_bias")
-        save_tensor(self.conv1_2_kernel, weights_dir + "/conv1_2_kernel.weights", "conv1_2_kernel")
-        save_tensor(self.conv1_2_bias, weights_dir + "/conv1_2_bias.weights", "conv1_2_bias")
+        save_tensor(
+            self.conv1_1_kernel,
+            weights_dir + "/conv1_1_kernel.weights",
+            "conv1_1_kernel",
+        )
+        save_tensor(
+            self.conv1_1_bias,
+            weights_dir + "/conv1_1_bias.weights",
+            "conv1_1_bias",
+        )
+        save_tensor(
+            self.conv1_2_kernel,
+            weights_dir + "/conv1_2_kernel.weights",
+            "conv1_2_kernel",
+        )
+        save_tensor(
+            self.conv1_2_bias,
+            weights_dir + "/conv1_2_bias.weights",
+            "conv1_2_bias",
+        )
 
         # Save Block 2
-        save_tensor(self.conv2_1_kernel, weights_dir + "/conv2_1_kernel.weights", "conv2_1_kernel")
-        save_tensor(self.conv2_1_bias, weights_dir + "/conv2_1_bias.weights", "conv2_1_bias")
-        save_tensor(self.conv2_2_kernel, weights_dir + "/conv2_2_kernel.weights", "conv2_2_kernel")
-        save_tensor(self.conv2_2_bias, weights_dir + "/conv2_2_bias.weights", "conv2_2_bias")
+        save_tensor(
+            self.conv2_1_kernel,
+            weights_dir + "/conv2_1_kernel.weights",
+            "conv2_1_kernel",
+        )
+        save_tensor(
+            self.conv2_1_bias,
+            weights_dir + "/conv2_1_bias.weights",
+            "conv2_1_bias",
+        )
+        save_tensor(
+            self.conv2_2_kernel,
+            weights_dir + "/conv2_2_kernel.weights",
+            "conv2_2_kernel",
+        )
+        save_tensor(
+            self.conv2_2_bias,
+            weights_dir + "/conv2_2_bias.weights",
+            "conv2_2_bias",
+        )
 
         # Save Block 3
-        save_tensor(self.conv3_1_kernel, weights_dir + "/conv3_1_kernel.weights", "conv3_1_kernel")
-        save_tensor(self.conv3_1_bias, weights_dir + "/conv3_1_bias.weights", "conv3_1_bias")
-        save_tensor(self.conv3_2_kernel, weights_dir + "/conv3_2_kernel.weights", "conv3_2_kernel")
-        save_tensor(self.conv3_2_bias, weights_dir + "/conv3_2_bias.weights", "conv3_2_bias")
-        save_tensor(self.conv3_3_kernel, weights_dir + "/conv3_3_kernel.weights", "conv3_3_kernel")
-        save_tensor(self.conv3_3_bias, weights_dir + "/conv3_3_bias.weights", "conv3_3_bias")
+        save_tensor(
+            self.conv3_1_kernel,
+            weights_dir + "/conv3_1_kernel.weights",
+            "conv3_1_kernel",
+        )
+        save_tensor(
+            self.conv3_1_bias,
+            weights_dir + "/conv3_1_bias.weights",
+            "conv3_1_bias",
+        )
+        save_tensor(
+            self.conv3_2_kernel,
+            weights_dir + "/conv3_2_kernel.weights",
+            "conv3_2_kernel",
+        )
+        save_tensor(
+            self.conv3_2_bias,
+            weights_dir + "/conv3_2_bias.weights",
+            "conv3_2_bias",
+        )
+        save_tensor(
+            self.conv3_3_kernel,
+            weights_dir + "/conv3_3_kernel.weights",
+            "conv3_3_kernel",
+        )
+        save_tensor(
+            self.conv3_3_bias,
+            weights_dir + "/conv3_3_bias.weights",
+            "conv3_3_bias",
+        )
 
         # Save Block 4
-        save_tensor(self.conv4_1_kernel, weights_dir + "/conv4_1_kernel.weights", "conv4_1_kernel")
-        save_tensor(self.conv4_1_bias, weights_dir + "/conv4_1_bias.weights", "conv4_1_bias")
-        save_tensor(self.conv4_2_kernel, weights_dir + "/conv4_2_kernel.weights", "conv4_2_kernel")
-        save_tensor(self.conv4_2_bias, weights_dir + "/conv4_2_bias.weights", "conv4_2_bias")
-        save_tensor(self.conv4_3_kernel, weights_dir + "/conv4_3_kernel.weights", "conv4_3_kernel")
-        save_tensor(self.conv4_3_bias, weights_dir + "/conv4_3_bias.weights", "conv4_3_bias")
+        save_tensor(
+            self.conv4_1_kernel,
+            weights_dir + "/conv4_1_kernel.weights",
+            "conv4_1_kernel",
+        )
+        save_tensor(
+            self.conv4_1_bias,
+            weights_dir + "/conv4_1_bias.weights",
+            "conv4_1_bias",
+        )
+        save_tensor(
+            self.conv4_2_kernel,
+            weights_dir + "/conv4_2_kernel.weights",
+            "conv4_2_kernel",
+        )
+        save_tensor(
+            self.conv4_2_bias,
+            weights_dir + "/conv4_2_bias.weights",
+            "conv4_2_bias",
+        )
+        save_tensor(
+            self.conv4_3_kernel,
+            weights_dir + "/conv4_3_kernel.weights",
+            "conv4_3_kernel",
+        )
+        save_tensor(
+            self.conv4_3_bias,
+            weights_dir + "/conv4_3_bias.weights",
+            "conv4_3_bias",
+        )
 
         # Save Block 5
-        save_tensor(self.conv5_1_kernel, weights_dir + "/conv5_1_kernel.weights", "conv5_1_kernel")
-        save_tensor(self.conv5_1_bias, weights_dir + "/conv5_1_bias.weights", "conv5_1_bias")
-        save_tensor(self.conv5_2_kernel, weights_dir + "/conv5_2_kernel.weights", "conv5_2_kernel")
-        save_tensor(self.conv5_2_bias, weights_dir + "/conv5_2_bias.weights", "conv5_2_bias")
-        save_tensor(self.conv5_3_kernel, weights_dir + "/conv5_3_kernel.weights", "conv5_3_kernel")
-        save_tensor(self.conv5_3_bias, weights_dir + "/conv5_3_bias.weights", "conv5_3_bias")
+        save_tensor(
+            self.conv5_1_kernel,
+            weights_dir + "/conv5_1_kernel.weights",
+            "conv5_1_kernel",
+        )
+        save_tensor(
+            self.conv5_1_bias,
+            weights_dir + "/conv5_1_bias.weights",
+            "conv5_1_bias",
+        )
+        save_tensor(
+            self.conv5_2_kernel,
+            weights_dir + "/conv5_2_kernel.weights",
+            "conv5_2_kernel",
+        )
+        save_tensor(
+            self.conv5_2_bias,
+            weights_dir + "/conv5_2_bias.weights",
+            "conv5_2_bias",
+        )
+        save_tensor(
+            self.conv5_3_kernel,
+            weights_dir + "/conv5_3_kernel.weights",
+            "conv5_3_kernel",
+        )
+        save_tensor(
+            self.conv5_3_bias,
+            weights_dir + "/conv5_3_bias.weights",
+            "conv5_3_bias",
+        )
 
         # Save FC layers
-        save_tensor(self.fc1_weights, weights_dir + "/fc1_weights.weights", "fc1_weights")
-        save_tensor(self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias")
-        save_tensor(self.fc2_weights, weights_dir + "/fc2_weights.weights", "fc2_weights")
-        save_tensor(self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias")
-        save_tensor(self.fc3_weights, weights_dir + "/fc3_weights.weights", "fc3_weights")
-        save_tensor(self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias")
+        save_tensor(
+            self.fc1_weights,
+            weights_dir + "/fc1_weights.weights",
+            "fc1_weights",
+        )
+        save_tensor(
+            self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias"
+        )
+        save_tensor(
+            self.fc2_weights,
+            weights_dir + "/fc2_weights.weights",
+            "fc2_weights",
+        )
+        save_tensor(
+            self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias"
+        )
+        save_tensor(
+            self.fc3_weights,
+            weights_dir + "/fc3_weights.weights",
+            "fc3_weights",
+        )
+        save_tensor(
+            self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias"
+        )
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
 
         Args:
-            weights_dir: Directory containing weight files
+            weights_dir: Directory containing weight files.
 
         Raises:
-            Error: If weight files are missing or have incompatible shapes
+            Error: If weight files are missing or have incompatible shapes.
         """
         # Load Block 1
-        var r1 = load_tensor(weights_dir + "/conv1_1_kernel.weights")
-        self.conv1_1_kernel = r1[1]^
-        var r2 = load_tensor(weights_dir + "/conv1_1_bias.weights")
-        self.conv1_1_bias = r2[1]^
-        var r3 = load_tensor(weights_dir + "/conv1_2_kernel.weights")
-        self.conv1_2_kernel = r3[1]^
-        var r4 = load_tensor(weights_dir + "/conv1_2_bias.weights")
-        self.conv1_2_bias = r4[1]^
+        self.conv1_1_kernel = load_tensor(
+            weights_dir + "/conv1_1_kernel.weights"
+        )
+        self.conv1_1_bias = load_tensor(weights_dir + "/conv1_1_bias.weights")
+        self.conv1_2_kernel = load_tensor(
+            weights_dir + "/conv1_2_kernel.weights"
+        )
+        self.conv1_2_bias = load_tensor(weights_dir + "/conv1_2_bias.weights")
 
         # Load Block 2
-        var r5 = load_tensor(weights_dir + "/conv2_1_kernel.weights")
-        self.conv2_1_kernel = r5[1]^
-        var r6 = load_tensor(weights_dir + "/conv2_1_bias.weights")
-        self.conv2_1_bias = r6[1]^
-        var r7 = load_tensor(weights_dir + "/conv2_2_kernel.weights")
-        self.conv2_2_kernel = r7[1]^
-        var r8 = load_tensor(weights_dir + "/conv2_2_bias.weights")
-        self.conv2_2_bias = r8[1]^
+        self.conv2_1_kernel = load_tensor(
+            weights_dir + "/conv2_1_kernel.weights"
+        )
+        self.conv2_1_bias = load_tensor(weights_dir + "/conv2_1_bias.weights")
+        self.conv2_2_kernel = load_tensor(
+            weights_dir + "/conv2_2_kernel.weights"
+        )
+        self.conv2_2_bias = load_tensor(weights_dir + "/conv2_2_bias.weights")
 
         # Load Block 3
-        var r9 = load_tensor(weights_dir + "/conv3_1_kernel.weights")
-        self.conv3_1_kernel = r9[1]^
-        var r10 = load_tensor(weights_dir + "/conv3_1_bias.weights")
-        self.conv3_1_bias = r10[1]^
-        var r11 = load_tensor(weights_dir + "/conv3_2_kernel.weights")
-        self.conv3_2_kernel = r11[1]^
-        var r12 = load_tensor(weights_dir + "/conv3_2_bias.weights")
-        self.conv3_2_bias = r12[1]^
-        var r13 = load_tensor(weights_dir + "/conv3_3_kernel.weights")
-        self.conv3_3_kernel = r13[1]^
-        var r14 = load_tensor(weights_dir + "/conv3_3_bias.weights")
-        self.conv3_3_bias = r14[1]^
+        self.conv3_1_kernel = load_tensor(
+            weights_dir + "/conv3_1_kernel.weights"
+        )
+        self.conv3_1_bias = load_tensor(weights_dir + "/conv3_1_bias.weights")
+        self.conv3_2_kernel = load_tensor(
+            weights_dir + "/conv3_2_kernel.weights"
+        )
+        self.conv3_2_bias = load_tensor(weights_dir + "/conv3_2_bias.weights")
+        self.conv3_3_kernel = load_tensor(
+            weights_dir + "/conv3_3_kernel.weights"
+        )
+        self.conv3_3_bias = load_tensor(weights_dir + "/conv3_3_bias.weights")
 
         # Load Block 4
-        var r15 = load_tensor(weights_dir + "/conv4_1_kernel.weights")
-        self.conv4_1_kernel = r15[1]^
-        var r16 = load_tensor(weights_dir + "/conv4_1_bias.weights")
-        self.conv4_1_bias = r16[1]^
-        var r17 = load_tensor(weights_dir + "/conv4_2_kernel.weights")
-        self.conv4_2_kernel = r17[1]^
-        var r18 = load_tensor(weights_dir + "/conv4_2_bias.weights")
-        self.conv4_2_bias = r18[1]^
-        var r19 = load_tensor(weights_dir + "/conv4_3_kernel.weights")
-        self.conv4_3_kernel = r19[1]^
-        var r20 = load_tensor(weights_dir + "/conv4_3_bias.weights")
-        self.conv4_3_bias = r20[1]^
+        self.conv4_1_kernel = load_tensor(
+            weights_dir + "/conv4_1_kernel.weights"
+        )
+        self.conv4_1_bias = load_tensor(weights_dir + "/conv4_1_bias.weights")
+        self.conv4_2_kernel = load_tensor(
+            weights_dir + "/conv4_2_kernel.weights"
+        )
+        self.conv4_2_bias = load_tensor(weights_dir + "/conv4_2_bias.weights")
+        self.conv4_3_kernel = load_tensor(
+            weights_dir + "/conv4_3_kernel.weights"
+        )
+        self.conv4_3_bias = load_tensor(weights_dir + "/conv4_3_bias.weights")
 
         # Load Block 5
-        var r21 = load_tensor(weights_dir + "/conv5_1_kernel.weights")
-        self.conv5_1_kernel = r21[1]^
-        var r22 = load_tensor(weights_dir + "/conv5_1_bias.weights")
-        self.conv5_1_bias = r22[1]^
-        var r23 = load_tensor(weights_dir + "/conv5_2_kernel.weights")
-        self.conv5_2_kernel = r23[1]^
-        var r24 = load_tensor(weights_dir + "/conv5_2_bias.weights")
-        self.conv5_2_bias = r24[1]^
-        var r25 = load_tensor(weights_dir + "/conv5_3_kernel.weights")
-        self.conv5_3_kernel = r25[1]^
-        var r26 = load_tensor(weights_dir + "/conv5_3_bias.weights")
-        self.conv5_3_bias = r26[1]^
+        self.conv5_1_kernel = load_tensor(
+            weights_dir + "/conv5_1_kernel.weights"
+        )
+        self.conv5_1_bias = load_tensor(weights_dir + "/conv5_1_bias.weights")
+        self.conv5_2_kernel = load_tensor(
+            weights_dir + "/conv5_2_kernel.weights"
+        )
+        self.conv5_2_bias = load_tensor(weights_dir + "/conv5_2_bias.weights")
+        self.conv5_3_kernel = load_tensor(
+            weights_dir + "/conv5_3_kernel.weights"
+        )
+        self.conv5_3_bias = load_tensor(weights_dir + "/conv5_3_bias.weights")
 
         # Load FC layers
-        var r27 = load_tensor(weights_dir + "/fc1_weights.weights")
-        self.fc1_weights = r27[1]^
-        var r28 = load_tensor(weights_dir + "/fc1_bias.weights")
-        self.fc1_bias = r28[1]^
-        var r29 = load_tensor(weights_dir + "/fc2_weights.weights")
-        self.fc2_weights = r29[1]^
-        var r30 = load_tensor(weights_dir + "/fc2_bias.weights")
-        self.fc2_bias = r30[1]^
-        var r31 = load_tensor(weights_dir + "/fc3_weights.weights")
-        self.fc3_weights = r31[1]^
-        var r32 = load_tensor(weights_dir + "/fc3_bias.weights")
-        self.fc3_bias = r32[1]^
+        self.fc1_weights = load_tensor(weights_dir + "/fc1_weights.weights")
+        self.fc1_bias = load_tensor(weights_dir + "/fc1_bias.weights")
+        self.fc2_weights = load_tensor(weights_dir + "/fc2_weights.weights")
+        self.fc2_bias = load_tensor(weights_dir + "/fc2_bias.weights")
+        self.fc3_weights = load_tensor(weights_dir + "/fc3_weights.weights")
+        self.fc3_bias = load_tensor(weights_dir + "/fc3_bias.weights")

@@ -33,7 +33,9 @@ from .extensor import ExTensor
 
 
 @always_inline
-fn _fill_uniform_scaled[dtype: DType](result: ExTensor, scale: Float64, offset: Float64) raises:
+fn _fill_uniform_scaled[
+    dtype: DType
+](result: ExTensor, scale: Float64, offset: Float64) raises:
     """Fill tensor with scaled uniform random values: offset + random() * scale.
 
     This is a dtype-generic helper that eliminates dtype branching.
@@ -50,7 +52,9 @@ fn _fill_uniform_scaled[dtype: DType](result: ExTensor, scale: Float64, offset: 
 
 
 @always_inline
-fn _fill_normal_boxmuller[dtype: DType](result: ExTensor, mean: Float64, std: Float64) raises:
+fn _fill_normal_boxmuller[
+    dtype: DType
+](result: ExTensor, mean: Float64, std: Float64) raises:
     """Fill tensor with normal random values using Box-Muller transform.
 
     This is a dtype-generic helper that eliminates dtype branching.
@@ -105,7 +109,13 @@ fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
 # ============================================================================
 
 
-fn xavier_uniform(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn xavier_uniform(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using Xavier/Glorot uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
@@ -165,12 +175,21 @@ fn xavier_uniform(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DT
     elif dtype == DType.float64:
         _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
     else:
-        raise Error("xavier_uniform: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "xavier_uniform: only float16, float32, and float64 dtypes"
+            " supported"
+        )
 
     return result^
 
 
-fn xavier_normal(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn xavier_normal(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using Xavier/Glorot normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
@@ -230,7 +249,9 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DTy
     elif dtype == DType.float64:
         _fill_normal_boxmuller[DType.float64](result, 0.0, std)
     else:
-        raise Error("xavier_normal: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "xavier_normal: only float16, float32, and float64 dtypes supported"
+        )
 
     return result^
 
@@ -243,7 +264,14 @@ fn xavier_normal(fan_in: Int, fan_out: Int, shape: List[Int], dtype: DType = DTy
 # ============================================================================
 
 
-fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn kaiming_uniform(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    fan_mode: String = "fan_in",
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using Kaiming/He uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
@@ -320,12 +348,22 @@ fn kaiming_uniform(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String
     elif dtype == DType.float64:
         _fill_uniform_scaled[DType.float64](result, 2.0 * bound, -bound)
     else:
-        raise Error("kaiming_uniform: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "kaiming_uniform: only float16, float32, and float64 dtypes"
+            " supported"
+        )
 
     return result^
 
 
-fn kaiming_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn kaiming_normal(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    fan_mode: String = "fan_in",
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using Kaiming/He normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
@@ -401,7 +439,10 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String 
     elif dtype == DType.float64:
         _fill_normal_boxmuller[DType.float64](result, 0.0, std)
     else:
-        raise Error("kaiming_normal: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "kaiming_normal: only float16, float32, and float64 dtypes"
+            " supported"
+        )
 
     return result^
 
@@ -411,7 +452,13 @@ fn kaiming_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String 
 # ============================================================================
 
 
-fn uniform(shape: List[Int], low: Float64 = -0.1, high: Float64 = 0.1, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn uniform(
+    shape: List[Int],
+    low: Float64 = -0.1,
+    high: Float64 = 0.1,
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using uniform distribution.
 
     Draws samples from uniform distribution U(low, high) with configurable bounds.
@@ -459,12 +506,20 @@ fn uniform(shape: List[Int], low: Float64 = -0.1, high: Float64 = 0.1, dtype: DT
     elif dtype == DType.float64:
         _fill_uniform_scaled[DType.float64](result, range_val, low)
     else:
-        raise Error("uniform: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "uniform: only float16, float32, and float64 dtypes supported"
+        )
 
     return result^
 
 
-fn normal(shape: List[Int], mean: Float64 = 0.0, std: Float64 = 0.01, dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn normal(
+    shape: List[Int],
+    mean: Float64 = 0.0,
+    std: Float64 = 0.01,
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Initialize weights using normal (Gaussian) distribution.
 
     Draws samples from normal distribution N(mean, std²) with configurable parameters.
@@ -513,12 +568,16 @@ fn normal(shape: List[Int], mean: Float64 = 0.0, std: Float64 = 0.01, dtype: DTy
     elif dtype == DType.float64:
         _fill_normal_boxmuller[DType.float64](result, mean, std)
     else:
-        raise Error("normal: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "normal: only float16, float32, and float64 dtypes supported"
+        )
 
     return result^
 
 
-fn constant(shape: List[Int], value: Float64, dtype: DType = DType.float32) raises -> ExTensor:
+fn constant(
+    shape: List[Int], value: Float64, dtype: DType = DType.float32
+) raises -> ExTensor:
     """Initialize tensor with constant value.
 
     Fills all elements with the specified constant value.
@@ -552,7 +611,9 @@ fn constant(shape: List[Int], value: Float64, dtype: DType = DType.float32) rais
     elif dtype == DType.float64:
         _fill_constant[DType.float64](result, value)
     else:
-        raise Error("constant: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "constant: only float16, float32, and float64 dtypes supported"
+        )
 
     return result^
 
@@ -562,7 +623,14 @@ fn constant(shape: List[Int], value: Float64, dtype: DType = DType.float32) rais
 # ============================================================================
 
 
-fn he_uniform(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn he_uniform(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    fan_mode: String = "fan_in",
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Alias for kaiming_uniform.
 
     He and Kaiming refer to the same initialization method (Kaiming He is the author).
@@ -573,7 +641,14 @@ fn he_uniform(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "f
     return kaiming_uniform(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
 
 
-fn he_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fan_in", dtype: DType = DType.float32, seed_val: Int = -1) raises -> ExTensor:
+fn he_normal(
+    fan_in: Int,
+    fan_out: Int,
+    shape: List[Int],
+    fan_mode: String = "fan_in",
+    dtype: DType = DType.float32,
+    seed_val: Int = -1,
+) raises -> ExTensor:
     """Alias for kaiming_normal.
 
     He and Kaiming refer to the same initialization method (Kaiming He is the author).
@@ -582,3 +657,94 @@ fn he_normal(fan_in: Int, fan_out: Int, shape: List[Int], fan_mode: String = "fa
     See kaiming_normal() for full documentation.
     """
     return kaiming_normal(fan_in, fan_out, shape, fan_mode, dtype, seed_val)
+
+
+# ============================================================================
+# Convenience Overloads (Auto-compute fan_in/fan_out)
+# ============================================================================
+
+
+fn he_uniform(
+    shape: List[Int], dtype: DType = DType.float32
+) raises -> ExTensor:
+    """Convenience overload that computes fan_in/fan_out from shape.
+
+    For conv weights [out_channels, in_channels, kH, kW]:
+        fan_in = in_channels * kH * kW
+        fan_out = out_channels * kH * kW
+
+    For linear weights [out_features, in_features]:
+        fan_in = in_features
+        fan_out = out_features
+
+    Args:
+        shape: Tensor shape (2D for linear, 4D for conv).
+        dtype: Data type for the tensor.
+
+    Returns:
+        Initialized tensor.
+    """
+    var fan_in: Int
+    var fan_out: Int
+
+    if len(shape) == 2:
+        # Linear layer: [out_features, in_features]
+        fan_out = shape[0]
+        fan_in = shape[1]
+    elif len(shape) == 4:
+        # Conv layer: [out_channels, in_channels, kH, kW]
+        var out_channels = shape[0]
+        var in_channels = shape[1]
+        var kH = shape[2]
+        var kW = shape[3]
+        fan_in = in_channels * kH * kW
+        fan_out = out_channels * kH * kW
+    else:
+        raise Error(
+            "Shape must be 2D (linear) or 4D (conv) for auto fan computation"
+        )
+
+    return kaiming_uniform(fan_in, fan_out, shape, "fan_in", dtype, -1)
+
+
+fn xavier_uniform(
+    shape: List[Int], dtype: DType = DType.float32
+) raises -> ExTensor:
+    """Convenience overload that computes fan_in/fan_out from shape.
+
+    For conv weights [out_channels, in_channels, kH, kW]:
+        fan_in = in_channels * kH * kW
+        fan_out = out_channels * kH * kW
+
+    For linear weights [out_features, in_features]:
+        fan_in = in_features
+        fan_out = out_features
+
+    Args:
+        shape: Tensor shape (2D for linear, 4D for conv).
+        dtype: Data type for the tensor.
+
+    Returns:
+        Initialized tensor.
+    """
+    var fan_in: Int
+    var fan_out: Int
+
+    if len(shape) == 2:
+        # Linear layer: [out_features, in_features]
+        fan_out = shape[0]
+        fan_in = shape[1]
+    elif len(shape) == 4:
+        # Conv layer: [out_channels, in_channels, kH, kW]
+        var out_channels = shape[0]
+        var in_channels = shape[1]
+        var kH = shape[2]
+        var kW = shape[3]
+        fan_in = in_channels * kH * kW
+        fan_out = out_channels * kH * kW
+    else:
+        raise Error(
+            "Shape must be 2D (linear) or 4D (conv) for auto fan computation"
+        )
+
+    return xavier_uniform(fan_in, fan_out, shape, dtype, -1)
