@@ -91,13 +91,13 @@ Architecture Design Agent:
   - Documents dependencies:
     * Requires: Tensor operations from core_ops
     * Integration: Will be used by LeNet-5 and future papers
-  - Creates detailed specification in notes/issues/150/
+  - Posts detailed specification as comment on GitHub issue #150
 ```text
 
 ### Artifacts
 
-- Component specification: `notes/issues/150/component-spec.md`
-- Interface definitions: `notes/issues/150/interfaces.md`
+- Component specification: Posted as comment on GitHub issue #150
+- Interface definitions: Posted as comment on GitHub issue #150
 - Dependency graph
 
 ##### Step 3: Component Planning (Level 3)
@@ -144,9 +144,9 @@ Documentation Specialist:
 
 ### Artifacts
 
-- Implementation plan: `notes/issues/150/implementation-plan.md`
-- Test plan: `notes/issues/150/test-plan.md`
-- Documentation outline: `notes/issues/150/docs-outline.md`
+- Implementation plan: Posted as comment on GitHub issue #150
+- Test plan: Posted as comment on GitHub issue #150
+- Documentation outline: Posted as comment on GitHub issue #150
 
 **Plan Phase Complete**: Specifications approved, ready for parallel execution
 
@@ -700,7 +700,7 @@ Implementation Specialist:
   - Creates brief fix specification:
     * Update _apply_kernel_simd to handle rectangular kernels
     * Fix: Use kernel_height and kernel_width separately
-  - Documents in notes/issues/200/fix-plan.md
+  - Posts fix plan as comment on GitHub issue #200
 
 Test Specialist:
   - Plans test:
@@ -1089,7 +1089,7 @@ Component Specialists (Level 3):
 
 ### Plan Phase Artifacts
 
-- Module specifications: `notes/issues/400-403/`
+- Module specifications: Posted as comments on GitHub issues #400-403
 - Interface definitions
 - Integration plan
 - Timeline: 8-12 weeks for full implementation
