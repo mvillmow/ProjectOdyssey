@@ -196,6 +196,12 @@ from .conv import (
     depthwise_conv2d_no_bias_backward,
     DepthwiseConv2dBackwardResult,
     DepthwiseConv2dNoBiasBackwardResult,
+    depthwise_separable_conv2d,
+    depthwise_separable_conv2d_no_bias,
+    depthwise_separable_conv2d_backward,
+    depthwise_separable_conv2d_no_bias_backward,
+    DepthwiseSeparableConv2dBackwardResult,
+    DepthwiseSeparableConv2dNoBiasBackwardResult,
 )
 
 from .pooling import (

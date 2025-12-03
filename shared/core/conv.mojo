@@ -733,3 +733,254 @@ fn depthwise_conv2d_no_bias_backward(
     """
     var result = depthwise_conv2d_backward(grad_output, x, kernel, stride, padding)
     return DepthwiseConv2dNoBiasBackwardResult(result.grad_input^, result.grad_kernel^)
+
+
+# ============================================================================
+# Depthwise Separable Convolution
+# ============================================================================
+
+
+struct DepthwiseSeparableConv2dBackwardResult(Movable):
+    """Result container for depthwise_separable_conv2d_backward.
+
+    Contains gradients for input, depthwise kernel, pointwise kernel, and bias.
+    """
+
+    var grad_input: ExTensor
+    var grad_depthwise_kernel: ExTensor
+    var grad_pointwise_kernel: ExTensor
+    var grad_bias: ExTensor
+
+    fn __init__(
+        out self,
+        grad_input: ExTensor,
+        grad_depthwise_kernel: ExTensor,
+        grad_pointwise_kernel: ExTensor,
+        grad_bias: ExTensor,
+    ):
+        self.grad_input = grad_input
+        self.grad_depthwise_kernel = grad_depthwise_kernel
+        self.grad_pointwise_kernel = grad_pointwise_kernel
+        self.grad_bias = grad_bias
+
+    fn __moveinit__(out self, owned existing: Self):
+        self.grad_input = existing.grad_input^
+        self.grad_depthwise_kernel = existing.grad_depthwise_kernel^
+        self.grad_pointwise_kernel = existing.grad_pointwise_kernel^
+        self.grad_bias = existing.grad_bias^
+
+
+fn depthwise_separable_conv2d(
+    x: ExTensor,
+    depthwise_kernel: ExTensor,
+    pointwise_kernel: ExTensor,
+    bias: ExTensor,
+    stride: Int = 1,
+    padding: Int = 0,
+) raises -> ExTensor:
+    """Depthwise separable 2D convolution.
+
+    Combines depthwise and pointwise convolutions for efficient mobile architectures.
+    Used extensively in MobileNet, EfficientNet, and other efficient networks.
+
+    The operation consists of two stages:
+    1. Depthwise conv: Each input channel is convolved with its own filter
+    2. Pointwise conv: 1x1 convolution to combine/project channels
+
+    Args:
+        `x`: Input tensor of shape (batch, in_channels, height, width)
+        `depthwise_kernel`: Depthwise filter of shape (in_channels, 1, kH, kW)
+        `pointwise_kernel`: Pointwise filter of shape (out_channels, in_channels, 1, 1)
+        `bias`: Bias tensor of shape (out_channels,)
+        `stride`: Stride for depthwise convolution (default: 1)
+        `padding`: Padding for depthwise convolution (default: 0)
+
+    Returns:
+        Output tensor of shape (batch, out_channels, out_height, out_width)
+
+    Example:
+        ```mojo
+        from shared.core import depthwise_separable_conv2d
+
+        # Input: (batch=1, channels=32, H=28, W=28)
+        # Depthwise: (32, 1, 3, 3) - one 3x3 filter per channel
+        # Pointwise: (64, 32, 1, 1) - project to 64 channels
+
+        var output = depthwise_separable_conv2d(
+            x, depthwise_kernel, pointwise_kernel, bias,
+            stride=1, padding=1
+        )
+        # output shape: (1, 64, 28, 28)
+        ```
+
+    Formula:
+        intermediate = depthwise_conv2d(x, depthwise_kernel)
+        output = conv2d_1x1(intermediate, pointwise_kernel) + bias
+
+    Note:
+        This is more efficient than standard convolution:
+        - Standard: out_channels * in_channels * kH * kW multiplications
+        - Separable: in_channels * kH * kW + out_channels * in_channels multiplications
+    """
+    # Stage 1: Depthwise convolution
+    var depthwise_output = depthwise_conv2d_no_bias(
+        x, depthwise_kernel, stride, padding
+    )
+
+    # Stage 2: Pointwise (1x1) convolution with bias
+    var output = conv2d(depthwise_output, pointwise_kernel, bias, stride=1, padding=0)
+
+    return output
+
+
+fn depthwise_separable_conv2d_no_bias(
+    x: ExTensor,
+    depthwise_kernel: ExTensor,
+    pointwise_kernel: ExTensor,
+    stride: Int = 1,
+    padding: Int = 0,
+) raises -> ExTensor:
+    """Depthwise separable 2D convolution without bias.
+
+    Args:
+        `x`: Input tensor of shape (batch, in_channels, height, width)
+        `depthwise_kernel`: Depthwise filter of shape (in_channels, 1, kH, kW)
+        `pointwise_kernel`: Pointwise filter of shape (out_channels, in_channels, 1, 1)
+        `stride`: Stride for depthwise convolution (default: 1)
+        `padding`: Padding for depthwise convolution (default: 0)
+
+    Returns:
+        Output tensor of shape (batch, out_channels, out_height, out_width)
+    """
+    # Stage 1: Depthwise convolution
+    var depthwise_output = depthwise_conv2d_no_bias(
+        x, depthwise_kernel, stride, padding
+    )
+
+    # Stage 2: Pointwise (1x1) convolution without bias
+    var output = conv2d_no_bias(depthwise_output, pointwise_kernel, stride=1, padding=0)
+
+    return output
+
+
+fn depthwise_separable_conv2d_backward(
+    grad_output: ExTensor,
+    x: ExTensor,
+    depthwise_kernel: ExTensor,
+    pointwise_kernel: ExTensor,
+    stride: Int = 1,
+    padding: Int = 0,
+) raises -> DepthwiseSeparableConv2dBackwardResult:
+    """Backward pass for depthwise separable 2D convolution.
+
+    Computes gradients with respect to input and both kernels.
+
+    Args:
+        `grad_output`: Gradient w.r.t. output (batch, out_channels, out_H, out_W)
+        `x`: Original input tensor (batch, in_channels, H, W)
+        `depthwise_kernel`: Depthwise filter (in_channels, 1, kH, kW)
+        `pointwise_kernel`: Pointwise filter (out_channels, in_channels, 1, 1)
+        `stride`: Stride used in forward pass
+        `padding`: Padding used in forward pass
+
+    Returns:
+        DepthwiseSeparableConv2dBackwardResult containing:
+            - grad_input: Gradient w.r.t. input
+            - grad_depthwise_kernel: Gradient w.r.t. depthwise kernel
+            - grad_pointwise_kernel: Gradient w.r.t. pointwise kernel
+            - grad_bias: Gradient w.r.t. bias (sum over batch and spatial dims)
+
+    Note:
+        Pure functional: returns new tensors, does not modify inputs.
+    """
+    # Recompute intermediate activation for backward
+    var depthwise_output = depthwise_conv2d_no_bias(
+        x, depthwise_kernel, stride, padding
+    )
+
+    # Backward through pointwise (1x1) convolution
+    var pointwise_result = conv2d_backward(
+        grad_output, depthwise_output, pointwise_kernel, stride=1, padding=0
+    )
+    var grad_depthwise_output = pointwise_result.grad_input
+    var grad_pointwise_kernel = pointwise_result.grad_kernel
+    var grad_bias = pointwise_result.grad_bias
+
+    # Backward through depthwise convolution
+    var depthwise_result = depthwise_conv2d_no_bias_backward(
+        grad_depthwise_output, x, depthwise_kernel, stride, padding
+    )
+    var grad_input = depthwise_result.grad_input
+    var grad_depthwise_kernel = depthwise_result.grad_kernel
+
+    return DepthwiseSeparableConv2dBackwardResult(
+        grad_input, grad_depthwise_kernel, grad_pointwise_kernel, grad_bias
+    )
+
+
+struct DepthwiseSeparableConv2dNoBiasBackwardResult(Movable):
+    """Result container for depthwise_separable_conv2d_no_bias_backward."""
+
+    var grad_input: ExTensor
+    var grad_depthwise_kernel: ExTensor
+    var grad_pointwise_kernel: ExTensor
+
+    fn __init__(
+        out self,
+        grad_input: ExTensor,
+        grad_depthwise_kernel: ExTensor,
+        grad_pointwise_kernel: ExTensor,
+    ):
+        self.grad_input = grad_input
+        self.grad_depthwise_kernel = grad_depthwise_kernel
+        self.grad_pointwise_kernel = grad_pointwise_kernel
+
+    fn __moveinit__(out self, owned existing: Self):
+        self.grad_input = existing.grad_input^
+        self.grad_depthwise_kernel = existing.grad_depthwise_kernel^
+        self.grad_pointwise_kernel = existing.grad_pointwise_kernel^
+
+
+fn depthwise_separable_conv2d_no_bias_backward(
+    grad_output: ExTensor,
+    x: ExTensor,
+    depthwise_kernel: ExTensor,
+    pointwise_kernel: ExTensor,
+    stride: Int = 1,
+    padding: Int = 0,
+) raises -> DepthwiseSeparableConv2dNoBiasBackwardResult:
+    """Backward pass for depthwise separable 2D convolution without bias.
+
+    Args:
+        `grad_output`: Gradient w.r.t. output
+        `x`: Original input tensor
+        `depthwise_kernel`: Depthwise filter
+        `pointwise_kernel`: Pointwise filter
+        `stride`: Stride used in forward pass
+        `padding`: Padding used in forward pass
+
+    Returns:
+        DepthwiseSeparableConv2dNoBiasBackwardResult containing gradients.
+    """
+    # Recompute intermediate activation
+    var depthwise_output = depthwise_conv2d_no_bias(
+        x, depthwise_kernel, stride, padding
+    )
+
+    # Backward through pointwise convolution
+    var pointwise_result = conv2d_no_bias_backward(
+        grad_output, depthwise_output, pointwise_kernel, stride=1, padding=0
+    )
+    var grad_depthwise_output = pointwise_result.grad_input
+    var grad_pointwise_kernel = pointwise_result.grad_kernel
+
+    # Backward through depthwise convolution
+    var depthwise_result = depthwise_conv2d_no_bias_backward(
+        grad_depthwise_output, x, depthwise_kernel, stride, padding
+    )
+
+    return DepthwiseSeparableConv2dNoBiasBackwardResult(
+        depthwise_result.grad_input,
+        depthwise_result.grad_kernel,
+        grad_pointwise_kernel,
+    )
