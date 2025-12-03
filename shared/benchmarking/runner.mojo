@@ -15,9 +15,10 @@ Example:
     print_benchmark_report(result, "Expensive Operation")
 """
 
-from sys import info
+from time import now
 from math import sqrt
 from collections import List
+from .result import BenchmarkResult as LowLevelBenchmarkResult
 
 
 # ============================================================================
@@ -43,16 +44,16 @@ struct BenchmarkConfig(Copyable, Movable):
 
 
 # ============================================================================
-# Benchmark Results
+# Benchmark Results - High-Level API
 # ============================================================================
 
 
 @fieldwise_init
 struct BenchmarkResult(Copyable, Movable, ImplicitlyCopyable):
-    """Results from a benchmark run.
+    """Results from a benchmark run with statistical analysis.
 
-    Contains timing statistics and throughput metrics for a benchmarked
-    operation.
+    Contains timing statistics, percentiles, and throughput metrics for a
+    benchmarked operation. Suitable for detailed performance reporting.
 
     Attributes:
         mean_latency_ms: Mean execution time in milliseconds
@@ -62,7 +63,7 @@ struct BenchmarkResult(Copyable, Movable, ImplicitlyCopyable):
         p99_ms: 99th percentile latency in milliseconds
         min_latency_ms: Minimum latency in milliseconds
         max_latency_ms: Maximum latency in milliseconds
-        throughput: Operations per second (if measured items available)
+        throughput: Operations per second (ops/sec)
         iterations: Total measurement iterations
         warmup_iterations: Warmup iterations performed
     """
@@ -131,25 +132,30 @@ fn _sort_ascending(mut data: List[Float64]):
                 data[j + 1] = temp
 
 
-fn _get_time_ms() -> Float64:
-    """Get current time in milliseconds.
+fn _get_time_ns() -> Int:
+    """Get current time in nanoseconds using platform-specific timer.
 
-    Uses platform-specific timing. Mojo v0.25.7 limitations mean
-    this uses a simplified approach.
+    Uses high-resolution timer from Mojo's time module:
+    - Linux: clock_gettime(CLOCK_MONOTONIC)
+    - macOS: mach_absolute_time()
+    - Windows: QueryPerformanceCounter()
 
     Returns:
-        Time in milliseconds
+        Time in nanoseconds as Int
     """
-    # Use a simplified timing approach - in practice, this would use
-    # platform-specific high-resolution timers (clock_gettime on Linux,
-    # mach_absolute_time on macOS, QueryPerformanceCounter on Windows)
-    # For now, return a placeholder that would be replaced with actual
-    # timer implementation
-    # TODO: Implement platform-specific high-resolution timing
-    # - Linux: clock_gettime(CLOCK_MONOTONIC)
-    # - macOS: mach_absolute_time()
-    # - Windows: QueryPerformanceCounter
-    return Float64(0.0)
+    return now()
+
+
+fn _ns_to_ms(ns: Int) -> Float64:
+    """Convert nanoseconds to milliseconds.
+
+    Args:
+        ns: Time in nanoseconds
+
+    Returns:
+        Time in milliseconds as Float64
+    """
+    return Float64(ns) / 1_000_000.0
 
 
 # ============================================================================
@@ -166,7 +172,9 @@ fn benchmark_function(
     """Benchmark a function with statistical analysis.
 
     Executes a function multiple times with warmup iterations, then
-    measures timing statistics across measurement iterations.
+    measures timing statistics across measurement iterations using high-
+    resolution timers. Computes mean, standard deviation, percentiles,
+    and throughput.
 
     Args:
         func: Function to benchmark (takes no args, returns nothing)
@@ -175,81 +183,190 @@ fn benchmark_function(
         compute_percentiles: Whether to compute percentiles (default True)
 
     Returns:
-        BenchmarkResult with timing statistics
+        BenchmarkResult with timing statistics (latencies in milliseconds)
 
     Raises:
         Error if benchmarking fails
+
+    Example:
+        fn expensive_op():
+            _ = compute_something()
+
+        var result = benchmark_function(expensive_op, warmup_iters=10, measure_iters=100)
+        print("Mean latency:", result.mean_latency_ms, "ms")
     """
-    # Warmup iterations
+    # Warmup iterations - warm up CPU cache, JIT compilation, etc.
     for _ in range(warmup_iters):
         func()
 
-    # Measurement iterations - collect latencies
-    var latencies = List[Float64]()
+    # Measurement iterations - collect latencies in nanoseconds
+    var latencies_ns = List[Int]()
 
     for _ in range(measure_iters):
-        # In a real implementation, this would use high-resolution timers
-        # For now, we collect placeholder timing data
-        var start_time = _get_time_ms()
+        var start_time_ns = _get_time_ns()
         func()
-        var end_time = _get_time_ms()
+        var end_time_ns = _get_time_ns()
 
-        var elapsed = end_time - start_time
-        latencies.append(elapsed)
+        var elapsed_ns = end_time_ns - start_time_ns
+        latencies_ns.append(elapsed_ns)
+
+    # Convert to milliseconds for statistics computation
+    var latencies_ms = List[Float64]()
+    for latency_ns in latencies_ns:
+        latencies_ms.append(_ns_to_ms(latency_ns))
 
     # Compute statistics
-    var total_latency = 0.0
-    var min_latency = latencies[0]
-    var max_latency = latencies[0]
+    var total_latency_ms = 0.0
+    var min_latency_ms = latencies_ms[0]
+    var max_latency_ms = latencies_ms[0]
 
-    for latency in latencies:
-        total_latency += latency
-        if latency < min_latency:
-            min_latency = latency
-        if latency > max_latency:
-            max_latency = latency
+    for latency_ms in latencies_ms:
+        total_latency_ms += latency_ms
+        if latency_ms < min_latency_ms:
+            min_latency_ms = latency_ms
+        if latency_ms > max_latency_ms:
+            max_latency_ms = latency_ms
 
-    var mean_latency = total_latency / Float64(measure_iters)
+    var mean_latency_ms = total_latency_ms / Float64(measure_iters)
 
-    # Compute standard deviation
+    # Compute standard deviation using sample variance (N denominator)
     var variance = 0.0
-    for latency in latencies:
-        var diff = latency - mean_latency
+    for latency_ms in latencies_ms:
+        var diff = latency_ms - mean_latency_ms
         variance += diff * diff
     variance = variance / Float64(measure_iters)
-    var std_dev = sqrt(variance)
+    var std_dev_ms = sqrt(variance)
 
-    # Compute percentiles
-    var p50 = 0.0
-    var p95 = 0.0
-    var p99 = 0.0
+    # Compute percentiles if requested
+    var p50_ms = 0.0
+    var p95_ms = 0.0
+    var p99_ms = 0.0
 
     if compute_percentiles:
-        _sort_ascending(latencies)
-        p50 = _compute_percentile(latencies, 50.0)
-        p95 = _compute_percentile(latencies, 95.0)
-        p99 = _compute_percentile(latencies, 99.0)
+        _sort_ascending(latencies_ms)
+        p50_ms = _compute_percentile(latencies_ms, 50.0)
+        p95_ms = _compute_percentile(latencies_ms, 95.0)
+        p99_ms = _compute_percentile(latencies_ms, 99.0)
 
-    # Compute throughput (items per second)
-    # If mean latency is in ms, then items/sec = 1000 / mean_latency_ms
-    var throughput = 0.0
-    if mean_latency > 0.0:
-        throughput = 1000.0 / mean_latency
+    # Compute throughput (operations per second)
+    # If mean latency is in ms, then ops/sec = 1000 / mean_latency_ms
+    var throughput_ops_per_sec = 0.0
+    if mean_latency_ms > 0.0:
+        throughput_ops_per_sec = 1000.0 / mean_latency_ms
     else:
-        throughput = 0.0
+        throughput_ops_per_sec = 0.0
 
     return BenchmarkResult(
-        mean_latency_ms=mean_latency,
-        std_dev_ms=std_dev,
-        p50_ms=p50,
-        p95_ms=p95,
-        p99_ms=p99,
-        min_latency_ms=min_latency,
-        max_latency_ms=max_latency,
-        throughput=throughput,
+        mean_latency_ms=mean_latency_ms,
+        std_dev_ms=std_dev_ms,
+        p50_ms=p50_ms,
+        p95_ms=p95_ms,
+        p99_ms=p99_ms,
+        min_latency_ms=min_latency_ms,
+        max_latency_ms=max_latency_ms,
+        throughput=throughput_ops_per_sec,
         iterations=measure_iters,
         warmup_iterations=warmup_iters,
     )
+
+
+# ============================================================================
+# BenchmarkRunner Class - Advanced benchmarking with low-level tracking
+# ============================================================================
+
+
+struct BenchmarkRunner(Movable):
+    """Advanced benchmarking runner using low-level result tracking.
+
+    Provides fine-grained iteration timing collection via the low-level
+    BenchmarkResult struct from the result module. Useful for detailed
+    performance analysis and percentile computation.
+
+    Example:
+        var runner = BenchmarkRunner("operation", warmup_iters=10)
+        for _ in range(100):
+            var start = now()
+            some_operation()
+            var end = now()
+            runner.record_iteration(end - start)
+
+        var stats = runner.compute_stats()
+    """
+
+    var name: String
+    var warmup_iters: Int
+    var result: LowLevelBenchmarkResult
+
+    fn __init__(out self, name: String, warmup_iters: Int = 10):
+        """Initialize a benchmark runner.
+
+        Args:
+            name: Descriptive name for the benchmarked operation
+            warmup_iters: Number of warmup iterations (default 10)
+        """
+        self.name = name
+        self.warmup_iters = warmup_iters
+        self.result = LowLevelBenchmarkResult(name, iterations=0)
+
+    fn run_warmup(mut self, func: fn () raises -> None) raises:
+        """Run warmup iterations.
+
+        Args:
+            func: Function to run during warmup phase
+
+        Raises:
+            Error if func raises during warmup
+        """
+        for _ in range(self.warmup_iters):
+            func()
+
+    fn record_iteration(mut self, time_ns: Int):
+        """Record a single iteration's execution time.
+
+        Args:
+            time_ns: Execution time in nanoseconds
+        """
+        self.result.record(time_ns)
+
+    fn get_mean_ms(self) -> Float64:
+        """Get mean execution time in milliseconds.
+
+        Returns:
+            Mean time in milliseconds
+        """
+        return self.result.mean() / 1_000_000.0
+
+    fn get_std_ms(self) -> Float64:
+        """Get standard deviation of execution times in milliseconds.
+
+        Returns:
+            Standard deviation in milliseconds
+        """
+        return self.result.std() / 1_000_000.0
+
+    fn get_min_ms(self) -> Float64:
+        """Get minimum execution time in milliseconds.
+
+        Returns:
+            Minimum time in milliseconds
+        """
+        return self.result.min_time() / 1_000_000.0
+
+    fn get_max_ms(self) -> Float64:
+        """Get maximum execution time in milliseconds.
+
+        Returns:
+            Maximum time in milliseconds
+        """
+        return self.result.max_time() / 1_000_000.0
+
+    fn get_iterations(self) -> Int:
+        """Get total number of iterations recorded.
+
+        Returns:
+            Number of iterations
+        """
+        return self.result.iterations
 
 
 # ============================================================================

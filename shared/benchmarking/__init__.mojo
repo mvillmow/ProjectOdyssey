@@ -1,42 +1,69 @@
 """Benchmarking Framework for ML Odyssey.
 
-Provides utilities for measuring and reporting performance characteristics
-of ML operations including latency, throughput, and statistical analysis.
+Comprehensive performance measurement utilities with two APIs:
+
+1. **High-Level API** (runner.py) - Simple benchmarking with statistics
+   - benchmark_function(): Single function with automatic warmup/measurement
+   - BenchmarkResult: Statistics including percentiles (p50, p95, p99)
+   - Automatic throughput calculation
+
+2. **Low-Level API** (result.py) - Granular iteration tracking
+   - BenchmarkResult: Record individual iteration times, compute online stats
+   - Uses Welford's algorithm for numerically stable mean/variance
+   - Efficient memory usage for large iteration counts
 
 Modules:
-    `result`: Consolidated low-level benchmark result tracking (NEW - Issue #2282)
-    `runner`: High-level benchmarking runner with statistical analysis
+    result: Low-level iteration-level timing and statistics (Issue #2282)
+    runner: High-level function benchmarking and reporting (Issue #2283)
 
-The `result` module provides BenchmarkResult for recording individual iteration
-times and computing statistics. Import directly to use:
+Features:
+    - High-resolution timers (platform-specific nanosecond precision)
+    - Warmup iterations for JIT compilation and cache warming
+    - Percentile calculations (p50, p95, p99)
+    - Throughput measurement (operations per second)
+    - Standard deviation and min/max tracking
+    - Formatted benchmark reports
 
-    from shared.benchmarking.result import BenchmarkResult
-
-The `runner` module provides benchmark_function for high-level benchmarking with
-percentiles and throughput. Imported here for convenience:
-
+Example - High-level quick benchmarking:
     from shared.benchmarking import benchmark_function, print_benchmark_report
 
-Example - Low-level result tracking:
-    from shared.benchmarking.result import BenchmarkResult
+    fn expensive_operation():
+        # Your operation here
+        pass
 
-    var result = BenchmarkResult("operation_name", iterations=1000)
+    var result = benchmark_function(expensive_operation, warmup_iters=10, measure_iters=100)
+    print_benchmark_report(result, "Expensive Operation")
+
+Example - Low-level granular tracking:
+    from shared.benchmarking.result import BenchmarkResult
+    from time import now
+
+    var result = BenchmarkResult("custom_benchmark", iterations=0)
+
     for _ in range(1000):
         var start = now()
         operation()
         var end = now()
         result.record(end - start)
-    print("Mean:", result.mean(), "ns")
 
-Example - High-level benchmarking:
-    from shared.benchmarking import benchmark_function, print_benchmark_report
+    print("Mean:", result.mean() / 1_000_000.0, "ms")
+    print("Std Dev:", result.std() / 1_000_000.0, "ms")
 
-    fn forward_pass():
-        var output = model.forward(input_batch)
-        return output
+Example - Advanced runner with manual control:
+    from shared.benchmarking import BenchmarkRunner
+    from time import now
 
-    var result = benchmark_function(forward_pass, warmup_iters=10, measure_iters=100)
-    print_benchmark_report(result, "Forward Pass")
+    var runner = BenchmarkRunner("custom_operation", warmup_iters=10)
+    runner.run_warmup(lambda: operation())
+
+    for _ in range(100):
+        var start = now()
+        operation()
+        var end = now()
+        runner.record_iteration(end - start)
+
+    print("Mean latency:", runner.get_mean_ms(), "ms")
+    print("Std dev:", runner.get_std_ms(), "ms")
 """
 
 # Package version
@@ -47,9 +74,11 @@ alias VERSION = "0.1.0"
 # ============================================================================
 
 from .runner import (
-    BenchmarkResult,  # High-level benchmark results from runner module
+    BenchmarkResult,  # High-level benchmark results with percentiles
     benchmark_function,  # Main benchmarking function
     print_benchmark_report,  # Print formatted results
+    print_benchmark_summary,  # Print summary table
     BenchmarkConfig,  # Configuration for benchmarking
     create_benchmark_config,  # Create default config
+    BenchmarkRunner,  # Advanced runner with low-level tracking
 )
