@@ -100,8 +100,8 @@ Before creating the issue, can you show me the proposed API and file structure?
 ### Expected Outputs
 
 1. **GitHub Issue Created**: Issue #XXX with full specification
-1. **Plan Document**: `/notes/issues/XXX/README.md` with objectives, deliverables, success criteria
-1. **Design Spec**: Component architecture from Architecture Design Agent
+1. **Plan Document**: Posted as comments on GitHub issue #XXX with objectives, deliverables, success criteria
+1. **Design Spec**: Component architecture from Architecture Design Agent (posted to issue)
 1. **Child Issues**: Test (#XXX+1), Implementation (#XXX+2), Package (#XXX+3), Cleanup (#XXX+4)
 
 ### Common Pitfalls

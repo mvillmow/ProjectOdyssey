@@ -151,7 +151,7 @@ cd worktrees/issue-62-plan-agents
 # ... create component specs, interface definitions, etc
 
 # Commit and push
-git add agents/ notes/issues/62/
+git add agents/
 git commit -m "feat(agents): complete agent architecture design"
 git push -u origin 62-plan-agents
 
@@ -196,7 +196,6 @@ ml-odyssey/                          # Main repository
 │   ├── issue-62-plan-agents/        # Plan phase
 │   │   ├── .git                     # Worktree git link
 │   │   ├── agents/                  # Agent docs being created
-│   │   ├── notes/issues/62/         # Issue-specific docs
 │   │   └── ... (full repo contents)
 │   ├── issue-63-test-agents/        # Test phase (parallel)
 │   │   ├── .git
@@ -240,8 +239,8 @@ Parallel Phases (issue-63, 64, 65):
 # In issue-64-impl-agents worktree
 cd worktrees/issue-64-impl-agents
 
-# Read specification from Plan phase (now in main)
-cat notes/issues/62/README.md
+# Read specification from Plan phase (posted on GitHub issue)
+gh issue view 62 --comments
 
 # Implement based on spec
 # No need to access issue-63 or issue-65 worktrees
@@ -312,9 +311,8 @@ git merge --abort
 **Use Case**: Agents communicate progress without file sharing
 
 ```bash
-# Test Engineer posts status
-cd worktrees/issue-63-test-agents
-cat > notes/issues/63/STATUS.md << 'EOF'
+# Test Engineer posts status to GitHub issue
+gh issue comment 63 --body "$(cat <<'EOF'
 ## Status Update - 2025-11-08
 
 **Agent**: Test Engineer
@@ -335,22 +333,17 @@ cat > notes/issues/63/STATUS.md << 'EOF'
 - Test fixtures in tests/fixtures/ ready to use
 - Gradient test will need backward() method implemented
 EOF
+)"
 
-git add notes/issues/63/STATUS.md
-git commit -m "Update status: 60% complete"
-git push
-
-# Implementation Engineer reads status
-cd ../issue-64-impl-agents
-git fetch origin
-git show origin/63-test-agents:notes/issues/63/STATUS.md
+# Implementation Engineer reads status from GitHub issue
+gh issue view 63 --comments
 ```text
 
 ### Cross-Worktree Communication Protocol
 
 #### Daily Status Updates
 
-Each agent posts status to their issue notes:
+Each agent posts status as comments on their GitHub issue:
 
 ```markdown
 ## Status Update - YYYY-MM-DD
@@ -405,10 +398,8 @@ When one phase depends on another:
 ### Individual Agent Status
 
 ```bash
-# Each agent maintains status in their worktree
-cd worktrees/issue-64-impl-agents
-
-cat > notes/issues/64/PROGRESS.md << 'EOF'
+# Each agent posts status to their GitHub issue
+gh issue comment 64 --body "$(cat <<'EOF'
 # Implementation Progress - Issue #64
 
 ## Overall: 75% Complete
@@ -433,31 +424,26 @@ cat > notes/issues/64/PROGRESS.md << 'EOF'
 - Review all agent descriptions for auto-invocation
 - Test agent loading with Claude Code
 EOF
-
-git add notes/issues/64/PROGRESS.md
-git commit -m "Update progress: 75% complete"
-git push
+)"
 ```text
 
 ### Aggregate Status (Section Orchestrator)
 
-Section Orchestrators aggregate status from all worktrees:
+Section Orchestrators aggregate status from all GitHub issues:
 
 ```bash
-# Section Orchestrator checks all parallel worktrees
-cd /home/user/ml-odyssey
-
+# Section Orchestrator checks all parallel issues
 # Check Test status
-git show origin/63-test-agents:notes/issues/63/PROGRESS.md
+gh issue view 63 --comments | tail -50
 
 # Check Implementation status
-git show origin/64-impl-agents:notes/issues/64/PROGRESS.md
+gh issue view 64 --comments | tail -50
 
 # Check Packaging status
-git show origin/65-pkg-agents:notes/issues/65/PROGRESS.md
+gh issue view 65 --comments | tail -50
 
-# Create aggregate report
-cat > notes/issues/62/AGGREGATE_STATUS.md << 'EOF'
+# Post aggregate report to parent issue
+gh issue comment 62 --body "$(cat <<'EOF'
 # Agents Implementation - Aggregate Status
 
 **Date**: 2025-11-08
@@ -487,6 +473,7 @@ cat > notes/issues/62/AGGREGATE_STATUS.md << 'EOF'
 - Test: Add validation tests for agent configs
 - Packaging: Finalize integration documentation
 EOF
+)"
 ```text
 
 ## Common Workflows
@@ -499,8 +486,8 @@ git worktree add worktrees/issue-62-plan-agents -b 62-plan-agents
 cd worktrees/issue-62-plan-agents
 
 # Architecture Design Agent creates specs
-# ... design work
-git add notes/issues/62/
+# ... design work, post specs to GitHub issue #62
+git add agents/
 git commit -m "feat(agents): design agent architecture"
 git push -u origin 62-plan-agents
 

@@ -109,7 +109,7 @@ dist/
 
 ❌ **Just Documenting Structure**:
 
-- Package phase is NOT about writing notes/issues/XX/README.md
+- Package phase is NOT about writing documentation comments on GitHub issues
 - NOT about documenting that `__init__.mojo` exists
 - NOT about verifying directory structure
 
@@ -130,7 +130,7 @@ dist/
 These activities, while useful, do NOT constitute Package phase completion:
 
 - ❌ Writing comprehensive README.md files
-- ❌ Creating notes/issues/XX/README.md documentation
+- ❌ Creating documentation comments on GitHub issues
 - ❌ Verifying `__init__.mojo` exports are correct
 - ❌ Documenting that "package structure is ready"
 - ❌ Listing files that exist in the module
@@ -142,7 +142,7 @@ These activities, while useful, do NOT constitute Package phase completion:
 Issue #40: [Package] Data Module
 
 Deliverables:
-✅ Created notes/issues/40/README.md documenting structure
+✅ Posted documentation comment on GitHub issue #40
 ✅ Verified shared/data/__init__.mojo has 19 exports
 ✅ Confirmed README.md is comprehensive (546 lines)
 ✅ Documented that module is "production-ready"
@@ -394,7 +394,7 @@ PR Title: "docs(training): complete package phase verification"
 
 Changes:
 
-- Added notes/issues/35/README.md
+- Posted documentation to GitHub issue #35
 - Updated README to say "package is ready"
 - Verified __init__.mojo exports
 
