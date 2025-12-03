@@ -4,9 +4,31 @@ Provides utilities for measuring and reporting performance characteristics
 of ML operations including latency, throughput, and statistical analysis.
 
 Modules:
-    `runner`: Benchmarking runner with statistical analysis
+    `result`: Consolidated low-level benchmark result tracking (NEW - Issue #2282)
+    `runner`: High-level benchmarking runner with statistical analysis
 
-Example:
+The `result` module provides BenchmarkResult for recording individual iteration
+times and computing statistics. Import directly to use:
+
+    from shared.benchmarking.result import BenchmarkResult
+
+The `runner` module provides benchmark_function for high-level benchmarking with
+percentiles and throughput. Imported here for convenience:
+
+    from shared.benchmarking import benchmark_function, print_benchmark_report
+
+Example - Low-level result tracking:
+    from shared.benchmarking.result import BenchmarkResult
+
+    var result = BenchmarkResult("operation_name", iterations=1000)
+    for _ in range(1000):
+        var start = now()
+        operation()
+        var end = now()
+        result.record(end - start)
+    print("Mean:", result.mean(), "ns")
+
+Example - High-level benchmarking:
     from shared.benchmarking import benchmark_function, print_benchmark_report
 
     fn forward_pass():
@@ -25,7 +47,7 @@ alias VERSION = "0.1.0"
 # ============================================================================
 
 from .runner import (
-    BenchmarkResult,  # Benchmark results container
+    BenchmarkResult,  # High-level benchmark results from runner module
     benchmark_function,  # Main benchmarking function
     print_benchmark_report,  # Print formatted results
     BenchmarkConfig,  # Configuration for benchmarking
