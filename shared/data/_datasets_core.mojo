@@ -157,14 +157,17 @@ struct FileDataset(Dataset, Copyable, Movable):
         """Return number of samples."""
         return self._len
 
-    fn __getitem__(mut self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
+    fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Load and return sample at index.
 
-        Args:.            `index`: Sample index (supports negative indexing).
+        Args:
+            index: Sample index (supports negative indexing).
 
-        Returns:.            Tuple of (data, label) tensors.
+        Returns:
+            Tuple of (data, label) tensors.
 
-        Raises:.            Error if index is out of bounds or file cannot be loaded.
+        Raises:
+            Error if index is out of bounds or file cannot be loaded.
         """
         var idx = index
         if idx < 0:
@@ -178,7 +181,8 @@ struct FileDataset(Dataset, Copyable, Movable):
                 + String(self._len)
             )
 
-        # Check cache first
+        # Note: Caching disabled as trait requires immutable self
+        # Check cache first (read-only)
         if self.cache_enabled:
             if idx in self._cache:
                 return self._cache[idx]
@@ -192,9 +196,9 @@ struct FileDataset(Dataset, Copyable, Movable):
 
         var result = (data, label)
 
-        # Cache if enabled
-        if self.cache_enabled:
-            self._cache[idx] = result
+        # Note: Cache write disabled - would require mut self
+        # if self.cache_enabled:
+        #     self._cache[idx] = result
 
         return result
 
