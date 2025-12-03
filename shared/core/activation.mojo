@@ -22,7 +22,8 @@ Issues covered:
 
 from math import exp, erf, sqrt, tanh as math_tanh
 from collections import List
-from .extensor import ExTensor, full
+from .extensor import ExTensor, full, zeros_like
+from .arithmetic import add, subtract, multiply
 from .reduction import sum as tensor_sum, max as tensor_max
 from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
 from .gradient_types import GradientPair
@@ -1255,5 +1256,409 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
                 result_ptr.bitcast[Float16]()[i] = Float16(grad_val * Float32(alpha) * exp_val)
     else:
         raise Error("elu_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+# ============================================================================
+# Hard Activation Functions (Piecewise Linear Approximations)
+# ============================================================================
+
+
+fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
+    """Hard Sigmoid activation function.
+
+    A piecewise linear approximation of sigmoid that is faster to compute.
+    Commonly used in efficient architectures like MobileNet.
+
+    Formula:
+        hard_sigmoid(x) = clip((x + 3) / 6, 0, 1)
+        = 0 if x <= -3
+        = 1 if x >= 3
+        = (x + 3) / 6 otherwise
+
+    Properties:
+        - Faster than sigmoid (no exp computation)
+        - Bounded output in [0, 1]
+        - Piecewise linear with slope 1/6 in active region
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        tensor: Input tensor of any shape.
+
+    Returns:
+        Output tensor with hard_sigmoid applied element-wise, values in [0, 1].
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, hard_sigmoid
+
+        var x = ExTensor.from_list([-4, -3, 0, 3, 4])
+        var y = hard_sigmoid(x)  # [0, 0, 0.5, 1, 1]
+        ```
+
+    Reference:
+        Howard et al., "Searching for MobileNetV3" (2019)
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = Float32(tensor._data.bitcast[Float16]()[i])
+            var val = (x + 3.0) / 6.0
+            val = max(Float32(0.0), min(Float32(1.0), val))
+            result._data.bitcast[Float16]()[i] = Float16(val)
+    elif tensor._dtype == DType.float32:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float32]()[i]
+            var val = (x + 3.0) / 6.0
+            val = max(Float32(0.0), min(Float32(1.0), val))
+            result._data.bitcast[Float32]()[i] = val
+    elif tensor._dtype == DType.float64:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float64]()[i]
+            var val = (x + 3.0) / 6.0
+            val = max(Float64(0.0), min(Float64(1.0), val))
+            result._data.bitcast[Float64]()[i] = val
+    else:
+        raise Error("hard_sigmoid: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn hard_swish(tensor: ExTensor) raises -> ExTensor:
+    """Hard Swish activation function.
+
+    A piecewise linear approximation of Swish using hard_sigmoid.
+    Used in MobileNetV3 for efficiency.
+
+    Formula:
+        hard_swish(x) = x * hard_sigmoid(x)
+        = 0 if x <= -3
+        = x if x >= 3
+        = x * (x + 3) / 6 otherwise
+
+    Properties:
+        - Faster than swish (no exp computation)
+        - Smooth transition regions
+        - Non-monotonic like swish
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        tensor: Input tensor of any shape.
+
+    Returns:
+        Output tensor with hard_swish applied element-wise.
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, hard_swish
+
+        var x = ExTensor.from_list([-4, -3, 0, 3, 4])
+        var y = hard_swish(x)  # [0, 0, 0, 3, 4]
+        ```
+
+    Reference:
+        Howard et al., "Searching for MobileNetV3" (2019)
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        for i in range(tensor._numel):
+            var x = Float32(tensor._data.bitcast[Float16]()[i])
+            if x <= -3.0:
+                result._data.bitcast[Float16]()[i] = Float16(0.0)
+            elif x >= 3.0:
+                result._data.bitcast[Float16]()[i] = Float16(x)
+            else:
+                result._data.bitcast[Float16]()[i] = Float16(x * (x + 3.0) / 6.0)
+    elif tensor._dtype == DType.float32:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float32]()[i]
+            if x <= -3.0:
+                result._data.bitcast[Float32]()[i] = 0.0
+            elif x >= 3.0:
+                result._data.bitcast[Float32]()[i] = x
+            else:
+                result._data.bitcast[Float32]()[i] = x * (x + 3.0) / 6.0
+    elif tensor._dtype == DType.float64:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float64]()[i]
+            if x <= -3.0:
+                result._data.bitcast[Float64]()[i] = 0.0
+            elif x >= 3.0:
+                result._data.bitcast[Float64]()[i] = x
+            else:
+                result._data.bitcast[Float64]()[i] = x * (x + 3.0) / 6.0
+    else:
+        raise Error("hard_swish: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn hard_tanh(tensor: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0) raises -> ExTensor:
+    """Hard Tanh activation function.
+
+    A piecewise linear approximation of tanh that clips values to a range.
+
+    Formula:
+        hard_tanh(x) = clip(x, min_val, max_val)
+        = min_val if x < min_val
+        = max_val if x > max_val
+        = x otherwise
+
+    Properties:
+        - Faster than tanh (no exp computation)
+        - Linear in active region
+        - Bounded output in [min_val, max_val]
+
+    Supported dtypes: float16, float32, float64
+
+    Args:
+        tensor: Input tensor of any shape.
+        min_val: Minimum output value (default: -1.0).
+        max_val: Maximum output value (default: 1.0).
+
+    Returns:
+        Output tensor with hard_tanh applied element-wise.
+
+    Example:
+        ```mojo
+        from shared.core import ExTensor, hard_tanh
+
+        var x = ExTensor.from_list([-2, -0.5, 0, 0.5, 2])
+        var y = hard_tanh(x)  # [-1, -0.5, 0, 0.5, 1]
+        ```
+
+    Reference:
+        Standard activation function used in various architectures.
+    """
+    var result = ExTensor(tensor._shape, tensor._dtype)
+
+    if tensor._dtype == DType.float16:
+        var min_f16 = Float16(min_val)
+        var max_f16 = Float16(max_val)
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float16]()[i]
+            result._data.bitcast[Float16]()[i] = max(min_f16, min(max_f16, x))
+    elif tensor._dtype == DType.float32:
+        var min_f32 = Float32(min_val)
+        var max_f32 = Float32(max_val)
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float32]()[i]
+            result._data.bitcast[Float32]()[i] = max(min_f32, min(max_f32, x))
+    elif tensor._dtype == DType.float64:
+        for i in range(tensor._numel):
+            var x = tensor._data.bitcast[Float64]()[i]
+            result._data.bitcast[Float64]()[i] = max(min_val, min(max_val, x))
+    else:
+        raise Error("hard_tanh: only float16/32/64 dtypes supported")
+
+    return result
+
+
+# ============================================================================
+# Hard Activation Backward Passes
+# ============================================================================
+
+
+fn hard_sigmoid_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+    """Backward pass for Hard Sigmoid activation.
+
+    The derivative is:
+        d/dx[hard_sigmoid(x)] = 1/6 if -3 < x < 3
+                               = 0 otherwise
+
+    Args:
+        grad_output: Gradient from upstream.
+        x: Input from forward pass.
+
+    Returns:
+        Gradient with respect to input.
+
+    Example:
+        ```mojo
+        from shared.core import hard_sigmoid, hard_sigmoid_backward
+
+        # Forward
+        var output = hard_sigmoid(x)
+        # Backward
+        var grad_x = hard_sigmoid_backward(grad_output, x)
+        ```
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("hard_sigmoid_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("hard_sigmoid_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = Float32(x._data.bitcast[Float16]()[i])
+            var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+            if x_val > -3.0 and x_val < 3.0:
+                result._data.bitcast[Float16]()[i] = Float16(grad / 6.0)
+            else:
+                result._data.bitcast[Float16]()[i] = Float16(0.0)
+    elif x._dtype == DType.float32:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            if x_val > -3.0 and x_val < 3.0:
+                result._data.bitcast[Float32]()[i] = grad / 6.0
+            else:
+                result._data.bitcast[Float32]()[i] = 0.0
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            if x_val > -3.0 and x_val < 3.0:
+                result._data.bitcast[Float64]()[i] = grad / 6.0
+            else:
+                result._data.bitcast[Float64]()[i] = 0.0
+    else:
+        raise Error("hard_sigmoid_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+    """Backward pass for Hard Swish activation.
+
+    The derivative is:
+        d/dx[hard_swish(x)] = 0 if x <= -3
+                            = 1 if x >= 3
+                            = (2x + 3) / 6 otherwise
+
+    This comes from: d/dx[x * (x + 3) / 6] = (2x + 3) / 6
+
+    Args:
+        grad_output: Gradient from upstream.
+        x: Input from forward pass.
+
+    Returns:
+        Gradient with respect to input.
+
+    Example:
+        ```mojo
+        from shared.core import hard_swish, hard_swish_backward
+
+        # Forward
+        var output = hard_swish(x)
+        # Backward
+        var grad_x = hard_swish_backward(grad_output, x)
+        ```
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("hard_swish_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("hard_swish_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        for i in range(x._numel):
+            var x_val = Float32(x._data.bitcast[Float16]()[i])
+            var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+            if x_val <= -3.0:
+                result._data.bitcast[Float16]()[i] = Float16(0.0)
+            elif x_val >= 3.0:
+                result._data.bitcast[Float16]()[i] = Float16(grad)
+            else:
+                result._data.bitcast[Float16]()[i] = Float16(grad * (2.0 * x_val + 3.0) / 6.0)
+    elif x._dtype == DType.float32:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            if x_val <= -3.0:
+                result._data.bitcast[Float32]()[i] = 0.0
+            elif x_val >= 3.0:
+                result._data.bitcast[Float32]()[i] = grad
+            else:
+                result._data.bitcast[Float32]()[i] = grad * (2.0 * x_val + 3.0) / 6.0
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            if x_val <= -3.0:
+                result._data.bitcast[Float64]()[i] = 0.0
+            elif x_val >= 3.0:
+                result._data.bitcast[Float64]()[i] = grad
+            else:
+                result._data.bitcast[Float64]()[i] = grad * (2.0 * x_val + 3.0) / 6.0
+    else:
+        raise Error("hard_swish_backward: only float16/32/64 dtypes supported")
+
+    return result
+
+
+fn hard_tanh_backward(
+    grad_output: ExTensor, x: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0
+) raises escaping -> ExTensor:
+    """Backward pass for Hard Tanh activation.
+
+    The derivative is:
+        d/dx[hard_tanh(x)] = 1 if min_val < x < max_val
+                           = 0 otherwise
+
+    Args:
+        grad_output: Gradient from upstream.
+        x: Input from forward pass.
+        min_val: Minimum value used in forward pass (default: -1.0).
+        max_val: Maximum value used in forward pass (default: 1.0).
+
+    Returns:
+        Gradient with respect to input.
+
+    Example:
+        ```mojo
+        from shared.core import hard_tanh, hard_tanh_backward
+
+        # Forward
+        var output = hard_tanh(x)
+        # Backward
+        var grad_x = hard_tanh_backward(grad_output, x)
+        ```
+    """
+    if grad_output._dtype != x._dtype:
+        raise Error("hard_tanh_backward: grad_output and x must have same dtype")
+    if grad_output._numel != x._numel:
+        raise Error("hard_tanh_backward: grad_output and x must have same shape")
+
+    var result = ExTensor(x._shape, x._dtype)
+
+    if x._dtype == DType.float16:
+        var min_f32 = Float32(min_val)
+        var max_f32 = Float32(max_val)
+        for i in range(x._numel):
+            var x_val = Float32(x._data.bitcast[Float16]()[i])
+            var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+            if x_val > min_f32 and x_val < max_f32:
+                result._data.bitcast[Float16]()[i] = Float16(grad)
+            else:
+                result._data.bitcast[Float16]()[i] = Float16(0.0)
+    elif x._dtype == DType.float32:
+        var min_f32 = Float32(min_val)
+        var max_f32 = Float32(max_val)
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float32]()[i]
+            var grad = grad_output._data.bitcast[Float32]()[i]
+            if x_val > min_f32 and x_val < max_f32:
+                result._data.bitcast[Float32]()[i] = grad
+            else:
+                result._data.bitcast[Float32]()[i] = 0.0
+    elif x._dtype == DType.float64:
+        for i in range(x._numel):
+            var x_val = x._data.bitcast[Float64]()[i]
+            var grad = grad_output._data.bitcast[Float64]()[i]
+            if x_val > min_val and x_val < max_val:
+                result._data.bitcast[Float64]()[i] = grad
+            else:
+                result._data.bitcast[Float64]()[i] = 0.0
+    else:
+        raise Error("hard_tanh_backward: only float16/32/64 dtypes supported")
 
     return result

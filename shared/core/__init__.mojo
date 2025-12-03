@@ -153,6 +153,9 @@ from .activation import (
     swish,
     mish,
     elu,
+    hard_sigmoid,
+    hard_swish,
+    hard_tanh,
     relu_backward,
     leaky_relu_backward,
     prelu_backward,
@@ -163,6 +166,9 @@ from .activation import (
     swish_backward,
     mish_backward,
     elu_backward,
+    hard_sigmoid_backward,
+    hard_swish_backward,
+    hard_tanh_backward,
 )
 
 # ============================================================================
