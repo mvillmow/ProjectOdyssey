@@ -14,7 +14,7 @@ All loss functions include:
 - Support for batched inputs
 """
 
-from .extensor import ExTensor
+from .extensor import ExTensor, ones_like, zeros_like, full_like
 from .arithmetic import add, subtract, multiply, divide
 from .elementwise import log, clip, exp
 from .reduction import mean, sum, max_reduce
@@ -62,9 +62,7 @@ fn binary_cross_entropy(
 
     # Compute log(p) and log(1-p)
     var log_pred = log(clipped)
-    var one = ExTensor(clipped.shape(), clipped.dtype())
-    for i in range(one.numel()):
-        one._set_float64(i, 1.0)
+    var one = ones_like(clipped)
 
     var one_minus_pred = subtract(one, clipped)
     var log_one_minus_pred = log(one_minus_pred)
@@ -76,9 +74,7 @@ fn binary_cross_entropy(
     var sum_terms = add(term1, term2)
 
     # Negate: BCE = -(term1 + term2)
-    var zero = ExTensor(sum_terms.shape(), sum_terms.dtype())
-    for i in range(zero.numel()):
-        zero._set_float64(i, 0.0)
+    var zero = zeros_like(sum_terms)
 
     return subtract(zero, sum_terms)
 
@@ -123,9 +119,7 @@ fn binary_cross_entropy_backward(
         var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
     """
     # Gradient formula: (p - y) / (p(1-p) + epsilon)
-    var one = ExTensor(predictions.shape(), predictions.dtype())
-    for i in range(one.numel()):
-        one._set_float64(i, 1.0)
+    var one = ones_like(predictions)
 
     # Numerator: (predictions - targets)
     var numerator = subtract(predictions, targets)
@@ -138,9 +132,7 @@ fn binary_cross_entropy_backward(
     var pred_times_one_minus_pred = multiply(predictions, one_minus_pred)
 
     # Create epsilon tensor
-    var epsilon_tensor = ExTensor(predictions.shape(), predictions.dtype())
-    for i in range(epsilon_tensor.numel()):
-        epsilon_tensor._set_float64(i, epsilon)
+    var epsilon_tensor = full_like(predictions, epsilon)
 
     # Compute: p(1-p) + epsilon
     var denominator = add(pred_times_one_minus_pred, epsilon_tensor)
@@ -213,9 +205,7 @@ fn mean_squared_error_backward(
     var diff = subtract(predictions, targets)
 
     # Create tensor with value 2.0
-    var two = ExTensor(diff.shape(), diff.dtype())
-    for i in range(two.numel()):
-        two._set_float64(i, 2.0)
+    var two = full_like(diff, 2.0)
 
     var grad = multiply(two, diff)
 
@@ -284,9 +274,7 @@ fn cross_entropy(
 
     # Step 5: Compute log_sum_exp = max + log(sum_exp + epsilon)
     # Add epsilon for numerical stability to prevent log(0)
-    var epsilon_tensor = ExTensor(sum_exp.shape(), sum_exp.dtype())
-    for i in range(epsilon_tensor.numel()):
-        epsilon_tensor._set_float64(i, epsilon)
+    var epsilon_tensor = full_like(sum_exp, epsilon)
     var sum_exp_stable = add(sum_exp, epsilon_tensor)
     var log_sum_exp = add(max_logits, log(sum_exp_stable))
 
@@ -298,9 +286,7 @@ fn cross_entropy(
     var ce_sum = sum(ce_per_sample, axis=class_axis, keepdims=False)  # Sum over classes
 
     # Negate: create -1.0 scalar tensor
-    var neg_one = ExTensor(ce_sum.shape(), logits.dtype())
-    for i in range(neg_one.numel()):
-        neg_one._set_float64(i, -1.0)
+    var neg_one = full_like(ce_sum, -1.0)
     var ce = multiply(ce_sum, neg_one)
 
     # Return mean over batch (first dimension)
@@ -350,9 +336,7 @@ fn cross_entropy_backward(
     var scale_val = 1.0 / batch_size
 
     # Create scale tensor with same shape as grad
-    var scale_tensor = ExTensor(grad.shape(), grad.dtype())
-    for i in range(scale_tensor.numel()):
-        scale_tensor._set_float64(i, Float64(scale_val))
+    var scale_tensor = full_like(grad, Float64(scale_val))
 
     var grad_scaled = multiply(grad, scale_tensor)
 
