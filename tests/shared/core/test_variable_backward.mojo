@@ -1,0 +1,226 @@
+"""Tests for Variable.backward() method - simplified API for backpropagation.
+
+This module tests the new simplified backward() API that stores the tape
+in Variable and allows calling backward() without explicitly passing the tape.
+
+Tests cover:
+- Basic scalar loss backward pass
+- Gradient flow to input variables
+- Gradient accumulation across multiple operations
+- Backward compatibility with explicit tape parameter
+"""
+
+from tests.shared.conftest import (
+    assert_almost_equal,
+    assert_equal,
+    assert_equal_int,
+    assert_true,
+)
+from shared.core.extensor import ExTensor, zeros, ones, ones_like
+from shared.autograd.variable import Variable, variable_add, variable_multiply, variable_sum
+from shared.autograd.tape import GradientTape
+
+
+# ============================================================================
+# Test Helpers
+# ============================================================================
+
+
+fn create_shape_1d(size: Int) -> List[Int]:
+    """Create a 1D shape list."""
+    var shape = List[Int]()
+    shape.append(size)
+    return shape
+
+
+fn create_shape_2d(rows: Int, cols: Int) -> List[Int]:
+    """Create a 2D shape list."""
+    var shape = List[Int]()
+    shape.append(rows)
+    shape.append(cols)
+    return shape
+
+
+# ============================================================================
+# Test Cases
+# ============================================================================
+
+
+fn test_variable_backward_scalar_loss() raises:
+    """Test backward() on a scalar loss without explicit tape parameter."""
+    # Create tape and enable recording
+    var tape = GradientTape()
+    tape.enable()
+
+    # Create input variables
+    var shape = create_shape_1d(1)
+    var x_data = ones(shape, DType.float32)
+    x_data._data.bitcast[Float32]()[0] = 2.0
+
+    var x = Variable(x_data, True, tape)
+
+    # Forward pass: compute loss = x * 2
+    var y = variable_multiply(x, x, tape)
+    var loss = variable_sum(y, tape)
+
+    # Backward pass using simplified API (no tape parameter)
+    loss.backward()
+
+    # Check gradients were computed
+    var grad_x = tape.get_grad(x.id)
+    assert_equal_int(grad_x.numel(), 1)
+
+    # For loss = (x*x).sum() where x=2, grad_x = 2*x*2 = 8
+    var grad_val = grad_x._data.bitcast[Float32]()[0]
+    assert_almost_equal(grad_val, 4.0, tolerance=1e-5)
+
+
+fn test_variable_backward_multiple_variables() raises:
+    """Test gradient flow to multiple input variables."""
+    # Create tape and enable recording
+    var tape = GradientTape()
+    tape.enable()
+
+    # Create two input variables
+    var shape = create_shape_1d(2)
+    var x_data = ones(shape, DType.float32)
+    x_data._data.bitcast[Float32]()[0] = 1.0
+    x_data._data.bitcast[Float32]()[1] = 2.0
+
+    var y_data = ones(shape, DType.float32)
+    y_data._data.bitcast[Float32]()[0] = 3.0
+    y_data._data.bitcast[Float32]()[1] = 4.0
+
+    var x = Variable(x_data, True, tape)
+    var y = Variable(y_data, True, tape)
+
+    # Forward pass: loss = (x + y).sum()
+    var z = variable_add(x, y, tape)
+    var loss = variable_sum(z, tape)
+
+    # Backward pass using simplified API
+    loss.backward()
+
+    # Check gradients for both inputs
+    var grad_x = tape.get_grad(x.id)
+    var grad_y = tape.get_grad(y.id)
+
+    # For loss = (x+y).sum(), grad_x and grad_y should be 1 for each element
+    assert_equal_int(grad_x.numel(), 2)
+    assert_equal_int(grad_y.numel(), 2)
+
+    # Check first element
+    var grad_x_0 = grad_x._data.bitcast[Float32]()[0]
+    var grad_y_0 = grad_y._data.bitcast[Float32]()[0]
+    assert_almost_equal(grad_x_0, 1.0, tolerance=1e-5)
+    assert_almost_equal(grad_y_0, 1.0, tolerance=1e-5)
+
+
+fn test_variable_backward_chain_rule() raises:
+    """Test gradient computation via chain rule."""
+    # Create tape and enable recording
+    var tape = GradientTape()
+    tape.enable()
+
+    # Create input variable
+    var shape = create_shape_1d(1)
+    var x_data = ones(shape, DType.float32)
+    x_data._data.bitcast[Float32]()[0] = 3.0
+
+    var x = Variable(x_data, True, tape)
+
+    # Forward pass: loss = (x * x) * 2
+    var y = variable_multiply(x, x, tape)
+    var z = variable_multiply(y, y, tape)
+    var loss = variable_sum(z, tape)
+
+    # Backward pass using simplified API
+    loss.backward()
+
+    # Check gradient at x
+    var grad_x = tape.get_grad(x.id)
+    assert_equal_int(grad_x.numel(), 1)
+
+    # loss = ((x*x)^2) = x^4, so d(loss)/dx = 4*x^3 = 4*27 = 108
+    var grad_val = grad_x._data.bitcast[Float32]()[0]
+    assert_almost_equal(grad_val, 108.0, tolerance=1e-3)
+
+
+fn test_variable_backward_explicit_vs_implicit() raises:
+    """Test that explicit backward(tape) and implicit backward() produce same results."""
+    # Test case 1: explicit tape parameter
+    var tape1 = GradientTape()
+    tape1.enable()
+
+    var shape = create_shape_1d(2)
+    var x1_data = ones(shape, DType.float32)
+    x1_data._data.bitcast[Float32]()[0] = 2.0
+    x1_data._data.bitcast[Float32]()[1] = 3.0
+
+    var x1 = Variable(x1_data, True, tape1)
+    var y1 = variable_multiply(x1, x1, tape1)
+    var loss1 = variable_sum(y1, tape1)
+
+    # Explicit backward
+    loss1.backward(tape1)
+
+    # Test case 2: implicit tape parameter
+    var tape2 = GradientTape()
+    tape2.enable()
+
+    var x2_data = ones(shape, DType.float32)
+    x2_data._data.bitcast[Float32]()[0] = 2.0
+    x2_data._data.bitcast[Float32]()[1] = 3.0
+
+    var x2 = Variable(x2_data, True, tape2)
+    var y2 = variable_multiply(x2, x2, tape2)
+    var loss2 = variable_sum(y2, tape2)
+
+    # Implicit backward
+    loss2.backward()
+
+    # Compare gradients
+    var grad1_x1 = tape1.get_grad(x1.id)
+    var grad2_x2 = tape2.get_grad(x2.id)
+
+    # Both should have same values
+    assert_equal_int(grad1_x1.numel(), grad2_x2.numel())
+
+    var grad1_0 = grad1_x1._data.bitcast[Float32]()[0]
+    var grad2_0 = grad2_x2._data.bitcast[Float32]()[0]
+
+    assert_almost_equal(grad1_0, grad2_0, tolerance=1e-5)
+
+
+fn test_variable_backward_no_gradients_required() raises:
+    """Test backward pass with some variables not requiring gradients."""
+    # Create tape and enable recording
+    var tape = GradientTape()
+    tape.enable()
+
+    # Create variables
+    var shape = create_shape_1d(1)
+    var x_data = ones(shape, DType.float32)
+    x_data._data.bitcast[Float32]()[0] = 2.0
+
+    var c_data = ones(shape, DType.float32)
+    c_data._data.bitcast[Float32]()[0] = 5.0
+
+    # x requires gradients, c does not
+    var x = Variable(x_data, True, tape)
+    var c = Variable(c_data, False, tape)
+
+    # Forward pass: loss = (x * c).sum()
+    var y = variable_multiply(x, c, tape)
+    var loss = variable_sum(y, tape)
+
+    # Backward pass using simplified API
+    loss.backward()
+
+    # Check gradient for x exists
+    var grad_x = tape.get_grad(x.id)
+    assert_equal_int(grad_x.numel(), 1)
+
+    # Gradient should be c = 5
+    var grad_val = grad_x._data.bitcast[Float32]()[0]
+    assert_almost_equal(grad_val, 5.0, tolerance=1e-5)

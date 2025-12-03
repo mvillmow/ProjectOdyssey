@@ -28,7 +28,11 @@ Examples:
     var z = variable_add(x, y, tape)
     var loss = variable_sum(z, tape)
 
-    # Compute gradients automatically
+    # Compute gradients - two options:
+    # Option 1: Simplified API (tape stored in Variable)
+    loss.backward()
+
+    # Option 2: Explicit tape parameter (backward compatible)
     loss.backward(tape)
 
     # Access gradients
@@ -67,6 +71,7 @@ struct Variable(Copyable, Movable):
     - data: The actual tensor values (ExTensor)
     - id: Unique identifier for tape tracking
     - requires_grad: Whether to track operations for this variable
+    - _tape: GradientTape reference for recording operations
 
     Gradients are stored in the GradientTape's registry, not in the Variable
     itself. This allows for gradient accumulation and cleanup via the tape.
@@ -75,6 +80,7 @@ struct Variable(Copyable, Movable):
         data: The underlying ExTensor containing values
         id: Unique identifier for gradient tracking
         requires_grad: Flag indicating whether this Variable participates in autograd
+        _tape: The GradientTape storing the computation graph
 
     Note:
         Operations on Variables create new Variables. The tape records which
@@ -85,6 +91,7 @@ struct Variable(Copyable, Movable):
     var data: ExTensor
     var id: Int
     var requires_grad: Bool
+    var _tape: GradientTape  # Store tape reference for simplified backward() API
 
     fn __init__(
         out self,
@@ -106,31 +113,36 @@ struct Variable(Copyable, Movable):
         self.data = data^
         self.requires_grad = requires_grad
         self.id = tape.register_variable(requires_grad)
+        self._tape = tape^
 
     fn __copyinit__(out self, existing: Self):
         """Copy constructor."""
         self.data = existing.data
         self.id = existing.id
         self.requires_grad = existing.requires_grad
+        self._tape = existing._tape
 
     fn __moveinit__(out self, deinit existing: Self):
         """Move constructor."""
         self.data = existing.data^
         self.id = existing.id
         self.requires_grad = existing.requires_grad
+        self._tape = existing._tape^
 
     fn __init__(
         out self,
         owned data: ExTensor,
         requires_grad: Bool,
         id: Int,
+        mut tape: GradientTape,
     ):
-        """Initialize a Variable with explicit ID (internal use).
+        """Initialize a Variable with explicit ID and tape (internal use).
 
         Args:
             data: The tensor values to wrap (ownership transferred)
             requires_grad: Whether to track gradients for this variable
             id: Pre-assigned variable ID
+            tape: The gradient tape to store
 
         Note:
             This constructor is primarily for internal use when creating
@@ -139,6 +151,7 @@ struct Variable(Copyable, Movable):
         self.data = data^
         self.requires_grad = requires_grad
         self.id = id
+        self._tape = tape^
 
     fn backward(self, mut tape: GradientTape) raises:
         """Compute gradients via automatic differentiation.
@@ -163,6 +176,38 @@ struct Variable(Copyable, Movable):
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
         tape.backward(self.id, grad^)
+
+    fn backward(mut self) raises:
+        """Compute gradients via automatic differentiation using stored tape.
+
+        This simplified version automatically uses the tape stored during Variable
+        creation. Useful for simple autograd workflows where all operations use
+        the same tape.
+
+        The gradient of this Variable with respect to itself is initialized to
+        ones (d_self/d_self = 1), then gradients are propagated backward through
+        the graph using the chain rule.
+
+        Examples:
+            # Simple API - tape is managed internally
+            var tape = GradientTape()
+            tape.enable()
+            var x = Variable(data, True, tape)
+            var y = x + x
+            var loss = y.sum(tape)
+            loss.backward()  # Automatically uses stored tape
+
+            # Equivalent to:
+            loss.backward(tape)
+
+        Note:
+            This method requires that the Variable was created with a GradientTape,
+            and all operations used the same tape. For more complex workflows with
+            multiple tapes or tape switching, use backward(tape) explicitly.
+        """
+        # Initialize gradient of output to ones
+        var grad = ones_like(self.data)
+        self._tape.backward(self.id, grad^)
 
     fn detach(self) -> ExTensor:
         """Get the underlying tensor without gradient tracking.
@@ -237,7 +282,9 @@ fn variable_add(
         var saved = SavedTensors()
         tape.record(OP_ADD, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id, tape^
+    )
 
 
 fn variable_subtract(
@@ -265,7 +312,9 @@ fn variable_subtract(
         var saved = SavedTensors()
         tape.record(OP_SUBTRACT, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id, tape^
+    )
 
 
 fn variable_multiply(
@@ -297,7 +346,9 @@ fn variable_multiply(
         saved.add_tensor(b.data)
         tape.record(OP_MULTIPLY, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id, tape^
+    )
 
 
 fn variable_divide(
@@ -329,7 +380,9 @@ fn variable_divide(
         saved.add_tensor(b.data)
         tape.record(OP_DIVIDE, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id, tape^
+    )
 
 
 fn variable_matmul(
@@ -361,7 +414,9 @@ fn variable_matmul(
         saved.add_tensor(b.data)
         tape.record(OP_MATMUL, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id, tape^
+    )
 
 
 fn variable_sum(
@@ -392,7 +447,7 @@ fn variable_sum(
         saved.add_scalar(Float64(axis))
         tape.record(OP_SUM, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
 
 
 fn variable_mean(
@@ -423,7 +478,7 @@ fn variable_mean(
         saved.add_scalar(Float64(axis))
         tape.record(OP_MEAN, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
 
 
 fn variable_relu(
@@ -451,7 +506,7 @@ fn variable_relu(
         saved.add_tensor(x.data)
         tape.record(OP_RELU, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
 
 
 fn variable_sigmoid(
@@ -479,7 +534,7 @@ fn variable_sigmoid(
         saved.add_tensor(result_data)
         tape.record(OP_SIGMOID, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
 
 
 fn variable_tanh(
@@ -507,7 +562,7 @@ fn variable_tanh(
         saved.add_tensor(result_data)
         tape.record(OP_TANH, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
 
 
 fn variable_neg(
@@ -537,4 +592,4 @@ fn variable_neg(
         var saved = SavedTensors()
         tape.record(OP_NEG, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, x.requires_grad, result_id)
+    return Variable(result_data^, x.requires_grad, result_id, tape^)
