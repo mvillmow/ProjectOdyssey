@@ -11,6 +11,7 @@ Tests cover:
 All tests use pure functional API.
 """
 
+from math import isinf, isnan
 from shared.core.types.mxfp4 import MXFP4, MXFP4Block, E8M0Scale
 from shared.core.types.fp4 import FP4_E2M1
 from tests.shared.conftest import (
@@ -128,15 +129,15 @@ fn test_mxfp4_block_roundtrip_mixed_signs() raises:
     """Test round-trip conversion with mixed signs."""
     var values = List[Float32]()
     for i in range(32):
-        var sign = 1.0 if i % 2 == 0 else -1.0
-        values.append(sign * Float32(i) * 0.1)
+        var sign = Float32(1.0) if i % 2 == 0 else Float32(-1.0)
+        values.append(sign * Float32(i) * Float32(0.1))
 
     var block = MXFP4Block.from_float32_array(values)
     var decoded = block.to_float32_array()
 
     # Verify signs are preserved
     for i in range(32):
-        var expected = (1.0 if i % 2 == 0 else -1.0) * Float32(i) * 0.1
+        var expected = (Float32(1.0) if i % 2 == 0 else Float32(-1.0)) * Float32(i) * Float32(0.1)
         var expected_sign = 1.0 if expected >= 0 else -1.0
         var decoded_sign = 1.0 if decoded[i] >= 0 else -1.0
         assert_equal(Int(expected_sign), Int(decoded_sign))
