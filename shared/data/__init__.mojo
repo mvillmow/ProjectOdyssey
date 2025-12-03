@@ -54,9 +54,10 @@ from .datasets import (
     CIFAR10Dataset,         # CIFAR-10 dataset with train/test splits
     load_cifar10_train,     # Load CIFAR-10 training set
     load_cifar10_test,      # Load CIFAR-10 test set
-    EMNISTDataset,          # EMNIST dataset with multiple splits
-    load_emnist_train,      # Load EMNIST training set
-    load_emnist_test,       # Load EMNIST test set
+    # TODO: EMNISTDataset not yet implemented
+    # EMNISTDataset,          # EMNIST dataset with multiple splits
+    # load_emnist_train,      # Load EMNIST training set
+    # load_emnist_test,       # Load EMNIST test set
 )
 
 # ============================================================================

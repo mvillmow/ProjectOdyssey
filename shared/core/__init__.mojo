@@ -237,10 +237,13 @@ from .normalization import (
 
 from .attention import (
     scaled_dot_product_attention,
+    scaled_dot_product_attention_masked,
     scaled_dot_product_attention_backward,
+    scaled_dot_product_attention_backward_masked,
     ScaledDotProductAttentionBackwardResult,
     create_causal_mask,
     multi_head_attention,
+    multi_head_attention_masked,
     multi_head_attention_backward,
     MultiHeadAttentionWeights,
     MultiHeadAttentionResult,

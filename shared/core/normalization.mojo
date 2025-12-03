@@ -324,12 +324,12 @@ fn normalize_rgb(
     var dst_data = normalized._data.bitcast[Float32]()
 
     # Extract mean and std values
-    var mean_r = mean.get[0, Float32]()
-    var mean_g = mean.get[1, Float32]()
-    var mean_b = mean.get[2, Float32]()
-    var std_r = std.get[0, Float32]()
-    var std_g = std.get[1, Float32]()
-    var std_b = std.get[2, Float32]()
+    var mean_r = mean[0]
+    var mean_g = mean[1]
+    var mean_b = mean[2]
+    var std_r = std[0]
+    var std_g = std[1]
+    var std_b = std[2]
 
     # Normalize each image
     for n in range(num_images):

@@ -24,7 +24,22 @@ fn scaled_dot_product_attention(
     query: ExTensor,
     key: ExTensor,
     value: ExTensor,
-    mask: ExTensor = ExTensor(),
+    dropout_p: Float64 = 0.0,
+) raises -> ExTensor:
+    """Scaled dot-product attention without mask.
+
+    See scaled_dot_product_attention_masked for version with mask support.
+    """
+    var empty_shape = List[Int]()
+    var empty_mask = zeros(empty_shape, DType.float32)
+    return scaled_dot_product_attention_masked(query, key, value, empty_mask, dropout_p)
+
+
+fn scaled_dot_product_attention_masked(
+    query: ExTensor,
+    key: ExTensor,
+    value: ExTensor,
+    mask: ExTensor,
     dropout_p: Float64 = 0.0,
 ) raises -> ExTensor:
     """Scaled dot-product attention.
@@ -150,7 +165,22 @@ fn scaled_dot_product_attention_backward(
     key: ExTensor,
     value: ExTensor,
     attention_weights: ExTensor,
-    mask: ExTensor = ExTensor(),
+) raises -> ScaledDotProductAttentionBackwardResult:
+    """Backward pass for scaled dot-product attention without mask."""
+    var empty_shape = List[Int]()
+    var empty_mask = zeros(empty_shape, DType.float32)
+    return scaled_dot_product_attention_backward_masked(
+        grad_output, query, key, value, attention_weights, empty_mask
+    )
+
+
+fn scaled_dot_product_attention_backward_masked(
+    grad_output: ExTensor,
+    query: ExTensor,
+    key: ExTensor,
+    value: ExTensor,
+    attention_weights: ExTensor,
+    mask: ExTensor,
 ) raises -> ScaledDotProductAttentionBackwardResult:
     """Backward pass for scaled dot-product attention.
 
@@ -415,7 +445,23 @@ fn multi_head_attention(
     value: ExTensor,
     weights: MultiHeadAttentionWeights,
     num_heads: Int,
-    mask: ExTensor = ExTensor(),
+) raises -> MultiHeadAttentionResult:
+    """Multi-head attention mechanism without mask.
+
+    See multi_head_attention_masked for version with mask support.
+    """
+    var empty_shape = List[Int]()
+    var empty_mask = zeros(empty_shape, DType.float32)
+    return multi_head_attention_masked(query, key, value, weights, num_heads, empty_mask)
+
+
+fn multi_head_attention_masked(
+    query: ExTensor,
+    key: ExTensor,
+    value: ExTensor,
+    weights: MultiHeadAttentionWeights,
+    num_heads: Int,
+    mask: ExTensor,
 ) raises -> MultiHeadAttentionResult:
     """Multi-head attention mechanism.
 

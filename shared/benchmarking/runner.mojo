@@ -148,10 +148,10 @@ fn _get_time_ms() -> Float64:
     var time_val = 0.0
 
     @parameter
-    if info.os == "linux":
+    if info.os.is_linux():
         # Would use clock_gettime(CLOCK_MONOTONIC) in real implementation
         time_val = 0.0
-    elif info.os == "macos":
+    elif info.os.is_macos():
         # Would use mach_absolute_time() in real implementation
         time_val = 0.0
     else:

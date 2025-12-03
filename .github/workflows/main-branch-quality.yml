@@ -62,41 +62,36 @@ jobs:
           REPO_ROOT="$(pwd)"
           mkdir -p compilation-results
 
-          total=0
+          # Count total files for reporting
+          total_files=$(find shared -name "*.mojo" -type f | wc -l)
+          echo "Total .mojo files in shared/: $total_files"
+
           passed=0
           failed=0
-          failed_files=""
-          warnings_files=""
+          failed_packages=""
 
-          # Find all .mojo files (excluding test files for now - they're handled separately)
-          for mojo_file in $(find shared -name "*.mojo" -type f | sort); do
-            total=$((total + 1))
-            echo ""
-            echo "Compiling: $mojo_file"
+          # Build the shared package (compiles all modules properly with relative imports)
+          echo ""
+          echo "=================================================="
+          echo "Building shared package..."
+          echo "=================================================="
 
-            # Try to compile the file (not run, just parse and type-check)
-            output=$(pixi run mojo -I "$REPO_ROOT" "$mojo_file" 2>&1) || true
-
-            if echo "$output" | grep -q "error:"; then
-              echo "❌ FAILED: $mojo_file"
-              failed=$((failed + 1))
-              failed_files="$failed_files\n  - $mojo_file"
-              echo "$output" | head -20
-            elif echo "$output" | grep -q "warning:"; then
-              echo "⚠️  WARNINGS: $mojo_file"
-              passed=$((passed + 1))
-              warnings_files="$warnings_files\n  - $mojo_file"
-            else
-              echo "✅ PASSED: $mojo_file"
-              passed=$((passed + 1))
-            fi
-          done
+          if output=$(pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg 2>&1); then
+            echo "✅ PASSED: shared package compiled successfully"
+            passed=$((passed + 1))
+          else
+            echo "❌ FAILED: shared package"
+            echo "$output"
+            failed=$((failed + 1))
+            failed_packages="shared"
+          fi
 
           echo ""
           echo "=================================================="
           echo "Mojo Compilation Summary"
           echo "=================================================="
-          echo "Total files: $total"
+          echo "Total .mojo files: $total_files"
+          echo "Packages compiled: $((passed + failed))"
           echo "Passed: $passed"
           echo "Failed: $failed"
 
@@ -104,24 +99,21 @@ jobs:
           cat > compilation-results/summary.txt << EOF
           Mojo Compilation Check
           ======================
-          Total files: $total
+          Total .mojo files: $total_files
+          Packages compiled: $((passed + failed))
           Passed: $passed
           Failed: $failed
           EOF
 
-          if [ -n "$failed_files" ]; then
-            echo -e "\nFailed files:$failed_files" >> compilation-results/summary.txt
-          fi
-
-          if [ -n "$warnings_files" ]; then
-            echo -e "\nFiles with warnings:$warnings_files" >> compilation-results/summary.txt
+          if [ -n "$failed_packages" ]; then
+            echo -e "\nFailed packages: $failed_packages" >> compilation-results/summary.txt
           fi
 
           cat compilation-results/summary.txt
 
           if [ $failed -gt 0 ]; then
             echo ""
-            echo "❌ FAIL: $failed Mojo files failed to compile"
+            echo "❌ FAIL: Package compilation failed"
             exit 1
           fi
 

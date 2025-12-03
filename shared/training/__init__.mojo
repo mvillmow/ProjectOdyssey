@@ -17,7 +17,6 @@ All tests marked as "(placeholder)" and require uncommented imports as Issue #49
 See Issue #49 for details
 """
 
-from tensor import Tensor
 from python import PythonObject
 from shared.core.extensor import ExTensor
 from shared.core.traits import Model, Loss, Optimizer
@@ -131,7 +130,7 @@ struct MSELoss(Loss, Movable):
         from shared.core.extensor import zeros
         return zeros(List[Int](), DType.float32)
 
-    fn forward(self, output: Tensor[DType.float32], target: Tensor[DType.float32]) raises -> Float32:
+    fn forward(self, output: ExTensor, target: ExTensor) raises -> Float32:
         """Compute MSE loss (legacy interface for backward compatibility).
 
         Args:
@@ -143,7 +142,7 @@ struct MSELoss(Loss, Movable):
         """
         return Float32(0.0)
 
-    fn backward(self, grad_output: Tensor[DType.float32]) raises -> Tensor[DType.float32]:
+    fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Compute gradient of loss.
 
         Args:

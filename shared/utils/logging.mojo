@@ -378,14 +378,6 @@ struct Logger:
 # ============================================================================
 
 
-var _default_logger: Logger
-
-
-fn _init_default_logger():
-    """Initialize the default logger (module initialization)."""
-    _default_logger = Logger("ml-odyssey")
-
-
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
     """Get or create a named logger.
 

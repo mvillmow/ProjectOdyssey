@@ -64,7 +64,7 @@ fn rmsprop_step(
 
         var W = xavier_uniform(784, 128, DType.float32)
         var square_avg = zeros_like(W)
-        var buf = ExTensor()  # Empty tensor (no momentum)
+        var buf = zeros([0], DType.float32)  # Empty tensor (no momentum)
         var t = 1
 
         # Training loop

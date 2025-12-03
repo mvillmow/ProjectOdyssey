@@ -36,7 +36,7 @@ from ..core.reduction import sum_backward, mean_backward
 from ..core.loss import mean_squared_error, mean_squared_error_backward
 from ..core.loss import binary_cross_entropy, binary_cross_entropy_backward
 from ..core.loss import cross_entropy, cross_entropy_backward
-from ..core.creation import ones
+from ..core.extensor import ones
 
 
 # ============================================================================
@@ -62,7 +62,7 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
-        let val = tensor._get_float64(i)
+        var val = tensor._get_float64(i)
         result._set_float64(i, val * scalar)
     return result
 
@@ -82,7 +82,7 @@ fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
-        let val = tensor._get_float64(i)
+        var val = tensor._get_float64(i)
         result._set_float64(i, val + scalar)
     return result
 
@@ -102,7 +102,7 @@ fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
-        let val = tensor._get_float64(i)
+        var val = tensor._get_float64(i)
         result._set_float64(i, val - scalar)
     return result
 
@@ -128,7 +128,7 @@ fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
-        let val = tensor._get_float64(i)
+        var val = tensor._get_float64(i)
         result._set_float64(i, val / scalar)
     return result
 

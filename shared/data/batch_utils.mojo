@@ -51,7 +51,7 @@ fn extract_batch(
     # Build output shape: (actual_batch_size, ...)
     var batch_shape = List[Int]()
     batch_shape.append(actual_batch_size)
-    for i in range(1, data_shape.size):
+    for i in range(1, len(data_shape)):
         batch_shape.append(data_shape[i])
 
     # Create output tensor
@@ -59,7 +59,7 @@ fn extract_batch(
 
     # Compute stride for each sample (product of all dimensions except first)
     var sample_stride = 1
-    for i in range(1, data_shape.size):
+    for i in range(1, len(data_shape)):
         sample_stride *= data_shape[i]
 
     # Copy samples

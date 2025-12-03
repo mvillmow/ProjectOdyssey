@@ -51,8 +51,9 @@ from .bf8 import BF8
 from .fp4 import FP4_E2M1
 from .mxfp4 import MXFP4, E8M0Scale
 from .nvfp4 import NVFP4, E4M3Scale
-from .integer import Int8, Int16, Int32, Int64
-from .unsigned import UInt8, UInt16, UInt32, UInt64
+# TODO: Fix integer/unsigned types - they have compilation errors
+# from .integer import Int8, Int16, Int32, Int64
+# from .unsigned import UInt8, UInt16, UInt32, UInt64
 
 # Future exports will be added here as components are implemented
 # from .tensor import Tensor
