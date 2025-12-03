@@ -89,7 +89,7 @@ fn test_mxfp4_tensor_conversion_padding() raises:
     # Verify padding values (last 14) are zeros
     for i in range(50, 64):
         var decoded = restored._data.bitcast[Float32]()[i]
-        assert_almost_equal(decoded, 0.0, rtol=1e-5, atol=0.1)
+        assert_almost_equal(decoded, 0.0, tolerance=0.1)
 
 
 fn test_mxfp4_tensor_conversion_multidim() raises:
@@ -186,7 +186,7 @@ fn test_nvfp4_tensor_conversion_padding() raises:
     # Verify padding values (last 14) are zeros
     for i in range(50, 64):
         var decoded = restored._data.bitcast[Float32]()[i]
-        assert_almost_equal(decoded, 0.0, rtol=1e-5, atol=0.1)
+        assert_almost_equal(decoded, 0.0, tolerance=0.1)
 
 
 fn test_nvfp4_tensor_conversion_multidim() raises:
