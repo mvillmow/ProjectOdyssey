@@ -118,7 +118,7 @@ Relevant links:
 ### Documentation Rules
 
 - **Issue-specific outputs**: Post as comments on the GitHub issue using `gh issue comment <number>`
-- **Comprehensive specs**: `/notes/review/` (architectural decisions, design docs)
+- **Developer documentation**: `/docs/dev/` (architectural decisions, design docs)
 - **Team guides**: `/agents/` (quick start, hierarchy, templates)
 - **Never duplicate** documentation across locations - link instead
 - See `.claude/shared/github-issue-workflow.md` for GitHub issue read/write patterns
@@ -451,7 +451,7 @@ mojo build /tmp/test_syntax.mojo
 
 ### Common Mistakes to Avoid (From 64+ Test Failure Analysis)
 
-**Source**: [Complete Pattern Analysis](/home/mvillmow/ml-odyssey/notes/review/mojo-test-failure-learnings.md)
+**Source**: [Complete Pattern Analysis](docs/dev/mojo-test-failure-patterns.md)
 
 Based on systematic analysis of 10 PRs fixing 64+ test failures, here are the most critical patterns to avoid:
 
@@ -754,7 +754,7 @@ Before committing Mojo code, verify:
 - [ ] Space after `var` keyword: `var a` not `vara`
 - [ ] Verify function signatures before calling (check source or compiler)
 
-**See**: [Complete Mojo Failure Patterns](notes/review/mojo-test-failure-learnings.md) for detailed
+**See**: [Complete Mojo Failure Patterns](docs/dev/mojo-test-failure-patterns.md) for detailed
 examples and prevention strategies.
 
 ### Zero-Warnings Policy
@@ -1076,16 +1076,16 @@ The repository uses three separate locations for documentation to avoid duplicat
 
 **When to Use**: Creating new documentation for team onboarding or quick reference.
 
-#### 2. Comprehensive Specifications (`/notes/review/`)
+#### 2. Developer Documentation (`/docs/dev/`)
 
 **Purpose**: Detailed architectural decisions, comprehensive specifications, and design documents.
 
 ### Contents
 
-- Architectural reviews and decisions
-- Comprehensive design specifications (agent-hierarchy.md, skills-design.md)
-- Workflow strategies (orchestration-patterns.md, worktree-strategy.md)
-- Implementation summaries and lessons learned
+- Mojo patterns and error handling (mojo-test-failure-patterns.md)
+- Skills architecture (skills-design.md, skills-architecture.md)
+- Orchestration patterns (orchestration-patterns.md)
+- Backward pass catalog (backward-pass-catalog.md)
 
 **When to Use**: Writing detailed specifications, architectural decisions, or comprehensive guides.
 
@@ -1130,7 +1130,7 @@ EOF
 ### Important Rules
 
 - ✅ DO: Post issue-specific findings and decisions as comments
-- ✅ DO: Link to comprehensive docs in `/agents/` and `/notes/review/`
+- ✅ DO: Link to comprehensive docs in `/agents/` and `/docs/dev/`
 - ✅ DO: Reference related issues with `#<number>` format
 - ❌ DON'T: Duplicate comprehensive documentation
 - ❌ DON'T: Create local files for issue tracking
@@ -1229,7 +1229,7 @@ See `.claude/shared/github-issue-workflow.md` for complete workflow patterns.
 
 - **Scripts**: `scripts/*.py`
 - **Logs**: `logs/*.log`
-- **Tracked Docs**: `notes/review/`, `agents/` (reference these in commits)
+- **Tracked Docs**: `docs/dev/`, `agents/` (reference these in commits)
 - **Issue Docs**: GitHub issue comments (not local files)
 
 ## Git Workflow
@@ -1545,7 +1545,7 @@ gh auth refresh -h github.com
 ## Important Files
 
 - `.clinerules` - Comprehensive Claude Code conventions
-- `notes/review/README.md` - PR review guidelines and 5-phase workflow explanation
+- `docs/dev/` - Developer documentation (Mojo patterns, skills architecture)
 - `scripts/README.md` - Complete scripts documentation
 - `README.md` - Main project documentation
 - `.claude/shared/github-issue-workflow.md` - GitHub issue read/write patterns

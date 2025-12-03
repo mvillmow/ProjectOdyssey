@@ -1,0 +1,348 @@
+"""Tests for data generators module.
+
+Tests all data generator functions including:
+- random_tensor: Basic random tensor generation
+- random_uniform: Uniform distribution generation
+- random_normal: Normal distribution generation
+- synthetic_classification_data: Synthetic dataset generation
+
+Tests verify:
+- Output shapes are correct
+- Output dtypes are correct
+- Values are within expected ranges
+- Distribution properties (for random distributions)
+"""
+
+from shared.testing import (
+    random_tensor,
+    random_uniform,
+    random_normal,
+    synthetic_classification_data,
+)
+from shared.core.extensor import ExTensor
+
+# Import test helpers
+from tests.shared.conftest import (
+    assert_true,
+    assert_equal_int,
+    assert_dtype,
+    assert_shape,
+    assert_numel,
+    assert_dim,
+    assert_value_at,
+    assert_all_close,
+)
+
+
+# ============================================================================
+# Test random_tensor()
+# ============================================================================
+
+
+fn test_random_tensor_shape_1d() raises:
+    """Test random_tensor creates correct 1D shape."""
+    var shape = List[Int]()
+    shape.append(10)
+    var tensor = random_tensor(shape, DType.float32)
+
+    assert_dim(tensor, 1, "random_tensor 1D should have 1 dimension")
+    assert_numel(tensor, 10, "random_tensor 1D should have 10 elements")
+
+
+fn test_random_tensor_shape_2d() raises:
+    """Test random_tensor creates correct 2D shape."""
+    var shape = List[Int]()
+    shape.append(5)
+    shape.append(8)
+    var tensor = random_tensor(shape, DType.float32)
+
+    assert_dim(tensor, 2, "random_tensor 2D should have 2 dimensions")
+    assert_numel(tensor, 40, "random_tensor 2D(5,8) should have 40 elements")
+
+
+fn test_random_tensor_shape_3d() raises:
+    """Test random_tensor creates correct 3D shape."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+    var tensor = random_tensor(shape, DType.float32)
+
+    assert_dim(tensor, 3, "random_tensor 3D should have 3 dimensions")
+    assert_numel(tensor, 24, "random_tensor 3D(2,3,4) should have 24 elements")
+
+
+fn test_random_tensor_dtype_float32() raises:
+    """Test random_tensor with float32 dtype."""
+    var shape = List[Int]()
+    shape.append(5)
+    var tensor = random_tensor(shape, DType.float32)
+
+    assert_dtype(tensor, DType.float32, "random_tensor should respect dtype")
+
+
+fn test_random_tensor_dtype_float64() raises:
+    """Test random_tensor with float64 dtype."""
+    var shape = List[Int]()
+    shape.append(5)
+    var tensor = random_tensor(shape, DType.float64)
+
+    assert_dtype(tensor, DType.float64, "random_tensor should respect dtype")
+
+
+fn test_random_tensor_dtype_int32() raises:
+    """Test random_tensor with int32 dtype."""
+    var shape = List[Int]()
+    shape.append(5)
+    var tensor = random_tensor(shape, DType.int32)
+
+    assert_dtype(tensor, DType.int32, "random_tensor should respect dtype")
+
+
+fn test_random_tensor_values_in_range() raises:
+    """Test random_tensor values are in [0, 1)."""
+    var shape = List[Int]()
+    shape.append(100)
+    var tensor = random_tensor(shape, DType.float32)
+
+    # Check a sample of values are in valid range
+    for i in range(0, 100, 10):
+        var val = tensor._get_float64(i)
+        assert_true(val >= 0.0, "random_tensor value should be >= 0.0")
+        assert_true(val < 1.0, "random_tensor value should be < 1.0")
+
+
+fn test_random_tensor_default_dtype() raises:
+    """Test random_tensor uses float32 as default dtype."""
+    var shape = List[Int]()
+    shape.append(5)
+    var tensor = random_tensor(shape)  # No dtype specified
+
+    assert_dtype(tensor, DType.float32, "random_tensor default dtype should be float32")
+
+
+# ============================================================================
+# Test random_uniform()
+# ============================================================================
+
+
+fn test_random_uniform_shape() raises:
+    """Test random_uniform creates correct shape."""
+    var shape = List[Int]()
+    shape.append(10)
+    shape.append(5)
+    var tensor = random_uniform(shape, low=0.0, high=1.0)
+
+    assert_numel(tensor, 50, "random_uniform(10,5) should have 50 elements")
+
+
+fn test_random_uniform_range_0_to_1() raises:
+    """Test random_uniform with default range [0, 1)."""
+    var shape = List[Int]()
+    shape.append(100)
+    var tensor = random_uniform(shape)
+
+    # Check sample values are in [0, 1)
+    for i in range(0, 100, 10):
+        var val = tensor._get_float64(i)
+        assert_true(val >= 0.0, "uniform value should be >= 0.0")
+        assert_true(val < 1.0, "uniform value should be < 1.0")
+
+
+fn test_random_uniform_range_negative_to_positive() raises:
+    """Test random_uniform with custom range [-1, 1)."""
+    var shape = List[Int]()
+    shape.append(100)
+    var tensor = random_uniform(shape, low=-1.0, high=1.0)
+
+    # Check sample values are in [-1, 1)
+    for i in range(0, 100, 10):
+        var val = tensor._get_float64(i)
+        assert_true(val >= -1.0, "uniform value should be >= -1.0")
+        assert_true(val < 1.0, "uniform value should be < 1.0")
+
+
+fn test_random_uniform_dtype() raises:
+    """Test random_uniform respects dtype."""
+    var shape = List[Int]()
+    shape.append(10)
+    var tensor = random_uniform(shape, dtype=DType.float64)
+
+    assert_dtype(tensor, DType.float64, "random_uniform should respect dtype")
+
+
+# ============================================================================
+# Test random_normal()
+# ============================================================================
+
+
+fn test_random_normal_shape() raises:
+    """Test random_normal creates correct shape."""
+    var shape = List[Int]()
+    shape.append(20)
+    shape.append(30)
+    var tensor = random_normal(shape)
+
+    assert_numel(tensor, 600, "random_normal(20,30) should have 600 elements")
+
+
+fn test_random_normal_dtype_float32() raises:
+    """Test random_normal with float32 dtype."""
+    var shape = List[Int]()
+    shape.append(10)
+    var tensor = random_normal(shape, dtype=DType.float32)
+
+    assert_dtype(tensor, DType.float32, "random_normal should respect dtype")
+
+
+fn test_random_normal_dtype_float64() raises:
+    """Test random_normal with float64 dtype."""
+    var shape = List[Int]()
+    shape.append(10)
+    var tensor = random_normal(shape, dtype=DType.float64)
+
+    assert_dtype(tensor, DType.float64, "random_normal should respect dtype")
+
+
+fn test_random_normal_mean_and_std() raises:
+    """Test random_normal respects mean and std parameters.
+
+    Note: With small samples (10 elements), we only do sanity checks.
+    Statistical tests would require larger samples.
+    """
+    var shape = List[Int]()
+    shape.append(10)
+
+    # Generate with mean=5.0, std=1.0
+    var tensor = random_normal(shape, mean=5.0, std=1.0)
+
+    # Get a sample value - should be roughly around mean (with tolerance)
+    var val = tensor._get_float64(0)
+
+    # With mean=5.0, values should typically be in [3, 7] (mean ± 2*std)
+    assert_true(
+        val >= 1.0 and val <= 9.0,
+        "random_normal with mean=5.0 should produce values roughly around 5.0"
+    )
+
+
+fn test_random_normal_distribution_sanity() raises:
+    """Test random_normal produces varied values (not all same).
+
+    With a normal distribution, consecutive values should be different.
+    """
+    var shape = List[Int]()
+    shape.append(50)
+    var tensor = random_normal(shape)
+
+    # Get first two values
+    var val1 = tensor._get_float64(0)
+    var val2 = tensor._get_float64(1)
+
+    # They should not be identical (probability of identical floats is essentially 0)
+    assert_true(
+        val1 != val2,
+        "random_normal should produce different values for different samples"
+    )
+
+
+# ============================================================================
+# Test synthetic_classification_data()
+# ============================================================================
+
+
+fn test_synthetic_classification_data_shape_features() raises:
+    """Test synthetic_classification_data produces correct feature shape."""
+    var (X, y) = synthetic_classification_data(100, 20, 3)
+
+    assert_shape(X, List[Int](100, 20), "Features should have shape [100, 20]")
+
+
+fn test_synthetic_classification_data_shape_labels() raises:
+    """Test synthetic_classification_data produces correct label shape."""
+    var (X, y) = synthetic_classification_data(100, 20, 3)
+
+    assert_shape(y, List[Int](100), "Labels should have shape [100]")
+
+
+fn test_synthetic_classification_data_dtype_features() raises:
+    """Test synthetic_classification_data feature dtype."""
+    var (X, y) = synthetic_classification_data(100, 20, 3, DType.float32)
+
+    assert_dtype(X, DType.float32, "Features should have specified dtype")
+
+
+fn test_synthetic_classification_data_dtype_labels() raises:
+    """Test synthetic_classification_data labels are int32."""
+    var (X, y) = synthetic_classification_data(100, 20, 3)
+
+    assert_dtype(y, DType.int32, "Labels should be int32")
+
+
+fn test_synthetic_classification_data_label_values() raises:
+    """Test synthetic_classification_data labels are in valid range."""
+    var (X, y) = synthetic_classification_data(50, 10, 3)
+
+    # Check that labels are in [0, num_classes)
+    for i in range(50):
+        var label_val = y._get_int64(i)
+        assert_true(label_val >= 0, "Label should be >= 0")
+        assert_true(label_val < 3, "Label should be < num_classes")
+
+
+fn test_synthetic_classification_data_single_sample() raises:
+    """Test synthetic_classification_data with minimal size."""
+    var (X, y) = synthetic_classification_data(1, 1, 1)
+
+    assert_shape(X, List[Int](1, 1), "Minimal features should have shape [1, 1]")
+    assert_shape(y, List[Int](1), "Minimal labels should have shape [1]")
+
+
+fn test_synthetic_classification_data_many_classes() raises:
+    """Test synthetic_classification_data with many classes."""
+    var (X, y) = synthetic_classification_data(100, 10, 10)
+
+    # Check all labels are in valid range
+    for i in range(100):
+        var label_val = y._get_int64(i)
+        assert_true(label_val >= 0, "Label should be >= 0")
+        assert_true(label_val < 10, "Label should be < num_classes")
+
+
+fn test_synthetic_classification_data_high_dimensions() raises:
+    """Test synthetic_classification_data with high-dimensional features."""
+    var (X, y) = synthetic_classification_data(50, 100, 5)
+
+    assert_shape(X, List[Int](50, 100), "Should handle high-dimensional features")
+
+
+# ============================================================================
+# Integration Tests
+# ============================================================================
+
+
+fn test_integration_random_tensor_and_normal() raises:
+    """Test combining random tensor and normal generation."""
+    var shape = List[Int]()
+    shape.append(5)
+    shape.append(5)
+
+    var t1 = random_tensor(shape)
+    var t2 = random_normal(shape)
+
+    assert_numel(t1, 25, "First tensor should have 25 elements")
+    assert_numel(t2, 25, "Second tensor should have 25 elements")
+
+
+fn test_integration_classification_data_shapes_match() raises:
+    """Test features and labels shapes are consistent."""
+    var num_samples = 100
+    var (X, y) = synthetic_classification_data(num_samples, 15, 4)
+
+    # Number of samples should match
+    assert_equal_int(
+        X.shape()[0],
+        num_samples,
+        "Features first dimension should match num_samples"
+    )
+    assert_equal_int(y.shape()[0], num_samples, "Labels should match num_samples")

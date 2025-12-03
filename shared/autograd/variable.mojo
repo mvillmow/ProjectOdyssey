@@ -10,8 +10,8 @@ replayed in reverse during backward propagation.
 Key Concepts:
 - Variable wraps an ExTensor and adds requires_grad flag and grad storage
 - Operations on Variables are recorded in a gradient tape
-- Calling .backward() triggers automatic gradient computation via chain rule
-- Gradients accumulate across multiple backward passes (call .zero_grad() to reset)
+- Calling .backward(tape) triggers automatic gradient computation via chain rule
+- Gradients accumulate across multiple backward passes (call tape.clear() to reset)
 
 Examples:
     from shared.autograd import Variable, GradientTape
@@ -28,7 +28,7 @@ Examples:
     var z = variable_add(x, y, tape)
     var loss = variable_sum(z, tape)
 
-    # Compute gradients automatically
+    # Compute gradients
     loss.backward(tape)
 
     # Access gradients
@@ -88,7 +88,7 @@ struct Variable(Copyable, Movable):
 
     fn __init__(
         out self,
-        owned data: ExTensor,
+        var data: ExTensor,
         requires_grad: Bool,
         mut tape: GradientTape,
     ) raises:
@@ -121,7 +121,7 @@ struct Variable(Copyable, Movable):
 
     fn __init__(
         out self,
-        owned data: ExTensor,
+        var data: ExTensor,
         requires_grad: Bool,
         id: Int,
     ):
@@ -163,6 +163,7 @@ struct Variable(Copyable, Movable):
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
         tape.backward(self.id, grad^)
+
 
     fn detach(self) -> ExTensor:
         """Get the underlying tensor without gradient tracking.
@@ -234,10 +235,16 @@ fn variable_add(
         var input_ids = List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
+
+        # Save inputs for backward pass (needed for broadcast reduction)
         var saved = SavedTensors()
+        saved.add_tensor(a.data)
+        saved.add_tensor(b.data)
         tape.record(OP_ADD, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id
+    )
 
 
 fn variable_subtract(
@@ -262,10 +269,16 @@ fn variable_subtract(
         var input_ids = List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
+
+        # Save inputs for backward pass (needed for broadcast reduction)
         var saved = SavedTensors()
+        saved.add_tensor(a.data)
+        saved.add_tensor(b.data)
         tape.record(OP_SUBTRACT, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id
+    )
 
 
 fn variable_multiply(
@@ -297,7 +310,9 @@ fn variable_multiply(
         saved.add_tensor(b.data)
         tape.record(OP_MULTIPLY, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id
+    )
 
 
 fn variable_divide(
@@ -329,7 +344,9 @@ fn variable_divide(
         saved.add_tensor(b.data)
         tape.record(OP_DIVIDE, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id
+    )
 
 
 fn variable_matmul(
@@ -361,7 +378,9 @@ fn variable_matmul(
         saved.add_tensor(b.data)
         tape.record(OP_MATMUL, input_ids^, result_id, saved^)
 
-    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
+    return Variable(
+        result_data^, a.requires_grad or b.requires_grad, result_id
+    )
 
 
 fn variable_sum(
@@ -386,9 +405,9 @@ fn variable_sum(
         var input_ids = List[Int]()
         input_ids.append(x.id)
 
-        # Save input shape and axis for backward pass
+        # Save input tensor and axis for backward pass
         var saved = SavedTensors()
-        saved.add_shape(x.data.shape())
+        saved.add_tensor(x.data)
         saved.add_scalar(Float64(axis))
         tape.record(OP_SUM, input_ids^, result_id, saved^)
 
@@ -417,9 +436,9 @@ fn variable_mean(
         var input_ids = List[Int]()
         input_ids.append(x.id)
 
-        # Save input shape and axis for backward pass
+        # Save input tensor and axis for backward pass
         var saved = SavedTensors()
-        saved.add_shape(x.data.shape())
+        saved.add_tensor(x.data)
         saved.add_scalar(Float64(axis))
         tape.record(OP_MEAN, input_ids^, result_id, saved^)
 

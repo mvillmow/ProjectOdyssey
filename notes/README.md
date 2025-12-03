@@ -12,10 +12,10 @@ See `.claude/shared/github-issue-workflow.md` for the workflow.
 ```text
 ml-odyssey/
 ├── notes/
-│   ├── review/                  # Architectural specs and comprehensive documentation
 │   └── blog/                    # Development blog entries
 ├── docs/
-│   └── adr/                     # Architecture Decision Records
+│   ├── adr/                     # Architecture Decision Records
+│   └── dev/                     # Developer documentation
 ├── agents/                      # Agent system documentation
 ├── scripts/                     # Automation scripts
 │   └── README.md                # Scripts documentation
@@ -29,7 +29,7 @@ ml-odyssey/
 | Issue-specific work | GitHub issue comments |
 | PR reviews | GitHub PR review comments |
 | Architecture Decision Records | `/docs/adr/` |
-| Architectural specs | `/notes/review/` |
+| Developer documentation | `/docs/dev/` |
 | Team guides | `/agents/` |
 | Development blog | `/notes/blog/` |
 
@@ -90,5 +90,5 @@ For questions or issues:
 - Check the logs in `logs/`
 - Review [scripts/README.md](../scripts/README.md)
 - See existing issues on GitHub
-- Refer to architectural specs in `notes/review/` and ADRs in `docs/adr/`
+- Refer to developer docs in `docs/dev/` and ADRs in `docs/adr/`
 - Agent documentation in `agents/`
