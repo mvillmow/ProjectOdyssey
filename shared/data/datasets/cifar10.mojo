@@ -49,10 +49,13 @@ fn _get_cifar10_classes() -> List[String]:
     classes.append("horse")
     classes.append("ship")
     classes.append("truck")
-    return classes
+    return classes^
 
 
-alias CIFAR10_CLASSES: List[String] = _get_cifar10_classes()
+# CIFAR10 class names - created at runtime when needed
+fn get_cifar10_classes() -> List[String]:
+    """Get CIFAR-10 class names."""
+    return _get_cifar10_classes()
 
 
 # ============================================================================
@@ -265,7 +268,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         # Use concatenate function to join all tensors along axis 0
         return concatenate(tensors, axis=0)
 
-    fn get_class_name(self, class_idx: Int) -> String:
+    fn get_class_name(self, class_idx: Int) raises -> String:
         """Get human-readable class name from class index.
 
         Args:
@@ -282,7 +285,8 @@ struct CIFAR10Dataset(Copyable, Movable):
                 "Class index " + String(class_idx) + " out of range [0, 9]"
             )
 
-        return CIFAR10_CLASSES[class_idx]
+        var classes = get_cifar10_classes()
+        return classes[class_idx]
 
     fn num_classes(self) -> Int:
         """Get number of classes in CIFAR-10.
@@ -318,4 +322,4 @@ struct CIFAR10Dataset(Copyable, Movable):
         shape.append(3)   # RGB channels
         shape.append(32)  # Height
         shape.append(32)  # Width
-        return shape
+        return shape^

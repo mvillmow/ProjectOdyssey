@@ -157,7 +157,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         """Return number of samples."""
         return self._len
 
-    fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
+    fn __getitem__(mut self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Load and return sample at index.
 
         Args:.            `index`: Sample index (supports negative indexing).
@@ -185,7 +185,10 @@ struct FileDataset(Dataset, Copyable, Movable):
 
         # Load data from file
         var data = self._load_file(self.file_paths[idx])
-        var label = ExTensor([self.labels[idx]])
+        # Create label tensor explicitly to avoid ambiguous constructor
+        var label_shape = List[Int](1)
+        var label = zeros(label_shape, DType.int32)
+        label._data.bitcast[Int32]()[0] = Int32(self.labels[idx])
 
         var result = (data, label)
 
@@ -361,7 +364,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
             self.labels.slice(idx, idx + 1, axis=0),
         )
 
-    fn get_train_data(self) -> ExTensorDataset raises:
+    fn get_train_data(self) raises -> ExTensorDataset:
         """Get training data as ExTensorDataset.
 
         Returns:
@@ -372,7 +375,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
         """
         return ExTensorDataset(self.data, self.labels)
 
-    fn get_test_data(self) -> ExTensorDataset raises:
+    fn get_test_data(self) raises -> ExTensorDataset:
         """Get test data as ExTensorDataset.
 
         Note: This method returns the same data as get_train_data since
@@ -397,7 +400,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
         shape.append(1)
         shape.append(28)
         shape.append(28)
-        return shape
+        return shape^
 
     fn num_classes(self) -> Int:
         """Return the number of classes for this split.

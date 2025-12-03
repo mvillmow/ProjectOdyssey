@@ -48,7 +48,7 @@ struct BenchmarkConfig(Copyable, Movable):
 
 
 @fieldwise_init
-struct BenchmarkResult(Copyable, Movable):
+struct BenchmarkResult(Copyable, Movable, ImplicitlyCopyable):
     """Results from a benchmark run.
 
     Contains timing statistics and throughput metrics for a benchmarked
@@ -145,20 +145,11 @@ fn _get_time_ms() -> Float64:
     # mach_absolute_time on macOS, QueryPerformanceCounter on Windows)
     # For now, return a placeholder that would be replaced with actual
     # timer implementation
-    var time_val = 0.0
-
-    @parameter
-    if info.os.is_linux():
-        # Would use clock_gettime(CLOCK_MONOTONIC) in real implementation
-        time_val = 0.0
-    elif info.os.is_macos():
-        # Would use mach_absolute_time() in real implementation
-        time_val = 0.0
-    else:
-        # Would use QueryPerformanceCounter on Windows
-        time_val = 0.0
-
-    return time_val
+    # TODO: Implement platform-specific high-resolution timing
+    # - Linux: clock_gettime(CLOCK_MONOTONIC)
+    # - macOS: mach_absolute_time()
+    # - Windows: QueryPerformanceCounter
+    return Float64(0.0)
 
 
 # ============================================================================

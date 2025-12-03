@@ -161,7 +161,7 @@ struct BroadcastIterator:
     var position: Int
 
     fn __init__(
-        mut self,
+        out self,
         var shape: List[Int],
         var strides1: List[Int],
         var strides2: List[Int],
@@ -182,9 +182,10 @@ struct BroadcastIterator:
         for i in range(len(self.shape)):
             self.size *= self.shape[i]
 
-    fn __iter__(self) -> Self:
-        """Return iterator."""
-        return self
+    # TODO: __iter__ requires copying which isn't supported with List[Int] fields
+    # Callers should use __next__ directly or iterate with while loop
+    # fn __iter__(self) -> Self:
+    #     return self
 
     fn __next__(mut self) raises -> Tuple[Int, Int]:
         """Get next pair of indices for the two tensors.

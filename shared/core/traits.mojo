@@ -237,72 +237,22 @@ trait Composable(Differentiable):
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
     """
 
-    fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
-        """Compose this component with another.
-
-        Args:.            `other`: Component to compose with.
-
-        Returns:.            Composed operation (self ∘ other)
-
-        Raises:.            Error: If shapes are incompatible.
-
-        Example:.            var layer1 = Linear(784, 128)
-            var layer2 = ReLU()
-            var composed = layer1.compose(layer2)  # Linear -> ReLU
-        """
-        ...
+    # TODO: compose() method requires Movable constraint on generic types
+    # Deferred until proper trait intersection syntax is available
+    # fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
+    #     ...
+    pass
 
 
-struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composable):
-    """Composition of two differentiable operations.
-
-    Represents the composition f ∘ g where:
-        forward: x -> g(f(x))
-        `backward`: Uses chain rule.
-
-    Parameters:
-        `F`: Type of first operation (must be Differentiable).
-        `S`: Type of second operation (must be Differentiable).
-
-    Attributes:
-        `first`: First operation (applied first)
-        `second`: Second operation (applied second)
-    """
-
-    var first: F
-    var second: S
-
-    fn __init__(out self, var first: F, var second: S):
-        """Create composed operation.
-
-        Args:.            `first`: First operation.
-            `second`: Second operation (receives output of first)
-        """
-        self.first = first^
-        self.second = second^
-
-    fn forward(mut self, input: ExTensor) raises -> ExTensor:
-        """Forward pass through composition.
-
-        Computes: second(first(input))
-        """
-        var intermediate = self.first.forward(input)
-        return self.second.forward(intermediate)
-
-    fn backward(self, grad_output: ExTensor) raises -> ExTensor:
-        """Backward pass through composition.
-
-        Uses chain rule: d(second ∘ first)/dx = d(second)/d(first) * d(first)/dx.
-        """
-        var grad_second = self.second.backward(grad_output)
-        return self.first.backward(grad_second)
-
-    fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
-        """Further compose with another operation.
-
-        Returns: (self ∘ other)
-        """
-        return ComposedOp[Self, T](self, other)
+# TODO: ComposedOp requires Movable constraint on generic types F and S
+# Commenting out until proper trait intersection syntax is available in Mojo
+# struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composable):
+#     """Composition of two differentiable operations."""
+#     var first: F
+#     var second: S
+#     ...
+#
+# See: https://docs.modular.com/mojo/manual/traits/
 
 
 trait Trainable:

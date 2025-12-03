@@ -287,8 +287,13 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
         - Converts pixel values from [0, 255] to normalized float
     """
     # ImageNet normalization parameters (R, G, B)
-    var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
-    var std = (Float32(0.229), Float32(0.224), Float32(0.225))
+    # ImageNet normalization constants per channel
+    var mean_r = Float32(0.485)
+    var mean_g = Float32(0.456)
+    var mean_b = Float32(0.406)
+    var std_r = Float32(0.229)
+    var std_g = Float32(0.224)
+    var std_b = Float32(0.225)
 
     var shape = images.shape()
     var normalized = zeros(shape, DType.float32)
@@ -307,14 +312,14 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
             var std_val = Float32(1.0)
 
             if c == 0:  # Red channel
-                mean_val = mean.0
-                std_val = std.0
+                mean_val = mean_r
+                std_val = std_r
             elif c == 1:  # Green channel
-                mean_val = mean.1
-                std_val = std.1
+                mean_val = mean_g
+                std_val = std_g
             else:  # Blue channel
-                mean_val = mean.2
-                std_val = std.2
+                mean_val = mean_b
+                std_val = std_b
 
             for h in range(height):
                 for w in range(width):

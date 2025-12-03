@@ -97,7 +97,7 @@ from .tape import (
     TapeNode,
     SavedTensors,
     VariableRegistry,
-    NoGradContext,
+    # NoGradContext - commented out due to UnsafePointer parametric mutability issues
     # Operation type aliases
     OP_ADD,
     OP_SUBTRACT,

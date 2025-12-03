@@ -53,7 +53,7 @@ struct RandomState(Copyable, Movable):
 
     fn size(self) -> Int:
         """Get number of state values stored."""
-        return self.state_data.size()
+        return len(self.state_data)
 
 
 # ============================================================================

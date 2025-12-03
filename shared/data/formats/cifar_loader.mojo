@@ -75,7 +75,7 @@ struct CIFARLoader(Copyable, Movable):
             Error: If cifar_version is not 10 or 100
         """
         if cifar_version != 10 and cifar_version != 100:
-            raise Error("CIFAR version must be 10 or 100, got: " + str(cifar_version))
+            raise Error("CIFAR version must be 10 or 100, got: " + String(cifar_version))
 
         self.cifar_version = cifar_version
         self.image_size = CIFAR10_IMAGE_SIZE
@@ -98,9 +98,9 @@ struct CIFARLoader(Copyable, Movable):
         if file_size % self.bytes_per_image != 0:
             raise Error(
                 "Invalid file size "
-                + str(file_size)
+                + String(file_size)
                 + ": not a multiple of "
-                + str(self.bytes_per_image)
+                + String(self.bytes_per_image)
             )
 
     fn _calculate_num_images(self, file_size: Int) -> Int:
@@ -137,7 +137,7 @@ struct CIFARLoader(Copyable, Movable):
         self._validate_file_size(file_size)
 
         var num_images = self._calculate_num_images(file_size)
-        var data_bytes = content._as_ptr()
+        var data_bytes = content.unsafe_ptr()
 
         if self.cifar_version == 10:
             # CIFAR-10: 1 label per image
@@ -191,7 +191,7 @@ struct CIFARLoader(Copyable, Movable):
         self._validate_file_size(file_size)
 
         var num_images = self._calculate_num_images(file_size)
-        var data_bytes = content._as_ptr()
+        var data_bytes = content.unsafe_ptr()
 
         # Create tensor to hold images
         var shape = List[Int]()
