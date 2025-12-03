@@ -24,7 +24,7 @@ from shared.core.pooling import maxpool2d, maxpool2d_backward
 from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
-from shared.core.loss import cross_entropy_loss, cross_entropy_loss_backward
+from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
 from sys import argv
 
@@ -135,12 +135,18 @@ fn compute_gradients(
     var logits = linear(drop2_out, model.fc3_weights, model.fc3_bias)
 
     # Compute loss
-    var loss = cross_entropy_loss(logits, labels)
+    var loss_tensor = cross_entropy(logits, labels)
+    var loss = loss_tensor._data.bitcast[Float32]()[0]
 
     # ========== Backward Pass ==========
 
     # Start with gradient from loss
-    var grad_logits = cross_entropy_loss_backward(logits, labels)
+    # For cross-entropy, the initial gradient is 1.0
+    var grad_output_shape = List[Int]()
+    grad_output_shape.append(1)
+    var grad_output = zeros(grad_output_shape, logits.dtype())
+    grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
+    var grad_logits = cross_entropy_backward(grad_output, logits, labels)
 
     # FC3 backward
     var fc3_grads = linear_backward(grad_logits, drop2_out, model.fc3_weights)
