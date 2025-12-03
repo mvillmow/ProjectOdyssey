@@ -261,7 +261,7 @@ python3 scripts/fix_markdown.py . --verbose
 
 ```text
 Found 42 markdown file(s)
-Fixed notes/issues/3/README.md: 5 issues
+Fixed docs/dev/skills-design.md: 5 issues
 Fixed scripts/README.md: 3 issues
 
 Summary:
@@ -807,4 +807,4 @@ ml-odyssey/
 - State files include timestamps for tracking multiple runs
 - Scripts handle errors gracefully with detailed logging
 - Resume capability prevents duplicate work if interrupted
-- For tracked team documentation, see `notes/issues/`, `notes/review/`, and `agents/`
+- For tracked team documentation, see `docs/dev/` and `agents/`

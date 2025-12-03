@@ -44,7 +44,7 @@ Types: feat, fix, docs, refactor, test, chore
 
 - README updated if public API changed
 - ADR created for architectural decisions
-- Issue-specific docs in notes/issues/<number>/
+- Issue-specific docs posted to GitHub issue comments
 - No duplicate documentation
 
 ### Testing Requirements

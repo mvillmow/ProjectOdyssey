@@ -899,7 +899,7 @@ Uses output from forward pass.
 Forward: Y = x * Φ(x)  where Φ is CDF of standard normal
 Backward:
   ∂L/∂X = ∂L/∂Y * [Φ(x) + x * φ(x)]
-  
+
 where φ(x) = (1/√(2π)) * exp(-x²/2) is the PDF
 ```text
 
@@ -908,7 +908,7 @@ where φ(x) = (1/√(2π)) * exp(-x²/2) is the PDF
 ```text
 Forward: Y = 0.5 * x * (1 + tanh(√(2/π) * (x + 0.044715 * x³)))
 Backward: Uses derivative of tanh approximation
-  
+
 with constants:
 - √(2/π) ≈ 0.7978845608028654
 - 0.044715 is the GELU coefficient
@@ -1094,4 +1094,3 @@ The system is sufficient for implementing and training neural networks including
 - Attention mechanisms (softmax + matmul)
 - Normalization layers (sum/mean)
 - Non-linearities (ReLU, GELU, Sigmoid, Tanh)
-
