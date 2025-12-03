@@ -117,7 +117,7 @@ from .tape import (
     OP_SQRT,
 )
 
-from .optimizers import SGD
+from .optimizers import SGD, Adam
 
 from .functional import (
     LossAndGrad,
