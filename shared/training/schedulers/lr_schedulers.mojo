@@ -17,7 +17,7 @@ from shared.training.base import LRScheduler
 # ============================================================================
 
 
-struct StepLR(LRScheduler, Copyable, Movable):
+struct StepLR(Copyable, LRScheduler, Movable):
     """Step decay: reduce learning rate at fixed intervals.
 
     Reduces the learning rate by a factor of gamma every step_size epochs.
@@ -43,9 +43,7 @@ struct StepLR(LRScheduler, Copyable, Movable):
     var step_size: Int
     var gamma: Float64
 
-    fn __init__(
-        out self, base_lr: Float64, step_size: Int, gamma: Float64
-    ):
+    fn __init__(out self, base_lr: Float64, step_size: Int, gamma: Float64):
         """Initialize StepLR scheduler.
 
         Args:.            `base_lr`: Initial learning rate.
@@ -68,7 +66,7 @@ struct StepLR(LRScheduler, Copyable, Movable):
             return self.base_lr
 
         var num_steps = epoch // self.step_size
-        var decay_factor = self.gamma ** num_steps
+        var decay_factor = self.gamma**num_steps
         return self.base_lr * decay_factor
 
 
@@ -77,7 +75,7 @@ struct StepLR(LRScheduler, Copyable, Movable):
 # ============================================================================
 
 
-struct CosineAnnealingLR(LRScheduler, Copyable, Movable):
+struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
     """Cosine annealing: smooth cosine decay from base_lr to eta_min.
 
     The learning rate follows a cosine curve, starting at base_lr and.
@@ -105,9 +103,7 @@ struct CosineAnnealingLR(LRScheduler, Copyable, Movable):
     var T_max: Int
     var eta_min: Float64
 
-    fn __init__(
-        out self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0
-    ):
+    fn __init__(out self, base_lr: Float64, T_max: Int, eta_min: Float64 = 0.0):
         """Initialize Cosine Annealing scheduler.
 
         Args:.            `base_lr`: Initial learning rate.
@@ -145,7 +141,7 @@ struct CosineAnnealingLR(LRScheduler, Copyable, Movable):
 # ============================================================================
 
 
-struct WarmupLR(LRScheduler, Copyable, Movable):
+struct WarmupLR(Copyable, LRScheduler, Movable):
     """Linear warmup: gradually increase learning rate during initial epochs.
 
     The learning rate increases linearly from 0 to base_lr over warmup_epochs,
@@ -196,3 +192,112 @@ struct WarmupLR(LRScheduler, Copyable, Movable):
         # Linear warmup
         var progress = Float64(epoch) / Float64(self.warmup_epochs)
         return self.base_lr * progress
+
+
+# ============================================================================
+# ReduceLROnPlateau Learning Rate Scheduler
+# ============================================================================
+
+
+struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
+    """Reduce learning rate when metric stops improving.
+
+    Monitors a metric (e.g., validation loss) and reduces the learning rate
+    by a factor when the metric has not improved for patience epochs.
+
+    Attributes:
+        `base_lr`: Initial learning rate.
+        `mode`: Optimization mode ("min" for loss, "max" for accuracy).
+        `factor`: Multiplicative factor for LR reduction.
+        `patience`: Number of epochs without improvement before reducing LR.
+        `best_metric`: Best metric value seen so far.
+        `epochs_without_improvement`: Counter for epochs without improvement.
+        `current_lr`: Current learning rate (updated by step()).
+
+    Example:.        var scheduler = ReduceLROnPlateau(
+            base_lr=0.1,
+            mode="min",
+            factor=0.1,
+            patience=10
+        )
+        # If validation loss doesn't improve for 10 epochs:
+        # LR = 0.1 * 0.1 = 0.01
+    """
+
+    var base_lr: Float64
+    var mode: String
+    var factor: Float64
+    var patience: Int
+    var best_metric: Float64
+    var epochs_without_improvement: Int
+    var current_lr: Float64
+
+    fn __init__(
+        out self,
+        base_lr: Float64,
+        mode: String = "min",
+        factor: Float64 = 0.1,
+        patience: Int = 10,
+    ):
+        """Initialize ReduceLROnPlateau scheduler.
+
+        Args:.            `base_lr`: Initial learning rate.
+            `mode`: Optimization mode ("min" or "max").
+            `factor`: Multiplicative factor for LR reduction.
+            `patience`: Epochs without improvement before reducing LR.
+        """
+        self.base_lr = base_lr
+        self.mode = mode
+        self.factor = factor
+        self.patience = patience
+        self.current_lr = base_lr
+
+        # Initialize best_metric based on mode
+        if mode == "min":
+            self.best_metric = Float64(1e10)
+        else:
+            self.best_metric = Float64(-1e10)
+
+        self.epochs_without_improvement = 0
+
+    fn step(mut self, metric: Float64) -> Float64:
+        """Update scheduler based on metric value.
+
+        Args:.            `metric`: Current metric value (e.g., validation loss).
+
+        Returns:.            New learning rate.
+        """
+        var improved = False
+
+        if self.mode == "min":
+            # For loss, improvement means metric decreased
+            if metric < self.best_metric:
+                improved = True
+                self.best_metric = metric
+        else:
+            # For accuracy, improvement means metric increased
+            if metric > self.best_metric:
+                improved = True
+                self.best_metric = metric
+
+        if improved:
+            self.epochs_without_improvement = 0
+        else:
+            self.epochs_without_improvement += 1
+
+        # Reduce LR if no improvement for patience epochs
+        if self.epochs_without_improvement >= self.patience:
+            self.current_lr = self.current_lr * self.factor
+            self.epochs_without_improvement = 0
+
+        return self.current_lr
+
+    fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
+        """Get current learning rate.
+
+        Args:.            `epoch`: Current epoch (unused in ReduceLROnPlateau).
+            `batch`: Current batch (unused).
+
+        Returns:.            Current learning rate.
+        """
+        return self.current_lr

@@ -11,7 +11,7 @@ All schedulers are struct-based implementations of the LRScheduler trait.
 """
 
 # Export scheduler implementations
-from .lr_schedulers import StepLR, CosineAnnealingLR, WarmupLR
+from .lr_schedulers import StepLR, CosineAnnealingLR, WarmupLR, ReduceLROnPlateau
 
 # Also export pure function implementations for backward compatibility
 from .step_decay import step_lr, multistep_lr, exponential_lr, constant_lr
