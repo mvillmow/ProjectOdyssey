@@ -520,3 +520,89 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
 
     var new_shape = List[Int](batch_size, flattened_size)
     return reshape(tensor, new_shape)
+
+
+fn transposed_conv2d_output_shape(
+    input_h: Int, input_w: Int,
+    kernel_h: Int, kernel_w: Int,
+    stride: Int, padding: Int,
+    output_padding: Int = 0
+) -> Tuple[Int, Int]:
+    """Compute output dimensions for 2D transposed convolution.
+
+    Calculates the spatial output dimensions (height, width) of a 2D transposed
+    convolution (deconvolution) operation. Transposed convolution upsamples the
+    input and is commonly used in decoder networks and generative models.
+
+    Args:
+        `input_h`: Input height in pixels
+        `input_w`: Input width in pixels
+        `kernel_h`: Kernel height in pixels
+        `kernel_w`: Kernel width in pixels
+        `stride`: Convolution stride (same for both dimensions)
+        `padding`: Padding applied to input (same for all sides)
+        `output_padding`: Additional padding added to output (default: 0)
+
+    Returns:
+        Tuple of (output_height, output_width)
+
+    Formula:
+        output_h = (input_h - 1) * stride - 2 * padding + kernel_h + output_padding
+        output_w = (input_w - 1) * stride - 2 * padding + kernel_w + output_padding
+
+    Examples:
+        # Upsample 7x7 to 14x14 with stride=2
+        var out_h, out_w = transposed_conv2d_output_shape(7, 7, 4, 4, 2, 1)  # (14, 14)
+
+        # Upsample 14x14 to 28x28 with stride=2
+        var out_h, out_w = transposed_conv2d_output_shape(14, 14, 4, 4, 2, 1)  # (28, 28)
+    """
+    var out_h = (input_h - 1) * stride - 2 * padding + kernel_h + output_padding
+    var out_w = (input_w - 1) * stride - 2 * padding + kernel_w + output_padding
+    return Tuple[Int, Int](out_h, out_w)
+
+
+fn global_avgpool_output_shape(batch: Int, channels: Int) -> Tuple[Int, Int, Int, Int]:
+    """Compute output shape for global average pooling.
+
+    Global average pooling reduces each channel to a single value by averaging
+    all spatial dimensions. The output has shape (batch, channels, 1, 1).
+
+    Args:
+        `batch`: Batch size
+        `channels`: Number of channels
+
+    Returns:
+        Tuple of (batch, channels, 1, 1)
+
+    Examples:
+        # Global average pooling on feature map
+        var shape = global_avgpool_output_shape(32, 512)  # (32, 512, 1, 1)
+
+        # Common in classification networks (replaces flatten + FC)
+        var shape = global_avgpool_output_shape(16, 2048)  # (16, 2048, 1, 1)
+    """
+    return Tuple[Int, Int, Int, Int](batch, channels, 1, 1)
+
+
+fn linear_output_shape(batch_size: Int, out_features: Int) -> Tuple[Int, Int]:
+    """Compute output shape for linear/dense layer.
+
+    Linear layers transform input features to output features. The output
+    shape is (batch_size, out_features).
+
+    Args:
+        `batch_size`: Number of samples in the batch
+        `out_features`: Number of output features (neurons)
+
+    Returns:
+        Tuple of (batch_size, out_features)
+
+    Examples:
+        # Classification head: 512 features -> 10 classes
+        var shape = linear_output_shape(32, 10)  # (32, 10)
+
+        # Hidden layer: 784 features -> 256 hidden units
+        var shape = linear_output_shape(64, 256)  # (64, 256)
+    """
+    return Tuple[Int, Int](batch_size, out_features)
