@@ -28,6 +28,14 @@ alias VERSION = "0.1.0"
 # Exports - Training Components
 # ============================================================================
 
+# Export model utilities for weight persistence (Issue #2294)
+from .model_utils import (
+    save_model_weights,
+    load_model_weights,
+    get_model_parameter_names,
+    validate_shapes,
+)
+
 # Export base interfaces and utilities
 from .base import (
     Callback,
