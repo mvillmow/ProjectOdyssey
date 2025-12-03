@@ -16,6 +16,7 @@ from tests.shared.conftest import (
     TestFixtures,
 )
 from shared.training.schedulers import CosineAnnealingLR, ReduceLROnPlateau
+from shared.training.schedulers.lr_schedulers import MODE_MIN, MODE_MAX
 
 
 # ============================================================================
@@ -158,7 +159,7 @@ fn test_reduce_lr_on_plateau_initialization_min_mode() raises:
 
     # Verify initial parameters
     assert_almost_equal(scheduler.base_lr, 0.1)
-    assert_equal(scheduler.mode, "min")
+    assert_equal(scheduler.mode, MODE_MIN)
     assert_almost_equal(scheduler.factor, 0.1)
     assert_equal(scheduler.patience, 10)
 
@@ -171,7 +172,7 @@ fn test_reduce_lr_on_plateau_initialization_max_mode() raises:
     """Test ReduceLROnPlateau initialization in 'max' mode."""
     var scheduler = ReduceLROnPlateau(base_lr=0.1, mode="max", factor=0.1, patience=5)
 
-    assert_equal(scheduler.mode, "max")
+    assert_equal(scheduler.mode, MODE_MAX)
     assert_equal(scheduler.patience, 5)
 
 
@@ -257,7 +258,7 @@ fn test_reduce_lr_on_plateau_max_mode_no_improvement() raises:
 
 fn test_reduce_lr_on_plateau_multiple_reductions() raises:
     """Test ReduceLROnPlateau continues reducing LR on multiple plateaus."""
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=1)
+    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
 
     # First reduction
     var lr1 = scheduler.step(0.5)
@@ -335,7 +336,7 @@ fn test_reduce_lr_on_plateau_get_lr_interface() raises:
 
     get_lr() should return current_lr regardless of epoch/batch.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=1)
+    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
 
     scheduler.step(0.5)
     scheduler.step(0.6)
@@ -380,20 +381,19 @@ fn test_reduce_lr_on_plateau_realistic_training_scenario() raises:
     )
 
     # Simulate validation loss decreasing then plateauing
+    # Note: "no improvement" means value >= best, not just similar
     var val_losses = List[Float64](
-        0.5,    # Epoch 0: improvement
-        0.4,    # Epoch 1: improvement
-        0.35,   # Epoch 2: improvement
-        0.345,  # Epoch 3: no improvement
-        0.344,  # Epoch 4: no improvement
-        0.343,  # Epoch 5: no improvement (patience exceeded, reduce)
-        0.342,  # Epoch 6: improvement on reduced LR
-        0.3415, # Epoch 7: no improvement
-        0.341,  # Epoch 8: no improvement
-        0.3405, # Epoch 9: no improvement (reduce again)
+        0.5,    # Epoch 0: improvement (best=0.5)
+        0.4,    # Epoch 1: improvement (best=0.4)
+        0.35,   # Epoch 2: improvement (best=0.35)
+        0.36,   # Epoch 3: no improvement (0.36 > 0.35), counter=1
+        0.37,   # Epoch 4: no improvement, counter=2
+        0.38,   # Epoch 5: no improvement, counter=3 >= patience(3), reduce to 0.005
+        0.34,   # Epoch 6: improvement (0.34 < 0.35), counter=0
+        0.35,   # Epoch 7: no improvement, counter=1
+        0.36,   # Epoch 8: no improvement, counter=2
+        0.37,   # Epoch 9: no improvement, counter=3 >= patience(3), reduce again
     )
-
-    var expected_reductions = 2  # Expect 2 LR reductions
 
     for loss in val_losses:
         scheduler.step(loss)

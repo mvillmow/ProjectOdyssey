@@ -198,6 +198,10 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
 # ReduceLROnPlateau Learning Rate Scheduler
 # ============================================================================
 
+# Mode constants for ReduceLROnPlateau
+alias MODE_MIN: Int = 0  # Minimize metric (for loss)
+alias MODE_MAX: Int = 1  # Maximize metric (for accuracy)
+
 
 struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
     """Reduce learning rate when metric stops improving.
@@ -207,14 +211,15 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
 
     Attributes:
         `base_lr`: Initial learning rate.
-        `mode`: Optimization mode ("min" for loss, "max" for accuracy).
+        `mode`: Optimization mode (MODE_MIN=0 for loss, MODE_MAX=1 for accuracy).
         `factor`: Multiplicative factor for LR reduction.
         `patience`: Number of epochs without improvement before reducing LR.
         `best_metric`: Best metric value seen so far.
         `epochs_without_improvement`: Counter for epochs without improvement.
         `current_lr`: Current learning rate (updated by step()).
 
-    Example:.        var scheduler = ReduceLROnPlateau(
+    Example:
+        var scheduler = ReduceLROnPlateau(
             base_lr=0.1,
             mode="min",
             factor=0.1,
@@ -225,7 +230,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
     """
 
     var base_lr: Float64
-    var mode: String
+    var mode: Int
     var factor: Float64
     var patience: Int
     var best_metric: Float64
@@ -241,35 +246,38 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
     ):
         """Initialize ReduceLROnPlateau scheduler.
 
-        Args:.            `base_lr`: Initial learning rate.
+        Args:
+            `base_lr`: Initial learning rate.
             `mode`: Optimization mode ("min" or "max").
             `factor`: Multiplicative factor for LR reduction.
             `patience`: Epochs without improvement before reducing LR.
         """
         self.base_lr = base_lr
-        self.mode = mode
         self.factor = factor
         self.patience = patience
         self.current_lr = base_lr
+        self.epochs_without_improvement = 0
 
-        # Initialize best_metric based on mode
+        # Convert string mode to int and initialize best_metric
         if mode == "min":
+            self.mode = MODE_MIN
             self.best_metric = Float64(1e10)
         else:
+            self.mode = MODE_MAX
             self.best_metric = Float64(-1e10)
-
-        self.epochs_without_improvement = 0
 
     fn step(mut self, metric: Float64) -> Float64:
         """Update scheduler based on metric value.
 
-        Args:.            `metric`: Current metric value (e.g., validation loss).
+        Args:
+            `metric`: Current metric value (e.g., validation loss).
 
-        Returns:.            New learning rate.
+        Returns:
+            New learning rate.
         """
         var improved = False
 
-        if self.mode == "min":
+        if self.mode == MODE_MIN:
             # For loss, improvement means metric decreased
             if metric < self.best_metric:
                 improved = True
@@ -284,20 +292,22 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
             self.epochs_without_improvement = 0
         else:
             self.epochs_without_improvement += 1
-
-        # Reduce LR if no improvement for patience epochs
-        if self.epochs_without_improvement >= self.patience:
-            self.current_lr = self.current_lr * self.factor
-            self.epochs_without_improvement = 0
+            # Reduce LR if no improvement for patience epochs
+            # Note: Check is inside else block to avoid reducing on improving steps
+            if self.epochs_without_improvement >= self.patience:
+                self.current_lr = self.current_lr * self.factor
+                self.epochs_without_improvement = 0
 
         return self.current_lr
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Get current learning rate.
 
-        Args:.            `epoch`: Current epoch (unused in ReduceLROnPlateau).
+        Args:
+            `epoch`: Current epoch (unused in ReduceLROnPlateau).
             `batch`: Current batch (unused).
 
-        Returns:.            Current learning rate.
+        Returns:
+            Current learning rate.
         """
         return self.current_lr
