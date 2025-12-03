@@ -28,7 +28,7 @@ Design Note:
     returns the new learning rate, while get_lr() returns current without changing state.
 """
 
-from math import pow
+# pow is not needed - use ** operator instead
 
 
 struct StepLR:
@@ -115,7 +115,7 @@ struct StepLR:
             var lr20 = sched.step(20) # 0.001 (0.1 * 0.1^2)
         """
         self.last_epoch = epoch
-        var decay_factor = pow(self.gamma, Float64(epoch // self.step_size))
+        var decay_factor = self.gamma ** Float64(epoch // self.step_size)
         self.current_lr = self.base_lr * decay_factor
         return self.current_lr
 
@@ -212,7 +212,7 @@ struct ExponentialLR:
             var lr10 = sched.step(10) # 0.0599 (0.1 * 0.95^10)
         """
         self.last_epoch = epoch
-        var decay_factor = pow(self.gamma, Float64(epoch))
+        var decay_factor = self.gamma ** Float64(epoch)
         self.current_lr = self.base_lr * decay_factor
         return self.current_lr
 

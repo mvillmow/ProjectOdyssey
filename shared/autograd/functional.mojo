@@ -50,15 +50,11 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     More efficient than creating a full tensor filled with the scalar value.
 
     Args:
-        tensor: Input tensor
-        scalar: Scalar value to multiply by
+        tensor: Input tensor.
+        scalar: Scalar value to multiply by.
 
     Returns:
-        New tensor with result
-
-    Example:
-        var scaled = multiply_scalar(gradients, 0.01)  # Scale by learning rate
-        var doubled = multiply_scalar(x, 2.0)
+        New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -71,14 +67,11 @@ fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Add a scalar value to all elements of a tensor.
 
     Args:
-        tensor: Input tensor
-        scalar: Scalar value to add
+        tensor: Input tensor.
+        scalar: Scalar value to add.
 
     Returns:
-        New tensor with result
-
-    Example:
-        var shifted = add_scalar(x, 1.0)  # x + 1
+        New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -91,14 +84,11 @@ fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Subtract a scalar value from all elements of a tensor.
 
     Args:
-        tensor: Input tensor
-        scalar: Scalar value to subtract
+        tensor: Input tensor.
+        scalar: Scalar value to subtract.
 
     Returns:
-        New tensor with result
-
-    Example:
-        var shifted = subtract_scalar(x, 1.0)  # x - 1
+        New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -111,17 +101,14 @@ fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Divide all elements of a tensor by a scalar value.
 
     Args:
-        tensor: Input tensor
-        scalar: Scalar value to divide by
+        tensor: Input tensor.
+        scalar: Scalar value to divide by.
 
     Returns:
-        New tensor with result
+        New tensor with result.
 
     Raises:
-        Error if scalar is zero
-
-    Example:
-        var normalized = divide_scalar(x, x_max)  # Normalize by max value
+        Error if scalar is zero.
     """
     if scalar == 0.0:
         raise Error("Cannot divide by zero")
@@ -148,19 +135,15 @@ fn apply_gradient(
     Performs: parameter = parameter - learning_rate * gradient
 
     Args:
-        parameter: Parameter tensor to update
-        gradient: Gradient tensor (same shape as parameter)
-        learning_rate: Learning rate (step size)
+        parameter: Parameter tensor to update.
+        gradient: Gradient tensor (same shape as parameter).
+        learning_rate: Learning rate (step size).
 
     Returns:
-        Updated parameter tensor
+        Updated parameter tensor.
 
     Raises:
-        Error if shapes don't match
-
-    Example:
-        w = apply_gradient(w, grad_w, 0.01)
-        b = apply_gradient(b, grad_b, 0.01)
+        Error if shapes don't match.
     """
     if gradient.shape() != parameter.shape():
         raise Error("Gradient shape must match parameter shape")
@@ -180,28 +163,13 @@ fn apply_gradients(
     Performs: parameters[i] = parameters[i] - learning_rate * gradients[i]
 
     Args:
-        parameters: Parameter tensors to update (modified in-place)
-        gradients: Gradient tensors (same shapes as parameters)
-        learning_rate: Learning rate (step size)
+        parameters: Parameter tensors to update (modified in-place).
+        gradients: Gradient tensors (same shapes as parameters).
+        learning_rate: Learning rate (step size).
 
     Raises:
-        Error if parameter count doesn't match gradient count
-        Error if any shape mismatch
-
-    Example:
-        var params = List[ExTensor]()
-        params.append(w)
-        params.append(b)
-
-        var grads = List[ExTensor]()
-        grads.append(grad_w)
-        grads.append(grad_b)
-
-        apply_gradients(params, grads, 0.01)
-
-        # Parameters are updated in-place
-        w = params[0]
-        b = params[1]
+        Error if parameter count doesn't match gradient count.
+        Error if any shape mismatch.
     """
     if len(parameters) != len(gradients):
         raise Error("Parameter count must match gradient count")
@@ -221,8 +189,8 @@ struct LossAndGrad:
     Returned by loss_and_grad helper functions.
 
     Attributes:
-        loss: Scalar loss value
-        grad: Gradient tensor (same shape as input)
+        loss: Scalar loss value.
+        grad: Gradient tensor (same shape as input).
     """
 
     var loss: ExTensor
@@ -232,8 +200,8 @@ struct LossAndGrad:
         """Initialize loss and gradient pair.
 
         Args:
-            loss: Scalar loss tensor (ownership transferred)
-            grad: Gradient tensor (ownership transferred)
+            loss: Scalar loss tensor (ownership transferred).
+            grad: Gradient tensor (ownership transferred).
         """
         self.loss = loss^
         self.grad = grad^
@@ -252,18 +220,11 @@ fn mse_loss_and_grad(
     This is the most common loss pattern for regression.
 
     Args:
-        predictions: Model predictions, any shape
-        targets: Ground truth targets, same shape as predictions
+        predictions: Model predictions, any shape.
+        targets: Ground truth targets, same shape as predictions.
 
     Returns:
-        LossAndGrad containing scalar loss and gradient tensor
-
-    Example:
-        var result = mse_loss_and_grad(predictions, targets)
-        print("Loss:", result.loss)
-
-        # Update parameters
-        params = subtract(params, multiply(lr_tensor, result.grad))
+        LossAndGrad containing scalar loss and gradient tensor.
     """
     # Forward pass
     var squared_errors = mean_squared_error(predictions, targets)
@@ -293,17 +254,12 @@ fn bce_loss_and_grad(
     Used for binary classification (predictions from sigmoid).
 
     Args:
-        predictions: Predicted probabilities in [0, 1], shape (batch_size,) or (batch_size, 1)
-        targets: Binary labels (0 or 1), same shape as predictions
-        epsilon: Small constant for numerical stability (default: 1e-7)
+        predictions: Predicted probabilities in [0, 1], shape (batch_size,) or (batch_size, 1).
+        targets: Binary labels (0 or 1), same shape as predictions.
+        epsilon: Small constant for numerical stability (default: 1e-7).
 
     Returns:
-        LossAndGrad containing scalar loss and gradient tensor
-
-    Example:
-        var predictions = sigmoid(logits)
-        var result = bce_loss_and_grad(predictions, targets)
-        # Gradient flows back through sigmoid
+        LossAndGrad containing scalar loss and gradient tensor.
     """
     # Forward pass
     var bce_per_sample = binary_cross_entropy(predictions, targets, epsilon)
@@ -333,21 +289,15 @@ fn ce_loss_and_grad(
     Used for multi-class classification. Includes softmax internally.
 
     Args:
-        logits: Raw model outputs (before softmax), shape (batch_size, num_classes)
-        targets: One-hot encoded labels, same shape as logits
-        epsilon: Small constant for numerical stability (default: 1e-7)
+        logits: Raw model outputs (before softmax), shape (batch_size, num_classes).
+        targets: One-hot encoded labels, same shape as logits.
+        epsilon: Small constant for numerical stability (default: 1e-7).
 
     Returns:
-        LossAndGrad containing scalar loss and gradient tensor
-
-    Example:
-        var logits = model(x)  # (batch_size, num_classes)
-        var targets_onehot = one_hot(targets, num_classes)
-        var result = ce_loss_and_grad(logits, targets_onehot)
+        LossAndGrad containing scalar loss and gradient tensor.
 
     Note:
-        cross_entropy already computes mean reduction internally,
-        so no need for additional mean() call.
+        The cross_entropy function already computes mean reduction internally.
     """
     # Forward pass (cross_entropy already includes mean reduction)
     var loss = cross_entropy(logits, targets, axis=-1, epsilon=epsilon)
@@ -371,15 +321,12 @@ fn compute_gradient(
     helper based on loss_type string.
 
     Args:
-        predictions: Model predictions
-        targets: Ground truth targets
-        loss_type: One of "mse", "bce", "ce" (default: "mse")
+        predictions: Model predictions.
+        targets: Ground truth targets.
+        loss_type: One of "mse", "bce", "ce" (default: "mse").
 
     Returns:
-        Gradient tensor
-
-    Example:
-        var grad = compute_gradient(predictions, targets, "mse")
+        Gradient tensor.
 
     Note:
         For more control, use the specific loss_and_grad functions directly.

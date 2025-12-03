@@ -369,7 +369,7 @@ struct Adam:
             var v_hat_sqrt = ExTensor(v_hat.shape(), v_hat.dtype())
             for j in range(v_hat.numel()):
                 var v_val = v_hat._get_float64(j)
-                var sqrt_v = sqrt(v_val)
+                var sqrt_v = v_val ** 0.5
                 v_hat_sqrt._set_float64(j, sqrt_v)
 
             # Second: √v̂_t + ε
@@ -480,7 +480,7 @@ struct AdaGrad:
         self.G_buffers = Dict[Int, ExTensor]()
 
     fn step(
-        self, mut parameters: List[Variable], mut tape: GradientTape
+        mut self, mut parameters: List[Variable], mut tape: GradientTape
     ) raises:
         """Update parameters using AdaGrad adaptive learning rates.
 
@@ -535,7 +535,7 @@ struct AdaGrad:
             G = add(G, grad_squared)
 
             # Store updated G buffer
-            self.G_buffers[i] = G^
+            self.G_buffers[i] = G
 
             # Compute adaptive learning rate: sqrt(G_t) + epsilon
             # sqrt_g = sqrt(G)

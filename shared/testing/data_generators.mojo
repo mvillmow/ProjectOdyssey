@@ -122,13 +122,13 @@ fn random_uniform(
     for dim in shape:
         numel *= dim
 
-    # Calculate range
-    var range = high - low
+    # Calculate value range
+    var value_range = high - low
 
     # Fill with random values
     for i in range(numel):
         var rand_val = random_float64()
-        var scaled_val = low + rand_val * range
+        var scaled_val = low + rand_val * value_range
 
         # Convert to appropriate dtype
         if (

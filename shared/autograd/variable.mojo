@@ -220,12 +220,12 @@ fn variable_add(
     """Add two Variables element-wise.
 
     Args:
-        a: First input Variable
-        b: Second input Variable
-        tape: Gradient tape for recording
+        a: First input `Variable`.
+        b: Second input `Variable`.
+        tape: Gradient tape for recording..
 
     Returns:
-        New Variable containing a + b
+        New `Variable` containing `a + b`.
     """
     var result_data = add(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -255,12 +255,12 @@ fn variable_subtract(
     """Subtract two Variables element-wise.
 
     Args:
-        a: First input Variable
-        b: Second input Variable
-        tape: Gradient tape for recording
+        a: First input `Variable`.
+        b: Second input `Variable`.
+        tape: Gradient tape for recording..
 
     Returns:
-        New Variable containing a - b
+        New `Variable` containing `a - b`.
     """
     var result_data = subtract(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -289,12 +289,12 @@ fn variable_multiply(
     """Multiply two Variables element-wise.
 
     Args:
-        a: First input Variable
-        b: Second input Variable
-        tape: Gradient tape for recording
+        a: First input `Variable`.
+        b: Second input `Variable`.
+        tape: Gradient tape for recording..
 
     Returns:
-        New Variable containing a * b
+        New `Variable` containing `a * b`.
     """
     var result_data = multiply(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -323,12 +323,12 @@ fn variable_divide(
     """Divide two Variables element-wise.
 
     Args:
-        a: Numerator Variable
-        b: Denominator Variable
-        tape: Gradient tape for recording
+        a: Numerator `Variable`.
+        b: Denominator `Variable`.
+        tape: Gradient tape for recording..
 
     Returns:
-        New Variable containing a / b
+        New `Variable` containing `a / b`.
     """
     var result_data = divide(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -357,12 +357,12 @@ fn variable_matmul(
     """Matrix multiply two Variables.
 
     Args:
-        a: First matrix Variable
-        b: Second matrix Variable
-        tape: Gradient tape for recording
+        a: First matrix `Variable`.
+        b: Second matrix `Variable`.
+        tape: Gradient tape for recording..
 
     Returns:
-        New Variable containing a @ b
+        New `Variable` containing `a @ b`.
     """
     var result_data = matmul(a.data, b.data)
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
@@ -391,12 +391,12 @@ fn variable_sum(
     """Sum a Variable along an axis (or all elements if axis=-1).
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
-        axis: Axis to sum along (-1 for full reduction)
+        x: Input Variable..
+        tape: Gradient tape for recording..
+        axis: Axis to sum along (-1 for full reduction).
 
     Returns:
-        New Variable containing the sum
+        New Variable containing the sum.
     """
     var result_data = tensor_sum(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -422,12 +422,12 @@ fn variable_mean(
     """Mean of a Variable along an axis (or all elements if axis=-1).
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
-        axis: Axis to average along (-1 for full reduction)
+        x: Input Variable..
+        tape: Gradient tape for recording..
+        axis: Axis to average along (-1 for full reduction).
 
     Returns:
-        New Variable containing the mean
+        New Variable containing the mean.
     """
     var result_data = tensor_mean(x.data, axis)
     var result_id = tape.register_variable(x.requires_grad)
@@ -452,11 +452,11 @@ fn variable_relu(
     """Apply ReLU activation to a Variable.
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
+        x: Input Variable.
+        tape: Gradient tape for recording.
 
     Returns:
-        New Variable containing ReLU(x)
+        New Variable containing `ReLU(x)`.
     """
     var result_data = relu(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -480,11 +480,11 @@ fn variable_sigmoid(
     """Apply sigmoid activation to a Variable.
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
+        x: Input Variable.
+        tape: Gradient tape for recording.
 
     Returns:
-        New Variable containing sigmoid(x)
+        New Variable containing `sigmoid(x)`.
     """
     var result_data = sigmoid(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -508,11 +508,11 @@ fn variable_tanh(
     """Apply tanh activation to a Variable.
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
+        x: Input Variable.
+        tape: Gradient tape for recording.
 
     Returns:
-        New Variable containing tanh(x)
+        New Variable containing `tanh(x)`.
     """
     var result_data = tanh(x.data)
     var result_id = tape.register_variable(x.requires_grad)
@@ -536,11 +536,11 @@ fn variable_neg(
     """Negate a Variable element-wise.
 
     Args:
-        x: Input Variable
-        tape: Gradient tape for recording
+        x: Input Variable.
+        tape: Gradient tape for recording.
 
     Returns:
-        New Variable containing -x
+        New Variable containing `-x`.
     """
     # Create negated tensor
     var result_data = zeros_like(x.data)

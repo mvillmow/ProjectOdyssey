@@ -26,7 +26,7 @@ References:
       https://arxiv.org/abs/1211.1541
 """
 
-from math import sqrt, abs
+from math import sqrt
 from ..core.extensor import ExTensor
 
 
@@ -51,7 +51,6 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
 
         var grad2 = full(List[Int](2, 3), 5.0, DType.float32)
         clip_grad_value_(grad2, max_value=1.0)
-        # All elements clipped to 1.0
     """
     if max_value < 0.0:
         raise Error("max_value must be non-negative, got: " + String(max_value))
@@ -96,7 +95,7 @@ fn clip_grad_norm_(mut grad: ExTensor, max_norm: Float64) raises -> Float64:
         # Since 0.158 < 1.0, grad2 is unchanged
 
     Note:
-        The norm is computed as the L2 (Euclidean) norm: sqrt(sum(x_i^2))
+        The norm is computed as the L2 (Euclidean) norm: `sqrt(sum(x_i^2))`.
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
@@ -157,8 +156,8 @@ fn clip_grad_global_norm_(
 
     Reference:
         On the difficulty of training Recurrent Neural Networks
-        (Pascanu et al., 2013)
-        https://arxiv.org/abs/1211.1541
+        (Pascanu et al., 2013).
+        https://arxiv.org/abs/1211.1541.
     """
     if max_norm < 0.0:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
