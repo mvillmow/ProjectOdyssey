@@ -142,6 +142,15 @@ from .training_args import (
     parse_training_args_with_defaults,  # Parse with custom defaults
 )
 
+# Inference utilities
+from .inference_utils import (
+    InferenceConfig,  # Inference configuration container
+    parse_inference_args,  # Parse common inference arguments
+    parse_inference_args_with_defaults,  # Parse with custom defaults
+    evaluate_accuracy,  # Calculate classification accuracy
+    count_correct,  # Count correct predictions for batch processing
+)
+
 # ============================================================================
 # Public API
 # ============================================================================
