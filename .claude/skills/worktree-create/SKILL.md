@@ -68,8 +68,44 @@ parent-directory/
 - Clean up after PR merge
 - Each branch can only be checked out in ONE worktree
 
+## Multi-Issue Parallel Development
+
+When working on related issues (e.g., Plan → Test/Impl/Package → Cleanup phases):
+
+### Phase-Based Worktree Pattern
+
+```bash
+# Phase 1: Plan (sequential, must complete first)
+git worktree add ../ml-odyssey-62-plan-agents 62-plan-agents
+
+# Phase 2: Parallel development (after Plan complete)
+git worktree add ../ml-odyssey-63-test-agents 63-test-agents
+git worktree add ../ml-odyssey-64-impl-agents 64-impl-agents
+git worktree add ../ml-odyssey-65-pkg-agents 65-pkg-agents
+
+# Phase 3: Cleanup (after parallel phases complete)
+git worktree add ../ml-odyssey-66-cleanup-agents 66-cleanup-agents
+```
+
+### Coordination Patterns
+
+- **Test and Impl** coordinate for TDD (test-first development)
+- **Package** integrates Test and Impl artifacts
+- All worktrees reference the same Plan specifications
+- Cleanup merges all parallel work and resolves issues
+
+### PR Strategy
+
+**Recommended: One PR per Phase**
+
+- PR 1: Plan issues → Merge specifications together
+- PR 2: Test/Impl/Package → Merge implementation together
+- PR 3: Cleanup → Final polish
+
+Advantages: Logical grouping, easier review, clear milestones
+
 ## References
 
-- [worktree-strategy.md](../../../notes/review/worktree-strategy.md)
 - `scripts/create_worktree.sh` implementation
 - See `worktree-cleanup` skill for removing worktrees
+- See `worktree-sync` skill for keeping worktrees up to date

@@ -19,7 +19,7 @@ Document progress and technical learnings in blog format.
 ## Quick Reference
 
 ```bash
-cat > notes/blog/progress/YYYY-MM-DD-title.md << 'EOF'
+cat > notes/blog/MM-DD-YYYY.md << 'EOF'
 # Progress Update: YYYY-MM-DD
 
 ## What Was Accomplished
@@ -62,10 +62,9 @@ EOF
 - Planned improvements
 ```
 
-## Blog Locations
+## Blog Location
 
-- `notes/blog/progress/YYYY-MM-DD-title.md` - Milestone updates
-- `notes/blog/technical/topic-name.md` - Technical deep dives
+- `notes/blog/MM-DD-YYYY.md` - All blog entries (flat structure)
 
 ## Best Practices
 
