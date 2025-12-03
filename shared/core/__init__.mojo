@@ -220,6 +220,17 @@ from .normalization import (
 )
 
 # ============================================================================
+# Attention Mechanisms
+# ============================================================================
+
+from .attention import (
+    scaled_dot_product_attention,
+    scaled_dot_product_attention_backward,
+    ScaledDotProductAttentionBackwardResult,
+    create_causal_mask,
+)
+
+# ============================================================================
 # Element-wise Operations
 # ============================================================================
 
