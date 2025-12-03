@@ -128,7 +128,7 @@ from .tape import (
     OP_SQRT,
 )
 
-from .optimizers import SGD, Adam, AdaGrad
+from .optimizers import SGD, Adam, AdaGrad, RMSprop
 
 from .schedulers import (
     StepLR,
