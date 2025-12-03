@@ -9,7 +9,7 @@ by Claude when appropriate.
 ## Skills vs Sub-Agents Decision Matrix
 
 | Criterion | Use Skill | Use Sub-Agent |
-|-----------|-----------|---------------|
+| --- | --- | --- |
 | Decision Making | No - algorithmic/template-based | Yes - requires judgment |
 | Context | Runs in current context | Separate conversation thread |
 | Invocation | Model-invoked automatically | Explicit delegation |

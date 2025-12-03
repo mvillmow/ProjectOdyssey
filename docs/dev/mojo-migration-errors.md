@@ -6,7 +6,9 @@
 
 ## Executive Summary
 
-After rebasing against main, discovered 1,143 compilation errors due to Mojo v0.25.7+ breaking changes. Systematically fixed 1,013 errors (88.6%) across 10 batches. This document catalogs all error patterns to prevent recurrence and guide agent updates.
+After rebasing against main, discovered 1,143 compilation errors due to Mojo v0.25.7+ breaking
+changes. Systematically fixed 1,013 errors (88.6%) across 10 batches. This document catalogs
+all error patterns to prevent recurrence and guide agent updates.
 
 ## Error Categories
 
@@ -18,7 +20,7 @@ After rebasing against main, discovered 1,143 compilation errors due to Mojo v0.
 
 **Error**:
 
-```
+```text
 error: use of unknown declaration 'inout'
 ```
 
@@ -46,7 +48,7 @@ fn process(mut data: ExTensor):
 
 **Error**:
 
-```
+```text
 error: __init__ method must return Self type with 'out' argument
     fn __init__(mut self):
        ^
@@ -78,7 +80,7 @@ fn __init__(out self, value: Int):
 
 **Error**:
 
-```
+```text
 error: package 'sys' does not contain 'DType'
 ```
 
@@ -119,7 +121,7 @@ from memory import DType
 
 **Error**:
 
-```
+```text
 error: package 'sys' does not contain 'simdwidthof'
 ```
 
@@ -143,7 +145,7 @@ from sys.info import simdwidthof
 
 **Error**:
 
-```
+```text
 error: use of unknown declaration 'str'
 ```
 
@@ -173,7 +175,7 @@ var msg = "Count: " + String(count)
 
 **Error**:
 
-```
+```text
 error: use of unknown declaration '@value'
 ```
 
@@ -203,7 +205,7 @@ struct Transform(Copyable, Movable):
 
 **Error**:
 
-```
+```text
 error: cannot bind type 'TypeName' to trait 'Copyable & Movable'
     var list_var: List[TypeName]
                        ^~~~~~~~~
@@ -244,7 +246,7 @@ struct MetricResult(Copyable, Movable):
 
 **Error**:
 
-```
+```text
 error: 'StructName' has an explicitly declared fieldwise initializer
 ```
 
@@ -281,7 +283,7 @@ struct Dataset(Copyable, Movable):
 
 **Error**:
 
-```
+```text
 error: value of type 'ExTensor' cannot be implicitly copied,
        it does not conform to 'ImplicitlyCopyable'
 ```
@@ -324,7 +326,7 @@ var copy = List[Int](some_list)
 
 **Error**:
 
-```
+```text
 error: 'UnsafePointer[?, ?, address_space=?]' value has no attribute 'address_of'
 ```
 
@@ -398,7 +400,8 @@ self.tensor = ExTensor()
 self.tensor = ExTensor(List[Float32](), DType.float32)
 ```
 
-**Files Affected**: shared/core/activation.mojo, shared/testing/gradient_checker.mojo, tests/, shared/training/optimizers/
+**Files Affected**: shared/core/activation.mojo, shared/testing/gradient_checker.mojo, tests/,
+shared/training/optimizers/
 
 ---
 
@@ -408,7 +411,7 @@ self.tensor = ExTensor(List[Float32](), DType.float32)
 
 **Error**:
 
-```
+```text
 error: 'Float64' has no attribute 'nan'
 ```
 
@@ -438,7 +441,7 @@ var infinity = Float64(1.0) / Float64(0.0)  # +Inf
 
 **Error**:
 
-```
+```text
 error: missing parameter 'dtype'
 ```
 
@@ -464,11 +467,12 @@ var tensor = full(shape, value, DType.float32)
 
 #### 5.4 Property vs Method: .shape() → .shape (628 errors)
 
-**Pattern**: `shape` changed from method to property in many files, but remains a method in extensor.mojo.
+**Pattern**: `shape` changed from method to property in many files, but remains a method in
+extensor.mojo.
 
 **Error**:
 
-```
+```text
 error: 'shape' expects 0 parameters, but 1 was specified
 ```
 
@@ -512,7 +516,7 @@ var dim0 = tensor.shape()[0]
 
 **Error**:
 
-```
+```text
 error: cannot emit closure for method 'shape'
 ```
 
@@ -538,7 +542,7 @@ var s = tensor.shape()  # Explicit call
 
 **Error**:
 
-```
+```text
 error: invalid call to '__add__': failed to infer parameter 'dtype',
        it inferred to two different values: 'T' and 'DType.float32'
 ```
@@ -574,7 +578,7 @@ else:
 
 **Error**:
 
-```
+```text
 error: inheriting from structs is not allowed
 ```
 
@@ -606,7 +610,7 @@ struct BatchLoader(Copyable, Movable):
 
 **Error**:
 
-```
+```text
 error: dynamic traits not supported yet, please use a compile time generic instead
 ```
 
@@ -649,7 +653,7 @@ struct Container[T: Transform]:  # Compile-time generic
 
 **Error**:
 
-```
+```text
 error: no matching function in call to 'assert_equal'
 ```
 
@@ -676,7 +680,7 @@ if tensor.dtype() != DType.float32:
 
 **Error**:
 
-```
+```text
 error: no matching function in call to 'len'
 ```
 
@@ -699,19 +703,19 @@ if len(shape_vec) == 2:
 
 ## Batch Summary
 
-| Batch | Errors Fixed | Categories |
-|-------|--------------|------------|
-| 1-6 | 950 | Syntax, imports, API, memory, type system |
-| 7 | 18 | UnsafePointer, List ownership, str() |
-| 8-9 | 35 | Closure, inheritance, traits, init |
-| 10 | 10 | SIMD inference, test imports |
-| **Total** | **1,013** | **88.6% of 1,143** |
+| Batch     | Errors Fixed | Categories                           |
+| --------- | ------------ | ------------------------------------ |
+| 1-6       | 950          | Syntax, imports, API, memory, types  |
+| 7         | 18           | UnsafePointer, List ownership, str() |
+| 8-9       | 35           | Closure, inheritance, traits, init   |
+| 10        | 10           | SIMD inference, test imports         |
+| **Total** | **1,013**    | **88.6% of 1,143**                   |
 
 ## Agent Update Priorities
 
 ### Critical (Always Apply)
 
-1. ✅ **Use `out self` in **init****, never `mut self`
+1. ✅ **Use `out self` in `__init__`**, never `mut self`
 2. ✅ **Use `String()` not `str()`**
 3. ✅ **Use `mut` not `inout`** for parameters
 4. ✅ **Add explicit traits**: `(Copyable, Movable)` to all structs
