@@ -88,6 +88,7 @@ from .shape import (
     conv2d_output_shape,
     pool_output_shape,
     flatten_size,
+    flatten_to_2d,
 )
 
 # ============================================================================

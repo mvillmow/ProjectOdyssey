@@ -481,3 +481,42 @@ fn flatten_size(height: Int, width: Int, channels: Int) -> Int:
         var fc_input_size = flatten_size(112, 112, 64)  # 802816 elements
     """
     return height * width * channels
+
+
+fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
+    """Flatten a 4D tensor to 2D, preserving the batch dimension.
+
+    Commonly used before fully connected layers in CNNs to reshape
+    (batch, channels, height, width) to (batch, channels * height * width).
+
+    Args:
+        `tensor`: Input tensor of shape (batch, channels, height, width)
+
+    Returns:
+        Tensor of shape (batch, channels * height * width)
+
+    Raises:
+        Error if input tensor is not 4D.
+
+    Examples:
+        # After pooling layer, flatten before FC layer
+        var pool_out = maxpool2d(x, kernel_size=2, stride=2)  # (32, 64, 7, 7)
+        var flattened = flatten_to_2d(pool_out)  # (32, 3136)
+
+        # Use in forward pass
+        var fc_input = flatten_to_2d(conv_output)
+        var fc_output = linear(fc_input, weights, bias)
+    """
+    var shape = tensor.shape()
+
+    if len(shape) != 4:
+        raise Error("flatten_to_2d requires 4D input (batch, channels, height, width), got " + String(len(shape)) + "D")
+
+    var batch_size = shape[0]
+    var channels = shape[1]
+    var height = shape[2]
+    var width = shape[3]
+    var flattened_size = channels * height * width
+
+    var new_shape = List[Int](batch_size, flattened_size)
+    return reshape(tensor, new_shape)
