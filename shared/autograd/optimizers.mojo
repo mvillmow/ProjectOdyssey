@@ -72,8 +72,8 @@ struct SGD:
 
     var learning_rate: Float64
     var momentum: Float64
-    # TODO(#2396): Add velocity storage for momentum
-    # var velocities: List[ExTensor]
+    var velocities: List[ExTensor]
+    var _initialized: Bool
 
     fn __init__(out self, learning_rate: Float64, momentum: Float64 = 0.0):
         """Initialize SGD optimizer.
@@ -91,13 +91,19 @@ struct SGD:
         """
         self.learning_rate = learning_rate
         self.momentum = momentum
+        self.velocities = List[ExTensor]()
+        self._initialized = False
 
     fn step(
-        self, mut parameters: List[Variable], mut tape: GradientTape
+        mut self, mut parameters: List[Variable], mut tape: GradientTape
     ) raises:
         """Update parameters using their gradients from the tape.
 
-        Performs one step of gradient descent:
+        Performs one step of gradient descent with optional momentum:
+            v_t = momentum * v_{t-1} + gradient
+            parameter = parameter - learning_rate * v_t
+
+        Without momentum (momentum=0):
             parameter = parameter - learning_rate * gradient
 
         Args:
@@ -107,6 +113,7 @@ struct SGD:
         Note:
             This assumes gradients have already been computed via backward().
             Parameters without gradients in the tape are skipped.
+            Velocity buffers are initialized on first call when momentum > 0.
 
         Raises:
             Error if any parameter has incompatible gradient shape
@@ -118,6 +125,18 @@ struct SGD:
             # Update all parameters
             optimizer.step(model.parameters(), tape)
         """
+        # Initialize velocity buffers on first call if using momentum
+        if self.momentum > 0.0 and not self._initialized:
+            self.velocities = List[ExTensor]()
+            for i in range(len(parameters)):
+                # Create zero-initialized velocity tensor matching parameter shape
+                var vel_shape = parameters[i].data.shape()
+                var vel = ExTensor(vel_shape, parameters[i].data.dtype())
+                vel._fill_zero()
+                self.velocities.append(vel^)
+            self._initialized = True
+
+        var vel_idx = 0
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
@@ -131,14 +150,22 @@ struct SGD:
             # Get the gradient for this parameter
             var grad = tape.registry.get_grad(param_id)
 
-            # Update: param.data = param.data - learning_rate * grad
-            # scaled_grad = learning_rate * grad
-            var scaled_grad = multiply_scalar(grad, self.learning_rate)
-            # new_data = param.data - scaled_grad
-            var new_data = subtract(parameters[i].data, scaled_grad)
+            if self.momentum > 0.0:
+                # v_t = momentum * v_{t-1} + gradient
+                var momentum_term = multiply_scalar(self.velocities[vel_idx], self.momentum)
+                var new_velocity = add(momentum_term, grad)
+                self.velocities[vel_idx] = new_velocity
 
-            # Update the parameter's data
-            parameters[i].data = new_data^
+                # param = param - learning_rate * v_t
+                var scaled_update = multiply_scalar(self.velocities[vel_idx], self.learning_rate)
+                var new_data = subtract(parameters[i].data, scaled_update)
+                parameters[i].data = new_data^
+                vel_idx += 1
+            else:
+                # Standard SGD: param = param - learning_rate * grad
+                var scaled_grad = multiply_scalar(grad, self.learning_rate)
+                var new_data = subtract(parameters[i].data, scaled_grad)
+                parameters[i].data = new_data^
 
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
