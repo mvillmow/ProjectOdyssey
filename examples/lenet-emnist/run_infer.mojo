@@ -246,7 +246,7 @@ fn main() raises:
         print("Single image inference not yet implemented.")
         print("Use --test-set for now to evaluate on the EMNIST test set.")
         print()
-        print("TODO: Implement PNG/image loading for single-image inference")
+        print("TODO(#2394): Implement PNG/image loading for single-image inference")
 
     print()
     print("Inference complete!")

@@ -251,7 +251,7 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
             return ExTensor(all_values^)
 
         # For multi-dimensional tensors, implement proper stacking
-        # TODO: Implement N-dimensional tensor stacking
+        # TODO(#2388): Implement N-dimensional tensor stacking
         # This would require:
         # 1. Calculate new shape: [batch_size, *tensor_shape]
         # 2. Create tensor with new shape

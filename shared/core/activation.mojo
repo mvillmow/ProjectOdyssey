@@ -300,7 +300,7 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
         raise Error("softmax: axis out of bounds")
 
     # For simplicity, implement for last axis first
-    # TODO: Support arbitrary axis with proper reduction
+    # TODO(#2398): Support arbitrary axis with proper reduction
     if norm_axis != ndim - 1:
         raise Error("softmax: only last axis currently supported")
 

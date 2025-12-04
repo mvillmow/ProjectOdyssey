@@ -4,7 +4,7 @@
 repos:
   # Mojo formatting (DISABLED - bug in mojo format removes space in "inout self")
   # See: https://github.com/modular/modular/issues/5573
-  # TODO: Re-enable when bug is fixed
+  # TODO(#2391): Re-enable when bug is fixed
   # - repo: local
   #   hooks:
   #     - id: mojo-format

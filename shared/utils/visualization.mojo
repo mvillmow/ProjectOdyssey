@@ -117,12 +117,12 @@ fn plot_training_curves(
         # Plot curves
         plot_training_curves(train_losses, val_losses, save_path="curves.png")
     """
-    # TODO: Create matplotlib figure with subplots
-    # TODO: Plot training losses
-    # TODO: Plot validation losses
-    # TODO: If provided, plot accuracies on secondary axis
-    # TODO: Add labels, legends, title
-    # TODO: Save or display
+    # TODO(#2384): Create matplotlib figure with subplots
+    # TODO(#2384): Plot training losses
+    # TODO(#2384): Plot validation losses
+    # TODO(#2384): If provided, plot accuracies on secondary axis
+    # TODO(#2384): Add labels, legends, title
+    # TODO(#2384): Save or display
     return True
 
 
@@ -139,7 +139,7 @@ fn plot_loss_only(
     Returns:
         True if successful
     """
-    # TODO: Implement simple loss plotting
+    # TODO(#2384): Implement simple loss plotting
     return True
 
 
@@ -158,7 +158,7 @@ fn plot_accuracy_only(
     Returns:
         True if successful
     """
-    # TODO: Implement simple accuracy plotting
+    # TODO(#2384): Implement simple accuracy plotting
     return True
 
 
@@ -180,7 +180,7 @@ fn compute_confusion_matrix(
     Returns:
         Confusion matrix (num_classes x num_classes)
     """
-    # TODO: Implement confusion matrix computation
+    # TODO(#2384): Implement confusion matrix computation
     return List[List[Int]]()^
 
 
@@ -219,12 +219,12 @@ fn plot_confusion_matrix(
 
         plot_confusion_matrix(y_true, y_pred, class_names=classes)
     """
-    # TODO: Compute confusion matrix
-    # TODO: Normalize if requested
-    # TODO: Create heatmap
-    # TODO: Add class names to axes
-    # TODO: Add colorbar and title
-    # TODO: Save or display
+    # TODO(#2384): Compute confusion matrix
+    # TODO(#2384): Normalize if requested
+    # TODO(#2384): Create heatmap
+    # TODO(#2384): Add class names to axes
+    # TODO(#2384): Add colorbar and title
+    # TODO(#2384): Save or display
     return True
 
 
@@ -237,7 +237,7 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
     Returns:
         Normalized matrix with values in [0, 1]
     """
-    # TODO: Implement normalization (divide by row totals)
+    # TODO(#2384): Implement normalization (divide by row totals)
     return List[List[Float32]]()^
 
 
@@ -252,7 +252,7 @@ fn compute_matrix_metrics(
     Returns:
         Tuple of (accuracy, precision, recall)
     """
-    # TODO: Implement metric computation
+    # TODO(#2384): Implement metric computation
     return (0.0, 0.0, 0.0)
 
 
@@ -289,10 +289,10 @@ fn visualize_model_architecture(
 
         visualize_model_architecture("LeNet5", layers)
     """
-    # TODO: Create diagram with boxes for layers
-    # TODO: Show tensor shapes
-    # TODO: Show connections between layers
-    # TODO: Save or display
+    # TODO(#2384): Create diagram with boxes for layers
+    # TODO(#2384): Show tensor shapes
+    # TODO(#2384): Show connections between layers
+    # TODO(#2384): Save or display
     return True
 
 
@@ -311,7 +311,7 @@ fn visualize_tensor_shapes(
     Returns:
         True if successful
     """
-    # TODO: Implement shape progression visualization
+    # TODO(#2384): Implement shape progression visualization
     return True
 
 
@@ -338,9 +338,9 @@ fn visualize_gradient_flow(
     Returns:
         True if successful
     """
-    # TODO: Plot gradient magnitudes
-    # TODO: Add reference lines for vanishing/exploding thresholds
-    # TODO: Save or display
+    # TODO(#2384): Plot gradient magnitudes
+    # TODO(#2384): Add reference lines for vanishing/exploding thresholds
+    # TODO(#2384): Save or display
     return True
 
 
@@ -353,7 +353,7 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     Returns:
         Tuple of (has_vanishing, has_exploding)
     """
-    # TODO: Implement gradient analysis
+    # TODO(#2384): Implement gradient analysis
     return (False, False)
 
 
@@ -389,9 +389,9 @@ fn show_images(
         # Load first batch...
         show_images(image_files, labels=labels, nrow=8)
     """
-    # TODO: Load and display images in grid
-    # TODO: Add labels if provided
-    # TODO: Save or display
+    # TODO(#2384): Load and display images in grid
+    # TODO(#2384): Add labels if provided
+    # TODO(#2384): Save or display
     return True
 
 
@@ -412,7 +412,7 @@ fn show_augmented_images(
     Returns:
         True if successful
     """
-    # TODO: Create side-by-side comparison
+    # TODO(#2384): Create side-by-side comparison
     return True
 
 
@@ -434,7 +434,7 @@ fn visualize_feature_maps(
     Returns:
         True if successful
     """
-    # TODO: Display feature maps in grid
+    # TODO(#2384): Display feature maps in grid
     return True
 
 
@@ -453,17 +453,17 @@ fn save_figure(filepath: String, format: String = "png") -> Bool:
     Returns:
         True if successful
     """
-    # TODO: Implement figure saving
+    # TODO(#2384): Implement figure saving
     return True
 
 
 fn clear_figure():
     """Clear current matplotlib figure."""
-    # TODO: Implement figure clearing
+    # TODO(#2384): Implement figure clearing
     pass
 
 
 fn show_figure():
     """Display current matplotlib figure."""
-    # TODO: Implement figure display
+    # TODO(#2384): Implement figure display
     pass

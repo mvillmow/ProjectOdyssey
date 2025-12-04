@@ -23,7 +23,7 @@ Example:.    from shared.core.types.fp4 import FP4_E2M1
 
 from math import isnan, isinf
 
-# **FIXME (TEST-010 - P0 CRITICAL)**: FP4_E2M1 base type completely untested (0% coverage)
+# **FIXME (#2378 - TEST-010 - P0 CRITICAL)**: FP4_E2M1 base type completely untested (0% coverage)
 # This entire 217-line module has ZERO test coverage. Critical untested functions:
 # - Lines 56-139: from_float32() (E2M1 encoding algorithm)
 # - Lines 141-178: to_float32() (E2M1 decoding algorithm)
