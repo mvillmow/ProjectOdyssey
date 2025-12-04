@@ -147,7 +147,7 @@ fn test_evaluate_model_batch_sizes() raises:
             verbose=False
         )
 
-        assert_equal(result.num_total, 10, "Should evaluate 10 samples with batch_size=" + str(batch_size))
+        assert_equal(result.num_total, 10, "Should evaluate 10 samples with batch_size=" + String(batch_size))
         assert_equal(len(result.correct_per_class), 3, "Should have 3 classes")
 
     print("   evaluate_model with different batch sizes test passed")
@@ -319,7 +319,7 @@ fn test_evaluate_topk_k_greater_than_classes() raises:
         )
         assert_false(True, "Should have raised error for k > num_classes")
     except e:
-        print("   Correctly raised error for k > num_classes: " + str(e))
+        print("   Correctly raised error for k > num_classes: " + String(e))
 
     print("   evaluate_topk with invalid k test passed")
 
@@ -445,7 +445,7 @@ fn test_evaluation_matches_sample_counts() raises:
 
     # Check per-class totals
     for i in range(4):
-        assert_equal(result.total_per_class[i], 2, "Class " + str(i) + " should have 2 samples")
+        assert_equal(result.total_per_class[i], 2, "Class " + String(i) + " should have 2 samples")
 
     # Check sum matches total
     var sum_totals = 0
