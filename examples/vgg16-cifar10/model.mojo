@@ -63,7 +63,8 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform
 from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.utils.serialization import save_tensor, load_tensor
+from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from collections import List
 
 
 # ============================================================================
@@ -615,171 +616,46 @@ struct VGG16:
             Creates directory if it doesn't exist. Each parameter saved as:
             - conv1_1_kernel.weights, conv1_1_bias.weights, etc.
         """
-        # Save Block 1
-        save_tensor(
-            self.conv1_1_kernel,
-            weights_dir + "/conv1_1_kernel.weights",
-            "conv1_1_kernel",
-        )
-        save_tensor(
-            self.conv1_1_bias,
-            weights_dir + "/conv1_1_bias.weights",
-            "conv1_1_bias",
-        )
-        save_tensor(
-            self.conv1_2_kernel,
-            weights_dir + "/conv1_2_kernel.weights",
-            "conv1_2_kernel",
-        )
-        save_tensor(
-            self.conv1_2_bias,
-            weights_dir + "/conv1_2_bias.weights",
-            "conv1_2_bias",
-        )
+        # Collect all parameters in order
+        var parameters = List[ExTensor]()
+        parameters.append(self.conv1_1_kernel)
+        parameters.append(self.conv1_1_bias)
+        parameters.append(self.conv1_2_kernel)
+        parameters.append(self.conv1_2_bias)
+        parameters.append(self.conv2_1_kernel)
+        parameters.append(self.conv2_1_bias)
+        parameters.append(self.conv2_2_kernel)
+        parameters.append(self.conv2_2_bias)
+        parameters.append(self.conv3_1_kernel)
+        parameters.append(self.conv3_1_bias)
+        parameters.append(self.conv3_2_kernel)
+        parameters.append(self.conv3_2_bias)
+        parameters.append(self.conv3_3_kernel)
+        parameters.append(self.conv3_3_bias)
+        parameters.append(self.conv4_1_kernel)
+        parameters.append(self.conv4_1_bias)
+        parameters.append(self.conv4_2_kernel)
+        parameters.append(self.conv4_2_bias)
+        parameters.append(self.conv4_3_kernel)
+        parameters.append(self.conv4_3_bias)
+        parameters.append(self.conv5_1_kernel)
+        parameters.append(self.conv5_1_bias)
+        parameters.append(self.conv5_2_kernel)
+        parameters.append(self.conv5_2_bias)
+        parameters.append(self.conv5_3_kernel)
+        parameters.append(self.conv5_3_bias)
+        parameters.append(self.fc1_weights)
+        parameters.append(self.fc1_bias)
+        parameters.append(self.fc2_weights)
+        parameters.append(self.fc2_bias)
+        parameters.append(self.fc3_weights)
+        parameters.append(self.fc3_bias)
 
-        # Save Block 2
-        save_tensor(
-            self.conv2_1_kernel,
-            weights_dir + "/conv2_1_kernel.weights",
-            "conv2_1_kernel",
-        )
-        save_tensor(
-            self.conv2_1_bias,
-            weights_dir + "/conv2_1_bias.weights",
-            "conv2_1_bias",
-        )
-        save_tensor(
-            self.conv2_2_kernel,
-            weights_dir + "/conv2_2_kernel.weights",
-            "conv2_2_kernel",
-        )
-        save_tensor(
-            self.conv2_2_bias,
-            weights_dir + "/conv2_2_bias.weights",
-            "conv2_2_bias",
-        )
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("vgg16")
 
-        # Save Block 3
-        save_tensor(
-            self.conv3_1_kernel,
-            weights_dir + "/conv3_1_kernel.weights",
-            "conv3_1_kernel",
-        )
-        save_tensor(
-            self.conv3_1_bias,
-            weights_dir + "/conv3_1_bias.weights",
-            "conv3_1_bias",
-        )
-        save_tensor(
-            self.conv3_2_kernel,
-            weights_dir + "/conv3_2_kernel.weights",
-            "conv3_2_kernel",
-        )
-        save_tensor(
-            self.conv3_2_bias,
-            weights_dir + "/conv3_2_bias.weights",
-            "conv3_2_bias",
-        )
-        save_tensor(
-            self.conv3_3_kernel,
-            weights_dir + "/conv3_3_kernel.weights",
-            "conv3_3_kernel",
-        )
-        save_tensor(
-            self.conv3_3_bias,
-            weights_dir + "/conv3_3_bias.weights",
-            "conv3_3_bias",
-        )
-
-        # Save Block 4
-        save_tensor(
-            self.conv4_1_kernel,
-            weights_dir + "/conv4_1_kernel.weights",
-            "conv4_1_kernel",
-        )
-        save_tensor(
-            self.conv4_1_bias,
-            weights_dir + "/conv4_1_bias.weights",
-            "conv4_1_bias",
-        )
-        save_tensor(
-            self.conv4_2_kernel,
-            weights_dir + "/conv4_2_kernel.weights",
-            "conv4_2_kernel",
-        )
-        save_tensor(
-            self.conv4_2_bias,
-            weights_dir + "/conv4_2_bias.weights",
-            "conv4_2_bias",
-        )
-        save_tensor(
-            self.conv4_3_kernel,
-            weights_dir + "/conv4_3_kernel.weights",
-            "conv4_3_kernel",
-        )
-        save_tensor(
-            self.conv4_3_bias,
-            weights_dir + "/conv4_3_bias.weights",
-            "conv4_3_bias",
-        )
-
-        # Save Block 5
-        save_tensor(
-            self.conv5_1_kernel,
-            weights_dir + "/conv5_1_kernel.weights",
-            "conv5_1_kernel",
-        )
-        save_tensor(
-            self.conv5_1_bias,
-            weights_dir + "/conv5_1_bias.weights",
-            "conv5_1_bias",
-        )
-        save_tensor(
-            self.conv5_2_kernel,
-            weights_dir + "/conv5_2_kernel.weights",
-            "conv5_2_kernel",
-        )
-        save_tensor(
-            self.conv5_2_bias,
-            weights_dir + "/conv5_2_bias.weights",
-            "conv5_2_bias",
-        )
-        save_tensor(
-            self.conv5_3_kernel,
-            weights_dir + "/conv5_3_kernel.weights",
-            "conv5_3_kernel",
-        )
-        save_tensor(
-            self.conv5_3_bias,
-            weights_dir + "/conv5_3_bias.weights",
-            "conv5_3_bias",
-        )
-
-        # Save FC layers
-        save_tensor(
-            self.fc1_weights,
-            weights_dir + "/fc1_weights.weights",
-            "fc1_weights",
-        )
-        save_tensor(
-            self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias"
-        )
-        save_tensor(
-            self.fc2_weights,
-            weights_dir + "/fc2_weights.weights",
-            "fc2_weights",
-        )
-        save_tensor(
-            self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias"
-        )
-        save_tensor(
-            self.fc3_weights,
-            weights_dir + "/fc3_weights.weights",
-            "fc3_weights",
-        )
-        save_tensor(
-            self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias"
-        )
+        # Save using shared utility
+        save_model_weights(parameters, weights_dir, param_names)
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
@@ -790,72 +666,45 @@ struct VGG16:
         Raises:
             Error: If weight files are missing or have incompatible shapes.
         """
-        # Load Block 1
-        self.conv1_1_kernel = load_tensor(
-            weights_dir + "/conv1_1_kernel.weights"
-        )
-        self.conv1_1_bias = load_tensor(weights_dir + "/conv1_1_bias.weights")
-        self.conv1_2_kernel = load_tensor(
-            weights_dir + "/conv1_2_kernel.weights"
-        )
-        self.conv1_2_bias = load_tensor(weights_dir + "/conv1_2_bias.weights")
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("vgg16")
 
-        # Load Block 2
-        self.conv2_1_kernel = load_tensor(
-            weights_dir + "/conv2_1_kernel.weights"
-        )
-        self.conv2_1_bias = load_tensor(weights_dir + "/conv2_1_bias.weights")
-        self.conv2_2_kernel = load_tensor(
-            weights_dir + "/conv2_2_kernel.weights"
-        )
-        self.conv2_2_bias = load_tensor(weights_dir + "/conv2_2_bias.weights")
+        # Create empty list for loaded parameters
+        var loaded_params = List[ExTensor]()
 
-        # Load Block 3
-        self.conv3_1_kernel = load_tensor(
-            weights_dir + "/conv3_1_kernel.weights"
-        )
-        self.conv3_1_bias = load_tensor(weights_dir + "/conv3_1_bias.weights")
-        self.conv3_2_kernel = load_tensor(
-            weights_dir + "/conv3_2_kernel.weights"
-        )
-        self.conv3_2_bias = load_tensor(weights_dir + "/conv3_2_bias.weights")
-        self.conv3_3_kernel = load_tensor(
-            weights_dir + "/conv3_3_kernel.weights"
-        )
-        self.conv3_3_bias = load_tensor(weights_dir + "/conv3_3_bias.weights")
+        # Load using shared utility
+        load_model_weights(loaded_params, weights_dir, param_names)
 
-        # Load Block 4
-        self.conv4_1_kernel = load_tensor(
-            weights_dir + "/conv4_1_kernel.weights"
-        )
-        self.conv4_1_bias = load_tensor(weights_dir + "/conv4_1_bias.weights")
-        self.conv4_2_kernel = load_tensor(
-            weights_dir + "/conv4_2_kernel.weights"
-        )
-        self.conv4_2_bias = load_tensor(weights_dir + "/conv4_2_bias.weights")
-        self.conv4_3_kernel = load_tensor(
-            weights_dir + "/conv4_3_kernel.weights"
-        )
-        self.conv4_3_bias = load_tensor(weights_dir + "/conv4_3_bias.weights")
-
-        # Load Block 5
-        self.conv5_1_kernel = load_tensor(
-            weights_dir + "/conv5_1_kernel.weights"
-        )
-        self.conv5_1_bias = load_tensor(weights_dir + "/conv5_1_bias.weights")
-        self.conv5_2_kernel = load_tensor(
-            weights_dir + "/conv5_2_kernel.weights"
-        )
-        self.conv5_2_bias = load_tensor(weights_dir + "/conv5_2_bias.weights")
-        self.conv5_3_kernel = load_tensor(
-            weights_dir + "/conv5_3_kernel.weights"
-        )
-        self.conv5_3_bias = load_tensor(weights_dir + "/conv5_3_bias.weights")
-
-        # Load FC layers
-        self.fc1_weights = load_tensor(weights_dir + "/fc1_weights.weights")
-        self.fc1_bias = load_tensor(weights_dir + "/fc1_bias.weights")
-        self.fc2_weights = load_tensor(weights_dir + "/fc2_weights.weights")
-        self.fc2_bias = load_tensor(weights_dir + "/fc2_bias.weights")
-        self.fc3_weights = load_tensor(weights_dir + "/fc3_weights.weights")
-        self.fc3_bias = load_tensor(weights_dir + "/fc3_bias.weights")
+        # Assign loaded parameters to model fields
+        self.conv1_1_kernel = loaded_params[0]
+        self.conv1_1_bias = loaded_params[1]
+        self.conv1_2_kernel = loaded_params[2]
+        self.conv1_2_bias = loaded_params[3]
+        self.conv2_1_kernel = loaded_params[4]
+        self.conv2_1_bias = loaded_params[5]
+        self.conv2_2_kernel = loaded_params[6]
+        self.conv2_2_bias = loaded_params[7]
+        self.conv3_1_kernel = loaded_params[8]
+        self.conv3_1_bias = loaded_params[9]
+        self.conv3_2_kernel = loaded_params[10]
+        self.conv3_2_bias = loaded_params[11]
+        self.conv3_3_kernel = loaded_params[12]
+        self.conv3_3_bias = loaded_params[13]
+        self.conv4_1_kernel = loaded_params[14]
+        self.conv4_1_bias = loaded_params[15]
+        self.conv4_2_kernel = loaded_params[16]
+        self.conv4_2_bias = loaded_params[17]
+        self.conv4_3_kernel = loaded_params[18]
+        self.conv4_3_bias = loaded_params[19]
+        self.conv5_1_kernel = loaded_params[20]
+        self.conv5_1_bias = loaded_params[21]
+        self.conv5_2_kernel = loaded_params[22]
+        self.conv5_2_bias = loaded_params[23]
+        self.conv5_3_kernel = loaded_params[24]
+        self.conv5_3_bias = loaded_params[25]
+        self.fc1_weights = loaded_params[26]
+        self.fc1_bias = loaded_params[27]
+        self.fc2_weights = loaded_params[28]
+        self.fc2_bias = loaded_params[29]
+        self.fc3_weights = loaded_params[30]
+        self.fc3_bias = loaded_params[31]

@@ -30,7 +30,8 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform, xavier_uniform
 from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.utils.serialization import save_tensor, load_tensor
+from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from collections import List
 
 
 # ============================================================================
@@ -441,71 +442,30 @@ struct AlexNet:
             Creates directory if it doesn't exist. Each parameter saved as:
             - conv1_kernel.weights, conv1_bias.weights, etc.
         """
-        # Save each parameter to its own file
-        save_tensor(
-            self.conv1_kernel,
-            weights_dir + "/conv1_kernel.weights",
-            "conv1_kernel",
-        )
-        save_tensor(
-            self.conv1_bias, weights_dir + "/conv1_bias.weights", "conv1_bias"
-        )
-        save_tensor(
-            self.conv2_kernel,
-            weights_dir + "/conv2_kernel.weights",
-            "conv2_kernel",
-        )
-        save_tensor(
-            self.conv2_bias, weights_dir + "/conv2_bias.weights", "conv2_bias"
-        )
-        save_tensor(
-            self.conv3_kernel,
-            weights_dir + "/conv3_kernel.weights",
-            "conv3_kernel",
-        )
-        save_tensor(
-            self.conv3_bias, weights_dir + "/conv3_bias.weights", "conv3_bias"
-        )
-        save_tensor(
-            self.conv4_kernel,
-            weights_dir + "/conv4_kernel.weights",
-            "conv4_kernel",
-        )
-        save_tensor(
-            self.conv4_bias, weights_dir + "/conv4_bias.weights", "conv4_bias"
-        )
-        save_tensor(
-            self.conv5_kernel,
-            weights_dir + "/conv5_kernel.weights",
-            "conv5_kernel",
-        )
-        save_tensor(
-            self.conv5_bias, weights_dir + "/conv5_bias.weights", "conv5_bias"
-        )
-        save_tensor(
-            self.fc1_weights,
-            weights_dir + "/fc1_weights.weights",
-            "fc1_weights",
-        )
-        save_tensor(
-            self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias"
-        )
-        save_tensor(
-            self.fc2_weights,
-            weights_dir + "/fc2_weights.weights",
-            "fc2_weights",
-        )
-        save_tensor(
-            self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias"
-        )
-        save_tensor(
-            self.fc3_weights,
-            weights_dir + "/fc3_weights.weights",
-            "fc3_weights",
-        )
-        save_tensor(
-            self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias"
-        )
+        # Collect all parameters
+        var parameters = List[ExTensor]()
+        parameters.append(self.conv1_kernel)
+        parameters.append(self.conv1_bias)
+        parameters.append(self.conv2_kernel)
+        parameters.append(self.conv2_bias)
+        parameters.append(self.conv3_kernel)
+        parameters.append(self.conv3_bias)
+        parameters.append(self.conv4_kernel)
+        parameters.append(self.conv4_bias)
+        parameters.append(self.conv5_kernel)
+        parameters.append(self.conv5_bias)
+        parameters.append(self.fc1_weights)
+        parameters.append(self.fc1_bias)
+        parameters.append(self.fc2_weights)
+        parameters.append(self.fc2_bias)
+        parameters.append(self.fc3_weights)
+        parameters.append(self.fc3_bias)
+
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("alexnet")
+
+        # Save using shared utility
+        save_model_weights(parameters, weights_dir, param_names)
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
@@ -516,23 +476,32 @@ struct AlexNet:
         Raises:
             Error: If weight files are missing or have incompatible shapes.
         """
-        # Load each parameter from its file
-        self.conv1_kernel = load_tensor(weights_dir + "/conv1_kernel.weights")
-        self.conv1_bias = load_tensor(weights_dir + "/conv1_bias.weights")
-        self.conv2_kernel = load_tensor(weights_dir + "/conv2_kernel.weights")
-        self.conv2_bias = load_tensor(weights_dir + "/conv2_bias.weights")
-        self.conv3_kernel = load_tensor(weights_dir + "/conv3_kernel.weights")
-        self.conv3_bias = load_tensor(weights_dir + "/conv3_bias.weights")
-        self.conv4_kernel = load_tensor(weights_dir + "/conv4_kernel.weights")
-        self.conv4_bias = load_tensor(weights_dir + "/conv4_bias.weights")
-        self.conv5_kernel = load_tensor(weights_dir + "/conv5_kernel.weights")
-        self.conv5_bias = load_tensor(weights_dir + "/conv5_bias.weights")
-        self.fc1_weights = load_tensor(weights_dir + "/fc1_weights.weights")
-        self.fc1_bias = load_tensor(weights_dir + "/fc1_bias.weights")
-        self.fc2_weights = load_tensor(weights_dir + "/fc2_weights.weights")
-        self.fc2_bias = load_tensor(weights_dir + "/fc2_bias.weights")
-        self.fc3_weights = load_tensor(weights_dir + "/fc3_weights.weights")
-        self.fc3_bias = load_tensor(weights_dir + "/fc3_bias.weights")
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("alexnet")
+
+        # Create empty list for loaded parameters
+        var loaded_params = List[ExTensor]()
+
+        # Load using shared utility
+        load_model_weights(loaded_params, weights_dir, param_names)
+
+        # Assign loaded parameters to model fields
+        self.conv1_kernel = loaded_params[0]
+        self.conv1_bias = loaded_params[1]
+        self.conv2_kernel = loaded_params[2]
+        self.conv2_bias = loaded_params[3]
+        self.conv3_kernel = loaded_params[4]
+        self.conv3_bias = loaded_params[5]
+        self.conv4_kernel = loaded_params[6]
+        self.conv4_bias = loaded_params[7]
+        self.conv5_kernel = loaded_params[8]
+        self.conv5_bias = loaded_params[9]
+        self.fc1_weights = loaded_params[10]
+        self.fc1_bias = loaded_params[11]
+        self.fc2_weights = loaded_params[12]
+        self.fc2_bias = loaded_params[13]
+        self.fc3_weights = loaded_params[14]
+        self.fc3_bias = loaded_params[15]
 
     fn update_parameters(
         mut self,

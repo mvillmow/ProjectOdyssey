@@ -27,7 +27,7 @@ from shared.core.activation import relu, relu_backward
 from shared.core.initializers import kaiming_uniform, xavier_uniform
 from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.core.traits import Model
-from shared.utils.serialization import save_tensor, load_tensor
+from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
 from collections import List
 
 
@@ -257,17 +257,24 @@ struct LeNet5(Model, Movable):
             - conv1_bias.weights
             - etc.
         """
-        # Save each parameter to its own file
-        save_tensor(self.conv1_kernel, weights_dir + "/conv1_kernel.weights", "conv1_kernel")
-        save_tensor(self.conv1_bias, weights_dir + "/conv1_bias.weights", "conv1_bias")
-        save_tensor(self.conv2_kernel, weights_dir + "/conv2_kernel.weights", "conv2_kernel")
-        save_tensor(self.conv2_bias, weights_dir + "/conv2_bias.weights", "conv2_bias")
-        save_tensor(self.fc1_weights, weights_dir + "/fc1_weights.weights", "fc1_weights")
-        save_tensor(self.fc1_bias, weights_dir + "/fc1_bias.weights", "fc1_bias")
-        save_tensor(self.fc2_weights, weights_dir + "/fc2_weights.weights", "fc2_weights")
-        save_tensor(self.fc2_bias, weights_dir + "/fc2_bias.weights", "fc2_bias")
-        save_tensor(self.fc3_weights, weights_dir + "/fc3_weights.weights", "fc3_weights")
-        save_tensor(self.fc3_bias, weights_dir + "/fc3_bias.weights", "fc3_bias")
+        # Collect all parameters
+        var parameters = List[ExTensor]()
+        parameters.append(self.conv1_kernel)
+        parameters.append(self.conv1_bias)
+        parameters.append(self.conv2_kernel)
+        parameters.append(self.conv2_bias)
+        parameters.append(self.fc1_weights)
+        parameters.append(self.fc1_bias)
+        parameters.append(self.fc2_weights)
+        parameters.append(self.fc2_bias)
+        parameters.append(self.fc3_weights)
+        parameters.append(self.fc3_bias)
+
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("lenet5")
+
+        # Save using shared utility
+        save_model_weights(parameters, weights_dir, param_names)
 
     fn load_weights(mut self, weights_dir: String) raises:
         """Load model weights from directory.
@@ -278,17 +285,26 @@ struct LeNet5(Model, Movable):
         Raises:
             Error: If weight files are missing or have incompatible shapes
         """
-        # Load each parameter from its file
-        self.conv1_kernel = load_tensor(weights_dir + "/conv1_kernel.weights")
-        self.conv1_bias = load_tensor(weights_dir + "/conv1_bias.weights")
-        self.conv2_kernel = load_tensor(weights_dir + "/conv2_kernel.weights")
-        self.conv2_bias = load_tensor(weights_dir + "/conv2_bias.weights")
-        self.fc1_weights = load_tensor(weights_dir + "/fc1_weights.weights")
-        self.fc1_bias = load_tensor(weights_dir + "/fc1_bias.weights")
-        self.fc2_weights = load_tensor(weights_dir + "/fc2_weights.weights")
-        self.fc2_bias = load_tensor(weights_dir + "/fc2_bias.weights")
-        self.fc3_weights = load_tensor(weights_dir + "/fc3_weights.weights")
-        self.fc3_bias = load_tensor(weights_dir + "/fc3_bias.weights")
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("lenet5")
+
+        # Create empty list for loaded parameters
+        var loaded_params = List[ExTensor]()
+
+        # Load using shared utility
+        load_model_weights(loaded_params, weights_dir, param_names)
+
+        # Assign loaded parameters to model fields
+        self.conv1_kernel = loaded_params[0]
+        self.conv1_bias = loaded_params[1]
+        self.conv2_kernel = loaded_params[2]
+        self.conv2_bias = loaded_params[3]
+        self.fc1_weights = loaded_params[4]
+        self.fc1_bias = loaded_params[5]
+        self.fc2_weights = loaded_params[6]
+        self.fc2_bias = loaded_params[7]
+        self.fc3_weights = loaded_params[8]
+        self.fc3_bias = loaded_params[9]
 
     fn update_parameters(mut self, learning_rate: Float32,
                         grad_conv1_kernel: ExTensor,

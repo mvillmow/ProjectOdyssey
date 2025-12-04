@@ -55,7 +55,8 @@ from shared.core.normalization import batch_norm2d
 from shared.core.initializers import he_uniform
 from shared.core.arithmetic import add  # For skip connections
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.utils.serialization import save_tensor, load_tensor
+from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from collections import List
 
 
 struct ResNet18:
