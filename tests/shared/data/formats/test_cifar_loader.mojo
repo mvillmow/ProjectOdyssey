@@ -40,14 +40,14 @@ fn create_cifar10_test_file(num_images: Int) -> String:
     # Create binary data as string of characters (1 byte per character)
     for img_idx in range(num_images):
         # 1 byte label (0-9)
-        var label = UInt8(img_idx % 10)
-        result += String(label)
+        var label = img_idx % 10
+        result += chr(label)
 
         # 3072 bytes of pixel data (3 channels * 32 * 32)
         var pixels_per_image = 32 * 32 * 3
         for pixel_idx in range(pixels_per_image):
-            var pixel_value = UInt8((img_idx + pixel_idx) % 256)
-            result += String(pixel_value)
+            var pixel_value = (img_idx + pixel_idx) % 256
+            result += chr(pixel_value)
 
     return result
 
@@ -67,18 +67,18 @@ fn create_cifar100_test_file(num_images: Int) -> String:
     # Create binary data as string of characters (1 byte per character)
     for img_idx in range(num_images):
         # 1 byte coarse label (0-19)
-        var coarse_label = UInt8(img_idx % 20)
-        result += String(coarse_label)
+        var coarse_label = img_idx % 20
+        result += chr(coarse_label)
 
         # 1 byte fine label (0-99)
-        var fine_label = UInt8(img_idx % 100)
-        result += String(fine_label)
+        var fine_label = img_idx % 100
+        result += chr(fine_label)
 
         # 3072 bytes of pixel data (3 channels * 32 * 32)
         var pixels_per_image = 32 * 32 * 3
         for pixel_idx in range(pixels_per_image):
-            var pixel_value = UInt8((img_idx + pixel_idx) % 256)
-            result += String(pixel_value)
+            var pixel_value = (img_idx + pixel_idx) % 256
+            result += chr(pixel_value)
 
     return result
 
@@ -140,11 +140,11 @@ fn test_load_cifar10_labels_single_image() raises:
     # Create a single-image CIFAR-10 file
     var loader = CIFARLoader(10)
     # Just a label byte (5) + 3072 pixel bytes
-    var label_byte: UInt8 = 5
+    var label_byte = 5
     var content = ""
-    content += String(label_byte)
+    content += chr(label_byte)
     for _ in range(3072):
-        content += String(UInt8(0))
+        content += chr(0)
 
     # Verify we can parse it
     var num_images = len(content) // CIFAR10_BYTES_PER_IMAGE
@@ -164,11 +164,11 @@ fn test_load_cifar10_labels_multiple_images() raises:
     var content = ""
     for img_idx in range(num_test_images):
         # Label is just the image index mod 10
-        var label = UInt8(img_idx % 10)
-        content += String(label)
+        var label = img_idx % 10
+        content += chr(label)
         # Pixel data
         for _ in range(3072):
-            content += String(UInt8(0))
+            content += chr(0)
 
     # Verify size calculation
     var expected_size = num_test_images * CIFAR10_BYTES_PER_IMAGE
@@ -193,14 +193,14 @@ fn test_load_cifar100_labels_structure() raises:
     var num_test_images = 5
     for img_idx in range(num_test_images):
         # Coarse label (0-19)
-        var coarse = UInt8(img_idx % 20)
-        content += String(coarse)
+        var coarse = img_idx % 20
+        content += chr(coarse)
         # Fine label (0-99)
-        var fine = UInt8((img_idx * 13) % 100)  # Arbitrary multiplier
-        content += String(fine)
+        var fine = (img_idx * 13) % 100  # Arbitrary multiplier
+        content += chr(fine)
         # Pixel data
         for _ in range(3072):
-            content += String(UInt8(0))
+            content += chr(0)
 
     var expected_size = num_test_images * CIFAR100_BYTES_PER_IMAGE
     assert_equal(len(content), expected_size, "File size should match expected")

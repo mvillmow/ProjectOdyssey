@@ -392,7 +392,7 @@ fn test_emnist_performance_random_access() raises:
         if length > 0:
             # Access first, middle, and last samples
             var first_data, first_label = dataset.__getitem__(0)
-            var middle_data, middle_label = dataset.__getitem__(length / 2)
+            var middle_data, middle_label = dataset.__getitem__(length // 2)
             var last_data, last_label = dataset.__getitem__(length - 1)
 
             # Verify all have correct shape
@@ -401,3 +401,85 @@ fn test_emnist_performance_random_access() raises:
                 assert_equal(len(shape), 4, "All samples should have 4D shape")
     except e:
         print("Test data not available - skipping performance test")
+
+
+# ============================================================================
+# Main Test Runner
+# ============================================================================
+
+
+fn main() raises:
+    """Run all EMNIST dataset tests."""
+    print("Running EMNIST dataset tests...")
+
+    # Basic functionality tests
+    test_emnist_init_balanced()
+    print("✓ test_emnist_init_balanced")
+
+    test_emnist_init_byclass()
+    print("✓ test_emnist_init_byclass")
+
+    test_emnist_init_digits()
+    print("✓ test_emnist_init_digits")
+
+    test_emnist_init_letters()
+    print("✓ test_emnist_init_letters")
+
+    test_emnist_init_invalid_split()
+    print("✓ test_emnist_init_invalid_split")
+
+    # Length and indexing tests
+    test_emnist_len()
+    print("✓ test_emnist_len")
+
+    test_emnist_getitem_index()
+    print("✓ test_emnist_getitem_index")
+
+    test_emnist_getitem_negative_index()
+    print("✓ test_emnist_getitem_negative_index")
+
+    test_emnist_getitem_out_of_bounds()
+    print("✓ test_emnist_getitem_out_of_bounds")
+
+    # Shape tests
+    test_emnist_shape()
+    print("✓ test_emnist_shape")
+
+    # Class count tests
+    test_emnist_num_classes_balanced()
+    print("✓ test_emnist_num_classes_balanced")
+
+    test_emnist_num_classes_byclass()
+    print("✓ test_emnist_num_classes_byclass")
+
+    test_emnist_num_classes_digits()
+    print("✓ test_emnist_num_classes_digits")
+
+    test_emnist_num_classes_letters()
+    print("✓ test_emnist_num_classes_letters")
+
+    test_emnist_num_classes_mnist()
+    print("✓ test_emnist_num_classes_mnist")
+
+    # Train/test data tests
+    test_emnist_get_train_data()
+    print("✓ test_emnist_get_train_data")
+
+    test_emnist_get_test_data()
+    print("✓ test_emnist_get_test_data")
+
+    test_emnist_train_vs_test_sizes()
+    print("✓ test_emnist_train_vs_test_sizes")
+
+    # Consistency tests
+    test_emnist_data_label_consistency()
+    print("✓ test_emnist_data_label_consistency")
+
+    test_emnist_all_valid_splits()
+    print("✓ test_emnist_all_valid_splits")
+
+    # Performance tests
+    test_emnist_performance_random_access()
+    print("✓ test_emnist_performance_random_access")
+
+    print("\nAll EMNIST dataset tests passed!")
