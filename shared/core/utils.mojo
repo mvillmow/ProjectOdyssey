@@ -167,7 +167,7 @@ fn top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     var pairs = List[Tuple[Float64, Int]]()
     for i in range(numel):
         var val = tensor._get_float64(i)
-        pairs.append(Tuple[Float64, Int](val, i))
+        pairs.append((val, i))
 
     # Simple selection sort to find top k (not the most efficient, but correct)
     for i in range(k):
@@ -223,7 +223,7 @@ fn top_k(tensor: ExTensor, k: Int) raises -> Tuple[ExTensor, List[Int]]:
         var val = tensor._get_float64(idx)
         values._set_float64(i, val)
 
-    return Tuple[ExTensor, List[Int]](values, indices^)
+    return (values, indices^)
 
 
 fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
@@ -252,7 +252,7 @@ fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
     var pairs = List[Tuple[Float64, Int]]()
     for i in range(numel):
         var val = tensor._get_float64(i)
-        pairs.append(Tuple[Float64, Int](val, i))
+        pairs.append((val, i))
 
     # Bubble sort (simple and correct, not the most efficient)
     for i in range(numel):
