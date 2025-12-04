@@ -386,6 +386,128 @@ fn test_softmax_backward() raises:
     assert_equal(grad_shape[1], 3)
 
 
+fn test_softmax_axis_0() raises:
+    """Test softmax along first axis (axis=0)."""
+    var input_shape = List[Int]()
+    input_shape.append(3)
+    input_shape.append(2)
+    var input = zeros(input_shape, DType.float32)
+
+    var input_data = input._data.bitcast[Float32]()
+    # Shape: (3, 2)
+    # [[1, 2],
+    #  [3, 4],
+    #  [5, 6]]
+    input_data[0] = 1.0  # [0, 0]
+    input_data[1] = 2.0  # [0, 1]
+    input_data[2] = 3.0  # [1, 0]
+    input_data[3] = 4.0  # [1, 1]
+    input_data[4] = 5.0  # [2, 0]
+    input_data[5] = 6.0  # [2, 1]
+
+    var output = softmax(input, axis=0)
+
+    var output_data = output._data.bitcast[Float32]()
+    # For each column, softmax should sum to 1
+    # Column 0: softmax([1, 3, 5])
+    # Column 1: softmax([2, 4, 6])
+    var col0_sum = output_data[0] + output_data[2] + output_data[4]
+    var col1_sum = output_data[1] + output_data[3] + output_data[5]
+    assert_almost_equal(col0_sum, 1.0, tolerance=1e-5)
+    assert_almost_equal(col1_sum, 1.0, tolerance=1e-5)
+
+
+fn test_softmax_axis_1() raises:
+    """Test softmax along second axis (axis=1)."""
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(3)
+    var input = zeros(input_shape, DType.float32)
+
+    var input_data = input._data.bitcast[Float32]()
+    # Shape: (2, 3)
+    # [[1, 2, 3],
+    #  [4, 5, 6]]
+    input_data[0] = 1.0
+    input_data[1] = 2.0
+    input_data[2] = 3.0
+    input_data[3] = 4.0
+    input_data[4] = 5.0
+    input_data[5] = 6.0
+
+    var output = softmax(input, axis=1)
+
+    var output_data = output._data.bitcast[Float32]()
+    # For each row, softmax should sum to 1
+    var row0_sum = output_data[0] + output_data[1] + output_data[2]
+    var row1_sum = output_data[3] + output_data[4] + output_data[5]
+    assert_almost_equal(row0_sum, 1.0, tolerance=1e-5)
+    assert_almost_equal(row1_sum, 1.0, tolerance=1e-5)
+
+
+fn test_softmax_axis_negative_indexing() raises:
+    """Test softmax with negative axis indexing."""
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(3)
+    input_shape.append(4)
+    var input = ones(input_shape, DType.float32)
+
+    # Test axis=-1 (last axis)
+    var output_neg1 = softmax(input, axis=-1)
+    var output_data_neg1 = output_neg1._data.bitcast[Float32]()
+
+    # For axis=-1, each group of 4 elements should sum to 1
+    # Since input is all ones, each softmax output should be 0.25
+    for i in range(2 * 3):
+        var sum_val = Float32(0.0)
+        for j in range(4):
+            sum_val += output_data_neg1[i * 4 + j]
+        assert_almost_equal(sum_val, 1.0, tolerance=1e-5)
+
+    # Test axis=-2 (second-to-last axis) on 2D tensor
+    var input_shape_2d = List[Int]()
+    input_shape_2d.append(3)
+    input_shape_2d.append(2)
+    var input_2d = ones(input_shape_2d, DType.float32)
+    var output_neg2 = softmax(input_2d, axis=-2)
+    var output_data_neg2 = output_neg2._data.bitcast[Float32]()
+
+    # axis=-2 on 2D is equivalent to axis=0
+    for j in range(2):
+        var sum_val = Float32(0.0)
+        for i in range(3):
+            sum_val += output_data_neg2[i * 2 + j]
+        assert_almost_equal(sum_val, 1.0, tolerance=1e-5)
+
+
+fn test_softmax_3d_axis_middle() raises:
+    """Test softmax on 3D tensor along middle axis."""
+    var input_shape = List[Int]()
+    input_shape.append(2)
+    input_shape.append(3)
+    input_shape.append(4)
+    var input = zeros(input_shape, DType.float32)
+
+    # Fill with sequential values
+    var input_data = input._data.bitcast[Float32]()
+    for i in range(24):
+        input_data[i] = Float32(i + 1)
+
+    var output = softmax(input, axis=1)
+
+    var output_data = output._data.bitcast[Float32]()
+    # For axis=1 on shape (2, 3, 4):
+    # For each (i, k) pair, sum over j should be 1
+    for i in range(2):
+        for k in range(4):
+            var sum_val = Float32(0.0)
+            for j in range(3):
+                var idx = i * (3 * 4) + j * 4 + k
+                sum_val += output_data[idx]
+            assert_almost_equal(sum_val, 1.0, tolerance=1e-5)
+
+
 # ============================================================================
 # Integration Tests
 # ============================================================================
@@ -506,6 +628,18 @@ fn main() raises:
 
     test_softmax_backward()
     print("✓ test_softmax_backward")
+
+    test_softmax_axis_0()
+    print("✓ test_softmax_axis_0")
+
+    test_softmax_axis_1()
+    print("✓ test_softmax_axis_1")
+
+    test_softmax_axis_negative_indexing()
+    print("✓ test_softmax_axis_negative_indexing")
+
+    test_softmax_3d_axis_middle()
+    print("✓ test_softmax_3d_axis_middle")
 
     test_activation_output_shape_preservation()
     print("✓ test_activation_output_shape_preservation")

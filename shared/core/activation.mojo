@@ -280,6 +280,7 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     Args:
         tensor: Input tensor (logits)
         axis: Axis along which to compute softmax (default: -1, last axis)
+              Supports negative indexing: -1 means last axis
 
     Returns:
         New tensor with softmax applied, values sum to 1.0 along axis
@@ -291,6 +292,10 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
         var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
         var probs = softmax(logits, axis=-1)
         # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
+
+        var logits_2d = ExTensor(...)  # [[1, 2], [3, 4], [5, 6]]
+        var probs = softmax(logits_2d, axis=0)
+        # Softmax along first axis
     """
     # Normalize axis
     var ndim = len(tensor._shape)
@@ -299,88 +304,108 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
     if norm_axis < 0 or norm_axis >= ndim:
         raise Error("softmax: axis out of bounds")
 
-    # For simplicity, implement for last axis first
-    # TODO(#2398): Support arbitrary axis with proper reduction
-    if norm_axis != ndim - 1:
-        raise Error("softmax: only last axis currently supported")
-
     var result = ExTensor(tensor._shape, tensor._dtype)
 
-    # Calculate outer size (all dimensions before axis) and inner size (axis dimension)
+    # Calculate stride for iterating along the softmax axis
+    # stride is the product of all dimensions after norm_axis
+    var axis_stride = 1
+    for i in range(norm_axis + 1, ndim):
+        axis_stride *= tensor._shape[i]
+
+    # Calculate outer size (product of all dimensions before norm_axis)
     var outer_size = 1
     for i in range(norm_axis):
         outer_size *= tensor._shape[i]
-    var inner_size = tensor._shape[norm_axis]
+
+    var axis_size = tensor._shape[norm_axis]
 
     if tensor._dtype == DType.float16:
+        # For each position before the softmax axis
         for outer_idx in range(outer_size):
-            var base_idx = outer_idx * inner_size
+            # For each position after the softmax axis
+            for inner_idx in range(axis_stride):
+                # Find max value along the axis for numerical stability
+                var max_val: Float16 = tensor._data.bitcast[Float16]()[
+                    (outer_idx * axis_size + 0) * axis_stride + inner_idx
+                ]
+                for k in range(1, axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float16]()[idx]
+                    if val > max_val:
+                        max_val = val
 
-            # Find max value for numerical stability
-            var max_val: Float16 = tensor._data.bitcast[Float16]()[base_idx]
-            for i in range(1, inner_size):
-                var val = tensor._data.bitcast[Float16]()[base_idx + i]
-                if val > max_val:
-                    max_val = val
+                # Compute exp(x - max) and sum
+                var sum_exp: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float16]()[idx]
+                    var exp_val = exp(Float32(val - max_val))
+                    result._data.bitcast[Float16]()[idx] = Float16(exp_val)
+                    sum_exp += exp_val
 
-            # Compute exp(x - max) and sum
-            var sum_exp: Float32 = 0.0
-            for i in range(inner_size):
-                var val = tensor._data.bitcast[Float16]()[base_idx + i]
-                var exp_val = exp(Float32(val - max_val))
-                result._data.bitcast[Float16]()[base_idx + i] = Float16(exp_val)
-                sum_exp += exp_val
-
-            # Normalize by sum
-            for i in range(inner_size):
-                var current = Float32(result._data.bitcast[Float16]()[base_idx + i])
-                result._data.bitcast[Float16]()[base_idx + i] = Float16(current / sum_exp)
+                # Normalize by sum
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var current = Float32(result._data.bitcast[Float16]()[idx])
+                    result._data.bitcast[Float16]()[idx] = Float16(current / sum_exp)
 
     elif tensor._dtype == DType.float32:
+        # For each position before the softmax axis
         for outer_idx in range(outer_size):
-            var base_idx = outer_idx * inner_size
+            # For each position after the softmax axis
+            for inner_idx in range(axis_stride):
+                # Find max value along the axis for numerical stability
+                var max_val: Float32 = tensor._data.bitcast[Float32]()[
+                    (outer_idx * axis_size + 0) * axis_stride + inner_idx
+                ]
+                for k in range(1, axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float32]()[idx]
+                    if val > max_val:
+                        max_val = val
 
-            # Find max value for numerical stability
-            var max_val: Float32 = tensor._data.bitcast[Float32]()[base_idx]
-            for i in range(1, inner_size):
-                var val = tensor._data.bitcast[Float32]()[base_idx + i]
-                if val > max_val:
-                    max_val = val
+                # Compute exp(x - max) and sum
+                var sum_exp: Float32 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float32]()[idx]
+                    var exp_val = exp(val - max_val)
+                    result._data.bitcast[Float32]()[idx] = exp_val
+                    sum_exp += exp_val
 
-            # Compute exp(x - max) and sum
-            var sum_exp: Float32 = 0.0
-            for i in range(inner_size):
-                var val = tensor._data.bitcast[Float32]()[base_idx + i]
-                var exp_val = exp(val - max_val)
-                result._data.bitcast[Float32]()[base_idx + i] = exp_val
-                sum_exp += exp_val
-
-            # Normalize by sum
-            for i in range(inner_size):
-                result._data.bitcast[Float32]()[base_idx + i] /= sum_exp
+                # Normalize by sum
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    result._data.bitcast[Float32]()[idx] /= sum_exp
 
     elif tensor._dtype == DType.float64:
+        # For each position before the softmax axis
         for outer_idx in range(outer_size):
-            var base_idx = outer_idx * inner_size
+            # For each position after the softmax axis
+            for inner_idx in range(axis_stride):
+                # Find max value along the axis for numerical stability
+                var max_val: Float64 = tensor._data.bitcast[Float64]()[
+                    (outer_idx * axis_size + 0) * axis_stride + inner_idx
+                ]
+                for k in range(1, axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float64]()[idx]
+                    if val > max_val:
+                        max_val = val
 
-            # Find max value for numerical stability
-            var max_val: Float64 = tensor._data.bitcast[Float64]()[base_idx]
-            for i in range(1, inner_size):
-                var val = tensor._data.bitcast[Float64]()[base_idx + i]
-                if val > max_val:
-                    max_val = val
+                # Compute exp(x - max) and sum
+                var sum_exp: Float64 = 0.0
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var val = tensor._data.bitcast[Float64]()[idx]
+                    var exp_val = exp(val - max_val)
+                    result._data.bitcast[Float64]()[idx] = exp_val
+                    sum_exp += exp_val
 
-            # Compute exp(x - max) and sum
-            var sum_exp: Float64 = 0.0
-            for i in range(inner_size):
-                var val = tensor._data.bitcast[Float64]()[base_idx + i]
-                var exp_val = exp(val - max_val)
-                result._data.bitcast[Float64]()[base_idx + i] = exp_val
-                sum_exp += exp_val
-
-            # Normalize by sum
-            for i in range(inner_size):
-                result._data.bitcast[Float64]()[base_idx + i] /= sum_exp
+                # Normalize by sum
+                for k in range(axis_size):
+                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    result._data.bitcast[Float64]()[idx] /= sum_exp
     else:
         raise Error("softmax: only float16, float32, and float64 dtypes supported")
 
