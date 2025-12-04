@@ -58,16 +58,11 @@ struct TrainConfig:
 
 
 fn parse_args() raises -> TrainConfig:
-<<<<<<< HEAD
     """Parse command line arguments using enhanced argument parser.
-=======
-    """Parse command line arguments using shared ArgumentParser.
->>>>>>> 27c604ca (refactor(lenet-emnist): Final integration with all shared modules)
 
     Returns:
         TrainConfig with parsed arguments.
     """
-<<<<<<< HEAD
     var parser = create_training_parser()
     parser.add_argument("weights-dir", "string", "lenet5_weights")
 
@@ -78,25 +73,6 @@ fn parse_args() raises -> TrainConfig:
     var learning_rate = Float32(args.get_float("lr", 0.001))
     var data_dir = args.get_string("data-dir", "datasets/emnist")
     var weights_dir = args.get_string("weights-dir", "lenet5_weights")
-=======
-    # Create argument parser with shared utilities
-    var parser = ArgumentParser()
-
-    # Set up standard arguments with types and defaults
-    parser.add_argument("epochs", "int", "10")
-    parser.add_argument("batch-size", "int", "32")
-    parser.add_argument("lr", "float", "0.001")
-    parser.add_argument("data-dir", "string", "datasets/emnist")
-    parser.add_argument("weights-dir", "string", "lenet5_weights")
-
-    var args = parser.parse()
-
-    var epochs = args.get_int("epochs")
-    var batch_size = args.get_int("batch-size")
-    var learning_rate = Float32(args.get_float("lr"))
-    var data_dir = args.get_string("data-dir")
-    var weights_dir = args.get_string("weights-dir")
->>>>>>> 27c604ca (refactor(lenet-emnist): Final integration with all shared modules)
 
     return TrainConfig(epochs, batch_size, learning_rate, data_dir, weights_dir)
 

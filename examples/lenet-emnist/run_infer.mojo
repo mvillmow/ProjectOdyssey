@@ -76,7 +76,6 @@ struct InferConfig(Movable):
 
 
 fn parse_args() raises -> InferConfig:
-<<<<<<< HEAD
     """Parse command line arguments using enhanced argument parser."""
     var parser = ArgumentParser()
     parser.add_argument("checkpoint", "string", "")
@@ -93,27 +92,6 @@ fn parse_args() raises -> InferConfig:
     config.run_test_set = args.get_bool("test-set")
     config.data_dir = args.get_string("data-dir", "datasets/emnist")
     config.top_k = args.get_int("top-k", 5)
-=======
-    """Parse command line arguments using shared ArgumentParser."""
-    # Create argument parser with shared utilities
-    var parser = ArgumentParser()
-
-    # Set up standard arguments with types and defaults
-    parser.add_argument("checkpoint", "string", "")
-    parser.add_argument("image", "string", "")
-    parser.add_flag("test-set")
-    parser.add_argument("data-dir", "string", "datasets/emnist")
-    parser.add_argument("top-k", "int", "5")
-
-    var parsed = parser.parse()
-
-    var config = InferConfig()
-    config.checkpoint_dir = parsed.get_string("checkpoint")
-    config.image_path = parsed.get_string("image")
-    config.run_test_set = parsed.get_bool("test-set")
-    config.data_dir = parsed.get_string("data-dir")
-    config.top_k = parsed.get_int("top-k")
->>>>>>> 27c604ca (refactor(lenet-emnist): Final integration with all shared modules)
 
     return config^
 

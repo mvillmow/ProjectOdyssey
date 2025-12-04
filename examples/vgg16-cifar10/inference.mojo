@@ -51,7 +51,6 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
     var test_shape = test_images.shape()
     var num_test_samples = test_shape[0]
 
-<<<<<<< HEAD
     print("Evaluating on " + str(num_test_samples) + " test samples...")
 
     # Collect predictions using model.predict()
@@ -64,36 +63,16 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
 
         # Forward pass (inference mode)
         var pred_class = model.predict(sample)
-=======
-    var predictions = List[Int]()
-
-    print("Evaluating on " + str(num_test_samples) + " test samples...")
-
-    # Process each test sample and collect predictions
-    for i in range(num_test_samples):
-        # Extract single sample using shared batch utilities
-        var batch_pair = extract_batch_pair(test_images, test_labels, i, 1)
-        var sample_image = batch_pair[0]
-
-        # Forward pass (inference mode)
-        var pred_class = model.predict(sample_image)
->>>>>>> ac757af4 (refactor(vgg16): Final integration with all shared modules)
         predictions.append(pred_class)
 
         # Print progress every 1000 samples
         if (i + 1) % 1000 == 0:
             print("  Processed " + str(i + 1) + "/" + str(num_test_samples))
 
-<<<<<<< HEAD
     # Use shared evaluate function
     var accuracy_fraction = evaluate_with_predict(predictions, test_labels)
     var accuracy = accuracy_fraction * 100.0
     return accuracy
-=======
-    # Use shared evaluate function from shared.training.metrics
-    var accuracy = evaluate_with_predict(predictions, test_labels)
-    return accuracy * 100.0
->>>>>>> ac757af4 (refactor(vgg16): Final integration with all shared modules)
 
 
 fn main() raises:
