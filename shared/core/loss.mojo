@@ -7,6 +7,8 @@ Implemented losses:
 - Binary Cross-Entropy (BCE): For binary classification
 - Mean Squared Error (MSE): For regression
 - Cross-Entropy: For multi-class classification (with softmax)
+- Focal Loss: For addressing class imbalance
+- KL Divergence: For distribution matching
 
 All loss functions include:
 - Numerical stability (epsilon handling, clipping)
@@ -15,7 +17,7 @@ All loss functions include:
 """
 
 from .extensor import ExTensor, ones_like, zeros_like, full_like
-from .arithmetic import add, subtract, multiply, divide
+from .arithmetic import add, subtract, multiply, divide, power
 from .elementwise import log, clip, exp
 from .reduction import mean, sum, max_reduce
 from .activation import softmax
@@ -342,3 +344,316 @@ fn cross_entropy_backward(
 
     # Chain rule: multiply by upstream gradient
     return multiply(grad_scaled, grad_output)
+
+
+fn focal_loss(
+    predictions: ExTensor, targets: ExTensor, alpha: Float32 = 0.25, gamma: Float32 = 2.0
+) raises -> ExTensor:
+    """Focal loss for addressing class imbalance in classification.
+
+    Formula:
+        FL = -alpha * (1 - p)^gamma * target * log(p) - (1 - alpha) * p^gamma * (1 - target) * log(1 - p)
+
+    where:
+        p = predictions (probabilities, should be in [0, 1] range)
+        target = ground truth labels (0 or 1)
+        alpha = weighting factor (default: 0.25)
+        gamma = focusing parameter (default: 2.0)
+
+    The focal loss applies a modulating term (1 - p)^gamma to the cross entropy loss.
+    This down-weights easy examples and focuses training on hard examples.
+    It is particularly useful for addressing class imbalance.
+
+    Args:
+        `predictions`: Predicted probabilities, shape (batch_size,) or (batch_size, 1)
+        `targets`: Ground truth binary labels (0 or 1), same shape as predictions
+        `alpha`: Weighting factor for class 1 (default: 0.25)
+        `gamma`: Focusing parameter (default: 2.0)
+
+    Returns:
+        Loss tensor of same shape as inputs (element-wise loss)
+        Use mean() to get scalar loss for backpropagation
+
+    Raises:
+        Error if shapes don't match or dtypes are incompatible
+
+    Example:
+        var predictions = sigmoid(logits)  # (batch_size,)
+        var targets = ...  # (batch_size,) with values 0 or 1
+        var loss_per_sample = focal_loss(predictions, targets)
+        var loss = mean(loss_per_sample)  # Scalar loss
+
+    Numerical Stability:
+        - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
+        - Uses epsilon=1e-7 by default
+    """
+    if predictions.dtype() != targets.dtype():
+        raise Error("Predictions and targets must have the same dtype")
+
+    if predictions.shape() != targets.shape():
+        raise Error("Predictions and targets must have the same shape")
+
+    var epsilon = 1e-7
+
+    # Clip predictions to prevent log(0) and log(1)
+    var clipped = clip(predictions, epsilon, 1.0 - epsilon)
+
+    # Compute log(p) and log(1-p)
+    var log_pred = log(clipped)
+    var one = ones_like(clipped)
+    var one_minus_pred = subtract(one, clipped)
+    var log_one_minus_pred = log(one_minus_pred)
+
+    # Compute alpha and (1-alpha) tensors
+    var alpha_tensor = full_like(clipped, Float64(alpha))
+    var one_minus_alpha = subtract(one, alpha_tensor)
+
+    # Compute (1 - p)^gamma for positive class
+    var gamma_tensor = full_like(clipped, Float64(gamma))
+    var one_minus_p_pow = power(one_minus_pred, gamma_tensor)
+
+    # Compute p^gamma for negative class
+    var p_pow = power(clipped, gamma_tensor)
+
+    # Focal loss: -alpha * (1-p)^gamma * target * log(p) - (1-alpha) * p^gamma * (1-target) * log(1-p)
+    var one_minus_targets = subtract(one, targets)
+
+    # First term: -alpha * (1-p)^gamma * target * log(p)
+    var term1 = multiply(alpha_tensor, one_minus_p_pow)
+    term1 = multiply(term1, targets)
+    term1 = multiply(term1, log_pred)
+
+    # Second term: -(1-alpha) * p^gamma * (1-target) * log(1-p)
+    var term2 = multiply(one_minus_alpha, p_pow)
+    term2 = multiply(term2, one_minus_targets)
+    term2 = multiply(term2, log_one_minus_pred)
+
+    # Combine: FL = -(term1 + term2)
+    var sum_terms = add(term1, term2)
+    var zero = zeros_like(sum_terms)
+
+    return subtract(zero, sum_terms)
+
+
+fn focal_loss_backward(
+    grad_output: ExTensor,
+    predictions: ExTensor,
+    targets: ExTensor,
+    alpha: Float32 = 0.25,
+    gamma: Float32 = 2.0
+) raises -> ExTensor:
+    """Backward pass for focal loss.
+
+    Computes gradient of focal loss with respect to predictions.
+
+    The gradient formula for focal loss is:
+        ∂FL/∂p = -alpha * gamma * (1-p)^(gamma-1) * target * log(p)
+                 - alpha * (1-p)^gamma * target / p
+                 + (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
+                 + (1-alpha) * p^gamma * (1-target) / (1-p)
+
+    Args:
+        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `predictions`: Original predictions passed to forward pass
+        `targets`: Original targets passed to forward pass
+        `alpha`: Weighting factor (default: 0.25)
+        `gamma`: Focusing parameter (default: 2.0)
+
+    Returns:
+        Gradient with respect to predictions, same shape as predictions
+
+    Example:
+        # Forward
+        var focal = focal_loss(predictions, targets, alpha, gamma)
+        var loss = mean(focal)
+
+        # Backward
+        var grad_loss = ones_like(loss)
+        var grad_focal = mean_backward(grad_loss, focal)
+        var grad_pred = focal_loss_backward(grad_focal, predictions, targets, alpha, gamma)
+    """
+    var epsilon = 1e-7
+
+    # Clip predictions to prevent division by zero
+    var clipped = clip(predictions, epsilon, 1.0 - epsilon)
+    var one = ones_like(clipped)
+    var one_minus_pred = subtract(one, clipped)
+
+    # Compute tensor versions of alpha and gamma
+    var alpha_tensor = full_like(clipped, Float64(alpha))
+    var one_minus_alpha = subtract(one, alpha_tensor)
+    var gamma_tensor = full_like(clipped, Float64(gamma))
+    var gamma_minus_one = subtract(gamma_tensor, ones_like(gamma_tensor))
+
+    # Compute powers for gradient
+    # (1-p)^(gamma-1)
+    var one_minus_p_pow_gm1 = power(one_minus_pred, gamma_minus_one)
+    # p^(gamma-1)
+    var p_pow_gm1 = power(clipped, gamma_minus_one)
+    # (1-p)^gamma
+    var one_minus_p_pow_g = power(one_minus_pred, gamma_tensor)
+    # p^gamma
+    var p_pow_g = power(clipped, gamma_tensor)
+
+    # Compute log terms
+    var log_pred = log(clipped)
+    var log_one_minus_pred = log(one_minus_pred)
+
+    # Gradient computation:
+    # ∂FL/∂p = -alpha * [gamma * (1-p)^(gamma-1) * target * log(p) + (1-p)^gamma * target / p]
+    #          + (1-alpha) * [gamma * p^(gamma-1) * (1-target) * log(1-p) + p^gamma * (1-target) / (1-p)]
+
+    var one_minus_targets = subtract(one, targets)
+
+    # First component: -alpha * gamma * (1-p)^(gamma-1) * target * log(p)
+    var term1_a = multiply(alpha_tensor, gamma_tensor)
+    term1_a = multiply(term1_a, one_minus_p_pow_gm1)
+    term1_a = multiply(term1_a, targets)
+    term1_a = multiply(term1_a, log_pred)
+
+    # Second component: -alpha * (1-p)^gamma * target / p
+    var term1_b = multiply(alpha_tensor, one_minus_p_pow_g)
+    term1_b = multiply(term1_b, targets)
+    term1_b = divide(term1_b, clipped)
+
+    # Combine first part: -(term1_a + term1_b)
+    var term1 = add(term1_a, term1_b)
+    var neg_one = full_like(term1, -1.0)
+    term1 = multiply(term1, neg_one)
+
+    # Third component: (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
+    var term2_a = multiply(one_minus_alpha, gamma_tensor)
+    term2_a = multiply(term2_a, p_pow_gm1)
+    term2_a = multiply(term2_a, one_minus_targets)
+    term2_a = multiply(term2_a, log_one_minus_pred)
+
+    # Fourth component: (1-alpha) * p^gamma * (1-target) / (1-p)
+    var term2_b = multiply(one_minus_alpha, p_pow_g)
+    term2_b = multiply(term2_b, one_minus_targets)
+    term2_b = divide(term2_b, one_minus_pred)
+
+    # Combine second part
+    var term2 = add(term2_a, term2_b)
+
+    # Final gradient
+    var grad = add(term1, term2)
+
+    # Chain rule: multiply by upstream gradient
+    return multiply(grad_output, grad)
+
+
+fn kl_divergence(p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7) raises -> ExTensor:
+    """Kullback-Leibler divergence loss for distribution matching.
+
+    Formula:
+        KL(p||q) = sum(p * log(p / q)) = sum(p * (log(p) - log(q)))
+
+    where:
+        p = reference distribution (target)
+        q = approximating distribution (predicted)
+
+    KL divergence measures how much one probability distribution differs from another.
+    It is always non-negative and is zero only when p == q almost everywhere.
+
+    Args:
+        `p`: Reference distribution (target), should sum to 1 along class axis
+        `q`: Approximating distribution (predicted), should sum to 1 along class axis
+        `epsilon`: Small constant for numerical stability (default: 1e-7)
+
+    Returns:
+        KL divergence loss, reduced along class axis
+        Use mean() to get scalar loss for backpropagation
+
+    Raises:
+        Error if shapes don't match or dtypes are incompatible
+
+    Example:
+        var p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
+        var q_dist = softmax(predictions_logits, axis=1)  # (batch_size, num_classes)
+        var kl_per_sample = kl_divergence(p_dist, q_dist)
+        var loss = mean(kl_per_sample)  # Scalar loss
+
+    Note:
+        This implementation assumes inputs are already probabilities (sum to 1).
+        For raw logits, apply softmax first.
+
+    Numerical Stability:
+        - Clips both p and q to [epsilon, 1] to prevent log(0)
+        - Handles zero probabilities gracefully
+    """
+    if p.dtype() != q.dtype():
+        raise Error("p and q must have the same dtype")
+
+    if p.shape() != q.shape():
+        raise Error("p and q must have the same shape")
+
+    # Clip both distributions to prevent log(0)
+    var clipped_p = clip(p, epsilon, 1.0)
+    var clipped_q = clip(q, epsilon, 1.0)
+
+    # Compute log(p) and log(q)
+    var log_p = log(clipped_p)
+    var log_q = log(clipped_q)
+
+    # Compute log(p/q) = log(p) - log(q)
+    var log_ratio = subtract(log_p, log_q)
+
+    # Compute p * log(p/q)
+    var kl_per_element = multiply(p, log_ratio)
+
+    # Sum along all axes except the first (batch) to get per-sample KL divergence
+    # For 2D: (batch, classes) -> (batch,)
+    # For 1D: (classes,) -> scalar
+    var shape = p.shape()
+    if len(shape) > 1:
+        # Sum over class axis (axis 1 for 2D, or all axes except batch)
+        var kl_per_sample = sum(kl_per_element, axis=-1, keepdims=False)
+        return kl_per_sample
+    else:
+        # For 1D input, sum all elements
+        var kl_total = sum(kl_per_element, axis=0, keepdims=False)
+        return kl_total
+
+
+fn kl_divergence_backward(
+    grad_output: ExTensor, p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7
+) raises -> ExTensor:
+    """Backward pass for KL divergence loss.
+
+    Computes gradient of KL divergence with respect to q (the predicted distribution).
+
+    Formula:
+        ∂KL/∂q = -p / q
+
+    The gradient with respect to p is:
+        ∂KL/∂p = log(p) - log(q) + 1 (not used in typical backprop since targets are fixed)
+
+    Args:
+        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `p`: Reference distribution passed to forward pass
+        `q`: Approximating distribution passed to forward pass
+        `epsilon`: Small constant for numerical stability (default: 1e-7)
+
+    Returns:
+        Gradient with respect to q, same shape as q
+
+    Example:
+        # Forward
+        var kl = kl_divergence(p_dist, q_dist)
+        var loss = mean(kl)
+
+        # Backward
+        var grad_loss = ones_like(loss)
+        var grad_kl = mean_backward(grad_loss, kl)
+        var grad_q = kl_divergence_backward(grad_kl, p_dist, q_dist)
+    """
+    # Clip q to prevent division by zero
+    var clipped_q = clip(q, epsilon, 1.0)
+
+    # Gradient: -p / q
+    var grad = divide(p, clipped_q)
+    var neg_one = full_like(grad, -1.0)
+    grad = multiply(grad, neg_one)
+
+    # Chain rule: multiply by upstream gradient
+    return multiply(grad_output, grad)
