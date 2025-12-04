@@ -265,6 +265,8 @@ struct DatasetInfo(Copyable, Movable):
             - "emnist_digits"
             - "emnist_letters"
         """
+        # Initialize field first
+        self.dataset_name = dataset_name
         # Validate dataset name
         if not self._is_valid_dataset(dataset_name):
             raise Error(
@@ -272,7 +274,6 @@ struct DatasetInfo(Copyable, Movable):
                 + dataset_name
                 + ". Supported: cifar10, emnist_balanced, emnist_byclass, emnist_bymerge, emnist_digits, emnist_letters"
             )
-        self.dataset_name = dataset_name
 
     fn _is_valid_dataset(self, name: String) -> Bool:
         """Check if dataset name is valid.
