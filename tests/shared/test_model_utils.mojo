@@ -20,7 +20,7 @@ from collections import List
 import os
 
 
-fn test_save_load_model_weights():
+fn test_save_load_model_weights() raises:
     """Test saving and loading model weights."""
     # Create test parameters
     var params = List[ExTensor]()
@@ -77,7 +77,7 @@ fn test_save_load_model_weights():
         _cleanup_directory(tmpdir)
 
 
-fn test_get_lenet5_parameter_names():
+fn test_get_lenet5_parameter_names() raises:
     """Test parameter naming for LeNet-5."""
     var names = get_model_parameter_names("lenet5")
 
@@ -90,7 +90,7 @@ fn test_get_lenet5_parameter_names():
     assert_equal(names[9], "fc3_bias", "Tenth param should be fc3_bias")
 
 
-fn test_get_alexnet_parameter_names():
+fn test_get_alexnet_parameter_names() raises:
     """Test parameter naming for AlexNet."""
     var names = get_model_parameter_names("alexnet")
 
@@ -105,7 +105,7 @@ fn test_get_alexnet_parameter_names():
     assert_equal(names[15], "fc3_bias", "Last param should be fc3_bias")
 
 
-fn test_get_vgg16_parameter_names():
+fn test_get_vgg16_parameter_names() raises:
     """Test parameter naming for VGG-16."""
     var names = get_model_parameter_names("vgg16")
 
@@ -124,7 +124,7 @@ fn test_get_vgg16_parameter_names():
     assert_equal(names[25], "fc3_bias", "Last param should be fc3_bias")
 
 
-fn test_validate_shapes_matching():
+fn test_validate_shapes_matching() raises:
     """Test shape validation with matching tensors."""
     # Create matching tensors
     var expected = List[ExTensor]()
@@ -143,7 +143,7 @@ fn test_validate_shapes_matching():
     validate_shapes(loaded, expected)
 
 
-fn test_validate_shapes_rank_mismatch():
+fn test_validate_shapes_rank_mismatch() raises:
     """Test shape validation with rank mismatch."""
     var expected = List[ExTensor]()
     var loaded = List[ExTensor]()
@@ -163,7 +163,7 @@ fn test_validate_shapes_rank_mismatch():
         pass
 
 
-fn test_validate_shapes_dimension_mismatch():
+fn test_validate_shapes_dimension_mismatch() raises:
     """Test shape validation with dimension mismatch."""
     var expected = List[ExTensor]()
     var loaded = List[ExTensor]()
@@ -183,7 +183,7 @@ fn test_validate_shapes_dimension_mismatch():
         pass
 
 
-fn test_validate_shapes_count_mismatch():
+fn test_validate_shapes_count_mismatch() raises:
     """Test shape validation with parameter count mismatch."""
     var expected = List[ExTensor]()
     var loaded = List[ExTensor]()
@@ -228,3 +228,17 @@ fn _cleanup_directory(path: String):
     except:
         # If cleanup fails, that's okay for test cleanup
         pass
+
+
+fn main() raises:
+    """Run all model utils tests."""
+    test_save_load_model_weights()
+    test_get_lenet5_parameter_names()
+    test_get_alexnet_parameter_names()
+    test_get_vgg16_parameter_names()
+    test_validate_shapes_matching()
+    test_validate_shapes_rank_mismatch()
+    test_validate_shapes_dimension_mismatch()
+    test_validate_shapes_count_mismatch()
+
+    print("All model_utils tests passed!")
