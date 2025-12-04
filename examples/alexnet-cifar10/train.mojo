@@ -27,6 +27,8 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
 from shared.utils.arg_parser import create_training_parser
+from shared.training.metrics import evaluate_with_predict
+from collections import List
 
 
 fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
