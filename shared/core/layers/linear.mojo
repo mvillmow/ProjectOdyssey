@@ -12,7 +12,7 @@ Key components:
 from shared.core.extensor import ExTensor, zeros, randn, zeros_like
 
 
-struct Linear:
+struct Linear(Copyable, Movable):
     """Linear layer: y = xW + b (stub for testing).
 
     A fully connected neural network layer that transforms inputs

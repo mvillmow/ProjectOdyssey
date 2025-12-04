@@ -190,6 +190,7 @@ from .conv import (
     conv2d_no_bias,
     conv2d_backward,
     conv2d_no_bias_backward,
+    Conv2dBackwardResult,
     depthwise_conv2d,
     depthwise_conv2d_no_bias,
     depthwise_conv2d_backward,
