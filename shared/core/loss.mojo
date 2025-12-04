@@ -7,6 +7,8 @@ Implemented losses:
 - Binary Cross-Entropy (BCE): For binary classification
 - Mean Squared Error (MSE): For regression
 - Cross-Entropy: For multi-class classification (with softmax)
+- Smooth L1 Loss (Huber Loss): Robust regression loss
+- Hinge Loss: For Support Vector Machines (SVMs)
 
 All loss functions include:
 - Numerical stability (epsilon handling, clipping)
@@ -16,9 +18,11 @@ All loss functions include:
 
 from .extensor import ExTensor, ones_like, zeros_like, full_like
 from .arithmetic import add, subtract, multiply, divide
-from .elementwise import log, clip, exp
+from .elementwise import log, clip, exp, abs
 from .reduction import mean, sum, max_reduce
 from .activation import softmax
+from .comparison import less
+from .dtype_dispatch import dispatch_binary, dispatch_scalar
 
 
 fn binary_cross_entropy(
@@ -342,3 +346,262 @@ fn cross_entropy_backward(
 
     # Chain rule: multiply by upstream gradient
     return multiply(grad_scaled, grad_output)
+
+
+fn smooth_l1_loss(
+    predictions: ExTensor, targets: ExTensor, beta: Float32 = 1.0
+) raises -> ExTensor:
+    """Smooth L1 loss (Huber loss) for robust regression.
+
+    Formula:
+        If |x| < beta:
+            L = 0.5 * (x)^2 / beta
+        Else:
+            L = |x| - 0.5 * beta
+
+        where x = predictions - targets
+
+    This loss is less sensitive to outliers than MSE, making it more robust
+    for regression tasks with noisy data.
+
+    Args:
+        `predictions`: Predicted values, any shape.
+        `targets`: Ground truth values, same shape as predictions.
+        `beta`: Threshold parameter that controls the transition between L2 and L1.
+                Smaller beta makes the function more similar to L1.
+                Default: 1.0
+
+    Returns:
+        Loss tensor, same shape as inputs. Use mean() to get scalar loss.
+
+    Raises:
+        Error if shapes don't match or dtypes are incompatible.
+
+    Example:
+        var predictions = model(x)  # (batch_size, output_dim)
+        var targets = y_true        # (batch_size, output_dim)
+        var loss_per_sample = smooth_l1_loss(predictions, targets, beta=1.0)
+        var loss = mean(loss_per_sample)  # Scalar loss for backprop
+
+    Numerical Stability:
+        - Uses absolute value for robust handling of differences
+        - Beta parameter prevents division by zero in gradient
+    """
+    if predictions.dtype() != targets.dtype():
+        raise Error("Predictions and targets must have the same dtype")
+
+    if predictions.shape() != targets.shape():
+        raise Error("Predictions and targets must have the same shape")
+
+    # Compute differences: x = predictions - targets
+    var diff = subtract(predictions, targets)
+
+    # Use dispatch to compute smooth L1 element-wise
+    @always_inline
+    fn _smooth_l1_op[T: DType](pred: Scalar[T], targ: Scalar[T]) -> Scalar[T]:
+        var diff_val = pred - targ
+        # Compute absolute value
+        var abs_diff = diff_val if diff_val >= Scalar[T](0) else -diff_val
+        var beta_val = Scalar[T](beta)
+        var half_beta = beta_val * Scalar[T](0.5)
+
+        # if |x| < beta: return 0.5 * x^2 / beta
+        # else: return |x| - 0.5 * beta
+        if abs_diff < beta_val:
+            return Scalar[T](0.5) * diff_val * diff_val / beta_val
+        else:
+            return abs_diff - half_beta
+
+    return dispatch_binary[_smooth_l1_op](predictions, targets)
+
+
+fn smooth_l1_loss_backward(
+    grad_output: ExTensor,
+    predictions: ExTensor,
+    targets: ExTensor,
+    beta: Float32 = 1.0
+) raises -> ExTensor:
+    """Backward pass for Smooth L1 loss (Huber loss).
+
+    Computes gradient of Smooth L1 loss with respect to predictions.
+
+    Formula:
+        If |x| < beta:
+            ∂L/∂pred = x / beta
+        Else:
+            ∂L/∂pred = sign(x)
+
+        where x = predictions - targets, sign(x) = 1 if x > 0 else -1
+
+    Args:
+        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `predictions`: Original predictions passed to forward pass.
+        `targets`: Original targets passed to forward pass.
+        `beta`: Threshold parameter (must match forward pass).
+
+    Returns:
+        Gradient with respect to predictions, same shape as predictions.
+
+    Example:
+        # Forward
+        var smoothl1_loss = smooth_l1_loss(predictions, targets, beta=1.0)
+        var loss = mean(smoothl1_loss)
+
+        # Backward
+        var grad_loss = ones_like(loss)
+        var grad_smoothl1 = mean_backward(grad_loss, smoothl1_loss)
+        var grad_pred = smooth_l1_loss_backward(grad_smoothl1, predictions, targets, beta=1.0)
+    """
+    if grad_output.dtype() != predictions.dtype():
+        raise Error("smooth_l1_loss_backward: grad_output and predictions must have same dtype")
+    if grad_output.shape() != predictions.shape():
+        raise Error("smooth_l1_loss_backward: grad_output and predictions must have same shape")
+
+    # Use dispatch to compute gradient element-wise
+    @always_inline
+    fn _smooth_l1_backward_op[T: DType](grad: Scalar[T], pred: Scalar[T], targ: Scalar[T]) -> Scalar[T]:
+        var diff_val = pred - targ
+        # Compute absolute value
+        var abs_diff = diff_val if diff_val >= Scalar[T](0) else -diff_val
+        var beta_val = Scalar[T](beta)
+
+        # if |x| < beta: return grad * (x / beta)
+        # else: return grad * sign(x)
+        if abs_diff < beta_val:
+            # Gradient: x / beta
+            return grad * diff_val / beta_val
+        else:
+            # Gradient: sign(x)
+            var sign_val = diff_val if diff_val > Scalar[T](0) else (diff_val if diff_val < Scalar[T](0) else Scalar[T](0))
+            return grad * sign_val
+
+    # Create a 3-argument wrapper by manually iterating
+    var result = ExTensor(predictions.shape(), predictions.dtype())
+    var pred_ptr = predictions._data.bitcast[Scalar[predictions.dtype()]]()
+    var targ_ptr = targets._data.bitcast[Scalar[targets.dtype()]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[grad_output.dtype()]]()
+    var result_ptr = result._data.bitcast[Scalar[predictions.dtype()]]()
+
+    for i in range(predictions._numel):
+        result_ptr[i] = _smooth_l1_backward_op[predictions.dtype()](grad_ptr[i], pred_ptr[i], targ_ptr[i])
+
+    return result
+
+
+fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
+    """Hinge loss for Support Vector Machines (SVMs).
+
+    Formula:
+        L = max(0, 1 - y * pred)
+
+    where:
+        y = targets (must be -1 or 1)
+        pred = predictions (model output)
+
+    The hinge loss penalizes predictions that are not confident enough.
+    A prediction is correct when y * pred >= 1 (margin of 1).
+
+    Args:
+        `predictions`: Model predictions (real-valued scores).
+        `targets`: Ground truth labels, must be -1 or 1, same shape as predictions.
+
+    Returns:
+        Loss tensor, same shape as inputs. Use mean() to get scalar loss.
+
+    Raises:
+        Error if shapes don't match or dtypes are incompatible.
+
+    Example:
+        var predictions = model(x)  # (batch_size,) or (batch_size, 1)
+        var targets = y_true        # (batch_size,) with values -1 or 1
+        var loss_per_sample = hinge_loss(predictions, targets)
+        var loss = mean(loss_per_sample)  # Scalar loss for backprop
+
+    Note:
+        Hinge loss is typically used with hard labels (-1 or 1) rather than
+        probabilities. For multi-class SVM, use with one-vs-rest strategy.
+
+    Numerical Stability:
+        - Uses max(0, ...) to prevent negative losses
+        - Avoids numerical issues with extreme values
+    """
+    if predictions.dtype() != targets.dtype():
+        raise Error("Predictions and targets must have the same dtype")
+
+    if predictions.shape() != targets.shape():
+        raise Error("Predictions and targets must have the same shape")
+
+    # Use dispatch to compute hinge loss element-wise
+    @always_inline
+    fn _hinge_loss_op[T: DType](pred: Scalar[T], targ: Scalar[T]) -> Scalar[T]:
+        var y_pred = targ * pred
+        var margin = Scalar[T](1) - y_pred
+
+        # return max(0, margin)
+        return margin if margin > Scalar[T](0) else Scalar[T](0)
+
+    return dispatch_binary[_hinge_loss_op](predictions, targets)
+
+
+fn hinge_loss_backward(
+    grad_output: ExTensor,
+    predictions: ExTensor,
+    targets: ExTensor
+) raises -> ExTensor:
+    """Backward pass for hinge loss.
+
+    Computes gradient of hinge loss with respect to predictions.
+
+    Formula:
+        If y * pred < 1 (margin violated):
+            ∂L/∂pred = -y
+        Else (margin satisfied):
+            ∂L/∂pred = 0
+
+    where y = targets, pred = predictions
+
+    Args:
+        `grad_output`: Gradient from upstream (e.g., from mean_backward)
+        `predictions`: Original predictions passed to forward pass.
+        `targets`: Original targets passed to forward pass (-1 or 1).
+
+    Returns:
+        Gradient with respect to predictions, same shape as predictions.
+
+    Example:
+        # Forward
+        var hinge = hinge_loss(predictions, targets)
+        var loss = mean(hinge)
+
+        # Backward
+        var grad_loss = ones_like(loss)
+        var grad_hinge = mean_backward(grad_loss, hinge)
+        var grad_pred = hinge_loss_backward(grad_hinge, predictions, targets)
+    """
+    if grad_output.dtype() != predictions.dtype():
+        raise Error("hinge_loss_backward: grad_output and predictions must have same dtype")
+    if grad_output.shape() != predictions.shape():
+        raise Error("hinge_loss_backward: grad_output and predictions must have same shape")
+
+    # Use dispatch to compute gradient element-wise
+    @always_inline
+    fn _hinge_backward_op[T: DType](grad: Scalar[T], pred: Scalar[T], targ: Scalar[T]) -> Scalar[T]:
+        var y_pred = targ * pred
+        # if y * pred < 1: return grad * (-y)
+        # else: return 0
+        if y_pred < Scalar[T](1):
+            return grad * (-targ)
+        else:
+            return Scalar[T](0)
+
+    # Create a 3-argument wrapper by manually iterating
+    var result = ExTensor(predictions.shape(), predictions.dtype())
+    var pred_ptr = predictions._data.bitcast[Scalar[predictions.dtype()]]()
+    var targ_ptr = targets._data.bitcast[Scalar[targets.dtype()]]()
+    var grad_ptr = grad_output._data.bitcast[Scalar[grad_output.dtype()]]()
+    var result_ptr = result._data.bitcast[Scalar[predictions.dtype()]]()
+
+    for i in range(predictions._numel):
+        result_ptr[i] = _hinge_backward_op[predictions.dtype()](grad_ptr[i], pred_ptr[i], targ_ptr[i])
+
+    return result
