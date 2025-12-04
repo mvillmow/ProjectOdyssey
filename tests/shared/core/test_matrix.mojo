@@ -875,6 +875,333 @@ fn test_transpose_combination_at_bt() raises:
 
 
 # ============================================================================
+# Transpose Tests - Custom Axes Permutation (Issue #2389)
+# ============================================================================
+
+
+fn test_transpose_axes_2d_simple() raises:
+    """Test 2D transpose with axes [1, 0] (standard transpose)."""
+    var shape = List[Int]()
+    shape.append(3)
+    shape.append(4)
+
+    var t = zeros(shape, DType.float32)  # 3x4
+
+    # Fill with values: [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, 11]]
+    for i in range(12):
+        t._data.bitcast[Float32]()[i] = Float32(i)
+
+    # Create axes [1, 0] for standard transpose
+    var axes = List[Int]()
+    axes.append(1)
+    axes.append(0)
+
+    var result = transpose(t, axes^)
+
+    # Result should be 4x3
+    assert_dim(result, 2, "Result should be 2D")
+    assert_equal(result.shape()[0], 4, "First dimension should be 4")
+    assert_equal(result.shape()[1], 3, "Second dimension should be 3")
+
+    # Check actual values: result[i,j] = input[j,i]
+    # result[0,0] = input[0,0] = 0, result[0,1] = input[1,0] = 4, result[0,2] = input[2,0] = 8
+    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
+    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(4.0), tolerance=1e-5)
+    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(8.0), tolerance=1e-5)
+
+
+fn test_transpose_axes_3d_identity() raises:
+    """Test 3D transpose with identity permutation [0, 1, 2]."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)  # 2x3x4
+
+    # Identity permutation
+    var axes = List[Int]()
+    axes.append(0)
+    axes.append(1)
+    axes.append(2)
+
+    var result = transpose(t, axes^)
+
+    # Result shape should be unchanged (2x3x4)
+    assert_dim(result, 3, "Result should be 3D")
+    assert_equal(result.shape()[0], 2, "First dimension should be 2")
+    assert_equal(result.shape()[1], 3, "Second dimension should be 3")
+    assert_equal(result.shape()[2], 4, "Third dimension should be 4")
+
+    # Values should be identical
+    assert_all_values(result, 1.0, 1e-6, "Identity permutation preserves values")
+
+
+fn test_transpose_axes_3d_permutation() raises:
+    """Test 3D transpose with permutation [2, 0, 1]."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = zeros(shape, DType.float32)  # 2x3x4
+
+    # Fill with sequential values
+    for i in range(24):
+        t._data.bitcast[Float32]()[i] = Float32(i)
+
+    # Permutation [2, 0, 1]: (2, 3, 4) -> (4, 2, 3)
+    var axes = List[Int]()
+    axes.append(2)
+    axes.append(0)
+    axes.append(1)
+
+    var result = transpose(t, axes^)
+
+    # Result shape should be (4, 2, 3)
+    assert_dim(result, 3, "Result should be 3D")
+    assert_equal(result.shape()[0], 4, "First dimension should be 4")
+    assert_equal(result.shape()[1], 2, "Second dimension should be 2")
+    assert_equal(result.shape()[2], 3, "Third dimension should be 3")
+
+    # Verify element count
+    assert_numel(result, 24, "Result should have 24 elements")
+
+
+fn test_transpose_axes_3d_reverse() raises:
+    """Test 3D transpose with reverse permutation [2, 1, 0]."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)  # 2x3x4
+
+    # Reverse permutation [2, 1, 0]: (2, 3, 4) -> (4, 3, 2)
+    var axes = List[Int]()
+    axes.append(2)
+    axes.append(1)
+    axes.append(0)
+
+    var result = transpose(t, axes^)
+
+    # Result shape should be (4, 3, 2)
+    assert_dim(result, 3, "Result should be 3D")
+    assert_equal(result.shape()[0], 4, "First dimension should be 4")
+    assert_equal(result.shape()[1], 3, "Second dimension should be 3")
+    assert_equal(result.shape()[2], 2, "Second dimension should be 2")
+
+    # All values should be preserved (all ones)
+    assert_all_values(result, 1.0, 1e-6, "Values preserved in reverse permutation")
+
+
+fn test_transpose_axes_default_none() raises:
+    """Test transpose with axes=None uses default (reverse all)."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)  # 2x3x4
+
+    # Explicit default: axes=None
+    var result = transpose(t)
+
+    # Should reverse all axes: (2, 3, 4) -> (4, 3, 2)
+    assert_dim(result, 3, "Result should be 3D")
+    assert_equal(result.shape()[0], 4, "First dimension should be 4")
+    assert_equal(result.shape()[1], 3, "Second dimension should be 3")
+    assert_equal(result.shape()[2], 2, "Third dimension should be 2")
+
+
+fn test_transpose_axes_4d_permutation() raises:
+    """Test 4D transpose with custom permutation [3, 1, 2, 0]."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+    shape.append(5)
+
+    var t = ones(shape, DType.float32)  # 2x3x4x5
+
+    # Permutation [3, 1, 2, 0]: (2, 3, 4, 5) -> (5, 3, 4, 2)
+    var axes = List[Int]()
+    axes.append(3)
+    axes.append(1)
+    axes.append(2)
+    axes.append(0)
+
+    var result = transpose(t, axes^)
+
+    # Result shape should be (5, 3, 4, 2)
+    assert_dim(result, 4, "Result should be 4D")
+    assert_equal(result.shape()[0], 5, "First dimension should be 5")
+    assert_equal(result.shape()[1], 3, "Second dimension should be 3")
+    assert_equal(result.shape()[2], 4, "Third dimension should be 4")
+    assert_equal(result.shape()[3], 2, "Fourth dimension should be 2")
+
+    # Verify element count
+    assert_numel(result, 120, "Result should have 120 elements")
+
+
+fn test_transpose_axes_invalid_duplicate() raises:
+    """Test that duplicate axes raise error."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)
+
+    # Invalid: duplicate axis 0
+    var axes = List[Int]()
+    axes.append(0)
+    axes.append(0)
+    axes.append(1)
+
+    var error_raised = False
+    try:
+        var result = transpose(t, axes^)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for duplicate axes")
+
+
+fn test_transpose_axes_invalid_out_of_bounds() raises:
+    """Test that out-of-bounds axes raise error."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)
+
+    # Invalid: axis 5 is out of bounds (only 3 dimensions)
+    var axes = List[Int]()
+    axes.append(0)
+    axes.append(1)
+    axes.append(5)
+
+    var error_raised = False
+    try:
+        var result = transpose(t, axes^)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for out-of-bounds axis")
+
+
+fn test_transpose_axes_invalid_length() raises:
+    """Test that wrong-length axes raise error."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = ones(shape, DType.float32)
+
+    # Invalid: only 2 axes provided for 3D tensor
+    var axes = List[Int]()
+    axes.append(0)
+    axes.append(1)
+
+    var error_raised = False
+    try:
+        var result = transpose(t, axes^)
+    except:
+        error_raised = True
+
+    if not error_raised:
+        raise Error("Should have raised error for wrong-length axes")
+
+
+fn test_transpose_axes_backward_3d() raises:
+    """Test transpose_backward with custom axes."""
+    var m = 2
+    var n = 3
+    var p = 4
+
+    # Create 3D input with shape (m, n, p)
+    var shape = List[Int]()
+    shape.append(m)
+    shape.append(n)
+    shape.append(p)
+    var x = zeros(shape, DType.float32)
+
+    # Initialize with non-uniform values
+    for i in range(m * n * p):
+        x._data.bitcast[Float32]()[i] = Float32(i) * 0.1 - 2.0
+
+    # Forward with axes [2, 0, 1]: (2, 3, 4) -> (4, 2, 3)
+    var axes = List[Int]()
+    axes.append(2)
+    axes.append(0)
+    axes.append(1)
+
+    var output = transpose(x, axes^)
+    var grad_output = ones_like(output)
+
+    # Compute backward - need new axes list since original was transferred
+    var backward_axes = List[Int]()
+    backward_axes.append(2)
+    backward_axes.append(0)
+    backward_axes.append(1)
+    var grad_input = transpose_backward(grad_output, backward_axes^)
+
+    # Gradient should have same shape as input
+    assert_equal(grad_input.shape()[0], m, "Gradient dim 0 should match input")
+    assert_equal(grad_input.shape()[1], n, "Gradient dim 1 should match input")
+    assert_equal(grad_input.shape()[2], p, "Gradient dim 2 should match input")
+
+
+fn test_transpose_axes_double_permutation() raises:
+    """Test that transpose(transpose(x, axes), inverse_axes) recovers original."""
+    var shape = List[Int]()
+    shape.append(2)
+    shape.append(3)
+    shape.append(4)
+
+    var t = zeros(shape, DType.float32)
+
+    # Fill with sequential values
+    for i in range(24):
+        t._data.bitcast[Float32]()[i] = Float32(i)
+
+    # Forward permutation [2, 0, 1]
+    var axes = List[Int]()
+    axes.append(2)
+    axes.append(0)
+    axes.append(1)
+
+    var t_perm = transpose(t, axes^)
+
+    # Compute inverse permutation
+    # For axes [2, 0, 1], inverse is [1, 2, 0]
+    var inverse_axes = List[Int]()
+    inverse_axes.append(1)
+    inverse_axes.append(2)
+    inverse_axes.append(0)
+
+    var t_recovered = transpose(t_perm, inverse_axes^)
+
+    # Should recover original shape
+    assert_equal(t_recovered.shape()[0], 2, "Recovered dim 0 should be 2")
+    assert_equal(t_recovered.shape()[1], 3, "Recovered dim 1 should be 3")
+    assert_equal(t_recovered.shape()[2], 4, "Recovered dim 2 should be 4")
+
+    # Check values are recovered
+    for i in range(24):
+        assert_almost_equal(
+            t_recovered._data.bitcast[Float32]()[i],
+            t._data.bitcast[Float32]()[i],
+            tolerance=1e-5
+        )
+
+
+# ============================================================================
 # Dot Product Tests
 # ============================================================================
 
@@ -1291,6 +1618,31 @@ fn main() raises:
     test_transpose_combination_at_bt()
     print("✓ test_transpose_combination_at_bt")
 
+    # Transpose tests - custom axes (Issue #2389)
+    print("\n=== Transpose: Custom Axes Permutation (Issue #2389) ===")
+    test_transpose_axes_2d_simple()
+    print("✓ test_transpose_axes_2d_simple")
+    test_transpose_axes_3d_identity()
+    print("✓ test_transpose_axes_3d_identity")
+    test_transpose_axes_3d_permutation()
+    print("✓ test_transpose_axes_3d_permutation")
+    test_transpose_axes_3d_reverse()
+    print("✓ test_transpose_axes_3d_reverse")
+    test_transpose_axes_default_none()
+    print("✓ test_transpose_axes_default_none")
+    test_transpose_axes_4d_permutation()
+    print("✓ test_transpose_axes_4d_permutation")
+    test_transpose_axes_invalid_duplicate()
+    print("✓ test_transpose_axes_invalid_duplicate")
+    test_transpose_axes_invalid_out_of_bounds()
+    print("✓ test_transpose_axes_invalid_out_of_bounds")
+    test_transpose_axes_invalid_length()
+    print("✓ test_transpose_axes_invalid_length")
+    test_transpose_axes_backward_3d()
+    print("✓ test_transpose_axes_backward_3d")
+    test_transpose_axes_double_permutation()
+    print("✓ test_transpose_axes_double_permutation")
+
     # Dot product tests
     print("\n=== Dot Product ===")
     # TODO: Fix dot product tests - crash/segfault during execution
@@ -1320,5 +1672,5 @@ fn main() raises:
     print("✓ test_dunder_matmul")
 
     print("\n" + "="*60)
-    print("All 56 matrix operation tests passed!")
+    print("All 67 matrix operation tests passed!")
     print("="*60)

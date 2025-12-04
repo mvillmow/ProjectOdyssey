@@ -182,65 +182,104 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     return result^
 
 
-fn transpose(tensor: ExTensor) raises -> ExTensor:
-    """Transpose tensor dimensions.
+fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTensor:
+    """Transpose tensor dimensions with optional axis permutation.
 
-    Args:.        `tensor`: Input tensor.
+    Supports arbitrary axis permutation for N-dimensional tensors, matching NumPy semantics.
 
-    Returns:.        A new tensor with transposed dimensions (reverses all axes)
+    Args:
+        `tensor`: Input tensor.
+        `axes`: Optional permutation of axes. If None, reverses all axes (default behavior).
+                Must be a permutation of [0, 1, ..., ndim-1] with no duplicates.
+                Example: axes=[2, 0, 1] permutes (N, H, W, C) -> (C, N, H, W)
+
+    Returns:
+        A new tensor with permuted dimensions according to axes.
+
+    Raises:
+        Error if axes is invalid (duplicates, wrong range, or wrong length).
 
     Examples:
+        # Default: reverse all axes
         var t = zeros(List[Int](3, 4), DType.float32)
         var t_T = transpose(t)  # Shape (4, 3)
 
+        # Custom permutation: (2, 3, 4) -> (4, 3, 2) with axes=[2, 0, 1]
         var t3d = zeros(List[Int](2, 3, 4), DType.float32)
-        var t3d_T = transpose(t3d)  # Shape (4, 3, 2) - reverse all axes
+        var axes = List[Int]()
+        axes.append(2)
+        axes.append(0)
+        axes.append(1)
+        var t3d_perm = transpose(t3d, axes)  # Shape (4, 2, 3)
 
     Note:
-        Currently supports reversing all axes for any dimensionality.
-        TODO(#2389): Add support for custom axis permutation via axes parameter.
+        - If axes is None, defaults to reversing all axes (same as original behavior)
+        - Validates axes parameter: no duplicates, correct range, correct length
+        - Matches NumPy transpose semantics for arbitrary permutations
     """
     var ndim = tensor.dim()
     var input_shape = tensor.shape()
 
-    # Build result shape (reverse all dimensions)
+    # Handle default case (None or default): reverse all axes
+    var perm = axes
+    if perm is None:
+        perm = List[Int]()
+        for i in range(ndim - 1, -1, -1):
+            perm.value().append(i)
+
+    # Validate axes parameter
+    if len(perm.value()) != ndim:
+        raise Error("axes length (" + String(len(perm.value())) + ") does not match tensor dimensions (" + String(ndim) + ")")
+
+    # Check for duplicates and valid range
+    var seen = List[Bool]()
+    for _ in range(ndim):
+        seen.append(False)
+
+    for axis in perm.value():
+        if axis < 0 or axis >= ndim:
+            raise Error("axis " + String(axis) + " is out of bounds for tensor with " + String(ndim) + " dimensions")
+        if seen[axis]:
+            raise Error("duplicate axis " + String(axis) + " in permutation")
+        seen[axis] = True
+
+    # Build result shape using permutation
     var result_shape = List[Int]()
-    for i in range(ndim - 1, -1, -1):
-        result_shape.append(input_shape[i])
+    for axis in perm.value():
+        result_shape.append(input_shape[axis])
 
     var result = ExTensor(result_shape, tensor.dtype())
 
     # Compute strides for input tensor (row-major order)
-    # BUGFIX: List[Int]() creates a list with wrong initialization
-    # We need to build the list using append() instead of indexing
     var input_strides = List[Int]()
     var stride = 1
-    # Build strides in reverse order (row-major)
-    var temp_strides = List[Int]()
     for i in range(ndim - 1, -1, -1):
-        temp_strides.append(stride)
+        input_strides.append(stride)
         stride *= input_shape[i]
     # Reverse to get correct indexing order
-    for i in range(len(temp_strides) - 1, -1, -1):
-        input_strides.append(temp_strides[i])
+    var temp_strides = List[Int]()
+    for i in range(len(input_strides) - 1, -1, -1):
+        temp_strides.append(input_strides[i])
+    input_strides = temp_strides^
 
     # For each element in result, map to input position
     for result_idx in range(result.numel()):
         # Convert linear result index to coordinates
-        # BUGFIX: Initialize list properly before indexing
         var result_coords = List[Int]()
         for _ in range(ndim):
             result_coords.append(0)
         var temp_idx = result_idx
         for i in range(ndim - 1, -1, -1):
-            result_coords[i] = temp_idx % result.shape()[i]
-            temp_idx //= result.shape()[i]
+            result_coords[i] = temp_idx % result_shape[i]
+            temp_idx //= result_shape[i]
 
-        # Map result coordinates to input coordinates (reverse order)
-        # BUGFIX: Initialize list properly before indexing
+        # Map result coordinates to input coordinates using permutation
         var input_coords = List[Int]()
-        for i in range(ndim):
-            input_coords.append(result_coords[ndim - 1 - i])
+        for _ in range(ndim):
+            input_coords.append(0)
+        for result_axis in range(ndim):
+            var input_axis = perm.value()[result_axis]
+            input_coords[input_axis] = result_coords[result_axis]
 
         # Convert input coordinates to linear index
         var input_idx = 0
@@ -451,23 +490,61 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
     return GradientPair(grad_a, grad_b)
 
 
-fn transpose_backward(grad_output: ExTensor) raises -> ExTensor:
+fn transpose_backward(grad_output: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTensor:
     """Compute gradient for transpose operation.
 
-    For Y = transpose(X), given ∂L/∂Y, computes:
-        ∂L/∂X = transpose(∂L/∂Y)
+    For Y = transpose(X, axes), given ∂L/∂Y, computes:
+        ∂L/∂X = transpose(∂L/∂Y, inverse_axes)
 
-    The gradient of transpose is simply transposing the gradient back.
+    The gradient of transpose is the transpose with inverse permutation.
 
-    Args:.        `grad_output`: Gradient from upstream (∂L/∂Y)
+    Args:
+        `grad_output`: Gradient from upstream (∂L/∂Y)
+        `axes`: The axes permutation used in forward pass. If None, uses default (reverse all).
 
-    Returns:.        Gradient w.r.t. input (∂L/∂X)
+    Returns:
+        Gradient w.r.t. input (∂L/∂X)
 
     Examples:
+        # Default case (reverse axes)
         var x = zeros(List[Int](3, 4), DType.float32)
         var y = transpose(x)  # Shape (4, 3)
         var grad_y = ones(List[Int](4, 3), DType.float32)
         var grad_x = transpose_backward(grad_y)  # Shape (3, 4)
+
+        # Custom axes case
+        var x3d = zeros(List[Int](2, 3, 4), DType.float32)
+        var axes = List[Int]()
+        axes.append(2)
+        axes.append(0)
+        axes.append(1)
+        var y3d = transpose(x3d, axes)  # Shape (4, 2, 3)
+        var grad_y3d = ones(List[Int](4, 2, 3), DType.float32)
+        var grad_x3d = transpose_backward(grad_y3d, axes)  # Shape (2, 3, 4)
+
+    Note:
+        Transpose is self-adjoint: the inverse permutation is used to compute gradients.
+        For axes=[a1, a2, ..., an], the inverse is computed by finding the permutation
+        that maps back to the original order.
     """
-    # Transpose is self-inverse for gradients
-    return transpose(grad_output)
+    var ndim = grad_output.dim()
+
+    # Handle default case (None): reverse all axes
+    var perm = axes
+    if perm is None:
+        perm = List[Int]()
+        for i in range(ndim - 1, -1, -1):
+            perm.value().append(i)
+
+    # Compute inverse permutation
+    # If forward permutation is [a1, a2, ..., an], inverse satisfies:
+    # inverse[perm[i]] = i for all i
+    var inverse_perm = List[Int]()
+    for _ in range(ndim):
+        inverse_perm.append(0)
+
+    for i in range(ndim):
+        inverse_perm[perm.value()[i]] = i
+
+    # Apply inverse permutation to gradient
+    return transpose(grad_output, inverse_perm^)
