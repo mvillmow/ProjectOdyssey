@@ -27,6 +27,7 @@ Modules:
     `loss`: Loss functions.
     `numerical_safety`: NaN/Inf detection, gradient monitoring, numerical stability checks.
     `dtype_dispatch`: Generic dtype dispatch helpers for eliminating dtype branching.
+    `utils`: Utility functions (argmax, top_k_indices, top_k, argsort).
 
 Example:.    from shared.core.extensor import ExTensor, zeros
     from shared.core.linear import linear
@@ -329,9 +330,13 @@ from .loss import (
     binary_cross_entropy,
     mean_squared_error,
     cross_entropy,
+    focal_loss,
+    kl_divergence,
     binary_cross_entropy_backward,
     mean_squared_error_backward,
     cross_entropy_backward,
+    focal_loss_backward,
+    kl_divergence_backward,
 )
 
 from .numerical_safety import (
@@ -375,6 +380,17 @@ from .reduction import (
     mean_backward,
     max_reduce_backward,
     min_reduce_backward,
+)
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+from .utils import (
+    argmax,
+    top_k_indices,
+    top_k,
+    argsort,
 )
 
 # ============================================================================
