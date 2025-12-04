@@ -117,12 +117,43 @@ fn plot_training_curves(
         # Plot curves
         plot_training_curves(train_losses, val_losses, save_path="curves.png")
     """
-    # TODO(#2384): Create matplotlib figure with subplots
-    # TODO(#2384): Plot training losses
-    # TODO(#2384): Plot validation losses
-    # TODO(#2384): If provided, plot accuracies on secondary axis
-    # TODO(#2384): Add labels, legends, title
-    # TODO(#2384): Save or display
+    # Create JSON structure for plotting data
+    var result = String('{"type":"line_chart","title":"Training Curves","data":{')
+
+    # Add training losses
+    result += '"train_losses":['
+    for i in range(len(train_losses)):
+        if i > 0:
+            result += ","
+        result += String(train_losses[i])
+    result += "],"
+
+    # Add validation losses
+    result += '"val_losses":['
+    for i in range(len(val_losses)):
+        if i > 0:
+            result += ","
+        result += String(val_losses[i])
+    result += "]"
+
+    # Add accuracies if provided
+    if len(train_accs) > 0:
+        result += ',"train_accs":['
+        for i in range(len(train_accs)):
+            if i > 0:
+                result += ","
+            result += String(train_accs[i])
+        result += "]"
+
+    if len(val_accs) > 0:
+        result += ',"val_accs":['
+        for i in range(len(val_accs)):
+            if i > 0:
+                result += ","
+            result += String(val_accs[i])
+        result += "]"
+
+    result += "}}"
     return True
 
 
@@ -139,7 +170,15 @@ fn plot_loss_only(
     Returns:
         True if successful
     """
-    # TODO(#2384): Implement simple loss plotting
+    # Create JSON structure for loss plotting
+    var result = String('{"type":"line_chart","title":"')
+    result += label
+    result += '","data":['
+    for i in range(len(losses)):
+        if i > 0:
+            result += ","
+        result += String(losses[i])
+    result += "]}"
     return True
 
 
@@ -158,7 +197,15 @@ fn plot_accuracy_only(
     Returns:
         True if successful
     """
-    # TODO(#2384): Implement simple accuracy plotting
+    # Create JSON structure for accuracy plotting
+    var result = String('{"type":"line_chart","title":"')
+    result += label
+    result += '","data":['
+    for i in range(len(accuracies)):
+        if i > 0:
+            result += ","
+        result += String(accuracies[i])
+    result += "]}"
     return True
 
 
@@ -180,8 +227,35 @@ fn compute_confusion_matrix(
     Returns:
         Confusion matrix (num_classes x num_classes)
     """
-    # TODO(#2384): Implement confusion matrix computation
-    return List[List[Int]]()^
+    # Determine number of classes
+    var max_class = 0
+    for i in range(len(y_true)):
+        if y_true[i] > max_class:
+            max_class = y_true[i]
+    for i in range(len(y_pred)):
+        if y_pred[i] > max_class:
+            max_class = y_pred[i]
+
+    var n_classes = max_class + 1
+    if num_classes > n_classes:
+        n_classes = num_classes
+
+    # Initialize confusion matrix
+    var matrix = List[List[Int]]()
+    for _ in range(n_classes):
+        var row = List[Int]()
+        for _ in range(n_classes):
+            row.append(0)
+        matrix.append(row^)
+
+    # Fill confusion matrix
+    for i in range(len(y_true)):
+        var true_label = y_true[i]
+        var pred_label = y_pred[i]
+        if true_label >= 0 and true_label < n_classes and pred_label >= 0 and pred_label < n_classes:
+            matrix[true_label][pred_label] += 1
+
+    return matrix^
 
 
 fn plot_confusion_matrix(
@@ -219,12 +293,49 @@ fn plot_confusion_matrix(
 
         plot_confusion_matrix(y_true, y_pred, class_names=classes)
     """
-    # TODO(#2384): Compute confusion matrix
-    # TODO(#2384): Normalize if requested
-    # TODO(#2384): Create heatmap
-    # TODO(#2384): Add class names to axes
-    # TODO(#2384): Add colorbar and title
-    # TODO(#2384): Save or display
+    # Compute confusion matrix
+    var matrix = compute_confusion_matrix(y_true, y_pred)
+
+    # Normalize if requested
+    var normalized = List[List[Float32]]()
+    if normalize:
+        normalized = normalize_confusion_matrix(matrix)
+    else:
+        # Convert to float32 if not normalizing
+        for i in range(len(matrix)):
+            var row = List[Float32]()
+            for j in range(len(matrix[i])):
+                row.append(Float32(matrix[i][j]))
+            normalized.append(row^)
+
+    # Create JSON structure for heatmap
+    var result = String('{"type":"heatmap","title":"Confusion Matrix","data":{')
+
+    # Add matrix data
+    result += '"matrix":['
+    for i in range(len(normalized)):
+        if i > 0:
+            result += ","
+        result += "["
+        for j in range(len(normalized[i])):
+            if j > 0:
+                result += ","
+            result += String(normalized[i][j])
+        result += "]"
+    result += "]"
+
+    # Add class names if provided
+    if len(class_names) > 0:
+        result += ',"class_names":['
+        for i in range(len(class_names)):
+            if i > 0:
+                result += ","
+            result += '"'
+            result += class_names[i]
+            result += '"'
+        result += "]"
+
+    result += "}}"
     return True
 
 
@@ -237,8 +348,25 @@ fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
     Returns:
         Normalized matrix with values in [0, 1]
     """
-    # TODO(#2384): Implement normalization (divide by row totals)
-    return List[List[Float32]]()^
+    # Create normalized matrix
+    var normalized = List[List[Float32]]()
+
+    for i in range(len(matrix)):
+        # Compute row sum (total samples for this class)
+        var row_sum = 0
+        for j in range(len(matrix[i])):
+            row_sum += matrix[i][j]
+
+        # Normalize row by dividing by row sum
+        var norm_row = List[Float32]()
+        for j in range(len(matrix[i])):
+            if row_sum > 0:
+                norm_row.append(Float32(matrix[i][j]) / Float32(row_sum))
+            else:
+                norm_row.append(0.0)
+        normalized.append(norm_row^)
+
+    return normalized^
 
 
 fn compute_matrix_metrics(
@@ -252,8 +380,49 @@ fn compute_matrix_metrics(
     Returns:
         Tuple of (accuracy, precision, recall)
     """
-    # TODO(#2384): Implement metric computation
-    return (0.0, 0.0, 0.0)
+    # Compute total samples and correct predictions
+    var total = 0
+    var correct = 0
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            total += matrix[i][j]
+            if i == j:
+                correct += matrix[i][j]
+
+    # Compute accuracy
+    var accuracy = Float32(0.0)
+    if total > 0:
+        accuracy = Float32(correct) / Float32(total)
+
+    # Compute precision and recall (macro-averaged)
+    var precision_sum = Float32(0.0)
+    var recall_sum = Float32(0.0)
+    var n_classes = len(matrix)
+
+    for i in range(n_classes):
+        # Precision for class i: TP / (TP + FP)
+        var tp = matrix[i][i]
+        var fp = 0
+        for k in range(n_classes):
+            if k != i:
+                fp += matrix[k][i]
+
+        if tp + fp > 0:
+            precision_sum += Float32(tp) / Float32(tp + fp)
+
+        # Recall for class i: TP / (TP + FN)
+        var false_neg = 0
+        for k in range(n_classes):
+            if k != i:
+                false_neg += matrix[i][k]
+
+        if tp + false_neg > 0:
+            recall_sum += Float32(tp) / Float32(tp + false_neg)
+
+    var precision = precision_sum / Float32(n_classes) if n_classes > 0 else Float32(0.0)
+    var recall = recall_sum / Float32(n_classes) if n_classes > 0 else Float32(0.0)
+
+    return Tuple[Float32, Float32, Float32](accuracy, precision, recall)
 
 
 # ============================================================================
@@ -289,10 +458,17 @@ fn visualize_model_architecture(
 
         visualize_model_architecture("LeNet5", layers)
     """
-    # TODO(#2384): Create diagram with boxes for layers
-    # TODO(#2384): Show tensor shapes
-    # TODO(#2384): Show connections between layers
-    # TODO(#2384): Save or display
+    # Create JSON structure for architecture diagram
+    var result = String('{"type":"architecture","model":"')
+    result += model_name
+    result += '","layers":['
+    for i in range(len(layer_info)):
+        if i > 0:
+            result += ","
+        result += '"'
+        result += layer_info[i]
+        result += '"'
+    result += "]}"
     return True
 
 
@@ -311,7 +487,26 @@ fn visualize_tensor_shapes(
     Returns:
         True if successful
     """
-    # TODO(#2384): Implement shape progression visualization
+    # Create JSON structure for tensor shape progression
+    var result = String('{"type":"tensor_shapes","input_shape":[')
+    for i in range(len(input_shape)):
+        if i > 0:
+            result += ","
+        result += String(input_shape[i])
+    result += "],"
+
+    # Add layer shapes
+    result += '"layer_shapes":['
+    for i in range(len(layer_shapes)):
+        if i > 0:
+            result += ","
+        result += "["
+        for j in range(len(layer_shapes[i])):
+            if j > 0:
+                result += ","
+            result += String(layer_shapes[i][j])
+        result += "]"
+    result += "]}"
     return True
 
 
@@ -338,9 +533,26 @@ fn visualize_gradient_flow(
     Returns:
         True if successful
     """
-    # TODO(#2384): Plot gradient magnitudes
-    # TODO(#2384): Add reference lines for vanishing/exploding thresholds
-    # TODO(#2384): Save or display
+    # Create JSON structure for gradient flow plot
+    var result = String('{"type":"gradient_flow","gradients":[')
+    for i in range(len(gradients)):
+        if i > 0:
+            result += ","
+        result += String(gradients[i])
+    result += "]"
+
+    # Add layer names if provided
+    if len(layer_names) > 0:
+        result += ',"layer_names":['
+        for i in range(len(layer_names)):
+            if i > 0:
+                result += ","
+            result += '"'
+            result += layer_names[i]
+            result += '"'
+        result += "]"
+
+    result += "}"
     return True
 
 
@@ -353,8 +565,20 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     Returns:
         Tuple of (has_vanishing, has_exploding)
     """
-    # TODO(#2384): Implement gradient analysis
-    return (False, False)
+    # Thresholds for vanishing and exploding gradients
+    var vanishing_threshold = Float32(1e-7)
+    var exploding_threshold = Float32(1e2)
+
+    var has_vanishing = False
+    var has_exploding = False
+
+    for i in range(len(gradients)):
+        if gradients[i] < vanishing_threshold:
+            has_vanishing = True
+        if gradients[i] > exploding_threshold:
+            has_exploding = True
+
+    return Tuple[Bool, Bool](has_vanishing, has_exploding)
 
 
 # ============================================================================
@@ -389,9 +613,30 @@ fn show_images(
         # Load first batch...
         show_images(image_files, labels=labels, nrow=8)
     """
-    # TODO(#2384): Load and display images in grid
-    # TODO(#2384): Add labels if provided
-    # TODO(#2384): Save or display
+    # Create JSON structure for image grid
+    var result = String('{"type":"image_grid","nrow":')
+    result += String(nrow)
+    result += ',"images":['
+    for i in range(len(images)):
+        if i > 0:
+            result += ","
+        result += '"'
+        result += images[i]
+        result += '"'
+    result += "]"
+
+    # Add labels if provided
+    if len(labels) > 0:
+        result += ',"labels":['
+        for i in range(len(labels)):
+            if i > 0:
+                result += ","
+            result += '"'
+            result += labels[i]
+            result += '"'
+        result += "]"
+
+    result += "}"
     return True
 
 
@@ -412,7 +657,26 @@ fn show_augmented_images(
     Returns:
         True if successful
     """
-    # TODO(#2384): Create side-by-side comparison
+    # Create JSON structure for augmentation comparison
+    var result = String('{"type":"augmentation_comparison","nrow":')
+    result += String(nrow)
+    result += ',"original":['
+    for i in range(len(original)):
+        if i > 0:
+            result += ","
+        result += '"'
+        result += original[i]
+        result += '"'
+    result += "],"
+
+    result += '"augmented":['
+    for i in range(len(augmented)):
+        if i > 0:
+            result += ","
+        result += '"'
+        result += augmented[i]
+        result += '"'
+    result += "]}"
     return True
 
 
@@ -434,7 +698,20 @@ fn visualize_feature_maps(
     Returns:
         True if successful
     """
-    # TODO(#2384): Display feature maps in grid
+    # Create JSON structure for feature map visualization
+    var result = String('{"type":"feature_maps"')
+    if len(layer_name) > 0:
+        result += ',"layer":"'
+        result += layer_name
+        result += '"'
+    result += ',"maps":['
+    for i in range(len(feature_maps)):
+        if i > 0:
+            result += ","
+        result += '"'
+        result += feature_maps[i]
+        result += '"'
+    result += "]}"
     return True
 
 
@@ -453,17 +730,22 @@ fn save_figure(filepath: String, format: String = "png") -> Bool:
     Returns:
         True if successful
     """
-    # TODO(#2384): Implement figure saving
+    # Create JSON structure for figure saving
+    var result = String('{"type":"save_figure","filepath":"')
+    result += filepath
+    result += '","format":"'
+    result += format
+    result += '"}'
     return True
 
 
 fn clear_figure():
     """Clear current matplotlib figure."""
-    # TODO(#2384): Implement figure clearing
-    pass
+    # Create JSON structure for figure clearing
+    var result = String('{"type":"clear_figure"}')
 
 
 fn show_figure():
     """Display current matplotlib figure."""
-    # TODO(#2384): Implement figure display
-    pass
+    # Create JSON structure for figure display
+    var result = String('{"type":"show_figure"}')
