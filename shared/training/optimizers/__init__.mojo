@@ -8,6 +8,7 @@ Includes:
 - Adam (Adaptive Moment Estimation)
 - AdamW (Adam with Weight Decay)
 - RMSprop (Root Mean Square Propagation)
+- LARS (Layer-wise Adaptive Rate Scaling)
 
 All optimizers follow pure functional design - caller manages state.
 """
@@ -31,3 +32,6 @@ from .adamw import adamw_step, adamw_step_simple
 
 # RMSprop optimizer (functional implementation)
 from .rmsprop import rmsprop_step, rmsprop_step_simple
+
+# LARS optimizer (Layer-wise Adaptive Rate Scaling)
+from .lars import lars_step, lars_step_simple
