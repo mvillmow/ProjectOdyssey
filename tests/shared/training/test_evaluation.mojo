@@ -455,3 +455,42 @@ fn test_evaluation_matches_sample_counts() raises:
     assert_equal(sum_totals, 8, "Per-class totals should sum to 8")
 
     print("   Evaluation sample count matching test passed")
+
+
+# ============================================================================
+# Test Runner
+# ============================================================================
+
+
+fn main() raises:
+    """Run all evaluation tests."""
+    print("=" * 60)
+    print("Evaluation Module Test Suite")
+    print("=" * 60)
+
+    # EvaluationResult tests
+    test_evaluation_result_initialization()
+    test_evaluation_result_with_per_class_stats()
+
+    # evaluate_model tests
+    test_evaluate_model_perfect_predictions()
+    test_evaluate_model_batch_sizes()
+    test_evaluate_model_per_class_statistics()
+
+    # evaluate_model_simple tests
+    test_evaluate_model_simple_basic()
+    test_evaluate_model_simple_batch_processing()
+
+    # evaluate_topk tests
+    test_evaluate_topk_basic()
+    test_evaluate_topk_k_greater_than_classes()
+    test_evaluate_topk_edge_case_k_equals_num_classes()
+
+    # Integration tests
+    test_evaluation_consistency()
+    test_single_sample_evaluation()
+    test_evaluation_matches_sample_counts()
+
+    print("=" * 60)
+    print("All evaluation tests passed! ✓")
+    print("=" * 60)
