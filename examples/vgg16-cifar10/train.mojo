@@ -2,6 +2,7 @@
 
 Implements training with manual backward passes through all 16 layers (no autograd).
 Uses SGD optimizer with momentum and dropout regularization.
+Uses consolidated TrainingLoop from shared module for epoch iteration.
 
 Usage:
     mojo run examples/vgg16-cifar10/train.mojo --epochs 200 --batch-size 128 --lr 0.01 --momentum 0.9
@@ -26,6 +27,7 @@ from shared.core.activation import relu, relu_backward
 from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
+from shared.training.loops import TrainingLoop
 from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices
 from sys import argv
 
@@ -394,66 +396,6 @@ fn compute_gradients(
     return loss
 
 
-fn train_epoch(
-    mut model: VGG16,
-    borrowed train_images: ExTensor,
-    borrowed train_labels: ExTensor,
-    batch_size: Int,
-    learning_rate: Float32,
-    momentum: Float32,
-    epoch: Int,
-    total_epochs: Int,
-    mut velocities: List[ExTensor]
-) raises -> Float32:
-    """Train for one epoch.
-
-    Args:
-        model: VGG16 model
-        train_images: Training images (50000, 3, 32, 32)
-        train_labels: Training labels (50000,)
-        batch_size: Mini-batch size
-        learning_rate: Learning rate for SGD
-        momentum: Momentum factor
-        epoch: Current epoch number (1-indexed)
-        total_epochs: Total number of epochs
-        velocities: Momentum velocities for each parameter
-
-    Returns:
-        Average loss for the epoch
-    """
-    var num_samples = train_images.shape()[0]
-    var num_batches = compute_num_batches(num_samples, batch_size)
-
-    var total_loss = Float32(0.0)
-
-    print("Epoch [", epoch, "/", total_epochs, "]")
-
-    for batch_idx in range(num_batches):
-        # Get batch indices
-        var indices = get_batch_indices(batch_idx, batch_size, num_samples)
-        var start_idx = indices.get[0, Int]()
-        var actual_batch_size = indices.get[2, Int]()
-
-        # Extract batch using shared library utility
-        var batch_pair = extract_batch_pair(train_images, train_labels, start_idx, batch_size)
-        var batch_images = batch_pair[0]
-        var batch_labels = batch_pair[1]
-
-        # Compute gradients and update parameters
-        var batch_loss = compute_gradients(model, batch_images, batch_labels, learning_rate, momentum, velocities)
-        total_loss += batch_loss
-
-        # Print progress every 100 batches
-        if (batch_idx + 1) % 100 == 0:
-            var avg_loss = total_loss / Float32(batch_idx + 1)
-            print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss)
-
-    var avg_loss = total_loss / Float32(num_batches)
-    print("  Average Loss: ", avg_loss)
-
-    return avg_loss
-
-
 fn evaluate(
     mut model: VGG16,
     borrowed test_images: ExTensor,
@@ -608,6 +550,9 @@ fn main() raises:
     print("  Test samples: ", test_images.shape()[0])
     print()
 
+    # Initialize TrainingLoop with logging interval
+    var training_loop = TrainingLoop(log_interval=100)
+
     # Training loop with learning rate decay
     print("Starting training...")
     print("Learning rate schedule: step decay every 60 epochs by 0.2x")
@@ -620,7 +565,18 @@ fn main() raises:
         if epoch == 1 or epoch % 60 == 1:
             print("Epoch", epoch, "- Learning rate:", current_lr)
 
-        var train_loss = train_epoch(model, train_images, train_labels, batch_size, current_lr, momentum, epoch, epochs, velocities)
+        # Run one epoch using TrainingLoop
+        # Pass compute_gradients as the batch loss computation function
+        # This computes gradients, performs backward pass, and updates parameters
+        var train_loss = training_loop.run_epoch_manual(
+            train_images,
+            train_labels,
+            batch_size,
+            fn(batch_images: ExTensor, batch_labels: ExTensor) raises -> Float32:
+                return compute_gradients(model, batch_images, batch_labels, current_lr, momentum, velocities),
+            epoch,
+            epochs
+        )
 
         # Evaluate every epoch
         var test_acc = evaluate(model, test_images, test_labels)
