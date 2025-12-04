@@ -183,7 +183,8 @@ fn test_top_k_indices_with_duplicates() raises:
 fn test_top_k_values_and_indices() raises:
     """Test top_k function returns both values and indices."""
     var t = arange(0.0, 10.0, 1.0, DType.float32)
-    var (values, indices) = top_k(t, 3)
+    var result = top_k(t, 3)
+    var values = result[0]
 
     # Check shape of values
     assert_shape(values, List[Int](3))
@@ -193,16 +194,17 @@ fn test_top_k_values_and_indices() raises:
     assert_close_float(values._get_float64(1), 8.0)
     assert_close_float(values._get_float64(2), 7.0)
 
-    # Check indices
-    assert_equal_int(indices[0], 9)
-    assert_equal_int(indices[1], 8)
-    assert_equal_int(indices[2], 7)
+    # Check indices (access from result tuple to avoid List[Int] copy)
+    assert_equal_int(result[1][0], 9)
+    assert_equal_int(result[1][1], 8)
+    assert_equal_int(result[1][2], 7)
 
 
 fn test_top_k_multidimensional() raises:
     """Test top_k on multi-dimensional tensor."""
     var t = arange(0.0, 12.0, 1.0, DType.float32)
-    var (values, indices) = top_k(t, 2)
+    var result = top_k(t, 2)
+    var values = result[0]
 
     assert_shape(values, List[Int](2))
     assert_close_float(values._get_float64(0), 11.0)
@@ -328,3 +330,66 @@ fn test_argsort_multidimensional() raises:
     assert_equal_int(indices[3], 2)  # 3
     assert_equal_int(indices[4], 4)  # 4
     assert_equal_int(indices[5], 0)  # 5
+
+
+fn main() raises:
+    """Run all tests."""
+    print("="*60)
+    print("Running shared.core.utils tests")
+    print("="*60)
+
+    # Argmax scalar tests
+    print("\n=== Argmax (Scalar) ===")
+    test_argmax_scalar_simple()
+    print("✓ test_argmax_scalar_simple")
+    test_argmax_scalar_negative_values()
+    print("✓ test_argmax_scalar_negative_values")
+    test_argmax_scalar_multi_dimensional()
+    print("✓ test_argmax_scalar_multi_dimensional")
+
+    # Argmax axis tests
+    print("\n=== Argmax (Axis) ===")
+    test_argmax_axis_1d()
+    print("✓ test_argmax_axis_1d")
+    test_argmax_axis_2d_axis0()
+    print("✓ test_argmax_axis_2d_axis0")
+    test_argmax_axis_2d_axis1()
+    print("✓ test_argmax_axis_2d_axis1")
+    test_argmax_axis_3d()
+    print("✓ test_argmax_axis_3d")
+
+    # Top K tests
+    print("\n=== Top K ===")
+    test_top_k_indices_simple()
+    print("✓ test_top_k_indices_simple")
+    test_top_k_indices_single_element()
+    print("✓ test_top_k_indices_single_element")
+    test_top_k_indices_all_elements()
+    print("✓ test_top_k_indices_all_elements")
+    test_top_k_indices_with_duplicates()
+    print("✓ test_top_k_indices_with_duplicates")
+    test_top_k_values_and_indices()
+    print("✓ test_top_k_values_and_indices")
+    test_top_k_multidimensional()
+    print("✓ test_top_k_multidimensional")
+
+    # Argsort tests
+    print("\n=== Argsort ===")
+    test_argsort_ascending()
+    print("✓ test_argsort_ascending")
+    test_argsort_descending()
+    print("✓ test_argsort_descending")
+    test_argsort_single_element()
+    print("✓ test_argsort_single_element")
+    test_argsort_sorted_array()
+    print("✓ test_argsort_sorted_array")
+    test_argsort_reverse_sorted()
+    print("✓ test_argsort_reverse_sorted")
+    test_argsort_negative_values()
+    print("✓ test_argsort_negative_values")
+    test_argsort_multidimensional()
+    print("✓ test_argsort_multidimensional")
+
+    print("\n" + "="*60)
+    print("All 18 utils tests passed!")
+    print("="*60)
