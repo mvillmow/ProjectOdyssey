@@ -1,22 +1,23 @@
-"""Linear (fully connected) layer - stub implementation for Issue #2395.
+"""Linear (fully connected) layer for neural networks.
 
-This module provides a basic Linear layer for neural networks.
-The stub implementation initializes weights and biases but the forward
-pass returns zeros. Full implementation is planned for a future issue.
+This module provides a fully connected (dense) layer that transforms inputs
+from in_features dimensions to out_features dimensions using learnable weights
+and biases.
 
 Key components:
 - Linear: Fully connected layer with learnable weights and bias
-  Implements: y = xW + b
+  Implements: y = xW + b (with broadcasting support for batched inputs)
 """
 
 from shared.core.extensor import ExTensor, zeros, randn, zeros_like
 
 
 struct Linear(Copyable, Movable):
-    """Linear layer: y = xW + b (stub for testing).
+    """Linear layer: y = xW + b.
 
     A fully connected neural network layer that transforms inputs
-    from in_features to out_features dimensions.
+    from in_features to out_features dimensions with proper matrix
+    multiplication and bias broadcasting.
 
     Attributes:
         weight: Weight matrix of shape (in_features, out_features).
@@ -60,7 +61,10 @@ struct Linear(Copyable, Movable):
         self.bias = zeros(List[Int](out_features), DType.float32)
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass: y = xW + b (stub - returns zeros for now).
+        """Forward pass: y = xW + b.
+
+        Computes the linear transformation: output = input @ weight + bias
+        Supports batched inputs through matrix multiplication broadcasting.
 
         Args:
             input: Input tensor of shape (batch_size, in_features) or (in_features,).
@@ -71,29 +75,23 @@ struct Linear(Copyable, Movable):
         Raises:
             Error if tensor operations fail.
 
-        Note:
-            This is a stub implementation that returns zeros. Full matrix
-            multiplication implementation is planned for a later issue.
-
         Example:
             ```mojo
             var layer = Linear(10, 5)
-            var input = ones([4, 10], DType.float32)  # batch of 4 samples
+            var input = ones(List[Int](4, 10), DType.float32)  # batch of 4 samples
             var output = layer.forward(input)  # Shape: [4, 5]
             ```
         """
-        # TODO: Implement proper matrix multiplication: output = input @ weight + bias
-        # For now, return zeros with correct output shape
-        if len(input.shape()) == 1:
-            # Single sample: (in_features,) -> (out_features,)
-            return zeros(List[Int](self.out_features), DType.float32)
-        else:
-            # Batch: (batch_size, in_features) -> (batch_size, out_features)
-            var batch_size = input.shape()[0]
-            return zeros(
-                List[Int](batch_size, self.out_features),
-                DType.float32
-            )
+        # Compute: output = input @ weight + bias
+        # Matrix multiplication: input @ weight
+        var matmul_result = input @ self.weight
+
+        # Add bias with broadcasting support
+        # For single sample: (out_features,) + (out_features,) = (out_features,)
+        # For batch: (batch_size, out_features) + (out_features,) = (batch_size, out_features)
+        var output = matmul_result + self.bias
+
+        return output
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
