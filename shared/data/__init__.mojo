@@ -43,6 +43,21 @@ from .formats import (
 )
 
 # ============================================================================
+# Dataset Constants and Metadata
+# ============================================================================
+
+# Dataset-specific constants and metadata
+from .constants import (
+    CIFAR10_CLASS_NAMES,           # CIFAR-10 class names (10 classes)
+    EMNIST_BALANCED_CLASSES,       # EMNIST Balanced class names (47 classes)
+    EMNIST_BYCLASS_CLASSES,        # EMNIST By Class class names (62 classes)
+    EMNIST_BYMERGE_CLASSES,        # EMNIST By Merge class names (47 classes)
+    EMNIST_DIGITS_CLASSES,         # EMNIST Digits class names (10 classes)
+    EMNIST_LETTERS_CLASSES,        # EMNIST Letters class names (52 classes)
+    DatasetInfo,                   # Dataset metadata container
+)
+
+# ============================================================================
 # Dataset Loaders (High-Level Interfaces)
 # ============================================================================
 
@@ -75,3 +90,14 @@ from ._datasets_core import (
 # Low-level usage:
 #   from shared.data import load_idx_images, load_idx_labels, read_uint32_be
 #   images = load_idx_images("/path/to/custom-images-idx3-ubyte")
+
+# ============================================================================
+# Batch Processing Utilities
+# ============================================================================
+
+from .batch_utils import (
+    extract_batch,
+    extract_batch_pair,
+    compute_num_batches,
+    get_batch_indices,
+)
