@@ -189,7 +189,7 @@ fn top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     for i in range(k):
         result.append(pairs[i][1])
 
-    return result
+    return result^
 
 
 fn top_k(tensor: ExTensor, k: Int) raises -> Tuple[ExTensor, List[Int]]:
@@ -223,7 +223,7 @@ fn top_k(tensor: ExTensor, k: Int) raises -> Tuple[ExTensor, List[Int]]:
         var val = tensor._get_float64(idx)
         values._set_float64(i, val)
 
-    return Tuple[ExTensor, List[Int]](values, indices)
+    return Tuple[ExTensor, List[Int]](values, indices^)
 
 
 fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
@@ -275,4 +275,4 @@ fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
     for i in range(numel):
         result.append(pairs[i][1])
 
-    return result
+    return result^
