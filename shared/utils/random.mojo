@@ -64,7 +64,7 @@ struct RandomState(Copyable, Movable):
 # Global state for the module - wrapped in struct to avoid global var restriction
 # NOTE: Mojo v0.25.7 doesn't support mutable global variables.
 # These functions are stubs that will be replaced with proper state management.
-# TODO: Implement proper state management (pass state explicitly or use context manager)
+# TODO(#2383): Implement proper state management (pass state explicitly or use context manager)
 
 alias DEFAULT_SEED = 42
 
@@ -91,9 +91,9 @@ fn set_seed(seed: Int):
         Current implementation is a stub. Global state is not yet supported.
         Use SeedContext for scoped seed management instead.
     """
-    # TODO: Actually set Mojo stdlib RNG seed
-    # TODO: Set custom RNG seeds
-    # TODO: Synchronize with any external libraries
+    # TODO(#2383): Actually set Mojo stdlib RNG seed
+    # TODO(#2383): Set custom RNG seeds
+    # TODO(#2383): Synchronize with any external libraries
     # TEMPORARY: This is a stub - no-op until proper state management is implemented
     pass
 
@@ -141,8 +141,8 @@ fn get_random_state() -> RandomState:
     """
     var state = RandomState()
     state.set_seed(DEFAULT_SEED)
-    # TODO: Capture Mojo stdlib RNG state
-    # TODO: Capture custom RNG state
+    # TODO(#2383): Capture Mojo stdlib RNG state
+    # TODO(#2383): Capture custom RNG state
     return state^
 
 
@@ -161,8 +161,8 @@ fn set_random_state(state: RandomState):
     Note:
         Current implementation is a stub. Global state is not yet supported.
     """
-    # TODO: Restore Mojo stdlib RNG state
-    # TODO: Restore custom RNG state
+    # TODO(#2383): Restore Mojo stdlib RNG state
+    # TODO(#2383): Restore custom RNG state
     # TEMPORARY: This is a stub - no-op until proper state management is implemented
     pass
 
@@ -175,7 +175,7 @@ fn save_random_state(state: RandomState):
     Note:
         Current implementation is a stub. Global state is not yet supported.
     """
-    # TODO: Implement with proper state container
+    # TODO(#2383): Implement with proper state container
     # TEMPORARY: This is a stub - no-op until proper state management is implemented
     pass
 
@@ -190,7 +190,7 @@ fn get_saved_state(index: Int) -> RandomState:
     Note:
         Current implementation is a stub. Always returns empty state.
     """
-    # TODO: Implement with proper state container
+    # TODO(#2383): Implement with proper state container
     return RandomState()
 
 
@@ -244,7 +244,7 @@ fn random_uniform() -> Float32:
     Returns:
         Random float value
     """
-    # TODO: Implement with seeded RNG
+    # TODO(#2383): Implement with seeded RNG
     return 0.5
 
 
@@ -254,7 +254,7 @@ fn random_normal() -> Float32:
     Returns:
         Random float from N(0, 1)
     """
-    # TODO: Implement with Box-Muller or similar
+    # TODO(#2383): Implement with Box-Muller or similar
     return 0.0
 
 
@@ -268,7 +268,7 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
     Returns:
         Random integer
     """
-    # TODO: Implement with seeded RNG
+    # TODO(#2383): Implement with seeded RNG
     return min_val
 
 
@@ -281,7 +281,7 @@ fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) -
     Returns:
         Random element from list
     """
-    # TODO: Implement with seeded RNG
+    # TODO(#2383): Implement with seeded RNG
     return options[0]
 
 
@@ -297,7 +297,7 @@ fn shuffle[T: Copyable & Movable](mut items: List[T]):
             indices.append(i)
         shuffle(indices)
     """
-    # TODO: Implement Fisher-Yates shuffle with seeded RNG
+    # TODO(#2383): Implement Fisher-Yates shuffle with seeded RNG
     pass
 
 
@@ -333,7 +333,7 @@ fn compute_distribution_stats(samples: List[Float32]) -> DistributionStats:
     Returns:
         Statistics including mean, std dev, min, max
     """
-    # TODO: Implement statistical calculation
+    # TODO(#2383): Implement statistical calculation
     return DistributionStats()
 
 
@@ -346,7 +346,7 @@ fn test_uniform_distribution(sample_count: Int = 1000) -> Bool:
     Returns:
         True if distribution is uniform enough, False if skewed
     """
-    # TODO: Implement chi-square test for uniformity
+    # TODO(#2383): Implement chi-square test for uniformity
     return True
 
 
@@ -359,5 +359,5 @@ fn test_normal_distribution(sample_count: Int = 1000) -> Bool:
     Returns:
         True if distribution is normal enough, False if skewed
     """
-    # TODO: Implement KS test for normality
+    # TODO(#2383): Implement KS test for normality
     return True

@@ -561,7 +561,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
                 max_abs = abs_val
 
         # Compute scale (avoid division by zero)
-        # **FIXME (TEST-002 - P0 CRITICAL)**: Scale = 0 edge case untested
+        # **FIXME (#2379 - TEST-002 - P0 CRITICAL)**: Scale = 0 edge case untested
         # When all values in block are zero or near-zero (< 1e-10), we fallback to scale=1.0
         # This behavior is COMPLETELY UNTESTED. Missing test cases:
         #   1. Block with all zeros (should encode as scale=1.0, all E2M1 values = 0)

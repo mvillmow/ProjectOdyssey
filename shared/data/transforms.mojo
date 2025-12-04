@@ -273,7 +273,7 @@ struct Reshape(Transform, Copyable, Movable):
         for i in range(data.num_elements()):
             values.append(Float32(data[i]))
 
-        # TODO: Properly set shape metadata on returned tensor
+        # TODO(#2388): Properly set shape metadata on returned tensor
         # For now, return flattened tensor (Mojo's ExTensor API limitation)
         return ExTensor(values^)
 
@@ -333,7 +333,7 @@ struct Resize(Transform, Copyable, Movable):
 
             resized.append(Float32(data[old_idx]))
 
-        # TODO: Implement proper 2D image resizing with interpolation
+        # TODO(#2388): Implement proper 2D image resizing with interpolation
         # This requires:
         # 1. Understanding tensor layout (H, W, C) vs (C, H, W)
         # 2. Bilinear or bicubic interpolation for quality

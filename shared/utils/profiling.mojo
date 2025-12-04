@@ -114,12 +114,12 @@ struct ProfilingReport(Copyable, Movable):
 
     fn to_string(self) -> String:
         """Format report as human-readable string."""
-        # TODO: Implement report formatting
+        # TODO(#2385): Implement report formatting
         return ""
 
     fn to_json(self) -> String:
         """Format report as JSON."""
-        # TODO: Implement JSON formatting
+        # TODO(#2385): Implement JSON formatting
         return ""
 
 
@@ -172,7 +172,7 @@ struct Timer(Copyable, Movable):
 
     fn _get_time_ns(self) -> Int:
         """Get current time in nanoseconds."""
-        # TODO: Implement high-precision timer
+        # TODO(#2385): Implement high-precision timer
         return 0
 
     fn elapsed_ms(self) -> Float32:
@@ -213,7 +213,7 @@ fn memory_usage() -> MemoryStats:
         print("Peak: " + String(mem.peak_mb()) + "MB")
     """
     var stats = MemoryStats()
-    # TODO: Implement memory tracking
+    # TODO(#2385): Implement memory tracking
     return stats^
 
 
@@ -251,7 +251,7 @@ fn profile_function(name: String, func_ptr: fn () -> None) -> TimingStats:
 
     Returns:.        Timing statistics for function.
     """
-    # TODO: Implement function profiling
+    # TODO(#2385): Implement function profiling
     var stats = TimingStats()
     stats.name = name
     return stats^
@@ -272,7 +272,7 @@ fn benchmark_function(
     Returns:
         Timing statistics with min, max, average, std dev.
     """
-    # TODO: Implement function benchmarking
+    # TODO(#2385): Implement function benchmarking
     var stats = TimingStats()
     stats.name = name
     stats.call_count = iterations
@@ -342,7 +342,7 @@ fn generate_timing_report(
         Complete profiling report
     """
     var report = ProfilingReport()
-    # TODO: Aggregate timing data
+    # TODO(#2385): Aggregate timing data
     return report^
 
 
@@ -352,7 +352,7 @@ fn print_timing_report(report: ProfilingReport):
     Args:
         report: Report to print
     """
-    # TODO: Format and print report
+    # TODO(#2385): Format and print report
     print(report.to_string())
 
 
@@ -369,7 +369,7 @@ fn export_profiling_report(
     Returns:
         True if successful
     """
-    # TODO: Implement report export
+    # TODO(#2385): Implement report export
     return True
 
 
@@ -390,7 +390,7 @@ fn measure_profiling_overhead(num_measurements: Int = 100) -> Float32:
     Returns:
         Overhead as percentage of total time
     """
-    # TODO: Measure profiling overhead
+    # TODO(#2385): Measure profiling overhead
     return 0.0
 
 
@@ -427,7 +427,7 @@ fn compare_to_baseline(
     Returns:
         Tuple of (is_regression, percent_slower)
     """
-    # TODO: Implement regression detection
+    # TODO(#2385): Implement regression detection
     return (False, 0.0)
 
 
@@ -444,5 +444,5 @@ fn detect_performance_regression(
     Returns:
         List of functions with regressions
     """
-    # TODO: Implement regression detection for multiple functions
+    # TODO(#2385): Implement regression detection for multiple functions
     return List[String]()^

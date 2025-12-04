@@ -411,7 +411,7 @@ struct MobileNetV1:
         Args:
             weights_dir: Directory containing saved weight files
         """
-        # TODO: Implement weight loading
+        # TODO(#2394): Implement weight loading
         raise Error("Weight loading not yet implemented")
 
     fn save_weights(self, weights_dir: String) raises:
@@ -420,5 +420,5 @@ struct MobileNetV1:
         Args:
             weights_dir: Directory to save weight files
         """
-        # TODO: Implement weight saving
+        # TODO(#2394): Implement weight saving
         raise Error("Weight saving not yet implemented")

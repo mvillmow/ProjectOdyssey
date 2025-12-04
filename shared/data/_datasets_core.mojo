@@ -214,7 +214,7 @@ struct FileDataset(Dataset, Copyable, Movable):
 
         Raises:.            Error if file cannot be loaded.
         """
-        # TODO: Implement proper file loading based on file extension:
+        # TODO(#2388): Implement proper file loading based on file extension:
         #
         # For images (.jpg, .png, .bmp):
         #   - Use image decoder library to read file
