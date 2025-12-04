@@ -332,7 +332,7 @@ fn test_class_names_not_empty() raises:
     )
 
 
-fn main():
+fn main() raises:
     """Run all tests."""
     print("Testing CIFAR-10 class names...")
     test_cifar10_class_names()
