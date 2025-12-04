@@ -8,7 +8,9 @@ This module defines the core traits and types for the training subsystem:
 These contracts establish clear APIs for gradient utilities (#2393) and training callbacks (#2392).
 """
 
-from collections import Dict
+from collections import Dict, List
+from shared.core import ExTensor, has_nan, has_inf
+from math import sqrt
 
 
 # ============================================================================
@@ -225,7 +227,33 @@ trait LRScheduler:
 # ============================================================================
 
 
-fn is_valid_loss(loss: Float64) -> Bool:
+fn has_nan_or_inf(tensor: ExTensor) -> Bool:
+    """Check if tensor contains NaN or Inf values (numerical instability detection).
+
+    Detects numerical instability in gradients during training by checking for:
+    - NaN (Not a Number) values indicating undefined operations
+    - Inf (positive or negative infinity) indicating overflow
+
+    Args:.        `tensor`: Tensor to check for numerical instability.
+
+    Returns:.        True if tensor contains any NaN or Inf values, False otherwise.
+
+    Example:.        ```mojo
+        var gradients = ...  # Computed gradients
+        if has_nan_or_inf(gradients):
+            print("Numerical instability detected! Stopping training.")
+            break
+        ```
+
+    Note:
+        - Works with all tensor dtypes (float32, float64, float16, integer types)
+        - Integer tensors cannot have NaN/Inf and will always return False
+        - Used for gradient validation during training
+    """
+    return has_nan(tensor) or has_inf(tensor)
+
+
+fn is_valid_loss(loss: Float64) raises -> Bool:
     """Check if loss value is valid (not NaN or inf).
 
     Args:.        `loss`: Loss value to check.
@@ -236,13 +264,97 @@ fn is_valid_loss(loss: Float64) -> Bool:
             print("Training diverged! Loss is", loss)
             break
 
-    Warning:
-        This is a placeholder implementation that always returns True.
-        It will be replaced with proper NaN/inf detection in Issue #2393.
+    Note:
+        Uses has_nan_or_inf internally for consistency with gradient validation.
     """
-    print("[WARNING] is_valid_loss is a placeholder - always returns True")
-    # TODO(#2393): Implement NaN/inf detection with proper Float64 checks
-    return True
+    # Create a single-element tensor for loss value
+    var shape = List[Int]()
+    shape.append(1)
+    var loss_tensor = ExTensor(shape, DType.float64)
+
+    # Access the tensor's data pointer and set the loss value
+    var ptr = loss_tensor._data.bitcast[Float64]()
+    ptr[0] = loss
+
+    # Use has_nan_or_inf for consistency
+    return not has_nan_or_inf(loss_tensor)
+
+
+fn compute_gradient_norm(
+    parameters: List[ExTensor],
+    norm_type: String = "L2"
+) -> Float64:
+    """Compute gradient norm for training diagnostics and exploding gradient detection.
+
+    Computes the global norm of all gradients in a parameter list using either
+    L1 or L2 norm. Used for:
+    - Gradient clipping (by computing norm to clip by)
+    - Training diagnostics (monitoring gradient magnitude)
+    - Exploding gradient detection (norm > threshold)
+
+    Args:.        `parameters`: List of gradient tensors to compute norm over.
+        `norm_type`: Type of norm to compute ("L2" or "L1"). Defaults to "L2".
+
+    Returns:.        Global norm of all gradients as Float64.
+
+    Example:.        ```mojo
+        var grad_norm = compute_gradient_norm(gradients, "L2")
+        if grad_norm > max_grad_norm:
+            # Clip gradients
+            ...
+        ```
+
+    Notes:.        - L2 norm: sqrt(sum of all gradient elements squared)
+        - L1 norm: sum of absolute values of all gradient elements
+        - Returns 0.0 for empty parameter list
+        - Aggregates norms across all tensors in the list
+
+    Reference:
+        Used in Gradient Clipping by Global Norm (arXiv:1308.0850)
+    """
+    var total_norm_sq = Float64(0.0)
+    var total_abs_norm = Float64(0.0)
+
+    # Aggregate norm over all parameter tensors
+    for i in range(len(parameters)):
+        var tensor = parameters[i]
+        var size = tensor.numel()
+
+        # Handle each dtype separately for efficiency
+        if tensor.dtype() == DType.float32:
+            var ptr = tensor._data.bitcast[Float32]()
+            for j in range(size):
+                var val = Float64(ptr[j])
+                if norm_type == "L2":
+                    total_norm_sq += val * val
+                elif norm_type == "L1":
+                    total_abs_norm += abs(val)
+        elif tensor.dtype() == DType.float64:
+            var ptr = tensor._data.bitcast[Float64]()
+            for j in range(size):
+                var val = ptr[j]
+                if norm_type == "L2":
+                    total_norm_sq += val * val
+                elif norm_type == "L1":
+                    total_abs_norm += abs(val)
+        elif tensor.dtype() == DType.float16:
+            var ptr = tensor._data.bitcast[Float16]()
+            for j in range(size):
+                var val = Float64(Float32(ptr[j]))
+                if norm_type == "L2":
+                    total_norm_sq += val * val
+                elif norm_type == "L1":
+                    total_abs_norm += abs(val)
+        # For integer types, skip (gradients are typically float)
+
+    # Return appropriate norm
+    if norm_type == "L2":
+        return sqrt(total_norm_sq)
+    elif norm_type == "L1":
+        return total_abs_norm
+    else:
+        # Default to L2 if unknown norm type
+        return sqrt(total_norm_sq)
 
 
 fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float64]:
@@ -255,10 +367,23 @@ fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float
 
     Example:.        clipped_grads = clip_gradients(grads, max_norm=1.0)
 
-    Warning:
-        This is a placeholder implementation that returns gradients unchanged.
-        It will be replaced with proper gradient clipping in Issue #2393.
+    Note:
+        This is a legacy function that works with lists of Float64.
+        For tensor-based gradient clipping, use compute_gradient_norm()
+        with ExTensor parameters instead.
     """
-    print("[WARNING] clip_gradients is a placeholder - returns gradients unchanged")
-    # TODO(#2393): Implement gradient norm computation and clipping
+    # Compute L2 norm of the gradient list
+    var norm_sq = Float64(0.0)
+    for i in range(len(gradients)):
+        var val = gradients[i]
+        norm_sq += val * val
+
+    var norm = sqrt(norm_sq)
+
+    # If norm exceeds max_norm, scale down all gradients
+    if norm > max_norm and norm > 0.0:
+        var scale = max_norm / norm
+        for i in range(len(gradients)):
+            gradients[i] = gradients[i] * scale
+
     return gradients^
