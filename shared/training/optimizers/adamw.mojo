@@ -26,7 +26,6 @@ Reference:
     arXiv preprint arXiv:1711.05101.
 """
 
-from math import pow
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic_simd import (
     subtract_simd,
@@ -132,13 +131,13 @@ fn adamw_step(
 
     # Compute bias-corrected first moment (SIMD optimized)
     # m_hat = m / (1 - beta1^t)
-    var bias_correction1 = 1.0 - pow(beta1, Float64(t))
+    var bias_correction1 = 1.0 - (beta1 ** Float64(t))
     var bc1_tensor = full_like(new_m, bias_correction1)
     var m_hat = divide_simd(new_m, bc1_tensor)
 
     # Compute bias-corrected second moment (SIMD optimized)
     # v_hat = v / (1 - beta2^t)
-    var bias_correction2 = 1.0 - pow(beta2, Float64(t))
+    var bias_correction2 = 1.0 - (beta2 ** Float64(t))
     var bc2_tensor = full_like(new_v, bias_correction2)
     var v_hat = divide_simd(new_v, bc2_tensor)
 
