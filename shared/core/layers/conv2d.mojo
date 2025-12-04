@@ -90,7 +90,7 @@ struct Conv2dLayer(Copyable, Movable):
         var fan_in = in_channels * kernel_h * kernel_w
         # Fan-out for conv2d: out_channels * kernel_h * kernel_w
         var fan_out = out_channels * kernel_h * kernel_w
-        self.weight = kaiming_uniform(fan_in, fan_out, weight_shape, DType.float32)
+        self.weight = kaiming_uniform(fan_in, fan_out, weight_shape, "fan_in", DType.float32)
 
         # Initialize bias to zeros
         # Shape: (out_channels,)
@@ -166,11 +166,9 @@ struct Conv2dLayer(Copyable, Movable):
             self.stride,
             self.padding
         )
-        return Tuple[ExTensor, ExTensor, ExTensor](
-            result.grad_input^,
-            result.grad_kernel^,
-            result.grad_bias^
-        )
+        # Return the result struct fields directly
+        # The Conv2dBackwardResult struct is only movable, so we return its fields
+        return (result.grad_input, result.grad_kernel, result.grad_bias)
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
