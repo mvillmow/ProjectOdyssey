@@ -66,13 +66,16 @@ fn extract_batch(
     var src_ptr = data._data
     var dst_ptr = batch._data
 
+    # Get element size in bytes for proper copying
+    var element_size = ExTensor._get_dtype_size_static(data.dtype())
+
     for i in range(actual_batch_size):
         var src_sample_idx = start_idx + i
-        var src_offset = src_sample_idx * sample_stride
-        var dst_offset = i * sample_stride
+        var src_offset = src_sample_idx * sample_stride * element_size
+        var dst_offset = i * sample_stride * element_size
 
-        # Copy all elements of this sample
-        for j in range(sample_stride):
+        # Copy all bytes of this sample
+        for j in range(sample_stride * element_size):
             dst_ptr[dst_offset + j] = src_ptr[src_offset + j]
 
     return batch
