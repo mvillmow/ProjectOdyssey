@@ -289,6 +289,14 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
 # Export validation loop
 from .loops.validation_loop import ValidationLoop
 
+# Export evaluation module (Issue #2352)
+from .evaluation import (
+    EvaluationResult,
+    evaluate_model,
+    evaluate_model_simple,
+    evaluate_topk,
+)
+
 # Export mixed precision training utilities
 from .mixed_precision import (
     GradientScaler,
