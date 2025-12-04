@@ -72,8 +72,8 @@ struct EvaluationResult(Copyable, Movable):
         self.accuracy = accuracy
         self.num_correct = num_correct
         self.num_total = num_total
-        self.correct_per_class = correct_per_class
-        self.total_per_class = total_per_class
+        self.correct_per_class = correct_per_class.copy()
+        self.total_per_class = total_per_class.copy()
 
 
 # ============================================================================
