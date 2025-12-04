@@ -64,7 +64,7 @@ fn test_assert_true_custom_message() raises:
         custom_assert_true(False, "Custom error message")
     except e:
         failed = True
-        var msg = str(e)
+        var msg = String(e)
         caught_message = "Custom error message" in msg
     assert_true(failed, "assert_true should raise error")
     assert_true(caught_message, "Error message should contain custom text")
