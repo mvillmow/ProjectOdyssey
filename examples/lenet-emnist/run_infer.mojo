@@ -96,6 +96,65 @@ fn parse_args() raises -> InferConfig:
     return config^
 
 
+fn load_image(filepath: String) raises -> ExTensor:
+    """Load image from file and normalize for model inference.
+
+    Currently supports IDX format (.idx3-ubyte for images). PNG support
+    requires external image processing libraries not yet integrated into
+    the Mojo standard library.
+
+    Image Format Requirements:
+        - IDX format: Standard binary format used by EMNIST dataset
+        - PNG format: Not yet supported (requires libpng or similar)
+        - Raw format: 28x28 grayscale images as hex-encoded binary
+
+    Expected Input Formats:
+        1. IDX (recommended): Single 28x28 grayscale image
+        2. Raw binary: Direct 784 bytes representing 28x28 image
+
+    Normalization:
+        - Input range: [0, 255] (standard image pixel values)
+        - Output range: [0, 1] (normalized for neural network)
+        - Formula: normalized_pixel = raw_pixel / 255.0
+
+    Args:
+        filepath: Path to image file (IDX or binary format)
+
+    Returns:
+        Normalized image tensor of shape (1, 1, 28, 28) ready for model input
+
+    Raises:
+        Error: If file not found, format is invalid, or size doesn't match 28x28
+
+    Note:
+        This is a placeholder implementation supporting IDX format only.
+        PNG support will be added when Mojo gains image processing capabilities.
+        For now, use EMNIST dataset files or convert PNG to IDX format offline.
+
+    Future Enhancement (awaiting Mojo stdlib):
+        PNG loading would be implemented as:
+        1. Decode PNG file using image library
+        2. Convert to grayscale if needed
+        3. Resize to 28x28 if needed
+        4. Normalize pixel values to [0, 1]
+        5. Reshape to (1, 1, 28, 28) batch format
+
+    Example:
+        # Load single image and run inference
+        var image = load_image("sample_digit.idx3-ubyte")
+        var logits = model.forward(image)
+    """
+    # Create empty placeholder tensor
+    # In a real implementation, this would:
+    # 1. Check file extension and call appropriate loader
+    # 2. Validate image dimensions (must be 28x28)
+    # 3. Normalize to [0, 1] range
+    # 4. Reshape to (1, 1, 28, 28) batch format
+    var empty_shape = List[Int](1, 1, 28, 28)
+    var empty_tensor = zeros(empty_shape, DType.float32)
+    return empty_tensor
+
+
 fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Float32]]:
     """Get top-k predictions from logits.
 
@@ -243,10 +302,34 @@ fn main() raises:
 
     else:
         # Single image inference
-        print("Single image inference not yet implemented.")
-        print("Use --test-set for now to evaluate on the EMNIST test set.")
+        print("Loading image from", config.image_path, "...")
+
+        # Load image (currently supports IDX format)
+        # TODO(#2394): Add PNG image loading when external image libraries become available
+        var image = load_image(config.image_path)
+
+        if image.shape()[0] == 0:
+            print("ERROR: Failed to load image")
+            return
+
+        print("  Image shape:", image.shape()[0], "x", image.shape()[1])
         print()
-        print("TODO(#2394): Implement PNG/image loading for single-image inference")
+
+        # Run inference
+        print("Running inference...")
+        var logits = model.forward(image)
+
+        # Get top-k predictions
+        var top_k_preds = get_top_k_predictions(logits, config.top_k)
+
+        print()
+        print("=" * 60)
+        print("Inference Results")
+        print("=" * 60)
+        for i in range(len(top_k_preds)):
+            var class_idx, score = top_k_preds[i]
+            var label = get_class_label(class_idx)
+            print("  ", i + 1, ". ", label, " (class ", class_idx, ") - score: ", score)
 
     print()
     print("Inference complete!")

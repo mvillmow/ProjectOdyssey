@@ -410,15 +410,188 @@ struct MobileNetV1:
 
         Args:
             weights_dir: Directory containing saved weight files
+
+        Raises:
+            Error: If weight files are missing or have incompatible shapes
+
+        Note:
+            Weights are loaded from individual .weights files in the directory.
+            Expected files:
+            - initial_conv_weights.weights
+            - initial_bn_gamma.weights, initial_bn_beta.weights
+            - ds_block_N_{dw,pw}_{weights,bias,bn_*}.weights for each block
+            - fc_weights.weights, fc_bias.weights
         """
-        # TODO(#2394): Implement weight loading
-        raise Error("Weight loading not yet implemented")
+        from shared.training.model_utils import load_model_weights, get_model_parameter_names
+
+        # Get standard parameter names for MobileNetV1
+        var param_names = get_model_parameter_names("mobilenetv1")
+
+        # Create empty list for loaded parameters
+        var loaded_params = List[ExTensor]()
+
+        # Load using shared utility
+        load_model_weights(loaded_params, weights_dir, param_names)
+
+        # Validate we loaded the correct number of parameters
+        if len(loaded_params) < 100:
+            raise Error(
+                "Invalid checkpoint: expected ~156 parameters for MobileNetV1, got "
+                + String(len(loaded_params))
+            )
+
+        # Assign loaded parameters to model fields (matching order in get_model_parameter_names)
+        var idx = 0
+
+        # Initial convolution
+        self.initial_conv_weights = loaded_params[idx]
+        idx += 1
+        self.initial_conv_bias = loaded_params[idx]
+        idx += 1
+        self.initial_bn_gamma = loaded_params[idx]
+        idx += 1
+        self.initial_bn_beta = loaded_params[idx]
+        idx += 1
+        self.initial_bn_running_mean = loaded_params[idx]
+        idx += 1
+        self.initial_bn_running_var = loaded_params[idx]
+        idx += 1
+
+        # Depthwise separable blocks (13 blocks × 12 params per block)
+        # Each block has: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
+        #                pw_weights, pw_bias, pw_bn_gamma, pw_bn_beta, pw_bn_running_mean, pw_bn_running_var
+        var ds_blocks = List[DepthwiseSeparableBlock]()
+        ds_blocks.append(self.ds_block_1)
+        ds_blocks.append(self.ds_block_2)
+        ds_blocks.append(self.ds_block_3)
+        ds_blocks.append(self.ds_block_4)
+        ds_blocks.append(self.ds_block_5)
+        ds_blocks.append(self.ds_block_6)
+        ds_blocks.append(self.ds_block_7)
+        ds_blocks.append(self.ds_block_8)
+        ds_blocks.append(self.ds_block_9)
+        ds_blocks.append(self.ds_block_10)
+        ds_blocks.append(self.ds_block_11)
+        ds_blocks.append(self.ds_block_12)
+        ds_blocks.append(self.ds_block_13)
+
+        for i in range(len(ds_blocks)):
+            # Depthwise convolution parameters
+            ds_blocks[i].dw_weights = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].dw_bias = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].dw_bn_gamma = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].dw_bn_beta = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].dw_bn_running_mean = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].dw_bn_running_var = loaded_params[idx]
+            idx += 1
+
+            # Pointwise convolution parameters
+            ds_blocks[i].pw_weights = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].pw_bias = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].pw_bn_gamma = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].pw_bn_beta = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].pw_bn_running_mean = loaded_params[idx]
+            idx += 1
+            ds_blocks[i].pw_bn_running_var = loaded_params[idx]
+            idx += 1
+
+        # Reassign blocks back to model
+        self.ds_block_1 = ds_blocks[0]
+        self.ds_block_2 = ds_blocks[1]
+        self.ds_block_3 = ds_blocks[2]
+        self.ds_block_4 = ds_blocks[3]
+        self.ds_block_5 = ds_blocks[4]
+        self.ds_block_6 = ds_blocks[5]
+        self.ds_block_7 = ds_blocks[6]
+        self.ds_block_8 = ds_blocks[7]
+        self.ds_block_9 = ds_blocks[8]
+        self.ds_block_10 = ds_blocks[9]
+        self.ds_block_11 = ds_blocks[10]
+        self.ds_block_12 = ds_blocks[11]
+        self.ds_block_13 = ds_blocks[12]
+
+        # Final fully connected layer
+        self.fc_weights = loaded_params[idx]
+        idx += 1
+        self.fc_bias = loaded_params[idx]
+        idx += 1
 
     fn save_weights(self, weights_dir: String) raises:
         """Save model weights to directory.
 
         Args:
             weights_dir: Directory to save weight files
+
+        Raises:
+            Error: If directory creation or file write fails
+
+        Note:
+            Creates directory if it doesn't exist. Each parameter is saved as:
+            - <param_name>.weights
+
+            Total parameters saved: ~156 (6 initial conv, 13 blocks × 12 params, 2 fc)
         """
-        # TODO(#2394): Implement weight saving
-        raise Error("Weight saving not yet implemented")
+        from shared.training.model_utils import save_model_weights, get_model_parameter_names
+
+        # Collect all parameters in order
+        var parameters = List[ExTensor]()
+
+        # Initial convolution parameters
+        parameters.append(self.initial_conv_weights)
+        parameters.append(self.initial_conv_bias)
+        parameters.append(self.initial_bn_gamma)
+        parameters.append(self.initial_bn_beta)
+        parameters.append(self.initial_bn_running_mean)
+        parameters.append(self.initial_bn_running_var)
+
+        # Depthwise separable blocks
+        var ds_blocks = List[DepthwiseSeparableBlock]()
+        ds_blocks.append(self.ds_block_1)
+        ds_blocks.append(self.ds_block_2)
+        ds_blocks.append(self.ds_block_3)
+        ds_blocks.append(self.ds_block_4)
+        ds_blocks.append(self.ds_block_5)
+        ds_blocks.append(self.ds_block_6)
+        ds_blocks.append(self.ds_block_7)
+        ds_blocks.append(self.ds_block_8)
+        ds_blocks.append(self.ds_block_9)
+        ds_blocks.append(self.ds_block_10)
+        ds_blocks.append(self.ds_block_11)
+        ds_blocks.append(self.ds_block_12)
+        ds_blocks.append(self.ds_block_13)
+
+        for i in range(len(ds_blocks)):
+            # Depthwise convolution parameters
+            parameters.append(ds_blocks[i].dw_weights)
+            parameters.append(ds_blocks[i].dw_bias)
+            parameters.append(ds_blocks[i].dw_bn_gamma)
+            parameters.append(ds_blocks[i].dw_bn_beta)
+            parameters.append(ds_blocks[i].dw_bn_running_mean)
+            parameters.append(ds_blocks[i].dw_bn_running_var)
+
+            # Pointwise convolution parameters
+            parameters.append(ds_blocks[i].pw_weights)
+            parameters.append(ds_blocks[i].pw_bias)
+            parameters.append(ds_blocks[i].pw_bn_gamma)
+            parameters.append(ds_blocks[i].pw_bn_beta)
+            parameters.append(ds_blocks[i].pw_bn_running_mean)
+            parameters.append(ds_blocks[i].pw_bn_running_var)
+
+        # Final fully connected layer
+        parameters.append(self.fc_weights)
+        parameters.append(self.fc_bias)
+
+        # Get standard parameter names
+        var param_names = get_model_parameter_names("mobilenetv1")
+
+        # Save using shared utility
+        save_model_weights(parameters, weights_dir, param_names)

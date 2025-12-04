@@ -224,6 +224,40 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
         names.append("fc3_bias")
         return names^
 
+    elif model_type == "mobilenetv1":
+        var names = List[String]()
+        # Initial standard convolution
+        names.append("initial_conv_weights")
+        names.append("initial_conv_bias")
+        names.append("initial_bn_gamma")
+        names.append("initial_bn_beta")
+        names.append("initial_bn_running_mean")
+        names.append("initial_bn_running_var")
+
+        # 13 depthwise separable blocks
+        # Each block: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
+        #            pw_weights, pw_bias, pw_bn_gamma, pw_bn_beta, pw_bn_running_mean, pw_bn_running_var
+        for block_idx in range(1, 14):
+            var block_str = String(block_idx)
+            names.append("ds_block_" + block_str + "_dw_weights")
+            names.append("ds_block_" + block_str + "_dw_bias")
+            names.append("ds_block_" + block_str + "_dw_bn_gamma")
+            names.append("ds_block_" + block_str + "_dw_bn_beta")
+            names.append("ds_block_" + block_str + "_dw_bn_running_mean")
+            names.append("ds_block_" + block_str + "_dw_bn_running_var")
+            names.append("ds_block_" + block_str + "_pw_weights")
+            names.append("ds_block_" + block_str + "_pw_bias")
+            names.append("ds_block_" + block_str + "_pw_bn_gamma")
+            names.append("ds_block_" + block_str + "_pw_bn_beta")
+            names.append("ds_block_" + block_str + "_pw_bn_running_mean")
+            names.append("ds_block_" + block_str + "_pw_bn_running_var")
+
+        # Final FC layer
+        names.append("fc_weights")
+        names.append("fc_bias")
+
+        return names^
+
     else:
         raise Error("Unknown model type: " + model_type)
 
