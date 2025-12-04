@@ -31,6 +31,15 @@ from .evaluate import (
     compute_accuracy_on_batch,
 )
 
+# Results printing utilities
+from .results_printer import (
+    print_evaluation_summary,
+    print_per_class_accuracy,
+    print_confusion_matrix,
+    print_training_progress,
+    print_training_summary,
+)
+
 # Future exports (to be implemented):
 # from .precision import Precision
 # from .recall import Recall
