@@ -256,7 +256,7 @@ fn assert_close_float(
     var a_is_nan = isnan(a)
     var b_is_nan = isnan(b)
     var a_is_inf = isinf(a)
-    var b_is_inf = isinf(a)
+    var b_is_inf = isinf(b)
 
     if a_is_nan and b_is_nan:
         return  # Both NaN, considered equal

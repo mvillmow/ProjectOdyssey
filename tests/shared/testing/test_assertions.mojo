@@ -202,12 +202,12 @@ fn test_assert_dtype_equal_fails():
     assert_true(failed, "assert_dtype_equal should raise error on mismatched dtypes")
 
 
-fn test_assert_equal_int_passes():
+fn test_assert_equal_int_specialized_passes():
     """Test assert_equal_int with matching integers."""
     assert_equal_int(42, 42)
 
 
-fn test_assert_equal_int_fails():
+fn test_assert_equal_int_specialized_fails():
     """Test assert_equal_int with mismatched integers."""
     var failed = False
     try:
@@ -608,6 +608,8 @@ fn main():
     test_assert_dtype_equal_fails()
     test_assert_equal_int_passes()
     test_assert_equal_int_fails()
+    test_assert_equal_int_specialized_passes()
+    test_assert_equal_int_specialized_fails()
     test_assert_equal_float_passes()
     test_assert_equal_float_fails()
     test_assert_close_float_passes()
