@@ -15,6 +15,7 @@ Features:
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches
 from shared.data.datasets import load_cifar10_test
+from shared.training.metrics import evaluate_logits_batch
 from model import MobileNetV1
 
 
@@ -37,8 +38,8 @@ fn evaluate_model(
     var total_per_class = List[Int]()
 
     for i in range(10):
-        correct_per_class[i] = 0
-        total_per_class[i] = 0
+        correct_per_class.append(0)
+        total_per_class.append(0)
 
     if verbose:
         print("Evaluating on " + str(num_samples) + " samples (" + str(num_batches) + " batches)...")
@@ -52,26 +53,24 @@ fn evaluate_model(
 
         var logits = model.forward(batch_images, training=False)
 
+        # Compute batch accuracy using shared function
+        var batch_acc_fraction = evaluate_logits_batch(logits, batch_labels)
+        var batch_correct = Int(batch_acc_fraction * Float32(current_batch_size))
+        total_correct += batch_correct
+
+        # Update per-class counters
+        var logits_data = logits._data.bitcast[Float32]()
         for i in range(current_batch_size):
-            var sample_logits = zeros(List[Int]().append(10), DType.float32)
-            var sample_logits_data = sample_logits._data.bitcast[Float32]()
-            var logits_data = logits._data.bitcast[Float32]()
-
-            var offset = i * 10
-            for j in range(10):
-                sample_logits_data[j] = logits_data[offset + j]
-
             var pred_class = 0
-            var max_logit = sample_logits_data[0]
+            var max_logit = logits_data[i * 10]
             for j in range(1, 10):
-                if sample_logits_data[j] > max_logit:
-                    max_logit = sample_logits_data[j]
+                if logits_data[i * 10 + j] > max_logit:
+                    max_logit = logits_data[i * 10 + j]
                     pred_class = j
 
             var true_class = int(batch_labels[i])
             total_per_class[true_class] += 1
             if pred_class == true_class:
-                total_correct += 1
                 correct_per_class[true_class] += 1
 
         if verbose and (batch_idx + 1) % 20 == 0:

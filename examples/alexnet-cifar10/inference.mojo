@@ -19,6 +19,7 @@ from model import AlexNet
 from shared.data.datasets import load_cifar10_test
 from shared.core import ExTensor
 from shared.utils.arg_parser import ArgumentParser
+from shared.training.metrics import evaluate_with_predict
 
 
 fn parse_args() raises -> Tuple[String, String]:
@@ -59,48 +60,52 @@ fn evaluate_model(
         For CIFAR-10 (10 classes), Top-5 is less meaningful but included for completeness
     """
     var num_samples = test_images.shape()[0]
-    var correct_top1 = 0
-    var correct_top5 = 0
 
     print("Evaluating on test set...")
     print("  Total samples:", num_samples)
 
-    # TODO: Process in batches when slicing is implemented
-    # For now, evaluate on first 1000 samples for demonstration
+    # Process samples and collect predictions
+    var predictions = List[Int]()
     var eval_samples = min(1000, num_samples)
 
     for i in range(eval_samples):
-        # TODO: Extract single sample when slicing works
-        # For demonstration, we'll use the first image repeatedly
-        var logits = model.forward(test_images, training=False)
-        var true_label = Int(test_labels[i])
+        # Extract single sample
+        var sample = test_images.slice(i, i + 1, axis=0)
+        var logits = model.forward(sample, training=False)
 
-        # Compute Top-1 accuracy (highest logit)
+        # Compute Top-1 prediction (highest logit)
         var pred_class = _argmax(logits)
-        if pred_class == true_label:
-            correct_top1 += 1
+        predictions.append(pred_class)
 
-        # Compute Top-5 accuracy (true label in top 5 logits)
+        # Print progress every 100 samples
+        if (i + 1) % 100 == 0:
+            print("  Processed [", i + 1, "/", eval_samples, "]")
+
+    # Compute Top-1 accuracy using shared function
+    var eval_labels = test_labels.slice(0, eval_samples, axis=0)
+    var top1_accuracy_fraction = evaluate_with_predict(predictions, eval_labels)
+
+    # Compute Top-5 accuracy (true label in top 5 predictions)
+    var correct_top5 = 0
+    for i in range(eval_samples):
+        var sample = test_images.slice(i, i + 1, axis=0)
+        var logits = model.forward(sample, training=False)
+        var true_label = Int(test_labels[i])
         var top5_indices = _top_k_indices(logits, k=5)
+
         for j in range(5):
             if top5_indices[j] == true_label:
                 correct_top5 += 1
                 break
 
-        # Print progress every 100 samples
-        if (i + 1) % 100 == 0:
-            var current_top1 = Float32(correct_top1) / Float32(i + 1) * 100.0
-            print("  Processed [", i + 1, "/", eval_samples, "] - Top-1 Accuracy: ", current_top1, "%")
-
-    var top1_accuracy = Float32(correct_top1) / Float32(eval_samples)
     var top5_accuracy = Float32(correct_top5) / Float32(eval_samples)
 
     print()
     print("Final Results:")
-    print("  Top-1 Accuracy: ", top1_accuracy * 100.0, "% (", correct_top1, "/", eval_samples, ")")
+    print("  Top-1 Accuracy: ", top1_accuracy_fraction * 100.0, "% (", Int(top1_accuracy_fraction * Float32(eval_samples)), "/", eval_samples, ")")
     print("  Top-5 Accuracy: ", top5_accuracy * 100.0, "% (", correct_top5, "/", eval_samples, ")")
 
-    return (top1_accuracy, top5_accuracy)
+    return (top1_accuracy_fraction, top5_accuracy)
 
 
 fn _argmax(tensor: ExTensor) raises -> Int:

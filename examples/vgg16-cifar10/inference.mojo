@@ -8,6 +8,7 @@ Usage:
 
 from shared.core import ExTensor, zeros
 from shared.data.formats import load_cifar10_batch
+from shared.training.metrics import evaluate_with_predict
 from model import VGG16
 from shared.utils.arg_parser import ArgumentParser
 from collections import List
@@ -45,34 +46,27 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
     var test_shape = test_images.shape()
     var num_test_samples = test_shape[0]
 
-    var correct = 0
-
     print("Evaluating on " + str(num_test_samples) + " test samples...")
+
+    # Collect predictions using model.predict()
+    var predictions = List[Int]()
 
     # Process each test sample
     for i in range(num_test_samples):
-        # Get single sample (simplified - in production would use proper slicing)
-        var sample_shape = List[Int]()
-        sample_shape.append(1)   # batch size = 1
-        sample_shape.append(3)   # RGB channels
-        sample_shape.append(32)  # height
-        sample_shape.append(32)  # width
-
-        var sample = zeros(sample_shape, DType.float32)
-        # TODO: Copy actual sample data from test_images[i]
+        # Get single sample from test set
+        var sample = test_images.slice(i, i + 1, axis=0)
 
         # Forward pass (inference mode)
         var pred_class = model.predict(sample)
-        var true_class = int(test_labels[i])
-
-        if pred_class == true_class:
-            correct += 1
+        predictions.append(pred_class)
 
         # Print progress every 1000 samples
         if (i + 1) % 1000 == 0:
             print("  Processed " + str(i + 1) + "/" + str(num_test_samples))
 
-    var accuracy = Float32(correct) / Float32(num_test_samples) * 100.0
+    # Use shared evaluate function
+    var accuracy_fraction = evaluate_with_predict(predictions, test_labels)
+    var accuracy = accuracy_fraction * 100.0
     return accuracy
 
 

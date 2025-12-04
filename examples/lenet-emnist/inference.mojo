@@ -20,6 +20,7 @@ from model import LeNet5
 from shared.data import load_idx_labels, load_idx_images, normalize_images
 from shared.core import ExTensor, zeros
 from shared.utils.arg_parser import ArgumentParser
+from shared.training.metrics import evaluate_with_predict
 from collections import List
 from math import exp
 
@@ -137,43 +138,28 @@ fn evaluate_test_set(
         EvaluationResult with accuracy and counts.
     """
     var num_samples = images.shape()[0]
-    var correct = 0
 
     print("Evaluating on", num_samples, "test samples...")
 
-    # Evaluate in batches to avoid memory issues
+    # Use batched processing to avoid memory issues
     var eval_batch_size = 32
-    var num_eval_batches = (num_samples + eval_batch_size - 1) // eval_batch_size
+    var predictions = List[Int]()
 
-    for batch_idx in range(num_eval_batches):
-        var start_idx = batch_idx * eval_batch_size
-        var end_idx = min(start_idx + eval_batch_size, num_samples)
+    # Collect predictions for all samples
+    for i in range(num_samples):
+        var sample = images.slice(i, i + 1, axis=0)
+        var pred_class = model.predict(sample)
+        predictions.append(pred_class)
 
-        # Extract batch slice
-        var batch_images = images.slice(start_idx, end_idx, axis=0)
-        var batch_labels = labels.slice(start_idx, end_idx, axis=0)
+        # Print progress
+        if (i + 1) % 100 == 0:
+            print("  Processed [", i + 1, "/", num_samples, "]")
 
-        # Process each sample in the batch
-        var actual_batch_size = end_idx - start_idx
-        for i in range(actual_batch_size):
-            # Extract single sample from batch
-            var sample = batch_images.slice(i, i + 1, axis=0)
-            var pred_class = model.predict(sample)
+    # Compute accuracy using shared function
+    var accuracy = evaluate_with_predict(predictions, labels)
+    var num_correct = Int(accuracy * Float32(num_samples))
 
-            # Get true label (integer from uint8 tensor)
-            var true_label = Int(batch_labels[i])
-
-            if pred_class == true_label:
-                correct += 1
-
-        # Print progress every 100 batches
-        if (batch_idx + 1) % 100 == 0:
-            var current_acc = Float32(correct) / Float32(end_idx)
-            print("  Processed [", end_idx, "/", num_samples, "] - Accuracy: ", current_acc * 100.0, "%")
-
-    var accuracy = Float32(correct) / Float32(num_samples)
-
-    return EvaluationResult(accuracy, correct, num_samples)
+    return EvaluationResult(accuracy, num_correct, num_samples)
 
 
 fn main() raises:

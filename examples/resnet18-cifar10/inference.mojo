@@ -27,7 +27,7 @@ Features:
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches
 from shared.data.datasets import load_cifar10_test
-from shared.training.metrics import evaluate_with_predict, top1_accuracy, per_class_accuracy
+from shared.training.metrics import evaluate_with_predict, top1_accuracy, per_class_accuracy, evaluate_logits_batch
 from shared.utils.arg_parser import ArgumentParser, ArgumentSpec
 from model import ResNet18
 
@@ -97,26 +97,20 @@ fn evaluate_model(
         # Forward pass (inference mode - no BN running stats updates)
         var logits = model.forward(batch_images, training=False)
 
-        # Compute predictions for each sample in batch
+        # Compute batch accuracy using shared function
+        var batch_acc_fraction = evaluate_logits_batch(logits, batch_labels)
+        var batch_correct = Int(batch_acc_fraction * Float32(current_batch_size))
+        total_correct += batch_correct
+
+        # Update per-class counters
+        var logits_data = logits._data.bitcast[Float32]()
         for i in range(current_batch_size):
-            # Extract logits for this sample (shape: (10,))
-            var shape = List[Int](capacity=1)
-            shape.append(10)
-            var sample_logits = zeros(shape, DType.float32)
-            var sample_logits_data = sample_logits._data.bitcast[Float32]()
-            var logits_data = logits._data.bitcast[Float32]()
-
-            # Copy logits for this sample
-            var offset = i * 10
-            for j in range(10):
-                sample_logits_data[j] = logits_data[offset + j]
-
             # Find argmax (predicted class)
             var pred_class = 0
-            var max_logit = sample_logits_data[0]
+            var max_logit = logits_data[i * 10]
             for j in range(1, 10):
-                if sample_logits_data[j] > max_logit:
-                    max_logit = sample_logits_data[j]
+                if logits_data[i * 10 + j] > max_logit:
+                    max_logit = logits_data[i * 10 + j]
                     pred_class = j
 
             # Get true label
@@ -125,7 +119,6 @@ fn evaluate_model(
             # Update counters
             total_per_class[true_class] += 1
             if pred_class == true_class:
-                total_correct += 1
                 correct_per_class[true_class] += 1
 
         if verbose and (batch_idx + 1) % 20 == 0:
