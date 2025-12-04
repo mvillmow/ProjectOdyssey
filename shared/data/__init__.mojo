@@ -51,7 +51,7 @@ from .constants import (
     CIFAR10_CLASS_NAMES,           # CIFAR-10 class names (10 classes)
     EMNIST_BALANCED_CLASSES,       # EMNIST Balanced class names (47 classes)
     EMNIST_BYCLASS_CLASSES,        # EMNIST By Class class names (62 classes)
-    EMNIST_BYMERGE_CLASSES,        # EMNIST By Merge class names (47 classes)
+    EMNIST_BYMERGE_CLASSES,        # EMNIST By Merge class names (36 classes)
     EMNIST_DIGITS_CLASSES,         # EMNIST Digits class names (10 classes)
     EMNIST_LETTERS_CLASSES,        # EMNIST Letters class names (52 classes)
     DatasetInfo,                   # Dataset metadata container

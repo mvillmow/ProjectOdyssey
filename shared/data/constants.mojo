@@ -62,14 +62,15 @@ fn CIFAR10_CLASS_NAMES() -> List[String]:
 fn EMNIST_BALANCED_CLASSES() -> List[String]:
     """Get EMNIST Balanced class names.
 
-    EMNIST Balanced contains 47 classes: 10 digits (0-9) and 37 letters (A-Z, a-z).
+    EMNIST Balanced contains 47 classes: 10 digits (0-9) and 37 letters.
     The balanced split has roughly equal numbers of samples per class.
+    Letters are: A-Z (26 classes) + a-k (11 classes) = 37 letter classes.
 
     Returns:
         List of 47 class name strings representing digits and letters.
 
     Note:
-        Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-z (lowercase).
+        Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-k (lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
     var classes = List[String]()
@@ -81,12 +82,12 @@ fn EMNIST_BALANCED_CLASSES() -> List[String]:
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i])
+        classes.append(uppercase[i:i+1])
 
-    # Lowercase letters a-z
-    var lowercase = "abcdefghijklmnopqrstuvwxyz"
-    for i in range(26):
-        classes.append(lowercase[i])
+    # Lowercase letters a-k (11 classes)
+    var lowercase = "abcdefghijk"
+    for i in range(11):
+        classes.append(lowercase[i:i+1])
 
     return classes^
 
@@ -118,12 +119,12 @@ fn EMNIST_BYCLASS_CLASSES() -> List[String]:
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i])
+        classes.append(uppercase[i:i+1])
 
     # Lowercase letters a-z
     var lowercase = "abcdefghijklmnopqrstuvwxyz"
     for i in range(26):
-        classes.append(lowercase[i])
+        classes.append(lowercase[i:i+1])
 
     return classes^
 
@@ -136,11 +137,11 @@ fn EMNIST_BYCLASS_CLASSES() -> List[String]:
 fn EMNIST_BYMERGE_CLASSES() -> List[String]:
     """Get EMNIST By Merge class names.
 
-    EMNIST By Merge contains 47 classes where uppercase and lowercase letters
+    EMNIST By Merge contains 36 classes where uppercase and lowercase letters
     are merged into single classes (e.g., 'A' and 'a' -> 'A').
 
     Returns:
-        List of 47 class name strings: 10 digits and 26 merged letter classes.
+        List of 36 class name strings: 10 digits and 26 merged letter classes.
 
     Note:
         Classes are ordered as: 0-9 (digits), then A-Z (merged uppercase/lowercase).
@@ -155,7 +156,7 @@ fn EMNIST_BYMERGE_CLASSES() -> List[String]:
     # Uppercase letters A-Z (merged with lowercase)
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i])
+        classes.append(uppercase[i:i+1])
 
     return classes^
 
@@ -205,12 +206,12 @@ fn EMNIST_LETTERS_CLASSES() -> List[String]:
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i])
+        classes.append(uppercase[i:i+1])
 
     # Lowercase letters a-z
     var lowercase = "abcdefghijklmnopqrstuvwxyz"
     for i in range(26):
-        classes.append(lowercase[i])
+        classes.append(lowercase[i:i+1])
 
     return classes^
 
@@ -303,7 +304,7 @@ struct DatasetInfo(Copyable, Movable):
             - cifar10: 10
             - emnist_balanced: 47
             - emnist_byclass: 62
-            - emnist_bymerge: 47
+            - emnist_bymerge: 36
             - emnist_digits: 10
             - emnist_letters: 52
 
@@ -317,7 +318,7 @@ struct DatasetInfo(Copyable, Movable):
         elif self.dataset_name == "emnist_byclass":
             return 62
         elif self.dataset_name == "emnist_bymerge":
-            return 47
+            return 36
         elif self.dataset_name == "emnist_digits":
             return 10
         elif self.dataset_name == "emnist_letters":
