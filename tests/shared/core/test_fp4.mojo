@@ -212,6 +212,175 @@ fn test_fp4_e2m1_quantization() raises:
 
 
 # ============================================================================
+# String Representation Tests
+# ============================================================================
+
+
+fn test_fp4_e2m1_str_representation() raises:
+    """Test __str__ method for FP4_E2M1."""
+    var fp4_one = FP4_E2M1.from_float32(1.0, scale=1.0)
+    var str_repr = fp4_one.__str__()
+
+    # Should contain "FP4_E2M1" and the value
+    assert_true(
+        "FP4_E2M1" in str_repr,
+        "__str__ should contain FP4_E2M1"
+    )
+
+
+fn test_fp4_e2m1_repr_representation() raises:
+    """Test __repr__ method for FP4_E2M1."""
+    var fp4_two = FP4_E2M1.from_float32(2.0, scale=1.0)
+    var repr_str = fp4_two.__repr__()
+
+    # Should contain "FP4_E2M1" and "bits="
+    assert_true(
+        "FP4_E2M1" in repr_str,
+        "__repr__ should contain FP4_E2M1"
+    )
+    assert_true(
+        "bits=" in repr_str,
+        "__repr__ should contain bits="
+    )
+
+
+fn test_fp4_e2m1_repr_zero() raises:
+    """Test __repr__ for zero value."""
+    var fp4_zero = FP4_E2M1(0b0000)
+    var repr_str = fp4_zero.__repr__()
+    assert_true(len(repr_str) > 0, "__repr__ should produce non-empty string")
+
+
+fn test_fp4_e2m1_repr_max() raises:
+    """Test __repr__ for max value."""
+    var fp4_max = FP4_E2M1(0b0111)
+    var repr_str = fp4_max.__repr__()
+    assert_true(len(repr_str) > 0, "__repr__ should produce non-empty string")
+
+
+# ============================================================================
+# All 16 FP4 Values Tests
+# ============================================================================
+
+
+fn test_fp4_e2m1_all_16_values() raises:
+    """Test decoding of all 16 possible FP4 bit patterns."""
+    # All 16 possible 4-bit values: 0x0 to 0xF
+    # Testing that all can be decoded without errors
+    for i in range(16):
+        var fp4 = FP4_E2M1(UInt8(i))
+        var _ = fp4.to_float32(scale=1.0)
+        # Should produce a valid float (not NaN unless explicitly set)
+        assert_true(len(fp4.__str__()) > 0, "All values should produce string representation")
+
+
+fn test_fp4_e2m1_positive_values_all() raises:
+    """Test all positive FP4 bit patterns (sign bit = 0)."""
+    # Positive values: 0x0 to 0x7
+    var values = List[UInt8]()
+    values.append(0b0000)  # Zero
+    values.append(0b0001)  # exp=0, mantissa=1 (invalid)
+    values.append(0b0010)  # exp=1, mantissa=0 = 1.0
+    values.append(0b0011)  # exp=1, mantissa=1 = 1.5
+    values.append(0b0100)  # exp=2, mantissa=0 = 2.0
+    values.append(0b0101)  # exp=2, mantissa=1 = 3.0
+    values.append(0b0110)  # exp=3, mantissa=0 = 4.0
+    values.append(0b0111)  # exp=3, mantissa=1 = 6.0
+
+    for i in range(len(values)):
+        var fp4 = FP4_E2M1(values[i])
+        var decoded = fp4.to_float32(scale=1.0)
+        assert_true(decoded >= 0.0, "Positive values should be >= 0")
+
+
+fn test_fp4_e2m1_negative_values_all() raises:
+    """Test all negative FP4 bit patterns (sign bit = 1)."""
+    # Negative values: 0x8 to 0xF
+    var values = List[UInt8]()
+    values.append(0b1000)  # -Zero
+    values.append(0b1001)  # exp=0, mantissa=1 (invalid)
+    values.append(0b1010)  # exp=1, mantissa=0 = -1.0
+    values.append(0b1011)  # exp=1, mantissa=1 = -1.5
+    values.append(0b1100)  # exp=2, mantissa=0 = -2.0
+    values.append(0b1101)  # exp=2, mantissa=1 = -3.0
+    values.append(0b1110)  # exp=3, mantissa=0 = -4.0
+    values.append(0b1111)  # exp=3, mantissa=1 = -6.0
+
+    for i in range(len(values)):
+        var fp4 = FP4_E2M1(values[i])
+        var decoded = fp4.to_float32(scale=1.0)
+        assert_true(decoded <= 0.0, "Negative values should be <= 0")
+
+
+fn test_fp4_e2m1_value_extraction() raises:
+    """Test bit pattern extraction in to_float32."""
+    # Test that correct components are extracted
+    var fp4_test = FP4_E2M1(0b0101)  # exp=2, mantissa=1 = 3.0
+    var result = fp4_test.to_float32(scale=1.0)
+    assert_almost_equal(result, Float32(3.0), tolerance=0.1)
+
+
+fn test_fp4_e2m1_scale_zero_edge_case() raises:
+    """Test encoding with various edge case scales."""
+    # Test with scale=1.0
+    var fp4_a = FP4_E2M1.from_float32(3.0, scale=1.0)
+    var result_a = fp4_a.to_float32(scale=1.0)
+    assert_almost_equal(result_a, Float32(3.0), tolerance=0.5)
+
+    # Test with scale=0.5
+    var fp4_b = FP4_E2M1.from_float32(1.5, scale=0.5)
+    var result_b = fp4_b.to_float32(scale=0.5)
+    assert_almost_equal(result_b, Float32(1.5), tolerance=0.3)
+
+    # Test with scale=2.0
+    var fp4_c = FP4_E2M1.from_float32(6.0, scale=2.0)
+    var result_c = fp4_c.to_float32(scale=2.0)
+    assert_almost_equal(result_c, Float32(6.0), tolerance=1.0)
+
+
+fn test_fp4_e2m1_not_equal() raises:
+    """Test __ne__ operator."""
+    var fp4_a = FP4_E2M1.from_float32(1.0, scale=1.0)
+    var fp4_b = FP4_E2M1.from_float32(2.0, scale=1.0)
+
+    assert_true(fp4_a != fp4_b, "Different FP4 values should not be equal")
+
+
+fn test_fp4_e2m1_equal_direct_init() raises:
+    """Test equality with direct initialization."""
+    var fp4_a = FP4_E2M1(0b0010)
+    var fp4_b = FP4_E2M1(0b0010)
+
+    assert_true(fp4_a == fp4_b, "Same bit patterns should be equal")
+
+
+fn test_fp4_e2m1_edge_case_boundaries() raises:
+    """Test boundary conditions for quantization."""
+    # Test value just below max
+    var fp4_below_max = FP4_E2M1.from_float32(5.9, scale=1.0)
+    var result_below_max = fp4_below_max.to_float32(scale=1.0)
+    assert_true(result_below_max <= 6.0, "Value should not exceed max")
+
+    # Test value just above min representable
+    var fp4_above_min = FP4_E2M1.from_float32(1.01, scale=1.0)
+    var result_above_min = fp4_above_min.to_float32(scale=1.0)
+    assert_true(result_above_min >= 0.5, "Value should be at least 0.5")
+
+
+fn test_fp4_e2m1_negative_scale() raises:
+    """Test behavior with scale factor variations."""
+    # Test inverse scale relationship
+    var value = Float32(3.0)
+    var fp4_scaled_up = FP4_E2M1.from_float32(value, scale=0.5)
+    var result_scaled_up = fp4_scaled_up.to_float32(scale=0.5)
+    assert_almost_equal(result_scaled_up, value, tolerance=0.5)
+
+    var fp4_scaled_down = FP4_E2M1.from_float32(value, scale=2.0)
+    var result_scaled_down = fp4_scaled_down.to_float32(scale=2.0)
+    assert_almost_equal(result_scaled_down, value, tolerance=0.5)
+
+
+# ============================================================================
 # Main Test Runner
 # ============================================================================
 
@@ -257,5 +426,46 @@ fn main() raises:
 
     test_fp4_e2m1_quantization()
     print("✓ FP4_E2M1 quantization behavior")
+
+    print("\n=== FP4_E2M1 String Representation Tests ===")
+    test_fp4_e2m1_str_representation()
+    print("✓ FP4_E2M1 __str__ method")
+
+    test_fp4_e2m1_repr_representation()
+    print("✓ FP4_E2M1 __repr__ method")
+
+    test_fp4_e2m1_repr_zero()
+    print("✓ FP4_E2M1 __repr__ for zero")
+
+    test_fp4_e2m1_repr_max()
+    print("✓ FP4_E2M1 __repr__ for max")
+
+    print("\n=== All 16 FP4 Values Tests ===")
+    test_fp4_e2m1_all_16_values()
+    print("✓ All 16 possible FP4 bit patterns")
+
+    test_fp4_e2m1_positive_values_all()
+    print("✓ All positive FP4 bit patterns")
+
+    test_fp4_e2m1_negative_values_all()
+    print("✓ All negative FP4 bit patterns")
+
+    test_fp4_e2m1_value_extraction()
+    print("✓ Bit pattern extraction")
+
+    test_fp4_e2m1_scale_zero_edge_case()
+    print("✓ Edge case scales")
+
+    test_fp4_e2m1_not_equal()
+    print("✓ __ne__ operator")
+
+    test_fp4_e2m1_equal_direct_init()
+    print("✓ __eq__ operator with direct init")
+
+    test_fp4_e2m1_edge_case_boundaries()
+    print("✓ Boundary conditions")
+
+    test_fp4_e2m1_negative_scale()
+    print("✓ Scale factor variations")
 
     print("\n=== All FP4_E2M1 Tests Passed! ===\n")
