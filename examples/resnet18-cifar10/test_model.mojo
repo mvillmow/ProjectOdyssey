@@ -1,7 +1,15 @@
-"""Quick integration test for ResNet-18 model"""
+"""Quick integration test for ResNet-18 model
+
+Tests ResNet-18 forward pass, weight persistence, and model integration with shared modules.
+
+Shared Modules Used:
+    - shared.core: Core tensor operations
+    - shared.utils.serialization: Weight save/load functionality
+"""
 
 from model import ResNet18
 from shared.core import ExTensor, zeros
+from shared.utils.serialization import save_tensor, load_tensor
 
 fn main() raises:
     print("Testing ResNet-18 Model")

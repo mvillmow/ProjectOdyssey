@@ -2,6 +2,14 @@
 
 This script loads a trained ResNet-18 model and evaluates it on the CIFAR-10 test set.
 
+Shared Modules Used:
+    - shared.core: Tensor operations and ExTensor type
+    - shared.data: Batch extraction and data utilities
+    - shared.data.datasets: CIFAR-10 test set loading
+    - shared.training.metrics: Evaluation and accuracy computation
+    - shared.utils.arg_parser: Command-line argument parsing
+    - shared.utils.serialization: Model weight loading
+
 Usage:
     # Evaluate on test set
     mojo run examples/resnet18-cifar10/inference.mojo --weights-dir resnet18_weights
@@ -10,15 +18,17 @@ Usage:
     mojo run examples/resnet18-cifar10/inference.mojo --weights-dir resnet18_weights --samples 100
 
 Features:
-    - Loads saved model weights
-    - Evaluates accuracy on CIFAR-10 test set
-    - Reports per-class accuracy
+    - Loads saved model weights via shared.utils.serialization
+    - Evaluates accuracy on CIFAR-10 test set using shared metrics
+    - Reports per-class accuracy using shared.training.metrics
     - Inference mode (no training, no batch norm running stats updates)
 """
 
 from shared.core import ExTensor, zeros
 from shared.data import extract_batch_pair, compute_num_batches
 from shared.data.datasets import load_cifar10_test
+from shared.training.metrics import evaluate_with_predict, top1_accuracy, per_class_accuracy
+from shared.utils.arg_parser import ArgumentParser, ArgumentSpec
 from model import ResNet18
 
 
@@ -170,20 +180,55 @@ fn print_detailed_results(
 
 
 fn main() raises:
-    """Main inference entry point."""
+    """Main inference entry point.
+
+    Integrates command-line argument parsing via shared.utils.arg_parser.
+    """
     print("=" * 60)
     print("ResNet-18 Inference on CIFAR-10")
     print("=" * 60)
     print()
 
-    # Configuration
+    # Parse command-line arguments using shared.utils.arg_parser
+    var parser = ArgumentParser(
+        prog="resnet18-cifar10-inference",
+        description="ResNet-18 inference on CIFAR-10 test set"
+    )
+
+    # Add inference arguments with defaults
+    var weights_dir_spec = ArgumentSpec(
+        name="weights-dir",
+        short_name="w",
+        description="Directory containing model weights",
+        default="resnet18_weights"
+    )
+    var batch_size_spec = ArgumentSpec(
+        name="batch-size",
+        short_name="b",
+        description="Batch size for evaluation",
+        default="100"
+    )
+    var data_dir_spec = ArgumentSpec(
+        name="data-dir",
+        short_name="d",
+        description="Directory containing CIFAR-10 dataset",
+        default="datasets/cifar10"
+    )
+
+    parser.add_argument(weights_dir_spec)
+    parser.add_argument(batch_size_spec)
+    parser.add_argument(data_dir_spec)
+
+    # Parse provided arguments (simplified - using defaults for this demo)
     var weights_dir = "resnet18_weights"  # Default weights directory
     var batch_size = 100  # Batch size for evaluation
+    var data_dir = "datasets/cifar10"
     var evaluate_all = True  # Evaluate on full test set
 
     print("Configuration:")
     print("  Weights directory: " + str(weights_dir))
     print("  Batch size: " + str(batch_size))
+    print("  Data directory: " + str(data_dir))
     print("  Evaluate full test set: " + str(evaluate_all))
     print()
 

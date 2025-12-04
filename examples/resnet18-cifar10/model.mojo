@@ -39,6 +39,18 @@ Key Innovation:
     - Batch normalization after each convolution
     - Solves vanishing gradient problem in deep networks
 
+Shared Modules Used:
+    - shared.core: Core tensor operations (ExTensor, zeros, ones)
+    - shared.core.conv: Convolution operations (conv2d, conv2d_backward)
+    - shared.core.pooling: Pooling operations (avgpool2d, avgpool2d_backward)
+    - shared.core.linear: Linear/fully-connected layers (linear, linear_backward)
+    - shared.core.activation: Activation functions (relu, relu_backward)
+    - shared.core.normalization: Batch normalization (batch_norm2d)
+    - shared.core.initializers: Weight initialization (he_uniform)
+    - shared.core.arithmetic: Element-wise operations (add for skip connections)
+    - shared.training.optimizers: Optimization algorithms (sgd_momentum_update_inplace)
+    - shared.utils.serialization: Model persistence (save_tensor, load_tensor)
+
 References:
     - He, K., Zhang, X., Ren, S., & Sun, J. (2015).
       Deep residual learning for image recognition.

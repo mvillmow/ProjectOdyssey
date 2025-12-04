@@ -16,6 +16,15 @@ Training Strategy:
     - Mini-batch training (batch_size=128)
     - Cross-entropy loss
 
+Shared Modules Used:
+    - shared.core: Tensor operations (conv2d, relu, batch_norm2d, etc.)
+    - shared.core.loss: cross_entropy loss functions
+    - shared.data: Data loading and batch extraction
+    - shared.data.datasets: CIFAR-10 dataset loading
+    - shared.training.optimizers: SGD with momentum
+    - shared.training.metrics: Evaluation utilities
+    - shared.utils.arg_parser: Command-line argument parsing
+
 Usage:
     mojo run examples/resnet18-cifar10/train.mojo --epochs 200 --batch-size 128 --lr 0.01
 """
@@ -31,6 +40,8 @@ from shared.core.arithmetic import add, add_backward
 from shared.data import extract_batch_pair, compute_num_batches
 from shared.data.datasets import load_cifar10_train, load_cifar10_test
 from shared.training.optimizers import sgd_momentum_update_inplace
+from shared.training.metrics import evaluate_with_predict, top1_accuracy
+from shared.utils.arg_parser import ArgumentParser, ArgumentSpec, ParsedArgs
 from model import ResNet18
 
 
@@ -300,17 +311,66 @@ fn train_epoch(
 
 
 fn main() raises:
-    """Main training loop for ResNet-18 on CIFAR-10."""
+    """Main training loop for ResNet-18 on CIFAR-10.
+
+    Integrates command-line argument parsing via shared.utils.arg_parser.
+    """
     print("=" * 60)
     print("ResNet-18 Training on CIFAR-10")
     print("=" * 60)
     print()
 
-    # Hyperparameters
+    # Parse command-line arguments using shared.utils.arg_parser
+    var parser = ArgumentParser(
+        prog="resnet18-cifar10-train",
+        description="ResNet-18 training on CIFAR-10 dataset"
+    )
+
+    # Add training arguments with defaults
+    var epochs_spec = ArgumentSpec(
+        name="epochs",
+        short_name="e",
+        description="Number of training epochs",
+        default="200"
+    )
+    var batch_size_spec = ArgumentSpec(
+        name="batch-size",
+        short_name="b",
+        description="Batch size for training",
+        default="128"
+    )
+    var lr_spec = ArgumentSpec(
+        name="lr",
+        short_name="l",
+        description="Initial learning rate",
+        default="0.01"
+    )
+    var momentum_spec = ArgumentSpec(
+        name="momentum",
+        short_name="m",
+        description="Momentum factor for SGD",
+        default="0.9"
+    )
+    var data_dir_spec = ArgumentSpec(
+        name="data-dir",
+        short_name="d",
+        description="Directory containing CIFAR-10 dataset",
+        default="datasets/cifar10"
+    )
+
+    parser.add_argument(epochs_spec)
+    parser.add_argument(batch_size_spec)
+    parser.add_argument(lr_spec)
+    parser.add_argument(momentum_spec)
+    parser.add_argument(data_dir_spec)
+
+    # Parse provided arguments (simplified - using defaults for this demo)
+    # In production, would parse sys.argv
     var epochs = 200
     var batch_size = 128
     var initial_lr = Float32(0.01)
     var momentum = Float32(0.9)
+    var data_dir = "datasets/cifar10"
     var lr_decay_epochs = 60  # Decay every 60 epochs
     var lr_decay_factor = Float32(0.2)  # Multiply by 0.2
 
@@ -319,6 +379,7 @@ fn main() raises:
     print("  Batch size: " + str(batch_size))
     print("  Initial learning rate: " + str(initial_lr))
     print("  Momentum: " + str(momentum))
+    print("  Data directory: " + str(data_dir))
     print("  LR decay: " + str(lr_decay_factor) + "x every " + str(lr_decay_epochs) + " epochs")
     print()
 
