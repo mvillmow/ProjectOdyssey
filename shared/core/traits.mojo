@@ -237,22 +237,68 @@ trait Composable(Differentiable):
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
     """
 
-    # TODO(#2401): compose() method requires Movable constraint on generic types
-    # Deferred until proper trait intersection syntax is available
-    # fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
-    #     ...
-    pass
+    fn compose[T: Composable](self, other: T) raises -> ExTensor:
+        """Compose this component with another.
+
+        NOTE: Full implementation blocked by Mojo language limitation.
+        Generic types F and S require Movable constraint which cannot
+        be expressed in the current Mojo type system. See issue #2401.
+
+        Args:
+            other: The component to compose with this one.
+
+        Returns:
+            Composed operation result.
+
+        Raises:
+            Error: This method is not yet supported due to Mojo limitation.
+
+        Workaround:
+            Instead of using compose(), manually chain operations:
+
+            # Instead of:
+            # var combined = layer1.compose(layer2)
+
+            # Use manual composition:
+            var intermediate = layer1.forward(input)
+            var result = layer2.forward(intermediate)
+
+        See Also:
+            - Issue #2401: Trait compose() blocked by Movable constraint
+            - https://docs.modular.com/mojo/manual/traits/
+        """
+        raise Error(
+            "compose() not yet supported - use manual composition instead. "
+            "See issue #2401 and Composable trait docstring for workaround."
+        )
 
 
-# TODO(#2401): ComposedOp requires Movable constraint on generic types F and S
-# Commenting out until proper trait intersection syntax is available in Mojo
+# TODO(#2401): ComposedOp struct blocked by Mojo type system limitation
+#
+# Issue: ComposedOp requires Movable constraint on generic types F and S,
+# but Mojo does not support trait intersection syntax needed to express:
+#   struct ComposedOp[F: (Differentiable & Movable), S: (Differentiable & Movable)](...)
+#
+# Current Status: Deferred until Mojo adds proper trait intersection.
+#
+# Workaround: Use manual composition in Composable.compose() docstring.
+# Commented code below for future reference:
+#
 # struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composable):
 #     """Composition of two differentiable operations."""
 #     var first: F
 #     var second: S
-#     ...
+#
+#     fn forward(mut self, input: ExTensor) raises -> ExTensor:
+#         var intermediate = self.first.forward(input)
+#         return self.second.forward(intermediate)
+#
+#     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
+#         var grad_intermediate = self.second.backward(grad_output)
+#         return self.first.backward(grad_intermediate)
 #
 # See: https://docs.modular.com/mojo/manual/traits/
+# See: GitHub issue #2401 for limitation details
 
 
 trait Trainable:
