@@ -218,7 +218,7 @@ fn test_lars_momentum_accumulation() raises:
     var velocity = zeros(shape, DType.float32)
 
     # Step 1: velocity accumulates gradient with trust ratio scaling
-    var result = lars_step(
+    var result1 = lars_step(
         params,
         grads,
         velocity,
@@ -229,17 +229,21 @@ fn test_lars_momentum_accumulation() raises:
         epsilon=1e-8
     )
 
-    params = result[0]
-    velocity = result[1]
+    var params1 = result1[0]
+    var velocity1 = result1[1]
 
-    var param_val1 = Float64(params._data.bitcast[Float32]()[0])
+    var param_val1 = Float64(params1._data.bitcast[Float32]()[0])
     assert_less(param_val1, 1.0)  # Should decrease
 
     # Step 2: momentum continues to accumulate
-    result = lars_step(
-        params,
-        grads,
-        velocity,
+    # Need fresh grads tensor for second step
+    var grads2 = zeros(shape, DType.float32)
+    grads2._data.bitcast[Float32]()[0] = 0.1
+
+    var result2 = lars_step(
+        params1,
+        grads2,
+        velocity1,
         learning_rate=1.0,
         momentum=0.9,
         weight_decay=0.0,
@@ -247,10 +251,8 @@ fn test_lars_momentum_accumulation() raises:
         epsilon=1e-8
     )
 
-    params = result[0]
-    velocity = result[1]
-
-    var param_val2 = Float64(params._data.bitcast[Float32]()[0])
+    var params2 = result2[0]
+    var param_val2 = Float64(params2._data.bitcast[Float32]()[0])
 
     # Parameter should continue to decrease
     assert_less(param_val2, param_val1)
@@ -264,35 +266,56 @@ fn test_lars_weight_decay() raises:
         - Effective gradient: grad_eff = grad + weight_decay * params
         - Trust ratio computed with weight_decay term
         - Then apply standard update with momentum
+
+    Note: LARS's trust ratio uses ||grad|| + wd * ||params|| in denominator
+    while effective gradient is grad + wd * params. These have different
+    magnitudes in multi-dimensional cases, making weight decay visible.
+    In 1D with same-sign values, they cancel perfectly, so we use 2D tensors.
     """
-    var shape = List[Int](1)
-    var params = ones(shape, DType.float32)
-    params._data.bitcast[Float32]()[0] = 1.0
+    var shape = List[Int](2)  # Use 2D to break cancellation
 
-    var grads = zeros(shape, DType.float32)
-    grads._data.bitcast[Float32]()[0] = 0.1
+    # Create tensors WITH weight decay test
+    # Use orthogonal grad and param vectors so ||grad + wd*params|| != ||grad|| + wd*||params||
+    var params_wd = zeros(shape, DType.float32)
+    params_wd._data.bitcast[Float32]()[0] = 1.0  # [1.0, 0.0]
+    params_wd._data.bitcast[Float32]()[1] = 0.0
 
-    var velocity = zeros(shape, DType.float32)
+    var grads_wd = zeros(shape, DType.float32)
+    grads_wd._data.bitcast[Float32]()[0] = 0.0  # [0.0, 0.1]
+    grads_wd._data.bitcast[Float32]()[1] = 0.1
+
+    var velocity_wd = zeros(shape, DType.float32)
 
     # Perform update WITH weight decay
     var result_with_wd = lars_step(
-        params,
-        grads,
-        velocity,
+        params_wd,
+        grads_wd,
+        velocity_wd,
         learning_rate=1.0,
         momentum=0.0,
-        weight_decay=0.01,
+        weight_decay=0.1,
         trust_coefficient=0.001,
         epsilon=1e-8
     )
 
     var new_params_with_wd = result_with_wd[0]
 
+    # Create tensors WITHOUT weight decay
+    var params_no_wd = zeros(shape, DType.float32)
+    params_no_wd._data.bitcast[Float32]()[0] = 1.0  # [1.0, 0.0]
+    params_no_wd._data.bitcast[Float32]()[1] = 0.0
+
+    var grads_no_wd = zeros(shape, DType.float32)
+    grads_no_wd._data.bitcast[Float32]()[0] = 0.0  # [0.0, 0.1]
+    grads_no_wd._data.bitcast[Float32]()[1] = 0.1
+
+    var velocity_no_wd = zeros(shape, DType.float32)
+
     # Perform update WITHOUT weight decay
-    result_with_wd = lars_step(
-        params,
-        grads,
-        velocity,
+    var result_without_wd = lars_step(
+        params_no_wd,
+        grads_no_wd,
+        velocity_no_wd,
         learning_rate=1.0,
         momentum=0.0,
         weight_decay=0.0,
@@ -300,13 +323,15 @@ fn test_lars_weight_decay() raises:
         epsilon=1e-8
     )
 
-    var new_params_without_wd = result_with_wd[0]
+    var new_params_without_wd = result_without_wd[0]
 
-    # With weight decay, parameter should decrease more
-    var val_with_wd = Float64(new_params_with_wd._data.bitcast[Float32]()[0])
-    var val_without_wd = Float64(new_params_without_wd._data.bitcast[Float32]()[0])
+    # With weight decay, the first component (params[0]=1.0) should decrease more
+    # because effective_gradient[0] = 0.0 + 0.1 * 1.0 = 0.1 (vs 0.0 without wd)
+    var val_with_wd_0 = Float64(new_params_with_wd._data.bitcast[Float32]()[0])
+    var val_without_wd_0 = Float64(new_params_without_wd._data.bitcast[Float32]()[0])
 
-    assert_less(val_with_wd, val_without_wd)
+    # First component should be smaller with weight decay
+    assert_less(val_with_wd_0, val_without_wd_0)
 
 
 # ============================================================================
@@ -439,7 +464,7 @@ fn test_lars_shape_mismatch() raises:
 
     # Should raise error due to shape mismatch
     try:
-        var result = lars_step(
+        var _ = lars_step(
             params,
             grads,
             velocity,
@@ -464,7 +489,7 @@ fn test_lars_dtype_mismatch() raises:
 
     # Should raise error due to dtype mismatch
     try:
-        var result = lars_step(
+        var _ = lars_step(
             params,
             grads,
             velocity,
@@ -489,7 +514,7 @@ fn test_lars_empty_velocity_buffer() raises:
 
     # Should raise error due to empty velocity buffer
     try:
-        var result = lars_step(
+        var _ = lars_step(
             params,
             grads,
             velocity,
