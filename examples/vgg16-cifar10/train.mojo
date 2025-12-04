@@ -30,6 +30,7 @@ from shared.training.schedulers import step_lr
 from shared.training.loops import TrainingLoop
 from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices
 from shared.utils.arg_parser import create_training_parser
+from shared.training.metrics.evaluate import evaluate_with_predict
 
 
 fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
@@ -391,7 +392,10 @@ fn evaluate(
     borrowed test_images: ExTensor,
     borrowed test_labels: ExTensor
 ) raises -> Float32:
-    """Evaluate model on test set.
+    """Evaluate model on test set using shared metrics utilities.
+
+    Uses evaluate_with_predict from shared.training.metrics to consolidate
+    evaluation logic across all examples.
 
     Args:
         model: VGG16 model
@@ -402,30 +406,27 @@ fn evaluate(
         Test accuracy (0.0 to 1.0)
     """
     var num_samples = test_images.shape()[0]
-    var correct = 0
+    var predictions = List[Int]()
 
     print("Evaluating on ", num_samples, " samples...")
 
-    # Evaluate all test samples
+    # Collect predictions from model for all test samples
     for i in range(num_samples):
         # Extract single sample using batch utilities
         var batch_pair = extract_batch_pair(test_images, test_labels, i, 1)
         var sample_image = batch_pair[0]
-        var sample_label = batch_pair[1]
 
         # Forward pass (inference mode)
         var pred_class = model.predict(sample_image)
-        var true_label = Int(sample_label[0])
-
-        if pred_class == true_label:
-            correct += 1
+        predictions.append(pred_class)
 
         # Print progress every 1000 samples
         if (i + 1) % 1000 == 0:
             print("  Processed ", i + 1, "/", num_samples)
 
-    var accuracy = Float32(correct) / Float32(num_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", num_samples, ")")
+    # Use shared evaluate function from shared.training.metrics
+    var accuracy = evaluate_with_predict(predictions, test_labels)
+    print("  Test Accuracy: ", accuracy * 100.0, "% (", Int(accuracy * Float32(num_samples)), "/", num_samples, ")")
 
     return accuracy
 

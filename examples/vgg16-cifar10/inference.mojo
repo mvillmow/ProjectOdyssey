@@ -8,6 +8,8 @@ Usage:
 
 from shared.core import ExTensor, zeros
 from shared.data.formats import load_cifar10_batch
+from shared.data.datasets import load_cifar10_test
+from shared.data import extract_batch_pair
 from shared.training.metrics import evaluate_with_predict
 from model import VGG16
 from shared.utils.arg_parser import ArgumentParser
@@ -33,7 +35,10 @@ fn parse_args() raises -> Tuple[String, String]:
 
 
 fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: ExTensor) raises -> Float32:
-    """Compute accuracy on test set.
+    """Compute accuracy on test set using shared metrics utilities.
+
+    Uses evaluate_with_predict from shared.training.metrics to consolidate
+    evaluation logic across all examples.
 
     Args:
         model: VGG-16 model with loaded weights
@@ -46,6 +51,7 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
     var test_shape = test_images.shape()
     var num_test_samples = test_shape[0]
 
+<<<<<<< HEAD
     print("Evaluating on " + str(num_test_samples) + " test samples...")
 
     # Collect predictions using model.predict()
@@ -58,16 +64,36 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
 
         # Forward pass (inference mode)
         var pred_class = model.predict(sample)
+=======
+    var predictions = List[Int]()
+
+    print("Evaluating on " + str(num_test_samples) + " test samples...")
+
+    # Process each test sample and collect predictions
+    for i in range(num_test_samples):
+        # Extract single sample using shared batch utilities
+        var batch_pair = extract_batch_pair(test_images, test_labels, i, 1)
+        var sample_image = batch_pair[0]
+
+        # Forward pass (inference mode)
+        var pred_class = model.predict(sample_image)
+>>>>>>> ac757af4 (refactor(vgg16): Final integration with all shared modules)
         predictions.append(pred_class)
 
         # Print progress every 1000 samples
         if (i + 1) % 1000 == 0:
             print("  Processed " + str(i + 1) + "/" + str(num_test_samples))
 
+<<<<<<< HEAD
     # Use shared evaluate function
     var accuracy_fraction = evaluate_with_predict(predictions, test_labels)
     var accuracy = accuracy_fraction * 100.0
     return accuracy
+=======
+    # Use shared evaluate function from shared.training.metrics
+    var accuracy = evaluate_with_predict(predictions, test_labels)
+    return accuracy * 100.0
+>>>>>>> ac757af4 (refactor(vgg16): Final integration with all shared modules)
 
 
 fn main() raises:
@@ -80,13 +106,13 @@ fn main() raises:
     var weights_dir = parsed[0]
     var data_dir = parsed[1]
 
-    # Load test set
+    # Load test set using shared data loading utilities
     print("Loading CIFAR-10 test set...")
-    var test_images = zeros(List[Int]().append(10000).append(3).append(32).append(32), DType.float32)
-    var test_labels = zeros(List[Int]().append(10000), DType.float32)
+    var test_data = load_cifar10_test(data_dir)
+    var test_images = test_data[0]
+    var test_labels = test_data[1]
 
-    # TODO: Load actual test set using load_cifar10_batch
-    print("Test set loaded: 10,000 images")
+    print("Test set loaded: ", test_images.shape()[0], " images")
     print()
 
     # Initialize model
@@ -95,13 +121,13 @@ fn main() raises:
     print("Model initialized")
     print()
 
-    # Load trained weights
+    # Load trained weights using model save/load utilities
     print("Loading weights from " + weights_dir + "...")
     model.load_weights(weights_dir)
     print("Weights loaded successfully")
     print()
 
-    # Evaluate on test set
+    # Evaluate on test set using shared metrics utilities
     var test_accuracy = compute_test_accuracy(model, test_images, test_labels)
 
     print()
