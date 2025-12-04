@@ -1,7 +1,8 @@
 name: Comprehensive Tests
 
-# Run ALL tests (Mojo and Python) in the repository
-# Target duration: < 10 minutes (parallelized across test groups)
+# Unified test workflow combining comprehensive tests with quality metrics
+# Runs ALL tests (Mojo and Python) with metrics collection and quality analysis
+# Target duration: < 15 minutes (parallelized across test groups)
 
 on:
   # Run on all pull requests
@@ -12,8 +13,14 @@ on:
     branches:
       - main
 
-  # Allow manual runs
+  # Allow manual runs with extended options
   workflow_dispatch:
+    inputs:
+      run_extended:
+        description: 'Run extended analysis (SIMD, complexity)'
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: read
@@ -57,19 +64,42 @@ jobs:
           echo "=================================================="
 
           REPO_ROOT="$(pwd)"
+          mkdir -p compilation-results
+
+          # Count total files for reporting
+          total_files=$(find shared -name "*.mojo" -type f | wc -l)
+          echo "Total .mojo files in shared/: $total_files"
 
           # Build the shared package (compiles all modules properly with relative imports)
           if pixi run mojo package -I "$REPO_ROOT" shared -o /tmp/shared.mojopkg 2>&1; then
             echo "✅ PASSED: shared package compiled successfully"
+            echo "compilation_status=success" >> $GITHUB_ENV
           else
             echo "❌ FAILED: shared package compilation"
             echo ""
             echo "Fix compilation errors before merging to main."
+            echo "compilation_status=failed" >> $GITHUB_ENV
             exit 1
           fi
 
+          # Save compilation summary
+          cat > compilation-results/summary.txt << EOF
+          Mojo Compilation Check
+          ======================
+          Total .mojo files: $total_files
+          Status: success
+          EOF
+
+      - name: Upload compilation results
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: mojo-compilation-results
+          path: compilation-results/
+          retention-days: 7
+
   # ============================================================================
-  # Comprehensive Mojo Test Suite
+  # Comprehensive Mojo Test Suite - Parallelized by Test Group
   # ============================================================================
   test-mojo-comprehensive:
     needs: [mojo-compilation]  # Only run tests if compilation succeeds
@@ -115,6 +145,24 @@ jobs:
             # Other tests (test_gradients, test_loss_decrease, test_predictions, etc.) require:
             #   datasets/emnist/ which must be downloaded separately
             pattern: "test_lenet5.mojo test_model.mojo"
+          - name: "Core Types"
+            path: "tests/core/types"
+            pattern: "test_*.mojo"
+          - name: "Autograd"
+            path: "tests/shared/autograd"
+            pattern: "test_*.mojo"
+          - name: "Benchmarking"
+            path: "tests/shared/benchmarking"
+            pattern: "test_*.mojo"
+          - name: "Data Formats"
+            path: "tests/shared/data/formats"
+            pattern: "test_*.mojo"
+          - name: "Data Datasets"
+            path: "tests/shared/data/datasets"
+            pattern: "test_*.mojo"
+          - name: "Testing Fixtures"
+            path: "tests/shared/testing"
+            pattern: "test_*.mojo"
 
     name: "${{ matrix.test-group.name }}"
 
@@ -153,6 +201,7 @@ jobs:
           passed_count=0
           failed_count=0
           failed_tests=""
+          start_time=$(date +%s)
 
           # Save repository root for imports
           REPO_ROOT="$(pwd)"
@@ -187,7 +236,7 @@ jobs:
           if [ -z "$test_files" ]; then
             echo "⚠️  No test files found for this group"
             echo "This may be expected if tests haven't been created yet."
-            echo "0 tests run, 0 failed" > "$REPO_ROOT/test-results/${{ matrix.test-group.name }}.txt"
+            echo '{"group": "${{ matrix.test-group.name }}", "tests": 0, "passed": 0, "failed": 0, "duration": 0}' > "test-results/${{ matrix.test-group.name }}.json"
             exit 0
           fi
 
@@ -206,10 +255,13 @@ jobs:
               else
                 echo "❌ FAILED: $test_file"
                 failed_count=$((failed_count + 1))
-                failed_tests="$failed_tests\n  - $test_file"
+                failed_tests="$failed_tests\\n  - $test_file"
               fi
             fi
           done
+
+          end_time=$(date +%s)
+          duration=$((end_time - start_time))
 
           echo ""
           echo "=================================================="
@@ -218,12 +270,25 @@ jobs:
           echo "Total: $test_count tests"
           echo "Passed: $passed_count tests"
           echo "Failed: $failed_count tests"
+          echo "Duration: ${duration}s"
           echo ""
 
-          # Save results
+          # Save results as JSON for aggregation
+          cat > "test-results/${{ matrix.test-group.name }}.json" << EOF
+          {
+            "group": "${{ matrix.test-group.name }}",
+            "tests": $test_count,
+            "passed": $passed_count,
+            "failed": $failed_count,
+            "duration": $duration
+          }
+          EOF
+
+          # Also save human-readable format
           result_file="$REPO_ROOT/test-results/${{ matrix.test-group.name }}.txt"
           echo "Test Group: ${{ matrix.test-group.name }}" > "$result_file"
           echo "Total: $test_count tests run, $passed_count passed, $failed_count failed" >> "$result_file"
+          echo "Duration: ${duration}s" >> "$result_file"
           if [ $failed_count -gt 0 ]; then
             echo "" >> "$result_file"
             echo "Failed tests:" >> "$result_file"
@@ -289,19 +354,22 @@ jobs:
           [ -f "tests/agents/test_integration.py" ] && TEST_PATHS="$TEST_PATHS tests/agents/test_integration.py"
           [ -f "tests/foundation/test_structure_integration.py" ] && TEST_PATHS="$TEST_PATHS tests/foundation/test_structure_integration.py"
 
+          start_time=$(date +%s)
           if [ -n "$TEST_PATHS" ]; then
             echo "Running Python tests from: $TEST_PATHS"
             if pytest $TEST_PATHS --verbose --timeout=300 --maxfail=5; then
-              echo "Test Group: Python Tests" > test-results/Python-Tests.txt
-              echo "Total: tests passed" >> test-results/Python-Tests.txt
+              end_time=$(date +%s)
+              duration=$((end_time - start_time))
+              echo '{"group": "Python Tests", "tests": 1, "passed": 1, "failed": 0, "duration": '"$duration"'}' > test-results/Python-Tests.json
             else
-              echo "Test Group: Python Tests" > test-results/Python-Tests.txt
-              echo "Total: 1 tests run, 0 passed, 1 failed" >> test-results/Python-Tests.txt
+              end_time=$(date +%s)
+              duration=$((end_time - start_time))
+              echo '{"group": "Python Tests", "tests": 1, "passed": 0, "failed": 1, "duration": '"$duration"'}' > test-results/Python-Tests.json
               exit 1
             fi
           else
             echo "⚠️  No Python tests found yet"
-            echo "0 tests run, 0 failed" > test-results/Python-Tests.txt
+            echo '{"group": "Python Tests", "tests": 0, "passed": 0, "failed": 0, "duration": 0}' > test-results/Python-Tests.json
           fi
 
       - name: Upload test results
@@ -313,12 +381,148 @@ jobs:
           retention-days: 7
 
   # ============================================================================
-  # Combined Test Report
+  # Code Quality Analysis
+  # ============================================================================
+  code-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: "Code Quality Analysis"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install analysis tools
+        run: |
+          pip install radon lizard
+
+      - name: Analyze code metrics
+        run: |
+          echo "=================================================="
+          echo "Code Quality Analysis"
+          echo "=================================================="
+
+          mkdir -p quality-reports
+
+          # Python complexity analysis
+          echo "## Python Code Complexity" > quality-reports/complexity.md
+          echo "" >> quality-reports/complexity.md
+          echo "Functions with complexity > 10 (consider refactoring):" >> quality-reports/complexity.md
+          echo '```' >> quality-reports/complexity.md
+          radon cc scripts/ -a -nc 2>/dev/null || echo "No complex functions found"
+          echo '```' >> quality-reports/complexity.md
+
+          # Mojo code statistics
+          echo "" >> quality-reports/complexity.md
+          echo "## Mojo Code Statistics" >> quality-reports/complexity.md
+          echo "" >> quality-reports/complexity.md
+
+          total_mojo_files=$(find shared tests -name "*.mojo" 2>/dev/null | wc -l)
+          total_mojo_lines=$(find shared tests -name "*.mojo" -exec cat {} \; 2>/dev/null | wc -l)
+          total_functions=$(grep -r "^fn " shared tests --include="*.mojo" 2>/dev/null | wc -l)
+          total_structs=$(grep -r "^struct " shared tests --include="*.mojo" 2>/dev/null | wc -l)
+
+          cat >> quality-reports/complexity.md << EOF
+          | Metric | Count |
+          |--------|-------|
+          | Mojo Files | $total_mojo_files |
+          | Lines of Code | $total_mojo_lines |
+          | Functions (fn) | $total_functions |
+          | Structs | $total_structs |
+          EOF
+
+          # Technical debt markers
+          echo "" >> quality-reports/complexity.md
+          echo "## Technical Debt Markers" >> quality-reports/complexity.md
+          echo "" >> quality-reports/complexity.md
+
+          todo_count=$(grep -r "TODO" shared tests scripts --include="*.mojo" --include="*.py" 2>/dev/null | wc -l)
+          fixme_count=$(grep -r "FIXME" shared tests scripts --include="*.mojo" --include="*.py" 2>/dev/null | wc -l)
+
+          cat >> quality-reports/complexity.md << EOF
+          | Marker | Count |
+          |--------|-------|
+          | TODO | $todo_count |
+          | FIXME | $fixme_count |
+          EOF
+
+          cat quality-reports/complexity.md
+
+      - name: Upload quality reports
+        uses: actions/upload-artifact@v5
+        with:
+          name: code-quality-reports
+          path: quality-reports/
+          retention-days: 30
+
+  # ============================================================================
+  # SIMD Analysis (Extended - manual trigger only)
+  # ============================================================================
+  simd-analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: "SIMD Analysis"
+    if: github.event_name == 'workflow_dispatch' && inputs.run_extended == true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+      - name: Analyze SIMD usage
+        run: |
+          echo "=================================================="
+          echo "SIMD Usage Analysis"
+          echo "=================================================="
+
+          mkdir -p simd-reports
+
+          simd_count=$(grep -r "SIMD\[" shared --include="*.mojo" 2>/dev/null | wc -l)
+          vectorize_count=$(grep -r "vectorize" shared --include="*.mojo" 2>/dev/null | wc -l)
+          parallelize_count=$(grep -r "parallelize" shared --include="*.mojo" 2>/dev/null | wc -l)
+
+          cat > simd-reports/analysis.md << EOF
+          # SIMD Optimization Analysis
+
+          ## Current Usage
+
+          | Pattern | Count |
+          |---------|-------|
+          | SIMD[] declarations | $simd_count |
+          | vectorize() calls | $vectorize_count |
+          | parallelize() calls | $parallelize_count |
+
+          ## Files with heavy loop usage (optimization candidates)
+          EOF
+
+          echo '```' >> simd-reports/analysis.md
+          grep -rl "for .* in range" shared --include="*.mojo" 2>/dev/null | \
+            xargs -I{} sh -c 'echo "{}": $(grep -c "for .* in range" "{}")' 2>/dev/null | \
+            sort -t: -k2 -nr | head -10 >> simd-reports/analysis.md || echo "None found"
+          echo '```' >> simd-reports/analysis.md
+
+          cat simd-reports/analysis.md
+
+      - name: Upload SIMD analysis
+        uses: actions/upload-artifact@v5
+        with:
+          name: simd-analysis
+          path: simd-reports/
+          retention-days: 30
+
+  # ============================================================================
+  # Combined Test Report with Metrics
   # ============================================================================
   test-report:
-    needs: [test-mojo-comprehensive, test-python]
+    needs: [mojo-compilation, test-mojo-comprehensive, test-python, code-quality]
     runs-on: ubuntu-latest
     if: always()
+    name: "Test Report"
 
     steps:
       - name: Checkout code
@@ -327,15 +531,17 @@ jobs:
       - name: Download all test results
         uses: actions/download-artifact@v6
         with:
-          path: all-test-results/
-          pattern: test-results-*
-          merge-multiple: true
+          path: all-results/
+          pattern: "*"
+          merge-multiple: false
 
       - name: Generate combined report
         run: |
           echo "# 🧪 Comprehensive Test Results" > test-report.md
           echo "" >> test-report.md
           echo "**Workflow Run**: [\`${{ github.run_number }}\`](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> test-report.md
+          echo "**Commit**: \`${{ github.sha }}\`" >> test-report.md
+          echo "**Date**: $(date -Iseconds)" >> test-report.md
           echo "" >> test-report.md
 
           total_groups=0
@@ -344,63 +550,78 @@ jobs:
           total_tests=0
           total_passed=0
           total_failed=0
+          total_duration=0
 
           echo "## Test Groups" >> test-report.md
           echo "" >> test-report.md
+          echo "| Group | Tests | Passed | Failed | Duration |" >> test-report.md
+          echo "|-------|-------|--------|--------|----------|" >> test-report.md
 
           # Process each result file
-          for result_file in all-test-results/*.txt; do
-            if [ -f "$result_file" ]; then
-              total_groups=$((total_groups + 1))
-              group_name=$(basename "$result_file" .txt)
+          for result_dir in all-results/test-results-*; do
+            if [ -d "$result_dir" ]; then
+              for json_file in "$result_dir"/*.json; do
+                if [ -f "$json_file" ]; then
+                  total_groups=$((total_groups + 1))
 
-              echo "### $group_name" >> test-report.md
-
-              # Extract test counts from result file
-              if grep -q "failed" "$result_file"; then
-                content=$(cat "$result_file")
-                echo '```' >> test-report.md
-                echo "$content" >> test-report.md
-                echo '```' >> test-report.md
-
-                # Parse counts (format: "Total: X tests run, Y passed, Z failed")
-                if grep -q "Total:" "$result_file"; then
-                  tests=$(grep "Total:" "$result_file" | grep -oP '\d+(?= tests run)' || echo "0")
-                  passed=$(grep "Total:" "$result_file" | grep -oP '\d+(?= passed)' || echo "0")
-                  failed=$(grep "Total:" "$result_file" | grep -oP '\d+(?= failed)' || echo "0")
+                  group=$(jq -r '.group' "$json_file" 2>/dev/null || echo "Unknown")
+                  tests=$(jq -r '.tests' "$json_file" 2>/dev/null || echo "0")
+                  passed=$(jq -r '.passed' "$json_file" 2>/dev/null || echo "0")
+                  failed=$(jq -r '.failed' "$json_file" 2>/dev/null || echo "0")
+                  duration=$(jq -r '.duration' "$json_file" 2>/dev/null || echo "0")
 
                   total_tests=$((total_tests + tests))
                   total_passed=$((total_passed + passed))
                   total_failed=$((total_failed + failed))
+                  total_duration=$((total_duration + duration))
 
                   if [ "$failed" -gt 0 ]; then
                     failed_groups=$((failed_groups + 1))
+                    status="❌"
                   else
                     passed_groups=$((passed_groups + 1))
+                    status="✅"
                   fi
-                fi
-              else
-                cat "$result_file" >> test-report.md
-              fi
 
-              echo "" >> test-report.md
+                  echo "| $status $group | $tests | $passed | $failed | ${duration}s |" >> test-report.md
+                fi
+              done
             fi
           done
 
+          echo "" >> test-report.md
           echo "## Summary" >> test-report.md
           echo "" >> test-report.md
-          echo "- **Total Test Groups**: $total_groups" >> test-report.md
-          echo "- **Passed Groups**: $passed_groups" >> test-report.md
-          echo "- **Failed Groups**: $failed_groups" >> test-report.md
-          echo "- **Total Tests**: $total_tests" >> test-report.md
-          echo "- **Passed Tests**: $total_passed" >> test-report.md
-          echo "- **Failed Tests**: $total_failed" >> test-report.md
+          echo "| Metric | Value |" >> test-report.md
+          echo "|--------|-------|" >> test-report.md
+          echo "| Total Test Groups | $total_groups |" >> test-report.md
+          echo "| Passed Groups | $passed_groups |" >> test-report.md
+          echo "| Failed Groups | $failed_groups |" >> test-report.md
+          echo "| Total Tests | $total_tests |" >> test-report.md
+          echo "| Passed Tests | $total_passed |" >> test-report.md
+          echo "| Failed Tests | $total_failed |" >> test-report.md
+          echo "| Total Duration | ${total_duration}s |" >> test-report.md
+
+          if [ $total_tests -gt 0 ]; then
+            pass_rate=$(echo "scale=1; $total_passed * 100 / $total_tests" | bc 2>/dev/null || echo "0")
+            echo "| Pass Rate | ${pass_rate}% |" >> test-report.md
+          fi
+
           echo "" >> test-report.md
 
           if [ $total_failed -eq 0 ]; then
             echo "✅ **All tests passed!**" >> test-report.md
           else
             echo "❌ **Some tests failed. See details above.**" >> test-report.md
+          fi
+
+          # Include code quality if available
+          if [ -f "all-results/code-quality-reports/complexity.md" ]; then
+            echo "" >> test-report.md
+            echo "---" >> test-report.md
+            echo "" >> test-report.md
+            echo "## 📈 Code Quality" >> test-report.md
+            cat "all-results/code-quality-reports/complexity.md" >> test-report.md
           fi
 
           # Display report
@@ -464,15 +685,17 @@ jobs:
         run: |
           # Check if any test groups failed
           failed=0
-          for result_file in all-test-results/*.txt; do
-            if [ -f "$result_file" ]; then
-              if grep -q "failed" "$result_file"; then
-                failed_count=$(grep "Total:" "$result_file" | grep -oP '\d+(?= failed)' || echo "0")
-                if [ "$failed_count" -gt 0 ]; then
-                  failed=1
-                  break
+          for result_dir in all-results/test-results-*; do
+            if [ -d "$result_dir" ]; then
+              for json_file in "$result_dir"/*.json; do
+                if [ -f "$json_file" ]; then
+                  failed_count=$(jq -r '.failed' "$json_file" 2>/dev/null || echo "0")
+                  if [ "$failed_count" -gt 0 ]; then
+                    failed=1
+                    break
+                  fi
                 fi
-              fi
+              done
             fi
           done
 
