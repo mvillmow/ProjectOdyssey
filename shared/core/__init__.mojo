@@ -331,9 +331,13 @@ from .loss import (
     binary_cross_entropy,
     mean_squared_error,
     cross_entropy,
+    smooth_l1_loss,
+    hinge_loss,
     binary_cross_entropy_backward,
     mean_squared_error_backward,
     cross_entropy_backward,
+    smooth_l1_loss_backward,
+    hinge_loss_backward,
 )
 
 from .numerical_safety import (
