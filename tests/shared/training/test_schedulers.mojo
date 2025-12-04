@@ -261,13 +261,13 @@ fn test_reduce_lr_on_plateau_multiple_reductions() raises:
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
 
     # First reduction
-    var lr1 = scheduler.step(0.5)
-    var lr2 = scheduler.step(0.6)  # No improvement
+    _ = scheduler.step(0.5)
+    _ = scheduler.step(0.6)  # No improvement
     var lr3 = scheduler.step(0.7)  # Still no improvement - reduce
     assert_almost_equal(lr3, 0.5)
 
     # Second reduction (continue from reduced LR)
-    var lr4 = scheduler.step(0.8)  # No improvement
+    _ = scheduler.step(0.8)  # No improvement
     var lr5 = scheduler.step(0.9)  # Still no improvement - reduce again
     assert_almost_equal(lr5, 0.25)
 
@@ -280,9 +280,9 @@ fn test_reduce_lr_on_plateau_improvement_resets_counter() raises:
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
 
     # Accumulate no-improvement epochs
-    scheduler.step(0.5)
-    scheduler.step(0.6)  # No improvement, counter = 1
-    scheduler.step(0.7)  # No improvement, counter = 2, LR reduced to 0.5
+    _ = scheduler.step(0.5)
+    _ = scheduler.step(0.6)  # No improvement, counter = 1
+    _ = scheduler.step(0.7)  # No improvement, counter = 2, LR reduced to 0.5
 
     # Now improve
     var lr_improved = scheduler.step(0.4)  # Improvement! Counter resets
@@ -297,8 +297,8 @@ fn test_reduce_lr_on_plateau_factor_one() raises:
     """
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=1.0, patience=1)
 
-    scheduler.step(0.5)
-    scheduler.step(0.6)  # No improvement
+    _ = scheduler.step(0.5)
+    _ = scheduler.step(0.6)  # No improvement
     var lr = scheduler.step(0.7)  # Reduce
     assert_almost_equal(lr, 1.0)  # No change
 
@@ -310,7 +310,7 @@ fn test_reduce_lr_on_plateau_zero_patience() raises:
     """
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=0)
 
-    scheduler.step(0.5)
+    _ = scheduler.step(0.5)
     var lr2 = scheduler.step(0.6)  # No improvement, reduce immediately
     assert_almost_equal(lr2, 0.5)
 
@@ -322,10 +322,10 @@ fn test_reduce_lr_on_plateau_very_small_lr() raises:
     """
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.1, patience=0)
 
-    scheduler.step(0.5)
-    scheduler.step(0.6)  # LR = 0.1
-    scheduler.step(0.7)  # LR = 0.01
-    scheduler.step(0.8)  # LR = 0.001
+    _ = scheduler.step(0.5)
+    _ = scheduler.step(0.6)  # LR = 0.1
+    _ = scheduler.step(0.7)  # LR = 0.01
+    _ = scheduler.step(0.8)  # LR = 0.001
     var lr = scheduler.get_lr(0)
 
     assert_almost_equal(lr, 0.001, tolerance=1e-6)
@@ -338,9 +338,9 @@ fn test_reduce_lr_on_plateau_get_lr_interface() raises:
     """
     var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
 
-    scheduler.step(0.5)
-    scheduler.step(0.6)
-    scheduler.step(0.7)  # LR reduced to 0.5
+    _ = scheduler.step(0.5)
+    _ = scheduler.step(0.6)
+    _ = scheduler.step(0.7)  # LR reduced to 0.5
 
     # get_lr() should return current LR
     var lr0 = scheduler.get_lr(0)
@@ -396,7 +396,7 @@ fn test_reduce_lr_on_plateau_realistic_training_scenario() raises:
     )
 
     for loss in val_losses:
-        scheduler.step(loss)
+        _ = scheduler.step(loss)
 
     # After 2 reductions: 0.01 * 0.5 * 0.5 = 0.0025
     assert_almost_equal(scheduler.get_lr(0), 0.0025, tolerance=1e-6)
