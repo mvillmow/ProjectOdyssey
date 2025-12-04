@@ -447,9 +447,9 @@ fn focal_loss_backward(
     Computes gradient of focal loss with respect to predictions.
 
     The gradient formula for focal loss is:
-        ∂FL/∂p = -alpha * gamma * (1-p)^(gamma-1) * target * log(p)
+        ∂FL/∂p = alpha * gamma * (1-p)^(gamma-1) * target * log(p)
                  - alpha * (1-p)^gamma * target / p
-                 + (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
+                 - (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
                  + (1-alpha) * p^gamma * (1-target) / (1-p)
 
     Args:
@@ -500,12 +500,12 @@ fn focal_loss_backward(
     var log_one_minus_pred = log(one_minus_pred)
 
     # Gradient computation:
-    # ∂FL/∂p = -alpha * [gamma * (1-p)^(gamma-1) * target * log(p) + (1-p)^gamma * target / p]
-    #          + (1-alpha) * [gamma * p^(gamma-1) * (1-target) * log(1-p) + p^gamma * (1-target) / (1-p)]
+    # ∂FL/∂p = alpha * [gamma * (1-p)^(gamma-1) * target * log(p)] - alpha * [(1-p)^gamma * target / p]
+    #          - (1-alpha) * [gamma * p^(gamma-1) * (1-target) * log(1-p)] + (1-alpha) * [p^gamma * (1-target) / (1-p)]
 
     var one_minus_targets = subtract(one, targets)
 
-    # First component: -alpha * gamma * (1-p)^(gamma-1) * target * log(p)
+    # First component: alpha * gamma * (1-p)^(gamma-1) * target * log(p)
     var term1_a = multiply(alpha_tensor, gamma_tensor)
     term1_a = multiply(term1_a, one_minus_p_pow_gm1)
     term1_a = multiply(term1_a, targets)
@@ -515,24 +515,28 @@ fn focal_loss_backward(
     var term1_b = multiply(alpha_tensor, one_minus_p_pow_g)
     term1_b = multiply(term1_b, targets)
     term1_b = divide(term1_b, clipped)
+    # Negate term1_b
+    var neg_one = full_like(term1_b, -1.0)
+    term1_b = multiply(term1_b, neg_one)
 
-    # Combine first part: -(term1_a + term1_b)
+    # Combine first part: term1_a + (-term1_b)
     var term1 = add(term1_a, term1_b)
-    var neg_one = full_like(term1, -1.0)
-    term1 = multiply(term1, neg_one)
 
     # Third component: (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
     var term2_a = multiply(one_minus_alpha, gamma_tensor)
     term2_a = multiply(term2_a, p_pow_gm1)
     term2_a = multiply(term2_a, one_minus_targets)
     term2_a = multiply(term2_a, log_one_minus_pred)
+    # Negate term2_a
+    var neg_one_2 = full_like(term2_a, -1.0)
+    term2_a = multiply(term2_a, neg_one_2)
 
     # Fourth component: (1-alpha) * p^gamma * (1-target) / (1-p)
     var term2_b = multiply(one_minus_alpha, p_pow_g)
     term2_b = multiply(term2_b, one_minus_targets)
     term2_b = divide(term2_b, one_minus_pred)
 
-    # Combine second part
+    # Combine second part: (-term2_a) + term2_b
     var term2 = add(term2_a, term2_b)
 
     # Final gradient
