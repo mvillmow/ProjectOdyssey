@@ -20,7 +20,7 @@ from shared.testing.fixtures import (
 from shared.core import ones, zeros
 
 
-fn test_simple_cnn_initialization():
+fn test_simple_cnn_initialization() raises:
     """Test SimpleCNN struct initialization."""
     var model = SimpleCNN(1, 8, 10)
     assert_equal(model.in_channels, 1)
@@ -28,7 +28,7 @@ fn test_simple_cnn_initialization():
     assert_equal(model.num_classes, 10)
 
 
-fn test_simple_cnn_default_initialization():
+fn test_simple_cnn_default_initialization() raises:
     """Test SimpleCNN with default parameters."""
     var model = SimpleCNN()
     assert_equal(model.in_channels, 1)
@@ -36,16 +36,16 @@ fn test_simple_cnn_default_initialization():
     assert_equal(model.num_classes, 10)
 
 
-fn test_simple_cnn_get_output_shape():
+fn test_simple_cnn_get_output_shape() raises:
     """Test SimpleCNN output shape computation."""
     var model = SimpleCNN(1, 8, 10)
     var shape = model.get_output_shape(32)
-    assert_equal(shape.size(), 2)
+    assert_equal(len(shape), 2)
     assert_equal(shape[0], 32)
     assert_equal(shape[1], 10)
 
 
-fn test_simple_cnn_forward():
+fn test_simple_cnn_forward() raises:
     """Test SimpleCNN forward pass produces correct output shape."""
     var model = SimpleCNN(1, 8, 10)
     var batch_size = 32
@@ -68,23 +68,23 @@ fn test_simple_cnn_forward():
         assert_true(val > 0.099 and val < 0.101, "Output should be 0.1")
 
 
-fn test_linear_model_initialization():
+fn test_linear_model_initialization() raises:
     """Test LinearModel struct initialization."""
     var model = LinearModel(784, 10)
     assert_equal(model.in_features, 784)
     assert_equal(model.out_features, 10)
 
 
-fn test_linear_model_get_output_shape():
+fn test_linear_model_get_output_shape() raises:
     """Test LinearModel output shape computation."""
     var model = LinearModel(784, 10)
     var shape = model.get_output_shape(32)
-    assert_equal(shape.size(), 2)
+    assert_equal(len(shape), 2)
     assert_equal(shape[0], 32)
     assert_equal(shape[1], 10)
 
 
-fn test_linear_model_forward():
+fn test_linear_model_forward() raises:
     """Test LinearModel forward pass produces correct output shape."""
     var model = LinearModel(784, 10)
     var batch_size = 32
@@ -105,7 +105,7 @@ fn test_linear_model_forward():
         assert_equal(val, 0.0)
 
 
-fn test_create_test_cnn():
+fn test_create_test_cnn() raises:
     """Test create_test_cnn factory function."""
     var model = create_test_cnn()
     assert_equal(model.in_channels, 1)
@@ -118,7 +118,7 @@ fn test_create_test_cnn():
     assert_equal(custom_model.num_classes, 1000)
 
 
-fn test_create_linear_model():
+fn test_create_linear_model() raises:
     """Test create_linear_model factory function."""
     var model = create_linear_model()
     assert_equal(model.in_features, 784)
@@ -129,7 +129,7 @@ fn test_create_linear_model():
     assert_equal(custom_model.out_features, 1024)
 
 
-fn test_create_test_input():
+fn test_create_test_input() raises:
     """Test create_test_input utility function."""
     var input = create_test_input(32, 784)
     assert_equal(input._shape[0], 32)
@@ -141,7 +141,7 @@ fn test_create_test_input():
         assert_equal(val, 1.0)
 
 
-fn test_create_test_input_custom_dtype():
+fn test_create_test_input_custom_dtype() raises:
     """Test create_test_input with custom dtype."""
     var input = create_test_input(16, 512, DType.float64)
     assert_equal(input._shape[0], 16)
@@ -149,7 +149,7 @@ fn test_create_test_input_custom_dtype():
     assert_true(input._dtype == DType.float64)
 
 
-fn test_create_test_targets():
+fn test_create_test_targets() raises:
     """Test create_test_targets utility function."""
     var targets = create_test_targets(32, 10)
     assert_equal(targets._shape[0], 32)
@@ -160,58 +160,58 @@ fn test_create_test_targets():
         assert_equal(val, 0.0)
 
 
-fn test_assert_tensor_shape_valid():
+fn test_assert_tensor_shape_valid() raises:
     """Test assert_tensor_shape with matching shapes."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     var expected = List[Int](32, 10)
     assert_true(assert_tensor_shape(tensor, expected))
 
 
-fn test_assert_tensor_shape_invalid_dimensions():
+fn test_assert_tensor_shape_invalid_dimensions() raises:
     """Test assert_tensor_shape with wrong number of dimensions."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     var expected = List[Int](32, 10, 5)
     assert_true(not assert_tensor_shape(tensor, expected))
 
 
-fn test_assert_tensor_shape_invalid_size():
+fn test_assert_tensor_shape_invalid_size() raises:
     """Test assert_tensor_shape with wrong dimension sizes."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     var expected = List[Int](64, 10)
     assert_true(not assert_tensor_shape(tensor, expected))
 
 
-fn test_assert_tensor_dtype_valid():
+fn test_assert_tensor_dtype_valid() raises:
     """Test assert_tensor_dtype with matching dtype."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     assert_true(assert_tensor_dtype(tensor, DType.float32))
 
 
-fn test_assert_tensor_dtype_invalid():
+fn test_assert_tensor_dtype_invalid() raises:
     """Test assert_tensor_dtype with mismatched dtype."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     assert_true(not assert_tensor_dtype(tensor, DType.float64))
 
 
-fn test_assert_tensor_all_finite_valid():
+fn test_assert_tensor_all_finite_valid() raises:
     """Test assert_tensor_all_finite with finite values."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     assert_true(assert_tensor_all_finite(tensor))
 
 
-fn test_assert_tensor_not_all_zeros_valid():
+fn test_assert_tensor_not_all_zeros_valid() raises:
     """Test assert_tensor_not_all_zeros with non-zero values."""
     var tensor = ones(List[Int](32, 10), DType.float32)
     assert_true(assert_tensor_not_all_zeros(tensor))
 
 
-fn test_assert_tensor_not_all_zeros_invalid():
+fn test_assert_tensor_not_all_zeros_invalid() raises:
     """Test assert_tensor_not_all_zeros with all zeros."""
     var tensor = zeros(List[Int](32, 10), DType.float32)
     assert_true(not assert_tensor_not_all_zeros(tensor))
 
 
-fn main():
+fn main() raises:
     """Run all fixture tests."""
     test_simple_cnn_initialization()
     test_simple_cnn_default_initialization()
