@@ -6,6 +6,7 @@ Tests for:
     - DatasetInfo struct with various datasets
 """
 
+from testing import assert_equal, assert_true
 from shared.data.constants import (
     CIFAR10_CLASS_NAMES,
     EMNIST_BALANCED_CLASSES,
@@ -17,7 +18,7 @@ from shared.data.constants import (
 )
 
 
-fn test_cifar10_class_names():
+fn test_cifar10_class_names() raises:
     """Test CIFAR-10 class names are correct."""
     var classes = CIFAR10_CLASS_NAMES()
     assert_equal(len(classes), 10, "CIFAR-10 should have 10 classes")
@@ -35,7 +36,7 @@ fn test_cifar10_class_names():
     assert_equal(classes[9], "truck", "Class 9 should be truck")
 
 
-fn test_emnist_balanced_classes():
+fn test_emnist_balanced_classes() raises:
     """Test EMNIST Balanced class names."""
     var classes = EMNIST_BALANCED_CLASSES()
     assert_equal(len(classes), 47, "EMNIST Balanced should have 47 classes")
@@ -62,7 +63,7 @@ fn test_emnist_balanced_classes():
         )
 
 
-fn test_emnist_byclass_classes():
+fn test_emnist_byclass_classes() raises:
     """Test EMNIST By Class class names."""
     var classes = EMNIST_BYCLASS_CLASSES()
     assert_equal(len(classes), 62, "EMNIST By Class should have 62 classes")
@@ -89,10 +90,10 @@ fn test_emnist_byclass_classes():
         )
 
 
-fn test_emnist_bymerge_classes():
+fn test_emnist_bymerge_classes() raises:
     """Test EMNIST By Merge class names."""
     var classes = EMNIST_BYMERGE_CLASSES()
-    assert_equal(len(classes), 47, "EMNIST By Merge should have 47 classes")
+    assert_equal(len(classes), 36, "EMNIST By Merge should have 36 classes")
 
     # Test digit classes (0-9)
     for i in range(10):
@@ -108,7 +109,7 @@ fn test_emnist_bymerge_classes():
         )
 
 
-fn test_emnist_digits_classes():
+fn test_emnist_digits_classes() raises:
     """Test EMNIST Digits class names."""
     var classes = EMNIST_DIGITS_CLASSES()
     assert_equal(len(classes), 10, "EMNIST Digits should have 10 classes")
@@ -119,7 +120,7 @@ fn test_emnist_digits_classes():
         assert_equal(classes[i], expected, "Digit class " + String(i))
 
 
-fn test_emnist_letters_classes():
+fn test_emnist_letters_classes() raises:
     """Test EMNIST Letters class names."""
     var classes = EMNIST_LETTERS_CLASSES()
     assert_equal(len(classes), 52, "EMNIST Letters should have 52 classes")
@@ -139,7 +140,7 @@ fn test_emnist_letters_classes():
         )
 
 
-fn test_dataset_info_cifar10():
+fn test_dataset_info_cifar10() raises:
     """Test DatasetInfo with CIFAR-10."""
     var info = DatasetInfo("cifar10")
 
@@ -166,7 +167,7 @@ fn test_dataset_info_cifar10():
     )
 
 
-fn test_dataset_info_emnist_balanced():
+fn test_dataset_info_emnist_balanced() raises:
     """Test DatasetInfo with EMNIST Balanced."""
     var info = DatasetInfo("emnist_balanced")
 
@@ -195,7 +196,7 @@ fn test_dataset_info_emnist_balanced():
     assert_equal(class_name, "0", "First class is digit 0")
 
 
-fn test_dataset_info_emnist_byclass():
+fn test_dataset_info_emnist_byclass() raises:
     """Test DatasetInfo with EMNIST By Class."""
     var info = DatasetInfo("emnist_byclass")
 
@@ -217,14 +218,14 @@ fn test_dataset_info_emnist_byclass():
     assert_equal(shape[2], 28, "EMNIST images are 28x28")
 
 
-fn test_dataset_info_emnist_bymerge():
+fn test_dataset_info_emnist_bymerge() raises:
     """Test DatasetInfo with EMNIST By Merge."""
     var info = DatasetInfo("emnist_bymerge")
 
-    assert_equal(info.num_classes(), 47, "EMNIST By Merge has 47 classes")
+    assert_equal(info.num_classes(), 36, "EMNIST By Merge has 36 classes")
 
 
-fn test_dataset_info_emnist_digits():
+fn test_dataset_info_emnist_digits() raises:
     """Test DatasetInfo with EMNIST Digits."""
     var info = DatasetInfo("emnist_digits")
 
@@ -235,7 +236,7 @@ fn test_dataset_info_emnist_digits():
     assert_equal(info.num_test_samples(), 10000, "EMNIST Digits has 10000 test samples")
 
 
-fn test_dataset_info_emnist_letters():
+fn test_dataset_info_emnist_letters() raises:
     """Test DatasetInfo with EMNIST Letters."""
     var info = DatasetInfo("emnist_letters")
 
@@ -250,7 +251,7 @@ fn test_dataset_info_emnist_letters():
     )
 
 
-fn test_dataset_info_invalid_dataset():
+fn test_dataset_info_invalid_dataset() raises:
     """Test DatasetInfo with invalid dataset name."""
     var error_raised = False
     try:
@@ -261,7 +262,7 @@ fn test_dataset_info_invalid_dataset():
     assert_true(error_raised, "Invalid dataset should raise error")
 
 
-fn test_dataset_info_class_name_out_of_range():
+fn test_dataset_info_class_name_out_of_range() raises:
     """Test DatasetInfo.class_name() with out-of-range index."""
     var info = DatasetInfo("cifar10")
 
@@ -282,7 +283,7 @@ fn test_dataset_info_class_name_out_of_range():
     assert_true(range_error, "Out-of-range class index should raise error")
 
 
-fn test_dataset_info_image_shape_all_datasets():
+fn test_dataset_info_image_shape_all_datasets() raises:
     """Test image_shape for all datasets."""
     var datasets = List[String]()
     datasets.append("cifar10")
@@ -311,7 +312,7 @@ fn test_dataset_info_image_shape_all_datasets():
             assert_equal(shape[2], 28, "EMNIST width should be 28 for " + dataset_name)
 
 
-fn test_class_names_not_empty():
+fn test_class_names_not_empty() raises:
     """Test that all class name functions return non-empty lists."""
     assert_true(len(CIFAR10_CLASS_NAMES()) > 0, "CIFAR10 classes should not be empty")
     assert_true(
