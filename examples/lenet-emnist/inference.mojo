@@ -20,7 +20,7 @@ from model import LeNet5
 from shared.data import load_idx_labels, load_idx_images, normalize_images
 from shared.core import ExTensor, zeros
 from shared.utils.arg_parser import ArgumentParser
-from shared.training.metrics import evaluate_with_predict
+from shared.training.metrics import evaluate_with_predict, top1_accuracy, AccuracyMetric
 from collections import List
 from math import exp
 
@@ -71,11 +71,16 @@ struct EvaluationResult:
 
 
 fn parse_args() raises -> InferenceConfig:
+<<<<<<< HEAD
     """Parse command line arguments using enhanced argument parser.
+=======
+    """Parse command line arguments using shared ArgumentParser.
+>>>>>>> 27c604ca (refactor(lenet-emnist): Final integration with all shared modules)
 
     Returns:
         InferenceConfig with parsed arguments.
     """
+<<<<<<< HEAD
     var parser = ArgumentParser()
     parser.add_argument("weights-dir", "string", "lenet5_weights")
     parser.add_argument("data-dir", "string", "datasets/emnist")
@@ -84,6 +89,18 @@ fn parse_args() raises -> InferenceConfig:
 
     var weights_dir = args.get_string("weights-dir", "lenet5_weights")
     var data_dir = args.get_string("data-dir", "datasets/emnist")
+=======
+    # Create argument parser with shared utilities
+    var parser = ArgumentParser()
+
+    # Set up standard arguments with types and defaults
+    parser.add_argument("weights-dir", "string", "lenet5_weights")
+    parser.add_argument("data-dir", "string", "datasets/emnist")
+
+    var parsed = parser.parse()
+    var weights_dir = parsed.get_string("weights-dir")
+    var data_dir = parsed.get_string("data-dir")
+>>>>>>> 27c604ca (refactor(lenet-emnist): Final integration with all shared modules)
 
     return InferenceConfig(weights_dir, data_dir)
 
