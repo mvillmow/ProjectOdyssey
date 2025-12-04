@@ -26,8 +26,8 @@ Reference:
     arXiv preprint arXiv:1711.05101.
 """
 
+from math import pow
 from shared.core.extensor import ExTensor
-from shared.core.arithmetic import subtract, multiply, add, divide, power
 from shared.core.arithmetic_simd import (
     subtract_simd,
     multiply_simd,
@@ -35,7 +35,7 @@ from shared.core.arithmetic_simd import (
     divide_simd,
 )
 from shared.core.elementwise import sqrt
-from shared.core.extensor import full_like, ones_like
+from shared.core.extensor import full_like
 
 
 fn adamw_step(
