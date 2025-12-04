@@ -330,13 +330,9 @@ from .loss import (
     binary_cross_entropy,
     mean_squared_error,
     cross_entropy,
-    focal_loss,
-    kl_divergence,
     binary_cross_entropy_backward,
     mean_squared_error_backward,
     cross_entropy_backward,
-    focal_loss_backward,
-    kl_divergence_backward,
 )
 
 from .numerical_safety import (
