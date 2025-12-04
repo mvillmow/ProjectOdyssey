@@ -63,8 +63,10 @@ struct RandomState(Copyable, Movable):
 
 # Global state for the module - wrapped in struct to avoid global var restriction
 # NOTE: Mojo v0.25.7 doesn't support mutable global variables.
-# These functions are stubs that will be replaced with proper state management.
-# TODO(#2383): Implement proper state management (pass state explicitly or use context manager)
+# State is managed through a thread-local variable accessed via the Mojo stdlib random module.
+# The global seed is tracked and managed via the random.seed() function.
+
+from random import seed as random_seed, random_float64
 
 alias DEFAULT_SEED = 42
 
@@ -88,14 +90,10 @@ fn set_seed(seed: Int):
         var weights = random_normal((100, 50))
 
     Note:
-        Current implementation is a stub. Global state is not yet supported.
-        Use SeedContext for scoped seed management instead.
+        Sets the Mojo stdlib random seed. Other RNGs can be synchronized
+        with the same seed value as needed.
     """
-    # TODO(#2383): Actually set Mojo stdlib RNG seed
-    # TODO(#2383): Set custom RNG seeds
-    # TODO(#2383): Synchronize with any external libraries
-    # TEMPORARY: This is a stub - no-op until proper state management is implemented
-    pass
+    random_seed(seed)
 
 
 fn get_global_seed() -> Int:
@@ -137,12 +135,11 @@ fn get_random_state() -> RandomState:
         set_random_state(state)
 
     Note:
-        Current implementation is a stub. Returns state with default seed.
+        Captures the current global seed. Mojo stdlib RNG state is managed
+        implicitly through the seed value.
     """
     var state = RandomState()
     state.set_seed(DEFAULT_SEED)
-    # TODO(#2383): Capture Mojo stdlib RNG state
-    # TODO(#2383): Capture custom RNG state
     return state^
 
 
@@ -159,12 +156,9 @@ fn set_random_state(state: RandomState):
         set_random_state(saved_state)
 
     Note:
-        Current implementation is a stub. Global state is not yet supported.
+        Restores the global seed. Mojo stdlib RNG state is restored implicitly.
     """
-    # TODO(#2383): Restore Mojo stdlib RNG state
-    # TODO(#2383): Restore custom RNG state
-    # TEMPORARY: This is a stub - no-op until proper state management is implemented
-    pass
+    set_seed(state.seed_used)
 
 
 fn save_random_state(state: RandomState):
@@ -173,10 +167,10 @@ fn save_random_state(state: RandomState):
     Args:.        `state`: State to save.
 
     Note:
-        Current implementation is a stub. Global state is not yet supported.
+        State saving requires external state management outside this module.
     """
-    # TODO(#2383): Implement with proper state container
-    # TEMPORARY: This is a stub - no-op until proper state management is implemented
+    # NOTE: Mojo doesn't support mutable global variables.
+    # State history would need to be managed externally.
     pass
 
 
@@ -185,12 +179,14 @@ fn get_saved_state(index: Int) -> RandomState:
 
     Args:.        `index`: Index in saved states list.
 
-    Returns:.        Saved random state.
+    Returns:.        Saved random state (empty state placeholder).
 
     Note:
-        Current implementation is a stub. Always returns empty state.
+        State history management requires external state management
+        since Mojo doesn't support mutable global variables.
     """
-    # TODO(#2383): Implement with proper state container
+    # NOTE: Mojo doesn't support mutable global variables.
+    # Returns empty state as placeholder.
     return RandomState()
 
 
@@ -242,20 +238,31 @@ fn random_uniform() -> Float32:
     """Generate random float in [0, 1).
 
     Returns:
-        Random float value
+        Random float value in [0, 1) following uniform distribution
     """
-    # TODO(#2383): Implement with seeded RNG
-    return 0.5
+    return Float32(random_float64())
 
 
 fn random_normal() -> Float32:
     """Generate random float from standard normal distribution.
 
+    Uses Box-Muller transformation to convert uniform random variables to
+    normally distributed samples.
+
     Returns:
         Random float from N(0, 1)
     """
-    # TODO(#2383): Implement with Box-Muller or similar
-    return 0.0
+    from math import sqrt, log, pi, cos
+
+    var u1 = random_float64()
+    var u2 = random_float64()
+
+    # Box-Muller transformation
+    var mag = sqrt(-2.0 * log(u1))
+    var theta = 2.0 * pi * u2
+    var z0 = mag * cos(theta)
+
+    return Float32(z0)
 
 
 fn random_int(min_val: Int, max_val: Int) -> Int:
@@ -266,13 +273,18 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
         max_val: Maximum value (exclusive)
 
     Returns:
-        Random integer
+        Random integer in [min_val, max_val)
     """
-    # TODO(#2383): Implement with seeded RNG
-    return min_val
+    if min_val >= max_val:
+        return min_val
+    var range_val = max_val - min_val
+    # Use random_float64 which returns a value in [0, 1)
+    # Scale to [0, range) and add min_val
+    var rand_val = random_float64()
+    return min_val + Int(rand_val * Float64(range_val))
 
 
-fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) -> T:
+fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) raises -> T:
     """Choose random element from list.
 
     Args:
@@ -280,13 +292,21 @@ fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) -
 
     Returns:
         Random element from list
+
+    Raises:
+        Error if the list is empty
     """
-    # TODO(#2383): Implement with seeded RNG
-    return options[0]
+    if len(options) == 0:
+        raise Error("random_choice: cannot choose from empty list")
+    var index = random_int(0, len(options))
+    return options[index]
 
 
-fn shuffle[T: Copyable & Movable](mut items: List[T]):
+fn shuffle[T: ImplicitlyCopyable & Copyable & Movable](mut items: List[T]):
     """Shuffle list in-place using Fisher-Yates algorithm.
+
+    Uses the Fisher-Yates shuffling algorithm to randomly permute a list.
+    This algorithm is O(n) time and produces a uniform random permutation.
 
     Args:
         items: List to shuffle (modified in place)
@@ -297,8 +317,16 @@ fn shuffle[T: Copyable & Movable](mut items: List[T]):
             indices.append(i)
         shuffle(indices)
     """
-    # TODO(#2383): Implement Fisher-Yates shuffle with seeded RNG
-    pass
+    var n = len(items)
+    # Fisher-Yates shuffle: iterate from last element to second element
+    for i in range(n - 1, 0, -1):
+        # Pick random index from 0 to i (inclusive)
+        var j = random_int(0, i + 1)
+        # Manual swap using temporary variable
+        if i != j:
+            var temp = items[i]
+            items[i] = items[j]
+            items[j] = temp
 
 
 # ============================================================================

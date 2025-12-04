@@ -92,10 +92,13 @@ from .random import (
     get_global_seed,  # Get current seed
     get_random_state,  # Get current random state
     set_random_state,  # Restore random state
+    save_random_state,  # Save random state to history
+    get_saved_state,  # Get saved random state by index
     RandomState,  # Random state container
     random_uniform,  # Generate uniform random
     random_normal,  # Generate normal random
     random_int,  # Generate random integer
+    random_choice,  # Choose random element from list
     shuffle,  # Shuffle list in-place
 )
 
