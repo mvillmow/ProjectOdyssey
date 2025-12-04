@@ -527,7 +527,7 @@ fn test_assert_tensor_equal_fails_shape():
     assert_true(failed, "assert_tensor_equal should raise error on shape mismatch")
 
 
-fn test_assert_tensor_equal_fails_values():
+fn test_assert_tensor_equal_fails_values() raises:
     """Test assert_tensor_equal with different values."""
     var tensor1 = ones(List[Int](3, 4), DType.float32)
     var tensor2 = full(List[Int](3, 4), 2.0, DType.float32)
@@ -539,14 +539,14 @@ fn test_assert_tensor_equal_fails_values():
     assert_true(failed, "assert_tensor_equal should raise error on value mismatch")
 
 
-fn test_assert_not_equal_tensor_passes():
+fn test_assert_not_equal_tensor_passes() raises:
     """Test assert_not_equal_tensor with different tensors."""
     var tensor1 = ones(List[Int](3, 4), DType.float32)
     var tensor2 = full(List[Int](3, 4), 2.0, DType.float32)
     assert_not_equal_tensor(tensor1, tensor2)
 
 
-fn test_assert_not_equal_tensor_fails():
+fn test_assert_not_equal_tensor_fails() raises:
     """Test assert_not_equal_tensor with equal tensors."""
     var tensor1 = ones(List[Int](3, 4), DType.float32)
     var tensor2 = ones(List[Int](3, 4), DType.float32)
@@ -563,13 +563,13 @@ fn test_assert_not_equal_tensor_fails():
 # ============================================================================
 
 
-fn test_assert_type_int():
+fn test_assert_type_int() raises:
     """Test assert_type with int value."""
     var value: Int = 42
     assert_type[Int](value, "Int")
 
 
-fn test_assert_type_float():
+fn test_assert_type_float() raises:
     """Test assert_type with float value."""
     var value: Float32 = 3.14
     assert_type[Float32](value, "Float32")
