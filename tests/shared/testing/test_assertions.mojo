@@ -43,7 +43,9 @@ from collections.optional import Optional
 
 fn test_assert_true_passes() raises:
     """Test assert_true with true condition."""
-    assert_true(custom_assert_true(True))
+    # custom_assert_true doesn't return a value, it just raises on failure
+    custom_assert_true(True)
+    # If we get here, the assertion passed
 
 
 fn test_assert_true_fails() raises:
