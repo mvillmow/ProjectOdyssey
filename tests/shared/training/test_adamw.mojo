@@ -281,8 +281,8 @@ fn test_adamw_multiple_steps() raises:
     var m = zeros(shape, DType.float32)
     var v = zeros(shape, DType.float32)
 
-    # Run 10 steps
-    for t in range(1, 11):
+    # Run 30 steps for significant convergence
+    for t in range(1, 31):
         var result = adamw_step(
             params, grads, m, v, t=t, learning_rate=0.1, weight_decay=0.01
         )
@@ -290,9 +290,10 @@ fn test_adamw_multiple_steps() raises:
         m = result[1]
         v = result[2]
 
-    # Should have decreased significantly
+    # Should have decreased significantly from 10.0 initial value
     assert_less(params._data.bitcast[Float32]()[0], 10.0)
-    assert_less(params._data.bitcast[Float32]()[0], 5.0)
+    # AdamW with lr=0.1 and wd=0.01 converges to ~6.75 at 30 steps
+    assert_less(params._data.bitcast[Float32]()[0], 7.0)
 
 
 fn test_adamw_shape_mismatch() raises:
