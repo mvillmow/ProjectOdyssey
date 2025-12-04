@@ -72,7 +72,7 @@ struct SGD:
 
     var learning_rate: Float64
     var momentum: Float64
-    # TODO: Add velocity storage for momentum
+    # TODO(#2396): Add velocity storage for momentum
     # var velocities: List[ExTensor]
 
     fn __init__(out self, learning_rate: Float64, momentum: Float64 = 0.0):

@@ -802,7 +802,7 @@ struct GradientTape:
             self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
 
 
-# TODO: NoGradContext requires UnsafePointer with parametric mutability
+# TODO(#2400): NoGradContext requires UnsafePointer with parametric mutability
 # which is not well-supported yet. Use tape.disable() / tape.enable() directly.
 # struct NoGradContext:
 #     """Context manager equivalent for disabling gradient computation."""

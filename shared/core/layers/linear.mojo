@@ -1,4 +1,4 @@
-"""Linear (fully connected) layer - stub implementation for Issue #34.
+"""Linear (fully connected) layer - stub implementation for Issue #2395.
 
 This module provides a basic Linear layer for neural networks.
 The stub implementation initializes weights and biases but the forward

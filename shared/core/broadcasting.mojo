@@ -182,7 +182,7 @@ struct BroadcastIterator:
         for i in range(len(self.shape)):
             self.size *= self.shape[i]
 
-    # TODO: __iter__ requires copying which isn't supported with List[Int] fields
+    # TODO(#2390): __iter__ requires copying which isn't supported with List[Int] fields
     # Callers should use __next__ directly or iterate with while loop
     # fn __iter__(self) -> Self:
     #     return self
@@ -206,7 +206,7 @@ struct BroadcastIterator:
 
         for i in range(len(self.shape)):
             var dim_size = self.shape[i]
-            var coord = remaining // self.size  # TODO: Fix this calculation
+            var coord = remaining // self.size  # TODO(#2390): Fix this calculation
             remaining = remaining % dim_size
 
             idx1 += coord * self.strides1[i]

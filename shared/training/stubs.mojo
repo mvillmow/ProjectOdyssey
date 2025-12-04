@@ -1,8 +1,8 @@
 """Stub implementations for TDD test execution.
 
 These stubs provide minimal implementations to make tests executable
-during the Test phase (Issue #33). They will be replaced with full
-implementations in the Implementation phase (Issue #34).
+during the Test phase. They will be replaced with full implementations
+when the relevant features are complete (see #2392, #2393, #2397).
 
 IMPORTANT: These are NOT production code - they are scaffolding for TDD.
 """
@@ -168,7 +168,7 @@ struct MockCosineAnnealingLR(LRScheduler):
             return self.base_lr
 
         # Cosine formula (simplified for stub)
-        # TODO(#34): Import proper math.cos function
+        # TODO: Import proper math.cos function when Mojo stdlib provides it
         var progress = Float64(epoch) / Float64(self.T_max)
         # Approximate cosine with linear decay for now
         var factor = 1.0 - progress

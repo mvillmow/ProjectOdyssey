@@ -221,7 +221,7 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
     """Flatten tensor to 1D (alias for flatten).
 
     Note: In NumPy, ravel can return a view. Our implementation always copies.
-    TODO: Implement zero-copy views with strides.
+    TODO(#2399): Implement zero-copy views with strides.
 
     Args:
         `tensor`: Input tensor.
@@ -301,7 +301,7 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 
     # Copy data from each tensor
     # This is simplified - copies element by element
-    # TODO: Optimize with memcpy for contiguous blocks
+    # TODO(#2399): Optimize with memcpy for contiguous blocks
 
     var offset = 0
     for tensor_idx in range(num_tensors):

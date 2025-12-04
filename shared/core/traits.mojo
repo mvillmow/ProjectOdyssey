@@ -237,14 +237,14 @@ trait Composable(Differentiable):
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
     """
 
-    # TODO: compose() method requires Movable constraint on generic types
+    # TODO(#2401): compose() method requires Movable constraint on generic types
     # Deferred until proper trait intersection syntax is available
     # fn compose[T: Composable](self, other: T) raises -> ComposedOp[Self, T]:
     #     ...
     pass
 
 
-# TODO: ComposedOp requires Movable constraint on generic types F and S
+# TODO(#2401): ComposedOp requires Movable constraint on generic types F and S
 # Commenting out until proper trait intersection syntax is available in Mojo
 # struct ComposedOp[F: Differentiable, S: Differentiable](Differentiable, Composable):
 #     """Composition of two differentiable operations."""
@@ -308,7 +308,7 @@ trait Trainable:
         ...
 
 # ============================================================================
-# Training Loop Traits (Issue #34)
+# Training Loop Traits (see #2392, #2393, #2397 for implementation)
 # ============================================================================
 
 

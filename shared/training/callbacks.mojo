@@ -304,7 +304,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
             self.save_count += 1
 
             # Build checkpoint path from template and epoch number
-            # TODO(#34): Implement actual checkpoint saving when model interface available
+            # TODO(#2392): Implement actual checkpoint saving when model interface available
             var checkpoint_path = self.filepath
 
             # When model interface is available, implement actual checkpoint saving:
@@ -394,7 +394,7 @@ struct LoggingCallback(Callback, Copyable, Movable):
         """
         if state.epoch % self.log_interval == 0:
             self.log_count += 1
-            # TODO(#34): Implement actual logging when desired
+            # TODO(#2392): Implement actual logging when desired
         return CallbackSignal(0)
 
     fn on_batch_begin(mut self, mut state: TrainingState) -> CallbackSignal:

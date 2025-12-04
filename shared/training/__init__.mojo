@@ -86,7 +86,7 @@ struct SGD(Optimizer, Movable):
             params: List of parameter tensors to update
 
         Note:
-            This is a stub implementation for Issue #34.
+            This is a stub implementation for Issue #2397.
             Full gradient-based updates will be implemented later.
         """
         # TODO: Implement actual parameter updates when gradient system is ready
@@ -130,7 +130,7 @@ struct MSELoss(Loss, Movable):
             Scalar loss value as ExTensor
 
         Note:
-            This is a stub implementation for Issue #34.
+            This is a stub implementation for Issue #2397.
             Full MSE computation will be implemented later.
         """
         # TODO: Implement actual MSE computation

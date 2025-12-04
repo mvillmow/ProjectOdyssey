@@ -29,5 +29,5 @@ from .adam import adam_step, adam_step_simple
 # RMSprop optimizer (functional implementation)
 from .rmsprop import rmsprop_step, rmsprop_step_simple
 
-# TODO: Implement remaining optimizers
+# TODO(#2397): Implement remaining optimizers
 # from .adamw import adamw_step

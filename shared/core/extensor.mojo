@@ -1958,9 +1958,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         return result^
 
-    # TODO: Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
-    # TODO: Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
-    # TODO: Add unary operators (__neg__, __pos__, __abs__, __invert__)
+    # TODO(#2386): Add reflected operators (__radd__, __rsub__, etc.) for operations like: 2 + tensor
+    # TODO(#2386): Add in-place operators (__iadd__, __isub__, etc.) for operations like: tensor += 2
+    # TODO(#2386): Add unary operators (__neg__, __pos__, __abs__, __invert__)
 
 
 # ============================================================================

@@ -5,7 +5,7 @@ This module defines the core traits and types for the training subsystem:
 - TrainingState: Shared state passed to callbacks
 - LRScheduler: Learning rate scheduling interface
 
-These contracts establish clear APIs for Issue #34 implementation.
+These contracts establish clear APIs for gradient utilities (#2393) and training callbacks (#2392).
 """
 
 from collections import Dict
@@ -238,10 +238,10 @@ fn is_valid_loss(loss: Float64) -> Bool:
 
     Warning:
         This is a placeholder implementation that always returns True.
-        It will be replaced with proper NaN/inf detection in Issue #34.
+        It will be replaced with proper NaN/inf detection in Issue #2393.
     """
     print("[WARNING] is_valid_loss is a placeholder - always returns True")
-    # TODO(#34): Implement NaN/inf detection with proper Float64 checks
+    # TODO(#2393): Implement NaN/inf detection with proper Float64 checks
     return True
 
 
@@ -257,8 +257,8 @@ fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float
 
     Warning:
         This is a placeholder implementation that returns gradients unchanged.
-        It will be replaced with proper gradient clipping in Issue #34.
+        It will be replaced with proper gradient clipping in Issue #2393.
     """
     print("[WARNING] clip_gradients is a placeholder - returns gradients unchanged")
-    # TODO(#34): Implement gradient norm computation and clipping
+    # TODO(#2393): Implement gradient norm computation and clipping
     return gradients^

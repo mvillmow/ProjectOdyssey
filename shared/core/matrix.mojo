@@ -198,7 +198,7 @@ fn transpose(tensor: ExTensor) raises -> ExTensor:
 
     Note:
         Currently supports reversing all axes for any dimensionality.
-        TODO: Add support for custom axis permutation via axes parameter.
+        TODO(#2389): Add support for custom axis permutation via axes parameter.
     """
     var ndim = tensor.dim()
     var input_shape = tensor.shape()

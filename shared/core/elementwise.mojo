@@ -432,11 +432,11 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
-        raise Error("logical_and: tensors must have same shape (broadcasting TODO)")
+        raise Error("logical_and: tensors must have same shape (broadcasting TODO #2387)")
 
     for i in range(len(shape_a)):
         if shape_a[i] != shape_b[i]:
-            raise Error("logical_and: tensors must have same shape (broadcasting TODO)")
+            raise Error("logical_and: tensors must have same shape (broadcasting TODO #2387)")
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -471,11 +471,11 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
-        raise Error("logical_or: tensors must have same shape (broadcasting TODO)")
+        raise Error("logical_or: tensors must have same shape (broadcasting TODO #2387)")
 
     for i in range(len(shape_a)):
         if shape_a[i] != shape_b[i]:
-            raise Error("logical_or: tensors must have same shape (broadcasting TODO)")
+            raise Error("logical_or: tensors must have same shape (broadcasting TODO #2387)")
 
     var result = ExTensor(a.shape(), a.dtype())
 
@@ -533,11 +533,11 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
     var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
-        raise Error("logical_xor: tensors must have same shape (broadcasting TODO)")
+        raise Error("logical_xor: tensors must have same shape (broadcasting TODO #2387)")
 
     for i in range(len(shape_a)):
         if shape_a[i] != shape_b[i]:
-            raise Error("logical_xor: tensors must have same shape (broadcasting TODO)")
+            raise Error("logical_xor: tensors must have same shape (broadcasting TODO #2387)")
 
     var result = ExTensor(a.shape(), a.dtype())
 
