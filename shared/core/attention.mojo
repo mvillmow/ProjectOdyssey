@@ -17,6 +17,7 @@ from .extensor import ExTensor, zeros, zeros_like
 from .matrix import matmul, transpose
 from .activation import softmax
 from .arithmetic import multiply, divide, add
+from .gradient_types import GradientTriple, GradientQuad
 from math import sqrt
 
 
@@ -32,7 +33,9 @@ fn scaled_dot_product_attention(
     """
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
-    return scaled_dot_product_attention_masked(query, key, value, empty_mask, dropout_p)
+    return scaled_dot_product_attention_masked(
+        query, key, value, empty_mask, dropout_p
+    )
 
 
 fn scaled_dot_product_attention_masked(
@@ -133,30 +136,12 @@ fn scaled_dot_product_attention_masked(
     return output
 
 
-struct ScaledDotProductAttentionBackwardResult(Movable):
-    """Result container for scaled_dot_product_attention_backward.
-
-    Contains gradients for query, key, and value tensors.
-    """
-
-    var grad_query: ExTensor
-    var grad_key: ExTensor
-    var grad_value: ExTensor
-
-    fn __init__(
-        out self,
-        grad_query: ExTensor,
-        grad_key: ExTensor,
-        grad_value: ExTensor,
-    ):
-        self.grad_query = grad_query
-        self.grad_key = grad_key
-        self.grad_value = grad_value
-
-    fn __moveinit__(out self, owned existing: Self):
-        self.grad_query = existing.grad_query^
-        self.grad_key = existing.grad_key^
-        self.grad_value = existing.grad_value^
+# Type alias for scaled dot-product attention backward results
+# Maps to GradientTriple with field name mapping:
+#   grad_input  -> grad_query  (query gradient)
+#   grad_weights -> grad_key    (key gradient)
+#   grad_bias  -> grad_value   (value gradient)
+alias ScaledDotProductAttentionBackwardResult = GradientTriple
 
 
 fn scaled_dot_product_attention_backward(
@@ -165,7 +150,7 @@ fn scaled_dot_product_attention_backward(
     key: ExTensor,
     value: ExTensor,
     attention_weights: ExTensor,
-) raises -> ScaledDotProductAttentionBackwardResult:
+) raises -> GradientTriple:
     """Backward pass for scaled dot-product attention without mask."""
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
@@ -181,7 +166,7 @@ fn scaled_dot_product_attention_backward_masked(
     value: ExTensor,
     attention_weights: ExTensor,
     mask: ExTensor,
-) raises -> ScaledDotProductAttentionBackwardResult:
+) raises -> GradientTriple:
     """Backward pass for scaled dot-product attention.
 
     Computes gradients with respect to query, key, and value tensors.
@@ -195,10 +180,11 @@ fn scaled_dot_product_attention_backward_masked(
         `mask`: Optional attention mask (same as forward pass)
 
     Returns:
-        ScaledDotProductAttentionBackwardResult containing:
-            - grad_query: Gradient w.r.t. query
-            - grad_key: Gradient w.r.t. key
-            - grad_value: Gradient w.r.t. value
+        GradientTriple containing gradients for query, key, and value.
+        Field mapping for backward results:
+            - grad_input  -> gradient w.r.t. query
+            - grad_weights -> gradient w.r.t. key
+            - grad_bias  -> gradient w.r.t. value
 
     Example:
         ```mojo
@@ -216,7 +202,7 @@ fn scaled_dot_product_attention_backward_masked(
         var result = scaled_dot_product_attention_backward(
             grad_output, query, key, value, attention_weights
         )
-        # result.grad_query, result.grad_key, result.grad_value
+        # result.grad_input, result.grad_weights, result.grad_bias
         ```
 
     Note:
@@ -264,9 +250,7 @@ fn scaled_dot_product_attention_backward_masked(
     var grad_scores_t = transpose(grad_scores)
     var grad_key = matmul(grad_scores_t, query)
 
-    return ScaledDotProductAttentionBackwardResult(
-        grad_query, grad_key, grad_value
-    )
+    return GradientTriple(grad_query, grad_key, grad_value)
 
 
 fn _softmax_backward(
@@ -329,7 +313,9 @@ fn _softmax_backward(
     return result
 
 
-fn create_causal_mask(seq_len: Int, dtype: DType = DType.float32) raises -> ExTensor:
+fn create_causal_mask(
+    seq_len: Int, dtype: DType = DType.float32
+) raises -> ExTensor:
     """Create a causal (lower-triangular) attention mask.
 
     Returns a mask where positions that should be ignored have large negative
@@ -452,7 +438,9 @@ fn multi_head_attention(
     """
     var empty_shape = List[Int]()
     var empty_mask = zeros(empty_shape, DType.float32)
-    return multi_head_attention_masked(query, key, value, weights, num_heads, empty_mask)
+    return multi_head_attention_masked(
+        query, key, value, weights, num_heads, empty_mask
+    )
 
 
 fn multi_head_attention_masked(
@@ -506,14 +494,18 @@ fn multi_head_attention_masked(
     """
     var q_shape = query.shape()
     if len(q_shape) != 3:
-        raise Error("multi_head_attention: query must be 3D (batch, seq, d_model)")
+        raise Error(
+            "multi_head_attention: query must be 3D (batch, seq, d_model)"
+        )
 
     var batch = q_shape[0]
     var seq_len = q_shape[1]
     var d_model = q_shape[2]
 
     if d_model % num_heads != 0:
-        raise Error("multi_head_attention: d_model must be divisible by num_heads")
+        raise Error(
+            "multi_head_attention: d_model must be divisible by num_heads"
+        )
 
     var d_k = d_model // num_heads
 
@@ -563,7 +555,9 @@ fn multi_head_attention_masked(
     var attended = matmul(attention_weights, v_heads)
 
     # Reshape back: (batch, heads, seq, d_k) -> (batch, seq, d_model)
-    var concat_heads = _reshape_from_heads(attended, batch, seq_len, num_heads, d_k)
+    var concat_heads = _reshape_from_heads(
+        attended, batch, seq_len, num_heads, d_k
+    )
 
     # Final output projection
     var output = matmul(concat_heads, weights.wo)
@@ -598,7 +592,9 @@ fn _reshape_for_heads(
                 for h in range(num_heads):
                     for k in range(d_k):
                         # Source: (b, s, h * d_k + k)
-                        var src_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        var src_idx = (
+                            b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        )
                         # Dest: (b, h, s, k)
                         var dst_idx = (
                             b * (num_heads * seq_len * d_k)
@@ -606,24 +602,26 @@ fn _reshape_for_heads(
                             + s * d_k
                             + k
                         )
-                        result_ptr.bitcast[Float32]()[dst_idx] = (
-                            x_ptr.bitcast[Float32]()[src_idx]
-                        )
+                        result_ptr.bitcast[Float32]()[dst_idx] = x_ptr.bitcast[
+                            Float32
+                        ]()[src_idx]
     else:
         for b in range(batch):
             for s in range(seq_len):
                 for h in range(num_heads):
                     for k in range(d_k):
-                        var src_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        var src_idx = (
+                            b * (seq_len * d_model) + s * d_model + h * d_k + k
+                        )
                         var dst_idx = (
                             b * (num_heads * seq_len * d_k)
                             + h * (seq_len * d_k)
                             + s * d_k
                             + k
                         )
-                        result_ptr.bitcast[Float64]()[dst_idx] = (
-                            x_ptr.bitcast[Float64]()[src_idx]
-                        )
+                        result_ptr.bitcast[Float64]()[dst_idx] = x_ptr.bitcast[
+                            Float64
+                        ]()[src_idx]
 
     return result
 
@@ -661,10 +659,12 @@ fn _reshape_from_heads(
                             + k
                         )
                         # Dest: (b, s, h * d_k + k)
-                        var dst_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
-                        result_ptr.bitcast[Float32]()[dst_idx] = (
-                            x_ptr.bitcast[Float32]()[src_idx]
+                        var dst_idx = (
+                            b * (seq_len * d_model) + s * d_model + h * d_k + k
                         )
+                        result_ptr.bitcast[Float32]()[dst_idx] = x_ptr.bitcast[
+                            Float32
+                        ]()[src_idx]
     else:
         for b in range(batch):
             for s in range(seq_len):
@@ -676,10 +676,12 @@ fn _reshape_from_heads(
                             + s * d_k
                             + k
                         )
-                        var dst_idx = b * (seq_len * d_model) + s * d_model + h * d_k + k
-                        result_ptr.bitcast[Float64]()[dst_idx] = (
-                            x_ptr.bitcast[Float64]()[src_idx]
+                        var dst_idx = (
+                            b * (seq_len * d_model) + s * d_model + h * d_k + k
                         )
+                        result_ptr.bitcast[Float64]()[dst_idx] = x_ptr.bitcast[
+                            Float64
+                        ]()[src_idx]
 
     return result
 
@@ -777,12 +779,16 @@ fn multi_head_attention_backward(
 
     # grad_Wo = concat_heads^T @ grad_output
     var attended = matmul(attention_weights, v_heads)
-    var concat_heads = _reshape_from_heads(attended, batch, seq_len, num_heads, d_k)
+    var concat_heads = _reshape_from_heads(
+        attended, batch, seq_len, num_heads, d_k
+    )
     var concat_heads_t = transpose(concat_heads)
     var grad_wo = matmul(concat_heads_t, grad_output)
 
     # Reshape gradient for heads
-    var grad_attended = _reshape_for_heads(grad_concat, batch, seq_len, num_heads, d_k)
+    var grad_attended = _reshape_for_heads(
+        grad_concat, batch, seq_len, num_heads, d_k
+    )
 
     # Gradient through attention: attended = attention_weights @ v_heads
     # grad_v_heads = attention_weights^T @ grad_attended
@@ -794,7 +800,9 @@ fn multi_head_attention_backward(
     var grad_attn_weights = matmul(grad_attended, v_heads_t)
 
     # Gradient through softmax
-    var grad_scaled_scores = _softmax_backward(grad_attn_weights, attention_weights)
+    var grad_scaled_scores = _softmax_backward(
+        grad_attn_weights, attention_weights
+    )
 
     # Gradient through scaling
     var scale = Float64(1.0) / sqrt(Float64(d_k))
@@ -821,9 +829,15 @@ fn multi_head_attention_backward(
     var grad_k_heads = matmul(grad_scores_t, q_heads)
 
     # Reshape gradients back to (batch, seq, d_model)
-    var grad_q_proj = _reshape_from_heads(grad_q_heads, batch, seq_len, num_heads, d_k)
-    var grad_k_proj = _reshape_from_heads(grad_k_heads, batch, seq_len, num_heads, d_k)
-    var grad_v_proj = _reshape_from_heads(grad_v_heads, batch, seq_len, num_heads, d_k)
+    var grad_q_proj = _reshape_from_heads(
+        grad_q_heads, batch, seq_len, num_heads, d_k
+    )
+    var grad_k_proj = _reshape_from_heads(
+        grad_k_heads, batch, seq_len, num_heads, d_k
+    )
+    var grad_v_proj = _reshape_from_heads(
+        grad_v_heads, batch, seq_len, num_heads, d_k
+    )
 
     # Gradient through input projections
     # grad_query = grad_q_proj @ Wq^T
