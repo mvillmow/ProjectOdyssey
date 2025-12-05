@@ -69,7 +69,7 @@ fn initialize_optimizer_state(
 
             param_state.append(zeros(shape, dtype))
 
-        all_states.append(param_state)
+        all_states.append(param_state^)
 
     return all_states^
 
@@ -112,7 +112,7 @@ fn initialize_optimizer_state_from_params(
         for state_idx in range(num_states):
             param_state.append(zeros(param.shape(), param.dtype()))
 
-        all_states.append(param_state)
+        all_states.append(param_state^)
 
     return all_states^
 
