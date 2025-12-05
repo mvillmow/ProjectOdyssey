@@ -13,18 +13,18 @@ are used throughout the test suite for:
 Functions:
     assert_true: Assert condition is true
     assert_false: Assert condition is false
-    assert_equal: Assert two values are equal (generic)
-    assert_not_equal: Assert two values are not equal (generic)
+    assert_equal: Assert two values are equal (parametric)
+    assert_not_equal: Assert two values are not equal (parametric)
     assert_not_none: Assert Optional value is not None
     assert_almost_equal: Assert floats are nearly equal (Float32/Float64)
     assert_dtype_equal: Assert DType values are equal
     assert_equal_int: Assert integers are equal
     assert_equal_float: Assert floats are exactly equal
     assert_close_float: Assert floats are numerically close with relative/absolute tolerance
-    assert_greater: Assert a > b (Float32/Float64/Int)
-    assert_less: Assert a < b (Float32/Float64)
-    assert_greater_or_equal: Assert a >= b (Float32/Float64/Int)
-    assert_less_or_equal: Assert a <= b (Float32/Float64/Int)
+    assert_greater: Assert a > b (parametric - Comparable & Stringable)
+    assert_less: Assert a < b (parametric - Comparable & Stringable)
+    assert_greater_or_equal: Assert a >= b (parametric - Comparable & Stringable)
+    assert_less_or_equal: Assert a <= b (parametric - Comparable & Stringable)
     assert_shape_equal: Assert two shapes are equal
     assert_not_equal_tensor: Assert two tensors are not equal element-wise
     assert_tensor_equal: Assert two tensors are equal (shape and elements)
@@ -313,8 +313,13 @@ fn assert_close_float(
 # ============================================================================
 
 
-fn assert_greater(a: Float32, b: Float32, message: String = "") raises:
-    """Assert a > b for Float32 values.
+fn assert_greater[T: Comparable & Stringable](
+    a: T, b: T, message: String = ""
+) raises:
+    """Assert a > b using parametric type constraints.
+
+    Works with any type supporting Comparable and Stringable traits
+    (Float32, Float64, Int, etc.).
 
     Args:
         a: First value.
@@ -329,40 +334,13 @@ fn assert_greater(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
-fn assert_greater(a: Float64, b: Float64, message: String = "") raises:
-    """Assert a > b for Float64 values.
+fn assert_less[T: Comparable & Stringable](
+    a: T, b: T, message: String = ""
+) raises:
+    """Assert a < b using parametric type constraints.
 
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a <= b.
-    """
-    if a <= b:
-        var error_msg = message if message else String(a) + " <= " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_greater(a: Int, b: Int, message: String = "") raises:
-    """Assert a > b for Int values.
-
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a <= b.
-    """
-    if a <= b:
-        var error_msg = message if message else String(a) + " <= " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_less(a: Float32, b: Float32, message: String = "") raises:
-    """Assert a < b for Float32 values.
+    Works with any type supporting Comparable and Stringable traits
+    (Float32, Float64, Int, etc.).
 
     Args:
         a: First value.
@@ -377,24 +355,13 @@ fn assert_less(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
-fn assert_less(a: Float64, b: Float64, message: String = "") raises:
-    """Assert a < b for Float64 values.
+fn assert_greater_or_equal[T: Comparable & Stringable](
+    a: T, b: T, message: String = ""
+) raises:
+    """Assert a >= b using parametric type constraints.
 
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a >= b.
-    """
-    if a >= b:
-        var error_msg = message if message else String(a) + " >= " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_greater_or_equal(a: Float32, b: Float32, message: String = "") raises:
-    """Assert a >= b for Float32 values.
+    Works with any type supporting Comparable and Stringable traits
+    (Float32, Float64, Int, etc.).
 
     Args:
         a: First value.
@@ -409,72 +376,13 @@ fn assert_greater_or_equal(a: Float32, b: Float32, message: String = "") raises:
         raise Error(error_msg)
 
 
-fn assert_greater_or_equal(a: Float64, b: Float64, message: String = "") raises:
-    """Assert a >= b for Float64 values.
+fn assert_less_or_equal[T: Comparable & Stringable](
+    a: T, b: T, message: String = ""
+) raises:
+    """Assert a <= b using parametric type constraints.
 
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a < b.
-    """
-    if a < b:
-        var error_msg = message if message else String(a) + " < " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_greater_or_equal(a: Int, b: Int, message: String = "") raises:
-    """Assert a >= b for Int values.
-
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a < b.
-    """
-    if a < b:
-        var error_msg = message if message else String(a) + " < " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_less_or_equal(a: Float32, b: Float32, message: String = "") raises:
-    """Assert a <= b for Float32 values.
-
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a > b.
-    """
-    if a > b:
-        var error_msg = message if message else String(a) + " > " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_less_or_equal(a: Float64, b: Float64, message: String = "") raises:
-    """Assert a <= b for Float64 values.
-
-    Args:
-        a: First value.
-        b: Second value.
-        message: Optional error message.
-
-    Raises:
-        Error if a > b.
-    """
-    if a > b:
-        var error_msg = message if message else String(a) + " > " + String(b)
-        raise Error(error_msg)
-
-
-fn assert_less_or_equal(a: Int, b: Int, message: String = "") raises:
-    """Assert a <= b for Int values.
+    Works with any type supporting Comparable and Stringable traits
+    (Float32, Float64, Int, etc.).
 
     Args:
         a: First value.
