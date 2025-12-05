@@ -10,6 +10,7 @@ Benefits:
 - Single source of truth for operations
 - Compile-time specialization (zero runtime overhead)
 - Easy to add new dtypes
+- Better error messages with dtype context
 
 Supported Dtypes:
 - Float16 (FP16) ✓ - Fully supported for mixed precision training
@@ -30,11 +31,59 @@ Example usage:
     # After (5 lines):
     return elementwise_unary[relu_op](tensor)
 
+Error Handling:
+    All dispatch functions raise Error with descriptive messages including:
+    - Which function failed (dispatch_unary, dispatch_binary, etc.)
+    - Which dtype was unsupported
+    - Expected dtype family (all, float-only, etc.)
+
 See notes/issues/dtype-refactoring-plan.md for complete design documentation.
 """
 
 from .extensor import ExTensor
 from collections import List
+
+
+# ============================================================================
+# Helper Function: Format dtype name for error messages
+# ============================================================================
+
+
+fn _format_dtype_name(dtype: DType) -> String:
+    """Format a DType into a readable string name.
+
+    Args:
+        `dtype`: The dtype to format.
+
+    Returns:
+        String representation of the dtype name.
+
+    Note: Used internally for error messages.
+    """
+    if dtype == DType.float16:
+        return "float16"
+    elif dtype == DType.float32:
+        return "float32"
+    elif dtype == DType.float64:
+        return "float64"
+    elif dtype == DType.int8:
+        return "int8"
+    elif dtype == DType.int16:
+        return "int16"
+    elif dtype == DType.int32:
+        return "int32"
+    elif dtype == DType.int64:
+        return "int64"
+    elif dtype == DType.uint8:
+        return "uint8"
+    elif dtype == DType.uint16:
+        return "uint16"
+    elif dtype == DType.uint32:
+        return "uint32"
+    elif dtype == DType.uint64:
+        return "uint64"
+    else:
+        return "unknown"
 
 
 # ============================================================================
@@ -85,17 +134,26 @@ fn dispatch_unary[
     specialized versions of the operation, ensuring zero overhead compared to
     hand-written dtype branches.
 
-    Args:.        `op`: Unary operation function pointer.
+    Args:
+        `op`: Unary operation function pointer.
         `tensor`: Input tensor.
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If tensor dtype is not supported.
+    Raises:
+        Error: If tensor dtype is not supported. Error message includes the
+               unsupported dtype and list of supported dtypes.
 
-    Example:.        fn relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             return max(Scalar[T](0), x)
 
         var result = dispatch_unary[relu_op](tensor)  # Works for any dtype
+
+    Note:
+        Supports: float16, float32, float64, int8, int16, int32, int64,
+                  uint8, uint16, uint32, uint64
     """
     # Runtime dispatch to compile-time specialized version
     if tensor._dtype == DType.float16:
@@ -121,7 +179,9 @@ fn dispatch_unary[
     elif tensor._dtype == DType.uint64:
         return elementwise_unary[DType.uint64, op](tensor)
     else:
-        raise Error("dispatch_unary: unsupported dtype")
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error("dispatch_unary: unsupported dtype '" + dtype_name +
+                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
 
 
 # ============================================================================
@@ -177,22 +237,35 @@ fn dispatch_binary[
     This function performs runtime dtype checking but dispatches to compile-time.
     specialized versions of the operation.
 
-    Args:.        `op`: Binary operation function pointer.
+    Args:
+        `op`: Binary operation function pointer.
         `lhs`: Left-hand side tensor.
         `rhs`: Right-hand side tensor.
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If dtypes don't match or are unsupported.
+    Raises:
+        Error: If dtypes don't match or are unsupported. Error message includes
+               the actual dtypes and list of supported dtypes.
 
-    Example:.        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x * y
 
         var result = dispatch_binary[mul_op](a, b)
+
+    Note:
+        Supports: float16, float32, float64, int8, int16, int32, int64,
+                  uint8, uint16, uint32, uint64.
+        Both tensors must have matching dtypes.
     """
     # Validate dtypes match
     if lhs._dtype != rhs._dtype:
-        raise Error("dispatch_binary: tensors must have same dtype")
+        var lhs_dtype = _format_dtype_name(lhs._dtype)
+        var rhs_dtype = _format_dtype_name(rhs._dtype)
+        raise Error("dispatch_binary: dtypes must match. Got lhs=" + lhs_dtype +
+                    ", rhs=" + rhs_dtype)
 
     # Runtime dispatch to compile-time specialized version
     if lhs._dtype == DType.float16:
@@ -218,7 +291,9 @@ fn dispatch_binary[
     elif lhs._dtype == DType.uint64:
         return elementwise_binary[DType.uint64, op](lhs, rhs)
     else:
-        raise Error("dispatch_binary: unsupported dtype")
+        var dtype_name = _format_dtype_name(lhs._dtype)
+        raise Error("dispatch_binary: unsupported dtype '" + dtype_name +
+                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
 
 
 # ============================================================================
@@ -266,20 +341,31 @@ fn dispatch_scalar[
     """Runtime dispatch to compile-time specialized scalar operation.
 
     This function performs runtime dtype checking but dispatches to compile-time.
-    specialized versions of the operation.
+    specialized versions of the operation. The scalar value is automatically
+    converted to the tensor's dtype.
 
-    Args:.        `op`: Binary operation function pointer.
+    Args:
+        `op`: Binary operation function pointer.
         `tensor`: Input tensor.
-        `scalar`: Scalar value.
+        `scalar`: Scalar value (converted to tensor's dtype).
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If tensor dtype is not supported.
+    Raises:
+        Error: If tensor dtype is not supported. Error message includes the
+               unsupported dtype and list of supported dtypes.
 
-    Example:.        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = dispatch_scalar[add_op](tensor, 1.0)
+
+    Note:
+        Supports: float16, float32, float64, int8, int16, int32, int64,
+                  uint8, uint16, uint32, uint64.
+        The scalar is automatically converted to match the tensor's dtype.
     """
     # Runtime dispatch to compile-time specialized version
     if tensor._dtype == DType.float16:
@@ -305,7 +391,9 @@ fn dispatch_scalar[
     elif tensor._dtype == DType.uint64:
         return elementwise_scalar[DType.uint64, op](tensor, scalar)
     else:
-        raise Error("dispatch_scalar: unsupported dtype")
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error("dispatch_scalar: unsupported dtype '" + dtype_name +
+                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
 
 
 # ============================================================================
@@ -318,21 +406,32 @@ fn dispatch_float_unary[
 ](tensor: ExTensor) raises -> ExTensor:
     """Runtime dispatch for floating-point only unary operations.
 
-    Use this for operations like sigmoid, tanh, exp, log that only support.
-    floating-point dtypes.
+    Use this for operations like sigmoid, tanh, exp, log that only support
+    floating-point dtypes. This function validates that the input tensor is
+    one of the supported float types and dispatches to the appropriate
+    compile-time specialized version.
 
-    Args:.        `op`: Unary operation function pointer.
+    Args:
+        `op`: Unary operation function pointer.
         `tensor`: Input tensor (must be float16/32/64)
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If tensor dtype is not a float type.
+    Raises:
+        Error: If tensor dtype is not a float type. Error message includes the
+               actual dtype and supported float types.
 
-    Example:.        fn sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             # Assuming T is float
             return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
 
         var result = dispatch_float_unary[sigmoid_op](tensor)
+
+    Note:
+        Supports float types only: float16, float32, float64.
+        For integer operations, use dispatch_unary instead.
     """
     # Runtime dispatch for float types only
     if tensor._dtype == DType.float16:
@@ -342,7 +441,8 @@ fn dispatch_float_unary[
     elif tensor._dtype == DType.float64:
         return elementwise_unary[DType.float64, op](tensor)
     else:
-        raise Error("dispatch_float_unary: operation only supports float16/32/64")
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error("dispatch_float_unary: operation only supports float16/32/64. Got " + dtype_name)
 
 
 fn dispatch_float_binary[
@@ -350,17 +450,32 @@ fn dispatch_float_binary[
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Runtime dispatch for floating-point only binary operations.
 
-    Args:.        `op`: Binary operation function pointer.
+    Use this for operations that only support floating-point dtypes.
+    This function validates that both input tensors are float types
+    and dispatches to the appropriate compile-time specialized version.
+
+    Args:
+        `op`: Binary operation function pointer.
         `lhs`: Left-hand side tensor (must be float16/32/64)
         `rhs`: Right-hand side tensor (must match lhs dtype)
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If dtypes don't match or are not float types.
+    Raises:
+        Error: If dtypes don't match or are not float types. Error message
+               includes the actual dtypes.
+
+    Note:
+        Supports float types only: float16, float32, float64.
+        Both tensors must have matching dtypes.
     """
     # Validate dtypes match
     if lhs._dtype != rhs._dtype:
-        raise Error("dispatch_float_binary: tensors must have same dtype")
+        var lhs_dtype = _format_dtype_name(lhs._dtype)
+        var rhs_dtype = _format_dtype_name(rhs._dtype)
+        raise Error("dispatch_float_binary: dtypes must match. Got lhs=" + lhs_dtype +
+                    ", rhs=" + rhs_dtype)
 
     # Runtime dispatch for float types only
     if lhs._dtype == DType.float16:
@@ -370,7 +485,8 @@ fn dispatch_float_binary[
     elif lhs._dtype == DType.float64:
         return elementwise_binary[DType.float64, op](lhs, rhs)
     else:
-        raise Error("dispatch_float_binary: operation only supports float16/32/64")
+        var dtype_name = _format_dtype_name(lhs._dtype)
+        raise Error("dispatch_float_binary: operation only supports float16/32/64. Got " + dtype_name)
 
 
 fn dispatch_float_scalar[
@@ -378,13 +494,24 @@ fn dispatch_float_scalar[
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Runtime dispatch for floating-point only scalar operations.
 
-    Args:.        `op`: Binary operation function pointer.
+    Use this for operations that only support floating-point dtypes.
+    The scalar value is automatically converted to the tensor's float dtype.
+
+    Args:
+        `op`: Binary operation function pointer.
         `tensor`: Input tensor (must be float16/32/64)
-        `scalar`: Scalar value.
+        `scalar`: Scalar value (converted to tensor's dtype).
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If tensor dtype is not a float type.
+    Raises:
+        Error: If tensor dtype is not a float type. Error message includes the
+               actual dtype and supported float types.
+
+    Note:
+        Supports float types only: float16, float32, float64.
+        The scalar is automatically converted to match the tensor's float dtype.
     """
     # Runtime dispatch for float types only
     if tensor._dtype == DType.float16:
@@ -394,4 +521,5 @@ fn dispatch_float_scalar[
     elif tensor._dtype == DType.float64:
         return elementwise_scalar[DType.float64, op](tensor, scalar)
     else:
-        raise Error("dispatch_float_scalar: operation only supports float16/32/64")
+        var dtype_name = _format_dtype_name(tensor._dtype)
+        raise Error("dispatch_float_scalar: operation only supports float16/32/64. Got " + dtype_name)
