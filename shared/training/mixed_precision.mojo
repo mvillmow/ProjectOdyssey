@@ -28,7 +28,7 @@ from ..core.numerical_safety import has_nan, has_inf
 from math import log2
 
 
-struct GradientScaler:
+struct GradientScaler(Copyable, Movable):
     """Manages gradient scaling for mixed precision training.
 
     Prevents gradient underflow in FP16 by scaling loss and gradients.

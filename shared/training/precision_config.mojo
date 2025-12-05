@@ -77,7 +77,7 @@ struct PrecisionMode(Copyable, Movable, Stringable, ImplicitlyCopyable):
             return "unknown"
 
 
-struct PrecisionConfig:
+struct PrecisionConfig(Copyable, Movable):
     """Central configuration for multi-precision training.
 
     Manages precision settings including:
