@@ -37,6 +37,7 @@ Example:
 """
 
 from shared.core import ExTensor, zeros, ones, zeros_like
+from shared.core.traits import Model
 
 
 # ============================================================================
@@ -468,7 +469,7 @@ struct Parameter(Copyable, Movable):
 # ============================================================================
 
 
-struct SimpleMLP(Copyable, Movable):
+struct SimpleMLP(Copyable, Movable, Model):
     """Simple multi-layer perceptron (2-3 layers).
 
     Provides a minimal MLP for testing multi-layer forward passes,
