@@ -14,6 +14,14 @@ Modules:
 """
 
 from .assertions import (
+    TOLERANCE_DEFAULT,
+    TOLERANCE_FLOAT32,
+    TOLERANCE_FLOAT64,
+    TOLERANCE_GRADIENT_RTOL,
+    TOLERANCE_GRADIENT_ATOL,
+    TOLERANCE_CONV,
+    TOLERANCE_SOFTMAX,
+    TOLERANCE_CROSS_ENTROPY,
     assert_true,
     assert_false,
     assert_equal,

@@ -44,6 +44,27 @@ from shared.core.extensor import ExTensor
 
 
 # ============================================================================
+# Test Tolerance Constants
+# ============================================================================
+
+# Default tolerance for exact comparisons
+alias TOLERANCE_DEFAULT: Float64 = 1e-6
+
+# Tolerances by dtype
+alias TOLERANCE_FLOAT32: Float64 = 1e-5
+alias TOLERANCE_FLOAT64: Float64 = 1e-10
+
+# Gradient checking tolerances (more relaxed due to numerical differences)
+alias TOLERANCE_GRADIENT_RTOL: Float64 = 1e-2
+alias TOLERANCE_GRADIENT_ATOL: Float64 = 1e-2
+
+# Operation-specific tolerances
+alias TOLERANCE_CONV: Float64 = 1e-3
+alias TOLERANCE_SOFTMAX: Float64 = 5e-4
+alias TOLERANCE_CROSS_ENTROPY: Float64 = 1e-3
+
+
+# ============================================================================
 # Basic Boolean Assertions
 # ============================================================================
 
@@ -136,7 +157,7 @@ fn assert_not_none[T: Copyable & Movable](value: Optional[T], message: String = 
 
 
 fn assert_almost_equal(
-    a: Float32, b: Float32, tolerance: Float32 = 1e-6, message: String = ""
+    a: Float32, b: Float32, tolerance: Float32 = Float32(TOLERANCE_DEFAULT), message: String = ""
 ) raises:
     """Assert floating point near-equality for Float32.
 
@@ -158,7 +179,7 @@ fn assert_almost_equal(
 
 
 fn assert_almost_equal(
-    a: Float64, b: Float64, tolerance: Float64 = 1e-6, message: String = ""
+    a: Float64, b: Float64, tolerance: Float64 = TOLERANCE_DEFAULT, message: String = ""
 ) raises:
     """Assert floating point near-equality for Float64.
 
@@ -679,7 +700,7 @@ fn assert_value_at(
     tensor: ExTensor,
     index: Int,
     expected: Float64,
-    tolerance: Float64 = 1e-6,
+    tolerance: Float64 = TOLERANCE_DEFAULT,
     message: String = ""
 ) raises:
     """Assert tensor value at flat index matches expected value.
@@ -711,7 +732,7 @@ fn assert_value_at(
 fn assert_all_values(
     tensor: ExTensor,
     expected: Float64,
-    tolerance: Float64 = 1e-6,
+    tolerance: Float64 = TOLERANCE_DEFAULT,
     message: String = ""
 ) raises:
     """Assert all tensor values match expected constant.
@@ -741,7 +762,7 @@ fn assert_all_values(
 fn assert_all_close(
     a: ExTensor,
     b: ExTensor,
-    tolerance: Float64 = 1e-6,
+    tolerance: Float64 = TOLERANCE_DEFAULT,
     message: String = ""
 ) raises:
     """Assert two tensors are element-wise close.
