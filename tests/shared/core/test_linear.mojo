@@ -322,13 +322,13 @@ fn test_linear_backward_output_shape() raises:
 
     # Check gradient shapes
     var grad_input_shape = result.grad_input.shape()
-    var grad_kernel_shape = result.grad_kernel.shape()
+    var grad_weights_shape = result.grad_weights.shape()
     var grad_bias_shape = result.grad_bias.shape()
 
     assert_equal(grad_input_shape[0], batch_size)
     assert_equal(grad_input_shape[1], in_features)
-    assert_equal(grad_kernel_shape[0], out_features)
-    assert_equal(grad_kernel_shape[1], in_features)
+    assert_equal(grad_weights_shape[0], out_features)
+    assert_equal(grad_weights_shape[1], in_features)
     assert_equal(grad_bias_shape[0], out_features)
 
 
@@ -380,12 +380,12 @@ fn test_linear_backward_single_sample() raises:
     assert_almost_equal(grad_input_data[0], 1.0, tolerance=1e-5)
     assert_almost_equal(grad_input_data[1], 1.0, tolerance=1e-5)
 
-    # Check grad_kernel: should be [[1, 2], [1, 2]]
-    var grad_kernel_data = result.grad_kernel._data.bitcast[Float32]()
-    assert_almost_equal(grad_kernel_data[0], 1.0, tolerance=1e-5)  # [0, 0]
-    assert_almost_equal(grad_kernel_data[1], 2.0, tolerance=1e-5)  # [0, 1]
-    assert_almost_equal(grad_kernel_data[2], 1.0, tolerance=1e-5)  # [1, 0]
-    assert_almost_equal(grad_kernel_data[3], 2.0, tolerance=1e-5)  # [1, 1]
+    # Check grad_weights: should be [[1, 2], [1, 2]]
+    var grad_weights_data = result.grad_weights._data.bitcast[Float32]()
+    assert_almost_equal(grad_weights_data[0], 1.0, tolerance=1e-5)  # [0, 0]
+    assert_almost_equal(grad_weights_data[1], 2.0, tolerance=1e-5)  # [0, 1]
+    assert_almost_equal(grad_weights_data[2], 1.0, tolerance=1e-5)  # [1, 0]
+    assert_almost_equal(grad_weights_data[3], 2.0, tolerance=1e-5)  # [1, 1]
 
     # Check grad_bias: should be [1, 1]
     var grad_bias_data = result.grad_bias._data.bitcast[Float32]()
@@ -476,14 +476,14 @@ fn test_linear_no_bias_backward_output_shape() raises:
     # Compute backward
     var result = linear_no_bias_backward(grad_output, input, weights)
 
-    # Check gradient shapes
-    var grad_input_shape = result.grad_input.shape()
-    var grad_kernel_shape = result.grad_kernel.shape()
+    # Check gradient shapes (GradientPair has grad_a=grad_input, grad_b=grad_weights)
+    var grad_input_shape = result.grad_a.shape()
+    var grad_weights_shape = result.grad_b.shape()
 
     assert_equal(grad_input_shape[0], batch_size)
     assert_equal(grad_input_shape[1], in_features)
-    assert_equal(grad_kernel_shape[0], out_features)
-    assert_equal(grad_kernel_shape[1], in_features)
+    assert_equal(grad_weights_shape[0], out_features)
+    assert_equal(grad_weights_shape[1], in_features)
 
 
 fn test_linear_no_bias_backward_single_sample() raises:
@@ -525,17 +525,17 @@ fn test_linear_no_bias_backward_single_sample() raises:
     # Compute backward
     var result = linear_no_bias_backward(grad_output, input, weights)
 
-    # Check grad_input: should be [1, 1]
-    var grad_input_data = result.grad_input._data.bitcast[Float32]()
+    # Check grad_input (grad_a): should be [1, 1]
+    var grad_input_data = result.grad_a._data.bitcast[Float32]()
     assert_almost_equal(grad_input_data[0], 1.0, tolerance=1e-5)
     assert_almost_equal(grad_input_data[1], 1.0, tolerance=1e-5)
 
-    # Check grad_kernel: should be [[1, 2], [1, 2]]
-    var grad_kernel_data = result.grad_kernel._data.bitcast[Float32]()
-    assert_almost_equal(grad_kernel_data[0], 1.0, tolerance=1e-5)  # [0, 0]
-    assert_almost_equal(grad_kernel_data[1], 2.0, tolerance=1e-5)  # [0, 1]
-    assert_almost_equal(grad_kernel_data[2], 1.0, tolerance=1e-5)  # [1, 0]
-    assert_almost_equal(grad_kernel_data[3], 2.0, tolerance=1e-5)  # [1, 1]
+    # Check grad_weights (grad_b): should be [[1, 2], [1, 2]]
+    var grad_weights_data = result.grad_b._data.bitcast[Float32]()
+    assert_almost_equal(grad_weights_data[0], 1.0, tolerance=1e-5)  # [0, 0]
+    assert_almost_equal(grad_weights_data[1], 2.0, tolerance=1e-5)  # [0, 1]
+    assert_almost_equal(grad_weights_data[2], 1.0, tolerance=1e-5)  # [1, 0]
+    assert_almost_equal(grad_weights_data[3], 2.0, tolerance=1e-5)  # [1, 1]
 
 
 # ============================================================================
@@ -633,8 +633,8 @@ fn test_linear_forward_backward_consistency() raises:
     # Verify gradient shapes match forward activation shapes
     assert_equal(result.grad_input.shape()[0], input.shape()[0])
     assert_equal(result.grad_input.shape()[1], input.shape()[1])
-    assert_equal(result.grad_kernel.shape()[0], weights.shape()[0])
-    assert_equal(result.grad_kernel.shape()[1], weights.shape()[1])
+    assert_equal(result.grad_weights.shape()[0], weights.shape()[0])
+    assert_equal(result.grad_weights.shape()[1], weights.shape()[1])
     assert_equal(result.grad_bias.shape()[0], bias.shape()[0])
 
 
@@ -680,13 +680,13 @@ fn test_linear_large_dimensions() raises:
 
     var result = linear_backward(grad_output, input, weights)
     var grad_input_shape = result.grad_input.shape()
-    var grad_kernel_shape = result.grad_kernel.shape()
+    var grad_weights_shape = result.grad_weights.shape()
     var grad_bias_shape = result.grad_bias.shape()
 
     assert_equal(grad_input_shape[0], batch_size)
     assert_equal(grad_input_shape[1], in_features)
-    assert_equal(grad_kernel_shape[0], out_features)
-    assert_equal(grad_kernel_shape[1], in_features)
+    assert_equal(grad_weights_shape[0], out_features)
+    assert_equal(grad_weights_shape[1], in_features)
     assert_equal(grad_bias_shape[0], out_features)
 
 
