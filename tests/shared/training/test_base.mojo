@@ -39,7 +39,7 @@ fn test_has_nan_or_inf_no_issues() raises:
     print("  ✓ has_nan_or_inf correctly returns False for normal values")
 
 
-fn test_has_nan_or_inf_with_nan[DType.float64]() raises:
+fn test_has_nan_or_inf_with_nan() raises:
     """Test has_nan_or_inf detects NaN values."""
     print("Testing has_nan_or_inf with NaN...")
 
@@ -61,7 +61,7 @@ fn test_has_nan_or_inf_with_nan[DType.float64]() raises:
     print("  ✓ has_nan_or_inf correctly detects NaN values")
 
 
-fn test_has_nan_or_inf_with_inf[DType.float64]() raises:
+fn test_has_nan_or_inf_with_inf() raises:
     """Test has_nan_or_inf detects Inf values."""
     print("Testing has_nan_or_inf with Inf...")
 
@@ -180,7 +180,7 @@ fn test_is_valid_loss_valid() raises:
     print("  ✓ is_valid_loss correctly validates normal loss")
 
 
-fn test_is_valid_loss_nan[DType.float64]() raises:
+fn test_is_valid_loss_nan() raises:
     """Test is_valid_loss with NaN."""
     print("Testing is_valid_loss with NaN...")
 
@@ -192,7 +192,7 @@ fn test_is_valid_loss_nan[DType.float64]() raises:
     print("  ✓ is_valid_loss correctly rejects NaN")
 
 
-fn test_is_valid_loss_inf[DType.float64]() raises:
+fn test_is_valid_loss_inf() raises:
     """Test is_valid_loss with Inf."""
     print("Testing is_valid_loss with Inf...")
 
@@ -259,14 +259,14 @@ fn main() raises:
 
     try:
         test_has_nan_or_inf_no_issues()
-        test_has_nan_or_inf_with_nan[DType.float64]()
-        test_has_nan_or_inf_with_inf[DType.float64]()
+        test_has_nan_or_inf_with_nan()
+        test_has_nan_or_inf_with_inf()
         test_compute_gradient_norm_l2()
         test_compute_gradient_norm_l1()
         test_compute_gradient_norm_multiple_tensors()
         test_is_valid_loss_valid()
-        test_is_valid_loss_nan[DType.float64]()
-        test_is_valid_loss_inf[DType.float64]()
+        test_is_valid_loss_nan()
+        test_is_valid_loss_inf()
         test_clip_gradients_no_clipping_needed()
         test_clip_gradients_clipping_needed()
 
