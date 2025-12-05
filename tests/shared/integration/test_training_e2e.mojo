@@ -111,9 +111,9 @@ struct SimpleMLP:
         var fc1_grads = linear_backward(grad_fc1_out, input, self.fc1_weights)
 
         # Parameter update (SGD) - inline to avoid aliasing issues
-        _sgd_update(self.fc1_weights, fc1_grads.grad_kernel, learning_rate)
+        _sgd_update(self.fc1_weights, fc1_grads.grad_weights, learning_rate)
         _sgd_update(self.fc1_bias, fc1_grads.grad_bias, learning_rate)
-        _sgd_update(self.fc2_weights, fc2_grads.grad_kernel, learning_rate)
+        _sgd_update(self.fc2_weights, fc2_grads.grad_weights, learning_rate)
         _sgd_update(self.fc2_bias, fc2_grads.grad_bias, learning_rate)
 
         return loss
