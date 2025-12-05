@@ -20,8 +20,8 @@ from .idx_loader import (
 )
 
 # CIFAR Binary Format Loaders
-from .cifar_loader import (
-    CIFARLoader,
+from .cifar_loader import CIFARLoader
+from ..constants import (
     CIFAR10_IMAGE_SIZE,
     CIFAR10_CHANNELS,
     CIFAR10_BYTES_PER_IMAGE,

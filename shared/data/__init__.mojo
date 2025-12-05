@@ -48,6 +48,15 @@ from .formats import (
 
 # Dataset-specific constants and metadata
 from .constants import (
+    CIFAR10_IMAGE_SIZE,            # CIFAR-10 image size (32x32)
+    CIFAR10_CHANNELS,              # CIFAR-10 color channels (3)
+    CIFAR10_BYTES_PER_IMAGE,       # CIFAR-10 bytes per image (3073)
+    CIFAR10_NUM_CLASSES,           # CIFAR-10 number of classes (10)
+    CIFAR100_IMAGE_SIZE,           # CIFAR-100 image size (32x32)
+    CIFAR100_CHANNELS,             # CIFAR-100 color channels (3)
+    CIFAR100_BYTES_PER_IMAGE,      # CIFAR-100 bytes per image (3074)
+    CIFAR100_NUM_CLASSES_FINE,     # CIFAR-100 fine-grained classes (100)
+    CIFAR100_NUM_CLASSES_COARSE,   # CIFAR-100 coarse classes (20)
     CIFAR10_CLASS_NAMES,           # CIFAR-10 class names (10 classes)
     EMNIST_BALANCED_CLASSES,       # EMNIST Balanced class names (47 classes)
     EMNIST_BYCLASS_CLASSES,        # EMNIST By Class class names (62 classes)

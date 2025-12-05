@@ -27,18 +27,17 @@ References:
 from collections import List
 from memory import UnsafePointer
 from shared.core import ExTensor, zeros
-
-
-alias CIFAR10_IMAGE_SIZE: Int = 32
-alias CIFAR10_CHANNELS: Int = 3
-alias CIFAR10_BYTES_PER_IMAGE: Int = 3073  # 1 label + 3*32*32 pixels
-alias CIFAR10_NUM_CLASSES: Int = 10
-
-alias CIFAR100_IMAGE_SIZE: Int = 32
-alias CIFAR100_CHANNELS: Int = 3
-alias CIFAR100_BYTES_PER_IMAGE: Int = 3074  # 2 labels + 3*32*32 pixels
-alias CIFAR100_NUM_CLASSES_FINE: Int = 100
-alias CIFAR100_NUM_CLASSES_COARSE: Int = 20
+from shared.data import (
+    CIFAR10_IMAGE_SIZE,
+    CIFAR10_CHANNELS,
+    CIFAR10_BYTES_PER_IMAGE,
+    CIFAR10_NUM_CLASSES,
+    CIFAR100_IMAGE_SIZE,
+    CIFAR100_CHANNELS,
+    CIFAR100_BYTES_PER_IMAGE,
+    CIFAR100_NUM_CLASSES_FINE,
+    CIFAR100_NUM_CLASSES_COARSE,
+)
 
 
 struct CIFARLoader(Copyable, Movable):
