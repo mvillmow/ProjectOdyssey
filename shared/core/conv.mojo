@@ -9,8 +9,9 @@ from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
 from .shape import conv2d_output_shape
-from .gradient_types import GradientPair, GradientTriple
+from .gradient_types import GradientPair, GradientTriple, GradientQuad
 from collections import List
+
 # max is now a builtin in Mojo - no import needed
 
 
@@ -19,6 +20,7 @@ alias Conv2dBackwardResult = GradientTriple
 alias Conv2dNoBiasBackwardResult = GradientPair
 alias DepthwiseConv2dBackwardResult = GradientTriple
 alias DepthwiseConv2dNoBiasBackwardResult = GradientPair
+alias DepthwiseSeparableConv2dBackwardResult = GradientQuad
 alias DepthwiseSeparableConv2dNoBiasBackwardResult = GradientTriple
 
 
@@ -27,7 +29,7 @@ fn conv2d(
     kernel: ExTensor,
     bias: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> ExTensor:
     """Functional 2D convolution using direct convolution: y = conv2d(x, kernel) + bias
 
@@ -71,7 +73,9 @@ fn conv2d(
     # Get kernel dimensions
     var k_shape = kernel.shape()
     if len(k_shape) != 4:
-        raise Error("Kernel must be 4D tensor (out_channels, in_channels, kH, kW)")
+        raise Error(
+            "Kernel must be 4D tensor (out_channels, in_channels, kH, kW)"
+        )
 
     var out_channels = k_shape[0]
     var kernel_in_channels = k_shape[1]
@@ -82,7 +86,9 @@ fn conv2d(
         raise Error("Kernel in_channels must match input in_channels")
 
     # Compute output dimensions using shape computation helper
-    var out_h, var out_w = conv2d_output_shape(in_height, in_width, kH, kW, stride, padding)
+    var out_h, var out_w = conv2d_output_shape(
+        in_height, in_width, kH, kW, stride, padding
+    )
     var out_height = out_h
     var out_width = out_w
 
@@ -117,13 +123,32 @@ fn conv2d(
                                 var in_w = in_w_start + kw
 
                                 # Check bounds (zero padding)
-                                if in_h >= 0 and in_h < in_height and in_w >= 0 and in_w < in_width:
+                                if (
+                                    in_h >= 0
+                                    and in_h < in_height
+                                    and in_w >= 0
+                                    and in_w < in_width
+                                ):
                                     # Get input and kernel values
-                                    var in_idx = b * (in_channels * in_height * in_width) + ic * (in_height * in_width) + in_h * in_width + in_w
-                                    var k_idx = oc * (in_channels * kH * kW) + ic * (kH * kW) + kh * kW + kw
+                                    var in_idx = (
+                                        b * (in_channels * in_height * in_width)
+                                        + ic * (in_height * in_width)
+                                        + in_h * in_width
+                                        + in_w
+                                    )
+                                    var k_idx = (
+                                        oc * (in_channels * kH * kW)
+                                        + ic * (kH * kW)
+                                        + kh * kW
+                                        + kw
+                                    )
 
-                                    var in_val = x._data.bitcast[Float32]()[in_idx]
-                                    var k_val = kernel._data.bitcast[Float32]()[k_idx]
+                                    var in_val = x._data.bitcast[Float32]()[
+                                        in_idx
+                                    ]
+                                    var k_val = kernel._data.bitcast[Float32]()[
+                                        k_idx
+                                    ]
 
                                     sum_val += in_val * k_val
 
@@ -132,17 +157,19 @@ fn conv2d(
                     sum_val += b_val
 
                     # Write to output
-                    var out_idx = b * (out_channels * out_height * out_width) + oc * (out_height * out_width) + oh * out_width + ow
+                    var out_idx = (
+                        b * (out_channels * out_height * out_width)
+                        + oc * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
                     output._data.bitcast[Float32]()[out_idx] = sum_val
 
     return output^
 
 
 fn conv2d_no_bias(
-    x: ExTensor,
-    kernel: ExTensor,
-    stride: Int = 1,
-    padding: Int = 0
+    x: ExTensor, kernel: ExTensor, stride: Int = 1, padding: Int = 0
 ) raises -> ExTensor:
     """Functional 2D convolution without bias: y = conv2d(x, kernel)
 
@@ -173,7 +200,7 @@ fn conv2d_backward(
     x: ExTensor,
     kernel: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> Conv2dBackwardResult:
     """Backward pass for 2D convolution.
 
@@ -264,17 +291,43 @@ fn conv2d_backward(
                                 # Sum over output channels
                                 for oc in range(out_channels):
                                     # Get grad_output value
-                                    var grad_out_idx = b * (out_channels * out_height * out_width) + oc * (out_height * out_width) + oh * out_width + ow
-                                    var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                                    var grad_out_idx = (
+                                        b
+                                        * (
+                                            out_channels
+                                            * out_height
+                                            * out_width
+                                        )
+                                        + oc * (out_height * out_width)
+                                        + oh * out_width
+                                        + ow
+                                    )
+                                    var grad_out_val = (
+                                        grad_output._data.bitcast[Float32]()[
+                                            grad_out_idx
+                                        ]
+                                    )
 
                                     # Get kernel value
-                                    var k_idx = oc * (in_channels * kH * kW) + ic * (kH * kW) + kh * kW + kw
-                                    var k_val = kernel._data.bitcast[Float32]()[k_idx]
+                                    var k_idx = (
+                                        oc * (in_channels * kH * kW)
+                                        + ic * (kH * kW)
+                                        + kh * kW
+                                        + kw
+                                    )
+                                    var k_val = kernel._data.bitcast[Float32]()[
+                                        k_idx
+                                    ]
 
                                     grad_sum += grad_out_val * k_val
 
                     # Write to grad_input
-                    var grad_in_idx = b * (in_channels * in_height * in_width) + ic * (in_height * in_width) + ih * in_width + iw
+                    var grad_in_idx = (
+                        b * (in_channels * in_height * in_width)
+                        + ic * (in_height * in_width)
+                        + ih * in_width
+                        + iw
+                    )
                     grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum
 
     # Compute grad_kernel
@@ -295,19 +348,50 @@ fn conv2d_backward(
                                 var in_w = ow * stride - padding + kw
 
                                 # Check bounds
-                                if in_h >= 0 and in_h < in_height and in_w >= 0 and in_w < in_width:
+                                if (
+                                    in_h >= 0
+                                    and in_h < in_height
+                                    and in_w >= 0
+                                    and in_w < in_width
+                                ):
                                     # Get input value
-                                    var in_idx = b * (in_channels * in_height * in_width) + ic * (in_height * in_width) + in_h * in_width + in_w
-                                    var in_val = x._data.bitcast[Float32]()[in_idx]
+                                    var in_idx = (
+                                        b * (in_channels * in_height * in_width)
+                                        + ic * (in_height * in_width)
+                                        + in_h * in_width
+                                        + in_w
+                                    )
+                                    var in_val = x._data.bitcast[Float32]()[
+                                        in_idx
+                                    ]
 
                                     # Get grad_output value
-                                    var grad_out_idx = b * (out_channels * out_height * out_width) + oc * (out_height * out_width) + oh * out_width + ow
-                                    var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                                    var grad_out_idx = (
+                                        b
+                                        * (
+                                            out_channels
+                                            * out_height
+                                            * out_width
+                                        )
+                                        + oc * (out_height * out_width)
+                                        + oh * out_width
+                                        + ow
+                                    )
+                                    var grad_out_val = (
+                                        grad_output._data.bitcast[Float32]()[
+                                            grad_out_idx
+                                        ]
+                                    )
 
                                     grad_sum += in_val * grad_out_val
 
                     # Write to grad_kernel
-                    var grad_k_idx = oc * (in_channels * kH * kW) + ic * (kH * kW) + kh * kW + kw
+                    var grad_k_idx = (
+                        oc * (in_channels * kH * kW)
+                        + ic * (kH * kW)
+                        + kh * kW
+                        + kw
+                    )
                     grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
 
     # Compute grad_bias: sum over batch, height, width
@@ -321,8 +405,15 @@ fn conv2d_backward(
         for b in range(batch):
             for oh in range(out_height):
                 for ow in range(out_width):
-                    var grad_out_idx = b * (out_channels * out_height * out_width) + oc * (out_height * out_width) + oh * out_width + ow
-                    var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                    var grad_out_idx = (
+                        b * (out_channels * out_height * out_width)
+                        + oc * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
+                    var grad_out_val = grad_output._data.bitcast[Float32]()[
+                        grad_out_idx
+                    ]
                     bias_grad_sum += grad_out_val
 
         grad_bias._data.bitcast[Float32]()[oc] = bias_grad_sum
@@ -335,7 +426,7 @@ fn conv2d_no_bias_backward(
     x: ExTensor,
     kernel: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> Conv2dNoBiasBackwardResult:
     """Backward pass for 2D convolution without bias.
 
@@ -361,7 +452,7 @@ fn depthwise_conv2d(
     kernel: ExTensor,
     bias: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> ExTensor:
     """Functional depthwise 2D convolution: y = depthwise_conv2d(x, kernel) + bias
 
@@ -398,7 +489,10 @@ fn depthwise_conv2d(
     # Get input dimensions
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("depthwise_conv2d: Input must be 4D tensor (batch, channels, height, width)")
+        raise Error(
+            "depthwise_conv2d: Input must be 4D tensor (batch, channels,"
+            " height, width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -408,7 +502,9 @@ fn depthwise_conv2d(
     # Get kernel dimensions
     var k_shape = kernel.shape()
     if len(k_shape) != 4:
-        raise Error("depthwise_conv2d: Kernel must be 4D tensor (channels, 1, kH, kW)")
+        raise Error(
+            "depthwise_conv2d: Kernel must be 4D tensor (channels, 1, kH, kW)"
+        )
 
     var kernel_channels = k_shape[0]
     var kernel_depth = k_shape[1]
@@ -416,13 +512,19 @@ fn depthwise_conv2d(
     var kW = k_shape[3]
 
     if kernel_channels != channels:
-        raise Error("depthwise_conv2d: Kernel channels must match input channels")
+        raise Error(
+            "depthwise_conv2d: Kernel channels must match input channels"
+        )
 
     if kernel_depth != 1:
-        raise Error("depthwise_conv2d: Kernel depth must be 1 for depthwise convolution")
+        raise Error(
+            "depthwise_conv2d: Kernel depth must be 1 for depthwise convolution"
+        )
 
     # Compute output dimensions
-    var out_h, var out_w = conv2d_output_shape(in_height, in_width, kH, kW, stride, padding)
+    var out_h, var out_w = conv2d_output_shape(
+        in_height, in_width, kH, kW, stride, padding
+    )
     var out_height = out_h
     var out_width = out_w
 
@@ -452,14 +554,26 @@ fn depthwise_conv2d(
                             var in_w = in_w_start + kw
 
                             # Check bounds (zero padding)
-                            if in_h >= 0 and in_h < in_height and in_w >= 0 and in_w < in_width:
+                            if (
+                                in_h >= 0
+                                and in_h < in_height
+                                and in_w >= 0
+                                and in_w < in_width
+                            ):
                                 # Get input value
-                                var in_idx = b * (channels * in_height * in_width) + c * (in_height * in_width) + in_h * in_width + in_w
+                                var in_idx = (
+                                    b * (channels * in_height * in_width)
+                                    + c * (in_height * in_width)
+                                    + in_h * in_width
+                                    + in_w
+                                )
                                 # Get kernel value (kernel shape is [channels, 1, kH, kW])
                                 var k_idx = c * (1 * kH * kW) + kh * kW + kw
 
                                 var in_val = x._data.bitcast[Float32]()[in_idx]
-                                var k_val = kernel._data.bitcast[Float32]()[k_idx]
+                                var k_val = kernel._data.bitcast[Float32]()[
+                                    k_idx
+                                ]
 
                                 sum_val += in_val * k_val
 
@@ -468,17 +582,19 @@ fn depthwise_conv2d(
                     sum_val += b_val
 
                     # Write to output
-                    var out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
+                    var out_idx = (
+                        b * (channels * out_height * out_width)
+                        + c * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
                     output._data.bitcast[Float32]()[out_idx] = sum_val
 
     return output^
 
 
 fn depthwise_conv2d_no_bias(
-    x: ExTensor,
-    kernel: ExTensor,
-    stride: Int = 1,
-    padding: Int = 0
+    x: ExTensor, kernel: ExTensor, stride: Int = 1, padding: Int = 0
 ) raises -> ExTensor:
     """Functional depthwise 2D convolution without bias.
 
@@ -508,7 +624,7 @@ fn depthwise_conv2d_backward(
     x: ExTensor,
     kernel: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> DepthwiseConv2dBackwardResult:
     """Backward pass for depthwise 2D convolution.
 
@@ -582,17 +698,31 @@ fn depthwise_conv2d_backward(
                             # Check if kernel offset is valid
                             if kh >= 0 and kh < kH and kw >= 0 and kw < kW:
                                 # Get grad_output value
-                                var grad_out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
-                                var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                                var grad_out_idx = (
+                                    b * (channels * out_height * out_width)
+                                    + c * (out_height * out_width)
+                                    + oh * out_width
+                                    + ow
+                                )
+                                var grad_out_val = grad_output._data.bitcast[
+                                    Float32
+                                ]()[grad_out_idx]
 
                                 # Get kernel value (shape: [channels, 1, kH, kW])
                                 var k_idx = c * (1 * kH * kW) + kh * kW + kw
-                                var k_val = kernel._data.bitcast[Float32]()[k_idx]
+                                var k_val = kernel._data.bitcast[Float32]()[
+                                    k_idx
+                                ]
 
                                 grad_sum += grad_out_val * k_val
 
                     # Write to grad_input
-                    var grad_in_idx = b * (channels * in_height * in_width) + c * (in_height * in_width) + ih * in_width + iw
+                    var grad_in_idx = (
+                        b * (channels * in_height * in_width)
+                        + c * (in_height * in_width)
+                        + ih * in_width
+                        + iw
+                    )
                     grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum
 
     # Compute grad_kernel
@@ -609,14 +739,31 @@ fn depthwise_conv2d_backward(
                             var in_w = ow * stride - padding + kw
 
                             # Check bounds
-                            if in_h >= 0 and in_h < in_height and in_w >= 0 and in_w < in_width:
+                            if (
+                                in_h >= 0
+                                and in_h < in_height
+                                and in_w >= 0
+                                and in_w < in_width
+                            ):
                                 # Get input value
-                                var in_idx = b * (channels * in_height * in_width) + c * (in_height * in_width) + in_h * in_width + in_w
+                                var in_idx = (
+                                    b * (channels * in_height * in_width)
+                                    + c * (in_height * in_width)
+                                    + in_h * in_width
+                                    + in_w
+                                )
                                 var in_val = x._data.bitcast[Float32]()[in_idx]
 
                                 # Get grad_output value
-                                var grad_out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
-                                var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                                var grad_out_idx = (
+                                    b * (channels * out_height * out_width)
+                                    + c * (out_height * out_width)
+                                    + oh * out_width
+                                    + ow
+                                )
+                                var grad_out_val = grad_output._data.bitcast[
+                                    Float32
+                                ]()[grad_out_idx]
 
                                 grad_sum += in_val * grad_out_val
 
@@ -635,8 +782,15 @@ fn depthwise_conv2d_backward(
         for b in range(batch):
             for oh in range(out_height):
                 for ow in range(out_width):
-                    var grad_out_idx = b * (channels * out_height * out_width) + c * (out_height * out_width) + oh * out_width + ow
-                    var grad_out_val = grad_output._data.bitcast[Float32]()[grad_out_idx]
+                    var grad_out_idx = (
+                        b * (channels * out_height * out_width)
+                        + c * (out_height * out_width)
+                        + oh * out_width
+                        + ow
+                    )
+                    var grad_out_val = grad_output._data.bitcast[Float32]()[
+                        grad_out_idx
+                    ]
                     bias_grad_sum += grad_out_val
 
         grad_bias._data.bitcast[Float32]()[c] = bias_grad_sum
@@ -649,7 +803,7 @@ fn depthwise_conv2d_no_bias_backward(
     x: ExTensor,
     kernel: ExTensor,
     stride: Int = 1,
-    padding: Int = 0
+    padding: Int = 0,
 ) raises -> DepthwiseConv2dNoBiasBackwardResult:
     """Backward pass for depthwise 2D convolution without bias.
 
@@ -666,46 +820,20 @@ fn depthwise_conv2d_no_bias_backward(
     Raises:
         Error if tensor shapes are incompatible.
     """
-    var result = depthwise_conv2d_backward(grad_output, x, kernel, stride, padding)
+    var result = depthwise_conv2d_backward(
+        grad_output, x, kernel, stride, padding
+    )
     # Copy needed fields before result is destroyed (ExTensor is ImplicitlyCopyable)
     var grad_input_copy = result.grad_input
     var grad_kernel_copy = result.grad_weights
-    return DepthwiseConv2dNoBiasBackwardResult(grad_input_copy^, grad_kernel_copy^)
+    return DepthwiseConv2dNoBiasBackwardResult(
+        grad_input_copy^, grad_kernel_copy^
+    )
 
 
 # ============================================================================
 # Depthwise Separable Convolution
 # ============================================================================
-
-
-struct DepthwiseSeparableConv2dBackwardResult(Movable):
-    """Result container for depthwise_separable_conv2d_backward.
-
-    Contains gradients for input, depthwise kernel, pointwise kernel, and bias.
-    """
-
-    var grad_input: ExTensor
-    var grad_depthwise_kernel: ExTensor
-    var grad_pointwise_kernel: ExTensor
-    var grad_bias: ExTensor
-
-    fn __init__(
-        out self,
-        grad_input: ExTensor,
-        grad_depthwise_kernel: ExTensor,
-        grad_pointwise_kernel: ExTensor,
-        grad_bias: ExTensor,
-    ):
-        self.grad_input = grad_input
-        self.grad_depthwise_kernel = grad_depthwise_kernel
-        self.grad_pointwise_kernel = grad_pointwise_kernel
-        self.grad_bias = grad_bias
-
-    fn __moveinit__(out self, owned existing: Self):
-        self.grad_input = existing.grad_input^
-        self.grad_depthwise_kernel = existing.grad_depthwise_kernel^
-        self.grad_pointwise_kernel = existing.grad_pointwise_kernel^
-        self.grad_bias = existing.grad_bias^
 
 
 fn depthwise_separable_conv2d(
@@ -766,7 +894,9 @@ fn depthwise_separable_conv2d(
     )
 
     # Stage 2: Pointwise (1x1) convolution with bias
-    var output = conv2d(depthwise_output, pointwise_kernel, bias, stride=1, padding=0)
+    var output = conv2d(
+        depthwise_output, pointwise_kernel, bias, stride=1, padding=0
+    )
 
     return output
 
@@ -796,7 +926,9 @@ fn depthwise_separable_conv2d_no_bias(
     )
 
     # Stage 2: Pointwise (1x1) convolution without bias
-    var output = conv2d_no_bias(depthwise_output, pointwise_kernel, stride=1, padding=0)
+    var output = conv2d_no_bias(
+        depthwise_output, pointwise_kernel, stride=1, padding=0
+    )
 
     return output
 
@@ -852,7 +984,7 @@ fn depthwise_separable_conv2d_backward(
     var grad_depthwise_kernel = depthwise_result.grad_b
 
     return DepthwiseSeparableConv2dBackwardResult(
-        grad_input, grad_depthwise_kernel, grad_pointwise_kernel, grad_bias
+        grad_input^, grad_depthwise_kernel^, grad_pointwise_kernel^, grad_bias^
     )
 
 
@@ -895,7 +1027,7 @@ fn depthwise_separable_conv2d_no_bias_backward(
     )
 
     return DepthwiseSeparableConv2dNoBiasBackwardResult(
-        depthwise_result.grad_a,
-        depthwise_result.grad_b,
-        grad_pointwise_kernel,
+        depthwise_result.grad_a^,
+        depthwise_result.grad_b^,
+        grad_pointwise_kernel^,
     )
