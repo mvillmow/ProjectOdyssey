@@ -30,7 +30,7 @@ See Issue #49 for details
 """
 
 # Package version
-alias VERSION = "0.1.0"
+from ..version import VERSION
 
 # ============================================================================
 # Exports - Implemented modules

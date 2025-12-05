@@ -22,7 +22,7 @@ from shared.core.extensor import ExTensor
 from shared.core.traits import Model, Loss, Optimizer
 
 # Package version
-alias VERSION = "0.1.0"
+from ..version import VERSION
 
 # ============================================================================
 # Exports - Training Components
