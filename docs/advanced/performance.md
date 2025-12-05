@@ -363,4 +363,4 @@ See Also:
 
 - [SIMD Patterns Documentation](../core/mojo-patterns.md#simd-patterns)
 - [Benchmarking SIMD Operations](#benchmarking)
-- [Example: SIMD Optimization](../../examples/performance/simd_optimization.mojo)
+- Example: `examples/performance/simd_optimization.mojo`
