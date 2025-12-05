@@ -9,7 +9,7 @@ Features:
     - Common test setup patterns
     - Assertion helpers for tensor validation
 
-This module re-exports the consolidated test models from test_models.mojo
+This module re-exports the consolidated test models from models.mojo
 for backward compatibility and provides additional fixture utilities.
 
 Example:
@@ -30,7 +30,7 @@ Example:
 """
 
 from shared.core import ExTensor, zeros, ones, full, zeros_like
-from .test_models import SimpleCNN, LinearModel
+from .models import SimpleCNN, LinearModel
 
 
 fn create_test_cnn(
