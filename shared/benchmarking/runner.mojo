@@ -49,11 +49,14 @@ struct BenchmarkConfig(Copyable, Movable):
 
 
 @fieldwise_init
-struct BenchmarkResult(Copyable, Movable, ImplicitlyCopyable):
-    """Results from a benchmark run with statistical analysis.
+struct BenchmarkStatistics(Copyable, Movable, ImplicitlyCopyable):
+    """Results from a benchmark run with statistical analysis (High-Level API).
 
     Contains timing statistics, percentiles, and throughput metrics for a
     benchmarked operation. Suitable for detailed performance reporting.
+
+    Note: This was renamed from BenchmarkResult to avoid namespace collision
+    with the low-level BenchmarkResult in result.mojo. See Issue #2457.
 
     Attributes:
         mean_latency_ms: Mean execution time in milliseconds
@@ -168,7 +171,7 @@ fn benchmark_function(
     warmup_iters: Int = 10,
     measure_iters: Int = 100,
     compute_percentiles: Bool = True,
-) raises -> BenchmarkResult:
+) raises -> BenchmarkStatistics:
     """Benchmark a function with statistical analysis.
 
     Executes a function multiple times with warmup iterations, then
@@ -183,7 +186,7 @@ fn benchmark_function(
         compute_percentiles: Whether to compute percentiles (default True)
 
     Returns:
-        BenchmarkResult with timing statistics (latencies in milliseconds)
+        BenchmarkStatistics with timing statistics (latencies in milliseconds)
 
     Raises:
         Error if benchmarking fails
@@ -256,7 +259,7 @@ fn benchmark_function(
     else:
         throughput_ops_per_sec = 0.0
 
-    return BenchmarkResult(
+    return BenchmarkStatistics(
         mean_latency_ms=mean_latency_ms,
         std_dev_ms=std_dev_ms,
         p50_ms=p50_ms,
@@ -374,11 +377,11 @@ struct BenchmarkRunner(Movable):
 # ============================================================================
 
 
-fn print_benchmark_report(result: BenchmarkResult, name: String = "Benchmark"):
+fn print_benchmark_report(result: BenchmarkStatistics, name: String = "Benchmark"):
     """Print formatted benchmark report.
 
     Args:
-        result: BenchmarkResult from benchmark_function()
+        result: BenchmarkStatistics from benchmark_function()
         name: Name of benchmarked operation (default "Benchmark")
     """
     print("")
@@ -414,14 +417,14 @@ fn print_benchmark_report(result: BenchmarkResult, name: String = "Benchmark"):
 
 
 fn print_benchmark_summary(
-    results: List[BenchmarkResult], names: List[String] = List[String]()
+    results: List[BenchmarkStatistics], names: List[String] = List[String]()
 ):
     """Print summary table of multiple benchmark results.
 
     Useful for comparing performance across multiple functions.
 
     Args:
-        results: List of BenchmarkResult objects
+        results: List of BenchmarkStatistics objects
         names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.)
     """
     print("")
@@ -494,6 +497,16 @@ fn create_benchmark_config(
         compute_percentiles=compute_percentiles,
         report_throughput=report_throughput,
     )
+
+
+# ============================================================================
+# Backward Compatibility Alias
+# ============================================================================
+
+# Alias for backward compatibility (Issue #2457)
+# The high-level BenchmarkResult was renamed to BenchmarkStatistics to avoid
+# namespace collision with the low-level BenchmarkResult in result.mojo.
+alias BenchmarkResult = BenchmarkStatistics
 
 
 # ============================================================================
