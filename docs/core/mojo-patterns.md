@@ -333,6 +333,6 @@ See the following files for complete working examples:
 
 ## References
 
-- [Mojo Manual: SIMD](https://docs.modular.com/mojo/manual/intrinsics/simd/)
-- [Mojo Manual: Vectorization](https://docs.modular.com/mojo/manual/algorithm/vectorize/)
+- [Mojo SIMD Module](https://docs.modular.com/mojo/stdlib/builtin/simd/)
+- [Mojo Vectorize Function](https://docs.modular.com/mojo/stdlib/algorithm/functional/vectorize/)
 - [sys.info: simd_width_of](https://docs.modular.com/mojo/stdlib/sys/info/)

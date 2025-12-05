@@ -354,9 +354,8 @@ fn main() raises:
 
 ## References
 
-- [Mojo Manual: SIMD](https://docs.modular.com/mojo/manual/intrinsics/simd/)
-- [Mojo Manual: Vectorization](https://docs.modular.com/mojo/manual/algorithm/vectorize/)
-- [Intel Intrinsics Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
+- [Mojo SIMD Module](https://docs.modular.com/mojo/stdlib/builtin/simd/)
+- [Mojo Vectorize Function](https://docs.modular.com/mojo/stdlib/algorithm/functional/vectorize/)
 - [Performance Optimization Guide](../core/mojo-patterns.md)
 
 See Also:
