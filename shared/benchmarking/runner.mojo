@@ -494,3 +494,128 @@ fn create_benchmark_config(
         compute_percentiles=compute_percentiles,
         report_throughput=report_throughput,
     )
+
+
+# ============================================================================
+# Legacy API (Backwards Compatibility with benchmarks/framework.mojo)
+# ============================================================================
+
+
+struct LegacyBenchmarkConfig(Copyable, Movable):
+    """Legacy benchmark configuration (backwards compatible).
+
+    Matches the old benchmarks/framework.mojo API.
+    """
+
+    var warmup_iterations: Int
+    var measure_iterations: Int
+
+    fn __init__(
+        out self,
+        warmup: Int = 100,
+        iterations: Int = 1000,
+    ):
+        """Initialize benchmark configuration.
+
+        Args:
+            warmup: Warmup iterations (default: 100)
+            iterations: Measurement iterations (default: 1000)
+        """
+        self.warmup_iterations = warmup
+        self.measure_iterations = iterations
+
+
+struct LegacyBenchmarkResult(Copyable, Movable):
+    """Legacy benchmark result with microsecond units (backwards compatible).
+
+    Matches the old benchmarks/framework.mojo API with field names in microseconds.
+    """
+
+    var name: String
+    var mean_time_us: Float64
+    var std_dev_us: Float64
+    var min_time_us: Float64
+    var max_time_us: Float64
+    var p50_us: Float64
+    var p95_us: Float64
+    var p99_us: Float64
+    var throughput_ops_per_sec: Float64
+    var memory_mb: Float64
+    var input_shape: String
+    var dtype: String
+
+    fn __init__(
+        out self,
+        name: String,
+        mean_time_us: Float64,
+        std_dev_us: Float64,
+        min_time_us: Float64,
+        max_time_us: Float64,
+        p50_us: Float64,
+        p95_us: Float64,
+        p99_us: Float64,
+        throughput_ops_per_sec: Float64,
+        memory_mb: Float64 = 0.0,
+        input_shape: String = "",
+        dtype: String = "",
+    ):
+        """Initialize legacy benchmark result."""
+        self.name = name
+        self.mean_time_us = mean_time_us
+        self.std_dev_us = std_dev_us
+        self.min_time_us = min_time_us
+        self.max_time_us = max_time_us
+        self.p50_us = p50_us
+        self.p95_us = p95_us
+        self.p99_us = p99_us
+        self.throughput_ops_per_sec = throughput_ops_per_sec
+        self.memory_mb = memory_mb
+        self.input_shape = input_shape
+        self.dtype = dtype
+
+
+fn benchmark_operation(
+    name: String,
+    operation: fn () raises -> None,
+    config: LegacyBenchmarkConfig = LegacyBenchmarkConfig(
+        warmup=100, iterations=1000
+    ),
+) raises -> LegacyBenchmarkResult:
+    """Run operation multiple times and collect statistics (legacy API).
+
+    Performs warmup phase for JIT compilation, then measures operation
+    execution time across multiple iterations. Computes mean, standard
+    deviation, percentiles, and throughput.
+
+    This function provides backwards compatibility with the old
+    benchmarks/framework.mojo API.
+
+    Args:
+        name: Descriptive name for the operation
+        operation: Function to benchmark (should be self-contained)
+        config: Benchmark configuration (warmup, iterations)
+
+    Returns:
+        LegacyBenchmarkResult with timing statistics in microseconds
+    """
+    # Use the new benchmark_function internally
+    var result = benchmark_function(
+        operation,
+        warmup_iters=config.warmup_iterations,
+        measure_iters=config.measure_iterations,
+        compute_percentiles=True,
+    )
+
+    # Convert milliseconds to microseconds for backwards compatibility
+    return LegacyBenchmarkResult(
+        name=name,
+        mean_time_us=result.mean_latency_ms * 1000.0,
+        std_dev_us=result.std_dev_ms * 1000.0,
+        min_time_us=result.min_latency_ms * 1000.0,
+        max_time_us=result.max_latency_ms * 1000.0,
+        p50_us=result.p50_ms * 1000.0,
+        p95_us=result.p95_ms * 1000.0,
+        p99_us=result.p99_ms * 1000.0,
+        throughput_ops_per_sec=result.throughput,
+        memory_mb=0.0,
+    )

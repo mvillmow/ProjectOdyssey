@@ -81,4 +81,8 @@ from .runner import (
     BenchmarkConfig,  # Configuration for benchmarking
     create_benchmark_config,  # Create default config
     BenchmarkRunner,  # Advanced runner with low-level tracking
+    # Legacy API (backwards compatibility with benchmarks/framework.mojo)
+    LegacyBenchmarkConfig,  # Legacy config with warmup/iterations params
+    LegacyBenchmarkResult,  # Legacy result with microsecond units
+    benchmark_operation,  # Legacy benchmark_operation function
 )
