@@ -32,7 +32,7 @@ from shared.training.evaluation import (
     evaluate_model_simple,
     evaluate_topk,
 )
-from tests.shared.fixtures.mock_models import SimpleMLP
+from shared.testing import SimpleMLP
 from collections import List
 
 

@@ -4,10 +4,13 @@ Provides common test setup utilities, model fixtures, and assertion helpers
 for validating neural network implementations.
 
 Features:
-    - Simple test models (CNN, Linear) for basic functionality testing
+    - Simple test models (CNN, Linear, MLP) for basic functionality testing
     - Model factory functions for consistent initialization
     - Common test setup patterns
     - Assertion helpers for tensor validation
+
+This module re-exports the consolidated test models from test_models.mojo
+for backward compatibility and provides additional fixture utilities.
 
 Example:
     from shared.testing.fixtures import create_test_cnn, create_linear_model
@@ -27,151 +30,7 @@ Example:
 """
 
 from shared.core import ExTensor, zeros, ones, full, zeros_like
-
-
-struct SimpleCNN(Copyable, Movable):
-    """Minimal CNN for testing purposes.
-
-    A very simple 2-layer CNN for testing infrastructure without the
-    complexity of real models. Useful for:
-    - Testing training loops
-    - Validating gradient computation
-    - Checking data pipeline integration
-    - Performance benchmarking
-
-    Shape flow:
-        Input: (batch_size, in_channels, height, width)
-        Output: (batch_size, num_classes)
-    """
-
-    var in_channels: Int
-    var out_channels: Int
-    var num_classes: Int
-
-    fn __init__(out self, in_channels: Int = 1, out_channels: Int = 8, num_classes: Int = 10):
-        """Initialize simple CNN.
-
-        Args:
-            in_channels: Number of input channels (default: 1 for MNIST-like)
-            out_channels: Number of output channels from first conv (default: 8)
-            num_classes: Number of output classes (default: 10)
-
-        Example:
-            var model = SimpleCNN(1, 8, 10)
-            assert_equal(model.num_classes, 10)
-        """
-        self.in_channels = in_channels
-        self.out_channels = out_channels
-        self.num_classes = num_classes
-
-    fn get_output_shape(self, batch_size: Int) -> List[Int]:
-        """Get output shape for given batch size.
-
-        Args:
-            batch_size: Number of samples in batch
-
-        Returns:
-            Output shape (batch_size, num_classes)
-        """
-        var shape = List[Int]()
-        shape.append(batch_size)
-        shape.append(self.num_classes)
-        return shape^
-
-    fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass (simplified for testing).
-
-        Creates output tensor with correct shape filled with dummy values.
-        In real implementation, this would include conv, pool, fc layers.
-
-        Args:
-            input: Input tensor (batch_size, in_channels, height, width)
-
-        Returns:
-            Output tensor (batch_size, num_classes)
-
-        Note:
-            This is a placeholder for testing. Real implementations should
-            contain actual neural network operations.
-        """
-        var batch_size = input._shape[0]
-        var output_shape = self.get_output_shape(batch_size)
-        var output = zeros(output_shape, input._dtype)
-
-        # Fill with dummy values (0.1 per element)
-        for i in range(output.numel()):
-            output._set_float64(i, 0.1)
-
-        return output
-
-
-struct LinearModel(Copyable, Movable):
-    """Simple linear model for testing.
-
-    A single fully-connected layer for basic testing of:
-    - Linear transformations
-    - Batch processing
-    - Gradient computation
-    - Loss functions
-
-    Shape flow:
-        Input: (batch_size, in_features)
-        Output: (batch_size, out_features)
-    """
-
-    var in_features: Int
-    var out_features: Int
-
-    fn __init__(out self, in_features: Int, out_features: Int):
-        """Initialize linear model.
-
-        Args:
-            in_features: Input dimension
-            out_features: Output dimension
-
-        Example:
-            var model = LinearModel(784, 10)
-            assert_equal(model.in_features, 784)
-        """
-        self.in_features = in_features
-        self.out_features = out_features
-
-    fn get_output_shape(self, batch_size: Int) -> List[Int]:
-        """Get output shape for given batch size.
-
-        Args:
-            batch_size: Number of samples in batch
-
-        Returns:
-            Output shape (batch_size, out_features)
-        """
-        var shape = List[Int]()
-        shape.append(batch_size)
-        shape.append(self.out_features)
-        return shape^
-
-    fn forward(self, input: ExTensor) raises -> ExTensor:
-        """Forward pass.
-
-        Creates output tensor with correct shape filled with zeros.
-        In real implementation, this would compute y = xW^T + b.
-
-        Args:
-            input: Input tensor (batch_size, in_features)
-
-        Returns:
-            Output tensor (batch_size, out_features)
-
-        Note:
-            This is a placeholder for testing. Real implementations should
-            contain actual linear transformation: y = matmul(input, weights^T) + bias
-        """
-        var batch_size = input._shape[0]
-        var output_shape = self.get_output_shape(batch_size)
-        var output = zeros(output_shape, input._dtype)
-
-        # Already zero-filled by zeros(), no need to fill again
-        return output
+from .test_models import SimpleCNN, LinearModel
 
 
 fn create_test_cnn(

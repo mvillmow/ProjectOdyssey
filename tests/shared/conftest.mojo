@@ -8,7 +8,7 @@ This module provides:
 
 from random import seed
 from shared.core.extensor import ExTensor
-from tests.shared.fixtures.mock_models import SimpleMLP
+from shared.testing import SimpleMLP
 
 # Re-export all assertions from shared.testing.assertions for backward compatibility
 from shared.testing.assertions import (
