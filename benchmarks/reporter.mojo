@@ -4,7 +4,7 @@ Provides utilities for printing benchmark results as formatted tables and
 exporting to JSON format for CI/CD tracking and historical analysis.
 """
 
-from benchmarks.framework import BenchmarkResult
+from shared.benchmarking import LegacyBenchmarkResult as BenchmarkResult
 from python import Python
 
 
@@ -55,7 +55,7 @@ fn print_table(results: List[BenchmarkResult]):
     print("╠════════════════════════════════════════════════════════════════════════════════════╣")
 
     for i in range(len(results)):
-        var r = results[i]
+        ref r = results[i]
 
         # Format operation name (max 30 chars)
         var name_display = r.name
@@ -110,7 +110,7 @@ fn export_json_simple(results: List[BenchmarkResult], filename: String) raises:
         json += '  "benchmarks": [\n'
 
         for i in range(len(results)):
-            var r = results[i]
+            ref r = results[i]
             json += '    {\n'
             json += '      "name": "' + r.name + '",\n'
             json += '      "mean_time_us": ' + String(r.mean_time_us) + ",\n"

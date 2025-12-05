@@ -7,7 +7,11 @@ Tests:
 4. JSON export
 """
 
-from benchmarks.framework import BenchmarkConfig, BenchmarkResult, benchmark_operation
+from shared.benchmarking import (
+    LegacyBenchmarkConfig as BenchmarkConfig,
+    LegacyBenchmarkResult as BenchmarkResult,
+    benchmark_operation,
+)
 from benchmarks.stats import compute_mean, compute_std_dev, compute_percentile
 from benchmarks.reporter import print_summary
 
@@ -84,11 +88,11 @@ fn test_multiple_benchmarks() raises:
 
     print("Running simple_loop benchmark...")
     var result1 = benchmark_operation("simple_loop", simple_loop, config)
-    results.append(result1)
+    results.append(result1^)
 
     print("Running vector_operation benchmark...")
     var result2 = benchmark_operation("vector_operation", vector_operation, config)
-    results.append(result2)
+    results.append(result2^)
 
     print_summary(results)
     print("✓ Multiple benchmarks test passed")

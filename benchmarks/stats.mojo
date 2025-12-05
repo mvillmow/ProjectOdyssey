@@ -89,7 +89,7 @@ fn compute_max(values: List[Float64]) -> Float64:
     return max_val
 
 
-fn _bubble_sort(inout values: List[Float64]):
+fn _bubble_sort(mut values: List[Float64]):
     """Simple bubble sort for small arrays.
 
     Args:
