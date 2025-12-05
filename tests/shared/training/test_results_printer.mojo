@@ -476,7 +476,7 @@ fn test_full_training_workflow_output() raises:
                 total_epochs=3,
                 batch=batch,
                 total_batches=10,
-                loss=Float32(2.5 / epoch - Float32(batch) * 0.05),
+                loss=Float32(2.5 / Float64(epoch) - Float64(batch) * 0.05),
                 learning_rate=0.01
             )
 
