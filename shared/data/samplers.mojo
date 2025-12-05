@@ -3,7 +3,17 @@
 This module provides various sampling strategies for iterating through datasets.
 """
 
-from random import random_si64, seed
+from .sampler_utils import (
+    validate_range,
+    create_range_indices,
+    set_random_seed,
+    sample_with_replacement,
+    sample_without_replacement,
+    build_cumulative_weights,
+    sample_index_from_distribution,
+    renormalize_weights,
+    generate_random_float,
+)
 
 
 # ============================================================================
@@ -59,12 +69,9 @@ struct SequentialSampler(Sampler, Copyable, Movable):
             end_index: Ending index (exclusive), -1 for end of dataset.
         """
         self.data_source_len = data_source_len
-        self.start_index = max(0, start_index)
-
-        if end_index == -1:
-            self.end_index = data_source_len
-        else:
-            self.end_index = min(data_source_len, end_index)
+        var normalized = validate_range(start_index, end_index, data_source_len)
+        self.start_index = normalized[0]
+        self.end_index = normalized[1]
 
     fn __len__(self) -> Int:
         """Return number of samples."""
@@ -73,12 +80,10 @@ struct SequentialSampler(Sampler, Copyable, Movable):
     fn __iter__(mut self) -> List[Int]:
         """Return sequential indices.
 
-        Returns:.            List of indices from start to end.
+        Returns:
+            List of indices from start to end.
         """
-        var indices = List[Int](capacity=self.__len__())
-        for i in range(self.start_index, self.end_index):
-            indices.append(i)
-        return indices^
+        return create_range_indices(self.start_index, self.end_index)^
 
 
 # ============================================================================
@@ -130,34 +135,12 @@ struct RandomSampler(Sampler, Copyable, Movable):
         Returns:
             List of randomly shuffled or sampled indices.
         """
-        # Set seed if provided
-        if self.seed_value:
-            seed(self.seed_value.value())
-
-        var indices = List[Int](capacity=self.num_samples)
+        set_random_seed(self.seed_value)
 
         if self.replacement:
-            # Sample with replacement
-            for _ in range(self.num_samples):
-                indices.append(Int(random_si64(0, self.data_source_len - 1)))
+            return sample_with_replacement(self.data_source_len, self.num_samples)^
         else:
-            # Create shuffled indices
-            var all_indices = List[Int](capacity=self.data_source_len)
-            for i in range(self.data_source_len):
-                all_indices.append(i)
-
-            # Fisher-Yates shuffle
-            for i in range(self.data_source_len - 1, 0, -1):
-                var j = Int(random_si64(0, i))
-                var temp = all_indices[i]
-                all_indices[i] = all_indices[j]
-                all_indices[j] = temp
-
-            # Take first num_samples
-            for i in range(min(self.num_samples, self.data_source_len)):
-                indices.append(all_indices[i])
-
-        return indices^
+            return sample_without_replacement(self.data_source_len, self.num_samples)^
 
 
 # ============================================================================
@@ -223,49 +206,25 @@ struct WeightedSampler(Sampler, Copyable, Movable):
     fn __iter__(mut self) -> List[Int]:
         """Return weighted random indices.
 
-        Returns:.            List of indices sampled according to weights.
+        Returns:
+            List of indices sampled according to weights.
         """
-        # Set seed if provided
-        if self.seed_value:
-            seed(self.seed_value.value())
+        set_random_seed(self.seed_value)
 
         var indices = List[Int](capacity=self.num_samples)
 
-        # Build cumulative weights for sampling
-        var cumsum = List[Float64](capacity=len(self.weights))
-        var total = Float64(0)
-        for i in range(len(self.weights)):
-            total += self.weights[i]
-            cumsum.append(total)
-
         # Sample indices
         for _ in range(self.num_samples):
-            var r = Float64(random_si64(0, 1000000)) / 1000000.0  # Random [0, 1)
+            var r = generate_random_float()
 
-            # Binary search for index
-            var idx = 0
-            for i in range(len(cumsum)):
-                if r < cumsum[i]:
-                    idx = i
-                    break
-
+            # Get index from cumulative distribution
+            var cumsum = build_cumulative_weights(self.weights)
+            var idx = sample_index_from_distribution(cumsum, r)
             indices.append(idx)
 
             # If without replacement, set weight to 0 and renormalize
             if not self.replacement:
                 self.weights[idx] = 0
-                # Renormalize remaining weights
-                total = Float64(0)
-                for i in range(len(self.weights)):
-                    total += self.weights[i]
-                if total > 0:
-                    for i in range(len(self.weights)):
-                        self.weights[i] = self.weights[i] / total
-                    # Rebuild cumsum
-                    cumsum.clear()
-                    total = Float64(0)
-                    for i in range(len(self.weights)):
-                        total += self.weights[i]
-                        cumsum.append(total)
+                self.weights = renormalize_weights(self.weights)
 
         return indices^
