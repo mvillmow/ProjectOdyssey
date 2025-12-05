@@ -17,8 +17,8 @@ Design Philosophy:
 """
 
 from math import sqrt
-from ..core.extensor import ExTensor, zeros_like, full_like
-from ..core.arithmetic_simd import multiply_simd
+from shared.core.extensor import ExTensor, zeros_like, full_like
+from shared.core.arithmetic_simd import multiply_simd
 
 
 fn initialize_optimizer_state(
@@ -54,7 +54,7 @@ fn initialize_optimizer_state(
         For SGD with momentum, use num_states=1 (one velocity buffer per param)
         For Adam variants, use num_states=2 (m and v buffers per param)
     """
-    from ..core.extensor import zeros
+    from shared.core.extensor import zeros
 
     var all_states = List[List[ExTensor]]()
 
@@ -101,7 +101,7 @@ fn initialize_optimizer_state_from_params(
         var states = initialize_optimizer_state_from_params(params, num_states=2)
         ```
     """
-    from ..core.extensor import zeros
+    from shared.core.extensor import zeros
 
     var all_states = List[List[ExTensor]]()
 
