@@ -242,7 +242,7 @@ fn test_validate_optimizer_state_valid() raises:
     assert_true(True)  # Mark as passed
 
 
-fn test_main():
+fn test_main() raises:
     """Run all tests."""
     test_initialize_optimizer_state()
     test_initialize_optimizer_state_from_params()
