@@ -36,7 +36,7 @@ fn test_zeros_tensor_float32() raises:
     assert_shape_equal(tensor, shape)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Check all values are zero
     for i in range(50):
@@ -53,7 +53,7 @@ fn test_zeros_tensor_int32() raises:
     assert_shape_equal(tensor, shape)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.int32)
+    assert_dtype_equal(tensor.dtype(), DType.int32)
 
     # Check all values are zero
     for i in range(20):
@@ -89,7 +89,7 @@ fn test_ones_tensor_float32() raises:
     assert_shape_equal(tensor, shape)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Check all values are one
     for i in range(50):
@@ -106,7 +106,7 @@ fn test_ones_tensor_int32() raises:
     assert_shape_equal(tensor, shape)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.int32)
+    assert_dtype_equal(tensor.dtype(), DType.int32)
 
     # Check all values are one
     for i in range(20):
@@ -143,7 +143,7 @@ fn test_full_tensor_float32_positive() raises:
     assert_shape_equal(tensor, shape)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Check all values match fill_value
     for i in range(50):
@@ -170,7 +170,7 @@ fn test_full_tensor_int32() raises:
     var tensor = full_tensor(shape, fill_value, DType.int32)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.int32)
+    assert_dtype_equal(tensor.dtype(), DType.int32)
 
     # Check all values match fill_value (as int)
     for i in range(20):
@@ -192,7 +192,7 @@ fn test_random_tensor_uniform_bounds_float32() raises:
 
     # Check shape and dtype
     assert_shape_equal(tensor, shape)
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Check all values are within bounds
     for i in range(5000):
@@ -221,7 +221,7 @@ fn test_random_tensor_int32() raises:
     var tensor = random_tensor(shape, DType.int32, low, high)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.int32)
+    assert_dtype_equal(tensor.dtype(), DType.int32)
 
     # Check values are integers in range
     for i in range(100):
@@ -257,7 +257,7 @@ fn test_random_normal_tensor_default_params() raises:
 
     # Check shape and dtype
     assert_shape_equal(tensor, shape)
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Calculate empirical mean and std (rough check)
     var sum_val = 0.0
@@ -287,7 +287,7 @@ fn test_random_normal_tensor_custom_mean_std() raises:
 
     # Check shape and dtype
     assert_shape_equal(tensor, shape)
-    assert_dtype_equal(tensor, DType.float32)
+    assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Calculate empirical mean and std
     var sum_val = 0.0
@@ -314,7 +314,7 @@ fn test_random_normal_tensor_int32() raises:
     var tensor = random_normal_tensor(shape, DType.int32, mean=0.0, std=1.0)
 
     # Check dtype
-    assert_dtype_equal(tensor, DType.int32)
+    assert_dtype_equal(tensor.dtype(), DType.int32)
 
     # Values should be reasonable integers (some negatives, some positive)
     var has_positive = False
@@ -461,11 +461,11 @@ fn test_tensor_factory_workflow() raises:
     assert_shape_equal(normal, shape)
 
     # Verify all have correct dtype
-    assert_dtype_equal(zeros, DType.float32)
-    assert_dtype_equal(ones, DType.float32)
-    assert_dtype_equal(fives, DType.float32)
-    assert_dtype_equal(random, DType.float32)
-    assert_dtype_equal(normal, DType.float32)
+    assert_dtype_equal(zeros.dtype(), DType.float32)
+    assert_dtype_equal(ones.dtype(), DType.float32)
+    assert_dtype_equal(fives.dtype(), DType.float32)
+    assert_dtype_equal(random.dtype(), DType.float32)
+    assert_dtype_equal(normal.dtype(), DType.float32)
 
 
 fn test_tensor_factory_all_dtypes() raises:
@@ -483,6 +483,6 @@ fn test_tensor_factory_all_dtypes() raises:
         var ones = ones_tensor(shape, dtype)
         var full = full_tensor(shape, 3.0, dtype)
 
-        assert_dtype_equal(zeros, dtype)
-        assert_dtype_equal(ones, dtype)
-        assert_dtype_equal(full, dtype)
+        assert_dtype_equal(zeros.dtype(), dtype)
+        assert_dtype_equal(ones.dtype(), dtype)
+        assert_dtype_equal(full.dtype(), dtype)

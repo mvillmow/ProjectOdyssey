@@ -49,7 +49,7 @@ fn zeros_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var weights = zeros_tensor(List[Int](10, 5), DType.float32)
         # Creates 10x5 tensor filled with zeros
     """
-    return zeros(shape, dtype)^
+    return zeros(shape, dtype)
 
 
 fn ones_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
@@ -66,7 +66,7 @@ fn ones_tensor(shape: List[Int], dtype: DType) raises -> ExTensor:
         var weights = ones_tensor(List[Int](10, 5), DType.float32)
         # Creates 10x5 tensor filled with ones
     """
-    return ones(shape, dtype)^
+    return ones(shape, dtype)
 
 
 fn full_tensor(
@@ -86,7 +86,7 @@ fn full_tensor(
         var weights = full_tensor(List[Int](10, 5), 3.14, DType.float32)
         # Creates 10x5 tensor filled with 3.14
     """
-    return full(shape, fill_value, dtype)^
+    return full(shape, fill_value, dtype)
 
 
 fn random_tensor(
