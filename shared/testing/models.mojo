@@ -397,7 +397,7 @@ struct SimpleLinearModel:
 
             output.append(sum)
 
-        return output
+        return output^
 
     fn num_parameters(self) -> Int:
         """Get total number of parameters.
