@@ -12,7 +12,7 @@ Tests cover:
 These tests verify the common utilities available to all optimizer implementations.
 """
 
-from testing import assert_true, assert_almost_equal, assert_equal
+from tests.shared.conftest import assert_true, assert_almost_equal, assert_equal
 from shared.core.extensor import ExTensor, zeros, ones, full, zeros_like
 from shared.training.optimizers import (
     initialize_optimizer_state,
