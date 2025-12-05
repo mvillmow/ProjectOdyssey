@@ -16,11 +16,24 @@ from collections import List
 
 
 # Backward compatibility aliases using generic gradient containers
+# DEPRECATED: Use GradientTriple directly instead of Conv2dBackwardResult
+# These aliases are maintained for backward compatibility during type consolidation.
+# See ADR-002 for the gradient struct return types design decision.
 alias Conv2dBackwardResult = GradientTriple
+
+# DEPRECATED: Use GradientPair directly instead of Conv2dNoBiasBackwardResult
 alias Conv2dNoBiasBackwardResult = GradientPair
+
+# DEPRECATED: Use GradientTriple directly instead of DepthwiseConv2dBackwardResult
 alias DepthwiseConv2dBackwardResult = GradientTriple
+
+# DEPRECATED: Use GradientPair directly instead of DepthwiseConv2dNoBiasBackwardResult
 alias DepthwiseConv2dNoBiasBackwardResult = GradientPair
+
+# DEPRECATED: Use GradientQuad directly instead of DepthwiseSeparableConv2dBackwardResult
 alias DepthwiseSeparableConv2dBackwardResult = GradientQuad
+
+# DEPRECATED: Use GradientTriple directly instead of DepthwiseSeparableConv2dNoBiasBackwardResult
 alias DepthwiseSeparableConv2dNoBiasBackwardResult = GradientTriple
 
 
