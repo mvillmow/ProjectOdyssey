@@ -505,6 +505,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Create view by explicitly copying (increments refcount via __copyinit__)
         var result = self.copy()
+        result._is_view = True  # Mark as view since it shares data with original
 
         # Update shape
         result._shape = List[Int]()
@@ -587,6 +588,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Create view by explicitly copying (increments refcount via __copyinit__)
         var result = self.copy()
+        result._is_view = True  # Mark as view since it shares data with original
 
         # Update shape with sliced dimension
         result._shape = List[Int]()
