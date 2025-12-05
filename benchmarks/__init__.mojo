@@ -28,18 +28,18 @@ Core benchmarking types are in shared.benchmarking:
 
 Usage:
     from shared.benchmarking import (
-        LegacyBenchmarkConfig as BenchmarkConfig,
-        LegacyBenchmarkResult as BenchmarkResult,
+        LegacyBenchmarkConfig,
+        LegacyBenchmarkResult,
         benchmark_operation,
     )
     from benchmarks import stats, reporter
 
-    var config = BenchmarkConfig(warmup=100, iterations=1000)
+    var config = LegacyBenchmarkConfig(warmup=100, iterations=1000)
     var result = benchmark_operation(
         "relu_forward",
         operation=fn() raises { _ = relu(tensor) },
         config=config
     )
-    reporter.print_summary(results)
-    reporter.export_json_simple(results, "results.json")
+    reporter.print_summary([result])
+    reporter.export_json_simple([result], "results.json")
 """

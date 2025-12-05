@@ -4,7 +4,7 @@ Provides utilities for printing benchmark results as formatted tables and
 exporting to JSON format for CI/CD tracking and historical analysis.
 """
 
-from shared.benchmarking import LegacyBenchmarkResult as BenchmarkResult
+from shared.benchmarking import LegacyBenchmarkResult
 from python import Python
 
 
@@ -44,7 +44,7 @@ fn format_time(value_us: Float64) -> String:
         return String(value_us / 1_000_000.0) + " s"
 
 
-fn print_table(results: List[BenchmarkResult]):
+fn print_table(results: List[LegacyBenchmarkResult]):
     """Print benchmark results as formatted table.
 
     Args:
@@ -89,7 +89,7 @@ fn print_table(results: List[BenchmarkResult]):
     print("╚════════════════════════════════════════════════════════════════════════════════════╝")
 
 
-fn export_json_simple(results: List[BenchmarkResult], filename: String) raises:
+fn export_json_simple(results: List[LegacyBenchmarkResult], filename: String) raises:
     """Export results to JSON file.
 
     Uses Python interop for file I/O (Mojo v0.25.7 limitation).
@@ -144,7 +144,7 @@ fn export_json_simple(results: List[BenchmarkResult], filename: String) raises:
         raise Error("Export failed")
 
 
-fn print_summary(results: List[BenchmarkResult]):
+fn print_summary(results: List[LegacyBenchmarkResult]):
     """Print summary statistics.
 
     Args:
