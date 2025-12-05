@@ -1,7 +1,21 @@
-"""ML Odyssey Benchmarking Framework.
+"""ML Odyssey Benchmarking Framework (DEPRECATED).
 
-Provides comprehensive benchmarking infrastructure for measuring operation
-performance with statistical confidence.
+DEPRECATED - Use shared.benchmarking for all new benchmarking code.
+
+This package contains legacy benchmark utilities that have been consolidated
+into the shared.benchmarking module. The legacy modules are maintained for
+backward compatibility but should not be used for new code.
+
+For new benchmarking code, import from shared.benchmarking:
+
+    from shared.benchmarking import (
+        benchmark_function,
+        BenchmarkConfig,
+        BenchmarkResult,
+        BenchmarkRunner,
+        print_benchmark_report,
+        print_benchmark_summary,
+    )
 
 Modules:
 - stats: Statistical utilities (mean, std_dev, percentiles, min/max)
