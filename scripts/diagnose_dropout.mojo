@@ -2,7 +2,7 @@
 
 from shared.core.extensor import ExTensor, zeros, ones, ones_like
 from shared.core.dropout import dropout, dropout_backward
-from tests.helpers.gradient_checking import check_gradient
+from shared.testing import check_gradient
 
 fn main() raises:
     """Diagnose dropout gradient checking failure."""

@@ -25,7 +25,7 @@ Features:
 """
 
 from shared.core import ExTensor, zeros
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_test
 from shared.training.metrics import evaluate_with_predict, top1_accuracy, per_class_accuracy, evaluate_logits_batch
 from shared.utils.arg_parser import ArgumentParser, ArgumentSpec
@@ -239,7 +239,9 @@ fn main() raises:
 
     # Initialize model
     print("Initializing ResNet-18 model...")
-    var model = ResNet18(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var num_classes = dataset_info.num_classes()
+    var model = ResNet18(num_classes=num_classes)
     print("  Model architecture: ResNet-18")
     print("  Parameters: ~11M")
     print()

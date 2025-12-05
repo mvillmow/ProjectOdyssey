@@ -35,7 +35,7 @@ from shared.core.reduction import (
     max_reduce_backward,
     min_reduce_backward,
 )
-from tests.helpers.gradient_checking import check_gradient
+from shared.testing import check_gradient
 
 
 # ============================================================================

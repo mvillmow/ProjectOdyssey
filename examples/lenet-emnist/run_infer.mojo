@@ -15,7 +15,7 @@ Arguments:
 """
 
 from model import LeNet5
-from shared.data import load_idx_labels, load_idx_images, normalize_images
+from shared.data import load_idx_labels, load_idx_images, normalize_images, DatasetInfo
 from shared.core import ExTensor, zeros
 from shared.utils.arg_parser import ArgumentParser
 from shared.training.metrics import top1_accuracy, AccuracyMetric
@@ -273,7 +273,8 @@ fn main() raises:
 
     # Initialize and load model
     print("Loading model from", config.checkpoint_dir, "...")
-    var model = LeNet5(num_classes=47)
+    var dataset_info = DatasetInfo("emnist_balanced")
+    var model = LeNet5(num_classes=dataset_info.num_classes())
     model.load_weights(config.checkpoint_dir)
     print("  Model loaded successfully")
     print()

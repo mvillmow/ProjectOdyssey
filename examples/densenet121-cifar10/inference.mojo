@@ -1,7 +1,7 @@
 """Inference Script for DenseNet-121 on CIFAR-10"""
 
 from shared.core import ExTensor, zeros
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_test
 from shared.training.metrics import evaluate_logits_batch
 from model import DenseNet121
@@ -147,7 +147,8 @@ fn main() raises:
     print()
 
     print("Initializing DenseNet-121 model...")
-    var model = DenseNet121(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = DenseNet121(num_classes=dataset_info.num_classes())
     print("  Model: DenseNet-121 (121 layers, dense connectivity)")
     print("  Parameters: ~7M")
     print()

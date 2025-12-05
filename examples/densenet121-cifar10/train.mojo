@@ -12,7 +12,7 @@ Full implementation would require ~3000 lines. Consider automatic differentiatio
 """
 
 from shared.core import ExTensor, zeros, cross_entropy
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_train
 from model import DenseNet121
 
@@ -28,7 +28,8 @@ fn main() raises:
     print("Training samples: " + str(train_images.shape()[0]))
     print()
 
-    var model = DenseNet121(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = DenseNet121(num_classes=dataset_info.num_classes())
     print("Model: DenseNet-121")
     print("Total layers: 121")
     print("Dense connections: 549")

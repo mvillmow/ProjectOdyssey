@@ -28,7 +28,7 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
 from shared.training.loops import TrainingLoop
-from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices
+from shared.data import extract_batch_pair, compute_num_batches, get_batch_indices, DatasetInfo
 from shared.utils.arg_parser import create_training_parser
 from shared.training.metrics.evaluate import evaluate_with_predict
 
@@ -516,7 +516,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing VGG-16 model...")
-    var model = VGG16(num_classes=10, dropout_rate=0.5)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = VGG16(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
     print("  Model initialized with", model.num_classes, "classes")
     print("  Dropout rate:", model.dropout_rate)
     print()

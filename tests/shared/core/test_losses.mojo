@@ -24,7 +24,7 @@ from shared.core.loss import hinge_loss, hinge_loss_backward
 from shared.core.loss import focal_loss, focal_loss_backward
 from shared.core.loss import kl_divergence, kl_divergence_backward
 from shared.core.reduction import mean
-from tests.helpers.gradient_checking import check_gradient
+from shared.testing import check_gradient
 
 
 fn test_binary_cross_entropy_perfect_prediction() raises:

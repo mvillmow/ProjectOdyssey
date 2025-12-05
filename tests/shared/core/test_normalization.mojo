@@ -21,7 +21,7 @@ from tests.shared.conftest import (
     assert_true,
 )
 from tests.shared.conftest import TestFixtures
-from tests.helpers.gradient_checking import (
+from shared.testing import (
     compute_numerical_gradient,
     assert_gradients_close,
 )

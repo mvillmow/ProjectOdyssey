@@ -43,7 +43,7 @@ from shared.core import (
     global_avgpool2d_backward,
     cross_entropy_backward,
 )
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_train
 from model import MobileNetV1
 
@@ -192,7 +192,8 @@ fn main() raises:
     print()
 
     print("Initializing MobileNetV1 model...")
-    var model = MobileNetV1(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = MobileNetV1(num_classes=dataset_info.num_classes())
     print("  Model architecture: MobileNetV1")
     print("  Parameters: ~4.2M")
     print("  Depthwise separable blocks: 13")

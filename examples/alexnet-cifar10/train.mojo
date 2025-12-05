@@ -28,6 +28,7 @@ from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.schedulers import step_lr
 from shared.utils.arg_parser import create_training_parser
 from shared.training.metrics import evaluate_with_predict
+from shared.data import DatasetInfo
 from collections import List
 
 
@@ -426,7 +427,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing AlexNet model...")
-    var model = AlexNet(num_classes=10, dropout_rate=0.5)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = AlexNet(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
     print("  Model initialized with", model.num_classes, "classes")
     print("  Dropout rate:", model.dropout_rate)
     print()

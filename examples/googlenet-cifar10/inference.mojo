@@ -17,7 +17,7 @@ Features:
 """
 
 from shared.core import ExTensor, zeros
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_test
 from shared.training.metrics import evaluate_logits_batch
 from model import GoogLeNet
@@ -195,7 +195,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing GoogLeNet model...")
-    var model = GoogLeNet(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = GoogLeNet(num_classes=dataset_info.num_classes())
     print("  Model architecture: GoogLeNet (Inception-v1)")
     print("  Parameters: ~6.8M")
     print("  Inception modules: 9")

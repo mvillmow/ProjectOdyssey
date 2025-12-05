@@ -9,7 +9,7 @@ Usage:
 from shared.core import ExTensor, zeros
 from shared.data.formats import load_cifar10_batch
 from shared.data.datasets import load_cifar10_test
-from shared.data import extract_batch_pair
+from shared.data import extract_batch_pair, DatasetInfo
 from shared.training.metrics import evaluate_with_predict
 from model import VGG16
 from shared.utils.arg_parser import ArgumentParser
@@ -96,7 +96,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing VGG-16 model...")
-    var model = VGG16(num_classes=10, dropout_rate=0.5)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = VGG16(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
     print("Model initialized")
     print()
 

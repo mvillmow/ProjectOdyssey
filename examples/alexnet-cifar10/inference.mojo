@@ -17,6 +17,7 @@ References:
 
 from model import AlexNet
 from shared.data.datasets import load_cifar10_test
+from shared.data import DatasetInfo
 from shared.core import ExTensor
 from shared.utils.arg_parser import ArgumentParser
 from shared.training.metrics import evaluate_with_predict
@@ -205,7 +206,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing AlexNet model...")
-    var model = AlexNet(num_classes=10, dropout_rate=0.5)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = AlexNet(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
     print("  Model initialized with", model.num_classes, "classes")
     print()
 

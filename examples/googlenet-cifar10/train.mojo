@@ -57,6 +57,7 @@ from shared.data import (
     load_cifar10_train_batches,
     extract_batch_pair,
     compute_num_batches,
+    DatasetInfo,
 )
 from shared.data.datasets import load_cifar10_train
 from model import GoogLeNet, InceptionModule
@@ -417,7 +418,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing GoogLeNet model...")
-    var model = GoogLeNet(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = GoogLeNet(num_classes=dataset_info.num_classes())
     print("  Model architecture: GoogLeNet (Inception-v1)")
     print("  Parameters: ~6.8M")
     print("  Inception modules: 9")

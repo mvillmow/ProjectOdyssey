@@ -30,7 +30,7 @@ from shared.core.loss import (
     mean_squared_error,
     mean_squared_error_backward,
 )
-from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
+from shared.testing import check_gradient, compute_numerical_gradient, assert_gradients_close
 
 
 # ============================================================================

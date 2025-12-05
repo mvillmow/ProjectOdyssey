@@ -13,7 +13,7 @@ Features:
 """
 
 from shared.core import ExTensor, zeros
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_test
 from shared.training.metrics import evaluate_logits_batch
 from model import MobileNetV1
@@ -138,7 +138,8 @@ fn main() raises:
     print()
 
     print("Initializing MobileNetV1 model...")
-    var model = MobileNetV1(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var model = MobileNetV1(num_classes=dataset_info.num_classes())
     print("  Model architecture: MobileNetV1")
     print("  Parameters: ~4.2M")
     print("  Key feature: Depthwise separable convolutions")

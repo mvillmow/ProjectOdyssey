@@ -21,7 +21,7 @@ from tests.shared.conftest import (
 from tests.shared.conftest import TestFixtures
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 from shared.core.dropout import dropout, dropout2d, dropout_backward, dropout2d_backward
-from tests.helpers.gradient_checking import check_gradient
+from shared.testing import check_gradient
 
 
 # ============================================================================

@@ -47,7 +47,7 @@ from shared.core.elementwise import (
     log10_backward,
     log2_backward,
 )
-from tests.helpers.gradient_checking import check_gradient
+from shared.testing import check_gradient
 from math import sqrt as math_sqrt, pi
 
 

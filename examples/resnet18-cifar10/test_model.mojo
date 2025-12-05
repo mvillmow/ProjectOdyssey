@@ -10,6 +10,8 @@ Shared Modules Used:
 from model import ResNet18
 from shared.core import ExTensor, zeros
 from shared.utils.serialization import save_tensor, load_tensor
+from shared.data import DatasetInfo
+from collections import List
 
 fn main() raises:
     print("Testing ResNet-18 Model")
@@ -17,7 +19,9 @@ fn main() raises:
 
     # Create model
     print("Initializing ResNet-18...")
-    var model = ResNet18(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var num_classes = dataset_info.num_classes()
+    var model = ResNet18(num_classes=num_classes)
     print("✓ Model initialized")
 
     # Create dummy input

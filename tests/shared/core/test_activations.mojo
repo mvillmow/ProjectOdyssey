@@ -51,7 +51,7 @@ from shared.core.activation import (
     elu_backward,
     GradientPair,
 )
-from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
+from shared.testing import check_gradient, compute_numerical_gradient, assert_gradients_close
 from math import tanh as math_tanh, exp as math_exp
 
 

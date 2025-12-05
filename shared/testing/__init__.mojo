@@ -44,7 +44,10 @@ from .assertions import (
 from .gradient_checker import (
     check_gradients,
     check_gradients_verbose,
-    relative_error
+    relative_error,
+    check_gradient,
+    compute_numerical_gradient,
+    assert_gradients_close
 )
 
 from .data_generators import (

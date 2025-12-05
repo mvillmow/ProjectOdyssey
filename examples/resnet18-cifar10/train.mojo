@@ -37,7 +37,7 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.normalization import batch_norm2d, batch_norm2d_backward
 from shared.core.arithmetic import add, add_backward
-from shared.data import extract_batch_pair, compute_num_batches
+from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_train, load_cifar10_test
 from shared.training.optimizers import sgd_momentum_update_inplace
 from shared.training.metrics import evaluate_with_predict, top1_accuracy
@@ -275,7 +275,9 @@ fn main() raises:
 
     # Initialize model
     print("Initializing ResNet-18 model...")
-    var model = ResNet18(num_classes=10)
+    var dataset_info = DatasetInfo("cifar10")
+    var num_classes = dataset_info.num_classes()
+    var model = ResNet18(num_classes=num_classes)
     print("  Total trainable parameters: 84")
     print("  Model size: ~11M parameters (actual tensor elements)")
     print()

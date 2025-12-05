@@ -38,7 +38,7 @@ from shared.core.matrix import (
     matmul_backward,
     transpose_backward,
 )
-from tests.helpers.gradient_checking import check_gradient, compute_numerical_gradient, assert_gradients_close
+from shared.testing import check_gradient, compute_numerical_gradient, assert_gradients_close
 
 
 # ============================================================================
