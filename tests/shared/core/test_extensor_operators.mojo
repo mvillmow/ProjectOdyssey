@@ -291,9 +291,9 @@ fn test_combined_unary_binary_ops() raises:
     var a = full(List[Int](2, 2), 2.0, DType.float32)
     var b = full(List[Int](2, 2), -3.0, DType.float32)
 
-    # Compute: a.__abs__() + abs(b) = 2.0 + 3.0 = 5.0
+    # Compute: a.__abs__() + b.__abs__() = 2.0 + 3.0 = 5.0
     var abs_a = a.__abs__()
-    var abs_b = abs(b)
+    var abs_b = b.__abs__()
     var result = abs_a + abs_b
 
     # Verify result
