@@ -430,6 +430,18 @@ from .utils import (
 )
 
 # ============================================================================
+# Tensor Validation Functions
+# ============================================================================
+
+from .validation import (
+    validate_tensor_shape,
+    validate_tensor_dtype,
+    validate_matching_tensors,
+    validate_2d_input,
+    validate_4d_input,
+)
+
+# ============================================================================
 # Module Interface for Layer Composition
 # ============================================================================
 
