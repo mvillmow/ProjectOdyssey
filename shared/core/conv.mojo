@@ -1026,8 +1026,12 @@ fn depthwise_separable_conv2d_no_bias_backward(
         grad_depthwise_output, x, depthwise_kernel, stride, padding
     )
 
+    # Extract fields before constructing result
+    var grad_input = depthwise_result.grad_a
+    var grad_depthwise_kernel = depthwise_result.grad_b
+
     return DepthwiseSeparableConv2dNoBiasBackwardResult(
-        depthwise_result.grad_a^,
-        depthwise_result.grad_b^,
+        grad_input^,
+        grad_depthwise_kernel^,
         grad_pointwise_kernel^,
     )
