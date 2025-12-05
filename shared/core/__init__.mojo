@@ -80,6 +80,32 @@ from .defaults import (
 )
 
 # ============================================================================
+# Mathematical Constants
+# ============================================================================
+
+from .math_constants import (
+    PI,
+    SQRT_2,
+    SQRT_2_OVER_PI,
+    INV_SQRT_2PI,
+    GELU_COEFF,
+    LN2,
+    LN10,
+)
+
+# ============================================================================
+# Numerical Stability Constants
+# ============================================================================
+
+from .numerical_constants import (
+    EPSILON_DIV,
+    EPSILON_LOSS,
+    EPSILON_NORM,
+    GRADIENT_MAX_NORM,
+    GRADIENT_MIN_NORM,
+)
+
+# ============================================================================
 # Core Tensor Type and Creation Functions
 # ============================================================================
 
