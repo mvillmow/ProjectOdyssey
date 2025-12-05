@@ -337,3 +337,28 @@ fn test_operators_preserve_shape() raises:
 
     var abs_result = a.__abs__()
     assert_equal(len(abs_result.shape()), 3)
+
+
+fn main() raises:
+    """Run all tests."""
+    test_radd_tensors()
+    test_rsub_tensors()
+    test_rmul_tensors()
+    test_rtruediv_tensors()
+    test_iadd_basic()
+    test_isub_basic()
+    test_imul_basic()
+    test_itruediv_basic()
+    test_inplace_operators_chain()
+    test_neg_basic()
+    test_neg_negative_values()
+    test_neg_zeros()
+    test_pos_basic()
+    test_pos_preserves_values()
+    test_abs_positive_values()
+    test_abs_negative_values()
+    test_abs_mixed_values()
+    test_abs_zeros()
+    test_combined_unary_binary_ops()
+    test_double_negation()
+    test_operators_preserve_shape()
