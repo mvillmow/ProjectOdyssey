@@ -56,6 +56,24 @@ imports to be uncommented as Issue #49 progresses. See Issue #49 for details
 from ..version import VERSION
 
 # ============================================================================
+# Default Hyperparameters
+# ============================================================================
+
+from .defaults import (
+    DEFAULT_LEAKY_RELU_ALPHA,
+    DEFAULT_ELU_ALPHA,
+    DEFAULT_HARD_TANH_MIN,
+    DEFAULT_HARD_TANH_MAX,
+    DEFAULT_DROPOUT_RATE,
+    DEFAULT_BATCHNORM_MOMENTUM,
+    DEFAULT_UNIFORM_LOW,
+    DEFAULT_UNIFORM_HIGH,
+    DEFAULT_AUGMENTATION_PROB,
+    DEFAULT_TEXT_AUGMENTATION_PROB,
+    DEFAULT_RANDOM_SEED,
+)
+
+# ============================================================================
 # Core Tensor Type and Creation Functions
 # ============================================================================
 
