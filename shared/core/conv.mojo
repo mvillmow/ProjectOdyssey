@@ -9,30 +9,17 @@ from .extensor import ExTensor, zeros
 from .arithmetic import add
 from .reduction import sum as reduce_sum
 from .shape import conv2d_output_shape
+from .gradient_types import GradientPair, GradientTriple
 from collections import List
 # max is now a builtin in Mojo - no import needed
 
 
-struct Conv2dBackwardResult(Movable):
-    """Result struct for conv2d_backward function.
-
-    Holds the three gradient tensors returned by the backward pass.
-    """
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-    var grad_bias: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
-        """Initialize the result struct with the three gradients."""
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-        self.grad_bias = grad_bias^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        """Move constructor."""
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
-        self.grad_bias = existing.grad_bias^
+# Backward compatibility aliases using generic gradient containers
+alias Conv2dBackwardResult = GradientTriple
+alias Conv2dNoBiasBackwardResult = GradientPair
+alias DepthwiseConv2dBackwardResult = GradientTriple
+alias DepthwiseConv2dNoBiasBackwardResult = GradientPair
+alias DepthwiseSeparableConv2dNoBiasBackwardResult = GradientTriple
 
 
 fn conv2d(
@@ -343,25 +330,6 @@ fn conv2d_backward(
     return Conv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
 
 
-struct Conv2dNoBiasBackwardResult(Movable):
-    """Result struct for conv2d_no_bias_backward function.
-
-    Holds the two gradient tensors (input and kernel only).
-    """
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
-        """Initialize the result struct with the two gradients."""
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        """Move constructor."""
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
-
-
 fn conv2d_no_bias_backward(
     grad_output: ExTensor,
     x: ExTensor,
@@ -386,28 +354,6 @@ fn conv2d_no_bias_backward(
     var grad_input_copy = result.grad_input
     var grad_kernel_copy = result.grad_kernel
     return Conv2dNoBiasBackwardResult(grad_input_copy^, grad_kernel_copy^)
-
-
-struct DepthwiseConv2dBackwardResult(Movable):
-    """Result struct for depthwise_conv2d_backward function.
-
-    Holds the three gradient tensors returned by the backward pass.
-    """
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-    var grad_bias: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
-        """Initialize the result struct with the three gradients."""
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-        self.grad_bias = grad_bias^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        """Move constructor."""
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
-        self.grad_bias = existing.grad_bias^
 
 
 fn depthwise_conv2d(
@@ -698,20 +644,6 @@ fn depthwise_conv2d_backward(
     return DepthwiseConv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
 
 
-struct DepthwiseConv2dNoBiasBackwardResult(Movable):
-    """Result struct for depthwise_conv2d_no_bias_backward function."""
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
-
-
 fn depthwise_conv2d_no_bias_backward(
     grad_output: ExTensor,
     x: ExTensor,
@@ -922,29 +854,6 @@ fn depthwise_separable_conv2d_backward(
     return DepthwiseSeparableConv2dBackwardResult(
         grad_input, grad_depthwise_kernel, grad_pointwise_kernel, grad_bias
     )
-
-
-struct DepthwiseSeparableConv2dNoBiasBackwardResult(Movable):
-    """Result container for depthwise_separable_conv2d_no_bias_backward."""
-
-    var grad_input: ExTensor
-    var grad_depthwise_kernel: ExTensor
-    var grad_pointwise_kernel: ExTensor
-
-    fn __init__(
-        out self,
-        grad_input: ExTensor,
-        grad_depthwise_kernel: ExTensor,
-        grad_pointwise_kernel: ExTensor,
-    ):
-        self.grad_input = grad_input
-        self.grad_depthwise_kernel = grad_depthwise_kernel
-        self.grad_pointwise_kernel = grad_pointwise_kernel
-
-    fn __moveinit__(out self, owned existing: Self):
-        self.grad_input = existing.grad_input^
-        self.grad_depthwise_kernel = existing.grad_depthwise_kernel^
-        self.grad_pointwise_kernel = existing.grad_pointwise_kernel^
 
 
 fn depthwise_separable_conv2d_no_bias_backward(

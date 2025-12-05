@@ -130,6 +130,7 @@ from .types.bf8 import BF8
 from .gradient_types import (
     GradientPair,
     GradientTriple,
+    GradientQuad,
 )
 
 # ============================================================================

@@ -8,47 +8,12 @@ from .extensor import ExTensor
 from .matrix import matmul, transpose
 from .arithmetic import add
 from .reduction import sum
+from .gradient_types import GradientPair, GradientTriple
 
 
-struct LinearBackwardResult(Movable):
-    """Result struct for linear_backward function.
-
-    Holds the three gradient tensors returned by the backward pass.
-    """
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-    var grad_bias: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor, var grad_bias: ExTensor):
-        """Initialize the result struct with the three gradients."""
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-        self.grad_bias = grad_bias^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        """Move constructor."""
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
-        self.grad_bias = existing.grad_bias^
-
-
-struct LinearNoBiasBackwardResult(Movable):
-    """Result struct for linear_no_bias_backward function.
-
-    Holds the two gradient tensors (input and weights only).
-    """
-    var grad_input: ExTensor
-    var grad_kernel: ExTensor
-
-    fn __init__(out self, var grad_input: ExTensor, var grad_kernel: ExTensor):
-        """Initialize the result struct with the two gradients."""
-        self.grad_input = grad_input^
-        self.grad_kernel = grad_kernel^
-
-    fn __moveinit__(out self, deinit existing: Self):
-        """Move constructor."""
-        self.grad_input = existing.grad_input^
-        self.grad_kernel = existing.grad_kernel^
+# Backward compatibility aliases using generic gradient containers
+alias LinearBackwardResult = GradientTriple
+alias LinearNoBiasBackwardResult = GradientPair
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
