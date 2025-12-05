@@ -259,3 +259,10 @@ fn test_main() raises:
     test_normalize_tensor_to_unit_norm()
     test_apply_bias_correction()
     test_validate_optimizer_state_valid()
+
+
+fn main() raises:
+    """Entry point for running tests."""
+    print("Running optimizer utils tests...")
+    test_main()
+    print("All optimizer utils tests passed!")
