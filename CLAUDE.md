@@ -1312,6 +1312,29 @@ docs(readme): Update instructions
 refactor(plans): Standardize to Template 1
 ```text
 
+### Worktree and PR Discipline
+
+**One PR per Issue:**
+
+- Each GitHub issue should have exactly ONE pull request
+- Do not combine multiple issues into a single PR
+- Branch naming: `<issue-number>-<description>`
+
+**Worktree Directory:**
+
+- Create all worktrees in the `worktrees/` subdirectory within the repo
+- Naming convention: `<issue-number>-<description>`
+- Example: `git worktree add worktrees/123-fix-bug 123-fix-bug`
+
+**Post-Merge Cleanup:**
+
+After a PR is merged/rebased to main:
+
+1. Remove the worktree: `git worktree remove worktrees/<issue-number>-<description>`
+2. Delete local branch: `git branch -d <branch-name>`
+3. Delete remote branch: `git push origin --delete <branch-name>`
+4. Prune stale references: `git worktree prune`
+
 ## Labels
 
 Standard labels automatically created by scripts:

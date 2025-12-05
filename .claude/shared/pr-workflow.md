@@ -21,10 +21,12 @@ After creating PR:
 
 ## PR Requirements
 
+- **One PR per issue** - Each GitHub issue gets exactly ONE pull request
 - PR must be linked to GitHub issue
 - PR title should be clear and descriptive
 - PR description should summarize changes
 - Do NOT create PR without linking to issue
+- Do NOT combine multiple issues into a single PR
 
 ## Responding to Review Comments
 
@@ -49,5 +51,25 @@ Keep responses SHORT and CONCISE (1 line preferred):
 - `Fixed - Updated conftest.py to use real repository root`
 - `Fixed - Deleted redundant test file`
 - `Fixed - Removed deprecated section from README`
+
+## Post-Merge Cleanup
+
+After a PR is merged/rebased to main, clean up the worktree and branch:
+
+```bash
+# 1. Remove the worktree
+git worktree remove worktrees/<issue-number>-<description>
+
+# 2. Delete local branch
+git branch -d <branch-name>
+
+# 3. Delete remote branch
+git push origin --delete <branch-name>
+
+# 4. Prune stale references
+git worktree prune
+```
+
+**Important:** Always clean up after merge to avoid accumulating stale worktrees and branches.
 
 See [CLAUDE.md](../../CLAUDE.md#git-workflow) for complete PR creation instructions.
