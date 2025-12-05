@@ -4,13 +4,22 @@ Provides tools for validating neural network implementations:
 - Assertion functions for test validation
 - Data generators for synthetic test datasets
 - Gradient checking (numerical vs analytical)
-- Test fixtures and helpers
+- Consolidated test models and fixtures
 
 Modules:
     assertions: Comprehensive assertion functions for testing
     data_generators: Generate synthetic test data (random tensors, classification datasets)
     gradient_checker: Validate backward passes using finite differences
-    fixtures: Test models, data generators, and assertion helpers
+    test_models: Consolidated test model implementations (SimpleCNN, LinearModel, SimpleMLP, etc.)
+    fixtures: Test model factories, tensor utilities, and assertion helpers
+
+Test Models:
+    SimpleCNN: Minimal CNN for image processing tests
+    LinearModel: Single fully-connected layer for basic tests
+    SimpleMLP: Multi-layer perceptron (2-3 layers) for composition tests
+    SimpleLinearModel: Linear model with explicit weights and bias
+    MockLayer: Minimal mock layer for testing
+    Parameter: Trainable parameter with gradient tracking
 """
 
 from .assertions import (
@@ -57,9 +66,16 @@ from .data_generators import (
     synthetic_classification_data
 )
 
-from .fixtures import (
+from .test_models import (
     SimpleCNN,
     LinearModel,
+    SimpleMLP,
+    MockLayer,
+    SimpleLinearModel,
+    Parameter,
+)
+
+from .fixtures import (
     create_test_cnn,
     create_linear_model,
     create_test_input,

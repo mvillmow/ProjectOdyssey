@@ -3,7 +3,7 @@
 This module provides comprehensive test utilities including:
 - Mock tensor creation and comparison utilities
 - Mock datasets and data loaders
-- Mock model architectures for testing
+- Mock model architectures for testing (now consolidated in shared.testing)
 - File I/O helpers for temporary files
 - Configuration fixtures for validation testing
 
@@ -16,7 +16,14 @@ All fixtures follow these principles:
 Usage:
     from tests.shared.fixtures.mock_tensors import create_random_tensor
     from tests.shared.fixtures.mock_data import MockDataset
-    from tests.shared.fixtures.mock_models import SimpleMLP
+    from shared.testing import SimpleMLP  # Models now consolidated in shared.testing
+
+Note on consolidation:
+    The SimpleMLP and other test model definitions have been consolidated
+    into shared.testing.test_models for better organization. Test files
+    should import test models from shared.testing instead of from this module.
+    For backward compatibility, mock_models.mojo re-exports from the
+    consolidated location, but direct imports from shared.testing are preferred.
 
 See individual modules for detailed documentation and examples.
 """

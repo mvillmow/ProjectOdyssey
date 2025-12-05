@@ -19,7 +19,7 @@ from tests.shared.conftest import (
     create_simple_model,
     TestFixtures,
 )
-from tests.shared.fixtures.mock_models import SimpleMLP
+from shared.testing import SimpleMLP
 from shared.core import (
     ExTensor,
     zeros,
