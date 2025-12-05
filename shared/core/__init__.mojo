@@ -17,6 +17,7 @@ Modules:
     `arithmetic`: Element-wise arithmetic operations (add, subtract, multiply, divide)
     `matrix`: Matrix operations (matmul, transpose, dot, outer)
     `activation`: Activation functions (relu, sigmoid, tanh, softmax, gelu)
+    `activation_ops`: Activation operation utilities (scalar exp functions).
     `linear`: Linear transformations.
     `conv`: Convolutional operations.
     `pooling`: Pooling operations.
@@ -25,9 +26,14 @@ Modules:
     `broadcasting`: Broadcasting utilities.
     `initializers`: Weight initialization functions.
     `loss`: Loss functions.
+    `loss_utils`: Utility functions for loss computation (clipping, epsilon handling, blending).
     `numerical_safety`: NaN/Inf detection, gradient monitoring, numerical stability checks.
     `dtype_dispatch`: Generic dtype dispatch helpers for eliminating dtype branching.
+    `reduction`: Reduction operations (sum, mean, max, min) with forward and backward passes.
+    `reduction_utils`: Utility functions for reduction operations (coordinate/stride computation).
     `utils`: Utility functions (argmax, top_k_indices, top_k, argsort).
+    `scalar_ops`: Scalar mathematical operations (sqrt, pow for float32 and float64).
+    `normalize_ops`: Normalization operations for data preprocessing (RGB normalization).
 
 Example:.    from shared.core.extensor import ExTensor, zeros
     from shared.core.linear import linear
@@ -197,6 +203,11 @@ from .activation import (
     hard_tanh_backward,
 )
 
+from .activation_ops import (
+    exp_scalar_f32,
+    exp_scalar_f64,
+)
+
 # ============================================================================
 # Neural Network Operations
 # ============================================================================
@@ -255,8 +266,9 @@ from .normalization import (
     instance_norm_backward,
 )
 
-from .normalize_ops import (
-    normalize_rgb,
+from .normalize_ops import normalize_rgb
+
+from .scalar_ops import (
     sqrt_scalar_f32,
     sqrt_scalar_f64,
     pow_scalar_f32,
@@ -375,6 +387,21 @@ from .loss import (
     kl_divergence_backward,
 )
 
+from .loss_utils import (
+    clip_predictions,
+    create_epsilon_tensor,
+    validate_tensor_shapes,
+    validate_tensor_dtypes,
+    compute_one_minus_tensor,
+    compute_sign_tensor,
+    blend_tensors,
+    compute_max_stable,
+    compute_difference,
+    compute_product,
+    compute_ratio,
+    negate_tensor,
+)
+
 from .numerical_safety import (
     has_nan,
     has_inf,
@@ -416,6 +443,14 @@ from .reduction import (
     mean_backward,
     max_reduce_backward,
     min_reduce_backward,
+)
+
+from .reduction_utils import (
+    compute_strides,
+    linear_to_coords,
+    coords_to_linear,
+    map_result_to_input_coords,
+    create_result_coords,
 )
 
 # ============================================================================

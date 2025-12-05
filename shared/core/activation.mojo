@@ -27,6 +27,7 @@ from .arithmetic import add, subtract, multiply
 from .reduction import sum as tensor_sum, max as tensor_max
 from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
 from .gradient_types import GradientPair
+from .activation_ops import exp_scalar_f32, exp_scalar_f64
 
 
 # ============================================================================
@@ -1114,16 +1115,8 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
     return result
 
 
-# Helper functions for scalar exp (used in ELU)
-fn exp_scalar_f32(x: Float32) -> Float32:
-    """Compute exp of a scalar float32."""
-    # Using power operator for exponential
-    return Float32(2.718281828459045) ** x
-
-
-fn exp_scalar_f64(x: Float64) -> Float64:
-    """Compute exp of a scalar float64."""
-    return 2.718281828459045 ** x
+# Note: exp_scalar_f32 and exp_scalar_f64 are imported from activation_ops.mojo
+# to avoid code duplication and maintain separation of concerns.
 
 
 # ============================================================================

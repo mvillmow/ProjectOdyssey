@@ -8,8 +8,8 @@ from .extensor import ExTensor, zeros, zeros_like, ones_like, full_like
 from .arithmetic import subtract, add, multiply, divide, power
 from .elementwise import sqrt
 from .reduction import mean as reduce_mean, sum as reduce_sum
-from .normalize_ops import (
-    normalize_rgb,
+from .normalize_ops import normalize_rgb
+from .scalar_ops import (
     sqrt_scalar_f32,
     sqrt_scalar_f64,
     pow_scalar_f32,

@@ -7,10 +7,6 @@ preprocessing and data transformations.
 
 Functions:
     `normalize_rgb`: Normalize RGB images with per-channel mean and std deviation.
-    `sqrt_scalar_f32`: Compute square root of a float32 scalar.
-    `sqrt_scalar_f64`: Compute square root of a float64 scalar.
-    `pow_scalar_f32`: Compute power (x^y) for float32 scalars.
-    `pow_scalar_f64`: Compute power (x^y) for float64 scalars.
 
 Example:
     from shared.core.normalize_ops import normalize_rgb
@@ -22,61 +18,6 @@ Example:
 """
 
 from .extensor import ExTensor, zeros
-
-
-# ============================================================================
-# Scalar Helper Functions
-# ============================================================================
-
-
-fn sqrt_scalar_f32(x: Float32) -> Float32:
-    """Compute square root of a scalar float32.
-
-    Args:
-        x: Input float32 value.
-
-    Returns:
-        Square root of x.
-    """
-    return x ** 0.5
-
-
-fn sqrt_scalar_f64(x: Float64) -> Float64:
-    """Compute square root of a scalar float64.
-
-    Args:
-        x: Input float64 value.
-
-    Returns:
-        Square root of x.
-    """
-    return x ** 0.5
-
-
-fn pow_scalar_f32(x: Float32, y: Float32) -> Float32:
-    """Compute x^y for scalar float32 values.
-
-    Args:
-        x: Base value (float32).
-        y: Exponent value (float32).
-
-    Returns:
-        Result of x^y.
-    """
-    return x ** y
-
-
-fn pow_scalar_f64(x: Float64, y: Float64) -> Float64:
-    """Compute x^y for scalar float64 values.
-
-    Args:
-        x: Base value (float64).
-        y: Exponent value (float64).
-
-    Returns:
-        Result of x^y.
-    """
-    return x ** y
 
 
 # ============================================================================
