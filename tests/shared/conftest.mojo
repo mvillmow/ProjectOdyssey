@@ -142,6 +142,11 @@ struct BenchmarkResult(Copyable, Movable):
             print("  Memory:", self.memory_mb, "MB")
 
 
+# DEPRECATED: Use BenchmarkResult directly instead of BenchmarkStatistics
+# This alias is maintained for backward compatibility during type consolidation.
+alias BenchmarkStatistics = BenchmarkResult
+
+
 fn print_benchmark_results(results: List[BenchmarkResult]):
     """Print all benchmark results.
 

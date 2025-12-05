@@ -12,7 +12,13 @@ from .gradient_types import GradientPair, GradientTriple
 
 
 # Backward compatibility aliases using generic gradient containers
+# DEPRECATED: Use GradientTriple directly instead of LinearBackwardResult
+# These aliases are maintained for backward compatibility during type consolidation.
+# See ADR-002 for the gradient struct return types design decision.
 alias LinearBackwardResult = GradientTriple
+
+# DEPRECATED: Use GradientPair directly instead of LinearNoBiasBackwardResult
+# These aliases are maintained for backward compatibility during type consolidation.
 alias LinearNoBiasBackwardResult = GradientPair
 
 
