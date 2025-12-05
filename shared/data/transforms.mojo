@@ -15,21 +15,12 @@ Future versions may support arbitrary image dimensions.
 from shared.core.extensor import ExTensor, zeros
 from math import sqrt, floor, ceil, sin, cos
 from random import random_si64
+from .random_transform_base import RandomTransformBase, random_float
 
 
 # ============================================================================
 # Helper Functions
 # ============================================================================
-
-
-fn random_float() -> Float64:
-    """Generate random float in [0, 1) with high precision.
-
-    Uses 1 billion possible values for better probability distribution.
-
-    Returns:.        Random float in range [0.0, 1.0).
-    """
-    return Float64(random_si64(0, 1000000000)) / 1000000000.0
 
 
 fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
@@ -553,18 +544,18 @@ struct RandomCrop(Transform, Copyable, Movable):
 struct RandomHorizontalFlip(Transform, Copyable, Movable):
     """Randomly flip image horizontally.
 
-    Flips with specified probability.
+    Flips with specified probability using RandomTransformBase for probability handling.
     """
 
-    var p: Float64
+    var base: RandomTransformBase
 
     fn __init__(out self, p: Float64 = 0.5):
         """Create random horizontal flip transform.
 
         Args:
-            p: Probability of flipping.
+            p: Probability of flipping (0.0 to 1.0).
         """
-        self.p = p
+        self.base = RandomTransformBase(p)
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image horizontally with probability p.
@@ -582,11 +573,8 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
         Raises:
             Error if operation fails.
         """
-        # Generate random number in [0, 1)
-        var rand_val = random_float()
-
-        # Don't flip if random value >= probability
-        if rand_val >= self.p:
+        # Check probability - don't flip if should_apply returns False
+        if not self.base.should_apply():
             return data
 
         # Determine image dimensions
@@ -616,18 +604,18 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
 struct RandomVerticalFlip(Transform, Copyable, Movable):
     """Randomly flip image vertically.
 
-    Flips with specified probability.
+    Flips with specified probability using RandomTransformBase for probability handling.
     """
 
-    var p: Float64
+    var base: RandomTransformBase
 
     fn __init__(out self, p: Float64 = 0.5):
         """Create random vertical flip transform.
 
         Args:
-            p: Probability of flipping.
+            p: Probability of flipping (0.0 to 1.0).
         """
-        self.p = p
+        self.base = RandomTransformBase(p)
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Randomly flip image vertically with probability p.
@@ -645,11 +633,8 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
         Raises:
             Error if operation fails.
         """
-        # Generate random number in [0, 1)
-        var rand_val = random_float()
-
-        # Don't flip if random value >= probability
-        if rand_val >= self.p:
+        # Check probability - don't flip if should_apply returns False
+        if not self.base.should_apply():
             return data
 
         # Determine image dimensions
@@ -780,10 +765,12 @@ struct RandomErasing(Transform, Copyable, Movable):
     Randomly selects a rectangle region and erases it by setting pixels to a fill value.
     Helps improve model robustness to occlusion.
 
+    Uses RandomTransformBase for probability handling.
+
     Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017)
     """
 
-    var p: Float64  # Probability of applying erasing
+    var base: RandomTransformBase  # Probability handling
     var scale: Tuple[Float64, Float64]  # Min/max area fraction to erase
     var ratio: Tuple[Float64, Float64]  # Min/max aspect ratio of erased region
     var value: Float64  # Fill value (0 for black, can be random)
@@ -798,12 +785,12 @@ struct RandomErasing(Transform, Copyable, Movable):
         """Create random erasing transform.
 
         Args:
-            p: Probability of applying erasing.
+            p: Probability of applying erasing (0.0 to 1.0).
             scale: Range of proportion of erased area (min, max).
             ratio: Range of aspect ratio of erased area (min, max).
             value: Pixel value to fill erased region with.
         """
-        self.p = p
+        self.base = RandomTransformBase(p)
         self.scale = scale
         self.ratio = ratio
         self.value = value
@@ -830,9 +817,8 @@ struct RandomErasing(Transform, Copyable, Movable):
         Raises:
             Error if operation fails.
         """
-        # Step 1: Check probability - randomly decide whether to apply erasing
-        var rand_val = random_float()
-        if rand_val >= self.p:
+        # Step 1: Check probability - don't erase if should_apply returns False
+        if not self.base.should_apply():
             return data  # Don't erase
 
         # Step 2: Infer image dimensions

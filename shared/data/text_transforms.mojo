@@ -4,6 +4,8 @@ This module provides transformations for augmenting text data for NLP tasks.
 Implements basic word-level augmentations including synonym replacement,
 random insertion, random swap, and random deletion.
 
+All Random* text transforms use RandomTransformBase for probability handling.
+
 Limitations:
 - Basic word-level operations (split on spaces)
 - English-centric approach
@@ -13,21 +15,7 @@ Limitations:
 """
 
 from random import random_si64
-
-
-# ============================================================================
-# Helper Functions
-# ============================================================================
-
-
-fn random_float() -> Float64:
-    """Generate random float in [0, 1) with high precision.
-
-    Uses 1 billion possible values for better probability distribution.
-
-    Returns:.        Random float in range [0.0, 1.0).
-    """
-    return Float64(random_si64(0, 1000000000)) / 1000000000.0
+from .random_transform_base import RandomTransformBase, random_float
 
 
 # ============================================================================
@@ -108,10 +96,12 @@ struct RandomSwap(TextTransform, Copyable, Movable):
     Swaps adjacent or nearby word positions with configurable probability.
     Helps create variations while preserving overall meaning.
 
+    Uses RandomTransformBase for probability handling.
+
     Example:.        "the quick brown fox" -> "quick the brown fox" (first two swapped)
     """
 
-    var p: Float64  # Probability of performing swap
+    var base: RandomTransformBase  # Probability handling
     var n: Int  # Number of swaps to perform
 
     fn __init__(out self, p: Float64 = 0.15, n: Int = 2):
@@ -121,7 +111,7 @@ struct RandomSwap(TextTransform, Copyable, Movable):
             p: Probability of performing each swap (0.0 to 1.0).
             n: Number of swap operations to attempt.
         """
-        self.p = p
+        self.base = RandomTransformBase(p)
         self.n = n
 
     fn __call__(self, text: String) raises -> String:
@@ -143,9 +133,8 @@ struct RandomSwap(TextTransform, Copyable, Movable):
 
         # Perform n swap operations
         for _ in range(self.n):
-            # Check probability
-            var rand_val = random_float()
-            if rand_val >= self.p:
+            # Check probability - skip if should_apply returns False
+            if not self.base.should_apply():
                 continue
 
             # Pick two random positions
@@ -165,13 +154,15 @@ struct RandomSwap(TextTransform, Copyable, Movable):
 struct RandomDeletion(TextTransform, Copyable, Movable):
     """Randomly delete words from text.
 
-    Deletes words with specified probability while ensuring at least.
+    Deletes words with specified probability while ensuring at least
     one word remains. Helps create shorter variations.
+
+    Uses RandomTransformBase for probability handling.
 
     Example:.        "the quick brown fox" -> "quick brown fox" (deleted "the")
     """
 
-    var p: Float64  # Probability of deleting each word
+    var base: RandomTransformBase  # Probability handling
 
     fn __init__(out self, p: Float64 = 0.1):
         """Create random deletion transform.
@@ -179,7 +170,7 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
         Args:
             p: Probability of deleting each word (0.0 to 1.0).
         """
-        self.p = p
+        self.base = RandomTransformBase(p)
 
     fn __call__(self, text: String) raises -> String:
         """Randomly delete words from text.
@@ -207,9 +198,8 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
         # Decide which words to keep
         var kept_words = List[String]()
         for i in range(len(words)):
-            var rand_val = random_float()
-            if rand_val >= self.p:
-                # Keep this word
+            if not self.base.should_apply():
+                # Keep this word if should_apply returns False
                 kept_words.append(words[i])
 
         # Ensure at least one word remains
@@ -227,10 +217,12 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     Inserts words from a predefined vocabulary at random positions.
     Helps increase lexical diversity.
 
+    Uses RandomTransformBase for probability handling.
+
     Example:.        "the brown fox" -> "the quick brown fox" (inserted "quick")
     """
 
-    var p: Float64  # Probability of insertion
+    var base: RandomTransformBase  # Probability handling
     var n: Int  # Number of words to insert
     var vocabulary: List[String]  # Words to insert from
 
@@ -242,8 +234,8 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
             p: Probability of performing insertion (0.0 to 1.0).
             n: Number of words to insert.
         """
+        self.base = RandomTransformBase(p)
         self.vocabulary = vocabulary^
-        self.p = p
         self.n = n
 
     fn __call__(self, text: String) raises -> String:
@@ -265,9 +257,8 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
 
         # Perform n insertion operations
         for _ in range(self.n):
-            # Check probability
-            var rand_val = random_float()
-            if rand_val >= self.p:
+            # Check probability - skip if should_apply returns False
+            if not self.base.should_apply():
                 continue
 
             # Pick random word from vocabulary
@@ -299,10 +290,12 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     Uses a simple synonym dictionary to replace words with alternatives.
     This is a conservative augmentation that preserves meaning well.
 
+    Uses RandomTransformBase for probability handling.
+
     Example:.        "the quick fox" -> "the fast fox" (replaced "quick" with "fast")
     """
 
-    var p: Float64  # Probability of replacing each word
+    var base: RandomTransformBase  # Probability handling
     var synonyms: Dict[String, List[String]]  # Synonym dictionary
 
     fn __init__(out self, var synonyms: Dict[String, List[String]], p: Float64 = 0.2):
@@ -312,8 +305,8 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
             synonyms: Dictionary mapping words to lists of synonyms.
             p: Probability of replacing each word (0.0 to 1.0).
         """
+        self.base = RandomTransformBase(p)
         self.synonyms = synonyms^
-        self.p = p
 
     fn __call__(self, text: String) raises -> String:
         """Replace random words with synonyms.
@@ -337,9 +330,8 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
         for i in range(len(words)):
             var word = words[i]
 
-            # Check if should replace
-            var rand_val = random_float()
-            if rand_val < self.p and word in self.synonyms:
+            # Check if should replace (if should_apply returns True and word has synonyms)
+            if self.base.should_apply() and word in self.synonyms:
                 # Get synonyms for this word
                 var syns = self.synonyms[word].copy()
                 if len(syns) > 0:

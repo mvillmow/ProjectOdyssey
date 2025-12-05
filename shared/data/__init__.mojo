@@ -92,6 +92,15 @@ from ._datasets_core import (
 #   images = load_idx_images("/path/to/custom-images-idx3-ubyte")
 
 # ============================================================================
+# Transform Base Classes and Utilities
+# ============================================================================
+
+from .random_transform_base import (
+    RandomTransformBase,  # Base for probabilistic transforms
+    random_float,         # Random float generation utility
+)
+
+# ============================================================================
 # Batch Processing Utilities
 # ============================================================================
 
