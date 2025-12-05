@@ -155,7 +155,7 @@ fn sample_without_replacement(
     var all_indices = create_sequential_indices(data_source_len)
 
     # Shuffle all indices
-    all_indices = shuffle_indices(all_indices)
+    all_indices = shuffle_indices(all_indices^)
 
     # Take first num_samples
     var indices = List[Int](capacity=min(num_samples, data_source_len))

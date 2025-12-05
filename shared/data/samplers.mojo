@@ -225,6 +225,6 @@ struct WeightedSampler(Sampler, Copyable, Movable):
             # If without replacement, set weight to 0 and renormalize
             if not self.replacement:
                 self.weights[idx] = 0
-                self.weights = renormalize_weights(self.weights)
+                self.weights = renormalize_weights(self.weights^)
 
         return indices^
