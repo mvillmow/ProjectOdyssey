@@ -105,8 +105,8 @@ fn test_create_epsilon_tensor_shape() raises:
 
     var epsilon_tensor = create_epsilon_tensor(template, epsilon=1e-5)
 
-    assert_equal(epsilon_tensor.shape(), template.shape(), "Epsilon tensor should match template shape")
-    assert_equal(epsilon_tensor.numel(), template.numel(), "Epsilon tensor should have same numel as template")
+    assert_true(epsilon_tensor.shape() == template.shape(), "Epsilon tensor should match template shape")
+    assert_true(epsilon_tensor.numel() == template.numel(), "Epsilon tensor should have same numel as template")
 
 
 fn test_create_epsilon_tensor_values() raises:
