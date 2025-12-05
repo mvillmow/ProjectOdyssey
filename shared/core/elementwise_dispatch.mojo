@@ -271,26 +271,24 @@ struct ExpOp(ElementwiseUnaryOp):
 struct LogOp(ElementwiseUnaryOp):
     """Natural logarithm operation: ln(x).
 
-    Note: Input must be positive.
+    Note: Returns -inf for zero, NaN for negative values.
     """
 
     fn apply(self, value: Float64) -> Float64:
-        """Compute ln(x)."""
-        if value <= 0.0:
-            raise Error("LogOp: input must be positive, got " + String(value))
+        """Compute ln(x). Returns -inf for 0, NaN for negative."""
+        # Return -inf for 0, NaN for negative (matches IEEE 754 behavior)
         return math_log(value)
 
 
 struct SqrtOp(ElementwiseUnaryOp):
     """Square root operation: sqrt(x).
 
-    Note: Input must be non-negative.
+    Note: Returns NaN for negative values (IEEE 754 behavior).
     """
 
     fn apply(self, value: Float64) -> Float64:
-        """Compute sqrt(x)."""
-        if value < 0.0:
-            raise Error("SqrtOp: input must be non-negative, got " + String(value))
+        """Compute sqrt(x). Returns NaN for negative values."""
+        # math_sqrt returns NaN for negative inputs (IEEE 754 behavior)
         return math_sqrt(value)
 
 
@@ -340,13 +338,12 @@ struct NegateOp(ElementwiseUnaryOp):
 struct ReciprocalOp(ElementwiseUnaryOp):
     """Reciprocal operation: 1/x.
 
-    Note: Input must not be zero.
+    Note: Returns inf for zero (IEEE 754 behavior).
     """
 
     fn apply(self, value: Float64) -> Float64:
-        """Compute 1/x."""
-        if value == 0.0:
-            raise Error("ReciprocalOp: cannot compute reciprocal of zero")
+        """Compute 1/x. Returns inf for zero."""
+        # Division by zero returns inf (IEEE 754 behavior)
         return 1.0 / value
 
 
@@ -403,39 +400,42 @@ struct MultiplyOp(ElementwiseBinaryOp):
 struct DivideOp(ElementwiseBinaryOp):
     """Division operation: a / b.
 
-    Note: b must not be zero.
+    Note: Returns inf for division by zero (IEEE 754 behavior).
     """
 
     fn apply(self, a: Float64, b: Float64) -> Float64:
-        """Compute a / b."""
-        if b == 0.0:
-            raise Error("DivideOp: cannot divide by zero")
+        """Compute a / b. Returns inf for division by zero."""
+        # Division by zero returns inf (IEEE 754 behavior)
         return a / b
 
 
 struct PowerOp(ElementwiseBinaryOp):
-    """Power operation: a ^ b."""
+    """Power operation: a ^ b.
+
+    Note: Returns inf for 0^negative, NaN for negative base with non-integer exponent.
+    """
 
     fn apply(self, a: Float64, b: Float64) -> Float64:
-        """Compute a ^ b (a to the power of b)."""
-        # Handle special cases
-        if a == 0.0 and b < 0.0:
-            raise Error("PowerOp: cannot raise 0 to negative power")
+        """Compute a ^ b (a to the power of b).
 
+        Uses IEEE 754 semantics:
+        - 0^negative = inf
+        - negative^non-integer = NaN
+        - 0^0 = 1 (by convention)
+        """
         # Use exp and log for general case: a^b = exp(b * ln(a))
-        if a > 0.0:
-            return math_exp(b * math_log(a))
-        elif a == 0.0:
-            if b == 0.0:
-                return 1.0  # 0^0 = 1 by convention
-            elif b > 0.0:
-                return 0.0  # 0^positive = 0
-            else:
-                raise Error("PowerOp: 0^negative is undefined")
+        # This naturally handles edge cases with IEEE 754 semantics:
+        # - 0^negative: log(0) = -inf, -inf * negative = +inf, exp(+inf) = inf
+        # - negative base: log(negative) = NaN, NaN propagates
+        # - 0^0: handled specially
+        if a == 0.0 and b == 0.0:
+            return 1.0  # 0^0 = 1 by convention
+        elif a == 0.0 and b > 0.0:
+            return 0.0  # 0^positive = 0
         else:
-            # a < 0: only support integer exponents
-            # For simplicity in dispatcher, raise error for negative base
-            raise Error("PowerOp: negative base not supported in elementwise dispatcher")
+            # For all other cases, use exp(b * log(a))
+            # This gives inf for 0^negative, NaN for negative^non-integer
+            return math_exp(b * math_log(a))
 
 
 struct MaxOp(ElementwiseBinaryOp):
