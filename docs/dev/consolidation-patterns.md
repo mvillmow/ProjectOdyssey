@@ -591,7 +591,6 @@ fn linear_backward(
 
 ## Related Documentation
 
-- [Gradient Types API](../api/gradient-types.md)
-- [DType Dispatch API](../api/dtype-dispatch.md)
-- [Backward Pass Catalog](../api/backward-pass-catalog.md)
-- [Mojo Guidelines](../shared/mojo-guidelines.md)
+- [Backward Pass Catalog](backward-pass-catalog.md)
+- [Mojo Test Failure Patterns](mojo-test-failure-patterns.md)
+- [Skills Architecture](skills-architecture.md)
