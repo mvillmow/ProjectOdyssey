@@ -357,10 +357,10 @@ fn main() raises:
 - [Mojo Manual: SIMD](https://docs.modular.com/mojo/manual/intrinsics/simd/)
 - [Mojo Manual: Vectorization](https://docs.modular.com/mojo/manual/algorithm/vectorize/)
 - [Intel Intrinsics Guide](https://www.intel.com/content/www/us/en/docs/intrinsics-guide/index.html)
-- [Performance Optimization Guide](docs/core/mojo-patterns.md)
+- [Performance Optimization Guide](../core/mojo-patterns.md)
 
 See Also:
 
-- [SIMD Patterns Documentation](docs/core/mojo-patterns.md#simd-patterns)
-- [Benchmarking SIMD Operations](docs/advanced/performance.md#benchmarking)
-- [Example: SIMD Optimization](examples/performance/simd_optimization.mojo)
+- [SIMD Patterns Documentation](../core/mojo-patterns.md#simd-patterns)
+- [Benchmarking SIMD Operations](#benchmarking)
+- [Example: SIMD Optimization](../../examples/performance/simd_optimization.mojo)
