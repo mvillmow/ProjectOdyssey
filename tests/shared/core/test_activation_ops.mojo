@@ -3,7 +3,7 @@
 Tests scalar exponential functions for numerical stability and correctness.
 """
 
-from testing import assert_almost_equal, assert_true
+from tests.shared.conftest import assert_almost_equal, assert_true
 from shared.core.activation_ops import exp_scalar_f32, exp_scalar_f64
 
 
