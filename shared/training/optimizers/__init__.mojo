@@ -35,3 +35,20 @@ from .rmsprop import rmsprop_step, rmsprop_step_simple
 
 # LARS optimizer (Layer-wise Adaptive Rate Scaling)
 from .lars import lars_step, lars_step_simple
+
+# Optimizer utilities (common helper functions)
+from .optimizer_utils import (
+    initialize_optimizer_state,
+    initialize_optimizer_state_from_params,
+    compute_weight_decay_term,
+    apply_weight_decay,
+    scale_tensor,
+    scale_tensor_inplace,
+    compute_tensor_norm,
+    compute_global_norm,
+    normalize_tensor_to_unit_norm,
+    clip_tensor_norm,
+    clip_global_norm,
+    apply_bias_correction,
+    validate_optimizer_state,
+)
