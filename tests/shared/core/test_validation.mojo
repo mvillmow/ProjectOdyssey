@@ -58,7 +58,7 @@ fn test_validate_tensor_shape_wrong_dimension_count() raises:
         validate_tensor_shape(x, expected_shape, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 3D tensor, got 2D" in error_msg,
             "Error should mention expected 3D but got 2D",
@@ -77,7 +77,7 @@ fn test_validate_tensor_shape_wrong_dimension_value() raises:
         validate_tensor_shape(x, expected_shape, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected shape" in error_msg and "[3, 5]" in error_msg,
             "Error should mention expected and actual shapes",
@@ -118,7 +118,7 @@ fn test_validate_tensor_dtype_mismatch() raises:
         validate_tensor_dtype(x, DType.float64, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected dtype float64, got float32" in error_msg,
             "Error should mention dtype mismatch",
@@ -149,7 +149,7 @@ fn test_validate_matching_tensors_different_dtype() raises:
         validate_matching_tensors(x, y, "x", "y")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "mismatched dtypes" in error_msg,
             "Error should mention dtype mismatch",
@@ -168,7 +168,7 @@ fn test_validate_matching_tensors_different_shape() raises:
         validate_matching_tensors(x, y, "x", "y")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "mismatched shapes" in error_msg,
             "Error should mention shape mismatch",
@@ -187,7 +187,7 @@ fn test_validate_matching_tensors_different_ndim() raises:
         validate_matching_tensors(x, y, "x", "y")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "mismatched number of dimensions" in error_msg,
             "Error should mention dimension count mismatch",
@@ -216,7 +216,7 @@ fn test_validate_2d_input_1d() raises:
         validate_2d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 2D tensor, got 1D" in error_msg,
             "Error should mention expected 2D but got 1D",
@@ -234,7 +234,7 @@ fn test_validate_2d_input_3d() raises:
         validate_2d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 2D tensor, got 3D" in error_msg,
             "Error should mention expected 2D but got 3D",
@@ -252,7 +252,7 @@ fn test_validate_2d_input_4d() raises:
         validate_2d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 2D tensor, got 4D" in error_msg,
             "Error should mention expected 2D but got 4D",
@@ -281,7 +281,7 @@ fn test_validate_4d_input_2d() raises:
         validate_4d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 4D tensor, got 2D" in error_msg,
             "Error should mention expected 4D but got 2D",
@@ -299,7 +299,7 @@ fn test_validate_4d_input_3d() raises:
         validate_4d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 4D tensor, got 3D" in error_msg,
             "Error should mention expected 4D but got 3D",
@@ -317,7 +317,7 @@ fn test_validate_4d_input_5d() raises:
         validate_4d_input(x, "input")
     except e:
         error_raised = True
-        var error_msg = str(e)
+        var error_msg = String(e)
         assert_true(
             "expected 4D tensor, got 5D" in error_msg,
             "Error should mention expected 4D but got 5D",
