@@ -53,7 +53,7 @@ imports to be uncommented as Issue #49 progresses. See Issue #49 for details
 """
 
 # Package version
-alias VERSION = "0.1.0"
+from ..version import VERSION
 
 # ============================================================================
 # Core Tensor Type and Creation Functions

@@ -67,7 +67,7 @@ Example - Advanced runner with manual control:
 """
 
 # Package version
-alias VERSION = "0.1.0"
+from ..version import VERSION
 
 # ============================================================================
 # Exports - Implemented modules

@@ -24,7 +24,7 @@ Example:
 """
 
 # Package version
-alias VERSION = "0.1.0"
+from ..version import VERSION
 
 # ============================================================================
 # Format Loaders (Low-Level File I/O)
