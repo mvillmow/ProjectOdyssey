@@ -35,6 +35,7 @@ from shared.utils.arg_parser import create_training_parser
 from shared.training.loops import TrainingLoop
 from shared.training.optimizers import sgd_step_simple
 from shared.training.metrics import top1_accuracy, AccuracyMetric, LossTracker
+from shared.training.evaluation import evaluate_model_simple
 from collections import List
 
 # Default number of classes for EMNIST Balanced dataset
@@ -251,56 +252,6 @@ fn train_epoch(
     return avg_loss
 
 
-fn evaluate(
-    mut model: LeNet5,
-    test_images: ExTensor,
-    test_labels: ExTensor
-) raises -> Float32:
-    """Evaluate model on test set using shared metrics.
-
-    Args:
-        model: LeNet-5 model.
-        test_images: Test images (num_samples, 1, 28, 28).
-        test_labels: Integer test labels (num_samples,).
-
-    Returns:
-        Test accuracy (0.0 to 1.0).
-    """
-    var num_samples = test_images.shape()[0]
-    var correct = 0
-    var accuracy_metric = AccuracyMetric()
-
-    print("Evaluating...")
-
-    # Evaluate in batches to avoid memory issues
-    var eval_batch_size = 32
-    var num_eval_batches = (num_samples + eval_batch_size - 1) // eval_batch_size
-
-    for batch_idx in range(num_eval_batches):
-        var start_idx = batch_idx * eval_batch_size
-        var end_idx = min(start_idx + eval_batch_size, num_samples)
-
-        # Extract batch slice
-        var batch_images = test_images.slice(start_idx, end_idx, axis=0)
-        var batch_labels = test_labels.slice(start_idx, end_idx, axis=0)
-
-        # Process each sample in the batch
-        var actual_batch_size = end_idx - start_idx
-        for i in range(actual_batch_size):
-            # Extract single sample from batch
-            var sample = batch_images.slice(i, i + 1, axis=0)
-            var pred_class = model.predict(sample)
-
-            # Get true label (integer from uint8 tensor)
-            var true_label = Int(batch_labels[i])
-
-            if pred_class == true_label:
-                correct += 1
-
-    var accuracy = Float32(correct) / Float32(num_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", num_samples, ")")
-
-    return accuracy
 
 
 fn main() raises:
@@ -356,8 +307,9 @@ fn main() raises:
     for epoch in range(1, epochs + 1):
         var train_loss = train_epoch(model, train_images, train_labels, batch_size, learning_rate, epoch, epochs)
 
-        # Evaluate every epoch
-        var test_acc = evaluate(model, test_images, test_labels)
+        # Evaluate every epoch using shared evaluation module
+        var test_acc = evaluate_model_simple(model, test_images, test_labels, batch_size=100, num_classes=DEFAULT_NUM_CLASSES, verbose=True)
+        print("  Test Accuracy: ", test_acc * 100.0, "%")
         print()
 
     # Save model

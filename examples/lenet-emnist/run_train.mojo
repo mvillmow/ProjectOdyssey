@@ -17,7 +17,7 @@ Arguments:
 """
 
 from model import LeNet5
-from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
+from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode, DatasetInfo
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
@@ -25,6 +25,7 @@ from shared.core.linear import linear, linear_backward
 from shared.core.activation import relu, relu_backward
 from shared.core.loss import cross_entropy, cross_entropy_backward
 from shared.training.precision_config import PrecisionConfig, PrecisionMode
+from shared.training.evaluation import evaluate_model_simple
 from shared.utils.arg_parser import create_training_parser
 from collections import List
 
@@ -286,7 +287,8 @@ fn train_epoch(
         var batch_labels_int = train_labels.slice(start_idx, end_idx, axis=0)
 
         # Convert batch labels to one-hot encoding
-        var batch_labels = one_hot_encode(batch_labels_int, num_classes=47)
+        var dataset_info = DatasetInfo("emnist_balanced")
+        var batch_labels = one_hot_encode(batch_labels_int, num_classes=dataset_info.num_classes())
 
         # Compute gradients and update parameters with precision scaling
         var result = compute_gradients(model, batch_images, batch_labels, learning_rate, precision_config)
@@ -314,40 +316,6 @@ fn train_epoch(
     return avg_loss
 
 
-fn evaluate(
-    mut model: LeNet5,
-    test_images: ExTensor,
-    test_labels: ExTensor
-) raises -> Float32:
-    """Evaluate model on test set."""
-    var num_samples = test_images.shape()[0]
-    var correct = 0
-
-    print("Evaluating...")
-
-    var eval_batch_size = 32
-    var num_eval_batches = (num_samples + eval_batch_size - 1) // eval_batch_size
-
-    for batch_idx in range(num_eval_batches):
-        var start_idx = batch_idx * eval_batch_size
-        var end_idx = min(start_idx + eval_batch_size, num_samples)
-
-        var batch_images = test_images.slice(start_idx, end_idx, axis=0)
-        var batch_labels = test_labels.slice(start_idx, end_idx, axis=0)
-
-        var actual_batch_size = end_idx - start_idx
-        for i in range(actual_batch_size):
-            var sample = batch_images.slice(i, i + 1, axis=0)
-            var pred_class = model.predict(sample)
-            var true_label = Int(batch_labels[i])
-
-            if pred_class == true_label:
-                correct += 1
-
-    var accuracy = Float32(correct) / Float32(num_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", num_samples, ")")
-
-    return accuracy
 
 
 fn main() raises:
@@ -382,7 +350,8 @@ fn main() raises:
 
     # Initialize model
     print("Initializing LeNet-5 model...")
-    var model = LeNet5(num_classes=47)
+    var dataset_info = DatasetInfo("emnist_balanced")
+    var model = LeNet5(num_classes=dataset_info.num_classes())
     print("  Model initialized with", model.num_classes, "classes")
     print()
 
@@ -416,8 +385,9 @@ fn main() raises:
             precision_config
         )
 
-        # Evaluate every epoch
-        var test_acc = evaluate(model, test_images, test_labels)
+        # Evaluate every epoch using shared evaluation module
+        var test_acc = evaluate_model_simple(model, test_images, test_labels, batch_size=100, num_classes=model.num_classes, verbose=True)
+        print("  Test Accuracy: ", test_acc * 100.0, "%")
         print()
 
     # Print final precision statistics
