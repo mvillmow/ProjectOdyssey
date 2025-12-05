@@ -4,11 +4,16 @@ Comprehensive performance measurement utilities with two APIs:
 
 1. **High-Level API** (runner.py) - Simple benchmarking with statistics
    - benchmark_function(): Single function with automatic warmup/measurement
-   - BenchmarkResult: Statistics including percentiles (p50, p95, p99)
+   - BenchmarkStatistics: Statistics including percentiles (p50, p95, p99)
    - Automatic throughput calculation
 
 2. **Low-Level API** (result.py) - Granular iteration tracking
    - BenchmarkResult: Record individual iteration times, compute online stats
+
+Namespace Resolution (Issue #2457):
+   - High-level API uses BenchmarkStatistics (renamed from BenchmarkResult)
+   - Low-level API uses BenchmarkResult (unchanged)
+   - BenchmarkResult alias exists in runner.mojo for backward compatibility
    - Uses Welford's algorithm for numerically stable mean/variance
    - Efficient memory usage for large iteration counts
 
@@ -74,7 +79,8 @@ from ..version import VERSION
 # ============================================================================
 
 from .runner import (
-    BenchmarkResult,  # High-level benchmark results with percentiles
+    BenchmarkStatistics,  # High-level benchmark results with percentiles (primary)
+    BenchmarkResult,  # Alias for backward compatibility (points to BenchmarkStatistics)
     benchmark_function,  # Main benchmarking function
     print_benchmark_report,  # Print formatted results
     print_benchmark_summary,  # Print summary table
