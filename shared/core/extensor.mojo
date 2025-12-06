@@ -52,11 +52,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
     Copying a tensor increments the reference count, allowing views and copies.
     to safely share data. Memory is freed only when the last reference is destroyed.
 
-    Fixes: #1904 (MOJO-001), #1905 (MOJO-002), #1906 (MOJO-003),
-           #1907 (MOJO-004), #1908 (MOJO-005),
-           #1909 (DATA-001), #1910 (DATA-002), #1911 (DATA-003),
-           #1912 (DATA-004), #1913 (DATA-005)
-
     Attributes:
         `_data`: UnsafePointer to raw byte storage (type-erased)
         `_shape`: List storing the shape dimensions.
@@ -338,7 +333,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Increments the reference count to track shared ownership.
         This prevents double-free and enables safe view semantics.
 
-        Fixes: #1908 (MOJO-005), part of #1906 (MOJO-003)
         """
         # Shallow copy all fields
         self._data = existing._data
@@ -360,7 +354,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Uses reference counting to safely manage shared ownership.
         Only frees memory when the last reference is destroyed.
 
-        Fixes: #1905 (MOJO-002), #1906 (MOJO-003)
         """
         if not self._is_view and self._refcount:
             self._refcount[] -= 1
@@ -480,7 +473,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Creates a view sharing data with the original tensor.
         Uses reference counting to ensure data remains valid.
 
-        Fixes: #1904 (MOJO-001), #1907 (MOJO-004)
 
         Args:
             new_shape: The new shape for the tensor
@@ -531,7 +523,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Creates a view sharing data with the original tensor.
         Uses reference counting to ensure data remains valid.
 
-        Fixes: #1904 (MOJO-001), #1907 (MOJO-004)
 
         Args:
             start: Starting index (inclusive)
@@ -927,7 +918,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         from .types.fp8 import FP8
 
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         # Verify source is floating point
         if not (
@@ -1022,7 +1012,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Note:
             FP16 inputs are converted to FP32 before conversion.
         """
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
 
         # Create output tensor with int8 dtype
         var result = ExTensor(self._shape, DType.int8)
@@ -1081,18 +1070,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=int16 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.int16)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1118,10 +1102,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int16 conversion")
 
-            # Convert to int16 range [-32768, 32767]
             var int_val = Int(val)
             if int_val < -32768:
                 int_val = -32768
@@ -1139,18 +1121,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=int32 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.int32)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1176,10 +1153,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int32 conversion")
 
-            # Convert to int32
             var int_val = Int(val)
             result._data.bitcast[SIMD[DType.int32, 1]]()[i][0] = int_val
 
@@ -1192,18 +1167,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=int64 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.int64)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1228,7 +1198,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_int64 conversion")
 
             var i64_val = Int64(val)
@@ -1244,18 +1213,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=uint8 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.uint8)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1281,10 +1245,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint8 conversion")
 
-            # Convert to uint8 range [0, 255]
             var int_val = Int(val)
             if int_val < 0:
                 int_val = 0
@@ -1302,18 +1264,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=uint16 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.uint16)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1338,7 +1295,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint16 conversion")
 
             var u16_val = UInt16(val)
@@ -1354,18 +1310,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=uint32 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.uint32)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1390,7 +1341,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint32 conversion")
 
             var u32_val = UInt32(val)
@@ -1405,18 +1355,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Returns:.            A new ExTensor with dtype=uint64 containing converted values.
         """
-
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         var result = ExTensor(self._shape, DType.uint64)
 
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1441,7 +1386,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
                 result._data.bitcast[UInt64]()[i] = self._data.bitcast[UInt64]()[i]
                 continue
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Unsupported dtype for to_uint64 conversion")
 
             var u64_val = UInt64(val)
@@ -1477,8 +1421,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         from .types.bf8 import BF8
 
-        # (Fixes DATA-003, DATA-004, DATA-005 - see docstring for documentation)
-
         # Verify source is floating point
         if not (
             self._dtype == DType.float16
@@ -1492,13 +1434,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Convert each element to BF8
         for i in range(self._numel):
-            # Bounds check (fixes DATA-004)
             if i >= self._numel:
                 raise Error("Index out of bounds during bitcast")
 
-            # Get source value as Float32
             var val: Float32
-            # Defensive dtype re-validation (fixes DATA-003)
             if self._dtype == DType.float16:
                 val = self._data.bitcast[Float16]()[i].cast[DType.float32]()
             elif self._dtype == DType.float32:
@@ -1506,10 +1445,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.float64:
                 val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
             else:
-                # Defensive re-validation (fixes DATA-003)
                 raise Error("Invalid dtype for BF8 conversion")
 
-            # Convert to BF8 and store
             var bf8_val = BF8.from_float32(val)
             result._data.bitcast[UInt8]()[i] = bf8_val.value
 
@@ -1618,7 +1555,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         from .types.mxfp4 import MXFP4Block
 
-        # Verify source is floating point (DATA-003 outer check)
+        # Verify source is floating point
         if not (
             self._dtype == DType.float16
             or self._dtype == DType.float32
@@ -1631,12 +1568,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
 
         # Create output tensor as flattened uint8 array
-        # Note: Need to specify shape for allocation (1D tensor of total_bytes)
         var output_shape = List[Int]()
         output_shape.append(total_bytes)
         var result = ExTensor(output_shape, DType.uint8)
 
-        # Store original size before padding (fixes DATA-001)
+        # Store original size before padding
         result._original_numel_quantized = self._numel
 
         # Process each block
@@ -1649,13 +1585,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(32):
                 var idx = start_idx + i
                 if idx < self._numel:
-                    # Bounds check (fixes DATA-004)
                     if idx >= self._numel:
                         raise Error("Index out of bounds during bitcast")
 
-                    # Get source value as Float32
                     var val: Float32
-                    # Defensive dtype re-validation (fixes DATA-003)
                     if self._dtype == DType.float16:
                         val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
                     elif self._dtype == DType.float32:
@@ -1663,7 +1596,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
                     elif self._dtype == DType.float64:
                         val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
                     else:
-                        # Defensive re-validation (fixes DATA-003)
                         raise Error("Invalid dtype for MXFP4 quantization")
                     values.append(val)
                 else:
@@ -1712,13 +1644,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var num_blocks = self._numel // 17
         var padded_output_size = num_blocks * 32
 
-        # Check if original size is stored (fixes DATA-002)
+        # Check if original size is stored
         var output_size: Int
         if self._original_numel_quantized >= 0:
-            # Use stored original size (was set by to_mxfp4)
             output_size = self._original_numel_quantized
         else:
-            # Fallback to padded size for backwards compatibility
             output_size = padded_output_size
 
         # Create output tensor with proper shape
@@ -1747,7 +1677,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
-            # Create a new tensor with the correct size
             var trimmed = ExTensor(List[Int](output_size), DType.float32)
             for i in range(output_size):
                 trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
@@ -1823,7 +1752,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """
         from .types.nvfp4 import NVFP4Block
 
-        # Verify source is floating point (DATA-003 outer check)
+        # Verify source is floating point
         if not (
             self._dtype == DType.float16
             or self._dtype == DType.float32
@@ -1836,12 +1765,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block
 
         # Create output tensor as flattened uint8 array
-        # Note: Need to specify shape for allocation (1D tensor of total_bytes)
         var output_shape = List[Int]()
         output_shape.append(total_bytes)
         var result = ExTensor(output_shape, DType.uint8)
 
-        # Store original size before padding (fixes DATA-001)
+        # Store original size before padding
         result._original_numel_quantized = self._numel
 
         # Process each block
@@ -1854,13 +1782,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(16):
                 var idx = start_idx + i
                 if idx < self._numel:
-                    # Bounds check (fixes DATA-004)
                     if idx >= self._numel:
                         raise Error("Index out of bounds during bitcast")
 
-                    # Get source value as Float32
                     var val: Float32
-                    # Defensive dtype re-validation (fixes DATA-003)
                     if self._dtype == DType.float16:
                         val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
                     elif self._dtype == DType.float32:
@@ -1868,7 +1793,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
                     elif self._dtype == DType.float64:
                         val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
                     else:
-                        # Defensive re-validation (fixes DATA-003)
                         raise Error("Invalid dtype for NVFP4 quantization")
                     values.append(val)
                 else:
@@ -1917,13 +1841,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var num_blocks = self._numel // 9
         var padded_output_size = num_blocks * 16
 
-        # Check if original size is stored (fixes DATA-002)
+        # Check if original size is stored
         var output_size: Int
         if self._original_numel_quantized >= 0:
-            # Use stored original size (was set by to_nvfp4)
             output_size = self._original_numel_quantized
         else:
-            # Fallback to padded size for backwards compatibility
             output_size = padded_output_size
 
         # Create output tensor with proper shape
@@ -1952,7 +1874,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
-            # Create a new tensor with the correct size
             var trimmed = ExTensor(List[Int](output_size), DType.float32)
             for i in range(output_size):
                 trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
