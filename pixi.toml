@@ -15,7 +15,7 @@ test = "mojo test"
 format = "mojo format"
 
 [dependencies]
-mojo = ">=0.25.7.0.dev2025110405,<0.26"
+mojo = ">=0.26,<0.27"
 pre-commit = ">=3.5.0"
 prettytable = ">=3.17.0,<4"
 pytest = ">=7.4.0,<8"
