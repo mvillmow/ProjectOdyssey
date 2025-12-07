@@ -66,8 +66,8 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
         """Initialize FP4_E2M1 from raw 4-bit value.
 
         Args:
-            value: Raw 4-bit representation (only lower 4 bits used)
-        """
+            value: Raw 4-bit representation (only lower 4 bits used).
+       """
         self.value = value & 0xF  # Mask to 4 bits
 
     @staticmethod

@@ -39,8 +39,8 @@ struct ArgumentSpec(Copyable, Movable):
         name: Argument name (e.g., "epochs", "batch-size")
         arg_type: Type string ("int", "float", "string", "bool")
         default_value: Default value as string (parsed based on arg_type)
-        is_flag: Whether this is a boolean flag (--flag with no value)
-    """
+        is_flag: Whether this is a boolean flag (--flag with no value).
+   """
 
     var name: String
     var arg_type: String
@@ -223,8 +223,8 @@ struct ArgumentParser(Copyable, Movable):
         Flags are provided as --name without a value.
 
         Args:
-            name: Flag name (e.g., "verbose", "debug")
-        """
+            name: Flag name (e.g., "verbose", "debug").
+       """
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
         )

@@ -66,7 +66,7 @@ def check_url(url: str) -> Tuple[bool, str]:
     Check if a URL is reachable.
 
     Returns:
-        (is_valid, error_message)
+        (is_valid, error_message).
     """
     if url in SKIP_URLS:
         return True, "Skipped (known issue)"
@@ -95,7 +95,7 @@ def validate_files(file_paths: List[str]) -> int:
     Validate URLs in the given files.
 
     Returns:
-        Exit code (0 = success, 1 = failures)
+        Exit code (0 = success, 1 = failures).
     """
     all_urls = set()
 

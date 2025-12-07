@@ -314,8 +314,8 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     """Test that batch_norm2d_backward behaves differently in training vs inference.
 
     Training mode: Gradients flow through batch statistics
-    Inference mode: Gradients bypass statistics (use running stats)
-    """
+    Inference mode: Gradients bypass statistics (use running stats).
+   """
     var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels

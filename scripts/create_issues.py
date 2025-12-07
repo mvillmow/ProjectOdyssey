@@ -109,7 +109,7 @@ def smart_rate_limit_sleep() -> None:
     This function checks the current rate limit and sleeps only when needed:
     - No sleep if remaining > 100 (healthy)
     - Exponential backoff if 10 < remaining <= 100 (low)
-    - Wait until reset if remaining <= 10 (critical)
+    - Wait until reset if remaining <= 10 (critical).
     """
     remaining, reset_time = check_github_rate_limit()
 

@@ -300,7 +300,7 @@ def process_plan_directory(plan_dir, section=None, dry_run=False, resume=False):
         resume: If True, attempt to resume from last saved state
 
     Returns:
-        Tuple of (success_count, error_count, errors_list)
+        Tuple of (success_count, error_count, errors_list).
     """
     plan_path = Path(plan_dir)
     logs_dir = plan_path.parent.parent / "logs"

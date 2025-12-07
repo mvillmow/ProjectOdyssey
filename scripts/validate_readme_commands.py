@@ -196,7 +196,7 @@ def is_safe_command(command: str) -> tuple[bool, str]:
         command: Command string to check
 
     Returns:
-        Tuple of (is_safe, reason)
+        Tuple of (is_safe, reason).
     """
     if is_blocked_command(command):
         return False, "matches blocked pattern"
@@ -496,7 +496,7 @@ def main() -> int:
     """Main entry point.
 
     Returns:
-        Exit code (0 = success, 1 = failure)
+        Exit code (0 = success, 1 = failure).
     """
     parser = argparse.ArgumentParser(
         description="Validate README.md commands",

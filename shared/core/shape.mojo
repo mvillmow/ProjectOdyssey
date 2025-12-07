@@ -243,8 +243,8 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
         var b = squeeze(a)  # Shape (3, 4)
 
         # Squeeze specific dim
-        var c = squeeze(a, 0)  # Shape (3, 1, 4)
-    """
+        var c = squeeze(a, 0)  # Shape (3, 1, 4).
+   """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
 
@@ -298,8 +298,8 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
     Examples:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
         var b = unsqueeze(a, 0)  # Shape (1, 3, 4)
-        var c = unsqueeze(a, -1)  # Shape (3, 4, 1)
-    """
+        var c = unsqueeze(a, -1)  # Shape (3, 4, 1).
+   """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
     var new_ndim = ndim + 1
@@ -348,8 +348,8 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
-        var b = flatten(a)  # Shape (12,)
-    """
+        var b = flatten(a)  # Shape (12,).
+   """
     var numel = tensor.numel()
     var shape_1d = List[Int]()
     shape_1d.append(numel)
@@ -372,8 +372,8 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = ones([2, 3], DType.float32)  # Contiguous
-        var b = ravel(a)  # Returns view of shape (6,)
-    """
+        var b = ravel(a)  # Returns view of shape (6,).
+   """
     # For contiguous tensors, we can safely flatten as a view
     # For non-contiguous tensors, we need to copy
     if is_contiguous(tensor):
@@ -403,8 +403,8 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         var tensors = List[ExTensor]()
         tensors.append(a)
         tensors.append(b)
-        var c = concatenate(tensors, axis=0)  # Shape (5, 3)
-    """
+        var c = concatenate(tensors, axis=0)  # Shape (5, 3).
+   """
     var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("concatenate: need at least one tensor")
@@ -497,8 +497,8 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         var tensors = List[ExTensor]()
         tensors.append(a)
         tensors.append(b)
-        var c = stack(tensors, axis=0)  # Shape (2, 2, 3)
-    """
+        var c = stack(tensors, axis=0)  # Shape (2, 2, 3).
+   """
     var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("stack: need at least one tensor")
@@ -575,8 +575,8 @@ fn conv2d_output_shape(
         var out_h, out_w = conv2d_output_shape(224, 224, 5, 5, 2, 2)  # (112, 112)
 
         # Dilated convolution (dilation=2)
-        var out_h, out_w = conv2d_output_shape(224, 224, 3, 3, 1, 1, dilation=2)  # (222, 222)
-    """
+        var out_h, out_w = conv2d_output_shape(224, 224, 3, 3, 1, 1, dilation=2)  # (222, 222).
+   """
     var out_h = (input_h + 2 * padding - dilation * (kernel_h - 1) - 1) // stride + 1
     var out_w = (input_w + 2 * padding - dilation * (kernel_w - 1) - 1) // stride + 1
     return Tuple[Int, Int](out_h, out_w)
@@ -611,8 +611,8 @@ fn pool_output_shape(
         var out_h, out_w = pool_output_shape(224, 224, 2, 2, 0)  # (112, 112)
 
         # 3x3 pooling with stride=1, padding=1 (same spatial dims)
-        var out_h, out_w = pool_output_shape(224, 224, 3, 1, 1)  # (224, 224)
-    """
+        var out_h, out_w = pool_output_shape(224, 224, 3, 1, 1)  # (224, 224).
+   """
     var out_h = (input_h + 2 * padding - kernel_size) // stride + 1
     var out_w = (input_w + 2 * padding - kernel_size) // stride + 1
     return Tuple[Int, Int](out_h, out_w)
@@ -666,8 +666,8 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
 
         # Use in forward pass
         var fc_input = flatten_to_2d(conv_output)
-        var fc_output = linear(fc_input, weights, bias)
-    """
+        var fc_output = linear(fc_input, weights, bias).
+   """
     var shape = tensor.shape()
 
     if len(shape) != 4:
@@ -716,8 +716,8 @@ fn transposed_conv2d_output_shape(
         var out_h, out_w = transposed_conv2d_output_shape(7, 7, 4, 4, 2, 1)  # (14, 14)
 
         # Upsample 14x14 to 28x28 with stride=2
-        var out_h, out_w = transposed_conv2d_output_shape(14, 14, 4, 4, 2, 1)  # (28, 28)
-    """
+        var out_h, out_w = transposed_conv2d_output_shape(14, 14, 4, 4, 2, 1)  # (28, 28).
+   """
     var out_h = (input_h - 1) * stride - 2 * padding + kernel_h + output_padding
     var out_w = (input_w - 1) * stride - 2 * padding + kernel_w + output_padding
     return Tuple[Int, Int](out_h, out_w)
@@ -741,8 +741,8 @@ fn global_avgpool_output_shape(batch: Int, channels: Int) -> Tuple[Int, Int, Int
         var shape = global_avgpool_output_shape(32, 512)  # (32, 512, 1, 1)
 
         # Common in classification networks (replaces flatten + FC)
-        var shape = global_avgpool_output_shape(16, 2048)  # (16, 2048, 1, 1)
-    """
+        var shape = global_avgpool_output_shape(16, 2048)  # (16, 2048, 1, 1).
+   """
     return Tuple[Int, Int, Int, Int](batch, channels, 1, 1)
 
 
@@ -764,6 +764,6 @@ fn linear_output_shape(batch_size: Int, out_features: Int) -> Tuple[Int, Int]:
         var shape = linear_output_shape(32, 10)  # (32, 10)
 
         # Hidden layer: 784 features -> 256 hidden units
-        var shape = linear_output_shape(64, 256)  # (64, 256)
-    """
+        var shape = linear_output_shape(64, 256)  # (64, 256).
+   """
     return Tuple[Int, Int](batch_size, out_features)

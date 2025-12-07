@@ -60,8 +60,8 @@ fn bench_data_preprocessing() raises -> BenchmarkResult:
         - Impact of various transformations
 
     Performance Target:
-        - Preprocessing should not be bottleneck (> 10k samples/sec)
-    """
+        - Preprocessing should not be bottleneck (> 10k samples/sec).
+   """
     # TODO: Implement when data preprocessing utilities are available
     # Placeholder for TDD
     return BenchmarkResult(

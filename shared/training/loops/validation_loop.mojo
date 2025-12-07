@@ -164,8 +164,8 @@ struct ValidationLoop:
         Args:
             compute_accuracy: Whether to compute accuracy.
             compute_confusion: Whether to compute confusion matrix.
-            num_classes: Number of classes (for confusion matrix)
-        """
+            num_classes: Number of classes (for confusion matrix).
+       """
         self.compute_accuracy = compute_accuracy
         self.compute_confusion = compute_confusion
         self.num_classes = num_classes

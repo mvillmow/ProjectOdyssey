@@ -20,8 +20,8 @@ fn parse_args() raises -> Tuple[String, String]:
     """Parse command line arguments using enhanced argument parser.
 
     Returns:
-        Tuple of (weights_dir, data_dir)
-    """
+        Tuple of (weights_dir, data_dir).
+   """
     var parser = ArgumentParser()
     parser.add_argument("weights-dir", "string", "vgg16_weights")
     parser.add_argument("data-dir", "string", "datasets/cifar10")
@@ -46,8 +46,8 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
         test_labels: Test labels of shape (num_samples,)
 
     Returns:
-        Accuracy as percentage (0-100)
-    """
+        Accuracy as percentage (0-100).
+   """
     var test_shape = test_images.shape()
     var num_test_samples = test_shape[0]
 

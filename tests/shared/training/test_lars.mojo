@@ -70,8 +70,8 @@ fn test_lars_initialization() raises:
 fn test_lars_parameter_norm_computation() raises:
     """Test LARS correctly computes parameter norm.
 
-    LARS uses L2 norm: ||params|| = sqrt(sum(params^2))
-    """
+    LARS uses L2 norm: ||params|| = sqrt(sum(params^2)).
+   """
     # Create simple parameter tensor: [3.0, 4.0]
     # Expected norm: sqrt(9 + 16) = 5.0
     var shape = List[Int](2)
@@ -88,8 +88,8 @@ fn test_lars_parameter_norm_computation() raises:
 fn test_lars_gradient_norm_computation() raises:
     """Test LARS correctly computes gradient norm.
 
-    LARS uses L2 norm: ||grads|| = sqrt(sum(grads^2))
-    """
+    LARS uses L2 norm: ||grads|| = sqrt(sum(grads^2)).
+   """
     # Create simple gradient tensor: [0.6, 0.8]
     # Expected norm: sqrt(0.36 + 0.64) = 1.0
     var shape = List[Int](2)
@@ -208,8 +208,8 @@ fn test_lars_momentum_accumulation() raises:
         - Subsequent updates: velocity = momentum * velocity + scaled_grad
         - Parameter update: new_params = params - lr * velocity
 
-    Returns: (new_params, new_velocity)
-    """
+    Returns: (new_params, new_velocity).
+   """
     var shape = List[Int](1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0

@@ -33,8 +33,8 @@ def validate_directory_structure(
         expected_structure: Dictionary mapping subdirectory names to expected contents
 
     Returns:
-        List of validation errors (empty list if all valid)
-    """
+        List of validation errors (empty list if all valid).
+   """
     errors = []
 
     for dir_name, expected_items in expected_structure.items():

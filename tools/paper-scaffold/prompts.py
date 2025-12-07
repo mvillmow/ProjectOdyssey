@@ -55,8 +55,8 @@ class InteractivePrompter:
             example: Example value to show in prompt
 
         Returns:
-            User input (validated)
-        """
+            User input (validated).
+       """
         # Build prompt message
         prompt_parts = [message]
 
@@ -99,8 +99,8 @@ class InteractivePrompter:
         Prompt for paper name.
 
         Returns:
-            Paper name (will be normalized to directory name)
-        """
+            Paper name (will be normalized to directory name).
+       """
         return self._prompt(
             message="Paper name (short identifier)",
             example="LeNet-5, BERT, GPT-2",
@@ -164,8 +164,8 @@ class InteractivePrompter:
         Prompt for publication year.
 
         Returns:
-            Publication year (defaults to current year)
-        """
+            Publication year (defaults to current year).
+       """
         current_year = str(datetime.datetime.now().year)
 
         return self._prompt(
@@ -202,8 +202,8 @@ class InteractivePrompter:
         Prompt for paper URL.
 
         Returns:
-            Paper URL (optional)
-        """
+            Paper URL (optional).
+       """
         result = self._prompt(
             message="Paper URL (optional)",
             default="",
@@ -220,8 +220,8 @@ class InteractivePrompter:
         Prompt for paper description.
 
         Returns:
-            Brief paper description (optional)
-        """
+            Brief paper description (optional).
+       """
         result = self._prompt(
             message="Brief description (optional)",
             default="",

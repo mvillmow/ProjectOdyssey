@@ -321,8 +321,8 @@ fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
         after: Memory after operation.
 
     Returns:
-        Memory delta in bytes (positive = increase)
-    """
+        Memory delta in bytes (positive = increase).
+   """
     return after.allocated_bytes - before.allocated_bytes
 
 
@@ -628,8 +628,8 @@ fn compare_to_baseline(
         baseline: Baseline metrics to compare against
 
     Returns:
-        Tuple of (is_regression, percent_slower)
-    """
+        Tuple of (is_regression, percent_slower).
+   """
     # Calculate percent difference
     var percent_slower = ((current.avg_ms - baseline.avg_time_ms) / baseline.avg_time_ms) * 100.0
 

@@ -53,7 +53,7 @@ def process_file(file_path: Path, dry_run: bool = False) -> Tuple[int, int]:
     Process a single markdown file to fix invalid links.
 
     Returns:
-        Tuple of (system_path_fixes, absolute_path_fixes)
+        Tuple of (system_path_fixes, absolute_path_fixes).
     """
     try:
         content = file_path.read_text(encoding="utf-8")

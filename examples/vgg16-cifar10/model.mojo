@@ -116,8 +116,8 @@ fn compute_flattened_size() -> Int:
     32 -> 16 -> 8 -> 4 -> 2 -> 1
 
     Returns:
-        Number of features after flattening (channels * height * width)
-    """
+        Number of features after flattening (channels * height * width).
+   """
     # VGG-16: Each block has 3x3 convs with padding=1 (size preserved)
     # followed by 2x2 pool with stride=2 (size halved)
     var h, w = INPUT_HEIGHT, INPUT_WIDTH
@@ -173,8 +173,8 @@ struct VGG16:
         # Fully connected layers
         fc1_weights, fc1_bias: First FC layer (512, 512)
         fc2_weights, fc2_bias: Second FC layer (512, 512)
-        fc3_weights, fc3_bias: Third FC layer (num_classes, 512)
-    """
+        fc3_weights, fc3_bias: Third FC layer (num_classes, 512).
+   """
 
     var num_classes: Int
     var dropout_rate: Float32
@@ -230,8 +230,8 @@ struct VGG16:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
-            dropout_rate: Dropout probability for FC layers (default: 0.5)
-        """
+            dropout_rate: Dropout probability for FC layers (default: 0.5).
+       """
         self.num_classes = num_classes
         self.dropout_rate = dropout_rate
 
@@ -406,8 +406,8 @@ struct VGG16:
             training: Whether in training mode (applies dropout if True)
 
         Returns:
-            Output logits of shape (batch, num_classes)
-        """
+            Output logits of shape (batch, num_classes).
+       """
         # Block 1: Conv -> ReLU -> Conv -> ReLU -> MaxPool
         var conv1_1 = conv2d(
             input,
@@ -590,8 +590,8 @@ struct VGG16:
             input: Input tensor of shape (1, 3, 32, 32)
 
         Returns:
-            Predicted class index (0 to num_classes-1)
-        """
+            Predicted class index (0 to num_classes-1).
+       """
         var logits = self.forward(input, training=False)
 
         # Find argmax

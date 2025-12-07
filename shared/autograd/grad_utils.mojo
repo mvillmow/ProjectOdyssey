@@ -52,8 +52,8 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
         # All elements in grad now in [-1.0, 1.0]
 
         var grad2 = full(List[Int](2, 3), 5.0, DType.float32)
-        clip_grad_value_(grad2, max_value=1.0)
-    """
+        clip_grad_value_(grad2, max_value=1.0).
+   """
     if max_value < 0.0:
         raise Error("max_value must be non-negative, got: " + String(max_value))
 

@@ -346,8 +346,8 @@ fn validate(
         batch_size: Mini-batch size
 
     Returns:
-        Validation accuracy (percentage)
-    """
+        Validation accuracy (percentage).
+   """
     var num_samples = val_images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_correct = 0

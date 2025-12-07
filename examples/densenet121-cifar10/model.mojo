@@ -41,8 +41,8 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
         tensors: List of tensors to concatenate (all with shape: (B, C_i, H, W))
 
     Returns:
-        Concatenated tensor (B, sum(C_i), H, W)
-    """
+        Concatenated tensor (B, sum(C_i), H, W).
+   """
     if len(tensors) == 0:
         raise Error("Cannot concatenate empty list")
 
@@ -120,8 +120,8 @@ struct DenseLayer:
 
         Args:
             in_channels: Number of input channels (concatenated from all previous layers)
-            growth_rate: Number of output channels (k, typically 32)
-        """
+            growth_rate: Number of output channels (k, typically 32).
+       """
         var bottleneck_channels = 4 * growth_rate
 
         # Bottleneck 1×1 conv
@@ -162,8 +162,8 @@ struct DenseLayer:
             training: Training mode flag
 
         Returns:
-            Output tensor (batch, growth_rate, H, W)
-        """
+            Output tensor (batch, growth_rate, H, W).
+       """
         # Bottleneck
         var out = batch_norm2d(
             x, self.bn1_gamma, self.bn1_beta, self.bn1_running_mean, self.bn1_running_var, training
@@ -221,8 +221,8 @@ struct DenseBlock:
             training: Training mode flag
 
         Returns:
-            Output tensor (batch, in_channels + num_layers * growth_rate, H, W)
-        """
+            Output tensor (batch, in_channels + num_layers * growth_rate, H, W).
+       """
         var features = List[ExTensor]()
         features.append(x)
 
@@ -248,8 +248,8 @@ struct TransitionLayer:
     Architecture:
         Input → BN → Conv1×1(θ × in_channels) → AvgPool2×2 → Output
 
-    Where θ = 0.5 (compression factor)
-    """
+    Where θ = 0.5 (compression factor).
+   """
 
     var bn_gamma: ExTensor
     var bn_beta: ExTensor
@@ -263,8 +263,8 @@ struct TransitionLayer:
 
         Args:
             in_channels: Number of input channels
-            out_channels: Number of output channels (typically in_channels / 2)
-        """
+            out_channels: Number of output channels (typically in_channels / 2).
+       """
         self.bn_gamma = constant(List[Int]().append(in_channels), 1.0)
         self.bn_beta = zeros(List[Int]().append(in_channels))
         self.bn_running_mean = zeros(List[Int]().append(in_channels))
@@ -288,8 +288,8 @@ struct TransitionLayer:
             training: Training mode flag
 
         Returns:
-            Output tensor (batch, out_channels, H/2, W/2)
-        """
+            Output tensor (batch, out_channels, H/2, W/2).
+       """
         var out = batch_norm2d(
             x, self.bn_gamma, self.bn_beta, self.bn_running_mean, self.bn_running_var, training
         )
@@ -342,8 +342,8 @@ struct DenseNet121:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
-            growth_rate: Growth rate k (default: 32)
-        """
+            growth_rate: Growth rate k (default: 32).
+       """
         var num_init_features = 2 * growth_rate  # 64 channels
 
         # Initial convolution: 3×3, 64 filters
@@ -405,8 +405,8 @@ struct DenseNet121:
             training: Training mode flag
 
         Returns:
-            Logits tensor (batch, num_classes)
-        """
+            Logits tensor (batch, num_classes).
+       """
         # Initial convolution
         var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=1, padding=1)
         out = batch_norm2d(

@@ -28,8 +28,8 @@ fn math_round[T: DType](x: Scalar[T]) -> Scalar[T]:
         -1.4 → -1.0
          0.5 →  0.0 (nearest even)
          1.4 →  1.0
-         2.5 →  2.0 (nearest even)
-    """
+         2.5 →  2.0 (nearest even).
+   """
     var floor_val = math_floor(x)
     var frac = x - floor_val
 
@@ -134,8 +134,8 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = zeros(shape, DType.float32)
-        var b = exp(a)  # All values become 1.0 (e^0)
-    """
+        var b = exp(a)  # All values become 1.0 (e^0).
+   """
     return dispatch_float_unary[_exp_op](tensor)
 
 
@@ -163,8 +163,8 @@ fn log(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = ones(shape, DType.float32)
-        var b = log(a)  # All values become 0.0 (ln(1))
-    """
+        var b = log(a)  # All values become 0.0 (ln(1)).
+   """
     return dispatch_float_unary[_log_op](tensor)
 
 
@@ -218,8 +218,8 @@ fn sin(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = zeros(shape, DType.float32)
-        var b = sin(a)  # All values become 0.0 (sin(0))
-    """
+        var b = sin(a)  # All values become 0.0 (sin(0)).
+   """
     return dispatch_float_unary[_sin_op](tensor)
 
 
@@ -244,8 +244,8 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = zeros(shape, DType.float32)
-        var b = cos(a)  # All values become 1.0 (cos(0))
-    """
+        var b = cos(a)  # All values become 1.0 (cos(0)).
+   """
     return dispatch_float_unary[_cos_op](tensor)
 
 
@@ -270,8 +270,8 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = zeros(shape, DType.float32)
-        var b = tanh(a)  # All values become 0.0 (tanh(0))
-    """
+        var b = tanh(a)  # All values become 0.0 (tanh(0)).
+   """
     return dispatch_float_unary[_tanh_op](tensor)
 
 
@@ -388,8 +388,8 @@ fn round(tensor: ExTensor) raises -> ExTensor:
 
     Examples:
         var a = tensor([1.2, 2.5, 3.9])
-        var b = round(a)  # [1.0, 2.0, 4.0] (or [1.0, 3.0, 4.0] depending on rounding mode)
-    """
+        var b = round(a)  # [1.0, 2.0, 4.0] (or [1.0, 3.0, 4.0] depending on rounding mode).
+   """
     return dispatch_float_unary[_round_op](tensor)
 
 
@@ -455,8 +455,8 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
-        var z = logical_and(x, y)  # Shape (3, 4, 5)
-    """
+        var z = logical_and(x, y)  # Shape (3, 4, 5).
+   """
     if a.dtype() != b.dtype():
         raise Error("logical_and: tensors must have same dtype")
 
@@ -533,8 +533,8 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
-        var z = logical_or(x, y)  # Shape (3, 4, 5)
-    """
+        var z = logical_or(x, y)  # Shape (3, 4, 5).
+   """
     if a.dtype() != b.dtype():
         raise Error("logical_or: tensors must have same dtype")
 
@@ -636,8 +636,8 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
-        var z = logical_xor(x, y)  # Shape (3, 4, 5)
-    """
+        var z = logical_xor(x, y)  # Shape (3, 4, 5).
+   """
     if a.dtype() != b.dtype():
         raise Error("logical_xor: tensors must have same dtype")
 
@@ -774,8 +774,8 @@ fn exp_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     Examples:
         var x = ones([3, 4])
         var grad_y = ones([3, 4])
-        var grad_x = exp_backward(grad_y, x)  # grad_x = grad_y * exp(x)
-    """
+        var grad_x = exp_backward(grad_y, x)  # grad_x = grad_y * exp(x).
+   """
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
 
     for i in range(grad_output.numel()):

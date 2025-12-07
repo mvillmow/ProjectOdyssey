@@ -328,8 +328,8 @@ from shared.core.math_constants import GELU_COEFF, SQRT_2_OVER_PI
 fn gelu_approximate[T: DType](x: Scalar[T]) -> Scalar[T]:
     """GELU approximation using precomputed constants.
 
-    GELU(x) ≈ 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))
-    """
+    GELU(x) ≈ 0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³))).
+   """
     var one = Scalar[T](1.0)
     var half = Scalar[T](0.5)
     var coeff = Scalar[T](GELU_COEFF)
@@ -425,8 +425,8 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
 
     Examples:
         var grad = ones(List[Int](3, 4), DType.float32)
-        clip_grad_value_(grad, max_value=1.0)
-    """
+        clip_grad_value_(grad, max_value=1.0).
+   """
     if max_value < 0.0:
         raise Error("max_value must be non-negative")
 

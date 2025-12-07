@@ -97,8 +97,8 @@ fn test_conv2d_output_shape_no_padding() raises:
              out_width = (width - kW) // stride + 1
 
     Test case: batch=1, in_channels=1, height=4, width=4, kH=3, kW=3, stride=1, padding=0
-    Expected: output shape (1, 1, 2, 2)
-    """
+    Expected: output shape (1, 1, 2, 2).
+   """
     var batch_size = 1
     var in_channels = 1
     var out_channels = 1
@@ -196,8 +196,8 @@ fn test_conv2d_output_shape_with_stride() raises:
     """Test conv2d output shape with stride > 1.
 
     Test case: batch=1, in_channels=1, height=8, width=8, kH=3, kW=3, stride=2, padding=1
-    Expected: output shape (1, 1, 4, 4)
-    """
+    Expected: output shape (1, 1, 4, 4).
+   """
     var batch_size = 1
     var in_channels = 1
     var out_channels = 1

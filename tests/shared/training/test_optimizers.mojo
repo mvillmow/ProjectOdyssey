@@ -348,8 +348,8 @@ fn test_rmsprop_initialization() raises:
             alpha: Float32 = 0.99,
             epsilon: Float32 = 1e-8,
             momentum: Float32 = 0.0
-        )
-    """
+        ).
+   """
     # TODO(#1538): Implement when RMSprop is available
     # var optimizer = RMSprop(
     #     learning_rate=0.01,
@@ -368,8 +368,8 @@ fn test_rmsprop_parameter_update() raises:
     API Contract:
         RMSprop maintains moving average of squared gradients:
         - v = alpha * v + (1 - alpha) * grad^2
-        - params = params - lr * grad / (sqrt(v) + epsilon)
-    """
+        - params = params - lr * grad / (sqrt(v) + epsilon).
+   """
     # TODO(#1538): Implement when RMSprop is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))

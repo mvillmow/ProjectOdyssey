@@ -250,8 +250,8 @@ struct Logger:
 
         Args:
             name: Logger name (e.g., "training", "evaluation")
-            level: Minimum log level to output (default: INFO)
-        """
+            level: Minimum log level to output (default: INFO).
+       """
         self.name = name
         self.level = level
         self.handlers = List[StreamHandler]()

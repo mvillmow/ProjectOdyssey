@@ -53,8 +53,8 @@ fn forward_pass(network: SimpleNN, input_data: ExTensor) raises -> ExTensor:
         input_data: Input tensor (batch_size, input_size)
 
     Returns:
-        Output tensor (batch_size, output_size)
-    """
+        Output tensor (batch_size, output_size).
+   """
     # Create output tensor
     var batch_size = input_data.shape()[0]
     var output_shape = List[Int]()

@@ -202,8 +202,8 @@ fn bench_adam_memory_usage() raises -> BenchmarkResult:
         - Peak memory usage during update
 
     Performance Target:
-        - Memory usage within 10% of theoretical minimum (3x parameter size)
-    """
+        - Memory usage within 10% of theoretical minimum (3x parameter size).
+   """
     # TODO(#1538): Implement when memory profiling is available
     # varn = 10_000_000
     # var params = Tensor.randn(n)

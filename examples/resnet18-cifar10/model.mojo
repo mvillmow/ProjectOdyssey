@@ -254,8 +254,8 @@ struct ResNet18:
         """Initialize ResNet-18 model with random weights.
 
         Args:
-            num_classes: Number of output classes (default: 10 for CIFAR-10)
-        """
+            num_classes: Number of output classes (default: 10 for CIFAR-10).
+       """
         self.num_classes = num_classes
 
         # ========== Initial conv: 3 → 64 channels, 3×3 kernel ==========
@@ -518,8 +518,8 @@ struct ResNet18:
             Stage4 → (batch, 512, 4, 4) →
             GAP → (batch, 512, 1, 1) →
             Flatten → (batch, 512) →
-            FC → (batch, num_classes)
-        """
+            FC → (batch, num_classes).
+       """
         # ========== Initial conv + BN + ReLU ==========
         var conv1 = conv2d(input, self.conv1_kernel, self.conv1_bias, stride=1, padding=1)
         var bn1_result = batch_norm2d(
@@ -788,8 +788,8 @@ struct ResNet18:
             input: Input tensor of shape (1, 3, 32, 32)
 
         Returns:
-            Predicted class index (0 to num_classes-1)
-        """
+            Predicted class index (0 to num_classes-1).
+       """
         var logits = self.forward(input, training=False)
 
         # Find argmax

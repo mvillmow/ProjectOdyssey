@@ -20,7 +20,7 @@ def fix_list_initialization(file_path: Path) -> tuple[int, bool]:
     Fix List initialization pattern in a single file.
 
     Returns:
-        (num_fixes, was_modified)
+        (num_fixes, was_modified).
     """
     content = file_path.read_text()
     original_content = content

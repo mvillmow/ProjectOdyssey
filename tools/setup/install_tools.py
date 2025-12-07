@@ -64,8 +64,8 @@ def run_command(cmd: list, check: bool = False) -> Tuple[int, str, str]:
         check: Raise exception on non-zero exit
 
     Returns:
-        Tuple of (exit_code, stdout, stderr)
-    """
+        Tuple of (exit_code, stdout, stderr).
+   """
     try:
         result = subprocess.run(
             cmd,

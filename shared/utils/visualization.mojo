@@ -229,8 +229,8 @@ fn compute_confusion_matrix(
         num_classes: Number of classes (auto-detect if 0)
 
     Returns:
-        Confusion matrix (num_classes x num_classes)
-    """
+        Confusion matrix (num_classes x num_classes).
+   """
     # Determine number of classes
     var max_class = 0
     for i in range(len(y_true)):
@@ -384,8 +384,8 @@ fn compute_matrix_metrics(
         matrix: Confusion matrix
 
     Returns:
-        Tuple of (accuracy, precision, recall)
-    """
+        Tuple of (accuracy, precision, recall).
+   """
     # Compute total samples and correct predictions
     var total = 0
     var correct = 0
@@ -571,8 +571,8 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
         gradients: Gradient magnitudes per layer
 
     Returns:
-        Tuple of (has_vanishing, has_exploding)
-    """
+        Tuple of (has_vanishing, has_exploding).
+   """
     # Thresholds for vanishing and exploding gradients
     var vanishing_threshold = Float32(1e-7)
     var exploding_threshold = Float32(1e2)

@@ -160,8 +160,8 @@ struct ComponentTracker(Copyable, Movable):
         """Get statistical summary (mean, std, min, max, count).
 
         Returns:
-            Statistics struct with overall statistics (not just window)
-        """
+            Statistics struct with overall statistics (not just window).
+       """
         var stats = Statistics()
 
         if self.count == 0:
@@ -237,8 +237,8 @@ struct LossTracker(Metric):
         """Initialize loss tracker.
 
         Args:
-            window_size: Number of values to keep for moving average (default: 100)
-        """
+            window_size: Number of values to keep for moving average (default: 100).
+       """
         self.window_size = window_size
         self.components = List[String]()
         self.trackers = List[ComponentTracker]()
@@ -267,8 +267,8 @@ struct LossTracker(Metric):
 
         Args:
             loss: Loss value to track
-            component: Component name (default: "total")
-        """
+            component: Component name (default: "total").
+       """
         var idx = self._get_or_create_component(component)
         self.trackers[idx].update(loss)
 
@@ -321,8 +321,8 @@ struct LossTracker(Metric):
         """Reset statistics for component(s).
 
         Args:
-            component: Component name to reset, or "" to reset all (default: "")
-        """
+            component: Component name to reset, or "" to reset all (default: "").
+       """
         if component == "":
             # Reset all components
             for i in range(len(self.trackers)):
@@ -338,8 +338,8 @@ struct LossTracker(Metric):
         """Get list of all tracked components.
 
         Returns:
-            Vector of component names (copy)
-        """
+            Vector of component names (copy).
+       """
         # Create a copy of the components list
         return List[String](self.components)
 

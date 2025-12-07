@@ -62,7 +62,7 @@ class MarkdownFixer:
             file_path: Path to markdown file
 
         Returns:
-            Tuple of (file_was_modified, error_count_fixed)
+            Tuple of (file_was_modified, error_count_fixed).
         """
         try:
             content = file_path.read_text(encoding="utf-8")
@@ -294,7 +294,7 @@ class MarkdownFixer:
             path: Path to file or directory
 
         Returns:
-            Tuple of (files_modified, total_fixes)
+            Tuple of (files_modified, total_fixes).
         """
         if not path.exists():
             print(f"Error: {path} does not exist", file=sys.stderr)

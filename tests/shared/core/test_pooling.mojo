@@ -316,8 +316,8 @@ fn test_global_avgpool2d_backward_output_shape() raises:
     """Test global_avgpool2d_backward produces correct gradient shape.
 
     Forward: (B, C, H, W) -> (B, C, 1, 1)
-    Backward: (B, C, 1, 1) -> (B, C, H, W)
-    """
+    Backward: (B, C, 1, 1) -> (B, C, H, W).
+   """
     var input_shape = List[Int]()
     input_shape.append(2)  # batch
     input_shape.append(3)  # channels

@@ -588,8 +588,8 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         Args:
             config: Config object to populate
             py_obj: Python object (dict, list, or primitive)
-            prefix: Current key prefix (empty for root level)
-        """
+            prefix: Current key prefix (empty for root level).
+       """
         try:
             var builtins = Python.import_module("builtins")
 

@@ -308,8 +308,8 @@ fn concatenate_depthwise(
         t4: Tensor 4 (batch, C4, H, W)
 
     Returns:
-        Concatenated tensor (batch, C1+C2+C3+C4, H, W)
-    """
+        Concatenated tensor (batch, C1+C2+C3+C4, H, W).
+   """
     var batch_size = t1.shape()[0]
     var c1 = t1.shape()[1]
     var c2 = t2.shape()[1]
@@ -410,8 +410,8 @@ struct GoogLeNet:
         """Initialize GoogLeNet model.
 
         Args:
-            num_classes: Number of output classes (default: 10 for CIFAR-10)
-        """
+            num_classes: Number of output classes (default: 10 for CIFAR-10).
+       """
         # Initial convolution: 3×3, 64 filters
         self.initial_conv_weights = kaiming_normal(
             List[Int]().append(64).append(3).append(3).append(3),
@@ -536,8 +536,8 @@ struct GoogLeNet:
             training: Training mode flag (affects batch norm and dropout)
 
         Returns:
-            Logits tensor (batch, num_classes)
-        """
+            Logits tensor (batch, num_classes).
+       """
         # Initial convolution block
         var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=1, padding=1)
         out = batch_norm2d(

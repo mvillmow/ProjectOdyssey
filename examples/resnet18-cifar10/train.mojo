@@ -55,8 +55,8 @@ fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) rai
         labels: Ground truth labels (N,)
 
     Returns:
-        Accuracy as percentage (0-100)
-    """
+        Accuracy as percentage (0-100).
+   """
     var num_samples = images.shape()[0]
     var correct = 0
 

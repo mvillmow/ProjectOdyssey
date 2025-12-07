@@ -101,8 +101,8 @@ struct Variable(Copyable, Movable):
 
         Examples:
             var tape = GradientTape()
-            var x = Variable(zeros(shape, dtype), True, tape)
-        """
+            var x = Variable(zeros(shape, dtype), True, tape).
+       """
         self.data = data^
         self.requires_grad = requires_grad
         self.id = tape.register_variable(requires_grad)

@@ -117,8 +117,8 @@ fn extract_batch(
         batch_size: Number of samples in batch
 
     Returns:
-        Batch tensor (batch_size, C, H, W)
-    """
+        Batch tensor (batch_size, C, H, W).
+   """
     var data_shape = data.shape()
     var channels = data_shape[1]
     var height = data_shape[2]

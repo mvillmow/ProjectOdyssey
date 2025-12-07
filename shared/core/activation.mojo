@@ -437,8 +437,8 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
     Examples:
         var x = ExTensor(...)     # [-2, 0, 2]
         var y_exact = gelu(x, approximate=False)
-        var y_approx = gelu(x, approximate=True)
-    """
+        var y_approx = gelu(x, approximate=True).
+   """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     # Constants for approximate GELU
@@ -566,8 +566,8 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
         alpha: Slope for negative values (default: 0.01)
 
     Returns:
-        Gradient with respect to input (∂L/∂x)
-    """
+        Gradient with respect to input (∂L/∂x).
+   """
     if grad_output._dtype != x._dtype:
         raise Error("leaky_relu_backward: grad_output and x must have same dtype")
     if grad_output._numel != x._numel:
@@ -639,8 +639,8 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises es
         alpha: Learnable slope parameter.
 
     Returns:
-        GradientPair containing (grad_input, grad_alpha)
-    """
+        GradientPair containing (grad_input, grad_alpha).
+   """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
     if grad_output._numel != x._numel:
@@ -737,8 +737,8 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
         approximate: Use tanh approximation (True) or exact erf (False)
 
     Returns:
-        Gradient with respect to input (∂L/∂x)
-    """
+        Gradient with respect to input (∂L/∂x).
+   """
     if grad_output._dtype != x._dtype:
         raise Error("gelu_backward: grad_output and x must have same dtype")
     if grad_output._numel != x._numel:
@@ -996,8 +996,8 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
         ```
 
     Reference:
-        Ramachandran et al., "Searching for Activation Functions" (2017)
-    """
+        Ramachandran et al., "Searching for Activation Functions" (2017).
+   """
     # swish(x) = x * sigmoid(x)
     var sig = sigmoid(tensor)
     return multiply(tensor, sig)
@@ -1034,8 +1034,8 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
         ```
 
     Reference:
-        Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019)
-    """
+        Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019).
+   """
     # mish(x) = x * tanh(softplus(x))
     # softplus(x) = log(1 + exp(x))
 
@@ -1095,8 +1095,8 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 
     Reference:
         Clevert et al., "Fast and Accurate Deep Network Learning by.
-        Exponential Linear Units (ELUs)" (2015)
-    """
+        Exponential Linear Units (ELUs)" (2015).
+   """
     var result = zeros_like(tensor)
     var data_ptr = tensor._data
     var result_ptr = result._data
@@ -1350,8 +1350,8 @@ fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
         ```
 
     Reference:
-        Howard et al., "Searching for MobileNetV3" (2019)
-    """
+        Howard et al., "Searching for MobileNetV3" (2019).
+   """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     if tensor._dtype == DType.float16:
@@ -1412,8 +1412,8 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
         ```
 
     Reference:
-        Howard et al., "Searching for MobileNetV3" (2019)
-    """
+        Howard et al., "Searching for MobileNetV3" (2019).
+   """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     if tensor._dtype == DType.float16:
