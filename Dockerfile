@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     ca-certificates \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Pixi (modern conda alternative)
