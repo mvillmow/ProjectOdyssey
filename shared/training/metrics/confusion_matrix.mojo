@@ -68,7 +68,9 @@ struct ConfusionMatrix(Metric):
         self.num_classes = num_classes
 
         # Initialize matrix with zeros
-        var shape = List[Int](num_classes, num_classes)
+        var shape = List[Int]()
+        shape.append(num_classes)
+        shape.append(num_classes)
         self.matrix = ExTensor(shape, DType.int32)
         for i in range(num_classes * num_classes):
             self.matrix._data.bitcast[Int32]()[i] = 0
@@ -147,7 +149,9 @@ struct ConfusionMatrix(Metric):
         Raises:
             Error: If mode is invalid
         """
-        var result_shape = List[Int](self.num_classes, self.num_classes)
+        var result_shape = List[Int]()
+        result_shape.append(self.num_classes)
+        result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         if mode == "none":
@@ -223,7 +227,8 @@ struct ConfusionMatrix(Metric):
 
         Note: Returns 0.0 for classes with no predictions
         """
-        var result_shape = List[Int](self.num_classes)
+        var result_shape = List[Int]()
+        result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for col in range(self.num_classes):
@@ -256,7 +261,8 @@ struct ConfusionMatrix(Metric):
 
         Note: Returns 0.0 for classes with no samples
         """
-        var result_shape = List[Int](self.num_classes)
+        var result_shape = List[Int]()
+        result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for row in range(self.num_classes):
@@ -291,7 +297,8 @@ struct ConfusionMatrix(Metric):
         var precision = self.get_precision()
         var recall = self.get_recall()
 
-        var result_shape = List[Int](self.num_classes)
+        var result_shape = List[Int]()
+        result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
         for i in range(self.num_classes):
@@ -323,8 +330,8 @@ fn argmax(var tensor: ExTensor) raises -> ExTensor:
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
-    var result_shape = List[Int](1)
-    result_shape[0] = batch_size
+    var result_shape = List[Int]()
+    result_shape.append(batch_size)
     var result = ExTensor(result_shape, DType.int32)
 
     for b in range(batch_size):

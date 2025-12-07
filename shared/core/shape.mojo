@@ -81,9 +81,9 @@ fn as_contiguous(tensor: ExTensor) raises -> ExTensor:
         var dtype_size = tensor._get_dtype_size()
         var total_bytes = numel * dtype_size
         memcpy(
-            result._data,
-            tensor._data,
-            total_bytes
+            dest=result._data,
+            src=tensor._data,
+            count=total_bytes
         )
 
         return result^
@@ -463,9 +463,9 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         # Use memcpy for efficient bulk copy if source is contiguous
         if is_contiguous(t):
             memcpy(
-                (result._data + offset_bytes).bitcast[UInt8](),
-                t._data,
-                t_bytes
+                dest=(result._data + offset_bytes).bitcast[UInt8](),
+                src=t._data,
+                count=t_bytes
             )
         else:
             # Fall back to element-by-element copy for non-contiguous tensors
