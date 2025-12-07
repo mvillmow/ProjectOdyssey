@@ -33,7 +33,8 @@ struct Batch(Copyable, Movable):
     ) raises:
         """Create a batch.
 
-        Args:.            data: Batch data tensor.
+        Args:
+            data: Batch data tensor.
             labels: Batch labels tensor.
             indices: Original indices of samples in the batch.
         """

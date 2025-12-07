@@ -17,7 +17,8 @@ Key characteristics:
 - Precision: Limited (E2M1 values) but better than MXFP4 (smaller blocks)
 - Use case: Memory-efficient ML training with better accuracy than MXFP4
 
-Example:.    from shared.core.types.nvfp4 import NVFP4, NVFP4Block
+Example:
+    from shared.core.types.nvfp4 import NVFP4, NVFP4Block
 
     # Individual value (stores both E2M1 and scale for convenience)
     var val = NVFP4.from_float32(3.14159)

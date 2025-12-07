@@ -17,12 +17,15 @@ from shared.core.gradient_types import GradientPair
 fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
-    Args:.        a: First tensor (matrix or vector)
+    Args:
+        a: First tensor (matrix or vector)
         b: Second tensor (matrix or vector)
 
-    Returns:.        A new tensor containing the matrix product a @ b.
+    Returns:
+        A new tensor containing the matrix product a @ b.
 
-    Raises:.        Error if dimensions are incompatible.
+    Raises:
+        Error if dimensions are incompatible.
 
     Requirements:
         - 2D @ 2D: a.shape() = (m, k), b.shape() = (k, n) -> result.shape() = (m, n)
@@ -296,10 +299,12 @@ fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTen
 fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Dot product of tensors.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        Dot product (scalar for 1D, matrix product for 2D)
+    Returns:
+        Dot product (scalar for 1D, matrix product for 2D)
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -338,10 +343,12 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Outer product of two vectors.
 
-    Args:.        a: First 1D tensor (vector)
+    Args:
+        a: First 1D tensor (vector)
         b: Second 1D tensor (vector)
 
-    Returns:.        A 2D tensor containing the outer product.
+    Returns:
+        A 2D tensor containing the outer product.
 
     Examples:
         var a = ones(List[Int](), DType.float32)
@@ -394,11 +401,13 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         - 1D @ 2D: Vector-matrix multiplication
         - Batched: N-D tensors with batched matmul
 
-    Args:.        grad_output: Gradient from upstream (∂L/∂C)
+    Args:
+        grad_output: Gradient from upstream (∂L/∂C)
         a: First input from forward pass (A)
         b: Second input from forward pass (B)
 
-    Returns:.        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
+    Returns:
+        GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
         # Forward pass

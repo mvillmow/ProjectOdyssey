@@ -95,11 +95,14 @@ fn is_reduced_precision(dtype: DType) -> Bool:
     Returns True for any dtype using less than 32-bit floating point.
     Useful for conditional logic in mixed precision training.
 
-    Args:.        dtype: DType to check.
+    Args:
+        dtype: DType to check.
 
-    Returns:.        True if dtype is float16 or bfloat16, False otherwise.
+    Returns:
+        True if dtype is float16 or bfloat16, False otherwise.
 
-    Example:.        if is_reduced_precision(model.dtype()):
+    Example:
+        if is_reduced_precision(model.dtype()):
             # Use gradient scaling
             var scaler = GradientScaler()
     """
@@ -109,11 +112,14 @@ fn is_reduced_precision(dtype: DType) -> Bool:
 fn is_floating_point(dtype: DType) -> Bool:
     """Check if dtype is a floating point type.
 
-    Args:.        dtype: DType to check.
+    Args:
+        dtype: DType to check.
 
-    Returns:.        True if dtype is float16, float32, or float64.
+    Returns:
+        True if dtype is float16, float32, or float64.
 
-    Example:.        if is_floating_point(tensor.dtype()):
+    Example:
+        if is_floating_point(tensor.dtype()):
             # Can use floating point operations
             var result = tensor / 2.0
     """
@@ -128,12 +134,15 @@ fn get_dtype_precision_bits(dtype: DType) -> Int:
     Returns the precision (mantissa bits) for floating point dtypes.
     Useful for understanding numerical precision limits.
 
-    Args:.        dtype: DType to query.
+    Args:
+        dtype: DType to query.
 
-    Returns:.        Number of mantissa bits (10 for FP16, 23 for FP32, 52 for FP64)
+    Returns:
+        Number of mantissa bits (10 for FP16, 23 for FP32, 52 for FP64)
         Returns 0 for non-floating-point dtypes.
 
-    Example:.        var bits = get_dtype_precision_bits(DType.float16)
+    Example:
+        var bits = get_dtype_precision_bits(DType.float16)
         print("FP16 has", bits, "mantissa bits")  # 10
     """
     if dtype == DType.float16:
@@ -152,12 +161,15 @@ fn get_dtype_exponent_bits(dtype: DType) -> Int:
     Returns the exponent bits for floating point dtypes.
     Useful for understanding numerical range limits.
 
-    Args:.        dtype: DType to query.
+    Args:
+        dtype: DType to query.
 
-    Returns:.        Number of exponent bits (5 for FP16, 8 for FP32/BF16, 11 for FP64)
+    Returns:
+        Number of exponent bits (5 for FP16, 8 for FP32/BF16, 11 for FP64)
         Returns 0 for non-floating-point dtypes.
 
-    Example:.        var bits = get_dtype_exponent_bits(DType.float32)
+    Example:
+        var bits = get_dtype_exponent_bits(DType.float32)
         print("FP32 has", bits, "exponent bits")  # 8
     """
     if dtype == DType.float16:
@@ -173,11 +185,14 @@ fn get_dtype_exponent_bits(dtype: DType) -> Int:
 fn dtype_to_string(dtype: DType) -> String:
     """Convert DType to human-readable string.
 
-    Args:.        dtype: DType to convert.
+    Args:
+        dtype: DType to convert.
 
-    Returns:.        String representation (e.g., "float16", "float32", "int32")
+    Returns:
+        String representation (e.g., "float16", "float32", "int32")
 
-    Example:.        var name = dtype_to_string(DType.float16)
+    Example:
+        var name = dtype_to_string(DType.float16)
         print("Using dtype:", name)  # "Using dtype: float16"
     """
     if dtype == DType.float16:
@@ -215,10 +230,12 @@ fn recommend_precision_dtype(model_size_mb: Float64,
     Provides guidance for choosing between FP32, FP16, and BF16 based on.
     model characteristics and hardware capabilities.
 
-    Args:.        model_size_mb: Model size in megabytes.
+    Args:
+        model_size_mb: Model size in megabytes.
         hardware_has_fp16: Whether hardware supports FP16 acceleration.
 
-    Returns:.        Recommended DType (float16, bfloat16, or float32)
+    Returns:
+        Recommended DType (float16, bfloat16, or float32)
 
     Recommendations:
         - Small models (<100MB): FP32 (speed gain minimal)
@@ -226,7 +243,8 @@ fn recommend_precision_dtype(model_size_mb: Float64,
         - Large models (>1GB): FP16/BF16 strongly recommended
         - No FP16 hardware: FP32 (reduced precision not worth it)
 
-    Example:.        var dtype = recommend_precision_dtype(model_size_mb=500.0)
+    Example:
+        var dtype = recommend_precision_dtype(model_size_mb=500.0)
         var params = ExTensor.zeros((1000, 1000), dtype)
     """
     if not hardware_has_fp16:
@@ -250,9 +268,11 @@ fn print_dtype_info(dtype: DType):
     Displays precision, range, and memory usage for the given dtype.
     Useful for debugging and understanding dtype characteristics.
 
-    Args:.        dtype: DType to describe.
+    Args:
+        dtype: DType to describe.
 
-    Example:.        print_dtype_info(DType.float16)
+    Example:
+        print_dtype_info(DType.float16)
         # Output:
         # DType: float16
         # Precision: 10 mantissa bits

@@ -216,7 +216,8 @@ struct BFloat16:
     fn is_nan(self) -> Bool:
         """Check if value is NaN.
 
-        Returns:.            True if NaN, False otherwise.
+        Returns:
+            True if NaN, False otherwise.
         """
         # NaN: exponent = 0xFF, mantissa != 0
         var exponent = (self.bits >> 7) & 0xFF
@@ -226,7 +227,8 @@ struct BFloat16:
     fn is_inf(self) -> Bool:
         """Check if value is infinity (positive or negative).
 
-        Returns:.            True if infinity, False otherwise.
+        Returns:
+            True if infinity, False otherwise.
         """
         # Inf: exponent = 0xFF, mantissa = 0
         var exponent = (self.bits >> 7) & 0xFF
@@ -236,7 +238,8 @@ struct BFloat16:
     fn is_finite(self) -> Bool:
         """Check if value is finite (not NaN or infinity).
 
-        Returns:.            True if finite, False otherwise.
+        Returns:
+            True if finite, False otherwise.
         """
         return not (self.is_nan() or self.is_inf())
 
@@ -247,9 +250,11 @@ struct BFloat16:
     fn __add__(self, other: BFloat16) -> BFloat16:
         """Add two BFloat16 values.
 
-        Args:.            other: Value to add.
+        Args:
+            other: Value to add.
 
-        Returns:.            Sum as BFloat16.
+        Returns:
+            Sum as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -258,9 +263,11 @@ struct BFloat16:
     fn __sub__(self, other: BFloat16) -> BFloat16:
         """Subtract two BFloat16 values.
 
-        Args:.            other: Value to subtract.
+        Args:
+            other: Value to subtract.
 
-        Returns:.            Difference as BFloat16.
+        Returns:
+            Difference as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -269,9 +276,11 @@ struct BFloat16:
     fn __mul__(self, other: BFloat16) -> BFloat16:
         """Multiply two BFloat16 values.
 
-        Args:.            other: Value to multiply.
+        Args:
+            other: Value to multiply.
 
-        Returns:.            Product as BFloat16.
+        Returns:
+            Product as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -280,9 +289,11 @@ struct BFloat16:
     fn __truediv__(self, other: BFloat16) -> BFloat16:
         """Divide two BFloat16 values.
 
-        Args:.            other: Divisor.
+        Args:
+            other: Divisor.
 
-        Returns:.            Quotient as BFloat16.
+        Returns:
+            Quotient as BFloat16.
         """
         var a = self.to_float32()
         var b = other.to_float32()
@@ -291,7 +302,8 @@ struct BFloat16:
     fn __neg__(self) -> BFloat16:
         """Negate BFloat16 value.
 
-        Returns:.            Negated value.
+        Returns:
+            Negated value.
         """
         # Flip sign bit
         return BFloat16(self.bits ^ 0x8000)
@@ -303,9 +315,11 @@ struct BFloat16:
     fn __eq__(self, other: BFloat16) -> Bool:
         """Check equality.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if equal.
+        Returns:
+            True if equal.
         """
         # NaN != NaN
         if self.is_nan() or other.is_nan():
@@ -315,45 +329,55 @@ struct BFloat16:
     fn __ne__(self, other: BFloat16) -> Bool:
         """Check inequality.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if not equal.
+        Returns:
+            True if not equal.
         """
         return not (self == other)
 
     fn __lt__(self, other: BFloat16) -> Bool:
         """Check less than.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if self < other.
+        Returns:
+            True if self < other.
         """
         return self.to_float32() < other.to_float32()
 
     fn __le__(self, other: BFloat16) -> Bool:
         """Check less than or equal.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if self <= other.
+        Returns:
+            True if self <= other.
         """
         return self.to_float32() <= other.to_float32()
 
     fn __gt__(self, other: BFloat16) -> Bool:
         """Check greater than.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if self > other.
+        Returns:
+            True if self > other.
         """
         return self.to_float32() > other.to_float32()
 
     fn __ge__(self, other: BFloat16) -> Bool:
         """Check greater than or equal.
 
-        Args:.            other: Value to compare.
+        Args:
+            other: Value to compare.
 
-        Returns:.            True if self >= other.
+        Returns:
+            True if self >= other.
         """
         return self.to_float32() >= other.to_float32()
 
@@ -364,14 +388,16 @@ struct BFloat16:
     fn __str__(self) -> String:
         """Convert to string.
 
-        Returns:.            String representation.
+        Returns:
+            String representation.
         """
         return "BFloat16(" + String(self.to_float32()) + ")"
 
     fn __repr__(self) -> String:
         """Get representation string.
 
-        Returns:.            Representation string.
+        Returns:
+            Representation string.
         """
         return self.__str__()
 
@@ -385,9 +411,11 @@ fn print_bfloat16_bits(value: BFloat16):
 
     Shows sign, exponent, and mantissa bits for debugging.
 
-    Args:.        value: BFloat16 value to print.
+    Args:
+        value: BFloat16 value to print.
 
-    Example:.        var bf16 = BFloat16.from_float32(3.14159)
+    Example:
+        var bf16 = BFloat16.from_float32(3.14159)
         print_bfloat16_bits(bf16)
         # Output:
         # BFloat16: 3.140625

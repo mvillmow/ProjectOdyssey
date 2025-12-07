@@ -4,7 +4,8 @@ This module provides configuration loading, validation, and merging
 from YAML and JSON files. Supports nested configurations, environment
 variable substitution, and validation rules.
 
-Example:.    from shared.utils import Config
+Example:
+    from shared.utils import Config
 
     var config = Config.from_yaml("config.yaml")
     var lr = config.get_float("learning_rate")

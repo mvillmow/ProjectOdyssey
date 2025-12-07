@@ -35,7 +35,8 @@ Modules:
     scalar_ops: Scalar mathematical operations (sqrt, pow for float32 and float64).
     normalize_ops: Normalization operations for data preprocessing (RGB normalization).
 
-Example:.    from shared.core.extensor import ExTensor, zeros
+Example:
+    from shared.core.extensor import ExTensor, zeros
     from shared.core.linear import linear
     from shared.core.activation import relu
     from shared.core.matrix import matmul, transpose

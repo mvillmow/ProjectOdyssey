@@ -111,7 +111,8 @@ struct RandomSampler(Sampler, Copyable, Movable):
     ):
         """Create random sampler.
 
-        Args:.            data_source_len: Length of the dataset.
+        Args:
+            data_source_len: Length of the dataset.
             replacement: Whether to sample with replacement.
             num_samples: Number of samples to draw (None = all).
             seed_value: Random seed for reproducibility.

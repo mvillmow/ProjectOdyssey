@@ -39,12 +39,15 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Uses vectorized operations when possible, falls back to broadcasting.
     for different shapes. Achieves 2-8x speedup for large same-shape tensors.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        New tensor containing a + b.
+    Returns:
+        New tensor containing a + b.
 
-    Raises:.        Error if dtypes don't match.
+    Raises:
+        Error if dtypes don't match.
 
     Performance:
         - Same shape, float32: ~4x speedup
@@ -132,12 +135,15 @@ fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
 fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise subtraction for same-shape tensors.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        New tensor containing a - b.
+    Returns:
+        New tensor containing a - b.
 
-    Raises:.        Error if dtypes don't match.
+    Raises:
+        Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot subtract tensors with different dtypes")
@@ -205,12 +211,15 @@ fn _subtract_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise multiplication for same-shape tensors.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        New tensor containing a * b.
+    Returns:
+        New tensor containing a * b.
 
-    Raises:.        Error if dtypes don't match.
+    Raises:
+        Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot multiply tensors with different dtypes")
@@ -278,12 +287,15 @@ fn _multiply_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise division for same-shape tensors.
 
-    Args:.        a: First tensor (numerator)
+    Args:
+        a: First tensor (numerator)
         b: Second tensor (denominator)
 
-    Returns:.        New tensor containing a / b.
+    Returns:
+        New tensor containing a / b.
 
-    Raises:.        Error if dtypes don't match or division by zero.
+    Raises:
+        Error if dtypes don't match or division by zero.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot divide tensors with different dtypes")

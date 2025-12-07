@@ -28,14 +28,17 @@ fn validation_step(
 ) raises -> Float64:
     """Execute single validation step (forward pass only, no gradients).
 
-    Args:.        model_forward: Function to compute model forward pass.
+    Args:
+        model_forward: Function to compute model forward pass.
         compute_loss: Function to compute loss.
         data: Input batch data.
         labels: Target labels.
 
-    Returns:.        Loss value for this batch.
+    Returns:
+        Loss value for this batch.
 
-    Raises:.        Error if evaluation fails.
+    Raises:
+        Error if evaluation fails.
     """
     # Forward pass (no gradient tracking)
     var predictions = model_forward(data)
@@ -59,16 +62,19 @@ fn validate(
 ) raises -> Float64:
     """Run validation loop.
 
-    Args:.        model_forward: Forward pass function.
+    Args:
+        model_forward: Forward pass function.
         compute_loss: Loss computation function.
         val_loader: Validation data loader.
         compute_accuracy: Whether to compute accuracy.
         compute_confusion: Whether to compute confusion matrix.
         num_classes: Number of classes (for confusion matrix)
 
-    Returns:.        Average validation loss.
+    Returns:
+        Average validation loss.
 
-    Raises:.        Error if validation fails.
+    Raises:
+        Error if validation fails.
     """
     print("\nRunning validation...")
 
@@ -173,14 +179,17 @@ struct ValidationLoop:
     ) raises -> Float64:
         """Run validation loop.
 
-        Args:.            model_forward: Forward pass function.
+        Args:
+            model_forward: Forward pass function.
             compute_loss: Loss computation function.
             val_loader: Validation data loader.
             metrics: Training metrics to update.
 
-        Returns:.            Validation loss.
+        Returns:
+            Validation loss.
 
-        Raises:.            Error if validation fails.
+        Raises:
+            Error if validation fails.
         """
         var val_loss = validate(
             model_forward,
@@ -208,15 +217,18 @@ struct ValidationLoop:
 
         Useful for quick validation checks during training.
 
-        Args:.            model_forward: Forward pass function.
+        Args:
+            model_forward: Forward pass function.
             compute_loss: Loss computation function.
             val_loader: Validation data loader (mutable for iteration).
             max_batches: Maximum number of batches to evaluate.
             metrics: Training metrics to update.
 
-        Returns:.            Validation loss.
+        Returns:
+            Validation loss.
 
-        Raises:.            Error if validation fails.
+        Raises:
+            Error if validation fails.
         """
         print("\nRunning subset validation (max " + String(max_batches) + " batches)...")
 

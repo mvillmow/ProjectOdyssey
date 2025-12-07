@@ -41,7 +41,8 @@ fn _fill_uniform_scaled[
     This is a dtype-generic helper that eliminates dtype branching.
     random_float64() returns [0, 1), which is transformed to [offset, offset+scale).
 
-    Args:.        result: Tensor to fill (must be pre-allocated)
+    Args:
+        result: Tensor to fill (must be pre-allocated)
         scale: Scale factor for random values.
         offset: Offset to add to scaled values.
     """
@@ -60,7 +61,8 @@ fn _fill_normal_boxmuller[
     This is a dtype-generic helper that eliminates dtype branching.
     Generates pairs of normal random values using Box-Muller transform.
 
-    Args:.        result: Tensor to fill (must be pre-allocated)
+    Args:
+        result: Tensor to fill (must be pre-allocated)
         mean: Mean of normal distribution.
         std: Standard deviation of normal distribution.
     """
@@ -95,7 +97,8 @@ fn _fill_constant[dtype: DType](result: ExTensor, value: Float64) raises:
 
     This is a dtype-generic helper that eliminates dtype branching.
 
-    Args:.        result: Tensor to fill (must be pre-allocated)
+    Args:
+        result: Tensor to fill (must be pre-allocated)
         value: Constant value to fill with.
     """
     var ptr = result._data.bitcast[Scalar[dtype]]()
@@ -132,15 +135,18 @@ fn xavier_uniform(
 
     Supported dtypes: float16, float32, float64.
 
-    Args:.        fan_in: Number of input units to the layer.
+    Args:
+        fan_in: Number of input units to the layer.
         fan_out: Number of output units from the layer.
         shape: Shape of weight tensor to initialize.
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized weight tensor with Xavier uniform distribution.
+    Returns:
+        Initialized weight tensor with Xavier uniform distribution.
 
-    Raises:.        Error: If fan_in or fan_out are not positive.
+    Raises:
+        Error: If fan_in or fan_out are not positive.
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
@@ -206,15 +212,18 @@ fn xavier_normal(
 
     Supported dtypes: float16, float32, float64.
 
-    Args:.        fan_in: Number of input units to the layer.
+    Args:
+        fan_in: Number of input units to the layer.
         fan_out: Number of output units from the layer.
         shape: Shape of weight tensor to initialize.
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized weight tensor with Xavier normal distribution.
+    Returns:
+        Initialized weight tensor with Xavier normal distribution.
 
-    Raises:.        Error: If fan_in or fan_out are not positive.
+    Raises:
+        Error: If fan_in or fan_out are not positive.
 
     Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
@@ -289,16 +298,19 @@ fn kaiming_uniform(
 
     Supported dtypes: float16, float32, float64.
 
-    Args:.        fan_in: Number of input units to the layer.
+    Args:
+        fan_in: Number of input units to the layer.
         fan_out: Number of output units from the layer.
         shape: Shape of weight tensor to initialize.
         fan_mode: "fan_in" (default) or "fan_out" for fan calculation
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized weight tensor with Kaiming uniform distribution.
+    Returns:
+        Initialized weight tensor with Kaiming uniform distribution.
 
-    Raises:.        Error: If fan_in or fan_out are not positive.
+    Raises:
+        Error: If fan_in or fan_out are not positive.
         Error: If fan_mode is not "fan_in" or "fan_out"
 
     Examples:
@@ -380,16 +392,19 @@ fn kaiming_normal(
 
     Supported dtypes: float16, float32, float64.
 
-    Args:.        fan_in: Number of input units to the layer.
+    Args:
+        fan_in: Number of input units to the layer.
         fan_out: Number of output units from the layer.
         shape: Shape of weight tensor to initialize.
         fan_mode: "fan_in" (default) or "fan_out" for fan calculation
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized weight tensor with Kaiming normal distribution.
+    Returns:
+        Initialized weight tensor with Kaiming normal distribution.
 
-    Raises:.        Error: If fan_in or fan_out are not positive.
+    Raises:
+        Error: If fan_in or fan_out are not positive.
         Error: If fan_mode is not "fan_in" or "fan_out"
 
     Examples:
@@ -464,15 +479,18 @@ fn uniform(
     Draws samples from uniform distribution U(low, high) with configurable bounds.
     This is a basic initializer useful for biases, embeddings, or custom schemes.
 
-    Args:.        shape: Shape of tensor to initialize.
+    Args:
+        shape: Shape of tensor to initialize.
         low: Lower bound of uniform distribution (default: -0.1)
         high: Upper bound of uniform distribution (default: 0.1)
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized tensor with uniform distribution.
+    Returns:
+        Initialized tensor with uniform distribution.
 
-    Raises:.        Error: If low >= high.
+    Raises:
+        Error: If low >= high.
 
     Examples:
         # Default range [-0.1, 0.1]
@@ -527,15 +545,18 @@ fn normal(
 
     Uses Box-Muller transform to generate normal distribution from uniform samples.
 
-    Args:.        shape: Shape of tensor to initialize.
+    Args:
+        shape: Shape of tensor to initialize.
         mean: Mean of normal distribution (default: 0.0)
         std: Standard deviation of normal distribution (default: 0.01)
         dtype: Data type (default: float32)
         seed_val: Random seed for reproducibility (-1 for random seed)
 
-    Returns:.        Initialized tensor with normal distribution.
+    Returns:
+        Initialized tensor with normal distribution.
 
-    Raises:.        Error: If std <= 0.
+    Raises:
+        Error: If std <= 0.
 
     Examples:
         # Default: N(0, 0.01)
@@ -583,11 +604,13 @@ fn constant(
     Fills all elements with the specified constant value.
     Useful for specific initialization strategies (ones, custom bias values, etc.).
 
-    Args:.        shape: Shape of tensor to initialize.
+    Args:
+        shape: Shape of tensor to initialize.
         value: Constant value to fill tensor with.
         dtype: Data type (default: float32)
 
-    Returns:.        Tensor filled with constant value.
+    Returns:
+        Tensor filled with constant value.
 
     Examples:
         # Initialize with ones

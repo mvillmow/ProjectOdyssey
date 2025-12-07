@@ -32,14 +32,16 @@ fn sgd_step(
 
     Returns new parameters and new velocity. Caller manages all state.
 
-    Args:.        params: Model parameters to update.
+    Args:
+        params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
         velocity: Momentum buffer (use zeros_like(params) if no momentum)
         learning_rate: Step size for parameter updates.
         momentum: Momentum factor (default: 0.0, no momentum)
         weight_decay: L2 regularization factor (default: 0.0, no regularization)
 
-    Returns:.        Tuple of (new_params, new_velocity)
+    Returns:
+        Tuple of (new_params, new_velocity)
 
     Example (basic SGD without momentum):
         ```mojo.
@@ -122,13 +124,16 @@ fn sgd_step_simple(
     Formula:
         params = params - learning_rate * gradients
 
-    Args:.        params: Model parameters to update.
+    Args:
+        params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
         learning_rate: Step size for parameter updates.
 
-    Returns:.        Updated parameters.
+    Returns:
+        Updated parameters.
 
-    Example:.        var W1 = xavier_uniform(784, 128, shape, DType.float32)
+    Example:
+        var W1 = xavier_uniform(784, 128, shape, DType.float32)
         var grad_W1 = ... # Computed gradients
         W1 = sgd_step_simple(W1, grad_W1, 0.01)
     """
@@ -161,13 +166,15 @@ fn sgd_momentum_update_inplace(
         velocity = momentum * velocity - lr * grad
         param = param + velocity
 
-    Args:.        param: Parameter tensor to update (modified in-place)
+    Args:
+        param: Parameter tensor to update (modified in-place)
         grad: Gradient tensor.
         velocity: Momentum velocity tensor (modified in-place)
         lr: Learning rate.
         momentum: Momentum coefficient (typically 0.9)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import sgd_momentum_update_inplace
 

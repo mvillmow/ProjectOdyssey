@@ -17,14 +17,17 @@ fn extract_batch(
     Extracts a contiguous slice of samples from the dataset starting at.
     start_idx and containing up to batch_size samples.
 
-    Args:.        data: Full dataset tensor of shape (N, ...) where N is number of samples.
+    Args:
+        data: Full dataset tensor of shape (N, ...) where N is number of samples.
         start_idx: Starting index for batch extraction (0-indexed)
         batch_size: Number of samples to extract.
 
-    Returns:.        Batch tensor of shape (actual_batch_size, ...) where actual_batch_size.
+    Returns:
+        Batch tensor of shape (actual_batch_size, ...) where actual_batch_size.
         is min(batch_size, N - start_idx)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.data import extract_batch
 
         # Extract batch of 128 images from dataset
@@ -92,14 +95,17 @@ fn extract_batch_pair(
     Convenience function that extracts matching batches from both.
     data and label tensors.
 
-    Args:.        data: Full dataset tensor of shape (N, ...)
+    Args:
+        data: Full dataset tensor of shape (N, ...)
         labels: Full labels tensor of shape (N,) or (N, ...)
         start_idx: Starting index for batch extraction.
         batch_size: Number of samples to extract.
 
-    Returns:.        Tuple of (batch_data, batch_labels) with matching first dimension.
+    Returns:
+        Tuple of (batch_data, batch_labels) with matching first dimension.
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.data import extract_batch_pair
 
         var images = load_images()      # Shape: (50000, 3, 32, 32)
@@ -134,12 +140,15 @@ fn extract_batch_pair(
 fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
     """Compute the number of batches needed to process all samples.
 
-    Args:.        num_samples: Total number of samples in dataset.
+    Args:
+        num_samples: Total number of samples in dataset.
         batch_size: Number of samples per batch.
 
-    Returns:.        Number of batches needed (rounded up)
+    Returns:
+        Number of batches needed (rounded up)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.data import compute_num_batches
 
         var num_batches = compute_num_batches(50000, 128)
@@ -163,16 +172,19 @@ fn get_batch_indices(
     Helper function to compute batch boundaries with proper handling.
     of the final partial batch.
 
-    Args:.        batch_idx: Batch index (0-indexed)
+    Args:
+        batch_idx: Batch index (0-indexed)
         batch_size: Desired batch size.
         num_samples: Total number of samples in dataset.
 
-    Returns:.        Tuple of (start_idx, end_idx, actual_batch_size) where:
+    Returns:
+        Tuple of (start_idx, end_idx, actual_batch_size) where:
         - start_idx: Starting sample index (inclusive)
         - end_idx: Ending sample index (exclusive)
         - actual_batch_size: Number of samples in this batch
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.data import get_batch_indices
 
         # Get indices for batch 390 of size 128 from 50000 samples

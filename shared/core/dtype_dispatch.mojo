@@ -100,13 +100,16 @@ fn elementwise_unary[
     This function is compile-time specialized for a specific dtype and operation.
     Use `dispatch_unary` for runtime dtype dispatch.
 
-    Args:.        dtype: Compile-time dtype parameter.
+    Args:
+        dtype: Compile-time dtype parameter.
         op: Unary operation function pointer.
         tensor: Input tensor.
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Example:.        # Define operation.
+    Example:
+        # Define operation.
         fn my_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             return max(Scalar[T](0), x)
 
@@ -198,16 +201,20 @@ fn elementwise_binary[
     This function is compile-time specialized for a specific dtype and operation.
     Use `dispatch_binary` for runtime dtype dispatch.
 
-    Args:.        dtype: Compile-time dtype parameter.
+    Args:
+        dtype: Compile-time dtype parameter.
         op: Binary operation function pointer.
         lhs: Left-hand side tensor.
         rhs: Right-hand side tensor (must have same shape as lhs)
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Raises:.        Error: If shapes don't match.
+    Raises:
+        Error: If shapes don't match.
 
-    Example:.        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = elementwise_binary[DType.float32, add_op](a, b)
@@ -310,14 +317,17 @@ fn elementwise_scalar[
     This function applies a binary operation between a tensor and a scalar value.
     The scalar is converted to the appropriate dtype at compile time.
 
-    Args:.        dtype: Compile-time dtype parameter.
+    Args:
+        dtype: Compile-time dtype parameter.
         op: Binary operation function pointer.
         tensor: Input tensor.
         scalar: Scalar value (converted to appropriate dtype)
 
-    Returns:.        New tensor with operation applied element-wise.
+    Returns:
+        New tensor with operation applied element-wise.
 
-    Example:.        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+    Example:
+        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x * y
 
         var result = elementwise_scalar[DType.float32, mul_op](tensor, 2.5)

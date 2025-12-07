@@ -4,7 +4,8 @@ This module provides utilities for saving and loading model checkpoints,
 serializing tensors, and safe file operations. Supports atomic writes,
 backup creation, and compression.
 
-Example:.    from shared.utils import save_checkpoint, load_checkpoint
+Example:
+    from shared.utils import save_checkpoint, load_checkpoint
 
     # Save checkpoint with model state
     save_checkpoint("checkpoint.pt", model, optimizer, epoch=10)

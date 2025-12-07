@@ -30,10 +30,12 @@ trait Metric:
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric state with a batch of predictions and labels.
 
-        Args:.            predictions: Model predictions (logits or class indices)
+        Args:
+            predictions: Model predictions (logits or class indices)
             labels: Ground truth labels.
 
-        Raises:.            Error if shapes are incompatible or values are invalid.
+        Raises:
+            Error if shapes are incompatible or values are invalid.
         """
         ...
 
@@ -73,9 +75,11 @@ struct MetricResult(Copyable, Movable):
     fn get_scalar(self) raises -> Float64:
         """Get scalar value.
 
-        Returns:.            Scalar value.
+        Returns:
+            Scalar value.
 
-        Raises:.            Error if metric is not scalar.
+        Raises:
+            Error if metric is not scalar.
         """
         if not self.is_scalar:
             raise Error("Metric '" + self.name + "' is not scalar")
@@ -84,9 +88,11 @@ struct MetricResult(Copyable, Movable):
     fn get_tensor(self) raises -> ExTensor:
         """Get tensor value.
 
-        Returns:.            Tensor value (copy).
+        Returns:
+            Tensor value (copy).
 
-        Raises:.            Error if metric is scalar.
+        Raises:
+            Error if metric is scalar.
         """
         if self.is_scalar:
             raise Error("Metric '" + self.name + "' is not tensor")
@@ -103,7 +109,8 @@ struct MetricCollection(Sized):
     - Reset all metrics together
     - Name-based metric access
 
-    Example:.        var metrics = MetricCollection()
+    Example:
+        var metrics = MetricCollection()
         metrics.add("accuracy", AccuracyMetric())
         metrics.add("loss", LossTracker(window_size=100))
 
@@ -235,7 +242,8 @@ struct MetricLogger:
     fn log_epoch(mut self, epoch: Int, metrics: List[MetricResult]):
         """Log metrics for an epoch.
 
-        Args:.            epoch: Epoch number.
+        Args:
+            epoch: Epoch number.
             metrics: Metric results to log.
         """
         # First epoch: initialize history
@@ -259,11 +267,14 @@ struct MetricLogger:
     fn get_history(self, metric_name: String) raises -> List[Float64]:
         """Get history for a specific metric.
 
-        Args:.            metric_name: Name of metric.
+        Args:
+            metric_name: Name of metric.
 
-        Returns:.            Vector of metric values across epochs.
+        Returns:
+            Vector of metric values across epochs.
 
-        Raises:.            Error if metric not found.
+        Raises:
+            Error if metric not found.
         """
         for i in range(self.num_metrics):
             if self.metric_names[i] == metric_name:
@@ -275,11 +286,14 @@ struct MetricLogger:
     fn get_latest(self, metric_name: String) raises -> Float64:
         """Get latest value for a metric.
 
-        Args:.            metric_name: Name of metric.
+        Args:
+            metric_name: Name of metric.
 
-        Returns:.            Latest metric value.
+        Returns:
+            Latest metric value.
 
-        Raises:.            Error if metric not found or no history.
+        Raises:
+            Error if metric not found or no history.
         """
         var history = self.get_history(metric_name)
         if len(history) == 0:
@@ -289,12 +303,15 @@ struct MetricLogger:
     fn get_best(self, metric_name: String, maximize: Bool = True) raises -> Float64:
         """Get best value for a metric.
 
-        Args:.            metric_name: Name of metric.
+        Args:
+            metric_name: Name of metric.
             maximize: If True, return maximum value; if False, return minimum.
 
-        Returns:.            Best metric value.
+        Returns:
+            Best metric value.
 
-        Raises:.            Error if metric not found or no history.
+        Raises:
+            Error if metric not found or no history.
         """
         var history = self.get_history(metric_name)
         if len(history) == 0:

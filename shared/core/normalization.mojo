@@ -32,7 +32,8 @@ fn batch_norm2d(
     Normalizes activations across the batch dimension for each channel.
     Returns updated running statistics (pure functional - caller must capture).
 
-    Args:.        x: Input tensor of shape (batch, channels, height, width)
+    Args:
+        x: Input tensor of shape (batch, channels, height, width)
         gamma: Scale parameter of shape (channels,)
         beta: Shift parameter of shape (channels,)
         running_mean: Running mean of shape (channels,)
@@ -42,12 +43,14 @@ fn batch_norm2d(
         momentum: Momentum for running statistics update (default: 0.1)
         epsilon: Small constant for numerical stability (default: 1e-5)
 
-    Returns:.        Tuple of (output, new_running_mean, new_running_var):
+    Returns:
+        Tuple of (output, new_running_mean, new_running_var):
             - output: Normalized tensor, shape (batch, channels, height, width)
             - new_running_mean: Updated running mean, shape (channels,)
             - new_running_var: Updated running variance, shape (channels,)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import batch_norm2d, zeros, ones
 
         var gamma = ones([channels])
@@ -283,7 +286,8 @@ fn batch_norm2d_backward(
 
     Computes gradients with respect to input, gamma, and beta parameters.
 
-    Args:.        grad_output: Gradient w.r.t. output (batch, channels, height, width)
+    Args:
+        grad_output: Gradient w.r.t. output (batch, channels, height, width)
         x: Original input tensor (batch, channels, height, width)
         gamma: Scale parameter (channels,)
         running_mean: Running mean (channels,) - used in inference mode.
@@ -291,12 +295,14 @@ fn batch_norm2d_backward(
         training: Whether in training mode (affects gradient computation)
         epsilon: Small constant for numerical stability (default: 1e-5)
 
-    Returns:.        Tuple of (grad_input, grad_gamma, grad_beta):
+    Returns:
+        Tuple of (grad_input, grad_gamma, grad_beta):
             - grad_input: Gradient w.r.t. input (batch, channels, height, width)
             - grad_gamma: Gradient w.r.t. gamma (channels,)
             - grad_beta: Gradient w.r.t. beta (channels,)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import batch_norm2d_backward
 
         # Forward pass (save x for backward)
@@ -689,14 +695,17 @@ fn layer_norm(
     Normalizes activations across the feature dimension for each sample.
     Unlike batch norm, this doesn't require running statistics.
 
-    Args:.        x: Input tensor of shape (batch, features) or (batch, channels, height, width)
+    Args:
+        x: Input tensor of shape (batch, features) or (batch, channels, height, width)
         gamma: Scale parameter of shape matching last dim(s)
         beta: Shift parameter of shape matching last dim(s)
         epsilon: Small constant for numerical stability (default: 1e-5)
 
-    Returns:.        Normalized tensor, same shape as input.
+    Returns:
+        Normalized tensor, same shape as input.
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import layer_norm, zeros, ones
 
         # For 2D input (batch, features)
@@ -888,17 +897,20 @@ fn layer_norm_backward(
 
     Computes gradients with respect to input, gamma, and beta parameters.
 
-    Args:.        grad_output: Gradient w.r.t. output, same shape as input
+    Args:
+        grad_output: Gradient w.r.t. output, same shape as input
         x: Original input tensor (batch, features) or (batch, channels, height, width)
         gamma: Scale parameter matching normalized dimensions
         epsilon: Small constant for numerical stability (default: 1e-5)
 
-    Returns:.        Tuple of (grad_input, grad_gamma, grad_beta):
+    Returns:
+        Tuple of (grad_input, grad_gamma, grad_beta):
             - grad_input: Gradient w.r.t. input (same shape as input)
             - grad_gamma: Gradient w.r.t. gamma (same shape as gamma)
             - grad_beta: Gradient w.r.t. beta (same shape as gamma)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import layer_norm, layer_norm_backward
 
         # Forward pass

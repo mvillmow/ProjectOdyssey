@@ -208,7 +208,8 @@ struct Timer(Copyable, Movable):
     Measures elapsed time of a code block and optionally prints the result.
     Can be used standalone or in a with statement.
 
-    Example:.        # Basic usage with print.
+    Example:
+        # Basic usage with print.
         with Timer("forward_pass"):
             var output = model.forward(inputs)
         # Output: forward_pass: 0.0234s
@@ -225,7 +226,8 @@ struct Timer(Copyable, Movable):
     fn __init__(out self, name: String = ""):
         """Create timer with optional name.
 
-        Args:.            name: Timer name for display.
+        Args:
+            name: Timer name for display.
         """
         self.name = name
         self.start_ns = 0
@@ -300,7 +302,8 @@ fn memory_usage() -> MemoryStats:
 fn memory_at_checkpoint() -> MemoryStats:
     """Record memory usage at a checkpoint.
 
-    Returns:.        Memory statistics at this point.
+    Returns:
+        Memory statistics at this point.
     """
     return memory_usage()
 
@@ -308,10 +311,12 @@ fn memory_at_checkpoint() -> MemoryStats:
 fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
     """Compute memory change between two points.
 
-    Args:.        before: Memory before operation.
+    Args:
+        before: Memory before operation.
         after: Memory after operation.
 
-    Returns:.        Memory delta in bytes (positive = increase)
+    Returns:
+        Memory delta in bytes (positive = increase)
     """
     return after.allocated_bytes - before.allocated_bytes
 

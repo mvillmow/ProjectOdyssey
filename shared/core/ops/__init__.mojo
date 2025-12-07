@@ -11,7 +11,8 @@ Components:
     - reduction: Reduction operations (sum, mean, max, min, etc.)
     - broadcast: Broadcasting utilities for tensor operations
 
-Example:.    from shared.core.ops import matmul, transpose
+Example:
+    from shared.core.ops import matmul, transpose
     from shared.core.types import Tensor
 
     fn forward(x: Tensor, w: Tensor) -> Tensor:

@@ -63,7 +63,8 @@ struct BaseTrainer(Trainer):
     fn __init__(out self, config: TrainerConfig):
         """Initialize base trainer.
 
-        Args:.            config: Trainer configuration.
+        Args:
+            config: Trainer configuration.
         """
         self.config = config.copy()
         self.metrics = TrainingMetrics()
@@ -78,9 +79,11 @@ struct BaseTrainer(Trainer):
         NOTE: This is a simplified interface. Use fit() for full training.
         with validation.
 
-        Args:.            num_epochs: Number of epochs to train.
+        Args:
+            num_epochs: Number of epochs to train.
 
-        Raises:.            Error if training fails or called without proper setup.
+        Raises:
+            Error if training fails or called without proper setup.
         """
         raise Error("Use fit() method instead of train() for complete training workflow")
 
@@ -90,9 +93,11 @@ struct BaseTrainer(Trainer):
         NOTE: This is a simplified interface. Use fit() for integrated.
         training with validation.
 
-        Returns:.            Validation loss.
+        Returns:
+            Validation loss.
 
-        Raises:.            Error if validation fails or called without proper setup.
+        Raises:
+            Error if validation fails or called without proper setup.
         """
         raise Error("Use fit() method for integrated training with validation")
 
@@ -110,14 +115,16 @@ struct BaseTrainer(Trainer):
         This is the main entry point for training. Combines training loop.
         and validation loop with proper metric tracking.
 
-        Args:.            model_forward: Function to compute model forward pass.
+        Args:
+            model_forward: Function to compute model forward pass.
             compute_loss: Function to compute loss.
             optimizer_step: Function to update weights.
             zero_gradients: Function to zero gradients.
             train_loader: Training data loader.
             val_loader: Validation data loader.
 
-        Raises:.            Error if training or validation fails.
+        Raises:
+            Error if training or validation fails.
         """
         print("\n" + "=" * 70)
         print("STARTING TRAINING")
@@ -204,24 +211,28 @@ struct BaseTrainer(Trainer):
 
         NOTE: Use the full fit() method with model/optimizer functions.
 
-        Args:.            num_epochs: Number of epochs to train.
+        Args:
+            num_epochs: Number of epochs to train.
             validate_every: Validate every N epochs.
 
-        Raises:.            Error indicating proper usage.
+        Raises:
+            Error indicating proper usage.
         """
         raise Error("Use fit() with model_forward, compute_loss, optimizer_step, and data loaders")
 
     fn get_metrics(self) -> TrainingMetrics:
         """Get current training metrics.
 
-        Returns:.            Current metrics.
+        Returns:
+            Current metrics.
         """
         return self.metrics.copy()
 
     fn get_best_checkpoint_epoch(self) -> Int:
         """Get epoch with best validation loss.
 
-        Returns:.            Epoch number (0-indexed)
+        Returns:
+            Epoch number (0-indexed)
         """
         return self.metrics.best_epoch
 
@@ -231,10 +242,12 @@ struct BaseTrainer(Trainer):
         NOTE: Simplified implementation - real checkpointing would save.
         model weights and optimizer state.
 
-        Args:.            epoch: Current epoch.
+        Args:
+            epoch: Current epoch.
             path: Path to save checkpoint.
 
-        Raises:.            Error if save fails.
+        Raises:
+            Error if save fails.
         """
         print("Checkpoint saved: " + path + " (epoch " + String(epoch) + ")")
         # TODO: Implement actual checkpoint saving
@@ -245,9 +258,11 @@ struct BaseTrainer(Trainer):
         NOTE: Simplified implementation - real checkpointing would load.
         model weights and optimizer state.
 
-        Args:.            path: Path to checkpoint.
+        Args:
+            path: Path to checkpoint.
 
-        Raises:.            Error if load fails.
+        Raises:
+            Error if load fails.
         """
         print("Checkpoint loaded: " + path)
         # TODO: Implement actual checkpoint loading

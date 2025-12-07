@@ -11,12 +11,15 @@ from .broadcasting import broadcast_shapes, compute_broadcast_strides
 fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise equality comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a == b.
+    Returns:
+        A new boolean tensor containing a == b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
@@ -75,12 +78,15 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise inequality comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a != b.
+    Returns:
+        A new boolean tensor containing a != b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
@@ -139,12 +145,15 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise less-than comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a < b.
+    Returns:
+        A new boolean tensor containing a < b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
@@ -203,12 +212,15 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise less-than-or-equal comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a <= b.
+    Returns:
+        A new boolean tensor containing a <= b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
@@ -267,12 +279,15 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise greater-than comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a > b.
+    Returns:
+        A new boolean tensor containing a > b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 3.0, DType.float32)
@@ -331,12 +346,15 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise greater-than-or-equal comparison with broadcasting.
 
-    Args:.        a: First tensor.
+    Args:
+        a: First tensor.
         b: Second tensor.
 
-    Returns:.        A new boolean tensor containing a >= b.
+    Returns:
+        A new boolean tensor containing a >= b.
 
-    Raises:.        Error if shapes are not broadcast-compatible or dtypes don't match.
+    Raises:
+        Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
         var a = full(List[Int](3, 4), 3.0, DType.float32)

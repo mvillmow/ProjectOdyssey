@@ -41,7 +41,8 @@ struct EarlyStopping(Callback, Copyable, Movable):
         wait_count: Epochs since last improvement.
         stopped: Whether training has been stopped.
 
-    Example:.        # For loss (minimize)
+    Example:
+        # For loss (minimize)
         var early_stop = EarlyStopping(
             monitor="val_loss",
             patience=5,
@@ -75,7 +76,8 @@ struct EarlyStopping(Callback, Copyable, Movable):
     ):
         """Initialize early stopping callback.
 
-        Args:.            monitor: Metric to monitor (e.g., "val_loss", "val_accuracy").
+        Args:
+            monitor: Metric to monitor (e.g., "val_loss", "val_accuracy").
             patience: Epochs to wait before stopping.
             min_delta: Minimum improvement threshold.
             mode: "min" for metrics to minimize (loss), "max" for metrics to maximize (accuracy).
@@ -274,9 +276,11 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         If saving fails, logs a warning but continues training to prevent I/O.
         errors from interrupting the training process.
 
-        Args:.            state: Training state with current epoch number and metrics.
+        Args:
+            state: Training state with current epoch number and metrics.
 
-        Returns:.            CONTINUE always (even if checkpoint save fails).
+        Returns:
+            CONTINUE always (even if checkpoint save fails).
         """
         var should_save = False
 
@@ -333,14 +337,16 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
     fn get_save_count(self) -> Int:
         """Get number of checkpoints saved.
 
-        Returns:.            Number of checkpoints saved so far.
+        Returns:
+            Number of checkpoints saved so far.
         """
         return self.save_count
 
     fn get_error_count(self) -> Int:
         """Get number of checkpoint save errors.
 
-        Returns:.            Number of failed checkpoint save attempts.
+        Returns:
+            Number of failed checkpoint save attempts.
         """
         return self.error_count
 
@@ -360,7 +366,8 @@ struct LoggingCallback(Callback, Copyable, Movable):
         log_interval: Log every N epochs.
         log_count: Number of times logged.
 
-    Example:.        var logger = LoggingCallback(log_interval=1)
+    Example:
+        var logger = LoggingCallback(log_interval=1)
     """
 
     var log_interval: Int
@@ -369,7 +376,8 @@ struct LoggingCallback(Callback, Copyable, Movable):
     fn __init__(out self, log_interval: Int = 1):
         """Initialize logging callback.
 
-        Args:.            log_interval: Log every N epochs.
+        Args:
+            log_interval: Log every N epochs.
         """
         self.log_interval = log_interval
         self.log_count = 0

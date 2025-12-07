@@ -4,7 +4,8 @@ This module provides structured logging capabilities with multiple handlers
 and formatters. It supports file and console output with configurable
 log levels.
 
-Example:.    from shared.utils import Logger, StreamHandler, FileHandler
+Example:
+    from shared.utils import Logger, StreamHandler, FileHandler
 
     var logger = Logger("training")
     logger.add_handler(StreamHandler())
@@ -337,12 +338,15 @@ struct Logger:
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
     """Get or create a named logger.
 
-    Args:.        name: Logger name.
+    Args:
+        name: Logger name.
         level: Log level threshold (default: INFO)
 
-    Returns:.        Logger with specified name and level.
+    Returns:
+        Logger with specified name and level.
 
-    Example:.        var logger = get_logger("training")
+    Example:
+        var logger = get_logger("training")
         logger.info("Training started")
     """
     return Logger(name, level)

@@ -33,11 +33,14 @@ trait TextTransform:
     fn __call__(self, text: String) raises -> String:
         """Apply the transform to text.
 
-        Args:.            text: Input text string.
+        Args:
+            text: Input text string.
 
-        Returns:.            Transformed text string.
+        Returns:
+            Transformed text string.
 
-        Raises:.            Error if transform cannot be applied.
+        Raises:
+            Error if transform cannot be applied.
         """
         ...
 
@@ -52,9 +55,11 @@ fn split_words(text: String) raises -> List[String]:
 
     Simple space-based tokenization. Does not handle punctuation specially.
 
-    Args:.        text: Input text to split.
+    Args:
+        text: Input text to split.
 
-    Returns:.        List of words (space-separated tokens).
+    Returns:
+        List of words (space-separated tokens).
     """
     # Use built-in split method
     var parts = text.split(" ")
@@ -71,9 +76,11 @@ fn split_words(text: String) raises -> List[String]:
 fn join_words(words: List[String]) raises -> String:
     """Join words into text with spaces.
 
-    Args:.        words: List of words to join.
+    Args:
+        words: List of words to join.
 
-    Returns:.        Joined text with spaces between words.
+    Returns:
+        Joined text with spaces between words.
     """
     if len(words) == 0:
         return String("")
@@ -98,7 +105,8 @@ struct RandomSwap(TextTransform, Copyable, Movable):
 
     Uses RandomTransformBase for probability handling.
 
-    Example:.        "the quick brown fox" -> "quick the brown fox" (first two swapped)
+    Example:
+        "the quick brown fox" -> "quick the brown fox" (first two swapped)
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -117,11 +125,14 @@ struct RandomSwap(TextTransform, Copyable, Movable):
     fn __call__(self, text: String) raises -> String:
         """Randomly swap word pairs in text.
 
-        Args:.            text: Input text.
+        Args:
+            text: Input text.
 
-        Returns:.            Text with randomly swapped words.
+        Returns:
+            Text with randomly swapped words.
 
-        Raises:.            Error if operation fails.
+        Raises:
+            Error if operation fails.
         """
         # Handle empty or single-word text
         if len(text) == 0:
@@ -159,7 +170,8 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
 
     Uses RandomTransformBase for probability handling.
 
-    Example:.        "the quick brown fox" -> "quick brown fox" (deleted "the")
+    Example:
+        "the quick brown fox" -> "quick brown fox" (deleted "the")
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -177,11 +189,14 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
 
         Ensures at least one word remains even if all would be deleted.
 
-        Args:.            text: Input text.
+        Args:
+            text: Input text.
 
-        Returns:.            Text with some words randomly deleted.
+        Returns:
+            Text with some words randomly deleted.
 
-        Raises:.            Error if operation fails.
+        Raises:
+            Error if operation fails.
         """
         # Handle empty text
         if len(text) == 0:
@@ -219,7 +234,8 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
 
     Uses RandomTransformBase for probability handling.
 
-    Example:.        "the brown fox" -> "the quick brown fox" (inserted "quick")
+    Example:
+        "the brown fox" -> "the quick brown fox" (inserted "quick")
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -241,11 +257,14 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     fn __call__(self, text: String) raises -> String:
         """Insert random words from vocabulary into text.
 
-        Args:.            text: Input text.
+        Args:
+            text: Input text.
 
-        Returns:.            Text with randomly inserted words.
+        Returns:
+            Text with randomly inserted words.
 
-        Raises:.            Error if operation fails.
+        Raises:
+            Error if operation fails.
         """
         # Handle empty text or empty vocabulary
         if len(text) == 0 or len(self.vocabulary) == 0:
@@ -292,7 +311,8 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
 
     Uses RandomTransformBase for probability handling.
 
-    Example:.        "the quick fox" -> "the fast fox" (replaced "quick" with "fast")
+    Example:
+        "the quick fox" -> "the fast fox" (replaced "quick" with "fast")
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -311,11 +331,14 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     fn __call__(self, text: String) raises -> String:
         """Replace random words with synonyms.
 
-        Args:.            text: Input text.
+        Args:
+            text: Input text.
 
-        Returns:.            Text with some words replaced by synonyms.
+        Returns:
+            Text with some words replaced by synonyms.
 
-        Raises:.            Error if operation fails.
+        Raises:
+            Error if operation fails.
         """
         # Handle empty text
         if len(text) == 0:
@@ -376,11 +399,14 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
 #     fn __call__(self, text: String) raises -> String:
 #         """Apply all text transforms sequentially.
 #
-#         Args:.            text: Input text.
+#         Args:
+            text: Input text.
 #
-#         Returns:.            Transformed text after all transforms.
+#         Returns:
+            Transformed text after all transforms.
 #
-#         Raises:.            Error if any transform cannot be applied.
+#         Raises:
+            Error if any transform cannot be applied.
 #         """
 #         var result = text
 #         for t in self.transforms:

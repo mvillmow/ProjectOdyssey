@@ -4,7 +4,8 @@ This module provides functions for plotting training curves, confusion matrices,
 model architecture diagrams, and other visualizations useful for understanding
 model behavior.
 
-Example:.    from shared.utils import plot_training_curves
+Example:
+    from shared.utils import plot_training_curves
 
     var train_losses = List[Float32]()
     var val_losses = List[Float32]()

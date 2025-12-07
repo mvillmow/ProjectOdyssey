@@ -14,7 +14,8 @@ Key characteristics:
 - Precision: Limited (E2M1 values)
 - Use case: Memory-efficient ML training and inference
 
-Example:.    from shared.core.types.mxfp4 import MXFP4, MXFP4Block
+Example:
+    from shared.core.types.mxfp4 import MXFP4, MXFP4Block
 
     # Individual value (stores both E2M1 and scale for convenience)
     var val = MXFP4.from_float32(3.14159)

@@ -49,18 +49,21 @@ fn conv2d(
     Pure function - caller manages kernel and bias. No internal state.
     Uses direct convolution algorithm (not im2col).
 
-    Args:.        x: Input tensor of shape (batch, in_channels, height, width)
+    Args:
+        x: Input tensor of shape (batch, in_channels, height, width)
         kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW)
         bias: Bias vector of shape (out_channels,)
         stride: Stride for convolution (default: 1)
         padding: Zero-padding added to input (default: 0)
 
-    Returns:.        Output tensor of shape (batch, out_channels, out_height, out_width)
+    Returns:
+        Output tensor of shape (batch, out_channels, out_height, out_width)
         where:
             out_height = (height + 2*padding - kH) // stride + 1
             out_width = (width + 2*padding - kW) // stride + 1
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import ExTensor, conv2d, zeros, he_uniform
 
         # Caller manages state
@@ -71,7 +74,8 @@ fn conv2d(
         var output = conv2d(input, kernel, bias, stride=1, padding=1)
         ```
 
-    Raises:.        Error: If tensor shapes are incompatible.
+    Raises:
+        Error: If tensor shapes are incompatible.
     """
     # Get input dimensions
     var x_shape = x.shape()
@@ -189,14 +193,17 @@ fn conv2d_no_bias(
     Pure function for convolution with no bias term.
     Uses direct convolution algorithm.
 
-    Args:.        x: Input tensor of shape (batch, in_channels, height, width)
+    Args:
+        x: Input tensor of shape (batch, in_channels, height, width)
         kernel: Convolution kernels of shape (out_channels, in_channels, kH, kW)
         stride: Stride for convolution (default: 1)
         padding: Zero-padding added to input (default: 0)
 
-    Returns:.        Output tensor of shape (batch, out_channels, out_height, out_width)
+    Returns:
+        Output tensor of shape (batch, out_channels, out_height, out_width)
 
-    Raises:.        Error: If tensor shapes are incompatible.
+    Raises:
+        Error: If tensor shapes are incompatible.
     """
     # Create zero bias
     var k_shape = kernel.shape()
@@ -226,18 +233,21 @@ fn conv2d_backward(
         - grad_kernel: Gradient w.r.t. kernel
         - grad_bias: Gradient w.r.t. bias
 
-    Args:.        grad_output: Gradient w.r.t. output, shape (batch, out_channels, out_H, out_W)
+    Args:
+        grad_output: Gradient w.r.t. output, shape (batch, out_channels, out_H, out_W)
         x: Input from forward pass, shape (batch, in_channels, in_H, in_W)
         kernel: Kernel from forward pass, shape (out_channels, in_channels, kH, kW)
         stride: Stride used in forward pass.
         padding: Padding used in forward pass.
 
-    Returns:.        Conv2dBackwardResult containing:
+    Returns:
+        Conv2dBackwardResult containing:
             - grad_input: Gradient w.r.t. input, shape (batch, in_channels, in_H, in_W)
             - grad_kernel: Gradient w.r.t. kernel, shape (out_channels, in_channels, kH, kW)
             - grad_bias: Gradient w.r.t. bias, shape (out_channels,)
 
-    Example:.        ```mojo.
+    Example:
+        ```mojo.
         from shared.core import conv2d, conv2d_backward
 
         # Forward pass
@@ -251,7 +261,8 @@ fn conv2d_backward(
         var grad_b = result.grad_bias
         ```
 
-    Raises:.        Error if tensor shapes are incompatible.
+    Raises:
+        Error if tensor shapes are incompatible.
     """
     # Get dimensions
     var x_shape = x.shape()
@@ -443,15 +454,18 @@ fn conv2d_no_bias_backward(
 ) raises -> Conv2dNoBiasBackwardResult:
     """Backward pass for 2D convolution without bias.
 
-    Args:.        grad_output: Gradient w.r.t. output.
+    Args:
+        grad_output: Gradient w.r.t. output.
         x: Input from forward pass.
         kernel: Kernel from forward pass.
         stride: Stride used in forward pass.
         padding: Padding used in forward pass.
 
-    Returns:.        Conv2dNoBiasBackwardResult containing grad_input and grad_kernel.
+    Returns:
+        Conv2dNoBiasBackwardResult containing grad_input and grad_kernel.
 
-    Raises:.        Error if tensor shapes are incompatible.
+    Raises:
+        Error if tensor shapes are incompatible.
     """
     var result = conv2d_backward(grad_output, x, kernel, stride, padding)
     # Copy needed fields before result is destroyed (ExTensor is ImplicitlyCopyable)

@@ -74,11 +74,14 @@ trait Transform(Copyable, Movable):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the transform to data.
 
-        Args:.            data: Input tensor.
+        Args:
+            data: Input tensor.
 
-        Returns:.            Transformed tensor.
+        Returns:
+            Transformed tensor.
 
-        Raises:.            Error if transform cannot be applied.
+        Raises:
+            Error if transform cannot be applied.
         """
         ...
 
@@ -110,11 +113,14 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
 
-        Args:.            data: Input tensor.
+        Args:
+            data: Input tensor.
 
-        Returns:.            Transformed tensor after all transforms.
+        Returns:
+            Transformed tensor after all transforms.
 
-        Raises:.            Error if any transform cannot be applied.
+        Raises:
+            Error if any transform cannot be applied.
         """
         var result = data
         for i in range(len(self.transforms)):

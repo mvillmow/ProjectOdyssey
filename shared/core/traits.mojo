@@ -17,7 +17,8 @@ Trait Categories:
 3. Serializable - Components that can be saved/loaded
 4. Composable - Components that can be chained
 
-Example:.    struct MyLayer(Differentiable, Parameterized):
+Example:
+    struct MyLayer(Differentiable, Parameterized):
         fn forward(self, input: ExTensor) -> ExTensor:
             # ... implementation
 
@@ -46,7 +47,8 @@ trait Differentiable:
         - backward must preserve batch dimension
         - backward must handle None/zero gradients gracefully
 
-    Example:.        struct ReLULayer(Differentiable):
+    Example:
+        struct ReLULayer(Differentiable):
             var last_input: ExTensor  # Cache for backward pass
 
             fn forward(mut self, input: ExTensor) -> ExTensor:
@@ -60,11 +62,14 @@ trait Differentiable:
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Compute forward pass.
 
-        Args:.            input: Input tensor (batch_size, ...)
+        Args:
+            input: Input tensor (batch_size, ...)
 
-        Returns:.            Output tensor (batch_size, ...)
+        Returns:
+            Output tensor (batch_size, ...)
 
-        Raises:.            Error: If input shape is invalid.
+        Raises:
+            Error: If input shape is invalid.
 
         Note:
             May cache values needed for backward pass.
@@ -74,11 +79,14 @@ trait Differentiable:
     fn backward(self, grad_output: ExTensor) raises -> ExTensor:
         """Compute backward pass (input gradient).
 
-        Args:.            grad_output: Gradient w.r.t. output (∂L/∂output)
+        Args:
+            grad_output: Gradient w.r.t. output (∂L/∂output)
 
-        Returns:.            Gradient w.r.t. input (∂L/∂input)
+        Returns:
+            Gradient w.r.t. input (∂L/∂input)
 
-        Raises:.            Error: If backward called before forward.
+        Raises:
+            Error: If backward called before forward.
 
         Note:
             Uses values cached during forward pass.
@@ -102,7 +110,8 @@ trait Parameterized:
         - Parameters and gradients must correspond (same order)
         - zero_grad() must clear all gradient accumulation
 
-    Example:.        struct LinearLayer(Parameterized):
+    Example:
+        struct LinearLayer(Parameterized):
             var weights: ExTensor
             var bias: ExTensor
             var grad_weights: ExTensor
@@ -122,7 +131,8 @@ trait Parameterized:
     fn parameters(self) raises -> List[ExTensor]:
         """Get all learnable parameters.
 
-        Returns:.            List of parameter tensors.
+        Returns:
+            List of parameter tensors.
 
         Note:
             Order must match gradients() return order.
@@ -133,7 +143,8 @@ trait Parameterized:
     fn gradients(self) raises -> List[ExTensor]:
         """Get gradients for all parameters.
 
-        Returns:.            List of gradient tensors.
+        Returns:
+            List of gradient tensors.
 
         Note:
             Must correspond 1:1 with parameters().
@@ -147,7 +158,8 @@ trait Parameterized:
         Called at the beginning of each mini-batch to clear.
         accumulated gradients from previous iteration.
 
-        Example:.            model.zero_grad()  # Clear gradients.
+        Example:
+            model.zero_grad()  # Clear gradients.
             loss = forward_pass(model, input, target)
             backward_pass(loss)  # Accumulate gradients
             optimizer.step(model.parameters(), model.gradients())
@@ -171,7 +183,8 @@ trait Serializable:
         - Round-trip (save->load) must be identity
         - File format should be documented
 
-    Example:.        struct ConvLayer(Serializable):
+    Example:
+        struct ConvLayer(Serializable):
             var weights: ExTensor
             var bias: ExTensor
 
@@ -189,9 +202,11 @@ trait Serializable:
     fn save(self, path: String) raises:
         """Save component state to file.
 
-        Args:.            path: File path or directory.
+        Args:
+            path: File path or directory.
 
-        Raises:.            Error: If write fails or path is invalid.
+        Raises:
+            Error: If write fails or path is invalid.
 
         Note:
             Should save all state needed to restore component.
@@ -202,9 +217,11 @@ trait Serializable:
     fn load(mut self, path: String) raises:
         """Load component state from file.
 
-        Args:.            path: File path or directory.
+        Args:
+            path: File path or directory.
 
-        Raises:.            Error: If file doesn't exist, is corrupted, or has version mismatch.
+        Raises:
+            Error: If file doesn't exist, is corrupted, or has version mismatch.
 
         Note:
             Should validate loaded state (shapes, dtypes).
@@ -227,7 +244,8 @@ trait Composable(Differentiable):
         - Output shape of self must match input shape of other
         - Associative: (A ∘ B) ∘ C = A ∘ (B ∘ C)
 
-    Example:.        struct Sequential(Composable):
+    Example:
+        struct Sequential(Composable):
             var layers: List[Composable]
 
             fn compose[T: Composable](self, other: T) -> ComposedOp[Self, T]:
@@ -312,7 +330,8 @@ trait Trainable:
         eval: Set to evaluation mode.
         is_training: Check current mode.
 
-    Example:.        struct Dropout(Trainable):
+    Example:
+        struct Dropout(Trainable):
             var training: Bool
             var p: Float64
 
@@ -349,7 +368,8 @@ trait Trainable:
     fn is_training(self) -> Bool:
         """Check if component is in training mode.
 
-        Returns:.            True if training, False if evaluating.
+        Returns:
+            True if training, False if evaluating.
         """
         ...
 
