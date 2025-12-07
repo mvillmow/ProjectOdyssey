@@ -27,7 +27,7 @@ All implementations marked with "WARNING: NOT YET IMPLEMENTED - Placeholder inte
 See Issue #49 for details
 """
 
-from python import Python
+from python import Python, PythonObject
 from memory import UnsafePointer
 from shared.core.extensor import ExTensor
 from collections import List
@@ -857,7 +857,7 @@ fn create_directory(dirpath: String) -> Bool:
     # Use Python os.makedirs() to create directory with parents
     try:
         var python = Python.import_module("os")
-        python.makedirs(dirpath, exist_ok=True)
+        python.makedirs(dirpath, exist_ok=PythonObject(True))
         return True
     except:
         # Return False if directory creation fails
