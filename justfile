@@ -73,7 +73,7 @@ docker-status:
 # Build project (default: debug mode)
 build mode="debug": docker-up (_ensure_build_dir mode)
     @echo "Building in {{mode}} mode..."
-    @just _run "echo 'Build complete: build/{{mode}}/'"
+    @just _run "pixi run mojo package shared -o build/{{mode}}/ml-odyssey-shared.mojopkg"
 
 # Build debug version
 build-debug: (build "debug")
