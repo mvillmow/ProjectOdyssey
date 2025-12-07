@@ -240,12 +240,14 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
         One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
 
     Example:
-        labels = [0, 2, 1]  # 3 samples, 3 classes
+        ```mojo
+        abels = [0, 2, 1]  # 3 samples, 3 classes
         one_hot = one_hot_encode(labels, 3)
         # Result shape: (3, 3)
         # [[1.0, 0.0, 0.0],
         #  [0.0, 0.0, 1.0],
         #  [0.0, 1.0, 0.0]]
+        ```
     """
     var num_samples = labels.shape()[0]
 

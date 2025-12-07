@@ -12,6 +12,7 @@ Example:
 
     # Load checkpoint
     var loaded = load_checkpoint("checkpoint.pt")
+    ```
 
 FIXME: Placeholder tests in tests/shared/fixtures/test_io_helpers.mojo require:
 - create_temp_dir() (line 26)
@@ -206,10 +207,12 @@ fn save_checkpoint(
         True if save successful, False if error
 
     Example:
-        var checkpoint = Checkpoint()
+        ```mojo
+        ar checkpoint = Checkpoint()
         checkpoint.set_epoch(10)
         checkpoint.set_loss(0.234)
         save_checkpoint("checkpoints/epoch_10.pt", checkpoint)
+        ```
     """
     # Create backup if requested and file exists
     if backup and file_exists(filepath):
@@ -237,9 +240,11 @@ fn load_checkpoint(filepath: String) raises -> Checkpoint:
         ValueError: If file format is invalid.
 
     Example:
-        var checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
+        ```mojo
+        ar checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
         var epoch = checkpoint.epoch
         var loss = checkpoint.loss
+        ```
     """
     # Read file content
     var content = safe_read_file(filepath)
@@ -516,7 +521,9 @@ fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
         Serialized tensor with metadata
 
     Example:
-        var serialized = serialize_tensor("weights", my_tensor_data)
+        ```mojo
+        ar serialized = serialize_tensor("weights", my_tensor_data)
+        ```
     """
     var serialized = SerializedTensor()
 
@@ -545,7 +552,9 @@ fn deserialize_tensor(serialized: SerializedTensor) -> List[String]:
         Deserialized tensor data
 
     Example:
-        var tensor_data = deserialize_tensor(serialized)
+        ```mojo
+        ar tensor_data = deserialize_tensor(serialized)
+        ```
     """
     # Deserialize by extracting data from SerializedTensor
     # Metadata is already parsed, just return the data
@@ -692,7 +701,9 @@ fn join_path(base: String, path: String) raises -> String:
         Error: If path contains ".." or starts with "/" (traversal attempt)
 
     Example:
-        var full_path = join_path("checkpoints", "epoch_10.pt")
+        ```mojo
+        ar full_path = join_path("checkpoints", "epoch_10.pt")
+        ```
     """
     # Validate path component for security
     if ".." in path:
@@ -728,7 +739,9 @@ fn split_path(filepath: String) -> Tuple[String, String]:
         Tuple of (directory, filename)
 
     Example:
-        var (dir, file) = split_path("checkpoints/epoch_10.pt")
+        ```mojo
+        ar (dir, file) = split_path("checkpoints/epoch_10.pt")
+        ```
     """
     # Handle platform-specific path separators (Unix-style for now)
     # Find last separator
@@ -761,7 +774,9 @@ fn get_filename(filepath: String) -> String:
         Filename only
 
     Example:
-        var name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
+        ```mojo
+        ar name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
+        ```
     """
     var (_, filename) = split_path(filepath)
     return filename

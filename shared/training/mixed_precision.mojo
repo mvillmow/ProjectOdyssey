@@ -43,7 +43,8 @@ struct GradientScaler(Copyable, Movable):
         max_scale: Maximum allowed scale (default: 65536.0)
 
     Example:
-        var scaler = GradientScaler()
+        ```mojo
+        ar scaler = GradientScaler()
 
         # In training loop:
         var scaled_loss = scaler.scale(loss)
@@ -58,6 +59,7 @@ struct GradientScaler(Copyable, Movable):
         else:
             # Skip step and reduce scale
             scaler.backoff()
+        ```
     """
     var scale: Float32
     var growth_factor: Float32
@@ -107,8 +109,10 @@ struct GradientScaler(Copyable, Movable):
             Error: If loss is empty or scale is invalid.
 
         Example:
-            var loss = compute_loss(predictions, targets)
+            ```mojo
+            ar loss = compute_loss(predictions, targets)
             var scaled_loss = scaler.scale_loss(loss)
+        ```
         """
         # Validate input
         if loss._numel == 0:
@@ -133,8 +137,10 @@ struct GradientScaler(Copyable, Movable):
             Error: If gradients are empty or scale is zero.
 
         Example:
-            var scaled_grads = backward(scaled_loss)
+            ```mojo
+            ar scaled_grads = backward(scaled_loss)
             var grads = scaler.unscale_gradients(scaled_grads)
+        ```
         """
         # Validate input
         if gradients._numel == 0:
@@ -153,8 +159,10 @@ struct GradientScaler(Copyable, Movable):
         Should be called after each successful optimizer update.
 
         Example:
-            if optimizer_step_successful:
+            ```mojo
+            f optimizer_step_successful:
                 scaler.step()
+        ```
         """
         self._num_steps += 1
         self._steps_since_growth += 1
@@ -176,9 +184,11 @@ struct GradientScaler(Copyable, Movable):
         Reduces scale and resets growth counter.
 
         Example:
-            if has_nan(gradients) or has_inf(gradients):
+            ```mojo
+            f has_nan(gradients) or has_inf(gradients):
                 scaler.backoff()
                 continue  # Skip optimizer step
+        ```
         """
         var new_scale = self.scale * self.backoff_factor
         if new_scale >= self.min_scale:
@@ -218,11 +228,13 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
         Error: If params is empty.
 
     Example:
-        # Model params in FP16.
+        ```mojo
+         Model params in FP16.
         var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
 
         # Create FP32 master weights for optimizer
         var master_params = convert_to_fp32_master(fp16_params)
+        ```
     """
     # Validate input
     if params._numel == 0:
@@ -273,11 +285,13 @@ fn update_model_from_master(mut model_params: ExTensor,
         Error: If tensors are empty or shapes don't match.
 
     Example:
-        # Optimizer updates master weights in FP32.
+        ```mojo
+         Optimizer updates master weights in FP32.
         optimizer_step(master_params, gradients)
 
         # Copy back to FP16 model params
         update_model_from_master(fp16_params, master_params)
+        ```
     """
     # Validate input
     if model_params._numel == 0 or master_params._numel == 0:
@@ -324,11 +338,13 @@ fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
         True if all gradients are finite, False otherwise.
 
     Example:
-        if check_gradients_finite(grads):
+        ```mojo
+        f check_gradients_finite(grads):
             optimizer_step(grads)
         else:
             scaler.backoff()
             continue  # Skip this step
+        ```
     """
     return not (has_nan(gradients) or has_inf(gradients))
 
@@ -350,8 +366,10 @@ fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTe
         Error: If max_norm is non-positive or gradients are empty.
 
     Example:
-        # Clip to prevent explosion in FP16.
+        ```mojo
+         Clip to prevent explosion in FP16.
         var clipped_grads = clip_gradients_by_norm(grads, 1.0)
+        ```
     """
     # Validate input
     if max_norm <= 0.0:
@@ -399,8 +417,10 @@ fn clip_gradients_by_value(gradients: ExTensor,
         Error: If min_value >= max_value or gradients are empty.
 
     Example:
-        # Clip each gradient to [-1, 1]
+        ```mojo
+         Clip each gradient to [-1, 1]
         var clipped = clip_gradients_by_value(grads, -1.0, 1.0)
+        ```
     """
     # Validate input
     if min_value >= max_value:

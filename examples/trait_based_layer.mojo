@@ -37,9 +37,11 @@ struct ReLULayer(Differentiable):
     Caches input for efficient backward pass.
 
     Example:
-        var relu = ReLULayer()
+        ```mojo
+        ar relu = ReLULayer()
         var output = relu.forward(input)
         var grad_input = relu.backward(grad_output)
+        ```
     """
 
     var last_input: ExTensor  # Cached for backward pass
@@ -107,7 +109,8 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
     - Parameterized: Weight/bias management
 
     Example:
-        var fc = FullyConnectedLayer(784, 128)
+        ```mojo
+        ar fc = FullyConnectedLayer(784, 128)
         fc.init_xavier()
 
         var output = fc.forward(input)
@@ -116,6 +119,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         # Access parameters for optimization
         var params = fc.parameters()
         var grads = fc.gradients()
+        ```
     """
 
     var weights: ExTensor
@@ -244,7 +248,8 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     - Trainable: Training vs evaluation mode
 
     Example:
-        var bn = BatchNormLayer(128)
+        ```mojo
+        ar bn = BatchNormLayer(128)
         bn.train()  # Set to training mode
 
         var output = bn.forward(input)
@@ -255,6 +260,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
         bn.save("checkpoint.bin")
         bn.load("checkpoint.bin")
+        ```
     """
 
     # Learnable parameters

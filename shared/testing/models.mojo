@@ -34,6 +34,7 @@ Example:
         var mlp = SimpleMLP(10, 20, 5, num_hidden_layers=1)
         var mlp_input = zeros(List[Int](10), DType.float32)
         var mlp_output = mlp.forward(mlp_input)
+    ```
 """
 
 from shared.core import ExTensor, zeros, ones, zeros_like
@@ -78,8 +79,10 @@ struct SimpleCNN(Copyable, Movable):
             num_classes: Number of output classes (default: 10)
 
         Example:
-            var model = SimpleCNN(1, 8, 10)
+            ```mojo
+            ar model = SimpleCNN(1, 8, 10)
             assert_equal(model.num_classes, 10)
+        ```
         """
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -160,8 +163,10 @@ struct LinearModel(Copyable, Movable):
             out_features: Output dimension
 
         Example:
-            var model = LinearModel(784, 10)
+            ```mojo
+            ar model = LinearModel(784, 10)
             assert_equal(model.in_features, 784)
+        ```
         """
         self.in_features = in_features
         self.out_features = out_features
@@ -234,7 +239,9 @@ struct MockLayer:
             scale: Scale factor for transformation (default: 1.0)
 
         Example:
-            var layer = MockLayer(input_dim=10, output_dim=5, scale=2.0)
+            ```mojo
+            ar layer = MockLayer(input_dim=10, output_dim=5, scale=2.0)
+        ```
 
         Note:
             This is a simplified layer for testing - not a real neural network layer.
@@ -254,10 +261,12 @@ struct MockLayer:
             Output tensor (flat list of size output_dim)
 
         Example:
-            var layer = MockLayer(10, 5, scale=2.0)
+            ```mojo
+            ar layer = MockLayer(10, 5, scale=2.0)
             var input = List[Float32](10)
             var output = layer.forward(input)
             # output contains first 5 elements scaled by 2.0
+        ```
 
         Note:
             If output_dim < input_dim: truncates and scales
@@ -287,8 +296,10 @@ struct MockLayer:
             Number of parameters (for testing parameter counting)
 
         Example:
-            var layer = MockLayer(10, 5)
+            ```mojo
+            ar layer = MockLayer(10, 5)
             var n_params = layer.num_parameters()  # 50 (10*5)
+        ```
 
         Note:
             Returns input_dim * output_dim to simulate weight matrix size.
@@ -337,12 +348,14 @@ struct SimpleLinearModel:
             init_value: Initial weight/bias value (default: 0.1)
 
         Example:
-            var model = SimpleLinearModel(
+            ```mojo
+            ar model = SimpleLinearModel(
                 input_dim=10,
                 output_dim=5,
                 use_bias=True,
                 init_value=0.1
             )
+        ```
 
         Note:
             Weights are initialized to constant value for predictable testing.
@@ -374,10 +387,12 @@ struct SimpleLinearModel:
             Output tensor (flat list of size output_dim)
 
         Example:
-            var model = SimpleLinearModel(10, 5)
+            ```mojo
+            ar model = SimpleLinearModel(10, 5)
             var input = List[Float32](10)
             var output = model.forward(input)
             # output = weights @ input + bias
+        ```
 
         Note:
             Performs matrix-vector multiplication: y = W @ x + b
@@ -407,8 +422,10 @@ struct SimpleLinearModel:
             Total parameters (weights + bias)
 
         Example:
-            var model = SimpleLinearModel(10, 5, use_bias=True)
+            ```mojo
+            ar model = SimpleLinearModel(10, 5, use_bias=True)
             var n_params = model.num_parameters()  # 55 (50 + 5)
+        ```
         """
         var n_params = len(self.weights)
         if self.use_bias:
@@ -445,8 +462,10 @@ struct Parameter(Copyable, Movable):
             Error: If gradient tensor cannot be created
 
         Example:
-            var param = Parameter(data_tensor)
+            ```mojo
+            ar param = Parameter(data_tensor)
             # grad is automatically initialized to zeros_like(data_tensor)
+        ```
         """
         self.data = data
         self.grad = zeros_like(data)
@@ -458,8 +477,10 @@ struct Parameter(Copyable, Movable):
             Shape of the parameter tensor
 
         Example:
-            var param = Parameter(tensor)
+            ```mojo
+            ar param = Parameter(tensor)
             var s = param.shape()  # Same as param.data.shape()
+        ```
         """
         return self.data.shape()
 
@@ -517,7 +538,8 @@ struct SimpleMLP(Copyable, Movable, Model):
             init_value: Initial weight/bias value (default: 0.1)
 
         Example:
-            # 2-layer MLP: input -> hidden -> output
+            ```mojo
+             2-layer MLP: input -> hidden -> output
             var mlp = SimpleMLP(
                 input_dim=10,
                 hidden_dim=20,
@@ -532,6 +554,7 @@ struct SimpleMLP(Copyable, Movable, Model):
                 output_dim=5,
                 num_hidden_layers=2
             )
+        ```
         """
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
@@ -590,10 +613,12 @@ struct SimpleMLP(Copyable, Movable, Model):
             Output tensor
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             var input = List[Float32](10)
             var output = mlp.forward(input)
             # output has shape [5]
+        ```
 
         Note:
             Uses ReLU activation between layers: ReLU(x) = max(0, x)
@@ -653,10 +678,12 @@ struct SimpleMLP(Copyable, Movable, Model):
             Error: If tensor conversion fails
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             var input = zeros(List[Int](10), DType.float32)
             var output = mlp.forward(input)
             # output has shape [5]
+        ```
 
         Note:
             This is the Model trait implementation that accepts ExTensor.
@@ -726,8 +753,10 @@ struct SimpleMLP(Copyable, Movable, Model):
             ExTensor containing all weights flattened
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             var weights = mlp.get_weights()
+        ```
         """
         # Flatten all weight lists into a single list
         var all_weights = List[Float32]()
@@ -755,10 +784,12 @@ struct SimpleMLP(Copyable, Movable, Model):
             List of ExTensor objects containing weights and biases
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             var params = mlp.parameters()
             for param in params:
                 print(param.shape())
+        ```
         """
         var param_list = List[ExTensor]()
 
@@ -814,8 +845,10 @@ struct SimpleMLP(Copyable, Movable, Model):
         """Zero all gradients.
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             mlp.zero_grad()
+        ```
         """
         # This is a placeholder - actual gradient zeroing would happen
         # on Parameter objects during backpropagation
@@ -828,8 +861,10 @@ struct SimpleMLP(Copyable, Movable, Model):
             Dictionary mapping parameter names to their tensor values
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             var state = mlp.state_dict()
+        ```
 
         Note:
             Returns owned Dict with ownership transfer to avoid copy errors.
@@ -891,8 +926,10 @@ struct SimpleMLP(Copyable, Movable, Model):
             state: Dictionary mapping parameter names to their tensor values
 
         Example:
-            var mlp = SimpleMLP(10, 20, 5)
+            ```mojo
+            ar mlp = SimpleMLP(10, 20, 5)
             mlp.load_state_dict(state)
+        ```
 
         Note:
             This is a placeholder implementation for now.

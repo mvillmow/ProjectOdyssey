@@ -100,9 +100,9 @@ struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
         T: Type of transforms in the composition (must implement Transform).
     """
 
-    var transforms: List[T]
+    var transforms: List[Self.T]
 
-    fn __init__(out self, var transforms: List[T]):
+    fn __init__(out self, var transforms: List[Self.T]):
         """Create composition of transforms.
 
         Args:

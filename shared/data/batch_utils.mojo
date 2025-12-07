@@ -27,7 +27,7 @@ fn extract_batch(
         is min(batch_size, N - start_idx)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.data import extract_batch
 
         # Extract batch of 128 images from dataset
@@ -105,7 +105,7 @@ fn extract_batch_pair(
         Tuple of (batch_data, batch_labels) with matching first dimension.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.data import extract_batch_pair
 
         var images = load_images()      # Shape: (50000, 3, 32, 32)
@@ -148,7 +148,7 @@ fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
         Number of batches needed (rounded up)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.data import compute_num_batches
 
         var num_batches = compute_num_batches(50000, 128)
@@ -184,7 +184,7 @@ fn get_batch_indices(
         - actual_batch_size: Number of samples in this batch
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.data import get_batch_indices
 
         # Get indices for batch 390 of size 128 from 50000 samples

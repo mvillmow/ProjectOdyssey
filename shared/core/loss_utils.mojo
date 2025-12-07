@@ -37,9 +37,11 @@ fn clip_predictions(
         Clipped tensor with values in [epsilon, 1.0 - epsilon].
 
     Example:
-        var predictions = sigmoid(logits)  # Some values may be 0 or 1
+        ```mojo
+        ar predictions = sigmoid(logits)  # Some values may be 0 or 1
         var clipped = clip_predictions(predictions)
         var log_pred = log(clipped)  # Safe to take log now
+        ```
     """
     return clip(predictions, epsilon, 1.0 - epsilon)
 
@@ -57,9 +59,11 @@ fn create_epsilon_tensor(
         Tensor filled with epsilon value, same shape as template.
 
     Example:
-        var pred = predictions
+        ```mojo
+        ar pred = predictions
         var eps = create_epsilon_tensor(pred)
         var denominator = add(pred, eps)  # Add epsilon to prevent division by zero
+        ```
     """
     return full_like(template, epsilon)
 
@@ -78,7 +82,9 @@ fn validate_tensor_shapes(
         Error if shapes don't match.
 
     Example:
-        validate_tensor_shapes(predictions, targets, "cross_entropy")
+        ```mojo
+        alidate_tensor_shapes(predictions, targets, "cross_entropy")
+        ```
     """
     if tensor1.shape() != tensor2.shape():
         raise Error(operation + ": Input tensors must have the same shape")
@@ -98,7 +104,9 @@ fn validate_tensor_dtypes(
         Error if dtypes don't match.
 
     Example:
-        validate_tensor_dtypes(predictions, targets, "cross_entropy")
+        ```mojo
+        alidate_tensor_dtypes(predictions, targets, "cross_entropy")
+        ```
     """
     if tensor1.dtype() != tensor2.dtype():
         raise Error(operation + ": Input tensors must have the same dtype")
@@ -116,7 +124,9 @@ fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
         Tensor with values: 1.0 - tensor[i] for each element.
 
     Example:
-        var one_minus_pred = compute_one_minus_tensor(predictions)
+        ```mojo
+        ar one_minus_pred = compute_one_minus_tensor(predictions)
+        ```
     """
     var one = ones_like(tensor)
     return subtract(one, tensor)
@@ -134,9 +144,11 @@ fn compute_sign_tensor(tensor: ExTensor) raises -> ExTensor:
         Tensor with sign values (-1, 0, or 1).
 
     Example:
-        # For hinge loss gradient
+        ```mojo
+         For hinge loss gradient
         var diff = subtract(predictions, targets)
         var sign = compute_sign_tensor(diff)
+        ```
     """
     var zero = zeros_like(tensor)
     var one = ones_like(tensor)
@@ -173,11 +185,13 @@ fn blend_tensors(
         Blended tensor with shape of inputs.
 
     Example:
-        # In smooth L1 loss
+        ```mojo
+         In smooth L1 loss
         var quadratic = ...  # For |x| < beta
         var linear = ...      # For |x| >= beta
         var mask = less(abs_diff, beta)  # Bool: true where |x| < beta
         var result = blend_tensors(quadratic, linear, mask)
+        ```
     """
     var one = ones_like(tensor1)
     var mask_inv = subtract(one, mask)
@@ -264,10 +278,12 @@ fn compute_ratio(tensor1: ExTensor, tensor2: ExTensor, epsilon: Float64 = 1e-7) 
         Error if shapes don't match.
 
     Example:
-        # Safe division in loss gradients
+        ```mojo
+         Safe division in loss gradients
         var numerator = ...
         var denominator = ...
         var ratio = compute_ratio(numerator, denominator)
+        ```
     """
     if tensor1.shape() != tensor2.shape():
         raise Error("compute_ratio: Tensors must have the same shape")
@@ -289,8 +305,10 @@ fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
         Negated tensor with opposite signs.
 
     Example:
-        # In BCE loss: negate the sum of terms
+        ```mojo
+         In BCE loss: negate the sum of terms
         var negated = negate_tensor(sum_terms)
+        ```
     """
     var zero = zeros_like(tensor)
     return subtract(zero, tensor)

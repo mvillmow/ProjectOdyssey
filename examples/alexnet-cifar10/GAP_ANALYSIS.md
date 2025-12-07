@@ -167,8 +167,10 @@ fn step_lr_schedule(
         Decayed learning rate
 
     Example:
-        lr = initial_lr * (gamma ** (epoch // step_size))
+        ```mojo
+        r = initial_lr * (gamma ** (epoch // step_size))
         For AlexNet: lr *= 0.1 every 30 epochs
+        ```
     """
 ```text
 

@@ -9,6 +9,7 @@ Implemented techniques:
 - clip_grad_global_norm_: Clip based on global norm across all parameters
 
 Usage Example:
+        ```
     from shared.autograd import clip_grad_value_, clip_grad_norm_, clip_grad_global_norm_
 
     # Clip individual gradient elements
@@ -20,6 +21,7 @@ Usage Example:
     # Clip multiple gradients by their global L2 norm
     var gradients = List[ExTensor](grad1, grad2, grad3)
     var global_norm = clip_grad_global_norm_(gradients, max_norm=1.0)
+        ```
 
 References:
     - On the difficulty of training Recurrent Neural Networks (Pascanu et al., 2013)

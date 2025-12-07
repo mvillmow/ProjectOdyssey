@@ -14,6 +14,7 @@ Example:
 
     var x = BF8.from_float32(3.14159)
     var y = x.to_float32()
+    ```
 """
 
 from math import isnan, isinf

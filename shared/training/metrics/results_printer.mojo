@@ -44,9 +44,11 @@ fn print_training_progress(
         learning_rate: Current learning rate (default: 0.01)
 
     Example:
-        print_training_progress(1, 200, 10, 100, 0.234, 0.01)
+        ```mojo
+        rint_training_progress(1, 200, 10, 100, 0.234, 0.01)
         Output:
         Epoch [1/200] Batch [10/100] Loss: 0.234000 LR: 0.010000
+        ```
 
     Issue: #2353
     """
@@ -85,7 +87,8 @@ fn print_evaluation_summary(
         test_accuracy: Test/validation accuracy (0.0 to 1.0)
 
     Example:
-        print_evaluation_summary(1, 200, 0.523, 0.923, 0.645, 0.891)
+        ```mojo
+        rint_evaluation_summary(1, 200, 0.523, 0.923, 0.645, 0.891)
         Output:
         ============================================================
         Epoch [1/200] Results
@@ -93,6 +96,7 @@ fn print_evaluation_summary(
         Train Loss: 0.523000  Train Acc: 92.30%
         Test Loss:  0.645000  Test Acc:  89.10%
         ============================================================
+        ```
 
     Issue: #2353
     """
@@ -137,7 +141,8 @@ fn print_per_class_accuracy(
         column_width: Width of each column in characters (default: 15)
 
     Example:
-        var per_class = ExTensor(List[Int](10), DType.float64)
+        ```mojo
+        ar per_class = ExTensor(List[Int](10), DType.float64)
         # ... populate with per-class accuracies ...
         print_per_class_accuracy(per_class)
 
@@ -150,6 +155,7 @@ fn print_per_class_accuracy(
         0          0.920000
         1          0.945000
         ...
+        ```
 
     Note:
         If class_names is provided, it must have same length as per_class_accuracies.
@@ -217,7 +223,8 @@ fn print_confusion_matrix(
         column_width: Width of each column in characters (default: 10)
 
     Example:
-        var cm = ConfusionMatrix(num_classes=3)
+        ```mojo
+        ar cm = ConfusionMatrix(num_classes=3)
         # ... populate matrix ...
         var matrix = cm.normalize(mode="none")
         print_confusion_matrix(matrix)
@@ -232,6 +239,7 @@ fn print_confusion_matrix(
              1  3   92    5
              2  2    4   94
         ============================================================
+        ```
 
     Note:
         - Rows represent true labels
@@ -346,7 +354,8 @@ fn print_training_summary(
         best_epoch: Epoch at which best accuracy was achieved
 
     Example:
-        print_training_summary(200, 0.034, 0.156, 0.965, 187)
+        ```mojo
+        rint_training_summary(200, 0.034, 0.156, 0.965, 187)
         Output:
         ============================================================
         Training Summary
@@ -356,6 +365,7 @@ fn print_training_summary(
         Best Test Loss:      0.156000
         Best Accuracy:       96.50%
         ============================================================
+        ```
 
     Issue: #2353
     """

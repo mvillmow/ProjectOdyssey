@@ -59,7 +59,7 @@ fn adam_step(
         Tuple of (new_params, new_m, new_v)
 
     Example (basic Adam):
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import adam_step
 
@@ -178,7 +178,8 @@ fn adam_step_simple(
         Tuple of (new_params, new_m, new_v)
 
     Example:
-        var W = xavier_uniform(784, 128, shape, DType.float32)
+        ```mojo
+        ar W = xavier_uniform(784, 128, shape, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
         var t = 1
@@ -187,6 +188,7 @@ fn adam_step_simple(
             var grad_W = ... # Computed gradients
             (W, m, v) = adam_step_simple(W, grad_W, m, v, t, 0.001)
             t += 1
+        ```
     """
     return adam_step(
         params, gradients, m, v, t,

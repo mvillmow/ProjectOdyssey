@@ -184,11 +184,13 @@ fn plot_training_curves(
         save_path: Path to save figure
 
     Example:
-        plot_training_curves(
+        ```mojo
+        lot_training_curves(
             train_losses=train_losses,
             val_losses=val_losses,
             save_path="training_curves.png"
         )
+        ```
     """
     # Create matplotlib figure
     # Plot loss curves
@@ -219,8 +221,10 @@ fn show_images(
         save_path: Path to save figure
 
     Example:
-        # Show first batch of training data
+        ```mojo
+         Show first batch of training data
         show_images(batch.inputs[:64], nrow=8)
+        ```
     """
     # Create image grid
     # Add labels if provided
@@ -250,12 +254,14 @@ fn plot_confusion_matrix(
         save_path: Path to save figure
 
     Example:
-        plot_confusion_matrix(
+        ```mojo
+        lot_confusion_matrix(
             y_true=true_labels,
             y_pred=predictions,
             class_names=["cat", "dog"],
             normalize=True
         )
+        ```
     """
     # Compute confusion matrix
     # Create heatmap
@@ -282,8 +288,10 @@ fn plot_lr_schedule(
         save_path: Path to save figure
 
     Example:
-        var scheduler = CosineAnnealingLR(optimizer, T_max=100)
+        ```mojo
+        ar scheduler = CosineAnnealingLR(optimizer, T_max=100)
         plot_lr_schedule(scheduler, num_epochs=100)
+        ```
     """
     # Simulate scheduler for num_epochs
     # Plot learning rate curve
@@ -336,8 +344,10 @@ fn load_config(filepath: String) -> Config:
         Loaded configuration
 
     Example:
-        var config = load_config("experiment.yaml")
+        ```mojo
+        ar config = load_config("experiment.yaml")
         var lr = config.get[Float32]("learning_rate")
+        ```
     """
     # Detect file format
     # Parse YAML or JSON
@@ -353,9 +363,11 @@ fn save_config(config: Config, filepath: String):
         filepath: Output file path
 
     Example:
-        var config = Config()
+        ```mojo
+        ar config = Config()
         config.set("learning_rate", 0.001)
         save_config(config, "experiment.yaml")
+        ```
     """
     # Convert Config to YAML/JSON
     # Write to file
@@ -379,9 +391,11 @@ fn merge_configs(base: Config, override: Config) -> Config:
         Merged configuration
 
     Example:
-        var default_config = load_config("default.yaml")
+        ```mojo
+        ar default_config = load_config("default.yaml")
         var experiment_config = load_config("experiment.yaml")
         var config = merge_configs(default_config, experiment_config)
+        ```
     """
     # Deep merge configurations
     # Override takes precedence
@@ -427,7 +441,9 @@ fn set_seed(seed: Int):
         seed: Random seed value
 
     Example:
-        set_seed(42)  # For reproducibility
+        ```mojo
+        et_seed(42)  # For reproducibility
+        ```
     """
     # Set Mojo stdlib seed
     # Set custom RNG seeds
@@ -524,10 +540,12 @@ fn profile[func: fn() -> None]():
     - Number of calls
 
     Example:
-        @profile
+        ```mojo
+        profile
         fn train_epoch():
             # training code
             pass
+        ```
     """
     # Measure time and memory
     # Print statistics
@@ -547,8 +565,10 @@ fn memory_usage() -> MemoryStats:
         Memory statistics (allocated, peak, available)
 
     Example:
-        var mem = memory_usage()
+        ```mojo
+        ar mem = memory_usage()
         print(f"Memory: {mem.allocated_mb}MB / {mem.peak_mb}MB")
+        ```
     """
     pass
 ```text

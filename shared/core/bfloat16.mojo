@@ -77,7 +77,9 @@ struct BFloat16:
             BFloat16 representation
 
         Example:
+       ```mojo
             var bf16 = BFloat16.from_float32(3.14159)
+        ```
         """
         # Handle special cases
         if isnan(value):
@@ -135,7 +137,9 @@ struct BFloat16:
             BFloat16 representation
 
         Example:
+       ```mojo
             var bf16 = BFloat16.from_float32_truncate(3.14159)
+        ```
         """
         # Get bit representation using SIMD bitcast
         var bits32 = bitcast[DType.uint32, 1](SIMD[DType.float32, 1](value))[0]
@@ -160,7 +164,9 @@ struct BFloat16:
             Float32 representation
 
         Example:
+        ```mojo
             var f32 = bf16.to_float32()
+        ```
         """
         # BFloat16 to Float32 is simple: extend to 32 bits by shifting left 16
         # BF16: [sign:1][exponent:8][mantissa:7]
@@ -415,12 +421,14 @@ fn print_bfloat16_bits(value: BFloat16):
         value: BFloat16 value to print.
 
     Example:
+       ```mojo
         var bf16 = BFloat16.from_float32(3.14159)
         print_bfloat16_bits(bf16)
         # Output:
         # BFloat16: 3.140625
         # Bits: 0100000010010010
         # Sign: 0, Exponent: 10000000 (128), Mantissa: 1001001
+        ```
     """
     print("BFloat16: " + String(value.to_float32()))
 

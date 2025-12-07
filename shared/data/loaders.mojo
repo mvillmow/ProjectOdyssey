@@ -113,11 +113,11 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
         S: Sampler type that conforms to the Sampler trait and is Copyable & Movable.
     """
 
-    var dataset: D
+    var dataset: Self.D
     var batch_size: Int
     var drop_last: Bool
     var _len: Int
-    var sampler: S
+    var sampler: Self.S
     var shuffle: Bool
 
     fn __init__(

@@ -115,7 +115,8 @@ fn test_lars_trust_ratio_scaling() raises:
         trust_ratio = trust_coefficient * param_norm / (grad_norm + weight_decay * param_norm + epsilon)
 
     Example:
-        param_norm = 5.0
+        ```mojo
+        aram_norm = 5.0
         grad_norm = 1.0
         weight_decay = 0.0001
         trust_coefficient = 0.001
@@ -123,6 +124,7 @@ fn test_lars_trust_ratio_scaling() raises:
         trust_ratio = 0.001 * 5.0 / (1.0 + 0.0001 * 5.0 + 1e-8)
                     = 0.005 / (1.0005)
                     ≈ 0.004998
+        ```
     """
     var shape = List[Int](2)
     var params = zeros(shape, DType.float32)

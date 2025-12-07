@@ -27,6 +27,7 @@ Example:
 
         fn parameters(self) -> List[ExTensor]:
             return [self.weights, self.bias]
+    ```
 """
 
 from shared.core import ExTensor
@@ -48,7 +49,8 @@ trait Differentiable:
         - backward must handle None/zero gradients gracefully
 
     Example:
-        struct ReLULayer(Differentiable):
+        ```mojo
+        truct ReLULayer(Differentiable):
             var last_input: ExTensor  # Cache for backward pass
 
             fn forward(mut self, input: ExTensor) -> ExTensor:
@@ -57,6 +59,7 @@ trait Differentiable:
 
             fn backward(self, grad_output: ExTensor) -> ExTensor:
                 return relu_backward(grad_output, self.last_input)
+        ```
     """
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
@@ -111,7 +114,8 @@ trait Parameterized:
         - zero_grad() must clear all gradient accumulation
 
     Example:
-        struct LinearLayer(Parameterized):
+        ```mojo
+        truct LinearLayer(Parameterized):
             var weights: ExTensor
             var bias: ExTensor
             var grad_weights: ExTensor
@@ -126,6 +130,7 @@ trait Parameterized:
             fn zero_grad(mut self):
                 self.grad_weights.fill(0.0)
                 self.grad_bias.fill(0.0)
+        ```
     """
 
     fn parameters(self) raises -> List[ExTensor]:
@@ -159,10 +164,12 @@ trait Parameterized:
         accumulated gradients from previous iteration.
 
         Example:
-            model.zero_grad()  # Clear gradients.
+            ```mojo
+            odel.zero_grad()  # Clear gradients.
             loss = forward_pass(model, input, target)
             backward_pass(loss)  # Accumulate gradients
             optimizer.step(model.parameters(), model.gradients())
+        ```
         """
         ...
 
@@ -184,7 +191,8 @@ trait Serializable:
         - File format should be documented
 
     Example:
-        struct ConvLayer(Serializable):
+        ```mojo
+        truct ConvLayer(Serializable):
             var weights: ExTensor
             var bias: ExTensor
 
@@ -197,6 +205,7 @@ trait Serializable:
                 # Load weights and bias from file
                 self.weights = read_tensor(path + "/weights.bin")
                 self.bias = read_tensor(path + "/bias.bin")
+        ```
     """
 
     fn save(self, path: String) raises:
@@ -245,7 +254,8 @@ trait Composable(Differentiable):
         - Associative: (A ∘ B) ∘ C = A ∘ (B ∘ C)
 
     Example:
-        struct Sequential(Composable):
+        ```mojo
+        truct Sequential(Composable):
             var layers: List[Composable]
 
             fn compose[T: Composable](self, other: T) -> ComposedOp[Self, T]:
@@ -253,6 +263,7 @@ trait Composable(Differentiable):
 
         # Usage:
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
+        ```
     """
 
     fn compose[T: Composable](self, other: T) raises -> ExTensor:
@@ -331,7 +342,8 @@ trait Trainable:
         is_training: Check current mode.
 
     Example:
-        struct Dropout(Trainable):
+        ```mojo
+        truct Dropout(Trainable):
             var training: Bool
             var p: Float64
 
@@ -349,6 +361,7 @@ trait Trainable:
                     # Apply dropout
                 else:
                     # No dropout during inference
+        ```
     """
 
     fn train(mut self):
@@ -390,7 +403,8 @@ trait Model:
         zero_grad: Reset parameter gradients
 
     Example:
-        struct SimpleMLP(Model):
+        ```mojo
+        truct SimpleMLP(Model):
             fn forward(mut self, input: ExTensor) raises -> ExTensor:
                 # ... layer computations ...
                 return output^
@@ -400,6 +414,7 @@ trait Model:
 
             fn zero_grad(mut self) raises:
                 # Reset all gradient accumulators
+        ```
     """
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
@@ -445,10 +460,12 @@ trait Loss:
         compute: Calculate loss between predictions and targets
 
     Example:
-        struct MSELoss(Loss):
+        ```mojo
+        truct MSELoss(Loss):
             fn compute(self, pred: ExTensor, target: ExTensor) raises -> ExTensor:
                 var diff = subtract(pred, target)
                 return mean(multiply(diff, diff))
+        ```
     """
 
     fn compute(self, pred: ExTensor, target: ExTensor) raises -> ExTensor:
@@ -477,7 +494,8 @@ trait Optimizer:
         zero_grad: Reset optimizer state
 
     Example:
-        struct SGD(Optimizer):
+        ```mojo
+        truct SGD(Optimizer):
             var learning_rate: Float32
 
             fn step(mut self, params: List[ExTensor]) raises:
@@ -486,6 +504,7 @@ trait Optimizer:
 
             fn zero_grad(mut self) raises:
                 # Clear any optimizer-specific state
+        ```
     """
 
     fn step(mut self, params: List[ExTensor]) raises:

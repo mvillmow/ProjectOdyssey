@@ -37,7 +37,7 @@ fn maxpool2d(
             out_width = (width + 2*padding - kernel_size) / stride_actual + 1
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, maxpool2d
 
         # Pure function call - no state to manage
@@ -135,7 +135,7 @@ fn avgpool2d(
         Output tensor of shape (batch, channels, out_height, out_width)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, avgpool2d
 
         # Pure function call - no state to manage
@@ -226,7 +226,7 @@ fn global_avgpool2d(x: ExTensor, method: String = "direct") raises -> ExTensor:
         Output tensor of shape (batch, channels, 1, 1)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, global_avgpool2d
 
         # Pure function call
@@ -307,7 +307,7 @@ fn maxpool2d_backward(
         grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import maxpool2d, maxpool2d_backward
 
         # Forward pass
@@ -412,7 +412,7 @@ fn avgpool2d_backward(
         grad_input: Gradient w.r.t. input, shape (batch, channels, in_H, in_W)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import avgpool2d, avgpool2d_backward
 
         # Forward pass
@@ -505,7 +505,7 @@ fn global_avgpool2d_backward(
         grad_input: Gradient w.r.t. input, shape (batch, channels, height, width)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import global_avgpool2d, global_avgpool2d_backward
 
         # Forward pass

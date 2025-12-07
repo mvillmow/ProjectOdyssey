@@ -77,7 +77,8 @@ fn check_gradients(
         4. Return True if max difference < tolerance
 
     Example:
-        fn my_forward(x: ExTensor) -> ExTensor:
+        ```mojo
+        n my_forward(x: ExTensor) -> ExTensor:
             return x * x  # f(x) = x²
 
         fn my_backward(grad_out: ExTensor, x: ExTensor) -> ExTensor:
@@ -86,6 +87,7 @@ fn check_gradients(
         var x = full([3, 4], 2.0, DType.float32)
         var passed = check_gradients(my_forward, my_backward, x)
         # Should return True (2x is correct derivative of x²)
+        ```
 
     Notes:
         - Expensive: O(n) forward passes where n = input.numel()
@@ -184,10 +186,12 @@ fn check_gradients_verbose(
         True if gradients correct, False otherwise
 
     Example:
-        var passed = check_gradients_verbose(
+        ```mojo
+        ar passed = check_gradients_verbose(
             forward, backward, input,
             print_all=True  # Print all gradient comparisons
         )
+        ```
     """
     # Run standard gradient check
     var passed = check_gradients(forward_fn, backward_fn, input, epsilon, tolerance)
@@ -268,7 +272,9 @@ fn relative_error(analytical: Float64, numerical: Float64) -> Float64:
         Relative error (typically 0-1, < 0.01 is good)
 
     Example:
-        var err = relative_error(0.5, 0.501)  # Returns ~0.002 (0.2%)
+        ```mojo
+        ar err = relative_error(0.5, 0.501)  # Returns ~0.002 (0.2%)
+        ```
     """
     var numerator = abs(analytical - numerical)
     var denominator = max(
@@ -315,7 +321,8 @@ fn compute_numerical_gradient(
         Therefore: f'(x) ≈ (f(x+ε) - f(x-ε)) / 2ε  [O(ε²) error]
 
     Example:
-        # Validate ReLU gradient
+        ```mojo
+         Validate ReLU gradient
         fn relu_forward(x: ExTensor) raises -> ExTensor:
             return relu(x)
 
@@ -323,6 +330,7 @@ fn compute_numerical_gradient(
         var numerical_grad = compute_numerical_gradient(relu_forward, x)
         var analytical_grad = relu_backward(ones_like(x), x)
         assert_gradients_close(analytical_grad, numerical_grad, rtol=1e-4)
+        ```
     """
     # Create gradient tensor (same shape as input)
     var grad = zeros_like(x)
@@ -389,9 +397,11 @@ fn assert_gradients_close(
         Float64: rtol=1e-7, atol=1e-10
 
     Example:
-        var analytical = relu_backward(grad_output, x)
+        ```mojo
+        ar analytical = relu_backward(grad_output, x)
         var numerical = compute_numerical_gradient(relu, x)
         assert_gradients_close(analytical, numerical)  # Uses default tolerances
+        ```
     """
     # Check shapes match
     if analytical.numel() != numerical.numel():
@@ -490,7 +500,8 @@ fn check_gradient(
         Error: If gradients don't match within tolerance
 
     Example:
-        fn test_relu_gradient() raises:
+        ```mojo
+        n test_relu_gradient() raises:
             var x = ExTensor(List[Int](), DType.float32)
             # ... initialize x with test values ...
 
@@ -502,6 +513,7 @@ fn check_gradient(
 
             var grad_out = ones_like(relu(x))
             check_gradient(forward, backward_wrapper, x, grad_out)
+        ```
     """
     # Auto-select epsilon and atol based on dtype if not specified
     var eps = epsilon

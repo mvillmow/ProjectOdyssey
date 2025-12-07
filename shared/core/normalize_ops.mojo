@@ -15,6 +15,7 @@ Example:
     var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
     var std = (Float32(0.229), Float32(0.224), Float32(0.225))
     var normalized = normalize_rgb(images, mean, std)
+    ```
 """
 
 from .extensor import ExTensor, zeros

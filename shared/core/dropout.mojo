@@ -36,7 +36,7 @@ fn dropout(
             - mask: Binary mask showing which elements were kept (1.0) or dropped (0.0)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, dropout, dropout_backward
 
         # Training mode
@@ -122,7 +122,7 @@ fn dropout2d(
             - mask: Binary mask at channel level (batch, channels, 1, 1)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import dropout2d, dropout2d_backward
 
         # Training mode - drops entire feature maps
@@ -245,7 +245,7 @@ fn dropout_backward(
         Gradient with respect to input.
 
     Example:
-        ```mojo.
+        ```mojo
         # Forward pass
         var (output, mask) = dropout(x, p=0.5, training=True)
 
@@ -282,7 +282,7 @@ fn dropout2d_backward(
         Gradient with respect to input.
 
     Example:
-        ```mojo.
+        ```mojo
         # Forward pass
         var (output, mask) = dropout2d(x, p=0.2, training=True)
 

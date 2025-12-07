@@ -36,6 +36,7 @@ Modules:
     normalize_ops: Normalization operations for data preprocessing (RGB normalization).
 
 Example:
+   ```mojo
     from shared.core.extensor import ExTensor, zeros
     from shared.core.linear import linear
     from shared.core.activation import relu
@@ -49,6 +50,7 @@ Example:
     # Forward pass (pure functional)
     var h1 = linear(x, weights, bias)
     var a1 = relu(h1)
+    ```
 
 FIXME: Placeholder import tests in tests/shared/test_imports.mojo require:
 - test_core_imports (line 17)

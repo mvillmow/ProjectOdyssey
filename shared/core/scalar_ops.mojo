@@ -18,6 +18,7 @@ Example:
     var base = Float32(2.0)
     var exp = Float32(3.0)
     var result = pow_scalar_f32(base, exp)  # 8.0
+    ```
 """
 
 

@@ -42,7 +42,8 @@ struct EarlyStopping(Callback, Copyable, Movable):
         stopped: Whether training has been stopped.
 
     Example:
-        # For loss (minimize)
+        ```mojo
+         For loss (minimize)
         var early_stop = EarlyStopping(
             monitor="val_loss",
             patience=5,
@@ -57,6 +58,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
             min_delta=0.001,
             mode="max"
         )
+        ```
     """
 
     var monitor: String
@@ -198,7 +200,8 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         error_count: Number of failed checkpoint save attempts
 
     Example:
-        # Save every epoch
+        ```mojo
+         Save every epoch
         var checkpoint = ModelCheckpoint(
             filepath="checkpoints/model_epoch_{epoch}.pt",
             save_frequency=1
@@ -211,6 +214,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
             save_best_only=True,
             mode="min"
         )
+        ```
     """
 
     var filepath: String
@@ -367,7 +371,9 @@ struct LoggingCallback(Callback, Copyable, Movable):
         log_count: Number of times logged.
 
     Example:
-        var logger = LoggingCallback(log_interval=1)
+        ```mojo
+        ar logger = LoggingCallback(log_interval=1)
+        ```
     """
 
     var log_interval: Int

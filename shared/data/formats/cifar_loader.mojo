@@ -53,10 +53,12 @@ struct CIFARLoader(Copyable, Movable):
         bytes_per_image: Total bytes per image including label(s)
 
     Example:
-        # Load CIFAR-10 batch
+        ```mojo
+         Load CIFAR-10 batch
         var loader = CIFARLoader(10)
         var images = loader.load_images("data/data_batch_1.bin")
         var labels = loader.load_labels("data/data_batch_1.bin")
+        ```
     """
 
     var cifar_version: Int

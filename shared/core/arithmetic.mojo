@@ -26,18 +26,20 @@ fn _broadcast_binary[
 
     Args:
         dtype: Compile-time dtype parameter.
-        op: Binary operation function (e.g., add, subtract, multiply, divide)
+        op: Binary operation function (e.g., add, subtract, multiply, divide).
         a: First tensor.
         b: Second tensor.
 
-    Returns:
-        Result tensor with operation applied element-wise with broadcasting.
-
     Example:
+       ```mojo
         fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = _broadcast_binary[DType.float32, add_op](a, b)
+        ```
+
+    Returns:
+        Result tensor with operation applied element-wise with broadcasting.
     """
     # Compute broadcast shape
     var result_shape = broadcast_shapes(a.shape(), b.shape())
@@ -153,6 +155,7 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
+        ```
         var a = zeros(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
         var c = add(a, b)  # Shape (3, 4), all ones
@@ -161,6 +164,7 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
         var z = add(x, y)  # Shape (3, 4, 5)
+        ```
     """
     # Define add operation
     @always_inline
@@ -185,6 +189,7 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
+        ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
         var c = subtract(a, b)  # Shape (3, 4), all zeros
@@ -193,6 +198,7 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
         var z = subtract(x, y)  # Shape (3, 4, 5)
+        ```
     """
     # Define subtract operation
     @always_inline
@@ -216,6 +222,7 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
+        ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
         var c = multiply(a, b)  # Shape (3, 4), all 6.0
@@ -224,6 +231,7 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 2.0, DType.float32)
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = multiply(x, y)  # Shape (3, 4, 5), all 6.0
+        ```
     """
     @always_inline
     fn _mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -252,6 +260,7 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         - 0.0 / 0.0 -> NaN
 
     Examples:
+        ```
         var a = full(List[Int](), 6.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
         var c = divide(a, b)  # Shape (3, 4), all 3.0
@@ -260,6 +269,7 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 6.0, DType.float32)
         var y = full([3, 4, 5], 2.0, DType.float32)
         var z = divide(x, y)  # Shape (3, 4, 5), all 3.0
+        ```
     """
     @always_inline
     fn _div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -288,6 +298,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         - 0.0 // 0.0 -> NaN
 
     Examples:
+        ```
         var a = full(List[Int](), 7.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
         var c = floor_divide(a, b)  # Shape (3, 4), all 3.0
@@ -296,6 +307,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 7.0, DType.float32)
         var y = full([3, 4, 5], 2.0, DType.float32)
         var z = floor_divide(x, y)  # Shape (3, 4, 5), all 3.0
+        ```
     """
     @always_inline
     fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -330,6 +342,7 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
+        ```
         var a = full(List[Int](), 7.0, DType.int32)
         var b = full(List[Int](), 3.0, DType.int32)
         var c = modulo(a, b)  # Shape (3, 4), all 1
@@ -338,6 +351,7 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 7.0, DType.float32)
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = modulo(x, y)  # Shape (3, 4, 5), all 1.0
+        ```
     """
     @always_inline
     fn _mod_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -370,6 +384,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Examples:
+        ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
         var c = power(a, b)  # Shape (3, 4), all 8.0
@@ -378,6 +393,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = full([3, 1, 5], 2.0, DType.float32)
         var y = full([3, 4, 5], 3.0, DType.float32)
         var z = power(x, y)  # Shape (3, 4, 5), all 8.0
+        ```
 
     Note:
         Uses ** operator which delegates to Mojo's built-in power implementation.
@@ -411,6 +427,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
         Reduced gradient matching original_shape.
 
     Examples:
+        ```
         # Broadcasting (3, 1, 5) → (3, 4, 5)
         var grad = ones([3, 4, 5])  # Gradient from loss
         var original = [3, 1, 5]    # Original input shape
@@ -420,6 +437,7 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
         var grad2 = ones([3, 4, 5])
         var original2 = [5]
         var reduced2 = _reduce_broadcast_dims(grad2, original2)  # Shape (5,)
+        ```
     """
     from .reduction import sum
 
@@ -466,6 +484,7 @@ fn add_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gradi
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
+        ```
         # No broadcasting
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -482,6 +501,7 @@ fn add_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gradi
         var grad_z = ones(List[Int](), DType.float32)
         var grads = add_backward(grad_z, x, y)
         # grads.grad_a will be shape (3, 1) - summed over broadcast dimension
+        ```
     """
     # For addition, gradient passes through but must be reduced for broadcasting
     var grad_a = _reduce_broadcast_dims(grad_output, a.shape())
@@ -500,9 +520,9 @@ fn subtract_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
     The gradient for B is negated since ∂(A-B)/∂B = -1.
 
     Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+        grad_output: Gradient from upstream (∂L/∂C).
+        a: First input from forward pass (A).
+        b: Second input from forward pass (B).
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
@@ -538,6 +558,7 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
+        ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
         var c = multiply(a, b)
@@ -545,6 +566,7 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
         var grads = multiply_backward(grad_c, a, b)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
+        ```
     """
     # grad_a = grad_output * b (then reduce for broadcasting)
     var grad_a_unreduced = multiply(grad_output, b)
@@ -575,6 +597,7 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
+        ```
         var a = ones(List[Int](), DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
         var c = divide(a, b)
@@ -582,6 +605,7 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         var grads = divide_backward(grad_c, a, b)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
+        ```
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero in b².

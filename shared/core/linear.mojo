@@ -36,7 +36,7 @@ fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
         Output tensor of shape (batch_size, out_features)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, linear, zeros, xavier_uniform
 
         # Caller manages state
@@ -102,7 +102,7 @@ fn linear_backward(
             - grad_bias: Gradient w.r.t. bias, shape (out_features,)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, linear, linear_backward
 
         # Forward pass

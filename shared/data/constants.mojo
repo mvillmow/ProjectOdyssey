@@ -18,6 +18,7 @@ Example:
     var info = DatasetInfo("cifar10")
     var num_classes = info.num_classes()
     var class_name = info.class_name(0)
+    ```
 """
 
 from collections import List
@@ -260,11 +261,13 @@ struct DatasetInfo(Copyable, Movable):
         dataset_name: Name of the dataset (e.g., "cifar10", "emnist_balanced")
 
     Example:
-        var info = DatasetInfo("cifar10")
+        ```mojo
+        ar info = DatasetInfo("cifar10")
         var num_classes = info.num_classes()           # Returns 10
         var shape = info.image_shape()                 # Returns [3, 32, 32]
         var class_name = info.class_name(0)           # Returns "airplane"
         var classes = info.class_names()              # Returns List of all 10 classes
+        ```
     """
 
     var dataset_name: String
@@ -490,7 +493,9 @@ struct DatasetInfo(Copyable, Movable):
             Description string including dataset name, number of classes, and image shape.
 
         Example:
-            "CIFAR-10: 10 classes, image shape [3, 32, 32]"
+            ```mojo
+            CIFAR-10: 10 classes, image shape [3, 32, 32]"
+        ```
         """
         var shape = self.image_shape()
         var description = self.dataset_name + ": " + String(self.num_classes()) + " classes, image shape ["

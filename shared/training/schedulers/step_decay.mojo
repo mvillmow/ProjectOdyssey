@@ -7,11 +7,13 @@ Formula:
     lr = initial_lr * (gamma ** (epoch // step_size))
 
 Example:
+    ```mojo
     initial_lr = 0.1, step_size = 30, gamma = 0.1
     - Epochs 0-29: lr = 0.1
     - Epochs 30-59: lr = 0.01
     - Epochs 60-89: lr = 0.001
     - Epochs 90+: lr = 0.0001
+    ```
 
 This scheduler is commonly used in:
 - AlexNet (decay by 10x every 30 epochs)
@@ -38,7 +40,7 @@ fn step_lr(
         Decayed learning rate for current epoch.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.training.schedulers import step_lr
 
         var initial_lr = Float32(0.01)
@@ -96,7 +98,7 @@ fn multistep_lr(
         Decayed learning rate for current epoch.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.training.schedulers import multistep_lr
 
         var initial_lr = Float32(0.1)
@@ -153,7 +155,7 @@ fn exponential_lr(
         Decayed learning rate for current epoch.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.training.schedulers import exponential_lr
 
         var initial_lr = Float32(0.1)
@@ -194,7 +196,7 @@ fn constant_lr(initial_lr: Float32, epoch: Int) -> Float32:
         Constant learning rate.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.training.schedulers import constant_lr
 
         var initial_lr = Float32(0.01)

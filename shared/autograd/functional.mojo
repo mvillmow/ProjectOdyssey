@@ -13,6 +13,7 @@ Each helper function computes gradients for a specific loss + reduction pattern.
 This covers 90% of real use cases without the complexity of full autograd.
 
 Example:
+   ```mojo
     from shared.autograd.functional import mse_loss_and_grad, multiply_scalar
 
     # Compute loss and gradient in one call
@@ -20,6 +21,7 @@ Example:
 
     # Apply gradient with scalar learning rate
     parameters = subtract(parameters, multiply_scalar(result.grad, 0.01))
+    ```
 
 Common Patterns Supported:
 - MSE loss + mean reduction

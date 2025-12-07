@@ -14,6 +14,7 @@ Example:
     # Get memory usage
     var mem = memory_usage()
     print("Memory: " + String(mem.allocated_mb()) + "MB / " + String(mem.peak_mb()) + "MB")
+    ```
 """
 
 import time as mojo_time
@@ -209,7 +210,8 @@ struct Timer(Copyable, Movable):
     Can be used standalone or in a with statement.
 
     Example:
-        # Basic usage with print.
+        ```mojo
+         Basic usage with print.
         with Timer("forward_pass"):
             var output = model.forward(inputs)
         # Output: forward_pass: 0.0234s
@@ -217,6 +219,7 @@ struct Timer(Copyable, Movable):
         # Without auto-print
         var timer = Timer("epoch")
         var elapsed = timer.elapsed_ms()
+        ```
     """
 
     var name: String
@@ -285,9 +288,11 @@ fn memory_usage() -> MemoryStats:
         Memory statistics.
 
     Example:
-        var mem = memory_usage()
+        ```mojo
+        ar mem = memory_usage()
         print("Allocated: " + String(mem.allocated_mb()) + "MB")
         print("Peak: " + String(mem.peak_mb()) + "MB")
+        ```
     """
     var stats = MemoryStats()
     # Note: Mojo doesn't have direct memory introspection APIs yet

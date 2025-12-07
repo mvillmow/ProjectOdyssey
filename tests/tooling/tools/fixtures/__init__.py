@@ -119,7 +119,8 @@ def create_sample_tool_structure(base_path: Path, tool_name: str) -> Dict[str, P
         Dictionary mapping structure element names to their paths
 
     Example:
-        >>> tool_paths = create_sample_tool_structure(
+        ```mojo
+        >> tool_paths = create_sample_tool_structure(
         ...     Path("/tmp/test"),
         ...     "my-tool"
         ... )
@@ -127,6 +128,7 @@ def create_sample_tool_structure(base_path: Path, tool_name: str) -> Dict[str, P
         Path("/tmp/test/my-tool")
         >>> tool_paths["readme"]
         Path("/tmp/test/my-tool/README.md")
+        ```
     """
     # Create tool root directory
     tool_root = base_path / tool_name

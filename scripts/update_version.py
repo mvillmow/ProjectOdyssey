@@ -10,7 +10,9 @@ Usage:
     python3 scripts/update_version.py <new_version>
 
 Example:
+    ```python
     python3 scripts/update_version.py 0.2.0
+    ```
 """
 
 import argparse

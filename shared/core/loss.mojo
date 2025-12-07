@@ -53,10 +53,12 @@ fn binary_cross_entropy(
         Error if shapes don't match or dtypes are incompatible.
 
     Example:
-        var predictions = sigmoid(logits)  # (batch_size,)
+        ```mojo
+        ar predictions = sigmoid(logits)  # (batch_size,)
         var targets = ... # (batch_size,) with values 0 or 1
         var loss_per_sample = binary_cross_entropy(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
+        ```
 
     Numerical Stability:
         - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
@@ -120,7 +122,8 @@ fn binary_cross_entropy_backward(
         Gradient with respect to predictions, same shape as predictions.
 
     Example:
-        # Forward
+        ```mojo
+         Forward
         var bce_loss = binary_cross_entropy(predictions, targets)
         var loss = mean(bce_loss)
 
@@ -128,6 +131,7 @@ fn binary_cross_entropy_backward(
         var grad_loss = ones_like(loss)
         var grad_bce = mean_backward(grad_loss, bce_loss)
         var grad_pred = binary_cross_entropy_backward(grad_bce, predictions, targets)
+        ```
     """
     # Gradient formula: (p - y) / (p(1-p) + epsilon)
     var one = ones_like(predictions)
@@ -175,10 +179,12 @@ fn mean_squared_error(predictions: ExTensor, targets: ExTensor) raises -> ExTens
         Error if shapes don't match or dtypes are incompatible.
 
     Example:
-        var predictions = model(x)  # (batch_size, output_dim)
+        ```mojo
+        ar predictions = model(x)  # (batch_size, output_dim)
         var targets = y_true        # (batch_size, output_dim)
         var loss_per_sample = mean_squared_error(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss
+        ```
     """
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
@@ -210,7 +216,8 @@ fn mean_squared_error_backward(
         Gradient with respect to predictions, same shape as predictions.
 
     Example:
-        # Forward.
+        ```mojo
+         Forward.
         var squared_error = mean_squared_error(predictions, targets)
         var loss = mean(squared_error)
 
@@ -218,6 +225,7 @@ fn mean_squared_error_backward(
         var grad_loss = ones_like(loss)
         var grad_squared_error = mean_backward(grad_loss, squared_error)
         var grad_pred = mean_squared_error_backward(grad_squared_error, predictions, targets)
+        ```
     """
     # Gradient: 2 * (predictions - targets)
     var diff = subtract(predictions, targets)
@@ -255,14 +263,16 @@ fn cross_entropy(
         Error if shapes don't match or dtypes are incompatible.
 
     Example:
-        var logits = model(x)           # (batch_size, num_classes)
+        ```mojo
+        ar logits = model(x)           # (batch_size, num_classes)
         var targets_onehot = ...        # (batch_size, num_classes) one-hot
         var loss_per_sample = cross_entropy(logits, targets_onehot)
         var loss = mean(loss_per_sample)  # Scalar loss
+        ```
 
     Note:
         For efficiency, this does NOT compute softmax explicitly.
-        Instead, it uses: CE = -sum(targets * (logits - log_sum_exp(logits)))
+        Instead, it uses: CE = -sum(targets * (logits - log_sum_exp(logits))).
 
     Numerical Stability:
         - Uses log-sum-exp trick to prevent overflow/underflow
@@ -335,7 +345,7 @@ fn cross_entropy_backward(
         Gradient with respect to logits, shape (batch, num_classes)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import cross_entropy, cross_entropy_backward
 
         # Forward pass
@@ -399,10 +409,12 @@ fn smooth_l1_loss(
         Error if shapes don't match or dtypes are incompatible.
 
     Example:
-        var predictions = model(x)  # (batch_size, output_dim)
+        ```mojo
+        ar predictions = model(x)  # (batch_size, output_dim)
         var targets = y_true        # (batch_size, output_dim)
         var loss_per_sample = smooth_l1_loss(predictions, targets, beta=1.0)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
+        ```
 
     Numerical Stability:
         - Uses absolute value for robust handling of differences
@@ -472,7 +484,8 @@ fn smooth_l1_loss_backward(
         Gradient with respect to predictions, same shape as predictions.
 
     Example:
-        # Forward
+        ```mojo
+         Forward
         var smoothl1_loss = smooth_l1_loss(predictions, targets, beta=1.0)
         var loss = mean(smoothl1_loss)
 
@@ -480,6 +493,7 @@ fn smooth_l1_loss_backward(
         var grad_loss = ones_like(loss)
         var grad_smoothl1 = mean_backward(grad_loss, smoothl1_loss)
         var grad_pred = smooth_l1_loss_backward(grad_smoothl1, predictions, targets, beta=1.0)
+        ```
     """
     if grad_output.dtype() != predictions.dtype():
         raise Error("smooth_l1_loss_backward: grad_output and predictions must have same dtype")
@@ -544,10 +558,12 @@ fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
         Error if shapes don't match or dtypes are incompatible.
 
     Example:
-        var predictions = model(x)  # (batch_size,) or (batch_size, 1)
+        ```mojo
+        ar predictions = model(x)  # (batch_size,) or (batch_size, 1)
         var targets = y_true        # (batch_size,) with values -1 or 1
         var loss_per_sample = hinge_loss(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
+        ```
 
     Note:
         Hinge loss is typically used with hard labels (-1 or 1) rather than
@@ -606,7 +622,8 @@ fn hinge_loss_backward(
         Gradient with respect to predictions, same shape as predictions.
 
     Example:
-        # Forward
+        ```mojo
+         Forward
         var hinge = hinge_loss(predictions, targets)
         var loss = mean(hinge)
 
@@ -614,6 +631,7 @@ fn hinge_loss_backward(
         var grad_loss = ones_like(loss)
         var grad_hinge = mean_backward(grad_loss, hinge)
         var grad_pred = hinge_loss_backward(grad_hinge, predictions, targets)
+        ```
     """
     if grad_output.dtype() != predictions.dtype():
         raise Error("hinge_loss_backward: grad_output and predictions must have same dtype")
@@ -673,10 +691,12 @@ fn focal_loss(
         Error if shapes don't match or dtypes are incompatible
 
     Example:
-        var predictions = sigmoid(logits)  # (batch_size,)
+        ```mojo
+        ar predictions = sigmoid(logits)  # (batch_size,)
         var targets = ...  # (batch_size,) with values 0 or 1
         var loss_per_sample = focal_loss(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss
+        ```
 
     Numerical Stability:
         - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
@@ -758,7 +778,8 @@ fn focal_loss_backward(
         Gradient with respect to predictions, same shape as predictions
 
     Example:
-        # Forward
+        ```mojo
+         Forward
         var focal = focal_loss(predictions, targets, alpha, gamma)
         var loss = mean(focal)
 
@@ -766,6 +787,7 @@ fn focal_loss_backward(
         var grad_loss = ones_like(loss)
         var grad_focal = mean_backward(grad_loss, focal)
         var grad_pred = focal_loss_backward(grad_focal, predictions, targets, alpha, gamma)
+        ```
     """
     var epsilon = 1e-7
 
@@ -867,11 +889,13 @@ fn kl_divergence(p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7) raises -> Ex
         Error if shapes don't match or dtypes are incompatible
 
     Example:
-        var p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
+        ```mojo
+        ar p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
         var q_dist = softmax(predictions_logits, axis=1)  # (batch_size, num_classes)
         var kl_per_element = kl_divergence(p_dist, q_dist)  # (batch_size, num_classes)
         var loss_per_sample = sum(kl_per_element, axis=1)  # (batch_size,)
         var loss = mean(loss_per_sample)  # Scalar loss
+        ```
 
     Note:
         This implementation assumes inputs are already probabilities (sum to 1).
@@ -926,7 +950,8 @@ fn kl_divergence_backward(
         Gradient with respect to q, same shape as q
 
     Example:
-        # Forward
+        ```mojo
+         Forward
         var kl_per_element = kl_divergence(p_dist, q_dist)
         var loss_per_sample = sum(kl_per_element, axis=1)
         var loss = mean(loss_per_sample)
@@ -936,6 +961,7 @@ fn kl_divergence_backward(
         var grad_per_sample = mean_backward(grad_loss, loss_per_sample)
         var grad_per_element = sum_backward(grad_per_sample, kl_per_element)
         var grad_q = kl_divergence_backward(grad_per_element, p_dist, q_dist)
+        ```
     """
     # Clip q to prevent division by zero
     var clipped_q = clip(q, epsilon, 1.0)

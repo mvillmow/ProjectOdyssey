@@ -27,6 +27,7 @@ Example:
         var model = create_linear_model(784, 10)
         assert_equal(model.in_features, 784)
         assert_equal(model.out_features, 10)
+    ```
 """
 
 from shared.core import ExTensor, zeros, ones, full, zeros_like
@@ -51,12 +52,14 @@ fn create_test_cnn(
         Test CNN instance
 
     Example:
-        var model = create_test_cnn(1, 8, 10)
+        ```mojo
+        ar model = create_test_cnn(1, 8, 10)
         assert_equal(model.num_classes, 10)
 
         # Create custom channel configuration
         var custom_model = create_test_cnn(3, 32, 1000)
         assert_equal(custom_model.in_channels, 3)
+        ```
     """
     return SimpleCNN(in_channels, out_channels, num_classes)
 
@@ -74,12 +77,14 @@ fn create_linear_model(in_features: Int = 784, out_features: Int = 10) -> Linear
         Linear model instance
 
     Example:
-        var model = create_linear_model(784, 10)
+        ```mojo
+        ar model = create_linear_model(784, 10)
         assert_equal(model.out_features, 10)
 
         # Create custom dimensions
         var large_model = create_linear_model(2048, 1024)
         assert_equal(large_model.in_features, 2048)
+        ```
     """
     return LinearModel(in_features, out_features)
 
@@ -102,9 +107,11 @@ fn create_test_input(
         Input tensor (batch_size, in_features) filled with 1.0
 
     Example:
-        var input = create_test_input(32, 784)
+        ```mojo
+        ar input = create_test_input(32, 784)
         assert_equal(input._shape[0], 32)
         assert_equal(input._shape[1], 784)
+        ```
     """
     var shape = List[Int]()
     shape.append(batch_size)
@@ -130,8 +137,10 @@ fn create_test_targets(
         Target tensor (batch_size,) filled with 0
 
     Example:
-        var targets = create_test_targets(32, 10)
+        ```mojo
+        ar targets = create_test_targets(32, 10)
         assert_equal(targets._shape[0], 32)
+        ```
     """
     var shape = List[Int]()
     shape.append(batch_size)
@@ -149,8 +158,10 @@ fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
         True if shapes match, False otherwise
 
     Example:
-        var tensor = ones(List[Int](32, 10), DType.float32)
+        ```mojo
+        ar tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_shape(tensor, List[Int](32, 10)))
+        ```
     """
     if len(tensor._shape) != len(expected_shape):
         return False
@@ -173,8 +184,10 @@ fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
         True if dtypes match, False otherwise
 
     Example:
-        var tensor = ones(List[Int](32, 10), DType.float32)
+        ```mojo
+        ar tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_dtype(tensor, DType.float32))
+        ```
     """
     return tensor._dtype == expected_dtype
 
@@ -189,8 +202,10 @@ fn assert_tensor_all_finite(tensor: ExTensor) -> Bool:
         True if all values are finite, False if any NaN/Inf found
 
     Example:
-        var tensor = ones(List[Int](32, 10), DType.float32)
+        ```mojo
+        ar tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_all_finite(tensor))
+        ```
     """
     for i in range(tensor.numel()):
         var val = tensor._get_float64(i)
@@ -216,8 +231,10 @@ fn assert_tensor_not_all_zeros(tensor: ExTensor) -> Bool:
         True if at least one non-zero value exists, False if all zeros
 
     Example:
-        var tensor = ones(List[Int](32, 10), DType.float32)
+        ```mojo
+        ar tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_not_all_zeros(tensor))
+        ```
     """
     for i in range(tensor.numel()):
         if tensor._get_float64(i) != 0.0:

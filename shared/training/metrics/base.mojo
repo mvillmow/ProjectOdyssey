@@ -110,7 +110,8 @@ struct MetricCollection(Sized):
     - Name-based metric access
 
     Example:
-        var metrics = MetricCollection()
+        ```mojo
+        ar metrics = MetricCollection()
         metrics.add("accuracy", AccuracyMetric())
         metrics.add("loss", LossTracker(window_size=100))
 
@@ -123,6 +124,7 @@ struct MetricCollection(Sized):
         print("Loss:", results.get("loss"))
 
         metrics.reset_all()  # Start new epoch
+        ```
     """
     var metric_names: List[String]
     var num_metrics: Int

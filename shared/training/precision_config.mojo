@@ -100,7 +100,8 @@ struct PrecisionConfig(Copyable, Movable):
         scaler: GradientScaler for loss/gradient scaling
 
     Example:
-        # Create config for mixed precision training
+        ```mojo
+         Create config for mixed precision training
         var config = PrecisionConfig.fp16()
 
         # Cast input to compute precision
@@ -111,6 +112,7 @@ struct PrecisionConfig(Copyable, Movable):
 
         # Scale loss before backward pass
         var scaled_loss = config.scale_loss(loss)
+        ```
     """
     var mode: PrecisionMode
     var compute_dtype: DType

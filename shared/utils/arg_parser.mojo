@@ -19,6 +19,7 @@ Example:
     var learning_rate = args.get_float("lr")
     var output_path = args.get_string("output")
     var verbose = args.get_bool("verbose")
+    ```
 """
 
 from sys import argv
@@ -172,12 +173,14 @@ struct ArgumentParser(Copyable, Movable):
     then parsed from sys.argv with parse().
 
     Example:
-        var parser = ArgumentParser()
+        ```mojo
+        ar parser = ArgumentParser()
         parser.add_argument("epochs", "int", "100")
         parser.add_flag("verbose")
         var args = parser.parse()
         var epochs = args.get_int("epochs")
         var verbose = args.get_bool("verbose")
+        ```
     """
 
     var arguments: Dict[String, ArgumentSpec]
