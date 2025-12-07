@@ -251,7 +251,7 @@ struct Timer(Copyable, Movable):
 
     fn _get_time_ns(self) -> Int:
         """Get current time in nanoseconds."""
-        return perf_counter_ns()
+        return Int(perf_counter_ns())
 
     fn elapsed_ms(self) -> Float32:
         """Get elapsed time in milliseconds."""
