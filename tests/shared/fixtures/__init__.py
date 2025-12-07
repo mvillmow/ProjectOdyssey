@@ -39,10 +39,12 @@ def temp_dir() -> Generator[Path, None, None]:
         Path to temporary directory.
 
     Example:
-        def test_config_loading(temp_dir):
+        ```mojo
+        ef test_config_loading(temp_dir):
             config_path = temp_dir / "config.yaml"
             config_path.write_text("key: value")
             # Directory cleaned up automatically after test
+        ```
     """
     with tempfile.TemporaryDirectory(prefix="ml_odyssey_test_") as tmpdir:
         yield Path(tmpdir)
@@ -59,9 +61,11 @@ def mock_config_file(temp_dir: Path) -> callable:
         Function to create config files.
 
     Example:
-        def test_yaml_loading(mock_config_file):
+        ```mojo
+        ef test_yaml_loading(mock_config_file):
             config_path = mock_config_file("config.yaml", {"key": "value"})
             # Load and test config
+        ```
     """
 
     def _create_config(filename: str, content: Dict) -> Path:
@@ -101,9 +105,11 @@ def mock_text_file(temp_dir: Path) -> callable:
         Function to create text files.
 
     Example:
-        def test_file_reading(mock_text_file):
+        ```mojo
+        ef test_file_reading(mock_text_file):
             file_path = mock_text_file("data.txt", ["line1", "line2"])
             # Read and test file
+        ```
     """
 
     def _create_text_file(filename: str, lines: List[str]) -> Path:
@@ -139,8 +145,10 @@ def validate_markdown_links(file_path: Path) -> List[str]:
         List of broken link descriptions (empty if all valid).
 
     Example:
-        broken_links = validate_markdown_links(Path("README.md"))
+        ```mojo
+        roken_links = validate_markdown_links(Path("README.md"))
         assert len(broken_links) == 0, f"Broken links: {broken_links}"
+        ```
     """
     import re
 
@@ -201,8 +209,10 @@ def validate_markdown_code_blocks(file_path: Path) -> List[str]:
         List of validation errors (empty if all valid).
 
     Example:
-        errors = validate_markdown_code_blocks(Path("README.md"))
+        ```mojo
+        rrors = validate_markdown_code_blocks(Path("README.md"))
         assert len(errors) == 0, f"Code block errors: {errors}"
+        ```
     """
     errors = []
     content = file_path.read_text()
@@ -273,7 +283,8 @@ def validate_directory_structure(
         List of validation errors (empty if valid).
 
     Example:
-        expected = {
+        ```mojo
+        xpected = {
             "README.md": None,
             "src": {
                 "__init__.py": None,
@@ -281,6 +292,7 @@ def validate_directory_structure(
             }
         }
         errors = validate_directory_structure(Path("project"), expected)
+        ```
     """
     errors = []
 
@@ -321,7 +333,9 @@ def find_files_by_pattern(root_dir: Path, pattern: str) -> List[Path]:
         List of matching file paths.
 
     Example:
-        mojo_files = find_files_by_pattern(Path("src"), "**/*.mojo")
+        ```mojo
+        ojo_files = find_files_by_pattern(Path("src"), "**/*.mojo")
+        ```
     """
     return list(root_dir.glob(pattern))
 
@@ -341,8 +355,10 @@ def validate_yaml_file(file_path: Path) -> Optional[str]:
         Error message if invalid, None if valid.
 
     Example:
-        error = validate_yaml_file(Path("config.yaml"))
+        ```mojo
+        rror = validate_yaml_file(Path("config.yaml"))
         assert error is None, f"YAML validation failed: {error}"
+        ```
     """
     try:
         with open(file_path, "r") as f:
@@ -364,8 +380,10 @@ def validate_json_file(file_path: Path) -> Optional[str]:
         Error message if invalid, None if valid.
 
     Example:
-        error = validate_json_file(Path("config.json"))
+        ```mojo
+        rror = validate_json_file(Path("config.json"))
         assert error is None, f"JSON validation failed: {error}"
+        ```
     """
     try:
         with open(file_path, "r") as f:
@@ -389,8 +407,10 @@ def get_fixtures_dir() -> Path:
         Path to tests/shared/fixtures/ directory.
 
     Example:
-        fixtures_dir = get_fixtures_dir()
+        ```mojo
+        ixtures_dir = get_fixtures_dir()
         sample_data = fixtures_dir / "images" / "sample.png"
+        ```
     """
     # Find fixtures directory relative to this file
     return Path(__file__).parent
@@ -406,7 +426,9 @@ def get_test_data_path(filename: str) -> Path:
         Full path to test data file.
 
     Example:
-        image_path = get_test_data_path("images/sample.png")
+        ```mojo
+        mage_path = get_test_data_path("images/sample.png")
+        ```
     """
     return get_fixtures_dir() / filename
 
@@ -418,8 +440,10 @@ def create_sample_yaml_config() -> Dict:
         Dictionary with sample configuration.
 
     Example:
-        config = create_sample_yaml_config()
+        ```mojo
+        onfig = create_sample_yaml_config()
         yaml_str = yaml.dump(config)
+        ```
     """
     return {
         "model": {
@@ -442,8 +466,10 @@ def create_sample_json_config() -> Dict:
         Dictionary with sample configuration.
 
     Example:
-        config = create_sample_json_config()
+        ```mojo
+        onfig = create_sample_json_config()
         json_str = json.dumps(config, indent=2)
+        ```
     """
     return create_sample_yaml_config()  # Same structure
 
@@ -464,7 +490,9 @@ def assert_files_equal(file1: Path, file2: Path):
         AssertionError if files differ.
 
     Example:
-        assert_files_equal(expected_output, actual_output)
+        ```mojo
+        ssert_files_equal(expected_output, actual_output)
+        ```
     """
     content1 = file1.read_text()
     content2 = file2.read_text()
@@ -489,7 +517,9 @@ def assert_file_contains(file_path: Path, expected_content: str):
         AssertionError if content not found.
 
     Example:
-        assert_file_contains(log_file, "Training completed")
+        ```mojo
+        ssert_file_contains(log_file, "Training completed")
+        ```
     """
     content = file_path.read_text()
     assert expected_content in content, (

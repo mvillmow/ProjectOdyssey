@@ -25,11 +25,13 @@ fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
         Error: If tensor is empty or conversion is not supported.
 
     Example:
-        # Convert FP32 to FP16.
+        ```mojo
+         Convert FP32 to FP16.
         var fp16_tensor = cast_tensor(fp32_tensor, DType.float16)
 
         # Convert FP16 back to FP32
         var fp32_tensor = cast_tensor(fp16_tensor, DType.float32)
+        ```
     """
     # Validate input
     if tensor._numel == 0:
@@ -107,9 +109,11 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
         Error: If tensor is empty.
 
     Example:
-        var fp32_params = ExTensor.randn((1000, 1000), DType.float32)
+        ```mojo
+        ar fp32_params = ExTensor.randn((1000, 1000), DType.float32)
         var bf16_params = cast_to_bfloat16(fp32_params)
         # bf16_params.dtype() == DType.uint16
+        ```
     """
     if tensor._numel == 0:
         raise Error("Cannot convert empty tensor to BFloat16")
@@ -143,8 +147,10 @@ fn cast_from_bfloat16(tensor: ExTensor, target_dtype: DType = DType.float32) rai
         Error: If tensor is not uint16 or target is not floating point.
 
     Example:
-        var bf16_params = cast_to_bfloat16(fp32_params)
+        ```mojo
+        ar bf16_params = cast_to_bfloat16(fp32_params)
         var fp32_params = cast_from_bfloat16(bf16_params)
+        ```
     """
     if tensor.dtype() != DType.uint16:
         raise Error("Expected uint16 tensor for BFloat16 storage, got: " + String(tensor.dtype()))
@@ -181,7 +187,9 @@ fn get_dtype_size(dtype: DType) -> Int:
         Size in bytes.
 
     Example:
-        var size = get_dtype_size(DType.float16)  # 2.
+        ```mojo
+        ar size = get_dtype_size(DType.float16)  # 2.
+        ```
     """
     if dtype == DType.float16:
         return 2
@@ -211,9 +219,11 @@ fn is_floating_dtype(dtype: DType) -> Bool:
         True if floating point dtype.
 
     Example:
-        if is_floating_dtype(tensor.dtype()):
+        ```mojo
+        f is_floating_dtype(tensor.dtype()):
             # Can use floating point operations
             var scaled = tensor * 0.5
+        ```
     """
     return (dtype == DType.float16 or
             dtype == DType.float32 or
@@ -230,9 +240,11 @@ fn is_integer_dtype(dtype: DType) -> Bool:
         True if integer dtype.
 
     Example:
-        if is_integer_dtype(tensor.dtype()):
+        ```mojo
+        f is_integer_dtype(tensor.dtype()):
             # Integer tensor - no fractional values
             pass
+        ```
     """
     return (dtype == DType.int8 or dtype == DType.int16 or
             dtype == DType.int32 or dtype == DType.int64 or

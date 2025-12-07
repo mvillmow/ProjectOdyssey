@@ -35,9 +35,11 @@ def matrix_multiply(a: ExTensor, b: ExTensor) -> ExTensor:
         ValueError: If matrix dimensions don't align for multiplication
 
     Example:
-        >>> a = ExTensor([[1, 2], [3, 4]], DType.float32)
+        ```mojo
+        >> a = ExTensor([[1, 2], [3, 4]], DType.float32)
         >>> b = ExTensor([[1, 0], [0, 1]], DType.float32)
         >>> c = matrix_multiply(a, b)
+        ```
     """
     ...
 ```

@@ -39,6 +39,7 @@ Example:
 
     # Load weights
     load_model_weights(model, "checkpoints/epoch_10/")
+    ```
 """
 
 from shared.core.extensor import ExTensor
@@ -66,7 +67,8 @@ fn save_model_weights(parameters: List[ExTensor], directory: String, param_names
         Error: If directory creation fails or file write fails
 
     Example:
-        var params = List[ExTensor]()
+        ```mojo
+        ar params = List[ExTensor]()
         params.append(model.conv1_kernel)
         params.append(model.fc1_weights)
 
@@ -75,6 +77,7 @@ fn save_model_weights(parameters: List[ExTensor], directory: String, param_names
         names.append("fc1_weights")
 
         save_model_weights(params, "checkpoint/", names)
+        ```
     """
     from shared.utils.io import create_directory
 
@@ -107,7 +110,8 @@ fn load_model_weights(mut parameters: List[ExTensor], directory: String, param_n
         Error: If directory doesn't exist, file format is invalid, or shape mismatch
 
     Example:
-        var params = List[ExTensor]()
+        ```mojo
+        ar params = List[ExTensor]()
         var names = List[String]()
         names.append("conv1_kernel")
         names.append("fc1_weights")
@@ -115,6 +119,7 @@ fn load_model_weights(mut parameters: List[ExTensor], directory: String, param_n
         load_model_weights(params, "checkpoint/", names)
 
         # params is now populated with loaded tensors
+        ```
     """
     # Clear existing parameters
     while len(parameters) > 0:
@@ -143,8 +148,10 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
         Parameter names must match the struct field names in each model.mojo file.
 
     Example:
-        var names = get_model_parameter_names("lenet5")
+        ```mojo
+        ar names = get_model_parameter_names("lenet5")
         # Returns: ["conv1_kernel", "conv1_bias", "conv2_kernel", "conv2_bias", ...]
+        ```
     """
     if model_type == "lenet5":
         var names = List[String]()
@@ -276,7 +283,9 @@ fn validate_shapes(loaded: List[ExTensor], expected: List[ExTensor]) raises:
         Error: If any tensor shapes don't match
 
     Example:
-        validate_shapes(loaded_params, model.get_parameters())
+        ```mojo
+        alidate_shapes(loaded_params, model.get_parameters())
+        ```
     """
     if len(loaded) != len(expected):
         raise Error("Parameter count mismatch: " + String(len(loaded)) +

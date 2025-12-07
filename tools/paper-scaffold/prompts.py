@@ -245,11 +245,13 @@ class InteractivePrompter:
             Dictionary of complete metadata
 
         Example:
-            >>> prompter = InteractivePrompter()
+            ```mojo
+            >> prompter = InteractivePrompter()
             >>> metadata = prompter.collect_metadata()
             >>> # User is prompted for all fields
             >>> metadata = prompter.collect_metadata(existing={'paper': 'LeNet-5'})
             >>> # User is only prompted for missing fields
+        ```
         """
         if not self.quiet:
             print("\n" + "=" * 60)

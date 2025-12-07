@@ -5,6 +5,7 @@ timing measurements, warmup iterations, and statistical analysis (mean, std dev,
 percentiles, throughput).
 
 Example:
+   ```mojo
     from shared.benchmarking import benchmark_function, print_benchmark_report
 
     fn compute_operation():
@@ -13,6 +14,7 @@ Example:
     var config = BenchmarkConfig(warmup_iters=10, measure_iters=100)
     var result = benchmark_function(compute_operation, config)
     print_benchmark_report(result, "Expensive Operation")
+    ```
 """
 
 from time import perf_counter_ns
@@ -192,11 +194,13 @@ fn benchmark_function(
         Error if benchmarking fails
 
     Example:
+       ```mojo
         fn expensive_op():
             _ = compute_something()
 
         var result = benchmark_function(expensive_op, warmup_iters=10, measure_iters=100)
         print("Mean latency:", result.mean_latency_ms, "ms")
+        ```
     """
     # Warmup iterations - warm up CPU cache, JIT compilation, etc.
     for _ in range(warmup_iters):
@@ -286,6 +290,7 @@ struct BenchmarkRunner(Movable):
     performance analysis and percentile computation.
 
     Example:
+       ```mojo
         var runner = BenchmarkRunner("operation", warmup_iters=10)
         for _ in range(100):
             var start = now()
@@ -294,6 +299,7 @@ struct BenchmarkRunner(Movable):
             runner.record_iteration(end - start)
 
         var stats = runner.compute_stats()
+        ```
     """
 
     var name: String

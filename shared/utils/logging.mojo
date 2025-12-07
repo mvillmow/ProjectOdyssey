@@ -14,6 +14,7 @@ Example:
     logger.info("Training started")
     logger.warning("High loss detected")
     logger.error("Validation failed")
+    ```
 """
 
 
@@ -346,7 +347,9 @@ fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
         Logger with specified name and level.
 
     Example:
-        var logger = get_logger("training")
+        ```mojo
+        ar logger = get_logger("training")
         logger.info("Training started")
+        ```
     """
     return Logger(name, level)

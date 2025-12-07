@@ -17,6 +17,7 @@ Example:
     var transform = RandomHorizontalFlip(p=0.5)
     if transform.should_apply():
         # Apply horizontal flip logic
+    ```
 """
 
 from random import random_si64
@@ -54,9 +55,11 @@ struct RandomTransformBase(Copyable, Movable):
         p: Probability of applying the transform (0.0 to 1.0).
 
     Example:
-        var base = RandomTransformBase(0.5)
+        ```mojo
+        ar base = RandomTransformBase(0.5)
         if base.should_apply():
             # Apply the transform
+        ```
     """
 
     var p: Float64

@@ -154,7 +154,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             value: Integer literal to convert
 
         Example:
-            var x: ExTensor = 42  # Implicit conversion from IntLiteral
+            ```mojo
+            ar x: ExTensor = 42  # Implicit conversion from IntLiteral
+        ```
+        ```
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -179,7 +182,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             value: Float literal to convert
 
         Example:
-            var x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
+            ```mojo
+            ar x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
+        ```
+        ```
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -203,8 +209,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Args:
             value: Int value to convert
 
-        Example:
-            var x: ExTensor = Int(42)
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -229,7 +233,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             value: Float64 value to convert
 
         Example:
-            var x: ExTensor = Float64(3.14)
+            ```mojo
+            ar x: ExTensor = Float64(3.14)
+        ```
         """
         # Initialize scalar tensor (0D shape)
         self._shape = List[Int]()
@@ -251,8 +257,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             data: List of Float32 values
 
         Example:
-            var values = List[Float32](1.0, 2.0, 3.0)
+            ```mojo
+            ar values = List[Float32](1.0, 2.0, 3.0)
             var tensor = ExTensor(values)
+        ```
+        ```
         """
         var shape = List[Int]()
         shape.append(len(data))
@@ -293,8 +302,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             data: List of Int values
 
         Example:
-            var values = List[Int](1, 2, 3)
+            ```mojo
+            ar values = List[Int](1, 2, 3)
             var tensor = ExTensor(values)
+        ```
+        ```
         """
         var shape = List[Int]()
         shape.append(len(data))
@@ -486,8 +498,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             Error: If the total number of elements doesn't match
 
         Example:
-            var t = zeros(List[Int](2, 3), DType.float32)
+            ```mojo
+            ar t = zeros(List[Int](2, 3), DType.float32)
             var reshaped = t.reshape(List[Int](6))  # (2, 3) -> (6,)
+        ```
+        ```
         """
         # Verify total elements match
         var new_numel = 1
@@ -537,11 +552,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         Raises:
             Error: If indices are out of bounds or axis is invalid
 
-        Example:
-            ```mojo
-            # Extract batch 0-32 from (112800, 1, 28, 28)
-            var batch = dataset.slice(0, 32, axis=0)  # Returns (32, 1, 28, 28)
-            ```
+    Example:
+        ```mojo
+        # Extract batch 0-32 from (112800, 1, 28, 28)
+        var batch = dataset.slice(0, 32, axis=0)  # Returns (32, 1, 28, 28)
+        ```
         """
         # Validate axis
         if axis < 0 or axis >= len(self._shape):
@@ -611,8 +626,10 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             Error: If index is out of bounds
 
         Example:
-            var t = arange(0.0, 10.0, 1.0, DType.float32)
+            ```mojo
+            ar t = arange(0.0, 10.0, 1.0, DType.float32)
             var val = t[5]  # Get element at index 5
+        ```
         """
         if index < 0 or index >= self._numel:
             raise Error("Index out of bounds")
@@ -2318,8 +2335,10 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
         A new ExTensor filled with ones, same shape and dtype as input.
 
     Example:
-        var x = zeros(List[Int](3, 4), DType.float32)
+        ```mojo
+        ar x = zeros(List[Int](3, 4), DType.float32)
         var y = ones_like(x)  # (3, 4) tensor of ones, float32
+        ```
     """
     var shape = tensor.shape()
     var dtype = tensor.dtype()
@@ -2336,8 +2355,10 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
         A new ExTensor filled with zeros, same shape and dtype as input.
 
     Example:
-        var x = ones(List[Int](3, 4), DType.float32)
+        ```mojo
+        ar x = ones(List[Int](3, 4), DType.float32)
         var y = zeros_like(x)  # (3, 4) tensor of zeros, float32
+        ```
     """
     var shape = tensor.shape()
     var dtype = tensor.dtype()
@@ -2355,8 +2376,10 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
         A new ExTensor filled with fill_value, same shape and dtype as input.
 
     Example:
-        var x = ones(List[Int](3, 4), DType.float32)
+        ```mojo
+        ar x = ones(List[Int](3, 4), DType.float32)
         var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
+        ```
     """
     var shape = tensor.shape()
     var dtype = tensor.dtype()
@@ -2463,7 +2486,7 @@ fn calculate_max_batch_size(
         Maximum batch size that fits in memory.
 
     Example:
-        ```mojo.
+        ```mojo
         # For MNIST: (1, 28, 28) images
         var sample_shape = List[Int]()
         sample_shape.append(1)

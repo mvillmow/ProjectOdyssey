@@ -19,6 +19,7 @@ Example:
         print("Batch size:", args.batch_size)
         print("Learning rate:", args.learning_rate)
         print("Verbose:", args.verbose)
+    ```
 """
 
 from .arg_parser import (
@@ -91,9 +92,11 @@ fn parse_training_args() raises -> TrainingArgs:
         Error if argument validation fails.
 
     Example:
-        # Command line: mojo train.mojo --epochs 100 --lr 0.001 --verbose
+        ```mojo
+         Command line: mojo train.mojo --epochs 100 --lr 0.001 --verbose
         var args = parse_training_args()
         # args.epochs == 100, args.learning_rate == 0.001, args.verbose == True
+        ```
     """
     return parse_training_args_with_defaults(
         default_epochs=10,
@@ -133,7 +136,8 @@ fn parse_training_args_with_defaults(
         Error if argument validation fails.
 
     Example:
-        # AlexNet with custom defaults
+        ```mojo
+         AlexNet with custom defaults
         var args = parse_training_args_with_defaults(
             default_epochs=100,
             default_batch_size=128,
@@ -141,6 +145,7 @@ fn parse_training_args_with_defaults(
             default_data_dir="datasets/cifar10",
             default_weights_dir="alexnet_weights"
         )
+        ```
     """
     var parser = create_training_parser()
     var parsed = parser.parse()

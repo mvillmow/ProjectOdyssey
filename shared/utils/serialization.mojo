@@ -13,6 +13,7 @@ Example:
     conv1_kernel
     float32 6 1 5 5
     3f800000 3f800000 ... (hex-encoded float values)
+    ```
 
 Modules:
     - Tensor saving/loading (single)
@@ -35,6 +36,7 @@ Example:
     tensors.append(NamedTensor("conv1_w", conv1_weights))
     tensors.append(NamedTensor("conv1_b", conv1_bias))
     save_named_tensors(tensors, "checkpoint/")
+    ```
 """
 
 from shared.core.extensor import ExTensor, zeros
@@ -99,8 +101,10 @@ fn save_tensor(tensor: ExTensor, filepath: String, name: String = "") raises:
         Error: If file write fails
 
     Example:
-        var weights = ExTensor(...)
+        ```mojo
+        ar weights = ExTensor(...)
         save_tensor(weights, "checkpoint/conv1.bin", "conv1_weights")
+        ```
     """
     var shape = tensor.shape()
     var dtype = tensor.dtype()
@@ -142,7 +146,9 @@ fn load_tensor(filepath: String) raises -> ExTensor:
         Error: If file format is invalid or file doesn't exist
 
     Example:
-        var tensor = load_tensor("checkpoint/conv1.bin")
+        ```mojo
+        ar tensor = load_tensor("checkpoint/conv1.bin")
+        ```
     """
     # Read file
     var content: String
@@ -196,7 +202,9 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
         Error: If file format is invalid or file doesn't exist
 
     Example:
-        var (name, tensor) = load_tensor_with_name("checkpoint/conv1.bin")
+        ```mojo
+        ar (name, tensor) = load_tensor_with_name("checkpoint/conv1.bin")
+        ```
     """
     # Read file
     var content: String
@@ -255,10 +263,12 @@ fn save_named_tensors(
         Error: If directory creation or file write fails
 
     Example:
-        var tensors = List[NamedTensor]()
+        ```mojo
+        ar tensors = List[NamedTensor]()
         tensors.append(NamedTensor("conv1_w", conv1_weights))
         tensors.append(NamedTensor("conv1_b", conv1_bias))
         save_named_tensors(tensors, "checkpoint/epoch_10/")
+        ```
     """
     # Create directory if needed
     from shared.utils.io import create_directory
@@ -289,9 +299,11 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
         Error: If directory doesn't exist or file format is invalid
 
     Example:
-        var tensors = load_named_tensors("checkpoint/epoch_10/")
+        ```mojo
+        ar tensors = load_named_tensors("checkpoint/epoch_10/")
         for i in range(len(tensors)):
             print(tensors[i].name)
+        ```
     """
     from python import Python
 
@@ -338,13 +350,15 @@ fn save_named_checkpoint(
         Error: If directory creation or file write fails
 
     Example:
-        var tensors = List[NamedTensor]()
+        ```mojo
+        ar tensors = List[NamedTensor]()
         tensors.append(NamedTensor("weights", weights_tensor))
         tensors.append(NamedTensor("bias", bias_tensor))
         var meta = Dict[String, String]()
         meta["epoch"] = "10"
         meta["loss"] = "0.45"
         save_checkpoint(tensors, "checkpoints/model/", meta)
+        ```
     """
     # Create checkpoint directory
     from shared.utils.io import create_directory
@@ -378,11 +392,13 @@ fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[S
         Error: If directory doesn't exist or file format is invalid
 
     Example:
-        var (tensors, metadata) = load_checkpoint("checkpoints/model/")
+        ```mojo
+        ar (tensors, metadata) = load_checkpoint("checkpoints/model/")
         for i in range(len(tensors)):
             print(tensors[i].name)
         if "epoch" in metadata:
             print("Epoch: " + metadata["epoch"])
+        ```
     """
     # Load all named tensors
     var tensors = load_named_tensors(path)
@@ -482,8 +498,10 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
         Hex string representation
 
     Example:
-        var hex_str = bytes_to_hex(tensor._data, 16)
+        ```mojo
+        ar hex_str = bytes_to_hex(tensor._data, 16)
         # Returns "3f800000..." for float32 values
+        ```
     """
     var hex_chars = "0123456789abcdef"
     var result = String("")
@@ -512,9 +530,11 @@ fn hex_to_bytes(hex_str: String, tensor: ExTensor) raises:
         Error: If hex string has odd length or contains invalid characters
 
     Example:
-        var hex_str = "3f800000"
+        ```mojo
+        ar hex_str = "3f800000"
         var tensor = zeros(shape, DType.float32)
         hex_to_bytes(hex_str, tensor)
+        ```
     """
     var length = len(hex_str)
     if length % 2 != 0:
@@ -571,7 +591,9 @@ fn get_dtype_size(dtype: DType) -> Int:
         Size in bytes (1, 2, 4, or 8)
 
     Example:
-        var size = get_dtype_size(DType.float32)  # Returns 4
+        ```mojo
+        ar size = get_dtype_size(DType.float32)  # Returns 4
+        ```
     """
     if dtype == DType.float16:
         return 2
@@ -607,7 +629,9 @@ fn parse_dtype(dtype_str: String) raises -> DType:
         Error: If dtype string is not recognized
 
     Example:
-        var dtype = parse_dtype("float32")  # Returns DType.float32
+        ```mojo
+        ar dtype = parse_dtype("float32")  # Returns DType.float32
+        ```
     """
     if dtype_str == "float16":
         return DType.float16
@@ -645,7 +669,9 @@ fn dtype_to_string(dtype: DType) -> String:
         String representation (e.g., "float32")
 
     Example:
-        var s = dtype_to_string(DType.float32)  # Returns "float32"
+        ```mojo
+        ar s = dtype_to_string(DType.float32)  # Returns "float32"
+        ```
     """
     if dtype == DType.float16:
         return "float16"

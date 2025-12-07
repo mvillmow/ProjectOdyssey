@@ -140,9 +140,11 @@ fn load_image(filepath: String) raises -> ExTensor:
         5. Reshape to (1, 1, 28, 28) batch format
 
     Example:
+       ```mojo
         # Load single image and run inference
         var image = load_image("sample_digit.idx3-ubyte")
         var logits = model.forward(image)
+        ```
     """
     # Create empty placeholder tensor
     # In a real implementation, this would:

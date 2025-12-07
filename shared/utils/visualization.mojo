@@ -13,6 +13,7 @@ Example:
     # Collect losses during training...
 
     plot_training_curves(train_losses, val_losses, save_path="curves.png")
+    ```
 """
 
 # ============================================================================
@@ -107,7 +108,8 @@ fn plot_training_curves(
         True if plotting successful, False if error
 
     Example:
-        var train_losses = List[Float32]()
+        ```mojo
+        ar train_losses = List[Float32]()
         var val_losses = List[Float32]()
 
         # Collect losses during training...
@@ -117,6 +119,7 @@ fn plot_training_curves(
 
         # Plot curves
         plot_training_curves(train_losses, val_losses, save_path="curves.png")
+        ```
     """
     # Create JSON structure for plotting data
     var result = String('{"type":"line_chart","title":"Training Curves","data":{')
@@ -283,7 +286,8 @@ fn plot_confusion_matrix(
         True if successful
 
     Example:
-        var y_true = List[Int]()  # True labels
+        ```mojo
+        ar y_true = List[Int]()  # True labels
         var y_pred = List[Int]()  # Predictions
 
         # Collect predictions during evaluation...
@@ -293,6 +297,7 @@ fn plot_confusion_matrix(
         classes.append("dog")
 
         plot_confusion_matrix(y_true, y_pred, class_names=classes)
+        ```
     """
     # Compute confusion matrix
     var matrix = compute_confusion_matrix(y_true, y_pred)
@@ -449,7 +454,8 @@ fn visualize_model_architecture(
         True if successful
 
     Example:
-        var layers = List[String]()
+        ```mojo
+        ar layers = List[String]()
         layers.append("Input: (batch, 1, 28, 28)")
         layers.append("Conv2d: (batch, 32, 28, 28)")
         layers.append("ReLU: (batch, 32, 28, 28)")
@@ -458,6 +464,7 @@ fn visualize_model_architecture(
         layers.append("Linear: (batch, 10)")
 
         visualize_model_architecture("LeNet5", layers)
+        ```
     """
     # Create JSON structure for architecture diagram
     var result = String('{"type":"architecture","model":"')
@@ -608,11 +615,13 @@ fn show_images(
         True if successful
 
     Example:
-        var image_files = List[String]()
+        ```mojo
+        ar image_files = List[String]()
         var labels = List[String]()
 
         # Load first batch...
         show_images(image_files, labels=labels, nrow=8)
+        ```
     """
     # Create JSON structure for image grid
     var result = String('{"type":"image_grid","nrow":')

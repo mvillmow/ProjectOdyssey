@@ -29,6 +29,7 @@ Example:
     var mxfp4_val = MXFP4.from_float32(2.718)
     var nvfp4_val = NVFP4.from_float32(1.414)
     var reconstructed = mxfp4_val.to_float32()
+    ```
 """
 
 # Type exports

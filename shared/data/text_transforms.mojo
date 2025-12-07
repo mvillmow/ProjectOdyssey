@@ -106,7 +106,9 @@ struct RandomSwap(TextTransform, Copyable, Movable):
     Uses RandomTransformBase for probability handling.
 
     Example:
-        "the quick brown fox" -> "quick the brown fox" (first two swapped)
+        ```mojo
+        the quick brown fox" -> "quick the brown fox" (first two swapped)
+        ```
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -171,7 +173,9 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
     Uses RandomTransformBase for probability handling.
 
     Example:
-        "the quick brown fox" -> "quick brown fox" (deleted "the")
+        ```mojo
+        the quick brown fox" -> "quick brown fox" (deleted "the")
+        ```
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -235,7 +239,9 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     Uses RandomTransformBase for probability handling.
 
     Example:
-        "the brown fox" -> "the quick brown fox" (inserted "quick")
+        ```mojo
+        the brown fox" -> "the quick brown fox" (inserted "quick")
+        ```
     """
 
     var base: RandomTransformBase  # Probability handling
@@ -312,7 +318,9 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     Uses RandomTransformBase for probability handling.
 
     Example:
-        "the quick fox" -> "the fast fox" (replaced "quick" with "fast")
+        ```mojo
+        the quick fox" -> "the fast fox" (replaced "quick" with "fast")
+        ```
     """
 
     var base: RandomTransformBase  # Probability handling

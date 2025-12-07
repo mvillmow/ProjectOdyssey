@@ -44,7 +44,7 @@ fn sgd_step(
         Tuple of (new_params, new_velocity)
 
     Example (basic SGD without momentum):
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import sgd_step
 
@@ -57,7 +57,7 @@ fn sgd_step(
         ```
 
     Example (SGD with momentum):
-        ```mojo.
+        ```mojo
         var W = xavier_uniform(784, 128, DType.float32)
         var W_vel = zeros_like(W)
 
@@ -133,9 +133,11 @@ fn sgd_step_simple(
         Updated parameters.
 
     Example:
-        var W1 = xavier_uniform(784, 128, shape, DType.float32)
+        ```mojo
+        ar W1 = xavier_uniform(784, 128, shape, DType.float32)
         var grad_W1 = ... # Computed gradients
         W1 = sgd_step_simple(W1, grad_W1, 0.01)
+        ```
     """
     if params.shape() != gradients.shape():
         raise Error("Parameters and gradients must have the same shape")
@@ -174,7 +176,7 @@ fn sgd_momentum_update_inplace(
         momentum: Momentum coefficient (typically 0.9)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import sgd_momentum_update_inplace
 

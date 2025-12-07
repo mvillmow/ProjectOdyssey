@@ -15,6 +15,7 @@ Example:
         # Evaluate model predictions
         var accuracy = evaluate_accuracy(predictions, labels)
         print("Accuracy:", accuracy)
+    ```
 """
 
 from sys import argv
@@ -69,9 +70,11 @@ fn parse_inference_args() raises -> InferenceConfig:
         InferenceConfig struct with parsed values.
 
     Example:
-        # Command line: mojo run inference.mojo --weights-dir ./trained --verbose
+        ```mojo
+         Command line: mojo run inference.mojo --weights-dir ./trained --verbose
         var config = parse_inference_args()
         # config.weights_dir == "./trained", config.verbose == True
+        ```
     """
     var result = InferenceConfig()
 
@@ -118,12 +121,14 @@ fn parse_inference_args_with_defaults(
         InferenceConfig struct with parsed values.
 
     Example:
-        # AlexNet with custom defaults
+        ```mojo
+         AlexNet with custom defaults
         var config = parse_inference_args_with_defaults(
             default_weights_dir="alexnet_weights",
             default_data_dir="datasets/cifar10",
             default_batch_size=128
         )
+        ```
     """
     var result = InferenceConfig()
     result.weights_dir = default_weights_dir

@@ -47,10 +47,12 @@ fn evaluate_with_predict(
         Error: If predictions and labels have different lengths
 
     Example:
-        var predictions = List[Int]()
+        ```mojo
+        ar predictions = List[Int]()
         for sample in test_images:
             predictions.append(model.predict(sample))
         var accuracy = evaluate_with_predict(predictions, test_labels)
+        ```
     """
     if len(predictions) != labels._numel:
         raise Error("evaluate_with_predict: predictions and labels must have same length")
@@ -86,8 +88,10 @@ fn evaluate_logits_batch(
         Error: If shapes are incompatible
 
     Example:
-        var logits = model.forward(test_images, training=False)
+        ```mojo
+        ar logits = model.forward(test_images, training=False)
         var accuracy = evaluate_logits_batch(logits, test_labels)
+        ```
     """
     var shape_vec = logits.shape()
     if len(shape_vec) != 2:
@@ -139,9 +143,11 @@ fn compute_accuracy_on_batch(predictions: ExTensor, labels: ExTensor) raises -> 
         Error: If batch sizes don't match
 
     Example:
-        # During training loop
+        ```mojo
+         During training loop
         var batch_acc = compute_accuracy_on_batch(logits, batch_labels)
         print("Batch accuracy: ", batch_acc)
+        ```
     """
     var pred_shape = predictions.shape()
     var batch_size = 0

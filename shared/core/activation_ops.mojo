@@ -10,11 +10,13 @@ Functions:
     exp_scalar_f64: Compute exponential of a float64 scalar.
 
 Example:
+   ```mojo
     from shared.core.activation_ops import exp_scalar_f32, exp_scalar_f64
 
     # Compute exponentials
     var result_f32 = exp_scalar_f32(-2.0)
     var result_f64 = exp_scalar_f64(-2.0)
+    ```
 """
 
 

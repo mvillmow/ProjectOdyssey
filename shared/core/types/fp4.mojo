@@ -20,6 +20,7 @@ Example:
     # E2M1 is typically used within block structures
     var fp4_val = FP4_E2M1.from_float32(1.5, scale=1.0)
     var reconstructed = fp4_val.to_float32(scale=1.0)
+    ```
 """
 
 from math import isnan, isinf

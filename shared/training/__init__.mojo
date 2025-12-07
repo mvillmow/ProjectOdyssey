@@ -178,10 +178,12 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
         O: Optimizer type (must implement Optimizer trait)
 
     Example:
-        var model = SimpleMLP(...)
+        ```mojo
+        ar model = SimpleMLP(...)
         var optimizer = SGD(learning_rate=0.01)
         var loss_fn = MSELoss()
         var loop = TrainingLoop[SimpleMLP, MSELoss, SGD](model, optimizer, loss_fn)
+        ```
     """
     var model: M
     var optimizer: O

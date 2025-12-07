@@ -10,7 +10,7 @@ All safety checks use @parameter for compile-time enable/disable, ensuring zero
 runtime overhead when safety mode is disabled.
 
 Example:
-    ```mojo.
+    ```mojo
     from shared.core import ExTensor, check_tensor_safety
 
     # Enable safety checks at compile time
@@ -37,7 +37,7 @@ fn has_nan(tensor: ExTensor) -> Bool:
         True if any element is NaN, False otherwise.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, float("nan"), 3.0]])
         assert_true(has_nan(x))
         ```
@@ -76,7 +76,7 @@ fn has_inf(tensor: ExTensor) -> Bool:
         True if any element is Inf or -Inf, False otherwise.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, float("inf"), 3.0]])
         assert_true(has_inf(x))
         ```
@@ -115,7 +115,7 @@ fn count_nan(tensor: ExTensor) -> Int:
         Number of NaN elements.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, float("nan"), float("nan")]])
         assert_equal(count_nan(x), 2)
         ```
@@ -152,7 +152,7 @@ fn count_inf(tensor: ExTensor) -> Int:
         Number of Inf/-Inf elements.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, float("inf"), float("-inf")]])
         assert_equal(count_inf(x), 2)
         ```
@@ -197,7 +197,7 @@ fn check_tensor_safety[enable: Bool = False](
         Error: If tensor contains NaN or Inf values (only when enable=True)
 
     Example:
-        ```mojo.
+        ```mojo
         # Production mode: safety disabled (zero overhead)
         check_tensor_safety(output)  # Compiles to nothing
 
@@ -234,7 +234,7 @@ fn tensor_min(tensor: ExTensor) -> Float64:
         Minimum value as Float64.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, -5.0, 3.0]])
         assert_equal(tensor_min(x), -5.0)
         ```
@@ -277,7 +277,7 @@ fn tensor_max(tensor: ExTensor) -> Float64:
         Maximum value as Float64.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[1.0, 10.0, 3.0]])
         assert_equal(tensor_max(x), 10.0)
         ```
@@ -328,7 +328,7 @@ fn check_tensor_range(
         Error: If any value is outside the range.
 
     Example:
-        ```mojo.
+        ```mojo
         var probs = sigmoid(logits)
         check_tensor_range(probs, 0.0, 1.0, "probabilities")
         # Raises if probs contains values outside [0, 1]
@@ -355,7 +355,7 @@ fn compute_tensor_l2_norm(tensor: ExTensor) -> Float64:
         L2 norm as Float64.
 
     Example:
-        ```mojo.
+        ```mojo
         var x = ExTensor([[3.0, 4.0]])
         assert_equal(compute_tensor_l2_norm(x), 5.0)  # sqrt(9 + 16)
         ```
@@ -398,7 +398,7 @@ fn check_gradient_norm(
         Error: If gradient norm exceeds max_norm.
 
     Example:
-        ```mojo.
+        ```mojo
         var grad_w = linear_backward(grad_out, x, w)[1]
         check_gradient_norm(grad_w, max_norm=100.0, "weight_gradient")
         # Raises if ||grad_w||_2 > 100
@@ -433,7 +433,7 @@ fn check_gradient_vanishing(
         Error: If gradient norm is below min_norm.
 
     Example:
-        ```mojo.
+        ```mojo
         var grad_w = linear_backward(grad_out, x, w)[1]
         check_gradient_vanishing(grad_w, min_norm=1e-6, "weight_gradient")
         # Raises if ||grad_w||_2 < 1e-6
@@ -476,7 +476,7 @@ fn check_gradient_safety[enable: Bool = False](
         Error: If any safety check fails (only when enable=True)
 
     Example:
-        ```mojo.
+        ```mojo
         # Debug mode: full gradient safety
         var grad = backward_pass(loss)
         check_gradient_safety[enable=True](grad, max_norm=100.0)

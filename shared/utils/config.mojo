@@ -10,6 +10,7 @@ Example:
     var config = Config.from_yaml("config.yaml")
     var lr = config.get_float("learning_rate")
     var batch_size = config.get_int("batch_size")
+    ```
 """
 
 from python import Python, PythonObject
@@ -534,7 +535,8 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         flattens them into dot-notation keys for easy access.
 
         Example:
-            YAML:
+            ```mojo
+            AML:
                 optimizer:
                   name: "sgd"
                   learning_rate: 0.01
@@ -542,6 +544,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Results in keys:
                 "optimizer.name" = "sgd"
                 "optimizer.learning_rate" = 0.01
+        ```
 
         Args:
             filepath: Path to YAML file
@@ -909,8 +912,10 @@ fn load_config(filepath: String) raises -> Config:
         Error if file doesn't exist or invalid format
 
     Example:
-        var config = load_config("configs/lenet5.yaml")
+        ```mojo
+        ar config = load_config("configs/lenet5.yaml")
         var lr = config.get_float("learning_rate")
+        ```
     """
     if filepath.endswith(".yaml") or filepath.endswith(".yml"):
         return Config.from_yaml(filepath)
@@ -933,9 +938,11 @@ fn save_config(config: Config, filepath: String) raises:
         Error if file cannot be written
 
     Example:
-        var config = Config()
+        ```mojo
+        ar config = Config()
         config.set("learning_rate", 0.001)
         save_config(config, "config.yaml")
+        ```
     """
     if filepath.endswith(".yaml") or filepath.endswith(".yml"):
         config.to_yaml(filepath)
@@ -965,9 +972,11 @@ fn merge_configs(base: Config, override: Config) -> Config:
         Merged configuration
 
     Example:
-        var defaults = load_config("config.yaml")
+        ```mojo
+        ar defaults = load_config("config.yaml")
         var experiment = load_config("config.lenet5.yaml")
         var config = merge_configs(defaults, experiment)
+        ```
     """
     return base.merge(override)
 

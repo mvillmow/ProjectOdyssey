@@ -17,6 +17,7 @@ Features:
     - Efficient memory usage via Welford's online algorithm
 
 Example:
+   ```mojo
     var result = BenchmarkResult("relu_forward", iterations=1000)
 
     # Record individual iteration times
@@ -33,6 +34,7 @@ Example:
     var min_ns = result.min_time()  # Minimum time
     var max_ns = result.max_time()  # Maximum time
     print(result)  # Formatted summary
+    ```
 """
 
 from math import sqrt

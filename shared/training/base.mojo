@@ -59,9 +59,11 @@ struct TrainingState(Copyable, Movable):
         should_stop: Flag set by callbacks to request training stop.
 
     Example:
-        var state = TrainingState(epoch=0, batch=0, metrics={}, lr=0.1)
+        ```mojo
+        ar state = TrainingState(epoch=0, batch=0, metrics={}, lr=0.1)
         state.metrics["train_loss"] = 0.5
         state.metrics["val_loss"] = 0.6
+        ```
     """
 
     var epoch: Int
@@ -118,10 +120,12 @@ trait Callback:
         - Multiple callbacks: first STOP signal takes precedence
 
     Example:
-        struct MyCallback(Callback):
+        ```mojo
+        truct MyCallback(Callback):
             fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
                 print("Epoch", state.epoch, "loss:", state.metrics["train_loss"])
                 return CONTINUE
+        ```
     """
 
     fn on_train_begin(mut self, mut state: TrainingState) -> CallbackSignal:
@@ -214,7 +218,8 @@ trait LRScheduler:
         - Warmup: Linear increase then constant
 
     Example:
-        struct StepLR(LRScheduler):
+        ```mojo
+        truct StepLR(LRScheduler):
             var base_lr: Float64
             var step_size: Int
             var gamma: Float64
@@ -222,6 +227,7 @@ trait LRScheduler:
             fn get_lr(self, epoch: Int, batch: Int) -> Float64:
                 let steps = epoch // self.step_size
                 return self.base_lr * (self.gamma ** steps)
+        ```
     """
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
@@ -286,9 +292,11 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
         True if loss is finite (not NaN, not inf), False otherwise.
 
     Example:
-        if not is_valid_loss(loss):
+        ```mojo
+        f not is_valid_loss(loss):
             print("Training diverged! Loss is", loss)
             break
+        ```
 
     Note:
         Uses has_nan_or_inf internally for consistency with gradient validation.
@@ -398,7 +406,9 @@ fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float
         Clipped gradients with norm <= max_norm.
 
     Example:
-        clipped_grads = clip_gradients(grads, max_norm=1.0)
+        ```mojo
+        lipped_grads = clip_gradients(grads, max_norm=1.0)
+        ```
 
     Note:
         This is a legacy function that works with lists of Float64.

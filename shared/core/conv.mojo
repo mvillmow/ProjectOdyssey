@@ -63,7 +63,7 @@ fn conv2d(
             out_width = (width + 2*padding - kW) // stride + 1
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, conv2d, zeros, he_uniform
 
         # Caller manages state
@@ -247,7 +247,7 @@ fn conv2d_backward(
             - grad_bias: Gradient w.r.t. bias, shape (out_channels,)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import conv2d, conv2d_backward
 
         # Forward pass

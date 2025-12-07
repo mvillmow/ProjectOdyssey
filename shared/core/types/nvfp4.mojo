@@ -26,6 +26,7 @@ Example:
 
     # Block storage (efficient: 16 values + 1 shared scale)
     var block = NVFP4Block.from_float32_array(data_array)
+    ```
 
 Reference:
     Tim Dettmers, Nolan Miller, Deepak Kapur, Luke Zettlemoyer.
@@ -278,9 +279,11 @@ struct NVFP4(Stringable, Representable, Copyable, Movable):
             Use from_float32() for forward passes and weights.
 
         Example:
-            # Gradient value 1.25 between 1.0 and 1.5.
+            ```mojo
+             Gradient value 1.25 between 1.0 and 1.5.
             # Will round to 1.5 with ~50% probability
             var grad = NVFP4.from_float32_stochastic(1.25, seed=12345)
+        ```
         """
         # Handle special cases
         if isnan(x) or isinf(x):
@@ -557,7 +560,8 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
     Smaller blocks (16 vs 32) provide better accuracy per the paper.
 
     Example:
-        from collections import List
+        ```mojo
+        rom collections import List
 
         # Create block from Float32 array
         var values = List[Float32]()
@@ -566,6 +570,7 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
 
         var block = NVFP4Block.from_float32_array(values)
         var decoded = block.to_float32_array()
+        ```
     """
     var data: SIMD[DType.uint8, 8]  # 16 E2M1 values (2 per byte)
     var scale: E4M3Scale  # Shared E4M3 scale

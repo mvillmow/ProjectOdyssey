@@ -21,6 +21,7 @@ Example:
 
     # Restore state to continue training
     set_random_state(state)
+    ```
 """
 
 
@@ -86,11 +87,13 @@ fn set_seed(seed: Int):
         seed: Random seed value (0-2147483647)
 
     Example:
-        # At start of experiment.
+        ```mojo
+         At start of experiment.
         set_seed(42)
 
         # All random operations are now deterministic
         var weights = random_normal((100, 50))
+        ```
 
     Note:
         Sets the Mojo stdlib random seed. Other RNGs can be synchronized
@@ -106,8 +109,10 @@ fn get_global_seed() -> Int:
         Current seed value.
 
     Example:
-        var seed = get_global_seed()
+        ```mojo
+        ar seed = get_global_seed()
         print("Using seed: " + String(seed))
+        ```
 
     Note:
         Current implementation returns default seed (42).
@@ -132,7 +137,8 @@ fn get_random_state() -> RandomState:
         Current random state.
 
     Example:
-        # Before starting validation.
+        ```mojo
+         Before starting validation.
         var state = get_random_state()
 
         # Validation with different random data
@@ -140,6 +146,7 @@ fn get_random_state() -> RandomState:
 
         # Restore state to continue training with same random sequence
         set_random_state(state)
+        ```
 
     Note:
         Captures the current global seed. Mojo stdlib RNG state is managed
@@ -160,9 +167,11 @@ fn set_random_state(state: RandomState):
         state: Previously saved random state.
 
     Example:
-        var saved_state = get_random_state()
+        ```mojo
+        ar saved_state = get_random_state()
         # ... do something ...
         set_random_state(saved_state)
+        ```
 
     Note:
         Restores the global seed. Mojo stdlib RNG state is restored implicitly.
@@ -214,7 +223,8 @@ struct SeedContext(Copyable, Movable):
     then restoring the original seed when exiting.
 
     Example:
-        # Current seed is 42.
+        ```mojo
+         Current seed is 42.
         set_seed(42)
 
         # Temporarily use different seed
@@ -223,6 +233,7 @@ struct SeedContext(Copyable, Movable):
             var data = random_data()
 
         # Outside: seed is back to 42
+        ```
     """
 
     var saved_seed: Int
@@ -326,10 +337,12 @@ fn shuffle[T: ImplicitlyCopyable & Copyable & Movable](mut items: List[T]):
         items: List to shuffle (modified in place)
 
     Example:
-        var indices = List[Int]()
+        ```mojo
+        ar indices = List[Int]()
         for i in range(10):
             indices.append(i)
         shuffle(indices)
+        ```
     """
     var n = len(items)
     # Fisher-Yates shuffle: iterate from last element to second element

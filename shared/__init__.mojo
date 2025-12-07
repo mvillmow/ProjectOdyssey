@@ -17,6 +17,7 @@ Usage:
     from shared.data.transforms import Normalize
 
 Example:
+    ```mojo
     from shared import Linear, ReLU, Sequential, SGD
 
     # Build a simple model
@@ -35,6 +36,7 @@ Example:
     for epoch in range(100):
         loss = train_epoch(model, optimizer, train_loader)
         print("Epoch", epoch, "Loss:", loss)
+    ```
 
 FIXME: Placeholder tests in tests/shared/integration/test_packaging.mojo require:
 - test_subpackage_accessibility (line 28)

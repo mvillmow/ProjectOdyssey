@@ -20,6 +20,7 @@ Example:
 
     # Create classification data
     var (X, y) = synthetic_classification_data(100, 10, 3)
+    ```
 """
 
 from random import random_float64
@@ -45,8 +46,10 @@ fn random_tensor(
         ExTensor with random values uniformly distributed in [0, 1).
 
     Example:
-        var weights = random_tensor(List[Int](10, 5), DType.float32)
+        ```mojo
+        ar weights = random_tensor(List[Int](10, 5), DType.float32)
         # Creates 10x5 tensor with random values in [0, 1)
+        ```
 
     Note:
         Values are uniformly distributed in [0, 1) regardless of dtype.
@@ -107,8 +110,10 @@ fn random_uniform(
         ExTensor with random values uniformly distributed in [low, high).
 
     Example:
-        var data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
+        ```mojo
+        ar data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
         # Creates 100x20 tensor with random values in [-1.0, 1.0)
+        ```
 
     Note:
         The range [low, high) is linearly scaled from [0, 1).
@@ -175,8 +180,10 @@ fn random_normal(
         ExTensor with random values from normal distribution N(mean, std^2).
 
     Example:
-        var weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
+        ```mojo
+        ar weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
         # Creates 784x256 tensor with normally distributed values
+        ```
 
     Note:
         Uses Box-Muller transform for efficiency.
@@ -263,9 +270,11 @@ fn synthetic_classification_data(
         - labels: ExTensor of shape [num_samples] with values in [0, num_classes)
 
     Example:
-        var (X, y) = synthetic_classification_data(100, 20, 3)
+        ```mojo
+        ar (X, y) = synthetic_classification_data(100, 20, 3)
         # X shape: [100, 20], Y shape: [100]
         # Y contains values in {0, 1, 2}
+        ```
 
     Algorithm:
         1. Generate random class centers in [-5, 5]^num_features

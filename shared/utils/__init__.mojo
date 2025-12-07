@@ -9,6 +9,7 @@ Modules:
     config: Configuration management utilities.
 
 Example:
+    ```mojo
     from shared.utils import Logger, plot_training_curves, load_config
 
     # Create logger
@@ -20,6 +21,7 @@ Example:
 
     # Load configuration
     config = load_config("experiment.yaml")
+    ```
 
 FIXME: Placeholder import tests in tests/shared/test_imports.mojo require:
 - test_utils_imports (line 210+)

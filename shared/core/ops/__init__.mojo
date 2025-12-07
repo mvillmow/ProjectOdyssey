@@ -18,6 +18,7 @@ Example:
     fn forward(x: Tensor, w: Tensor) -> Tensor:
         # Efficient matrix multiplication
         return matmul(x, transpose(w))
+    ```
 """
 
 # Operation exports will be added here as components are implemented

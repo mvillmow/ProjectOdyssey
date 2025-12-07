@@ -988,7 +988,7 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
         Output tensor with swish applied element-wise.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, swish
 
         var x = ExTensor.from_list([...])
@@ -1026,7 +1026,7 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
         Output tensor with mish applied element-wise.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, mish
 
         var x = ExTensor.from_list([...])
@@ -1086,7 +1086,7 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
         Output tensor with ELU applied element-wise.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, elu
 
         var x = ExTensor.from_list([...])
@@ -1163,7 +1163,7 @@ fn swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTenso
         Gradient with respect to input.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import swish, swish_backward
 
         # Forward
@@ -1198,7 +1198,7 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor
         Gradient with respect to input.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import mish, mish_backward
 
         # Forward
@@ -1254,7 +1254,7 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
         Gradient with respect to input.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import elu, elu_backward
 
         # Forward

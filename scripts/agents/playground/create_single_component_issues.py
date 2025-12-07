@@ -6,7 +6,9 @@ Usage:
     python scripts/create_single_component_issues.py <path-to-github_issue.md>
 
 Example:
+    ```p
     python scripts/create_single_component_issues.py notes/plan/01-foundation/01-directory-structure/01-create-papers-dir/01-create-base-dir/github_issue.md
+    ```
 """
 
 import re

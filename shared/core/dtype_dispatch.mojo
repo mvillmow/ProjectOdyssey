@@ -109,12 +109,14 @@ fn elementwise_unary[
         New tensor with operation applied element-wise.
 
     Example:
-        # Define operation.
+        ```mojo
+         Define operation.
         fn my_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             return max(Scalar[T](0), x)
 
         # Apply with compile-time dtype
         var result = elementwise_unary[DType.float32, my_op](tensor)
+        ```
     """
     var result = ExTensor(tensor._shape, dtype)
     var size = tensor._numel
@@ -149,10 +151,12 @@ fn dispatch_unary[
                unsupported dtype and list of supported dtypes.
 
     Example:
-        fn relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             return max(Scalar[T](0), x)
 
         var result = dispatch_unary[relu_op](tensor)  # Works for any dtype
+        ```
 
     Note:
         Supports: float16, float32, float64, int8, int16, int32, int64,
@@ -214,10 +218,12 @@ fn elementwise_binary[
         Error: If shapes don't match.
 
     Example:
-        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = elementwise_binary[DType.float32, add_op](a, b)
+        ```
     """
     # Validate shapes match
     if lhs._numel != rhs._numel:
@@ -257,10 +263,12 @@ fn dispatch_binary[
                the actual dtypes and list of supported dtypes.
 
     Example:
-        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x * y
 
         var result = dispatch_binary[mul_op](a, b)
+        ```
 
     Note:
         Supports: float16, float32, float64, int8, int16, int32, int64,
@@ -327,10 +335,12 @@ fn elementwise_scalar[
         New tensor with operation applied element-wise.
 
     Example:
-        fn mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x * y
 
         var result = elementwise_scalar[DType.float32, mul_op](tensor, 2.5)
+        ```
     """
     var result = ExTensor(tensor._shape, dtype)
     var size = tensor._numel
@@ -367,10 +377,12 @@ fn dispatch_scalar[
                unsupported dtype and list of supported dtypes.
 
     Example:
-        fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
             return x + y
 
         var result = dispatch_scalar[add_op](tensor, 1.0)
+        ```
 
     Note:
         Supports: float16, float32, float64, int8, int16, int32, int64,
@@ -433,11 +445,13 @@ fn dispatch_float_unary[
                actual dtype and supported float types.
 
     Example:
-        fn sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
+        ```mojo
+        n sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             # Assuming T is float
             return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
 
         var result = dispatch_float_unary[sigmoid_op](tensor)
+        ```
 
     Note:
         Supports float types only: float16, float32, float64.

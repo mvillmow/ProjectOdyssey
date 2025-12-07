@@ -31,13 +31,15 @@ struct StepLR(Copyable, LRScheduler, Movable):
         gamma: Multiplicative factor for LR reduction.
 
     Example:
-        var scheduler = StepLR(
+        ```mojo
+        ar scheduler = StepLR(
             base_lr=0.1,
             step_size=10,
             gamma=0.1
         )
         # After 10 epochs: LR = 0.1 * 0.1 = 0.01
         # After 20 epochs: LR = 0.1 * 0.01 = 0.001
+        ```
     """
 
     var base_lr: Float64
@@ -94,7 +96,8 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
         eta_min: Minimum learning rate.
 
     Example:
-        var scheduler = CosineAnnealingLR(
+        ```mojo
+        ar scheduler = CosineAnnealingLR(
             base_lr=0.1,
             T_max=100,
             eta_min=0.0
@@ -102,6 +105,7 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
         # At epoch 0: LR = 0.1 (maximum)
         # At epoch 50: LR = 0.05 (halfway)
         # At epoch 100: LR = 0.0 (minimum)
+        ```
     """
 
     var base_lr: Float64
@@ -164,12 +168,14 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
         warmup_epochs: Number of epochs for warmup phase.
 
     Example:
-        var scheduler = WarmupLR(
+        ```mojo
+        ar scheduler = WarmupLR(
             base_lr=0.1,
             warmup_epochs=10
         )
         # Epochs 0-9: LR increases from 0 to 0.1
         # Epochs 10+: LR = 0.1
+        ```
     """
 
     var base_lr: Float64
@@ -231,7 +237,8 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         current_lr: Current learning rate (updated by step()).
 
     Example:
-        var scheduler = ReduceLROnPlateau(
+        ```mojo
+        ar scheduler = ReduceLROnPlateau(
             base_lr=0.1,
             mode="min",
             factor=0.1,
@@ -239,6 +246,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         )
         # If validation loss doesn't improve for 10 epochs:
         # LR = 0.1 * 0.1 = 0.01
+        ```
     """
 
     var base_lr: Float64

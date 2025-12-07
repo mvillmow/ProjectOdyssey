@@ -21,6 +21,7 @@ Example:
     from shared.data import EMNISTDataset
     dataset = EMNISTDataset("/path/to/emnist", split="balanced", train=True)
     sample_img, sample_label = dataset[0]
+    ```
 """
 
 # Package version

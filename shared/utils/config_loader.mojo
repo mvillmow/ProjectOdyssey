@@ -9,6 +9,7 @@ Example:
     var config = load_experiment_config("lenet5", "baseline")
     var lr = config.get_float("optimizer.learning_rate")
     var batch_size = config.get_int("training.batch_size")
+    ```
 """
 
 from .config import Config, load_config, merge_configs
@@ -28,8 +29,10 @@ fn load_default_config(config_type: String) raises -> Config:
         Error if config file not found or invalid.
 
     Example:
-        var training_defaults = load_default_config("training")
+        ```mojo
+        ar training_defaults = load_default_config("training")
         var lr = training_defaults.get_float("optimizer.learning_rate")
+        ```
     """
     var filepath = "configs/defaults/" + config_type + ".yaml"
     return load_config(filepath)
@@ -53,8 +56,10 @@ fn load_paper_config(
         Error if config files not found or invalid.
 
     Example:
-        var lenet5_config = load_paper_config("lenet5", "model")
+        ```mojo
+        ar lenet5_config = load_paper_config("lenet5", "model")
         var num_classes = lenet5_config.get_int("num_classes")
+        ```
     """
     # Load defaults
     var defaults = Config()
@@ -99,10 +104,12 @@ fn load_experiment_config(
         Error if required config files not found or invalid.
 
     Example:
-        var config = load_experiment_config("lenet5", "baseline")
+        ```mojo
+        ar config = load_experiment_config("lenet5", "baseline")
         var lr = config.get_float("optimizer.learning_rate")
         var batch_size = config.get_int("training.batch_size")
         var model_name = config.get_string("model.name")
+        ```
     """
     # Step 1: Load all defaults (training, model, data)
     var config = Config()
@@ -165,7 +172,8 @@ fn load_config_with_validation(
         Error if file not found, invalid, or missing required keys.
 
     Example:
-        var required = List[String]()
+        ```mojo
+        ar required = List[String]()
         required.append("optimizer.learning_rate")
         required.append("training.epochs")
 
@@ -173,6 +181,7 @@ fn load_config_with_validation(
             "configs/experiments/lenet5/baseline.yaml",
             required
         )
+        ```
     """
     var config = load_config(filepath)
     config.validate(required_keys)
@@ -196,11 +205,13 @@ fn create_experiment_config(
         Error if experiment already exists or file cannot be written.
 
     Example:
-        var overrides = Config()
+        ```mojo
+        ar overrides = Config()
         overrides.set("optimizer.learning_rate", 0.01)
         overrides.set("training.batch_size", 64)
 
         create_experiment_config("lenet5", "high_lr", overrides)
+        ```
     """
     # Create experiment config from paper config + overrides
     var paper_config = load_paper_config(paper_name, "training")
@@ -225,8 +236,10 @@ fn validate_experiment_config(config: Config) raises:
         Error if any required field is missing or invalid.
 
     Example:
-        var config = load_experiment_config("lenet5", "baseline")
+        ```mojo
+        ar config = load_experiment_config("lenet5", "baseline")
         validate_experiment_config(config)  # Raises if invalid
+        ```
     """
     # Define required fields
     var required = List[String]()

@@ -60,7 +60,7 @@ fn rmsprop_step(
         Tuple of (new_params, new_square_avg, new_buf)
 
     Example (basic RMSprop):
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import rmsprop_step
 
@@ -77,7 +77,7 @@ fn rmsprop_step(
         ```
 
     Example (RMSprop with momentum):
-        ```mojo.
+        ```mojo
         var W = xavier_uniform(784, 128, DType.float32)
         var square_avg = zeros_like(W)
         var buf = zeros_like(W)  # Momentum buffer
@@ -189,7 +189,7 @@ fn rmsprop_step_simple(
         Tuple of (new_params, new_square_avg)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import ExTensor, zeros_like
         from shared.training.optimizers import rmsprop_step_simple
 

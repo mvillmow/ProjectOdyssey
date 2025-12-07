@@ -24,6 +24,7 @@ Example:
     >>> pipeline.append(ClampTransform(0.0, 1.0))
     >>>
     >>> var result = pipeline(data)
+    ```
 """
 
 from shared.core.extensor import ExTensor
@@ -45,8 +46,10 @@ struct IdentityTransform(Transform, Copyable, Movable):
     Space Complexity: O(1) - no allocation.
 
     Example:
-        >>> var identity = IdentityTransform()
+        ```mojo
+        >> var identity = IdentityTransform()
         >>> var result = identity(data)  # result == data
+        ```
     """
 
     fn __init__(out self):
@@ -81,11 +84,13 @@ struct LambdaTransform(Transform, Copyable, Movable):
     Space Complexity: O(n) for output tensor.
 
     Example:
-        >>> fn double(x: Float32) -> Float32:
+        ```mojo
+        >> fn double(x: Float32) -> Float32:
         ...     return x * 2.0
         >>>
         >>> var transform = LambdaTransform(double)
         >>> var result = transform(data)
+        ```
     """
 
     var func: fn (Float32) -> Float32
@@ -132,11 +137,13 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyab
     Space Complexity: O(n) if transform applied, O(1) otherwise.
 
     Example:
-        >>> fn is_large(tensor: ExTensor) -> Bool:
+        ```mojo
+        >> fn is_large(tensor: ExTensor) -> Bool:
         ...     return tensor.num_elements() > 100
         >>>
         >>> var transform = ConditionalTransform(is_large, augment)
         >>> var result = transform(data)  # Only augments large tensors
+        ```
     """
 
     var predicate: fn (ExTensor) raises -> Bool
@@ -186,8 +193,10 @@ struct ClampTransform(Transform, Copyable, Movable):
     Space Complexity: O(n) for output tensor.
 
     Example:
-        >>> var clamp = ClampTransform(0.0, 1.0)
+        ```mojo
+        >> var clamp = ClampTransform(0.0, 1.0)
         >>> var result = clamp(data)  # All values in [0, 1]
+        ```
     """
 
     var min_val: Float32
@@ -250,8 +259,10 @@ struct DebugTransform(Transform, Copyable, Movable):
     Space Complexity: O(1) - no allocation.
 
     Example:
-        >>> var debug = DebugTransform("layer1_output")
+        ```mojo
+        >> var debug = DebugTransform("layer1_output")
         >>> var result = debug(data)  # Prints info, returns data
+        ```
     """
 
     var name: String
@@ -425,12 +436,14 @@ struct SequentialTransform(Transform, Copyable, Movable):
     Space Complexity: O(n) for intermediate results.
 
     Example:
-        >>> var transforms = List[AnyTransform]()
+        ```mojo
+        >> var transforms = List[AnyTransform]()
         >>> transforms.append(AnyTransform(normalize))
         >>> transforms.append(AnyTransform(clamp))
         >>>
         >>> var pipeline = SequentialTransform(transforms^)
         >>> var result = pipeline(data)
+        ```
     """
 
     var transforms: List[AnyTransform]
@@ -476,11 +489,13 @@ struct BatchTransform(Copyable, Movable):
     Space Complexity: O(b * n) for output batch.
 
     Example:
-        >>> var batch = List[ExTensor]()
+        ```mojo
+        >> var batch = List[ExTensor]()
         >>> # ... fill batch ...
         >>>
         >>> var transform = BatchTransform(AnyTransform(normalize))
         >>> var results = transform(batch)
+        ```
     """
 
     var transform: AnyTransform
@@ -526,8 +541,10 @@ struct ToFloat32(Transform, Copyable, Movable):
     Space Complexity: O(n) for output tensor.
 
     Example:
-        >>> var converter = ToFloat32()
+        ```mojo
+        >> var converter = ToFloat32()
         >>> var result = converter(int_tensor)
+        ```
     """
 
     fn __init__(out self):
@@ -564,8 +581,10 @@ struct ToInt32(Transform, Copyable, Movable):
     Space Complexity: O(n) for output tensor.
 
     Example:
-        >>> var converter = ToInt32()
+        ```mojo
+        >> var converter = ToInt32()
         >>> var result = converter(float_tensor)  # Truncates decimals
+        ```
     """
 
     fn __init__(out self):
@@ -616,10 +635,12 @@ fn apply_to_tensor(
         Transformed tensor.
 
     Example:
-        >>> fn square(x: Float32) -> Float32:
+        ```mojo
+        >> fn square(x: Float32) -> Float32:
         ...     return x * x
         >>>
         >>> var result = apply_to_tensor(data, square)
+        ```
     """
     var transform = LambdaTransform(func)
     return transform(data)
@@ -637,7 +658,9 @@ fn compose_transforms(var transforms: List[AnyTransform]) raises -> SequentialTr
         SequentialTransform that applies all transforms in order.
 
     Example:
-        >>> var pipeline = compose_transforms(List(AnyTransform(norm), AnyTransform(clamp)))
+        ```mojo
+        >> var pipeline = compose_transforms(List(AnyTransform(norm), AnyTransform(clamp)))
         >>> var result = pipeline(data)
+        ```
     """
     return SequentialTransform(transforms^)

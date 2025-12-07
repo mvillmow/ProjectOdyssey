@@ -17,6 +17,7 @@ Example:
     var strides = compute_strides(shape)  # [20, 5, 1]
     var coords = linear_to_coords(27, shape)  # [1, 2, 2]
     var linear = coords_to_linear(coords, strides)  # 27
+    ```
 """
 
 from collections import List

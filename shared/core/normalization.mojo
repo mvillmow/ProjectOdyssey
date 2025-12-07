@@ -50,7 +50,7 @@ fn batch_norm2d(
             - new_running_var: Updated running variance, shape (channels,)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import batch_norm2d, zeros, ones
 
         var gamma = ones([channels])
@@ -302,7 +302,7 @@ fn batch_norm2d_backward(
             - grad_beta: Gradient w.r.t. beta (channels,)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import batch_norm2d_backward
 
         # Forward pass (save x for backward)
@@ -705,7 +705,7 @@ fn layer_norm(
         Normalized tensor, same shape as input.
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import layer_norm, zeros, ones
 
         # For 2D input (batch, features)
@@ -910,7 +910,7 @@ fn layer_norm_backward(
             - grad_beta: Gradient w.r.t. beta (same shape as gamma)
 
     Example:
-        ```mojo.
+        ```mojo
         from shared.core import layer_norm, layer_norm_backward
 
         # Forward pass
