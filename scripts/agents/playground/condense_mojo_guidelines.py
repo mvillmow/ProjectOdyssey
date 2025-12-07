@@ -67,7 +67,7 @@ See [mojo-language-review-specialist.md](./mojo-language-review-specialist.md) f
 def extract_mojo_section(content: str) -> Tuple[str, str, str]:
     """
     Extract the Mojo-Specific Guidelines section.
-    Returns: (before_section, section_content, after_section)
+    Returns: (before_section, section_content, after_section).
     """
     # Pattern to match from "## Mojo-Specific Guidelines" to the next "## "
     pattern = r"(.*?)(^## Mojo-Specific Guidelines\n\n.*?)(^## )"

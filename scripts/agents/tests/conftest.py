@@ -108,7 +108,7 @@ def parse_agent_file(agents_dir: Path):
     Factory fixture to parse agent configuration files.
 
     Returns:
-        Function that takes a filename and returns (frontmatter, body)
+        Function that takes a filename and returns (frontmatter, body).
     """
 
     def _parse(filename: str) -> Tuple[Optional[Dict], str]:
@@ -139,7 +139,7 @@ def validate_frontmatter_keys(
         optional_keys: List of optional keys (for checking unknowns)
 
     Returns:
-        List of error messages (empty if valid)
+        List of error messages (empty if valid).
     """
     errors = []
 
@@ -166,7 +166,7 @@ def extract_links(content: str) -> List[str]:
         content: Markdown content
 
     Returns:
-        List of link targets (URLs or paths)
+        List of link targets (URLs or paths).
     """
     # Match [text](link) pattern
     pattern = r"\[([^\]]+)\]\(([^)]+)\)"

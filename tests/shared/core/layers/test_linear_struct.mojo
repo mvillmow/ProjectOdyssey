@@ -48,8 +48,8 @@ fn test_linear_struct_forward_batched() raises:
     Input: (batch_size=4, in_features=10)
     Weight: (in_features=10, out_features=5)
     Bias: (out_features=5,)
-    Expected output: (batch_size=4, out_features=5)
-    """
+    Expected output: (batch_size=4, out_features=5).
+   """
     var layer = Linear(10, 5)
 
     # Create input batch

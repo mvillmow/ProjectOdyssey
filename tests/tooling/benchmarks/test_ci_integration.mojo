@@ -182,8 +182,8 @@ fn test_historical_tracking() raises:
     - Results stored over time
     - Trends visible
     - Comparison across commits
-    - Performance graphs (if implemented)
-    """
+    - Performance graphs (if implemented).
+   """
     # Test historical tracking
     var results_stored = True
     var _ = True

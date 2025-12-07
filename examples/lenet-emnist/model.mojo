@@ -75,8 +75,8 @@ fn compute_flattened_size() -> Int:
     This derives the FC1 input dimension from the architecture hyperparameters.
 
     Returns:
-        Number of features after flattening (channels * height * width)
-    """
+        Number of features after flattening (channels * height * width).
+   """
     # After conv1: Use shared conv2d_output_shape
     var h1, w1 = conv2d_output_shape(INPUT_HEIGHT, INPUT_WIDTH, CONV1_KERNEL_SIZE, CONV1_KERNEL_SIZE,
                                       CONV1_STRIDE, CONV1_PADDING)
@@ -112,8 +112,8 @@ struct LeNet5(Model, Movable):
         fc2_weights: Second FC layer weights (FC2_OUT_FEATURES, FC1_OUT_FEATURES)
         fc2_bias: Second FC layer bias (FC2_OUT_FEATURES,)
         fc3_weights: Third FC layer weights (num_classes, FC2_OUT_FEATURES)
-        fc3_bias: Third FC layer bias (num_classes,)
-    """
+        fc3_bias: Third FC layer bias (num_classes,).
+   """
 
     var num_classes: Int
 
@@ -133,8 +133,8 @@ struct LeNet5(Model, Movable):
         """Initialize LeNet-5 model with random weights.
 
         Args:
-            num_classes: Number of output classes (default: 47 for EMNIST Balanced)
-        """
+            num_classes: Number of output classes (default: 47 for EMNIST Balanced).
+       """
         self.num_classes = num_classes
 
         # Compute derived dimensions
@@ -181,8 +181,8 @@ struct LeNet5(Model, Movable):
             input: Input tensor of shape (batch, INPUT_CHANNELS, INPUT_HEIGHT, INPUT_WIDTH)
 
         Returns:
-            Output logits of shape (batch, num_classes)
-        """
+            Output logits of shape (batch, num_classes).
+       """
         # Conv1 + ReLU + MaxPool
         var conv1_out = conv2d(input, self.conv1_kernel, self.conv1_bias,
                                stride=CONV1_STRIDE, padding=CONV1_PADDING)
@@ -229,8 +229,8 @@ struct LeNet5(Model, Movable):
             input: Input tensor of shape (1, 1, 28, 28)
 
         Returns:
-            Predicted class index (0 to num_classes-1)
-        """
+            Predicted class index (0 to num_classes-1).
+       """
         var logits = self.forward(input)
 
         # Find argmax

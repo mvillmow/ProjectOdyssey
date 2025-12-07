@@ -205,7 +205,7 @@ def extract_sections(content: str) -> Set[str]:
         content: The markdown file content
 
     Returns:
-        Set of section header texts (without ## prefix)
+        Set of section header texts (without ## prefix).
     """
     # Match level 2 headers (##)
     pattern = r"^##\s+(.+)$"

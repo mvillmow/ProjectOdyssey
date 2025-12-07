@@ -68,8 +68,8 @@ fn create_synthetic_data() raises -> Tuple[ExTensor, ExTensor]:
     Returns:
         (inputs, targets) where:
             inputs: (4, 2) - Four 2D input points
-            targets: (4, 1) - Binary labels (0 or 1)
-    """
+            targets: (4, 1) - Binary labels (0 or 1).
+   """
     # Create 4 samples with 2 features each
     var input_shape = List[Int]()
     var target_shape = List[Int]()

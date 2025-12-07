@@ -28,8 +28,8 @@ fn broadcast_shapes(
     Examples:
         broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
-        broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible)
-    """
+        broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible).
+   """
     var ndim1 = len(shape1)
     var ndim2 = len(shape2)
     var max_ndim = max(ndim1, ndim2)

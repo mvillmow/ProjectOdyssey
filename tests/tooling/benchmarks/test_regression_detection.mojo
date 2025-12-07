@@ -35,8 +35,8 @@ fn test_single_regression_detection() raises:
     - Regression detected when >10% slowdown
     - Correct benchmark identified
     - Alert generated
-    - Exit code = 1 (failure)
-    """
+    - Exit code = 1 (failure).
+   """
     # Test single regression detection
     var regression_threshold = 10.0
     var regression_pct = 15.0  # 15% slowdown > threshold
@@ -87,8 +87,8 @@ fn test_no_false_positives() raises:
     - Changes <10% don't trigger alerts
     - Exactly 10% doesn't trigger alert
     - Both faster and slower within tolerance pass
-    - Exit code = 0 (success)
-    """
+    - Exit code = 0 (success).
+   """
     # Test no false positives
     var regression_threshold = 10.0
     var changes = List[Float64](capacity=3)

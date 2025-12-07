@@ -522,6 +522,6 @@ trait Optimizer:
         """Reset optimizer state.
 
         Note:
-            May be called before parameter zero_grad()
-        """
+            May be called before parameter zero_grad().
+       """
         ...

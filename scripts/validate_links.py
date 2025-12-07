@@ -71,7 +71,7 @@ def validate_internal_link(link: str, source_file: Path, repo_root: Path) -> Tup
     Validate an internal (file) link
 
     Returns:
-        (is_valid, error_message)
+        (is_valid, error_message).
     """
     # Remove anchor if present
     link_path = link.split("#")[0]

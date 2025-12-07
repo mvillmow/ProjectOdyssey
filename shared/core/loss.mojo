@@ -276,8 +276,8 @@ fn cross_entropy(
 
     Numerical Stability:
         - Uses log-sum-exp trick to prevent overflow/underflow
-        - Adds epsilon to log argument to prevent log(0)
-    """
+        - Adds epsilon to log argument to prevent log(0).
+   """
     if logits.dtype() != targets.dtype():
         raise Error("Logits and targets must have the same dtype")
 

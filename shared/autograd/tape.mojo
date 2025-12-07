@@ -319,8 +319,8 @@ struct VariableRegistry:
             id: Variable ID
 
         Returns:
-            The gradient tensor (or placeholder if not computed)
-        """
+            The gradient tensor (or placeholder if not computed).
+       """
         if id < len(self.grads):
             return self.grads[id]
         # Return empty placeholder
@@ -373,8 +373,8 @@ struct GradientTape:
         var z = y + 3  # Recorded
 
         tape.backward(z)  # Compute all gradients
-        tape.disable()
-    """
+        tape.disable().
+   """
 
     var nodes: List[TapeNode]
     var enabled: Bool
@@ -407,8 +407,8 @@ struct GradientTape:
 
         Examples:
             tape.disable()
-            var y = x + 1  # Not recorded (no gradient tracking)
-        """
+            var y = x + 1  # Not recorded (no gradient tracking).
+       """
         self.enabled = False
 
     fn clear(mut self):
@@ -459,8 +459,8 @@ struct GradientTape:
         Examples:
             # Internal use by Variable operations
             if tape.enabled:
-                tape.record("add", input_ids, output_id, saved)
-        """
+                tape.record("add", input_ids, output_id, saved).
+       """
         if not self.enabled:
             return
 
@@ -843,8 +843,8 @@ struct NoGradContext(Copyable, Movable):
 
         TODO(#2400): Implement gradient tracking disable when Mojo supports
         UnsafePointer with parametric mutability. For now, use:
-            tape.disable()
-        """
+            tape.disable().
+       """
         pass
 
     fn __exit__(mut self):
@@ -852,6 +852,6 @@ struct NoGradContext(Copyable, Movable):
 
         TODO(#2400): Implement gradient tracking restore when Mojo supports
         UnsafePointer with parametric mutability. For now, use:
-            tape.enable()
-        """
+            tape.enable().
+       """
         pass

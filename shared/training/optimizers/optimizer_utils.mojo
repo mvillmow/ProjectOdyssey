@@ -52,8 +52,8 @@ fn initialize_optimizer_state(
 
     Note:
         For SGD with momentum, use num_states=1 (one velocity buffer per param)
-        For Adam variants, use num_states=2 (m and v buffers per param)
-    """
+        For Adam variants, use num_states=2 (m and v buffers per param).
+   """
     from shared.core.extensor import zeros
 
     var all_states = List[List[ExTensor]]()

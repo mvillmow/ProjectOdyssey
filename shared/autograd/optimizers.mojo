@@ -67,8 +67,8 @@ struct SGD:
 
         # Training step
         optimizer.step(parameters)
-        optimizer.zero_grad(parameters)
-    """
+        optimizer.zero_grad(parameters).
+   """
 
     var learning_rate: Float64
     var momentum: Float64
@@ -87,8 +87,8 @@ struct SGD:
 
         Examples:
             var opt = SGD(learning_rate=0.01)
-            var opt_momentum = SGD(learning_rate=0.01, momentum=0.9)
-        """
+            var opt_momentum = SGD(learning_rate=0.01, momentum=0.9).
+       """
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.velocities = List[ExTensor]()
@@ -123,8 +123,8 @@ struct SGD:
             loss.backward(tape)
 
             # Update all parameters
-            optimizer.step(model.parameters(), tape)
-        """
+            optimizer.step(model.parameters(), tape).
+       """
         # Initialize velocity buffers on first call if using momentum
         if self.momentum > 0.0 and not self._initialized:
             self.velocities = List[ExTensor]()
@@ -178,8 +178,8 @@ struct SGD:
 
         Examples:
             # Clear gradients before next iteration
-            optimizer.zero_grad(tape)
-        """
+            optimizer.zero_grad(tape).
+       """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -223,8 +223,8 @@ struct Adam:
         # Training step
         loss.backward(tape)
         optimizer.step(parameters, tape)
-        optimizer.zero_grad(tape)
-    """
+        optimizer.zero_grad(tape).
+   """
 
     var learning_rate: Float64
     var beta1: Float64
@@ -261,8 +261,8 @@ struct Adam:
         Examples:
             var opt = Adam()  # Use defaults
             var opt = Adam(learning_rate=0.002)
-            var opt = Adam(learning_rate=0.001, weight_decay=1e-5)
-        """
+            var opt = Adam(learning_rate=0.001, weight_decay=1e-5).
+       """
         self.learning_rate = learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
@@ -307,8 +307,8 @@ struct Adam:
             loss.backward(tape)
 
             # Update all parameters (multiple calls increment step counter)
-            optimizer.step(model.parameters(), tape)
-        """
+            optimizer.step(model.parameters(), tape).
+       """
         # Increment step counter
         self.t += 1
         var t_float = Float64(self.t)
@@ -441,8 +441,8 @@ struct Adam:
 
         Examples:
             # Clear gradients before next iteration
-            optimizer.zero_grad(tape)
-        """
+            optimizer.zero_grad(tape).
+       """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -470,8 +470,8 @@ struct AdaGrad:
 
         # Training step
         optimizer.step(parameters, tape)
-        optimizer.zero_grad(tape)
-    """
+        optimizer.zero_grad(tape).
+   """
 
     var learning_rate: Float64
     var epsilon: Float64
@@ -499,8 +499,8 @@ struct AdaGrad:
 
         Examples:
             var opt = AdaGrad(learning_rate=0.01)
-            var opt_reg = AdaGrad(learning_rate=0.01, weight_decay=1e-4)
-        """
+            var opt_reg = AdaGrad(learning_rate=0.01, weight_decay=1e-4).
+       """
         self.learning_rate = learning_rate
         self.epsilon = epsilon
         self.weight_decay = weight_decay
@@ -533,8 +533,8 @@ struct AdaGrad:
             loss.backward(tape)
 
             # Update all parameters with adaptive learning rates
-            optimizer.step(model.parameters(), tape)
-        """
+            optimizer.step(model.parameters(), tape).
+       """
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
@@ -605,8 +605,8 @@ struct AdaGrad:
 
         Examples:
             # Clear gradients before next iteration
-            optimizer.zero_grad(tape)
-        """
+            optimizer.zero_grad(tape).
+       """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -618,8 +618,8 @@ struct AdaGrad:
 
         Examples:
             # Clear accumulators before new training phase
-            optimizer.reset_accumulators()
-        """
+            optimizer.reset_accumulators().
+       """
         self.G_buffers.clear()
 
 
@@ -656,8 +656,8 @@ struct RMSprop:
 
         # Training step
         optimizer.step(parameters, tape)
-        optimizer.zero_grad(tape)
-    """
+        optimizer.zero_grad(tape).
+   """
 
     var learning_rate: Float64
     var alpha: Float64
@@ -690,8 +690,8 @@ struct RMSprop:
             var opt = RMSprop(learning_rate=0.001)
             var opt = RMSprop(0.01, alpha=0.999)
             var opt = RMSprop(0.01, momentum=0.9)
-            var opt = RMSprop(0.01, weight_decay=1e-4)
-        """
+            var opt = RMSprop(0.01, weight_decay=1e-4).
+       """
         self.learning_rate = learning_rate
         self.alpha = alpha
         self.epsilon = epsilon

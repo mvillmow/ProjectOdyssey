@@ -89,8 +89,8 @@ struct StepLR:
             var sched = StepLR(base_lr=0.1, step_size=30, gamma=0.1)
 
             # Custom: halve every 10 epochs
-            var sched = StepLR(base_lr=0.01, step_size=10, gamma=0.5)
-        """
+            var sched = StepLR(base_lr=0.01, step_size=10, gamma=0.5).
+       """
         self.base_lr = base_lr
         self.step_size = step_size
         self.gamma = gamma
@@ -112,8 +112,8 @@ struct StepLR:
             var sched = StepLR(base_lr=0.1, step_size=10, gamma=0.1)
             var lr0 = sched.step(0)   # 0.1
             var lr10 = sched.step(10) # 0.01 (0.1 * 0.1^1)
-            var lr20 = sched.step(20) # 0.001 (0.1 * 0.1^2)
-        """
+            var lr20 = sched.step(20) # 0.001 (0.1 * 0.1^2).
+       """
         self.last_epoch = epoch
         var decay_factor = self.gamma ** Float64(epoch // self.step_size)
         self.current_lr = self.base_lr * decay_factor
@@ -187,8 +187,8 @@ struct ExponentialLR:
             var sched = ExponentialLR(base_lr=0.1, gamma=0.95)
 
             # Aggressive decay: 10% per epoch
-            var sched = ExponentialLR(base_lr=0.01, gamma=0.9)
-        """
+            var sched = ExponentialLR(base_lr=0.01, gamma=0.9).
+       """
         self.base_lr = base_lr
         self.gamma = gamma
         self.last_epoch = -1
@@ -209,8 +209,8 @@ struct ExponentialLR:
             var sched = ExponentialLR(base_lr=0.1, gamma=0.95)
             var lr0 = sched.step(0)   # 0.1
             var lr1 = sched.step(1)   # 0.095 (0.1 * 0.95)
-            var lr10 = sched.step(10) # 0.0599 (0.1 * 0.95^10)
-        """
+            var lr10 = sched.step(10) # 0.0599 (0.1 * 0.95^10).
+       """
         self.last_epoch = epoch
         var decay_factor = self.gamma ** Float64(epoch)
         self.current_lr = self.base_lr * decay_factor

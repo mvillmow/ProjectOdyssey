@@ -440,8 +440,8 @@ def main() -> int:
     """Main entry point.
 
     Returns:
-        Exit code (0 for success, 1 for errors)
-    """
+        Exit code (0 for success, 1 for errors).
+   """
     # Configure logging
     logging.basicConfig(
         level=logging.INFO,

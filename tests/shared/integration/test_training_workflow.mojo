@@ -248,8 +248,8 @@ fn test_multi_epoch_convergence() raises:
     Success Criteria:
         - Loss decreases monotonically (or mostly)
         - Final loss is close to optimal
-        - Training is stable (no NaN, inf)
-    """
+        - Training is stable (no NaN, inf).
+   """
     # TODO(#1538): Implement when all components are available
     # # Simple problem: learn identity function
     # var model = Linear(10, 10)

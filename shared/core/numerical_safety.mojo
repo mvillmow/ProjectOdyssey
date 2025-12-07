@@ -406,8 +406,8 @@ fn check_gradient_norm(
 
     Note:
         Use this to detect gradient explosion during training.
-        Common thresholds: 10.0 (strict), 100.0 (moderate), 1000.0 (lenient)
-    """
+        Common thresholds: 10.0 (strict), 100.0 (moderate), 1000.0 (lenient).
+   """
     var norm = compute_tensor_l2_norm(gradient)
 
     if norm > max_norm:
@@ -441,8 +441,8 @@ fn check_gradient_vanishing(
 
     Note:
         Use this to detect gradient vanishing in deep networks.
-        Common thresholds: 1e-7 (lenient), 1e-5 (moderate), 1e-3 (strict)
-    """
+        Common thresholds: 1e-7 (lenient), 1e-5 (moderate), 1e-3 (strict).
+   """
     var norm = compute_tensor_l2_norm(gradient)
 
     if norm < min_norm:

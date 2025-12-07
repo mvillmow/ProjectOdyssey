@@ -175,8 +175,8 @@ struct DepthwiseSeparableBlock:
         Args:
             in_channels: Number of input channels
             out_channels: Number of output channels
-            stride: Stride for depthwise convolution (1 or 2)
-        """
+            stride: Stride for depthwise convolution (1 or 2).
+       """
         # Depthwise convolution weights (one 3×3 filter per channel)
         self.dw_weights = kaiming_normal(
             List[Int]().append(in_channels).append(1).append(3).append(3),
@@ -215,8 +215,8 @@ struct DepthwiseSeparableBlock:
             training: Training mode flag (affects batch norm)
 
         Returns:
-            Output tensor (batch, out_channels, H/stride, W/stride)
-        """
+            Output tensor (batch, out_channels, H/stride, W/stride).
+       """
         # Depthwise convolution (spatial filtering, per-channel)
         var out = depthwise_conv2d(x, self.dw_weights, self.dw_bias, stride=stride, padding=1)
         out = batch_norm2d(
@@ -289,8 +289,8 @@ struct MobileNetV1:
         """Initialize MobileNetV1 model.
 
         Args:
-            num_classes: Number of output classes (default: 10 for CIFAR-10)
-        """
+            num_classes: Number of output classes (default: 10 for CIFAR-10).
+       """
         # Initial standard convolution: 3×3, 32 filters, stride=2
         self.initial_conv_weights = kaiming_normal(
             List[Int]().append(32).append(3).append(3).append(3),
@@ -334,8 +334,8 @@ struct MobileNetV1:
             training: Training mode flag (affects batch norm)
 
         Returns:
-            Logits tensor (batch, num_classes)
-        """
+            Logits tensor (batch, num_classes).
+       """
         # Initial standard convolution
         var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=2, padding=1)
         out = batch_norm2d(
@@ -538,8 +538,8 @@ struct MobileNetV1:
             Creates directory if it doesn't exist. Each parameter is saved as:
             - <param_name>.weights
 
-            Total parameters saved: ~156 (6 initial conv, 13 blocks × 12 params, 2 fc)
-        """
+            Total parameters saved: ~156 (6 initial conv, 13 blocks × 12 params, 2 fc).
+       """
         from shared.training.model_utils import save_model_weights, get_model_parameter_names
 
         # Collect all parameters in order

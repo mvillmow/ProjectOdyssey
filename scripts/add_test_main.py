@@ -28,7 +28,7 @@ def find_test_functions(file_content: str) -> List[str]:
         file_content: Content of the Mojo file
 
     Returns:
-        List of test function names (e.g., ['test_addition', 'test_multiplication'])
+        List of test function names (e.g., ['test_addition', 'test_multiplication']).
     """
     # Pattern to match function definitions starting with 'test_'
     # Matches: fn test_name(...) raises:

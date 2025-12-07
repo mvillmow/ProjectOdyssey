@@ -37,8 +37,8 @@ fn test_mxfp4_unaligned_roundtrip() raises:
 
     This is the critical test for DATA-001 (padding data loss fix).
     Before the fix: 33 → 64 elements (WRONG!)
-    After the fix: 33 → 33 elements (CORRECT!)
-    """
+    After the fix: 33 → 33 elements (CORRECT!).
+   """
     print("Test: MXFP4 unaligned round-trip...")
 
     # Create 33-element tensor (1 complete block + 1 extra)
@@ -99,8 +99,8 @@ fn test_nvfp4_unaligned_roundtrip() raises:
 
     Similar to DATA-001 but for NVFP4 which uses 16-element blocks.
     Before fix: 17 → 32 elements (WRONG!)
-    After fix: 17 → 17 elements (CORRECT!)
-    """
+    After fix: 17 → 17 elements (CORRECT!).
+   """
     print("Test: NVFP4 unaligned round-trip...")
 
     var t = zeros(List[Int](17), DType.float32)

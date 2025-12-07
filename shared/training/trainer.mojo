@@ -51,8 +51,8 @@ struct BaseTrainer(Trainer):
             zero_gradients,
             train_loader,
             val_loader
-        )
-    """
+        ).
+   """
     var config: TrainerConfig
     var metrics: TrainingMetrics
     var metric_logger: MetricLogger
@@ -232,8 +232,8 @@ struct BaseTrainer(Trainer):
         """Get epoch with best validation loss.
 
         Returns:
-            Epoch number (0-indexed)
-        """
+            Epoch number (0-indexed).
+       """
         return self.metrics.best_epoch
 
     fn save_checkpoint(self, epoch: Int, path: String) raises:

@@ -177,8 +177,8 @@ fn test_conv2d_initialization() raises:
             stride: Int = 1,
             padding: Int = 0,
             bias: Bool = True
-        )
-    """
+        ).
+   """
     # TODO(#1538): Implement when Conv2D is available
     # var layer = Conv2D(
     #     in_channels=3,
@@ -201,8 +201,8 @@ fn test_conv2d_output_shape() raises:
     API Contract:
         layer.forward(input: Tensor) -> Tensor
         - Input: (batch, in_channels, height, width)
-        - Output: (batch, out_channels, out_height, out_width)
-    """
+        - Output: (batch, out_channels, out_height, out_width).
+   """
     # TODO(#1538): Implement when Conv2D is available
     # # Input: (batch=1, channels=3, height=32, width=32)
     # # Conv2D: out_channels=16, kernel=3, stride=1, padding=1
@@ -261,8 +261,8 @@ fn test_relu_activation() raises:
 
     Functional API:
         relu(x) -> output
-        - For each element: output = max(0, input)
-    """
+        - For each element: output = max(0, input).
+   """
     # Test with known values: [-2.0, -1.0, 0.0, 1.0, 2.0]
     var shape = List[Int]()
     shape.append(5)
@@ -299,8 +299,8 @@ fn test_sigmoid_range() raises:
     Functional API:
         sigmoid(x) -> output
         - For each element: output = 1 / (1 + exp(-input))
-        - Output range: (0, 1)
-    """
+        - Output range: (0, 1).
+   """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
     var shape = List[Int]()
     shape.append(5)
@@ -330,8 +330,8 @@ fn test_tanh_range() raises:
     Functional API:
         tanh(x) -> output
         - For each element: output = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
-        - Output range: (-1, 1)
-    """
+        - Output range: (-1, 1).
+   """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
     var shape = List[Int]()
     shape.append(5)
@@ -365,8 +365,8 @@ fn test_maxpool2d_downsampling() raises:
 
     API Contract:
         MaxPool2D(kernel_size: Int, stride: Int = None, padding: Int = 0)
-        - Reduces spatial dimensions by kernel_size (if stride=kernel_size)
-    """
+        - Reduces spatial dimensions by kernel_size (if stride=kernel_size).
+   """
     # TODO(#1538): Implement when MaxPool2D is available
     # # Input: (1, 16, 32, 32)
     # # MaxPool2D: kernel=2, stride=2

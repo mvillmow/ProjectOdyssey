@@ -58,8 +58,8 @@ fn evaluate_model(
         Tuple of (accuracy, correct_per_class, total_per_class)
         - accuracy: Overall accuracy as percentage (0-100)
         - correct_per_class: Correct predictions per class (10,)
-        - total_per_class: Total samples per class (10,)
-    """
+        - total_per_class: Total samples per class (10,).
+   """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 

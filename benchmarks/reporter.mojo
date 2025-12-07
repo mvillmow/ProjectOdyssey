@@ -15,8 +15,8 @@ fn format_throughput(value: Float64) -> String:
         value: Throughput in operations per second
 
     Returns:
-        Formatted string with units (ops/s, kops/s, Mops/s, Gops/s)
-    """
+        Formatted string with units (ops/s, kops/s, Mops/s, Gops/s).
+   """
     if value < 1000.0:
         return String(Int(value)) + " ops/s"
     elif value < 1_000_000.0:
@@ -34,8 +34,8 @@ fn format_time(value_us: Float64) -> String:
         value_us: Time in microseconds
 
     Returns:
-        Formatted string with units (us, ms, s)
-    """
+        Formatted string with units (us, ms, s).
+   """
     if value_us < 1000.0:
         return String(value_us) + " us"
     elif value_us < 1_000_000.0:

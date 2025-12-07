@@ -38,8 +38,8 @@ def run_command(cmd: list) -> Tuple[int, str, str]:
         cmd: Command to run as list of arguments (secure from injection)
 
     Returns:
-        Tuple of (exit_code, stdout, stderr)
-    """
+        Tuple of (exit_code, stdout, stderr).
+   """
     try:
         result = subprocess.run(
             cmd,

@@ -118,8 +118,8 @@ def load_cifar10_batch(filepath: Path) -> Tuple[np.ndarray, np.ndarray]:
         CIFAR-10 pickle format:
         - dict['data']: (10000, 3072) uint8 array (3072 = 32*32*3)
         - dict['labels']: (10000,) list of ints
-        - Pixel order: R channel, G channel, B channel (all 1024 pixels each)
-    """
+        - Pixel order: R channel, G channel, B channel (all 1024 pixels each).
+   """
     with open(filepath, "rb") as f:
         batch = pickle.load(f, encoding="bytes")
 
@@ -143,8 +143,8 @@ def save_idx_labels(labels: np.ndarray, filepath: Path):
 
     IDX Format:
         [magic(4B)][count(4B)][label_data...]
-        Magic number: 2049 (0x00000801)
-    """
+        Magic number: 2049 (0x00000801).
+   """
     magic = 2049
     count = len(labels)
 
@@ -168,8 +168,8 @@ def save_idx_images_rgb(images: np.ndarray, filepath: Path):
 
     IDX Format:
         [magic(4B)][count(4B)][channels(4B)][rows(4B)][cols(4B)][pixel_data...]
-        Magic number: 2052 (custom extension for RGB)
-    """
+        Magic number: 2052 (custom extension for RGB).
+   """
     magic = 2052  # Custom magic for RGB images
     count, channels, rows, cols = images.shape
 

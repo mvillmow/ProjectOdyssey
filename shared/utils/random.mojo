@@ -275,8 +275,8 @@ fn random_normal() -> Float32:
     normally distributed samples.
 
     Returns:
-        Random float from N(0, 1)
-    """
+        Random float from N(0, 1).
+   """
     from math import sqrt, log, pi, cos
 
     var u1 = random_float64()
@@ -298,8 +298,8 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
         max_val: Maximum value (exclusive)
 
     Returns:
-        Random integer in [min_val, max_val)
-    """
+        Random integer in [min_val, max_val).
+   """
     if min_val >= max_val:
         return min_val
     var range_val = max_val - min_val

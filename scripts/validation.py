@@ -77,7 +77,7 @@ def check_required_sections(
         file_path: Optional path for logging
 
     Returns:
-        Tuple of (all_found, missing_sections)
+        Tuple of (all_found, missing_sections).
     """
     missing = []
 
@@ -125,7 +125,7 @@ def validate_relative_link(link: str, source_file: Path, repo_root: Path) -> Tup
         repo_root: Repository root directory
 
     Returns:
-        Tuple of (is_valid, error_message)
+        Tuple of (is_valid, error_message).
     """
     # Skip external links
     if link.startswith(("http://", "https://", "mailto:")):

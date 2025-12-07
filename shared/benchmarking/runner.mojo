@@ -311,8 +311,8 @@ struct BenchmarkRunner(Movable):
 
         Args:
             name: Descriptive name for the benchmarked operation
-            warmup_iters: Number of warmup iterations (default 10)
-        """
+            warmup_iters: Number of warmup iterations (default 10).
+       """
         self.name = name
         self.warmup_iters = warmup_iters
         self.result = LowLevelBenchmarkResult(name, iterations=0)
@@ -388,8 +388,8 @@ fn print_benchmark_report(result: BenchmarkStatistics, name: String = "Benchmark
 
     Args:
         result: BenchmarkStatistics from benchmark_function()
-        name: Name of benchmarked operation (default "Benchmark")
-    """
+        name: Name of benchmarked operation (default "Benchmark").
+   """
     print("")
     print("=" * 70)
     print("Benchmark Report: " + name)
@@ -431,8 +431,8 @@ fn print_benchmark_summary(
 
     Args:
         results: List of BenchmarkStatistics objects
-        names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.)
-    """
+        names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.).
+   """
     print("")
     print("=" * 100)
     print("Benchmark Summary")
@@ -538,8 +538,8 @@ struct LegacyBenchmarkConfig(Copyable, Movable):
 
         Args:
             warmup: Warmup iterations (default: 100)
-            iterations: Measurement iterations (default: 1000)
-        """
+            iterations: Measurement iterations (default: 1000).
+       """
         self.warmup_iterations = warmup
         self.measure_iterations = iterations
 

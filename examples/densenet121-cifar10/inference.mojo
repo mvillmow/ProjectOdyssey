@@ -26,8 +26,8 @@ fn evaluate_model(
         verbose: Print progress during evaluation
 
     Returns:
-        Tuple of (accuracy, correct_per_class, total_per_class)
-    """
+        Tuple of (accuracy, correct_per_class, total_per_class).
+   """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 

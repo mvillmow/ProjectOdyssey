@@ -32,8 +32,8 @@ fn create_cifar10_test_file(num_images: Int) -> String:
         num_images: Number of images to create
 
     Returns:
-        String containing binary format data (concatenated image records)
-    """
+        String containing binary format data (concatenated image records).
+   """
     var total_bytes = num_images * CIFAR10_BYTES_PER_IMAGE
     var result = ""
 
@@ -59,8 +59,8 @@ fn create_cifar100_test_file(num_images: Int) -> String:
         num_images: Number of images to create
 
     Returns:
-        String containing binary format data (concatenated image records)
-    """
+        String containing binary format data (concatenated image records).
+   """
     var total_bytes = num_images * CIFAR100_BYTES_PER_IMAGE
     var result = ""
 

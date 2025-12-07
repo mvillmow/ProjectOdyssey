@@ -95,8 +95,8 @@ struct SimpleCNN(Copyable, Movable):
             batch_size: Number of samples in batch
 
         Returns:
-            Output shape (batch_size, num_classes)
-        """
+            Output shape (batch_size, num_classes).
+       """
         var shape = List[Int]()
         shape.append(batch_size)
         shape.append(self.num_classes)
@@ -178,8 +178,8 @@ struct LinearModel(Copyable, Movable):
             batch_size: Number of samples in batch
 
         Returns:
-            Output shape (batch_size, out_features)
-        """
+            Output shape (batch_size, out_features).
+       """
         var shape = List[Int]()
         shape.append(batch_size)
         shape.append(self.out_features)
@@ -506,8 +506,8 @@ struct SimpleMLP(Copyable, Movable, Model):
         layer2_weights: Second layer weights (hidden to hidden or hidden to output)
         layer2_bias: Second layer bias
         layer3_weights: Third layer weights (only if num_hidden_layers=2)
-        layer3_bias: Third layer bias (only if num_hidden_layers=2)
-    """
+        layer3_bias: Third layer bias (only if num_hidden_layers=2).
+   """
 
     var input_dim: Int
     var hidden_dim: Int
@@ -621,8 +621,8 @@ struct SimpleMLP(Copyable, Movable, Model):
         ```
 
         Note:
-            Uses ReLU activation between layers: ReLU(x) = max(0, x)
-        """
+            Uses ReLU activation between layers: ReLU(x) = max(0, x).
+       """
         # Layer 1: input -> hidden
         var hidden1 = self._linear_forward(
             input,
@@ -687,8 +687,8 @@ struct SimpleMLP(Copyable, Movable, Model):
 
         Note:
             This is the Model trait implementation that accepts ExTensor.
-            Uses ReLU activation between layers: ReLU(x) = max(0, x)
-        """
+            Uses ReLU activation between layers: ReLU(x) = max(0, x).
+       """
         # Extract Float32 values from ExTensor
         var input_list = List[Float32]()
         var input_numel = input.numel()

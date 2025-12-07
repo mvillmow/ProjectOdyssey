@@ -93,8 +93,8 @@ fn test_throughput_calculation() raises:
     - Throughput = operations / time
     - Handles different operation counts
     - Handles different time scales
-    - Results are sensible (positive, non-infinite)
-    """
+    - Results are sensible (positive, non-infinite).
+   """
     # Test throughput with different values
     var throughput_high: Float64 = 1000.0  # 1000 ops/sec
     var throughput_low: Float64 = 100.0    # 100 ops/sec

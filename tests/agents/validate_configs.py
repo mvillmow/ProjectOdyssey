@@ -191,8 +191,8 @@ class AgentConfigValidator:
             content: File content
 
         Returns:
-            Tuple of (errors, warnings, frontmatter_dict)
-        """
+            Tuple of (errors, warnings, frontmatter_dict).
+       """
         errors = []
         warnings = []
         frontmatter = {}
@@ -263,8 +263,8 @@ class AgentConfigValidator:
             frontmatter: Parsed frontmatter
 
         Returns:
-            Tuple of (errors, warnings)
-        """
+            Tuple of (errors, warnings).
+       """
         errors = []
         warnings = []
 
@@ -400,8 +400,8 @@ def main() -> int:
     """Main entry point.
 
     Returns:
-        Exit code (0 for success, 1 for failure)
-    """
+        Exit code (0 for success, 1 for failure).
+   """
     # Configure logging
     logging.basicConfig(
         level=logging.INFO,

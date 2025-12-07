@@ -243,8 +243,8 @@ trait LRScheduler:
         Notes:
             - Schedulers should be deterministic (same inputs -> same output)
             - epoch and batch are 0-indexed
-            - batch parameter is optional (defaults to 0 for epoch-based schedulers)
-        """
+            - batch parameter is optional (defaults to 0 for epoch-based schedulers).
+       """
         ...
 
 
@@ -348,8 +348,8 @@ fn compute_gradient_norm(
         - Aggregates norms across all tensors in the list
 
     Reference:
-        Used in Gradient Clipping by Global Norm (arXiv:1308.0850)
-    """
+        Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
+   """
     var total_norm_sq = Float64(0.0)
     var total_abs_norm = Float64(0.0)
 

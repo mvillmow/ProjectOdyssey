@@ -945,8 +945,8 @@ fn depthwise_separable_conv2d_no_bias(
         padding: Padding for depthwise convolution (default: 0)
 
     Returns:
-        Output tensor of shape (batch, out_channels, out_height, out_width)
-    """
+        Output tensor of shape (batch, out_channels, out_height, out_width).
+   """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(
         x, depthwise_kernel, stride, padding

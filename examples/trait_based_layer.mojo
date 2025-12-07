@@ -178,8 +178,8 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             input: Input tensor (batch_size, in_features)
 
         Returns:
-            Output tensor (batch_size, out_features)
-        """
+            Output tensor (batch_size, out_features).
+       """
         self.last_input = input.copy()
         self.last_output = linear(input, self.weights, self.bias)
         return self.last_output
@@ -288,8 +288,8 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         """Initialize batch normalization layer.
 
         Args:
-            num_features: Number of features (channels)
-        """
+            num_features: Number of features (channels).
+       """
         var shape = List[Int]()
         shape.append(num_features)
 

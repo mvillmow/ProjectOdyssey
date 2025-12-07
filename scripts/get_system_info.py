@@ -27,7 +27,7 @@ def run_command(cmd: list, capture_output: bool = True) -> Tuple[bool, str]:
         capture_output: Whether to capture stdout/stderr
 
     Returns:
-        Tuple of (success: bool, output: str)
+        Tuple of (success: bool, output: str).
     """
     try:
         result = subprocess.run(cmd, capture_output=capture_output, text=True, timeout=5)
@@ -101,7 +101,7 @@ def get_tool_info(
         version_extract: Optional function to extract version from output
 
     Returns:
-        Tuple of (version: str, path: str)
+        Tuple of (version: str, path: str).
     """
     path = get_command_path(tool_name)
 

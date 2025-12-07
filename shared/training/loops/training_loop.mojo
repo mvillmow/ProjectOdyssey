@@ -164,8 +164,8 @@ struct TrainingLoop:
             train_images, train_labels, batch_size=128,
             compute_batch_loss=my_batch_fn,
             total_epochs=100, current_epoch=1
-        )
-    """
+        ).
+   """
     var log_interval: Int
     var clip_gradients: Bool
     var max_grad_norm: Float64

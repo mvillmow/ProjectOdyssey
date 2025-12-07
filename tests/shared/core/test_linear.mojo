@@ -81,8 +81,8 @@ fn test_linear_output_shape() raises:
     Formula: output_shape = (batch_size, out_features)
 
     Test case: batch=32, in_features=784, out_features=128
-    Expected: output shape (32, 128)
-    """
+    Expected: output shape (32, 128).
+   """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
@@ -206,8 +206,8 @@ fn test_linear_no_bias_output_shape() raises:
     Formula: output_shape = (batch_size, out_features)
 
     Test case: batch=32, in_features=784, out_features=128
-    Expected: output shape (32, 128)
-    """
+    Expected: output shape (32, 128).
+   """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
@@ -293,8 +293,8 @@ fn test_linear_backward_output_shape() raises:
     Expected gradients:
         grad_input: (batch_size, in_features)
         grad_kernel: (out_features, in_features)
-        grad_bias: (out_features,)
-    """
+        grad_bias: (out_features,).
+   """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
@@ -449,8 +449,8 @@ fn test_linear_no_bias_backward_output_shape() raises:
 
     Expected gradients:
         grad_input: (batch_size, in_features)
-        grad_kernel: (out_features, in_features)
-    """
+        grad_kernel: (out_features, in_features).
+   """
     var batch_size = 32
     var in_features = 784
     var out_features = 128

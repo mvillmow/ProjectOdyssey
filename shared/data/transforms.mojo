@@ -773,8 +773,8 @@ struct RandomErasing(Transform, Copyable, Movable):
 
     Uses RandomTransformBase for probability handling.
 
-    Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017)
-    """
+    Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017).
+   """
 
     var base: RandomTransformBase  # Probability handling
     var scale: Tuple[Float64, Float64]  # Min/max area fraction to erase

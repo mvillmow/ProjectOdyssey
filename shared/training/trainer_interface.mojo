@@ -48,8 +48,8 @@ struct TrainerConfig(Copyable, Movable):
                 precision_dtype=DType.float16,
                 loss_scale=65536.0,
                 gradient_clip_norm=1.0
-            )
-    """
+            ).
+   """
     var num_epochs: Int
     var batch_size: Int
     var learning_rate: Float64
@@ -187,8 +187,8 @@ trait Trainer:
     - on_batch_begin()
     - on_batch_end()
     - on_validation_begin()
-    - on_validation_end()
-    """
+    - on_validation_end().
+   """
 
     fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.

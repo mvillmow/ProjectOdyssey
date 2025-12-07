@@ -205,8 +205,8 @@ fn evaluate_test_set(
         test_labels: Test labels (N,)
 
     Returns:
-        Test accuracy (0.0 to 1.0)
-    """
+        Test accuracy (0.0 to 1.0).
+   """
     var num_samples = test_images.shape()[0]
     var correct = 0
 

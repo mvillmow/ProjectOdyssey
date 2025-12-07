@@ -27,8 +27,8 @@ fn parse_args() raises -> Tuple[String, String]:
     """Parse command line arguments using enhanced argument parser.
 
     Returns:
-        Tuple of (weights_dir, data_dir)
-    """
+        Tuple of (weights_dir, data_dir).
+   """
     var parser = ArgumentParser()
     parser.add_argument("weights-dir", "string", "alexnet_weights")
     parser.add_argument("data-dir", "string", "datasets/cifar10")
@@ -141,8 +141,8 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
         DynamicVector of indices (length k) sorted by descending value
 
     Note:
-        Simple implementation using repeated argmax (not optimal but clear)
-    """
+        Simple implementation using repeated argmax (not optimal but clear).
+   """
     var shape = tensor.shape()
     var num_classes = shape[1]
     var indices = List[Int]()

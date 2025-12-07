@@ -545,8 +545,8 @@ fn main() raises:
        - Apply tolerance (~5% for normal variance)
        - Flag regressions (>10% slowdown)
     5. Generate comparison report
-    6. Exit with appropriate code (0 = success, 1 = regressions)
-    """
+    6. Exit with appropriate code (0 = success, 1 = regressions).
+   """
     print("Benchmark Comparison Tool\n")
 
     var baseline_file = "benchmarks/baselines/baseline_results.json"

@@ -37,8 +37,8 @@ fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
     """Parse command line arguments using enhanced argument parser.
 
     Returns:
-        Tuple of (epochs, batch_size, learning_rate, momentum, data_dir, weights_dir)
-    """
+        Tuple of (epochs, batch_size, learning_rate, momentum, data_dir, weights_dir).
+   """
     var parser = create_training_parser()
     parser.add_argument("weights-dir", "string", "vgg16_weights")
 
@@ -403,8 +403,8 @@ fn evaluate(
         test_labels: Test labels (10000,)
 
     Returns:
-        Test accuracy (0.0 to 1.0)
-    """
+        Test accuracy (0.0 to 1.0).
+   """
     var num_samples = test_images.shape()[0]
     var predictions = List[Int]()
 

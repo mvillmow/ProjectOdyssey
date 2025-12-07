@@ -101,8 +101,8 @@ fn compute_flattened_size() -> Int:
     This derives the FC1 input dimension from the architecture hyperparameters.
 
     Returns:
-        Number of features after flattening (channels * height * width)
-    """
+        Number of features after flattening (channels * height * width).
+   """
     # After conv1: Use shared conv2d_output_shape
     var h1, w1 = conv2d_output_shape(
         INPUT_HEIGHT,
@@ -192,8 +192,8 @@ struct AlexNet:
         fc2_weights: Second FC layer weights (4096, 4096)
         fc2_bias: Second FC layer bias (4096,)
         fc3_weights: Third FC layer weights (num_classes, 4096)
-        fc3_bias: Third FC layer bias (num_classes,)
-    """
+        fc3_bias: Third FC layer bias (num_classes,).
+   """
 
     var num_classes: Int
     var dropout_rate: Float32
@@ -225,8 +225,8 @@ struct AlexNet:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
-            dropout_rate: Dropout probability for FC layers (default: 0.5)
-        """
+            dropout_rate: Dropout probability for FC layers (default: 0.5).
+       """
         self.num_classes = num_classes
         self.dropout_rate = dropout_rate
 
@@ -308,8 +308,8 @@ struct AlexNet:
             training: Whether in training mode (applies dropout if True)
 
         Returns:
-            Output logits of shape (batch, num_classes)
-        """
+            Output logits of shape (batch, num_classes).
+       """
         # Conv1 + ReLU + MaxPool
         var conv1_out = conv2d(
             input,
@@ -416,8 +416,8 @@ struct AlexNet:
             input: Input tensor of shape (1, 3, 32, 32)
 
         Returns:
-            Predicted class index (0 to num_classes-1)
-        """
+            Predicted class index (0 to num_classes-1).
+       """
         var logits = self.forward(input, training=False)
 
         # Find argmax

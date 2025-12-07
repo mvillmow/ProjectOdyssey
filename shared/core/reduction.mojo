@@ -28,8 +28,8 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
     Examples:
         var t = ones(List[Int](3, 4), DType.float32)
         var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
-        var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
-    """
+        var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,).
+   """
     if axis == -1:
         # Sum all elements
         var result_shape = List[Int]()
@@ -335,8 +335,8 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
         var x2 = ones(List[Int](3, 4), DType.float32)
         var y2 = sum(x2, axis=1)  # Shape (3,)
         var grad_y2 = ones(List[Int](), DType.float32)
-        var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4)
-    """
+        var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4).
+   """
     # Create result tensor with input shape
     var input_shape = x.shape()
     var result = ExTensor(input_shape, grad_output.dtype())

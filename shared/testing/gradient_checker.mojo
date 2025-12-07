@@ -461,8 +461,8 @@ fn _deep_copy(tensor: ExTensor) raises -> ExTensor:
         tensor: Tensor to deep copy
 
     Returns:
-        New tensor with copied data (independent memory allocation)
-    """
+        New tensor with copied data (independent memory allocation).
+   """
     # Create new tensor with same shape and dtype
     var result = ExTensor(tensor.shape(), tensor._dtype)
 

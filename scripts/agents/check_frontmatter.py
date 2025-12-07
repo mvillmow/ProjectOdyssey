@@ -100,7 +100,7 @@ def validate_frontmatter(frontmatter: Dict, file_path: Path, verbose: bool = Fal
         verbose: Whether to show verbose output
 
     Returns:
-        List of error messages (empty if valid)
+        List of error messages (empty if valid).
     """
     errors = []
 
@@ -157,7 +157,7 @@ def check_file(file_path: Path, verbose: bool = False) -> Tuple[bool, List[str]]
         verbose: Whether to show verbose output
 
     Returns:
-        Tuple of (is_valid, error_messages)
+        Tuple of (is_valid, error_messages).
     """
     errors = []
 

@@ -146,8 +146,8 @@ class TestExtractMarkdownLinks(unittest.TestCase):
         content = """
         [Link 1](https://example.com)
         [Link 2](./relative/path.md)
-        [Link 3](#anchor)
-        """
+        [Link 3](#anchor).
+       """
         links = extract_markdown_links(content)
 
         self.assertEqual(len(links), 3)
