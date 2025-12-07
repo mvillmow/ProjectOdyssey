@@ -59,7 +59,7 @@ struct BenchmarkResult(Copyable, Movable):
         - Welford's algorithm: https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
         - Variance = _M2 / (iterations - 1) for sample variance (N-1 denominator)
         - Standard deviation = sqrt(variance)
-        - Mean is computed exactly via accumulated sum
+        - Mean is computed exactly via accumulated sum.
     """
 
     var name: String
@@ -81,7 +81,7 @@ struct BenchmarkResult(Copyable, Movable):
             - iterations parameter is stored for reference but does not limit
               the number of records() calls
             - All timing fields initialized to 0
-            - First call to record() will initialize min/max to that time
+            - First call to record() will initialize min/max to that time.
         """
         self.name = name
         self.iterations = iterations
@@ -104,7 +104,7 @@ struct BenchmarkResult(Copyable, Movable):
             - First call sets min and max to this time
             - Subsequent calls update min/max if needed
             - Mean and variance are updated via Welford's algorithm
-            - Total time is accumulated for reference
+            - Total time is accumulated for reference.
         """
         var n = self.iterations + 1
         self.iterations = n
@@ -139,7 +139,7 @@ struct BenchmarkResult(Copyable, Movable):
 
         Notes:
             - Result is exact (computed from accumulated mean via Welford's)
-            - Safe even for very large iteration counts
+            - Safe even for very large iteration counts.
         """
         if self.iterations == 0:
             return 0.0
@@ -175,7 +175,7 @@ struct BenchmarkResult(Copyable, Movable):
 
         Notes:
             - Tracks actual minimum across all recorded iterations
-            - Useful for identifying best-case performance
+            - Useful for identifying best-case performance.
         """
         if self.iterations == 0:
             return 0.0
@@ -190,7 +190,7 @@ struct BenchmarkResult(Copyable, Movable):
 
         Notes:
             - Tracks actual maximum across all recorded iterations
-            - Useful for identifying worst-case performance
+            - Useful for identifying worst-case performance.
         """
         if self.iterations == 0:
             return 0.0
@@ -208,7 +208,7 @@ struct BenchmarkResult(Copyable, Movable):
               Mean: 1234.56 us (1234567.89 ns)
               Std Dev: 45.67 us
               Min: 1000.00 us
-              Max: 2000.00 us
+              Max: 2000.00 us.
         """
         var mean_ns = self.mean()
         var mean_us = mean_ns / 1000.0

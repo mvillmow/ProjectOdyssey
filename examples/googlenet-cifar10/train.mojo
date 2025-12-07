@@ -73,7 +73,7 @@ fn compute_learning_rate(initial_lr: Float32, epoch: Int) -> Float32:
         epoch: Current epoch number
 
     Returns:
-        Adjusted learning rate
+        Adjusted learning rate.
     """
     var decay_factor = Float32(0.2)
     var decay_epochs = 60
@@ -105,7 +105,7 @@ fn train_epoch(
         epoch: Current epoch number
 
     Returns:
-        Average training loss for the epoch
+        Average training loss for the epoch.
     """
     var num_samples = train_images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)

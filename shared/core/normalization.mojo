@@ -729,7 +729,7 @@ fn layer_norm(
     Note:
         - No running statistics needed (stateless)
         - Normalizes each sample independently
-        - Commonly used in transformers and RNNs
+        - Commonly used in transformers and RNNs.
     """
     var x_shape = x.shape()
 
@@ -1384,7 +1384,7 @@ fn group_norm(
     Note:
         - Channels must be divisible by num_groups
         - No running statistics needed (stateless)
-        - Commonly used in detection and segmentation models
+        - Commonly used in detection and segmentation models.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -1792,7 +1792,7 @@ fn instance_norm(
     Note:
         - No batch statistics needed (each sample normalized independently)
         - No running statistics (stateless)
-        - Commonly used in style transfer, GANs, and image generation
+        - Commonly used in style transfer, GANs, and image generation.
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:

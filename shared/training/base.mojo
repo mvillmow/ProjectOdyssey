@@ -277,7 +277,7 @@ fn has_nan_or_inf(tensor: ExTensor) -> Bool:
     Note:
         - Works with all tensor dtypes (float32, float64, float16, integer types)
         - Integer tensors cannot have NaN/Inf and will always return False
-        - Used for gradient validation during training
+        - Used for gradient validation during training.
     """
     return has_nan(tensor) or has_inf(tensor)
 

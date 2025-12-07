@@ -36,7 +36,7 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
 
     Performance Target:
         - > 1B parameters/second on test hardware
-        - Within 2x of PyTorch SGD performance
+        - Within 2x of PyTorch SGD performance.
     """
     # TODO(#1538): Implement when SGD and timing utilities are available
     # varparam_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
@@ -94,7 +94,7 @@ fn bench_sgd_momentum_overhead() raises -> BenchmarkResult:
         - Memory overhead of momentum state
 
     Performance Target:
-        - Momentum should add < 20% overhead
+        - Momentum should add < 20% overhead.
     """
     # TODO(#1538): Implement when SGD is available
     # varn = 10_000_000
@@ -143,7 +143,7 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
 
     Performance Target:
         - > 500M parameters/second on test hardware
-        - Within 2x of PyTorch Adam performance
+        - Within 2x of PyTorch Adam performance.
     """
     # TODO(#1538): Implement when Adam is available
     # varparam_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
@@ -320,7 +320,7 @@ fn bench_simd_vectorization() raises -> BenchmarkResult:
         - Memory bandwidth utilization
 
     Performance Target:
-        - SIMD version should be 4-8x faster than scalar
+        - SIMD version should be 4-8x faster than scalar.
     """
     # TODO(#1538): Implement when SIMD utilities are available
     # alias simd_width = simdwidthof[DType.float32]()

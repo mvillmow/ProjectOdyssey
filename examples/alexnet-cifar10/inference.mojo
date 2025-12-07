@@ -58,7 +58,7 @@ fn evaluate_model(
 
     Note:
         Top-5 accuracy: Model is correct if true label is in top 5 predictions
-        For CIFAR-10 (10 classes), Top-5 is less meaningful but included for completeness
+        For CIFAR-10 (10 classes), Top-5 is less meaningful but included for completeness.
     """
     var num_samples = test_images.shape()[0]
 
@@ -116,7 +116,7 @@ fn _argmax(tensor: ExTensor) raises -> Int:
         tensor: 1D tensor
 
     Returns:
-        Index of maximum value
+        Index of maximum value.
     """
     var shape = tensor.shape()
     var max_idx = 0

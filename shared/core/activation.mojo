@@ -298,7 +298,7 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 
         var logits_2d = ExTensor(...)  # [[1, 2], [3, 4], [5, 6]]
         var probs = softmax(logits_2d, axis=0)
-        # Softmax along first axis
+        # Softmax along first axis.
     """
     # Normalize axis
     var ndim = len(tensor._shape)
@@ -526,7 +526,7 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor
         var x = ExTensor(...)  # Input
         var y = relu(x)        # Forward pass
         var grad_y = ExTensor(...)  # Gradient from loss
-        var grad_x = relu_backward(grad_y, x)  # Backward pass
+        var grad_x = relu_backward(grad_y, x)  # Backward pass.
     """
     if grad_output._dtype != x._dtype:
         raise Error("relu_backward: grad_output and x must have same dtype")

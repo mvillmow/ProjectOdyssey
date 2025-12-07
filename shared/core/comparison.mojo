@@ -24,7 +24,7 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
         var b = full(List[Int](3, 4), 2.0, DType.float32)
-        var c = equal(a, b)  # Shape (3, 4), all True
+        var c = equal(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -91,7 +91,7 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
         var b = full(List[Int](3, 4), 3.0, DType.float32)
-        var c = not_equal(a, b)  # Shape (3, 4), all True
+        var c = not_equal(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -158,7 +158,7 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
         var b = full(List[Int](3, 4), 3.0, DType.float32)
-        var c = less(a, b)  # Shape (3, 4), all True
+        var c = less(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -225,7 +225,7 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 2.0, DType.float32)
         var b = full(List[Int](3, 4), 2.0, DType.float32)
-        var c = less_equal(a, b)  # Shape (3, 4), all True
+        var c = less_equal(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -292,7 +292,7 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 3.0, DType.float32)
         var b = full(List[Int](3, 4), 2.0, DType.float32)
-        var c = greater(a, b)  # Shape (3, 4), all True
+        var c = greater(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")
@@ -359,7 +359,7 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = full(List[Int](3, 4), 3.0, DType.float32)
         var b = full(List[Int](3, 4), 3.0, DType.float32)
-        var c = greater_equal(a, b)  # Shape (3, 4), all True
+        var c = greater_equal(a, b)  # Shape (3, 4), all True.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot compare tensors with different dtypes")

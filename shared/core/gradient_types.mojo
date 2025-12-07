@@ -24,7 +24,7 @@ struct GradientPair(Copyable, Movable):
     Examples:
         var grads = add_backward(grad_output, a_shape, b_shape)
         var grad_a = grads.grad_a
-        var grad_b = grads.grad_b
+        var grad_b = grads.grad_b.
     """
 
     var grad_a: ExTensor
@@ -56,7 +56,7 @@ struct GradientTriple(Copyable, Movable):
         var grads = linear_backward(grad_output, x, weights)
         var grad_input = grads.grad_input
         var grad_weights = grads.grad_weights
-        var grad_bias = grads.grad_bias
+        var grad_bias = grads.grad_bias.
     """
 
     var grad_input: ExTensor
@@ -98,7 +98,7 @@ struct GradientQuad(Copyable, Movable):
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b
         var grad_c = grads.grad_c
-        var grad_d = grads.grad_d
+        var grad_d = grads.grad_d.
     """
 
     var grad_a: ExTensor

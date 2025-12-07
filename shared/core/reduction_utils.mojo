@@ -40,7 +40,7 @@ fn compute_strides(shape: List[Int]) -> List[Int]:
         var strides = compute_strides(shape)  # [20, 5, 1]
         # Moving 1 position along axis 0 skips 20 elements
         # Moving 1 position along axis 1 skips 5 elements
-        # Moving 1 position along axis 2 skips 1 element
+        # Moving 1 position along axis 2 skips 1 element.
     """
     var ndim = len(shape)
     var strides = List[Int]()

@@ -31,7 +31,7 @@ fn get_class_label(class_idx: Int) -> String:
         class_idx: Class index (0-46 for EMNIST Balanced)
 
     Returns:
-        Character label
+        Character label.
     """
     if class_idx < 10:
         # Digits 0-9
@@ -165,7 +165,7 @@ fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Flo
         k: Number of top predictions to return
 
     Returns:
-        List of (class_idx, score) tuples sorted by score descending
+        List of (class_idx, score) tuples sorted by score descending.
     """
     var logits_shape = logits.shape()
     var num_classes = logits_shape[1] if len(logits_shape) > 1 else logits_shape[0]

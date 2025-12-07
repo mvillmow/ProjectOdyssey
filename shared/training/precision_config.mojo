@@ -209,7 +209,7 @@ struct PrecisionConfig(Copyable, Movable):
             - 1 sign + 8 exponent + 7 mantissa = 16 bits
             - Range: ~1e-38 to 3.4e38 (same as FP32)
             - Precision: ~2 decimal digits (less than FP16)
-            - Better for large models due to wider exponent range
+            - Better for large models due to wider exponent range.
         """
         # NOTE: bfloat16_dtype aliases to float16_dtype until Mojo supports BF16
         return PrecisionConfig(
@@ -250,7 +250,7 @@ struct PrecisionConfig(Copyable, Movable):
         Current Implementation:
             - Compute: FP16 (fallback, will use FP8 when available)
             - Storage: FP16 (reduces quantization noise vs pure FP8)
-            - Scaling: Recommended initial_scale >= 2^16 for stability
+            - Scaling: Recommended initial_scale >= 2^16 for stability.
         """
         # FP8 for compute, FP16 for storage (reduces quantization noise)
         return PrecisionConfig(

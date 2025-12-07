@@ -54,7 +54,7 @@ fn dropout(
         - During training: output = x * mask / (1 - p) for scaling
         - During inference: output = x (no dropout)
         - Mask is needed for backward pass (must be saved by caller)
-        - Pure functional: caller manages mask state
+        - Pure functional: caller manages mask state.
     """
     if p < 0.0 or p >= 1.0:
         raise Error("Dropout probability must be in [0, 1)")
@@ -135,7 +135,7 @@ fn dropout2d(
     Note:
         - Drops entire channels (all spatial positions in a channel)
         - More effective than standard dropout for CNNs
-        - Mask shape is (batch, channels, 1, 1) for broadcasting
+        - Mask shape is (batch, channels, 1, 1) for broadcasting.
     """
     if p < 0.0 or p >= 1.0:
         raise Error("Dropout probability must be in [0, 1)")
@@ -257,7 +257,7 @@ fn dropout_backward(
 
     Note:
         - Gradient flows only through non-dropped elements
-        - Scaled by 1/(1-p) to match forward pass scaling
+        - Scaled by 1/(1-p) to match forward pass scaling.
     """
     # Apply mask and scale: grad_input = grad_output * mask / (1 - p)
     var masked_grad = multiply(grad_output, mask)

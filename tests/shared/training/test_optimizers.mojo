@@ -141,7 +141,7 @@ fn test_sgd_weight_decay() raises:
     Functional API:
         With weight_decay > 0:
         - Effective gradient: grad = grad + weight_decay * params
-        - Then apply standard update
+        - Then apply standard update.
     """
     var shape = List[Int](1)
     var params = ones(shape, DType.float32)

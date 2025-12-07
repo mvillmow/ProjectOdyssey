@@ -172,7 +172,7 @@ fn plot_loss_only(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for loss plotting
     var result = String('{"type":"line_chart","title":"')
@@ -199,7 +199,7 @@ fn plot_accuracy_only(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for accuracy plotting
     var result = String('{"type":"line_chart","title":"')
@@ -493,7 +493,7 @@ fn visualize_tensor_shapes(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for tensor shape progression
     var result = String('{"type":"tensor_shapes","input_shape":[')
@@ -539,7 +539,7 @@ fn visualize_gradient_flow(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for gradient flow plot
     var result = String('{"type":"gradient_flow","gradients":[')
@@ -665,7 +665,7 @@ fn show_augmented_images(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for augmentation comparison
     var result = String('{"type":"augmentation_comparison","nrow":')
@@ -706,7 +706,7 @@ fn visualize_feature_maps(
         save_path: Path to save figure
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for feature map visualization
     var result = String('{"type":"feature_maps"')
@@ -738,7 +738,7 @@ fn save_figure(filepath: String, format: String = "png") -> Bool:
         format: Image format (png, jpg, pdf, svg)
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Create JSON structure for figure saving
     var result = String('{"type":"save_figure","filepath":"')

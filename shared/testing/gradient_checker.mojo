@@ -94,7 +94,7 @@ fn check_gradients(
         - Use small tensors for testing (e.g., 3x4 instead of 1024x1024)
         - Typical tolerance: 1e-2 for float32 (accounts for accumulated numerical error)
         - Lower epsilon = more accurate but numerically unstable
-        - Higher epsilon = more stable but less accurate
+        - Higher epsilon = more stable but less accurate.
     """
     # Step 1: Compute analytical gradient
     var output = forward_fn(input)

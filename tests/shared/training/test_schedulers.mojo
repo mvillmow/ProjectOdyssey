@@ -40,7 +40,7 @@ fn test_cosine_annealing_epoch_zero() raises:
     At epoch 0, LR should equal base_lr.
     Formula: lr = eta_min + (base_lr - eta_min) * (1 + cos(π * 0 / T_max)) / 2
     = eta_min + (base_lr - eta_min) * (1 + 1) / 2
-    = base_lr
+    = base_lr.
     """
     var scheduler = CosineAnnealingLR(base_lr=0.1, T_max=100, eta_min=0.0)
 
@@ -54,7 +54,7 @@ fn test_cosine_annealing_epoch_max() raises:
     At epoch T_max, LR should equal eta_min.
     Formula: lr = eta_min + (base_lr - eta_min) * (1 + cos(π * 1)) / 2
     = eta_min + (base_lr - eta_min) * (1 - 1) / 2
-    = eta_min
+    = eta_min.
     """
     var scheduler = CosineAnnealingLR(base_lr=0.1, T_max=100, eta_min=0.01)
 
@@ -66,7 +66,7 @@ fn test_cosine_annealing_midpoint() raises:
     """Test CosineAnnealingLR at midpoint epoch.
 
     At epoch = T_max / 2, cosine factor should be 0.
-    LR = eta_min + (base_lr - eta_min) * 0 / 2 = eta_min
+    LR = eta_min + (base_lr - eta_min) * 0 / 2 = eta_min.
     """
     var scheduler = CosineAnnealingLR(base_lr=1.0, T_max=100, eta_min=0.0)
 

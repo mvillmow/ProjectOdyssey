@@ -610,7 +610,7 @@ fn test_multiply_backward_gradient() raises:
     """Test multiply_backward with numerical gradient checking.
 
     Validates analytical vs numerical gradients for multiplication operation.
-    Tests product rule: ∂(A*B)/∂A = B
+    Tests product rule: ∂(A*B)/∂A = B.
     """
     var shape = create_shape_vec(3, 4)
     var a = zeros(shape, DType.float32)
@@ -643,7 +643,7 @@ fn test_divide_backward_gradient() raises:
     """Test divide_backward with numerical gradient checking.
 
     Validates analytical vs numerical gradients for division operation.
-    Tests quotient rule: ∂(A/B)/∂A = 1/B
+    Tests quotient rule: ∂(A/B)/∂A = 1/B.
     """
     var shape = create_shape_vec(3, 4)
     var a = zeros(shape, DType.float32)
@@ -739,7 +739,7 @@ fn test_subtract_backward_b_gradient() raises:
 fn test_multiply_backward_b_gradient() raises:
     """Test multiply_backward gradient w.r.t. second operand (B).
 
-    Validates product rule for second operand: ∂(A*B)/∂B = A
+    Validates product rule for second operand: ∂(A*B)/∂B = A.
     """
     var shape = create_shape_vec(3, 4)
     var a = zeros(shape, DType.float32)

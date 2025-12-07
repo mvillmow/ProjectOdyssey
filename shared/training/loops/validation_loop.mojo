@@ -147,7 +147,7 @@ struct ValidationLoop:
     - Gradient-free forward passes
     - Metric aggregation
     - Subset validation support
-    - Memory-efficient evaluation
+    - Memory-efficient evaluation.
     """
     var compute_accuracy: Bool
     var compute_confusion: Bool

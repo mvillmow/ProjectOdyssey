@@ -72,7 +72,7 @@ fn test_linear_forward() raises:
         - Weights shape: (out_features, in_features)
         - Bias shape: (out_features,)
         - Output shape: (batch_size, out_features)
-        - Computation: output = x @ weights.T + bias
+        - Computation: output = x @ weights.T + bias.
     """
     # Create parameters: in=10, out=5
     var in_features = 10
@@ -119,7 +119,7 @@ fn test_linear_no_bias() raises:
     Functional API:
         linear_no_bias(x, weights) -> output
         - No bias parameter required
-        - Computation: output = x @ weights.T
+        - Computation: output = x @ weights.T.
     """
     # Create parameters: in=10, out=5
     var in_features = 10
@@ -219,7 +219,7 @@ fn test_conv2d_stride() raises:
     """Test Conv2D with stride > 1 downsamples correctly.
 
     API Contract:
-        Conv2D with stride=2 should halve spatial dimensions
+        Conv2D with stride=2 should halve spatial dimensions.
     """
     # TODO(#1538): Implement when Conv2D is available
     # # Input: (1, 3, 32, 32)
@@ -237,7 +237,7 @@ fn test_conv2d_valid_padding() raises:
     """Test Conv2D with no padding (valid convolution).
 
     API Contract:
-        Conv2D with padding=0 reduces spatial dimensions
+        Conv2D with padding=0 reduces spatial dimensions.
     """
     # TODO(#1538): Implement when Conv2D is available
     # # Input: (1, 3, 32, 32)
@@ -383,7 +383,7 @@ fn test_maxpool2d_max_selection() raises:
     """Test MaxPool2D selects maximum value in each window.
 
     API Contract:
-        MaxPool2D selects max over kernel_size x kernel_size window
+        MaxPool2D selects max over kernel_size x kernel_size window.
     """
     # TODO(#1538): Implement when MaxPool2D is available
     # var pool = MaxPool2D(kernel_size=2)

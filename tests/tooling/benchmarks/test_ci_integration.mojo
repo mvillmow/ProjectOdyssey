@@ -35,7 +35,7 @@ fn test_pr_benchmark_execution() raises:
     - Benchmarks run automatically on PR
     - Results compared to baseline
     - Comparison report generated
-    - PR check passes/fails based on regressions
+    - PR check passes/fails based on regressions.
     """
     # Test PR benchmark execution
     var pr_executed = True
@@ -55,7 +55,7 @@ fn test_baseline_update_on_merge() raises:
     - Baseline updated on main branch commits
     - New baseline saved to repository
     - Historical baseline preserved
-    - Timestamp and metadata included
+    - Timestamp and metadata included.
     """
     # Test baseline update on merge
     var baseline_updated = True
@@ -75,7 +75,7 @@ fn test_scheduled_benchmark_runs() raises:
     - Benchmarks run on schedule
     - Results stored with timestamp
     - Historical data preserved
-    - Trends can be tracked
+    - Trends can be tracked.
     """
     # Test scheduled benchmark runs
     var schedule_triggered = True
@@ -97,7 +97,7 @@ fn test_ci_exit_code_handling() raises:
     - Exit 0 allows workflow to continue
     - Exit 1 fails workflow
     - Non-zero exit blocks PR merge
-    - Exit code matches regression state
+    - Exit code matches regression state.
     """
     # Test CI exit code handling
     var exit_0_workflow_continues = True
@@ -117,7 +117,7 @@ fn test_benchmark_result_artifacts() raises:
     - Results saved as workflow artifacts
     - JSON format preserved
     - Downloadable from CI
-    - Used for historical tracking
+    - Used for historical tracking.
     """
     # Test artifact storage
     var artifacts_saved = True
@@ -139,7 +139,7 @@ fn test_github_actions_annotations() raises:
     - Annotations created for regressions
     - Visible in PR checks
     - Include benchmark name and slowdown
-    - Link to detailed results
+    - Link to detailed results.
     """
     # Test GitHub Actions annotations
     var annotations_created = True
@@ -163,7 +163,7 @@ fn test_benchmark_timeout_in_ci() raises:
     - Total time limit enforced (15 minutes)
     - Individual benchmark timeouts
     - Timeout doesn't hang CI
-    - Partial results saved on timeout
+    - Partial results saved on timeout.
     """
     # Test timeout enforcement in CI
     var timeout_limit_ms: Float64 = 15 * 60 * 1000  # 15 minutes
@@ -211,7 +211,7 @@ fn test_ci_environment_consistency() raises:
     - Same OS/CPU across runs
     - Mojo version tracked
     - Environment variables set
-    - Deterministic execution
+    - Deterministic execution.
     """
     # Test CI environment consistency
     var os_consistent = "Linux"
@@ -236,7 +236,7 @@ fn test_manual_benchmark_trigger() raises:
     - workflow_dispatch enabled
     - Can trigger manually
     - Can specify options (baseline, subset, etc.)
-    - Results same as automatic runs
+    - Results same as automatic runs.
     """
     # Test manual benchmark triggering
     var workflow_dispatch_enabled = True

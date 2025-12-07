@@ -74,7 +74,7 @@ fn compute_gradients(
         velocities: Momentum velocities for each parameter (16 tensors)
 
     Returns:
-        Loss value for this batch
+        Loss value for this batch.
     """
     # ========== Forward Pass (with caching for backward) ==========
 
@@ -294,7 +294,7 @@ fn train_epoch(
         velocities: Momentum velocities for each parameter
 
     Returns:
-        Average loss for the epoch
+        Average loss for the epoch.
     """
     var num_samples = train_images.shape()[0]
     var num_batches = (num_samples + batch_size - 1) // batch_size
@@ -376,7 +376,7 @@ fn initialize_velocities(model: AlexNet) raises -> List[ExTensor]:
         model: AlexNet model
 
     Returns:
-        DynamicVector of zero-initialized velocity tensors matching parameter shapes
+        DynamicVector of zero-initialized velocity tensors matching parameter shapes.
     """
     var velocities = List[ExTensor]()
 

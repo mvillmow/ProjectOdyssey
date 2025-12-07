@@ -58,7 +58,7 @@ trait Module:
     Modules that need training/eval mode switching implement train() and eval().
 
     Type Parameters:
-        - No generic parameters - all modules work with ExTensor
+        - No generic parameters - all modules work with ExTensor.
     """
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
@@ -97,7 +97,7 @@ trait Module:
             - Returned parameters are typically references/copies
             - Order should be deterministic for reproducibility
             - Nested modules should recursively include sub-module parameters
-            - For optimization: frameworks typically flatten this for gradient updates
+            - For optimization: frameworks typically flatten this for gradient updates.
         """
         ...
 

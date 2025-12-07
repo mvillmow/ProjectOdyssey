@@ -334,7 +334,7 @@ fn test_mxfp4_block_all_zeros() raises:
     1. Trigger the fallback (max_abs = 0.0 < 1e-10)
     2. Use scale = 1.0 (exponent = 127)
     3. Encode all values as 0 (since 0.0 / scale = 0.0)
-    4. Round-trip losslessly to zeros
+    4. Round-trip losslessly to zeros.
     """
     # Create a block with 32 zeros
     var values = List[Float32]()

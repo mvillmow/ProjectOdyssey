@@ -62,7 +62,7 @@ fn normalize_rgb(
     Note:
         - Input must be uint8 [0, 255]
         - Output is float32 with normalized values
-        - Common for CIFAR-10, ImageNet, and other RGB datasets
+        - Common for CIFAR-10, ImageNet, and other RGB datasets.
     """
     var shape = images.shape()
     if len(shape) != 4:

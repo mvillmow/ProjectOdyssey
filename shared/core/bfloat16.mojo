@@ -38,7 +38,7 @@ struct BFloat16:
     enabling simple conversion: truncate Float32's lower 16 bits.
 
     Attributes:
-        bits: uint16 storage for BF16 representation
+        bits: uint16 storage for BF16 representation.
     """
     var bits: UInt16
 
@@ -54,7 +54,7 @@ struct BFloat16:
         """Initialize BFloat16 from raw bits.
 
         Args:
-            bits: Raw uint16 bit representation
+            bits: Raw uint16 bit representation.
         """
         self.bits = bits
 
@@ -186,7 +186,7 @@ struct BFloat16:
         Goes through Float32 conversion first.
 
         Returns:
-            Float64 representation
+            Float64 representation.
         """
         return Float64(self.to_float32())
 

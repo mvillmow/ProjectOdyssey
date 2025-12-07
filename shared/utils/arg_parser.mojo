@@ -71,7 +71,7 @@ struct ParsedArgs(Copyable, Movable):
 
         Args:
             name: Argument name
-            value: Value as string
+            value: Value as string.
         """
         self.values[name] = value
 
@@ -82,7 +82,7 @@ struct ParsedArgs(Copyable, Movable):
             name: Argument name
 
         Returns:
-            True if argument exists, False otherwise
+            True if argument exists, False otherwise.
         """
         return name in self.values
 
@@ -94,7 +94,7 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            String value or default
+            String value or default.
         """
         if name in self.values:
             return self.values[name]
@@ -111,7 +111,7 @@ struct ParsedArgs(Copyable, Movable):
             Integer value or default
 
         Raises:
-            Error if value cannot be parsed as integer
+            Error if value cannot be parsed as integer.
         """
         if name not in self.values:
             return default
@@ -135,7 +135,7 @@ struct ParsedArgs(Copyable, Movable):
             Float64 value or default
 
         Raises:
-            Error if value cannot be parsed as float
+            Error if value cannot be parsed as float.
         """
         if name not in self.values:
             return default
@@ -155,7 +155,7 @@ struct ParsedArgs(Copyable, Movable):
             name: Argument name
 
         Returns:
-            True if flag was provided, False otherwise
+            True if flag was provided, False otherwise.
         """
         return self.has(name)
 
@@ -203,7 +203,7 @@ struct ArgumentParser(Copyable, Movable):
             default: Default value as string
 
         Raises:
-            Error if arg_type is not recognized
+            Error if arg_type is not recognized.
         """
         # Validate type
         if arg_type != "int"
@@ -237,7 +237,7 @@ struct ArgumentParser(Copyable, Movable):
             ParsedArgs container with parsed values
 
         Raises:
-            Error if argument parsing fails
+            Error if argument parsing fails.
         """
         var result = ParsedArgs()
 
@@ -289,7 +289,7 @@ fn create_parser() raises -> ArgumentParser:
     """Create a new argument parser.
 
     Returns:
-        New ArgumentParser instance
+        New ArgumentParser instance.
     """
     return ArgumentParser()
 
@@ -314,7 +314,7 @@ fn create_training_parser() raises -> ArgumentParser:
         - verbose (flag)
 
     Returns:
-        ArgumentParser configured with ML training arguments
+        ArgumentParser configured with ML training arguments.
     """
     var parser = ArgumentParser()
 
@@ -340,7 +340,7 @@ fn validate_positive_int(value: Int, name: String) raises:
         name: Argument name for error messages
 
     Raises:
-        Error if value is not positive
+        Error if value is not positive.
     """
     if value <= 0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -354,7 +354,7 @@ fn validate_positive_float(value: Float64, name: String) raises:
         name: Argument name for error messages
 
     Raises:
-        Error if value is not positive
+        Error if value is not positive.
     """
     if value <= 0.0:
         raise Error(name + " must be positive, got: " + String(value))
@@ -370,7 +370,7 @@ fn validate_range_float(value: Float64, min_val: Float64, max_val: Float64, name
         name: Argument name for error messages
 
     Raises:
-        Error if value is outside the range
+        Error if value is outside the range.
     """
     if value < min_val or value > max_val:
         raise Error(

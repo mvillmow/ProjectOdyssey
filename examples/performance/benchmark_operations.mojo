@@ -124,7 +124,7 @@ fn print_operation_comparison(
         operation_name: Name of the operation
         small_result: Benchmark result for small tensor
         medium_result: Benchmark result for medium tensor
-        large_result: Benchmark result for large tensor
+        large_result: Benchmark result for large tensor.
     """
     print("")
     print("=" * 70)

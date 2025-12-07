@@ -148,7 +148,7 @@ fn test_conv2d_output_shape_with_padding() raises:
              out_width = (width + 2*padding - kW) // stride + 1
 
     Test case: batch=1, in_channels=1, height=4, width=4, kH=3, kW=3, stride=1, padding=1
-    Expected: output shape (1, 1, 4, 4) - same as input due to padding
+    Expected: output shape (1, 1, 4, 4) - same as input due to padding.
     """
     var batch_size = 1
     var in_channels = 1
@@ -477,7 +477,7 @@ fn test_conv2d_multi_channel() raises:
 
     Input: (1, 2, 3, 3) - 2 input channels
     Kernel: (3, 2, 2, 2) - 3 output channels, 2 input channels
-    Output: (1, 3, 2, 2) - 3 output channels
+    Output: (1, 3, 2, 2) - 3 output channels.
     """
     var batch = 1
     var in_channels = 2

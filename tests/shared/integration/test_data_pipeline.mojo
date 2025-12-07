@@ -33,7 +33,7 @@ fn test_data_loading_basic() raises:
     Success Criteria:
         - Data loader creates batches correctly
         - All data is accessible
-        - No runtime errors
+        - No runtime errors.
     """
     # TODO(#1538): Implement when all components are available
     pass
@@ -50,7 +50,7 @@ fn test_data_transformation_pipeline() raises:
     Success Criteria:
         - Transforms apply in correct order
         - Data shapes preserved/correct
-        - No data corruption
+        - No data corruption.
     """
     # TODO(#1538): Implement when all components are available
     pass
@@ -67,7 +67,7 @@ fn test_data_batching_and_shuffling() raises:
     Success Criteria:
         - Batches have correct size
         - Shuffling produces different order
-        - All data included in epochs
+        - All data included in epochs.
     """
     # TODO(#1538): Implement when all components are available
     pass
@@ -84,7 +84,7 @@ fn test_data_pipeline_memory_efficiency() raises:
     Success Criteria:
         - Memory usage stays bounded
         - Large datasets handled efficiently
-        - No data duplication
+        - No data duplication.
     """
     # TODO(#1538): Implement when all components are available
     pass
@@ -106,7 +106,7 @@ fn test_dataset_creation() raises:
     Success Criteria:
         - Datasets created successfully
         - Metadata correct
-        - Data accessible
+        - Data accessible.
     """
     # TODO(#1538): Implement when all components are available
     pass
@@ -123,7 +123,7 @@ fn test_dataset_splits() raises:
     Success Criteria:
         - Splits created correctly
         - Total data preserved
-        - No overlap between splits
+        - No overlap between splits.
     """
     # TODO(#1538): Implement when all components are available
     pass

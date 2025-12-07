@@ -39,7 +39,7 @@ fn extract_batch(
     Note:
         - Handles edge cases where remaining samples < batch_size
         - Works with any tensor dimensionality (2D, 3D, 4D, etc.)
-        - Efficient memory copying with proper bounds checking
+        - Efficient memory copying with proper bounds checking.
     """
     var data_shape = data.shape()
     var num_samples = data_shape[0]
@@ -121,7 +121,7 @@ fn extract_batch_pair(
     Note:
         - Ensures data and labels have matching number of samples
         - Both tensors extracted with same start_idx and batch_size
-        - Efficient for training loops
+        - Efficient for training loops.
     """
     # Verify matching sizes
     var data_samples = data.shape()[0]
@@ -157,7 +157,7 @@ fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
 
     Note:
         - Uses ceiling division: (num_samples + batch_size - 1) // batch_size
-        - Accounts for partial batch at end
+        - Accounts for partial batch at end.
     """
     return (num_samples + batch_size - 1) // batch_size
 
@@ -196,7 +196,7 @@ fn get_batch_indices(
         - Handles partial batches automatically
         - start_idx = batch_idx * batch_size
         - end_idx = min(start_idx + batch_size, num_samples)
-        - actual_batch_size = end_idx - start_idx
+        - actual_batch_size = end_idx - start_idx.
     """
     var start_idx = batch_idx * batch_size
     var end_idx = min(start_idx + batch_size, num_samples)

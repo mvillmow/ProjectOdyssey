@@ -62,7 +62,7 @@ fn binary_cross_entropy(
 
     Numerical Stability:
         - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
-        - Uses epsilon=1e-7 by default
+        - Uses epsilon=1e-7 by default.
     """
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
@@ -418,7 +418,7 @@ fn smooth_l1_loss(
 
     Numerical Stability:
         - Uses absolute value for robust handling of differences
-        - Beta parameter prevents division by zero in gradient
+        - Beta parameter prevents division by zero in gradient.
     """
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
@@ -571,7 +571,7 @@ fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
 
     Numerical Stability:
         - Uses max(0, ...) to prevent negative losses
-        - Avoids numerical issues with extreme values
+        - Avoids numerical issues with extreme values.
     """
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
@@ -700,7 +700,7 @@ fn focal_loss(
 
     Numerical Stability:
         - Clips predictions to [epsilon, 1-epsilon] to prevent log(0)
-        - Uses epsilon=1e-7 by default
+        - Uses epsilon=1e-7 by default.
     """
     if predictions.dtype() != targets.dtype():
         raise Error("Predictions and targets must have the same dtype")
@@ -903,7 +903,7 @@ fn kl_divergence(p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7) raises -> Ex
 
     Numerical Stability:
         - Clips both p and q to [epsilon, 1] to prevent log(0)
-        - Handles zero probabilities gracefully
+        - Handles zero probabilities gracefully.
     """
     if p.dtype() != q.dtype():
         raise Error("p and q must have the same dtype")

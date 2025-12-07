@@ -136,7 +136,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
 
         Args:
             in_features: Input dimension
-            out_features: Output dimension
+            out_features: Output dimension.
         """
         # Initialize weights and gradients
         var w_shape = List[Int]()
@@ -191,7 +191,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             grad_output: Gradient w.r.t. output
 
         Returns:
-            Gradient w.r.t. input
+            Gradient w.r.t. input.
         """
         # grad_input = grad_output @ W
         var grad_input = zeros_like(self.last_input)

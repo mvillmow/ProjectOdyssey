@@ -70,7 +70,7 @@ fn test_fp16_training_loss_decreases() raises:
     FP16 training requires:
     - Gradient scaling to prevent underflow
     - Loss scaling before backward pass
-    - Gradient unscaling after backward pass
+    - Gradient unscaling after backward pass.
     """
     var config = PrecisionConfig.fp16()
 
@@ -116,7 +116,7 @@ fn test_fp8_training_loss_decreases() raises:
     FP8 has very limited range:
     - E4M3: ~1.5e-4 to 448
     - Requires aggressive gradient scaling
-    - Uses FP16 storage to reduce quantization noise
+    - Uses FP16 storage to reduce quantization noise.
     """
     var config = PrecisionConfig.fp8()
 
@@ -143,7 +143,7 @@ fn test_fp16_gradient_overflow_recovery() raises:
     When gradients contain NaN/Inf:
     1. Skip optimizer step
     2. Reduce scale factor
-    3. Continue training with reduced scale
+    3. Continue training with reduced scale.
     """
     var config = PrecisionConfig.fp16()
 
@@ -207,7 +207,7 @@ fn test_gradient_scaler_dynamic_scaling() raises:
 
     The scaler should:
     - Increase scale after consecutive successful steps
-    - Decrease scale after overflow
+    - Decrease scale after overflow.
     """
     var scaler = GradientScaler(initial_scale=65536.0)
 
@@ -238,7 +238,7 @@ fn test_master_weights_fp32() raises:
 
     For reduced precision training:
     - Compute is done in FP16/BF16/FP8
-    - Master weights stay in FP32 for optimizer stability
+    - Master weights stay in FP32 for optimizer stability.
     """
     var fp16_config = PrecisionConfig.fp16()
     var fp32_config = PrecisionConfig.fp32()
@@ -271,7 +271,7 @@ fn test_fp16_vs_fp32_accuracy() raises:
     FP16 should achieve similar results to FP32:
     - Loss values within 2% of FP32
     - Gradient directions preserved
-    - No significant accuracy degradation
+    - No significant accuracy degradation.
     """
     var fp32_config = PrecisionConfig.fp32()
     var fp16_config = PrecisionConfig.fp16()
@@ -299,7 +299,7 @@ fn test_bf16_vs_fp32_accuracy() raises:
 
     BF16 has less precision than FP16 but wider range:
     - ~2 decimal digits precision
-    - Same exponent range as FP32
+    - Same exponent range as FP32.
     """
     var bf16_config = PrecisionConfig.bf16()
 

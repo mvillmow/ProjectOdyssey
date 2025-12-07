@@ -98,7 +98,7 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
         checkpoint: Checkpoint to serialize
 
     Returns:
-        Serialized string representation
+        Serialized string representation.
     """
     var lines = List[String]()
 
@@ -279,7 +279,7 @@ fn save_tensor_to_checkpoint(
     File format (per tensor):
         Line 1: name
         Line 2: dtype shape_dim0 shape_dim1 ...
-        Line 3: hex_data
+        Line 3: hex_data.
     """
     # Create directory if needed
     if not create_directory(checkpoint_dir):
@@ -331,7 +331,7 @@ fn load_tensor_from_checkpoint(
         Loaded ExTensor
 
     Raises:
-        Error: If file doesn't exist or format is invalid
+        Error: If file doesn't exist or format is invalid.
     """
     var filepath = checkpoint_dir + "/" + name + ".weights"
 
@@ -581,7 +581,7 @@ fn safe_write_file(filepath: String, content: String) -> Bool:
         content: File content
 
     Returns:
-        True if write successful, False if error
+        True if write successful, False if error.
     """
     # Atomic write pattern: write to temp file, then rename
     var temp_filepath = filepath + ".tmp"
@@ -636,7 +636,7 @@ fn create_backup(filepath: String) -> Bool:
         filepath: Original file path
 
     Returns:
-        True if backup created, False if file doesn't exist or error
+        True if backup created, False if file doesn't exist or error.
     """
     if not file_exists(filepath):
         return False
@@ -667,7 +667,7 @@ fn remove_safely(filepath: String) -> Bool:
         filepath: File to remove
 
     Returns:
-        True if removed, False if error
+        True if removed, False if error.
     """
     # NOTE: Mojo v0.25.7 doesn't have os.remove() or file system operations
     # In production, this would move file to trash/trash directory
@@ -789,7 +789,7 @@ fn expand_path(filepath: String) -> String:
         filepath: File path (may contain ~)
 
     Returns:
-        Expanded absolute path
+        Expanded absolute path.
     """
     # Use Python os.path.expanduser() for proper ~ expansion
     try:
@@ -813,7 +813,7 @@ fn file_exists(filepath: String) -> Bool:
         filepath: Path to check
 
     Returns:
-        True if file exists, False otherwise
+        True if file exists, False otherwise.
     """
     # Check if file exists by trying to open it
     try:
@@ -831,7 +831,7 @@ fn directory_exists(dirpath: String) -> Bool:
         dirpath: Path to check
 
     Returns:
-        True if directory exists, False otherwise
+        True if directory exists, False otherwise.
     """
     # Use Python os.path.isdir() to check if directory exists
     try:
@@ -852,7 +852,7 @@ fn create_directory(dirpath: String) -> Bool:
         dirpath: Directory path
 
     Returns:
-        True if created or already exists, False if error
+        True if created or already exists, False if error.
     """
     # Use Python os.makedirs() to create directory with parents
     try:
@@ -871,7 +871,7 @@ fn get_file_size(filepath: String) -> Int:
         filepath: File path
 
     Returns:
-        File size in bytes, or -1 if file doesn't exist
+        File size in bytes, or -1 if file doesn't exist.
     """
     if not file_exists(filepath):
         return -1

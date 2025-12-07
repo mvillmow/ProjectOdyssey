@@ -280,7 +280,7 @@ fn synthetic_classification_data(
         1. Generate random class centers in [-5, 5]^num_features
         2. For each sample, assign to random class
         3. Add Gaussian noise around class center
-        4. Normalize features to zero mean and unit variance
+        4. Normalize features to zero mean and unit variance.
     """
     # Validate inputs
     if num_samples <= 0 or num_features <= 0 or num_classes <= 0:

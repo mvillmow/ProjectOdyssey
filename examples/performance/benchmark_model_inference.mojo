@@ -39,7 +39,7 @@ struct SimpleNetwork(Copyable, Movable):
     Attributes:
         input_size: Number of input features
         hidden_size: Number of hidden units
-        output_size: Number of output classes
+        output_size: Number of output classes.
     """
 
     var input_size: Int
@@ -55,7 +55,7 @@ fn simple_forward(mut network: SimpleNetwork, input_data: ExTensor) raises -> Ex
         input_data: Input tensor
 
     Returns:
-        Output tensor from forward pass
+        Output tensor from forward pass.
     """
     # Simplified forward pass for demonstration
     # In real code, this would include matrix multiplications

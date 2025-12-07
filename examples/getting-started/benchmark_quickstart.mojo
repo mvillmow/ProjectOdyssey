@@ -37,7 +37,7 @@ struct SimpleNN(Copyable, Movable):
     Attributes:
         input_size: Number of input features
         hidden_size: Number of hidden units
-        output_size: Number of output classes
+        output_size: Number of output classes.
     """
 
     var input_size: Int
@@ -74,7 +74,7 @@ fn training_step(network: SimpleNN, input_data: ExTensor, targets: ExTensor) rai
         targets: Target labels
 
     Returns:
-        Loss value
+        Loss value.
     """
     # Forward pass
     var logits = forward_pass(network, input_data)

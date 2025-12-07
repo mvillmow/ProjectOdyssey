@@ -94,7 +94,7 @@ struct SavedTensors(Copyable, Movable):
     Different operations need different tensors saved:
     - Binary ops (add, mul): Need both inputs and output
     - Unary ops (relu, exp): Need input and output
-    - Reductions (sum, mean): Need input tensor for gradient computation
+    - Reductions (sum, mean): Need input tensor for gradient computation.
     """
 
     var tensors: List[ExTensor]
@@ -290,7 +290,7 @@ struct VariableRegistry:
 
         Args:
             id: Variable ID
-            grad: Gradient tensor to set/accumulate
+            grad: Gradient tensor to set/accumulate.
         """
         if id >= len(self.grads):
             return
@@ -335,7 +335,7 @@ struct VariableRegistry:
             id: Variable ID
 
         Returns:
-            True if gradient has been computed
+            True if gradient has been computed.
         """
         if id < len(self.has_grad):
             return self.has_grad[id]
@@ -395,7 +395,7 @@ struct GradientTape:
         Examples:
             var tape = GradientTape()
             tape.enable()
-            var y = x + 1  # Recorded
+            var y = x + 1  # Recorded.
         """
         self.enabled = True
 
@@ -419,7 +419,7 @@ struct GradientTape:
 
         Examples:
             tape.backward(loss)
-            tape.clear()  # Free memory
+            tape.clear()  # Free memory.
         """
         self.nodes = List[TapeNode]()
         self.registry.clear()
@@ -485,7 +485,7 @@ struct GradientTape:
         Examples:
             var loss = compute_loss(x)
             var ones = ones_like(loss.data)
-            tape.backward(loss.id, ones)  # Populates x.grad
+            tape.backward(loss.id, ones)  # Populates x.grad.
         """
         # Set the gradient of the output
         self.registry.set_grad(output_id, output_grad)
@@ -685,7 +685,7 @@ struct GradientTape:
             The gradient tensor
 
         Raises:
-            Error if gradient not found for variable
+            Error if gradient not found for variable.
         """
         return self.registry.get_grad(var_id)
 

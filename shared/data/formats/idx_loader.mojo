@@ -30,7 +30,7 @@ fn read_uint32_be(data: UnsafePointer[UInt8], offset: Int) -> Int:
         offset: Byte offset to read from
 
     Returns:
-        Integer value in host byte order
+        Integer value in host byte order.
     """
     var b0 = Int(data[offset])
     var b1 = Int(data[offset + 1])
@@ -50,7 +50,7 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
         ExTensor of shape (num_samples,) with uint8 label values
 
     Raises:
-        Error: If file format is invalid or cannot be read
+        Error: If file format is invalid or cannot be read.
     """
     # Read entire file
     var content: String
@@ -157,7 +157,7 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
         Error: If file format is invalid or cannot be read
 
     Note:
-        For CIFAR-10 and similar: (N, 3, 32, 32) where 3 channels are RGB
+        For CIFAR-10 and similar: (N, 3, 32, 32) where 3 channels are RGB.
     """
     # Read entire file
     var content: String
@@ -286,7 +286,7 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
         Applies ImageNet normalization:
         - mean=[0.485, 0.456, 0.406] for RGB channels
         - std=[0.229, 0.224, 0.225] for RGB channels
-        - Converts pixel values from [0, 255] to normalized float
+        - Converts pixel values from [0, 255] to normalized float.
     """
     # ImageNet normalization parameters (R, G, B)
     # ImageNet normalization constants per channel

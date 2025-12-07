@@ -75,7 +75,7 @@ fn compute_gradients(
         velocities: Momentum velocities for each parameter (32 tensors)
 
     Returns:
-        Loss value for this batch
+        Loss value for this batch.
     """
     # ========== Forward Pass (with caching for backward) ==========
 
@@ -438,7 +438,7 @@ fn initialize_velocities(model: VGG16) raises -> List[ExTensor]:
         model: VGG16 model
 
     Returns:
-        DynamicVector of zero-initialized velocity tensors matching parameter shapes
+        DynamicVector of zero-initialized velocity tensors matching parameter shapes.
     """
     var velocities = List[ExTensor]()
 

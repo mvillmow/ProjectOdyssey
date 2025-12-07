@@ -50,7 +50,7 @@ struct InceptionModule:
         - Branch 1: conv1x1_1 (weights, bias), bn1x1_1 (gamma, beta, running_mean, running_var)
         - Branch 2: conv1x1_2 (reduce), bn1x1_2, conv3x3, bn3x3
         - Branch 3: conv1x1_3 (reduce), bn1x1_3, conv5x5, bn5x5
-        - Branch 4: conv1x1_4 (project after pool), bn1x1_4
+        - Branch 4: conv1x1_4 (project after pool), bn1x1_4.
     """
 
     # Branch 1: 1×1 convolution
@@ -118,7 +118,7 @@ struct InceptionModule:
             out_3x3: Output channels for 3×3 branch
             reduce_5x5: Reduction channels before 5×5 conv
             out_5x5: Output channels for 5×5 branch
-            pool_proj: Projection channels after pooling
+            pool_proj: Projection channels after pooling.
         """
         # Branch 1: 1×1 conv
         self.conv1x1_1_weights = kaiming_normal(
@@ -227,7 +227,7 @@ struct InceptionModule:
 
         Returns:
             Output tensor (batch, out_channels, H, W)
-            where out_channels = out_1x1 + out_3x3 + out_5x5 + pool_proj
+            where out_channels = out_1x1 + out_3x3 + out_5x5 + pool_proj.
         """
         var batch_size = x.shape()[0]
         var height = x.shape()[2]
@@ -380,7 +380,7 @@ struct GoogLeNet:
         - Dropout + FC layer
         - Output: 10 classes
 
-    Total parameters: ~6.8M
+    Total parameters: ~6.8M.
     """
 
     # Initial convolution block
@@ -631,7 +631,7 @@ struct GoogLeNet:
         """Load model weights from directory.
 
         Args:
-            weights_dir: Directory containing saved weight files
+            weights_dir: Directory containing saved weight files.
         """
         # TODO(#2394): Implement weight loading
         # This will be similar to ResNet-18's weight loading
@@ -641,7 +641,7 @@ struct GoogLeNet:
         """Save model weights to directory.
 
         Args:
-            weights_dir: Directory to save weight files
+            weights_dir: Directory to save weight files.
         """
         # TODO(#2394): Implement weight saving
         # This will be similar to ResNet-18's weight saving

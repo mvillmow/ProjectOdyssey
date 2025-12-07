@@ -158,7 +158,7 @@ struct Variable(Copyable, Movable):
             var x = Variable(data, True, tape)
             var loss = compute_loss(x, tape)
             loss.backward(tape)  # Computes gradients for all inputs
-            print(tape.get_grad(x.id))  # dLoss/dx
+            print(tape.get_grad(x.id))  # dLoss/dx.
         """
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
@@ -176,7 +176,7 @@ struct Variable(Copyable, Movable):
 
         Examples:
             var x = Variable(data, True, tape)
-            var y = x.detach()  # y is just an ExTensor, no gradient tracking
+            var y = x.detach()  # y is just an ExTensor, no gradient tracking.
         """
         return self.data
 
@@ -184,7 +184,7 @@ struct Variable(Copyable, Movable):
         """Get the shape of the underlying tensor.
 
         Returns:
-            List of dimension sizes
+            List of dimension sizes.
         """
         return self.data.shape()
 
@@ -192,7 +192,7 @@ struct Variable(Copyable, Movable):
         """Get the number of elements in the tensor.
 
         Returns:
-            Total number of elements
+            Total number of elements.
         """
         return self.data.numel()
 
@@ -200,7 +200,7 @@ struct Variable(Copyable, Movable):
         """Get the data type of the underlying tensor.
 
         Returns:
-            The DType of the tensor
+            The DType of the tensor.
         """
         return self.data.dtype()
 

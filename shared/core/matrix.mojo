@@ -218,7 +218,7 @@ fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTen
     Note:
         - If axes is None, defaults to reversing all axes (same as original behavior)
         - Validates axes parameter: no duplicates, correct range, correct length
-        - Matches NumPy transpose semantics for arbitrary permutations
+        - Matches NumPy transpose semantics for arbitrary permutations.
     """
     var ndim = tensor.dim()
     var input_shape = tensor.shape()
@@ -353,7 +353,7 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Examples:
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
-        var c = outer(a, b)  # Shape (3, 4), all ones
+        var c = outer(a, b)  # Shape (3, 4), all ones.
     """
     # Check that inputs are 1D
     if a.dim() != 1 or b.dim() != 1:

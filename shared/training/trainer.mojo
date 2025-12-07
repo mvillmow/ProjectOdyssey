@@ -281,7 +281,7 @@ fn create_trainer(config: TrainerConfig) -> BaseTrainer:
         config: Trainer configuration
 
     Returns:
-        Initialized BaseTrainer
+        Initialized BaseTrainer.
     """
     return BaseTrainer(config)
 
@@ -290,7 +290,7 @@ fn create_default_trainer() -> BaseTrainer:
     """Create a trainer with default configuration.
 
     Returns:
-        BaseTrainer with default config
+        BaseTrainer with default config.
     """
     var config = TrainerConfig()
     return BaseTrainer(config)

@@ -478,7 +478,7 @@ fn generate_timing_report(
         timings: Dictionary of timing statistics
 
     Returns:
-        Complete profiling report
+        Complete profiling report.
     """
     var report = ProfilingReport()
     var total_time: Float32 = 0.0
@@ -507,7 +507,7 @@ fn print_timing_report(report: ProfilingReport) raises:
     """Print profiling report to console.
 
     Args:
-        report: Report to print
+        report: Report to print.
     """
     print(report.to_string())
 
@@ -523,7 +523,7 @@ fn export_profiling_report(
         format: Export format (json, csv, txt)
 
     Returns:
-        True if successful
+        True if successful.
     """
     # Determine format and convert report accordingly
     var content: String
@@ -570,7 +570,7 @@ fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
         num_measurements: Number of measurements to take
 
     Returns:
-        Overhead as percentage of total time
+        Overhead as percentage of total time.
     """
     # Measure time spent on profiling operations themselves
     var overhead_times = List[Float32](capacity=num_measurements)
@@ -650,7 +650,7 @@ fn detect_performance_regression(
         baseline_metrics: Baseline metrics
 
     Returns:
-        List of functions with regressions
+        List of functions with regressions.
     """
     var regressions = List[String]()
 

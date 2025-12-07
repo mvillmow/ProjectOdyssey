@@ -89,7 +89,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         _test_data: Cached test images (lazy loaded)
         _test_labels: Cached test labels (lazy loaded)
         _train_loaded: Whether training data has been loaded
-        _test_loaded: Whether test data has been loaded
+        _test_loaded: Whether test data has been loaded.
     """
 
     var data_dir: String

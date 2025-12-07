@@ -34,7 +34,7 @@ fn test_basic_training_loop() raises:
     Success Criteria:
         - Loss decreases over epochs
         - Validation accuracy improves
-        - No runtime errors
+        - No runtime errors.
     """
     # TODO(#1538): Implement when all components are available
     # # Create small model (2 layer MLP)
@@ -105,7 +105,7 @@ fn test_training_with_validation() raises:
     Success Criteria:
         - Validation metrics computed correctly
         - Model switches between train/eval modes
-        - Gradients not computed during validation
+        - Gradients not computed during validation.
     """
     # TODO(#1538): Implement when components are available
     # # Create model and data
@@ -148,7 +148,7 @@ fn test_training_with_early_stopping() raises:
 
     Success Criteria:
         - Training stops before max epochs if no improvement
-        - Best model weights are restored
+        - Best model weights are restored.
     """
     # TODO(#1538): Implement when callbacks are available
     # var model = SimpleModel()
@@ -193,7 +193,7 @@ fn test_training_with_checkpoint() raises:
     Success Criteria:
         - Best model is saved during training
         - Checkpoint contains model weights
-        - Can restore from checkpoint
+        - Can restore from checkpoint.
     """
     # TODO(#1538): Implement when callbacks are available
     # var model = SimpleModel()
@@ -309,7 +309,7 @@ fn test_gradient_flow_through_layers() raises:
     Success Criteria:
         - Gradients computed for all layers
         - Gradient magnitudes are reasonable
-        - No vanishing/exploding gradients
+        - No vanishing/exploding gradients.
     """
     # TODO(#1538): Implement when backpropagation is available
     # # Create 3-layer network

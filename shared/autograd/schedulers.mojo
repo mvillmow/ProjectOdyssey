@@ -59,7 +59,7 @@ struct StepLR:
         # Training loop
         for epoch in range(100):
             var lr = scheduler.step(epoch)
-            optimizer.learning_rate = lr
+            optimizer.learning_rate = lr.
     """
 
     var base_lr: Float64
@@ -163,7 +163,7 @@ struct ExponentialLR:
         # Training loop
         for epoch in range(100):
             var lr = scheduler.step(epoch)
-            optimizer.learning_rate = lr
+            optimizer.learning_rate = lr.
     """
 
     var base_lr: Float64

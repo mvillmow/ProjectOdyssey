@@ -580,7 +580,7 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
         var y = min_reduce(x, axis=-1)  # Scalar: 1.0
         var grad_y = ones([])  # Gradient: 1.0
         var grad_x = min_reduce_backward(grad_y, x, axis=-1)
-        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s
+        # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s.
     """
     var result = ExTensor(x.shape(), x.dtype())
     # Initialize to zero

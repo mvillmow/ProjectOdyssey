@@ -65,7 +65,7 @@ struct NamedTensor(Copyable, Movable):
 
         Args:
             name: Parameter name (e.g., "conv1_kernel", "linear_bias")
-            tensor: Tensor data
+            tensor: Tensor data.
         """
         self.name = name
         self.tensor = tensor
@@ -428,7 +428,7 @@ fn _serialize_metadata(metadata: Dict[String, String]) raises -> String:
         metadata: Dictionary to serialize
 
     Returns:
-        Serialized string
+        Serialized string.
     """
     var lines = List[String]()
 
@@ -457,7 +457,7 @@ fn _deserialize_metadata(content: String) raises -> Dict[String, String]:
         Metadata dictionary
 
     Raises:
-        Error: If format is invalid
+        Error: If format is invalid.
     """
     var metadata = Dict[String, String]()
     var lines = content.split("\n")
@@ -560,7 +560,7 @@ fn _hex_char_to_int(c: String) raises -> Int:
         Integer value (0-15)
 
     Raises:
-        Error: If character is not a valid hex digit
+        Error: If character is not a valid hex digit.
     """
     if c >= "0" and c <= "9":
         return ord(c) - ord("0")

@@ -96,7 +96,7 @@ struct ResNet18:
         # Fully connected (2 params)
         fc_weights, fc_bias: (num_classes, 512)
 
-        Total trainable params: 6 + 16 + 20 + 20 + 20 + 2 = 84 parameters
+        Total trainable params: 6 + 16 + 20 + 20 + 20 + 2 = 84 parameters.
     """
 
     var num_classes: Int

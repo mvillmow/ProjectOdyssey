@@ -81,7 +81,7 @@ fn scaled_dot_product_attention_masked(
     Note:
         - The scaling factor sqrt(d_k) prevents dot products from growing too large
         - Masking is applied before softmax (additive masking)
-        - For causal (autoregressive) attention, use a lower-triangular mask
+        - For causal (autoregressive) attention, use a lower-triangular mask.
     """
     var q_shape = query.shape()
     var k_shape = key.shape()
@@ -490,7 +490,7 @@ fn multi_head_attention_masked(
 
     Note:
         - d_model must be divisible by num_heads
-        - Each head operates on d_k = d_model / num_heads dimensions
+        - Each head operates on d_k = d_model / num_heads dimensions.
     """
     var q_shape = query.shape()
     if len(q_shape) != 3:

@@ -422,7 +422,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """Return the data type of the tensor.
 
         Returns:
-            The DType of tensor elements
+            The DType of tensor elements.
         """
         return self._dtype
 
@@ -2115,7 +2115,7 @@ fn ones(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     Examples:
         var t = ones(List[Int](3, 4), DType.float32)
-        # Creates a 3x4 tensor of float32 ones
+        # Creates a 3x4 tensor of float32 ones.
     """
     var tensor = ExTensor(shape, dtype)
 
@@ -2178,7 +2178,7 @@ fn empty(shape: List[Int], dtype: DType) raises -> ExTensor:
 
     Examples:
         var t = empty(List[Int](3, 4), DType.float32)
-        # Creates a 3x4 tensor with undefined values
+        # Creates a 3x4 tensor with undefined values.
     """
     # Just allocate without initialization
     var tensor = ExTensor(shape, dtype)
@@ -2246,7 +2246,7 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
         # Creates 3x3 identity matrix
 
         var t2 = eye(3, 4, 1, DType.float32)
-        # Creates 3x4 matrix with ones on diagonal above main
+        # Creates 3x4 matrix with ones on diagonal above main.
     """
     var shape = List[Int]()
     shape.append(n)

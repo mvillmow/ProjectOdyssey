@@ -913,7 +913,7 @@ fn depthwise_separable_conv2d(
     Note:
         This is more efficient than standard convolution:
         - Standard: out_channels * in_channels * kH * kW multiplications
-        - Separable: in_channels * kH * kW + out_channels * in_channels multiplications
+        - Separable: in_channels * kH * kW + out_channels * in_channels multiplications.
     """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(

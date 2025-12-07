@@ -262,7 +262,7 @@ struct Logger:
         Handlers receive all log records that pass the level filter.
 
         Args:
-            handler: Handler to add
+            handler: Handler to add.
         """
         self.handlers.append(handler)
 
@@ -270,7 +270,7 @@ struct Logger:
         """Log a debug message (lowest priority).
 
         Args:
-            message: Message to log
+            message: Message to log.
         """
         if self.level <= LogLevel.DEBUG:
             self._log(LogLevel.DEBUG, message)
@@ -279,7 +279,7 @@ struct Logger:
         """Log an info message (normal priority).
 
         Args:
-            message: Message to log
+            message: Message to log.
         """
         if self.level <= LogLevel.INFO:
             self._log(LogLevel.INFO, message)
@@ -288,7 +288,7 @@ struct Logger:
         """Log a warning message (medium priority).
 
         Args:
-            message: Message to log
+            message: Message to log.
         """
         if self.level <= LogLevel.WARNING:
             self._log(LogLevel.WARNING, message)
@@ -297,7 +297,7 @@ struct Logger:
         """Log an error message (high priority).
 
         Args:
-            message: Message to log
+            message: Message to log.
         """
         if self.level <= LogLevel.ERROR:
             self._log(LogLevel.ERROR, message)
@@ -306,7 +306,7 @@ struct Logger:
         """Log a critical message (highest priority).
 
         Args:
-            message: Message to log
+            message: Message to log.
         """
         if self.level <= LogLevel.CRITICAL:
             self._log(LogLevel.CRITICAL, message)
@@ -316,7 +316,7 @@ struct Logger:
 
         Args:
             level: Log level for this message
-            message: Message to log
+            message: Message to log.
         """
         var record = LogRecord(self.name, level, message)
         for handler in self.handlers:
@@ -326,7 +326,7 @@ struct Logger:
         """Change the log level for this logger.
 
         Args:
-            level: New log level threshold
+            level: New log level threshold.
         """
         self.level = level
 

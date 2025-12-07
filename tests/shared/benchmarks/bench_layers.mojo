@@ -35,7 +35,7 @@ fn bench_linear_forward() raises -> List[BenchmarkResult]:
 
     Performance Target:
         - > 1M samples/second for typical layer sizes
-        - Within 2x of PyTorch Linear layer performance
+        - Within 2x of PyTorch Linear layer performance.
     """
     # TODO: Implement when Linear layer is available
     # Placeholder for TDD
@@ -60,7 +60,7 @@ fn bench_linear_backward() raises -> BenchmarkResult:
         - Memory overhead during backpropagation
 
     Performance Target:
-        - Backward pass within 2x of forward pass time
+        - Backward pass within 2x of forward pass time.
     """
     # TODO: Implement when Linear layer backward is available
     # Placeholder for TDD
@@ -86,7 +86,7 @@ fn bench_activation_functions() raises -> List[BenchmarkResult]:
         - Memory access patterns
 
     Performance Target:
-        - > 10M elements/second for all activation functions
+        - > 10M elements/second for all activation functions.
     """
     # TODO: Implement when activation layers are available
     # Placeholder for TDD

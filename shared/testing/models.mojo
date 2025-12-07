@@ -63,7 +63,7 @@ struct SimpleCNN(Copyable, Movable):
     Attributes:
         in_channels: Number of input channels
         out_channels: Number of output channels from first conv layer
-        num_classes: Number of output classes
+        num_classes: Number of output classes.
     """
 
     var in_channels: Int
@@ -149,7 +149,7 @@ struct LinearModel(Copyable, Movable):
 
     Attributes:
         in_features: Input feature dimension
-        out_features: Output feature dimension
+        out_features: Output feature dimension.
     """
 
     var in_features: Int
@@ -199,7 +199,7 @@ struct LinearModel(Copyable, Movable):
 
         Note:
             This is a placeholder for testing. Real implementations should
-            contain actual linear transformation: y = matmul(input, weights^T) + bias
+            contain actual linear transformation: y = matmul(input, weights^T) + bias.
         """
         var batch_size = input._shape[0]
         var output_shape = self.get_output_shape(batch_size)
@@ -223,7 +223,7 @@ struct MockLayer:
     Attributes:
         input_dim: Input feature dimension
         output_dim: Output feature dimension
-        scale: Scale factor applied to inputs
+        scale: Scale factor applied to inputs.
     """
 
     var input_dim: Int
@@ -271,7 +271,7 @@ struct MockLayer:
         Note:
             If output_dim < input_dim: truncates and scales
             If output_dim > input_dim: pads with zeros after scaling
-            If output_dim == input_dim: scales all elements
+            If output_dim == input_dim: scales all elements.
         """
         var output = List[Float32](capacity=self.output_dim)
 
@@ -323,7 +323,7 @@ struct SimpleLinearModel:
         output_dim: Output dimension
         weights: Model weights (flattened weight matrix)
         bias: Model bias
-        use_bias: Whether to use bias
+        use_bias: Whether to use bias.
     """
 
     var input_dim: Int
@@ -446,7 +446,7 @@ struct Parameter(Copyable, Movable):
 
     Attributes:
         data: The parameter tensor (weights or bias)
-        grad: The gradient tensor for backpropagation
+        grad: The gradient tensor for backpropagation.
     """
 
     var data: ExTensor
@@ -738,7 +738,7 @@ struct SimpleMLP(Copyable, Movable, Model):
         """Get total number of parameters.
 
         Returns:
-            Total parameters across all layers
+            Total parameters across all layers.
         """
         var total = len(self.layer1_weights) + len(self.layer1_bias)
         total += len(self.layer2_weights) + len(self.layer2_bias)

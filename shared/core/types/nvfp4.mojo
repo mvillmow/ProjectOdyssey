@@ -203,7 +203,7 @@ struct NVFP4(Stringable, Representable, Copyable, Movable):
 
     Attributes:
         value: 4-bit E2M1 encoded value
-        scale: 7-bit E4M3 scale factor
+        scale: 7-bit E4M3 scale factor.
     """
     var value: FP4_E2M1
     var scale: E4M3Scale
@@ -585,7 +585,7 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
 
         Args:
             data: 8 bytes containing 16 packed E2M1 values
-            scale: E4M3 scale factor for the block
+            scale: E4M3 scale factor for the block.
         """
         self.data = data
         self.scale = scale.copy()
@@ -672,7 +672,7 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
             NVFP4 value at the given index
 
         Raises:
-            Error: If index is out of range
+            Error: If index is out of range.
         """
         if index < 0 or index >= 16:
             raise Error("Index " + String(index) + " out of range [0, 15]")
@@ -727,7 +727,7 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
         """String representation showing scale and value count.
 
         Returns:
-            String representation
+            String representation.
         """
         return "NVFP4Block(16 values, scale=" + String(self.scale.to_float32()) + ")"
 
@@ -735,6 +735,6 @@ struct NVFP4Block(Stringable, Representable, Copyable, Movable):
         """Detailed representation.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return "NVFP4Block(scale=" + repr(self.scale) + ", data=8 bytes)"

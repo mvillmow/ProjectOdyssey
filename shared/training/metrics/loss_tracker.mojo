@@ -227,7 +227,7 @@ struct LossTracker(Metric):
         var stats = tracker.get_statistics(component="total")
         var avg = tracker.get_average(component="total")
 
-    Issue: #283-287 - Loss tracking
+    Issue: #283-287 - Loss tracking.
     """
     var window_size: Int
     var components: List[String]
@@ -247,10 +247,10 @@ struct LossTracker(Metric):
         """Get index of component tracker, creating if needed.
 
         Args:
-            component: Component name
+            component: Component name.
 
         Returns:
-            Index of component tracker in trackers list
+            Index of component tracker in trackers list.
         """
         # Search for existing component
         for i in range(len(self.components)):
@@ -266,7 +266,7 @@ struct LossTracker(Metric):
         """Add new loss value for specified component.
 
         Args:
-            loss: Loss value to track
+            loss: Loss value to track.
             component: Component name (default: "total").
        """
         var idx = self._get_or_create_component(component)
@@ -276,10 +276,10 @@ struct LossTracker(Metric):
         """Get most recent loss value for component.
 
         Args:
-            component: Component name (default: "total")
+            component: Component name (default: "total").
 
         Returns:
-            Most recent loss value, or 0.0 if component doesn't exist
+            Most recent loss value, or 0.0 if component doesn't exist.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:
@@ -291,10 +291,10 @@ struct LossTracker(Metric):
         """Get moving average for component.
 
         Args:
-            component: Component name (default: "total")
+            component: Component name (default: "total").
 
         Returns:
-            Moving average over window, or 0.0 if component doesn't exist
+            Moving average over window, or 0.0 if component doesn't exist.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:
@@ -306,10 +306,10 @@ struct LossTracker(Metric):
         """Get statistical summary for component.
 
         Args:
-            component: Component name (default: "total")
+            component: Component name (default: "total").
 
         Returns:
-            Statistics struct with mean, std, min, max, count
+            Statistics struct with mean, std, min, max, count.
         """
         for i in range(len(self.components)):
             if self.components[i] == component:
@@ -322,7 +322,7 @@ struct LossTracker(Metric):
 
         Args:
             component: Component name to reset, or "" to reset all (default: "").
-       """
+        """
         if component == "":
             # Reset all components
             for i in range(len(self.trackers)):
@@ -352,7 +352,7 @@ struct LossTracker(Metric):
         Use update(loss: Float32, component: String) instead.
 
         Raises:
-            Error indicating this method should not be used
+            Error indicating this method should not be used.
         """
         raise Error("LossTracker.update(predictions, labels) not applicable - use update(loss, component) instead")
 

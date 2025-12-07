@@ -226,7 +226,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         Supported Formats:
             - CSV files (.csv): Parsed as 2D arrays (rows x columns)
             - Binary data (.bin): Read as raw float32 values
-            - Text data (.txt): Parsed as space/newline separated numbers
+            - Text data (.txt): Parsed as space/newline separated numbers.
         """
         # Determine file extension
         var ext_idx = -1
@@ -347,7 +347,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
         labels: Tensor containing the label data (N,)
         _len: Number of samples in the dataset
         split: The split type loaded (balanced, byclass, bymerge, digits, letters, mnist)
-        data_dir: Directory containing the EMNIST data files
+        data_dir: Directory containing the EMNIST data files.
     """
 
     var data: ExTensor
@@ -376,7 +376,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
             train: Whether to load training (True) or test (False) split
 
         Raises:
-            Error: If data files cannot be loaded or invalid split specified
+            Error: If data files cannot be loaded or invalid split specified.
         """
         # Validate split
         var valid_splits = List[String]()
@@ -504,7 +504,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
             - bymerge: 47 classes
             - digits: 10 classes
             - letters: 26 classes
-            - mnist: 10 classes
+            - mnist: 10 classes.
         """
         if self.split == "balanced":
             return 47
@@ -541,7 +541,7 @@ fn load_emnist_train(
         Tuple of (images, labels) tensors
 
     Raises:
-        Error: If data files cannot be loaded
+        Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=True)
     return (dataset.data, dataset.labels)
@@ -561,7 +561,7 @@ fn load_emnist_test(
         Tuple of (images, labels) tensors
 
     Raises:
-        Error: If data files cannot be loaded
+        Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=False)
     return (dataset.data, dataset.labels)

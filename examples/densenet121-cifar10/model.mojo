@@ -202,7 +202,7 @@ struct DenseBlock:
         Args:
             num_layers: Number of dense layers in this block
             in_channels: Number of input channels to the first layer
-            growth_rate: Growth rate (k) for each layer
+            growth_rate: Growth rate (k) for each layer.
         """
         self.num_layers = num_layers
         self.growth_rate = growth_rate

@@ -39,7 +39,7 @@ fn test_step_scheduler_reduces_lr_at_step() raises:
     """Test StepLR reduces learning rate at specified step.
 
     At epoch = step_size, LR *= gamma
-    LR remains constant between steps
+    LR remains constant between steps.
     """
     var scheduler = StepLR(base_lr=1.0, step_size=5, gamma=0.1)
 
@@ -91,7 +91,7 @@ fn test_step_scheduler_different_gamma_values() raises:
     gamma determines how much LR is reduced:
     - gamma=0.1: LR reduced to 10% of previous value
     - gamma=0.5: LR reduced to 50% of previous value
-    - gamma=0.9: LR reduced to 90% of previous value
+    - gamma=0.9: LR reduced to 90% of previous value.
     """
     # Test gamma = 0.5
     var scheduler1 = StepLR(base_lr=1.0, step_size=1, gamma=0.5)
@@ -126,7 +126,7 @@ fn test_step_scheduler_different_step_sizes() raises:
 
     step_size determines frequency of LR reduction:
     - step_size=1: Reduce every epoch
-    - step_size=10: Reduce every 10 epochs
+    - step_size=10: Reduce every 10 epochs.
     """
     # Test step_size = 1 (reduce every epoch)
     var scheduler1 = StepLR(base_lr=1.0, step_size=1, gamma=0.5)

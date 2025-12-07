@@ -37,7 +37,7 @@ fn test_percentage_change_calculation() raises:
     - Formula: ((current - baseline) / baseline) * 100
     - Positive change = slower (worse)
     - Negative change = faster (better)
-    - Zero change = same performance
+    - Zero change = same performance.
     """
     # Test percentage change calculation
     var baseline_100 = 100.0
@@ -63,7 +63,7 @@ fn test_improvement_detection() raises:
     - Negative percentage = improvement
     - Faster execution detected
     - Reported as improvement, not regression
-    - Magnitude calculated correctly
+    - Magnitude calculated correctly.
     """
     # Test improvement detection (negative percentage = faster)
     var pct_10_faster = -10.0
@@ -85,7 +85,7 @@ fn test_regression_detection() raises:
     - Positive percentage = regression
     - Slower execution detected
     - Threshold checking (>10% = alert)
-    - Magnitude calculated correctly
+    - Magnitude calculated correctly.
     """
     # Test regression detection (positive percentage = slower)
     var pct_5_slower = 5.0
@@ -110,7 +110,7 @@ fn test_normal_variance_tolerance() raises:
     - Changes within ±5% considered normal
     - No alerts for normal variance
     - Alerts only for significant changes
-    - Configurable tolerance threshold
+    - Configurable tolerance threshold.
     """
     # Test normal variance tolerance
     var normal_variance = 5.0
@@ -131,7 +131,7 @@ fn test_regression_threshold() raises:
     - 10% slowdown = boundary (no alert)
     - >10% slowdown = regression (alert)
     - Threshold is exclusive (>10%, not >=10%)
-    - Configurable threshold
+    - Configurable threshold.
     """
     # Test exact boundary conditions
     var threshold = 10.0
@@ -155,7 +155,7 @@ fn test_multiple_metric_comparison() raises:
     - Throughput comparison (higher is better)
     - Memory comparison (lower is better)
     - Each metric compared independently
-    - Alerts for any metric regression
+    - Alerts for any metric regression.
     """
     # Test multiple metric comparison
     var duration_baseline = 100.0
@@ -186,7 +186,7 @@ fn test_missing_baseline_benchmark() raises:
     - Missing baseline detected
     - Warning issued (not error)
     - Suggests updating baseline
-    - Comparison skipped for that benchmark
+    - Comparison skipped for that benchmark.
     """
     # Test handling of missing baseline benchmarks
     var baseline_list = List[String](capacity=2)
@@ -218,7 +218,7 @@ fn test_zero_baseline_handling() raises:
     Verifies:
     - Zero baseline doesn't cause division by zero
     - Appropriate error or special handling
-    - Invalid baseline data detected
+    - Invalid baseline data detected.
     """
     # Test zero value handling
     var zero_value: Float64 = 0.0
@@ -241,7 +241,7 @@ fn test_comparison_report_generation() raises:
     - Percentage changes shown
     - Regressions highlighted
     - Improvements noted
-    - Summary statistics included
+    - Summary statistics included.
     """
     # Test report generation
     var benchmarks_total = 3

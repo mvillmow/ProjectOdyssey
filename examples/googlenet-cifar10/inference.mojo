@@ -136,7 +136,7 @@ fn print_detailed_results(
     Args:
         accuracy: Overall accuracy percentage
         correct_per_class: Correct predictions per class
-        total_per_class: Total samples per class
+        total_per_class: Total samples per class.
     """
     print("=" * 60)
     print("EVALUATION RESULTS")

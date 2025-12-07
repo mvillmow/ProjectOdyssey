@@ -546,7 +546,7 @@ struct AlexNet:
             learning_rate: Learning rate for gradient descent
             momentum: Momentum factor (typically 0.9)
             grad_*: Gradients for each parameter
-            velocity_*: Velocity (momentum) for each parameter
+            velocity_*: Velocity (momentum) for each parameter.
         """
         # SGD with momentum update: v = momentum * v - lr * grad; param = param + v
         # Convert Float32 parameters to Float64 for shared library

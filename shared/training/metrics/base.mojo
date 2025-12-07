@@ -139,7 +139,7 @@ struct MetricCollection(Sized):
 
         Args:
             name: Unique name for the metric
-            metric: Metric instance implementing Metric trait
+            metric: Metric instance implementing Metric trait.
         """
         # Check for duplicate names
         for i in range(self.num_metrics):
@@ -154,7 +154,7 @@ struct MetricCollection(Sized):
         """Get number of metrics in collection (Sized trait).
 
         Returns:
-            Number of metrics
+            Number of metrics.
         """
         return self.num_metrics
 
@@ -162,7 +162,7 @@ struct MetricCollection(Sized):
         """Get number of metrics in collection.
 
         Returns:
-            Number of metrics
+            Number of metrics.
         """
         return self.num_metrics
 
@@ -170,7 +170,7 @@ struct MetricCollection(Sized):
         """Get names of all metrics.
 
         Returns:
-            Copy of metric names vector
+            Copy of metric names vector.
         """
         return List[String](self.metric_names)
 
@@ -181,7 +181,7 @@ struct MetricCollection(Sized):
             name: Metric name
 
         Returns:
-            True if metric exists
+            True if metric exists.
         """
         for i in range(self.num_metrics):
             if self.metric_names[i] == name:

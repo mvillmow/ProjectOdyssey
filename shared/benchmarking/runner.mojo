@@ -36,7 +36,7 @@ struct BenchmarkConfig(Copyable, Movable):
         warmup_iters: Number of warmup iterations before measurement
         measure_iters: Number of measurement iterations
         compute_percentiles: Whether to compute p50, p95, p99
-        report_throughput: Whether to report items per second
+        report_throughput: Whether to report items per second.
     """
 
     var warmup_iters: Int
@@ -70,7 +70,7 @@ struct BenchmarkStatistics(Copyable, Movable, ImplicitlyCopyable):
         max_latency_ms: Maximum latency in milliseconds
         throughput: Operations per second (ops/sec)
         iterations: Total measurement iterations
-        warmup_iterations: Warmup iterations performed
+        warmup_iterations: Warmup iterations performed.
     """
 
     var mean_latency_ms: Float64
@@ -98,7 +98,7 @@ fn _compute_percentile(data: List[Float64], percentile: Float64) -> Float64:
         percentile: Percentile to compute (0-100)
 
     Returns:
-        Percentile value
+        Percentile value.
     """
     if len(data) == 0:
         return 0.0
@@ -125,7 +125,7 @@ fn _sort_ascending(mut data: List[Float64]):
     """Simple bubble sort for small lists.
 
     Args:
-        data: List to sort in-place
+        data: List to sort in-place.
     """
     var n = len(data)
     for i in range(n):
@@ -146,7 +146,7 @@ fn _get_time_ns() -> Int:
     - Windows: QueryPerformanceCounter()
 
     Returns:
-        Time in nanoseconds as Int
+        Time in nanoseconds as Int.
     """
     return Int(perf_counter_ns())
 
@@ -158,7 +158,7 @@ fn _ns_to_ms(ns: Int) -> Float64:
         ns: Time in nanoseconds
 
     Returns:
-        Time in milliseconds as Float64
+        Time in milliseconds as Float64.
     """
     return Float64(ns) / 1_000_000.0
 
@@ -324,7 +324,7 @@ struct BenchmarkRunner(Movable):
             func: Function to run during warmup phase
 
         Raises:
-            Error if func raises during warmup
+            Error if func raises during warmup.
         """
         for _ in range(self.warmup_iters):
             func()
@@ -333,7 +333,7 @@ struct BenchmarkRunner(Movable):
         """Record a single iteration's execution time.
 
         Args:
-            time_ns: Execution time in nanoseconds
+            time_ns: Execution time in nanoseconds.
         """
         self.result.record(time_ns)
 
@@ -341,7 +341,7 @@ struct BenchmarkRunner(Movable):
         """Get mean execution time in milliseconds.
 
         Returns:
-            Mean time in milliseconds
+            Mean time in milliseconds.
         """
         return self.result.mean() / 1_000_000.0
 
@@ -349,7 +349,7 @@ struct BenchmarkRunner(Movable):
         """Get standard deviation of execution times in milliseconds.
 
         Returns:
-            Standard deviation in milliseconds
+            Standard deviation in milliseconds.
         """
         return self.result.std() / 1_000_000.0
 
@@ -357,7 +357,7 @@ struct BenchmarkRunner(Movable):
         """Get minimum execution time in milliseconds.
 
         Returns:
-            Minimum time in milliseconds
+            Minimum time in milliseconds.
         """
         return self.result.min_time() / 1_000_000.0
 
@@ -365,7 +365,7 @@ struct BenchmarkRunner(Movable):
         """Get maximum execution time in milliseconds.
 
         Returns:
-            Maximum time in milliseconds
+            Maximum time in milliseconds.
         """
         return self.result.max_time() / 1_000_000.0
 
@@ -373,7 +373,7 @@ struct BenchmarkRunner(Movable):
         """Get total number of iterations recorded.
 
         Returns:
-            Number of iterations
+            Number of iterations.
         """
         return self.result.iterations
 
@@ -495,7 +495,7 @@ fn create_benchmark_config(
         report_throughput: Report throughput (default True)
 
     Returns:
-        BenchmarkConfig with specified settings
+        BenchmarkConfig with specified settings.
     """
     return BenchmarkConfig(
         warmup_iters=warmup_iters,
@@ -615,7 +615,7 @@ fn benchmark_operation(
         config: Benchmark configuration (warmup, iterations)
 
     Returns:
-        LegacyBenchmarkResult with timing statistics in microseconds
+        LegacyBenchmarkResult with timing statistics in microseconds.
     """
     # Use the new benchmark_function internally
     var result = benchmark_function(

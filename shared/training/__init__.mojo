@@ -195,7 +195,7 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
         Args:
             model: Model implementing Model trait
             optimizer: Optimizer implementing Optimizer trait
-            loss_fn: Loss function implementing Loss trait
+            loss_fn: Loss function implementing Loss trait.
         """
         self.model = model^
         self.optimizer = optimizer^
@@ -240,7 +240,7 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
             inputs: Input ExTensor
 
         Returns:
-            Model output ExTensor
+            Model output ExTensor.
         """
         # Call model.forward() via Model trait
         return self.model.forward(inputs)
@@ -253,7 +253,7 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
             targets: Ground truth targets
 
         Returns:
-            Scalar loss value as ExTensor
+            Scalar loss value as ExTensor.
         """
         # Call loss_fn.compute() via Loss trait
         return self.loss_fn.compute(outputs, targets)
@@ -338,7 +338,7 @@ struct CrossEntropyLoss(Loss, Movable):
             target: Ground truth targets (class indices or one-hot)
 
         Returns:
-            Scalar loss value as ExTensor
+            Scalar loss value as ExTensor.
         """
         from shared.core.loss import cross_entropy
         return cross_entropy(pred, target)

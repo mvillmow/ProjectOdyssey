@@ -283,7 +283,7 @@ struct LeNet5(Model, Movable):
             weights_dir: Directory containing weight files
 
         Raises:
-            Error: If weight files are missing or have incompatible shapes
+            Error: If weight files are missing or have incompatible shapes.
         """
         # Get standard parameter names
         var param_names = get_model_parameter_names("lenet5")
@@ -321,7 +321,7 @@ struct LeNet5(Model, Movable):
 
         Args:
             learning_rate: Learning rate for gradient descent
-            grad_*: Gradients for each parameter
+            grad_*: Gradients for each parameter.
         """
         # SGD update: param = param - lr * grad
         _sgd_update(self.conv1_kernel, grad_conv1_kernel, learning_rate)

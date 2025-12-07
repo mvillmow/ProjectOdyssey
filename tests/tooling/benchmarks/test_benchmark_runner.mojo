@@ -39,7 +39,7 @@ fn test_benchmark_execution_timing() raises:
     Verifies:
     - Timing measurement is non-zero
     - Multiple runs produce consistent results
-    - Timing reflects actual work done
+    - Timing reflects actual work done.
     """
     # Create test fixture with non-zero duration
     var benchmark_name = "test_timing"
@@ -66,7 +66,7 @@ fn test_multiple_iterations() raises:
     - Runs specified number of iterations
     - Collects results for all iterations
     - Calculates statistics correctly (mean, std, min, max)
-    - Handles iteration count parameter
+    - Handles iteration count parameter.
     """
     # Test that we can collect multiple results
     var results = List[BenchmarkResult](capacity=5)
@@ -117,7 +117,7 @@ fn test_deterministic_execution() raises:
     Verifies:
     - Same seed produces same results
     - Results reproducible across runs
-    - Variance is only from timing, not randomness
+    - Variance is only from timing, not randomness.
     """
     # Set deterministic seed
     TestFixtures.set_seed()
@@ -146,7 +146,7 @@ fn test_result_collection() raises:
     - All metrics captured (duration, throughput, memory)
     - Results formatted as expected
     - Metadata included (name, iterations, timestamp)
-    - Ready for JSON serialization
+    - Ready for JSON serialization.
     """
     # Create a complete benchmark result with all metrics
     var name = "collection_test"
@@ -170,7 +170,7 @@ fn test_benchmark_isolation() raises:
     - Each benchmark runs independently
     - Previous benchmark doesn't affect next one
     - State is reset between benchmarks
-    - Failures in one don't cascade
+    - Failures in one don't cascade.
     """
     # Create two independent benchmarks
     var bench1 = BenchmarkResult("benchmark_1", 10.0, 100.0)
@@ -194,7 +194,7 @@ fn test_benchmark_timeout() raises:
     - Timeout mechanism works
     - Long benchmarks are terminated
     - Timeout reported in results
-    - Other benchmarks continue after timeout
+    - Other benchmarks continue after timeout.
     """
     # Define timeout threshold (in milliseconds)
     var timeout_threshold: Float64 = 1000.0  # 1 second
@@ -215,7 +215,7 @@ fn test_json_output_format() raises:
     - JSON structure matches expected schema
     - All required fields present
     - Data types correct
-    - Parseable by comparison tool
+    - Parseable by comparison tool.
     """
     # Create benchmark results that should be JSON serializable
     var results = List[BenchmarkResult](capacity=3)

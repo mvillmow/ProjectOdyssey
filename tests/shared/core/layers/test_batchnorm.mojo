@@ -149,7 +149,7 @@ fn test_batchnorm_forward_training_mode() raises:
     Training mode should:
     1. Compute batch statistics
     2. Normalize using batch statistics
-    3. Update running statistics
+    3. Update running statistics.
     """
     var layer = BatchNorm2dLayer(4, momentum=0.1)
 
@@ -195,7 +195,7 @@ fn test_batchnorm_forward_inference_mode() raises:
 
     Inference mode should:
     1. Use running statistics (not compute batch statistics)
-    2. NOT update running statistics
+    2. NOT update running statistics.
     """
     var layer = BatchNorm2dLayer(4)
 
@@ -350,7 +350,7 @@ fn test_batchnorm_set_running_stats() raises:
 fn test_batchnorm_running_stats_update_over_batches() raises:
     """Test BatchNorm2dLayer running statistics accumulate over multiple batches.
 
-    With momentum=0.1, running_stat = 0.9 * old + 0.1 * batch_stat
+    With momentum=0.1, running_stat = 0.9 * old + 0.1 * batch_stat.
     """
     var layer = BatchNorm2dLayer(1, momentum=0.1)
 

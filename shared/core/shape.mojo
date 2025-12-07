@@ -130,7 +130,7 @@ fn view(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
         var b = view(a, [6])  # Creates view with shape (6,)
 
         # View fails for non-trivial reshapes
-        # var c = view(a, [3, 2])  # Would fail - need to transpose memory layout
+        # var c = view(a, [3, 2])  # Would fail - need to transpose memory layout.
     """
     var old_shape = tensor.shape()
     var old_numel = tensor.numel()
@@ -639,7 +639,7 @@ fn flatten_size(height: Int, width: Int, channels: Int) -> Int:
         var fc_weight_shape = [4096, 25088]  # Common dense layer size
 
         # After initial conv layer
-        var fc_input_size = flatten_size(112, 112, 64)  # 802816 elements
+        var fc_input_size = flatten_size(112, 112, 64)  # 802816 elements.
     """
     return height * width * channels
 

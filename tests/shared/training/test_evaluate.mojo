@@ -39,7 +39,7 @@ struct MockPredictor:
         """Initialize with fixed predictions.
 
         Args:
-            predictions: Tensor of predicted class indices
+            predictions: Tensor of predicted class indices.
         """
         self.predictions = predictions^
 
@@ -50,7 +50,7 @@ struct MockPredictor:
             sample: Single sample (not used, returns from predictions list)
 
         Returns:
-            Predicted class index
+            Predicted class index.
         """
         # This is a simplified mock - in real usage, this would process the sample
         return Int(self.predictions._data.bitcast[Int32]()[0])

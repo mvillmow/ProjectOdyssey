@@ -153,7 +153,7 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
 
     Attributes:
         value: 4-bit E2M1 encoded value
-        scale: 8-bit E8M0 scale factor
+        scale: 8-bit E8M0 scale factor.
     """
     var value: FP4_E2M1
     var scale: E8M0Scale
@@ -534,7 +534,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
 
         Args:
             data: 16 bytes containing 32 packed E2M1 values
-            scale: E8M0 scale factor for the block
+            scale: E8M0 scale factor for the block.
         """
         self.data = data
         self.scale = scale.copy()
@@ -631,7 +631,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
             MXFP4 value at the given index
 
         Raises:
-            Error: If index is out of range
+            Error: If index is out of range.
         """
         if index < 0 or index >= 32:
             raise Error("Index " + String(index) + " out of range [0, 31]")
@@ -686,7 +686,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """String representation showing scale and value count.
 
         Returns:
-            String representation
+            String representation.
         """
         return "MXFP4Block(32 values, scale=" + String(self.scale.to_float32()) + ")"
 
@@ -694,6 +694,6 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """Detailed representation.
 
         Returns:
-            Detailed string representation
+            Detailed string representation.
         """
         return "MXFP4Block(scale=" + repr(self.scale) + ", data=16 bytes)"

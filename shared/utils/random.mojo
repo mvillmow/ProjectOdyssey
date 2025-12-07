@@ -263,7 +263,7 @@ fn random_uniform() -> Float32:
     """Generate random float in [0, 1).
 
     Returns:
-        Random float value in [0, 1) following uniform distribution
+        Random float value in [0, 1) following uniform distribution.
     """
     return Float32(random_float64())
 
@@ -319,7 +319,7 @@ fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) r
         Random element from list
 
     Raises:
-        Error if the list is empty
+        Error if the list is empty.
     """
     if len(options) == 0:
         raise Error("random_choice: cannot choose from empty list")
@@ -386,7 +386,7 @@ fn compute_distribution_stats(samples: List[Float32]) -> DistributionStats:
         samples: List of random samples
 
     Returns:
-        Statistics including mean, std dev, min, max
+        Statistics including mean, std dev, min, max.
     """
     # TODO(#2383): Implement statistical calculation
     return DistributionStats()
@@ -399,7 +399,7 @@ fn test_uniform_distribution(sample_count: Int = 1000) -> Bool:
         sample_count: Number of samples to generate
 
     Returns:
-        True if distribution is uniform enough, False if skewed
+        True if distribution is uniform enough, False if skewed.
     """
     # TODO(#2383): Implement chi-square test for uniformity
     return True
@@ -412,7 +412,7 @@ fn test_normal_distribution(sample_count: Int = 1000) -> Bool:
         sample_count: Number of samples to generate
 
     Returns:
-        True if distribution is normal enough, False if skewed
+        True if distribution is normal enough, False if skewed.
     """
     # TODO(#2383): Implement KS test for normality
     return True

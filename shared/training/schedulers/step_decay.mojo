@@ -58,7 +58,7 @@ fn step_lr(
         - Gamma typically 0.1 (10x reduction) or 0.5 (2x reduction)
         - Step size depends on dataset and model
           - CIFAR-10: typically 30-50 epochs
-          - ImageNet: typically 30 epochs
+          - ImageNet: typically 30 epochs.
     """
     if step_size <= 0:
         raise Error("step_size must be positive")
@@ -115,7 +115,7 @@ fn multistep_lr(
     Note:
         - Used in ResNet paper: decay at epochs [30, 60, 90]
         - Allows fine-grained control over LR schedule
-        - Milestones should be sorted in ascending order
+        - Milestones should be sorted in ascending order.
     """
     if gamma <= 0.0 or gamma >= 1.0:
         raise Error("gamma must be in range (0, 1)")
@@ -169,7 +169,7 @@ fn exponential_lr(
         - Smoother decay than step_lr
         - Gamma typically 0.9-0.99 (1-10% decay per epoch)
         - Less aggressive than step decay
-        - Good for fine-tuning
+        - Good for fine-tuning.
     """
     if gamma <= 0.0 or gamma >= 1.0:
         raise Error("gamma must be in range (0, 1)")

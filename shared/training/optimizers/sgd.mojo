@@ -194,7 +194,7 @@ fn sgd_momentum_update_inplace(
         - Velocity tensor must be pre-allocated (use zeros_like)
         - Both param and velocity are modified directly
         - This is the AlexNet/ResNet standard momentum formulation
-        - Supports float32 and float64 dtypes
+        - Supports float32 and float64 dtypes.
     """
     var numel = param.numel()
 

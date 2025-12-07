@@ -241,7 +241,7 @@ fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
 
     Examples:
         var t = arange(5.0, 0.0, -1.0, DType.float32)  # [5, 4, 3, 2, 1]
-        var idx = argsort(t, descending=False)  # Returns [4, 3, 2, 1, 0] for ascending
+        var idx = argsort(t, descending=False)  # Returns [4, 3, 2, 1, 0] for ascending.
     """
     if tensor.numel() == 0:
         raise Error("argsort: tensor is empty")

@@ -94,7 +94,7 @@ struct CIFARLoader(Copyable, Movable):
             file_size: Size of file in bytes
 
         Raises:
-            Error: If file size is not a multiple of bytes_per_image
+            Error: If file size is not a multiple of bytes_per_image.
         """
         if file_size % self.bytes_per_image != 0:
             raise Error(
@@ -111,7 +111,7 @@ struct CIFARLoader(Copyable, Movable):
             file_size: Size of file in bytes
 
         Returns:
-            Number of images in file
+            Number of images in file.
         """
         return file_size // self.bytes_per_image
 
@@ -128,7 +128,7 @@ struct CIFARLoader(Copyable, Movable):
             ExTensor containing labels
 
         Raises:
-            Error: If file cannot be read or format is invalid
+            Error: If file cannot be read or format is invalid.
         """
         var content: String
         with open(filepath, "r") as f:
@@ -182,7 +182,7 @@ struct CIFARLoader(Copyable, Movable):
             ExTensor of shape (num_images, 3, 32, 32) with uint8 pixel values
 
         Raises:
-            Error: If file cannot be read or format is invalid
+            Error: If file cannot be read or format is invalid.
         """
         var content: String
         with open(filepath, "r") as f:
@@ -235,7 +235,7 @@ struct CIFARLoader(Copyable, Movable):
             - labels: ExTensor with shape (num_images,) for CIFAR-10 or (num_images, 2) for CIFAR-100
 
         Raises:
-            Error: If file cannot be read or format is invalid
+            Error: If file cannot be read or format is invalid.
         """
         var images = self.load_images(filepath)
         var labels = self.load_labels(filepath)

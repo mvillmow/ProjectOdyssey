@@ -35,7 +35,7 @@ fn bench_batch_loading_speed() raises -> List[BenchmarkResult]:
 
     Performance Target:
         - > 1000 batches/second on test hardware
-        - Within 2x of PyTorch DataLoader performance
+        - Within 2x of PyTorch DataLoader performance.
     """
     # TODO: Implement when DataLoader is available
     # Placeholder for TDD

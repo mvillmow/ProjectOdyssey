@@ -95,7 +95,7 @@ fn test_training_loop_full_epoch() raises:
         fn run_epoch(self, data_loader: DataLoader) -> Float32
         - Iterates through all batches in data loader
         - Performs training step on each batch
-        - Returns average loss for the epoch
+        - Returns average loss for the epoch.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP and create_mock_dataloader are available
@@ -122,7 +122,7 @@ fn test_training_loop_multiple_epochs() raises:
         Multiple epochs should:
         - Each epoch processes entire dataset
         - Loss should generally decrease (for simple problems)
-        - Return list of epoch losses
+        - Return list of epoch losses.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP and create_simple_dataset are available
@@ -156,7 +156,7 @@ fn test_training_loop_forward_pass() raises:
         Forward pass should:
         - Call model.forward(input)
         - Return output tensor
-        - Preserve batch dimension
+        - Preserve batch dimension.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP and ExTensor.randn are available
@@ -209,7 +209,7 @@ fn test_training_loop_computes_loss() raises:
     API Contract:
         fn compute_loss(self, outputs: Tensor, targets: Tensor) -> Float32
         - Calls loss_fn(outputs, targets)
-        - Returns scalar loss value
+        - Returns scalar loss value.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when TrainingLoop is available
@@ -311,7 +311,7 @@ fn test_training_loop_gradient_accumulation() raises:
 
     API Contract:
         If gradients not zeroed, backward pass should accumulate:
-        new_grad = old_grad + computed_grad
+        new_grad = old_grad + computed_grad.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP, TrainingLoop, ExTensor.randn, and _grad attribute are available
@@ -384,7 +384,7 @@ fn test_training_loop_respects_learning_rate() raises:
 
     API Contract:
         Higher learning rate → larger weight updates
-        Lower learning rate → smaller weight updates
+        Lower learning rate → smaller weight updates.
     """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP, TrainingLoop, state_dict, and ExTensor.randn are available

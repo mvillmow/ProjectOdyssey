@@ -38,7 +38,7 @@ from collections import List
 struct SimpleMLP:
     """Simple 2-layer MLP for testing training loops.
 
-    Architecture: input(10) -> fc1(10->20) -> relu -> fc2(20->5) -> output
+    Architecture: input(10) -> fc1(10->20) -> relu -> fc2(20->5) -> output.
     """
     var fc1_weights: ExTensor
     var fc1_bias: ExTensor
@@ -165,7 +165,7 @@ fn test_e2e_training_loop_completes() raises:
     - Model initializes correctly
     - Forward pass executes
     - Backward pass computes gradients
-    - Parameter update applies
+    - Parameter update applies.
     """
     var model = SimpleMLP()
     var batch = create_dummy_batch(batch_size=4, input_dim=10, num_classes=5)

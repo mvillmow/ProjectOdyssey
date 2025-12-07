@@ -159,7 +159,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             key: Configuration key
 
         Returns:
-            True if key exists, False otherwise
+            True if key exists, False otherwise.
         """
         return key in self.data
 
@@ -170,7 +170,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             key: Configuration key
 
         Returns:
-            True if key exists, False otherwise
+            True if key exists, False otherwise.
         """
         return self.has(key)
 
@@ -185,7 +185,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             String value or default
 
         Raises:
-            Error: If key exists but type is not string
+            Error: If key exists but type is not string.
         """
         if key not in self.data:
             return default
@@ -211,7 +211,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Integer value or default
 
         Raises:
-            Error: If key exists but type is not int
+            Error: If key exists but type is not int.
         """
         if key not in self.data:
             return default
@@ -237,7 +237,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Float value or default
 
         Raises:
-            Error: If key exists but type is not float
+            Error: If key exists but type is not float.
         """
         if key not in self.data:
             return default
@@ -263,7 +263,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Boolean value or default
 
         Raises:
-            Error: If key exists but type is not bool
+            Error: If key exists but type is not bool.
         """
         if key not in self.data:
             return default
@@ -288,7 +288,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             List value or empty list if not found
 
         Raises:
-            Error: If key exists but type is not list
+            Error: If key exists but type is not list.
         """
         if key not in self.data:
             return List[String]()^
@@ -317,7 +317,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Configuration value or default ConfigValue if not found
 
         Raises:
-            Error if key access fails
+            Error if key access fails.
         """
         if key in self.data:
             return self.data[key]
@@ -331,7 +331,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             default: Default value to return if key not found
 
         Returns:
-            Integer value or default
+            Integer value or default.
         """
         if not self.has(key):
             return default
@@ -348,7 +348,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             default: Default value to return if key not found
 
         Returns:
-            Float value or default
+            Float value or default.
         """
         if not self.has(key):
             return default
@@ -365,7 +365,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             default: Default value to return if key not found
 
         Returns:
-            String value or default
+            String value or default.
         """
         if not self.has(key):
             return default
@@ -382,7 +382,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             default: Default value to return if key not found
 
         Returns:
-            Bool value or default
+            Bool value or default.
         """
         if not self.has(key):
             return default
@@ -398,7 +398,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             other: Config to merge (overrides self)
 
         Returns:
-            New merged configuration
+            New merged configuration.
         """
         var result = Config()
 
@@ -419,7 +419,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             required_keys: List of required configuration keys
 
         Raises:
-            Error if any required key is missing
+            Error if any required key is missing.
         """
         for i in range(len(required_keys)):
             var key = required_keys[i]
@@ -434,7 +434,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             type_name: Expected type name ("int", "float", "string", "bool", "list")
 
         Raises:
-            Error if type doesn't match
+            Error if type doesn't match.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -461,7 +461,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             max_val: Maximum allowed value
 
         Raises:
-            Error if value is out of range
+            Error if value is out of range.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -495,7 +495,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             valid_values: List of allowed values
 
         Raises:
-            Error if value is not in valid_values
+            Error if value is not in valid_values.
         """
         if not self.has(key):
             raise Error("Key not found: " + key)
@@ -517,7 +517,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             keys: List of mutually exclusive keys
 
         Raises:
-            Error if more than one key is present
+            Error if more than one key is present.
         """
         var count = 0
         for i in range(len(keys)):
@@ -553,7 +553,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Loaded configuration
 
         Raises:
-            Error if file not found, empty, or invalid YAML
+            Error if file not found, empty, or invalid YAML.
         """
         var config = Config()
 
@@ -658,7 +658,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             Loaded configuration
 
         Raises:
-            Error if file not found, empty, or invalid JSON
+            Error if file not found, empty, or invalid JSON.
         """
         # NOTE: Current implementation supports flat key-value pairs.
         # Full nested JSON parsing can be added as needed. Using basic parsing.
@@ -712,7 +712,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             filepath: Output file path
 
         Raises:
-            Error if file cannot be written
+            Error if file cannot be written.
         """
         try:
             with open(filepath, "w") as f:
@@ -745,7 +745,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             filepath: Output file path
 
         Raises:
-            Error if file cannot be written
+            Error if file cannot be written.
         """
         try:
             with open(filepath, "w") as f:
@@ -793,7 +793,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         Supports default syntax: ${VAR_NAME:-default}
 
         Returns:
-            New config with substituted values
+            New config with substituted values.
         """
         var result = Config()
 
@@ -819,7 +819,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             value: String that may contain ${VAR} patterns
 
         Returns:
-            String with substituted values
+            String with substituted values.
         """
         var result = value
 
@@ -874,7 +874,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             name: Template name (e.g., "training_default", "lenet5")
 
         Returns:
-            Template configuration
+            Template configuration.
         """
         var config = Config()
 
@@ -1009,7 +1009,7 @@ struct ConfigValidator(Copyable, Movable):
             key: Configuration key
 
         Returns:
-            Self for method chaining
+            Self for method chaining.
         """
         self.required_keys.append(key)
         return self.copy()
@@ -1022,7 +1022,7 @@ struct ConfigValidator(Copyable, Movable):
             type_name: Expected type name
 
         Returns:
-            Self for method chaining
+            Self for method chaining.
         """
         self.allowed_keys[key] = type_name
         return self.copy()
@@ -1034,7 +1034,7 @@ struct ConfigValidator(Copyable, Movable):
             config: Configuration to validate
 
         Returns:
-            True if valid, False otherwise
+            True if valid, False otherwise.
         """
         # Check required keys
         for i in range(len(self.required_keys)):
@@ -1048,6 +1048,6 @@ fn create_validator() -> ConfigValidator:
     """Create new configuration validator.
 
     Returns:
-        Empty validator ready for configuration
+        Empty validator ready for configuration.
     """
     return ConfigValidator()

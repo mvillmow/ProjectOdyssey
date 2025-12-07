@@ -35,7 +35,7 @@ fn test_model_forward(
         batch_size: Batch size for test input
 
     Returns:
-        True if test passes, False otherwise
+        True if test passes, False otherwise.
     """
     print("\n" + String('='*60))
     print("Testing " + String(model_name))

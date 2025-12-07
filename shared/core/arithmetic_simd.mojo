@@ -63,7 +63,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Broadcasting - falls back to scalar
         var x = ones([1, 1024], DType.float32)
         var y = ones([1024, 1024], DType.float32)
-        var z = add_simd(x, y)  # Scalar broadcasting
+        var z = add_simd(x, y)  # Scalar broadcasting.
     """
     if a.dtype() != b.dtype():
         raise Error("Cannot add tensors with different dtypes")

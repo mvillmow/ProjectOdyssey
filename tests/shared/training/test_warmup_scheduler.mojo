@@ -72,7 +72,7 @@ fn test_warmup_scheduler_reaches_target() raises:
 
     After warmup_epochs:
     - LR equals base_lr
-    - LR remains constant at base_lr
+    - LR remains constant at base_lr.
     """
     var scheduler = WarmupLR(base_lr=0.1, warmup_epochs=5)
 
@@ -95,7 +95,7 @@ fn test_warmup_scheduler_different_warmup_periods() raises:
 
     warmup_epochs determines warmup speed:
     - Small warmup_epochs: Fast warmup
-    - Large warmup_epochs: Slow warmup
+    - Large warmup_epochs: Slow warmup.
     """
     # Fast warmup (2 epochs)
     var scheduler1 = WarmupLR(base_lr=1.0, warmup_epochs=2)
@@ -121,7 +121,7 @@ fn test_warmup_scheduler_single_epoch_warmup() raises:
 
     Minimal warmup case:
     - Epoch 0: lr = 0.0
-    - Epoch 1+: lr = base_lr
+    - Epoch 1+: lr = base_lr.
     """
     var scheduler = WarmupLR(base_lr=1.0, warmup_epochs=1)
 
@@ -283,7 +283,7 @@ fn test_warmup_scheduler_property_linear() raises:
 fn test_warmup_scheduler_property_bounded() raises:
     """Property: LR is always bounded by [0, base_lr].
 
-    For all epochs: 0 <= LR <= base_lr
+    For all epochs: 0 <= LR <= base_lr.
     """
     var base_lr: Float64 = 0.5
     var scheduler = WarmupLR(base_lr=base_lr, warmup_epochs=20)

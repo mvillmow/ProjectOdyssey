@@ -38,7 +38,7 @@ fn test_load_valid_baseline() raises:
     - File is read successfully
     - JSON is parsed correctly
     - All benchmark entries loaded
-    - Metadata extracted properly
+    - Metadata extracted properly.
     """
     # Create a collection of baseline benchmarks (simulating loaded baseline)
     var baseline_benchmarks = List[String](capacity=3)
@@ -62,7 +62,7 @@ fn test_parse_benchmark_entry() raises:
     - Duration field extracted and parsed as Float64
     - Throughput field extracted and parsed as Float64
     - Memory field extracted and parsed as Float64
-    - Iterations field extracted and parsed as Int
+    - Iterations field extracted and parsed as Int.
     """
     # Parse a benchmark entry with all required fields
     var entry_name = "matrix_ops"
@@ -85,7 +85,7 @@ fn test_missing_baseline_file() raises:
     Verifies:
     - Appropriate error raised
     - Error message is helpful
-    - Doesn't crash program
+    - Doesn't crash program.
     """
     # Test that we handle missing files gracefully
     var missing_file = "nonexistent_baseline.json"
@@ -103,7 +103,7 @@ fn test_malformed_json() raises:
     Verifies:
     - JSON parsing errors caught
     - Error message indicates parsing issue
-    - Points to problematic line if possible
+    - Points to problematic line if possible.
     """
     # Test detection of malformed JSON
     var _ = '{"name": "test", "duration": }'  # Missing value
@@ -122,7 +122,7 @@ fn test_missing_required_fields() raises:
     - Missing 'name' field detected
     - Missing 'duration_ms' field detected
     - Missing 'benchmarks' array detected
-    - Error messages identify missing field
+    - Error messages identify missing field.
     """
     # Test detection of missing required fields
     var missing_name_msg = "Missing required field: name"
@@ -142,7 +142,7 @@ fn test_baseline_version_compatibility() raises:
     - Version field is checked
     - Compatible versions accepted
     - Incompatible versions rejected
-    - Warning for minor version mismatch
+    - Warning for minor version mismatch.
     """
     # Test version compatibility checks
     var _ = "1.0.0"
@@ -166,7 +166,7 @@ fn test_environment_metadata() raises:
     - CPU field extracted
     - Mojo version extracted
     - Git commit extracted
-    - Used for comparison context
+    - Used for comparison context.
     """
     # Test extraction of environment metadata
     var metadata_os = "Linux"
@@ -188,7 +188,7 @@ fn test_baseline_lookup_by_name() raises:
     - Benchmark found by exact name match
     - Returns correct benchmark data
     - Returns error for non-existent benchmark
-    - Case-sensitive matching
+    - Case-sensitive matching.
     """
     # Create a baseline with named benchmarks
     var baseline = List[BenchmarkResult](capacity=2)

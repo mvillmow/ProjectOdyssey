@@ -78,7 +78,7 @@ fn are_shapes_broadcastable(
 
     Examples:
         are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
-        are_shapes_broadcastable([3, 4], [5, 4]) -> False
+        are_shapes_broadcastable([3, 4], [5, 4]) -> False.
     """
     var ndim1 = len(shape1)
     var ndim2 = len(shape2)

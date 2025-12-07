@@ -283,7 +283,7 @@ struct DataLoader(Copyable, Movable):
         """Check if more batches available.
 
         Returns:
-            True if more batches available
+            True if more batches available.
         """
         return self.current_batch < self.num_batches
 
@@ -294,7 +294,7 @@ struct DataLoader(Copyable, Movable):
             Next data batch
 
         Raises:
-            Error if no more batches
+            Error if no more batches.
         """
         if not self.has_next():
             raise Error("No more batches available")
@@ -331,6 +331,6 @@ fn create_simple_dataloader(var data: ExTensor, var labels: ExTensor, batch_size
         batch_size: Batch size
 
     Returns:
-        DataLoader instance
+        DataLoader instance.
     """
     return DataLoader(data^, labels^, batch_size)

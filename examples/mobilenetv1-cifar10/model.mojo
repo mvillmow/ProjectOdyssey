@@ -148,7 +148,7 @@ struct DepthwiseSeparableBlock:
 
     Parameters:
         - Depthwise: weights (in_channels, 1, 3, 3), bias (in_channels,), BN params
-        - Pointwise: weights (out_channels, in_channels, 1, 1), bias (out_channels,), BN params
+        - Pointwise: weights (out_channels, in_channels, 1, 1), bias (out_channels,), BN params.
     """
 
     # Depthwise convolution (3×3, per-channel)
@@ -255,7 +255,7 @@ struct MobileNetV1:
         - FC layer
         - Output: 10 classes
 
-    Total parameters: ~4.2M
+    Total parameters: ~4.2M.
     """
 
     # Initial standard convolution
@@ -420,7 +420,7 @@ struct MobileNetV1:
             - initial_conv_weights.weights
             - initial_bn_gamma.weights, initial_bn_beta.weights
             - ds_block_N_{dw,pw}_{weights,bias,bn_*}.weights for each block
-            - fc_weights.weights, fc_bias.weights
+            - fc_weights.weights, fc_bias.weights.
         """
         from shared.training.model_utils import load_model_weights, get_model_parameter_names
 

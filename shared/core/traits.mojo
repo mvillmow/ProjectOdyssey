@@ -427,7 +427,7 @@ trait Model:
             Output tensor (batch_size, output_dim)
 
         Raises:
-            Error: If input shape is invalid
+            Error: If input shape is invalid.
         """
         ...
 
@@ -438,7 +438,7 @@ trait Model:
             List of parameter tensors
 
         Note:
-            Used by optimizers to update weights
+            Used by optimizers to update weights.
         """
         ...
 
@@ -446,7 +446,7 @@ trait Model:
         """Reset all parameter gradients to zero.
 
         Note:
-            Should be called before each backward pass
+            Should be called before each backward pass.
         """
         ...
 
@@ -479,7 +479,7 @@ trait Loss:
             Scalar loss value
 
         Raises:
-            Error: If shapes are incompatible
+            Error: If shapes are incompatible.
         """
         ...
 
@@ -514,7 +514,7 @@ trait Optimizer:
             params: List of parameter tensors to update
 
         Note:
-            Assumes gradients are already computed
+            Assumes gradients are already computed.
         """
         ...
 

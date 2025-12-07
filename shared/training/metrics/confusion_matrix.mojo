@@ -64,7 +64,7 @@ struct ConfusionMatrix(Metric):
             class_names: Optional list of class names (default: empty)
 
         Raises:
-            Error: If tensor size exceeds memory limits
+            Error: If tensor size exceeds memory limits.
         """
         self.num_classes = num_classes
 
@@ -150,7 +150,7 @@ struct ConfusionMatrix(Metric):
             Normalized confusion matrix as Float64 tensor
 
         Raises:
-            Error: If mode is invalid
+            Error: If mode is invalid.
         """
         var result_shape = List[Int]()
         result_shape.append(self.num_classes)
@@ -228,7 +228,7 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with precision for each class
 
-        Note: Returns 0.0 for classes with no predictions
+        Note: Returns 0.0 for classes with no predictions.
         """
         var result_shape = List[Int]()
         result_shape.append(self.num_classes)
@@ -262,7 +262,7 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with recall for each class
 
-        Note: Returns 0.0 for classes with no samples
+        Note: Returns 0.0 for classes with no samples.
         """
         var result_shape = List[Int]()
         result_shape.append(self.num_classes)

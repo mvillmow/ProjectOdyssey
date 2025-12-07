@@ -402,7 +402,7 @@ struct AccuracyMetric(Metric):
             labels: True class labels of shape [batch_size]
 
         Raises:
-            Error: If shapes are incompatible
+            Error: If shapes are incompatible.
         """
         # Get predicted classes
         var pred_classes: ExTensor
@@ -439,7 +439,7 @@ struct AccuracyMetric(Metric):
         """Compute final accuracy from accumulated counts.
 
         Returns:
-            Accuracy as a fraction in [0, 1], or 0.0 if no samples
+            Accuracy as a fraction in [0, 1], or 0.0 if no samples.
         """
         if self.total_count == 0:
             return 0.0

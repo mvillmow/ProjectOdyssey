@@ -60,7 +60,7 @@ fn test_multiple_regressions_detection() raises:
     - All regressions detected
     - Each regression reported
     - Exit code = 1 (failure)
-    - Summary includes count
+    - Summary includes count.
     """
     # Test multiple regression detection
     var regression_threshold = 10.0
@@ -140,7 +140,7 @@ fn test_exit_code_failure() raises:
     - Any regression -> exit 1
     - Single regression -> exit 1
     - Multiple regressions -> exit 1
-    - Even if other benchmarks improved
+    - Even if other benchmarks improved.
     """
     # Test exit code 1 on failure
     var regression_threshold = 10.0
@@ -167,7 +167,7 @@ fn test_regression_report_format() raises:
     - Report includes percentage changes
     - Report includes baseline vs current values
     - Report is human-readable
-    - Report includes summary statistics
+    - Report includes summary statistics.
     """
     # Test regression report format
     var report = List[String](capacity=5)
@@ -191,7 +191,7 @@ fn test_regression_severity_levels() raises:
     - 10-20% = minor regression
     - 20-50% = moderate regression
     - >50% = severe regression
-    - Severity shown in report
+    - Severity shown in report.
     """
     # Test severity categorization
     var minor_regression = 15.0    # 10-20%
@@ -215,7 +215,7 @@ fn test_improvement_reporting() raises:
     - Improvements listed separately
     - Not counted as regressions
     - Noted in report (not just errors)
-    - Doesn't affect exit code if no regressions
+    - Doesn't affect exit code if no regressions.
     """
     # Test improvement reporting
     var regression_threshold = 10.0
@@ -241,7 +241,7 @@ fn test_ci_integration_output() raises:
     - Exit code usable by CI (0 or 1)
     - Output parseable by CI tools
     - Annotations for GitHub Actions (if applicable)
-    - Summary visible in CI logs
+    - Summary visible in CI logs.
     """
     # Test CI integration output
     var exit_code_success = 0

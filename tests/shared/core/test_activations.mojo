@@ -1061,7 +1061,7 @@ fn test_integration_forward_backward() raises:
 
     Simulates a simple neural network layer with:
     - Input -> ReLU -> Sigmoid -> Output
-    - Loss gradient flows back through the network
+    - Loss gradient flows back through the network.
     """
     # Input data
     var shape = List[Int]()

@@ -48,7 +48,7 @@ fn test_model_training_to_evaluation() raises:
         - Model trains without errors
         - Loss decreases over time
         - Evaluation metrics computed
-        - No runtime errors
+        - No runtime errors.
     """
     # Create a simple MLP model
     var model = SimpleMLP(
@@ -135,7 +135,7 @@ fn test_model_inference() raises:
     Success Criteria:
         - Inference produces correct shape
         - Outputs are deterministic
-        - Handles variable batch sizes
+        - Handles variable batch sizes.
     """
     # Create model with known dimensions
     var model = SimpleMLP(
@@ -211,7 +211,7 @@ fn test_model_prediction_confidence() raises:
     Success Criteria:
         - Probabilities sum to 1.0
         - Scores in valid range
-        - Confident predictions on easy data
+        - Confident predictions on easy data.
     """
     # Create model with multiple output classes
     var model = SimpleMLP(
@@ -293,7 +293,7 @@ fn test_model_checkpoint_save_load() raises:
         - Checkpoint saved successfully
         - Checkpoint loaded without errors
         - Loaded model produces same results
-        - Parameters correctly restored
+        - Parameters correctly restored.
     """
     # Create model with known weights
     var model = SimpleMLP(
@@ -396,7 +396,7 @@ fn test_model_best_checkpoint_selection() raises:
         - Best metric correctly identified
         - Best checkpoint preserved
         - Suboptimal checkpoints discarded
-        - Best model recoverable
+        - Best model recoverable.
     """
     # Simulate tracking losses over multiple epochs
     var losses = List[Float32]()
@@ -473,7 +473,7 @@ fn test_full_pipeline_integration() raises:
         - All components work together
         - Data flows through pipeline correctly
         - Results are consistent
-        - No integration errors
+        - No integration errors.
     """
     # Step 1: Create model
     var model = SimpleMLP(
@@ -571,7 +571,7 @@ fn test_multiple_models_comparison() raises:
         - Multiple models train independently
         - Metrics computed correctly
         - Comparison meaningful
-        - No state corruption
+        - No state corruption.
     """
     # Create multiple models with different configurations
     var model_small = SimpleMLP(

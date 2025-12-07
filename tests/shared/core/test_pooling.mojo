@@ -39,7 +39,7 @@ fn test_maxpool2d_output_shape() raises:
     Formula: out_height = (in_height - kernel_size) / stride + 1
 
     Test case: 4x4 input, 2x2 kernel, stride 2, padding 0
-    Expected: 2x2 output
+    Expected: 2x2 output.
     """
     var input_shape = List[Int]()
     input_shape.append(1)  # batch

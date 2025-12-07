@@ -174,7 +174,7 @@ struct ToExTensor(Transform, Copyable, Movable):
 struct Normalize(Transform, Copyable, Movable):
     """Normalize tensor with mean and standard deviation.
 
-    Applies: (x - mean) / std
+    Applies: (x - mean) / std.
     """
 
     var mean: Float64
