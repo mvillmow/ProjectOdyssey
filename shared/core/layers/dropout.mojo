@@ -64,15 +64,14 @@ struct DropoutLayer(Copyable, Movable):
         """
         if dropout_rate < 0.0 or dropout_rate >= 1.0:
             raise Error(
-                "dropout_rate must be in [0, 1), got: "
-                + String(dropout_rate)
+                "dropout_rate must be in [0, 1), got: " + String(dropout_rate)
             )
 
         self.dropout_rate = dropout_rate
         self.training = False
 
         # Initialize with a dummy mask (will be replaced in forward pass)
-        self.last_mask = zeros_like(ExTensor(List[Int](1), DType.float32))
+        self.last_mask = zeros_like(ExTensor([1], DType.float32))
 
     fn set_training(mut self, training: Bool):
         """Set training mode.
@@ -139,15 +138,21 @@ struct DropoutLayer(Copyable, Movable):
                 # Generate random value in [0, 1)
                 var rand_val = Float32(random_float64())
                 # Keep element if rand_val > dropout_rate, else drop it
-                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (rand_val > Float32(self.dropout_rate)) else Float32(0.0)
+                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (
+                    rand_val > Float32(self.dropout_rate)
+                ) else Float32(0.0)
         elif input._dtype == DType.float64:
             for i in range(input._numel):
                 var rand_val = random_float64()
-                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (rand_val > Float64(self.dropout_rate)) else Float32(0.0)
+                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (
+                    rand_val > Float64(self.dropout_rate)
+                ) else Float32(0.0)
         elif input._dtype == DType.float16:
             for i in range(input._numel):
                 var rand_val = Float32(random_float64())
-                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (rand_val > Float32(self.dropout_rate)) else Float32(0.0)
+                mask._data.bitcast[Float32]()[i] = Float32(1.0) if (
+                    rand_val > Float32(self.dropout_rate)
+                ) else Float32(0.0)
         else:
             raise Error("dropout: only float16/32/64 dtypes supported")
 
@@ -162,27 +167,29 @@ struct DropoutLayer(Copyable, Movable):
             for i in range(input._numel):
                 var input_val = input._data.bitcast[Float32]()[i]
                 var mask_val = mask._data.bitcast[Float32]()[i]
-                result._data.bitcast[Float32]()[i] = mask_val * input_val * scale
+                result._data.bitcast[Float32]()[i] = (
+                    mask_val * input_val * scale
+                )
         elif input._dtype == DType.float64:
             for i in range(input._numel):
                 var input_val = input._data.bitcast[Float64]()[i]
                 var mask_val = Float64(mask._data.bitcast[Float32]()[i])
-                result._data.bitcast[Float64]()[i] = mask_val * input_val * Float64(scale)
+                result._data.bitcast[Float64]()[i] = (
+                    mask_val * input_val * Float64(scale)
+                )
         elif input._dtype == DType.float16:
             for i in range(input._numel):
                 var input_val = input._data.bitcast[Float16]()[i]
                 var mask_val = Float16(mask._data.bitcast[Float32]()[i])
-                result._data.bitcast[Float16]()[i] = mask_val * input_val * Float16(scale)
+                result._data.bitcast[Float16]()[i] = (
+                    mask_val * input_val * Float16(scale)
+                )
         else:
             raise Error("dropout: only float16/32/64 dtypes supported")
 
         return result
 
-    fn backward(
-        self,
-        grad_output: ExTensor,
-        mask: ExTensor
-    ) raises -> ExTensor:
+    fn backward(self, grad_output: ExTensor, mask: ExTensor) raises -> ExTensor:
         """Backward pass: apply same mask as forward pass.
 
         During training, propagates gradient through kept elements only,
@@ -221,12 +228,16 @@ struct DropoutLayer(Copyable, Movable):
             for i in range(grad_output._numel):
                 var grad_val = grad_output._data.bitcast[Float64]()[i]
                 var mask_val = Float64(mask._data.bitcast[Float32]()[i])
-                result._data.bitcast[Float64]()[i] = mask_val * grad_val * Float64(scale)
+                result._data.bitcast[Float64]()[i] = (
+                    mask_val * grad_val * Float64(scale)
+                )
         elif grad_output._dtype == DType.float16:
             for i in range(grad_output._numel):
                 var grad_val = grad_output._data.bitcast[Float16]()[i]
                 var mask_val = Float16(mask._data.bitcast[Float32]()[i])
-                result._data.bitcast[Float16]()[i] = mask_val * grad_val * Float16(scale)
+                result._data.bitcast[Float16]()[i] = (
+                    mask_val * grad_val * Float16(scale)
+                )
         else:
             raise Error("dropout backward: only float16/32/64 dtypes supported")
 

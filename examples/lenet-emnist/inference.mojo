@@ -20,7 +20,11 @@ from model import LeNet5
 from shared.data import load_idx_labels, load_idx_images, normalize_images
 from shared.core import ExTensor, zeros
 from shared.utils.arg_parser import ArgumentParser
-from shared.training.metrics import evaluate_with_predict, top1_accuracy, AccuracyMetric
+from shared.training.metrics import (
+    evaluate_with_predict,
+    top1_accuracy,
+    AccuracyMetric,
+)
 from collections import List
 from math import exp
 
@@ -30,16 +34,59 @@ alias DEFAULT_NUM_CLASSES = 47
 # EMNIST Balanced class mapping (47 classes)
 # 0-9: digits, 10-35: uppercase letters, 36-46: lowercase letters (select)
 alias CLASS_NAMES = List[String](
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",  # 0-9
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",  # 10-19
-    "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",  # 20-29
-    "U", "V", "W", "X", "Y", "Z",                      # 30-35
-    "a", "b", "d", "e", "f", "g", "h", "n", "q", "r", "t"  # 36-46 (select lowercase)
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",  # 0-9
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",  # 10-19
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T",  # 20-29
+    "U",
+    "V",
+    "W",
+    "X",
+    "Y",
+    "Z",  # 30-35
+    "a",
+    "b",
+    "d",
+    "e",
+    "f",
+    "g",
+    "h",
+    "n",
+    "q",
+    "r",
+    "t",  # 36-46 (select lowercase)
 )
 
 
 struct InferenceConfig:
     """Inference configuration from command line arguments."""
+
     var weights_dir: String
     var data_dir: String
 
@@ -50,6 +97,7 @@ struct InferenceConfig:
 
 struct PredictionResult:
     """Result from a single prediction."""
+
     var predicted_class: Int
     var confidence: Float32
 
@@ -60,6 +108,7 @@ struct PredictionResult:
 
 struct EvaluationResult:
     """Result from evaluating on a dataset."""
+
     var accuracy: Float32
     var num_correct: Int
     var num_total: Int
@@ -123,9 +172,7 @@ fn infer_single(mut model: LeNet5, image: ExTensor) raises -> PredictionResult:
 
 
 fn evaluate_test_set(
-    mut model: LeNet5,
-    images: ExTensor,
-    labels: ExTensor
+    mut model: LeNet5, images: ExTensor, labels: ExTensor
 ) raises -> EvaluationResult:
     """Evaluate model on entire test set.
 
@@ -143,7 +190,7 @@ fn evaluate_test_set(
 
     # Use batched processing to avoid memory issues
     var eval_batch_size = 32
-    var predictions = List[Int]()
+    var predictions= List[Int]()
 
     # Collect predictions for all samples
     for i in range(num_samples):
@@ -219,4 +266,7 @@ fn main() raises:
 
     print("Inference complete!")
     print("\nNote: This implementation demonstrates the inference structure.")
-    print("Batch processing will be more efficient when tensor slicing is optimized.")
+    print(
+        "Batch processing will be more efficient when tensor slicing is"
+        " optimized."
+    )

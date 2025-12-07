@@ -65,7 +65,10 @@ fn test_mxfp4_stochastic_different_seeds() raises:
 
     if abs(result2.to_float32() - first_val) > 0.01:
         unique_count += 1
-    if abs(result3.to_float32() - first_val) > 0.01 and abs(result3.to_float32() - result2.to_float32()) > 0.01:
+    if (
+        abs(result3.to_float32() - first_val) > 0.01
+        and abs(result3.to_float32() - result2.to_float32()) > 0.01
+    ):
         unique_count += 1
 
     # Should get at least 1 unique value (may get both 1.0 and 1.5)
@@ -117,10 +120,19 @@ fn test_mxfp4_stochastic_distribution() raises:
     # For value exactly halfway, expect roughly 50/50 distribution
     # Allow very wide variance (1-99% range) to avoid flaky tests
     # Note: If distribution is extremely skewed (0 or 100), there may be an implementation bug
-    assert_true(count_lower >= 1 and count_lower <= 99, "Distribution too skewed")
-    assert_true(count_upper >= 1 and count_upper <= 99, "Distribution too skewed")
+    assert_true(
+        count_lower >= 1 and count_lower <= 99, "Distribution too skewed"
+    )
+    assert_true(
+        count_upper >= 1 and count_upper <= 99, "Distribution too skewed"
+    )
 
-    print("MXFP4 stochastic: lower=" + String(count_lower) + ", upper=" + String(count_upper))
+    print(
+        "MXFP4 stochastic: lower="
+        + String(count_lower)
+        + ", upper="
+        + String(count_upper)
+    )
 
 
 fn test_nvfp4_stochastic_distribution() raises:
@@ -144,10 +156,19 @@ fn test_nvfp4_stochastic_distribution() raises:
     # For value exactly halfway, expect roughly 50/50 distribution
     # Allow very wide variance (1-99% range) to avoid flaky tests
     # Note: If distribution is extremely skewed (0 or 100), there may be an implementation bug
-    assert_true(count_lower >= 1 and count_lower <= 99, "Distribution too skewed")
-    assert_true(count_upper >= 1 and count_upper <= 99, "Distribution too skewed")
+    assert_true(
+        count_lower >= 1 and count_lower <= 99, "Distribution too skewed"
+    )
+    assert_true(
+        count_upper >= 1 and count_upper <= 99, "Distribution too skewed"
+    )
 
-    print("NVFP4 stochastic: lower=" + String(count_lower) + ", upper=" + String(count_upper))
+    print(
+        "NVFP4 stochastic: lower="
+        + String(count_lower)
+        + ", upper="
+        + String(count_upper)
+    )
 
 
 # ============================================================================
@@ -183,9 +204,17 @@ fn test_mxfp4_stochastic_vs_deterministic() raises:
             count_10 += 1
 
     # Expect roughly 60/40 split (allow wide variance 30-90% to avoid flaky tests)
-    assert_true(count_15 >= 30 and count_15 <= 90, "Stochastic distribution incorrect")
+    assert_true(
+        count_15 >= 30 and count_15 <= 90, "Stochastic distribution incorrect"
+    )
 
-    print("Stochastic for 1.3: 1.5=" + String(count_15) + "%, 1.0=" + String(count_10) + "%")
+    print(
+        "Stochastic for 1.3: 1.5="
+        + String(count_15)
+        + "%, 1.0="
+        + String(count_10)
+        + "%"
+    )
 
 
 fn test_nvfp4_stochastic_vs_deterministic() raises:
@@ -209,9 +238,17 @@ fn test_nvfp4_stochastic_vs_deterministic() raises:
             count_10 += 1
 
     # Expect roughly 60/40 split (allow wide variance 30-90% to avoid flaky tests)
-    assert_true(count_15 >= 30 and count_15 <= 90, "Stochastic distribution incorrect")
+    assert_true(
+        count_15 >= 30 and count_15 <= 90, "Stochastic distribution incorrect"
+    )
 
-    print("Stochastic for 1.3: 1.5=" + String(count_15) + "%, 1.0=" + String(count_10) + "%")
+    print(
+        "Stochastic for 1.3: 1.5="
+        + String(count_15)
+        + "%, 1.0="
+        + String(count_10)
+        + "%"
+    )
 
 
 # ============================================================================

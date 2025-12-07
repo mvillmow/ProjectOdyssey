@@ -72,6 +72,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     if a.shape() != b.shape():
         # Fall back to broadcasting
         from .arithmetic import add
+
         return add(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
@@ -84,6 +85,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     else:
         # Fall back to scalar for other dtypes
         from .arithmetic import add
+
         return add(a, b)
 
     return result^
@@ -150,6 +152,7 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     if a.shape() != b.shape():
         from .arithmetic import subtract
+
         return subtract(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
@@ -160,13 +163,16 @@ fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         _subtract_simd_float64(a, b, result)
     else:
         from .arithmetic import subtract
+
         return subtract(a, b)
 
     return result^
 
 
 @always_inline
-fn _subtract_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
+fn _subtract_simd_float32(
+    a: ExTensor, b: ExTensor, mut result: ExTensor
+) raises:
     """SIMD subtraction for float32 tensors."""
     alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
@@ -185,7 +191,9 @@ fn _subtract_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 
 
 @always_inline
-fn _subtract_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
+fn _subtract_simd_float64(
+    a: ExTensor, b: ExTensor, mut result: ExTensor
+) raises:
     """SIMD subtraction for float64 tensors."""
     alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
@@ -226,6 +234,7 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     if a.shape() != b.shape():
         from .arithmetic import multiply
+
         return multiply(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
@@ -236,13 +245,16 @@ fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         _multiply_simd_float64(a, b, result)
     else:
         from .arithmetic import multiply
+
         return multiply(a, b)
 
     return result^
 
 
 @always_inline
-fn _multiply_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
+fn _multiply_simd_float32(
+    a: ExTensor, b: ExTensor, mut result: ExTensor
+) raises:
     """SIMD multiplication for float32 tensors."""
     alias simd_width = simd_width_of[DType.float32]()
     var size = a.numel()
@@ -261,7 +273,9 @@ fn _multiply_simd_float32(a: ExTensor, b: ExTensor, mut result: ExTensor) raises
 
 
 @always_inline
-fn _multiply_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
+fn _multiply_simd_float64(
+    a: ExTensor, b: ExTensor, mut result: ExTensor
+) raises:
     """SIMD multiplication for float64 tensors."""
     alias simd_width = simd_width_of[DType.float64]()
     var size = a.numel()
@@ -302,6 +316,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     if a.shape() != b.shape():
         from .arithmetic import divide
+
         return divide(a, b)
 
     var result = ExTensor(a.shape(), a.dtype())
@@ -312,6 +327,7 @@ fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         _divide_simd_float64(a, b, result)
     else:
         from .arithmetic import divide
+
         return divide(a, b)
 
     return result^

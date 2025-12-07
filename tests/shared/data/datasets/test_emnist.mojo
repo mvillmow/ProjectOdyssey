@@ -99,7 +99,7 @@ fn test_emnist_init_invalid_split() raises:
         error_raised = True
         assert_true(
             String(e).__contains__("Invalid split"),
-            "Error should mention invalid split"
+            "Error should mention invalid split",
         )
 
     assert_true(error_raised, "Invalid split should raise error")
@@ -134,7 +134,9 @@ fn test_emnist_getitem_index() raises:
 
         # Verify sample is a valid ExTensor
         var data_shape = sample_data.shape()
-        assert_equal(len(data_shape), 4, "Image should have 4 dimensions (N, C, H, W)")
+        assert_equal(
+            len(data_shape), 4, "Image should have 4 dimensions (N, C, H, W)"
+        )
         assert_equal(data_shape[1], 1, "Should have 1 channel (grayscale)")
         assert_equal(data_shape[2], 28, "Height should be 28")
         assert_equal(data_shape[3], 28, "Width should be 28")
@@ -175,7 +177,7 @@ fn test_emnist_getitem_out_of_bounds() raises:
             error_raised = True
             assert_true(
                 String(e).__contains__("out of bounds"),
-                "Error should mention out of bounds"
+                "Error should mention out of bounds",
             )
 
         assert_true(error_raised, "Out of bounds access should raise error")
@@ -217,7 +219,9 @@ fn test_emnist_num_classes_balanced() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        assert_equal(dataset.num_classes(), 47, "Balanced split should have 47 classes")
+        assert_equal(
+            dataset.num_classes(), 47, "Balanced split should have 47 classes"
+        )
     except e:
         print("Test data not available - skipping class count test")
 
@@ -229,7 +233,9 @@ fn test_emnist_num_classes_byclass() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="byclass", train=True)
-        assert_equal(dataset.num_classes(), 62, "Byclass split should have 62 classes")
+        assert_equal(
+            dataset.num_classes(), 62, "Byclass split should have 62 classes"
+        )
     except e:
         print("Test data not available - skipping byclass class count test")
 
@@ -241,7 +247,9 @@ fn test_emnist_num_classes_digits() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="digits", train=True)
-        assert_equal(dataset.num_classes(), 10, "Digits split should have 10 classes")
+        assert_equal(
+            dataset.num_classes(), 10, "Digits split should have 10 classes"
+        )
     except e:
         print("Test data not available - skipping digits class count test")
 
@@ -253,7 +261,9 @@ fn test_emnist_num_classes_letters() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="letters", train=True)
-        assert_equal(dataset.num_classes(), 26, "Letters split should have 26 classes")
+        assert_equal(
+            dataset.num_classes(), 26, "Letters split should have 26 classes"
+        )
     except e:
         print("Test data not available - skipping letters class count test")
 
@@ -265,7 +275,9 @@ fn test_emnist_num_classes_mnist() raises:
     """
     try:
         var dataset = EMNISTDataset("/tmp/emnist", split="mnist", train=True)
-        assert_equal(dataset.num_classes(), 10, "MNIST split should have 10 classes")
+        assert_equal(
+            dataset.num_classes(), 10, "MNIST split should have 10 classes"
+        )
     except e:
         print("Test data not available - skipping mnist class count test")
 
@@ -297,7 +309,9 @@ fn test_emnist_get_test_data() raises:
     Verifies that the method wraps data in ExTensorDataset correctly.
     """
     try:
-        var dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=False)
+        var dataset = EMNISTDataset(
+            "/tmp/emnist", split="balanced", train=False
+        )
         var tensor_dataset = dataset.get_test_data()
 
         # Verify it's a valid ExTensorDataset
@@ -313,8 +327,12 @@ fn test_emnist_train_vs_test_sizes() raises:
     Verifies that training and test datasets contain expected sample counts.
     """
     try:
-        var train_dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=True)
-        var test_dataset = EMNISTDataset("/tmp/emnist", split="balanced", train=False)
+        var train_dataset = EMNISTDataset(
+            "/tmp/emnist", split="balanced", train=True
+        )
+        var test_dataset = EMNISTDataset(
+            "/tmp/emnist", split="balanced", train=False
+        )
 
         var train_len = train_dataset.__len__()
         var test_len = test_dataset.__len__()
@@ -342,7 +360,11 @@ fn test_emnist_data_label_consistency() raises:
         var data_len = dataset.data.shape()[0]
         var labels_len = dataset.labels.shape()[0]
 
-        assert_equal(data_len, labels_len, "Data and labels should have same first dimension")
+        assert_equal(
+            data_len,
+            labels_len,
+            "Data and labels should have same first dimension",
+        )
     except e:
         print("Test data not available - skipping consistency test")
 
@@ -352,7 +374,7 @@ fn test_emnist_all_valid_splits() raises:
 
     Verifies that balanced, byclass, bymerge, digits, letters, mnist are all valid.
     """
-    var splits = List[String]()
+    var splits= List[String]()
     splits.append("balanced")
     splits.append("byclass")
     splits.append("bymerge")

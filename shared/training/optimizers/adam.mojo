@@ -21,7 +21,12 @@ Reference:
 
 from shared.core.extensor import ExTensor
 from shared.core.arithmetic import subtract, multiply, add, divide, power
-from shared.core.arithmetic_simd import subtract_simd, multiply_simd, add_simd, divide_simd
+from shared.core.arithmetic_simd import (
+    subtract_simd,
+    multiply_simd,
+    add_simd,
+    divide_simd,
+)
 from shared.core.elementwise import sqrt
 from shared.core.extensor import full_like, ones_like
 
@@ -36,7 +41,7 @@ fn adam_step(
     beta1: Float64 = 0.9,
     beta2: Float64 = 0.999,
     epsilon: Float64 = 1e-8,
-    weight_decay: Float64 = 0.0
+    weight_decay: Float64 = 0.0,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single Adam optimization step - pure functional.
 
@@ -87,7 +92,10 @@ fn adam_step(
         raise Error("Parameters and gradients must have the same dtype")
 
     if m.numel() == 0 or v.numel() == 0:
-        raise Error("Moment buffers (m and v) must be initialized (use zeros_like(params))")
+        raise Error(
+            "Moment buffers (m and v) must be initialized (use"
+            " zeros_like(params))"
+        )
 
     if t <= 0:
         raise Error("Timestep t must be positive (starts at 1)")
@@ -153,7 +161,7 @@ fn adam_step_simple(
     m: ExTensor,
     v: ExTensor,
     t: Int,
-    learning_rate: Float64
+    learning_rate: Float64,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Simplified Adam step with default hyperparameters.
 
@@ -179,7 +187,7 @@ fn adam_step_simple(
 
     Example:
         ```mojo
-        ar W = xavier_uniform(784, 128, shape, DType.float32)
+        var W = xavier_uniform(784, 128, shape, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
         var t = 1
@@ -191,10 +199,14 @@ fn adam_step_simple(
         ```
     """
     return adam_step(
-        params, gradients, m, v, t,
+        params,
+        gradients,
+        m,
+        v,
+        t,
         learning_rate=learning_rate,
         beta1=0.9,
         beta2=0.999,
         epsilon=1e-8,
-        weight_decay=0.0
+        weight_decay=0.0,
     )

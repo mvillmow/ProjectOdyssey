@@ -46,7 +46,9 @@ from shared.training.loops import TrainingLoop
 from model import ResNet18
 
 
-fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) raises -> Float32:
+fn compute_accuracy(
+    mut model: ResNet18, images: ExTensor, labels: ExTensor
+) raises -> Float32:
     """Compute classification accuracy on a dataset.
 
     Args:
@@ -56,7 +58,7 @@ fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) rai
 
     Returns:
         Accuracy as percentage (0-100).
-   """
+    """
     var num_samples = images.shape()[0]
     var correct = 0
 
@@ -66,7 +68,9 @@ fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) rai
 
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
-        var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            images, labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]
@@ -77,7 +81,7 @@ fn compute_accuracy(model: mut ResNet18, images: ExTensor, labels: ExTensor) rai
         # Count correct predictions
         for i in range(current_batch_size):
             # Extract single sample
-            var sample_shape = List[Int]()
+            var sample_shape= List[Int]()
             sample_shape.append(1)
             sample_shape.append(3)
             sample_shape.append(32)
@@ -110,7 +114,7 @@ fn train_epoch(
     momentum: Float32,
     mut velocities: List[ExTensor],
     epoch: Int,
-    total_epochs: Int
+    total_epochs: Int,
 ) raises -> Float32:
     """Train for one epoch using TrainingLoop.
 
@@ -145,7 +149,9 @@ fn train_epoch(
     var loop = TrainingLoop(log_interval=100)
 
     # Define compute_batch_loss closure that processes batches
-    fn compute_batch_loss(batch_images: ExTensor, batch_labels: ExTensor) raises -> Float32:
+    fn compute_batch_loss(
+        batch_images: ExTensor, batch_labels: ExTensor
+    ) raises -> Float32:
         # Forward pass (training mode - updates BN running stats)
         var logits = model.forward(batch_images, training=True)
 
@@ -180,7 +186,7 @@ fn train_epoch(
         batch_size=batch_size,
         compute_batch_loss=compute_batch_loss,
         epoch=epoch,
-        total_epochs=total_epochs
+        total_epochs=total_epochs,
     )
 
     return avg_loss
@@ -199,7 +205,7 @@ fn main() raises:
     # Parse command-line arguments using shared.utils.arg_parser
     var parser = ArgumentParser(
         prog="resnet18-cifar10-train",
-        description="ResNet-18 training on CIFAR-10 dataset"
+        description="ResNet-18 training on CIFAR-10 dataset",
     )
 
     # Add training arguments with defaults
@@ -207,31 +213,31 @@ fn main() raises:
         name="epochs",
         short_name="e",
         description="Number of training epochs",
-        default="200"
+        default="200",
     )
     var batch_size_spec = ArgumentSpec(
         name="batch-size",
         short_name="b",
         description="Batch size for training",
-        default="128"
+        default="128",
     )
     var lr_spec = ArgumentSpec(
         name="lr",
         short_name="l",
         description="Initial learning rate",
-        default="0.01"
+        default="0.01",
     )
     var momentum_spec = ArgumentSpec(
         name="momentum",
         short_name="m",
         description="Momentum factor for SGD",
-        default="0.9"
+        default="0.9",
     )
     var data_dir_spec = ArgumentSpec(
         name="data-dir",
         short_name="d",
         description="Directory containing CIFAR-10 dataset",
-        default="datasets/cifar10"
+        default="datasets/cifar10",
     )
 
     parser.add_argument(epochs_spec)
@@ -251,12 +257,18 @@ fn main() raises:
     var lr_decay_factor = Float32(0.2)  # Multiply by 0.2
 
     print("Configuration:")
-    print("  Epochs: " + str(epochs))
-    print("  Batch size: " + str(batch_size))
-    print("  Initial learning rate: " + str(initial_lr))
-    print("  Momentum: " + str(momentum))
-    print("  Data directory: " + str(data_dir))
-    print("  LR decay: " + str(lr_decay_factor) + "x every " + str(lr_decay_epochs) + " epochs")
+    print("  Epochs: " + String(epochs))
+    print("  Batch size: " + String(batch_size))
+    print("  Initial learning rate: " + String(initial_lr))
+    print("  Momentum: " + String(momentum))
+    print("  Data directory: " + String(data_dir))
+    print(
+        "  LR decay: "
+        + String(lr_decay_factor)
+        + "x every "
+        + String(lr_decay_epochs)
+        + " epochs"
+    )
     print()
 
     # Load CIFAR-10 dataset
@@ -269,8 +281,8 @@ fn main() raises:
     var test_images = test_data[0]
     var test_labels = test_data[1]
 
-    print("  Training samples: " + str(train_images.shape()[0]))
-    print("  Test samples: " + str(test_images.shape()[0]))
+    print("  Training samples: " + String(train_images.shape()[0]))
+    print("  Test samples: " + String(test_images.shape()[0]))
     print()
 
     # Initialize model
@@ -284,7 +296,7 @@ fn main() raises:
 
     # Initialize momentum velocities (one per trainable parameter)
     print("Initializing momentum velocities...")
-    var velocities = List[ExTensor]()
+    var velocities: List[ExTensor] = []
 
     # Note: In a complete implementation, initialize 84 velocity tensors
     # matching the shape of each parameter. For this demonstration:
@@ -333,10 +345,16 @@ fn main() raises:
     print("  Forward pass successful")
     print("  Batch shape: (10, 3, 32, 32)")
     print("  Output logits shape: (10, 10)")
-    print("  Loss value: " + str(demo_loss))
+    print("  Loss value: " + String(demo_loss))
     print()
 
     print("ResNet-18 forward pass is complete.")
-    print("To enable training, implement the full backward pass as documented above.")
+    print(
+        "To enable training, implement the full backward pass as documented"
+        " above."
+    )
     print()
-    print("Alternative: Consider using automatic differentiation for such deep networks.")
+    print(
+        "Alternative: Consider using automatic differentiation for such deep"
+        " networks."
+    )

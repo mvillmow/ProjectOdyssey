@@ -29,7 +29,7 @@ from shared.training.optimizers.rmsprop import rmsprop_step, rmsprop_step_simple
 
 fn test_rmsprop_step_shapes() raises:
     """Test that rmsprop_step returns correct shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
 
@@ -39,14 +39,16 @@ fn test_rmsprop_step_shapes() raises:
     var buf = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg, new_buf) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.01,
         alpha=0.99,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # Check shapes
@@ -58,7 +60,7 @@ fn test_rmsprop_step_shapes() raises:
 
 fn test_rmsprop_simple_shapes() raises:
     """Test that rmsprop_step_simple returns correct shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
 
@@ -67,10 +69,12 @@ fn test_rmsprop_simple_shapes() raises:
     var square_avg = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg) = rmsprop_step_simple(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         learning_rate=0.01,
         alpha=0.99,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     # Check shapes
@@ -82,7 +86,7 @@ fn test_rmsprop_simple_shapes() raises:
 
 fn test_rmsprop_step_parameter_update() raises:
     """Test that rmsprop_step updates parameters correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -95,14 +99,16 @@ fn test_rmsprop_step_parameter_update() raises:
     var buf = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # First step:
@@ -110,24 +116,24 @@ fn test_rmsprop_step_parameter_update() raises:
     # normalized_grad = 0.1 / (sqrt(0.001) + 1e-8) ≈ 0.1 / 0.0316 ≈ 3.16
     # new_params = 1.0 - 0.1 * 3.16 = 1.0 - 0.316 = 0.684
 
-    assert_true(new_params._data.bitcast[Float32]()[0] < 1.0)  # Parameter should decrease
+    assert_true(
+        new_params._data.bitcast[Float32]()[0] < 1.0
+    )  # Parameter should decrease
     assert_almost_equal(
-        new_params._data.bitcast[Float32]()[0],
-        Float32(0.684),
-        tolerance=0.01
+        new_params._data.bitcast[Float32]()[0], Float32(0.684), tolerance=0.01
     )
 
     # Check that square_avg was updated
     assert_almost_equal(
         new_square_avg._data.bitcast[Float32]()[0],
         Float32(0.001),
-        tolerance=1e-5
+        tolerance=1e-5,
     )
 
 
 fn test_rmsprop_simple_parameter_update() raises:
     """Test that rmsprop_step_simple updates parameters correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -139,24 +145,24 @@ fn test_rmsprop_simple_parameter_update() raises:
     var square_avg = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg) = rmsprop_step_simple(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         learning_rate=0.1,
         alpha=0.9,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     # Should produce same result as rmsprop_step with momentum=0.0
     assert_true(new_params._data.bitcast[Float32]()[0] < 1.0)
     assert_almost_equal(
-        new_params._data.bitcast[Float32]()[0],
-        Float32(0.684),
-        tolerance=0.01
+        new_params._data.bitcast[Float32]()[0], Float32(0.684), tolerance=0.01
     )
 
 
 fn test_rmsprop_square_avg_accumulation() raises:
     """Test that square_avg accumulates correctly over multiple steps."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -168,45 +174,50 @@ fn test_rmsprop_square_avg_accumulation() raises:
 
     # Step 1
     var (params1, square_avg1, buf1) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.01,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # square_avg after step 1: 0.9 * 0.0 + 0.1 * 0.01 = 0.001
 
     # Step 2
     var (params2, square_avg2, buf2) = rmsprop_step(
-        params1, gradients, square_avg1,
+        params1,
+        gradients,
+        square_avg1,
         t=2,
         learning_rate=0.01,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf1
+        buf=buf1,
     )
 
     # square_avg after step 2: 0.9 * 0.001 + 0.1 * 0.01 = 0.0009 + 0.001 = 0.0019
 
     assert_almost_equal(
-        square_avg2._data.bitcast[Float32]()[0],
-        Float32(0.0019),
-        tolerance=1e-5
+        square_avg2._data.bitcast[Float32]()[0], Float32(0.0019), tolerance=1e-5
     )
 
     # Square avg should be increasing
-    assert_true(square_avg2._data.bitcast[Float32]()[0] > square_avg1._data.bitcast[Float32]()[0])
+    assert_true(
+        square_avg2._data.bitcast[Float32]()[0]
+        > square_avg1._data.bitcast[Float32]()[0]
+    )
 
 
 fn test_rmsprop_with_momentum() raises:
     """Test rmsprop with momentum."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -220,14 +231,16 @@ fn test_rmsprop_with_momentum() raises:
 
     # Step 1 with momentum
     var (params1, square_avg1, buf1) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.9,
-        buf=buf
+        buf=buf,
     )
 
     # buf should now contain momentum-weighted gradient
@@ -235,23 +248,27 @@ fn test_rmsprop_with_momentum() raises:
 
     # Step 2 with momentum
     var (params2, square_avg2, buf2) = rmsprop_step(
-        params1, gradients, square_avg1,
+        params1,
+        gradients,
+        square_avg1,
         t=2,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.9,
-        buf=buf1
+        buf=buf1,
     )
 
     # With momentum, buf accumulates and parameter updates should be larger
-    assert_true(buf2._data.bitcast[Float32]()[0] > buf1._data.bitcast[Float32]()[0])
+    assert_true(
+        buf2._data.bitcast[Float32]()[0] > buf1._data.bitcast[Float32]()[0]
+    )
 
 
 fn test_rmsprop_with_weight_decay() raises:
     """Test rmsprop with weight decay."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -262,14 +279,16 @@ fn test_rmsprop_with_weight_decay() raises:
     var buf = zeros(shape, DType.float32)
 
     var (new_params, _, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.01,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # With weight decay, parameters should decrease even with zero gradient
@@ -279,7 +298,7 @@ fn test_rmsprop_with_weight_decay() raises:
 
 fn test_rmsprop_zero_gradient() raises:
     """Test that rmsprop handles zero gradients correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -288,27 +307,27 @@ fn test_rmsprop_zero_gradient() raises:
     var buf = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # With zero gradient and no weight decay, parameters should not change
     assert_almost_equal(
-        new_params._data.bitcast[Float32]()[0],
-        Float32(1.0),
-        tolerance=1e-5
+        new_params._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5
     )
 
 
 fn test_rmsprop_alpha_parameter() raises:
     """Test that alpha parameter controls averaging."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -320,37 +339,44 @@ fn test_rmsprop_alpha_parameter() raises:
 
     # High alpha (0.99) - slow adaptation
     var (_, square_avg_high, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.01,
         alpha=0.99,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # Low alpha (0.5) - fast adaptation
     var (_, square_avg_low, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.01,
         alpha=0.5,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # Low alpha should result in larger square_avg update
     # alpha=0.99: 0.99 * 0.0 + 0.01 * 0.01 = 0.0001
     # alpha=0.5: 0.5 * 0.0 + 0.5 * 0.01 = 0.005
-    assert_true(square_avg_low._data.bitcast[Float32]()[0] > square_avg_high._data.bitcast[Float32]()[0])
+    assert_true(
+        square_avg_low._data.bitcast[Float32]()[0]
+        > square_avg_high._data.bitcast[Float32]()[0]
+    )
 
 
 fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
     """Test that epsilon prevents division by zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var params = ones(shape, DType.float32)
@@ -360,14 +386,16 @@ fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
 
     # This should not crash despite zero square_avg
     var (new_params, _, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.1,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # Result should be finite
@@ -378,7 +406,7 @@ fn test_rmsprop_epsilon_prevents_division_by_zero() raises:
 
 fn test_rmsprop_batch_update() raises:
     """Test rmsprop with batch of parameters."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     shape.append(5)
 
@@ -393,20 +421,25 @@ fn test_rmsprop_batch_update() raises:
     var buf = zeros(shape, DType.float32)
 
     var (new_params, new_square_avg, _) = rmsprop_step(
-        params, gradients, square_avg,
+        params,
+        gradients,
+        square_avg,
         t=1,
         learning_rate=0.01,
         alpha=0.9,
         epsilon=1e-8,
         weight_decay=0.0,
         momentum=0.0,
-        buf=buf
+        buf=buf,
     )
 
     # All parameters should have been updated
     var all_different = True
     for i in range(50):
-        if new_params._data.bitcast[Float32]()[i] == params._data.bitcast[Float32]()[i]:
+        if (
+            new_params._data.bitcast[Float32]()[i]
+            == params._data.bitcast[Float32]()[i]
+        ):
             all_different = False
             break
 

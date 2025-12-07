@@ -63,12 +63,14 @@ from .callbacks import EarlyStopping, ModelCheckpoint, LoggingCallback
 # Core Training Components (Issue #1939)
 # ============================================================================
 
+
 # SGD Optimizer
-struct SGD(Optimizer, Movable):
+struct SGD(Movable, Optimizer):
     """Stochastic Gradient Descent optimizer.
 
     Implements the Optimizer trait for use with generic TrainingLoop.
     """
+
     var learning_rate: Float32
 
     fn __init__(out self, learning_rate: Float32):
@@ -109,6 +111,7 @@ struct MSELoss(Loss, Movable):
 
     Implements the Loss trait for use with generic TrainingLoop.
     """
+
     var reduction: String
 
     fn __init__(out self, reduction: String = "mean"):
@@ -138,6 +141,7 @@ struct MSELoss(Loss, Movable):
         # TODO: Implement actual MSE computation
         # For now, return a dummy scalar tensor
         from shared.core.extensor import zeros
+
         return zeros(List[Int](), DType.float32)
 
     fn forward(self, output: ExTensor, target: ExTensor) raises -> Float32:
@@ -166,7 +170,9 @@ struct MSELoss(Loss, Movable):
 
 
 # TrainingLoop - Main training orchestrator (Generic with Trait Bounds)
-struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movable]:
+struct TrainingLoop[
+    M: Model & Movable, L: Loss & Movable, O: Optimizer & Movable
+]:
     """Orchestrates training with forward/backward/optimize cycle.
 
     Generic training loop with compile-time type safety via trait bounds.
@@ -179,17 +185,20 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
 
     Example:
         ```mojo
-        ar model = SimpleMLP(...)
+        var model = SimpleMLP(...)
         var optimizer = SGD(learning_rate=0.01)
         var loss_fn = MSELoss()
         var loop = TrainingLoop[SimpleMLP, MSELoss, SGD](model, optimizer, loss_fn)
         ```
     """
+
     var model: Self.M
     var optimizer: Self.O
     var loss_fn: Self.L
 
-    fn __init__(out self, var model: Self.M, var optimizer: Self.O, var loss_fn: Self.L):
+    fn __init__(
+        out self, var model: Self.M, var optimizer: Self.O, var loss_fn: Self.L
+    ):
         """Initialize training loop with generic components.
 
         Args:
@@ -245,7 +254,9 @@ struct TrainingLoop[M: Model & Movable, L: Loss & Movable, O: Optimizer & Movabl
         # Call model.forward() via Model trait
         return self.model.forward(inputs)
 
-    fn compute_loss(self, outputs: ExTensor, targets: ExTensor) raises -> ExTensor:
+    fn compute_loss(
+        self, outputs: ExTensor, targets: ExTensor
+    ) raises -> ExTensor:
         """Compute loss via Loss trait.
 
         Args:
@@ -314,12 +325,14 @@ from .mixed_precision import (
 # Export precision configuration
 from .precision_config import PrecisionConfig, PrecisionMode
 
+
 # Export CrossEntropyLoss wrapper (wraps core.loss.cross_entropy)
 struct CrossEntropyLoss(Loss, Movable):
     """Cross entropy loss function for classification.
 
     Implements the Loss trait for use with generic TrainingLoop.
     """
+
     var reduction: String
 
     fn __init__(out self, reduction: String = "mean"):
@@ -341,7 +354,9 @@ struct CrossEntropyLoss(Loss, Movable):
             Scalar loss value as ExTensor.
         """
         from shared.core.loss import cross_entropy
+
         return cross_entropy(pred, target)
+
 
 # ============================================================================
 # Public API

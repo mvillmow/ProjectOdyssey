@@ -31,7 +31,9 @@ fn test_load_default_training_config() raises:
     assert_equal(optimizer, "sgd", "Default optimizer should be SGD")
 
     # Verify learning rate exists and is reasonable
-    assert_true(config.has("optimizer.learning_rate"), "Should have learning_rate")
+    assert_true(
+        config.has("optimizer.learning_rate"), "Should have learning_rate"
+    )
     var lr = config.get_float("optimizer.learning_rate")
     assert_true(lr > 0.0, "Learning rate should be positive")
 
@@ -82,7 +84,9 @@ fn test_load_lenet5_model_config() raises:
     assert_equal(name, "lenet5", "Model name should be lenet5")
 
     # Verify architecture details (output_classes at model.output_classes)
-    assert_true(config.has("model.output_classes"), "Should have model.output_classes")
+    assert_true(
+        config.has("model.output_classes"), "Should have model.output_classes"
+    )
     var num_classes = config.get_int("model.output_classes")
     assert_equal(num_classes, 10, "LeNet-5 should have 10 output classes")
 
@@ -102,7 +106,7 @@ fn test_load_lenet5_training_config() raises:
     # Check for learning rate (common parameter)
     assert_true(
         config.has("learning_rate") or config.has("optimizer.learning_rate"),
-        "Should have learning rate configuration"
+        "Should have learning rate configuration",
     )
 
     print("✓ test_load_lenet5_training_config passed")

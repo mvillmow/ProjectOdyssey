@@ -41,17 +41,21 @@ fn test_load_valid_baseline() raises:
     - Metadata extracted properly.
     """
     # Create a collection of baseline benchmarks (simulating loaded baseline)
-    var baseline_benchmarks = List[String](capacity=3)
+    var baseline_benchmarks: List[String](capacity=3)
     baseline_benchmarks.append("matrix_multiply_1000")
     baseline_benchmarks.append("tensor_add_1000")
     baseline_benchmarks.append("conv2d_16x16")
 
     # Verify all benchmarks are present
-    assert_equal(len(baseline_benchmarks), 3, "Should load all benchmark entries")
+    assert_equal(
+        len(baseline_benchmarks), 3, "Should load all benchmark entries"
+    )
 
     # Verify each benchmark name is non-empty
     for i in range(len(baseline_benchmarks)):
-        assert_true(len(baseline_benchmarks[i]) > 0, "Benchmark name should be present")
+        assert_true(
+            len(baseline_benchmarks[i]) > 0, "Benchmark name should be present"
+        )
 
 
 fn test_parse_benchmark_entry() raises:
@@ -73,9 +77,15 @@ fn test_parse_benchmark_entry() raises:
 
     # Verify all fields are extractable and correct type
     assert_equal(entry_name, "matrix_ops", "Name field should be extracted")
-    assert_greater(Float32(entry_duration), Float32(0.0), "Duration should be positive")
-    assert_greater(Float32(entry_throughput), Float32(0.0), "Throughput should be positive")
-    assert_greater(Float32(entry_memory), Float32(0.0), "Memory should be positive")
+    assert_greater(
+        Float32(entry_duration), Float32(0.0), "Duration should be positive"
+    )
+    assert_greater(
+        Float32(entry_throughput), Float32(0.0), "Throughput should be positive"
+    )
+    assert_greater(
+        Float32(entry_memory), Float32(0.0), "Memory should be positive"
+    )
     assert_greater(entry_iterations, 0, "Iterations should be positive")
 
 
@@ -93,8 +103,13 @@ fn test_missing_baseline_file() raises:
 
     # Verify error message is informative
     assert_true(len(error_message) > 0, "Error message should be present")
-    assert_true(error_message.find("not found") >= 0, "Error should indicate missing file")
-    assert_true(error_message.find("nonexistent") >= 0, "Error should include filename")
+    assert_true(
+        error_message.find("not found") >= 0,
+        "Error should indicate missing file",
+    )
+    assert_true(
+        error_message.find("nonexistent") >= 0, "Error should include filename"
+    )
 
 
 fn test_malformed_json() raises:
@@ -112,7 +127,10 @@ fn test_malformed_json() raises:
     # Verify error message indicates parsing problem
     assert_true(len(error_message) > 0, "Error message should be present")
     assert_true(error_message.find("JSON") >= 0, "Error should mention JSON")
-    assert_true(error_message.find("error") >= 0, "Error should indicate error condition")
+    assert_true(
+        error_message.find("error") >= 0,
+        "Error should indicate error condition",
+    )
 
 
 fn test_missing_required_fields() raises:
@@ -130,9 +148,17 @@ fn test_missing_required_fields() raises:
     var missing_benchmarks_msg = "Missing required field: benchmarks"
 
     # Verify error messages identify the specific missing field
-    assert_true(missing_name_msg.find("name") >= 0, "Should identify missing name field")
-    assert_true(missing_duration_msg.find("duration_ms") >= 0, "Should identify missing duration field")
-    assert_true(missing_benchmarks_msg.find("benchmarks") >= 0, "Should identify missing benchmarks field")
+    assert_true(
+        missing_name_msg.find("name") >= 0, "Should identify missing name field"
+    )
+    assert_true(
+        missing_duration_msg.find("duration_ms") >= 0,
+        "Should identify missing duration field",
+    )
+    assert_true(
+        missing_benchmarks_msg.find("benchmarks") >= 0,
+        "Should identify missing benchmarks field",
+    )
 
 
 fn test_baseline_version_compatibility() raises:
@@ -155,7 +181,11 @@ fn test_baseline_version_compatibility() raises:
     assert_equal(incoming_major, 2, "Incoming major version should be 2")
 
     # Verify incompatible version is detected
-    assert_not_equal(current_major, incoming_major, "Different major versions should be incompatible")
+    assert_not_equal(
+        current_major,
+        incoming_major,
+        "Different major versions should be incompatible",
+    )
 
 
 fn test_environment_metadata() raises:
@@ -177,7 +207,9 @@ fn test_environment_metadata() raises:
     # Verify all metadata fields are present and non-empty
     assert_true(len(metadata_os) > 0, "OS should be present")
     assert_true(len(metadata_cpu) > 0, "CPU should be present")
-    assert_true(len(metadata_mojo_version) > 0, "Mojo version should be present")
+    assert_true(
+        len(metadata_mojo_version) > 0, "Mojo version should be present"
+    )
     assert_true(len(metadata_git_commit) > 0, "Git commit should be present")
 
 
@@ -191,7 +223,7 @@ fn test_baseline_lookup_by_name() raises:
     - Case-sensitive matching.
     """
     # Create a baseline with named benchmarks
-    var baseline = List[BenchmarkResult](capacity=2)
+    var baseline: List[BenchmarkResult](capacity=2)
     baseline.append(BenchmarkResult("matrix_multiply", 50.0, 200.0))
     baseline.append(BenchmarkResult("tensor_add", 25.0, 400.0))
 
@@ -203,7 +235,11 @@ fn test_baseline_lookup_by_name() raises:
             break
 
     assert_greater(found_index, -1, "Should find matrix_multiply benchmark")
-    assert_equal(baseline[found_index].name, "matrix_multiply", "Should return correct benchmark")
+    assert_equal(
+        baseline[found_index].name,
+        "matrix_multiply",
+        "Should return correct benchmark",
+    )
 
 
 fn main() raises:

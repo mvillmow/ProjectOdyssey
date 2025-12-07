@@ -5,7 +5,22 @@ flatten, ravel, concatenate, stack, split, tile, repeat, broadcast_to, permute.
 """
 
 # Import ExTensor and operations
-from shared.core import ExTensor, zeros, ones, full, arange, reshape, squeeze, unsqueeze, expand_dims, flatten, ravel, concatenate, stack, flatten_to_2d
+from shared.core import (
+    ExTensor,
+    zeros,
+    ones,
+    full,
+    arange,
+    reshape,
+    squeeze,
+    unsqueeze,
+    expand_dims,
+    flatten,
+    ravel,
+    concatenate,
+    stack,
+    flatten_to_2d,
+)
 
 # Import test helpers
 from tests.shared.conftest import (
@@ -21,12 +36,13 @@ from tests.shared.conftest import (
 # Test reshape()
 # ============================================================================
 
+
 fn test_reshape_valid() raises:
     """Test reshaping to compatible size."""
-    var shape_orig = List[Int]()
+    var shape_orig= List[Int]()
     shape_orig.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float32)  # 12 elements
-    var new_shape = List[Int]()
+    var new_shape= List[Int]()
     new_shape.append(3)
     new_shape.append(4)
     var b = reshape(a, new_shape)
@@ -37,7 +53,7 @@ fn test_reshape_valid() raises:
 
 fn test_reshape_invalid_size() raises:
     """Test that reshape with incompatible size raises error."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
     # var new_shape = List[Int]()
@@ -51,10 +67,10 @@ fn test_reshape_invalid_size() raises:
 
 fn test_reshape_infer_dimension() raises:
     """Test reshape with inferred dimension (-1)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
-    var new_shape = List[Int]()
+    var new_shape= List[Int]()
     new_shape.append(3)
     new_shape.append(-1)  # Infer: should be 4
     var b = reshape(a, new_shape)
@@ -67,9 +83,10 @@ fn test_reshape_infer_dimension() raises:
 # Test squeeze()
 # ============================================================================
 
+
 fn test_squeeze_all_dims() raises:
     """Test removing all size-1 dimensions."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(1)
@@ -84,7 +101,7 @@ fn test_squeeze_all_dims() raises:
 
 fn test_squeeze_specific_dim() raises:
     """Test removing specific size-1 dimension."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(4)
@@ -99,9 +116,10 @@ fn test_squeeze_specific_dim() raises:
 # Test unsqueeze() / expand_dims()
 # ============================================================================
 
+
 fn test_unsqueeze_add_dim() raises:
     """Test adding a size-1 dimension."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)  # Shape (3, 4)
@@ -114,7 +132,7 @@ fn test_unsqueeze_add_dim() raises:
 
 fn test_expand_dims_at_end() raises:
     """Test adding dimension at end."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -128,9 +146,10 @@ fn test_expand_dims_at_end() raises:
 # Test flatten() / ravel()
 # ============================================================================
 
+
 fn test_flatten_c_order() raises:
     """Test flattening tensor to 1D (C order)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
@@ -142,7 +161,7 @@ fn test_flatten_c_order() raises:
 
 fn test_ravel_view() raises:
     """Test ravel (should return view if possible)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -156,19 +175,20 @@ fn test_ravel_view() raises:
 # Test concatenate()
 # ============================================================================
 
+
 fn test_concatenate_axis_0() raises:
     """Test concatenating along axis 0."""
-    var shape_a = List[Int]()
+    var shape_a= List[Int]()
     shape_a.append(2)
     shape_a.append(3)
-    var shape_b = List[Int]()
+    var shape_b= List[Int]()
     shape_b.append(3)
     shape_b.append(3)
 
     var a = ones(shape_a, DType.float32)  # 2x3
     var b = full(shape_b, 2.0, DType.float32)  # 3x3
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(a)
     tensors.append(b)
     var c = concatenate(tensors, axis=0)
@@ -180,17 +200,17 @@ fn test_concatenate_axis_0() raises:
 
 fn test_concatenate_axis_1() raises:
     """Test concatenating along axis 1."""
-    var shape_a = List[Int]()
+    var shape_a= List[Int]()
     shape_a.append(3)
     shape_a.append(2)
-    var shape_b = List[Int]()
+    var shape_b= List[Int]()
     shape_b.append(3)
     shape_b.append(4)
 
     var a = ones(shape_a, DType.float32)  # 3x2
     var b = full(shape_b, 2.0, DType.float32)  # 3x4
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(a)
     tensors.append(b)
     var c = concatenate(tensors, axis=1)
@@ -203,16 +223,17 @@ fn test_concatenate_axis_1() raises:
 # Test stack()
 # ============================================================================
 
+
 fn test_stack_new_axis() raises:
     """Test stacking tensors along new axis."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
     var a = ones(shape, DType.float32)  # 2x3
     var b = full(shape, 2.0, DType.float32)  # 2x3
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(a)
     tensors.append(b)
     var c = stack(tensors, axis=0)
@@ -224,14 +245,14 @@ fn test_stack_new_axis() raises:
 
 fn test_stack_axis_1() raises:
     """Test stacking along axis 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(a)
     tensors.append(b)
     var c = stack(tensors, axis=1)
@@ -244,9 +265,10 @@ fn test_stack_axis_1() raises:
 # Test split()
 # ============================================================================
 
+
 fn test_split_equal() raises:
     """Test splitting into equal parts."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
     # varparts = split(a, 3)  # TODO: Implement split()
@@ -260,7 +282,7 @@ fn test_split_equal() raises:
 
 fn test_split_unequal() raises:
     """Test splitting into unequal parts."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = arange(0.0, 10.0, 1.0, DType.float32)
     # varparts = split(a, [3, 5, 10])  # TODO: Implement split with indices
@@ -276,9 +298,10 @@ fn test_split_unequal() raises:
 # Test tile()
 # ============================================================================
 
+
 fn test_tile_1d() raises:
     """Test tiling 1D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
     # varb = tile(a, 3)  # TODO: Implement tile()
@@ -290,7 +313,7 @@ fn test_tile_1d() raises:
 
 fn test_tile_multidim() raises:
     """Test tiling with multi-dimensional repetitions."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = ones(shape, DType.float32)  # 2x3
@@ -305,9 +328,10 @@ fn test_tile_multidim() raises:
 # Test repeat()
 # ============================================================================
 
+
 fn test_repeat_elements() raises:
     """Test repeating each element."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = arange(0.0, 3.0, 1.0, DType.float32)  # [0, 1, 2]
     # varb = repeat(a, 2)  # TODO: Implement repeat()
@@ -319,7 +343,7 @@ fn test_repeat_elements() raises:
 
 fn test_repeat_axis() raises:
     """Test repeating along specific axis."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = ones(shape, DType.float32)  # 2x3
@@ -334,9 +358,10 @@ fn test_repeat_axis() raises:
 # Test broadcast_to()
 # ============================================================================
 
+
 fn test_broadcast_to_compatible() raises:
     """Test broadcasting to compatible shape."""
-    var shape_orig = List[Int]()
+    var shape_orig= List[Int]()
     shape_orig.append(3)
     var a = arange(0.0, 3.0, 1.0, DType.float32)  # Shape (3,)
     # var target_shape = List[Int]()
@@ -352,7 +377,7 @@ fn test_broadcast_to_compatible() raises:
 
 fn test_broadcast_to_incompatible() raises:
     """Test that broadcasting to incompatible shape raises error."""
-    var shape_orig = List[Int]()
+    var shape_orig= List[Int]()
     shape_orig.append(3)
     var a = arange(0.0, 3.0, 1.0, DType.float32)
     # var target_shape = List[Int]()
@@ -367,9 +392,10 @@ fn test_broadcast_to_incompatible() raises:
 # Test permute()
 # ============================================================================
 
+
 fn test_permute_axes() raises:
     """Test permuting axes (similar to transpose with axes)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -386,9 +412,10 @@ fn test_permute_axes() raises:
 # Test dtype preservation
 # ============================================================================
 
+
 fn test_reshape_preserves_dtype() raises:
     """Test that reshape preserves dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(12)
     var a = arange(0.0, 12.0, 1.0, DType.float64)
     # var new_shape = List[Int]()
@@ -404,10 +431,11 @@ fn test_reshape_preserves_dtype() raises:
 # Test flatten_to_2d()
 # ============================================================================
 
+
 fn test_flatten_to_2d_basic() raises:
     """Test basic flatten_to_2d functionality."""
     # Create 4D tensor: (batch=2, channels=3, height=4, width=4)
-    var shape = List[Int](2, 3, 4, 4)
+    var shape: List[Int] = [2, 3, 4, 4]
     var a = ones(shape, DType.float32)
 
     var b = flatten_to_2d(a)
@@ -418,14 +446,21 @@ fn test_flatten_to_2d_basic() raises:
 
     var out_shape = b.shape()
     if out_shape[0] != 2:
-        raise Error("Batch dimension should be preserved (expected 2, got " + String(out_shape[0]) + ")")
+        raise Error(
+            "Batch dimension should be preserved (expected 2, got "
+            + String(out_shape[0])
+            + ")"
+        )
     if out_shape[1] != 48:
-        raise Error("Flattened dimension should be 48 (3*4*4), got " + String(out_shape[1]))
+        raise Error(
+            "Flattened dimension should be 48 (3*4*4), got "
+            + String(out_shape[1])
+        )
 
 
 fn test_flatten_to_2d_single_batch() raises:
     """Test flatten_to_2d with batch size 1."""
-    var shape = List[Int](1, 64, 7, 7)
+    var shape: List[Int] = [1, 64, 7, 7]
     var a = ones(shape, DType.float32)
 
     var b = flatten_to_2d(a)
@@ -434,12 +469,15 @@ fn test_flatten_to_2d_single_batch() raises:
     if out_shape[0] != 1:
         raise Error("Batch dimension should be 1, got " + String(out_shape[0]))
     if out_shape[1] != 3136:
-        raise Error("Flattened dimension should be 3136 (64*7*7), got " + String(out_shape[1]))
+        raise Error(
+            "Flattened dimension should be 3136 (64*7*7), got "
+            + String(out_shape[1])
+        )
 
 
 fn test_flatten_to_2d_preserves_dtype() raises:
     """Test that flatten_to_2d preserves dtype."""
-    var shape = List[Int](2, 3, 4, 4)
+    var shape: List[Int] = [2, 3, 4, 4]
     var a = ones(shape, DType.float64)
 
     var b = flatten_to_2d(a)
@@ -451,6 +489,7 @@ fn test_flatten_to_2d_preserves_dtype() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all shape manipulation tests."""

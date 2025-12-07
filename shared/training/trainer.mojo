@@ -19,13 +19,18 @@ Design principles:
 from collections import List
 from shared.core import ExTensor
 from shared.training.trainer_interface import (
-    Trainer, TrainerConfig, TrainingMetrics, DataLoader
+    Trainer,
+    TrainerConfig,
+    TrainingMetrics,
+    DataLoader,
 )
 from shared.training.loops.training_loop import TrainingLoop
 from shared.training.loops.validation_loop import ValidationLoop
 from shared.training.metrics import MetricLogger, MetricResult
 from shared.training.mixed_precision import (
-    GradientScaler, check_gradients_finite, clip_gradients_by_norm
+    GradientScaler,
+    check_gradients_finite,
+    clip_gradients_by_norm,
 )
 from shared.core.numerical_safety import has_nan, has_inf
 
@@ -52,7 +57,8 @@ struct BaseTrainer(Trainer):
             train_loader,
             val_loader
         ).
-   """
+    """
+
     var config: TrainerConfig
     var metrics: TrainingMetrics
     var metric_logger: MetricLogger
@@ -85,7 +91,9 @@ struct BaseTrainer(Trainer):
         Raises:
             Error if training fails or called without proper setup.
         """
-        raise Error("Use fit() method instead of train() for complete training workflow")
+        raise Error(
+            "Use fit() method instead of train() for complete training workflow"
+        )
 
     fn validate(mut self) raises -> Float64:
         """Execute validation loop.
@@ -103,12 +111,12 @@ struct BaseTrainer(Trainer):
 
     fn fit(
         mut self,
-        model_forward: fn(ExTensor) raises -> ExTensor,
-        compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn() raises -> None,
-        zero_gradients: fn() raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
-        mut val_loader: DataLoader
+        mut val_loader: DataLoader,
     ) raises:
         """Train model with periodic validation.
 
@@ -139,11 +147,17 @@ struct BaseTrainer(Trainer):
         # Print mixed precision settings
         if self.config.use_mixed_precision:
             print("\nMixed Precision Training: ENABLED")
-            var dtype_name = "float16" if self.config.precision_dtype == DType.float16 else "float32"
+            var dtype_name = (
+                "float16" if self.config.precision_dtype
+                == DType.float16 else "float32"
+            )
             print("  Precision: " + dtype_name)
             print("  Initial Loss Scale: " + String(self.config.loss_scale))
             if self.config.gradient_clip_norm > 0.0:
-                print("  Gradient Clipping: " + String(self.config.gradient_clip_norm))
+                print(
+                    "  Gradient Clipping: "
+                    + String(self.config.gradient_clip_norm)
+                )
         else:
             print("\nMixed Precision Training: DISABLED")
 
@@ -157,7 +171,12 @@ struct BaseTrainer(Trainer):
             self.metrics.reset_epoch()
 
             print("\n" + "=" * 70)
-            print("EPOCH " + String(epoch + 1) + "/" + String(self.config.num_epochs))
+            print(
+                "EPOCH "
+                + String(epoch + 1)
+                + "/"
+                + String(self.config.num_epochs)
+            )
             print("=" * 70)
 
             # Run training epoch
@@ -167,35 +186,45 @@ struct BaseTrainer(Trainer):
                 optimizer_step,
                 zero_gradients,
                 train_loader,
-                self.metrics
+                self.metrics,
             )
 
             # Validation (if enabled for this epoch)
-            if self.config.validate_interval > 0 and (epoch + 1) % self.config.validate_interval == 0:
+            if (
+                self.config.validate_interval > 0
+                and (epoch + 1) % self.config.validate_interval == 0
+            ):
                 print("\n" + "-" * 70)
                 print("VALIDATION")
                 print("-" * 70)
 
                 var val_loss = self.validation_loop.run(
-                    model_forward,
-                    compute_loss,
-                    val_loader,
-                    self.metrics
+                    model_forward, compute_loss, val_loader, self.metrics
                 )
 
                 print("-" * 70)
 
             # Log epoch metrics
-            var epoch_metrics = List[MetricResult]()
-            epoch_metrics.append(MetricResult("train_loss", self.metrics.train_loss))
-            epoch_metrics.append(MetricResult("val_loss", self.metrics.val_loss))
+            var epoch_metrics: List[MetricResult] = []
+            epoch_metrics.append(
+                MetricResult("train_loss", self.metrics.train_loss)
+            )
+            epoch_metrics.append(
+                MetricResult("val_loss", self.metrics.val_loss)
+            )
             self.metric_logger.log_epoch(epoch, epoch_metrics)
 
             # Print epoch summary
             print("\nEpoch " + String(epoch + 1) + " Summary:")
             print("  Train Loss: " + String(self.metrics.train_loss))
             print("  Val Loss: " + String(self.metrics.val_loss))
-            print("  Best Val Loss: " + String(self.metrics.best_val_loss) + " (epoch " + String(self.metrics.best_epoch + 1) + ")")
+            print(
+                "  Best Val Loss: "
+                + String(self.metrics.best_val_loss)
+                + " (epoch "
+                + String(self.metrics.best_epoch + 1)
+                + ")"
+            )
 
         self.is_training = False
 
@@ -218,7 +247,10 @@ struct BaseTrainer(Trainer):
         Raises:
             Error indicating proper usage.
         """
-        raise Error("Use fit() with model_forward, compute_loss, optimizer_step, and data loaders")
+        raise Error(
+            "Use fit() with model_forward, compute_loss, optimizer_step, and"
+            " data loaders"
+        )
 
     fn get_metrics(self) -> TrainingMetrics:
         """Get current training metrics.
@@ -233,7 +265,7 @@ struct BaseTrainer(Trainer):
 
         Returns:
             Epoch number (0-indexed).
-       """
+        """
         return self.metrics.best_epoch
 
     fn save_checkpoint(self, epoch: Int, path: String) raises:

@@ -15,7 +15,8 @@ struct PReLU(Module):
     """Parametric ReLU activation.
 
     Formula: PReLU(x) = max(0, x) + α * min(0, x).
-   """
+    """
+
     var alpha: Tensor  # Learnable slope for negative values
 
     fn __init__(out self, num_features: Int = 1, init_value: Float64 = 0.25):
@@ -32,7 +33,7 @@ struct PReLU(Module):
 
         Returns:
             PReLU(input) = max(0, input) + α * min(0, input).
-       """
+        """
         var positive = max(input, 0.0)
         var negative = min(input, 0.0)
 

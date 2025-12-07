@@ -13,9 +13,10 @@ from shared.utils.serialization import save_tensor, load_tensor
 from shared.data import DatasetInfo
 from collections import List
 
+
 fn main() raises:
     print("Testing ResNet-18 Model")
-    print("="*60)
+    print("=" * 60)
 
     # Create model
     print("Initializing ResNet-18...")
@@ -25,10 +26,11 @@ fn main() raises:
     print("✓ Model initialized")
 
     # Create dummy input
-    print("\nCreating dummy input (batch=4, channels=3, height=32, width=32)...")
+    print(
+        "\nCreating dummy input (batch=4, channels=3, height=32, width=32)..."
+    )
     var input = zeros(
-        List[Int]().append(4).append(3).append(32).append(32),
-        DType.float32
+        List[Int]().append(4).append(3).append(32).append(32), DType.float32
     )
     var input_data = input._data.bitcast[Float32]()
     for i in range(4 * 3 * 32 * 32):
@@ -38,7 +40,13 @@ fn main() raises:
     # Test inference mode
     print("\nTesting inference mode...")
     var logits_inf = model.forward(input, training=False)
-    print("  Output shape: (" + str(logits_inf.shape()[0]) + ", " + str(logits_inf.shape()[1]) + ")")
+    print(
+        "  Output shape: ("
+        + String(logits_inf.shape()[0])
+        + ", "
+        + String(logits_inf.shape()[1])
+        + ")"
+    )
     if logits_inf.shape()[0] == 4 and logits_inf.shape()[1] == 10:
         print("✓ Inference mode PASSED")
     else:
@@ -48,7 +56,13 @@ fn main() raises:
     # Test training mode
     print("\nTesting training mode...")
     var logits_train = model.forward(input, training=True)
-    print("  Output shape: (" + str(logits_train.shape()[0]) + ", " + str(logits_train.shape()[1]) + ")")
+    print(
+        "  Output shape: ("
+        + String(logits_train.shape()[0])
+        + ", "
+        + String(logits_train.shape()[1])
+        + ")"
+    )
     if logits_train.shape()[0] == 4 and logits_train.shape()[1] == 10:
         print("✓ Training mode PASSED")
     else:
@@ -70,6 +84,6 @@ fn main() raises:
     else:
         print("✓ No NaN/Inf detected")
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("✓ ResNet-18 ALL TESTS PASSED!")
-    print("="*60)
+    print("=" * 60)

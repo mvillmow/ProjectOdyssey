@@ -247,7 +247,7 @@ fn test_loss_tracker_min_max() raises:
     tracker.update(5.0, component="total")
     tracker.update(1.0, component="total")  # Min
     tracker.update(3.0, component="total")
-    tracker.update(10.0, component="total") # Max
+    tracker.update(10.0, component="total")  # Max
     tracker.update(7.0, component="total")
 
     var stats = tracker.get_statistics(component="total")
@@ -284,9 +284,9 @@ fn test_loss_tracker_single_value() raises:
 
 fn main() raises:
     """Run all loss tracker tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("LOSS TRACKER TEST SUITE")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Basic Functionality Tests (#284)")
     print("-" * 70)
@@ -310,6 +310,6 @@ fn main() raises:
     test_loss_tracker_min_max()
     test_loss_tracker_single_value()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ALL LOSS TRACKER TESTS PASSED ✓")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")

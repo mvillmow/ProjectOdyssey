@@ -13,7 +13,7 @@ fn test_list_basic_append() raises:
     """Test basic List append operations."""
     print("\n=== Test 1: Basic List Append ===")
 
-    var lst = List[Int]()
+    var lst= List[Int]()
     print("Appending 10 elements...")
 
     for i in range(10):
@@ -28,7 +28,7 @@ fn test_list_large_append() raises:
     """Test List with many append operations."""
     print("\n=== Test 2: Large List Append ===")
 
-    var sizes = List[Int]()
+    var sizes= List[Int]()
     sizes.append(100)
     sizes.append(1000)
     sizes.append(10000)
@@ -38,7 +38,7 @@ fn test_list_large_append() raises:
         var size = sizes[i]
         print("\nAppending", size, "elements...")
 
-        var lst = List[Int]()
+        var lst= List[Int]()
         for j in range(size):
             lst.append(j)
 
@@ -52,7 +52,7 @@ fn test_list_rapid_allocations() raises:
 
     print("Creating and destroying 1000 lists...")
     for i in range(1000):
-        var lst = List[Int]()
+        var lst= List[Int]()
         for j in range(10):
             lst.append(j)
         # List goes out of scope and is destroyed
@@ -76,27 +76,27 @@ fn test_list_append_pattern_from_extensor() raises:
 
     # Test case 1: 1D shape
     print("\nTest case 1: 1D shape [2]")
-    var shape1 = List[Int]()
+    var shape1= List[Int]()
     shape1.append(2)
     test_stride_pattern(shape1)
 
     # Test case 2: 2D shape
     print("\nTest case 2: 2D shape [2, 3]")
-    var shape2 = List[Int]()
+    var shape2= List[Int]()
     shape2.append(2)
     shape2.append(3)
     test_stride_pattern(shape2)
 
     # Test case 3: Exact crash case
     print("\nTest case 3: 2D shape [2, 47] (CRASH CASE)")
-    var shape3 = List[Int]()
+    var shape3= List[Int]()
     shape3.append(2)
     shape3.append(47)
     test_stride_pattern(shape3)
 
     # Test case 4: 3D shape
     print("\nTest case 4: 3D shape [10, 20, 30]")
-    var shape4 = List[Int]()
+    var shape4= List[Int]()
     shape4.append(10)
     shape4.append(20)
     shape4.append(30)
@@ -109,7 +109,7 @@ fn test_stride_pattern(shape: List[Int]) raises:
 
     # Step 1: Preallocate with zeros (backward iteration)
     print("  Step 1: Preallocate with append(0)...")
-    var strides = List[Int]()
+    var strides= List[Int]()
     for i in range(len(shape) - 1, -1, -1):
         print("    i =", i, "appending 0...")
         strides.append(0)  # THIS IS LINE 107
@@ -140,7 +140,7 @@ fn test_list_reverse_iteration_append() raises:
 
     print("Testing reverse iteration append with various sizes...")
 
-    var sizes = List[Int]()
+    var sizes= List[Int]()
     sizes.append(1)
     sizes.append(2)
     sizes.append(3)
@@ -152,7 +152,7 @@ fn test_list_reverse_iteration_append() raises:
         var size = sizes[size_idx]
         print("\n  Size:", size)
 
-        var lst = List[Int]()
+        var lst= List[Int]()
 
         # Reverse iteration append (like in ExTensor)
         print("    Reverse iteration append...")
@@ -178,7 +178,7 @@ fn test_list_memory_stress() raises:
     var total_lists = 0
 
     for i in range(100):
-        var lst = List[Int]()
+        var lst= List[Int]()
         for j in range(100):
             lst.append(j)
         total_lists += 1
@@ -194,7 +194,7 @@ fn test_list_growth_pattern() raises:
     print("\n=== Test 7: List Growth Pattern ===")
 
     print("Testing List growth with incremental appends...")
-    var lst = List[Int]()
+    var lst= List[Int]()
 
     for i in range(1000):
         lst.append(i)
@@ -213,21 +213,21 @@ fn test_list_zero_append_stress() raises:
 
     # Pattern 1: Sequential forward
     print("\n  Pattern 1: Forward append of zeros...")
-    var lst1 = List[Int]()
+    var lst1= List[Int]()
     for i in range(100):
         lst1.append(0)
     print("    len =", len(lst1))
 
     # Pattern 2: Sequential backward (like ExTensor)
     print("\n  Pattern 2: Backward loop, forward append of zeros...")
-    var lst2 = List[Int]()
+    var lst2= List[Int]()
     for i in range(100 - 1, -1, -1):
         lst2.append(0)
     print("    len =", len(lst2))
 
     # Pattern 3: Large size
     print("\n  Pattern 3: Large backward loop...")
-    var lst3 = List[Int]()
+    var lst3= List[Int]()
     for i in range(10000 - 1, -1, -1):
         lst3.append(0)
     print("    len =", len(lst3))

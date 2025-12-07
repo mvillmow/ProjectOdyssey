@@ -19,11 +19,18 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from shared.core import ExTensor
 from shared.training.trainer_interface import (
-    TrainerConfig, TrainingMetrics, DataLoader, DataBatch
+    TrainerConfig,
+    TrainingMetrics,
+    DataLoader,
+    DataBatch,
 )
 from shared.training.loops.training_loop import TrainingLoop
 from shared.training.loops.validation_loop import ValidationLoop
-from shared.training.trainer import BaseTrainer, create_trainer, create_default_trainer
+from shared.training.trainer import (
+    BaseTrainer,
+    create_trainer,
+    create_default_trainer,
+)
 
 
 # ==================================================================
@@ -36,7 +43,9 @@ fn mock_model_forward(input: ExTensor) raises -> ExTensor:
     return input
 
 
-fn mock_compute_loss(predictions: ExTensor, labels: ExTensor) raises -> ExTensor:
+fn mock_compute_loss(
+    predictions: ExTensor, labels: ExTensor
+) raises -> ExTensor:
     """Mock loss computation - returns constant loss."""
     var loss = ExTensor(List[Int](), DType.float32)
     loss._data.bitcast[Float32]()[0] = 0.5
@@ -86,7 +95,7 @@ fn test_trainer_config_custom() raises:
         log_interval=5,
         validate_interval=2,
         save_checkpoints=True,
-        checkpoint_interval=10
+        checkpoint_interval=10,
     )
 
     assert_equal(config.num_epochs, 20, "Custom num_epochs")
@@ -225,7 +234,9 @@ fn test_training_loop_initialization() raises:
     """Test TrainingLoop initialization."""
     print("Testing TrainingLoop initialization...")
 
-    var loop = TrainingLoop(log_interval=5, clip_gradients=True, max_grad_norm=2.0)
+    var loop = TrainingLoop(
+        log_interval=5, clip_gradients=True, max_grad_norm=2.0
+    )
 
     assert_equal(loop.log_interval, 5, "Log interval")
     assert_true(loop.clip_gradients, "Clip gradients enabled")
@@ -243,7 +254,9 @@ fn test_validation_loop_initialization() raises:
     """Test ValidationLoop initialization."""
     print("Testing ValidationLoop initialization...")
 
-    var loop = ValidationLoop(compute_accuracy=True, compute_confusion=True, num_classes=5)
+    var loop = ValidationLoop(
+        compute_accuracy=True, compute_confusion=True, num_classes=5
+    )
 
     assert_true(loop.compute_accuracy, "Compute accuracy")
     assert_true(loop.compute_confusion, "Compute confusion")
@@ -289,7 +302,9 @@ fn test_create_default_trainer() raises:
 
     var trainer = create_default_trainer()
 
-    assert_equal(trainer.config.num_epochs, 10, "Default trainer has default config")
+    assert_equal(
+        trainer.config.num_epochs, 10, "Default trainer has default config"
+    )
 
     print("  ✓ create_default_trainer factory works")
 
@@ -371,16 +386,17 @@ fn test_trainer_config_to_base_trainer_integration() raises:
     print("Testing TrainerConfig to BaseTrainer integration...")
 
     var config = TrainerConfig(
-        num_epochs=3,
-        batch_size=8,
-        learning_rate=0.01,
-        log_interval=5
+        num_epochs=3, batch_size=8, learning_rate=0.01, log_interval=5
     )
 
     var trainer = BaseTrainer(config)
 
     assert_equal(trainer.config.num_epochs, 3, "Config passed correctly")
-    assert_equal(trainer.training_loop.log_interval, 5, "Log interval configured in training loop")
+    assert_equal(
+        trainer.training_loop.log_interval,
+        5,
+        "Log interval configured in training loop",
+    )
 
     print("  ✓ TrainerConfig integrates with BaseTrainer")
 
@@ -409,10 +425,10 @@ fn test_metrics_flow_through_trainer() raises:
 
 fn main() raises:
     """Run all training infrastructure tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("TRAINING INFRASTRUCTURE TEST SUITE")
     print("Trainer Interface, Loops, and Base Trainer (#303-322)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("TrainerConfig Tests (#304)")
     print("-" * 70)
@@ -453,9 +469,9 @@ fn main() raises:
     test_trainer_config_to_base_trainer_integration()
     test_metrics_flow_through_trainer()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ALL TRAINING INFRASTRUCTURE TESTS PASSED ✓")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
     print("Summary:")
     print("  ✓ TrainerConfig: Default and custom configuration")
     print("  ✓ TrainingMetrics: Initialization, updates, reset, best tracking")

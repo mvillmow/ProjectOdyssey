@@ -30,7 +30,7 @@ fn load_default_config(config_type: String) raises -> Config:
 
     Example:
         ```mojo
-        ar training_defaults = load_default_config("training")
+        var training_defaults = load_default_config("training")
         var lr = training_defaults.get_float("optimizer.learning_rate")
         ```
     """
@@ -57,7 +57,7 @@ fn load_paper_config(
 
     Example:
         ```mojo
-        ar lenet5_config = load_paper_config("lenet5", "model")
+        var lenet5_config = load_paper_config("lenet5", "model")
         var num_classes = lenet5_config.get_int("num_classes")
         ```
     """
@@ -105,7 +105,7 @@ fn load_experiment_config(
 
     Example:
         ```mojo
-        ar config = load_experiment_config("lenet5", "baseline")
+        var config = load_experiment_config("lenet5", "baseline")
         var lr = config.get_float("optimizer.learning_rate")
         var batch_size = config.get_int("training.batch_size")
         var model_name = config.get_string("model.name")
@@ -115,7 +115,7 @@ fn load_experiment_config(
     var config = Config()
 
     # Try to load each type of default config (graceful if missing)
-    var default_types = List[String]()
+    var default_types= List[String]()
     default_types.append("training")
     default_types.append("model")
     default_types.append("data")
@@ -173,7 +173,7 @@ fn load_config_with_validation(
 
     Example:
         ```mojo
-        ar required = List[String]()
+        var required = List[String]()
         required.append("optimizer.learning_rate")
         required.append("training.epochs")
 
@@ -206,7 +206,7 @@ fn create_experiment_config(
 
     Example:
         ```mojo
-        ar overrides = Config()
+        var overrides = Config()
         overrides.set("optimizer.learning_rate", 0.01)
         overrides.set("training.batch_size", 64)
 
@@ -237,12 +237,12 @@ fn validate_experiment_config(config: Config) raises:
 
     Example:
         ```mojo
-        ar config = load_experiment_config("lenet5", "baseline")
+        var config = load_experiment_config("lenet5", "baseline")
         validate_experiment_config(config)  # Raises if invalid
         ```
     """
     # Define required fields
-    var required = List[String]()
+    var required= List[String]()
 
     # Training requirements
     required.append("optimizer.name")
@@ -265,7 +265,7 @@ fn validate_experiment_config(config: Config) raises:
     config.validate_range("training.batch_size", 1.0, 10000.0)
 
     # Validate optimizer name
-    var valid_optimizers = List[String]()
+    var valid_optimizers= List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("adamw")

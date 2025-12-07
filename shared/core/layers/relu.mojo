@@ -71,9 +71,7 @@ struct ReLULayer(Copyable, Movable):
         return relu(input)
 
     fn backward(
-        self,
-        grad_output: ExTensor,
-        input: ExTensor
+        self, grad_output: ExTensor, input: ExTensor
     ) raises -> ExTensor:
         """Backward pass: compute gradient w.r.t. input.
 
@@ -117,5 +115,5 @@ struct ReLULayer(Copyable, Movable):
             # params is empty
             ```
         """
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
         return params^

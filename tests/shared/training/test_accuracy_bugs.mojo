@@ -1,7 +1,7 @@
 """Tests for List[Int] constructor bugs in accuracy.mojo.
 
 This test file demonstrates the bugs in accuracy.mojo functions that use the
-unsafe pattern: List[Int]() followed by list[i] = value.
+unsafe pattern= List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fixes are applied, demonstrating the bug.
 After fixing, they should PASS.
@@ -20,6 +20,7 @@ from shared.training.metrics.accuracy import top1_accuracy, per_class_accuracy
 # Test argmax() bug (Line 118) - called by top1_accuracy
 # ============================================================================
 
+
 fn test_top1_accuracy_with_logits() raises:
     """Test top1_accuracy with logits (triggers argmax bug at line 118).
 
@@ -27,13 +28,13 @@ fn test_top1_accuracy_with_logits() raises:
     This crashes because the list has undefined size.
     """
     # Create logits tensor [batch_size=4, num_classes=3]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(4)  # batch size
     logits_shape.append(3)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=4]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -55,13 +56,13 @@ fn test_top1_accuracy_small_batch() raises:
     Even with batch_size=1, this crashes.
     """
     # Create logits tensor [batch_size=1, num_classes=10]
-    var logits_shape = List[Int]()
-    logits_shape.append(1)   # batch size = 1
+    var logits_shape= List[Int]()
+    logits_shape.append(1)  # batch size = 1
     logits_shape.append(10)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=1]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(1)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -79,13 +80,13 @@ fn test_top1_accuracy_large_batch() raises:
     Larger batch size makes the bug more likely to manifest.
     """
     # Create logits tensor [batch_size=100, num_classes=10]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(100)  # larger batch
-    logits_shape.append(10)   # num classes
+    logits_shape.append(10)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=100]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(100)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -100,6 +101,7 @@ fn test_top1_accuracy_large_batch() raises:
 # Test per_class_accuracy() bug (Line 348)
 # ============================================================================
 
+
 fn test_per_class_accuracy_basic() raises:
     """Test per_class_accuracy (triggers bug at line 348).
 
@@ -107,13 +109,13 @@ fn test_per_class_accuracy_basic() raises:
     This crashes because the list has undefined size.
     """
     # Create logits tensor [batch_size=10, num_classes=3]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(10)  # batch size
-    logits_shape.append(3)   # num classes
+    logits_shape.append(3)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=10]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(10)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -131,13 +133,13 @@ fn test_per_class_accuracy_many_classes() raises:
     More classes = more likely to crash.
     """
     # Create logits tensor [batch_size=50, num_classes=20]
-    var logits_shape = List[Int]()
-    logits_shape.append(50)   # batch size
-    logits_shape.append(20)   # many classes
+    var logits_shape= List[Int]()
+    logits_shape.append(50)  # batch size
+    logits_shape.append(20)  # many classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=50]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(50)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -154,13 +156,13 @@ fn test_per_class_accuracy_few_classes() raises:
     Bug: Even with num_classes=2, the bug still crashes.
     """
     # Create logits tensor [batch_size=10, num_classes=2]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(10)  # batch size
-    logits_shape.append(2)   # binary classification
+    logits_shape.append(2)  # binary classification
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=10]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(10)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -174,6 +176,7 @@ fn test_per_class_accuracy_few_classes() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all accuracy.mojo bug tests.

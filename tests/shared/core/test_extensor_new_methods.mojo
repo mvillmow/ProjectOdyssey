@@ -45,7 +45,9 @@ fn test_get_float32_dtype_conversions() raises:
     var tensor_f16 = zeros(List[Int](5), DType.float16)
     tensor_f16._set_float64(2, 1.5)
     var val_f16 = tensor_f16._get_float32(2)
-    assert_almost_equal(Float64(val_f16), 1.5, tolerance=1e-3)  # Lower precision for Float16
+    assert_almost_equal(
+        Float64(val_f16), 1.5, tolerance=1e-3
+    )  # Lower precision for Float16
 
     # Test Float64 -> Float32
     var tensor_f64 = zeros(List[Int](5), DType.float64)
@@ -95,7 +97,9 @@ fn test_set_float32_dtype_conversions() raises:
     var tensor_f16 = zeros(List[Int](5), DType.float16)
     tensor_f16._set_float32(2, Float32(1.5))
     var val_f16 = tensor_f16._get_float64(2)
-    assert_almost_equal(val_f16, 1.5, tolerance=1e-3)  # Lower precision for Float16
+    assert_almost_equal(
+        val_f16, 1.5, tolerance=1e-3
+    )  # Lower precision for Float16
 
     # Test Float64 (upcast from Float32)
     var tensor_f64 = zeros(List[Int](5), DType.float64)

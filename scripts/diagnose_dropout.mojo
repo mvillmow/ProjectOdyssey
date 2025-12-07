@@ -4,6 +4,7 @@ from shared.core.extensor import ExTensor, zeros, ones, ones_like
 from shared.core.dropout import dropout, dropout_backward
 from shared.testing import check_gradient
 
+
 fn main() raises:
     """Diagnose dropout gradient checking failure."""
 
@@ -21,21 +22,40 @@ fn main() raises:
 
     print("Input values:")
     for i in range(x.numel()):
-        print("  x[" + String(i) + "] = " + String(x._data.bitcast[Float32]()[i]))
+        print(
+            "  x[" + String(i) + "] = " + String(x._data.bitcast[Float32]()[i])
+        )
 
     # Forward pass to create mask
     var (output, mask) = dropout(x, p=0.3, training=True, seed=42)
 
     print("\nMask values (seed=42):")
     for i in range(mask.numel()):
-        print("  mask[" + String(i) + "] = " + String(mask._data.bitcast[Float32]()[i]))
+        print(
+            "  mask["
+            + String(i)
+            + "] = "
+            + String(mask._data.bitcast[Float32]()[i])
+        )
 
     print("\nOutput values (x * mask / (1-p)):")
     var scale = 1.0 / (1.0 - 0.3)
     for i in range(output.numel()):
-        var expected = x._data.bitcast[Float32]()[i] * mask._data.bitcast[Float32]()[i] * Float32(scale)
+        var expected = (
+            x._data.bitcast[Float32]()[i]
+            * mask._data.bitcast[Float32]()[i]
+            * Float32(scale)
+        )
         var actual = output._data.bitcast[Float32]()[i]
-        print("  output[" + String(i) + "] = " + String(actual) + " (expected: " + String(expected) + ")")
+        print(
+            "  output["
+            + String(i)
+            + "] = "
+            + String(actual)
+            + " (expected: "
+            + String(expected)
+            + ")"
+        )
 
     # Test backward
     var grad_out = ones_like(output)
@@ -43,18 +63,40 @@ fn main() raises:
 
     print("\nGradient values (grad_out * mask / (1-p)):")
     for i in range(grad_input.numel()):
-        var expected = grad_out._data.bitcast[Float32]()[i] * mask._data.bitcast[Float32]()[i] * Float32(scale)
+        var expected = (
+            grad_out._data.bitcast[Float32]()[i]
+            * mask._data.bitcast[Float32]()[i]
+            * Float32(scale)
+        )
         var actual = grad_input._data.bitcast[Float32]()[i]
-        print("  grad[" + String(i) + "] = " + String(actual) + " (expected: " + String(expected) + ")")
+        print(
+            "  grad["
+            + String(i)
+            + "] = "
+            + String(actual)
+            + " (expected: "
+            + String(expected)
+            + ")"
+        )
 
     # Test with another mask to verify consistency
     var (output2, mask2) = dropout(x, p=0.3, training=True, seed=42)
 
     print("\nMask values (second call with seed=42):")
     for i in range(mask2.numel()):
-        var same = mask._data.bitcast[Float32]()[i] == mask2._data.bitcast[Float32]()[i]
-        print("  mask2[" + String(i) + "] = " + String(mask2._data.bitcast[Float32]()[i]) +
-              " (same as first: " + String(same) + ")")
+        var same = (
+            mask._data.bitcast[Float32]()[i]
+            == mask2._data.bitcast[Float32]()[i]
+        )
+        print(
+            "  mask2["
+            + String(i)
+            + "] = "
+            + String(mask2._data.bitcast[Float32]()[i])
+            + " (same as first: "
+            + String(same)
+            + ")"
+        )
 
     # Now test numerical gradient manually
     print("\nManual numerical gradient check:")
@@ -70,7 +112,10 @@ fn main() raises:
         var (out_plus, _) = dropout(x_plus, p=0.3, training=True, seed=42)
         var loss_plus: Float32 = 0.0
         for j in range(out_plus.numel()):
-            loss_plus += out_plus._data.bitcast[Float32]()[j] * grad_out._data.bitcast[Float32]()[j]
+            loss_plus += (
+                out_plus._data.bitcast[Float32]()[j]
+                * grad_out._data.bitcast[Float32]()[j]
+            )
 
         # Backward perturbation
         var x_minus = zeros(shape, DType.float32)
@@ -81,7 +126,10 @@ fn main() raises:
         var (out_minus, _) = dropout(x_minus, p=0.3, training=True, seed=42)
         var loss_minus: Float32 = 0.0
         for j in range(out_minus.numel()):
-            loss_minus += out_minus._data.bitcast[Float32]()[j] * grad_out._data.bitcast[Float32]()[j]
+            loss_minus += (
+                out_minus._data.bitcast[Float32]()[j]
+                * grad_out._data.bitcast[Float32]()[j]
+            )
 
         # Central difference
         var numerical_grad = (loss_plus - loss_minus) / (2.0 * Float32(epsilon))

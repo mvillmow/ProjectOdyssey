@@ -54,10 +54,10 @@ fn forward_pass(network: SimpleNN, input_data: ExTensor) raises -> ExTensor:
 
     Returns:
         Output tensor (batch_size, output_size).
-   """
+    """
     # Create output tensor
     var batch_size = input_data.shape()[0]
-    var output_shape = List[Int]()
+    var output_shape= List[Int]()
     output_shape.append(batch_size)
     output_shape.append(network.output_size)
 
@@ -65,7 +65,9 @@ fn forward_pass(network: SimpleNN, input_data: ExTensor) raises -> ExTensor:
     return output
 
 
-fn training_step(network: SimpleNN, input_data: ExTensor, targets: ExTensor) raises -> Float32:
+fn training_step(
+    network: SimpleNN, input_data: ExTensor, targets: ExTensor
+) raises -> Float32:
     """Perform a training step.
 
     Args:
@@ -102,8 +104,8 @@ fn training_step(network: SimpleNN, input_data: ExTensor, targets: ExTensor) rai
 fn benchmark_forward_batch32() raises -> None:
     """Benchmark forward pass with batch size 32."""
     var network = SimpleNN(784, 256, 10)
-    var input_shape = List[Int]()
-    input_shape.append(32)   # batch size
+    var input_shape= List[Int]()
+    input_shape.append(32)  # batch size
     input_shape.append(784)  # input features
     var input_data = ones(input_shape, DType.float32)
 
@@ -113,8 +115,8 @@ fn benchmark_forward_batch32() raises -> None:
 fn benchmark_forward_batch64() raises -> None:
     """Benchmark forward pass with batch size 64."""
     var network = SimpleNN(784, 256, 10)
-    var input_shape = List[Int]()
-    input_shape.append(64)   # batch size
+    var input_shape= List[Int]()
+    input_shape.append(64)  # batch size
     input_shape.append(784)  # input features
     var input_data = ones(input_shape, DType.float32)
 
@@ -124,7 +126,7 @@ fn benchmark_forward_batch64() raises -> None:
 fn benchmark_forward_batch128() raises -> None:
     """Benchmark forward pass with batch size 128."""
     var network = SimpleNN(784, 256, 10)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(128)  # batch size
     input_shape.append(784)  # input features
     var input_data = ones(input_shape, DType.float32)
@@ -135,12 +137,12 @@ fn benchmark_forward_batch128() raises -> None:
 fn benchmark_training_step() raises -> None:
     """Benchmark a full training step."""
     var network = SimpleNN(784, 256, 10)
-    var input_shape = List[Int]()
-    input_shape.append(32)   # batch size
+    var input_shape= List[Int]()
+    input_shape.append(32)  # batch size
     input_shape.append(784)  # input features
     var input_data = ones(input_shape, DType.float32)
 
-    var target_shape = List[Int]()
+    var target_shape= List[Int]()
     target_shape.append(32)  # batch size
     var targets = zeros(target_shape, DType.float32)
 
@@ -190,7 +192,9 @@ fn analyze_batch_scaling(
         if scaling_64 < 2.0:
             print("Good scaling: Batch size 64 has reasonable latency increase")
         if scaling_128 < 4.0:
-            print("Good scaling: Batch size 128 has reasonable latency increase")
+            print(
+                "Good scaling: Batch size 128 has reasonable latency increase"
+            )
 
     print("")
 

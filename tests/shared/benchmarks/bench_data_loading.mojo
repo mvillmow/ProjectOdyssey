@@ -39,7 +39,7 @@ fn bench_batch_loading_speed() raises -> List[BenchmarkResult]:
     """
     # TODO: Implement when DataLoader is available
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="BatchLoading-placeholder",
@@ -61,7 +61,7 @@ fn bench_data_preprocessing() raises -> BenchmarkResult:
 
     Performance Target:
         - Preprocessing should not be bottleneck (> 10k samples/sec).
-   """
+    """
     # TODO: Implement when data preprocessing utilities are available
     # Placeholder for TDD
     return BenchmarkResult(

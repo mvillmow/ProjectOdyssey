@@ -32,7 +32,7 @@ Example:
     save_tensor(tensor, "weights.bin")
 
     # Save named collection
-    var tensors = List[NamedTensor]()
+    var tensors : List[NamedTensor] = []
     tensors.append(NamedTensor("conv1_w", conv1_weights))
     tensors.append(NamedTensor("conv1_b", conv1_bias))
     save_named_tensors(tensors, "checkpoint/")
@@ -102,7 +102,7 @@ fn save_tensor(tensor: ExTensor, filepath: String, name: String = "") raises:
 
     Example:
         ```mojo
-        ar weights = ExTensor(...)
+        var weights = ExTensor(...)
         save_tensor(weights, "checkpoint/conv1.bin", "conv1_weights")
         ```
     """
@@ -147,7 +147,7 @@ fn load_tensor(filepath: String) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar tensor = load_tensor("checkpoint/conv1.bin")
+        var tensor = load_tensor("checkpoint/conv1.bin")
         ```
     """
     # Read file
@@ -173,7 +173,7 @@ fn load_tensor(filepath: String) raises -> ExTensor:
     var dtype = parse_dtype(String(dtype_str))
 
     # Parse shape
-    var shape = List[Int]()
+    var shape= List[Int]()
     for i in range(1, len(meta_parts)):
         shape.append(Int(meta_parts[i]))
 
@@ -203,7 +203,7 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
 
     Example:
         ```mojo
-        ar (name, tensor) = load_tensor_with_name("checkpoint/conv1.bin")
+        var (name, tensor) = load_tensor_with_name("checkpoint/conv1.bin")
         ```
     """
     # Read file
@@ -229,7 +229,7 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
     var dtype = parse_dtype(String(dtype_str))
 
     # Parse shape
-    var shape = List[Int]()
+    var shape= List[Int]()
     for i in range(1, len(meta_parts)):
         shape.append(Int(meta_parts[i]))
 
@@ -247,9 +247,7 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
 # ============================================================================
 
 
-fn save_named_tensors(
-    tensors: List[NamedTensor], dirpath: String
-) raises:
+fn save_named_tensors(tensors: List[NamedTensor], dirpath: String) raises:
     """Save collection of named tensors to directory.
 
     Creates a directory with one .weights file per tensor.
@@ -264,7 +262,7 @@ fn save_named_tensors(
 
     Example:
         ```mojo
-        ar tensors = List[NamedTensor]()
+        var tensors : List[NamedTensor] = []
         tensors.append(NamedTensor("conv1_w", conv1_weights))
         tensors.append(NamedTensor("conv1_b", conv1_bias))
         save_named_tensors(tensors, "checkpoint/epoch_10/")
@@ -272,6 +270,7 @@ fn save_named_tensors(
     """
     # Create directory if needed
     from shared.utils.io import create_directory
+
     if not create_directory(dirpath):
         raise Error("Failed to create directory: " + dirpath)
 
@@ -300,14 +299,14 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
 
     Example:
         ```mojo
-        ar tensors = load_named_tensors("checkpoint/epoch_10/")
+        var tensors = load_named_tensors("checkpoint/epoch_10/")
         for i in range(len(tensors)):
             print(tensors[i].name)
         ```
     """
     from python import Python
 
-    var result = List[NamedTensor]()
+    var result: List[NamedTensor] = []
 
     try:
         # Use Python to list directory contents
@@ -334,7 +333,9 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
 
 
 fn save_named_checkpoint(
-    tensors: List[NamedTensor], path: String, metadata: Optional[Dict[String, String]] = None
+    tensors: List[NamedTensor],
+    path: String,
+    metadata: Optional[Dict[String, String]] = None,
 ) raises:
     """Save model checkpoint with named tensors and optional metadata.
 
@@ -351,7 +352,7 @@ fn save_named_checkpoint(
 
     Example:
         ```mojo
-        ar tensors = List[NamedTensor]()
+        var tensors : List[NamedTensor] = []
         tensors.append(NamedTensor("weights", weights_tensor))
         tensors.append(NamedTensor("bias", bias_tensor))
         var meta = Dict[String, String]()
@@ -362,6 +363,7 @@ fn save_named_checkpoint(
     """
     # Create checkpoint directory
     from shared.utils.io import create_directory
+
     if not create_directory(path):
         raise Error("Failed to create checkpoint directory: " + path)
 
@@ -376,7 +378,9 @@ fn save_named_checkpoint(
             _ = f.write(meta_content)
 
 
-fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[String, String]]:
+fn load_named_checkpoint(
+    path: String,
+) raises -> Tuple[List[NamedTensor], Dict[String, String]]:
     """Load model checkpoint with named tensors and metadata.
 
     Reads all tensor files from checkpoint directory and metadata if present.
@@ -393,7 +397,7 @@ fn load_named_checkpoint(path: String) raises -> Tuple[List[NamedTensor], Dict[S
 
     Example:
         ```mojo
-        ar (tensors, metadata) = load_checkpoint("checkpoints/model/")
+        var (tensors, metadata) = load_checkpoint("checkpoints/model/")
         for i in range(len(tensors)):
             print(tensors[i].name)
         if "epoch" in metadata:
@@ -430,7 +434,7 @@ fn _serialize_metadata(metadata: Dict[String, String]) raises -> String:
     Returns:
         Serialized string.
     """
-    var lines = List[String]()
+    var lines= List[String]()
 
     for key_ref in metadata.keys():
         var k = String(key_ref)
@@ -473,7 +477,7 @@ fn _deserialize_metadata(content: String) raises -> Dict[String, String]:
             continue  # Skip malformed lines
 
         var key = String(line[:eq_pos])
-        var value = String(line[eq_pos + 1:])
+        var value = String(line[eq_pos + 1 :])
         metadata[key] = value
 
     return metadata^
@@ -499,7 +503,7 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
 
     Example:
         ```mojo
-        ar hex_str = bytes_to_hex(tensor._data, 16)
+        var hex_str = bytes_to_hex(tensor._data, 16)
         # Returns "3f800000..." for float32 values
         ```
     """
@@ -531,7 +535,7 @@ fn hex_to_bytes(hex_str: String, tensor: ExTensor) raises:
 
     Example:
         ```mojo
-        ar hex_str = "3f800000"
+        var hex_str = "3f800000"
         var tensor = zeros(shape, DType.float32)
         hex_to_bytes(hex_str, tensor)
         ```
@@ -592,7 +596,7 @@ fn get_dtype_size(dtype: DType) -> Int:
 
     Example:
         ```mojo
-        ar size = get_dtype_size(DType.float32)  # Returns 4
+        var size = get_dtype_size(DType.float32)  # Returns 4
         ```
     """
     if dtype == DType.float16:
@@ -630,7 +634,7 @@ fn parse_dtype(dtype_str: String) raises -> DType:
 
     Example:
         ```mojo
-        ar dtype = parse_dtype("float32")  # Returns DType.float32
+        var dtype = parse_dtype("float32")  # Returns DType.float32
         ```
     """
     if dtype_str == "float16":
@@ -670,7 +674,7 @@ fn dtype_to_string(dtype: DType) -> String:
 
     Example:
         ```mojo
-        ar s = dtype_to_string(DType.float32)  # Returns "float32"
+        var s = dtype_to_string(DType.float32)  # Returns "float32"
         ```
     """
     if dtype == DType.float16:

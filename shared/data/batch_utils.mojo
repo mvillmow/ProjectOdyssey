@@ -8,9 +8,7 @@ from ..core import ExTensor, zeros
 
 
 fn extract_batch(
-    data: ExTensor,
-    start_idx: Int,
-    batch_size: Int
+    data: ExTensor, start_idx: Int, batch_size: Int
 ) raises -> ExTensor:
     """Extract a mini-batch from a dataset tensor.
 
@@ -46,13 +44,19 @@ fn extract_batch(
 
     # Handle edge case: start_idx beyond dataset
     if start_idx >= num_samples:
-        raise Error("start_idx (" + String(start_idx) + ") >= num_samples (" + String(num_samples) + ")")
+        raise Error(
+            "start_idx ("
+            + String(start_idx)
+            + ") >= num_samples ("
+            + String(num_samples)
+            + ")"
+        )
 
     # Compute actual batch size (handle partial batches at end)
     var actual_batch_size = min(batch_size, num_samples - start_idx)
 
     # Build output shape: (actual_batch_size, ...)
-    var batch_shape = List[Int]()
+    var batch_shape= List[Int]()
     batch_shape.append(actual_batch_size)
     for i in range(1, len(data_shape)):
         batch_shape.append(data_shape[i])
@@ -85,10 +89,7 @@ fn extract_batch(
 
 
 fn extract_batch_pair(
-    data: ExTensor,
-    labels: ExTensor,
-    start_idx: Int,
-    batch_size: Int
+    data: ExTensor, labels: ExTensor, start_idx: Int, batch_size: Int
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Extract a mini-batch of both data and labels.
 
@@ -128,7 +129,13 @@ fn extract_batch_pair(
     var label_samples = labels.shape()[0]
 
     if data_samples != label_samples:
-        raise Error("Data samples (" + String(data_samples) + ") != label samples (" + String(label_samples) + ")")
+        raise Error(
+            "Data samples ("
+            + String(data_samples)
+            + ") != label samples ("
+            + String(label_samples)
+            + ")"
+        )
 
     # Extract both batches
     var batch_data = extract_batch(data, start_idx, batch_size)
@@ -163,9 +170,7 @@ fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
 
 
 fn get_batch_indices(
-    batch_idx: Int,
-    batch_size: Int,
-    num_samples: Int
+    batch_idx: Int, batch_size: Int, num_samples: Int
 ) -> Tuple[Int, Int, Int]:
     """Compute start index, end index, and actual size for a batch.
 

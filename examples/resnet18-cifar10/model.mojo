@@ -67,7 +67,11 @@ from shared.core.normalization import batch_norm2d
 from shared.core.initializers import he_uniform
 from shared.core.arithmetic import add  # For skip connections
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from shared.training.model_utils import (
+    save_model_weights,
+    load_model_weights,
+    get_model_parameter_names,
+)
 from collections import List
 
 
@@ -255,22 +259,22 @@ struct ResNet18:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10).
-       """
+        """
         self.num_classes = num_classes
 
         # ========== Initial conv: 3 → 64 channels, 3×3 kernel ==========
-        var conv1_shape = List[Int]()
-        conv1_shape.append(64)   # out_channels
-        conv1_shape.append(3)    # in_channels (RGB)
-        conv1_shape.append(3)    # kernel_height
-        conv1_shape.append(3)    # kernel_width
+        var conv1_shape= List[Int]()
+        conv1_shape.append(64)  # out_channels
+        conv1_shape.append(3)  # in_channels (RGB)
+        conv1_shape.append(3)  # kernel_height
+        conv1_shape.append(3)  # kernel_width
         self.conv1_kernel = he_uniform(conv1_shape, DType.float32)
 
-        var conv1_bias_shape = List[Int]()
+        var conv1_bias_shape= List[Int]()
         conv1_bias_shape.append(64)
         self.conv1_bias = zeros(conv1_bias_shape, DType.float32)
 
-        var bn1_shape = List[Int]()
+        var bn1_shape= List[Int]()
         bn1_shape.append(64)
         self.bn1_gamma = ones(bn1_shape, DType.float32)
         self.bn1_beta = zeros(bn1_shape, DType.float32)
@@ -279,14 +283,16 @@ struct ResNet18:
 
         # ========== Stage 1: 64 → 64 (no projection) ==========
         # Block 1
-        var s1_shape = List[Int]()
-        s1_shape.append(64); s1_shape.append(64)
-        s1_shape.append(3); s1_shape.append(3)
+        var s1_shape= List[Int]()
+        s1_shape.append(64)
+        s1_shape.append(64)
+        s1_shape.append(3)
+        s1_shape.append(3)
 
-        var s1_bias_shape = List[Int]()
+        var s1_bias_shape= List[Int]()
         s1_bias_shape.append(64)
 
-        var s1_bn_shape = List[Int]()
+        var s1_bn_shape= List[Int]()
         s1_bn_shape.append(64)
 
         self.s1b1_conv1_kernel = he_uniform(s1_shape, DType.float32)
@@ -320,18 +326,22 @@ struct ResNet18:
 
         # ========== Stage 2: 64 → 128 → 128 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s2b1_conv1_shape = List[Int]()
-        s2b1_conv1_shape.append(128); s2b1_conv1_shape.append(64)
-        s2b1_conv1_shape.append(3); s2b1_conv1_shape.append(3)
+        var s2b1_conv1_shape= List[Int]()
+        s2b1_conv1_shape.append(128)
+        s2b1_conv1_shape.append(64)
+        s2b1_conv1_shape.append(3)
+        s2b1_conv1_shape.append(3)
 
-        var s2b1_conv2_shape = List[Int]()
-        s2b1_conv2_shape.append(128); s2b1_conv2_shape.append(128)
-        s2b1_conv2_shape.append(3); s2b1_conv2_shape.append(3)
+        var s2b1_conv2_shape= List[Int]()
+        s2b1_conv2_shape.append(128)
+        s2b1_conv2_shape.append(128)
+        s2b1_conv2_shape.append(3)
+        s2b1_conv2_shape.append(3)
 
-        var s2_bias_shape = List[Int]()
+        var s2_bias_shape= List[Int]()
         s2_bias_shape.append(128)
 
-        var s2_bn_shape = List[Int]()
+        var s2_bn_shape= List[Int]()
         s2_bn_shape.append(128)
 
         self.s2b1_conv1_kernel = he_uniform(s2b1_conv1_shape, DType.float32)
@@ -349,9 +359,11 @@ struct ResNet18:
         self.s2b1_bn2_running_var = ones(s2_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 64→128, stride=2
-        var s2b1_proj_shape = List[Int]()
-        s2b1_proj_shape.append(128); s2b1_proj_shape.append(64)
-        s2b1_proj_shape.append(1); s2b1_proj_shape.append(1)
+        var s2b1_proj_shape= List[Int]()
+        s2b1_proj_shape.append(128)
+        s2b1_proj_shape.append(64)
+        s2b1_proj_shape.append(1)
+        s2b1_proj_shape.append(1)
 
         self.s2b1_proj_kernel = he_uniform(s2b1_proj_shape, DType.float32)
         self.s2b1_proj_bias = zeros(s2_bias_shape, DType.float32)
@@ -377,18 +389,22 @@ struct ResNet18:
 
         # ========== Stage 3: 128 → 256 → 256 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s3b1_conv1_shape = List[Int]()
-        s3b1_conv1_shape.append(256); s3b1_conv1_shape.append(128)
-        s3b1_conv1_shape.append(3); s3b1_conv1_shape.append(3)
+        var s3b1_conv1_shape= List[Int]()
+        s3b1_conv1_shape.append(256)
+        s3b1_conv1_shape.append(128)
+        s3b1_conv1_shape.append(3)
+        s3b1_conv1_shape.append(3)
 
-        var s3b1_conv2_shape = List[Int]()
-        s3b1_conv2_shape.append(256); s3b1_conv2_shape.append(256)
-        s3b1_conv2_shape.append(3); s3b1_conv2_shape.append(3)
+        var s3b1_conv2_shape= List[Int]()
+        s3b1_conv2_shape.append(256)
+        s3b1_conv2_shape.append(256)
+        s3b1_conv2_shape.append(3)
+        s3b1_conv2_shape.append(3)
 
-        var s3_bias_shape = List[Int]()
+        var s3_bias_shape= List[Int]()
         s3_bias_shape.append(256)
 
-        var s3_bn_shape = List[Int]()
+        var s3_bn_shape= List[Int]()
         s3_bn_shape.append(256)
 
         self.s3b1_conv1_kernel = he_uniform(s3b1_conv1_shape, DType.float32)
@@ -406,9 +422,11 @@ struct ResNet18:
         self.s3b1_bn2_running_var = ones(s3_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 128→256, stride=2
-        var s3b1_proj_shape = List[Int]()
-        s3b1_proj_shape.append(256); s3b1_proj_shape.append(128)
-        s3b1_proj_shape.append(1); s3b1_proj_shape.append(1)
+        var s3b1_proj_shape= List[Int]()
+        s3b1_proj_shape.append(256)
+        s3b1_proj_shape.append(128)
+        s3b1_proj_shape.append(1)
+        s3b1_proj_shape.append(1)
 
         self.s3b1_proj_kernel = he_uniform(s3b1_proj_shape, DType.float32)
         self.s3b1_proj_bias = zeros(s3_bias_shape, DType.float32)
@@ -434,18 +452,22 @@ struct ResNet18:
 
         # ========== Stage 4: 256 → 512 → 512 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s4b1_conv1_shape = List[Int]()
-        s4b1_conv1_shape.append(512); s4b1_conv1_shape.append(256)
-        s4b1_conv1_shape.append(3); s4b1_conv1_shape.append(3)
+        var s4b1_conv1_shape= List[Int]()
+        s4b1_conv1_shape.append(512)
+        s4b1_conv1_shape.append(256)
+        s4b1_conv1_shape.append(3)
+        s4b1_conv1_shape.append(3)
 
-        var s4b1_conv2_shape = List[Int]()
-        s4b1_conv2_shape.append(512); s4b1_conv2_shape.append(512)
-        s4b1_conv2_shape.append(3); s4b1_conv2_shape.append(3)
+        var s4b1_conv2_shape= List[Int]()
+        s4b1_conv2_shape.append(512)
+        s4b1_conv2_shape.append(512)
+        s4b1_conv2_shape.append(3)
+        s4b1_conv2_shape.append(3)
 
-        var s4_bias_shape = List[Int]()
+        var s4_bias_shape= List[Int]()
         s4_bias_shape.append(512)
 
-        var s4_bn_shape = List[Int]()
+        var s4_bn_shape= List[Int]()
         s4_bn_shape.append(512)
 
         self.s4b1_conv1_kernel = he_uniform(s4b1_conv1_shape, DType.float32)
@@ -463,9 +485,11 @@ struct ResNet18:
         self.s4b1_bn2_running_var = ones(s4_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 256→512, stride=2
-        var s4b1_proj_shape = List[Int]()
-        s4b1_proj_shape.append(512); s4b1_proj_shape.append(256)
-        s4b1_proj_shape.append(1); s4b1_proj_shape.append(1)
+        var s4b1_proj_shape= List[Int]()
+        s4b1_proj_shape.append(512)
+        s4b1_proj_shape.append(256)
+        s4b1_proj_shape.append(1)
+        s4b1_proj_shape.append(1)
 
         self.s4b1_proj_kernel = he_uniform(s4b1_proj_shape, DType.float32)
         self.s4b1_proj_bias = zeros(s4_bias_shape, DType.float32)
@@ -490,16 +514,18 @@ struct ResNet18:
         self.s4b2_bn2_running_var = ones(s4_bn_shape, DType.float32)
 
         # ========== FC layer: 512 → num_classes ==========
-        var fc_shape = List[Int]()
+        var fc_shape= List[Int]()
         fc_shape.append(num_classes)
         fc_shape.append(512)
         self.fc_weights = he_uniform(fc_shape, DType.float32)
 
-        var fc_bias_shape = List[Int]()
+        var fc_bias_shape= List[Int]()
         fc_bias_shape.append(num_classes)
         self.fc_bias = zeros(fc_bias_shape, DType.float32)
 
-    fn forward(mut self, input: ExTensor, training: Bool = True) raises -> ExTensor:
+    fn forward(
+        mut self, input: ExTensor, training: Bool = True
+    ) raises -> ExTensor:
         """Forward pass through ResNet-18.
 
         Args:
@@ -519,13 +545,18 @@ struct ResNet18:
             GAP → (batch, 512, 1, 1) →
             Flatten → (batch, 512) →
             FC → (batch, num_classes).
-       """
+        """
         # ========== Initial conv + BN + ReLU ==========
-        var conv1 = conv2d(input, self.conv1_kernel, self.conv1_bias, stride=1, padding=1)
+        var conv1 = conv2d(
+            input, self.conv1_kernel, self.conv1_bias, stride=1, padding=1
+        )
         var bn1_result = batch_norm2d(
-            conv1, self.bn1_gamma, self.bn1_beta,
-            self.bn1_running_mean, self.bn1_running_var,
-            training=training
+            conv1,
+            self.bn1_gamma,
+            self.bn1_beta,
+            self.bn1_running_mean,
+            self.bn1_running_var,
+            training=training,
         )
         var bn1 = bn1_result[0]
         self.bn1_running_mean = bn1_result[1]
@@ -533,22 +564,40 @@ struct ResNet18:
         var relu1 = relu(bn1)
 
         # ========== Stage 1, Block 1 (identity shortcut) ==========
-        var s1b1_conv1 = conv2d(relu1, self.s1b1_conv1_kernel, self.s1b1_conv1_bias, stride=1, padding=1)
+        var s1b1_conv1 = conv2d(
+            relu1,
+            self.s1b1_conv1_kernel,
+            self.s1b1_conv1_bias,
+            stride=1,
+            padding=1,
+        )
         var s1b1_bn1_result = batch_norm2d(
-            s1b1_conv1, self.s1b1_bn1_gamma, self.s1b1_bn1_beta,
-            self.s1b1_bn1_running_mean, self.s1b1_bn1_running_var,
-            training=training
+            s1b1_conv1,
+            self.s1b1_bn1_gamma,
+            self.s1b1_bn1_beta,
+            self.s1b1_bn1_running_mean,
+            self.s1b1_bn1_running_var,
+            training=training,
         )
         var s1b1_bn1 = s1b1_bn1_result[0]
         self.s1b1_bn1_running_mean = s1b1_bn1_result[1]
         self.s1b1_bn1_running_var = s1b1_bn1_result[2]
         var s1b1_relu1 = relu(s1b1_bn1)
 
-        var s1b1_conv2 = conv2d(s1b1_relu1, self.s1b1_conv2_kernel, self.s1b1_conv2_bias, stride=1, padding=1)
+        var s1b1_conv2 = conv2d(
+            s1b1_relu1,
+            self.s1b1_conv2_kernel,
+            self.s1b1_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s1b1_bn2_result = batch_norm2d(
-            s1b1_conv2, self.s1b1_bn2_gamma, self.s1b1_bn2_beta,
-            self.s1b1_bn2_running_mean, self.s1b1_bn2_running_var,
-            training=training
+            s1b1_conv2,
+            self.s1b1_bn2_gamma,
+            self.s1b1_bn2_beta,
+            self.s1b1_bn2_running_mean,
+            self.s1b1_bn2_running_var,
+            training=training,
         )
         var s1b1_bn2 = s1b1_bn2_result[0]
         self.s1b1_bn2_running_mean = s1b1_bn2_result[1]
@@ -558,22 +607,40 @@ struct ResNet18:
         var s1b1_out = relu(s1b1_skip)
 
         # ========== Stage 1, Block 2 (identity shortcut) ==========
-        var s1b2_conv1 = conv2d(s1b1_out, self.s1b2_conv1_kernel, self.s1b2_conv1_bias, stride=1, padding=1)
+        var s1b2_conv1 = conv2d(
+            s1b1_out,
+            self.s1b2_conv1_kernel,
+            self.s1b2_conv1_bias,
+            stride=1,
+            padding=1,
+        )
         var s1b2_bn1_result = batch_norm2d(
-            s1b2_conv1, self.s1b2_bn1_gamma, self.s1b2_bn1_beta,
-            self.s1b2_bn1_running_mean, self.s1b2_bn1_running_var,
-            training=training
+            s1b2_conv1,
+            self.s1b2_bn1_gamma,
+            self.s1b2_bn1_beta,
+            self.s1b2_bn1_running_mean,
+            self.s1b2_bn1_running_var,
+            training=training,
         )
         var s1b2_bn1 = s1b2_bn1_result[0]
         self.s1b2_bn1_running_mean = s1b2_bn1_result[1]
         self.s1b2_bn1_running_var = s1b2_bn1_result[2]
         var s1b2_relu1 = relu(s1b2_bn1)
 
-        var s1b2_conv2 = conv2d(s1b2_relu1, self.s1b2_conv2_kernel, self.s1b2_conv2_bias, stride=1, padding=1)
+        var s1b2_conv2 = conv2d(
+            s1b2_relu1,
+            self.s1b2_conv2_kernel,
+            self.s1b2_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s1b2_bn2_result = batch_norm2d(
-            s1b2_conv2, self.s1b2_bn2_gamma, self.s1b2_bn2_beta,
-            self.s1b2_bn2_running_mean, self.s1b2_bn2_running_var,
-            training=training
+            s1b2_conv2,
+            self.s1b2_bn2_gamma,
+            self.s1b2_bn2_beta,
+            self.s1b2_bn2_running_mean,
+            self.s1b2_bn2_running_var,
+            training=training,
         )
         var s1b2_bn2 = s1b2_bn2_result[0]
         self.s1b2_bn2_running_mean = s1b2_bn2_result[1]
@@ -583,33 +650,60 @@ struct ResNet18:
         var s1b2_out = relu(s1b2_skip)
 
         # ========== Stage 2, Block 1 (projection shortcut, stride=2) ==========
-        var s2b1_conv1 = conv2d(s1b2_out, self.s2b1_conv1_kernel, self.s2b1_conv1_bias, stride=2, padding=1)
+        var s2b1_conv1 = conv2d(
+            s1b2_out,
+            self.s2b1_conv1_kernel,
+            self.s2b1_conv1_bias,
+            stride=2,
+            padding=1,
+        )
         var s2b1_bn1_result = batch_norm2d(
-            s2b1_conv1, self.s2b1_bn1_gamma, self.s2b1_bn1_beta,
-            self.s2b1_bn1_running_mean, self.s2b1_bn1_running_var,
-            training=training
+            s2b1_conv1,
+            self.s2b1_bn1_gamma,
+            self.s2b1_bn1_beta,
+            self.s2b1_bn1_running_mean,
+            self.s2b1_bn1_running_var,
+            training=training,
         )
         var s2b1_bn1 = s2b1_bn1_result[0]
         self.s2b1_bn1_running_mean = s2b1_bn1_result[1]
         self.s2b1_bn1_running_var = s2b1_bn1_result[2]
         var s2b1_relu1 = relu(s2b1_bn1)
 
-        var s2b1_conv2 = conv2d(s2b1_relu1, self.s2b1_conv2_kernel, self.s2b1_conv2_bias, stride=1, padding=1)
+        var s2b1_conv2 = conv2d(
+            s2b1_relu1,
+            self.s2b1_conv2_kernel,
+            self.s2b1_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s2b1_bn2_result = batch_norm2d(
-            s2b1_conv2, self.s2b1_bn2_gamma, self.s2b1_bn2_beta,
-            self.s2b1_bn2_running_mean, self.s2b1_bn2_running_var,
-            training=training
+            s2b1_conv2,
+            self.s2b1_bn2_gamma,
+            self.s2b1_bn2_beta,
+            self.s2b1_bn2_running_mean,
+            self.s2b1_bn2_running_var,
+            training=training,
         )
         var s2b1_bn2 = s2b1_bn2_result[0]
         self.s2b1_bn2_running_mean = s2b1_bn2_result[1]
         self.s2b1_bn2_running_var = s2b1_bn2_result[2]
 
         # Projection shortcut: 1×1 conv, stride=2
-        var s2b1_proj_conv = conv2d(s1b2_out, self.s2b1_proj_kernel, self.s2b1_proj_bias, stride=2, padding=0)
+        var s2b1_proj_conv = conv2d(
+            s1b2_out,
+            self.s2b1_proj_kernel,
+            self.s2b1_proj_bias,
+            stride=2,
+            padding=0,
+        )
         var s2b1_proj_bn_result = batch_norm2d(
-            s2b1_proj_conv, self.s2b1_proj_bn_gamma, self.s2b1_proj_bn_beta,
-            self.s2b1_proj_bn_running_mean, self.s2b1_proj_bn_running_var,
-            training=training
+            s2b1_proj_conv,
+            self.s2b1_proj_bn_gamma,
+            self.s2b1_proj_bn_beta,
+            self.s2b1_proj_bn_running_mean,
+            self.s2b1_proj_bn_running_var,
+            training=training,
         )
         var s2b1_proj_bn = s2b1_proj_bn_result[0]
         self.s2b1_proj_bn_running_mean = s2b1_proj_bn_result[1]
@@ -619,22 +713,40 @@ struct ResNet18:
         var s2b1_out = relu(s2b1_skip)
 
         # ========== Stage 2, Block 2 (identity shortcut) ==========
-        var s2b2_conv1 = conv2d(s2b1_out, self.s2b2_conv1_kernel, self.s2b2_conv1_bias, stride=1, padding=1)
+        var s2b2_conv1 = conv2d(
+            s2b1_out,
+            self.s2b2_conv1_kernel,
+            self.s2b2_conv1_bias,
+            stride=1,
+            padding=1,
+        )
         var s2b2_bn1_result = batch_norm2d(
-            s2b2_conv1, self.s2b2_bn1_gamma, self.s2b2_bn1_beta,
-            self.s2b2_bn1_running_mean, self.s2b2_bn1_running_var,
-            training=training
+            s2b2_conv1,
+            self.s2b2_bn1_gamma,
+            self.s2b2_bn1_beta,
+            self.s2b2_bn1_running_mean,
+            self.s2b2_bn1_running_var,
+            training=training,
         )
         var s2b2_bn1 = s2b2_bn1_result[0]
         self.s2b2_bn1_running_mean = s2b2_bn1_result[1]
         self.s2b2_bn1_running_var = s2b2_bn1_result[2]
         var s2b2_relu1 = relu(s2b2_bn1)
 
-        var s2b2_conv2 = conv2d(s2b2_relu1, self.s2b2_conv2_kernel, self.s2b2_conv2_bias, stride=1, padding=1)
+        var s2b2_conv2 = conv2d(
+            s2b2_relu1,
+            self.s2b2_conv2_kernel,
+            self.s2b2_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s2b2_bn2_result = batch_norm2d(
-            s2b2_conv2, self.s2b2_bn2_gamma, self.s2b2_bn2_beta,
-            self.s2b2_bn2_running_mean, self.s2b2_bn2_running_var,
-            training=training
+            s2b2_conv2,
+            self.s2b2_bn2_gamma,
+            self.s2b2_bn2_beta,
+            self.s2b2_bn2_running_mean,
+            self.s2b2_bn2_running_var,
+            training=training,
         )
         var s2b2_bn2 = s2b2_bn2_result[0]
         self.s2b2_bn2_running_mean = s2b2_bn2_result[1]
@@ -644,33 +756,60 @@ struct ResNet18:
         var s2b2_out = relu(s2b2_skip)
 
         # ========== Stage 3, Block 1 (projection shortcut, stride=2) ==========
-        var s3b1_conv1 = conv2d(s2b2_out, self.s3b1_conv1_kernel, self.s3b1_conv1_bias, stride=2, padding=1)
+        var s3b1_conv1 = conv2d(
+            s2b2_out,
+            self.s3b1_conv1_kernel,
+            self.s3b1_conv1_bias,
+            stride=2,
+            padding=1,
+        )
         var s3b1_bn1_result = batch_norm2d(
-            s3b1_conv1, self.s3b1_bn1_gamma, self.s3b1_bn1_beta,
-            self.s3b1_bn1_running_mean, self.s3b1_bn1_running_var,
-            training=training
+            s3b1_conv1,
+            self.s3b1_bn1_gamma,
+            self.s3b1_bn1_beta,
+            self.s3b1_bn1_running_mean,
+            self.s3b1_bn1_running_var,
+            training=training,
         )
         var s3b1_bn1 = s3b1_bn1_result[0]
         self.s3b1_bn1_running_mean = s3b1_bn1_result[1]
         self.s3b1_bn1_running_var = s3b1_bn1_result[2]
         var s3b1_relu1 = relu(s3b1_bn1)
 
-        var s3b1_conv2 = conv2d(s3b1_relu1, self.s3b1_conv2_kernel, self.s3b1_conv2_bias, stride=1, padding=1)
+        var s3b1_conv2 = conv2d(
+            s3b1_relu1,
+            self.s3b1_conv2_kernel,
+            self.s3b1_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s3b1_bn2_result = batch_norm2d(
-            s3b1_conv2, self.s3b1_bn2_gamma, self.s3b1_bn2_beta,
-            self.s3b1_bn2_running_mean, self.s3b1_bn2_running_var,
-            training=training
+            s3b1_conv2,
+            self.s3b1_bn2_gamma,
+            self.s3b1_bn2_beta,
+            self.s3b1_bn2_running_mean,
+            self.s3b1_bn2_running_var,
+            training=training,
         )
         var s3b1_bn2 = s3b1_bn2_result[0]
         self.s3b1_bn2_running_mean = s3b1_bn2_result[1]
         self.s3b1_bn2_running_var = s3b1_bn2_result[2]
 
         # Projection shortcut: 1×1 conv, stride=2
-        var s3b1_proj_conv = conv2d(s2b2_out, self.s3b1_proj_kernel, self.s3b1_proj_bias, stride=2, padding=0)
+        var s3b1_proj_conv = conv2d(
+            s2b2_out,
+            self.s3b1_proj_kernel,
+            self.s3b1_proj_bias,
+            stride=2,
+            padding=0,
+        )
         var s3b1_proj_bn_result = batch_norm2d(
-            s3b1_proj_conv, self.s3b1_proj_bn_gamma, self.s3b1_proj_bn_beta,
-            self.s3b1_proj_bn_running_mean, self.s3b1_proj_bn_running_var,
-            training=training
+            s3b1_proj_conv,
+            self.s3b1_proj_bn_gamma,
+            self.s3b1_proj_bn_beta,
+            self.s3b1_proj_bn_running_mean,
+            self.s3b1_proj_bn_running_var,
+            training=training,
         )
         var s3b1_proj_bn = s3b1_proj_bn_result[0]
         self.s3b1_proj_bn_running_mean = s3b1_proj_bn_result[1]
@@ -680,22 +819,40 @@ struct ResNet18:
         var s3b1_out = relu(s3b1_skip)
 
         # ========== Stage 3, Block 2 (identity shortcut) ==========
-        var s3b2_conv1 = conv2d(s3b1_out, self.s3b2_conv1_kernel, self.s3b2_conv1_bias, stride=1, padding=1)
+        var s3b2_conv1 = conv2d(
+            s3b1_out,
+            self.s3b2_conv1_kernel,
+            self.s3b2_conv1_bias,
+            stride=1,
+            padding=1,
+        )
         var s3b2_bn1_result = batch_norm2d(
-            s3b2_conv1, self.s3b2_bn1_gamma, self.s3b2_bn1_beta,
-            self.s3b2_bn1_running_mean, self.s3b2_bn1_running_var,
-            training=training
+            s3b2_conv1,
+            self.s3b2_bn1_gamma,
+            self.s3b2_bn1_beta,
+            self.s3b2_bn1_running_mean,
+            self.s3b2_bn1_running_var,
+            training=training,
         )
         var s3b2_bn1 = s3b2_bn1_result[0]
         self.s3b2_bn1_running_mean = s3b2_bn1_result[1]
         self.s3b2_bn1_running_var = s3b2_bn1_result[2]
         var s3b2_relu1 = relu(s3b2_bn1)
 
-        var s3b2_conv2 = conv2d(s3b2_relu1, self.s3b2_conv2_kernel, self.s3b2_conv2_bias, stride=1, padding=1)
+        var s3b2_conv2 = conv2d(
+            s3b2_relu1,
+            self.s3b2_conv2_kernel,
+            self.s3b2_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s3b2_bn2_result = batch_norm2d(
-            s3b2_conv2, self.s3b2_bn2_gamma, self.s3b2_bn2_beta,
-            self.s3b2_bn2_running_mean, self.s3b2_bn2_running_var,
-            training=training
+            s3b2_conv2,
+            self.s3b2_bn2_gamma,
+            self.s3b2_bn2_beta,
+            self.s3b2_bn2_running_mean,
+            self.s3b2_bn2_running_var,
+            training=training,
         )
         var s3b2_bn2 = s3b2_bn2_result[0]
         self.s3b2_bn2_running_mean = s3b2_bn2_result[1]
@@ -705,33 +862,60 @@ struct ResNet18:
         var s3b2_out = relu(s3b2_skip)
 
         # ========== Stage 4, Block 1 (projection shortcut, stride=2) ==========
-        var s4b1_conv1 = conv2d(s3b2_out, self.s4b1_conv1_kernel, self.s4b1_conv1_bias, stride=2, padding=1)
+        var s4b1_conv1 = conv2d(
+            s3b2_out,
+            self.s4b1_conv1_kernel,
+            self.s4b1_conv1_bias,
+            stride=2,
+            padding=1,
+        )
         var s4b1_bn1_result = batch_norm2d(
-            s4b1_conv1, self.s4b1_bn1_gamma, self.s4b1_bn1_beta,
-            self.s4b1_bn1_running_mean, self.s4b1_bn1_running_var,
-            training=training
+            s4b1_conv1,
+            self.s4b1_bn1_gamma,
+            self.s4b1_bn1_beta,
+            self.s4b1_bn1_running_mean,
+            self.s4b1_bn1_running_var,
+            training=training,
         )
         var s4b1_bn1 = s4b1_bn1_result[0]
         self.s4b1_bn1_running_mean = s4b1_bn1_result[1]
         self.s4b1_bn1_running_var = s4b1_bn1_result[2]
         var s4b1_relu1 = relu(s4b1_bn1)
 
-        var s4b1_conv2 = conv2d(s4b1_relu1, self.s4b1_conv2_kernel, self.s4b1_conv2_bias, stride=1, padding=1)
+        var s4b1_conv2 = conv2d(
+            s4b1_relu1,
+            self.s4b1_conv2_kernel,
+            self.s4b1_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s4b1_bn2_result = batch_norm2d(
-            s4b1_conv2, self.s4b1_bn2_gamma, self.s4b1_bn2_beta,
-            self.s4b1_bn2_running_mean, self.s4b1_bn2_running_var,
-            training=training
+            s4b1_conv2,
+            self.s4b1_bn2_gamma,
+            self.s4b1_bn2_beta,
+            self.s4b1_bn2_running_mean,
+            self.s4b1_bn2_running_var,
+            training=training,
         )
         var s4b1_bn2 = s4b1_bn2_result[0]
         self.s4b1_bn2_running_mean = s4b1_bn2_result[1]
         self.s4b1_bn2_running_var = s4b1_bn2_result[2]
 
         # Projection shortcut: 1×1 conv, stride=2
-        var s4b1_proj_conv = conv2d(s3b2_out, self.s4b1_proj_kernel, self.s4b1_proj_bias, stride=2, padding=0)
+        var s4b1_proj_conv = conv2d(
+            s3b2_out,
+            self.s4b1_proj_kernel,
+            self.s4b1_proj_bias,
+            stride=2,
+            padding=0,
+        )
         var s4b1_proj_bn_result = batch_norm2d(
-            s4b1_proj_conv, self.s4b1_proj_bn_gamma, self.s4b1_proj_bn_beta,
-            self.s4b1_proj_bn_running_mean, self.s4b1_proj_bn_running_var,
-            training=training
+            s4b1_proj_conv,
+            self.s4b1_proj_bn_gamma,
+            self.s4b1_proj_bn_beta,
+            self.s4b1_proj_bn_running_mean,
+            self.s4b1_proj_bn_running_var,
+            training=training,
         )
         var s4b1_proj_bn = s4b1_proj_bn_result[0]
         self.s4b1_proj_bn_running_mean = s4b1_proj_bn_result[1]
@@ -741,22 +925,40 @@ struct ResNet18:
         var s4b1_out = relu(s4b1_skip)
 
         # ========== Stage 4, Block 2 (identity shortcut) ==========
-        var s4b2_conv1 = conv2d(s4b1_out, self.s4b2_conv1_kernel, self.s4b2_conv1_bias, stride=1, padding=1)
+        var s4b2_conv1 = conv2d(
+            s4b1_out,
+            self.s4b2_conv1_kernel,
+            self.s4b2_conv1_bias,
+            stride=1,
+            padding=1,
+        )
         var s4b2_bn1_result = batch_norm2d(
-            s4b2_conv1, self.s4b2_bn1_gamma, self.s4b2_bn1_beta,
-            self.s4b2_bn1_running_mean, self.s4b2_bn1_running_var,
-            training=training
+            s4b2_conv1,
+            self.s4b2_bn1_gamma,
+            self.s4b2_bn1_beta,
+            self.s4b2_bn1_running_mean,
+            self.s4b2_bn1_running_var,
+            training=training,
         )
         var s4b2_bn1 = s4b2_bn1_result[0]
         self.s4b2_bn1_running_mean = s4b2_bn1_result[1]
         self.s4b2_bn1_running_var = s4b2_bn1_result[2]
         var s4b2_relu1 = relu(s4b2_bn1)
 
-        var s4b2_conv2 = conv2d(s4b2_relu1, self.s4b2_conv2_kernel, self.s4b2_conv2_bias, stride=1, padding=1)
+        var s4b2_conv2 = conv2d(
+            s4b2_relu1,
+            self.s4b2_conv2_kernel,
+            self.s4b2_conv2_bias,
+            stride=1,
+            padding=1,
+        )
         var s4b2_bn2_result = batch_norm2d(
-            s4b2_conv2, self.s4b2_bn2_gamma, self.s4b2_bn2_beta,
-            self.s4b2_bn2_running_mean, self.s4b2_bn2_running_var,
-            training=training
+            s4b2_conv2,
+            self.s4b2_bn2_gamma,
+            self.s4b2_bn2_beta,
+            self.s4b2_bn2_running_mean,
+            self.s4b2_bn2_running_var,
+            training=training,
         )
         var s4b2_bn2 = s4b2_bn2_result[0]
         self.s4b2_bn2_running_mean = s4b2_bn2_result[1]
@@ -771,7 +973,7 @@ struct ResNet18:
         # ========== Flatten: (batch, 512, 1, 1) → (batch, 512) ==========
         var gap_shape = gap.shape()
         var batch_size = gap_shape[0]
-        var flatten_shape = List[Int]()
+        var flatten_shape= List[Int]()
         flatten_shape.append(batch_size)
         flatten_shape.append(512)
         var flattened = gap.reshape(flatten_shape)
@@ -789,7 +991,7 @@ struct ResNet18:
 
         Returns:
             Predicted class index (0 to num_classes-1).
-       """
+        """
         var logits = self.forward(input, training=False)
 
         # Find argmax
@@ -815,101 +1017,417 @@ struct ResNet18:
             are recomputed during training from scratch.
         """
         # Initial conv + BN
-        save_tensor(self.conv1_kernel, weights_dir + "/conv1_kernel.weights", "conv1_kernel")
-        save_tensor(self.conv1_bias, weights_dir + "/conv1_bias.weights", "conv1_bias")
-        save_tensor(self.bn1_gamma, weights_dir + "/bn1_gamma.weights", "bn1_gamma")
-        save_tensor(self.bn1_beta, weights_dir + "/bn1_beta.weights", "bn1_beta")
+        save_tensor(
+            self.conv1_kernel,
+            weights_dir + "/conv1_kernel.weights",
+            "conv1_kernel",
+        )
+        save_tensor(
+            self.conv1_bias, weights_dir + "/conv1_bias.weights", "conv1_bias"
+        )
+        save_tensor(
+            self.bn1_gamma, weights_dir + "/bn1_gamma.weights", "bn1_gamma"
+        )
+        save_tensor(
+            self.bn1_beta, weights_dir + "/bn1_beta.weights", "bn1_beta"
+        )
 
         # Stage 1
-        save_tensor(self.s1b1_conv1_kernel, weights_dir + "/s1b1_conv1_kernel.weights", "s1b1_conv1_kernel")
-        save_tensor(self.s1b1_conv1_bias, weights_dir + "/s1b1_conv1_bias.weights", "s1b1_conv1_bias")
-        save_tensor(self.s1b1_bn1_gamma, weights_dir + "/s1b1_bn1_gamma.weights", "s1b1_bn1_gamma")
-        save_tensor(self.s1b1_bn1_beta, weights_dir + "/s1b1_bn1_beta.weights", "s1b1_bn1_beta")
-        save_tensor(self.s1b1_conv2_kernel, weights_dir + "/s1b1_conv2_kernel.weights", "s1b1_conv2_kernel")
-        save_tensor(self.s1b1_conv2_bias, weights_dir + "/s1b1_conv2_bias.weights", "s1b1_conv2_bias")
-        save_tensor(self.s1b1_bn2_gamma, weights_dir + "/s1b1_bn2_gamma.weights", "s1b1_bn2_gamma")
-        save_tensor(self.s1b1_bn2_beta, weights_dir + "/s1b1_bn2_beta.weights", "s1b1_bn2_beta")
+        save_tensor(
+            self.s1b1_conv1_kernel,
+            weights_dir + "/s1b1_conv1_kernel.weights",
+            "s1b1_conv1_kernel",
+        )
+        save_tensor(
+            self.s1b1_conv1_bias,
+            weights_dir + "/s1b1_conv1_bias.weights",
+            "s1b1_conv1_bias",
+        )
+        save_tensor(
+            self.s1b1_bn1_gamma,
+            weights_dir + "/s1b1_bn1_gamma.weights",
+            "s1b1_bn1_gamma",
+        )
+        save_tensor(
+            self.s1b1_bn1_beta,
+            weights_dir + "/s1b1_bn1_beta.weights",
+            "s1b1_bn1_beta",
+        )
+        save_tensor(
+            self.s1b1_conv2_kernel,
+            weights_dir + "/s1b1_conv2_kernel.weights",
+            "s1b1_conv2_kernel",
+        )
+        save_tensor(
+            self.s1b1_conv2_bias,
+            weights_dir + "/s1b1_conv2_bias.weights",
+            "s1b1_conv2_bias",
+        )
+        save_tensor(
+            self.s1b1_bn2_gamma,
+            weights_dir + "/s1b1_bn2_gamma.weights",
+            "s1b1_bn2_gamma",
+        )
+        save_tensor(
+            self.s1b1_bn2_beta,
+            weights_dir + "/s1b1_bn2_beta.weights",
+            "s1b1_bn2_beta",
+        )
 
-        save_tensor(self.s1b2_conv1_kernel, weights_dir + "/s1b2_conv1_kernel.weights", "s1b2_conv1_kernel")
-        save_tensor(self.s1b2_conv1_bias, weights_dir + "/s1b2_conv1_bias.weights", "s1b2_conv1_bias")
-        save_tensor(self.s1b2_bn1_gamma, weights_dir + "/s1b2_bn1_gamma.weights", "s1b2_bn1_gamma")
-        save_tensor(self.s1b2_bn1_beta, weights_dir + "/s1b2_bn1_beta.weights", "s1b2_bn1_beta")
-        save_tensor(self.s1b2_conv2_kernel, weights_dir + "/s1b2_conv2_kernel.weights", "s1b2_conv2_kernel")
-        save_tensor(self.s1b2_conv2_bias, weights_dir + "/s1b2_conv2_bias.weights", "s1b2_conv2_bias")
-        save_tensor(self.s1b2_bn2_gamma, weights_dir + "/s1b2_bn2_gamma.weights", "s1b2_bn2_gamma")
-        save_tensor(self.s1b2_bn2_beta, weights_dir + "/s1b2_bn2_beta.weights", "s1b2_bn2_beta")
+        save_tensor(
+            self.s1b2_conv1_kernel,
+            weights_dir + "/s1b2_conv1_kernel.weights",
+            "s1b2_conv1_kernel",
+        )
+        save_tensor(
+            self.s1b2_conv1_bias,
+            weights_dir + "/s1b2_conv1_bias.weights",
+            "s1b2_conv1_bias",
+        )
+        save_tensor(
+            self.s1b2_bn1_gamma,
+            weights_dir + "/s1b2_bn1_gamma.weights",
+            "s1b2_bn1_gamma",
+        )
+        save_tensor(
+            self.s1b2_bn1_beta,
+            weights_dir + "/s1b2_bn1_beta.weights",
+            "s1b2_bn1_beta",
+        )
+        save_tensor(
+            self.s1b2_conv2_kernel,
+            weights_dir + "/s1b2_conv2_kernel.weights",
+            "s1b2_conv2_kernel",
+        )
+        save_tensor(
+            self.s1b2_conv2_bias,
+            weights_dir + "/s1b2_conv2_bias.weights",
+            "s1b2_conv2_bias",
+        )
+        save_tensor(
+            self.s1b2_bn2_gamma,
+            weights_dir + "/s1b2_bn2_gamma.weights",
+            "s1b2_bn2_gamma",
+        )
+        save_tensor(
+            self.s1b2_bn2_beta,
+            weights_dir + "/s1b2_bn2_beta.weights",
+            "s1b2_bn2_beta",
+        )
 
         # Stage 2
-        save_tensor(self.s2b1_conv1_kernel, weights_dir + "/s2b1_conv1_kernel.weights", "s2b1_conv1_kernel")
-        save_tensor(self.s2b1_conv1_bias, weights_dir + "/s2b1_conv1_bias.weights", "s2b1_conv1_bias")
-        save_tensor(self.s2b1_bn1_gamma, weights_dir + "/s2b1_bn1_gamma.weights", "s2b1_bn1_gamma")
-        save_tensor(self.s2b1_bn1_beta, weights_dir + "/s2b1_bn1_beta.weights", "s2b1_bn1_beta")
-        save_tensor(self.s2b1_conv2_kernel, weights_dir + "/s2b1_conv2_kernel.weights", "s2b1_conv2_kernel")
-        save_tensor(self.s2b1_conv2_bias, weights_dir + "/s2b1_conv2_bias.weights", "s2b1_conv2_bias")
-        save_tensor(self.s2b1_bn2_gamma, weights_dir + "/s2b1_bn2_gamma.weights", "s2b1_bn2_gamma")
-        save_tensor(self.s2b1_bn2_beta, weights_dir + "/s2b1_bn2_beta.weights", "s2b1_bn2_beta")
-        save_tensor(self.s2b1_proj_kernel, weights_dir + "/s2b1_proj_kernel.weights", "s2b1_proj_kernel")
-        save_tensor(self.s2b1_proj_bias, weights_dir + "/s2b1_proj_bias.weights", "s2b1_proj_bias")
-        save_tensor(self.s2b1_proj_bn_gamma, weights_dir + "/s2b1_proj_bn_gamma.weights", "s2b1_proj_bn_gamma")
-        save_tensor(self.s2b1_proj_bn_beta, weights_dir + "/s2b1_proj_bn_beta.weights", "s2b1_proj_bn_beta")
+        save_tensor(
+            self.s2b1_conv1_kernel,
+            weights_dir + "/s2b1_conv1_kernel.weights",
+            "s2b1_conv1_kernel",
+        )
+        save_tensor(
+            self.s2b1_conv1_bias,
+            weights_dir + "/s2b1_conv1_bias.weights",
+            "s2b1_conv1_bias",
+        )
+        save_tensor(
+            self.s2b1_bn1_gamma,
+            weights_dir + "/s2b1_bn1_gamma.weights",
+            "s2b1_bn1_gamma",
+        )
+        save_tensor(
+            self.s2b1_bn1_beta,
+            weights_dir + "/s2b1_bn1_beta.weights",
+            "s2b1_bn1_beta",
+        )
+        save_tensor(
+            self.s2b1_conv2_kernel,
+            weights_dir + "/s2b1_conv2_kernel.weights",
+            "s2b1_conv2_kernel",
+        )
+        save_tensor(
+            self.s2b1_conv2_bias,
+            weights_dir + "/s2b1_conv2_bias.weights",
+            "s2b1_conv2_bias",
+        )
+        save_tensor(
+            self.s2b1_bn2_gamma,
+            weights_dir + "/s2b1_bn2_gamma.weights",
+            "s2b1_bn2_gamma",
+        )
+        save_tensor(
+            self.s2b1_bn2_beta,
+            weights_dir + "/s2b1_bn2_beta.weights",
+            "s2b1_bn2_beta",
+        )
+        save_tensor(
+            self.s2b1_proj_kernel,
+            weights_dir + "/s2b1_proj_kernel.weights",
+            "s2b1_proj_kernel",
+        )
+        save_tensor(
+            self.s2b1_proj_bias,
+            weights_dir + "/s2b1_proj_bias.weights",
+            "s2b1_proj_bias",
+        )
+        save_tensor(
+            self.s2b1_proj_bn_gamma,
+            weights_dir + "/s2b1_proj_bn_gamma.weights",
+            "s2b1_proj_bn_gamma",
+        )
+        save_tensor(
+            self.s2b1_proj_bn_beta,
+            weights_dir + "/s2b1_proj_bn_beta.weights",
+            "s2b1_proj_bn_beta",
+        )
 
-        save_tensor(self.s2b2_conv1_kernel, weights_dir + "/s2b2_conv1_kernel.weights", "s2b2_conv1_kernel")
-        save_tensor(self.s2b2_conv1_bias, weights_dir + "/s2b2_conv1_bias.weights", "s2b2_conv1_bias")
-        save_tensor(self.s2b2_bn1_gamma, weights_dir + "/s2b2_bn1_gamma.weights", "s2b2_bn1_gamma")
-        save_tensor(self.s2b2_bn1_beta, weights_dir + "/s2b2_bn1_beta.weights", "s2b2_bn1_beta")
-        save_tensor(self.s2b2_conv2_kernel, weights_dir + "/s2b2_conv2_kernel.weights", "s2b2_conv2_kernel")
-        save_tensor(self.s2b2_conv2_bias, weights_dir + "/s2b2_conv2_bias.weights", "s2b2_conv2_bias")
-        save_tensor(self.s2b2_bn2_gamma, weights_dir + "/s2b2_bn2_gamma.weights", "s2b2_bn2_gamma")
-        save_tensor(self.s2b2_bn2_beta, weights_dir + "/s2b2_bn2_beta.weights", "s2b2_bn2_beta")
+        save_tensor(
+            self.s2b2_conv1_kernel,
+            weights_dir + "/s2b2_conv1_kernel.weights",
+            "s2b2_conv1_kernel",
+        )
+        save_tensor(
+            self.s2b2_conv1_bias,
+            weights_dir + "/s2b2_conv1_bias.weights",
+            "s2b2_conv1_bias",
+        )
+        save_tensor(
+            self.s2b2_bn1_gamma,
+            weights_dir + "/s2b2_bn1_gamma.weights",
+            "s2b2_bn1_gamma",
+        )
+        save_tensor(
+            self.s2b2_bn1_beta,
+            weights_dir + "/s2b2_bn1_beta.weights",
+            "s2b2_bn1_beta",
+        )
+        save_tensor(
+            self.s2b2_conv2_kernel,
+            weights_dir + "/s2b2_conv2_kernel.weights",
+            "s2b2_conv2_kernel",
+        )
+        save_tensor(
+            self.s2b2_conv2_bias,
+            weights_dir + "/s2b2_conv2_bias.weights",
+            "s2b2_conv2_bias",
+        )
+        save_tensor(
+            self.s2b2_bn2_gamma,
+            weights_dir + "/s2b2_bn2_gamma.weights",
+            "s2b2_bn2_gamma",
+        )
+        save_tensor(
+            self.s2b2_bn2_beta,
+            weights_dir + "/s2b2_bn2_beta.weights",
+            "s2b2_bn2_beta",
+        )
 
         # Stage 3
-        save_tensor(self.s3b1_conv1_kernel, weights_dir + "/s3b1_conv1_kernel.weights", "s3b1_conv1_kernel")
-        save_tensor(self.s3b1_conv1_bias, weights_dir + "/s3b1_conv1_bias.weights", "s3b1_conv1_bias")
-        save_tensor(self.s3b1_bn1_gamma, weights_dir + "/s3b1_bn1_gamma.weights", "s3b1_bn1_gamma")
-        save_tensor(self.s3b1_bn1_beta, weights_dir + "/s3b1_bn1_beta.weights", "s3b1_bn1_beta")
-        save_tensor(self.s3b1_conv2_kernel, weights_dir + "/s3b1_conv2_kernel.weights", "s3b1_conv2_kernel")
-        save_tensor(self.s3b1_conv2_bias, weights_dir + "/s3b1_conv2_bias.weights", "s3b1_conv2_bias")
-        save_tensor(self.s3b1_bn2_gamma, weights_dir + "/s3b1_bn2_gamma.weights", "s3b1_bn2_gamma")
-        save_tensor(self.s3b1_bn2_beta, weights_dir + "/s3b1_bn2_beta.weights", "s3b1_bn2_beta")
-        save_tensor(self.s3b1_proj_kernel, weights_dir + "/s3b1_proj_kernel.weights", "s3b1_proj_kernel")
-        save_tensor(self.s3b1_proj_bias, weights_dir + "/s3b1_proj_bias.weights", "s3b1_proj_bias")
-        save_tensor(self.s3b1_proj_bn_gamma, weights_dir + "/s3b1_proj_bn_gamma.weights", "s3b1_proj_bn_gamma")
-        save_tensor(self.s3b1_proj_bn_beta, weights_dir + "/s3b1_proj_bn_beta.weights", "s3b1_proj_bn_beta")
+        save_tensor(
+            self.s3b1_conv1_kernel,
+            weights_dir + "/s3b1_conv1_kernel.weights",
+            "s3b1_conv1_kernel",
+        )
+        save_tensor(
+            self.s3b1_conv1_bias,
+            weights_dir + "/s3b1_conv1_bias.weights",
+            "s3b1_conv1_bias",
+        )
+        save_tensor(
+            self.s3b1_bn1_gamma,
+            weights_dir + "/s3b1_bn1_gamma.weights",
+            "s3b1_bn1_gamma",
+        )
+        save_tensor(
+            self.s3b1_bn1_beta,
+            weights_dir + "/s3b1_bn1_beta.weights",
+            "s3b1_bn1_beta",
+        )
+        save_tensor(
+            self.s3b1_conv2_kernel,
+            weights_dir + "/s3b1_conv2_kernel.weights",
+            "s3b1_conv2_kernel",
+        )
+        save_tensor(
+            self.s3b1_conv2_bias,
+            weights_dir + "/s3b1_conv2_bias.weights",
+            "s3b1_conv2_bias",
+        )
+        save_tensor(
+            self.s3b1_bn2_gamma,
+            weights_dir + "/s3b1_bn2_gamma.weights",
+            "s3b1_bn2_gamma",
+        )
+        save_tensor(
+            self.s3b1_bn2_beta,
+            weights_dir + "/s3b1_bn2_beta.weights",
+            "s3b1_bn2_beta",
+        )
+        save_tensor(
+            self.s3b1_proj_kernel,
+            weights_dir + "/s3b1_proj_kernel.weights",
+            "s3b1_proj_kernel",
+        )
+        save_tensor(
+            self.s3b1_proj_bias,
+            weights_dir + "/s3b1_proj_bias.weights",
+            "s3b1_proj_bias",
+        )
+        save_tensor(
+            self.s3b1_proj_bn_gamma,
+            weights_dir + "/s3b1_proj_bn_gamma.weights",
+            "s3b1_proj_bn_gamma",
+        )
+        save_tensor(
+            self.s3b1_proj_bn_beta,
+            weights_dir + "/s3b1_proj_bn_beta.weights",
+            "s3b1_proj_bn_beta",
+        )
 
-        save_tensor(self.s3b2_conv1_kernel, weights_dir + "/s3b2_conv1_kernel.weights", "s3b2_conv1_kernel")
-        save_tensor(self.s3b2_conv1_bias, weights_dir + "/s3b2_conv1_bias.weights", "s3b2_conv1_bias")
-        save_tensor(self.s3b2_bn1_gamma, weights_dir + "/s3b2_bn1_gamma.weights", "s3b2_bn1_gamma")
-        save_tensor(self.s3b2_bn1_beta, weights_dir + "/s3b2_bn1_beta.weights", "s3b2_bn1_beta")
-        save_tensor(self.s3b2_conv2_kernel, weights_dir + "/s3b2_conv2_kernel.weights", "s3b2_conv2_kernel")
-        save_tensor(self.s3b2_conv2_bias, weights_dir + "/s3b2_conv2_bias.weights", "s3b2_conv2_bias")
-        save_tensor(self.s3b2_bn2_gamma, weights_dir + "/s3b2_bn2_gamma.weights", "s3b2_bn2_gamma")
-        save_tensor(self.s3b2_bn2_beta, weights_dir + "/s3b2_bn2_beta.weights", "s3b2_bn2_beta")
+        save_tensor(
+            self.s3b2_conv1_kernel,
+            weights_dir + "/s3b2_conv1_kernel.weights",
+            "s3b2_conv1_kernel",
+        )
+        save_tensor(
+            self.s3b2_conv1_bias,
+            weights_dir + "/s3b2_conv1_bias.weights",
+            "s3b2_conv1_bias",
+        )
+        save_tensor(
+            self.s3b2_bn1_gamma,
+            weights_dir + "/s3b2_bn1_gamma.weights",
+            "s3b2_bn1_gamma",
+        )
+        save_tensor(
+            self.s3b2_bn1_beta,
+            weights_dir + "/s3b2_bn1_beta.weights",
+            "s3b2_bn1_beta",
+        )
+        save_tensor(
+            self.s3b2_conv2_kernel,
+            weights_dir + "/s3b2_conv2_kernel.weights",
+            "s3b2_conv2_kernel",
+        )
+        save_tensor(
+            self.s3b2_conv2_bias,
+            weights_dir + "/s3b2_conv2_bias.weights",
+            "s3b2_conv2_bias",
+        )
+        save_tensor(
+            self.s3b2_bn2_gamma,
+            weights_dir + "/s3b2_bn2_gamma.weights",
+            "s3b2_bn2_gamma",
+        )
+        save_tensor(
+            self.s3b2_bn2_beta,
+            weights_dir + "/s3b2_bn2_beta.weights",
+            "s3b2_bn2_beta",
+        )
 
         # Stage 4
-        save_tensor(self.s4b1_conv1_kernel, weights_dir + "/s4b1_conv1_kernel.weights", "s4b1_conv1_kernel")
-        save_tensor(self.s4b1_conv1_bias, weights_dir + "/s4b1_conv1_bias.weights", "s4b1_conv1_bias")
-        save_tensor(self.s4b1_bn1_gamma, weights_dir + "/s4b1_bn1_gamma.weights", "s4b1_bn1_gamma")
-        save_tensor(self.s4b1_bn1_beta, weights_dir + "/s4b1_bn1_beta.weights", "s4b1_bn1_beta")
-        save_tensor(self.s4b1_conv2_kernel, weights_dir + "/s4b1_conv2_kernel.weights", "s4b1_conv2_kernel")
-        save_tensor(self.s4b1_conv2_bias, weights_dir + "/s4b1_conv2_bias.weights", "s4b1_conv2_bias")
-        save_tensor(self.s4b1_bn2_gamma, weights_dir + "/s4b1_bn2_gamma.weights", "s4b1_bn2_gamma")
-        save_tensor(self.s4b1_bn2_beta, weights_dir + "/s4b1_bn2_beta.weights", "s4b1_bn2_beta")
-        save_tensor(self.s4b1_proj_kernel, weights_dir + "/s4b1_proj_kernel.weights", "s4b1_proj_kernel")
-        save_tensor(self.s4b1_proj_bias, weights_dir + "/s4b1_proj_bias.weights", "s4b1_proj_bias")
-        save_tensor(self.s4b1_proj_bn_gamma, weights_dir + "/s4b1_proj_bn_gamma.weights", "s4b1_proj_bn_gamma")
-        save_tensor(self.s4b1_proj_bn_beta, weights_dir + "/s4b1_proj_bn_beta.weights", "s4b1_proj_bn_beta")
+        save_tensor(
+            self.s4b1_conv1_kernel,
+            weights_dir + "/s4b1_conv1_kernel.weights",
+            "s4b1_conv1_kernel",
+        )
+        save_tensor(
+            self.s4b1_conv1_bias,
+            weights_dir + "/s4b1_conv1_bias.weights",
+            "s4b1_conv1_bias",
+        )
+        save_tensor(
+            self.s4b1_bn1_gamma,
+            weights_dir + "/s4b1_bn1_gamma.weights",
+            "s4b1_bn1_gamma",
+        )
+        save_tensor(
+            self.s4b1_bn1_beta,
+            weights_dir + "/s4b1_bn1_beta.weights",
+            "s4b1_bn1_beta",
+        )
+        save_tensor(
+            self.s4b1_conv2_kernel,
+            weights_dir + "/s4b1_conv2_kernel.weights",
+            "s4b1_conv2_kernel",
+        )
+        save_tensor(
+            self.s4b1_conv2_bias,
+            weights_dir + "/s4b1_conv2_bias.weights",
+            "s4b1_conv2_bias",
+        )
+        save_tensor(
+            self.s4b1_bn2_gamma,
+            weights_dir + "/s4b1_bn2_gamma.weights",
+            "s4b1_bn2_gamma",
+        )
+        save_tensor(
+            self.s4b1_bn2_beta,
+            weights_dir + "/s4b1_bn2_beta.weights",
+            "s4b1_bn2_beta",
+        )
+        save_tensor(
+            self.s4b1_proj_kernel,
+            weights_dir + "/s4b1_proj_kernel.weights",
+            "s4b1_proj_kernel",
+        )
+        save_tensor(
+            self.s4b1_proj_bias,
+            weights_dir + "/s4b1_proj_bias.weights",
+            "s4b1_proj_bias",
+        )
+        save_tensor(
+            self.s4b1_proj_bn_gamma,
+            weights_dir + "/s4b1_proj_bn_gamma.weights",
+            "s4b1_proj_bn_gamma",
+        )
+        save_tensor(
+            self.s4b1_proj_bn_beta,
+            weights_dir + "/s4b1_proj_bn_beta.weights",
+            "s4b1_proj_bn_beta",
+        )
 
-        save_tensor(self.s4b2_conv1_kernel, weights_dir + "/s4b2_conv1_kernel.weights", "s4b2_conv1_kernel")
-        save_tensor(self.s4b2_conv1_bias, weights_dir + "/s4b2_conv1_bias.weights", "s4b2_conv1_bias")
-        save_tensor(self.s4b2_bn1_gamma, weights_dir + "/s4b2_bn1_gamma.weights", "s4b2_bn1_gamma")
-        save_tensor(self.s4b2_bn1_beta, weights_dir + "/s4b2_bn1_beta.weights", "s4b2_bn1_beta")
-        save_tensor(self.s4b2_conv2_kernel, weights_dir + "/s4b2_conv2_kernel.weights", "s4b2_conv2_kernel")
-        save_tensor(self.s4b2_conv2_bias, weights_dir + "/s4b2_conv2_bias.weights", "s4b2_conv2_bias")
-        save_tensor(self.s4b2_bn2_gamma, weights_dir + "/s4b2_bn2_gamma.weights", "s4b2_bn2_gamma")
-        save_tensor(self.s4b2_bn2_beta, weights_dir + "/s4b2_bn2_beta.weights", "s4b2_bn2_beta")
+        save_tensor(
+            self.s4b2_conv1_kernel,
+            weights_dir + "/s4b2_conv1_kernel.weights",
+            "s4b2_conv1_kernel",
+        )
+        save_tensor(
+            self.s4b2_conv1_bias,
+            weights_dir + "/s4b2_conv1_bias.weights",
+            "s4b2_conv1_bias",
+        )
+        save_tensor(
+            self.s4b2_bn1_gamma,
+            weights_dir + "/s4b2_bn1_gamma.weights",
+            "s4b2_bn1_gamma",
+        )
+        save_tensor(
+            self.s4b2_bn1_beta,
+            weights_dir + "/s4b2_bn1_beta.weights",
+            "s4b2_bn1_beta",
+        )
+        save_tensor(
+            self.s4b2_conv2_kernel,
+            weights_dir + "/s4b2_conv2_kernel.weights",
+            "s4b2_conv2_kernel",
+        )
+        save_tensor(
+            self.s4b2_conv2_bias,
+            weights_dir + "/s4b2_conv2_bias.weights",
+            "s4b2_conv2_bias",
+        )
+        save_tensor(
+            self.s4b2_bn2_gamma,
+            weights_dir + "/s4b2_bn2_gamma.weights",
+            "s4b2_bn2_gamma",
+        )
+        save_tensor(
+            self.s4b2_bn2_beta,
+            weights_dir + "/s4b2_bn2_beta.weights",
+            "s4b2_bn2_beta",
+        )
 
         # FC layer
-        save_tensor(self.fc_weights, weights_dir + "/fc_weights.weights", "fc_weights")
+        save_tensor(
+            self.fc_weights, weights_dir + "/fc_weights.weights", "fc_weights"
+        )
         save_tensor(self.fc_bias, weights_dir + "/fc_bias.weights", "fc_bias")
 
     fn load_weights(mut self, weights_dir: String) raises:
@@ -929,91 +1447,211 @@ struct ResNet18:
         self.bn1_beta = load_tensor(weights_dir + "/bn1_beta.weights")
 
         # Stage 1
-        self.s1b1_conv1_kernel = load_tensor(weights_dir + "/s1b1_conv1_kernel.weights")
-        self.s1b1_conv1_bias = load_tensor(weights_dir + "/s1b1_conv1_bias.weights")
-        self.s1b1_bn1_gamma = load_tensor(weights_dir + "/s1b1_bn1_gamma.weights")
+        self.s1b1_conv1_kernel = load_tensor(
+            weights_dir + "/s1b1_conv1_kernel.weights"
+        )
+        self.s1b1_conv1_bias = load_tensor(
+            weights_dir + "/s1b1_conv1_bias.weights"
+        )
+        self.s1b1_bn1_gamma = load_tensor(
+            weights_dir + "/s1b1_bn1_gamma.weights"
+        )
         self.s1b1_bn1_beta = load_tensor(weights_dir + "/s1b1_bn1_beta.weights")
-        self.s1b1_conv2_kernel = load_tensor(weights_dir + "/s1b1_conv2_kernel.weights")
-        self.s1b1_conv2_bias = load_tensor(weights_dir + "/s1b1_conv2_bias.weights")
-        self.s1b1_bn2_gamma = load_tensor(weights_dir + "/s1b1_bn2_gamma.weights")
+        self.s1b1_conv2_kernel = load_tensor(
+            weights_dir + "/s1b1_conv2_kernel.weights"
+        )
+        self.s1b1_conv2_bias = load_tensor(
+            weights_dir + "/s1b1_conv2_bias.weights"
+        )
+        self.s1b1_bn2_gamma = load_tensor(
+            weights_dir + "/s1b1_bn2_gamma.weights"
+        )
         self.s1b1_bn2_beta = load_tensor(weights_dir + "/s1b1_bn2_beta.weights")
 
-        self.s1b2_conv1_kernel = load_tensor(weights_dir + "/s1b2_conv1_kernel.weights")
-        self.s1b2_conv1_bias = load_tensor(weights_dir + "/s1b2_conv1_bias.weights")
-        self.s1b2_bn1_gamma = load_tensor(weights_dir + "/s1b2_bn1_gamma.weights")
+        self.s1b2_conv1_kernel = load_tensor(
+            weights_dir + "/s1b2_conv1_kernel.weights"
+        )
+        self.s1b2_conv1_bias = load_tensor(
+            weights_dir + "/s1b2_conv1_bias.weights"
+        )
+        self.s1b2_bn1_gamma = load_tensor(
+            weights_dir + "/s1b2_bn1_gamma.weights"
+        )
         self.s1b2_bn1_beta = load_tensor(weights_dir + "/s1b2_bn1_beta.weights")
-        self.s1b2_conv2_kernel = load_tensor(weights_dir + "/s1b2_conv2_kernel.weights")
-        self.s1b2_conv2_bias = load_tensor(weights_dir + "/s1b2_conv2_bias.weights")
-        self.s1b2_bn2_gamma = load_tensor(weights_dir + "/s1b2_bn2_gamma.weights")
+        self.s1b2_conv2_kernel = load_tensor(
+            weights_dir + "/s1b2_conv2_kernel.weights"
+        )
+        self.s1b2_conv2_bias = load_tensor(
+            weights_dir + "/s1b2_conv2_bias.weights"
+        )
+        self.s1b2_bn2_gamma = load_tensor(
+            weights_dir + "/s1b2_bn2_gamma.weights"
+        )
         self.s1b2_bn2_beta = load_tensor(weights_dir + "/s1b2_bn2_beta.weights")
 
         # Stage 2
-        self.s2b1_conv1_kernel = load_tensor(weights_dir + "/s2b1_conv1_kernel.weights")
-        self.s2b1_conv1_bias = load_tensor(weights_dir + "/s2b1_conv1_bias.weights")
-        self.s2b1_bn1_gamma = load_tensor(weights_dir + "/s2b1_bn1_gamma.weights")
+        self.s2b1_conv1_kernel = load_tensor(
+            weights_dir + "/s2b1_conv1_kernel.weights"
+        )
+        self.s2b1_conv1_bias = load_tensor(
+            weights_dir + "/s2b1_conv1_bias.weights"
+        )
+        self.s2b1_bn1_gamma = load_tensor(
+            weights_dir + "/s2b1_bn1_gamma.weights"
+        )
         self.s2b1_bn1_beta = load_tensor(weights_dir + "/s2b1_bn1_beta.weights")
-        self.s2b1_conv2_kernel = load_tensor(weights_dir + "/s2b1_conv2_kernel.weights")
-        self.s2b1_conv2_bias = load_tensor(weights_dir + "/s2b1_conv2_bias.weights")
-        self.s2b1_bn2_gamma = load_tensor(weights_dir + "/s2b1_bn2_gamma.weights")
+        self.s2b1_conv2_kernel = load_tensor(
+            weights_dir + "/s2b1_conv2_kernel.weights"
+        )
+        self.s2b1_conv2_bias = load_tensor(
+            weights_dir + "/s2b1_conv2_bias.weights"
+        )
+        self.s2b1_bn2_gamma = load_tensor(
+            weights_dir + "/s2b1_bn2_gamma.weights"
+        )
         self.s2b1_bn2_beta = load_tensor(weights_dir + "/s2b1_bn2_beta.weights")
-        self.s2b1_proj_kernel = load_tensor(weights_dir + "/s2b1_proj_kernel.weights")
-        self.s2b1_proj_bias = load_tensor(weights_dir + "/s2b1_proj_bias.weights")
-        self.s2b1_proj_bn_gamma = load_tensor(weights_dir + "/s2b1_proj_bn_gamma.weights")
-        self.s2b1_proj_bn_beta = load_tensor(weights_dir + "/s2b1_proj_bn_beta.weights")
+        self.s2b1_proj_kernel = load_tensor(
+            weights_dir + "/s2b1_proj_kernel.weights"
+        )
+        self.s2b1_proj_bias = load_tensor(
+            weights_dir + "/s2b1_proj_bias.weights"
+        )
+        self.s2b1_proj_bn_gamma = load_tensor(
+            weights_dir + "/s2b1_proj_bn_gamma.weights"
+        )
+        self.s2b1_proj_bn_beta = load_tensor(
+            weights_dir + "/s2b1_proj_bn_beta.weights"
+        )
 
-        self.s2b2_conv1_kernel = load_tensor(weights_dir + "/s2b2_conv1_kernel.weights")
-        self.s2b2_conv1_bias = load_tensor(weights_dir + "/s2b2_conv1_bias.weights")
-        self.s2b2_bn1_gamma = load_tensor(weights_dir + "/s2b2_bn1_gamma.weights")
+        self.s2b2_conv1_kernel = load_tensor(
+            weights_dir + "/s2b2_conv1_kernel.weights"
+        )
+        self.s2b2_conv1_bias = load_tensor(
+            weights_dir + "/s2b2_conv1_bias.weights"
+        )
+        self.s2b2_bn1_gamma = load_tensor(
+            weights_dir + "/s2b2_bn1_gamma.weights"
+        )
         self.s2b2_bn1_beta = load_tensor(weights_dir + "/s2b2_bn1_beta.weights")
-        self.s2b2_conv2_kernel = load_tensor(weights_dir + "/s2b2_conv2_kernel.weights")
-        self.s2b2_conv2_bias = load_tensor(weights_dir + "/s2b2_conv2_bias.weights")
-        self.s2b2_bn2_gamma = load_tensor(weights_dir + "/s2b2_bn2_gamma.weights")
+        self.s2b2_conv2_kernel = load_tensor(
+            weights_dir + "/s2b2_conv2_kernel.weights"
+        )
+        self.s2b2_conv2_bias = load_tensor(
+            weights_dir + "/s2b2_conv2_bias.weights"
+        )
+        self.s2b2_bn2_gamma = load_tensor(
+            weights_dir + "/s2b2_bn2_gamma.weights"
+        )
         self.s2b2_bn2_beta = load_tensor(weights_dir + "/s2b2_bn2_beta.weights")
 
         # Stage 3
-        self.s3b1_conv1_kernel = load_tensor(weights_dir + "/s3b1_conv1_kernel.weights")
-        self.s3b1_conv1_bias = load_tensor(weights_dir + "/s3b1_conv1_bias.weights")
-        self.s3b1_bn1_gamma = load_tensor(weights_dir + "/s3b1_bn1_gamma.weights")
+        self.s3b1_conv1_kernel = load_tensor(
+            weights_dir + "/s3b1_conv1_kernel.weights"
+        )
+        self.s3b1_conv1_bias = load_tensor(
+            weights_dir + "/s3b1_conv1_bias.weights"
+        )
+        self.s3b1_bn1_gamma = load_tensor(
+            weights_dir + "/s3b1_bn1_gamma.weights"
+        )
         self.s3b1_bn1_beta = load_tensor(weights_dir + "/s3b1_bn1_beta.weights")
-        self.s3b1_conv2_kernel = load_tensor(weights_dir + "/s3b1_conv2_kernel.weights")
-        self.s3b1_conv2_bias = load_tensor(weights_dir + "/s3b1_conv2_bias.weights")
-        self.s3b1_bn2_gamma = load_tensor(weights_dir + "/s3b1_bn2_gamma.weights")
+        self.s3b1_conv2_kernel = load_tensor(
+            weights_dir + "/s3b1_conv2_kernel.weights"
+        )
+        self.s3b1_conv2_bias = load_tensor(
+            weights_dir + "/s3b1_conv2_bias.weights"
+        )
+        self.s3b1_bn2_gamma = load_tensor(
+            weights_dir + "/s3b1_bn2_gamma.weights"
+        )
         self.s3b1_bn2_beta = load_tensor(weights_dir + "/s3b1_bn2_beta.weights")
-        self.s3b1_proj_kernel = load_tensor(weights_dir + "/s3b1_proj_kernel.weights")
-        self.s3b1_proj_bias = load_tensor(weights_dir + "/s3b1_proj_bias.weights")
-        self.s3b1_proj_bn_gamma = load_tensor(weights_dir + "/s3b1_proj_bn_gamma.weights")
-        self.s3b1_proj_bn_beta = load_tensor(weights_dir + "/s3b1_proj_bn_beta.weights")
+        self.s3b1_proj_kernel = load_tensor(
+            weights_dir + "/s3b1_proj_kernel.weights"
+        )
+        self.s3b1_proj_bias = load_tensor(
+            weights_dir + "/s3b1_proj_bias.weights"
+        )
+        self.s3b1_proj_bn_gamma = load_tensor(
+            weights_dir + "/s3b1_proj_bn_gamma.weights"
+        )
+        self.s3b1_proj_bn_beta = load_tensor(
+            weights_dir + "/s3b1_proj_bn_beta.weights"
+        )
 
-        self.s3b2_conv1_kernel = load_tensor(weights_dir + "/s3b2_conv1_kernel.weights")
-        self.s3b2_conv1_bias = load_tensor(weights_dir + "/s3b2_conv1_bias.weights")
-        self.s3b2_bn1_gamma = load_tensor(weights_dir + "/s3b2_bn1_gamma.weights")
+        self.s3b2_conv1_kernel = load_tensor(
+            weights_dir + "/s3b2_conv1_kernel.weights"
+        )
+        self.s3b2_conv1_bias = load_tensor(
+            weights_dir + "/s3b2_conv1_bias.weights"
+        )
+        self.s3b2_bn1_gamma = load_tensor(
+            weights_dir + "/s3b2_bn1_gamma.weights"
+        )
         self.s3b2_bn1_beta = load_tensor(weights_dir + "/s3b2_bn1_beta.weights")
-        self.s3b2_conv2_kernel = load_tensor(weights_dir + "/s3b2_conv2_kernel.weights")
-        self.s3b2_conv2_bias = load_tensor(weights_dir + "/s3b2_conv2_bias.weights")
-        self.s3b2_bn2_gamma = load_tensor(weights_dir + "/s3b2_bn2_gamma.weights")
+        self.s3b2_conv2_kernel = load_tensor(
+            weights_dir + "/s3b2_conv2_kernel.weights"
+        )
+        self.s3b2_conv2_bias = load_tensor(
+            weights_dir + "/s3b2_conv2_bias.weights"
+        )
+        self.s3b2_bn2_gamma = load_tensor(
+            weights_dir + "/s3b2_bn2_gamma.weights"
+        )
         self.s3b2_bn2_beta = load_tensor(weights_dir + "/s3b2_bn2_beta.weights")
 
         # Stage 4
-        self.s4b1_conv1_kernel = load_tensor(weights_dir + "/s4b1_conv1_kernel.weights")
-        self.s4b1_conv1_bias = load_tensor(weights_dir + "/s4b1_conv1_bias.weights")
-        self.s4b1_bn1_gamma = load_tensor(weights_dir + "/s4b1_bn1_gamma.weights")
+        self.s4b1_conv1_kernel = load_tensor(
+            weights_dir + "/s4b1_conv1_kernel.weights"
+        )
+        self.s4b1_conv1_bias = load_tensor(
+            weights_dir + "/s4b1_conv1_bias.weights"
+        )
+        self.s4b1_bn1_gamma = load_tensor(
+            weights_dir + "/s4b1_bn1_gamma.weights"
+        )
         self.s4b1_bn1_beta = load_tensor(weights_dir + "/s4b1_bn1_beta.weights")
-        self.s4b1_conv2_kernel = load_tensor(weights_dir + "/s4b1_conv2_kernel.weights")
-        self.s4b1_conv2_bias = load_tensor(weights_dir + "/s4b1_conv2_bias.weights")
-        self.s4b1_bn2_gamma = load_tensor(weights_dir + "/s4b1_bn2_gamma.weights")
+        self.s4b1_conv2_kernel = load_tensor(
+            weights_dir + "/s4b1_conv2_kernel.weights"
+        )
+        self.s4b1_conv2_bias = load_tensor(
+            weights_dir + "/s4b1_conv2_bias.weights"
+        )
+        self.s4b1_bn2_gamma = load_tensor(
+            weights_dir + "/s4b1_bn2_gamma.weights"
+        )
         self.s4b1_bn2_beta = load_tensor(weights_dir + "/s4b1_bn2_beta.weights")
-        self.s4b1_proj_kernel = load_tensor(weights_dir + "/s4b1_proj_kernel.weights")
-        self.s4b1_proj_bias = load_tensor(weights_dir + "/s4b1_proj_bias.weights")
-        self.s4b1_proj_bn_gamma = load_tensor(weights_dir + "/s4b1_proj_bn_gamma.weights")
-        self.s4b1_proj_bn_beta = load_tensor(weights_dir + "/s4b1_proj_bn_beta.weights")
+        self.s4b1_proj_kernel = load_tensor(
+            weights_dir + "/s4b1_proj_kernel.weights"
+        )
+        self.s4b1_proj_bias = load_tensor(
+            weights_dir + "/s4b1_proj_bias.weights"
+        )
+        self.s4b1_proj_bn_gamma = load_tensor(
+            weights_dir + "/s4b1_proj_bn_gamma.weights"
+        )
+        self.s4b1_proj_bn_beta = load_tensor(
+            weights_dir + "/s4b1_proj_bn_beta.weights"
+        )
 
-        self.s4b2_conv1_kernel = load_tensor(weights_dir + "/s4b2_conv1_kernel.weights")
-        self.s4b2_conv1_bias = load_tensor(weights_dir + "/s4b2_conv1_bias.weights")
-        self.s4b2_bn1_gamma = load_tensor(weights_dir + "/s4b2_bn1_gamma.weights")
+        self.s4b2_conv1_kernel = load_tensor(
+            weights_dir + "/s4b2_conv1_kernel.weights"
+        )
+        self.s4b2_conv1_bias = load_tensor(
+            weights_dir + "/s4b2_conv1_bias.weights"
+        )
+        self.s4b2_bn1_gamma = load_tensor(
+            weights_dir + "/s4b2_bn1_gamma.weights"
+        )
         self.s4b2_bn1_beta = load_tensor(weights_dir + "/s4b2_bn1_beta.weights")
-        self.s4b2_conv2_kernel = load_tensor(weights_dir + "/s4b2_conv2_kernel.weights")
-        self.s4b2_conv2_bias = load_tensor(weights_dir + "/s4b2_conv2_bias.weights")
-        self.s4b2_bn2_gamma = load_tensor(weights_dir + "/s4b2_bn2_gamma.weights")
+        self.s4b2_conv2_kernel = load_tensor(
+            weights_dir + "/s4b2_conv2_kernel.weights"
+        )
+        self.s4b2_conv2_bias = load_tensor(
+            weights_dir + "/s4b2_conv2_bias.weights"
+        )
+        self.s4b2_bn2_gamma = load_tensor(
+            weights_dir + "/s4b2_bn2_gamma.weights"
+        )
         self.s4b2_bn2_beta = load_tensor(weights_dir + "/s4b2_bn2_beta.weights")
 
         # FC layer

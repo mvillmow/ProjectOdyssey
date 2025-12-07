@@ -19,7 +19,7 @@ Example:
     fn test_forward_pass():
         var model = create_test_cnn(1, 8, 10)
         var batch_size = 32
-        var input_shape = List[Int](batch_size, 1, 28, 28)
+        var input_shape : List[Int] = [batch_size, 1, 28, 28]
         var input = ones(input_shape, DType.float32)
         # Test forward pass...
 
@@ -35,9 +35,7 @@ from .models import SimpleCNN, LinearModel
 
 
 fn create_test_cnn(
-    in_channels: Int = 1,
-    out_channels: Int = 8,
-    num_classes: Int = 10
+    in_channels: Int = 1, out_channels: Int = 8, num_classes: Int = 10
 ) -> SimpleCNN:
     """Factory function to create test CNN models.
 
@@ -53,7 +51,7 @@ fn create_test_cnn(
 
     Example:
         ```mojo
-        ar model = create_test_cnn(1, 8, 10)
+        var model = create_test_cnn(1, 8, 10)
         assert_equal(model.num_classes, 10)
 
         # Create custom channel configuration
@@ -64,7 +62,9 @@ fn create_test_cnn(
     return SimpleCNN(in_channels, out_channels, num_classes)
 
 
-fn create_linear_model(in_features: Int = 784, out_features: Int = 10) -> LinearModel:
+fn create_linear_model(
+    in_features: Int = 784, out_features: Int = 10
+) -> LinearModel:
     """Create a simple linear test model.
 
     Useful for testing linear layers, loss functions, and optimization.
@@ -78,7 +78,7 @@ fn create_linear_model(in_features: Int = 784, out_features: Int = 10) -> Linear
 
     Example:
         ```mojo
-        ar model = create_linear_model(784, 10)
+        var model = create_linear_model(784, 10)
         assert_equal(model.out_features, 10)
 
         # Create custom dimensions
@@ -90,9 +90,7 @@ fn create_linear_model(in_features: Int = 784, out_features: Int = 10) -> Linear
 
 
 fn create_test_input(
-    batch_size: Int,
-    in_features: Int,
-    dtype: DType = DType.float32
+    batch_size: Int, in_features: Int, dtype: DType = DType.float32
 ) raises -> ExTensor:
     """Create a test input tensor for linear models.
 
@@ -108,21 +106,19 @@ fn create_test_input(
 
     Example:
         ```mojo
-        ar input = create_test_input(32, 784)
+        var input = create_test_input(32, 784)
         assert_equal(input._shape[0], 32)
         assert_equal(input._shape[1], 784)
         ```
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(batch_size)
     shape.append(in_features)
     return ones(shape, dtype)
 
 
 fn create_test_targets(
-    batch_size: Int,
-    num_classes: Int,
-    dtype: DType = DType.int32
+    batch_size: Int, num_classes: Int, dtype: DType = DType.int32
 ) raises -> ExTensor:
     """Create a test target tensor for classification.
 
@@ -138,11 +134,11 @@ fn create_test_targets(
 
     Example:
         ```mojo
-        ar targets = create_test_targets(32, 10)
+        var targets = create_test_targets(32, 10)
         assert_equal(targets._shape[0], 32)
         ```
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(batch_size)
     return zeros(shape, dtype)
 
@@ -159,7 +155,7 @@ fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
 
     Example:
         ```mojo
-        ar tensor = ones(List[Int](32, 10), DType.float32)
+        var tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_shape(tensor, List[Int](32, 10)))
         ```
     """
@@ -185,7 +181,7 @@ fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
 
     Example:
         ```mojo
-        ar tensor = ones(List[Int](32, 10), DType.float32)
+        var tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_dtype(tensor, DType.float32))
         ```
     """
@@ -203,7 +199,7 @@ fn assert_tensor_all_finite(tensor: ExTensor) -> Bool:
 
     Example:
         ```mojo
-        ar tensor = ones(List[Int](32, 10), DType.float32)
+        var tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_all_finite(tensor))
         ```
     """
@@ -232,7 +228,7 @@ fn assert_tensor_not_all_zeros(tensor: ExTensor) -> Bool:
 
     Example:
         ```mojo
-        ar tensor = ones(List[Int](32, 10), DType.float32)
+        var tensor = ones(List[Int](32, 10), DType.float32)
         assert_true(assert_tensor_not_all_zeros(tensor))
         ```
     """

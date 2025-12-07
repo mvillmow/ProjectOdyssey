@@ -36,9 +36,10 @@ from collections import List
 # CIFAR-10 Class Labels
 # ============================================================================
 
+
 fn _get_cifar10_classes() -> List[String]:
     """Get CIFAR-10 class names."""
-    var classes = List[String]()
+    var classes: List[String] = []
     classes.append("airplane")
     classes.append("automobile")
     classes.append("bird")
@@ -115,10 +116,10 @@ struct CIFAR10Dataset(Copyable, Movable):
         self.data_dir = data_dir
 
         # Initialize placeholder tensors
-        self._train_data = zeros(List[Int](1), DType.float32)
-        self._train_labels = zeros(List[Int](1), DType.uint8)
-        self._test_data = zeros(List[Int](1), DType.float32)
-        self._test_labels = zeros(List[Int](1), DType.uint8)
+        self._train_data = zeros([1], DType.float32)
+        self._train_labels = zeros([1], DType.uint8)
+        self._test_data = zeros([1], DType.float32)
+        self._test_labels = zeros([1], DType.uint8)
 
         self._train_loaded = False
         self._test_loaded = False
@@ -152,7 +153,9 @@ struct CIFAR10Dataset(Copyable, Movable):
         # Validate index
         if index < 0 or index >= 50000:
             raise Error(
-                "Index " + String(index) + " out of bounds for training set of size 50000"
+                "Index "
+                + String(index)
+                + " out of bounds for training set of size 50000"
             )
 
         # Return the sample at index
@@ -175,8 +178,8 @@ struct CIFAR10Dataset(Copyable, Movable):
         Raises:
             Error: If batch files cannot be read or loaded.
         """
-        var all_images = List[ExTensor]()
-        var all_labels = List[ExTensor]()
+        var all_images: List[ExTensor] = []
+        var all_labels: List[ExTensor] = []
 
         # Load 5 training batches
         for batch_num in range(1, 6):
@@ -318,8 +321,8 @@ struct CIFAR10Dataset(Copyable, Movable):
         Returns:
             List containing image dimensions [3, 32, 32] (channels, height, width).
         """
-        var shape = List[Int]()
-        shape.append(3)   # RGB channels
+        var shape: List[Int] = []
+        shape.append(3)  # RGB channels
         shape.append(32)  # Height
         shape.append(32)  # Width
         return shape^

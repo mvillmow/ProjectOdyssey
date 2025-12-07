@@ -26,16 +26,20 @@ Design principles:
 from collections import List
 from shared.core.extensor import ExTensor
 from shared.training.metrics import AccuracyMetric, LossTracker
-from shared.training.trainer_interface import DataLoader, DataBatch, TrainingMetrics
+from shared.training.trainer_interface import (
+    DataLoader,
+    DataBatch,
+    TrainingMetrics,
+)
 
 
 fn training_step(
-    model_forward: fn(ExTensor) raises -> ExTensor,
-    compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-    optimizer_step: fn() raises -> None,
-    zero_gradients: fn() raises -> None,
+    model_forward: fn (ExTensor) raises -> ExTensor,
+    compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+    optimizer_step: fn () raises -> None,
+    zero_gradients: fn () raises -> None,
     data: ExTensor,
-    labels: ExTensor
+    labels: ExTensor,
 ) raises -> Float64:
     """Execute single training step (forward, backward, update).
 
@@ -75,13 +79,13 @@ fn training_step(
 
 
 fn train_one_epoch(
-    model_forward: fn(ExTensor) raises -> ExTensor,
-    compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-    optimizer_step: fn() raises -> None,
-    zero_gradients: fn() raises -> None,
+    model_forward: fn (ExTensor) raises -> ExTensor,
+    compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+    optimizer_step: fn () raises -> None,
+    zero_gradients: fn () raises -> None,
     mut train_loader: DataLoader,
     mut metrics: TrainingMetrics,
-    log_interval: Int = 10
+    log_interval: Int = 10,
 ) raises:
     """Train for one epoch.
 
@@ -118,7 +122,7 @@ fn train_one_epoch(
             optimizer_step,
             zero_gradients,
             batch.data,
-            batch.labels
+            batch.labels,
         )
 
         # Update metrics
@@ -132,14 +136,25 @@ fn train_one_epoch(
         # Log progress
         if num_batches % log_interval == 0:
             var avg_loss = loss_tracker.get_average()
-            print("  Batch " + String(num_batches) + "/" + String(train_loader.num_batches) +
-                  " - Loss: " + String(avg_loss))
+            print(
+                "  Batch "
+                + String(num_batches)
+                + "/"
+                + String(train_loader.num_batches)
+                + " - Loss: "
+                + String(avg_loss)
+            )
 
     # Update epoch metrics
     var epoch_avg_loss = epoch_loss / Float64(num_batches)
     metrics.update_train_metrics(epoch_avg_loss, 0.0)  # Accuracy placeholder
 
-    print("Epoch " + String(metrics.current_epoch) + " complete - Avg Loss: " + String(epoch_avg_loss))
+    print(
+        "Epoch "
+        + String(metrics.current_epoch)
+        + " complete - Avg Loss: "
+        + String(epoch_avg_loss)
+    )
 
 
 struct TrainingLoop:
@@ -165,7 +180,8 @@ struct TrainingLoop:
             compute_batch_loss=my_batch_fn,
             total_epochs=100, current_epoch=1
         ).
-   """
+    """
+
     var log_interval: Int
     var clip_gradients: Bool
     var max_grad_norm: Float64
@@ -174,7 +190,7 @@ struct TrainingLoop:
         out self,
         log_interval: Int = 10,
         clip_gradients: Bool = False,
-        max_grad_norm: Float64 = 1.0
+        max_grad_norm: Float64 = 1.0,
     ):
         """Initialize training loop.
 
@@ -192,9 +208,9 @@ struct TrainingLoop:
         train_data: ExTensor,
         train_labels: ExTensor,
         batch_size: Int,
-        compute_batch_loss: fn(ExTensor, ExTensor) raises -> Float32,
+        compute_batch_loss: fn (ExTensor, ExTensor) raises -> Float32,
         epoch: Int,
-        total_epochs: Int
+        total_epochs: Int,
     ) raises -> Float32:
         """Run one epoch with manual batch processing.
 
@@ -235,7 +251,14 @@ struct TrainingLoop:
             # Print progress every log_interval batches
             if (batch_idx + 1) % self.log_interval == 0:
                 var avg_loss = total_loss / Float32(batch_idx + 1)
-                print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss)
+                print(
+                    "  Batch [",
+                    batch_idx + 1,
+                    "/",
+                    num_batches,
+                    "] - Loss: ",
+                    avg_loss,
+                )
 
             # TODO: Remove after tensor slicing is optimized
             # break
@@ -247,12 +270,12 @@ struct TrainingLoop:
 
     fn run_epoch(
         self,
-        model_forward: fn(ExTensor) raises -> ExTensor,
-        compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn() raises -> None,
-        zero_gradients: fn() raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
-        mut metrics: TrainingMetrics
+        mut metrics: TrainingMetrics,
     ) raises:
         """Run one training epoch.
 
@@ -274,18 +297,18 @@ struct TrainingLoop:
             zero_gradients,
             train_loader,
             metrics,
-            self.log_interval
+            self.log_interval,
         )
 
     fn run(
         self,
-        model_forward: fn(ExTensor) raises -> ExTensor,
-        compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn() raises -> None,
-        zero_gradients: fn() raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        optimizer_step: fn () raises -> None,
+        zero_gradients: fn () raises -> None,
         mut train_loader: DataLoader,
         num_epochs: Int,
-        mut metrics: TrainingMetrics
+        mut metrics: TrainingMetrics,
     ) raises:
         """Run complete training loop.
 
@@ -317,7 +340,7 @@ struct TrainingLoop:
                 optimizer_step,
                 zero_gradients,
                 train_loader,
-                metrics
+                metrics,
             )
 
         print("\n" + "=" * 50)

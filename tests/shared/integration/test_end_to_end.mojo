@@ -56,7 +56,7 @@ fn test_model_training_to_evaluation() raises:
         hidden_dim=5,
         output_dim=1,
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     # Create synthetic training data (simple regression task)
@@ -70,15 +70,17 @@ fn test_model_training_to_evaluation() raises:
     # Training loop - manual SGD for simplicity
     for iteration in range(n_iterations):
         # Create input tensor
-        var input_shape = List[Int](10)
+        var input_shape: List[Int] = [10]
         var input_tensor = zeros(input_shape, DType.float32)
         for i in range(10):
             input_tensor._set_float32(i, Float32(i) * 0.1)
 
         # Create target tensor (simple target: sum of inputs / 10)
-        var target_shape = List[Int](1)
+        var target_shape: List[Int] = [1]
         var target_tensor = zeros(target_shape, DType.float32)
-        target_tensor._set_float32(0, Float32(0.45))  # Expected output for input
+        target_tensor._set_float32(
+            0, Float32(0.45)
+        )  # Expected output for input
 
         # Forward pass
         var output = model.forward(input_tensor)
@@ -103,22 +105,18 @@ fn test_model_training_to_evaluation() raises:
 
     # Verify training completed
     assert_true(
-        initial_loss >= Float32(0.0),
-        "Initial loss should be non-negative"
+        initial_loss >= Float32(0.0), "Initial loss should be non-negative"
     )
-    assert_true(
-        final_loss >= Float32(0.0),
-        "Final loss should be non-negative"
-    )
+    assert_true(final_loss >= Float32(0.0), "Final loss should be non-negative")
 
     # Model should produce output without errors
-    var test_input_shape = List[Int](10)
+    var test_input_shape: List[Int] = [10]
     var test_input = zeros(test_input_shape, DType.float32)
     var test_output = model.forward(test_input)
     var test_output_shape = test_output.shape()
     assert_true(
         len(test_output_shape) == 1 and test_output_shape[0] == 1,
-        "Model should produce output of shape [1]"
+        "Model should produce output of shape [1]",
     )
 
     print("  ✓ test_model_training_to_evaluation passed")
@@ -143,11 +141,11 @@ fn test_model_inference() raises:
         hidden_dim=5,
         output_dim=3,  # 3 output classes
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     # Test 1: Single sample inference
-    var input_shape = List[Int](10)
+    var input_shape: List[Int] = [10]
     var input_tensor = zeros(input_shape, DType.float32)
     for i in range(10):
         input_tensor._set_float32(i, Float32(i) * 0.1)
@@ -156,13 +154,9 @@ fn test_model_inference() raises:
     var output_shape = output.shape()
 
     # Verify output shape
+    assert_true(len(output_shape) == 1, "Output should be 1D tensor")
     assert_true(
-        len(output_shape) == 1,
-        "Output should be 1D tensor"
-    )
-    assert_true(
-        output_shape[0] == 3,
-        "Output should have 3 elements (output_dim=3)"
+        output_shape[0] == 3, "Output should have 3 elements (output_dim=3)"
     )
 
     # Test 2: Determinism - same input produces same output
@@ -172,8 +166,10 @@ fn test_model_inference() raises:
         var val1 = output._get_float32(i)
         var val2 = output2._get_float32(i)
         assert_almost_equal(
-            val1, val2, tolerance=Float32(1e-6),
-            message="Inference should be deterministic"
+            val1,
+            val2,
+            tolerance=Float32(1e-6),
+            message="Inference should be deterministic",
         )
 
     # Test 3: Different inputs produce different outputs
@@ -193,8 +189,7 @@ fn test_model_inference() raises:
             break
 
     assert_true(
-        not all_same,
-        "Different inputs should produce different outputs"
+        not all_same, "Different inputs should produce different outputs"
     )
 
     print("  ✓ test_model_inference passed")
@@ -219,11 +214,11 @@ fn test_model_prediction_confidence() raises:
         hidden_dim=5,
         output_dim=5,  # 5 classes
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     # Create input tensor
-    var input_shape = List[Int](10)
+    var input_shape: List[Int] = [10]
     var input_tensor = zeros(input_shape, DType.float32)
     for i in range(10):
         input_tensor._set_float32(i, Float32(i) * 0.1)
@@ -238,7 +233,7 @@ fn test_model_prediction_confidence() raises:
     # Test 1: Verify probability shape
     assert_true(
         len(probs_shape) == 1 and probs_shape[0] == 5,
-        "Probabilities should have shape [5]"
+        "Probabilities should have shape [5]",
     )
 
     # Test 2: All probabilities should be in [0, 1]
@@ -246,7 +241,7 @@ fn test_model_prediction_confidence() raises:
         var p = probs._get_float32(i)
         assert_true(
             p >= Float32(0.0) and p <= Float32(1.0),
-            "Probability should be in [0, 1]"
+            "Probability should be in [0, 1]",
         )
 
     # Test 3: Probabilities should sum to ~1.0
@@ -255,8 +250,10 @@ fn test_model_prediction_confidence() raises:
         prob_sum += probs._get_float32(i)
 
     assert_almost_equal(
-        prob_sum, Float32(1.0), tolerance=Float32(1e-5),
-        message="Probabilities should sum to 1.0"
+        prob_sum,
+        Float32(1.0),
+        tolerance=Float32(1e-5),
+        message="Probabilities should sum to 1.0",
     )
 
     # Test 4: Find highest probability (most confident prediction)
@@ -269,7 +266,7 @@ fn test_model_prediction_confidence() raises:
     # At least one class should have non-zero probability
     assert_true(
         max_prob > Float32(0.0),
-        "At least one class should have positive probability"
+        "At least one class should have positive probability",
     )
 
     print("  ✓ test_model_prediction_confidence passed")
@@ -301,11 +298,11 @@ fn test_model_checkpoint_save_load() raises:
         hidden_dim=3,
         output_dim=2,
         num_hidden_layers=1,
-        init_value=0.5  # Specific value for verification
+        init_value=0.5,  # Specific value for verification
     )
 
     # Get original model output on test input
-    var input_shape = List[Int](4)
+    var input_shape: List[Int] = [4]
     var test_input = zeros(input_shape, DType.float32)
     for i in range(4):
         test_input._set_float32(i, Float32(i) * 0.25)
@@ -317,25 +314,24 @@ fn test_model_checkpoint_save_load() raises:
 
     # Verify we have the expected number of parameters
     # 2-layer MLP: layer1_weights, layer1_bias, layer2_weights, layer2_bias = 4 params
-    assert_true(
-        len(params) == 4,
-        "SimpleMLP should have 4 parameter tensors"
-    )
+    assert_true(len(params) == 4, "SimpleMLP should have 4 parameter tensors")
 
     # Verify first layer weights shape (hidden_dim x input_dim = 3 x 4)
     var layer1_weights_shape = params[0].shape()
     assert_true(
-        len(layer1_weights_shape) == 2 and
-        layer1_weights_shape[0] == 3 and
-        layer1_weights_shape[1] == 4,
-        "Layer 1 weights should be [3, 4]"
+        len(layer1_weights_shape) == 2
+        and layer1_weights_shape[0] == 3
+        and layer1_weights_shape[1] == 4,
+        "Layer 1 weights should be [3, 4]",
     )
 
     # Verify parameter values are as initialized
     var first_param_val = params[0]._get_float32(0)
     assert_almost_equal(
-        first_param_val, Float32(0.5), tolerance=Float32(1e-6),
-        message="Parameters should match init_value"
+        first_param_val,
+        Float32(0.5),
+        tolerance=Float32(1e-6),
+        message="Parameters should match init_value",
     )
 
     # Create second model with different init value
@@ -344,7 +340,7 @@ fn test_model_checkpoint_save_load() raises:
         hidden_dim=3,
         output_dim=2,
         num_hidden_layers=1,
-        init_value=0.1  # Different from original
+        init_value=0.1,  # Different from original
     )
 
     # Verify model2 has different weights initially
@@ -352,7 +348,7 @@ fn test_model_checkpoint_save_load() raises:
     var second_model_val = params2[0]._get_float32(0)
     assert_true(
         abs(second_model_val - Float32(0.1)) < Float32(1e-6),
-        "Second model should have init_value=0.1"
+        "Second model should have init_value=0.1",
     )
 
     # Test that both models produce outputs (testing the lifecycle)
@@ -362,8 +358,9 @@ fn test_model_checkpoint_save_load() raises:
     var output_shape = original_output.shape()
     var output2_shape = output2.shape()
     assert_true(
-        len(output_shape) == len(output2_shape) and output_shape[0] == output2_shape[0],
-        "Both models should produce same output shape"
+        len(output_shape) == len(output2_shape)
+        and output_shape[0] == output2_shape[0],
+        "Both models should produce same output shape",
     )
 
     # Outputs should differ due to different weights
@@ -377,7 +374,7 @@ fn test_model_checkpoint_save_load() raises:
 
     assert_true(
         outputs_differ,
-        "Models with different weights should produce different outputs"
+        "Models with different weights should produce different outputs",
     )
 
     print("  ✓ test_model_checkpoint_save_load passed")
@@ -399,7 +396,7 @@ fn test_model_best_checkpoint_selection() raises:
         - Best model recoverable.
     """
     # Simulate tracking losses over multiple epochs
-    var losses = List[Float32]()
+    var losses= List[Float32]()
     losses.append(Float32(1.0))
     losses.append(Float32(0.8))
     losses.append(Float32(0.5))  # Best
@@ -417,30 +414,29 @@ fn test_model_best_checkpoint_selection() raises:
             best_epoch = epoch
 
     # Verify best was correctly identified
-    assert_true(
-        best_epoch == 2,
-        "Best epoch should be index 2 (loss=0.5)"
-    )
+    assert_true(best_epoch == 2, "Best epoch should be index 2 (loss=0.5)")
     assert_almost_equal(
-        best_loss, Float32(0.5), tolerance=Float32(1e-6),
-        message="Best loss should be 0.5"
+        best_loss,
+        Float32(0.5),
+        tolerance=Float32(1e-6),
+        message="Best loss should be 0.5",
     )
 
     # Test that we can recover the "best" model state
     # Create models for each "epoch"
-    var models = List[SimpleMLP]()
+    var models: List[SimpleMLP] = []
     for i in range(5):
         var m = SimpleMLP(
             input_dim=4,
             hidden_dim=3,
             output_dim=2,
             num_hidden_layers=1,
-            init_value=Float32(i + 1) * 0.1  # Different weights each epoch
+            init_value=Float32(i + 1) * 0.1,  # Different weights each epoch
         )
         models.append(m^)
 
     # Verify we can access the model at best_epoch
-    var input_shape = List[Int](4)
+    var input_shape: List[Int] = [4]
     var test_input = zeros(input_shape, DType.float32)
     var best_output = models[best_epoch].forward(test_input)
 
@@ -448,7 +444,7 @@ fn test_model_best_checkpoint_selection() raises:
     var output_shape = best_output.shape()
     assert_true(
         len(output_shape) == 1 and output_shape[0] == 2,
-        "Best model should produce output shape [2]"
+        "Best model should produce output shape [2]",
     )
 
     print("  ✓ test_model_best_checkpoint_selection passed")
@@ -481,24 +477,24 @@ fn test_full_pipeline_integration() raises:
         hidden_dim=4,
         output_dim=2,
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     # Step 2: Create synthetic dataset
     var n_samples = 10
-    var train_inputs = List[ExTensor]()
-    var train_targets = List[ExTensor]()
+    var train_inputs: List[ExTensor] = []
+    var train_targets: List[ExTensor] = []
 
     for sample_idx in range(n_samples):
         # Create input
-        var input_shape = List[Int](8)
+        var input_shape: List[Int] = [8]
         var input_tensor = zeros(input_shape, DType.float32)
         for i in range(8):
             input_tensor._set_float32(i, Float32(sample_idx * 8 + i) * 0.01)
         train_inputs.append(input_tensor^)
 
         # Create target
-        var target_shape = List[Int](2)
+        var target_shape: List[Int] = [2]
         var target_tensor = zeros(target_shape, DType.float32)
         target_tensor._set_float32(0, Float32(sample_idx % 2))
         target_tensor._set_float32(1, Float32(1 - sample_idx % 2))
@@ -506,7 +502,7 @@ fn test_full_pipeline_integration() raises:
 
     # Step 3: Training loop
     var n_epochs = 3
-    var epoch_losses = List[Float32]()
+    var epoch_losses= List[Float32]()
 
     for _ in range(n_epochs):
         var epoch_loss = Float32(0.0)
@@ -524,18 +520,16 @@ fn test_full_pipeline_integration() raises:
 
     # Step 4: Validation - verify loss is computed
     assert_true(
-        len(epoch_losses) == n_epochs,
-        "Should have loss for each epoch"
+        len(epoch_losses) == n_epochs, "Should have loss for each epoch"
     )
 
     for i in range(n_epochs):
         assert_true(
-            epoch_losses[i] >= Float32(0.0),
-            "Loss should be non-negative"
+            epoch_losses[i] >= Float32(0.0), "Loss should be non-negative"
         )
 
     # Step 5: Evaluation on test data
-    var test_input_shape = List[Int](8)
+    var test_input_shape: List[Int] = [8]
     var test_input = zeros(test_input_shape, DType.float32)
     for i in range(8):
         test_input._set_float32(i, Float32(i) * 0.1)
@@ -545,15 +539,12 @@ fn test_full_pipeline_integration() raises:
 
     assert_true(
         len(test_output_shape) == 1 and test_output_shape[0] == 2,
-        "Test output should have shape [2]"
+        "Test output should have shape [2]",
     )
 
     # Step 6: Get model parameters (simulates checkpoint)
     var params = model.parameters()
-    assert_true(
-        len(params) > 0,
-        "Model should have trainable parameters"
-    )
+    assert_true(len(params) > 0, "Model should have trainable parameters")
 
     print("  ✓ test_full_pipeline_integration passed")
 
@@ -579,7 +570,7 @@ fn test_multiple_models_comparison() raises:
         hidden_dim=4,
         output_dim=2,
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     var model_large = SimpleMLP(
@@ -587,7 +578,7 @@ fn test_multiple_models_comparison() raises:
         hidden_dim=8,  # Larger hidden layer
         output_dim=2,
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
 
     var model_deep = SimpleMLP(
@@ -595,11 +586,11 @@ fn test_multiple_models_comparison() raises:
         hidden_dim=4,
         output_dim=2,
         num_hidden_layers=2,  # Two hidden layers
-        init_value=0.1
+        init_value=0.1,
     )
 
     # Create shared test input
-    var input_shape = List[Int](8)
+    var input_shape: List[Int] = [8]
     var test_input = zeros(input_shape, DType.float32)
     for i in range(8):
         test_input._set_float32(i, Float32(i) * 0.1)
@@ -616,15 +607,15 @@ fn test_multiple_models_comparison() raises:
 
     assert_true(
         len(shape_small) == 1 and shape_small[0] == 2,
-        "Small model should produce shape [2]"
+        "Small model should produce shape [2]",
     )
     assert_true(
         len(shape_large) == 1 and shape_large[0] == 2,
-        "Large model should produce shape [2]"
+        "Large model should produce shape [2]",
     )
     assert_true(
         len(shape_deep) == 1 and shape_deep[0] == 2,
-        "Deep model should produce shape [2]"
+        "Deep model should produce shape [2]",
     )
 
     # Verify models have different number of parameters
@@ -634,11 +625,11 @@ fn test_multiple_models_comparison() raises:
 
     assert_true(
         params_large > params_small,
-        "Large model should have more parameters than small"
+        "Large model should have more parameters than small",
     )
     assert_true(
         params_deep > params_small,
-        "Deep model should have more parameters than small"
+        "Deep model should have more parameters than small",
     )
 
     # Verify models are independent (modifying one doesn't affect others)
@@ -655,8 +646,10 @@ fn test_multiple_models_comparison() raises:
         var val_before = output_large._get_float32(i)
         var val_after = output_large_unchanged._get_float32(i)
         assert_almost_equal(
-            val_before, val_after, tolerance=Float32(1e-6),
-            message="Modifying one model should not affect others"
+            val_before,
+            val_after,
+            tolerance=Float32(1e-6),
+            message="Modifying one model should not affect others",
         )
 
     # Small model output should have changed (all weights now much larger)
@@ -668,10 +661,7 @@ fn test_multiple_models_comparison() raises:
             small_changed = True
             break
 
-    assert_true(
-        small_changed,
-        "Modified model should produce different output"
-    )
+    assert_true(small_changed, "Modified model should produce different output")
 
     print("  ✓ test_multiple_models_comparison passed")
 

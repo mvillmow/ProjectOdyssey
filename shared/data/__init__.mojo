@@ -33,14 +33,14 @@ from ..version import VERSION
 
 # IDX format utilities
 from .formats import (
-    read_uint32_be,         # Read big-endian uint32
-    load_idx_labels,        # Load IDX label file
-    load_idx_images,        # Load IDX grayscale images
-    load_idx_images_rgb,    # Load IDX RGB images
-    normalize_images,       # Normalize uint8 images to [0, 1] float32
-    normalize_images_rgb,   # Normalize RGB images with ImageNet parameters
-    one_hot_encode,         # One-hot encode integer labels
-    load_cifar10_batch,     # Load single CIFAR-10 batch
+    read_uint32_be,  # Read big-endian uint32
+    load_idx_labels,  # Load IDX label file
+    load_idx_images,  # Load IDX grayscale images
+    load_idx_images_rgb,  # Load IDX RGB images
+    normalize_images,  # Normalize uint8 images to [0, 1] float32
+    normalize_images_rgb,  # Normalize RGB images with ImageNet parameters
+    one_hot_encode,  # One-hot encode integer labels
+    load_cifar10_batch,  # Load single CIFAR-10 batch
 )
 
 # ============================================================================
@@ -49,22 +49,22 @@ from .formats import (
 
 # Dataset-specific constants and metadata
 from .constants import (
-    CIFAR10_IMAGE_SIZE,            # CIFAR-10 image size (32x32)
-    CIFAR10_CHANNELS,              # CIFAR-10 color channels (3)
-    CIFAR10_BYTES_PER_IMAGE,       # CIFAR-10 bytes per image (3073)
-    CIFAR10_NUM_CLASSES,           # CIFAR-10 number of classes (10)
-    CIFAR100_IMAGE_SIZE,           # CIFAR-100 image size (32x32)
-    CIFAR100_CHANNELS,             # CIFAR-100 color channels (3)
-    CIFAR100_BYTES_PER_IMAGE,      # CIFAR-100 bytes per image (3074)
-    CIFAR100_NUM_CLASSES_FINE,     # CIFAR-100 fine-grained classes (100)
-    CIFAR100_NUM_CLASSES_COARSE,   # CIFAR-100 coarse classes (20)
-    CIFAR10_CLASS_NAMES,           # CIFAR-10 class names (10 classes)
-    EMNIST_BALANCED_CLASSES,       # EMNIST Balanced class names (47 classes)
-    EMNIST_BYCLASS_CLASSES,        # EMNIST By Class class names (62 classes)
-    EMNIST_BYMERGE_CLASSES,        # EMNIST By Merge class names (36 classes)
-    EMNIST_DIGITS_CLASSES,         # EMNIST Digits class names (10 classes)
-    EMNIST_LETTERS_CLASSES,        # EMNIST Letters class names (52 classes)
-    DatasetInfo,                   # Dataset metadata container
+    CIFAR10_IMAGE_SIZE,  # CIFAR-10 image size (32x32)
+    CIFAR10_CHANNELS,  # CIFAR-10 color channels (3)
+    CIFAR10_BYTES_PER_IMAGE,  # CIFAR-10 bytes per image (3073)
+    CIFAR10_NUM_CLASSES,  # CIFAR-10 number of classes (10)
+    CIFAR100_IMAGE_SIZE,  # CIFAR-100 image size (32x32)
+    CIFAR100_CHANNELS,  # CIFAR-100 color channels (3)
+    CIFAR100_BYTES_PER_IMAGE,  # CIFAR-100 bytes per image (3074)
+    CIFAR100_NUM_CLASSES_FINE,  # CIFAR-100 fine-grained classes (100)
+    CIFAR100_NUM_CLASSES_COARSE,  # CIFAR-100 coarse classes (20)
+    CIFAR10_CLASS_NAMES,  # CIFAR-10 class names (10 classes)
+    EMNIST_BALANCED_CLASSES,  # EMNIST Balanced class names (47 classes)
+    EMNIST_BYCLASS_CLASSES,  # EMNIST By Class class names (62 classes)
+    EMNIST_BYMERGE_CLASSES,  # EMNIST By Merge class names (36 classes)
+    EMNIST_DIGITS_CLASSES,  # EMNIST Digits class names (10 classes)
+    EMNIST_LETTERS_CLASSES,  # EMNIST Letters class names (52 classes)
+    DatasetInfo,  # Dataset metadata container
 )
 
 # ============================================================================
@@ -73,17 +73,17 @@ from .constants import (
 
 # Dataset classes and loaders
 from .datasets import (
-    Dataset,                # Base dataset interface
-    ExTensorDataset,        # In-memory tensor dataset wrapper
-    FileDataset,            # File-based lazy-loading dataset
-    CIFAR10Dataset,         # CIFAR-10 dataset with train/test splits
+    Dataset,  # Base dataset interface
+    ExTensorDataset,  # In-memory tensor dataset wrapper
+    FileDataset,  # File-based lazy-loading dataset
+    CIFAR10Dataset,  # CIFAR-10 dataset with train/test splits
 )
 
 # EMNIST dataset is defined in _datasets_core.mojo
 from ._datasets_core import (
-    EMNISTDataset,          # EMNIST dataset with multiple splits
-    load_emnist_train,      # Load EMNIST training set
-    load_emnist_test,       # Load EMNIST test set
+    EMNISTDataset,  # EMNIST dataset with multiple splits
+    load_emnist_train,  # Load EMNIST training set
+    load_emnist_test,  # Load EMNIST test set
 )
 
 # ============================================================================
@@ -107,7 +107,7 @@ from ._datasets_core import (
 
 from .random_transform_base import (
     RandomTransformBase,  # Base for probabilistic transforms
-    random_float,         # Random float generation utility
+    random_float,  # Random float generation utility
 )
 
 # ============================================================================

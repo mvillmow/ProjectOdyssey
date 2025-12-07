@@ -42,14 +42,14 @@ fn equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -109,14 +109,14 @@ fn not_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -176,14 +176,14 @@ fn less(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -243,14 +243,14 @@ fn less_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -310,14 +310,14 @@ fn greater(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -377,14 +377,14 @@ fn greater_equal(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 

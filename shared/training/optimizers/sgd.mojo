@@ -134,7 +134,7 @@ fn sgd_step_simple(
 
     Example:
         ```mojo
-        ar W1 = xavier_uniform(784, 128, shape, DType.float32)
+        var W1 = xavier_uniform(784, 128, shape, DType.float32)
         var grad_W1 = ... # Computed gradients
         W1 = sgd_step_simple(W1, grad_W1, 0.01)
         ```
@@ -281,11 +281,11 @@ fn initialize_velocities(
     """
     from shared.core.extensor import zeros
 
-    var velocities = List[ExTensor]()
+    var velocities: List[ExTensor] = []
 
     for i in range(len(param_shapes)):
         # Copy the shape since List[Int] is not ImplicitlyCopyable
-        var shape = List[Int]()
+        var shape= List[Int]()
         for j in range(len(param_shapes[i])):
             shape.append(param_shapes[i][j])
         velocities.append(zeros(shape, dtype))
@@ -312,7 +312,7 @@ fn initialize_velocities_from_params(
         from shared.training.optimizers import initialize_velocities_from_params
 
         # Collect all model parameters
-        var params = List[ExTensor]()
+        var params : List[ExTensor] = []
         params.append(model.conv1_kernel)
         params.append(model.conv1_bias)
         params.append(model.fc1_weights)
@@ -323,7 +323,7 @@ fn initialize_velocities_from_params(
     """
     from shared.core.extensor import zeros
 
-    var velocities = List[ExTensor]()
+    var velocities: List[ExTensor] = []
 
     for i in range(len(params)):
         var param = params[i]

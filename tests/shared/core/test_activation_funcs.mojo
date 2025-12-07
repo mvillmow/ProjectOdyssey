@@ -39,7 +39,7 @@ from shared.core.activation import (
 
 fn test_relu_positive_values() raises:
     """Test ReLU preserves positive values."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = ones(input_shape, DType.float32)
 
@@ -52,7 +52,7 @@ fn test_relu_positive_values() raises:
 
 fn test_relu_negative_values() raises:
     """Test ReLU zeros out negative values."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = zeros(input_shape, DType.float32)
 
@@ -69,16 +69,16 @@ fn test_relu_negative_values() raises:
 
 fn test_relu_mixed_values() raises:
     """Test ReLU on mixed positive and negative values."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = zeros(input_shape, DType.float32)
 
     var input_data = input._data.bitcast[Float32]()
     input_data[0] = -2.0  # Should become 0
     input_data[1] = -1.0  # Should become 0
-    input_data[2] = 0.0   # Should become 0
-    input_data[3] = 1.0   # Should stay 1
-    input_data[4] = 2.0   # Should stay 2
+    input_data[2] = 0.0  # Should become 0
+    input_data[3] = 1.0  # Should stay 1
+    input_data[4] = 2.0  # Should stay 2
 
     var output = relu(input)
 
@@ -92,18 +92,18 @@ fn test_relu_mixed_values() raises:
 
 fn test_relu_backward() raises:
     """Test ReLU backward pass computes correct gradients."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = zeros(input_shape, DType.float32)
 
     var input_data = input._data.bitcast[Float32]()
     input_data[0] = -2.0  # Negative
     input_data[1] = -1.0  # Negative
-    input_data[2] = 0.0   # Zero
-    input_data[3] = 1.0   # Positive
-    input_data[4] = 2.0   # Positive
+    input_data[2] = 0.0  # Zero
+    input_data[3] = 1.0  # Positive
+    input_data[4] = 2.0  # Positive
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(5)
     var grad_output = ones(grad_output_shape, DType.float32)
 
@@ -121,7 +121,7 @@ fn test_relu_backward() raises:
 
 fn test_leaky_relu_forward() raises:
     """Test Leaky ReLU preserves negative values with slope."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = zeros(input_shape, DType.float32)
 
@@ -149,7 +149,7 @@ fn test_leaky_relu_forward() raises:
 
 fn test_sigmoid_range() raises:
     """Test sigmoid output is in [0, 1] range."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(5)
@@ -172,7 +172,7 @@ fn test_sigmoid_range() raises:
 
 fn test_sigmoid_at_zero() raises:
     """Test sigmoid(0) = 0.5."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     var input = zeros(input_shape, DType.float32)
 
@@ -184,7 +184,7 @@ fn test_sigmoid_at_zero() raises:
 
 fn test_sigmoid_symmetry() raises:
     """Test sigmoid(-x) + sigmoid(x) = 1."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     var x = zeros(input_shape, DType.float32)
     var x_data = x._data.bitcast[Float32]()
@@ -206,11 +206,11 @@ fn test_sigmoid_symmetry() raises:
 
 fn test_sigmoid_backward() raises:
     """Test sigmoid backward pass computes correct gradients."""
-    var output_shape = List[Int]()
+    var output_shape= List[Int]()
     output_shape.append(1)
     var output = full(output_shape, 0.5, DType.float32)
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = ones(grad_output_shape, DType.float32)
 
@@ -228,7 +228,7 @@ fn test_sigmoid_backward() raises:
 
 fn test_tanh_range() raises:
     """Test tanh output is in [-1, 1] range."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(5)
@@ -251,7 +251,7 @@ fn test_tanh_range() raises:
 
 fn test_tanh_at_zero() raises:
     """Test tanh(0) = 0."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     var input = zeros(input_shape, DType.float32)
 
@@ -263,7 +263,7 @@ fn test_tanh_at_zero() raises:
 
 fn test_tanh_antisymmetry() raises:
     """Test tanh(-x) = -tanh(x)."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     var x = zeros(input_shape, DType.float32)
     var x_data = x._data.bitcast[Float32]()
@@ -284,13 +284,13 @@ fn test_tanh_antisymmetry() raises:
 
 fn test_tanh_backward() raises:
     """Test tanh backward pass computes correct gradients."""
-    var output_shape = List[Int]()
+    var output_shape= List[Int]()
     output_shape.append(1)
     var output = zeros(output_shape, DType.float32)
     var output_data = output._data.bitcast[Float32]()
     output_data[0] = 0.5
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = ones(grad_output_shape, DType.float32)
 
@@ -308,7 +308,7 @@ fn test_tanh_backward() raises:
 
 fn test_softmax_output_sum() raises:
     """Test softmax outputs sum to 1 along last axis."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(3)
     var input = zeros(input_shape, DType.float32)
@@ -327,7 +327,7 @@ fn test_softmax_output_sum() raises:
 
 fn test_softmax_positive_outputs() raises:
     """Test softmax outputs are all positive."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(3)
     var input = zeros(input_shape, DType.float32)
@@ -346,7 +346,7 @@ fn test_softmax_positive_outputs() raises:
 
 fn test_softmax_uniform() raises:
     """Test softmax on uniform input gives uniform output."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(4)
     var input = zeros(input_shape, DType.float32)
@@ -364,7 +364,7 @@ fn test_softmax_uniform() raises:
 
 fn test_softmax_backward() raises:
     """Test softmax backward pass."""
-    var output_shape = List[Int]()
+    var output_shape= List[Int]()
     output_shape.append(1)
     output_shape.append(3)
     var output = zeros(output_shape, DType.float32)
@@ -374,7 +374,7 @@ fn test_softmax_backward() raises:
     output_data[1] = 0.6
     output_data[2] = 0.3
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(3)
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -388,7 +388,7 @@ fn test_softmax_backward() raises:
 
 fn test_softmax_axis_0() raises:
     """Test softmax along first axis (axis=0)."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(3)
     input_shape.append(2)
     var input = zeros(input_shape, DType.float32)
@@ -419,7 +419,7 @@ fn test_softmax_axis_0() raises:
 
 fn test_softmax_axis_1() raises:
     """Test softmax along second axis (axis=1)."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     var input = zeros(input_shape, DType.float32)
@@ -447,7 +447,7 @@ fn test_softmax_axis_1() raises:
 
 fn test_softmax_axis_negative_indexing() raises:
     """Test softmax with negative axis indexing."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     input_shape.append(4)
@@ -466,7 +466,7 @@ fn test_softmax_axis_negative_indexing() raises:
         assert_almost_equal(sum_val, 1.0, tolerance=1e-5)
 
     # Test axis=-2 (second-to-last axis) on 2D tensor
-    var input_shape_2d = List[Int]()
+    var input_shape_2d= List[Int]()
     input_shape_2d.append(3)
     input_shape_2d.append(2)
     var input_2d = ones(input_shape_2d, DType.float32)
@@ -483,7 +483,7 @@ fn test_softmax_axis_negative_indexing() raises:
 
 fn test_softmax_3d_axis_middle() raises:
     """Test softmax on 3D tensor along middle axis."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     input_shape.append(4)
@@ -515,7 +515,7 @@ fn test_softmax_3d_axis_middle() raises:
 
 fn test_activation_output_shape_preservation() raises:
     """Test that activations preserve input shape."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     var input = ones(input_shape, DType.float32)
@@ -538,7 +538,7 @@ fn test_activation_output_shape_preservation() raises:
 
 fn test_activation_dtype_preservation() raises:
     """Test that activations preserve input dtype."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(5)
     var input = ones(input_shape, DType.float32)
 
@@ -551,7 +551,7 @@ fn test_activation_dtype_preservation() raises:
 
 fn test_relu_gradient_mask() raises:
     """Test that ReLU gradient acts as a mask for positive values."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(4)
     var input = zeros(input_shape, DType.float32)
 
@@ -561,7 +561,7 @@ fn test_relu_gradient_mask() raises:
     input_data[2] = -3.0
     input_data[3] = 4.0
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(4)
     var grad_output = ones(grad_output_shape, DType.float32)
 

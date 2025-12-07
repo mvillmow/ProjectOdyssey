@@ -65,7 +65,7 @@ fn split_words(text: String) raises -> List[String]:
     var parts = text.split(" ")
 
     # Filter out empty strings that may result from multiple spaces
-    var words = List[String]()
+    var words= List[String]()
     for i in range(len(parts)):
         if len(String(parts[i])) > 0:
             words.append(String(parts[i]))
@@ -97,7 +97,7 @@ fn join_words(words: List[String]) raises -> String:
 # ============================================================================
 
 
-struct RandomSwap(TextTransform, Copyable, Movable):
+struct RandomSwap(Copyable, Movable, TextTransform):
     """Randomly swap positions of word pairs.
 
     Swaps adjacent or nearby word positions with configurable probability.
@@ -164,7 +164,7 @@ struct RandomSwap(TextTransform, Copyable, Movable):
         return join_words(words)
 
 
-struct RandomDeletion(TextTransform, Copyable, Movable):
+struct RandomDeletion(Copyable, Movable, TextTransform):
     """Randomly delete words from text.
 
     Deletes words with specified probability while ensuring at least
@@ -215,7 +215,7 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
             return text
 
         # Decide which words to keep
-        var kept_words = List[String]()
+        var kept_words= List[String]()
         for i in range(len(words)):
             if not self.base.should_apply():
                 # Keep this word if should_apply returns False
@@ -230,7 +230,7 @@ struct RandomDeletion(TextTransform, Copyable, Movable):
         return join_words(kept_words)
 
 
-struct RandomInsertion(TextTransform, Copyable, Movable):
+struct RandomInsertion(Copyable, Movable, TextTransform):
     """Insert random words from vocabulary into text.
 
     Inserts words from a predefined vocabulary at random positions.
@@ -248,7 +248,9 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
     var n: Int  # Number of words to insert
     var vocabulary: List[String]  # Words to insert from
 
-    fn __init__(out self, var vocabulary: List[String], p: Float64 = 0.1, n: Int = 1):
+    fn __init__(
+        out self, var vocabulary: List[String], p: Float64 = 0.1, n: Int = 1
+    ):
         """Create random insertion transform.
 
         Args:
@@ -294,7 +296,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
             var insert_pos = Int(random_si64(0, len(words) + 1))
 
             # Insert word at position
-            var new_words = List[String]()
+            var new_words= List[String]()
             for i in range(len(words)):
                 if i == insert_pos:
                     new_words.append(word_to_insert)
@@ -309,7 +311,7 @@ struct RandomInsertion(TextTransform, Copyable, Movable):
         return join_words(words)
 
 
-struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
+struct RandomSynonymReplacement(Copyable, Movable, TextTransform):
     """Replace random words with synonyms from dictionary.
 
     Uses a simple synonym dictionary to replace words with alternatives.
@@ -326,7 +328,9 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
     var base: RandomTransformBase  # Probability handling
     var synonyms: Dict[String, List[String]]  # Synonym dictionary
 
-    fn __init__(out self, var synonyms: Dict[String, List[String]], p: Float64 = 0.2):
+    fn __init__(
+        out self, var synonyms: Dict[String, List[String]], p: Float64 = 0.2
+    ):
         """Create random synonym replacement transform.
 
         Args:
@@ -357,7 +361,7 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
             return text
 
         # Process each word
-        var result_words = List[String]()
+        var result_words= List[String]()
         for i in range(len(words)):
             var word = words[i]
 
@@ -408,13 +412,13 @@ struct RandomSynonymReplacement(TextTransform, Copyable, Movable):
 #         """Apply all text transforms sequentially.
 #
 #         Args:
-            text: Input text.
+#            text: Input text.
 #
 #         Returns:
-            Transformed text after all transforms.
+#            Transformed text after all transforms.
 #
 #         Raises:
-            Error if any transform cannot be applied.
+#            Error if any transform cannot be applied.
 #         """
 #         var result = text
 #         for t in self.transforms:

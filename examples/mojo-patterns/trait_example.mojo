@@ -38,6 +38,7 @@ trait Optimizer:
 
 struct Linear(Module):
     """Linear layer implementing Module trait."""
+
     var weight: Tensor
     var bias: Tensor
 
@@ -54,11 +55,17 @@ struct Linear(Module):
 
 struct Adam(Optimizer):
     """Adam optimizer implementing Optimizer trait."""
+
     var lr: Float64
     var beta1: Float64
     var beta2: Float64
 
-    fn __init__(out self, lr: Float64 = 0.001, beta1: Float64 = 0.9, beta2: Float64 = 0.999):
+    fn __init__(
+        out self,
+        lr: Float64 = 0.001,
+        beta1: Float64 = 0.9,
+        beta2: Float64 = 0.999,
+    ):
         self.lr = lr
         self.beta1 = beta1
         self.beta2 = beta2

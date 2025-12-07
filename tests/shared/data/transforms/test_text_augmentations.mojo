@@ -5,7 +5,12 @@ random swap, random deletion) with emphasis on reproducibility, semantic
 preservation, and proper randomization.
 """
 
-from tests.shared.conftest import assert_true, assert_equal, assert_false, TestFixtures
+from tests.shared.conftest import (
+    assert_true,
+    assert_equal,
+    assert_false,
+    TestFixtures,
+)
 from shared.data.text_transforms import (
     TextTransform,
     RandomSwap,
@@ -55,7 +60,7 @@ fn test_split_words_single() raises:
 
 fn test_join_words_basic() raises:
     """Test basic word joining with spaces."""
-    var words = List[String]()
+    var words= List[String]()
     words.append("the")
     words.append("quick")
     words.append("brown")
@@ -67,7 +72,7 @@ fn test_join_words_basic() raises:
 
 fn test_join_words_empty() raises:
     """Test joining empty list returns empty string."""
-    var words = List[String]()
+    var words= List[String]()
     var text = join_words(words)
 
     assert_equal(text, "")
@@ -75,7 +80,7 @@ fn test_join_words_empty() raises:
 
 fn test_join_words_single() raises:
     """Test joining single word."""
-    var words = List[String]()
+    var words= List[String]()
     words.append("hello")
 
     var text = join_words(words)
@@ -233,7 +238,7 @@ fn test_random_insertion_basic() raises:
     """Test RandomInsertion inserts words from vocabulary."""
     var text = String("the brown fox")
 
-    var vocab = List[String]()
+    var vocab= List[String]()
     vocab.append("quick")
     vocab.append("lazy")
     vocab.append("red")
@@ -255,7 +260,7 @@ fn test_random_insertion_probability() raises:
     """Test RandomInsertion respects probability."""
     var text = String("the brown fox")
 
-    var vocab = List[String]()
+    var vocab= List[String]()
     vocab.append("quick")
 
     # With p=0.0, no insertion should occur
@@ -269,7 +274,7 @@ fn test_random_insertion_empty_text() raises:
     """Test RandomInsertion handles empty text."""
     var text = String("")
 
-    var vocab = List[String]()
+    var vocab= List[String]()
     vocab.append("quick")
 
     var insert = RandomInsertion(vocab.copy(), 1.0, 1)
@@ -282,7 +287,7 @@ fn test_random_insertion_empty_vocabulary() raises:
     """Test RandomInsertion handles empty vocabulary."""
     var text = String("the brown fox")
 
-    var vocab = List[String]()
+    var vocab= List[String]()
 
     var insert = RandomInsertion(vocab.copy(), 1.0, 1)
     var result = insert(text)
@@ -294,7 +299,7 @@ fn test_random_insertion_deterministic() raises:
     """Test RandomInsertion is deterministic with seed."""
     var text = String("the brown fox")
 
-    var vocab = List[String]()
+    var vocab= List[String]()
     vocab.append("quick")
     vocab.append("lazy")
 
@@ -303,7 +308,7 @@ fn test_random_insertion_deterministic() raises:
     var result1 = insert1(text)
 
     TestFixtures.set_seed()
-    var vocab2 = List[String]()
+    var vocab2= List[String]()
     vocab2.append("quick")
     vocab2.append("lazy")
     var insert2 = RandomInsertion(vocab2.copy(), 0.5, 2)
@@ -322,7 +327,7 @@ fn test_random_synonym_replacement_basic() raises:
     var text = String("the quick fox")
 
     var synonyms = Dict[String, List[String]]()
-    var quick_syns = List[String]()
+    var quick_syns= List[String]()
     quick_syns.append("fast")
     quick_syns.append("rapid")
     synonyms["quick"] = quick_syns^
@@ -348,7 +353,7 @@ fn test_random_synonym_replacement_probability() raises:
     var text = String("the quick fox")
 
     var synonyms = Dict[String, List[String]]()
-    var quick_syns = List[String]()
+    var quick_syns= List[String]()
     quick_syns.append("fast")
     synonyms["quick"] = quick_syns^
 
@@ -364,7 +369,7 @@ fn test_random_synonym_replacement_no_synonyms() raises:
     var text = String("the quick fox")
 
     var synonyms = Dict[String, List[String]]()
-    var slow_syns = List[String]()
+    var slow_syns= List[String]()
     slow_syns.append("sluggish")
     synonyms["slow"] = slow_syns^  # "slow" not in text
 
@@ -380,7 +385,7 @@ fn test_random_synonym_replacement_empty_text() raises:
     var text = String("")
 
     var synonyms = Dict[String, List[String]]()
-    var quick_syns = List[String]()
+    var quick_syns= List[String]()
     quick_syns.append("fast")
     synonyms["quick"] = quick_syns^
 
@@ -395,12 +400,12 @@ fn test_random_synonym_replacement_deterministic() raises:
     var text = String("the quick brown fox")
 
     var synonyms = Dict[String, List[String]]()
-    var quick_syns = List[String]()
+    var quick_syns= List[String]()
     quick_syns.append("fast")
     quick_syns.append("rapid")
     synonyms["quick"] = quick_syns^
 
-    var brown_syns = List[String]()
+    var brown_syns= List[String]()
     brown_syns.append("dark")
     brown_syns.append("tan")
     synonyms["brown"] = brown_syns^
@@ -411,12 +416,12 @@ fn test_random_synonym_replacement_deterministic() raises:
 
     TestFixtures.set_seed()
     var synonyms2 = Dict[String, List[String]]()
-    var quick_syns2 = List[String]()
+    var quick_syns2= List[String]()
     quick_syns2.append("fast")
     quick_syns2.append("rapid")
     synonyms2["quick"] = quick_syns2^
 
-    var brown_syns2 = List[String]()
+    var brown_syns2= List[String]()
     brown_syns2.append("dark")
     brown_syns2.append("tan")
     synonyms2["brown"] = brown_syns2^
@@ -437,7 +442,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     """Test TextCompose applies transforms sequentially."""
 #     var text = String("the quick brown fox")
 #
-#     var transforms = List[TextTransform]()
+#     var transforms : List[TextTransform] = []
 #     transforms.append(RandomSwap(1.0, 1))
 #     transforms.append(RandomDeletion(0.2))
 #
@@ -459,7 +464,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     var vocab = List[String]()
 #     vocab.append("lazy")
 #
-#     var transforms = List[TextTransform]()
+#     var transforms : List[TextTransform] = []
 #     transforms.append(RandomSwap(0.5, 1))
 #     transforms.append(RandomInsertion(vocab.copy(), 0.5, 1))
 #     transforms.append(RandomDeletion(0.3))
@@ -472,7 +477,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     TestFixtures.set_seed()
 #     var vocab2 = List[String]()
 #     vocab2.append("lazy")
-#     var transforms2 = List[TextTransform]()
+#     var transforms2 : List[TextTransform] = []
 #     transforms2.append(RandomSwap(0.5, 1))
 #     transforms2.append(RandomInsertion(vocab2.copy(), 0.5, 1))
 #     transforms2.append(RandomDeletion(0.3))
@@ -487,7 +492,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     """Test TextPipeline alias works correctly."""
 #     var text = String("the quick fox")
 #
-#     var transforms = List[TextTransform]()
+#     var transforms : List[TextTransform] = []
 #     transforms.append(RandomSwap(0.5, 1))
 #
 #     var pipeline = TextPipeline(transforms)
@@ -523,7 +528,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     lazy_syns.append("sluggish")
 #     synonyms["lazy"] = lazy_syns^
 #
-#     var transforms = List[TextTransform]()
+#     var transforms : List[TextTransform] = []
 #     transforms.append(RandomSynonymReplacement(synonyms.copy(), 0.3))
 #     transforms.append(RandomInsertion(vocab.copy(), 0.2, 1))
 #     transforms.append(RandomSwap(0.3, 2))
@@ -549,7 +554,7 @@ fn test_random_synonym_replacement_deterministic() raises:
 #     quick_syns.append("fast")
 #     synonyms["quick"] = quick_syns^
 #
-#     var transforms = List[TextTransform]()
+#     var transforms : List[TextTransform] = []
 #     transforms.append(RandomSynonymReplacement(synonyms.copy(), 1.0))
 #     transforms.append(RandomSwap(1.0, 2))
 #
@@ -653,4 +658,7 @@ fn main() raises:
     # test_augmentation_preserves_word_count_without_insertion_deletion()
     # print("  ✓ test_augmentation_preserves_word_count_without_insertion_deletion")
 
-    print("\n✓ All 30 text augmentation tests passed (5 skipped due to Mojo limitations)!")
+    print(
+        "\n✓ All 30 text augmentation tests passed (5 skipped due to Mojo"
+        " limitations)!"
+    )

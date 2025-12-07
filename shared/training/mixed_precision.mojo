@@ -44,7 +44,7 @@ struct GradientScaler(Copyable, Movable):
 
     Example:
         ```mojo
-        ar scaler = GradientScaler()
+        var scaler = GradientScaler()
 
         # In training loop:
         var scaled_loss = scaler.scale(loss)
@@ -61,6 +61,7 @@ struct GradientScaler(Copyable, Movable):
             scaler.backoff()
         ```
     """
+
     var scale: Float32
     var growth_factor: Float32
     var backoff_factor: Float32
@@ -70,13 +71,15 @@ struct GradientScaler(Copyable, Movable):
     var min_scale: Float32
     var max_scale: Float32
 
-    fn __init__(out self,
-                initial_scale: Float32 = 65536.0,
-                growth_factor: Float32 = 2.0,
-                backoff_factor: Float32 = 0.5,
-                growth_interval: Int = 2000,
-                min_scale: Float32 = 1.0,
-                max_scale: Float32 = 65536.0):
+    fn __init__(
+        out self,
+        initial_scale: Float32 = 65536.0,
+        growth_factor: Float32 = 2.0,
+        backoff_factor: Float32 = 0.5,
+        growth_interval: Int = 2000,
+        min_scale: Float32 = 1.0,
+        max_scale: Float32 = 65536.0,
+    ):
         """Initialize gradient scaler.
 
         Args:
@@ -110,7 +113,7 @@ struct GradientScaler(Copyable, Movable):
 
         Example:
             ```mojo
-            ar loss = compute_loss(predictions, targets)
+            var loss = compute_loss(predictions, targets)
             var scaled_loss = scaler.scale_loss(loss)
         ```
         """
@@ -118,7 +121,9 @@ struct GradientScaler(Copyable, Movable):
         if loss._numel == 0:
             raise Error("Cannot scale empty loss tensor")
         if self.scale <= 0.0:
-            raise Error("Scale factor must be positive, got: " + String(self.scale))
+            raise Error(
+                "Scale factor must be positive, got: " + String(self.scale)
+            )
 
         # Create a tensor with the scale value and multiply
         var scale_tensor = full(loss.shape(), Float64(self.scale), loss.dtype())
@@ -138,7 +143,7 @@ struct GradientScaler(Copyable, Movable):
 
         Example:
             ```mojo
-            ar scaled_grads = backward(scaled_loss)
+            var scaled_grads = backward(scaled_loss)
             var grads = scaler.unscale_gradients(scaled_grads)
         ```
         """
@@ -149,7 +154,9 @@ struct GradientScaler(Copyable, Movable):
             raise Error("Cannot unscale with zero scale factor")
 
         # Create a tensor with the scale value and divide
-        var scale_tensor = full(gradients.shape(), Float64(self.scale), gradients.dtype())
+        var scale_tensor = full(
+            gradients.shape(), Float64(self.scale), gradients.dtype()
+        )
         return gradients / scale_tensor
 
     fn step(mut self):
@@ -270,8 +277,9 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     return result
 
 
-fn update_model_from_master(mut model_params: ExTensor,
-                            master_params: ExTensor) raises:
+fn update_model_from_master(
+    mut model_params: ExTensor, master_params: ExTensor
+) raises:
     """Update model parameters from FP32 master weights with SIMD optimization.
 
     Copies FP32 master weights back to model parameters with dtype conversion.
@@ -299,7 +307,10 @@ fn update_model_from_master(mut model_params: ExTensor,
     if model_params._numel != master_params._numel:
         raise Error("Parameter and master weight sizes must match")
     if master_params.dtype() != DType.float32:
-        raise Error("Master params must be Float32, got: " + String(master_params.dtype()))
+        raise Error(
+            "Master params must be Float32, got: "
+            + String(master_params.dtype())
+        )
 
     var size = model_params._numel
 
@@ -349,7 +360,9 @@ fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
     return not (has_nan(gradients) or has_inf(gradients))
 
 
-fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTensor:
+fn clip_gradients_by_norm(
+    gradients: ExTensor, max_norm: Float32
+) raises -> ExTensor:
     """Clip gradients by global norm.
 
     Scales gradients if their L2 norm exceeds max_norm.
@@ -391,15 +404,17 @@ fn clip_gradients_by_norm(gradients: ExTensor, max_norm: Float32) raises -> ExTe
     # Clip if norm exceeds max_norm
     if grad_norm > Float64(max_norm):
         var scale_factor = Float64(max_norm) / grad_norm
-        var scale_tensor = full(gradients.shape(), scale_factor, gradients.dtype())
+        var scale_tensor = full(
+            gradients.shape(), scale_factor, gradients.dtype()
+        )
         return gradients * scale_tensor
     else:
         return gradients
 
 
-fn clip_gradients_by_value(gradients: ExTensor,
-                           min_value: Float32,
-                           max_value: Float32) raises -> ExTensor:
+fn clip_gradients_by_value(
+    gradients: ExTensor, min_value: Float32, max_value: Float32
+) raises -> ExTensor:
     """Clip gradients by value range with SIMD optimization.
 
     Clamps each gradient value to [min_value, max_value].
@@ -424,7 +439,12 @@ fn clip_gradients_by_value(gradients: ExTensor,
     """
     # Validate input
     if min_value >= max_value:
-        raise Error("min_value must be < max_value, got min=" + String(min_value) + ", max=" + String(max_value))
+        raise Error(
+            "min_value must be < max_value, got min="
+            + String(min_value)
+            + ", max="
+            + String(max_value)
+        )
     if gradients._numel == 0:
         return gradients  # No clipping needed for empty tensor
 

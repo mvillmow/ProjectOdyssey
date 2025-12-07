@@ -38,7 +38,7 @@ fn clip_predictions(
 
     Example:
         ```mojo
-        ar predictions = sigmoid(logits)  # Some values may be 0 or 1
+        var predictions = sigmoid(logits)  # Some values may be 0 or 1
         var clipped = clip_predictions(predictions)
         var log_pred = log(clipped)  # Safe to take log now
         ```
@@ -60,7 +60,7 @@ fn create_epsilon_tensor(
 
     Example:
         ```mojo
-        ar pred = predictions
+        var pred = predictions
         var eps = create_epsilon_tensor(pred)
         var denominator = add(pred, eps)  # Add epsilon to prevent division by zero
         ```
@@ -125,7 +125,7 @@ fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar one_minus_pred = compute_one_minus_tensor(predictions)
+        var one_minus_pred = compute_one_minus_tensor(predictions)
         ```
     """
     var one = ones_like(tensor)
@@ -221,9 +221,7 @@ fn compute_max_stable(tensor: ExTensor) raises -> ExTensor:
     return tensor
 
 
-fn compute_difference(
-    tensor1: ExTensor, tensor2: ExTensor
-) raises -> ExTensor:
+fn compute_difference(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     """Compute tensor1 - tensor2 with error checking.
 
     Args:
@@ -261,7 +259,9 @@ fn compute_product(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     return multiply(tensor1, tensor2)
 
 
-fn compute_ratio(tensor1: ExTensor, tensor2: ExTensor, epsilon: Float64 = 1e-7) raises -> ExTensor:
+fn compute_ratio(
+    tensor1: ExTensor, tensor2: ExTensor, epsilon: Float64 = 1e-7
+) raises -> ExTensor:
     """Compute element-wise ratio tensor1 / tensor2 with numerical stability.
 
     Adds epsilon to denominator to prevent division by zero.

@@ -25,7 +25,7 @@ fn test_validate_required_keys() raises:
     config.set("learning_rate", 0.001)
     config.set("batch_size", 32)
 
-    var required_keys = List[String]()
+    var required_keys= List[String]()
     required_keys.append("learning_rate")
     required_keys.append("batch_size")
 
@@ -44,7 +44,7 @@ fn test_validate_missing_required_key() raises:
     config.set("learning_rate", 0.001)
     # Missing batch_size
 
-    var required_keys = List[String]()
+    var required_keys= List[String]()
     required_keys.append("learning_rate")
     required_keys.append("batch_size")
 
@@ -66,7 +66,7 @@ fn test_validate_training_config_required_fields() raises:
     """
     var config = load_config("configs/defaults/training.yaml")
 
-    var required = List[String]()
+    var required= List[String]()
     required.append("optimizer.name")
     required.append("optimizer.learning_rate")
 
@@ -239,7 +239,7 @@ fn test_validate_enum_valid_value() raises:
     var config = Config()
     config.set("optimizer", "sgd")
 
-    var valid_optimizers = List[String]()
+    var valid_optimizers= List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("rmsprop")
@@ -257,7 +257,7 @@ fn test_validate_enum_invalid_value() raises:
     var config = Config()
     config.set("optimizer", "invalid_optimizer")
 
-    var valid_optimizers = List[String]()
+    var valid_optimizers= List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("rmsprop")
@@ -281,7 +281,7 @@ fn test_validate_activation_function() raises:
     var config = Config()
     config.set("activation", "relu")
 
-    var valid_activations = List[String]()
+    var valid_activations= List[String]()
     valid_activations.append("relu")
     valid_activations.append("sigmoid")
     valid_activations.append("tanh")
@@ -305,7 +305,7 @@ fn test_validate_exclusive_none_set() raises:
     var config = Config()
     config.set("other", "value")
 
-    var exclusive_keys = List[String]()
+    var exclusive_keys= List[String]()
     exclusive_keys.append("option_a")
     exclusive_keys.append("option_b")
 
@@ -323,7 +323,7 @@ fn test_validate_exclusive_one_set() raises:
     var config = Config()
     config.set("option_a", "value")
 
-    var exclusive_keys = List[String]()
+    var exclusive_keys= List[String]()
     exclusive_keys.append("option_a")
     exclusive_keys.append("option_b")
 
@@ -342,7 +342,7 @@ fn test_validate_exclusive_multiple_set() raises:
     config.set("option_a", "value1")
     config.set("option_b", "value2")
 
-    var exclusive_keys = List[String]()
+    var exclusive_keys= List[String]()
     exclusive_keys.append("option_a")
     exclusive_keys.append("option_b")
 
@@ -370,7 +370,7 @@ fn test_validate_complete_training_config() raises:
     var config = load_config("tests/configs/fixtures/valid_training.yaml")
 
     # Validate required fields
-    var required = List[String]()
+    var required= List[String]()
     required.append("optimizer.name")
     required.append("optimizer.learning_rate")
     required.append("training.epochs")
@@ -379,7 +379,7 @@ fn test_validate_complete_training_config() raises:
     config.validate(required)
 
     # Validate optimizer is valid choice
-    var valid_opts = List[String]()
+    var valid_opts= List[String]()
     valid_opts.append("sgd")
     valid_opts.append("adam")
     valid_opts.append("rmsprop")
@@ -405,7 +405,7 @@ fn test_validate_invalid_training_config() raises:
     var config = load_config("tests/configs/fixtures/invalid_training.yaml")
 
     # Should have invalid optimizer
-    var valid_opts = List[String]()
+    var valid_opts= List[String]()
     valid_opts.append("sgd")
     valid_opts.append("adam")
     valid_opts.append("rmsprop")
@@ -429,7 +429,7 @@ fn test_validate_model_config() raises:
     var config = load_config("configs/papers/lenet5/model.yaml")
 
     # Validate required model fields
-    var required = List[String]()
+    var required= List[String]()
     required.append("model.name")
     required.append("model.output_classes")
 

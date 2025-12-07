@@ -28,7 +28,7 @@ fn parse_args() raises -> Tuple[String, String]:
 
     Returns:
         Tuple of (weights_dir, data_dir).
-   """
+    """
     var parser = ArgumentParser()
     parser.add_argument("weights-dir", "string", "alexnet_weights")
     parser.add_argument("data-dir", "string", "datasets/cifar10")
@@ -42,9 +42,7 @@ fn parse_args() raises -> Tuple[String, String]:
 
 
 fn evaluate_model(
-    mut model: AlexNet,
-    borrowed test_images: ExTensor,
-    borrowed test_labels: ExTensor
+    mut model: AlexNet, test_images: ExTensor, test_labels: ExTensor
 ) raises -> Tuple[Float32, Float32]:
     """Evaluate model on test set with Top-1 and Top-5 accuracy.
 
@@ -66,7 +64,7 @@ fn evaluate_model(
     print("  Total samples:", num_samples)
 
     # Process samples and collect predictions
-    var predictions = List[Int]()
+    var predictions= List[Int]()
     var eval_samples = min(1000, num_samples)
 
     for i in range(eval_samples):
@@ -103,8 +101,24 @@ fn evaluate_model(
 
     print()
     print("Final Results:")
-    print("  Top-1 Accuracy: ", top1_accuracy_fraction * 100.0, "% (", Int(top1_accuracy_fraction * Float32(eval_samples)), "/", eval_samples, ")")
-    print("  Top-5 Accuracy: ", top5_accuracy * 100.0, "% (", correct_top5, "/", eval_samples, ")")
+    print(
+        "  Top-1 Accuracy: ",
+        top1_accuracy_fraction * 100.0,
+        "% (",
+        Int(top1_accuracy_fraction * Float32(eval_samples)),
+        "/",
+        eval_samples,
+        ")",
+    )
+    print(
+        "  Top-5 Accuracy: ",
+        top5_accuracy * 100.0,
+        "% (",
+        correct_top5,
+        "/",
+        eval_samples,
+        ")",
+    )
 
     return (top1_accuracy_fraction, top5_accuracy)
 
@@ -142,13 +156,13 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
 
     Note:
         Simple implementation using repeated argmax (not optimal but clear).
-   """
+    """
     var shape = tensor.shape()
     var num_classes = shape[1]
-    var indices = List[Int]()
+    var indices= List[Int]()
 
     # Create a copy of tensor values for modification
-    var values = List[Float32]()
+    var values= List[Float32]()
     var tensor_data = tensor._data.bitcast[Float32]()
     for i in range(num_classes):
         values.append(tensor_data[i])
@@ -207,7 +221,9 @@ fn main() raises:
     # Initialize model
     print("Initializing AlexNet model...")
     var dataset_info = DatasetInfo("cifar10")
-    var model = AlexNet(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
+    var model = AlexNet(
+        num_classes=dataset_info.num_classes(), dropout_rate=0.5
+    )
     print("  Model initialized with", model.num_classes, "classes")
     print()
 
@@ -232,5 +248,10 @@ fn main() raises:
 
     print()
     print("Inference complete!")
-    print("\nNote: This implementation demonstrates the full inference structure.")
-    print("Batch processing will be more efficient when tensor slicing is optimized.")
+    print(
+        "\nNote: This implementation demonstrates the full inference structure."
+    )
+    print(
+        "Batch processing will be more efficient when tensor slicing is"
+        " optimized."
+    )

@@ -35,11 +35,13 @@ fn main() raises:
     """Create and train a simple neural network."""
 
     # Create a simple network
-    var model = Sequential([
-        Layer("linear", input_size=784, output_size=128),
-        Layer("relu"),
-        Layer("linear", input_size=128, output_size=10),
-    ])
+    var model = Sequential(
+        [
+            Layer("linear", input_size=784, output_size=128),
+            Layer("relu"),
+            Layer("linear", input_size=128, output_size=10),
+        ]
+    )
 
     # Prepare data (using placeholder data for example)
     # In a real scenario, you would load actual training data

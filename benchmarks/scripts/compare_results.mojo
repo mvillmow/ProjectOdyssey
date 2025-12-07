@@ -122,7 +122,12 @@ fn parse_float_value(line: String, field_name: String) raises -> Float64:
 
     # Find end of number (comma, newline, or closing brace)
     var end = start
-    while end < len(line) and line[end] != "," and line[end] != "}" and line[end] != "\n":
+    while (
+        end < len(line)
+        and line[end] != ","
+        and line[end] != "}"
+        and line[end] != "\n"
+    ):
         end += 1
 
     var value_str = line[start:end].strip()
@@ -182,7 +187,7 @@ fn atof(s: String) -> Float64:
 
         # Apply exponent: result * 10^exponent
         var exp_value = Float64(exp_sign * exponent)
-        result = result * (10.0 ** exp_value)
+        result = result * (10.0**exp_value)
 
     return result * sign
 
@@ -206,7 +211,12 @@ fn parse_int_value(line: String, field_name: String) raises -> Int:
 
     # Find end of number (comma, newline, or closing brace)
     var end = start
-    while end < len(line) and line[end] != "," and line[end] != "}" and line[end] != "\n":
+    while (
+        end < len(line)
+        and line[end] != ","
+        and line[end] != "}"
+        and line[end] != "\n"
+    ):
         end += 1
 
     var value_str = line[start:end].strip()
@@ -217,7 +227,6 @@ fn parse_int_value(line: String, field_name: String) raises -> Int:
         result = result * 10 + (ord(value_str[i]) - ord("0"))
 
     return result
-
 
 
 fn load_benchmark_results(filepath: String) raises -> List[BenchmarkData]:
@@ -256,16 +265,16 @@ fn load_benchmark_results(filepath: String) raises -> List[BenchmarkData]:
         # Find benchmark entries within the array
         var current_pos = benchmarks_start
         while True:
-            var entry_start = content.find('{', current_pos)
+            var entry_start = content.find("{", current_pos)
             if entry_start == -1:
                 break
 
             # Check if we've gone past the benchmarks array
-            var array_end = content.find(']', benchmarks_start)
+            var array_end = content.find("]", benchmarks_start)
             if entry_start > array_end:
                 break
 
-            var entry_end = content.find('}', entry_start)
+            var entry_end = content.find("}", entry_start)
             if entry_end == -1:
                 break
 
@@ -280,7 +289,9 @@ fn load_benchmark_results(filepath: String) raises -> List[BenchmarkData]:
                 var iterations = parse_int_value(entry, '"iterations')
 
                 results.append(
-                    BenchmarkData(name, duration_ms, throughput, memory_mb, iterations)
+                    BenchmarkData(
+                        name, duration_ms, throughput, memory_mb, iterations
+                    )
                 )
             except:
                 # Skip entries that can't be parsed
@@ -290,7 +301,7 @@ fn load_benchmark_results(filepath: String) raises -> List[BenchmarkData]:
             current_pos = entry_end + 1
 
     except e:
-        raise Error("Failed to load benchmark results: " + str(e))
+        raise Error("Failed to load benchmark results: " + String(e))
 
     return results
 
@@ -327,7 +338,9 @@ fn atoi(s: String) -> Int:
 # ============================================================================
 
 
-fn calculate_percentage_change(baseline: Float64, current: Float64) raises -> Float64:
+fn calculate_percentage_change(
+    baseline: Float64, current: Float64
+) raises -> Float64:
     """Calculate percentage change from baseline to current.
 
     Formula: ((current - baseline) / baseline) * 100
@@ -414,7 +427,11 @@ fn compare_benchmarks(
 
         # O(1) lookup in dictionary
         if baseline.name not in current_dict:
-            print("Warning: Benchmark '" + baseline.name + "' not found in current results")
+            print(
+                "Warning: Benchmark '"
+                + baseline.name
+                + "' not found in current results"
+            )
             continue
 
         # Get current result via index from dictionary
@@ -423,7 +440,9 @@ fn compare_benchmarks(
         var current_duration = current.duration_ms
 
         # Calculate percentage change
-        var pct_change = calculate_percentage_change(baseline.duration_ms, current_duration)
+        var pct_change = calculate_percentage_change(
+            baseline.duration_ms, current_duration
+        )
 
         # Determine if regression
         var is_regr = is_regression(pct_change)
@@ -448,7 +467,9 @@ fn compare_benchmarks(
 # ============================================================================
 
 
-fn generate_comparison_report(comparisons: List[ComparisonResult]) raises -> String:
+fn generate_comparison_report(
+    comparisons: List[ComparisonResult],
+) raises -> String:
     """Generate comparison report.
 
     Args:
@@ -500,7 +521,9 @@ fn generate_comparison_report(comparisons: List[ComparisonResult]) raises -> Str
     return report
 
 
-fn generate_regression_report(comparisons: List[ComparisonResult]) raises -> String:
+fn generate_regression_report(
+    comparisons: List[ComparisonResult],
+) raises -> String:
     """Generate report focused on regressions.
 
     Args:
@@ -546,7 +569,7 @@ fn main() raises:
        - Flag regressions (>10% slowdown)
     5. Generate comparison report
     6. Exit with appropriate code (0 = success, 1 = regressions).
-   """
+    """
     print("Benchmark Comparison Tool\n")
 
     var baseline_file = "benchmarks/baselines/baseline_results.json"

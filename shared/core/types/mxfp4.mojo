@@ -42,7 +42,7 @@ from math import isnan, isinf
 from .fp4 import FP4_E2M1
 
 
-struct E8M0Scale(Stringable, Representable, Copyable, Movable):
+struct E8M0Scale(Copyable, Movable, Representable, Stringable):
     """8-bit exponent-only scale factor for MXFP4 blocks.
 
     Memory layout (1 byte):
@@ -54,6 +54,7 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
 
     Valid range: 2^-127 to 2^128.
     """
+
     var exponent: UInt8
 
     fn __init__(out self, exponent: UInt8 = 127):
@@ -132,7 +133,13 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
         Returns:
             String representation.
         """
-        return "E8M0(exp=" + String(self.exponent) + ", scale=" + String(self.to_float32()) + ")"
+        return (
+            "E8M0(exp="
+            + String(self.exponent)
+            + ", scale="
+            + String(self.to_float32())
+            + ")"
+        )
 
     fn __repr__(self) -> String:
         """Detailed representation.
@@ -143,7 +150,7 @@ struct E8M0Scale(Stringable, Representable, Copyable, Movable):
         return self.__str__()
 
 
-struct MXFP4(Stringable, Representable, Copyable, Movable):
+struct MXFP4(Copyable, Movable, Representable, Stringable):
     """MXFP4 individual value (E2M1 + E8M0 scale).
 
     Acts like FP16 but stores internally as 4-bit E2M1 value plus 8-bit E8M0 scale.
@@ -155,10 +162,13 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
         value: 4-bit E2M1 encoded value
         scale: 8-bit E8M0 scale factor.
     """
+
     var value: FP4_E2M1
     var scale: E8M0Scale
 
-    fn __init__(out self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()):
+    fn __init__(
+        out self, value: FP4_E2M1 = FP4_E2M1(), scale: E8M0Scale = E8M0Scale()
+    ):
         """Initialize MXFP4 from E2M1 value and E8M0 scale.
 
         Args:
@@ -264,7 +274,9 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
         return MXFP4(value, scale)
 
     @staticmethod
-    fn _fp4_stochastic_round(x: Float32, scale: Float32, seed: UInt64) -> FP4_E2M1:
+    fn _fp4_stochastic_round(
+        x: Float32, scale: Float32, seed: UInt64
+    ) -> FP4_E2M1:
         """Internal: Stochastic rounding helper using simple LCG.
 
         Args:
@@ -420,7 +432,10 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
         Returns:
             True if equal.
         """
-        return self.value == other.value and self.scale.exponent == other.scale.exponent
+        return (
+            self.value == other.value
+            and self.scale.exponent == other.scale.exponent
+        )
 
     fn __ne__(self, other: MXFP4) -> Bool:
         """Check inequality.
@@ -491,10 +506,16 @@ struct MXFP4(Stringable, Representable, Copyable, Movable):
         Returns:
             Representation string.
         """
-        return "MXFP4(value=" + repr(self.value) + ", scale=" + repr(self.scale) + ")"
+        return (
+            "MXFP4(value="
+            + repr(self.value)
+            + ", scale="
+            + repr(self.scale)
+            + ")"
+        )
 
 
-struct MXFP4Block(Stringable, Representable, Copyable, Movable):
+struct MXFP4Block(Copyable, Movable, Representable, Stringable):
     """MXFP4 block storage: 32 E2M1 values + 1 E8M0 scale (17 bytes total).
 
     Memory layout:
@@ -509,11 +530,11 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
     This provides 16:1 compression vs Float32 (17 bytes vs 128 bytes).
 
     Example:
-        ```mojo
-        rom collections import List.
+        ```
+        from collections import List
 
         # Create block from Float32 array
-        var values = List[Float32]()
+        var values : List[Float32]()
         for i in range(32):
             values.append(Float32(i) * 0.1)
 
@@ -521,6 +542,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         var decoded = block.to_float32_array()
         ```
     """
+
     var data: SIMD[DType.uint8, 16]  # 32 E2M1 values (2 per byte)
     var scale: E8M0Scale  # Shared E8M0 scale
 
@@ -533,7 +555,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """Initialize MXFP4Block from packed data and scale.
 
         Args:
-            data: 16 bytes containing 32 packed E2M1 values
+            data: 16 bytes containing 32 packed E2M1 values.
             scale: E8M0 scale factor for the block.
         """
         self.data = data
@@ -544,20 +566,25 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """Convert 32 Float32 values to MXFP4Block.
 
         Args:
-            values: List of exactly 32 Float32 values
+            values: List of exactly 32 Float32 values.
 
         Returns:
-            MXFP4Block with optimal scale and packed E2M1 values
+            MXFP4Block with optimal scale and packed E2M1 values.
 
         Raises:
-            Error: If values list doesn't contain exactly 32 elements
+            Error: If values list doesn't contain exactly 32 elements.
 
         Note:
+        ```
             Computes optimal E8M0 scale as max(abs(values)) / 6.0
             to fit all values in E2M1 range [0, 6].
+        ```
         """
         if len(values) != 32:
-            raise Error("MXFP4Block requires exactly 32 values, got " + String(len(values)))
+            raise Error(
+                "MXFP4Block requires exactly 32 values, got "
+                + String(len(values))
+            )
 
         # Find optimal scale: max(abs(values)) / 6.0
         var max_abs = Float32(0.0)
@@ -606,7 +633,7 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         Note:
             Decoding is lossless given the quantization that occurred during encoding.
         """
-        var result = List[Float32]()
+        var result= List[Float32]()
         var scale_f32 = self.scale.to_float32()
 
         for i in range(16):
@@ -625,10 +652,10 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """Get MXFP4 value at index (0-31).
 
         Args:
-            index: Index in range [0, 31]
+            index: Index in range [0, 31].
 
         Returns:
-            MXFP4 value at the given index
+            MXFP4 value at the given index.
 
         Raises:
             Error: If index is out of range.
@@ -652,11 +679,11 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         """Set MXFP4 value at index (0-31).
 
         Args:
-            index: Index in range [0, 31]
-            value: MXFP4 value to set
+            index: Index in range [0, 31].
+            value: MXFP4 value to set.
 
         Raises:
-            Error: If index is out of range
+            Error: If index is out of range.
 
         Note:
             This updates the E2M1 value but keeps the block's shared scale.
@@ -667,7 +694,9 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
 
         # Re-encode value with block's scale
         var float_val = value.to_float32()
-        var fp4_val = FP4_E2M1.from_float32(float_val, scale=self.scale.to_float32())
+        var fp4_val = FP4_E2M1.from_float32(
+            float_val, scale=self.scale.to_float32()
+        )
 
         var byte_idx = index // 2
         var is_upper = (index % 2) == 0
@@ -688,7 +717,11 @@ struct MXFP4Block(Stringable, Representable, Copyable, Movable):
         Returns:
             String representation.
         """
-        return "MXFP4Block(32 values, scale=" + String(self.scale.to_float32()) + ")"
+        return (
+            "MXFP4Block(32 values, scale="
+            + String(self.scale.to_float32())
+            + ")"
+        )
 
     fn __repr__(self) -> String:
         """Detailed representation.

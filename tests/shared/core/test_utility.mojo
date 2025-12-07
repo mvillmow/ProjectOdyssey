@@ -21,9 +21,10 @@ from tests.shared.conftest import (
 # Test copy() and clone()
 # ============================================================================
 
+
 fn test_copy_independence() raises:
     """Test that copy creates independent tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 3.0, DType.float32)
     # var b = copy(a)  # TODO: Implement copy()
@@ -36,7 +37,7 @@ fn test_copy_independence() raises:
 
 fn test_clone_identical() raises:
     """Test that clone creates identical tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
@@ -53,9 +54,10 @@ fn test_clone_identical() raises:
 # Test property accessors
 # ============================================================================
 
+
 fn test_numel_total_elements() raises:
     """Test numel() returns total number of elements."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -66,12 +68,12 @@ fn test_numel_total_elements() raises:
 
 fn test_dim_num_dimensions() raises:
     """Test that dim is correct."""
-    var shape_1d = List[Int]()
+    var shape_1d= List[Int]()
     shape_1d.append(10)
     var t1 = ones(shape_1d, DType.float32)
     assert_dim(t1, 1, "1D tensor should have dim=1")
 
-    var shape_3d = List[Int]()
+    var shape_3d= List[Int]()
     shape_3d.append(2)
     shape_3d.append(3)
     shape_3d.append(4)
@@ -81,7 +83,7 @@ fn test_dim_num_dimensions() raises:
 
 fn test_shape_property() raises:
     """Test shape() returns correct shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var t = ones(shape, DType.float32)
@@ -94,7 +96,7 @@ fn test_shape_property() raises:
 
 fn test_dtype_property() raises:
     """Test dtype() returns correct data type."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var t32 = ones(shape, DType.float32)
@@ -108,9 +110,10 @@ fn test_dtype_property() raises:
 # Test stride calculations
 # ============================================================================
 
+
 fn test_stride_row_major() raises:
     """Test stride calculation for row-major (C-order)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -127,9 +130,10 @@ fn test_stride_row_major() raises:
 # Test contiguity
 # ============================================================================
 
+
 fn test_is_contiguous_true() raises:
     """Test that newly created tensors are contiguous."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var t = ones(shape, DType.float32)
@@ -143,7 +147,7 @@ fn test_is_contiguous_true() raises:
 
 fn test_is_contiguous_after_transpose() raises:
     """Test that transposed tensor is not contiguous."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -159,9 +163,10 @@ fn test_is_contiguous_after_transpose() raises:
 # Test contiguous() - make contiguous copy
 # ============================================================================
 
+
 fn test_contiguous_on_noncontiguous() raises:
     """Test making non-contiguous tensor contiguous."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -178,9 +183,10 @@ fn test_contiguous_on_noncontiguous() raises:
 # Test item() - scalar extraction
 # ============================================================================
 
+
 fn test_item_single_element() raises:
     """Test extracting value from single-element tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t = full(shape, 42.0, DType.float32)
     # var val = item(t)  # TODO: Implement item()
 
@@ -190,7 +196,7 @@ fn test_item_single_element() raises:
 
 fn test_item_requires_single_element() raises:
     """Test that item() requires single-element tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = ones(shape, DType.float32)
     # var val = item(t)  # Should raise error
@@ -202,6 +208,7 @@ fn test_item_requires_single_element() raises:
 # ============================================================================
 # Test tolist() - convert to nested list
 # ============================================================================
+
 
 fn test_tolist_1d() raises:
     """Test converting 1D tensor to list."""
@@ -215,7 +222,7 @@ fn test_tolist_1d() raises:
 
 fn test_tolist_nested() raises:
     """Test converting multi-dimensional tensor to nested list."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var t = arange(0.0, 6.0, 1.0, DType.float32)
@@ -232,9 +239,10 @@ fn test_tolist_nested() raises:
 # Test __len__
 # ============================================================================
 
+
 fn test_len_first_dim() raises:
     """Test __len__ returns size of first dimension."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     shape.append(3)
     var t = ones(shape, DType.float32)
@@ -246,7 +254,7 @@ fn test_len_first_dim() raises:
 
 fn test_len_1d() raises:
     """Test __len__ on 1D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var t = ones(shape, DType.float32)
 
@@ -259,9 +267,10 @@ fn test_len_1d() raises:
 # Test __bool__
 # ============================================================================
 
+
 fn test_bool_single_element() raises:
     """Test __bool__ on single-element tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t_zero = full(shape, 0.0, DType.float32)
     var t_nonzero = full(shape, 5.0, DType.float32)
 
@@ -274,7 +283,7 @@ fn test_bool_single_element() raises:
 
 fn test_bool_requires_single_element() raises:
     """Test that __bool__ requires single-element tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = ones(shape, DType.float32)
 
@@ -289,9 +298,10 @@ fn test_bool_requires_single_element() raises:
 # Test type conversions
 # ============================================================================
 
+
 fn test_int_conversion() raises:
     """Test __int__ conversion."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t = full(shape, 42.5, DType.float32)
 
     # var val = Int(t)  # TODO: Implement __int__
@@ -301,7 +311,7 @@ fn test_int_conversion() raises:
 
 fn test_float_conversion() raises:
     """Test __float__ conversion."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t = full(shape, 42.0, DType.int32)
 
     # var val = float(t)  # TODO: Implement __float__
@@ -313,20 +323,21 @@ fn test_float_conversion() raises:
 # Test __str__ and __repr__
 # ============================================================================
 
+
 fn test_str_readable() raises:
     """Test __str__ produces readable output."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var t = arange(0.0, 3.0, 1.0, DType.float32)
 
-    # var s = str(t)  # TODO: Implement __str__
+    # var s = String(t)  # TODO: Implement __str__
     # Should produce something like "ExTensor([0, 1, 2], dtype=float32)"
     pass  # Placeholder
 
 
 fn test_repr_complete() raises:
     """Test __repr__ produces complete representation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(2)
     var t = ones(shape, DType.float32)
@@ -340,9 +351,10 @@ fn test_repr_complete() raises:
 # Test __hash__
 # ============================================================================
 
+
 fn test_hash_immutable() raises:
     """Test __hash__ for immutable tensors."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = arange(0.0, 3.0, 1.0, DType.float32)
     var b = arange(0.0, 3.0, 1.0, DType.float32)
@@ -357,6 +369,7 @@ fn test_hash_immutable() raises:
 # ============================================================================
 # Test diff() - consecutive differences
 # ============================================================================
+
 
 fn test_diff_1d() raises:
     """Test computing consecutive differences."""
@@ -382,6 +395,7 @@ fn test_diff_higher_order() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all utility operation tests."""

@@ -39,8 +39,8 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
         - Within 2x of PyTorch SGD performance.
     """
     # TODO(#1538): Implement when SGD and timing utilities are available
-    # varparam_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
-    # var results = List[BenchmarkResult]()
+    # varparam_counts : List[Int] = [1_000_000, 10_000_000, 100_000_000]
+    # var results : List[BenchmarkResult] = []
     #
     # for n in param_counts:
     #     # Create parameters and gradients
@@ -65,7 +65,7 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
     #     varmemory_mb = Float64(n * 2) * sizeof[Float32]() / 1_000_000  # params + momentum
     #
     #     results.append(BenchmarkResult(
-    #         name="SGD-" + str(n) + "-params",
+    #         name="SGD-" + String(n) + "-params",
     #         duration_ms=elapsed * 1000,
     #         throughput=throughput,
     #         memory_mb=memory_mb
@@ -74,7 +74,7 @@ fn bench_sgd_update_speed() raises -> List[BenchmarkResult]:
     # return results
 
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="SGD-placeholder",
@@ -146,8 +146,8 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
         - Within 2x of PyTorch Adam performance.
     """
     # TODO(#1538): Implement when Adam is available
-    # varparam_counts = List[Int](1_000_000, 10_000_000, 100_000_000)
-    # var results = List[BenchmarkResult]()
+    # varparam_counts : List[Int] = [1_000_000, 10_000_000, 100_000_000]
+    # var results : List[BenchmarkResult] = []
     #
     # for n in param_counts:
     #     # Create parameters and gradients
@@ -172,7 +172,7 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
     #     varmemory_mb = Float64(n * 3) * sizeof[Float32]() / 1_000_000  # params + m + v
     #
     #     results.append(BenchmarkResult(
-    #         name="Adam-" + str(n) + "-params",
+    #         name="Adam-" + String(n) + "-params",
     #         duration_ms=elapsed * 1000,
     #         throughput=throughput,
     #         memory_mb=memory_mb
@@ -181,7 +181,7 @@ fn bench_adam_update_speed() raises -> List[BenchmarkResult]:
     # return results
 
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="Adam-placeholder",
@@ -203,7 +203,7 @@ fn bench_adam_memory_usage() raises -> BenchmarkResult:
 
     Performance Target:
         - Memory usage within 10% of theoretical minimum (3x parameter size).
-   """
+    """
     # TODO(#1538): Implement when memory profiling is available
     # varn = 10_000_000
     # var params = Tensor.randn(n)
@@ -267,7 +267,7 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
     #     ("RMSprop", RMSprop(learning_rate=0.01)),
     # ]
     #
-    # var results = List[BenchmarkResult]()
+    # var results : List[BenchmarkResult] = []
     #
     # for (name, optimizer) in optimizers:
     #     # Warmup
@@ -294,7 +294,7 @@ fn bench_optimizer_comparison() raises -> List[BenchmarkResult]:
     # return results
 
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="Optimizer-comparison-placeholder",

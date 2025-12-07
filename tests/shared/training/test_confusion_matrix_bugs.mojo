@@ -1,7 +1,7 @@
 """Tests for List[Int] constructor bugs in confusion_matrix.mojo.
 
 This test file demonstrates the bug in confusion_matrix.mojo that uses the
-unsafe pattern: List[Int]() followed by list[i] = value.
+unsafe pattern= List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fix is applied, demonstrating the bug.
 After fixing, they should PASS.
@@ -19,6 +19,7 @@ from shared.training.metrics.confusion_matrix import ConfusionMatrix
 # Test argmax() bug (Line 323) - called by ConfusionMatrix.update()
 # ============================================================================
 
+
 fn test_confusion_matrix_update_with_logits() raises:
     """Test ConfusionMatrix.update with logits (triggers argmax bug at line 323).
 
@@ -29,13 +30,13 @@ fn test_confusion_matrix_update_with_logits() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # Create logits tensor [batch_size=10, num_classes=3]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(10)  # batch size
-    logits_shape.append(3)   # num classes
+    logits_shape.append(3)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=10]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(10)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -56,13 +57,13 @@ fn test_confusion_matrix_small_batch() raises:
     var cm = ConfusionMatrix(num_classes=5)
 
     # Create logits tensor [batch_size=1, num_classes=5]
-    var logits_shape = List[Int]()
-    logits_shape.append(1)   # batch size = 1
-    logits_shape.append(5)   # num classes
+    var logits_shape= List[Int]()
+    logits_shape.append(1)  # batch size = 1
+    logits_shape.append(5)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=1]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(1)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -83,13 +84,13 @@ fn test_confusion_matrix_large_batch() raises:
     var cm = ConfusionMatrix(num_classes=10)
 
     # Create logits tensor [batch_size=128, num_classes=10]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(128)  # large batch
-    logits_shape.append(10)   # num classes
+    logits_shape.append(10)  # num classes
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=128]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(128)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -111,13 +112,13 @@ fn test_confusion_matrix_multiple_updates() raises:
     # Update with multiple batches
     for batch in range(3):
         # Create logits tensor [batch_size=16, num_classes=4]
-        var logits_shape = List[Int]()
+        var logits_shape= List[Int]()
         logits_shape.append(16)
         logits_shape.append(4)
         var logits = ones(logits_shape, DType.float32)
 
         # Create labels tensor [batch_size=16]
-        var labels_shape = List[Int]()
+        var labels_shape= List[Int]()
         labels_shape.append(16)
         var labels = zeros(labels_shape, DType.int32)
 
@@ -137,13 +138,13 @@ fn test_confusion_matrix_binary_classification() raises:
     var cm = ConfusionMatrix(num_classes=2)
 
     # Create logits tensor [batch_size=20, num_classes=2]
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(20)
     logits_shape.append(2)
     var logits = ones(logits_shape, DType.float32)
 
     # Create labels tensor [batch_size=20]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(20)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -157,6 +158,7 @@ fn test_confusion_matrix_binary_classification() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all confusion_matrix.mojo bug tests.

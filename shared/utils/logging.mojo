@@ -106,7 +106,7 @@ trait Formatter:
 
 
 @fieldwise_init
-struct SimpleFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
+struct SimpleFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
     """Simple formatter: [LEVEL] message."""
 
     fn format(self, record: LogRecord) -> String:
@@ -115,25 +115,38 @@ struct SimpleFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
 
 
 @fieldwise_init
-struct TimestampFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
+struct TimestampFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
     """Timestamp formatter: YYYY-MM-DD HH:MM:SS [LEVEL] message."""
 
     fn format(self, record: LogRecord) -> String:
         """Format log record with timestamp."""
-        return record.timestamp + " [" + record.level_name() + "] " + record.message
+        return (
+            record.timestamp
+            + " ["
+            + record.level_name()
+            + "] "
+            + record.message
+        )
 
 
 @fieldwise_init
-struct DetailedFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
+struct DetailedFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
     """Detailed formatter: [LEVEL] logger_name - message."""
 
     fn format(self, record: LogRecord) -> String:
         """Format log record with logger name."""
-        return "[" + record.level_name() + "] " + record.logger_name + " - " + record.message
+        return (
+            "["
+            + record.level_name()
+            + "] "
+            + record.logger_name
+            + " - "
+            + record.message
+        )
 
 
 @fieldwise_init
-struct ColoredFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
+struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
     """Colored formatter using ANSI escape codes."""
 
     # ANSI color codes
@@ -146,7 +159,15 @@ struct ColoredFormatter(Formatter, Copyable, Movable, ImplicitlyCopyable):
     fn format(self, record: LogRecord) -> String:
         """Format log record with ANSI color codes."""
         var color = self._get_color(record.level)
-        return color + "[" + record.level_name() + "]" + self.RESET + " " + record.message
+        return (
+            color
+            + "["
+            + record.level_name()
+            + "]"
+            + self.RESET
+            + " "
+            + record.message
+        )
 
     fn _get_color(self, level: Int) -> String:
         """Get ANSI color for level."""
@@ -173,7 +194,7 @@ trait Handler:
         ...
 
 
-struct StreamHandler(Handler, Copyable, Movable, ImplicitlyCopyable):
+struct StreamHandler(Copyable, Handler, ImplicitlyCopyable, Movable):
     """Write log messages to stdout/stderr."""
 
     var formatter: SimpleFormatter
@@ -188,7 +209,7 @@ struct StreamHandler(Handler, Copyable, Movable, ImplicitlyCopyable):
         print(formatted)
 
 
-struct FileHandler(Handler, Copyable, Movable):
+struct FileHandler(Copyable, Handler, Movable):
     """Write log messages to a file."""
 
     var filepath: String
@@ -251,10 +272,10 @@ struct Logger:
         Args:
             name: Logger name (e.g., "training", "evaluation")
             level: Minimum log level to output (default: INFO).
-       """
+        """
         self.name = name
         self.level = level
-        self.handlers = List[StreamHandler]()
+        self.handlers: List[StreamHandler] = []
 
     fn add_handler(mut self, handler: StreamHandler):
         """Add an output handler to this logger.
@@ -348,7 +369,7 @@ fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
 
     Example:
         ```mojo
-        ar logger = get_logger("training")
+        var logger = get_logger("training")
         logger.info("Training started")
         ```
     """

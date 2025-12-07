@@ -39,7 +39,7 @@ fn bench_linear_forward() raises -> List[BenchmarkResult]:
     """
     # TODO: Implement when Linear layer is available
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="LinearForward-placeholder",
@@ -90,7 +90,7 @@ fn bench_activation_functions() raises -> List[BenchmarkResult]:
     """
     # TODO: Implement when activation layers are available
     # Placeholder for TDD
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(
         BenchmarkResult(
             name="Activations-placeholder",

@@ -47,16 +47,24 @@ fn test_benchmark_execution_timing() raises:
     var throughput: Float64 = 100.0
 
     # Verify non-zero timing
-    assert_greater(Float32(duration_ms), Float32(0.0), "Duration should be positive")
+    assert_greater(
+        Float32(duration_ms), Float32(0.0), "Duration should be positive"
+    )
 
     # Verify reasonable range (not too large)
-    assert_less(Float32(duration_ms), Float32(10000.0), "Duration should be reasonable")
+    assert_less(
+        Float32(duration_ms), Float32(10000.0), "Duration should be reasonable"
+    )
 
     # Verify multiple iteration durations are consistent
     var result1 = BenchmarkResult(benchmark_name, duration_ms, throughput)
     var result2 = BenchmarkResult(benchmark_name, duration_ms, throughput)
 
-    assert_equal(result1.duration_ms, result2.duration_ms, "Timing should be reproducible")
+    assert_equal(
+        result1.duration_ms,
+        result2.duration_ms,
+        "Timing should be reproducible",
+    )
 
 
 fn test_multiple_iterations() raises:
@@ -82,7 +90,9 @@ fn test_multiple_iterations() raises:
 
     # Verify first and last have different values (for statistics)
     assert_not_equal(
-        Float64(results[0].duration_ms), Float64(results[4].duration_ms), "Iterations should vary"
+        Float64(results[0].duration_ms),
+        Float64(results[4].duration_ms),
+        "Iterations should vary",
     )
 
 
@@ -94,21 +104,33 @@ fn test_throughput_calculation() raises:
     - Handles different operation counts
     - Handles different time scales
     - Results are sensible (positive, non-infinite).
-   """
+    """
     # Test throughput with different values
     var throughput_high: Float64 = 1000.0  # 1000 ops/sec
-    var throughput_low: Float64 = 100.0    # 100 ops/sec
+    var throughput_low: Float64 = 100.0  # 100 ops/sec
 
     # Verify throughput values are positive
-    assert_greater(Float32(throughput_high), Float32(0.0), "Throughput should be positive")
-    assert_greater(Float32(throughput_low), Float32(0.0), "Throughput should be positive")
+    assert_greater(
+        Float32(throughput_high), Float32(0.0), "Throughput should be positive"
+    )
+    assert_greater(
+        Float32(throughput_low), Float32(0.0), "Throughput should be positive"
+    )
 
     # Verify relationship between high and low throughput
-    assert_greater(Float32(throughput_high), Float32(throughput_low), "High throughput should exceed low")
+    assert_greater(
+        Float32(throughput_high),
+        Float32(throughput_low),
+        "High throughput should exceed low",
+    )
 
     # Create result and verify throughput is preserved
     var result = BenchmarkResult("throughput_test", 10.0, throughput_high)
-    assert_equal(result.throughput, throughput_high, "Throughput should be stored correctly")
+    assert_equal(
+        result.throughput,
+        throughput_high,
+        "Throughput should be stored correctly",
+    )
 
 
 fn test_deterministic_execution() raises:
@@ -134,9 +156,15 @@ fn test_deterministic_execution() raises:
         results2.append(10.5)
 
     # Verify results are identical
-    assert_equal(len(results1), len(results2), "Should have same number of results")
+    assert_equal(
+        len(results1), len(results2), "Should have same number of results"
+    )
     for i in range(len(results1)):
-        assert_equal(results1[i], results2[i], "Results should be identical with same seed")
+        assert_equal(
+            results1[i],
+            results2[i],
+            "Results should be identical with same seed",
+        )
 
 
 fn test_result_collection() raises:
@@ -177,14 +205,28 @@ fn test_benchmark_isolation() raises:
     var bench2 = BenchmarkResult("benchmark_2", 20.0, 200.0)
 
     # Verify they are independent
-    assert_not_equal(bench1.name, bench2.name, "Benchmarks should have different names")
-    assert_not_equal(Float64(bench1.duration_ms), Float64(bench2.duration_ms), "Benchmarks should have different durations")
-    assert_not_equal(Float64(bench1.throughput), Float64(bench2.throughput), "Benchmarks should have different throughputs")
+    assert_not_equal(
+        bench1.name, bench2.name, "Benchmarks should have different names"
+    )
+    assert_not_equal(
+        Float64(bench1.duration_ms),
+        Float64(bench2.duration_ms),
+        "Benchmarks should have different durations",
+    )
+    assert_not_equal(
+        Float64(bench1.throughput),
+        Float64(bench2.throughput),
+        "Benchmarks should have different throughputs",
+    )
 
     # Verify modifications to one don't affect the other
     var original_bench2_duration = bench2.duration_ms
     bench1.duration_ms = 999.0
-    assert_equal(bench2.duration_ms, original_bench2_duration, "Modifying bench1 should not affect bench2")
+    assert_equal(
+        bench2.duration_ms,
+        original_bench2_duration,
+        "Modifying bench1 should not affect bench2",
+    )
 
 
 fn test_benchmark_timeout() raises:
@@ -201,11 +243,19 @@ fn test_benchmark_timeout() raises:
 
     # Create a fast benchmark (should not timeout)
     var fast_bench = BenchmarkResult("fast", 50.0, 100.0)
-    assert_less(Float32(fast_bench.duration_ms), Float32(timeout_threshold), "Fast benchmark should be under timeout")
+    assert_less(
+        Float32(fast_bench.duration_ms),
+        Float32(timeout_threshold),
+        "Fast benchmark should be under timeout",
+    )
 
     # Create a slow benchmark that exceeds timeout
     var slow_bench = BenchmarkResult("slow", 5000.0, 10.0)
-    assert_greater(Float32(slow_bench.duration_ms), Float32(timeout_threshold), "Slow benchmark should exceed timeout")
+    assert_greater(
+        Float32(slow_bench.duration_ms),
+        Float32(timeout_threshold),
+        "Slow benchmark should exceed timeout",
+    )
 
 
 fn test_json_output_format() raises:
@@ -230,8 +280,16 @@ fn test_json_output_format() raises:
     for i in range(len(results)):
         ref result = results[i]
         assert_true(len(result.name) > 0, "Name should be present")
-        assert_greater(Float32(result.duration_ms), Float32(0.0), "Duration should be positive")
-        assert_greater(Float32(result.throughput), Float32(0.0), "Throughput should be positive")
+        assert_greater(
+            Float32(result.duration_ms),
+            Float32(0.0),
+            "Duration should be positive",
+        )
+        assert_greater(
+            Float32(result.throughput),
+            Float32(0.0),
+            "Throughput should be positive",
+        )
 
 
 fn main() raises:

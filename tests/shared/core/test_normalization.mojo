@@ -26,7 +26,12 @@ from shared.testing import (
     assert_gradients_close,
 )
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
-from shared.core.normalization import batch_norm2d, batch_norm2d_backward, layer_norm, layer_norm_backward
+from shared.core.normalization import (
+    batch_norm2d,
+    batch_norm2d_backward,
+    layer_norm,
+    layer_norm_backward,
+)
 from shared.core.arithmetic import add, subtract, multiply
 from shared.core.reduction import sum as reduce_sum
 
@@ -38,7 +43,7 @@ from shared.core.reduction import sum as reduce_sum
 
 fn test_batch_norm2d_shapes() raises:
     """Test that batch_norm2d returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -46,7 +51,7 @@ fn test_batch_norm2d_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Create gamma, beta, running_mean, running_var for 3 channels
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(3)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -55,8 +60,14 @@ fn test_batch_norm2d_shapes() raises:
 
     # Training mode
     var (output, new_mean, new_var) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=True, momentum=0.1, epsilon=1e-5
+        x,
+        gamma,
+        beta,
+        running_mean,
+        running_var,
+        training=True,
+        momentum=0.1,
+        epsilon=1e-5,
     )
 
     # Check output shape
@@ -72,7 +83,7 @@ fn test_batch_norm2d_shapes() raises:
 
 fn test_batch_norm2d_training_mode() raises:
     """Test that batch_norm2d computes batch statistics in training mode."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
@@ -84,7 +95,7 @@ fn test_batch_norm2d_training_mode() raises:
         x._data.bitcast[Float32]()[i] = Float32(i)
 
     # Mean should be 3.5, variance should be computed from data
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -92,30 +103,34 @@ fn test_batch_norm2d_training_mode() raises:
     var running_var = ones(param_shape, DType.float32)
 
     var (output, new_mean, new_var) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=True, momentum=0.1, epsilon=1e-5
+        x,
+        gamma,
+        beta,
+        running_mean,
+        running_var,
+        training=True,
+        momentum=0.1,
+        epsilon=1e-5,
     )
 
     # In training mode, running stats should be updated
     # new_running_mean = (1 - momentum) * old + momentum * batch_mean
     # = 0.9 * 0.0 + 0.1 * 3.5 = 0.35
     assert_almost_equal(
-        new_mean._data.bitcast[Float32]()[0],
-        Float32(0.35),
-        tolerance=1e-4
+        new_mean._data.bitcast[Float32]()[0], Float32(0.35), tolerance=1e-4
     )
 
 
 fn test_batch_norm2d_inference_mode() raises:
     """Test that batch_norm2d uses running statistics in inference mode."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
     shape.append(2)  # width
     var x = ones(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -129,20 +144,22 @@ fn test_batch_norm2d_inference_mode() raises:
 
     # Inference mode
     var (output, new_mean, new_var) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=False, momentum=0.1, epsilon=1e-5
+        x,
+        gamma,
+        beta,
+        running_mean,
+        running_var,
+        training=False,
+        momentum=0.1,
+        epsilon=1e-5,
     )
 
     # Running statistics should be unchanged in inference mode
     assert_almost_equal(
-        new_mean._data.bitcast[Float32]()[0],
-        Float32(0.5),
-        tolerance=1e-5
+        new_mean._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5
     )
     assert_almost_equal(
-        new_var._data.bitcast[Float32]()[0],
-        Float32(0.25),
-        tolerance=1e-5
+        new_var._data.bitcast[Float32]()[0], Float32(0.25), tolerance=1e-5
     )
 
     # Output should use running statistics for normalization
@@ -151,22 +168,20 @@ fn test_batch_norm2d_inference_mode() raises:
     # output = gamma * normalized + beta = 1.0 * 1.0 + 0.0 = 1.0
     for i in range(8):
         assert_almost_equal(
-            output._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-3
+            output._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-3
         )
 
 
 fn test_batch_norm2d_scale_shift() raises:
     """Test that batch_norm2d applies gamma and beta correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)  # batch
     shape.append(2)  # channels
     shape.append(2)  # height
     shape.append(2)  # width
     var x = zeros(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(2)
 
     # Set gamma = [2.0, 3.0], beta = [1.0, -1.0]
@@ -183,8 +198,14 @@ fn test_batch_norm2d_scale_shift() raises:
 
     # Inference mode with zero input and zero mean
     var (output, _, _) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=False, momentum=0.1, epsilon=1e-5
+        x,
+        gamma,
+        beta,
+        running_mean,
+        running_var,
+        training=False,
+        momentum=0.1,
+        epsilon=1e-5,
     )
 
     # For zero input with zero mean: normalized = 0
@@ -195,30 +216,26 @@ fn test_batch_norm2d_scale_shift() raises:
     # Check channel 0 values (indices 0-3)
     for i in range(4):
         assert_almost_equal(
-            output._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-4
+            output._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-4
         )
 
     # Check channel 1 values (indices 4-7)
     for i in range(4, 8):
         assert_almost_equal(
-            output._data.bitcast[Float32]()[i],
-            Float32(-1.0),
-            tolerance=1e-4
+            output._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-4
         )
 
 
 fn test_batch_norm2d_zero_variance() raises:
     """Test that batch_norm2d handles zero variance with epsilon."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(1)  # height
     shape.append(1)  # width
     var x = ones(shape, DType.float32)  # All values are 1.0 - zero variance
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -227,8 +244,14 @@ fn test_batch_norm2d_zero_variance() raises:
 
     # This should not crash due to division by zero
     var (output, _, _) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=True, momentum=0.1, epsilon=1e-5
+        x,
+        gamma,
+        beta,
+        running_mean,
+        running_var,
+        training=True,
+        momentum=0.1,
+        epsilon=1e-5,
     )
 
     # All outputs should be finite
@@ -250,7 +273,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
     Uses central finite differences for gold-standard gradient validation.
     """
     # Small tensor for gradient checking (computational cost is O(n²))
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(2)  # channels
     shape.append(2)  # height
@@ -262,7 +285,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
     # Parameters
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(2)
     var gamma = ones(param_shape, DType.float32)
     gamma._data.bitcast[Float32]()[0] = 1.5
@@ -274,8 +297,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
 
     # Forward pass
     var (output, _, _) = batch_norm2d(
-        x, gamma, beta, running_mean, running_var,
-        training=True, epsilon=1e-5
+        x, gamma, beta, running_mean, running_var, training=True, epsilon=1e-5
     )
 
     # Upstream gradient (typically from loss)
@@ -283,15 +305,25 @@ fn test_batch_norm2d_backward_gradient_input() raises:
 
     # Backward pass
     var (grad_input, grad_gamma, grad_beta) = batch_norm2d_backward(
-        grad_output, x, gamma, running_mean, running_var,
-        training=True, epsilon=1e-5
+        grad_output,
+        x,
+        gamma,
+        running_mean,
+        running_var,
+        training=True,
+        epsilon=1e-5,
     )
 
     # Numerical gradient via finite differences
     fn forward_for_grad(inp: ExTensor) raises -> ExTensor:
         var (out, _, _) = batch_norm2d(
-            inp, gamma, beta, running_mean, running_var,
-            training=True, epsilon=1e-5
+            inp,
+            gamma,
+            beta,
+            running_mean,
+            running_var,
+            training=True,
+            epsilon=1e-5,
         )
         # Sum output to get scalar (gradient checking requires scalar loss)
         # Reduce all dimensions by repeatedly summing along each axis
@@ -300,12 +332,19 @@ fn test_batch_norm2d_backward_gradient_input() raises:
             result = reduce_sum(result, axis=0, keepdims=False)
         return result
 
-    var numerical_grad = compute_numerical_gradient(forward_for_grad, x, epsilon=1e-4)
+    var numerical_grad = compute_numerical_gradient(
+        forward_for_grad, x, epsilon=1e-4
+    )
 
     # Validate analytical gradient matches numerical gradient
     # Looser tolerance for batch norm (complex operation with many intermediate steps)
-    assert_gradients_close(grad_input, numerical_grad, rtol=1e-2, atol=1e-5,
-                          message="Batch norm gradient w.r.t. input")
+    assert_gradients_close(
+        grad_input,
+        numerical_grad,
+        rtol=1e-2,
+        atol=1e-5,
+        message="Batch norm gradient w.r.t. input",
+    )
 
     print("✓ Batch norm backward gradient (input) validated numerically")
 
@@ -315,8 +354,8 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
 
     Training mode: Gradients flow through batch statistics
     Inference mode: Gradients bypass statistics (use running stats).
-   """
-    var shape = List[Int]()
+    """
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
@@ -326,7 +365,7 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     for i in range(8):
         x._data.bitcast[Float32]()[i] = Float32(i)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     gamma._data.bitcast[Float32]()[0] = 2.0
@@ -336,8 +375,12 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     var running_var = ones(param_shape, DType.float32)
 
     # Forward passes
-    var (out_train, _, _) = batch_norm2d(x, gamma, beta, running_mean, running_var, training=True)
-    var (out_infer, _, _) = batch_norm2d(x, gamma, beta, running_mean, running_var, training=False)
+    var (out_train, _, _) = batch_norm2d(
+        x, gamma, beta, running_mean, running_var, training=True
+    )
+    var (out_infer, _, _) = batch_norm2d(
+        x, gamma, beta, running_mean, running_var, training=False
+    )
 
     var grad_output = ones_like(out_train)
 
@@ -352,8 +395,10 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     # Gradients should differ between training and inference modes
     var diff_found = False
     for i in range(8):
-        var diff = abs(grad_train._data.bitcast[Float32]()[i] -
-                      grad_infer._data.bitcast[Float32]()[i])
+        var diff = abs(
+            grad_train._data.bitcast[Float32]()[i]
+            - grad_infer._data.bitcast[Float32]()[i]
+        )
         if diff > 1e-5:
             diff_found = True
             break
@@ -364,7 +409,7 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
 
 fn test_batch_norm2d_backward_shapes() raises:
     """Test that batch_norm2d_backward returns correct gradient shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)  # batch
     shape.append(4)  # channels
     shape.append(5)  # height
@@ -373,7 +418,7 @@ fn test_batch_norm2d_backward_shapes() raises:
     var x = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var running_mean = zeros(param_shape, DType.float32)
@@ -384,9 +429,15 @@ fn test_batch_norm2d_backward_shapes() raises:
     )
 
     # Validate shapes
-    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
-    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
-    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
+    assert_shape_equal(
+        grad_input.shape(), x.shape(), "grad_input should match input shape"
+    )
+    assert_shape_equal(
+        grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape"
+    )
+    assert_shape_equal(
+        grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape"
+    )
 
     # Check specific dimensions
     assert_equal(grad_input.shape()[0], 3, "batch dimension")
@@ -402,12 +453,12 @@ fn test_batch_norm2d_backward_shapes() raises:
 
 fn test_layer_norm_shapes_2d() raises:
     """Test that layer_norm returns correct shape for 2D input."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)  # batch
     shape.append(10)  # features
     var x = ones(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -421,7 +472,7 @@ fn test_layer_norm_shapes_2d() raises:
 
 fn test_layer_norm_shapes_4d() raises:
     """Test that layer_norm returns correct shape for 4D input."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -430,7 +481,7 @@ fn test_layer_norm_shapes_4d() raises:
 
     # For 4D input, normalize over C*H*W
     var normalized_shape = 3 * 4 * 4  # 48
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(normalized_shape)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -446,7 +497,7 @@ fn test_layer_norm_shapes_4d() raises:
 
 fn test_layer_norm_normalization_2d() raises:
     """Test that layer_norm normalizes each sample independently."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)
@@ -463,7 +514,7 @@ fn test_layer_norm_normalization_2d() raises:
     x._data.bitcast[Float32]()[6] = 6.0
     x._data.bitcast[Float32]()[7] = 7.0
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -497,12 +548,12 @@ fn test_layer_norm_normalization_2d() raises:
 
 fn test_layer_norm_scale_shift() raises:
     """Test that layer_norm applies gamma and beta correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)  # batch
     shape.append(3)  # features
     var x = zeros(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(3)
 
     # Set gamma = [2.0, 3.0, 4.0], beta = [1.0, 0.0, -1.0]
@@ -521,30 +572,24 @@ fn test_layer_norm_scale_shift() raises:
     # For zero input with zero mean: normalized = 0
     # output = gamma * 0 + beta = beta
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(1.0),
-        tolerance=1e-4
+        output._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-4
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[1],
-        Float32(0.0),
-        tolerance=1e-4
+        output._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-4
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[2],
-        Float32(-1.0),
-        tolerance=1e-4
+        output._data.bitcast[Float32]()[2], Float32(-1.0), tolerance=1e-4
     )
 
 
 fn test_layer_norm_zero_variance() raises:
     """Test that layer_norm handles zero variance with epsilon."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # features
     var x = ones(shape, DType.float32)  # All values are 1.0 - zero variance
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(3)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -565,14 +610,15 @@ fn test_layer_norm_zero_variance() raises:
 
 
 fn test_layer_norm_backward_shapes_2d() raises:
-    """Test that layer_norm_backward returns correct gradient shapes for 2D input."""
-    var shape = List[Int]()
+    """Test that layer_norm_backward returns correct gradient shapes for 2D input.
+    """
+    var shape= List[Int]()
     shape.append(4)  # batch
     shape.append(10)  # features
     var x = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
 
@@ -581,9 +627,15 @@ fn test_layer_norm_backward_shapes_2d() raises:
     )
 
     # Validate shapes
-    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
-    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
-    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
+    assert_shape_equal(
+        grad_input.shape(), x.shape(), "grad_input should match input shape"
+    )
+    assert_shape_equal(
+        grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape"
+    )
+    assert_shape_equal(
+        grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape"
+    )
 
     # Check specific dimensions
     assert_equal(grad_input.shape()[0], 4, "batch dimension")
@@ -593,8 +645,9 @@ fn test_layer_norm_backward_shapes_2d() raises:
 
 
 fn test_layer_norm_backward_shapes_4d() raises:
-    """Test that layer_norm_backward returns correct gradient shapes for 4D input."""
-    var shape = List[Int]()
+    """Test that layer_norm_backward returns correct gradient shapes for 4D input.
+    """
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -604,7 +657,7 @@ fn test_layer_norm_backward_shapes_4d() raises:
 
     # For 4D input, gamma has shape (C * H * W)
     var normalized_size = 3 * 4 * 4  # 48
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(normalized_size)
     var gamma = ones(param_shape, DType.float32)
 
@@ -613,14 +666,21 @@ fn test_layer_norm_backward_shapes_4d() raises:
     )
 
     # Validate shapes
-    assert_shape_equal(grad_input.shape(), x.shape(), "grad_input should match input shape")
-    assert_shape_equal(grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape")
-    assert_shape_equal(grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape")
+    assert_shape_equal(
+        grad_input.shape(), x.shape(), "grad_input should match input shape"
+    )
+    assert_shape_equal(
+        grad_gamma.shape(), gamma.shape(), "grad_gamma should match gamma shape"
+    )
+    assert_shape_equal(
+        grad_beta.shape(), gamma.shape(), "grad_beta should match beta shape"
+    )
 
 
 fn test_layer_norm_backward_grad_beta() raises:
-    """Test that layer_norm_backward grad_beta equals sum of grad_output over batch."""
-    var shape = List[Int]()
+    """Test that layer_norm_backward grad_beta equals sum of grad_output over batch.
+    """
+    var shape= List[Int]()
     shape.append(3)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)
@@ -629,7 +689,7 @@ fn test_layer_norm_backward_grad_beta() raises:
     for i in range(12):
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
 
@@ -638,7 +698,9 @@ fn test_layer_norm_backward_grad_beta() raises:
     for b in range(3):
         for f in range(4):
             var idx = b * 4 + f
-            grad_output._data.bitcast[Float32]()[idx] = Float32(b + 1) * Float32(f + 1) * 0.1
+            grad_output._data.bitcast[Float32]()[idx] = (
+                Float32(b + 1) * Float32(f + 1) * 0.1
+            )
 
     var (_, _, grad_beta) = layer_norm_backward(
         grad_output, x, gamma, epsilon=1e-5
@@ -651,20 +713,18 @@ fn test_layer_norm_backward_grad_beta() raises:
         for b in range(3):
             expected_sum += Float32(b + 1) * Float32(f + 1) * 0.1
         assert_almost_equal(
-            grad_beta._data.bitcast[Float32]()[f],
-            expected_sum,
-            tolerance=1e-4
+            grad_beta._data.bitcast[Float32]()[f], expected_sum, tolerance=1e-4
         )
 
 
 fn test_layer_norm_backward_zero_input() raises:
     """Test layer_norm_backward with zero input (edge case)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)  # All zeros - zero variance
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var grad_output = ones(shape, DType.float32)

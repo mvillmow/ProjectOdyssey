@@ -42,7 +42,7 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
 
     Returns:
         Concatenated tensor (B, sum(C_i), H, W).
-   """
+    """
     if len(tensors) == 0:
         raise Error("Cannot concatenate empty list")
 
@@ -82,7 +82,9 @@ fn concatenate_channel_list(tensors: List[ExTensor]) raises -> ExTensor:
             for c in range(channels):
                 for idx in range(hw):
                     var src_idx = ((b * channels + c) * hw) + idx
-                    var dst_idx = ((b * total_channels + (offset + c)) * hw) + idx
+                    var dst_idx = (
+                        (b * total_channels + (offset + c)) * hw
+                    ) + idx
                     result_data[dst_idx] = tensor_data[src_idx]
 
         offset += channels
@@ -121,7 +123,7 @@ struct DenseLayer:
         Args:
             in_channels: Number of input channels (concatenated from all previous layers)
             growth_rate: Number of output channels (k, typically 32).
-       """
+        """
         var bottleneck_channels = 4 * growth_rate
 
         # Bottleneck 1×1 conv
@@ -143,7 +145,9 @@ struct DenseLayer:
         self.bn2_gamma = constant(List[Int]().append(bottleneck_channels), 1.0)
         self.bn2_beta = zeros(List[Int]().append(bottleneck_channels))
         self.bn2_running_mean = zeros(List[Int]().append(bottleneck_channels))
-        self.bn2_running_var = constant(List[Int]().append(bottleneck_channels), 1.0)
+        self.bn2_running_var = constant(
+            List[Int]().append(bottleneck_channels), 1.0
+        )
         self.conv2_weights = kaiming_normal(
             List[Int]()
             .append(growth_rate)
@@ -163,20 +167,34 @@ struct DenseLayer:
 
         Returns:
             Output tensor (batch, growth_rate, H, W).
-       """
+        """
         # Bottleneck
         var out = batch_norm2d(
-            x, self.bn1_gamma, self.bn1_beta, self.bn1_running_mean, self.bn1_running_var, training
+            x,
+            self.bn1_gamma,
+            self.bn1_beta,
+            self.bn1_running_mean,
+            self.bn1_running_var,
+            training,
         )
         out = relu(out)
-        out = conv2d(out, self.conv1_weights, self.conv1_bias, stride=1, padding=0)
+        out = conv2d(
+            out, self.conv1_weights, self.conv1_bias, stride=1, padding=0
+        )
 
         # 3×3 convolution
         out = batch_norm2d(
-            out, self.bn2_gamma, self.bn2_beta, self.bn2_running_mean, self.bn2_running_var, training
+            out,
+            self.bn2_gamma,
+            self.bn2_beta,
+            self.bn2_running_mean,
+            self.bn2_running_var,
+            training,
         )
         out = relu(out)
-        out = conv2d(out, self.conv2_weights, self.conv2_bias, stride=1, padding=1)
+        out = conv2d(
+            out, self.conv2_weights, self.conv2_bias, stride=1, padding=1
+        )
 
         return out
 
@@ -196,7 +214,9 @@ struct DenseBlock:
     var growth_rate: Int
     var layers: List[DenseLayer]
 
-    fn __init__(out self, num_layers: Int, in_channels: Int, growth_rate: Int) raises:
+    fn __init__(
+        out self, num_layers: Int, in_channels: Int, growth_rate: Int
+    ) raises:
         """Initialize dense block.
 
         Args:
@@ -206,7 +226,7 @@ struct DenseBlock:
         """
         self.num_layers = num_layers
         self.growth_rate = growth_rate
-        self.layers = List[DenseLayer]()
+        self.layers: List[DenseLayer] = []
 
         # Create layers with increasing input channels
         for i in range(num_layers):
@@ -222,8 +242,8 @@ struct DenseBlock:
 
         Returns:
             Output tensor (batch, in_channels + num_layers * growth_rate, H, W).
-       """
-        var features = List[ExTensor]()
+        """
+        var features: List[ExTensor] = []
         features.append(x)
 
         for i in range(self.num_layers):
@@ -249,7 +269,7 @@ struct TransitionLayer:
         Input → BN → Conv1×1(θ × in_channels) → AvgPool2×2 → Output
 
     Where θ = 0.5 (compression factor).
-   """
+    """
 
     var bn_gamma: ExTensor
     var bn_beta: ExTensor
@@ -264,7 +284,7 @@ struct TransitionLayer:
         Args:
             in_channels: Number of input channels
             out_channels: Number of output channels (typically in_channels / 2).
-       """
+        """
         self.bn_gamma = constant(List[Int]().append(in_channels), 1.0)
         self.bn_beta = zeros(List[Int]().append(in_channels))
         self.bn_running_mean = zeros(List[Int]().append(in_channels))
@@ -289,11 +309,18 @@ struct TransitionLayer:
 
         Returns:
             Output tensor (batch, out_channels, H/2, W/2).
-       """
+        """
         var out = batch_norm2d(
-            x, self.bn_gamma, self.bn_beta, self.bn_running_mean, self.bn_running_var, training
+            x,
+            self.bn_gamma,
+            self.bn_beta,
+            self.bn_running_mean,
+            self.bn_running_var,
+            training,
         )
-        out = conv2d(out, self.conv_weights, self.conv_bias, stride=1, padding=0)
+        out = conv2d(
+            out, self.conv_weights, self.conv_bias, stride=1, padding=0
+        )
         out = avgpool2d(out, kernel_size=2, stride=2, padding=0)
         return out
 
@@ -343,23 +370,25 @@ struct DenseNet121:
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
             growth_rate: Growth rate k (default: 32).
-       """
+        """
         var num_init_features = 2 * growth_rate  # 64 channels
 
         # Initial convolution: 3×3, 64 filters
         self.initial_conv_weights = kaiming_normal(
-            List[Int]()
-            .append(num_init_features)
-            .append(3)
-            .append(3)
-            .append(3),
+            List[Int]().append(num_init_features).append(3).append(3).append(3),
             fan_in=3 * 9,
         )
         self.initial_conv_bias = zeros(List[Int]().append(num_init_features))
-        self.initial_bn_gamma = constant(List[Int]().append(num_init_features), 1.0)
+        self.initial_bn_gamma = constant(
+            List[Int]().append(num_init_features), 1.0
+        )
         self.initial_bn_beta = zeros(List[Int]().append(num_init_features))
-        self.initial_bn_running_mean = zeros(List[Int]().append(num_init_features))
-        self.initial_bn_running_var = constant(List[Int]().append(num_init_features), 1.0)
+        self.initial_bn_running_mean = zeros(
+            List[Int]().append(num_init_features)
+        )
+        self.initial_bn_running_var = constant(
+            List[Int]().append(num_init_features), 1.0
+        )
 
         # Dense Block 1: 6 layers, 64 → 256 channels
         self.dense_block_1 = DenseBlock(6, num_init_features, growth_rate)
@@ -406,9 +435,15 @@ struct DenseNet121:
 
         Returns:
             Logits tensor (batch, num_classes).
-       """
+        """
         # Initial convolution
-        var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=1, padding=1)
+        var out = conv2d(
+            x,
+            self.initial_conv_weights,
+            self.initial_conv_bias,
+            stride=1,
+            padding=1,
+        )
         out = batch_norm2d(
             out,
             self.initial_bn_gamma,
@@ -455,7 +490,9 @@ struct DenseNet121:
 
         for b in range(batch_size):
             for c in range(channels):
-                flattened_data[b * channels + c] = out_data[((b * channels + c) * 1) + 0]
+                flattened_data[b * channels + c] = out_data[
+                    ((b * channels + c) * 1) + 0
+                ]
 
         # Final FC layer
         var logits = linear(flattened, self.fc_weights, self.fc_bias)

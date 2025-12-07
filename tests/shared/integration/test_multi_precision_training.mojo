@@ -49,19 +49,27 @@ fn test_fp32_training_loss_decreases() raises:
 
     # Verify config settings
     assert_true(config.mode == PrecisionMode.FP32, "Mode should be FP32")
-    assert_true(config.compute_dtype == DType.float32, "Compute dtype should be float32")
-    assert_false(config.use_gradient_scaler, "FP32 should not use gradient scaler")
-    assert_false(config.needs_master_weights(), "FP32 doesn't need master weights")
+    assert_true(
+        config.compute_dtype == DType.float32, "Compute dtype should be float32"
+    )
+    assert_false(
+        config.use_gradient_scaler, "FP32 should not use gradient scaler"
+    )
+    assert_false(
+        config.needs_master_weights(), "FP32 doesn't need master weights"
+    )
 
     # Simulate training step with dummy data
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(4)
     input_shape.append(10)
     var input = full(input_shape, 0.5, DType.float32)
 
     # Cast to compute precision (should be identity for FP32)
     var compute_input = config.cast_to_compute(input)
-    assert_dtype(compute_input, DType.float32, "Compute input should be float32")
+    assert_dtype(
+        compute_input, DType.float32, "Compute input should be float32"
+    )
 
 
 fn test_fp16_training_loss_decreases() raises:
@@ -76,12 +84,14 @@ fn test_fp16_training_loss_decreases() raises:
 
     # Verify config settings
     assert_true(config.mode == PrecisionMode.FP16, "Mode should be FP16")
-    assert_true(config.compute_dtype == DType.float16, "Compute dtype should be float16")
+    assert_true(
+        config.compute_dtype == DType.float16, "Compute dtype should be float16"
+    )
     assert_true(config.use_gradient_scaler, "FP16 should use gradient scaler")
     assert_true(config.needs_master_weights(), "FP16 needs master weights")
 
     # Test casting to compute precision
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(4)
     input_shape.append(10)
     var fp32_input = full(input_shape, 0.5, DType.float32)
@@ -106,7 +116,7 @@ fn test_bf16_training_loss_decreases() raises:
     # When native BF16 is available, this test should use bfloat16_dtype
     assert_true(
         config.compute_dtype == bfloat16_dtype,
-        "Compute dtype should be bfloat16 (or alias)"
+        "Compute dtype should be bfloat16 (or alias)",
     )
 
 
@@ -128,7 +138,7 @@ fn test_fp8_training_loss_decreases() raises:
     # FP8 uses FP16 storage to reduce quantization noise
     assert_true(
         config.storage_dtype == DType.float16,
-        "Storage dtype should be float16 for FP8"
+        "Storage dtype should be float16 for FP8",
     )
 
 
@@ -149,20 +159,30 @@ fn test_fp16_gradient_overflow_recovery() raises:
 
     # Initial scale
     var initial_scale = config.get_scale()
-    assert_greater(Float64(initial_scale), Float64(0.0), "Initial scale should be positive")
+    assert_greater(
+        Float64(initial_scale), Float64(0.0), "Initial scale should be positive"
+    )
 
     # Simulate overflow - step with invalid gradients
     config.step(grads_valid=False)
     var reduced_scale = config.get_scale()
 
     # Scale should decrease after overflow
-    assert_less(Float64(reduced_scale), Float64(initial_scale), "Scale should decrease after overflow")
-    assert_equal_int(config.get_overflow_count(), 1, "Overflow count should be 1")
+    assert_less(
+        Float64(reduced_scale),
+        Float64(initial_scale),
+        "Scale should decrease after overflow",
+    )
+    assert_equal_int(
+        config.get_overflow_count(), 1, "Overflow count should be 1"
+    )
 
     # Simulate recovery - step with valid gradients
     config.step(grads_valid=True)
     # Scale may increase or stay same, but overflow count stays at 1
-    assert_equal_int(config.get_overflow_count(), 1, "Overflow count should still be 1")
+    assert_equal_int(
+        config.get_overflow_count(), 1, "Overflow count should still be 1"
+    )
 
 
 # ============================================================================
@@ -174,16 +194,28 @@ fn test_precision_config_from_string() raises:
     """Test PrecisionConfig creation from string names."""
     # Test all valid precision strings
     var fp32_config = PrecisionConfig.from_string("fp32")
-    assert_true(fp32_config.mode == PrecisionMode.FP32, "fp32 string should create FP32 mode")
+    assert_true(
+        fp32_config.mode == PrecisionMode.FP32,
+        "fp32 string should create FP32 mode",
+    )
 
     var fp16_config = PrecisionConfig.from_string("fp16")
-    assert_true(fp16_config.mode == PrecisionMode.FP16, "fp16 string should create FP16 mode")
+    assert_true(
+        fp16_config.mode == PrecisionMode.FP16,
+        "fp16 string should create FP16 mode",
+    )
 
     var bf16_config = PrecisionConfig.from_string("bf16")
-    assert_true(bf16_config.mode == PrecisionMode.BF16, "bf16 string should create BF16 mode")
+    assert_true(
+        bf16_config.mode == PrecisionMode.BF16,
+        "bf16 string should create BF16 mode",
+    )
 
     var fp8_config = PrecisionConfig.from_string("fp8")
-    assert_true(fp8_config.mode == PrecisionMode.FP8, "fp8 string should create FP8 mode")
+    assert_true(
+        fp8_config.mode == PrecisionMode.FP8,
+        "fp8 string should create FP8 mode",
+    )
 
 
 fn test_precision_config_invalid_string() raises:
@@ -220,12 +252,18 @@ fn test_gradient_scaler_dynamic_scaling() raises:
 
     # Scale may increase after successful steps (depends on growth interval)
     var final_scale = scaler.get_scale()
-    assert_greater(Float64(final_scale), Float64(0.0), "Scale should remain positive")
+    assert_greater(
+        Float64(final_scale), Float64(0.0), "Scale should remain positive"
+    )
 
     # Simulate overflow
     scaler.backoff()
     var reduced_scale = scaler.get_scale()
-    assert_less(Float64(reduced_scale), Float64(final_scale), "Scale should decrease after backoff")
+    assert_less(
+        Float64(reduced_scale),
+        Float64(final_scale),
+        "Scale should decrease after backoff",
+    )
 
 
 # ============================================================================
@@ -244,20 +282,30 @@ fn test_master_weights_fp32() raises:
     var fp32_config = PrecisionConfig.fp32()
 
     # FP16 needs master weights
-    assert_true(fp16_config.needs_master_weights(), "FP16 should need master weights")
-    assert_true(fp16_config.master_dtype == DType.float32, "Master dtype should be float32")
+    assert_true(
+        fp16_config.needs_master_weights(), "FP16 should need master weights"
+    )
+    assert_true(
+        fp16_config.master_dtype == DType.float32,
+        "Master dtype should be float32",
+    )
 
     # FP32 doesn't need separate master weights
-    assert_false(fp32_config.needs_master_weights(), "FP32 should not need master weights")
+    assert_false(
+        fp32_config.needs_master_weights(),
+        "FP32 should not need master weights",
+    )
 
     # Test casting to master precision
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(10)
     weight_shape.append(10)
     var fp16_weights = full(weight_shape, 0.5, DType.float16)
     var master_weights = fp16_config.cast_to_master(fp16_weights)
 
-    assert_dtype(master_weights, DType.float32, "Master weights should be float32")
+    assert_dtype(
+        master_weights, DType.float32, "Master weights should be float32"
+    )
 
 
 # ============================================================================
@@ -277,7 +325,7 @@ fn test_fp16_vs_fp32_accuracy() raises:
     var fp16_config = PrecisionConfig.fp16()
 
     # Create test tensor
-    var test_shape = List[Int]()
+    var test_shape= List[Int]()
     test_shape.append(10)
     var test_data = full(test_shape, 1.5, DType.float32)
 
@@ -305,7 +353,9 @@ fn test_bf16_vs_fp32_accuracy() raises:
 
     # BF16 currently uses FP16 as fallback
     # This test documents expected behavior when native BF16 is available
-    assert_true(bf16_config.mode == PrecisionMode.BF16, "Config should be BF16 mode")
+    assert_true(
+        bf16_config.mode == PrecisionMode.BF16, "Config should be BF16 mode"
+    )
 
 
 # ============================================================================
@@ -326,12 +376,23 @@ fn test_mixed_precision_memory_savings() raises:
     var fp32_bytes = 4  # sizeof(float32)
     var fp16_bytes = 2  # sizeof(float16)
 
-    var savings_percent = Float64(1.0 - Float64(fp16_bytes) / Float64(fp32_bytes)) * 100.0
-    assert_almost_equal(savings_percent, Float64(50.0), tolerance=Float64(0.1), message="FP16 should save ~50% memory")
+    var savings_percent = (
+        Float64(1.0 - Float64(fp16_bytes) / Float64(fp32_bytes)) * 100.0
+    )
+    assert_almost_equal(
+        savings_percent,
+        Float64(50.0),
+        tolerance=Float64(0.1),
+        message="FP16 should save ~50% memory",
+    )
 
     # Verify reduced_precision utility
-    assert_true(is_reduced_precision(DType.float16), "FP16 is reduced precision")
-    assert_false(is_reduced_precision(DType.float32), "FP32 is not reduced precision")
+    assert_true(
+        is_reduced_precision(DType.float16), "FP16 is reduced precision"
+    )
+    assert_false(
+        is_reduced_precision(DType.float32), "FP32 is not reduced precision"
+    )
 
 
 # ============================================================================
@@ -359,8 +420,15 @@ fn test_training_with_toml_config() raises:
 
     # For now, just verify we can create configs programmatically
     var fp16_config = PrecisionConfig.fp16(initial_scale=65536.0)
-    assert_true(fp16_config.mode == PrecisionMode.FP16, "Should create FP16 config")
-    assert_almost_equal(Float64(fp16_config.get_scale()), Float64(65536.0), tolerance=Float64(0.1), message="Scale should match initial")
+    assert_true(
+        fp16_config.mode == PrecisionMode.FP16, "Should create FP16 config"
+    )
+    assert_almost_equal(
+        Float64(fp16_config.get_scale()),
+        Float64(65536.0),
+        tolerance=Float64(0.1),
+        message="Scale should match initial",
+    )
 
 
 # ============================================================================

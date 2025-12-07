@@ -17,7 +17,7 @@ from shared.autograd import Variable, GradientTape, SGD
 fn test_sgd_basic() raises:
     """Test basic SGD without momentum."""
     # Create a simple 1D parameter
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var param_data = zeros(shape, DType.float32)
     param_data._set_float64(0, 1.0)
 
@@ -39,7 +39,7 @@ fn test_sgd_basic() raises:
     var optimizer = SGD(learning_rate=0.1, momentum=0.0)
 
     # Collect parameters
-    var params = List[Variable]()
+    var params: List[Variable] = []
     params.append(param.copy())
 
     # Perform one step
@@ -54,7 +54,7 @@ fn test_sgd_basic() raises:
 fn test_sgd_momentum_init() raises:
     """Test that velocity buffers are initialized to zeros."""
     # Create parameter
-    var shape = List[Int](2)
+    var shape: List[Int] = [2]
     var param_data = zeros(shape, DType.float32)
     param_data._set_float64(0, 1.0)
     param_data._set_float64(1, 2.0)
@@ -74,21 +74,25 @@ fn test_sgd_momentum_init() raises:
     # Create optimizer with momentum
     var optimizer = SGD(learning_rate=0.01, momentum=0.9)
 
-    var params = List[Variable]()
+    var params: List[Variable] = []
     params.append(param.copy())
 
     # First step should initialize velocity
     optimizer.step(params, tape)
 
     # Check that velocity buffer was created
-    assert_true(len(optimizer.velocities) == 1, "One velocity buffer should be created")
-    assert_true(optimizer._initialized, "Optimizer should be marked as initialized")
+    assert_true(
+        len(optimizer.velocities) == 1, "One velocity buffer should be created"
+    )
+    assert_true(
+        optimizer._initialized, "Optimizer should be marked as initialized"
+    )
 
 
 fn test_sgd_momentum_accumulation() raises:
     """Test momentum accumulation across multiple steps."""
     # Create parameter
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var param_data = zeros(shape, DType.float32)
     param_data._set_float64(0, 1.0)
 
@@ -101,7 +105,7 @@ fn test_sgd_momentum_accumulation() raises:
     # Create optimizer with momentum
     var optimizer = SGD(learning_rate=0.1, momentum=0.9)
 
-    var params = List[Variable]()
+    var params: List[Variable] = []
     params.append(param.copy())
 
     # Step 1: gradient = 1.0
@@ -143,7 +147,7 @@ fn test_sgd_momentum_accumulation() raises:
 fn test_sgd_momentum_vs_vanilla() raises:
     """Test that momentum converges faster than vanilla SGD."""
     # Both optimizers should converge to same point, but momentum faster
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
 
     # Vanilla SGD
     var param_vanilla = zeros(shape, DType.float32)
@@ -155,7 +159,7 @@ fn test_sgd_momentum_vs_vanilla() raises:
     var id_vanilla = var_vanilla.id
 
     var optimizer_vanilla = SGD(learning_rate=0.01, momentum=0.0)
-    var params_vanilla = List[Variable]()
+    var params_vanilla: List[Variable] = []
     params_vanilla.append(var_vanilla.copy())
 
     # Momentum SGD
@@ -168,7 +172,7 @@ fn test_sgd_momentum_vs_vanilla() raises:
     var id_momentum = var_momentum.id
 
     var optimizer_momentum = SGD(learning_rate=0.01, momentum=0.9)
-    var params_momentum = List[Variable]()
+    var params_momentum: List[Variable] = []
     params_momentum.append(var_momentum.copy())
 
     # Run 5 steps with same gradients
@@ -193,13 +197,13 @@ fn test_sgd_momentum_vs_vanilla() raises:
     # Momentum should have moved more (descended faster)
     assert_true(
         final_momentum < final_vanilla,
-        "Momentum should converge faster than vanilla SGD"
+        "Momentum should converge faster than vanilla SGD",
     )
 
 
 fn test_sgd_zero_momentum() raises:
     """Test that momentum=0 behaves like standard SGD."""
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
 
     # Create parameter
     var param_data = zeros(shape, DType.float32)
@@ -212,7 +216,7 @@ fn test_sgd_zero_momentum() raises:
 
     var optimizer = SGD(learning_rate=0.1, momentum=0.0)
 
-    var params = List[Variable]()
+    var params: List[Variable] = []
     params.append(param.copy())
 
     # Step with gradient = 2.0
@@ -228,7 +232,7 @@ fn test_sgd_zero_momentum() raises:
 
 fn test_sgd_multiple_parameters() raises:
     """Test momentum with multiple parameters."""
-    var shape = List[Int](2)
+    var shape: List[Int] = [2]
 
     # Create two parameters
     var param1_data = zeros(shape, DType.float32)
@@ -250,7 +254,7 @@ fn test_sgd_multiple_parameters() raises:
 
     var optimizer = SGD(learning_rate=0.1, momentum=0.9)
 
-    var params = List[Variable]()
+    var params: List[Variable] = []
     params.append(param1.copy())
     params.append(param2.copy())
 

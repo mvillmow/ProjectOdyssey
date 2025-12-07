@@ -24,7 +24,7 @@ import sys
 
 fn test_model_forward(
     model_name: String,
-    forward_fn: fn(ExTensor, Bool) raises -> ExTensor,
+    forward_fn: fn (ExTensor, Bool) raises -> ExTensor,
     batch_size: Int = 4,
 ) raises -> Bool:
     """Test a model's forward pass with dummy data.
@@ -37,14 +37,14 @@ fn test_model_forward(
     Returns:
         True if test passes, False otherwise.
     """
-    print("\n" + String('='*60))
+    print("\n" + String("=" * 60))
     print("Testing " + String(model_name))
-    print(String('='*60))
+    print(String("=" * 60))
 
     try:
         # Create dummy input (batch_size, 3, 32, 32)
         print("Creating dummy input: (" + String(batch_size) + ", 3, 32, 32)")
-        var shape = List[Int]()
+        var shape= List[Int]()
         shape.append(batch_size)
         shape.append(3)
         shape.append(32)
@@ -65,10 +65,21 @@ fn test_model_forward(
         var batch_out = logits_inference.shape()[0]
         var classes_out = logits_inference.shape()[1]
 
-        print("  Output shape: (" + String(batch_out) + ", " + String(classes_out) + ")")
+        print(
+            "  Output shape: ("
+            + String(batch_out)
+            + ", "
+            + String(classes_out)
+            + ")"
+        )
 
         if batch_out != batch_size:
-            print("✗ FAIL: Expected batch size " + String(batch_size) + ", got " + String(batch_out))
+            print(
+                "✗ FAIL: Expected batch size "
+                + String(batch_size)
+                + ", got "
+                + String(batch_out)
+            )
             return False
 
         if classes_out != 10:
@@ -84,10 +95,21 @@ fn test_model_forward(
         var batch_train = logits_training.shape()[0]
         var classes_train = logits_training.shape()[1]
 
-        print("  Output shape: (" + String(batch_train) + ", " + String(classes_train) + ")")
+        print(
+            "  Output shape: ("
+            + String(batch_train)
+            + ", "
+            + String(classes_train)
+            + ")"
+        )
 
         if batch_train != batch_size:
-            print("✗ FAIL: Expected batch size " + String(batch_size) + ", got " + String(batch_train))
+            print(
+                "✗ FAIL: Expected batch size "
+                + String(batch_size)
+                + ", got "
+                + String(batch_train)
+            )
             return False
 
         if classes_train != 10:
@@ -114,7 +136,10 @@ fn test_model_forward(
         print("  " + String(same_pct) + "% of outputs are identical")
 
         if same_pct == 100.0:
-            print("  ⚠ Warning: Outputs identical (no batch norm running stats difference)")
+            print(
+                "  ⚠ Warning: Outputs identical (no batch norm running stats"
+                " difference)"
+            )
         else:
             print("✓ Outputs differ between modes (expected)")
 
@@ -134,25 +159,25 @@ fn test_model_forward(
         else:
             print("✓ No NaN/Inf detected")
 
-        print("\n" + String('='*60))
+        print("\n" + String("=" * 60))
         print("✓ " + String(model_name) + " PASSED ALL TESTS")
-        print(String('='*60) + "\n")
+        print(String("=" * 60) + "\n")
 
         return True
 
     except e:
-        print("\n" + String('='*60))
+        print("\n" + String("=" * 60))
         print("✗ " + String(model_name) + " FAILED")
         print("Error: " + String(e))
-        print(String('='*60) + "\n")
+        print(String("=" * 60) + "\n")
         return False
 
 
 fn main() raises:
     """Run all integration tests."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("INTEGRATION TESTS FOR ALL CNN ARCHITECTURES")
-    print("="*60)
+    print("=" * 60)
     print("\nTesting 5 classic CNN architectures:")
     print("  1. ResNet-18")
     print("  2. GoogLeNet (Inception-v1)")
@@ -161,13 +186,13 @@ fn main() raises:
     print("  5. VGG-16 (if available)")
     print()
 
-    var results = List[Bool]()
-    var model_names = List[String]()
+    var results: List[Bool] = []
+    var model_names= List[String]()
 
     # Test 1: ResNet-18
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1/5: ResNet-18")
-    print("="*60)
+    print("=" * 60)
     print("NOTE: Import paths use hyphens in directory names")
     print("Attempting: examples/resnet18-cifar10/model.mojo")
     print()
@@ -180,45 +205,45 @@ fn main() raises:
     model_names.append("ResNet-18")
 
     # Test 2: GoogLeNet
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2/5: GoogLeNet (Inception-v1)")
-    print("="*60)
+    print("=" * 60)
     var googlenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
     results.append(googlenet_passed)
     model_names.append("GoogLeNet")
 
     # Test 3: MobileNetV1
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3/5: MobileNetV1")
-    print("="*60)
+    print("=" * 60)
     var mobilenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
     results.append(mobilenet_passed)
     model_names.append("MobileNetV1")
 
     # Test 4: DenseNet-121
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4/5: DenseNet-121")
-    print("="*60)
+    print("=" * 60)
     var densenet_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
     results.append(densenet_passed)
     model_names.append("DenseNet-121")
 
     # Test 5: VGG-16
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 5/5: VGG-16")
-    print("="*60)
+    print("=" * 60)
     var vgg_passed = False
     print("⚠ Manual test required - cannot dynamically import with hyphens")
     results.append(vgg_passed)
     model_names.append("VGG-16")
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print()
 
     var total_tests = len(results)
@@ -231,11 +256,17 @@ fn main() raises:
             passed_tests += 1
 
     print()
-    print("Total: " + String(passed_tests) + "/" + String(total_tests) + " tests passed")
+    print(
+        "Total: "
+        + String(passed_tests)
+        + "/"
+        + String(total_tests)
+        + " tests passed"
+    )
 
     if passed_tests == total_tests:
         print("\n🎉 ALL TESTS PASSED!")
     else:
         print("\n⚠ " + String(total_tests - passed_tests) + " test(s) failed")
 
-    print("="*60)
+    print("=" * 60)

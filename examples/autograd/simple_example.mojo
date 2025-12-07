@@ -119,7 +119,7 @@ fn simple_linear_regression() raises:
         b.grad = grad_b_sum
 
         # Update parameters using optimizer
-        var params = List[Variable]()
+        var params: List[Variable] = []
         params.append(w)
         params.append(b)
         optimizer.step(params)

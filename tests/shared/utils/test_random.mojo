@@ -48,8 +48,12 @@ fn test_set_global_seed() raises:
     var val4 = random_uniform()
 
     # Verify: sequences are identical
-    assert_equal(val1, val3, "First uniform values should be identical with same seed")
-    assert_equal(val2, val4, "Second uniform values should be identical with same seed")
+    assert_equal(
+        val1, val3, "First uniform values should be identical with same seed"
+    )
+    assert_equal(
+        val2, val4, "Second uniform values should be identical with same seed"
+    )
 
 
 fn test_seed_affects_all_generators() raises:
@@ -83,7 +87,9 @@ fn test_different_seeds_produce_different_sequences() raises:
     var val_b = random_uniform()
 
     # Verify: A != B (sequences differ)
-    assert_not_equal(val_a, val_b, "Different seeds should produce different values")
+    assert_not_equal(
+        val_a, val_b, "Different seeds should produce different values"
+    )
 
 
 fn test_seed_zero() raises:
@@ -193,8 +199,12 @@ fn test_state_roundtrip() raises:
     var a2_again = random_uniform()
 
     # Verify: sequence restarts from beginning of seed
-    assert_equal(a1, a1_again, "Restored sequence should restart from beginning")
-    assert_equal(a2, a2_again, "Restored sequence should restart from beginning")
+    assert_equal(
+        a1, a1_again, "Restored sequence should restart from beginning"
+    )
+    assert_equal(
+        a2, a2_again, "Restored sequence should restart from beginning"
+    )
 
 
 fn test_save_multiple_states() raises:
@@ -214,7 +224,9 @@ fn test_save_multiple_states() raises:
     # Create a custom RandomState with a different seed
     var custom_state = RandomState()
     custom_state.set_seed(123)
-    assert_equal(custom_state.seed_used, 123, "Custom state should have seed 123")
+    assert_equal(
+        custom_state.seed_used, 123, "Custom state should have seed 123"
+    )
 
     # Generate values with seed 42
     set_seed(42)
@@ -235,7 +247,9 @@ fn test_save_multiple_states() raises:
     # Restore to seed 123 using custom state
     set_random_state(custom_state)
     var b_again = random_uniform()
-    assert_equal(b, b_again, "Restored to seed 123 should give same first value")
+    assert_equal(
+        b, b_again, "Restored to seed 123 should give same first value"
+    )
 
 
 # ============================================================================
@@ -446,7 +460,7 @@ fn test_randint_bounds() raises:
 fn test_random_choice() raises:
     """Test randomly choosing from list of options."""
     set_seed(42)
-    var options = List[Int](10, 20, 30, 40)
+    var options: List[Int] = [10, 20, 30, 40]
 
     # Choose 100 times
     var count_10 = 0
@@ -478,7 +492,7 @@ fn test_random_permutation() raises:
     var original_sum = 0 + 1 + 2 + 3 + 4
 
     # Create a copy and shuffle it
-    var shuffled = List[Int](0, 1, 2, 3, 4)
+    var shuffled: List[Int] = [0, 1, 2, 3, 4]
     shuffle(shuffled)
 
     # Verify: contains same elements (sum should be preserved)
@@ -486,13 +500,17 @@ fn test_random_permutation() raises:
     for i in range(len(shuffled)):
         shuffled_sum += shuffled[i]
 
-    assert_equal(shuffled_sum, original_sum, "Shuffled array should have same sum (same elements)")
+    assert_equal(
+        shuffled_sum,
+        original_sum,
+        "Shuffled array should have same sum (same elements)",
+    )
 
 
 fn test_random_shuffle() raises:
     """Test in-place shuffle of array."""
     set_seed(42)
-    var array = List[Int](0, 1, 2, 3, 4)
+    var array: List[Int] = [0, 1, 2, 3, 4]
 
     # Shuffle in-place
     shuffle(array)
@@ -502,7 +520,9 @@ fn test_random_shuffle() raises:
     for i in range(len(array)):
         shuffled_sum += array[i]
 
-    assert_equal(shuffled_sum, 10, "Shuffled array should contain same elements (sum=10)")
+    assert_equal(
+        shuffled_sum, 10, "Shuffled array should contain same elements (sum=10)"
+    )
 
 
 # ============================================================================

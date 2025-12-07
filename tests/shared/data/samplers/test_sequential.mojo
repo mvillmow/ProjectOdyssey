@@ -83,7 +83,7 @@ fn test_sequential_sampler_yields_all_indices() raises:
     """
     var sampler = StubSequentialSampler(size=10)
 
-    var indices = List[Int](capacity=10)
+    var indices= List[Int](capacity=10)
     for i in range(sampler.__len__()):
         indices.append(sampler.get_index(i))
 
@@ -102,7 +102,7 @@ fn test_sequential_sampler_order() raises:
     """
     var sampler = StubSequentialSampler(size=100)
 
-    var indices = List[Int](capacity=100)
+    var indices= List[Int](capacity=100)
     for i in range(sampler.__len__()):
         indices.append(sampler.get_index(i))
 
@@ -120,12 +120,12 @@ fn test_sequential_sampler_deterministic() raises:
     var sampler = StubSequentialSampler(size=50)
 
     # First iteration
-    var indices1 = List[Int](capacity=50)
+    var indices1= List[Int](capacity=50)
     for i in range(sampler.__len__()):
         indices1.append(sampler.get_index(i))
 
     # Second iteration
-    var indices2 = List[Int](capacity=50)
+    var indices2= List[Int](capacity=50)
     for i in range(sampler.__len__()):
         indices2.append(sampler.get_index(i))
 

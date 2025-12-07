@@ -36,5 +36,6 @@ from .conv2d import Conv2dLayer
 from .batchnorm import BatchNorm2dLayer
 from .relu import ReLULayer
 from .dropout import DropoutLayer
+
 # from .activation import ReLU, Sigmoid, Tanh
 # from .pooling import MaxPool2D, AvgPool2D

@@ -18,6 +18,7 @@ from .extensor import ExTensor
 # Zero-Copy Views and Memory Optimization Helpers
 # ============================================================================
 
+
 fn is_contiguous(tensor: ExTensor) -> Bool:
     """Check if tensor data is contiguous in memory (row-major C order).
 
@@ -80,11 +81,7 @@ fn as_contiguous(tensor: ExTensor) raises -> ExTensor:
         # Use memcpy for efficient bulk copy
         var dtype_size = tensor._get_dtype_size()
         var total_bytes = numel * dtype_size
-        memcpy(
-            dest=result._data,
-            src=tensor._data,
-            count=total_bytes
-        )
+        memcpy(dest=result._data, src=tensor._data, count=total_bytes)
 
         return result^
     else:
@@ -178,7 +175,9 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
     for i in range(new_len):
         if new_shape[i] == -1:
             if inferred_dim != -1:
-                raise Error("reshape: can only specify one unknown dimension (-1)")
+                raise Error(
+                    "reshape: can only specify one unknown dimension (-1)"
+                )
             inferred_dim = i
         elif new_shape[i] <= 0:
             raise Error("reshape: shape dimensions must be positive or -1")
@@ -186,7 +185,7 @@ fn reshape(tensor: ExTensor, new_shape: List[Int]) raises -> ExTensor:
             known_product *= new_shape[i]
 
     # If we have -1, infer that dimension
-    var final_shape = List[Int]()
+    var final_shape= List[Int]()
     var total_elements = tensor.numel()
 
     if inferred_dim != -1:
@@ -244,7 +243,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
 
         # Squeeze specific dim
         var c = squeeze(a, 0)  # Shape (3, 1, 4).
-   """
+    """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
 
@@ -259,7 +258,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             raise Error("squeeze: cannot squeeze dimension that is not size 1")
 
         # Create new shape without this dimension
-        var new_shape = List[Int]()
+        var new_shape= List[Int]()
         for i in range(ndim):
             if i != actual_dim:
                 new_shape.append(old_shape[i])
@@ -277,7 +276,7 @@ fn squeeze(tensor: ExTensor, dim: Int = -999) raises -> ExTensor:
             return reshape(tensor, old_shape)
 
         # Build new shape
-        var new_shape = List[Int]()
+        var new_shape= List[Int]()
         for i in range(ndim):
             if old_shape[i] != 1:
                 new_shape.append(old_shape[i])
@@ -299,7 +298,7 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
         var b = unsqueeze(a, 0)  # Shape (1, 3, 4)
         var c = unsqueeze(a, -1)  # Shape (3, 4, 1).
-   """
+    """
     var old_shape = tensor.shape()
     var ndim = len(old_shape)
     var new_ndim = ndim + 1
@@ -311,7 +310,7 @@ fn unsqueeze(tensor: ExTensor, dim: Int) raises -> ExTensor:
         raise Error("unsqueeze: dimension out of range")
 
     # Create new shape with size-1 dimension inserted
-    var new_shape = List[Int]()
+    var new_shape= List[Int]()
     var j = 0
     for i in range(new_ndim):
         if i == actual_dim:
@@ -349,9 +348,9 @@ fn flatten(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = ones([3, 4], DType.float32)  # Shape (3, 4)
         var b = flatten(a)  # Shape (12,).
-   """
+    """
     var numel = tensor.numel()
-    var shape_1d = List[Int]()
+    var shape_1d= List[Int]()
     shape_1d.append(numel)
 
     return reshape(tensor, shape_1d)
@@ -373,11 +372,11 @@ fn ravel(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = ones([2, 3], DType.float32)  # Contiguous
         var b = ravel(a)  # Returns view of shape (6,).
-   """
+    """
     # For contiguous tensors, we can safely flatten as a view
     # For non-contiguous tensors, we need to copy
     if is_contiguous(tensor):
-        var new_shape = List[Int]()
+        var new_shape= List[Int]()
         new_shape.append(tensor.numel())
         return view(tensor, new_shape)
     else:
@@ -400,11 +399,11 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
         var b = ones([3, 3], DType.float32)  # 3x3
-        var tensors = List[ExTensor]()
+        var tensors : List[ExTensor] = []
         tensors.append(a)
         tensors.append(b)
         var c = concatenate(tensors, axis=0)  # Shape (5, 3).
-   """
+    """
     var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("concatenate: need at least one tensor")
@@ -429,7 +428,9 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         var shape = tensors[i].shape()
 
         if len(shape) != ndim:
-            raise Error("concatenate: all tensors must have same number of dimensions")
+            raise Error(
+                "concatenate: all tensors must have same number of dimensions"
+            )
 
         if tensors[i].dtype() != dtype:
             raise Error("concatenate: all tensors must have same dtype")
@@ -441,7 +442,7 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         concat_size += shape[actual_axis]
 
     # Create result shape
-    var result_shape = List[Int]()
+    var result_shape= List[Int]()
     for i in range(ndim):
         if i == actual_axis:
             result_shape.append(concat_size)
@@ -465,7 +466,7 @@ fn concatenate(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
             memcpy(
                 dest=(result._data + offset_bytes).bitcast[UInt8](),
                 src=t._data,
-                count=t_bytes
+                count=t_bytes,
             )
         else:
             # Fall back to element-by-element copy for non-contiguous tensors
@@ -494,11 +495,11 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
     Examples:
         var a = ones([2, 3], DType.float32)  # 2x3
         var b = ones([2, 3], DType.float32)  # 2x3
-        var tensors = List[ExTensor]()
+        var tensors : List[ExTensor] = []
         tensors.append(a)
         tensors.append(b)
         var c = stack(tensors, axis=0)  # Shape (2, 2, 3).
-   """
+    """
     var num_tensors = len(tensors)
     if num_tensors == 0:
         raise Error("stack: need at least one tensor")
@@ -512,7 +513,9 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         var shape = tensors[i].shape()
 
         if len(shape) != ndim:
-            raise Error("stack: all tensors must have same number of dimensions")
+            raise Error(
+                "stack: all tensors must have same number of dimensions"
+            )
 
         if tensors[i].dtype() != dtype:
             raise Error("stack: all tensors must have same dtype")
@@ -529,7 +532,7 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
         raise Error("stack: axis out of range")
 
     # Unsqueeze each tensor and concatenate
-    var unsqueezed = List[ExTensor]()
+    var unsqueezed: List[ExTensor] = []
     for i in range(num_tensors):
         unsqueezed.append(unsqueeze(tensors[i], actual_axis))
 
@@ -540,11 +543,15 @@ fn stack(tensors: List[ExTensor], axis: Int = 0) raises -> ExTensor:
 # Shape Computation Functions for Neural Network Layers
 # ============================================================================
 
+
 fn conv2d_output_shape(
-    input_h: Int, input_w: Int,
-    kernel_h: Int, kernel_w: Int,
-    stride: Int, padding: Int,
-    dilation: Int = 1
+    input_h: Int,
+    input_w: Int,
+    kernel_h: Int,
+    kernel_w: Int,
+    stride: Int,
+    padding: Int,
+    dilation: Int = 1,
 ) -> Tuple[Int, Int]:
     """Compute output dimensions for 2D convolution.
 
@@ -576,16 +583,18 @@ fn conv2d_output_shape(
 
         # Dilated convolution (dilation=2)
         var out_h, out_w = conv2d_output_shape(224, 224, 3, 3, 1, 1, dilation=2)  # (222, 222).
-   """
-    var out_h = (input_h + 2 * padding - dilation * (kernel_h - 1) - 1) // stride + 1
-    var out_w = (input_w + 2 * padding - dilation * (kernel_w - 1) - 1) // stride + 1
+    """
+    var out_h = (
+        input_h + 2 * padding - dilation * (kernel_h - 1) - 1
+    ) // stride + 1
+    var out_w = (
+        input_w + 2 * padding - dilation * (kernel_w - 1) - 1
+    ) // stride + 1
     return Tuple[Int, Int](out_h, out_w)
 
 
 fn pool_output_shape(
-    input_h: Int, input_w: Int,
-    kernel_size: Int,
-    stride: Int, padding: Int
+    input_h: Int, input_w: Int, kernel_size: Int, stride: Int, padding: Int
 ) -> Tuple[Int, Int]:
     """Compute output dimensions for 2D pooling.
 
@@ -612,7 +621,7 @@ fn pool_output_shape(
 
         # 3x3 pooling with stride=1, padding=1 (same spatial dims)
         var out_h, out_w = pool_output_shape(224, 224, 3, 1, 1)  # (224, 224).
-   """
+    """
     var out_h = (input_h + 2 * padding - kernel_size) // stride + 1
     var out_w = (input_w + 2 * padding - kernel_size) // stride + 1
     return Tuple[Int, Int](out_h, out_w)
@@ -667,11 +676,16 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
         # Use in forward pass
         var fc_input = flatten_to_2d(conv_output)
         var fc_output = linear(fc_input, weights, bias).
-   """
+    """
     var shape = tensor.shape()
 
     if len(shape) != 4:
-        raise Error("flatten_to_2d requires 4D input (batch, channels, height, width), got " + String(len(shape)) + "D")
+        raise Error(
+            "flatten_to_2d requires 4D input (batch, channels, height, width),"
+            " got "
+            + String(len(shape))
+            + "D"
+        )
 
     var batch_size = shape[0]
     var channels = shape[1]
@@ -679,15 +693,18 @@ fn flatten_to_2d(tensor: ExTensor) raises -> ExTensor:
     var width = shape[3]
     var flattened_size = channels * height * width
 
-    var new_shape = List[Int](batch_size, flattened_size)
+    var new_shape: List[Int] = [batch_size, flattened_size]
     return reshape(tensor, new_shape)
 
 
 fn transposed_conv2d_output_shape(
-    input_h: Int, input_w: Int,
-    kernel_h: Int, kernel_w: Int,
-    stride: Int, padding: Int,
-    output_padding: Int = 0
+    input_h: Int,
+    input_w: Int,
+    kernel_h: Int,
+    kernel_w: Int,
+    stride: Int,
+    padding: Int,
+    output_padding: Int = 0,
 ) -> Tuple[Int, Int]:
     """Compute output dimensions for 2D transposed convolution.
 
@@ -717,13 +734,15 @@ fn transposed_conv2d_output_shape(
 
         # Upsample 14x14 to 28x28 with stride=2
         var out_h, out_w = transposed_conv2d_output_shape(14, 14, 4, 4, 2, 1)  # (28, 28).
-   """
+    """
     var out_h = (input_h - 1) * stride - 2 * padding + kernel_h + output_padding
     var out_w = (input_w - 1) * stride - 2 * padding + kernel_w + output_padding
     return Tuple[Int, Int](out_h, out_w)
 
 
-fn global_avgpool_output_shape(batch: Int, channels: Int) -> Tuple[Int, Int, Int, Int]:
+fn global_avgpool_output_shape(
+    batch: Int, channels: Int
+) -> Tuple[Int, Int, Int, Int]:
     """Compute output shape for global average pooling.
 
     Global average pooling reduces each channel to a single value by averaging
@@ -742,7 +761,7 @@ fn global_avgpool_output_shape(batch: Int, channels: Int) -> Tuple[Int, Int, Int
 
         # Common in classification networks (replaces flatten + FC)
         var shape = global_avgpool_output_shape(16, 2048)  # (16, 2048, 1, 1).
-   """
+    """
     return Tuple[Int, Int, Int, Int](batch, channels, 1, 1)
 
 
@@ -765,5 +784,5 @@ fn linear_output_shape(batch_size: Int, out_features: Int) -> Tuple[Int, Int]:
 
         # Hidden layer: 784 features -> 256 hidden units
         var shape = linear_output_shape(64, 256)  # (64, 256).
-   """
+    """
     return Tuple[Int, Int](batch_size, out_features)

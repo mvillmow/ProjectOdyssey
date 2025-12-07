@@ -42,7 +42,7 @@ struct RandomState(Copyable, Movable):
 
     fn __init__(out self):
         """Create empty random state."""
-        self.state_data = List[UInt64]()
+        self.state_data: List[UInt64] = []
         self.seed_used = 0
 
     fn add_state_value(mut self, value: UInt64):
@@ -110,7 +110,7 @@ fn get_global_seed() -> Int:
 
     Example:
         ```mojo
-        ar seed = get_global_seed()
+        var seed = get_global_seed()
         print("Using seed: " + String(seed))
         ```
 
@@ -168,7 +168,7 @@ fn set_random_state(state: RandomState):
 
     Example:
         ```mojo
-        ar saved_state = get_random_state()
+        var saved_state = get_random_state()
         # ... do something ...
         set_random_state(saved_state)
         ```
@@ -276,7 +276,7 @@ fn random_normal() -> Float32:
 
     Returns:
         Random float from N(0, 1).
-   """
+    """
     from math import sqrt, log, pi, cos
 
     var u1 = random_float64()
@@ -299,7 +299,7 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
 
     Returns:
         Random integer in [min_val, max_val).
-   """
+    """
     if min_val >= max_val:
         return min_val
     var range_val = max_val - min_val
@@ -309,7 +309,9 @@ fn random_int(min_val: Int, max_val: Int) -> Int:
     return min_val + Int(rand_val * Float64(range_val))
 
 
-fn random_choice[T: ImplicitlyCopyable & Copyable & Movable](options: List[T]) raises -> T:
+fn random_choice[
+    T: ImplicitlyCopyable & Copyable & Movable
+](options: List[T]) raises -> T:
     """Choose random element from list.
 
     Args:
@@ -338,7 +340,7 @@ fn shuffle[T: ImplicitlyCopyable & Copyable & Movable](mut items: List[T]):
 
     Example:
         ```mojo
-        ar indices = List[Int]()
+        var indices = List[Int]()
         for i in range(10):
             indices.append(i)
         shuffle(indices)

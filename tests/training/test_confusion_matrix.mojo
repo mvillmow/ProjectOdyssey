@@ -31,7 +31,7 @@ fn test_confusion_matrix_basic() raises:
     # Sample 3: true=0, pred=1 ✗
     # Sample 4: true=1, pred=2 ✗
 
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
@@ -40,7 +40,7 @@ fn test_confusion_matrix_basic() raises:
     preds._data.bitcast[Int32]()[3] = 1  # Wrong
     preds._data.bitcast[Int32]()[4] = 2  # Wrong
 
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(5)  # 5 samples
     var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 0
@@ -71,11 +71,21 @@ fn test_confusion_matrix_basic() raises:
         print(row_str)
 
     # Verify specific values
-    assert_equal(Int(raw._data.bitcast[Float64]()[0]), 1, "Matrix[0,0] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[1]), 1, "Matrix[0,1] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[4]), 1, "Matrix[1,1] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[5]), 1, "Matrix[1,2] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[8]), 1, "Matrix[2,2] should be 1")
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[0]), 1, "Matrix[0,0] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[1]), 1, "Matrix[0,1] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[4]), 1, "Matrix[1,1] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[5]), 1, "Matrix[1,2] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[8]), 1, "Matrix[2,2] should be 1"
+    )
 
     print("  ✓ ConfusionMatrix basic test passed")
 
@@ -87,10 +97,10 @@ fn test_confusion_matrix_perfect() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # All predictions correct
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(6)  # 6 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(6)  # 6 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -104,16 +114,26 @@ fn test_confusion_matrix_perfect() raises:
     # Expected: diagonal matrix [2,0,0; 0,2,0; 0,0,2]
     var raw = cm.normalize(mode="none")
 
-    assert_equal(Int(raw._data.bitcast[Float64]()[0]), 2, "Matrix[0,0] should be 2")
-    assert_equal(Int(raw._data.bitcast[Float64]()[4]), 2, "Matrix[1,1] should be 2")
-    assert_equal(Int(raw._data.bitcast[Float64]()[8]), 2, "Matrix[2,2] should be 2")
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[0]), 2, "Matrix[0,0] should be 2"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[4]), 2, "Matrix[1,1] should be 2"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[8]), 2, "Matrix[2,2] should be 2"
+    )
 
     # All off-diagonal should be 0
     for i in range(3):
         for j in range(3):
             if i != j:
                 var idx = i * 3 + j
-                assert_equal(Int(raw._data.bitcast[Float64]()[idx]), 0, "Off-diagonal should be 0")
+                assert_equal(
+                    Int(raw._data.bitcast[Float64]()[idx]),
+                    0,
+                    "Off-diagonal should be 0",
+                )
 
     # Precision, recall, F1 should all be 1.0
     var precision = cm.get_precision()
@@ -121,8 +141,14 @@ fn test_confusion_matrix_perfect() raises:
     var f1 = cm.get_f1_score()
 
     for i in range(3):
-        assert_equal(precision._data.bitcast[Float64]()[i], 1.0, "Precision should be 1.0")
-        assert_equal(recall._data.bitcast[Float64]()[i], 1.0, "Recall should be 1.0")
+        assert_equal(
+            precision._data.bitcast[Float64]()[i],
+            1.0,
+            "Precision should be 1.0",
+        )
+        assert_equal(
+            recall._data.bitcast[Float64]()[i], 1.0, "Recall should be 1.0"
+        )
         assert_equal(f1._data.bitcast[Float64]()[i], 1.0, "F1 should be 1.0")
 
     print("  ✓ Perfect predictions test passed")
@@ -136,10 +162,10 @@ fn test_confusion_matrix_normalize_row() raises:
 
     # Class 0: 2 samples, 1 correct (50%)
     # Class 1: 2 samples, 2 correct (100%)
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -160,10 +186,18 @@ fn test_confusion_matrix_normalize_row() raises:
     # Row 0: [1, 1] -> [0.5, 0.5]
     # Row 1: [0, 2] -> [0.0, 1.0]
 
-    assert_equal(row_norm._data.bitcast[Float64]()[0], 0.5, "Row 0, col 0 should be 0.5")
-    assert_equal(row_norm._data.bitcast[Float64]()[1], 0.5, "Row 0, col 1 should be 0.5")
-    assert_equal(row_norm._data.bitcast[Float64]()[2], 0.0, "Row 1, col 0 should be 0.0")
-    assert_equal(row_norm._data.bitcast[Float64]()[3], 1.0, "Row 1, col 1 should be 1.0")
+    assert_equal(
+        row_norm._data.bitcast[Float64]()[0], 0.5, "Row 0, col 0 should be 0.5"
+    )
+    assert_equal(
+        row_norm._data.bitcast[Float64]()[1], 0.5, "Row 0, col 1 should be 0.5"
+    )
+    assert_equal(
+        row_norm._data.bitcast[Float64]()[2], 0.0, "Row 1, col 0 should be 0.0"
+    )
+    assert_equal(
+        row_norm._data.bitcast[Float64]()[3], 1.0, "Row 1, col 1 should be 1.0"
+    )
 
     print("  ✓ Row normalization test passed")
 
@@ -176,10 +210,10 @@ fn test_confusion_matrix_normalize_column() raises:
 
     # Predicted as class 0: 1 sample, 1 correct (100%)
     # Predicted as class 1: 3 samples, 2 correct (67%)
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -200,8 +234,12 @@ fn test_confusion_matrix_normalize_column() raises:
     # Column 0: [1, 0] -> [1.0, 0.0]
     # Column 1: [1, 2] -> [0.333..., 0.666...]
 
-    assert_equal(col_norm._data.bitcast[Float64]()[0], 1.0, "Col 0, row 0 should be 1.0")
-    assert_equal(col_norm._data.bitcast[Float64]()[2], 0.0, "Col 0, row 1 should be 0.0")
+    assert_equal(
+        col_norm._data.bitcast[Float64]()[0], 1.0, "Col 0, row 0 should be 1.0"
+    )
+    assert_equal(
+        col_norm._data.bitcast[Float64]()[2], 0.0, "Col 0, row 1 should be 0.0"
+    )
 
     var expected_col1_row0 = 1.0 / 3.0
     var expected_col1_row1 = 2.0 / 3.0
@@ -221,10 +259,10 @@ fn test_confusion_matrix_normalize_total() raises:
     var cm = ConfusionMatrix(num_classes=2)
 
     # 4 total samples
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -263,10 +301,10 @@ fn test_confusion_matrix_precision() raises:
     # Class 0: predicted 2 times, 1 correct -> 50%
     # Class 1: predicted 2 times, 2 correct -> 100%
     # Class 2: predicted 1 time, 1 correct -> 100%
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(5)  # 5 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -286,9 +324,21 @@ fn test_confusion_matrix_precision() raises:
 
     var precision = cm.get_precision()
 
-    assert_equal(precision._data.bitcast[Float64]()[0], 0.5, "Precision class 0 should be 0.5")
-    assert_equal(precision._data.bitcast[Float64]()[1], 1.0, "Precision class 1 should be 1.0")
-    assert_equal(precision._data.bitcast[Float64]()[2], 1.0, "Precision class 2 should be 1.0")
+    assert_equal(
+        precision._data.bitcast[Float64]()[0],
+        0.5,
+        "Precision class 0 should be 0.5",
+    )
+    assert_equal(
+        precision._data.bitcast[Float64]()[1],
+        1.0,
+        "Precision class 1 should be 1.0",
+    )
+    assert_equal(
+        precision._data.bitcast[Float64]()[2],
+        1.0,
+        "Precision class 2 should be 1.0",
+    )
 
     print("  ✓ Precision test passed")
 
@@ -302,10 +352,10 @@ fn test_confusion_matrix_recall() raises:
     # Class 0: 1 sample, 1 correct -> 100%
     # Class 1: 3 samples, 2 correct -> 67%
     # Class 2: 1 sample, 1 correct -> 100%
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(5)  # 5 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(5)  # 5 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -325,13 +375,17 @@ fn test_confusion_matrix_recall() raises:
 
     var recall = cm.get_recall()
 
-    assert_equal(recall._data.bitcast[Float64]()[0], 1.0, "Recall class 0 should be 1.0")
+    assert_equal(
+        recall._data.bitcast[Float64]()[0], 1.0, "Recall class 0 should be 1.0"
+    )
 
     var expected_recall_1 = 2.0 / 3.0
     var diff = abs(recall._data.bitcast[Float64]()[1] - expected_recall_1)
     assert_true(diff < 0.01, "Recall class 1 should be ~0.667")
 
-    assert_equal(recall._data.bitcast[Float64]()[2], 1.0, "Recall class 2 should be 1.0")
+    assert_equal(
+        recall._data.bitcast[Float64]()[2], 1.0, "Recall class 2 should be 1.0"
+    )
 
     print("  ✓ Recall test passed")
 
@@ -345,10 +399,10 @@ fn test_confusion_matrix_f1_score() raises:
     # Matrix: [[1, 1], [1, 1]]
     # Class 0: precision=0.5 (1/2), recall=0.5 (1/2) -> F1=0.5
     # Class 1: precision=0.5 (1/2), recall=0.5 (1/2) -> F1=0.5
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(4)  # 4 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -370,8 +424,12 @@ fn test_confusion_matrix_f1_score() raises:
     # Class 0: 2 * (0.5 * 0.5) / (0.5 + 0.5) = 0.5 / 1.0 = 0.5
     # Class 1: 2 * (0.5 * 0.5) / (0.5 + 0.5) = 0.5 / 1.0 = 0.5
 
-    assert_equal(f1._data.bitcast[Float64]()[0], 0.5, "F1 class 0 should be 0.5")
-    assert_equal(f1._data.bitcast[Float64]()[1], 0.5, "F1 class 1 should be 0.5")
+    assert_equal(
+        f1._data.bitcast[Float64]()[0], 0.5, "F1 class 0 should be 0.5"
+    )
+    assert_equal(
+        f1._data.bitcast[Float64]()[1], 0.5, "F1 class 1 should be 0.5"
+    )
 
     print("  ✓ F1-score test passed")
 
@@ -384,7 +442,7 @@ fn test_confusion_matrix_with_logits() raises:
 
     # Create logits [batch_size=4, num_classes=3]
     var logits = ExTensor(List[Int](4, 3), DType.float32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)  # 4 samples
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -417,10 +475,18 @@ fn test_confusion_matrix_with_logits() raises:
     # Expected matrix: [1,1,0; 0,1,0; 0,0,1]
     var raw = cm.normalize(mode="none")
 
-    assert_equal(Int(raw._data.bitcast[Float64]()[0]), 1, "Matrix[0,0] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[1]), 1, "Matrix[0,1] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[4]), 1, "Matrix[1,1] should be 1")
-    assert_equal(Int(raw._data.bitcast[Float64]()[8]), 1, "Matrix[2,2] should be 1")
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[0]), 1, "Matrix[0,0] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[1]), 1, "Matrix[0,1] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[4]), 1, "Matrix[1,1] should be 1"
+    )
+    assert_equal(
+        Int(raw._data.bitcast[Float64]()[8]), 1, "Matrix[2,2] should be 1"
+    )
 
     print("  ✓ Logits test passed")
 
@@ -432,10 +498,10 @@ fn test_confusion_matrix_reset() raises:
     var cm = ConfusionMatrix(num_classes=2)
 
     # Add some data
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(2)  # 2 samples
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(2)  # 2 samples
     var labels = ExTensor(labels_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
@@ -451,7 +517,11 @@ fn test_confusion_matrix_reset() raises:
     # All values should be 0
     var raw = cm.normalize(mode="none")
     for i in range(4):
-        assert_equal(Int(raw._data.bitcast[Float64]()[i]), 0, "All values should be 0 after reset")
+        assert_equal(
+            Int(raw._data.bitcast[Float64]()[i]),
+            0,
+            "All values should be 0 after reset",
+        )
 
     print("  ✓ Reset test passed")
 
@@ -469,18 +539,28 @@ fn test_confusion_matrix_empty() raises:
 
     # All should be 0.0
     for i in range(3):
-        assert_equal(precision._data.bitcast[Float64]()[i], 0.0, "Empty precision should be 0.0")
-        assert_equal(recall._data.bitcast[Float64]()[i], 0.0, "Empty recall should be 0.0")
-        assert_equal(f1._data.bitcast[Float64]()[i], 0.0, "Empty F1 should be 0.0")
+        assert_equal(
+            precision._data.bitcast[Float64]()[i],
+            0.0,
+            "Empty precision should be 0.0",
+        )
+        assert_equal(
+            recall._data.bitcast[Float64]()[i],
+            0.0,
+            "Empty recall should be 0.0",
+        )
+        assert_equal(
+            f1._data.bitcast[Float64]()[i], 0.0, "Empty F1 should be 0.0"
+        )
 
     print("  ✓ Empty matrix test passed")
 
 
 fn main() raises:
     """Run all confusion matrix tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("CONFUSION MATRIX TEST SUITE")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Basic Functionality Tests (#289)")
     print("-" * 70)
@@ -505,6 +585,6 @@ fn main() raises:
     test_confusion_matrix_reset()
     test_confusion_matrix_empty()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ALL CONFUSION MATRIX TESTS PASSED ✓")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")

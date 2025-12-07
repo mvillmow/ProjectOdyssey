@@ -25,7 +25,13 @@ from collections import List
 from .extensor import ExTensor, full, zeros_like
 from .arithmetic import add, subtract, multiply
 from .reduction import sum as tensor_sum, max as tensor_max
-from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary, dispatch_scalar
+from .dtype_dispatch import (
+    dispatch_unary,
+    dispatch_binary,
+    dispatch_float_unary,
+    dispatch_float_binary,
+    dispatch_scalar,
+)
 from .gradient_types import GradientPair
 from .activation_ops import exp_scalar_f32, exp_scalar_f64
 
@@ -123,7 +129,9 @@ fn leaky_relu(tensor: ExTensor, alpha: Float64 = 0.01) raises -> ExTensor:
             var scaled = Int64(alpha * Float64(val))
             result._data.bitcast[Int64]()[i] = max(scaled, val)
     else:
-        raise Error("leaky_relu: unsupported dtype (use float16/32/64 or int8/16/32/64)")
+        raise Error(
+            "leaky_relu: unsupported dtype (use float16/32/64 or int8/16/32/64)"
+        )
 
     return result
 
@@ -165,20 +173,28 @@ fn prelu(tensor: ExTensor, alpha: ExTensor) raises -> ExTensor:
     if tensor._dtype == DType.float16:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float16]()[i]
-            var a = alpha._data.bitcast[Float16]()[0] if is_scalar else alpha._data.bitcast[Float16]()[i]
+            var a = alpha._data.bitcast[Float16]()[
+                0
+            ] if is_scalar else alpha._data.bitcast[Float16]()[i]
             result._data.bitcast[Float16]()[i] = max(a * val, val)
     elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float32]()[i]
-            var a = alpha._data.bitcast[Float32]()[0] if is_scalar else alpha._data.bitcast[Float32]()[i]
+            var a = alpha._data.bitcast[Float32]()[
+                0
+            ] if is_scalar else alpha._data.bitcast[Float32]()[i]
             result._data.bitcast[Float32]()[i] = max(a * val, val)
     elif tensor._dtype == DType.float64:
         for i in range(tensor._numel):
             var val = tensor._data.bitcast[Float64]()[i]
-            var a = alpha._data.bitcast[Float64]()[0] if is_scalar else alpha._data.bitcast[Float64]()[i]
+            var a = alpha._data.bitcast[Float64]()[
+                0
+            ] if is_scalar else alpha._data.bitcast[Float64]()[i]
             result._data.bitcast[Float64]()[i] = max(a * val, val)
     else:
-        raise Error("prelu: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "prelu: only float16, float32, and float64 dtypes supported"
+        )
 
     return result
 
@@ -197,6 +213,7 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     elif x < Scalar[T](-20.0):
         return Scalar[T](0.0)
     else:
+
         @parameter
         if T == DType.float16:
             # Upcast to Float32 for computation, then cast back
@@ -235,6 +252,7 @@ fn sigmoid(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Tanh operation for float dtypes."""
+
     @parameter
     if T == DType.float16:
         return Scalar[T](math_tanh(Float32(x)))
@@ -332,7 +350,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                     (outer_idx * axis_size + 0) * axis_stride + inner_idx
                 ]
                 for k in range(1, axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float16]()[idx]
                     if val > max_val:
                         max_val = val
@@ -340,7 +360,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                 # Compute exp(x - max) and sum
                 var sum_exp: Float32 = 0.0
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float16]()[idx]
                     var exp_val = exp(Float32(val - max_val))
                     result._data.bitcast[Float16]()[idx] = Float16(exp_val)
@@ -348,9 +370,13 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 
                 # Normalize by sum
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var current = Float32(result._data.bitcast[Float16]()[idx])
-                    result._data.bitcast[Float16]()[idx] = Float16(current / sum_exp)
+                    result._data.bitcast[Float16]()[idx] = Float16(
+                        current / sum_exp
+                    )
 
     elif tensor._dtype == DType.float32:
         # For each position before the softmax axis
@@ -362,7 +388,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                     (outer_idx * axis_size + 0) * axis_stride + inner_idx
                 ]
                 for k in range(1, axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float32]()[idx]
                     if val > max_val:
                         max_val = val
@@ -370,7 +398,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                 # Compute exp(x - max) and sum
                 var sum_exp: Float32 = 0.0
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float32]()[idx]
                     var exp_val = exp(val - max_val)
                     result._data.bitcast[Float32]()[idx] = exp_val
@@ -378,7 +408,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 
                 # Normalize by sum
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     result._data.bitcast[Float32]()[idx] /= sum_exp
 
     elif tensor._dtype == DType.float64:
@@ -391,7 +423,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                     (outer_idx * axis_size + 0) * axis_stride + inner_idx
                 ]
                 for k in range(1, axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float64]()[idx]
                     if val > max_val:
                         max_val = val
@@ -399,7 +433,9 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
                 # Compute exp(x - max) and sum
                 var sum_exp: Float64 = 0.0
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float64]()[idx]
                     var exp_val = exp(val - max_val)
                     result._data.bitcast[Float64]()[idx] = exp_val
@@ -407,10 +443,14 @@ fn softmax(tensor: ExTensor, axis: Int = -1) raises -> ExTensor:
 
                 # Normalize by sum
                 for k in range(axis_size):
-                    var idx = (outer_idx * axis_size + k) * axis_stride + inner_idx
+                    var idx = (
+                        outer_idx * axis_size + k
+                    ) * axis_stride + inner_idx
                     result._data.bitcast[Float64]()[idx] /= sum_exp
     else:
-        raise Error("softmax: only float16, float32, and float64 dtypes supported")
+        raise Error(
+            "softmax: only float16, float32, and float64 dtypes supported"
+        )
 
     return result^
 
@@ -438,7 +478,7 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
         var x = ExTensor(...)     # [-2, 0, 2]
         var y_exact = gelu(x, approximate=False)
         var y_approx = gelu(x, approximate=True).
-   """
+    """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     # Constants for approximate GELU
@@ -452,15 +492,21 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
             for i in range(tensor._numel):
                 var x = Float32(tensor._data.bitcast[Float16]()[i])
                 var x_cubed = x * x * x
-                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x + Float32(GELU_COEFF) * x_cubed
+                )
                 var tanh_val = math_tanh(inner)
-                result._data.bitcast[Float16]()[i] = Float16(0.5 * x * (1.0 + tanh_val))
+                result._data.bitcast[Float16]()[i] = Float16(
+                    0.5 * x * (1.0 + tanh_val)
+                )
         else:
             # Exact: x * 0.5 * (1 + erf(x / sqrt(2)))
             for i in range(tensor._numel):
                 var x = Float32(tensor._data.bitcast[Float16]()[i])
                 var erf_val = erf(x / Float32(SQRT_2))
-                result._data.bitcast[Float16]()[i] = Float16(x * 0.5 * (1.0 + erf_val))
+                result._data.bitcast[Float16]()[i] = Float16(
+                    x * 0.5 * (1.0 + erf_val)
+                )
 
     elif tensor._dtype == DType.float32:
         if approximate:
@@ -468,7 +514,9 @@ fn gelu(tensor: ExTensor, approximate: Bool = False) raises -> ExTensor:
             for i in range(tensor._numel):
                 var x = tensor._data.bitcast[Float32]()[i]
                 var x_cubed = x * x * x
-                var inner = Float32(SQRT_2_OVER_PI) * (x + Float32(GELU_COEFF) * x_cubed)
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x + Float32(GELU_COEFF) * x_cubed
+                )
                 var tanh_val = math_tanh(inner)
                 result._data.bitcast[Float32]()[i] = 0.5 * x * (1.0 + tanh_val)
         else:
@@ -510,7 +558,9 @@ fn _relu_backward_op[T: DType](grad: Scalar[T], x: Scalar[T]) -> Scalar[T]:
     return grad if x > Scalar[T](0) else Scalar[T](0)
 
 
-fn relu_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+fn relu_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises escaping -> ExTensor:
     """Compute gradient of ReLU activation.
 
     ReLU gradient: ∂L/∂x = ∂L/∂y * (x > 0)
@@ -537,9 +587,9 @@ fn relu_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor
 
 
 @always_inline
-fn _leaky_relu_backward_impl[dtype: DType](
-    result: ExTensor, grad_output: ExTensor, x: ExTensor, alpha: Float64
-) raises:
+fn _leaky_relu_backward_impl[
+    dtype: DType
+](result: ExTensor, grad_output: ExTensor, x: ExTensor, alpha: Float64) raises:
     """Dtype-generic implementation of leaky ReLU backward pass.
 
     Eliminates dtype branching by using compile-time dtype specialization.
@@ -555,7 +605,9 @@ fn _leaky_relu_backward_impl[dtype: DType](
         result_ptr[i] = grad if x_val > Scalar[dtype](0) else grad * alpha_typed
 
 
-fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01) raises escaping -> ExTensor:
+fn leaky_relu_backward(
+    grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
+) raises escaping -> ExTensor:
     """Compute gradient of Leaky ReLU activation.
 
     Leaky ReLU gradient: ∂L/∂x = ∂L/∂y * (1 if x > 0 else alpha)
@@ -567,11 +619,15 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
 
     Returns:
         Gradient with respect to input (∂L/∂x).
-   """
+    """
     if grad_output._dtype != x._dtype:
-        raise Error("leaky_relu_backward: grad_output and x must have same dtype")
+        raise Error(
+            "leaky_relu_backward: grad_output and x must have same dtype"
+        )
     if grad_output._numel != x._numel:
-        raise Error("leaky_relu_backward: grad_output and x must have same shape")
+        raise Error(
+            "leaky_relu_backward: grad_output and x must have same shape"
+        )
 
     var result = ExTensor(x._shape, x._dtype)
 
@@ -589,13 +645,15 @@ fn leaky_relu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 0.01
 
 
 @always_inline
-fn _prelu_backward_impl[dtype: DType](
+fn _prelu_backward_impl[
+    dtype: DType
+](
     grad_input: ExTensor,
     grad_alpha: ExTensor,
     grad_output: ExTensor,
     x: ExTensor,
     alpha: ExTensor,
-    is_scalar: Bool
+    is_scalar: Bool,
 ) raises:
     """Dtype-generic implementation of PReLU backward pass.
 
@@ -626,7 +684,9 @@ fn _prelu_backward_impl[dtype: DType](
             grad_alpha_ptr[alpha_idx] += grad * x_val
 
 
-fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises escaping -> GradientPair:
+fn prelu_backward(
+    grad_output: ExTensor, x: ExTensor, alpha: ExTensor
+) raises escaping -> GradientPair:
     """Compute gradients of PReLU activation.
 
     PReLU gradients:
@@ -640,7 +700,7 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises es
 
     Returns:
         GradientPair containing (grad_input, grad_alpha).
-   """
+    """
     if grad_output._dtype != x._dtype or grad_output._dtype != alpha._dtype:
         raise Error("prelu_backward: all tensors must have same dtype")
     if grad_output._numel != x._numel:
@@ -652,11 +712,17 @@ fn prelu_backward(grad_output: ExTensor, x: ExTensor, alpha: ExTensor) raises es
 
     # Use dtype dispatch pattern to eliminate branching
     if x._dtype == DType.float16:
-        _prelu_backward_impl[DType.float16](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
+        _prelu_backward_impl[DType.float16](
+            grad_input, grad_alpha, grad_output, x, alpha, is_scalar
+        )
     elif x._dtype == DType.float32:
-        _prelu_backward_impl[DType.float32](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
+        _prelu_backward_impl[DType.float32](
+            grad_input, grad_alpha, grad_output, x, alpha, is_scalar
+        )
     elif x._dtype == DType.float64:
-        _prelu_backward_impl[DType.float64](grad_input, grad_alpha, grad_output, x, alpha, is_scalar)
+        _prelu_backward_impl[DType.float64](
+            grad_input, grad_alpha, grad_output, x, alpha, is_scalar
+        )
     else:
         raise Error("prelu_backward: only float16/32/64 dtypes supported")
 
@@ -669,7 +735,9 @@ fn _sigmoid_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     return grad * y * (Scalar[T](1.0) - y)
 
 
-fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> ExTensor:
+fn sigmoid_backward(
+    grad_output: ExTensor, output: ExTensor
+) raises escaping -> ExTensor:
     """Compute gradient of sigmoid activation.
 
     Sigmoid gradient: ∂L/∂x = ∂L/∂y * y * (1 - y)
@@ -686,9 +754,13 @@ fn sigmoid_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> 
         Takes output instead of input to avoid recomputing sigmoid.
     """
     if grad_output._dtype != output._dtype:
-        raise Error("sigmoid_backward: grad_output and output must have same dtype")
+        raise Error(
+            "sigmoid_backward: grad_output and output must have same dtype"
+        )
     if grad_output._numel != output._numel:
-        raise Error("sigmoid_backward: grad_output and output must have same shape")
+        raise Error(
+            "sigmoid_backward: grad_output and output must have same shape"
+        )
 
     return dispatch_float_binary[_sigmoid_backward_op](grad_output, output)
 
@@ -699,7 +771,9 @@ fn _tanh_backward_op[T: DType](grad: Scalar[T], y: Scalar[T]) -> Scalar[T]:
     return grad * (Scalar[T](1.0) - y * y)
 
 
-fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> ExTensor:
+fn tanh_backward(
+    grad_output: ExTensor, output: ExTensor
+) raises escaping -> ExTensor:
     """Compute gradient of tanh activation.
 
     Tanh gradient: ∂L/∂x = ∂L/∂y * (1 - y²)
@@ -716,14 +790,20 @@ fn tanh_backward(grad_output: ExTensor, output: ExTensor) raises escaping -> ExT
         Takes output instead of input to avoid recomputing tanh.
     """
     if grad_output._dtype != output._dtype:
-        raise Error("tanh_backward: grad_output and output must have same dtype")
+        raise Error(
+            "tanh_backward: grad_output and output must have same dtype"
+        )
     if grad_output._numel != output._numel:
-        raise Error("tanh_backward: grad_output and output must have same shape")
+        raise Error(
+            "tanh_backward: grad_output and output must have same shape"
+        )
 
     return dispatch_float_binary[_tanh_backward_op](grad_output, output)
 
 
-fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) raises escaping -> ExTensor:
+fn gelu_backward(
+    grad_output: ExTensor, x: ExTensor, approximate: Bool = False
+) raises escaping -> ExTensor:
     """Compute gradient of GELU activation.
 
     GELU gradient (exact): ∂L/∂x = ∂L/∂y * [Φ(x) + x*φ(x)]
@@ -738,7 +818,7 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
 
     Returns:
         Gradient with respect to input (∂L/∂x).
-   """
+    """
     if grad_output._dtype != x._dtype:
         raise Error("gelu_backward: grad_output and x must have same dtype")
     if grad_output._numel != x._numel:
@@ -759,12 +839,16 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
                 var grad = grad_output._data.bitcast[Float32]()[i]
 
                 var x_cubed = x_val * x_val * x_val
-                var inner = Float32(SQRT_2_OVER_PI) * (x_val + Float32(GELU_COEFF) * x_cubed)
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x_val + Float32(GELU_COEFF) * x_cubed
+                )
                 var tanh_val = math_tanh(inner)
                 var sech2 = 1.0 - tanh_val * tanh_val
 
                 # Derivative computation
-                var dtanh = Float32(SQRT_2_OVER_PI) * (1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val)
+                var dtanh = Float32(SQRT_2_OVER_PI) * (
+                    1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
+                )
                 var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
 
                 result._data.bitcast[Float32]()[i] = grad * dgelu
@@ -775,7 +859,9 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
                 var grad = grad_output._data.bitcast[Float32]()[i]
 
                 var erf_val = erf(x_val / Float32(SQRT_2))
-                var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)  # φ(x)
+                var pdf = Float32(INV_SQRT_2PI) * exp(
+                    -0.5 * x_val * x_val
+                )  # φ(x)
                 var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
 
                 result._data.bitcast[Float32]()[i] = grad * dgelu
@@ -791,7 +877,9 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
                 var tanh_val = math_tanh(inner)
                 var sech2 = 1.0 - tanh_val * tanh_val
 
-                var dtanh = SQRT_2_OVER_PI * (1.0 + 3.0 * GELU_COEFF * x_val * x_val)
+                var dtanh = SQRT_2_OVER_PI * (
+                    1.0 + 3.0 * GELU_COEFF * x_val * x_val
+                )
                 var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
 
                 result._data.bitcast[Float64]()[i] = grad * dgelu
@@ -814,11 +902,15 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
                 var grad = Float32(grad_output._data.bitcast[Float16]()[i])
 
                 var x_cubed = x_val * x_val * x_val
-                var inner = Float32(SQRT_2_OVER_PI) * (x_val + Float32(GELU_COEFF) * x_cubed)
+                var inner = Float32(SQRT_2_OVER_PI) * (
+                    x_val + Float32(GELU_COEFF) * x_cubed
+                )
                 var tanh_val = math_tanh(inner)
                 var sech2 = 1.0 - tanh_val * tanh_val
 
-                var dtanh = Float32(SQRT_2_OVER_PI) * (1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val)
+                var dtanh = Float32(SQRT_2_OVER_PI) * (
+                    1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
+                )
                 var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
 
                 result._data.bitcast[Float16]()[i] = Float16(grad * dgelu)
@@ -838,7 +930,9 @@ fn gelu_backward(grad_output: ExTensor, x: ExTensor, approximate: Bool = False) 
     return result
 
 
-fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) raises escaping -> ExTensor:
+fn softmax_backward(
+    grad_output: ExTensor, output: ExTensor, axis: Int = -1
+) raises escaping -> ExTensor:
     """Compute gradient of softmax activation.
 
     Softmax gradient (along axis):
@@ -873,9 +967,13 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
         depends on all inputs x_j, not just x_i, due to the normalization.
     """
     if grad_output._dtype != output._dtype:
-        raise Error("softmax_backward: grad_output and output must have same dtype")
+        raise Error(
+            "softmax_backward: grad_output and output must have same dtype"
+        )
     if grad_output._numel != output._numel:
-        raise Error("softmax_backward: grad_output and output must have same shape")
+        raise Error(
+            "softmax_backward: grad_output and output must have same shape"
+        )
 
     var result = ExTensor(output._shape, output._dtype)
 
@@ -915,7 +1013,9 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
                     var idx = (outer * axis_size + k) * axis_stride + inner
                     var grad_val = grad_output._data.bitcast[Float32]()[idx]
                     var out_val = output._data.bitcast[Float32]()[idx]
-                    result._data.bitcast[Float32]()[idx] = out_val * (grad_val - dot_sum)
+                    result._data.bitcast[Float32]()[idx] = out_val * (
+                        grad_val - dot_sum
+                    )
 
     elif output._dtype == DType.float64:
         # For each outer position
@@ -935,7 +1035,9 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
                     var idx = (outer * axis_size + k) * axis_stride + inner
                     var grad_val = grad_output._data.bitcast[Float64]()[idx]
                     var out_val = output._data.bitcast[Float64]()[idx]
-                    result._data.bitcast[Float64]()[idx] = out_val * (grad_val - dot_sum)
+                    result._data.bitcast[Float64]()[idx] = out_val * (
+                        grad_val - dot_sum
+                    )
 
     elif output._dtype == DType.float16:
         # Use float32 intermediate precision
@@ -945,16 +1047,22 @@ fn softmax_backward(grad_output: ExTensor, output: ExTensor, axis: Int = -1) rai
                 var dot_sum: Float32 = 0.0
                 for k in range(axis_size):
                     var idx = (outer * axis_size + k) * axis_stride + inner
-                    var grad_val = Float32(grad_output._data.bitcast[Float16]()[idx])
+                    var grad_val = Float32(
+                        grad_output._data.bitcast[Float16]()[idx]
+                    )
                     var out_val = Float32(output._data.bitcast[Float16]()[idx])
                     dot_sum += grad_val * out_val
 
                 # Compute gradient for each position along axis
                 for k in range(axis_size):
                     var idx = (outer * axis_size + k) * axis_stride + inner
-                    var grad_val = Float32(grad_output._data.bitcast[Float16]()[idx])
+                    var grad_val = Float32(
+                        grad_output._data.bitcast[Float16]()[idx]
+                    )
                     var out_val = Float32(output._data.bitcast[Float16]()[idx])
-                    result._data.bitcast[Float16]()[idx] = Float16(out_val * (grad_val - dot_sum))
+                    result._data.bitcast[Float16]()[idx] = Float16(
+                        out_val * (grad_val - dot_sum)
+                    )
     else:
         raise Error("softmax_backward: only float16/32/64 dtypes supported")
 
@@ -997,7 +1105,7 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
 
     Reference:
         Ramachandran et al., "Searching for Activation Functions" (2017).
-   """
+    """
     # swish(x) = x * sigmoid(x)
     var sig = sigmoid(tensor)
     return multiply(tensor, sig)
@@ -1035,7 +1143,7 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
 
     Reference:
         Misra, "Mish: A Self Regularized Non-Monotonic Activation Function" (2019).
-   """
+    """
     # mish(x) = x * tanh(softplus(x))
     # softplus(x) = log(1 + exp(x))
 
@@ -1052,9 +1160,13 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
     var zeros = full(tensor._shape, 0.0, tensor._dtype)
     var x_pos = clip(tensor, 0.0, 1e10)  # max(0, x)
     var x_abs = abs_fn(tensor)  # |x|
-    var neg_x_abs: ExTensor = multiply(x_abs, full(x_abs._shape, -1.0, x_abs._dtype))  # -|x|
+    var neg_x_abs: ExTensor = multiply(
+        x_abs, full(x_abs._shape, -1.0, x_abs._dtype)
+    )  # -|x|
     var exp_neg_abs: ExTensor = tensor_exp(neg_x_abs)  # exp(-|x|)
-    var one_plus_exp = add(exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype))
+    var one_plus_exp = add(
+        exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype)
+    )
     var log_term = log(one_plus_exp)
     var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
@@ -1096,7 +1208,7 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
     Reference:
         Clevert et al., "Fast and Accurate Deep Network Learning by.
         Exponential Linear Units (ELUs)" (2015).
-   """
+    """
     var result = zeros_like(tensor)
     var data_ptr = tensor._data
     var result_ptr = result._data
@@ -1112,7 +1224,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
                 # Clip val to prevent extreme exp() values (exp(-20) ≈ 2e-9)
                 var val_clipped = max(val, Float32(-20.0))
                 var exp_val = exp_scalar_f32(val_clipped)
-                result_ptr.bitcast[Float32]()[i] = Float32(alpha) * (exp_val - 1.0)
+                result_ptr.bitcast[Float32]()[i] = Float32(alpha) * (
+                    exp_val - 1.0
+                )
     elif tensor.dtype() == DType.float64:
         for i in range(size):
             var val = data_ptr.bitcast[Float64]()[i]
@@ -1132,7 +1246,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
                 # Clip val to prevent extreme exp() values
                 var val_clipped = max(val, Float32(-20.0))
                 var exp_val = exp_scalar_f32(val_clipped)
-                result_ptr.bitcast[Float16]()[i] = Float16(Float32(alpha) * (exp_val - 1.0))
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    Float32(alpha) * (exp_val - 1.0)
+                )
     else:
         raise Error("elu: only float16/32/64 dtypes supported")
 
@@ -1148,7 +1264,9 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 # ============================================================================
 
 
-fn swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+fn swish_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises escaping -> ExTensor:
     """Backward pass for Swish activation.
 
     The derivative of swish is:
@@ -1185,7 +1303,9 @@ fn swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTenso
     return multiply(grad_output, derivative)
 
 
-fn mish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+fn mish_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises escaping -> ExTensor:
     """Backward pass for Mish activation.
 
     The derivative involves the derivative of tanh(softplus(x)).
@@ -1213,9 +1333,13 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor
 
     var x_pos = clip(x, 0.0, 1e10)  # max(0, x)
     var x_abs = abs_fn(x)  # |x|
-    var neg_x_abs: ExTensor = multiply(x_abs, full(x_abs._shape, -1.0, x_abs._dtype))  # -|x|
+    var neg_x_abs: ExTensor = multiply(
+        x_abs, full(x_abs._shape, -1.0, x_abs._dtype)
+    )  # -|x|
     var exp_neg_abs: ExTensor = tensor_exp(neg_x_abs)  # exp(-|x|)
-    var one_plus_exp = add(exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype))
+    var one_plus_exp = add(
+        exp_neg_abs, full(exp_neg_abs._shape, 1.0, exp_neg_abs._dtype)
+    )
     var log_term = log(one_plus_exp)
     var softplus = add(x_pos, log_term)  # max(0,x) + log(1 + exp(-|x|))
 
@@ -1238,7 +1362,9 @@ fn mish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor
     return multiply(grad_output, derivative)
 
 
-fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises escaping -> ExTensor:
+fn elu_backward(
+    grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0
+) raises escaping -> ExTensor:
     """Backward pass for ELU activation.
 
     The derivative is:
@@ -1280,7 +1406,9 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
                 # alpha * exp(val) - clip val for numerical stability
                 var val_clipped = max(val, Float32(-20.0))
                 var exp_val = exp_scalar_f32(val_clipped)
-                result_ptr.bitcast[Float32]()[i] = grad_val * Float32(alpha) * exp_val
+                result_ptr.bitcast[Float32]()[i] = (
+                    grad_val * Float32(alpha) * exp_val
+                )
     elif x.dtype() == DType.float64:
         for i in range(size):
             var val = x_ptr.bitcast[Float64]()[i]
@@ -1304,7 +1432,9 @@ fn elu_backward(grad_output: ExTensor, x: ExTensor, alpha: Float64 = 1.0) raises
                 # Clip val for numerical stability
                 var val_clipped = max(val, Float32(-20.0))
                 var exp_val = exp_scalar_f32(val_clipped)
-                result_ptr.bitcast[Float16]()[i] = Float16(grad_val * Float32(alpha) * exp_val)
+                result_ptr.bitcast[Float16]()[i] = Float16(
+                    grad_val * Float32(alpha) * exp_val
+                )
     else:
         raise Error("elu_backward: only float16/32/64 dtypes supported")
 
@@ -1351,7 +1481,7 @@ fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
 
     Reference:
         Howard et al., "Searching for MobileNetV3" (2019).
-   """
+    """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     if tensor._dtype == DType.float16:
@@ -1413,7 +1543,7 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
 
     Reference:
         Howard et al., "Searching for MobileNetV3" (2019).
-   """
+    """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
     if tensor._dtype == DType.float16:
@@ -1424,7 +1554,9 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
             elif x >= 3.0:
                 result._data.bitcast[Float16]()[i] = Float16(x)
             else:
-                result._data.bitcast[Float16]()[i] = Float16(x * (x + 3.0) / 6.0)
+                result._data.bitcast[Float16]()[i] = Float16(
+                    x * (x + 3.0) / 6.0
+                )
     elif tensor._dtype == DType.float32:
         for i in range(tensor._numel):
             var x = tensor._data.bitcast[Float32]()[i]
@@ -1449,7 +1581,9 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
     return result
 
 
-fn hard_tanh(tensor: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0) raises -> ExTensor:
+fn hard_tanh(
+    tensor: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0
+) raises -> ExTensor:
     """Hard Tanh activation function.
 
     A piecewise linear approximation of tanh that clips values to a range.
@@ -1515,7 +1649,9 @@ fn hard_tanh(tensor: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0) 
 # ============================================================================
 
 
-fn hard_sigmoid_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+fn hard_sigmoid_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises escaping -> ExTensor:
     """Backward pass for Hard Sigmoid activation.
 
     The derivative is:
@@ -1540,9 +1676,13 @@ fn hard_sigmoid_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> 
         ```
     """
     if grad_output._dtype != x._dtype:
-        raise Error("hard_sigmoid_backward: grad_output and x must have same dtype")
+        raise Error(
+            "hard_sigmoid_backward: grad_output and x must have same dtype"
+        )
     if grad_output._numel != x._numel:
-        raise Error("hard_sigmoid_backward: grad_output and x must have same shape")
+        raise Error(
+            "hard_sigmoid_backward: grad_output and x must have same shape"
+        )
 
     var result = ExTensor(x._shape, x._dtype)
 
@@ -1571,12 +1711,16 @@ fn hard_sigmoid_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> 
             else:
                 result._data.bitcast[Float64]()[i] = 0.0
     else:
-        raise Error("hard_sigmoid_backward: only float16/32/64 dtypes supported")
+        raise Error(
+            "hard_sigmoid_backward: only float16/32/64 dtypes supported"
+        )
 
     return result
 
 
-fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+fn hard_swish_backward(
+    grad_output: ExTensor, x: ExTensor
+) raises escaping -> ExTensor:
     """Backward pass for Hard Swish activation.
 
     The derivative is:
@@ -1604,9 +1748,13 @@ fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> Ex
         ```
     """
     if grad_output._dtype != x._dtype:
-        raise Error("hard_swish_backward: grad_output and x must have same dtype")
+        raise Error(
+            "hard_swish_backward: grad_output and x must have same dtype"
+        )
     if grad_output._numel != x._numel:
-        raise Error("hard_swish_backward: grad_output and x must have same shape")
+        raise Error(
+            "hard_swish_backward: grad_output and x must have same shape"
+        )
 
     var result = ExTensor(x._shape, x._dtype)
 
@@ -1619,7 +1767,9 @@ fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> Ex
             elif x_val >= 3.0:
                 result._data.bitcast[Float16]()[i] = Float16(grad)
             else:
-                result._data.bitcast[Float16]()[i] = Float16(grad * (2.0 * x_val + 3.0) / 6.0)
+                result._data.bitcast[Float16]()[i] = Float16(
+                    grad * (2.0 * x_val + 3.0) / 6.0
+                )
     elif x._dtype == DType.float32:
         for i in range(x._numel):
             var x_val = x._data.bitcast[Float32]()[i]
@@ -1629,7 +1779,9 @@ fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> Ex
             elif x_val >= 3.0:
                 result._data.bitcast[Float32]()[i] = grad
             else:
-                result._data.bitcast[Float32]()[i] = grad * (2.0 * x_val + 3.0) / 6.0
+                result._data.bitcast[Float32]()[i] = (
+                    grad * (2.0 * x_val + 3.0) / 6.0
+                )
     elif x._dtype == DType.float64:
         for i in range(x._numel):
             var x_val = x._data.bitcast[Float64]()[i]
@@ -1639,7 +1791,9 @@ fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> Ex
             elif x_val >= 3.0:
                 result._data.bitcast[Float64]()[i] = grad
             else:
-                result._data.bitcast[Float64]()[i] = grad * (2.0 * x_val + 3.0) / 6.0
+                result._data.bitcast[Float64]()[i] = (
+                    grad * (2.0 * x_val + 3.0) / 6.0
+                )
     else:
         raise Error("hard_swish_backward: only float16/32/64 dtypes supported")
 
@@ -1647,7 +1801,10 @@ fn hard_swish_backward(grad_output: ExTensor, x: ExTensor) raises escaping -> Ex
 
 
 fn hard_tanh_backward(
-    grad_output: ExTensor, x: ExTensor, min_val: Float64 = -1.0, max_val: Float64 = 1.0
+    grad_output: ExTensor,
+    x: ExTensor,
+    min_val: Float64 = -1.0,
+    max_val: Float64 = 1.0,
 ) raises escaping -> ExTensor:
     """Backward pass for Hard Tanh activation.
 
@@ -1675,9 +1832,13 @@ fn hard_tanh_backward(
         ```
     """
     if grad_output._dtype != x._dtype:
-        raise Error("hard_tanh_backward: grad_output and x must have same dtype")
+        raise Error(
+            "hard_tanh_backward: grad_output and x must have same dtype"
+        )
     if grad_output._numel != x._numel:
-        raise Error("hard_tanh_backward: grad_output and x must have same shape")
+        raise Error(
+            "hard_tanh_backward: grad_output and x must have same shape"
+        )
 
     var result = ExTensor(x._shape, x._dtype)
 

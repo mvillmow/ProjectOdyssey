@@ -76,7 +76,9 @@ struct CIFARLoader(Copyable, Movable):
             Error: If cifar_version is not 10 or 100
         """
         if cifar_version != 10 and cifar_version != 100:
-            raise Error("CIFAR version must be 10 or 100, got: " + String(cifar_version))
+            raise Error(
+                "CIFAR version must be 10 or 100, got: " + String(cifar_version)
+            )
 
         self.cifar_version = cifar_version
         self.image_size = CIFAR10_IMAGE_SIZE
@@ -142,7 +144,7 @@ struct CIFARLoader(Copyable, Movable):
 
         if self.cifar_version == 10:
             # CIFAR-10: 1 label per image
-            var shape = List[Int]()
+            var shape= List[Int]()
             shape.append(num_images)
             var labels = zeros(shape, DType.uint8)
 
@@ -154,7 +156,7 @@ struct CIFARLoader(Copyable, Movable):
             return labels^
         else:
             # CIFAR-100: 2 labels (coarse, fine) per image
-            var shape = List[Int]()
+            var shape= List[Int]()
             shape.append(num_images)
             shape.append(2)
             var labels = zeros(shape, DType.uint8)
@@ -195,7 +197,7 @@ struct CIFARLoader(Copyable, Movable):
         var data_bytes = content.unsafe_ptr()
 
         # Create tensor to hold images
-        var shape = List[Int]()
+        var shape= List[Int]()
         shape.append(num_images)
         shape.append(self.channels)
         shape.append(self.image_size)
@@ -215,13 +217,13 @@ struct CIFARLoader(Copyable, Movable):
 
             # Copy pixel data: R channel, then G channel, then B channel
             for pixel_idx in range(pixels_per_image * self.channels):
-                images_data[tensor_offset + pixel_idx] = data_bytes[file_offset + pixel_idx]
+                images_data[tensor_offset + pixel_idx] = data_bytes[
+                    file_offset + pixel_idx
+                ]
 
         return images^
 
-    fn load_batch(
-        self, filepath: String
-    ) raises -> Tuple[ExTensor, ExTensor]:
+    fn load_batch(self, filepath: String) raises -> Tuple[ExTensor, ExTensor]:
         """Load a complete batch of images and labels from CIFAR file.
 
         Convenience function that loads both images and labels in a single call.

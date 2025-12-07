@@ -43,7 +43,7 @@ fn test_linear_backward_result_alias() raises:
     print("Testing LinearBackwardResult alias...")
 
     # Create test tensors
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -57,8 +57,12 @@ fn test_linear_backward_result_alias() raises:
     )
 
     # Verify it's the same as GradientTriple
-    assert_shape(result.grad_input, shape, "grad_input should have correct shape")
-    assert_shape(result.grad_weights, shape, "grad_weights should have correct shape")
+    assert_shape(
+        result.grad_input, shape, "grad_input should have correct shape"
+    )
+    assert_shape(
+        result.grad_weights, shape, "grad_weights should have correct shape"
+    )
     assert_shape(result.grad_bias, shape, "grad_bias should have correct shape")
 
     print("  ✓ LinearBackwardResult alias works correctly")
@@ -69,7 +73,7 @@ fn test_conv2d_backward_result_alias() raises:
     print("Testing Conv2dBackwardResult alias...")
 
     # Create test tensors with 4D shape
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -85,8 +89,12 @@ fn test_conv2d_backward_result_alias() raises:
     )
 
     # Verify it has three gradient fields
-    assert_shape(result.grad_input, shape, "grad_input should have correct shape")
-    assert_shape(result.grad_weights, shape, "grad_weights should have correct shape")
+    assert_shape(
+        result.grad_input, shape, "grad_input should have correct shape"
+    )
+    assert_shape(
+        result.grad_weights, shape, "grad_weights should have correct shape"
+    )
     assert_shape(result.grad_bias, shape, "grad_bias should have correct shape")
 
     print("  ✓ Conv2dBackwardResult alias works correctly")
@@ -96,7 +104,7 @@ fn test_conv2d_no_bias_backward_result_alias() raises:
     """Test Conv2dNoBiasBackwardResult is an alias for GradientPair."""
     print("Testing Conv2dNoBiasBackwardResult alias...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -119,7 +127,7 @@ fn test_depthwise_conv2d_backward_result_alias() raises:
     """Test DepthwiseConv2dBackwardResult is an alias for GradientTriple."""
     print("Testing DepthwiseConv2dBackwardResult alias...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -145,10 +153,11 @@ fn test_depthwise_conv2d_backward_result_alias() raises:
 
 
 fn test_depthwise_separable_conv2d_backward_result_alias() raises:
-    """Test DepthwiseSeparableConv2dBackwardResult is an alias for GradientQuad."""
+    """Test DepthwiseSeparableConv2dBackwardResult is an alias for GradientQuad.
+    """
     print("Testing DepthwiseSeparableConv2dBackwardResult alias...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -159,7 +168,9 @@ fn test_depthwise_separable_conv2d_backward_result_alias() raises:
 
     # Create using alias name
     var result: DepthwiseSeparableConv2dBackwardResult = (
-        DepthwiseSeparableConv2dBackwardResult(grad_a^, grad_b^, grad_c^, grad_d^)
+        DepthwiseSeparableConv2dBackwardResult(
+            grad_a^, grad_b^, grad_c^, grad_d^
+        )
     )
 
     # Verify it has four fields
@@ -180,7 +191,7 @@ fn test_linear_no_bias_backward_result_alias() raises:
     """Test LinearNoBiasBackwardResult is an alias for GradientPair."""
     print("Testing LinearNoBiasBackwardResult alias...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -234,7 +245,7 @@ fn test_alias_interoperability() raises:
     """Test that aliases and base types are interchangeable."""
     print("Testing alias/type interoperability...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -250,9 +261,7 @@ fn test_alias_interoperability() raises:
     # Since LinearBackwardResult is an alias for GradientTriple, the type IS the same
     # No assignment needed - just verify the triple works
     # Access fields through GradientTriple (same as LinearBackwardResult)
-    assert_shape(
-        triple.grad_input, shape, "grad_input should be accessible"
-    )
+    assert_shape(triple.grad_input, shape, "grad_input should be accessible")
     assert_shape(
         triple.grad_weights, shape, "grad_weights should be accessible"
     )

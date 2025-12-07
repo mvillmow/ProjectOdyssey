@@ -8,9 +8,13 @@ This module tests the gradient utilities and numerical safety functions:
 """
 
 from shared.core import (
-    ExTensor, DType,
-    zeros, ones, full,
-    has_nan, has_inf,
+    ExTensor,
+    DType,
+    zeros,
+    ones,
+    full,
+    has_nan,
+    has_inf,
 )
 from shared.training.base import (
     has_nan_or_inf,
@@ -26,7 +30,7 @@ fn test_has_nan_or_inf_no_issues() raises:
     """Test has_nan_or_inf returns False for normal values."""
     print("Testing has_nan_or_inf with normal values...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -43,7 +47,7 @@ fn test_has_nan_or_inf_with_nan() raises:
     """Test has_nan_or_inf detects NaN values."""
     print("Testing has_nan_or_inf with NaN...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(2)
 
@@ -65,7 +69,7 @@ fn test_has_nan_or_inf_with_inf() raises:
     """Test has_nan_or_inf detects Inf values."""
     print("Testing has_nan_or_inf with Inf...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(2)
 
@@ -88,7 +92,7 @@ fn test_compute_gradient_norm_l2() raises:
     print("Testing compute_gradient_norm L2 norm...")
 
     # Create test gradients: [3.0, 4.0] should have L2 norm = 5.0
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
 
     var tensor = full(shape, 0.0, DType.float64)
@@ -96,7 +100,7 @@ fn test_compute_gradient_norm_l2() raises:
     ptr[0] = 3.0
     ptr[1] = 4.0
 
-    var params = List[ExTensor]()
+    var params: List[ExTensor] = []
     params.append(tensor)
 
     var norm = compute_gradient_norm(params, "L2")
@@ -114,7 +118,7 @@ fn test_compute_gradient_norm_l1() raises:
     print("Testing compute_gradient_norm L1 norm...")
 
     # Create test gradients: [1.0, 2.0, 3.0] should have L1 norm = 6.0
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     var tensor = full(shape, 0.0, DType.float64)
@@ -123,7 +127,7 @@ fn test_compute_gradient_norm_l1() raises:
     ptr[1] = 2.0
     ptr[2] = 3.0
 
-    var params = List[ExTensor]()
+    var params: List[ExTensor] = []
     params.append(tensor)
 
     var norm = compute_gradient_norm(params, "L1")
@@ -141,7 +145,7 @@ fn test_compute_gradient_norm_multiple_tensors() raises:
     print("Testing compute_gradient_norm with multiple tensors...")
 
     # Create two tensors: [3.0, 4.0] and [0.0] for combined L2 norm = 5.0
-    var shape1 = List[Int]()
+    var shape1= List[Int]()
     shape1.append(2)
 
     var tensor1 = full(shape1, 0.0, DType.float64)
@@ -149,12 +153,12 @@ fn test_compute_gradient_norm_multiple_tensors() raises:
     ptr1[0] = 3.0
     ptr1[1] = 4.0
 
-    var shape2 = List[Int]()
+    var shape2= List[Int]()
     shape2.append(1)
 
     var tensor2 = full(shape2, 0.0, DType.float64)
 
-    var params = List[ExTensor]()
+    var params: List[ExTensor] = []
     params.append(tensor1)
     params.append(tensor2)
 
@@ -208,7 +212,7 @@ fn test_clip_gradients_no_clipping_needed() raises:
     """Test clip_gradients when norm is below threshold."""
     print("Testing clip_gradients with norm below threshold...")
 
-    var gradients = List[Float64]()
+    var gradients: List[Float64] = []
     gradients.append(0.1)
     gradients.append(0.2)
     gradients.append(0.3)
@@ -232,7 +236,7 @@ fn test_clip_gradients_clipping_needed() raises:
     """Test clip_gradients scales gradients when norm exceeds threshold."""
     print("Testing clip_gradients with norm above threshold...")
 
-    var gradients = List[Float64]()
+    var gradients: List[Float64] = []
     gradients.append(3.0)
     gradients.append(4.0)
 

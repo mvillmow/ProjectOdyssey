@@ -1,14 +1,14 @@
 """Tests for List[Int] constructor bugs in shape.mojo.
 
 This test file demonstrates the bugs in shape.mojo functions that use the
-unsafe pattern: List[Int]() followed by list[i] = value.
+unsafe pattern= List[Int]() followed by list[i] = value.
 
 These tests SHOULD FAIL before the fixes are applied, demonstrating the bug.
 After fixing, they should PASS.
 
 Bugs tested:
 - Line 48: reshape() - var final_shape = List[Int]()
-- Line 121: squeeze(dim) - var new_shape = List[Int](ndim - 1)
+- Line 121: squeeze(dim) - var new_shape : List[Int] = [ndim - 1]
 - Line 141: squeeze() - var new_shape = List[Int]()
 - Line 177: unsqueeze() - var new_shape = List[Int]()
 - Line 296: concatenate() - var result_shape = List[Int]()
@@ -31,6 +31,7 @@ from tests.shared.conftest import (
 # Test reshape() bug (Line 48)
 # ============================================================================
 
+
 fn test_reshape_with_inferred_dimension() raises:
     """Test reshape with -1 dimension (triggers List constructor bug at line 48).
 
@@ -41,7 +42,7 @@ fn test_reshape_with_inferred_dimension() raises:
     var a = arange(0.0, 12.0, 1.0, DType.float32)  # Shape (12,)
 
     # Reshape to (3, -1) should infer -1 as 4
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(-1)  # Should infer 4
 
@@ -63,7 +64,7 @@ fn test_reshape_explicit_shape() raises:
     var a = arange(0.0, 12.0, 1.0, DType.float32)  # Shape (12,)
 
     # Reshape to (3, 4) explicitly
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -79,6 +80,7 @@ fn test_reshape_explicit_shape() raises:
 # Test squeeze() bugs (Lines 121, 141)
 # ============================================================================
 
+
 fn test_squeeze_specific_dimension() raises:
     """Test squeeze with specific dimension (triggers bug at line 121).
 
@@ -86,7 +88,7 @@ fn test_squeeze_specific_dimension() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (1, 3, 1, 4)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(1)
@@ -109,7 +111,7 @@ fn test_squeeze_all_dimensions() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (1, 3, 1, 4)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(1)
@@ -129,6 +131,7 @@ fn test_squeeze_all_dimensions() raises:
 # Test unsqueeze() bug (Line 177)
 # ============================================================================
 
+
 fn test_unsqueeze_add_dimension() raises:
     """Test unsqueeze to add dimension (triggers bug at line 177).
 
@@ -136,7 +139,7 @@ fn test_unsqueeze_add_dimension() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -157,7 +160,7 @@ fn test_unsqueeze_negative_index() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -175,6 +178,7 @@ fn test_unsqueeze_negative_index() raises:
 # Test concatenate() bug (Line 296)
 # ============================================================================
 
+
 fn test_concatenate_along_axis() raises:
     """Test concatenate tensors (triggers bug at line 296).
 
@@ -182,18 +186,18 @@ fn test_concatenate_along_axis() raises:
     This crashes because the list has undefined size.
     """
     # Create two tensors to concatenate
-    var shape1 = List[Int]()
+    var shape1= List[Int]()
     shape1.append(2)
     shape1.append(3)
     var a = ones(shape1, DType.float32)  # 2x3
 
-    var shape2 = List[Int]()
+    var shape2= List[Int]()
     shape2.append(3)
     shape2.append(3)
     var b = ones(shape2, DType.float32)  # 3x3
 
     # Concatenate along axis 0
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(a)
     tensors.append(b)
 
@@ -208,6 +212,7 @@ fn test_concatenate_along_axis() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all shape.mojo bug tests.

@@ -53,17 +53,17 @@ fn initialize_optimizer_state(
     Note:
         For SGD with momentum, use num_states=1 (one velocity buffer per param)
         For Adam variants, use num_states=2 (m and v buffers per param).
-   """
+    """
     from shared.core.extensor import zeros
 
     var all_states = List[List[ExTensor]]()
 
     for i in range(len(param_shapes)):
-        var param_state = List[ExTensor]()
+        var param_state: List[ExTensor] = []
 
         for state_idx in range(num_states):
             # Copy the shape since List[Int] is not ImplicitlyCopyable
-            var shape = List[Int]()
+            var shape= List[Int]()
             for j in range(len(param_shapes[i])):
                 shape.append(param_shapes[i][j])
 
@@ -92,7 +92,7 @@ fn initialize_optimizer_state_from_params(
     Example:
         ```mojo
         # Collect all model parameters
-        var params = List[ExTensor]()
+        var params : List[ExTensor] = []
         params.append(layer1_weight)
         params.append(layer1_bias)
         params.append(layer2_weight)
@@ -107,7 +107,7 @@ fn initialize_optimizer_state_from_params(
 
     for i in range(len(params)):
         var param = params[i]
-        var param_state = List[ExTensor]()
+        var param_state: List[ExTensor] = []
 
         for state_idx in range(num_states):
             param_state.append(zeros(param.shape(), param.dtype()))
@@ -148,9 +148,7 @@ fn compute_weight_decay_term(
     return multiply_simd(wd_tensor, params)
 
 
-fn apply_weight_decay(
-    mut params: ExTensor, weight_decay: Float64
-) raises:
+fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
     """Apply L2 regularization directly to parameters (in-place).
 
     This performs decoupled weight decay: params = params * (1 - weight_decay).
@@ -278,7 +276,7 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
         ```mojo
         var grad1 = full(List[Int](100), 1.0, DType.float32)
         var grad2 = full(List[Int](50), 1.0, DType.float32)
-        var tensors = List[ExTensor](grad1, grad2)
+        var tensors : List[ExTensor] = [grad1, grad2]
 
         var global_norm = compute_global_norm(tensors)
         # global_norm = sqrt(100 + 50) = sqrt(150) ≈ 12.25
@@ -390,7 +388,7 @@ fn clip_global_norm(
         ```mojo
         var grad1 = full(List[Int](100), 1.0, DType.float32)
         var grad2 = full(List[Int](50), 1.0, DType.float32)
-        var grads = List[ExTensor](grad1, grad2)
+        var grads : List[ExTensor] = [grad1, grad2]
 
         var global_norm = clip_global_norm(grads, max_norm=5.0)
         # Both gradients scaled proportionally
@@ -455,9 +453,7 @@ fn apply_bias_correction(
         raise Error("timestep must be positive, got: " + String(timestep))
 
     if decay < 0.0 or decay >= 1.0:
-        raise Error(
-            "decay must be in [0, 1), got: " + String(decay)
-        )
+        raise Error("decay must be in [0, 1), got: " + String(decay))
 
     # Compute correction factor: 1 - decay^timestep
     var decay_power = 1.0
@@ -468,8 +464,7 @@ fn apply_bias_correction(
 
     if correction_factor <= 0.0:
         raise Error(
-            "Bias correction factor invalid: "
-            + String(correction_factor)
+            "Bias correction factor invalid: " + String(correction_factor)
         )
 
     # Correction: estimate / (1 - decay^t)
@@ -478,7 +473,9 @@ fn apply_bias_correction(
     return corrected
 
 
-fn validate_optimizer_state(params: List[ExTensor], states: List[List[ExTensor]]) raises:
+fn validate_optimizer_state(
+    params: List[ExTensor], states: List[List[ExTensor]]
+) raises:
     """Validate that optimizer state matches parameter shapes.
 
     Checks that:

@@ -386,6 +386,7 @@ trait Trainable:
         """
         ...
 
+
 # ============================================================================
 # Training Loop Traits (see #2392, #2393, #2397 for implementation)
 # ============================================================================
@@ -523,5 +524,5 @@ trait Optimizer:
 
         Note:
             May be called before parameter zero_grad().
-       """
+        """
         ...

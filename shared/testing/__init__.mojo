@@ -64,14 +64,14 @@ from .gradient_checker import (
     relative_error,
     check_gradient,
     compute_numerical_gradient,
-    assert_gradients_close
+    assert_gradients_close,
 )
 
 from .data_generators import (
     random_tensor,
     random_uniform,
     random_normal,
-    synthetic_classification_data
+    synthetic_classification_data,
 )
 
 from .models import (

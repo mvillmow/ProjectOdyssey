@@ -1,4 +1,5 @@
-"""CLI Wrapper for LeNet-5 Training
+"""
+CLI Wrapper for LeNet-5 Training
 
 Provides command-line interface for training LeNet-5 on EMNIST.
 Wraps the core train.mojo functionality with enhanced argument parser.
@@ -17,7 +18,13 @@ Arguments:
 """
 
 from model import LeNet5
-from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode, DatasetInfo
+from shared.data import (
+    load_idx_labels,
+    load_idx_images,
+    normalize_images,
+    one_hot_encode,
+    DatasetInfo,
+)
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
@@ -32,6 +39,7 @@ from collections import List
 
 struct TrainConfig(Movable):
     """Training configuration."""
+
     var epochs: Int
     var batch_size: Int
     var learning_rate: Float32
@@ -84,7 +92,7 @@ fn compute_gradients(
     input: ExTensor,
     labels: ExTensor,
     learning_rate: Float32,
-    mut precision_config: PrecisionConfig
+    mut precision_config: PrecisionConfig,
 ) raises -> Tuple[Float32, Bool]:
     """Compute gradients and update parameters for one batch with precision scaling.
 
@@ -110,12 +118,16 @@ fn compute_gradients(
     # ========== Forward Pass (with caching) ==========
 
     # Conv1 + ReLU + MaxPool
-    var conv1_out = conv2d(input, model.conv1_kernel, model.conv1_bias, stride=1, padding=0)
+    var conv1_out = conv2d(
+        input, model.conv1_kernel, model.conv1_bias, stride=1, padding=0
+    )
     var relu1_out = relu(conv1_out)
     var pool1_out = maxpool2d(relu1_out, kernel_size=2, stride=2, padding=0)
 
     # Conv2 + ReLU + MaxPool
-    var conv2_out = conv2d(pool1_out, model.conv2_kernel, model.conv2_bias, stride=1, padding=0)
+    var conv2_out = conv2d(
+        pool1_out, model.conv2_kernel, model.conv2_bias, stride=1, padding=0
+    )
     var relu2_out = relu(conv2_out)
     var pool2_out = maxpool2d(relu2_out, kernel_size=2, stride=2, padding=0)
 
@@ -123,7 +135,7 @@ fn compute_gradients(
     var pool2_shape = pool2_out.shape()
     var batch_size = pool2_shape[0]
     var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
-    var flatten_shape = List[Int]()
+    var flatten_shape= List[Int]()
     flatten_shape.append(batch_size)
     flatten_shape.append(flattened_size)
     var flattened = pool2_out.reshape(flatten_shape)
@@ -149,7 +161,7 @@ fn compute_gradients(
     # ========== Backward Pass ==========
 
     # Start with gradient from scaled loss
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -174,49 +186,97 @@ fn compute_gradients(
     var grad_pool2_out = fc1_grads.grad_input.reshape(pool2_shape)
 
     # MaxPool2 backward
-    var grad_relu2_out = maxpool2d_backward(grad_pool2_out, relu2_out, kernel_size=2, stride=2, padding=0)
+    var grad_relu2_out = maxpool2d_backward(
+        grad_pool2_out, relu2_out, kernel_size=2, stride=2, padding=0
+    )
 
     # ReLU2 backward
     var grad_conv2_out = relu_backward(grad_relu2_out, conv2_out)
 
     # Conv2 backward
-    var conv2_grads = conv2d_backward(grad_conv2_out, pool1_out, model.conv2_kernel, stride=1, padding=0)
+    var conv2_grads = conv2d_backward(
+        grad_conv2_out, pool1_out, model.conv2_kernel, stride=1, padding=0
+    )
 
     # MaxPool1 backward
-    var grad_relu1_out = maxpool2d_backward(conv2_grads.grad_input, relu1_out, kernel_size=2, stride=2, padding=0)
+    var grad_relu1_out = maxpool2d_backward(
+        conv2_grads.grad_input, relu1_out, kernel_size=2, stride=2, padding=0
+    )
 
     # ReLU1 backward
     var grad_conv1_out = relu_backward(grad_relu1_out, conv1_out)
 
     # Conv1 backward
-    var conv1_grads = conv2d_backward(grad_conv1_out, input, model.conv1_kernel, stride=1, padding=0)
+    var conv1_grads = conv2d_backward(
+        grad_conv1_out, input, model.conv1_kernel, stride=1, padding=0
+    )
 
     # ========== Gradient Scaling and Validation ==========
 
     # Unscale gradients for mixed-precision training
-    var unscaled_conv1_grad_kernel = precision_config.unscale_gradients(conv1_grads.grad_weights)
-    var unscaled_conv1_grad_bias = precision_config.unscale_gradients(conv1_grads.grad_bias)
-    var unscaled_conv2_grad_kernel = precision_config.unscale_gradients(conv2_grads.grad_weights)
-    var unscaled_conv2_grad_bias = precision_config.unscale_gradients(conv2_grads.grad_bias)
-    var unscaled_fc1_grad_kernel = precision_config.unscale_gradients(fc1_grads.grad_weights)
-    var unscaled_fc1_grad_bias = precision_config.unscale_gradients(fc1_grads.grad_bias)
-    var unscaled_fc2_grad_kernel = precision_config.unscale_gradients(fc2_grads.grad_weights)
-    var unscaled_fc2_grad_bias = precision_config.unscale_gradients(fc2_grads.grad_bias)
-    var unscaled_fc3_grad_kernel = precision_config.unscale_gradients(fc3_grads.grad_weights)
-    var unscaled_fc3_grad_bias = precision_config.unscale_gradients(fc3_grads.grad_bias)
+    var unscaled_conv1_grad_kernel = precision_config.unscale_gradients(
+        conv1_grads.grad_weights
+    )
+    var unscaled_conv1_grad_bias = precision_config.unscale_gradients(
+        conv1_grads.grad_bias
+    )
+    var unscaled_conv2_grad_kernel = precision_config.unscale_gradients(
+        conv2_grads.grad_weights
+    )
+    var unscaled_conv2_grad_bias = precision_config.unscale_gradients(
+        conv2_grads.grad_bias
+    )
+    var unscaled_fc1_grad_kernel = precision_config.unscale_gradients(
+        fc1_grads.grad_weights
+    )
+    var unscaled_fc1_grad_bias = precision_config.unscale_gradients(
+        fc1_grads.grad_bias
+    )
+    var unscaled_fc2_grad_kernel = precision_config.unscale_gradients(
+        fc2_grads.grad_weights
+    )
+    var unscaled_fc2_grad_bias = precision_config.unscale_gradients(
+        fc2_grads.grad_bias
+    )
+    var unscaled_fc3_grad_kernel = precision_config.unscale_gradients(
+        fc3_grads.grad_weights
+    )
+    var unscaled_fc3_grad_bias = precision_config.unscale_gradients(
+        fc3_grads.grad_bias
+    )
 
     # Check if any gradients have NaN/Inf (overflow detection)
     var grads_valid = True
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_conv1_grad_kernel)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_conv1_grad_bias)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_conv2_grad_kernel)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_conv2_grad_bias)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc1_grad_kernel)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc1_grad_bias)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc2_grad_kernel)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc2_grad_bias)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc3_grad_kernel)
-    grads_valid = grads_valid and precision_config.check_gradients(unscaled_fc3_grad_bias)
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_conv1_grad_kernel
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_conv1_grad_bias
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_conv2_grad_kernel
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_conv2_grad_bias
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc1_grad_kernel
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc1_grad_bias
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc2_grad_kernel
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc2_grad_bias
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc3_grad_kernel
+    )
+    grads_valid = grads_valid and precision_config.check_gradients(
+        unscaled_fc3_grad_bias
+    )
 
     # ========== Conditional Parameter Update ==========
 
@@ -233,7 +293,7 @@ fn compute_gradients(
             unscaled_fc2_grad_kernel^,
             unscaled_fc2_grad_bias^,
             unscaled_fc3_grad_kernel^,
-            unscaled_fc3_grad_bias^
+            unscaled_fc3_grad_bias^,
         )
         precision_config.step(grads_valid=True)
     else:
@@ -252,7 +312,7 @@ fn train_epoch(
     learning_rate: Float32,
     epoch: Int,
     total_epochs: Int,
-    mut precision_config: PrecisionConfig
+    mut precision_config: PrecisionConfig,
 ) raises -> Float32:
     """Train for one epoch with mixed-precision support.
 
@@ -288,10 +348,14 @@ fn train_epoch(
 
         # Convert batch labels to one-hot encoding
         var dataset_info = DatasetInfo("emnist_balanced")
-        var batch_labels = one_hot_encode(batch_labels_int, num_classes=dataset_info.num_classes())
+        var batch_labels = one_hot_encode(
+            batch_labels_int, num_classes=dataset_info.num_classes()
+        )
 
         # Compute gradients and update parameters with precision scaling
-        var result = compute_gradients(model, batch_images, batch_labels, learning_rate, precision_config)
+        var result = compute_gradients(
+            model, batch_images, batch_labels, learning_rate, precision_config
+        )
         var batch_loss = result[0]
         var batch_success = result[1]
 
@@ -306,7 +370,17 @@ fn train_epoch(
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
             var scale = precision_config.get_scale()
-            print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss, " (scale: ", scale, ")")
+            print(
+                "  Batch [",
+                batch_idx + 1,
+                "/",
+                num_batches,
+                "] - Loss: ",
+                avg_loss,
+                " (scale: ",
+                scale,
+                ")",
+            )
 
     var avg_loss = total_loss / Float32(num_batches)
     print("  Average Loss: ", avg_loss)
@@ -314,8 +388,6 @@ fn train_epoch(
         print("  Gradient overflows: ", precision_config.get_overflow_count())
 
     return avg_loss
-
-
 
 
 fn main() raises:
@@ -344,8 +416,13 @@ fn main() raises:
     # Note: Full mixed-precision training requires gradient scaling through all layers
     # Currently, training uses FP32 compute. PrecisionConfig is ready for future integration.
     if precision_config.mode != PrecisionMode.FP32:
-        print("Note: Mixed-precision training with gradient scaling will be applied.")
-        print("      Master weights maintained in FP32 for optimizer stability.")
+        print(
+            "Note: Mixed-precision training with gradient scaling will be"
+            " applied."
+        )
+        print(
+            "      Master weights maintained in FP32 for optimizer stability."
+        )
         print()
 
     # Initialize model
@@ -357,10 +434,18 @@ fn main() raises:
 
     # Load dataset
     print("Loading EMNIST dataset...")
-    var train_images_path = config.data_dir + "/emnist-balanced-train-images-idx3-ubyte"
-    var train_labels_path = config.data_dir + "/emnist-balanced-train-labels-idx1-ubyte"
-    var test_images_path = config.data_dir + "/emnist-balanced-test-images-idx3-ubyte"
-    var test_labels_path = config.data_dir + "/emnist-balanced-test-labels-idx1-ubyte"
+    var train_images_path = (
+        config.data_dir + "/emnist-balanced-train-images-idx3-ubyte"
+    )
+    var train_labels_path = (
+        config.data_dir + "/emnist-balanced-train-labels-idx1-ubyte"
+    )
+    var test_images_path = (
+        config.data_dir + "/emnist-balanced-test-images-idx3-ubyte"
+    )
+    var test_labels_path = (
+        config.data_dir + "/emnist-balanced-test-labels-idx1-ubyte"
+    )
 
     var train_images_raw = load_idx_images(train_images_path)
     var train_labels = load_idx_labels(train_labels_path)
@@ -379,14 +464,25 @@ fn main() raises:
     print("Starting training...")
     for epoch in range(1, config.epochs + 1):
         var train_loss = train_epoch(
-            model, train_images, train_labels,
-            config.batch_size, config.learning_rate,
-            epoch, config.epochs,
-            precision_config
+            model,
+            train_images,
+            train_labels,
+            config.batch_size,
+            config.learning_rate,
+            epoch,
+            config.epochs,
+            precision_config,
         )
 
         # Evaluate every epoch using shared evaluation module
-        var test_acc = evaluate_model_simple(model, test_images, test_labels, batch_size=100, num_classes=model.num_classes, verbose=True)
+        var test_acc = evaluate_model_simple(
+            model,
+            test_images,
+            test_labels,
+            batch_size=100,
+            num_classes=model.num_classes,
+            verbose=True,
+        )
         print("  Test Accuracy: ", test_acc * 100.0, "%")
         print()
 

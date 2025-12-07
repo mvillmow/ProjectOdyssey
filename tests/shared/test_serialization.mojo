@@ -60,7 +60,7 @@ fn test_dtype_utilities():
 fn test_hex_encoding():
     """Test hex encoding/decoding."""
     # Test bytes_to_hex and hex_to_bytes roundtrip
-    var shape = List[Int](4)
+    var shape: List[Int] = [4]
     var tensor = ones(shape, DType.float32)
 
     # Get hex representation
@@ -69,7 +69,9 @@ fn test_hex_encoding():
     var hex_str = bytes_to_hex(tensor._data, total_bytes)
 
     # Verify hex string has expected length
-    assert_equal(len(hex_str), total_bytes * 2, "Hex string should be 2x byte count")
+    assert_equal(
+        len(hex_str), total_bytes * 2, "Hex string should be 2x byte count"
+    )
 
     # Create new tensor and decode hex
     var tensor2 = zeros(shape, DType.float32)
@@ -85,7 +87,7 @@ fn test_hex_encoding():
 fn test_single_tensor_serialization() raises:
     """Test saving and loading single tensor."""
     # Create test tensor
-    var shape = List[Int](2, 3)
+    var shape: List[Int] = [2, 3]
     var tensor = full(shape, 3.14, DType.float32)
 
     # Create temp file
@@ -111,7 +113,9 @@ fn test_single_tensor_serialization() raises:
         assert_equal(loaded.numel(), 6, "Wrong number of elements")
         for i in range(loaded.numel()):
             var v = loaded._get_float64(i)
-            assert_almost_equal(v, 3.14, tolerance=1e-6, msg="Value mismatch after load")
+            assert_almost_equal(
+                v, 3.14, tolerance=1e-6, msg="Value mismatch after load"
+            )
 
     finally:
         # Clean up
@@ -122,7 +126,7 @@ fn test_single_tensor_serialization() raises:
 fn test_tensor_with_name() raises:
     """Test loading tensor with name preservation."""
     # Create test tensor
-    var shape = List[Int](2, 2)
+    var shape: List[Int] = [2, 2]
     var tensor = ones(shape, DType.float32)
 
     var tmpfile = "test_named_tensor.tmp"
@@ -153,13 +157,13 @@ fn test_named_tensor_collection() raises:
 
     try:
         # Create named tensors
-        var tensors = List[NamedTensor]()
+        var tensors: List[NamedTensor] = []
 
-        var shape1 = List[Int](2, 3)
+        var shape1: List[Int] = [2, 3]
         var tensor1 = full(shape1, 1.0, DType.float32)
         tensors.append(NamedTensor("weights", tensor1))
 
-        var shape2 = List[Int](3)
+        var shape2: List[Int] = [3]
         var tensor2 = full(shape2, 0.5, DType.float32)
         tensors.append(NamedTensor("bias", tensor2))
 
@@ -169,11 +173,10 @@ fn test_named_tensor_collection() raises:
         # Verify files were created
         assert_true(
             _file_exists(tmpdir + "/weights.weights"),
-            "weights.weights not created"
+            "weights.weights not created",
         )
         assert_true(
-            _file_exists(tmpdir + "/bias.weights"),
-            "bias.weights not created"
+            _file_exists(tmpdir + "/bias.weights"), "bias.weights not created"
         )
 
         # Load collection
@@ -202,34 +205,32 @@ fn test_different_dtypes() raises:
 
     try:
         # Test float32
-        var f32_shape = List[Int](2)
+        var f32_shape: List[Int] = [2]
         var f32_tensor = ones(f32_shape, DType.float32)
         var f32_path = tmpdir + "/f32.bin"
         save_tensor(f32_tensor, f32_path)
         var f32_loaded = load_tensor(f32_path)
-        assert_equal(f32_loaded.dtype(), DType.float32, "float32 dtype mismatch")
+        assert_equal(
+            f32_loaded.dtype(), DType.float32, "float32 dtype mismatch"
+        )
 
         # Test float64
-        var f64_shape = List[Int](2)
+        var f64_shape: List[Int] = [2]
         var f64_tensor = ones(f64_shape, DType.float64)
         var f64_path = tmpdir + "/f64.bin"
         save_tensor(f64_tensor, f64_path)
         var f64_loaded = load_tensor(f64_path)
         assert_true(
-            f64_loaded.dtype() == DType.float64,
-            "float64 dtype mismatch"
+            f64_loaded.dtype() == DType.float64, "float64 dtype mismatch"
         )
 
         # Test int32
-        var i32_shape = List[Int](2)
+        var i32_shape: List[Int] = [2]
         var i32_tensor = ones(i32_shape, DType.int32)
         var i32_path = tmpdir + "/i32.bin"
         save_tensor(i32_tensor, i32_path)
         var i32_loaded = load_tensor(i32_path)
-        assert_true(
-            i32_loaded.dtype() == DType.int32,
-            "int32 dtype mismatch"
-        )
+        assert_true(i32_loaded.dtype() == DType.int32, "int32 dtype mismatch")
 
     finally:
         _cleanup_temp_dir(tmpdir)
@@ -254,6 +255,7 @@ fn _create_temp_dir(path: String):
     """Create temporary directory."""
     try:
         from python import Python
+
         var os = Python.import_module("os")
         os.makedirs(path, exist_ok=True)
     except:
@@ -264,6 +266,7 @@ fn _cleanup_temp_dir(path: String):
     """Clean up temporary directory."""
     try:
         from python import Python
+
         var shutil = Python.import_module("shutil")
         shutil.rmtree(path)
     except:

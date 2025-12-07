@@ -20,7 +20,12 @@ from tests.shared.conftest import (
 )
 from tests.shared.conftest import TestFixtures
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
-from shared.core.dropout import dropout, dropout2d, dropout_backward, dropout2d_backward
+from shared.core.dropout import (
+    dropout,
+    dropout2d,
+    dropout_backward,
+    dropout2d_backward,
+)
 from shared.testing import check_gradient
 
 
@@ -31,7 +36,7 @@ from shared.testing import check_gradient
 
 fn test_dropout_shapes() raises:
     """Test that dropout returns correct output and mask shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -48,7 +53,7 @@ fn test_dropout_shapes() raises:
 
 fn test_dropout_inference_mode() raises:
     """Test that dropout passes input unchanged in inference mode."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -62,21 +67,19 @@ fn test_dropout_inference_mode() raises:
         assert_almost_equal(
             output._data.bitcast[Float32]()[i],
             x._data.bitcast[Float32]()[i],
-            tolerance=1e-5
+            tolerance=1e-5,
         )
 
     # Mask should be all ones
     for i in range(size):
         assert_almost_equal(
-            mask._data.bitcast[Float32]()[i],
-            Float32(1.0),
-            tolerance=1e-5
+            mask._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
         )
 
 
 fn test_dropout_probability() raises:
     """Test that dropout approximately drops p% of elements."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(100)
     shape.append(100)
     var x = ones(shape, DType.float32)
@@ -103,7 +106,7 @@ fn test_dropout_probability() raises:
 
 fn test_dropout_scaling() raises:
     """Test that kept elements are scaled by 1/(1-p)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -128,7 +131,7 @@ fn test_dropout_scaling() raises:
 
 fn test_dropout_reproducibility() raises:
     """Test that dropout with same seed produces same mask."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -142,13 +145,13 @@ fn test_dropout_reproducibility() raises:
         assert_almost_equal(
             mask1._data.bitcast[Float32]()[i],
             mask2._data.bitcast[Float32]()[i],
-            tolerance=1e-5
+            tolerance=1e-5,
         )
 
 
 fn test_dropout_backward_shapes() raises:
     """Test that dropout_backward returns correct gradient shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(8)
     var x = ones(shape, DType.float32)
@@ -166,8 +169,9 @@ fn test_dropout_backward_shapes() raises:
 
 
 fn test_dropout_backward_gradient_flow() raises:
-    """Test that dropout_backward only passes gradients through non-dropped elements."""
-    var shape = List[Int]()
+    """Test that dropout_backward only passes gradients through non-dropped elements.
+    """
+    var shape= List[Int]()
     shape.append(3)
     shape.append(3)
     var x = ones(shape, DType.float32)
@@ -195,7 +199,7 @@ fn test_dropout_backward_gradient_flow() raises:
 
 fn test_dropout_backward_gradient() raises:
     """Test dropout_backward with numerical gradient checking."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -219,6 +223,7 @@ fn test_dropout_backward_gradient() raises:
         # Apply the same mask that was generated initially
         from shared.core.arithmetic import multiply
         from shared.core.extensor import full_like
+
         var masked = multiply(x, mask)
         var scale = 1.0 / (1.0 - p)
         var scale_tensor = full_like(x, scale)
@@ -241,7 +246,7 @@ fn test_dropout_backward_gradient() raises:
 
 fn test_dropout2d_shapes() raises:
     """Test that dropout2d returns correct output and mask shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -260,7 +265,7 @@ fn test_dropout2d_shapes() raises:
 
 fn test_dropout2d_channel_level() raises:
     """Test that dropout2d drops entire channels (all spatial positions)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)  # batch
     shape.append(4)  # channels
     shape.append(3)  # height
@@ -290,7 +295,7 @@ fn test_dropout2d_channel_level() raises:
 
 fn test_dropout2d_inference_mode() raises:
     """Test that dropout2d passes input unchanged in inference mode."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -306,13 +311,13 @@ fn test_dropout2d_inference_mode() raises:
         assert_almost_equal(
             output._data.bitcast[Float32]()[i],
             x._data.bitcast[Float32]()[i],
-            tolerance=1e-5
+            tolerance=1e-5,
         )
 
 
 fn test_dropout2d_backward_shapes() raises:
     """Test that dropout2d_backward returns correct gradient shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(4)
     shape.append(8)
@@ -335,7 +340,7 @@ fn test_dropout2d_backward_shapes() raises:
 
 fn test_dropout2d_backward_gradient() raises:
     """Test dropout2d_backward with numerical gradient checking."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(2)
     shape.append(4)
@@ -359,6 +364,7 @@ fn test_dropout2d_backward_gradient() raises:
         # Apply the same mask that was generated initially
         from shared.core.arithmetic import multiply
         from shared.core.extensor import full_like
+
         var masked = multiply(x, mask)
         var scale = 1.0 / (1.0 - p)
         var scale_tensor = full_like(x, scale)

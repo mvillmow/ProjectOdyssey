@@ -38,7 +38,7 @@ fn test_mxfp4_unaligned_roundtrip() raises:
     This is the critical test for DATA-001 (padding data loss fix).
     Before the fix: 33 → 64 elements (WRONG!)
     After the fix: 33 → 33 elements (CORRECT!).
-   """
+    """
     print("Test: MXFP4 unaligned round-trip...")
 
     # Create 33-element tensor (1 complete block + 1 extra)
@@ -51,14 +51,13 @@ fn test_mxfp4_unaligned_roundtrip() raises:
     # The encoded tensor should have stored original size in metadata
     assert_true(
         encoded._original_numel_quantized == 33,
-        "Encoded should store original size (33)"
+        "Encoded should store original size (33)",
     )
 
     # Decode: Should restore to original 33 elements, NOT 64!
     var decoded = encoded.from_mxfp4()
     assert_true(
-        decoded.numel() == 33,
-        "Decoded size should be 33 (was 64 before fix!)"
+        decoded.numel() == 33, "Decoded size should be 33 (was 64 before fix!)"
     )
     print("  ✓ Unaligned MXFP4 round-trip: 33 → 33 elements (FIX VERIFIED!)")
 
@@ -67,7 +66,7 @@ fn test_mxfp4_various_unaligned_sizes() raises:
     """Test MXFP4 with various non-aligned sizes."""
     print("Test: MXFP4 various unaligned sizes...")
 
-    var test_sizes = List[Int](1, 17, 31, 33, 64, 65, 100, 1000)
+    var test_sizes: List[Int] = [1, 17, 31, 33, 64, 65, 100, 1000]
 
     for size_idx in range(len(test_sizes)):
         var original_size = test_sizes[size_idx]
@@ -84,7 +83,9 @@ fn test_mxfp4_various_unaligned_sizes() raises:
         # Verify size is preserved
         assert_true(
             decoded.numel() == original_size,
-            "Size should be preserved for " + String(original_size) + " elements"
+            "Size should be preserved for "
+            + String(original_size)
+            + " elements",
         )
         print(
             "  ✓ Size "
@@ -100,7 +101,7 @@ fn test_nvfp4_unaligned_roundtrip() raises:
     Similar to DATA-001 but for NVFP4 which uses 16-element blocks.
     Before fix: 17 → 32 elements (WRONG!)
     After fix: 17 → 17 elements (CORRECT!).
-   """
+    """
     print("Test: NVFP4 unaligned round-trip...")
 
     var t = zeros(List[Int](17), DType.float32)
@@ -110,11 +111,13 @@ fn test_nvfp4_unaligned_roundtrip() raises:
     var encoded = t.to_nvfp4()
     assert_true(
         encoded._original_numel_quantized == 17,
-        "Encoded should store original size (17)"
+        "Encoded should store original size (17)",
     )
 
     var decoded = encoded.from_nvfp4()
-    assert_true(decoded.numel() == 17, "Decoded size should be 17 (was 32 before fix!)")
+    assert_true(
+        decoded.numel() == 17, "Decoded size should be 17 (was 32 before fix!)"
+    )
     print("  ✓ Unaligned NVFP4 round-trip: 17 → 17 elements (FIX VERIFIED!)")
 
 
@@ -237,7 +240,7 @@ fn test_metadata_preservation() raises:
     # Metadata should be set
     assert_true(
         encoded._original_numel_quantized == 123,
-        "Original size should be stored in metadata"
+        "Original size should be stored in metadata",
     )
 
     # Decode using metadata
@@ -246,7 +249,7 @@ fn test_metadata_preservation() raises:
     # Should restore exact size
     assert_true(
         decoded.numel() == 123,
-        "Decoded should restore original size from metadata"
+        "Decoded should restore original size from metadata",
     )
     print("  ✓ Quantization metadata preserved and used correctly")
 
@@ -260,7 +263,7 @@ fn test_backwards_compatibility() raises:
     # Non-quantized tensors should have _original_numel_quantized = -1
     assert_true(
         t._original_numel_quantized == -1,
-        "Non-quantized tensor should have -1 flag"
+        "Non-quantized tensor should have -1 flag",
     )
 
     # Regular operations should not be affected

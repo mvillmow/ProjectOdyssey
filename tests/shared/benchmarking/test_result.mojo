@@ -148,29 +148,15 @@ fn test_string_representation() raises:
 
     # Check that key information is in the string
     assert_true(
-        "format_test" in result_str,
-        "String should contain operation name"
+        "format_test" in result_str, "String should contain operation name"
     )
     assert_true(
-        "Iterations:" in result_str,
-        "String should contain iterations label"
+        "Iterations:" in result_str, "String should contain iterations label"
     )
-    assert_true(
-        "Mean:" in result_str,
-        "String should contain mean label"
-    )
-    assert_true(
-        "Std Dev:" in result_str,
-        "String should contain std dev label"
-    )
-    assert_true(
-        "Min:" in result_str,
-        "String should contain min label"
-    )
-    assert_true(
-        "Max:" in result_str,
-        "String should contain max label"
-    )
+    assert_true("Mean:" in result_str, "String should contain mean label")
+    assert_true("Std Dev:" in result_str, "String should contain std dev label")
+    assert_true("Min:" in result_str, "String should contain min label")
+    assert_true("Max:" in result_str, "String should contain max label")
 
 
 fn test_zero_times() raises:

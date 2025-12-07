@@ -63,7 +63,7 @@ fn create_shape_vec(*dims: Int) -> List[Int]:
     Returns:
         List[Int] with specified dimensions.
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     for i in range(len(dims)):
         shape.append(dims[i])
     return shape^

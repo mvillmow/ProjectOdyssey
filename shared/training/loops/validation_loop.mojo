@@ -17,14 +17,18 @@ Design principles:
 from collections import List
 from shared.core.extensor import ExTensor
 from shared.training.metrics import AccuracyMetric, LossTracker, ConfusionMatrix
-from shared.training.trainer_interface import DataLoader, DataBatch, TrainingMetrics
+from shared.training.trainer_interface import (
+    DataLoader,
+    DataBatch,
+    TrainingMetrics,
+)
 
 
 fn validation_step(
-    model_forward: fn(ExTensor) raises -> ExTensor,
-    compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
+    model_forward: fn (ExTensor) raises -> ExTensor,
+    compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
     data: ExTensor,
-    labels: ExTensor
+    labels: ExTensor,
 ) raises -> Float64:
     """Execute single validation step (forward pass only, no gradients).
 
@@ -53,12 +57,12 @@ fn validation_step(
 
 
 fn validate(
-    model_forward: fn(ExTensor) raises -> ExTensor,
-    compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
+    model_forward: fn (ExTensor) raises -> ExTensor,
+    compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
     mut val_loader: DataLoader,
     compute_accuracy: Bool = True,
     compute_confusion: Bool = False,
-    num_classes: Int = 10
+    num_classes: Int = 10,
 ) raises -> Float64:
     """Run validation loop.
 
@@ -95,10 +99,7 @@ fn validate(
 
         # Validation step (no gradients)
         var batch_loss = validation_step(
-            model_forward,
-            compute_loss,
-            batch.data,
-            batch.labels
+            model_forward, compute_loss, batch.data, batch.labels
         )
 
         # Update metrics
@@ -135,7 +136,16 @@ fn validate(
             var p = precision._data.bitcast[Float64]()[i]
             var r = recall._data.bitcast[Float64]()[i]
             var f = f1._data.bitcast[Float64]()[i]
-            print("    Class " + String(i) + ": P=" + String(p) + ", R=" + String(r) + ", F1=" + String(f))
+            print(
+                "    Class "
+                + String(i)
+                + ": P="
+                + String(p)
+                + ", R="
+                + String(r)
+                + ", F1="
+                + String(f)
+            )
 
     return avg_loss
 
@@ -149,6 +159,7 @@ struct ValidationLoop:
     - Subset validation support
     - Memory-efficient evaluation.
     """
+
     var compute_accuracy: Bool
     var compute_confusion: Bool
     var num_classes: Int
@@ -157,7 +168,7 @@ struct ValidationLoop:
         out self,
         compute_accuracy: Bool = True,
         compute_confusion: Bool = False,
-        num_classes: Int = 10
+        num_classes: Int = 10,
     ):
         """Initialize validation loop.
 
@@ -165,17 +176,17 @@ struct ValidationLoop:
             compute_accuracy: Whether to compute accuracy.
             compute_confusion: Whether to compute confusion matrix.
             num_classes: Number of classes (for confusion matrix).
-       """
+        """
         self.compute_accuracy = compute_accuracy
         self.compute_confusion = compute_confusion
         self.num_classes = num_classes
 
     fn run(
         self,
-        model_forward: fn(ExTensor) raises -> ExTensor,
-        compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
         mut val_loader: DataLoader,
-        mut metrics: TrainingMetrics
+        mut metrics: TrainingMetrics,
     ) raises -> Float64:
         """Run validation loop.
 
@@ -197,7 +208,7 @@ struct ValidationLoop:
             val_loader,
             self.compute_accuracy,
             self.compute_confusion,
-            self.num_classes
+            self.num_classes,
         )
 
         # Update metrics
@@ -207,11 +218,11 @@ struct ValidationLoop:
 
     fn run_subset(
         self,
-        model_forward: fn(ExTensor) raises -> ExTensor,
-        compute_loss: fn(ExTensor, ExTensor) raises -> ExTensor,
+        model_forward: fn (ExTensor) raises -> ExTensor,
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
         mut val_loader: DataLoader,
         max_batches: Int,
-        mut metrics: TrainingMetrics
+        mut metrics: TrainingMetrics,
     ) raises -> Float64:
         """Run validation on subset of data.
 
@@ -230,7 +241,11 @@ struct ValidationLoop:
         Raises:
             Error if validation fails.
         """
-        print("\nRunning subset validation (max " + String(max_batches) + " batches)...")
+        print(
+            "\nRunning subset validation (max "
+            + String(max_batches)
+            + " batches)..."
+        )
 
         var total_loss = Float64(0.0)
         var num_batches = 0
@@ -243,10 +258,7 @@ struct ValidationLoop:
             var batch = val_loader.next()
 
             var batch_loss = validation_step(
-                model_forward,
-                compute_loss,
-                batch.data,
-                batch.labels
+                model_forward, compute_loss, batch.data, batch.labels
             )
 
             loss_tracker.update(Float32(batch_loss))

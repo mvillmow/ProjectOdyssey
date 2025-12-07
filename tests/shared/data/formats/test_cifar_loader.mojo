@@ -16,7 +16,11 @@ Run with: mojo test tests/shared/data/formats/test_cifar_loader.mojo
 from collections import List
 from memory import UnsafePointer
 from shared.core.extensor import ExTensor, zeros
-from shared.data.formats import CIFARLoader, CIFAR10_BYTES_PER_IMAGE, CIFAR100_BYTES_PER_IMAGE
+from shared.data.formats import (
+    CIFARLoader,
+    CIFAR10_BYTES_PER_IMAGE,
+    CIFAR100_BYTES_PER_IMAGE,
+)
 from tests.shared.conftest import assert_true, assert_equal
 
 
@@ -33,7 +37,7 @@ fn create_cifar10_test_file(num_images: Int) -> String:
 
     Returns:
         String containing binary format data (concatenated image records).
-   """
+    """
     var total_bytes = num_images * CIFAR10_BYTES_PER_IMAGE
     var result = ""
 
@@ -60,7 +64,7 @@ fn create_cifar100_test_file(num_images: Int) -> String:
 
     Returns:
         String containing binary format data (concatenated image records).
-   """
+    """
     var total_bytes = num_images * CIFAR100_BYTES_PER_IMAGE
     var result = ""
 
@@ -96,7 +100,9 @@ fn test_cifar_loader_init_cifar10() raises:
     assert_equal(loader.cifar_version, 10, "Should be CIFAR-10")
     assert_equal(loader.image_size, 32, "Image size should be 32")
     assert_equal(loader.channels, 3, "Channels should be 3 (RGB)")
-    assert_equal(loader.bytes_per_image, 3073, "CIFAR-10: 1 label + 3072 pixels")
+    assert_equal(
+        loader.bytes_per_image, 3073, "CIFAR-10: 1 label + 3072 pixels"
+    )
 
     print("  ✓ CIFAR-10 loader initialized correctly")
 
@@ -109,7 +115,9 @@ fn test_cifar_loader_init_cifar100() raises:
     assert_equal(loader.cifar_version, 100, "Should be CIFAR-100")
     assert_equal(loader.image_size, 32, "Image size should be 32")
     assert_equal(loader.channels, 3, "Channels should be 3 (RGB)")
-    assert_equal(loader.bytes_per_image, 3074, "CIFAR-100: 2 labels + 3072 pixels")
+    assert_equal(
+        loader.bytes_per_image, 3074, "CIFAR-100: 2 labels + 3072 pixels"
+    )
 
     print("  ✓ CIFAR-100 loader initialized correctly")
 
@@ -221,7 +229,7 @@ fn test_image_shape_cifar10() raises:
 
     # Expected shape for 10 images
     var num_images = 10
-    var expected_shape = List[Int]()
+    var expected_shape= List[Int]()
     expected_shape.append(num_images)
     expected_shape.append(3)  # RGB channels
     expected_shape.append(32)  # Height
@@ -241,7 +249,7 @@ fn test_image_dtype_is_uint8() raises:
     print("Test: Image dtype is uint8...")
 
     # Create a minimal test tensor
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(32)
@@ -265,7 +273,7 @@ fn test_label_shape_cifar10() raises:
 
     # Expected shape for 10 image labels
     var num_images = 10
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_images)
 
     assert_equal(len(shape), 1, "CIFAR-10 labels should be 1D")
@@ -280,7 +288,7 @@ fn test_label_shape_cifar100() raises:
 
     # Expected shape for 10 images with (coarse, fine) labels
     var num_images = 10
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_images)
     shape.append(2)  # coarse + fine
 
@@ -303,7 +311,7 @@ fn test_validate_cifar10_file_size() raises:
     var loader = CIFARLoader(10)
 
     # Valid sizes: multiples of 3073
-    var valid_sizes = List[Int](3073, 6146, 30730)  # 1, 2, 10 images
+    var valid_sizes: List[Int] = [3073, 6146, 30730]  # 1, 2, 10 images
     for size_idx in range(len(valid_sizes)):
         var size = valid_sizes[size_idx]
         try:
@@ -331,7 +339,7 @@ fn test_validate_cifar100_file_size() raises:
     var loader = CIFARLoader(100)
 
     # Valid sizes: multiples of 3074
-    var valid_sizes = List[Int](3074, 6148, 30740)  # 1, 2, 10 images
+    var valid_sizes: List[Int] = [3074, 6148, 30740]  # 1, 2, 10 images
     for size_idx in range(len(valid_sizes)):
         var size = valid_sizes[size_idx]
         try:
@@ -364,12 +372,16 @@ fn test_calculate_num_images_cifar10() raises:
     var loader = CIFARLoader(10)
 
     # Test various image counts
-    var test_counts = List[Int](1, 2, 5, 10, 100)
+    var test_counts: List[Int] = [1, 2, 5, 10, 100]
     for count_idx in range(len(test_counts)):
         var expected_count = test_counts[count_idx]
         var file_size = expected_count * CIFAR10_BYTES_PER_IMAGE
         var calculated_count = loader._calculate_num_images(file_size)
-        assert_equal(calculated_count, expected_count, "Should calculate correct image count")
+        assert_equal(
+            calculated_count,
+            expected_count,
+            "Should calculate correct image count",
+        )
 
     print("  ✓ Image count calculation correct (CIFAR-10)")
 
@@ -381,12 +393,16 @@ fn test_calculate_num_images_cifar100() raises:
     var loader = CIFARLoader(100)
 
     # Test various image counts
-    var test_counts = List[Int](1, 2, 5, 10, 100)
+    var test_counts: List[Int] = [1, 2, 5, 10, 100]
     for count_idx in range(len(test_counts)):
         var expected_count = test_counts[count_idx]
         var file_size = expected_count * CIFAR100_BYTES_PER_IMAGE
         var calculated_count = loader._calculate_num_images(file_size)
-        assert_equal(calculated_count, expected_count, "Should calculate correct image count")
+        assert_equal(
+            calculated_count,
+            expected_count,
+            "Should calculate correct image count",
+        )
 
     print("  ✓ Image count calculation correct (CIFAR-100)")
 

@@ -53,8 +53,9 @@ fn test_substitute_multiple_env_vars() raises:
 
     var path = substituted.get_string("data_path")
     assert_equal(
-        path, "/home/user/datasets",
-        "Should substitute multiple environment variables"
+        path,
+        "/home/user/datasets",
+        "Should substitute multiple environment variables",
     )
 
     print("✓ test_substitute_multiple_env_vars passed")
@@ -75,8 +76,9 @@ fn test_substitute_env_var_in_middle() raises:
 
     var path = substituted.get_string("path")
     assert_equal(
-        path, "/models/lenet5/checkpoint.mojo",
-        "Should substitute variable in middle of string"
+        path,
+        "/models/lenet5/checkpoint.mojo",
+        "Should substitute variable in middle of string",
     )
 
     print("✓ test_substitute_env_var_in_middle passed")
@@ -99,8 +101,7 @@ fn test_substitute_with_default_value() raises:
 
     var path = substituted.get_string("output_dir")
     assert_equal(
-        path, "/tmp/output",
-        "Should use default value for missing variable"
+        path, "/tmp/output", "Should use default value for missing variable"
     )
 
     print("✓ test_substitute_with_default_value passed")
@@ -121,8 +122,7 @@ fn test_substitute_with_default_when_var_exists() raises:
 
     var path = substituted.get_string("data_path")
     assert_equal(
-        path, "/actual/data",
-        "Should use actual value when variable exists"
+        path, "/actual/data", "Should use actual value when variable exists"
     )
 
     print("✓ test_substitute_with_default_when_var_exists passed")
@@ -156,8 +156,9 @@ fn test_substitute_complex_default_value() raises:
 
     var path = substituted.get_string("path")
     assert_equal(
-        path, "/path/with-dashes_and.dots",
-        "Should handle complex default values"
+        path,
+        "/path/with-dashes_and.dots",
+        "Should handle complex default values",
     )
 
     print("✓ test_substitute_complex_default_value passed")
@@ -188,8 +189,7 @@ fn test_substitute_from_file() raises:
     if substituted.has("output_dir"):
         var output_dir = substituted.get_string("output_dir")
         assert_equal(
-            output_dir, "/tmp/output",
-            "Should use default for OUTPUT_DIR"
+            output_dir, "/tmp/output", "Should use default for OUTPUT_DIR"
         )
 
     print("✓ test_substitute_from_file passed")
@@ -245,8 +245,7 @@ fn test_substitute_no_variables() raises:
 
     var path = substituted.get_string("path")
     assert_equal(
-        path, "/static/path/no/vars",
-        "Should preserve values without variables"
+        path, "/static/path/no/vars", "Should preserve values without variables"
     )
 
     print("✓ test_substitute_no_variables passed")
@@ -260,7 +259,7 @@ fn test_substitute_malformed_pattern() raises:
     var config = Config()
     config.set("value1", "${MISSING")  # Missing closing brace
     config.set("value2", "$MISSING}")  # Missing opening brace
-    config.set("value3", "${}")        # Empty variable name
+    config.set("value3", "${}")  # Empty variable name
 
     _ = config.substitute_env_vars()
 
@@ -328,8 +327,9 @@ fn test_load_and_substitute_training_config() raises:
 
     var output = substituted.get_string("output")
     assert_equal(
-        output, "/results/baseline_001",
-        "Should substitute multiple variables in path"
+        output,
+        "/results/baseline_001",
+        "Should substitute multiple variables in path",
     )
 
     var lr = substituted.get_float("learning_rate")

@@ -29,6 +29,7 @@ Shared Mojo language guidelines for all agents. Reference this file instead of d
 
 | Wrong | Correct | Notes |
 |-------|---------|-------|
+| `borrowed self` | `self` | Deprecated keyword |
 | `inout self` | `mut self` | Deprecated keyword |
 | `@value` | `@fieldwise_init` + traits | Add `(Copyable, Movable)` |
 | `DynamicVector[T]` | `List[T]` | Use `.append()` not `.push_back()` |

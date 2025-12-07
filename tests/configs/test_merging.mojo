@@ -97,8 +97,7 @@ fn test_merge_default_and_paper() raises:
         var paper_lr = paper.get_float("learning_rate")
         var merged_lr = merged.get_float("learning_rate")
         assert_equal(
-            merged_lr, paper_lr,
-            "Paper learning_rate should override default"
+            merged_lr, paper_lr, "Paper learning_rate should override default"
         )
 
     print("✓ test_merge_default_and_paper passed")
@@ -183,8 +182,7 @@ fn test_experiment_overrides_all() raises:
 
     var lr = merged.get_float("learning_rate")
     assert_equal(
-        lr, 0.0001,
-        "Experiment learning_rate should override all others"
+        lr, 0.0001, "Experiment learning_rate should override all others"
     )
 
     var bs = merged.get_int("batch_size")
@@ -311,16 +309,19 @@ fn test_merge_multiple_times() raises:
 
     # Should produce identical results
     assert_equal(
-        merged1.get_int("a"), merged2.get_int("a"),
-        "Multiple merges should be consistent"
+        merged1.get_int("a"),
+        merged2.get_int("a"),
+        "Multiple merges should be consistent",
     )
     assert_equal(
-        merged1.get_int("b"), merged2.get_int("b"),
-        "Multiple merges should be consistent"
+        merged1.get_int("b"),
+        merged2.get_int("b"),
+        "Multiple merges should be consistent",
     )
     assert_equal(
-        merged1.get_int("c"), merged2.get_int("c"),
-        "Multiple merges should be consistent"
+        merged1.get_int("c"),
+        merged2.get_int("c"),
+        "Multiple merges should be consistent",
     )
 
     print("✓ test_merge_multiple_times passed")

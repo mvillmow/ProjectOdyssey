@@ -49,17 +49,10 @@ fn main() raises:
 
     # Step 2: Create data loaders
     var train_loader = BatchLoader(
-        train_data,
-        batch_size=32,
-        shuffle=True,
-        drop_last=True
+        train_data, batch_size=32, shuffle=True, drop_last=True
     )
 
-    var test_loader = BatchLoader(
-        test_data,
-        batch_size=32,
-        shuffle=False
-    )
+    var test_loader = BatchLoader(test_data, batch_size=32, shuffle=False)
 
     # Step 3: Create model
     var model = DigitClassifier()
@@ -67,25 +60,16 @@ fn main() raises:
     print(model.model.summary())
 
     # Step 4: Configure optimizer
-    var optimizer = SGD(
-        learning_rate=0.01,
-        momentum=0.9
-    )
+    var optimizer = SGD(learning_rate=0.01, momentum=0.9)
 
     # Step 5: Configure loss function
     var loss_fn = CrossEntropyLoss()
 
     # Step 6: Create trainer
-    var trainer = Trainer(
-        model=model,
-        optimizer=optimizer,
-        loss_fn=loss_fn
-    )
+    var trainer = Trainer(model=model, optimizer=optimizer, loss_fn=loss_fn)
 
     # Step 7: Add callbacks
-    trainer.add_callback(
-        EarlyStopping(patience=3, min_delta=0.001)
-    )
+    trainer.add_callback(EarlyStopping(patience=3, min_delta=0.001))
     trainer.add_callback(
         ModelCheckpoint(filepath="best_model.mojo", save_best_only=True)
     )
@@ -96,7 +80,7 @@ fn main() raises:
         train_loader=train_loader,
         val_loader=test_loader,
         epochs=10,
-        verbose=True
+        verbose=True,
     )
 
     print("\nTraining complete!")

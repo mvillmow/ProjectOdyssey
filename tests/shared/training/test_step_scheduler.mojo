@@ -217,7 +217,7 @@ fn test_step_scheduler_formula_accuracy() raises:
     """Test StepLR matches the mathematical formula exactly.
 
     Formula: lr = base_lr * gamma^(epoch // step_size).
-   """
+    """
     var scheduler = StepLR(base_lr=0.1, step_size=30, gamma=0.1)
 
     # Epoch 0: gamma^0 = 1.0

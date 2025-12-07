@@ -12,7 +12,7 @@ from shared.core.types import Tensor
 
 
 # Borrowed: read-only access (no ownership transfer)
-fn compute_loss(borrowed predictions: Tensor, borrowed targets: Tensor) -> Float64:
+fn compute_loss(predictions: Tensor, targets: Tensor) -> Float64:
     """Compute loss without taking ownership."""
     var diff = predictions - targets
     return (diff * diff).mean()
@@ -27,7 +27,7 @@ fn consume_tensor(var tensor: Tensor) -> Float64:
 
 
 # Inout: mutable reference (modify in place)
-fn update_weights(mut weights: Tensor, borrowed gradients: Tensor, lr: Float64):
+fn update_weights(mut weights: Tensor, gradients: Tensor, lr: Float64):
     """Update weights in place."""
     weights -= lr * gradients  # Modifies original
 

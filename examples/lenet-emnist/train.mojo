@@ -19,12 +19,23 @@ References:
 from model import (
     LeNet5,
     # Architecture constants for consistent forward/backward passes
-    CONV1_STRIDE, CONV1_PADDING,
-    CONV2_STRIDE, CONV2_PADDING,
-    POOL1_KERNEL_SIZE, POOL1_STRIDE, POOL1_PADDING,
-    POOL2_KERNEL_SIZE, POOL2_STRIDE, POOL2_PADDING,
+    CONV1_STRIDE,
+    CONV1_PADDING,
+    CONV2_STRIDE,
+    CONV2_PADDING,
+    POOL1_KERNEL_SIZE,
+    POOL1_STRIDE,
+    POOL1_PADDING,
+    POOL2_KERNEL_SIZE,
+    POOL2_STRIDE,
+    POOL2_PADDING,
 )
-from shared.data import load_idx_labels, load_idx_images, normalize_images, one_hot_encode
+from shared.data import (
+    load_idx_labels,
+    load_idx_images,
+    normalize_images,
+    one_hot_encode,
+)
 from shared.core import ExTensor, zeros
 from shared.core.conv import conv2d, conv2d_backward
 from shared.core.pooling import maxpool2d, maxpool2d_backward
@@ -44,13 +55,21 @@ alias DEFAULT_NUM_CLASSES = 47
 
 struct TrainConfig:
     """Training configuration from command line arguments."""
+
     var epochs: Int
     var batch_size: Int
     var learning_rate: Float32
     var data_dir: String
     var weights_dir: String
 
-    fn __init__(out self, epochs: Int, batch_size: Int, learning_rate: Float32, data_dir: String, weights_dir: String):
+    fn __init__(
+        out self,
+        epochs: Int,
+        batch_size: Int,
+        learning_rate: Float32,
+        data_dir: String,
+        weights_dir: String,
+    ):
         self.epochs = epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
@@ -79,10 +98,7 @@ fn parse_args() raises -> TrainConfig:
 
 
 fn compute_gradients(
-    mut model: LeNet5,
-    input: ExTensor,
-    labels: ExTensor,
-    learning_rate: Float32
+    mut model: LeNet5, input: ExTensor, labels: ExTensor, learning_rate: Float32
 ) raises -> Float32:
     """Compute gradients and update parameters for one batch.
 
@@ -100,24 +116,42 @@ fn compute_gradients(
     # ========== Forward Pass (with caching) ==========
 
     # Conv1 + ReLU + MaxPool
-    var conv1_out = conv2d(input, model.conv1_kernel, model.conv1_bias,
-                           stride=CONV1_STRIDE, padding=CONV1_PADDING)
+    var conv1_out = conv2d(
+        input,
+        model.conv1_kernel,
+        model.conv1_bias,
+        stride=CONV1_STRIDE,
+        padding=CONV1_PADDING,
+    )
     var relu1_out = relu(conv1_out)
-    var pool1_out = maxpool2d(relu1_out, kernel_size=POOL1_KERNEL_SIZE,
-                              stride=POOL1_STRIDE, padding=POOL1_PADDING)
+    var pool1_out = maxpool2d(
+        relu1_out,
+        kernel_size=POOL1_KERNEL_SIZE,
+        stride=POOL1_STRIDE,
+        padding=POOL1_PADDING,
+    )
 
     # Conv2 + ReLU + MaxPool
-    var conv2_out = conv2d(pool1_out, model.conv2_kernel, model.conv2_bias,
-                           stride=CONV2_STRIDE, padding=CONV2_PADDING)
+    var conv2_out = conv2d(
+        pool1_out,
+        model.conv2_kernel,
+        model.conv2_bias,
+        stride=CONV2_STRIDE,
+        padding=CONV2_PADDING,
+    )
     var relu2_out = relu(conv2_out)
-    var pool2_out = maxpool2d(relu2_out, kernel_size=POOL2_KERNEL_SIZE,
-                              stride=POOL2_STRIDE, padding=POOL2_PADDING)
+    var pool2_out = maxpool2d(
+        relu2_out,
+        kernel_size=POOL2_KERNEL_SIZE,
+        stride=POOL2_STRIDE,
+        padding=POOL2_PADDING,
+    )
 
     # Flatten
     var pool2_shape = pool2_out.shape()
     var batch_size = pool2_shape[0]
     var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
-    var flatten_shape = List[Int](batch_size, flattened_size)
+    var flatten_shape: List[Int] = [batch_size, flattened_size]
     var flattened = pool2_out.reshape(flatten_shape)
 
     # FC1 + ReLU
@@ -139,7 +173,7 @@ fn compute_gradients(
 
     # Start with gradient from loss
     # For cross-entropy with mean reduction, the initial gradient is 1.0 / batch_size
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -164,28 +198,46 @@ fn compute_gradients(
     var grad_pool2_out = fc1_grads.grad_input.reshape(pool2_shape)
 
     # MaxPool2 backward
-    var grad_relu2_out = maxpool2d_backward(grad_pool2_out, relu2_out,
-                                            kernel_size=POOL2_KERNEL_SIZE,
-                                            stride=POOL2_STRIDE, padding=POOL2_PADDING)
+    var grad_relu2_out = maxpool2d_backward(
+        grad_pool2_out,
+        relu2_out,
+        kernel_size=POOL2_KERNEL_SIZE,
+        stride=POOL2_STRIDE,
+        padding=POOL2_PADDING,
+    )
 
     # ReLU2 backward
     var grad_conv2_out = relu_backward(grad_relu2_out, conv2_out)
 
     # Conv2 backward
-    var conv2_grads = conv2d_backward(grad_conv2_out, pool1_out, model.conv2_kernel,
-                                       stride=CONV2_STRIDE, padding=CONV2_PADDING)
+    var conv2_grads = conv2d_backward(
+        grad_conv2_out,
+        pool1_out,
+        model.conv2_kernel,
+        stride=CONV2_STRIDE,
+        padding=CONV2_PADDING,
+    )
 
     # MaxPool1 backward
-    var grad_relu1_out = maxpool2d_backward(conv2_grads.grad_input, relu1_out,
-                                            kernel_size=POOL1_KERNEL_SIZE,
-                                            stride=POOL1_STRIDE, padding=POOL1_PADDING)
+    var grad_relu1_out = maxpool2d_backward(
+        conv2_grads.grad_input,
+        relu1_out,
+        kernel_size=POOL1_KERNEL_SIZE,
+        stride=POOL1_STRIDE,
+        padding=POOL1_PADDING,
+    )
 
     # ReLU1 backward
     var grad_conv1_out = relu_backward(grad_relu1_out, conv1_out)
 
     # Conv1 backward
-    var conv1_grads = conv2d_backward(grad_conv1_out, input, model.conv1_kernel,
-                                       stride=CONV1_STRIDE, padding=CONV1_PADDING)
+    var conv1_grads = conv2d_backward(
+        grad_conv1_out,
+        input,
+        model.conv1_kernel,
+        stride=CONV1_STRIDE,
+        padding=CONV1_PADDING,
+    )
 
     # ========== Parameter Update (SGD) ==========
     model.update_parameters(
@@ -199,7 +251,7 @@ fn compute_gradients(
         fc2_grads.grad_kernel^,
         fc2_grads.grad_bias^,
         fc3_grads.grad_kernel^,
-        fc3_grads.grad_bias^
+        fc3_grads.grad_bias^,
     )
 
     return loss
@@ -212,7 +264,7 @@ fn train_epoch(
     batch_size: Int,
     learning_rate: Float32,
     epoch: Int,
-    total_epochs: Int
+    total_epochs: Int,
 ) raises -> Float32:
     """Train for one epoch using TrainingLoop.
 
@@ -232,12 +284,18 @@ fn train_epoch(
     var loop = TrainingLoop(log_interval=100)
 
     # Define compute_batch_loss closure that processes batches
-    fn compute_batch_loss(batch_images: ExTensor, batch_labels_int: ExTensor) raises -> Float32:
+    fn compute_batch_loss(
+        batch_images: ExTensor, batch_labels_int: ExTensor
+    ) raises -> Float32:
         # Convert batch labels to one-hot encoding (required for cross_entropy loss)
-        var batch_labels = one_hot_encode(batch_labels_int, num_classes=DEFAULT_NUM_CLASSES)
+        var batch_labels = one_hot_encode(
+            batch_labels_int, num_classes=DEFAULT_NUM_CLASSES
+        )
 
         # Compute gradients and update parameters
-        return compute_gradients(model, batch_images, batch_labels, learning_rate)
+        return compute_gradients(
+            model, batch_images, batch_labels, learning_rate
+        )
 
     # Run one epoch using the consolidated training loop
     var avg_loss = loop.run_epoch_manual(
@@ -246,12 +304,10 @@ fn train_epoch(
         batch_size=batch_size,
         compute_batch_loss=compute_batch_loss,
         epoch=epoch,
-        total_epochs=total_epochs
+        total_epochs=total_epochs,
     )
 
     return avg_loss
-
-
 
 
 fn main() raises:
@@ -284,8 +340,12 @@ fn main() raises:
 
     # Load dataset
     print("Loading EMNIST dataset...")
-    var train_images_path = data_dir + "/emnist-balanced-train-images-idx3-ubyte"
-    var train_labels_path = data_dir + "/emnist-balanced-train-labels-idx1-ubyte"
+    var train_images_path = (
+        data_dir + "/emnist-balanced-train-images-idx3-ubyte"
+    )
+    var train_labels_path = (
+        data_dir + "/emnist-balanced-train-labels-idx1-ubyte"
+    )
     var test_images_path = data_dir + "/emnist-balanced-test-images-idx3-ubyte"
     var test_labels_path = data_dir + "/emnist-balanced-test-labels-idx1-ubyte"
 
@@ -305,10 +365,25 @@ fn main() raises:
     # Training loop
     print("Starting training...")
     for epoch in range(1, epochs + 1):
-        var train_loss = train_epoch(model, train_images, train_labels, batch_size, learning_rate, epoch, epochs)
+        var train_loss = train_epoch(
+            model,
+            train_images,
+            train_labels,
+            batch_size,
+            learning_rate,
+            epoch,
+            epochs,
+        )
 
         # Evaluate every epoch using shared evaluation module
-        var test_acc = evaluate_model_simple(model, test_images, test_labels, batch_size=100, num_classes=DEFAULT_NUM_CLASSES, verbose=True)
+        var test_acc = evaluate_model_simple(
+            model,
+            test_images,
+            test_labels,
+            batch_size=100,
+            num_classes=DEFAULT_NUM_CLASSES,
+            verbose=True,
+        )
         print("  Test Accuracy: ", test_acc * 100.0, "%")
         print()
 
@@ -319,5 +394,10 @@ fn main() raises:
     print()
 
     print("Training complete!")
-    print("\nNote: This implementation demonstrates the full training structure.")
-    print("Batch processing will be more efficient when tensor slicing is optimized.")
+    print(
+        "\nNote: This implementation demonstrates the full training structure."
+    )
+    print(
+        "Batch processing will be more efficient when tensor slicing is"
+        " optimized."
+    )

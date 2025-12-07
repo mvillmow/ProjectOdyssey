@@ -12,7 +12,9 @@ from random import random_si64, seed
 # ============================================================================
 
 
-fn validate_range(start_index: Int, end_index: Int, data_source_len: Int) -> Tuple[Int, Int]:
+fn validate_range(
+    start_index: Int, end_index: Int, data_source_len: Int
+) -> Tuple[Int, Int]:
     """Validate and normalize range parameters for index generation.
 
     Args:
@@ -34,9 +36,7 @@ fn validate_range(start_index: Int, end_index: Int, data_source_len: Int) -> Tup
     return Tuple[Int, Int](normalized_start, normalized_end)
 
 
-fn create_sequential_indices(
-    capacity: Int, start_index: Int = 0
-) -> List[Int]:
+fn create_sequential_indices(capacity: Int, start_index: Int = 0) -> List[Int]:
     """Create sequential indices for range iteration.
 
     Args:
@@ -52,9 +52,7 @@ fn create_sequential_indices(
     return indices^
 
 
-fn create_range_indices(
-    start_index: Int, end_index: Int
-) -> List[Int]:
+fn create_range_indices(start_index: Int, end_index: Int) -> List[Int]:
     """Create sequential indices for a range.
 
     Args:
@@ -119,9 +117,7 @@ fn shuffle_indices(var indices: List[Int]) -> List[Int]:
 # ============================================================================
 
 
-fn sample_with_replacement(
-    data_source_len: Int, num_samples: Int
-) -> List[Int]:
+fn sample_with_replacement(data_source_len: Int, num_samples: Int) -> List[Int]:
     """Generate indices by sampling with replacement.
 
     Args:
@@ -131,7 +127,7 @@ fn sample_with_replacement(
     Returns:
         List of sampled indices (may contain duplicates).
     """
-    var indices = List[Int](capacity=num_samples)
+    var indices= List[Int](capacity=num_samples)
     for _ in range(num_samples):
         indices.append(Int(random_si64(0, data_source_len - 1)))
     return indices^
@@ -158,7 +154,7 @@ fn sample_without_replacement(
     all_indices = shuffle_indices(all_indices^)
 
     # Take first num_samples
-    var indices = List[Int](capacity=min(num_samples, data_source_len))
+    var indices= List[Int](capacity=min(num_samples, data_source_len))
     for i in range(min(num_samples, data_source_len)):
         indices.append(all_indices[i])
 

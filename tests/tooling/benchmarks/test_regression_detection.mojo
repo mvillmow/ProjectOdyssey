@@ -36,7 +36,7 @@ fn test_single_regression_detection() raises:
     - Correct benchmark identified
     - Alert generated
     - Exit code = 1 (failure).
-   """
+    """
     # Test single regression detection
     var regression_threshold = 10.0
     var regression_pct = 15.0  # 15% slowdown > threshold
@@ -44,11 +44,17 @@ fn test_single_regression_detection() raises:
     var exit_code_success = 0
 
     # Verify regression is detected
-    assert_greater(Float32(regression_pct), Float32(regression_threshold), "15% exceeds 10% threshold")
+    assert_greater(
+        Float32(regression_pct),
+        Float32(regression_threshold),
+        "15% exceeds 10% threshold",
+    )
 
     # Verify correct exit code for failure
     if regression_pct > regression_threshold:
-        assert_equal(exit_code_failure, 1, "Should exit with code 1 on regression")
+        assert_equal(
+            exit_code_failure, 1, "Should exit with code 1 on regression"
+        )
     else:
         assert_equal(exit_code_success, 0, "Should exit with code 0 on success")
 
@@ -77,7 +83,9 @@ fn test_multiple_regressions_detection() raises:
 
     # Verify all regressions detected
     assert_equal(regression_count, 3, "Should detect all 3 regressions")
-    assert_equal(regression_count > 0, True, "Should report at least one regression")
+    assert_equal(
+        regression_count > 0, True, "Should report at least one regression"
+    )
 
 
 fn test_no_false_positives() raises:
@@ -88,11 +96,11 @@ fn test_no_false_positives() raises:
     - Exactly 10% doesn't trigger alert
     - Both faster and slower within tolerance pass
     - Exit code = 0 (success).
-   """
+    """
     # Test no false positives
     var regression_threshold = 10.0
     var changes = List[Float64](capacity=3)
-    changes.append(5.0)   # 5% slower
+    changes.append(5.0)  # 5% slower
     changes.append(10.0)  # exactly 10%
     changes.append(-5.0)  # 5% faster
 
@@ -103,7 +111,9 @@ fn test_no_false_positives() raises:
             false_positive_count = false_positive_count + 1
 
     assert_equal(false_positive_count, 0, "Should have no false positives")
-    assert_equal(false_positive_count > 0, False, "No changes should trigger alerts")
+    assert_equal(
+        false_positive_count > 0, False, "No changes should trigger alerts"
+    )
 
 
 fn test_exit_code_success() raises:
@@ -118,9 +128,9 @@ fn test_exit_code_success() raises:
     # Test exit code 0 on success
     var regression_threshold = 10.0
     var scenarios = List[Float64](capacity=4)
-    scenarios.append(-5.0)   # Improvement
-    scenarios.append(5.0)    # Normal variance
-    scenarios.append(10.0)   # At threshold
+    scenarios.append(-5.0)  # Improvement
+    scenarios.append(5.0)  # Normal variance
+    scenarios.append(10.0)  # At threshold
     scenarios.append(-10.0)  # Good improvement
 
     var has_regression = False
@@ -145,9 +155,9 @@ fn test_exit_code_failure() raises:
     # Test exit code 1 on failure
     var regression_threshold = 10.0
     var scenarios = List[Float64](capacity=3)
-    scenarios.append(-5.0)   # Improvement (but...)
-    scenarios.append(15.0)   # Regression (should trigger exit 1)
-    scenarios.append(5.0)    # Normal variance
+    scenarios.append(-5.0)  # Improvement (but...)
+    scenarios.append(15.0)  # Regression (should trigger exit 1)
+    scenarios.append(5.0)  # Normal variance
 
     var has_regression = False
     for i in range(len(scenarios)):
@@ -170,7 +180,7 @@ fn test_regression_report_format() raises:
     - Report includes summary statistics.
     """
     # Test regression report format
-    var report = List[String](capacity=5)
+    var report: List[String](capacity=5)
     report.append("REGRESSION DETECTED")
     report.append("Benchmark: matrix_op")
     report.append("Change: +15%")
@@ -179,9 +189,16 @@ fn test_regression_report_format() raises:
 
     # Verify all required sections present
     assert_equal(len(report), 5, "Report should have 5 sections")
-    assert_true(report[0].find("REGRESSION") >= 0, "Report should have REGRESSION header")
-    assert_true(report[1].find("Benchmark") >= 0, "Report should include benchmark name")
-    assert_true(report[2].find("Change") >= 0, "Report should show percentage change")
+    assert_true(
+        report[0].find("REGRESSION") >= 0,
+        "Report should have REGRESSION header",
+    )
+    assert_true(
+        report[1].find("Benchmark") >= 0, "Report should include benchmark name"
+    )
+    assert_true(
+        report[2].find("Change") >= 0, "Report should show percentage change"
+    )
 
 
 fn test_regression_severity_levels() raises:
@@ -194,18 +211,28 @@ fn test_regression_severity_levels() raises:
     - Severity shown in report.
     """
     # Test severity categorization
-    var minor_regression = 15.0    # 10-20%
-    var moderate_regression = 30.0 # 20-50%
+    var minor_regression = 15.0  # 10-20%
+    var moderate_regression = 30.0  # 20-50%
     var severe_regression = 100.0  # >50%
 
     # Verify severity ranges
-    assert_greater(Float32(minor_regression), Float32(10.0), "Minor should be >10%")
-    assert_less(Float32(minor_regression), Float32(20.0), "Minor should be <20%")
+    assert_greater(
+        Float32(minor_regression), Float32(10.0), "Minor should be >10%"
+    )
+    assert_less(
+        Float32(minor_regression), Float32(20.0), "Minor should be <20%"
+    )
 
-    assert_greater(Float32(moderate_regression), Float32(20.0), "Moderate should be >20%")
-    assert_less(Float32(moderate_regression), Float32(50.0), "Moderate should be <50%")
+    assert_greater(
+        Float32(moderate_regression), Float32(20.0), "Moderate should be >20%"
+    )
+    assert_less(
+        Float32(moderate_regression), Float32(50.0), "Moderate should be <50%"
+    )
 
-    assert_greater(Float32(severe_regression), Float32(50.0), "Severe should be >50%")
+    assert_greater(
+        Float32(severe_regression), Float32(50.0), "Severe should be >50%"
+    )
 
 
 fn test_improvement_reporting() raises:
@@ -221,7 +248,7 @@ fn test_improvement_reporting() raises:
     var regression_threshold = 10.0
     var improvements = List[Float64](capacity=2)
     improvements.append(-10.0)  # 10% faster
-    improvements.append(-5.0)   # 5% faster
+    improvements.append(-5.0)  # 5% faster
 
     # Count actual regressions
     var regression_count = 0
@@ -230,7 +257,9 @@ fn test_improvement_reporting() raises:
             regression_count = regression_count + 1
 
     # Verify improvements don't count as regressions
-    assert_equal(regression_count, 0, "Improvements should not count as regressions")
+    assert_equal(
+        regression_count, 0, "Improvements should not count as regressions"
+    )
     assert_true(len(improvements) > 0, "Should have improvements to report")
 
 
@@ -248,7 +277,7 @@ fn test_ci_integration_output() raises:
     var exit_code_failure = 1
 
     # Create CI-friendly output
-    var ci_output = List[String](capacity=3)
+    var ci_output: List[String](capacity=3)
     ci_output.append("Benchmark test result: PASS")
     ci_output.append("Exit code: 0")
     ci_output.append("Summary: All benchmarks within threshold")

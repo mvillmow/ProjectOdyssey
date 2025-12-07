@@ -40,7 +40,7 @@ fn test_sgd_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that sgd_step accepts all hyperparameters
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)
@@ -52,7 +52,7 @@ fn test_sgd_initialization() raises:
         velocity,
         learning_rate=0.01,
         momentum=0.9,
-        weight_decay=0.0001
+        weight_decay=0.0001,
     )
 
     # If we got here without error, the API contract is satisfied
@@ -70,7 +70,7 @@ fn test_sgd_basic_update() raises:
     This is a CRITICAL test that defines the core SGD behavior.
     """
     # Initial parameters: [1.0, 2.0, 3.0]
-    var shape = List[Int](3)
+    var shape: List[Int] = [3]
     var params = ones(shape, DType.float32)
 
     # Manually set values: [1.0, 2.0, 3.0]
@@ -90,9 +90,15 @@ fn test_sgd_basic_update() raises:
     # Expected: new_params = params - lr * grads
     # [1.0 - 0.1*0.1, 2.0 - 0.1*0.2, 3.0 - 0.1*0.3]
     # = [0.99, 1.98, 2.97]
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6)
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[1]), 1.98, tolerance=1e-6)
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[2]), 2.97, tolerance=1e-6)
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6
+    )
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[1]), 1.98, tolerance=1e-6
+    )
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[2]), 2.97, tolerance=1e-6
+    )
 
 
 fn test_sgd_momentum_accumulation() raises:
@@ -107,7 +113,7 @@ fn test_sgd_momentum_accumulation() raises:
 
     This is a CRITICAL test for momentum-based training.
     """
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -119,11 +125,15 @@ fn test_sgd_momentum_accumulation() raises:
     # Step 1: velocity = grad = 0.1
     # update = lr * velocity = 0.1 * 0.1 = 0.01
     # params = 1.0 - 0.01 = 0.99
-    var result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    var result = sgd_step(
+        params, grads, velocity, learning_rate=0.1, momentum=0.9
+    )
     params = result[0]
     velocity = result[1]
 
-    assert_almost_equal(Float64(params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6)
+    assert_almost_equal(
+        Float64(params._data.bitcast[Float32]()[0]), 0.99, tolerance=1e-6
+    )
 
     # Step 2: velocity = 0.9 * 0.1 + 0.1 = 0.19
     # update = 0.1 * 0.19 = 0.019
@@ -132,7 +142,9 @@ fn test_sgd_momentum_accumulation() raises:
     params = result[0]
     velocity = result[1]
 
-    assert_almost_equal(Float64(params._data.bitcast[Float32]()[0]), 0.971, tolerance=1e-5)
+    assert_almost_equal(
+        Float64(params._data.bitcast[Float32]()[0]), 0.971, tolerance=1e-5
+    )
 
 
 fn test_sgd_weight_decay() raises:
@@ -143,7 +155,7 @@ fn test_sgd_weight_decay() raises:
         - Effective gradient: grad = grad + weight_decay * params
         - Then apply standard update.
     """
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -156,13 +168,13 @@ fn test_sgd_weight_decay() raises:
     # update = 0.1 * 0.11 = 0.011
     # params = 1.0 - 0.011 = 0.989
     var result = sgd_step(
-        params, grads, velocity,
-        learning_rate=0.1,
-        weight_decay=0.01
+        params, grads, velocity, learning_rate=0.1, weight_decay=0.01
     )
     var new_params = result[0]
 
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[0]), 0.989, tolerance=1e-6)
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[0]), 0.989, tolerance=1e-6
+    )
 
 
 fn test_sgd_nesterov_momentum() raises:
@@ -202,7 +214,7 @@ fn test_adam_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that adam_step accepts all hyperparameters
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
@@ -211,11 +223,15 @@ fn test_adam_initialization() raises:
 
     # Should accept all hyperparameters without error
     var result = adam_step(
-        params, grads, m, v, t=1,
+        params,
+        grads,
+        m,
+        v,
+        t=1,
         learning_rate=0.001,
         beta1=0.9,
         beta2=0.999,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     # If we got here without error, the API contract is satisfied
@@ -239,7 +255,7 @@ fn test_adam_parameter_update() raises:
 
     This is a CRITICAL test for Adam correctness.
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -256,7 +272,17 @@ fn test_adam_parameter_update() raises:
     # m_hat = 0.01 / (1 - 0.9) = 0.1
     # v_hat = 0.00001 / (1 - 0.999) = 0.01
     # update = 0.001 * 0.1 / (sqrt(0.01) + 1e-8) ≈ 0.001
-    var result = adam_step(params, grads, m, v, t=1, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    var result = adam_step(
+        params,
+        grads,
+        m,
+        v,
+        t=1,
+        learning_rate=0.001,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8,
+    )
     params = result[0]
     m = result[1]
     v = result[2]
@@ -264,7 +290,9 @@ fn test_adam_parameter_update() raises:
     # Parameter should decrease from 1.0
     # Exact value ≈ 0.999 (1.0 - 0.001)
     assert_less(params._data.bitcast[Float32]()[0], 1.0)
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.999, tolerance=1e-3)
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[0], 0.999, tolerance=1e-3
+    )
 
 
 fn test_adam_bias_correction() raises:
@@ -278,7 +306,7 @@ fn test_adam_bias_correction() raises:
 
     This is CRITICAL for Adam's fast convergence in early training.
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -349,7 +377,7 @@ fn test_rmsprop_initialization() raises:
             epsilon: Float32 = 1e-8,
             momentum: Float32 = 0.0
         ).
-   """
+    """
     # TODO(#1538): Implement when RMSprop is available
     # var optimizer = RMSprop(
     #     learning_rate=0.01,
@@ -369,7 +397,7 @@ fn test_rmsprop_parameter_update() raises:
         RMSprop maintains moving average of squared gradients:
         - v = alpha * v + (1 - alpha) * grad^2
         - params = params - lr * grad / (sqrt(v) + epsilon).
-   """
+    """
     # TODO(#1538): Implement when RMSprop is available
     # var params = Tensor(List[Float32](1.0), Shape(1))
     # var grads = Tensor(List[Float32](0.1), Shape(1))
@@ -484,7 +512,7 @@ fn test_sgd_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -501,14 +529,22 @@ fn test_sgd_matches_pytorch() raises:
     var velocity = zeros(shape, DType.float32)
 
     # First step
-    var result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
+    var result = sgd_step(
+        params, grads, velocity, learning_rate=0.1, momentum=0.9
+    )
     params = result[0]
     velocity = result[1]
 
     # Validate against PyTorch (step 1)
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9900, tolerance=1e-6)
-    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9800, tolerance=1e-6)
-    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9700, tolerance=1e-6)
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[0], 0.9900, tolerance=1e-6
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[1], 1.9800, tolerance=1e-6
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[2], 2.9700, tolerance=1e-6
+    )
 
     # Second step (same gradients)
     result = sgd_step(params, grads, velocity, learning_rate=0.1, momentum=0.9)
@@ -516,9 +552,15 @@ fn test_sgd_matches_pytorch() raises:
     velocity = result[1]
 
     # Validate against PyTorch (step 2)
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9710, tolerance=1e-6)
-    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9420, tolerance=1e-6)
-    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9130, tolerance=1e-6)
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[0], 0.9710, tolerance=1e-6
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[1], 1.9420, tolerance=1e-6
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[2], 2.9130, tolerance=1e-6
+    )
 
 
 fn test_adam_matches_pytorch() raises:
@@ -553,7 +595,7 @@ fn test_adam_matches_pytorch() raises:
         ```
     """
     # Initial parameters
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
@@ -571,26 +613,58 @@ fn test_adam_matches_pytorch() raises:
     var v = zeros(shape, DType.float32)
 
     # First step (t=1)
-    var result = adam_step(params, grads, m, v, t=1, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    var result = adam_step(
+        params,
+        grads,
+        m,
+        v,
+        t=1,
+        learning_rate=0.001,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8,
+    )
     params = result[0]
     m = result[1]
     v = result[2]
 
     # Validate against PyTorch (step 1)
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9990, tolerance=1e-4)
-    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9990, tolerance=1e-4)
-    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9990, tolerance=1e-4)
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[0], 0.9990, tolerance=1e-4
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[1], 1.9990, tolerance=1e-4
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[2], 2.9990, tolerance=1e-4
+    )
 
     # Second step (t=2, same gradients)
-    result = adam_step(params, grads, m, v, t=2, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8)
+    result = adam_step(
+        params,
+        grads,
+        m,
+        v,
+        t=2,
+        learning_rate=0.001,
+        beta1=0.9,
+        beta2=0.999,
+        epsilon=1e-8,
+    )
     params = result[0]
     m = result[1]
     v = result[2]
 
     # Validate against PyTorch (step 2)
-    assert_almost_equal(params._data.bitcast[Float32]()[0], 0.9980, tolerance=1e-4)
-    assert_almost_equal(params._data.bitcast[Float32]()[1], 1.9980, tolerance=1e-4)
-    assert_almost_equal(params._data.bitcast[Float32]()[2], 2.9980, tolerance=1e-4)
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[0], 0.9980, tolerance=1e-4
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[1], 1.9980, tolerance=1e-4
+    )
+    assert_almost_equal(
+        params._data.bitcast[Float32]()[2], 2.9980, tolerance=1e-4
+    )
 
 
 # ============================================================================

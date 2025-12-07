@@ -1,72 +1,89 @@
 # ML Odyssey - Mojo Development Environment
-# Multi-stage Dockerfile for Mojo-based AI research platform
+# Multi-stage Dockerfile
 
-# Stage 1: Base image with Pixi and system dependencies
+# ---------------------------
+# Stage 1: Base image with system deps
+# ---------------------------
 FROM ubuntu:22.04 AS base
 
-# Avoid prompts from apt
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
+# Install system dependencies as root
 RUN apt-get update && apt-get install -y \
     curl \
     git \
     build-essential \
     ca-certificates \
     vim \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Pixi (modern conda alternative)
-# Pixi manages Mojo and Python dependencies
-RUN curl -fsSL https://pixi.sh/install.sh | bash
+# ---------------------------
+# Stage 1.5: Create dev user
+# ---------------------------
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+ARG USER_NAME=dev
 
-# Add Pixi to PATH
-ENV PATH="/root/.pixi/bin:${PATH}"
+RUN groupadd -g ${GROUP_ID} ${USER_NAME} && \
+    useradd -m -u ${USER_ID} -g ${GROUP_ID} -s /bin/bash ${USER_NAME}
 
-# Set working directory
-WORKDIR /workspace
+# Set environment for dev user
+ENV HOME=/home/${USER_NAME}
+ENV PATH="$HOME/.pixi/bin:$PATH"
 
+# ---------------------------
 # Stage 2: Development environment
+# ---------------------------
 FROM base AS development
 
-# Copy dependency files first for better caching
-COPY pixi.toml pixi.lock ./
-COPY pyproject.toml requirements.txt requirements-dev.txt ./
+# Switch to dev user
+USER ${USER_NAME}
+WORKDIR /workspace
 
-# Install project dependencies via Pixi
-# This installs Mojo, pre-commit, and other conda dependencies
+# Install Pixi as dev user
+RUN curl -fsSL https://pixi.sh/install.sh | bash
+
+# Ensure Rattler/Conda cache is writable
+RUN mkdir -p $HOME/.cache/rattler/cache && \
+    chmod -R 700 $HOME/.cache/rattler
+
+# Copy project dependency files
+COPY --chown=${USER_NAME}:${USER_NAME} pixi.toml pixi.lock pyproject.toml requirements.txt requirements-dev.txt ./
+
+# Install project dependencies
 RUN pixi install
 
-# Copy pre-commit configuration
-COPY .pre-commit-config.yaml ./
-
-# Install pre-commit hooks
-# Note: Hooks will be installed in the Git working directory when mounted
+# Pre-commit
+COPY --chown=${USER_NAME}:${USER_NAME} .pre-commit-config.yaml ./
 RUN pixi run pre-commit install --install-hooks || true
 
-# Copy the rest of the project
-COPY . .
+# Copy the rest of the workspace
+COPY --chown=${USER_NAME}:${USER_NAME} . .
 
-# Set up Python path
-ENV PYTHONPATH=/workspace:${PYTHONPATH}
+# Set Python path
+ENV PYTHONPATH=/workspace:${PYTHONPATH:-}
 
-# Default command: Start a bash shell with Pixi environment activated
+# Default shell
 CMD ["pixi", "shell"]
 
-# Stage 3: CI/Testing environment (minimal, optimized for CI)
+# ---------------------------
+# Stage 3: CI / Testing
+# ---------------------------
 FROM development AS ci
 
-# Run tests by default in CI mode
 CMD ["pixi", "run", "pytest", "tests/", "-v"]
 
-# Stage 4: Production (if needed for deployment)
+# ---------------------------
+# Stage 4: Production
+# ---------------------------
 FROM base AS production
 
-# Copy only necessary files for production
+# Copy dev workspace
 COPY --from=development /workspace /workspace
 
-# Set production environment
 ENV ENVIRONMENT=production
+USER ${USER_NAME}
+WORKDIR /workspace
 
-# Default production command (customize as needed)
 CMD ["pixi", "shell"]

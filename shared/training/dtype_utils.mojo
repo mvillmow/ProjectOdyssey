@@ -89,6 +89,7 @@ Current behavior (aliased to FP16):
 # DType Utility Functions
 # ============================================================================
 
+
 fn is_reduced_precision(dtype: DType) -> Bool:
     """Check if dtype uses reduced precision (FP16 or BF16).
 
@@ -108,7 +109,9 @@ fn is_reduced_precision(dtype: DType) -> Bool:
             var scaler = GradientScaler()
         ```
     """
-    return dtype == DType.float16  # Currently only FP16, will include BF16 when available
+    return (
+        dtype == DType.float16
+    )  # Currently only FP16, will include BF16 when available
 
 
 fn is_floating_point(dtype: DType) -> Bool:
@@ -127,9 +130,11 @@ fn is_floating_point(dtype: DType) -> Bool:
             var result = tensor / 2.0
         ```
     """
-    return (dtype == DType.float16 or
-            dtype == DType.float32 or
-            dtype == DType.float64)
+    return (
+        dtype == DType.float16
+        or dtype == DType.float32
+        or dtype == DType.float64
+    )
 
 
 fn get_dtype_precision_bits(dtype: DType) -> Int:
@@ -147,7 +152,7 @@ fn get_dtype_precision_bits(dtype: DType) -> Int:
 
     Example:
         ```mojo
-        ar bits = get_dtype_precision_bits(DType.float16)
+        var bits = get_dtype_precision_bits(DType.float16)
         print("FP16 has", bits, "mantissa bits")  # 10
         ```
     """
@@ -158,7 +163,7 @@ fn get_dtype_precision_bits(dtype: DType) -> Int:
     elif dtype == DType.float64:
         return 52  # FP64: 52 mantissa bits
     else:
-        return 0   # Not a floating point type
+        return 0  # Not a floating point type
 
 
 fn get_dtype_exponent_bits(dtype: DType) -> Int:
@@ -176,18 +181,18 @@ fn get_dtype_exponent_bits(dtype: DType) -> Int:
 
     Example:
         ```mojo
-        ar bits = get_dtype_exponent_bits(DType.float32)
+        var bits = get_dtype_exponent_bits(DType.float32)
         print("FP32 has", bits, "exponent bits")  # 8
         ```
     """
     if dtype == DType.float16:
-        return 5   # FP16: 5 exponent bits (narrow range)
+        return 5  # FP16: 5 exponent bits (narrow range)
     elif dtype == DType.float32:
-        return 8   # FP32: 8 exponent bits (wide range)
+        return 8  # FP32: 8 exponent bits (wide range)
     elif dtype == DType.float64:
         return 11  # FP64: 11 exponent bits (very wide range)
     else:
-        return 0   # Not a floating point type
+        return 0  # Not a floating point type
 
 
 fn dtype_to_string(dtype: DType) -> String:
@@ -201,7 +206,7 @@ fn dtype_to_string(dtype: DType) -> String:
 
     Example:
         ```mojo
-        ar name = dtype_to_string(DType.float16)
+        var name = dtype_to_string(DType.float16)
         print("Using dtype:", name)  # "Using dtype: float16"
         ```
     """
@@ -233,8 +238,9 @@ fn dtype_to_string(dtype: DType) -> String:
         return "unknown"
 
 
-fn recommend_precision_dtype(model_size_mb: Float64,
-                            hardware_has_fp16: Bool = True) -> DType:
+fn recommend_precision_dtype(
+    model_size_mb: Float64, hardware_has_fp16: Bool = True
+) -> DType:
     """Recommend optimal precision dtype based on model size and hardware.
 
     Provides guidance for choosing between FP32, FP16, and BF16 based on.
@@ -255,7 +261,7 @@ fn recommend_precision_dtype(model_size_mb: Float64,
 
     Example:
         ```mojo
-        ar dtype = recommend_precision_dtype(model_size_mb=500.0)
+        var dtype = recommend_precision_dtype(model_size_mb=500.0)
         var params = ExTensor.zeros((1000, 1000), dtype)
         ```
     """

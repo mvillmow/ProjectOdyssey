@@ -19,7 +19,7 @@ Usage Example:
     var norm = clip_grad_norm_(grad, max_norm=1.0)
 
     # Clip multiple gradients by their global L2 norm
-    var gradients = List[ExTensor](grad1, grad2, grad3)
+    var gradients : List[ExTensor] = [grad1, grad2, grad3]
     var global_norm = clip_grad_global_norm_(gradients, max_norm=1.0)
         ```
 
@@ -53,7 +53,7 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
 
         var grad2 = full(List[Int](2, 3), 5.0, DType.float32)
         clip_grad_value_(grad2, max_value=1.0).
-   """
+    """
     if max_value < 0.0:
         raise Error("max_value must be non-negative, got: " + String(max_value))
 
@@ -146,7 +146,7 @@ fn clip_grad_global_norm_(
     Examples:
         var grad1 = full(List[Int](10,), 1.0, DType.float32)
         var grad2 = full(List[Int](20,), 1.0, DType.float32)
-        var grads = List[ExTensor](grad1, grad2)
+        var grads : List[ExTensor] = [grad1, grad2]
 
         var global_norm = clip_grad_global_norm_(grads, max_norm=1.0)
         # global_norm is sqrt(10 + 20) = sqrt(30) ≈ 5.48

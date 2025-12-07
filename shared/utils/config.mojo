@@ -21,7 +21,7 @@ from python import Python, PythonObject
 # ============================================================================
 
 
-struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
+struct ConfigValue(Copyable, ImplicitlyCopyable, Movable):
     """Union type to hold different configuration value types.
 
     Supports common types needed for ML configurations: integers, floats,
@@ -42,7 +42,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.float_val = 0.0
         self.str_val = ""
         self.bool_val = False
-        self.list_val = List[String]()
+        self.list_val= List[String]()
 
     fn __init__(out self, value: Float64):
         """Create ConfigValue from Float64."""
@@ -51,7 +51,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.float_val = value
         self.str_val = ""
         self.bool_val = False
-        self.list_val = List[String]()
+        self.list_val= List[String]()
 
     fn __init__(out self, value: String):
         """Create ConfigValue from String."""
@@ -60,7 +60,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.float_val = 0.0
         self.str_val = value
         self.bool_val = False
-        self.list_val = List[String]()
+        self.list_val= List[String]()
 
     fn __init__(out self, value: Bool):
         """Create ConfigValue from Bool."""
@@ -69,7 +69,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.float_val = 0.0
         self.str_val = ""
         self.bool_val = value
-        self.list_val = List[String]()
+        self.list_val= List[String]()
 
     fn __init__(out self, var value: List[String]):
         """Create ConfigValue from List[String]."""
@@ -87,7 +87,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
         self.float_val = 0.0
         self.str_val = ""
         self.bool_val = False
-        self.list_val = List[String]()
+        self.list_val= List[String]()
         # Convert int list to string list for storage
         for i in range(len(value)):
             self.list_val.append(String(value[i]))
@@ -107,7 +107,7 @@ struct ConfigValue(Copyable, Movable, ImplicitlyCopyable):
 # ============================================================================
 
 
-struct Config(Copyable, Movable, ImplicitlyCopyable):
+struct Config(Copyable, ImplicitlyCopyable, Movable):
     """Configuration container with nested access and validation.
 
     Stores configuration as key-value pairs with support for nested.
@@ -302,7 +302,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 + val.value_type
             )
         # Copy list_val before returning to avoid partial destruction of val
-        var list_copy = List[String]()
+        var list_copy= List[String]()
         for i in range(len(val.list_val)):
             list_copy.append(val.list_val[i])
         return list_copy^
@@ -582,14 +582,16 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
         return config
 
     @staticmethod
-    fn _flatten_dict(mut config: Config, py_obj: PythonObject, prefix: String) raises:
+    fn _flatten_dict(
+        mut config: Config, py_obj: PythonObject, prefix: String
+    ) raises:
         """Recursively flatten a Python dict into dot-notation keys.
 
         Args:
             config: Config object to populate
             py_obj: Python object (dict, list, or primitive)
             prefix: Current key prefix (empty for root level).
-       """
+        """
         try:
             var builtins = Python.import_module("builtins")
 
@@ -598,13 +600,15 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 var items = py_obj.items()
                 for item in items:
                     var key = String(item[0])
-                    var full_key = prefix + "." + key if len(prefix) > 0 else key
+                    var full_key = (
+                        prefix + "." + key if len(prefix) > 0 else key
+                    )
                     Config._flatten_dict(config, item[1], full_key)
 
             # Check if it's a list
             elif builtins.isinstance(py_obj, builtins.list):
                 # Store lists as string representations for now
-                var list_items = List[String]()
+                var list_items= List[String]()
                 for item in py_obj:
                     list_items.append(String(item))
                 config.set(prefix, list_items^)
@@ -635,7 +639,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                 var str_val = String(py_obj)
                 # Remove quotes if present
                 if str_val.startswith('"') and str_val.endswith('"'):
-                    str_val = str_val[1:-1]
+                    str_val = String(str_val[1:-1])
                 config.set(prefix, str_val)
 
         except e:
@@ -685,7 +689,9 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
                         var colon_idx = pair.find(":")
                         if colon_idx != -1:
                             var key = String(pair[:colon_idx].strip())
-                            var value_str = String(pair[colon_idx + 1:].strip())
+                            var value_str = String(
+                                pair[colon_idx + 1 :].strip()
+                            )
 
                             # Try to parse as number
                             if "." in value_str:
@@ -844,7 +850,7 @@ struct Config(Copyable, Movable, ImplicitlyCopyable):
             var colon_pos = var_spec.find(":-")
             if colon_pos != -1:
                 var_name = var_spec[:colon_pos]
-                default_value = var_spec[colon_pos + 2 :]
+                default_value = String(var_spec[colon_pos + 2 :])
 
             # Get environment variable value using Python
             var env_value = default_value
@@ -913,7 +919,7 @@ fn load_config(filepath: String) raises -> Config:
 
     Example:
         ```mojo
-        ar config = load_config("configs/lenet5.yaml")
+        var config = load_config("configs/lenet5.yaml")
         var lr = config.get_float("learning_rate")
         ```
     """
@@ -939,7 +945,7 @@ fn save_config(config: Config, filepath: String) raises:
 
     Example:
         ```mojo
-        ar config = Config()
+        var config = Config()
         config.set("learning_rate", 0.001)
         save_config(config, "config.yaml")
         ```
@@ -973,7 +979,7 @@ fn merge_configs(base: Config, override: Config) -> Config:
 
     Example:
         ```mojo
-        ar defaults = load_config("config.yaml")
+        var defaults = load_config("config.yaml")
         var experiment = load_config("config.lenet5.yaml")
         var config = merge_configs(defaults, experiment)
         ```
@@ -994,7 +1000,7 @@ struct ConfigValidator(Copyable, Movable):
 
     fn __init__(out self):
         """Create empty validator."""
-        self.required_keys = List[String]()
+        self.required_keys= List[String]()
         self.allowed_keys = Dict[String, String]()
 
     fn __copyinit__(out self, existing: Self):

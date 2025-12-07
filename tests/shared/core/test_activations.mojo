@@ -27,7 +27,14 @@ from tests.shared.conftest import (
     assert_true,
 )
 from tests.shared.conftest import TestFixtures
-from shared.core.extensor import ExTensor, zeros, ones, full, zeros_like, ones_like
+from shared.core.extensor import (
+    ExTensor,
+    zeros,
+    ones,
+    full,
+    zeros_like,
+    ones_like,
+)
 from shared.core.activation import (
     relu,
     leaky_relu,
@@ -51,7 +58,11 @@ from shared.core.activation import (
     elu_backward,
     GradientPair,
 )
-from shared.testing import check_gradient, compute_numerical_gradient, assert_gradients_close
+from shared.testing import (
+    check_gradient,
+    compute_numerical_gradient,
+    assert_gradients_close,
+)
 from math import tanh as math_tanh, exp as math_exp
 
 
@@ -62,7 +73,7 @@ from math import tanh as math_tanh, exp as math_exp
 
 fn test_relu_basic() raises:
     """Test ReLU with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -76,16 +87,26 @@ fn test_relu_basic() raises:
     var y = relu(x)
 
     # Expected: [0, 0, 0, 1, 2]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[4], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[4], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_relu_non_negativity() raises:
     """Test ReLU always produces non-negative outputs."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(100)
     var x = zeros(shape, DType.float32)
 
@@ -103,7 +124,7 @@ fn test_relu_non_negativity() raises:
 
 fn test_relu_backward() raises:
     """Test ReLU gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var x = zeros(shape, DType.float32)
 
@@ -121,7 +142,9 @@ fn test_relu_backward() raises:
     var grad_out = ones_like(y)
 
     # Backward function wrapper
-    fn backward_wrapper(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+    fn backward_wrapper(
+        grad: ExTensor, x: ExTensor
+    ) raises escaping -> ExTensor:
         return relu_backward(grad, x)
 
     # Use numerical gradient checking (gold standard)
@@ -131,7 +154,7 @@ fn test_relu_backward() raises:
 
 fn test_relu_shape() raises:
     """Test ReLU preserves shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -147,7 +170,7 @@ fn test_relu_shape() raises:
 fn test_relu_integer_types() raises:
     """Test ReLU with integer types."""
     # Test int32
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x_int32 = zeros(shape, DType.int32)
     x_int32._data.bitcast[Int32]()[0] = -2
@@ -184,7 +207,7 @@ fn test_relu_integer_types() raises:
 
 fn test_relu_float64() raises:
     """Test ReLU with float64 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float64)
 
@@ -204,7 +227,7 @@ fn test_relu_float64() raises:
 
 fn test_leaky_relu_basic() raises:
     """Test Leaky ReLU with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -215,14 +238,20 @@ fn test_leaky_relu_basic() raises:
     var y = leaky_relu(x, alpha=0.1)
 
     # Expected: [-0.2, 0, 2.0]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-0.2), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-0.2), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_leaky_relu_custom_alpha() raises:
     """Test Leaky ReLU with custom alpha value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -4.0
@@ -232,14 +261,20 @@ fn test_leaky_relu_custom_alpha() raises:
     var y = leaky_relu(x, alpha=0.25)
 
     # Expected with alpha=0.25: [-1.0, 0, 4.0]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-1.0), tolerance=1e-6)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(4.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-1.0), tolerance=1e-6
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(4.0), tolerance=1e-5
+    )
 
 
 fn test_leaky_relu_backward() raises:
     """Test Leaky ReLU gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
 
@@ -254,7 +289,9 @@ fn test_leaky_relu_backward() raises:
     var grad_out = ones_like(y)
 
     # Use numerical gradient checking (gold standard)
-    fn backward_wrapper(grad: ExTensor, x: ExTensor) raises escaping -> ExTensor:
+    fn backward_wrapper(
+        grad: ExTensor, x: ExTensor
+    ) raises escaping -> ExTensor:
         return leaky_relu_backward(grad, x, alpha=0.1)
 
     # Note: rtol=1e-3 is appropriate for float32 finite differences
@@ -268,7 +305,7 @@ fn test_leaky_relu_backward() raises:
 
 fn test_prelu_basic() raises:
     """Test PReLU with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     var alpha = zeros(shape, DType.float32)
@@ -284,14 +321,20 @@ fn test_prelu_basic() raises:
     var y = prelu(x, alpha)
 
     # Expected: [-0.5, 0, 2.0]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-0.5), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-0.5), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_prelu_scalar_alpha() raises:
     """Test PReLU with scalar alpha parameter."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
@@ -301,23 +344,33 @@ fn test_prelu_scalar_alpha() raises:
     x._data.bitcast[Float32]()[4] = 2.0
 
     # Scalar alpha = 0.2
-    var alpha_shape = List[Int]()
+    var alpha_shape= List[Int]()
     alpha_shape.append(1)
     var alpha = full(alpha_shape, 0.2, DType.float32)
 
     var y = prelu(x, alpha)
 
     # Expected with alpha=0.2: [-0.4, -0.2, 0, 1, 2]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-0.4), tolerance=1e-6)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(-0.2), tolerance=1e-6)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[4], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-0.4), tolerance=1e-6
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(-0.2), tolerance=1e-6
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[3], Float32(1.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[4], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_prelu_elementwise_alpha() raises:
     """Test PReLU with element-wise alpha parameters."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
@@ -333,14 +386,20 @@ fn test_prelu_elementwise_alpha() raises:
     var y = prelu(x, alpha)
 
     # Expected: [-0.2, -0.2, 2.0]
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-0.2), tolerance=1e-6)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(-0.2), tolerance=1e-6)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-0.2), tolerance=1e-6
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(-0.2), tolerance=1e-6
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_prelu_backward() raises:
     """Test PReLU gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
     var alpha = zeros(shape, DType.float32)
@@ -374,24 +433,30 @@ fn test_prelu_backward() raises:
 
 fn test_sigmoid_basic() raises:
     """Test sigmoid with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
     x._data.bitcast[Float32]()[0] = -100.0  # Should be ~0
-    x._data.bitcast[Float32]()[1] = 0.0     # Should be 0.5
-    x._data.bitcast[Float32]()[2] = 100.0   # Should be ~1
+    x._data.bitcast[Float32]()[1] = 0.0  # Should be 0.5
+    x._data.bitcast[Float32]()[2] = 100.0  # Should be ~1
 
     var y = sigmoid(x)
 
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.5), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-3)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.5), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-3
+    )
 
 
 fn test_sigmoid_backward() raises:
     """Test sigmoid gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -419,7 +484,7 @@ fn test_sigmoid_backward() raises:
 
 fn test_sigmoid_range() raises:
     """Test sigmoid output is in (0, 1)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -440,7 +505,7 @@ fn test_sigmoid_range() raises:
 
 fn test_sigmoid_numerical_stability() raises:
     """Test sigmoid with extreme values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -100.0
@@ -461,7 +526,7 @@ fn test_sigmoid_numerical_stability() raises:
 
 fn test_sigmoid_float16() raises:
     """Test sigmoid with float16."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float16)
     x._data.bitcast[Float16]()[0] = Float16(-1.0)
@@ -482,7 +547,7 @@ fn test_sigmoid_float16() raises:
 
 fn test_sigmoid_float64() raises:
     """Test sigmoid with float64 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float64)
 
@@ -500,24 +565,30 @@ fn test_sigmoid_float64() raises:
 
 fn test_tanh_basic() raises:
     """Test tanh with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
     x._data.bitcast[Float32]()[0] = -100.0  # Should be ~-1
-    x._data.bitcast[Float32]()[1] = 0.0     # Should be 0
-    x._data.bitcast[Float32]()[2] = 100.0   # Should be ~1
+    x._data.bitcast[Float32]()[1] = 0.0  # Should be 0
+    x._data.bitcast[Float32]()[2] = 100.0  # Should be ~1
 
     var y = tanh(x)
 
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-1.0), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-3)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-1.0), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-3
+    )
 
 
 fn test_tanh_values() raises:
     """Test tanh against known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float64)
     x._data.bitcast[Float64]()[0] = 0.0
@@ -531,15 +602,19 @@ fn test_tanh_values() raises:
 
     # tanh(1) ≈ 0.7616
     var expected_tanh_1 = math_tanh(1.0)
-    assert_almost_equal(y._data.bitcast[Float64]()[1], expected_tanh_1, tolerance=1e-10)
+    assert_almost_equal(
+        y._data.bitcast[Float64]()[1], expected_tanh_1, tolerance=1e-10
+    )
 
     # tanh(-1) ≈ -0.7616
-    assert_almost_equal(y._data.bitcast[Float64]()[2], -expected_tanh_1, tolerance=1e-10)
+    assert_almost_equal(
+        y._data.bitcast[Float64]()[2], -expected_tanh_1, tolerance=1e-10
+    )
 
 
 fn test_tanh_backward() raises:
     """Test tanh gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -567,7 +642,7 @@ fn test_tanh_backward() raises:
 
 fn test_tanh_range() raises:
     """Test tanh output is in (-1, 1)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -593,7 +668,7 @@ fn test_tanh_range() raises:
 
 fn test_softmax_basic_2d() raises:
     """Test softmax 2D normalization."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     var x = zeros(shape, DType.float32)
@@ -602,18 +677,28 @@ fn test_softmax_basic_2d() raises:
     var y = softmax(x, axis=1)
 
     # Sum should be 1.0
-    var sum = y._data.bitcast[Float32]()[0] + y._data.bitcast[Float32]()[1] + y._data.bitcast[Float32]()[2]
+    var sum = (
+        y._data.bitcast[Float32]()[0]
+        + y._data.bitcast[Float32]()[1]
+        + y._data.bitcast[Float32]()[2]
+    )
     assert_almost_equal(sum, Float32(1.0), tolerance=1e-5)
 
     # Each value should be ~1/3
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.333333), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.333333), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.333333), tolerance=1e-3)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.333333), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.333333), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.333333), tolerance=1e-3
+    )
 
 
 fn test_softmax_one_hot() raises:
     """Test softmax with large difference (one-hot-like)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     shape.append(3)
     var x = zeros(shape, DType.float32)
@@ -625,14 +710,20 @@ fn test_softmax_one_hot() raises:
     var y = softmax(x, axis=1)
 
     # Middle value should be ~1.0, others ~0.0
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-3)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-3)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-3
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-3
+    )
 
 
 fn test_softmax_sum_to_one() raises:
     """Test softmax probabilities sum to 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(4)
     var x = zeros(shape, DType.float32)
@@ -656,7 +747,7 @@ fn test_softmax_sum_to_one() raises:
 
 fn test_softmax_numerical_stability() raises:
     """Test softmax with large values (numerical stability)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1000.0
@@ -679,7 +770,7 @@ fn test_softmax_numerical_stability() raises:
 
 fn test_softmax_backward() raises:
     """Test softmax gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var x = zeros(shape, DType.float32)
@@ -718,7 +809,7 @@ fn test_softmax_backward() raises:
 
 fn test_gelu_basic() raises:
     """Test GELU with known value at x=0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
 
@@ -727,12 +818,14 @@ fn test_gelu_basic() raises:
     var y = gelu(x)
 
     # GELU(0) = 0
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5
+    )
 
 
 fn test_gelu_positive() raises:
     """Test GELU with positive values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
 
@@ -751,7 +844,7 @@ fn test_gelu_positive() raises:
 
 fn test_gelu_shape() raises:
     """Test GELU preserves shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var x = ones(shape, DType.float32)
@@ -764,7 +857,7 @@ fn test_gelu_shape() raises:
 
 fn test_gelu_approximate() raises:
     """Test GELU with tanh approximation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
@@ -776,7 +869,9 @@ fn test_gelu_approximate() raises:
     var y = gelu(x, approximate=True)
 
     # GELU(0) should be 0
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
+    )
 
     # GELU is NOT symmetric (unlike relu). For x < 0, GELU(x) is close to 0.
     # For x > 0, GELU(x) is close to x.
@@ -792,7 +887,7 @@ fn test_gelu_approximate() raises:
 
 fn test_gelu_exact() raises:
     """Test GELU with exact erf implementation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
@@ -804,7 +899,9 @@ fn test_gelu_exact() raises:
     var y = gelu(x, approximate=False)
 
     # GELU(0) = 0
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
+    )
 
     # For large positive x, GELU(x) ≈ x
     assert_true(y._data.bitcast[Float32]()[4] > 1.9)
@@ -815,7 +912,7 @@ fn test_gelu_exact() raises:
 
 fn test_gelu_comparison() raises:
     """Compare approximate and exact GELU implementations."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -2.0
@@ -841,7 +938,7 @@ fn test_gelu_comparison() raises:
 
 fn test_gelu_float16() raises:
     """Test GELU with float16."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float16)
     x._data.bitcast[Float16]()[0] = Float16(-1.0)
@@ -857,7 +954,7 @@ fn test_gelu_float16() raises:
 
 fn test_gelu_backward_gradient() raises:
     """Test GELU backward with numerical gradient checking."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -888,7 +985,7 @@ fn test_gelu_backward_gradient() raises:
 
 fn test_swish_basic() raises:
     """Test swish with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
 
@@ -897,12 +994,14 @@ fn test_swish_basic() raises:
     var y = swish(x)
 
     # swish(0) = 0 * sigmoid(0) = 0 * 0.5 = 0
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5
+    )
 
 
 fn test_swish_positive() raises:
     """Test swish with large positive value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
 
@@ -911,12 +1010,14 @@ fn test_swish_positive() raises:
     var y = swish(x)
 
     # swish(10) ≈ 10 * sigmoid(10) ≈ 10 * 1 ≈ 10
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(10.0), tolerance=0.01)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(10.0), tolerance=0.01
+    )
 
 
 fn test_swish_backward_gradient() raises:
     """Test Swish backward with numerical gradient checking."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -947,7 +1048,7 @@ fn test_swish_backward_gradient() raises:
 
 fn test_mish_basic() raises:
     """Test mish with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
 
@@ -956,12 +1057,14 @@ fn test_mish_basic() raises:
     var y = mish(x)
 
     # mish(0) = 0 * tanh(softplus(0)) = 0 * tanh(log(2)) ≈ 0
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.01)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.01
+    )
 
 
 fn test_mish_shape() raises:
     """Test mish preserves shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -976,7 +1079,7 @@ fn test_mish_shape() raises:
 
 fn test_mish_backward_gradient() raises:
     """Test Mish backward with numerical gradient checking."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -1007,7 +1110,7 @@ fn test_mish_backward_gradient() raises:
 
 fn test_elu_basic() raises:
     """Test ELU with known values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -1020,14 +1123,20 @@ fn test_elu_basic() raises:
     # ELU(-1) = 1.0 * (exp(-1) - 1) ≈ -0.632
     # ELU(0) = 0
     # ELU(1) = 1
-    assert_almost_equal(y._data.bitcast[Float32]()[0], Float32(-0.632), tolerance=0.01)
-    assert_almost_equal(y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5)
-    assert_almost_equal(y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5)
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[0], Float32(-0.632), tolerance=0.01
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        y._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5
+    )
 
 
 fn test_elu_backward() raises:
     """Test ELU gradient with numerical validation."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -1064,7 +1173,7 @@ fn test_integration_forward_backward() raises:
     - Loss gradient flows back through the network.
     """
     # Input data
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
@@ -1077,9 +1186,15 @@ fn test_integration_forward_backward() raises:
 
     # Check forward pass values
     # After ReLU: [0, 0.5, 2.0]
-    assert_almost_equal(relu_out._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.001)
-    assert_almost_equal(relu_out._data.bitcast[Float32]()[1], Float32(0.5), tolerance=0.001)
-    assert_almost_equal(relu_out._data.bitcast[Float32]()[2], Float32(2.0), tolerance=0.001)
+    assert_almost_equal(
+        relu_out._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.001
+    )
+    assert_almost_equal(
+        relu_out._data.bitcast[Float32]()[1], Float32(0.5), tolerance=0.001
+    )
+    assert_almost_equal(
+        relu_out._data.bitcast[Float32]()[2], Float32(2.0), tolerance=0.001
+    )
 
     # After Sigmoid: [0.5, sigmoid(0.5), sigmoid(2.0)]
     var sig_0_5 = sigmoid_out._data.bitcast[Float32]()[1]
@@ -1096,7 +1211,9 @@ fn test_integration_forward_backward() raises:
 
     # Check backward pass values
     # Gradient through ReLU should be 0 at x=-1 (negative input)
-    assert_almost_equal(grad_x._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.001)
+    assert_almost_equal(
+        grad_x._data.bitcast[Float32]()[0], Float32(0.0), tolerance=0.001
+    )
 
     # Gradients at positive inputs should be non-zero
     assert_true(grad_x._data.bitcast[Float32]()[1] > 0.0)

@@ -25,7 +25,7 @@ fn relu_simd(mut tensor: Tensor):
     vectorize[simd_width, vectorized_relu](tensor.size())
 
 
-fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
+fn matmul_simd(a: Tensor, b: Tensor) -> Tensor:
     """Matrix multiplication using SIMD."""
     var result = Tensor.zeros(a.shape()[0], b.shape()[1], DType.float32)
 
@@ -33,6 +33,7 @@ fn matmul_simd(borrowed a: Tensor, borrowed b: Tensor) -> Tensor:
 
     for i in range(a.shape()[0]):
         for j in range(b.shape()[1]):
+
             @parameter
             fn dot_product[width: Int](k: Int):
                 var a_vec = a.data.simd_load[width](i * a.shape()[1] + k)

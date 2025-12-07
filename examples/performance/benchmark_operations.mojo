@@ -31,7 +31,7 @@ from shared.core import ExTensor, ones, relu, zeros
 
 fn benchmark_relu_activation_small() raises -> None:
     """Benchmark ReLU activation on small tensor."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(32)
     input_shape.append(128)
     var input_tensor = ones(input_shape, DType.float32)
@@ -41,7 +41,7 @@ fn benchmark_relu_activation_small() raises -> None:
 
 fn benchmark_relu_activation_medium() raises -> None:
     """Benchmark ReLU activation on medium tensor."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(64)
     input_shape.append(512)
     var input_tensor = ones(input_shape, DType.float32)
@@ -51,7 +51,7 @@ fn benchmark_relu_activation_medium() raises -> None:
 
 fn benchmark_relu_activation_large() raises -> None:
     """Benchmark ReLU activation on large tensor."""
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(128)
     input_shape.append(1024)
     var input_tensor = ones(input_shape, DType.float32)
@@ -61,7 +61,7 @@ fn benchmark_relu_activation_large() raises -> None:
 
 fn benchmark_tensor_zeros_small() raises -> None:
     """Benchmark tensor creation (small)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(32)
     shape.append(128)
     _ = zeros(shape, DType.float32)
@@ -69,7 +69,7 @@ fn benchmark_tensor_zeros_small() raises -> None:
 
 fn benchmark_tensor_zeros_medium() raises -> None:
     """Benchmark tensor creation (medium)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(64)
     shape.append(512)
     _ = zeros(shape, DType.float32)
@@ -77,7 +77,7 @@ fn benchmark_tensor_zeros_medium() raises -> None:
 
 fn benchmark_tensor_zeros_large() raises -> None:
     """Benchmark tensor creation (large)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(128)
     shape.append(1024)
     _ = zeros(shape, DType.float32)
@@ -85,7 +85,7 @@ fn benchmark_tensor_zeros_large() raises -> None:
 
 fn benchmark_tensor_ones_small() raises -> None:
     """Benchmark tensor creation with ones (small)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(32)
     shape.append(128)
     _ = ones(shape, DType.float32)
@@ -93,7 +93,7 @@ fn benchmark_tensor_ones_small() raises -> None:
 
 fn benchmark_tensor_ones_medium() raises -> None:
     """Benchmark tensor creation with ones (medium)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(64)
     shape.append(512)
     _ = ones(shape, DType.float32)
@@ -101,7 +101,7 @@ fn benchmark_tensor_ones_medium() raises -> None:
 
 fn benchmark_tensor_ones_large() raises -> None:
     """Benchmark tensor creation with ones (large)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(128)
     shape.append(1024)
     _ = ones(shape, DType.float32)
@@ -133,12 +133,12 @@ fn print_operation_comparison(
     print("")
 
     # Create results list for summary
-    var results = List[BenchmarkResult]()
+    var results: List[BenchmarkResult] = []
     results.append(small_result)
     results.append(medium_result)
     results.append(large_result)
 
-    var names = List[String]()
+    var names= List[String]()
     names.append("Small")
     names.append("Medium")
     names.append("Large")
@@ -187,7 +187,9 @@ fn main() raises:
         measure_iters=100,
     )
 
-    print_operation_comparison("ReLU Activation", relu_small, relu_medium, relu_large)
+    print_operation_comparison(
+        "ReLU Activation", relu_small, relu_medium, relu_large
+    )
 
     # =========================================================================
     # Benchmark Tensor Creation with zeros()
@@ -246,7 +248,9 @@ fn main() raises:
         measure_iters=100,
     )
 
-    print_operation_comparison("Tensor Creation (ones)", ones_small, ones_medium, ones_large)
+    print_operation_comparison(
+        "Tensor Creation (ones)", ones_small, ones_medium, ones_large
+    )
 
     print("=" * 70)
     print("Operations benchmarking complete!")

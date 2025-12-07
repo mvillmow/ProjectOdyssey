@@ -11,7 +11,7 @@ from shared.training.mixed_precision import (
     update_model_from_master,
     check_gradients_finite,
     clip_gradients_by_norm,
-    clip_gradients_by_value
+    clip_gradients_by_value,
 )
 from shared.core.numerical_safety import has_nan, has_inf
 from testing import assert_equal, assert_true, assert_false
@@ -24,9 +24,15 @@ fn test_gradient_scaler_initialization() raises:
     var scaler = GradientScaler()
 
     assert_equal(scaler.scale, 65536.0, "Default scale should be 65536.0")
-    assert_equal(scaler.growth_factor, 2.0, "Default growth factor should be 2.0")
-    assert_equal(scaler.backoff_factor, 0.5, "Default backoff factor should be 0.5")
-    assert_equal(scaler.growth_interval, 2000, "Default growth interval should be 2000")
+    assert_equal(
+        scaler.growth_factor, 2.0, "Default growth factor should be 2.0"
+    )
+    assert_equal(
+        scaler.backoff_factor, 0.5, "Default backoff factor should be 0.5"
+    )
+    assert_equal(
+        scaler.growth_interval, 2000, "Default growth interval should be 2000"
+    )
     assert_equal(scaler.get_num_steps(), 0, "Initial steps should be 0")
 
     print("✓ GradientScaler initialization test passed")
@@ -75,21 +81,25 @@ fn test_scaler_step_updates() raises:
     print("Testing scaler step updates...")
 
     var scaler = GradientScaler(
-        initial_scale=1024.0,
-        growth_factor=2.0,
-        growth_interval=100
+        initial_scale=1024.0, growth_factor=2.0, growth_interval=100
     )
 
     # Take 99 steps (not enough to trigger growth)
     for i in range(99):
         scaler.step()
 
-    assert_equal(scaler.get_scale(), 1024.0, "Scale should not increase before growth interval")
+    assert_equal(
+        scaler.get_scale(),
+        1024.0,
+        "Scale should not increase before growth interval",
+    )
 
     # Take one more step (100 total - should trigger growth)
     scaler.step()
 
-    assert_equal(scaler.get_scale(), 2048.0, "Scale should double after growth interval")
+    assert_equal(
+        scaler.get_scale(), 2048.0, "Scale should double after growth interval"
+    )
 
     print("✓ Scaler step updates test passed")
 
@@ -98,15 +108,14 @@ fn test_scaler_backoff() raises:
     """Test scaler backoff reduces scale factor."""
     print("Testing scaler backoff...")
 
-    var scaler = GradientScaler(
-        initial_scale=1024.0,
-        backoff_factor=0.5
-    )
+    var scaler = GradientScaler(initial_scale=1024.0, backoff_factor=0.5)
 
     # Trigger backoff
     scaler.backoff()
 
-    assert_equal(scaler.get_scale(), 512.0, "Scale should be halved after backoff")
+    assert_equal(
+        scaler.get_scale(), 512.0, "Scale should be halved after backoff"
+    )
 
     print("✓ Scaler backoff test passed")
 
@@ -119,7 +128,7 @@ fn test_scaler_min_max_limits() raises:
         initial_scale=1024.0,
         min_scale=512.0,
         max_scale=2048.0,
-        backoff_factor=0.5
+        backoff_factor=0.5,
     )
 
     # Try to backoff below min_scale
@@ -138,7 +147,7 @@ fn test_scaler_min_max_limits() raises:
         min_scale=512.0,
         max_scale=2048.0,
         growth_factor=2.0,
-        growth_interval=1
+        growth_interval=1,
     )
 
     scaler.step()  # Should grow to 3072, but capped at 2048
@@ -157,8 +166,12 @@ fn test_fp32_master_conversion() raises:
     # Convert to FP32 master weights
     var master_params = convert_to_fp32_master(fp16_params)
 
-    assert_true(master_params.dtype() == DType.float32, "Master params should be FP32")
-    assert_equal(master_params._numel, 100, "Master params should have same size")
+    assert_true(
+        master_params.dtype() == DType.float32, "Master params should be FP32"
+    )
+    assert_equal(
+        master_params._numel, 100, "Master params should have same size"
+    )
 
     var val = master_params._get_float64(0)
     assert_true(abs(val - 0.5) < 1e-5, "Master params should have same values")
@@ -190,7 +203,10 @@ fn test_check_gradients_finite() raises:
 
     # Create finite gradients (10 elements)
     var finite_grads = full(List[Int](10), 1.0, DType.float32)
-    assert_true(check_gradients_finite(finite_grads), "Finite gradients should return True")
+    assert_true(
+        check_gradients_finite(finite_grads),
+        "Finite gradients should return True",
+    )
 
     # TODO: Test with NaN/Inf gradients when we can create them
     # (Requires ability to set individual elements or create from values)
@@ -203,7 +219,7 @@ fn test_clip_gradients_by_value() raises:
     print("Testing gradient clipping by value...")
 
     # Create gradients with various values (5 elements)
-    var shape = List[Int](5)
+    var shape: List[Int] = [5]
     var grads = ExTensor(shape, DType.float32)
 
     # Set some values manually
@@ -231,7 +247,7 @@ fn test_clip_gradients_by_norm() raises:
     print("Testing gradient clipping by norm...")
 
     # Create gradients with known norm (3 elements)
-    var shape = List[Int](3)
+    var shape: List[Int] = [3]
     var grads = ExTensor(shape, DType.float32)
 
     # Set values: [3.0, 4.0, 0.0] -> norm = sqrt(9 + 16) = 5.0

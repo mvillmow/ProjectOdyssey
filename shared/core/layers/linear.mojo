@@ -52,13 +52,10 @@ struct Linear(Copyable, Movable):
         self.out_features = out_features
 
         # Initialize weights with randn (standard normal distribution)
-        self.weight = randn(
-            List[Int](in_features, out_features),
-            DType.float32
-        )
+        self.weight = randn([in_features, out_features], DType.float32)
 
         # Initialize bias to zeros
-        self.bias = zeros(List[Int](out_features), DType.float32)
+        self.bias = zeros([out_features], DType.float32)
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
         """Forward pass: y = xW + b.
@@ -78,7 +75,7 @@ struct Linear(Copyable, Movable):
         Example:
             ```mojo
             var layer = Linear(10, 5)
-            var input = ones(List[Int](4, 10), DType.float32)  # batch of 4 samples
+            var input = ones([4, 10], DType.float32)  # batch of 4 samples
             var output = layer.forward(input)  # Shape: [4, 5]
             ```
         """
@@ -109,7 +106,7 @@ struct Linear(Copyable, Movable):
             # params[0] is weight, params[1] is bias
             ```
         """
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
         # Create copies of weight and bias tensors
         var weight_copy = zeros_like(self.weight)
         var bias_copy = zeros_like(self.bias)

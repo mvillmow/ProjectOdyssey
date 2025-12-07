@@ -5,7 +5,16 @@ from_array, eye, linspace, and empty with various shapes and dtypes.
 """
 
 # Import ExTensor and creation operations
-from shared.core import ExTensor, zeros, ones, full, empty, arange, eye, linspace
+from shared.core import (
+    ExTensor,
+    zeros,
+    ones,
+    full,
+    empty,
+    arange,
+    eye,
+    linspace,
+)
 
 # Import test helpers
 from tests.shared.conftest import (
@@ -28,9 +37,10 @@ from tests.shared.conftest import (
 # Test zeros()
 # ============================================================================
 
+
 fn test_zeros_1d_float32() raises:
     """Test creating 1D tensor of zeros with float32."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
 
@@ -42,7 +52,7 @@ fn test_zeros_1d_float32() raises:
 
 fn test_zeros_2d_int64() raises:
     """Test creating 2D tensor of zeros with int64."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var t = zeros(shape, DType.int64)
@@ -55,7 +65,7 @@ fn test_zeros_2d_int64() raises:
 
 fn test_zeros_3d_float64() raises:
     """Test creating 3D tensor of zeros with float64."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -69,7 +79,7 @@ fn test_zeros_3d_float64() raises:
 
 fn test_zeros_empty_shape() raises:
     """Test creating 0D scalar tensor of zeros."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t = zeros(shape, DType.float32)
 
     assert_dim(t, 0, "zeros 0D should have 0 dimensions")
@@ -80,7 +90,7 @@ fn test_zeros_empty_shape() raises:
 
 fn test_zeros_large_shape() raises:
     """Test creating zeros with very large shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10000)
     var t = zeros(shape, DType.float32)
 
@@ -95,9 +105,10 @@ fn test_zeros_large_shape() raises:
 # Test ones()
 # ============================================================================
 
+
 fn test_ones_1d_float32() raises:
     """Test creating 1D tensor of ones with float32."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = ones(shape, DType.float32)
 
@@ -109,7 +120,7 @@ fn test_ones_1d_float32() raises:
 
 fn test_ones_2d_int32() raises:
     """Test creating 2D tensor of ones with int32."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var t = ones(shape, DType.int32)
@@ -122,7 +133,7 @@ fn test_ones_2d_int32() raises:
 
 fn test_ones_3d_float64() raises:
     """Test creating 3D tensor of ones with float64."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -138,9 +149,10 @@ fn test_ones_3d_float64() raises:
 # Test full()
 # ============================================================================
 
+
 fn test_full_positive_value() raises:
     """Test creating tensor filled with positive value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var t = full(shape, 5.5, DType.float32)
@@ -152,7 +164,7 @@ fn test_full_positive_value() raises:
 
 fn test_full_negative_value() raises:
     """Test creating tensor filled with negative value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var t = full(shape, -3.14, DType.float64)
 
@@ -163,7 +175,7 @@ fn test_full_negative_value() raises:
 
 fn test_full_zero_value() raises:
     """Test creating tensor filled with zero (should match zeros)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     shape.append(5)
     var t = full(shape, 0.0, DType.float32)
@@ -174,7 +186,7 @@ fn test_full_zero_value() raises:
 
 fn test_full_large_value() raises:
     """Test creating tensor filled with large value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(100)
     var t = full(shape, 999999.0, DType.float32)
 
@@ -186,9 +198,10 @@ fn test_full_large_value() raises:
 # Test empty()
 # ============================================================================
 
+
 fn test_empty_allocates_memory() raises:
     """Test that empty() allocates memory without initialization."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     shape.append(10)
     var t = empty(shape, DType.float32)
@@ -202,7 +215,7 @@ fn test_empty_allocates_memory() raises:
 
 fn test_empty_1d() raises:
     """Test creating empty 1D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(100)
     var t = empty(shape, DType.float64)
 
@@ -213,7 +226,7 @@ fn test_empty_1d() raises:
 
 fn test_empty_2d() raises:
     """Test creating empty 2D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(8)
     shape.append(8)
     var t = empty(shape, DType.int32)
@@ -227,6 +240,7 @@ fn test_empty_2d() raises:
 # Test arange()
 # ============================================================================
 
+
 fn test_arange_basic() raises:
     """Test arange with start, stop, step=1."""
     var t = arange(0.0, 10.0, 1.0, DType.float32)
@@ -237,7 +251,9 @@ fn test_arange_basic() raises:
 
     # Check values: [0, 1, 2, ..., 9]
     for i in range(10):
-        assert_value_at(t, i, Float64(i), 1e-6, "arange value at index " + String(i))
+        assert_value_at(
+            t, i, Float64(i), 1e-6, "arange value at index " + String(i)
+        )
 
 
 fn test_arange_step_2() raises:
@@ -290,6 +306,7 @@ fn test_arange_float() raises:
 # Test from_array()
 # ============================================================================
 
+
 fn test_from_array_1d() raises:
     """Test creating tensor from 1D array."""
     # TODO: Implement once from_array() is available
@@ -315,6 +332,7 @@ fn test_from_array_3d() raises:
 # Test eye()
 # ============================================================================
 
+
 fn test_eye_square() raises:
     """Test creating square identity matrix."""
     var t = eye(5, 5, 0, DType.float32)
@@ -328,9 +346,13 @@ fn test_eye_square() raises:
         for j in range(5):
             var flat_idx = i * 5 + j
             if i == j:
-                assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
+                assert_value_at(
+                    t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0"
+                )
             else:
-                assert_value_at(t, flat_idx, 0.0, 1e-8, "eye off-diagonal should be 0.0")
+                assert_value_at(
+                    t, flat_idx, 0.0, 1e-8, "eye off-diagonal should be 0.0"
+                )
 
 
 fn test_eye_rectangular() raises:
@@ -346,9 +368,13 @@ fn test_eye_rectangular() raises:
         for j in range(5):
             var flat_idx = i * 5 + j
             if i == j:
-                assert_value_at(t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0")
+                assert_value_at(
+                    t, flat_idx, 1.0, 1e-8, "eye diagonal should be 1.0"
+                )
             else:
-                assert_value_at(t, flat_idx, 0.0, 1e-8, "eye off-diagonal should be 0.0")
+                assert_value_at(
+                    t, flat_idx, 0.0, 1e-8, "eye off-diagonal should be 0.0"
+                )
 
 
 fn test_eye_offset_diagonal() raises:
@@ -362,6 +388,7 @@ fn test_eye_offset_diagonal() raises:
 # Test linspace()
 # ============================================================================
 
+
 fn test_linspace_basic() raises:
     """Test linspace with basic range."""
     var t = linspace(0.0, 10.0, 11, DType.float32)
@@ -372,7 +399,9 @@ fn test_linspace_basic() raises:
 
     # Check values: [0, 1, 2, ..., 10]
     for i in range(11):
-        assert_value_at(t, i, Float64(i), 1e-6, "linspace value at index " + String(i))
+        assert_value_at(
+            t, i, Float64(i), 1e-6, "linspace value at index " + String(i)
+        )
 
 
 fn test_linspace_negative_range() raises:
@@ -411,9 +440,10 @@ fn test_linspace_large_num() raises:
 # Test dtype support
 # ============================================================================
 
+
 fn test_creation_float16() raises:
     """Test creation operations with float16 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float16)
     assert_dtype(t, DType.float16, "zeros should support float16")
@@ -421,7 +451,7 @@ fn test_creation_float16() raises:
 
 fn test_creation_float32() raises:
     """Test creation operations with float32 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = ones(shape, DType.float32)
     assert_dtype(t, DType.float32, "ones should support float32")
@@ -429,7 +459,7 @@ fn test_creation_float32() raises:
 
 fn test_creation_float64() raises:
     """Test creation operations with float64 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = full(shape, 3.14, DType.float64)
     assert_dtype(t, DType.float64, "full should support float64")
@@ -437,7 +467,7 @@ fn test_creation_float64() raises:
 
 fn test_creation_int8() raises:
     """Test creation operations with int8 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.int8)
     assert_dtype(t, DType.int8, "zeros should support int8")
@@ -445,7 +475,7 @@ fn test_creation_int8() raises:
 
 fn test_creation_int32() raises:
     """Test creation operations with int32 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = ones(shape, DType.int32)
     assert_dtype(t, DType.int32, "ones should support int32")
@@ -453,7 +483,7 @@ fn test_creation_int32() raises:
 
 fn test_creation_uint8() raises:
     """Test creation operations with uint8 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = full(shape, 255.0, DType.uint8)
     assert_dtype(t, DType.uint8, "full should support uint8")
@@ -461,7 +491,7 @@ fn test_creation_uint8() raises:
 
 fn test_creation_bool() raises:
     """Test creation operations with bool dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.bool)
     assert_dtype(t, DType.bool, "zeros should support bool")
@@ -471,9 +501,10 @@ fn test_creation_bool() raises:
 # Test edge cases
 # ============================================================================
 
+
 fn test_creation_0d_scalar() raises:
     """Test creating 0D scalar tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     var t = zeros(shape, DType.float32)
 
     assert_dim(t, 0, "0D tensor should have 0 dimensions")
@@ -483,7 +514,7 @@ fn test_creation_0d_scalar() raises:
 
 fn test_creation_very_large_1d() raises:
     """Test creating very large 1D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1000000)
     var t = zeros(shape, DType.float32)
 
@@ -495,7 +526,7 @@ fn test_creation_very_large_1d() raises:
 
 fn test_creation_high_dimensional() raises:
     """Test creating tensor with many dimensions (e.g., 8D)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     for i in range(8):
         shape.append(2)
     var t = zeros(shape, DType.float32)
@@ -507,6 +538,7 @@ fn test_creation_high_dimensional() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all creation operation tests."""

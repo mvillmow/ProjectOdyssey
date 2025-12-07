@@ -29,7 +29,7 @@ from .extensor import ExTensor, zeros
 fn normalize_rgb(
     images: ExTensor,
     mean: Tuple[Float32, Float32, Float32],
-    std: Tuple[Float32, Float32, Float32]
+    std: Tuple[Float32, Float32, Float32],
 ) raises -> ExTensor:
     """Normalize RGB images with per-channel mean and standard deviation.
 
@@ -74,7 +74,10 @@ fn normalize_rgb(
     var num_cols = shape[3]
 
     if num_channels != 3:
-        raise Error("normalize_rgb requires 3 RGB channels, got: " + String(num_channels))
+        raise Error(
+            "normalize_rgb requires 3 RGB channels, got: "
+            + String(num_channels)
+        )
 
     # Create output tensor (float32)
     var normalized = zeros(shape, DType.float32)
@@ -95,17 +98,32 @@ fn normalize_rgb(
         for h in range(num_rows):
             for w in range(num_cols):
                 # R channel (c=0)
-                var idx_r = n * (num_channels * num_rows * num_cols) + 0 * (num_rows * num_cols) + h * num_cols + w
+                var idx_r = (
+                    n * (num_channels * num_rows * num_cols)
+                    + 0 * (num_rows * num_cols)
+                    + h * num_cols
+                    + w
+                )
                 var pixel_r = Float32(src_data[idx_r]) / 255.0
                 dst_data[idx_r] = (pixel_r - mean_r) / std_r
 
                 # G channel (c=1)
-                var idx_g = n * (num_channels * num_rows * num_cols) + 1 * (num_rows * num_cols) + h * num_cols + w
+                var idx_g = (
+                    n * (num_channels * num_rows * num_cols)
+                    + 1 * (num_rows * num_cols)
+                    + h * num_cols
+                    + w
+                )
                 var pixel_g = Float32(src_data[idx_g]) / 255.0
                 dst_data[idx_g] = (pixel_g - mean_g) / std_g
 
                 # B channel (c=2)
-                var idx_b = n * (num_channels * num_rows * num_cols) + 2 * (num_rows * num_cols) + h * num_cols + w
+                var idx_b = (
+                    n * (num_channels * num_rows * num_cols)
+                    + 2 * (num_rows * num_cols)
+                    + h * num_cols
+                    + w
+                )
                 var pixel_b = Float32(src_data[idx_b]) / 255.0
                 dst_data[idx_b] = (pixel_b - mean_b) / std_b
 

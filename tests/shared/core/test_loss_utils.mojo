@@ -41,7 +41,7 @@ from shared.core.loss_utils import (
 
 fn test_clip_predictions_within_range() raises:
     """Test clip_predictions with values already in safe range."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = full(shape, 0.5, DType.float32)
 
@@ -50,13 +50,17 @@ fn test_clip_predictions_within_range() raises:
     # All values should be in [1e-7, 1.0 - 1e-7]
     var clipped_data = clipped._data.bitcast[Float32]()
     for i in range(3):
-        assert_greater_or_equal(clipped_data[i], 1e-7, "Clipped value should be >= epsilon")
-        assert_less_or_equal(clipped_data[i], 1.0 - 1e-7, "Clipped value should be <= 1-epsilon")
+        assert_greater_or_equal(
+            clipped_data[i], 1e-7, "Clipped value should be >= epsilon"
+        )
+        assert_less_or_equal(
+            clipped_data[i], 1.0 - 1e-7, "Clipped value should be <= 1-epsilon"
+        )
 
 
 fn test_clip_predictions_zero_lower_bound() raises:
     """Test clip_predictions clips 0 to epsilon."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = zeros(shape, DType.float32)
 
@@ -68,7 +72,7 @@ fn test_clip_predictions_zero_lower_bound() raises:
 
 fn test_clip_predictions_one_upper_bound() raises:
     """Test clip_predictions clips 1 to 1 - epsilon."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = full(shape, 1.0, DType.float32)
 
@@ -80,7 +84,7 @@ fn test_clip_predictions_one_upper_bound() raises:
 
 fn test_clip_predictions_custom_epsilon() raises:
     """Test clip_predictions with custom epsilon value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var predictions = full(shape, 0.0, DType.float32)
 
@@ -88,7 +92,9 @@ fn test_clip_predictions_custom_epsilon() raises:
     var clipped = clip_predictions(predictions, epsilon=custom_epsilon)
 
     var clipped_data = clipped._data.bitcast[Float32]()
-    assert_almost_equal(Float64(clipped_data[0]), custom_epsilon, tolerance=1e-6)
+    assert_almost_equal(
+        Float64(clipped_data[0]), custom_epsilon, tolerance=1e-6
+    )
 
 
 # ============================================================================
@@ -98,20 +104,26 @@ fn test_clip_predictions_custom_epsilon() raises:
 
 fn test_create_epsilon_tensor_shape() raises:
     """Test create_epsilon_tensor returns correct shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var template = zeros(shape, DType.float32)
 
     var epsilon_tensor = create_epsilon_tensor(template, epsilon=1e-5)
 
-    assert_true(epsilon_tensor.shape() == template.shape(), "Epsilon tensor should match template shape")
-    assert_true(epsilon_tensor.numel() == template.numel(), "Epsilon tensor should have same numel as template")
+    assert_true(
+        epsilon_tensor.shape() == template.shape(),
+        "Epsilon tensor should match template shape",
+    )
+    assert_true(
+        epsilon_tensor.numel() == template.numel(),
+        "Epsilon tensor should have same numel as template",
+    )
 
 
 fn test_create_epsilon_tensor_values() raises:
     """Test create_epsilon_tensor fills with correct epsilon value."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var template = zeros(shape, DType.float32)
 
@@ -130,7 +142,7 @@ fn test_create_epsilon_tensor_values() raises:
 
 fn test_validate_tensor_shapes_matching() raises:
     """Test validate_tensor_shapes accepts matching shapes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -143,11 +155,11 @@ fn test_validate_tensor_shapes_matching() raises:
 
 fn test_validate_tensor_shapes_mismatch() raises:
     """Test validate_tensor_shapes raises on shape mismatch."""
-    var shape1 = List[Int]()
+    var shape1= List[Int]()
     shape1.append(2)
     shape1.append(3)
 
-    var shape2 = List[Int]()
+    var shape2= List[Int]()
     shape2.append(2)
     shape2.append(4)
 
@@ -170,7 +182,7 @@ fn test_validate_tensor_shapes_mismatch() raises:
 
 fn test_validate_tensor_dtypes_matching() raises:
     """Test validate_tensor_dtypes accepts matching dtypes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     var tensor1 = zeros(shape, DType.float32)
@@ -182,7 +194,7 @@ fn test_validate_tensor_dtypes_matching() raises:
 
 fn test_validate_tensor_dtypes_mismatch() raises:
     """Test validate_tensor_dtypes raises on dtype mismatch."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     var tensor1 = zeros(shape, DType.float32)
@@ -204,7 +216,7 @@ fn test_validate_tensor_dtypes_mismatch() raises:
 
 fn test_compute_one_minus_tensor_half() raises:
     """Test compute_one_minus_tensor with 0.5 gives 0.5."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = full(shape, 0.5, DType.float32)
 
@@ -216,7 +228,7 @@ fn test_compute_one_minus_tensor_half() raises:
 
 fn test_compute_one_minus_tensor_zero() raises:
     """Test compute_one_minus_tensor with 0.0 gives 1.0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = zeros(shape, DType.float32)
 
@@ -228,7 +240,7 @@ fn test_compute_one_minus_tensor_zero() raises:
 
 fn test_compute_one_minus_tensor_one() raises:
     """Test compute_one_minus_tensor with 1.0 gives 0.0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = full(shape, 1.0, DType.float32)
 
@@ -245,7 +257,7 @@ fn test_compute_one_minus_tensor_one() raises:
 
 fn test_compute_sign_tensor_positive() raises:
     """Test compute_sign_tensor with positive values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var tensor = full(shape, 5.0, DType.float32)
 
@@ -257,7 +269,7 @@ fn test_compute_sign_tensor_positive() raises:
 
 fn test_compute_sign_tensor_negative() raises:
     """Test compute_sign_tensor with negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var tensor = full(shape, -3.0, DType.float32)
 
@@ -269,7 +281,7 @@ fn test_compute_sign_tensor_negative() raises:
 
 fn test_compute_sign_tensor_zero() raises:
     """Test compute_sign_tensor with zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var tensor = zeros(shape, DType.float32)
 
@@ -286,7 +298,7 @@ fn test_compute_sign_tensor_zero() raises:
 
 fn test_blend_tensors_all_first() raises:
     """Test blend_tensors selects first tensor with all 1s mask."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
 
     var tensor1 = full(shape, 1.0, DType.float32)
@@ -301,7 +313,7 @@ fn test_blend_tensors_all_first() raises:
 
 fn test_blend_tensors_all_second() raises:
     """Test blend_tensors selects second tensor with all 0s mask."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
 
     var tensor1 = full(shape, 1.0, DType.float32)
@@ -316,7 +328,7 @@ fn test_blend_tensors_all_second() raises:
 
 fn test_blend_tensors_mixed() raises:
     """Test blend_tensors with mixed mask values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
 
     var tensor1 = full(shape, 10.0, DType.float32)
@@ -341,7 +353,7 @@ fn test_blend_tensors_mixed() raises:
 
 fn test_compute_difference_basic() raises:
     """Test compute_difference computes tensor1 - tensor2."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     var tensor1 = full(shape, 5.0, DType.float32)
@@ -355,10 +367,10 @@ fn test_compute_difference_basic() raises:
 
 fn test_compute_difference_shape_mismatch() raises:
     """Test compute_difference raises on shape mismatch."""
-    var shape1 = List[Int]()
+    var shape1= List[Int]()
     shape1.append(2)
 
-    var shape2 = List[Int]()
+    var shape2= List[Int]()
     shape2.append(3)
 
     var tensor1 = zeros(shape1, DType.float32)
@@ -380,7 +392,7 @@ fn test_compute_difference_shape_mismatch() raises:
 
 fn test_compute_product_basic() raises:
     """Test compute_product computes element-wise multiplication."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
 
     var tensor1 = full(shape, 3.0, DType.float32)
@@ -394,7 +406,7 @@ fn test_compute_product_basic() raises:
 
 fn test_compute_product_with_zero() raises:
     """Test compute_product with zero gives zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var tensor1 = full(shape, 5.0, DType.float32)
@@ -413,7 +425,7 @@ fn test_compute_product_with_zero() raises:
 
 fn test_compute_ratio_basic() raises:
     """Test compute_ratio computes numerator / denominator."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var numerator = full(shape, 6.0, DType.float32)
@@ -427,7 +439,7 @@ fn test_compute_ratio_basic() raises:
 
 fn test_compute_ratio_zero_denominator() raises:
     """Test compute_ratio prevents division by zero with epsilon."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
 
     var numerator = full(shape, 1.0, DType.float32)
@@ -437,7 +449,9 @@ fn test_compute_ratio_zero_denominator() raises:
 
     var result_data = result._data.bitcast[Float32]()
     # Should be 1.0 / 1e-5 = 100000, but check it's finite and positive
-    assert_greater_or_equal(result_data[0], 0.0, "Result should be non-negative")
+    assert_greater_or_equal(
+        result_data[0], 0.0, "Result should be non-negative"
+    )
 
 
 # ============================================================================
@@ -447,7 +461,7 @@ fn test_compute_ratio_zero_denominator() raises:
 
 fn test_negate_tensor_positive() raises:
     """Test negate_tensor negates positive values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = full(shape, 5.0, DType.float32)
 
@@ -459,7 +473,7 @@ fn test_negate_tensor_positive() raises:
 
 fn test_negate_tensor_negative() raises:
     """Test negate_tensor negates negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = full(shape, -3.0, DType.float32)
 
@@ -471,7 +485,7 @@ fn test_negate_tensor_negative() raises:
 
 fn test_negate_tensor_zero() raises:
     """Test negate_tensor with zero stays zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var tensor = zeros(shape, DType.float32)
 

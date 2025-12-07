@@ -37,7 +37,7 @@ fn rmsprop_step(
     epsilon: Float64 = 1e-8,
     weight_decay: Float64 = 0.0,
     momentum: Float64 = 0.0,
-    buf: Optional[ExTensor] = None
+    buf: Optional[ExTensor] = None,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Perform a single RMSprop optimization step - pure functional.
 
@@ -115,7 +115,7 @@ fn rmsprop_step(
     if buf:
         initialized_buf = buf.value()
     else:
-        initialized_buf = zeros(List[Int](0), DType.float32)
+        initialized_buf = zeros([0], DType.float32)
 
     var effective_gradients = gradients
 
@@ -171,7 +171,7 @@ fn rmsprop_step_simple(
     square_avg: ExTensor,
     learning_rate: Float64,
     alpha: Float64 = 0.99,
-    epsilon: Float64 = 1e-8
+    epsilon: Float64 = 1e-8,
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Simplified RMSprop step without weight decay, momentum, or timestep.
 
@@ -203,9 +203,16 @@ fn rmsprop_step_simple(
         ```
     """
     var (new_params, new_square_avg, _) = rmsprop_step(
-        params, gradients, square_avg, 1,  # t=1 (not used without momentum/wd)
-        learning_rate, alpha, epsilon,
-        weight_decay=0.0, momentum=0.0, buf=None
+        params,
+        gradients,
+        square_avg,
+        1,  # t=1 (not used without momentum/wd)
+        learning_rate,
+        alpha,
+        epsilon,
+        weight_decay=0.0,
+        momentum=0.0,
+        buf=None,
     )
 
     return (new_params, new_square_avg)

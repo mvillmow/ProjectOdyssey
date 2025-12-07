@@ -104,7 +104,7 @@ fn test_parallel_loader_deterministic_order():
     # var loader1 = ParallelLoader(
     #     dataset, batch_size=32, num_workers=4, shuffle=False
     # )
-    # var batches1 = List[Batch]()
+    # var batches1 : List[Batch] = []
     # for batch in loader1:
     #     batches1.append(batch)
     #
@@ -112,7 +112,7 @@ fn test_parallel_loader_deterministic_order():
     # var loader2 = ParallelLoader(
     #     dataset, batch_size=32, num_workers=4, shuffle=False
     # )
-    # var batches2 = List[Batch]()
+    # var batches2 : List[Batch] = []
     # for batch in loader2:
     #     batches2.append(batch)
     #

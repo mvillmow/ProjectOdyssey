@@ -48,19 +48,19 @@ fn test_linear_initialization() raises:
     var out_features = 128
 
     # Create input: (batch_size, in_features)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights: (out_features, in_features)
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
 
     # Create bias: (out_features,)
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -82,25 +82,25 @@ fn test_linear_output_shape() raises:
 
     Test case: batch=32, in_features=784, out_features=128
     Expected: output shape (32, 128).
-   """
+    """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
 
     # Create input: (batch_size, in_features)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights: (out_features, in_features)
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
 
     # Create bias: (out_features,)
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -126,7 +126,7 @@ fn test_linear_single_sample() raises:
     Expected output: [[1, 2]]
     """
     # Input: (1, 3)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(3)
     var input = ones(input_shape, DType.float32)
@@ -136,7 +136,7 @@ fn test_linear_single_sample() raises:
     input_data[2] = 3.0
 
     # Weights: (2, 3) - identity-like pattern
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(2)
     weights_shape.append(3)
     var weights = zeros(weights_shape, DType.float32)
@@ -145,7 +145,7 @@ fn test_linear_single_sample() raises:
     weights_data[4] = 1.0  # weights[1, 1] = 1.0
 
     # Bias: (2,) - all zeros
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(2)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -169,13 +169,13 @@ fn test_linear_with_bias() raises:
     Single sample: [1, 1] @ [[1, 0], [0, 1]]^T + [5, 10] = [6, 11]
     """
     # Input: (1, 2)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(2)
     var input = ones(input_shape, DType.float32)
 
     # Weights: (2, 2) - identity
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(2)
     weights_shape.append(2)
     var weights = zeros(weights_shape, DType.float32)
@@ -184,7 +184,7 @@ fn test_linear_with_bias() raises:
     weights_data[3] = 1.0  # weights[1, 1]
 
     # Bias: (2,) - [5, 10]
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(2)
     var bias = zeros(bias_shape, DType.float32)
     var bias_data = bias._data.bitcast[Float32]()
@@ -207,19 +207,19 @@ fn test_linear_no_bias_output_shape() raises:
 
     Test case: batch=32, in_features=784, out_features=128
     Expected: output shape (32, 128).
-   """
+    """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
 
     # Create input: (batch_size, in_features)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights: (out_features, in_features)
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
@@ -245,7 +245,7 @@ fn test_linear_no_bias_single_sample() raises:
     Expected output: [[1, 2]]
     """
     # Input: (1, 3)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(3)
     var input = ones(input_shape, DType.float32)
@@ -255,7 +255,7 @@ fn test_linear_no_bias_single_sample() raises:
     input_data[2] = 3.0
 
     # Weights: (2, 3) - identity-like pattern
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(2)
     weights_shape.append(3)
     var weights = zeros(weights_shape, DType.float32)
@@ -294,25 +294,25 @@ fn test_linear_backward_output_shape() raises:
         grad_input: (batch_size, in_features)
         grad_kernel: (out_features, in_features)
         grad_bias: (out_features,).
-   """
+    """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
 
     # Create grad_output: (batch_size, out_features)
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(batch_size)
     grad_output_shape.append(out_features)
     var grad_output = ones(grad_output_shape, DType.float32)
 
     # Create input: (batch_size, in_features)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights: (out_features, in_features)
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
@@ -349,7 +349,7 @@ fn test_linear_backward_single_sample() raises:
     grad_bias = sum(grad_output, axis=0) = [1, 1]
     """
     # Input: (1, 2)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(2)
     var input = ones(input_shape, DType.float32)
@@ -358,7 +358,7 @@ fn test_linear_backward_single_sample() raises:
     input_data[1] = 2.0
 
     # Weights: (2, 2) - identity
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(2)
     weights_shape.append(2)
     var weights = zeros(weights_shape, DType.float32)
@@ -367,7 +367,7 @@ fn test_linear_backward_single_sample() raises:
     weights_data[3] = 1.0  # weights[1, 1]
 
     # grad_output: (1, 2) = [1, 1]
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(2)
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -405,13 +405,13 @@ fn test_linear_backward_multiple_samples() raises:
     var out_features = 2
 
     # Input: (2, 2)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Weights: (2, 2) - identity
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = zeros(weights_shape, DType.float32)
@@ -420,7 +420,7 @@ fn test_linear_backward_multiple_samples() raises:
     weights_data[3] = 1.0  # weights[1, 1]
 
     # grad_output: (2, 2) = [[1, 1], [2, 2]]
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(batch_size)
     grad_output_shape.append(out_features)
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -450,25 +450,25 @@ fn test_linear_no_bias_backward_output_shape() raises:
     Expected gradients:
         grad_input: (batch_size, in_features)
         grad_kernel: (out_features, in_features).
-   """
+    """
     var batch_size = 32
     var in_features = 784
     var out_features = 128
 
     # Create grad_output: (batch_size, out_features)
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(batch_size)
     grad_output_shape.append(out_features)
     var grad_output = ones(grad_output_shape, DType.float32)
 
     # Create input: (batch_size, in_features)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights: (out_features, in_features)
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
@@ -499,7 +499,7 @@ fn test_linear_no_bias_backward_single_sample() raises:
     grad_kernel = grad_output^T @ x = [[1, 2], [1, 2]]
     """
     # Input: (1, 2)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(2)
     var input = ones(input_shape, DType.float32)
@@ -508,7 +508,7 @@ fn test_linear_no_bias_backward_single_sample() raises:
     input_data[1] = 2.0
 
     # Weights: (2, 2) - identity
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(2)
     weights_shape.append(2)
     var weights = zeros(weights_shape, DType.float32)
@@ -517,7 +517,7 @@ fn test_linear_no_bias_backward_single_sample() raises:
     weights_data[3] = 1.0  # weights[1, 1]
 
     # grad_output: (1, 2) = [1, 1]
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(2)
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -554,7 +554,7 @@ fn test_linear_batch_processing() raises:
     var out_features = 1
 
     # Input: (3, 2)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = zeros(input_shape, DType.float32)
@@ -567,7 +567,7 @@ fn test_linear_batch_processing() raises:
     input_data[5] = 3.0  # Sample 3: [3, 3]
 
     # Weights: (1, 2) = [[2, 3]]
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = zeros(weights_shape, DType.float32)
@@ -576,7 +576,7 @@ fn test_linear_batch_processing() raises:
     weights_data[1] = 3.0
 
     # Bias: (1,) = [1]
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = ones(bias_shape, DType.float32)
 
@@ -603,17 +603,17 @@ fn test_linear_forward_backward_consistency() raises:
     var out_features = 6
 
     # Create forward inputs
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
 
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -622,7 +622,7 @@ fn test_linear_forward_backward_consistency() raises:
     var output_shape = output.shape()
 
     # Create gradient with same shape as output
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(output_shape[0])
     grad_output_shape.append(output_shape[1])
     var grad_output = ones(grad_output_shape, DType.float32)
@@ -648,19 +648,19 @@ fn test_linear_large_dimensions() raises:
     var out_features = 512
 
     # Create input
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
 
     # Create weights
-    var weights_shape = List[Int]()
+    var weights_shape= List[Int]()
     weights_shape.append(out_features)
     weights_shape.append(in_features)
     var weights = ones(weights_shape, DType.float32)
 
     # Create bias
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -673,7 +673,7 @@ fn test_linear_large_dimensions() raises:
     assert_equal(out_shape[1], out_features)
 
     # Backward should also work
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(batch_size)
     grad_output_shape.append(out_features)
     var grad_output = ones(grad_output_shape, DType.float32)

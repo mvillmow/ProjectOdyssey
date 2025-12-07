@@ -131,10 +131,15 @@ struct ProfilingReport(Copyable, Movable):
         """Format report as human-readable string."""
         var result = String("Profiling Report\n")
         result += String("================\n")
-        result += String("Total Time: ") + String(self.total_time_ms) + String("ms\n")
+        result += (
+            String("Total Time: ") + String(self.total_time_ms) + String("ms\n")
+        )
         result += String("\nTiming Statistics:\n")
         result += String("------------------\n")
-        result += String("Function              | Total (ms) | Calls | Avg (ms)  | Min (ms)  | Max (ms)  | StdDev\n")
+        result += String(
+            "Function              | Total (ms) | Calls | Avg (ms)  | Min (ms) "
+            " | Max (ms)  | StdDev\n"
+        )
 
         # Add separator line
         var sep = String("")
@@ -160,16 +165,32 @@ struct ProfilingReport(Copyable, Movable):
 
         result += String("\nMemory Statistics:\n")
         result += String("------------------\n")
-        result += String("Start Allocated: ") + String(self.memory_start.allocated_mb()) + String(" MB\n")
-        result += String("End Allocated: ") + String(self.memory_end.allocated_mb()) + String(" MB\n")
-        result += String("Peak Memory: ") + String(self.memory_end.peak_mb()) + String(" MB\n")
+        result += (
+            String("Start Allocated: ")
+            + String(self.memory_start.allocated_mb())
+            + String(" MB\n")
+        )
+        result += (
+            String("End Allocated: ")
+            + String(self.memory_end.allocated_mb())
+            + String(" MB\n")
+        )
+        result += (
+            String("Peak Memory: ")
+            + String(self.memory_end.peak_mb())
+            + String(" MB\n")
+        )
 
         return result
 
     fn to_json(self) raises -> String:
         """Format report as JSON."""
-        var result = String('{\n')
-        result += String('  "total_time_ms": ') + String(self.total_time_ms) + String(",\n")
+        var result = String("{\n")
+        result += (
+            String('  "total_time_ms": ')
+            + String(self.total_time_ms)
+            + String(",\n")
+        )
         result += String('  "timing_stats": {\n')
 
         var first = True
@@ -179,21 +200,57 @@ struct ProfilingReport(Copyable, Movable):
             first = False
             # Access fields directly to avoid copy issues
             result += String('    "') + key + String('": {\n')
-            result += String('      "total_ms": ') + String(self.timing_stats[key].total_ms) + String(",\n")
-            result += String('      "call_count": ') + String(self.timing_stats[key].call_count) + String(",\n")
-            result += String('      "avg_ms": ') + String(self.timing_stats[key].avg_ms) + String(",\n")
-            result += String('      "min_ms": ') + String(self.timing_stats[key].min_ms) + String(",\n")
-            result += String('      "max_ms": ') + String(self.timing_stats[key].max_ms) + String(",\n")
-            result += String('      "std_dev": ') + String(self.timing_stats[key].std_dev) + String("\n")
-            result += String('    }')
+            result += (
+                String('      "total_ms": ')
+                + String(self.timing_stats[key].total_ms)
+                + String(",\n")
+            )
+            result += (
+                String('      "call_count": ')
+                + String(self.timing_stats[key].call_count)
+                + String(",\n")
+            )
+            result += (
+                String('      "avg_ms": ')
+                + String(self.timing_stats[key].avg_ms)
+                + String(",\n")
+            )
+            result += (
+                String('      "min_ms": ')
+                + String(self.timing_stats[key].min_ms)
+                + String(",\n")
+            )
+            result += (
+                String('      "max_ms": ')
+                + String(self.timing_stats[key].max_ms)
+                + String(",\n")
+            )
+            result += (
+                String('      "std_dev": ')
+                + String(self.timing_stats[key].std_dev)
+                + String("\n")
+            )
+            result += String("    }")
 
         result += String("\n  },\n")
         result += String('  "memory_stats": {\n')
-        result += String('    "start_allocated_mb": ') + String(self.memory_start.allocated_mb()) + String(",\n")
-        result += String('    "end_allocated_mb": ') + String(self.memory_end.allocated_mb()) + String(",\n")
-        result += String('    "peak_memory_mb": ') + String(self.memory_end.peak_mb()) + String("\n")
-        result += String('  }\n')
-        result += String('}')
+        result += (
+            String('    "start_allocated_mb": ')
+            + String(self.memory_start.allocated_mb())
+            + String(",\n")
+        )
+        result += (
+            String('    "end_allocated_mb": ')
+            + String(self.memory_end.allocated_mb())
+            + String(",\n")
+        )
+        result += (
+            String('    "peak_memory_mb": ')
+            + String(self.memory_end.peak_mb())
+            + String("\n")
+        )
+        result += String("  }\n")
+        result += String("}")
 
         return result
 
@@ -289,7 +346,7 @@ fn memory_usage() -> MemoryStats:
 
     Example:
         ```mojo
-        ar mem = memory_usage()
+        var mem = memory_usage()
         print("Allocated: " + String(mem.allocated_mb()) + "MB")
         print("Peak: " + String(mem.peak_mb()) + "MB")
         ```
@@ -322,7 +379,7 @@ fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
 
     Returns:
         Memory delta in bytes (positive = increase).
-   """
+    """
     return after.allocated_bytes - before.allocated_bytes
 
 
@@ -331,7 +388,9 @@ fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
 # ============================================================================
 
 
-fn profile_function(name: String, func_ptr: fn () raises -> None) raises -> TimingStats:
+fn profile_function(
+    name: String, func_ptr: fn () raises -> None
+) raises -> TimingStats:
     """Profile a function for execution time.
 
     Measures function execution time and returns statistics.
@@ -374,7 +433,7 @@ fn benchmark_function(
     Returns:
         Timing statistics with min, max, average, std dev.
     """
-    var times = List[Float32](capacity=iterations)
+    var times= List[Float32](capacity=iterations)
 
     for _ in range(iterations):
         var start = perf_counter_ns()
@@ -447,7 +506,7 @@ struct CallStack(Copyable, Movable):
     fn __init__(out self):
         """Create empty call stack."""
         self.root = CallStackEntry("root")
-        self.entries = List[CallStackEntry]()
+        self.entries: List[CallStackEntry] = []
         self.depth = 0
 
     fn push(mut self, name: String):
@@ -533,16 +592,24 @@ fn export_profiling_report(
         content = report.to_string()
     elif format == "csv":
         # CSV format: name,total_ms,calls,avg_ms,min_ms,max_ms,std_dev
-        var csv_content = String("function_name,total_ms,call_count,avg_ms,min_ms,max_ms,std_dev\n")
+        var csv_content = String(
+            "function_name,total_ms,call_count,avg_ms,min_ms,max_ms,std_dev\n"
+        )
         for key in report.timing_stats:
             # Access fields directly to avoid implicit copy
             csv_content += key + String(",")
-            csv_content += String(report.timing_stats[key].total_ms) + String(",")
-            csv_content += String(report.timing_stats[key].call_count) + String(",")
+            csv_content += String(report.timing_stats[key].total_ms) + String(
+                ","
+            )
+            csv_content += String(report.timing_stats[key].call_count) + String(
+                ","
+            )
             csv_content += String(report.timing_stats[key].avg_ms) + String(",")
             csv_content += String(report.timing_stats[key].min_ms) + String(",")
             csv_content += String(report.timing_stats[key].max_ms) + String(",")
-            csv_content += String(report.timing_stats[key].std_dev) + String("\n")
+            csv_content += String(report.timing_stats[key].std_dev) + String(
+                "\n"
+            )
         content = csv_content
     else:
         # Default to text format
@@ -573,7 +640,7 @@ fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
         Overhead as percentage of total time.
     """
     # Measure time spent on profiling operations themselves
-    var overhead_times = List[Float32](capacity=num_measurements)
+    var overhead_times= List[Float32](capacity=num_measurements)
 
     for _ in range(num_measurements):
         var start = perf_counter_ns()
@@ -629,9 +696,11 @@ fn compare_to_baseline(
 
     Returns:
         Tuple of (is_regression, percent_slower).
-   """
+    """
     # Calculate percent difference
-    var percent_slower = ((current.avg_ms - baseline.avg_time_ms) / baseline.avg_time_ms) * 100.0
+    var percent_slower = (
+        (current.avg_ms - baseline.avg_time_ms) / baseline.avg_time_ms
+    ) * 100.0
 
     # Check if it exceeds threshold
     var is_regression = percent_slower > baseline.threshold_percent
@@ -652,7 +721,7 @@ fn detect_performance_regression(
     Returns:
         List of functions with regressions.
     """
-    var regressions = List[String]()
+    var regressions= List[String]()
 
     # Check each current metric against baseline
     for key in current_metrics:
@@ -661,7 +730,9 @@ fn detect_performance_regression(
             var current_avg = current_metrics[key].avg_ms
             var baseline_avg = baseline_metrics[key].avg_time_ms
             var threshold = baseline_metrics[key].threshold_percent
-            var percent_slower = ((current_avg - baseline_avg) / baseline_avg) * 100.0
+            var percent_slower = (
+                (current_avg - baseline_avg) / baseline_avg
+            ) * 100.0
             var is_regression = percent_slower > threshold
             if is_regression:
                 regressions.append(key)

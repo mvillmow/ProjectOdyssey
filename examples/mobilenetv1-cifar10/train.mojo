@@ -94,12 +94,14 @@ fn train_epoch(
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_loss = Float32(0.0)
 
-    print("Epoch " + str(epoch + 1) + ": lr=" + str(learning_rate))
+    print("Epoch " + String(epoch + 1) + ": lr=" + String(learning_rate))
 
     # Placeholder training loop
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
-        var batch_pair = extract_batch_pair(train_images, train_labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            train_images, train_labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
 
@@ -118,7 +120,14 @@ fn train_epoch(
 
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
-            print("  Batch " + str(batch_idx + 1) + "/" + str(num_batches) + ", Loss: " + str(avg_loss))
+            print(
+                "  Batch "
+                + String(batch_idx + 1)
+                + "/"
+                + String(num_batches)
+                + ", Loss: "
+                + String(avg_loss)
+            )
 
     var avg_loss = total_loss / Float32(num_batches)
     return avg_loss
@@ -137,7 +146,9 @@ fn validate(
 
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
-        var batch_pair = extract_batch_pair(val_images, val_labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            val_images, val_labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]
@@ -176,19 +187,19 @@ fn main() raises:
     var weights_dir = "mobilenetv1_weights"
 
     print("Configuration:")
-    print("  Epochs: " + str(epochs))
-    print("  Batch size: " + str(batch_size))
-    print("  Initial learning rate: " + str(initial_lr))
-    print("  Momentum: " + str(momentum))
-    print("  Data directory: " + str(data_dir))
-    print("  Weights directory: " + str(weights_dir))
+    print("  Epochs: " + String(epochs))
+    print("  Batch size: " + String(batch_size))
+    print("  Initial learning rate: " + String(initial_lr))
+    print("  Momentum: " + String(momentum))
+    print("  Data directory: " + String(data_dir))
+    print("  Weights directory: " + String(weights_dir))
     print()
 
     print("Loading CIFAR-10 training set...")
     var train_data = load_cifar10_train(data_dir)
     var train_images = train_data[0]
     var train_labels = train_data[1]
-    print("  Training samples: " + str(train_images.shape()[0]))
+    print("  Training samples: " + String(train_images.shape()[0]))
     print()
 
     print("Initializing MobileNetV1 model...")
@@ -203,7 +214,9 @@ fn main() raises:
     print()
     print("NOTE: Full backward pass implementation would require ~2000 lines.")
     print("      This is a placeholder showing the structure.")
-    print("      For actual training, consider using automatic differentiation.")
+    print(
+        "      For actual training, consider using automatic differentiation."
+    )
     print()
 
     for epoch in range(epochs):
@@ -219,29 +232,41 @@ fn main() raises:
             epoch,
         )
 
-        print("Epoch " + str(epoch + 1) + "/" + str(epochs) + " - Loss: " + str(train_loss))
+        print(
+            "Epoch "
+            + String(epoch + 1)
+            + "/"
+            + String(epochs)
+            + " - Loss: "
+            + String(train_loss)
+        )
 
         if (epoch + 1) % 10 == 0:
-            var val_acc = validate(model, train_images, train_labels, batch_size)
-            print("  Validation Accuracy: " + str(val_acc) + "%")
+            var val_acc = validate(
+                model, train_images, train_labels, batch_size
+            )
+            print("  Validation Accuracy: " + String(val_acc) + "%")
 
         print()
 
     print("Training complete!")
     print()
 
-    print("Saving weights to " + str(weights_dir) + "/...")
+    print("Saving weights to " + String(weights_dir) + "/...")
     try:
         model.save_weights(weights_dir)
         print("  ✓ Weights saved successfully")
     except e:
-        print("  ✗ Failed to save weights: " + str(e))
+        print("  ✗ Failed to save weights: " + String(e))
 
     print()
     print("=" * 60)
     print("Training Summary")
     print("=" * 60)
-    print("Total epochs: " + str(epochs))
-    print("Final learning rate: " + str(compute_learning_rate(initial_lr, epochs - 1)))
-    print("Model saved to: " + str(weights_dir) + "/")
+    print("Total epochs: " + String(epochs))
+    print(
+        "Final learning rate: "
+        + String(compute_learning_rate(initial_lr, epochs - 1))
+    )
+    print("Model saved to: " + String(weights_dir) + "/")
     print("=" * 60)

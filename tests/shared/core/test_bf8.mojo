@@ -96,13 +96,17 @@ fn test_bf8_range_clamping() raises:
     # Test positive overflow
     var bf8_overflow = BF8.from_float32(100000.0)
     var result_overflow = bf8_overflow.to_float32()
-    assert_true(result_overflow <= 57344.0, "BF8 should clamp large positive values")
+    assert_true(
+        result_overflow <= 57344.0, "BF8 should clamp large positive values"
+    )
     assert_true(result_overflow > 50000.0, "BF8 max should be near 57344")
 
     # Test negative overflow
     var bf8_underflow = BF8.from_float32(-100000.0)
     var result_underflow = bf8_underflow.to_float32()
-    assert_true(result_underflow >= -57344.0, "BF8 should clamp large negative values")
+    assert_true(
+        result_underflow >= -57344.0, "BF8 should clamp large negative values"
+    )
     assert_true(result_underflow < -50000.0, "BF8 min should be near -57344")
 
 
@@ -138,13 +142,17 @@ fn test_bf8_special_values_inf() raises:
     var pos_inf = Float32(1.0) / Float32(0.0)
     var bf8_pos_inf = BF8.from_float32(pos_inf)
     var result_pos = bf8_pos_inf.to_float32()
-    assert_true(isinf(result_pos) and result_pos > 0, "BF8 should preserve +Inf")
+    assert_true(
+        isinf(result_pos) and result_pos > 0, "BF8 should preserve +Inf"
+    )
 
     # Negative infinity
     var neg_inf = Float32(-1.0) / Float32(0.0)
     var bf8_neg_inf = BF8.from_float32(neg_inf)
     var result_neg = bf8_neg_inf.to_float32()
-    assert_true(isinf(result_neg) and result_neg < 0, "BF8 should preserve -Inf")
+    assert_true(
+        isinf(result_neg) and result_neg < 0, "BF8 should preserve -Inf"
+    )
 
 
 fn test_bf8_equality() raises:
@@ -164,7 +172,7 @@ fn test_bf8_equality() raises:
 
 fn test_tensor_to_bf8() raises:
     """Test converting Float32 tensor to BF8."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -181,7 +189,9 @@ fn test_tensor_to_bf8() raises:
     var bf8_tensor = t.to_bf8()
 
     # Check dtype is uint8
-    assert_true(bf8_tensor.dtype() == DType.uint8, "BF8 tensor should have uint8 dtype")
+    assert_true(
+        bf8_tensor.dtype() == DType.uint8, "BF8 tensor should have uint8 dtype"
+    )
 
     # Check shape is preserved
     assert_shape_equal(bf8_tensor.shape(), t.shape())
@@ -196,7 +206,7 @@ fn test_tensor_to_bf8() raises:
 
 fn test_tensor_from_bf8() raises:
     """Test converting BF8 tensor back to Float32."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(2)
 
@@ -212,7 +222,10 @@ fn test_tensor_from_bf8() raises:
     var restored = bf8_tensor.from_bf8()
 
     # Check dtype is float32
-    assert_true(restored.dtype() == DType.float32, "Restored tensor should have float32 dtype")
+    assert_true(
+        restored.dtype() == DType.float32,
+        "Restored tensor should have float32 dtype",
+    )
 
     # Check shape is preserved
     assert_shape_equal(restored.shape(), original.shape())
@@ -220,30 +233,22 @@ fn test_tensor_from_bf8() raises:
     # Check values are approximately restored (with BF8 precision loss)
     # BF8 has less precision than FP8, so use larger tolerances
     assert_almost_equal(
-        restored._data.bitcast[Float32]()[0],
-        Float32(3.0),
-        tolerance=1.0
+        restored._data.bitcast[Float32]()[0], Float32(3.0), tolerance=1.0
     )
     assert_almost_equal(
-        restored._data.bitcast[Float32]()[1],
-        Float32(-1.5),
-        tolerance=0.5
+        restored._data.bitcast[Float32]()[1], Float32(-1.5), tolerance=0.5
     )
     assert_almost_equal(
-        restored._data.bitcast[Float32]()[2],
-        Float32(7.0),
-        tolerance=2.0
+        restored._data.bitcast[Float32]()[2], Float32(7.0), tolerance=2.0
     )
     assert_almost_equal(
-        restored._data.bitcast[Float32]()[3],
-        Float32(-10.0),
-        tolerance=3.0
+        restored._data.bitcast[Float32]()[3], Float32(-10.0), tolerance=3.0
     )
 
 
 fn test_tensor_bf8_roundtrip() raises:
     """Test round-trip conversion Float32 -> BF8 -> Float32."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     # Create tensor with various values
@@ -271,7 +276,7 @@ fn test_tensor_bf8_roundtrip() raises:
 
 fn test_tensor_to_bf8_requires_float() raises:
     """Test that to_bf8() requires floating-point tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     # Create int32 tensor
@@ -284,12 +289,14 @@ fn test_tensor_to_bf8_requires_float() raises:
     except:
         raised_error = True
 
-    assert_true(raised_error, "to_bf8() should raise error for non-float tensor")
+    assert_true(
+        raised_error, "to_bf8() should raise error for non-float tensor"
+    )
 
 
 fn test_tensor_from_bf8_requires_uint8() raises:
     """Test that from_bf8() requires uint8 tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
 
     # Create float32 tensor (not uint8)
@@ -302,7 +309,9 @@ fn test_tensor_from_bf8_requires_uint8() raises:
     except:
         raised_error = True
 
-    assert_true(raised_error, "from_bf8() should raise error for non-uint8 tensor")
+    assert_true(
+        raised_error, "from_bf8() should raise error for non-uint8 tensor"
+    )
 
 
 # ============================================================================

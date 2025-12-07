@@ -12,7 +12,10 @@ Usage:
     mojo train.mojo --paper lenet5 --experiment augmented
 """
 
-from shared.utils.config_loader import load_experiment_config, validate_experiment_config
+from shared.utils.config_loader import (
+    load_experiment_config,
+    validate_experiment_config,
+)
 from shared.utils.config import Config
 
 
@@ -73,7 +76,9 @@ fn create_trainer(config: Config) raises:
     print("Creating trainer from configuration...")
 
     # Example: Extract training configuration
-    var learning_rate = config.get_float("optimizer.learning_rate", default=0.001)
+    var learning_rate = config.get_float(
+        "optimizer.learning_rate", default=0.001
+    )
     var batch_size = config.get_int("training.batch_size", default=32)
     var epochs = config.get_int("training.epochs", default=10)
     var optimizer_name = config.get_string("optimizer.name", default="sgd")
@@ -132,7 +137,7 @@ fn main() raises:
         print("  Configuration is valid!")
     except e:
         print("  ERROR: Configuration validation failed!")
-        print("  ", str(e))
+        print("  ", String(e))
         return
 
     # Step 4: Create model from config

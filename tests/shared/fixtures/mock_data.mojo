@@ -289,7 +289,7 @@ struct MockRegressionDataset:
 
         # Add noise
         seed(item_seed + 1000)
-        var output = List[Float32](capacity=self.output_dim)
+        var output= List[Float32](capacity=self.output_dim)
         for _ in range(self.output_dim):
             var noise = Float32(randn()) * self.noise_scale
             output.append(input_mean + noise)
@@ -398,7 +398,7 @@ struct MockDataLoader:
         var start_idx = batch_index * self.batch_size
         var end_idx = min(start_idx + self.batch_size, self.num_samples)
 
-        var indices = List[Int](capacity=end_idx - start_idx)
+        var indices= List[Int](capacity=end_idx - start_idx)
         for i in range(start_idx, end_idx):
             indices.append(i)
 
@@ -480,7 +480,7 @@ fn create_mock_classification_batch(
         ```
     """
     var inputs = List[List[Float32]](capacity=batch_size)
-    var labels = List[Int](capacity=batch_size)
+    var labels= List[Int](capacity=batch_size)
 
     for i in range(batch_size):
         var input = create_random_tensor(

@@ -121,7 +121,9 @@ fn lars_step(
 
     # Apply trust ratio scaling to effective gradients
     # scaled_grad = trust_ratio * grad_eff (SIMD optimized)
-    var scaled_gradients = multiply_simd(trust_ratio_tensor, effective_gradients)
+    var scaled_gradients = multiply_simd(
+        trust_ratio_tensor, effective_gradients
+    )
 
     # Update velocity with momentum
     # velocity = momentum * velocity + scaled_grad (SIMD optimized)
@@ -140,7 +142,10 @@ fn lars_step(
 
 
 fn lars_step_simple(
-    params: ExTensor, gradients: ExTensor, velocity: ExTensor, learning_rate: Float64
+    params: ExTensor,
+    gradients: ExTensor,
+    velocity: ExTensor,
+    learning_rate: Float64,
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Simplified LARS step with default hyperparameters.
 
@@ -180,5 +185,5 @@ fn lars_step_simple(
         momentum=0.9,
         weight_decay=0.0001,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )

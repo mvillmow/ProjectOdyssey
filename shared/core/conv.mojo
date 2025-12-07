@@ -110,7 +110,7 @@ fn conv2d(
     var out_width = out_w
 
     # Create output tensor
-    var out_shape = List[Int]()
+    var out_shape= List[Int]()
     out_shape.append(batch)
     out_shape.append(out_channels)
     out_shape.append(out_height)
@@ -208,7 +208,7 @@ fn conv2d_no_bias(
     # Create zero bias
     var k_shape = kernel.shape()
     var out_channels = k_shape[0]
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_channels)
     var bias = zeros(bias_shape, x.dtype())
 
@@ -419,7 +419,7 @@ fn conv2d_backward(
                     grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
 
     # Compute grad_bias: sum over batch, height, width
-    var grad_bias_shape = List[Int]()
+    var grad_bias_shape= List[Int]()
     grad_bias_shape.append(out_channels)
     var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
 
@@ -556,7 +556,7 @@ fn depthwise_conv2d(
     var out_width = out_w
 
     # Create output tensor
-    var out_shape = List[Int]()
+    var out_shape= List[Int]()
     out_shape.append(batch)
     out_shape.append(channels)
     out_shape.append(out_height)
@@ -639,7 +639,7 @@ fn depthwise_conv2d_no_bias(
     """
     var x_shape = x.shape()
     var channels = x_shape[1]
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(channels)
     var bias = zeros(bias_shape, x.dtype())
 
@@ -799,7 +799,7 @@ fn depthwise_conv2d_backward(
                 grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
 
     # Compute grad_bias: sum over batch, height, width
-    var grad_bias_shape = List[Int]()
+    var grad_bias_shape= List[Int]()
     grad_bias_shape.append(channels)
     var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
 
@@ -946,7 +946,7 @@ fn depthwise_separable_conv2d_no_bias(
 
     Returns:
         Output tensor of shape (batch, out_channels, out_height, out_width).
-   """
+    """
     # Stage 1: Depthwise convolution
     var depthwise_output = depthwise_conv2d_no_bias(
         x, depthwise_kernel, stride, padding

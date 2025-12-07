@@ -35,12 +35,12 @@ Design Note:
     The optimizer updates Variable.data based on Variable.grad.
 """
 
-from ..core.extensor import ExTensor
-from ..core.arithmetic import subtract, multiply, divide, add
-from ..core.elementwise import sqrt
-from .variable import Variable
-from .tape import GradientTape
-from .functional import multiply_scalar, subtract_scalar, add_scalar
+from shared.core.extensor import ExTensor
+from shared.core.arithmetic import subtract, multiply, divide, add
+from shared.core.elementwise import sqrt
+from shared.autograd.variable import Variable
+from shared.autograd.tape import GradientTape
+from shared.autograd.functional import multiply_scalar, subtract_scalar, add_scalar
 
 
 struct SGD:
@@ -68,7 +68,7 @@ struct SGD:
         # Training step
         optimizer.step(parameters)
         optimizer.zero_grad(parameters).
-   """
+    """
 
     var learning_rate: Float64
     var momentum: Float64
@@ -88,10 +88,10 @@ struct SGD:
         Examples:
             var opt = SGD(learning_rate=0.01)
             var opt_momentum = SGD(learning_rate=0.01, momentum=0.9).
-       """
+        """
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.velocities = List[ExTensor]()
+        self.velocities: List[ExTensor] = []
         self._initialized = False
 
     fn step(
@@ -124,10 +124,10 @@ struct SGD:
 
             # Update all parameters
             optimizer.step(model.parameters(), tape).
-       """
+        """
         # Initialize velocity buffers on first call if using momentum
         if self.momentum > 0.0 and not self._initialized:
-            self.velocities = List[ExTensor]()
+            self.velocities: List[ExTensor] = []
             for i in range(len(parameters)):
                 # Create zero-initialized velocity tensor matching parameter shape
                 var vel_shape = parameters[i].data.shape()
@@ -152,12 +152,16 @@ struct SGD:
 
             if self.momentum > 0.0:
                 # v_t = momentum * v_{t-1} + gradient
-                var momentum_term = multiply_scalar(self.velocities[vel_idx], self.momentum)
+                var momentum_term = multiply_scalar(
+                    self.velocities[vel_idx], self.momentum
+                )
                 var new_velocity = add(momentum_term, grad)
                 self.velocities[vel_idx] = new_velocity
 
                 # param = param - learning_rate * v_t
-                var scaled_update = multiply_scalar(self.velocities[vel_idx], self.learning_rate)
+                var scaled_update = multiply_scalar(
+                    self.velocities[vel_idx], self.learning_rate
+                )
                 var new_data = subtract(parameters[i].data, scaled_update)
                 parameters[i].data = new_data^
                 vel_idx += 1
@@ -179,7 +183,7 @@ struct SGD:
         Examples:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape).
-       """
+        """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -224,7 +228,7 @@ struct Adam:
         loss.backward(tape)
         optimizer.step(parameters, tape)
         optimizer.zero_grad(tape).
-   """
+    """
 
     var learning_rate: Float64
     var beta1: Float64
@@ -262,16 +266,16 @@ struct Adam:
             var opt = Adam()  # Use defaults
             var opt = Adam(learning_rate=0.002)
             var opt = Adam(learning_rate=0.001, weight_decay=1e-5).
-       """
+        """
         self.learning_rate = learning_rate
         self.beta1 = beta1
         self.beta2 = beta2
         self.epsilon = epsilon
         self.weight_decay = weight_decay
         self.t = 0
-        self.m_buffers = List[ExTensor]()
-        self.v_buffers = List[ExTensor]()
-        self.has_buffer = List[Bool]()
+        self.m_buffers: List[ExTensor] = []
+        self.v_buffers: List[ExTensor] = []
+        self.has_buffer: List[Bool] = []
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -308,7 +312,7 @@ struct Adam:
 
             # Update all parameters (multiple calls increment step counter)
             optimizer.step(model.parameters(), tape).
-       """
+        """
         # Increment step counter
         self.t += 1
         var t_float = Float64(self.t)
@@ -332,7 +336,7 @@ struct Adam:
 
             # Ensure buffer lists are large enough for this parameter ID
             while len(self.m_buffers) <= param_id:
-                var placeholder_shape = List[Int]()
+                var placeholder_shape= List[Int]()
                 placeholder_shape.append(1)
                 self.m_buffers.append(
                     ExTensor(placeholder_shape, DType.float32)
@@ -396,7 +400,7 @@ struct Adam:
             var v_hat_sqrt = ExTensor(v_hat.shape(), v_hat.dtype())
             for j in range(v_hat.numel()):
                 var v_val = v_hat._get_float64(j)
-                var sqrt_v = v_val ** 0.5
+                var sqrt_v = v_val**0.5
                 v_hat_sqrt._set_float64(j, sqrt_v)
 
             # Second: √v̂_t + ε
@@ -442,7 +446,7 @@ struct Adam:
         Examples:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape).
-       """
+        """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -471,7 +475,7 @@ struct AdaGrad:
         # Training step
         optimizer.step(parameters, tape)
         optimizer.zero_grad(tape).
-   """
+    """
 
     var learning_rate: Float64
     var epsilon: Float64
@@ -500,7 +504,7 @@ struct AdaGrad:
         Examples:
             var opt = AdaGrad(learning_rate=0.01)
             var opt_reg = AdaGrad(learning_rate=0.01, weight_decay=1e-4).
-       """
+        """
         self.learning_rate = learning_rate
         self.epsilon = epsilon
         self.weight_decay = weight_decay
@@ -534,7 +538,7 @@ struct AdaGrad:
 
             # Update all parameters with adaptive learning rates
             optimizer.step(model.parameters(), tape).
-       """
+        """
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
@@ -606,7 +610,7 @@ struct AdaGrad:
         Examples:
             # Clear gradients before next iteration
             optimizer.zero_grad(tape).
-       """
+        """
         # Clear the gradient registry
         tape.registry.clear()
 
@@ -619,7 +623,7 @@ struct AdaGrad:
         Examples:
             # Clear accumulators before new training phase
             optimizer.reset_accumulators().
-       """
+        """
         self.G_buffers.clear()
 
 
@@ -657,7 +661,7 @@ struct RMSprop:
         # Training step
         optimizer.step(parameters, tape)
         optimizer.zero_grad(tape).
-   """
+    """
 
     var learning_rate: Float64
     var alpha: Float64
@@ -691,15 +695,15 @@ struct RMSprop:
             var opt = RMSprop(0.01, alpha=0.999)
             var opt = RMSprop(0.01, momentum=0.9)
             var opt = RMSprop(0.01, weight_decay=1e-4).
-       """
+        """
         self.learning_rate = learning_rate
         self.alpha = alpha
         self.epsilon = epsilon
         self.weight_decay = weight_decay
         self.momentum = momentum
-        self.v_buffers = List[ExTensor]()
-        self.m_buffers = List[ExTensor]()
-        self.has_buffer = List[Bool]()
+        self.v_buffers: List[ExTensor] = []
+        self.m_buffers: List[ExTensor] = []
+        self.has_buffer: List[Bool] = []
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -728,7 +732,7 @@ struct RMSprop:
 
             # Ensure buffer lists are large enough for this parameter ID
             while len(self.v_buffers) <= param_id:
-                var placeholder_shape = List[Int]()
+                var placeholder_shape= List[Int]()
                 placeholder_shape.append(1)
                 self.v_buffers.append(
                     ExTensor(placeholder_shape, DType.float32)
@@ -768,7 +772,10 @@ struct RMSprop:
             for j in range(grad.numel()):
                 var v_prev = v._get_float64(j)
                 var grad_val = working_grad._get_float64(j)
-                var v_val = self.alpha * v_prev + (1.0 - self.alpha) * grad_val * grad_val
+                var v_val = (
+                    self.alpha * v_prev
+                    + (1.0 - self.alpha) * grad_val * grad_val
+                )
                 v_new._set_float64(j, v_val)
             self.v_buffers[param_id] = v_new^
 
@@ -776,11 +783,13 @@ struct RMSprop:
             var v_updated = self.v_buffers[param_id]
 
             # Compute adaptive learning rate
-            var adaptive_grad = ExTensor(working_grad.shape(), working_grad.dtype())
+            var adaptive_grad = ExTensor(
+                working_grad.shape(), working_grad.dtype()
+            )
             for j in range(working_grad.numel()):
                 var g = working_grad._get_float64(j)
                 var v_val = v_updated._get_float64(j)
-                var denom = (v_val ** 0.5) + self.epsilon
+                var denom = (v_val**0.5) + self.epsilon
                 adaptive_grad._set_float64(j, g / denom)
 
             # Apply learning rate

@@ -45,13 +45,13 @@ fn test_linear_initialization() raises:
     var out_features = 5
 
     # Weights shape: (out_features, in_features) = (5, 10)
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
 
     # Bias shape: (out_features,) = (5,)
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -80,7 +80,7 @@ fn test_linear_forward() raises:
     var batch_size = 2
 
     # Weights: (5, 10) filled with 0.1
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
@@ -90,12 +90,12 @@ fn test_linear_forward() raises:
             weights._data.bitcast[Float32]()[i * in_features + j] = 0.1
 
     # Bias: (5,) filled with 0.0
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
     # Input: (2, 10) filled with 1.0
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -110,7 +110,9 @@ fn test_linear_forward() raises:
 
     # Check output values: sum of weights = 10 * 0.1 = 1.0
     var expected_value = Float32(10.0 * 0.1)
-    assert_almost_equal(output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5)
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5
+    )
 
 
 fn test_linear_no_bias() raises:
@@ -126,7 +128,7 @@ fn test_linear_no_bias() raises:
     var out_features = 5
 
     # Weights: (5, 10) filled with 0.5
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
@@ -134,7 +136,7 @@ fn test_linear_no_bias() raises:
         weights._data.bitcast[Float32]()[i] = 0.5
 
     # Input: (1, 10) filled with 1.0
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -149,7 +151,9 @@ fn test_linear_no_bias() raises:
 
     # Check output values: sum = 10 * 0.5 = 5.0 (no bias added)
     var expected_value = Float32(10.0 * 0.5)
-    assert_almost_equal(output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5)
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[0], expected_value, tolerance=1e-5
+    )
 
 
 fn test_linear_backward() raises:
@@ -178,7 +182,7 @@ fn test_conv2d_initialization() raises:
             padding: Int = 0,
             bias: Bool = True
         ).
-   """
+    """
     # TODO(#1538): Implement when Conv2D is available
     # var layer = Conv2D(
     #     in_channels=3,
@@ -202,7 +206,7 @@ fn test_conv2d_output_shape() raises:
         layer.forward(input: Tensor) -> Tensor
         - Input: (batch, in_channels, height, width)
         - Output: (batch, out_channels, out_height, out_width).
-   """
+    """
     # TODO(#1538): Implement when Conv2D is available
     # # Input: (batch=1, channels=3, height=32, width=32)
     # # Conv2D: out_channels=16, kernel=3, stride=1, padding=1
@@ -262,9 +266,9 @@ fn test_relu_activation() raises:
     Functional API:
         relu(x) -> output
         - For each element: output = max(0, input).
-   """
+    """
     # Test with known values: [-2.0, -1.0, 0.0, 1.0, 2.0]
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -2.0
@@ -300,9 +304,9 @@ fn test_sigmoid_range() raises:
         sigmoid(x) -> output
         - For each element: output = 1 / (1 + exp(-input))
         - Output range: (0, 1).
-   """
+    """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -10.0
@@ -331,9 +335,9 @@ fn test_tanh_range() raises:
         tanh(x) -> output
         - For each element: output = (exp(x) - exp(-x)) / (exp(x) + exp(-x))
         - Output range: (-1, 1).
-   """
+    """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -10.0
@@ -366,7 +370,7 @@ fn test_maxpool2d_downsampling() raises:
     API Contract:
         MaxPool2D(kernel_size: Int, stride: Int = None, padding: Int = 0)
         - Reduces spatial dimensions by kernel_size (if stride=kernel_size).
-   """
+    """
     # TODO(#1538): Implement when MaxPool2D is available
     # # Input: (1, 16, 32, 32)
     # # MaxPool2D: kernel=2, stride=2
@@ -418,32 +422,34 @@ fn test_layer_property_batch_independence() raises:
     var batch_size = 2
 
     # Create weights and bias
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
     for i in range(out_features * in_features):
         weights._data.bitcast[Float32]()[i] = 0.2
 
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
     # Create batch input: (2, 4)
-    var batch_input_shape = List[Int]()
+    var batch_input_shape= List[Int]()
     batch_input_shape.append(batch_size)
     batch_input_shape.append(in_features)
     var batch_input = ones(batch_input_shape, DType.float32)
     # Set different values for each batch element
     for i in range(in_features):
         batch_input._data.bitcast[Float32]()[i] = 1.0  # First batch element
-        batch_input._data.bitcast[Float32]()[in_features + i] = 2.0  # Second batch element
+        batch_input._data.bitcast[Float32]()[
+            in_features + i
+        ] = 2.0  # Second batch element
 
     # Process as batch
     var batch_output = linear(batch_input, weights, bias)
 
     # Process first element individually: (1, 4)
-    var single_input_shape = List[Int]()
+    var single_input_shape= List[Int]()
     single_input_shape.append(1)
     single_input_shape.append(in_features)
     var single_input_1 = ones(single_input_shape, DType.float32)
@@ -457,7 +463,7 @@ fn test_layer_property_batch_independence() raises:
         assert_almost_equal(
             batch_output._data.bitcast[Float32]()[i],
             single_output_1._data.bitcast[Float32]()[i],
-            tolerance=1e-5
+            tolerance=1e-5,
         )
 
 
@@ -472,21 +478,21 @@ fn test_layer_property_deterministic() raises:
     var out_features = 5
 
     # Create weights and bias
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
     for i in range(out_features * in_features):
         weights._data.bitcast[Float32]()[i] = Float32(i) * 0.01
 
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(out_features)
     var bias = ones(bias_shape, DType.float32)
     for i in range(out_features):
         bias._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
     # Create input
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -503,7 +509,7 @@ fn test_layer_property_deterministic() raises:
         assert_almost_equal(
             output1._data.bitcast[Float32]()[i],
             output2._data.bitcast[Float32]()[i],
-            tolerance=1e-9  # Should be exactly equal
+            tolerance=1e-9,  # Should be exactly equal
         )
 
 
@@ -550,7 +556,7 @@ fn test_linear_matches_pytorch() raises:
         ```
     """
     # Create input: (2, 4)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(4)
     var input = zeros(input_shape, DType.float32)
@@ -564,7 +570,7 @@ fn test_linear_matches_pytorch() raises:
     input._data.bitcast[Float32]()[7] = 8.0
 
     # Create weights: (3, 4)
-    var weight_shape = List[Int]()
+    var weight_shape= List[Int]()
     weight_shape.append(3)
     weight_shape.append(4)
     var weights = zeros(weight_shape, DType.float32)
@@ -582,7 +588,7 @@ fn test_linear_matches_pytorch() raises:
     weights._data.bitcast[Float32]()[11] = 1.2
 
     # Create bias: (3,)
-    var bias_shape = List[Int]()
+    var bias_shape= List[Int]()
     bias_shape.append(3)
     var bias = zeros(bias_shape, DType.float32)
     bias._data.bitcast[Float32]()[0] = 1.0
@@ -596,10 +602,16 @@ fn test_linear_matches_pytorch() raises:
     # Expected output: [[4.0, 9.0, 14.0], [8.0, 19.4, 30.8]]
     assert_almost_equal(output._data.bitcast[Float32]()[0], 4.0, tolerance=1e-5)
     assert_almost_equal(output._data.bitcast[Float32]()[1], 9.0, tolerance=1e-5)
-    assert_almost_equal(output._data.bitcast[Float32]()[2], 14.0, tolerance=1e-5)
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[2], 14.0, tolerance=1e-5
+    )
     assert_almost_equal(output._data.bitcast[Float32]()[3], 8.0, tolerance=1e-5)
-    assert_almost_equal(output._data.bitcast[Float32]()[4], 19.4, tolerance=1e-5)
-    assert_almost_equal(output._data.bitcast[Float32]()[5], 30.8, tolerance=1e-5)
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[4], 19.4, tolerance=1e-5
+    )
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[5], 30.8, tolerance=1e-5
+    )
 
 
 fn test_relu_matches_pytorch() raises:
@@ -617,7 +629,7 @@ fn test_relu_matches_pytorch() raises:
         # Expected output: tensor([0.0, 0.0, 0.0, 0.0, 0.1, 1.5, 3.0])
         ```
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(7)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -3.0
@@ -656,7 +668,7 @@ fn test_sigmoid_matches_pytorch() raises:
         # tensor([0.1192, 0.2689, 0.5000, 0.7311, 0.8808])
         ```
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -2.0
@@ -668,11 +680,21 @@ fn test_sigmoid_matches_pytorch() raises:
     var output = sigmoid(input)
 
     # Validate against PyTorch reference values (6 decimal places)
-    assert_almost_equal(output._data.bitcast[Float32]()[0], 0.1192, tolerance=1e-4)
-    assert_almost_equal(output._data.bitcast[Float32]()[1], 0.2689, tolerance=1e-4)
-    assert_almost_equal(output._data.bitcast[Float32]()[2], 0.5000, tolerance=1e-4)
-    assert_almost_equal(output._data.bitcast[Float32]()[3], 0.7311, tolerance=1e-4)
-    assert_almost_equal(output._data.bitcast[Float32]()[4], 0.8808, tolerance=1e-4)
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[0], 0.1192, tolerance=1e-4
+    )
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[1], 0.2689, tolerance=1e-4
+    )
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[2], 0.5000, tolerance=1e-4
+    )
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[3], 0.7311, tolerance=1e-4
+    )
+    assert_almost_equal(
+        output._data.bitcast[Float32]()[4], 0.8808, tolerance=1e-4
+    )
 
 
 # ============================================================================

@@ -18,27 +18,32 @@ Output:
 
 from shared.core import ExTensor, zeros, ones
 from shared.core.arithmetic import add, subtract, multiply, divide
-from shared.core.arithmetic_simd import add_simd, subtract_simd, multiply_simd, divide_simd
+from shared.core.arithmetic_simd import (
+    add_simd,
+    subtract_simd,
+    multiply_simd,
+    divide_simd,
+)
 from time import now
 
 
 fn benchmark_operation(
     name: String,
     size: Int,
-    scalar_fn: fn(ExTensor, ExTensor) raises -> ExTensor,
-    simd_fn: fn(ExTensor, ExTensor) raises -> ExTensor,
+    scalar_fn: fn (ExTensor, ExTensor) raises -> ExTensor,
+    simd_fn: fn (ExTensor, ExTensor) raises -> ExTensor,
     dtype: DType,
-    iterations: Int = 100
+    iterations: Int = 100,
 ) raises:
     """Benchmark scalar vs SIMD implementation of an operation.
 
     Args:
-        name: Operation name (e.g., "add")
-        size: Tensor size (N x N square matrix)
-        scalar_fn: Scalar implementation
-        simd_fn: SIMD implementation
-        dtype: Data type to benchmark
-        iterations: Number of iterations for timing
+        name: Operation name (e.g., "add").
+        size: Tensor size (N x N square matrix).
+        scalar_fn: Scalar implementation.
+        simd_fn: SIMD implementation.
+        dtype: Data type to benchmark.
+        iterations: Number of iterations for timing.
     """
     # Create test tensors
     var shape = List[Int]()
@@ -57,7 +62,9 @@ fn benchmark_operation(
     for _ in range(iterations):
         _ = scalar_fn(a, b)
     var scalar_end = now()
-    var scalar_time = Float64(scalar_end - scalar_start) / 1e9  # Convert to seconds
+    var scalar_time = (
+        Float64(scalar_end - scalar_start) / 1e9
+    )  # Convert to seconds
 
     # Benchmark SIMD implementation
     var simd_start = now()
@@ -77,7 +84,7 @@ fn benchmark_operation(
         String(size).ljust(6) + "x" + String(size).ljust(6),
         String(scalar_time / Float64(iterations) * 1000).ljust(10) + "ms",
         String(simd_time / Float64(iterations) * 1000).ljust(10) + "ms",
-        String(speedup) + "x"
+        String(speedup) + "x",
     )
 
 
@@ -85,7 +92,7 @@ fn verify_correctness() raises -> Bool:
     """Verify SIMD produces same results as scalar (within tolerance).
 
     Returns:
-        True if all operations match within tolerance
+        True if all operations match within tolerance.
     """
     print("\n=== Verifying SIMD Correctness ===\n")
 
@@ -109,7 +116,12 @@ fn verify_correctness() raises -> Bool:
         if diff > add_diff:
             add_diff = diff
 
-    print("add:      max diff =", add_diff, "  ", "PASS ✓" if add_diff < tolerance else "FAIL ✗")
+    print(
+        "add:      max diff =",
+        add_diff,
+        "  ",
+        "PASS ✓" if add_diff < tolerance else "FAIL ✗",
+    )
 
     # Subtract
     var scalar_sub = subtract(a, b)
@@ -120,7 +132,12 @@ fn verify_correctness() raises -> Bool:
         if diff > sub_diff:
             sub_diff = diff
 
-    print("subtract: max diff =", sub_diff, "  ", "PASS ✓" if sub_diff < tolerance else "FAIL ✗")
+    print(
+        "subtract: max diff =",
+        sub_diff,
+        "  ",
+        "PASS ✓" if sub_diff < tolerance else "FAIL ✗",
+    )
 
     # Multiply
     var scalar_mul = multiply(a, b)
@@ -131,7 +148,12 @@ fn verify_correctness() raises -> Bool:
         if diff > mul_diff:
             mul_diff = diff
 
-    print("multiply: max diff =", mul_diff, "  ", "PASS ✓" if mul_diff < tolerance else "FAIL ✗")
+    print(
+        "multiply: max diff =",
+        mul_diff,
+        "  ",
+        "PASS ✓" if mul_diff < tolerance else "FAIL ✗",
+    )
 
     # Divide
     var scalar_div = divide(a, b)
@@ -142,16 +164,26 @@ fn verify_correctness() raises -> Bool:
         if diff > div_diff:
             div_diff = diff
 
-    print("divide:   max diff =", div_diff, "  ", "PASS ✓" if div_diff < tolerance else "FAIL ✗")
+    print(
+        "divide:   max diff =",
+        div_diff,
+        "  ",
+        "PASS ✓" if div_diff < tolerance else "FAIL ✗",
+    )
 
-    return add_diff < tolerance and sub_diff < tolerance and mul_diff < tolerance and div_diff < tolerance
+    return (
+        add_diff < tolerance
+        and sub_diff < tolerance
+        and mul_diff < tolerance
+        and div_diff < tolerance
+    )
 
 
 fn main() raises:
     """Run SIMD benchmarks."""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("SIMD Arithmetic Benchmarks")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     # Verify correctness first
     var correct = verify_correctness()
@@ -160,9 +192,9 @@ fn main() raises:
         return
 
     print("\n✅ SIMD correctness verified!\n")
-    print("="*80)
+    print("=" * 80)
     print("Performance Benchmarks")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     # Print header
     print(
@@ -171,7 +203,7 @@ fn main() raises:
         "Size".ljust(12),
         "Scalar".ljust(10),
         "SIMD".ljust(10),
-        "Speedup"
+        "Speedup",
     )
     print("-" * 80)
 
@@ -181,23 +213,31 @@ fn main() raises:
 
     # Float32 benchmarks
     for size in sizes:
-        benchmark_operation("add", size, add, add_simd, DType.float32, iterations)
+        benchmark_operation(
+            "add", size, add, add_simd, DType.float32, iterations
+        )
 
     for size in sizes:
-        benchmark_operation("multiply", size, multiply, multiply_simd, DType.float32, iterations)
+        benchmark_operation(
+            "multiply", size, multiply, multiply_simd, DType.float32, iterations
+        )
 
     # Float64 benchmarks
     print()
     for size in sizes:
-        benchmark_operation("add", size, add, add_simd, DType.float64, iterations)
+        benchmark_operation(
+            "add", size, add, add_simd, DType.float64, iterations
+        )
 
     for size in sizes:
-        benchmark_operation("multiply", size, multiply, multiply_simd, DType.float64, iterations)
+        benchmark_operation(
+            "multiply", size, multiply, multiply_simd, DType.float64, iterations
+        )
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("Summary:")
     print("  - Float32 operations show 3-5x speedup with SIMD")
     print("  - Float64 operations show 2-3x speedup with SIMD")
     print("  - Larger tensors benefit more from SIMD (better amortization)")
     print("  - All SIMD operations produce identical results to scalar")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")

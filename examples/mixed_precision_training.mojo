@@ -24,7 +24,7 @@ from shared.training.mixed_precision import (
     convert_to_fp32_master,
     update_model_from_master,
     check_gradients_finite,
-    clip_gradients_by_norm
+    clip_gradients_by_norm,
 )
 from shared.training.trainer_interface import TrainerConfig
 
@@ -34,18 +34,22 @@ fn simulate_forward_pass(params: ExTensor, input: ExTensor) raises -> ExTensor:
     return params * input
 
 
-fn simulate_backward_pass(output: ExTensor, target: ExTensor) raises -> ExTensor:
+fn simulate_backward_pass(
+    output: ExTensor, target: ExTensor
+) raises -> ExTensor:
     """Simulate backward pass: compute gradients."""
     # In real training, this would compute actual gradients
     # For demo, just return the error
     return output - target
 
 
-fn simple_optimizer_step(mut master_params: ExTensor,
-                         gradients: ExTensor,
-                         learning_rate: Float64) raises:
+fn simple_optimizer_step(
+    mut master_params: ExTensor, gradients: ExTensor, learning_rate: Float64
+) raises:
     """Simple SGD update: params = params - lr * grads."""
-    var lr_tensor = ExTensor.full(master_params.shape(), learning_rate, master_params.dtype())
+    var lr_tensor = ExTensor.full(
+        master_params.shape(), learning_rate, master_params.dtype()
+    )
     var update = gradients * lr_tensor
     master_params = master_params - update
 
@@ -80,12 +84,15 @@ fn main() raises:
     print("Initializing model parameters...")
     print("-" * 70)
 
-    var param_shape = List[Int]()
+    var param_shape= List[Int]()
 
     # Model parameters in FP16
     var model_params = ExTensor.full(param_shape, 1.0, model_dtype)
     print("  Model params shape: [100]")
-    print("  Model params dtype: " + ("float16" if model_dtype == DType.float16 else "float32"))
+    print(
+        "  Model params dtype: "
+        + ("float16" if model_dtype == DType.float16 else "float32")
+    )
 
     # Master weights in FP32 (for optimizer)
     var master_params = convert_to_fp32_master(model_params)
@@ -97,10 +104,10 @@ fn main() raises:
     # Initialize Gradient Scaler (for FP16 training)
     # ========================================================================
     var scaler = GradientScaler(
-        initial_scale=65536.0,      # Start with 2^16
-        growth_factor=2.0,          # Double scale on success
-        backoff_factor=0.5,         # Halve scale on overflow
-        growth_interval=2000        # Grow every 2000 successful steps
+        initial_scale=65536.0,  # Start with 2^16
+        growth_factor=2.0,  # Double scale on success
+        backoff_factor=0.5,  # Halve scale on overflow
+        growth_interval=2000,  # Grow every 2000 successful steps
     )
 
     if use_fp16:
@@ -145,7 +152,13 @@ fn main() raises:
         if use_fp16:
             scaled_loss = scaler.scale_loss(loss)
             var scaled_val = scaled_loss.item()
-            print("  Scaled Loss: " + String(scaled_val) + " (scale: " + String(scaler.get_scale()) + ")")
+            print(
+                "  Scaled Loss: "
+                + String(scaled_val)
+                + " (scale: "
+                + String(scaler.get_scale())
+                + ")"
+            )
 
         # ----------------------------------------------------------------
         # Backward Pass (compute gradients)
@@ -172,7 +185,9 @@ fn main() raises:
         # Clip Gradients (optional, for stability)
         # ----------------------------------------------------------------
         if gradient_clip_norm > 0.0:
-            gradients = clip_gradients_by_norm(gradients, Float32(gradient_clip_norm))
+            gradients = clip_gradients_by_norm(
+                gradients, Float32(gradient_clip_norm)
+            )
 
         # ----------------------------------------------------------------
         # Convert gradients to FP32 for optimizer

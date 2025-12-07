@@ -36,13 +36,13 @@ Examples:
     print(tape.get_grad(y.id))  # dLoss/dy
 """
 
-from ..core.extensor import ExTensor, ones_like, zeros_like
-from ..core.arithmetic import add, subtract, multiply, divide
-from ..core.reduction import sum as tensor_sum, mean as tensor_mean
-from ..core.matrix import matmul
-from ..core.activation import relu, sigmoid, tanh
+from shared.core.extensor import ExTensor, ones_like, zeros_like
+from shared.core.arithmetic import add, subtract, multiply, divide
+from shared.core.reduction import sum as tensor_sum, mean as tensor_mean
+from shared.core.matrix import matmul
+from shared.core.activation import relu, sigmoid, tanh
 
-from .tape import (
+from shared.autograd.tape import (
     GradientTape,
     SavedTensors,
     OP_ADD,
@@ -102,7 +102,7 @@ struct Variable(Copyable, Movable):
         Examples:
             var tape = GradientTape()
             var x = Variable(zeros(shape, dtype), True, tape).
-       """
+        """
         self.data = data^
         self.requires_grad = requires_grad
         self.id = tape.register_variable(requires_grad)
@@ -163,7 +163,6 @@ struct Variable(Copyable, Movable):
         # Initialize gradient of output to ones
         var grad = ones_like(self.data)
         tape.backward(self.id, grad^)
-
 
     fn detach(self) -> ExTensor:
         """Get the underlying tensor without gradient tracking.
@@ -232,7 +231,7 @@ fn variable_add(
 
     # Record operation for backward pass
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
 
@@ -242,9 +241,7 @@ fn variable_add(
         saved.add_tensor(b.data)
         tape.record(OP_ADD, input_ids^, result_id, saved^)
 
-    return Variable(
-        result_data^, a.requires_grad or b.requires_grad, result_id
-    )
+    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
 
 fn variable_subtract(
@@ -266,7 +263,7 @@ fn variable_subtract(
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
 
@@ -276,9 +273,7 @@ fn variable_subtract(
         saved.add_tensor(b.data)
         tape.record(OP_SUBTRACT, input_ids^, result_id, saved^)
 
-    return Variable(
-        result_data^, a.requires_grad or b.requires_grad, result_id
-    )
+    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
 
 fn variable_multiply(
@@ -300,7 +295,7 @@ fn variable_multiply(
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
 
@@ -310,9 +305,7 @@ fn variable_multiply(
         saved.add_tensor(b.data)
         tape.record(OP_MULTIPLY, input_ids^, result_id, saved^)
 
-    return Variable(
-        result_data^, a.requires_grad or b.requires_grad, result_id
-    )
+    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
 
 fn variable_divide(
@@ -334,7 +327,7 @@ fn variable_divide(
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
 
@@ -344,9 +337,7 @@ fn variable_divide(
         saved.add_tensor(b.data)
         tape.record(OP_DIVIDE, input_ids^, result_id, saved^)
 
-    return Variable(
-        result_data^, a.requires_grad or b.requires_grad, result_id
-    )
+    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
 
 fn variable_matmul(
@@ -368,7 +359,7 @@ fn variable_matmul(
     var result_id = tape.register_variable(a.requires_grad or b.requires_grad)
 
     if tape.enabled and (a.requires_grad or b.requires_grad):
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(a.id)
         input_ids.append(b.id)
 
@@ -378,9 +369,7 @@ fn variable_matmul(
         saved.add_tensor(b.data)
         tape.record(OP_MATMUL, input_ids^, result_id, saved^)
 
-    return Variable(
-        result_data^, a.requires_grad or b.requires_grad, result_id
-    )
+    return Variable(result_data^, a.requires_grad or b.requires_grad, result_id)
 
 
 fn variable_sum(
@@ -402,7 +391,7 @@ fn variable_sum(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
 
         # Save input tensor and axis for backward pass
@@ -433,7 +422,7 @@ fn variable_mean(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
 
         # Save input tensor and axis for backward pass
@@ -462,7 +451,7 @@ fn variable_relu(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
 
         # Save input for backward pass
@@ -490,7 +479,7 @@ fn variable_sigmoid(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
 
         # Save output for backward pass (sigmoid_backward uses output)
@@ -518,7 +507,7 @@ fn variable_tanh(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
 
         # Save output for backward pass (tanh_backward uses output)
@@ -551,7 +540,7 @@ fn variable_neg(
     var result_id = tape.register_variable(x.requires_grad)
 
     if tape.enabled and x.requires_grad:
-        var input_ids = List[Int]()
+        var input_ids= List[Int]()
         input_ids.append(x.id)
         var saved = SavedTensors()
         tape.record(OP_NEG, input_ids^, result_id, saved^)

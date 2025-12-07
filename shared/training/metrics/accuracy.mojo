@@ -66,7 +66,10 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
         # Predictions are already class indices (copy since we can't transfer from read-only ref)
         pred_classes = predictions
     else:
-        raise Error("top1_accuracy: predictions must be 1D (class indices) or 2D (logits)")
+        raise Error(
+            "top1_accuracy: predictions must be 1D (class indices) or 2D"
+            " (logits)"
+        )
 
     # Validate shapes
     if pred_classes._numel != labels._numel:
@@ -116,7 +119,7 @@ fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
         var batch_size = shape_vec[0]
         var num_classes = shape_vec[1]
 
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         result_shape.append(batch_size)
         var result = ExTensor(result_shape, DType.int32)
 
@@ -127,7 +130,9 @@ fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
 
             # Get first value
             if tensor._dtype == DType.float32:
-                max_val = Float64(tensor._data.bitcast[Float32]()[b * num_classes])
+                max_val = Float64(
+                    tensor._data.bitcast[Float32]()[b * num_classes]
+                )
             else:  # float64
                 max_val = tensor._data.bitcast[Float64]()[b * num_classes]
 
@@ -157,7 +162,9 @@ fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
 # ============================================================================
 
 
-fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> Float64:
+fn topk_accuracy(
+    predictions: ExTensor, labels: ExTensor, k: Int = 5
+) raises -> Float64:
     """Compute top-k accuracy for a single batch.
 
     Top-k accuracy is the fraction of samples where the true label appears.
@@ -223,7 +230,9 @@ fn topk_accuracy(predictions: ExTensor, labels: ExTensor, k: Int = 5) raises -> 
     return Float64(correct) / Float64(batch_size)
 
 
-fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> List[Int]:
+fn get_topk_indices(
+    predictions: ExTensor, batch_idx: Int, k: Int
+) raises -> List[Int]:
     """Get indices of top-k predictions for a single sample.
 
     Uses selection algorithm (not full sort) for efficiency.
@@ -241,8 +250,8 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
     var offset = batch_idx * num_classes
 
     # Create list of (value, index) pairs
-    var values = List[Float64]()
-    var indices = List[Int]()
+    var values: List[Float64] = []
+    var indices= List[Int]()
 
     for c in range(num_classes):
         var idx = offset + c
@@ -253,7 +262,7 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
         indices.append(c)
 
     # Simple selection: repeatedly find max and swap to front
-    var result = List[Int]()
+    var result= List[Int]()
 
     for i in range(k):
         # Find max in remaining elements
@@ -283,7 +292,9 @@ fn get_topk_indices(predictions: ExTensor, batch_idx: Int, k: Int) raises -> Lis
 # ============================================================================
 
 
-fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int) raises -> ExTensor:
+fn per_class_accuracy(
+    predictions: ExTensor, labels: ExTensor, num_classes: Int
+) raises -> ExTensor:
     """Compute accuracy for each class separately.
 
     Returns a tensor where each element is the accuracy for that class,
@@ -320,8 +331,8 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
         raise Error("per_class_accuracy: invalid predictions shape")
 
     # Count correct and total per class
-    var correct_counts = List[Int]()
-    var total_counts = List[Int]()
+    var correct_counts= List[Int]()
+    var total_counts= List[Int]()
 
     for c in range(num_classes):
         correct_counts.append(0)
@@ -349,7 +360,7 @@ fn per_class_accuracy(predictions: ExTensor, labels: ExTensor, num_classes: Int)
             correct_counts[label_val] += 1
 
     # Compute per-class accuracies
-    var result_shape = List[Int]()
+    var result_shape= List[Int]()
     result_shape.append(num_classes)
     var result = ExTensor(result_shape, DType.float64)
 
@@ -386,6 +397,7 @@ struct AccuracyMetric(Metric):
 
     Issue: #278-282 - Accuracy metrics.
     """
+
     var correct_count: Int
     var total_count: Int
 

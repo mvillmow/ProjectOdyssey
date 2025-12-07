@@ -62,10 +62,16 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
         var indices = argmax(t, axis=1)  # Shape: [3]
     """
     if axis < 0 or axis >= tensor.dim():
-        raise Error("argmax: axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
+        raise Error(
+            "argmax: axis "
+            + String(axis)
+            + " is out of bounds for tensor with "
+            + String(tensor.dim())
+            + " dimensions"
+        )
 
     # Build result shape
-    var result_shape = List[Int]()
+    var result_shape= List[Int]()
     for i in range(tensor.dim()):
         if i != axis:
             result_shape.append(tensor.shape()[i])
@@ -75,7 +81,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
     # Compute strides for indexing
     var input_shape = tensor.shape()
     var ndim = tensor.dim()
-    var strides = List[Int]()
+    var strides= List[Int]()
     for _ in range(ndim):
         strides.append(0)
     var stride = 1
@@ -89,7 +95,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
     for result_idx in range(result.numel()):
         # Convert result index to coordinates
         var result_dim = result.dim()
-        var result_coords = List[Int]()
+        var result_coords= List[Int]()
         for _ in range(result_dim):
             result_coords.append(0)
         var temp_idx = result_idx
@@ -99,7 +105,7 @@ fn argmax(tensor: ExTensor, axis: Int) raises -> ExTensor:
 
         # Map result coordinates to input coordinates (accounting for reduced axis)
         var tensor_dim = tensor.dim()
-        var input_coords = List[Int]()
+        var input_coords= List[Int]()
         for _ in range(tensor_dim):
             input_coords.append(0)
         var result_coord_idx = 0
@@ -157,7 +163,13 @@ fn top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     if k < 0:
         raise Error("top_k_indices: k must be non-negative, got " + String(k))
     if k > tensor.numel():
-        raise Error("top_k_indices: k (" + String(k) + ") cannot exceed tensor size (" + String(tensor.numel()) + ")")
+        raise Error(
+            "top_k_indices: k ("
+            + String(k)
+            + ") cannot exceed tensor size ("
+            + String(tensor.numel())
+            + ")"
+        )
     if tensor.numel() == 0:
         raise Error("top_k_indices: tensor is empty")
 
@@ -185,7 +197,7 @@ fn top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
             pairs[max_idx] = temp
 
     # Extract indices of top k
-    var result = List[Int]()
+    var result= List[Int]()
     for i in range(k):
         result.append(pairs[i][1])
 
@@ -214,7 +226,7 @@ fn top_k(tensor: ExTensor, k: Int) raises -> Tuple[ExTensor, List[Int]]:
     var indices = top_k_indices(tensor, k)
 
     # Create result tensor for values
-    var values_shape = List[Int]()
+    var values_shape= List[Int]()
     values_shape.append(k)
     var values = ExTensor(values_shape, tensor.dtype())
 
@@ -271,7 +283,7 @@ fn argsort(tensor: ExTensor, descending: Bool = False) raises -> List[Int]:
                 pairs[j + 1] = temp
 
     # Extract indices
-    var result = List[Int]()
+    var result= List[Int]()
     for i in range(numel):
         result.append(pairs[i][1])
 

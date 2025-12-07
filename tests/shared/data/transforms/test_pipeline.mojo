@@ -220,7 +220,7 @@ fn test_pipeline_transform_error_propagation():
     #     assert_true(False, "Should have raised error")
     # except TransformError as e:
     #     # Error message should indicate which transform failed
-    #     assert_true("InvalidTransform" in str(e))
+    #     assert_true("InvalidTransform" in String(e))
     pass
 
 
@@ -257,7 +257,7 @@ fn test_pipeline_str_representation():
     e.g., 'Pipeline([Resize(224), Normalize(0.5)])'.
     """
     # var pipeline = Pipeline([Resize(224, 224), Normalize(0.5, 0.5)])
-    # var repr = str(pipeline)
+    # var repr = String(pipeline)
     #
     # assert_true("Pipeline" in repr)
     # assert_true("Resize" in repr)

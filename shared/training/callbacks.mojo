@@ -118,7 +118,9 @@ struct EarlyStopping(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
+    fn on_epoch_end(
+        mut self, mut state: TrainingState
+    ) raises -> CallbackSignal:
         """Check for improvement and decide whether to stop.
 
         Args:
@@ -270,7 +272,9 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
+    fn on_epoch_end(
+        mut self, mut state: TrainingState
+    ) raises -> CallbackSignal:
         """Save checkpoint at end of epoch with error handling.
 
         Attempts to save checkpoint based on configuration:
@@ -321,7 +325,12 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
                 checkpoint_path = parts[0] + epoch_str + parts[1]
 
             # Log checkpoint save action
-            print("[ModelCheckpoint] Saving checkpoint to", checkpoint_path, "at epoch", state.epoch)
+            print(
+                "[ModelCheckpoint] Saving checkpoint to",
+                checkpoint_path,
+                "at epoch",
+                state.epoch,
+            )
 
             # Note: Actual model serialization would happen here when model interface is available.
             # For now, we track the save action. Error handling would be implemented
@@ -372,7 +381,7 @@ struct LoggingCallback(Callback, Copyable, Movable):
 
     Example:
         ```mojo
-        ar logger = LoggingCallback(log_interval=1)
+        var logger = LoggingCallback(log_interval=1)
         ```
     """
 
@@ -400,7 +409,9 @@ struct LoggingCallback(Callback, Copyable, Movable):
         """No-op at epoch begin."""
         return CallbackSignal(0)
 
-    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
+    fn on_epoch_end(
+        mut self, mut state: TrainingState
+    ) raises -> CallbackSignal:
         """Log metrics at end of epoch.
 
         Args:

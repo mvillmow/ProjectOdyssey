@@ -54,7 +54,7 @@ fn test_initialize_optimizer_state() raises:
 
 fn test_initialize_optimizer_state_from_params() raises:
     """Test optimizer state initialization from parameters."""
-    var params = List[ExTensor]()
+    var params: List[ExTensor] = []
     params.append(ones(List[Int](2, 3), DType.float32))
     params.append(ones(List[Int](3), DType.float32))
 
@@ -115,7 +115,7 @@ fn test_compute_global_norm() raises:
     var t1 = full(List[Int](3), 1.0, DType.float32)
     var t2 = full(List[Int](4), 2.0, DType.float32)
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(t1)
     tensors.append(t2)
 
@@ -157,7 +157,7 @@ fn test_clip_global_norm() raises:
     var t1 = full(List[Int](3), 1.0, DType.float32)
     var t2 = full(List[Int](4), 2.0, DType.float32)
 
-    var tensors = List[ExTensor]()
+    var tensors: List[ExTensor] = []
     tensors.append(t1)
     tensors.append(t2)
 
@@ -224,7 +224,7 @@ fn test_apply_bias_correction() raises:
 
 fn test_validate_optimizer_state_valid() raises:
     """Test validation of valid optimizer state."""
-    var params = List[ExTensor]()
+    var params: List[ExTensor] = []
     params.append(ones(List[Int](2, 3), DType.float32))
     params.append(ones(List[Int](3), DType.float32))
 

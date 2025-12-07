@@ -431,7 +431,7 @@ fn test_training_loop_processes_variable_batch_sizes() raises:
         - Small batches (1-4 samples)
         - Medium batches (16-64 samples)
         - Large batches (128+ samples).
-   """
+    """
     # TODO(#34): Implement when TrainingLoop is available
     # TODO: Uncomment when SimpleMLP, TrainingLoop, and ExTensor.randn are available
     # var model = create_simple_model()

@@ -28,8 +28,7 @@ from collections import List
 
 
 fn evaluate_with_predict(
-    predictions: List[Int],
-    labels: ExTensor
+    predictions: List[Int], labels: ExTensor
 ) raises -> Float32:
     """Evaluate model using pre-computed predictions.
 
@@ -48,14 +47,17 @@ fn evaluate_with_predict(
 
     Example:
         ```mojo
-        ar predictions = List[Int]()
+        var predictions = List[Int]()
         for sample in test_images:
             predictions.append(model.predict(sample))
         var accuracy = evaluate_with_predict(predictions, test_labels)
         ```
     """
     if len(predictions) != labels._numel:
-        raise Error("evaluate_with_predict: predictions and labels must have same length")
+        raise Error(
+            "evaluate_with_predict: predictions and labels must have same"
+            " length"
+        )
 
     var correct = 0
     for i in range(len(predictions)):
@@ -68,10 +70,7 @@ fn evaluate_with_predict(
     return Float32(correct) / Float32(len(predictions))
 
 
-fn evaluate_logits_batch(
-    logits: ExTensor,
-    labels: ExTensor
-) raises -> Float32:
+fn evaluate_logits_batch(logits: ExTensor, labels: ExTensor) raises -> Float32:
     """Evaluate using logits (2D) by computing argmax per sample.
 
     Evaluates a batch of logits by computing argmax for each sample
@@ -89,13 +88,15 @@ fn evaluate_logits_batch(
 
     Example:
         ```mojo
-        ar logits = model.forward(test_images, training=False)
+        var logits = model.forward(test_images, training=False)
         var accuracy = evaluate_logits_batch(logits, test_labels)
         ```
     """
     var shape_vec = logits.shape()
     if len(shape_vec) != 2:
-        raise Error("evaluate_logits_batch: logits must be 2D [batch_size, num_classes]")
+        raise Error(
+            "evaluate_logits_batch: logits must be 2D [batch_size, num_classes]"
+        )
 
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
@@ -125,7 +126,9 @@ fn evaluate_logits_batch(
     return Float32(correct) / Float32(batch_size)
 
 
-fn compute_accuracy_on_batch(predictions: ExTensor, labels: ExTensor) raises -> Float32:
+fn compute_accuracy_on_batch(
+    predictions: ExTensor, labels: ExTensor
+) raises -> Float32:
     """Compute accuracy for a single batch (simple utility).
 
     Lightweight function for computing accuracy on a single batch without
@@ -162,7 +165,10 @@ fn compute_accuracy_on_batch(predictions: ExTensor, labels: ExTensor) raises -> 
 
     # Validate batch size matches
     if batch_size != labels.shape()[0]:
-        raise Error("compute_accuracy_on_batch: batch size mismatch between predictions and labels")
+        raise Error(
+            "compute_accuracy_on_batch: batch size mismatch between predictions"
+            " and labels"
+        )
 
     var correct = 0
 

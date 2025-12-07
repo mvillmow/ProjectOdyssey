@@ -25,7 +25,7 @@ fn test_weighted_sampler_creation() raises:
     Should accept list of weights (one per sample) and sample
     indices proportional to weights.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(2.0)
     weights.append(3.0)
@@ -40,7 +40,7 @@ fn test_weighted_sampler_uniform_weights() raises:
     When all weights are equal, should behave like RandomSampler,
     each index equally likely.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(1.0)
     weights.append(1.0)
@@ -48,7 +48,7 @@ fn test_weighted_sampler_uniform_weights() raises:
     var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=123)
     var indices = sampler.__iter__()
 
-    var counts = List[Int]()
+    var counts= List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -69,7 +69,7 @@ fn test_weighted_sampler_zero_weight() raises:
     useful for excluding certain samples.
     Note: Due to normalization, this tests very low weights.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(0.001)  # Very low weight
     weights.append(1.0)
@@ -77,7 +77,7 @@ fn test_weighted_sampler_zero_weight() raises:
     var sampler = WeightedSampler(weights^, num_samples=100, seed_value=456)
     var indices = sampler.__iter__()
 
-    var counts = List[Int]()
+    var counts= List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -97,14 +97,14 @@ fn test_weighted_sampler_weights_normalization() raises:
     Weights [1, 2, 3] should behave same as [10, 20, 30],
     only relative proportions matter.
     """
-    var weights1 = List[Float64]()
+    var weights1: List[Float64] = []
     weights1.append(1.0)
     weights1.append(2.0)
     weights1.append(3.0)
     var sampler1 = WeightedSampler(weights1^, num_samples=100, seed_value=789)
     var indices1 = sampler1.__iter__()
 
-    var weights2 = List[Float64]()
+    var weights2: List[Float64] = []
     weights2.append(10.0)
     weights2.append(20.0)
     weights2.append(30.0)
@@ -127,14 +127,14 @@ fn test_weighted_sampler_proportional_sampling() raises:
     With weights [1, 2, 3], index 2 should appear 3x more often
     than index 0, index 1 appears 2x more often than index 0.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(2.0)
     weights.append(3.0)
     var sampler = WeightedSampler(weights^, num_samples=6000, seed_value=111)
     var indices = sampler.__iter__()
 
-    var counts = List[Int]()
+    var counts= List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -144,7 +144,7 @@ fn test_weighted_sampler_proportional_sampling() raises:
 
     # Expected proportions: 1/6, 2/6, 3/6
     # With 6000 samples: ~1000, ~2000, ~3000
-    assert_true(counts[0] > 800 and counts[0] < 1200)   # ~1000
+    assert_true(counts[0] > 800 and counts[0] < 1200)  # ~1000
     assert_true(counts[1] > 1800 and counts[1] < 2200)  # ~2000
     assert_true(counts[2] > 2800 and counts[2] < 3200)  # ~3000
 
@@ -155,7 +155,7 @@ fn test_weighted_sampler_extreme_weights() raises:
     With weights [0.001, 0.999], second index should dominate
     (appear ~99.9% of the time).
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(0.001)
     weights.append(0.999)
     var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=222)
@@ -181,10 +181,12 @@ fn test_weighted_sampler_with_replacement() raises:
     Should allow same index to be sampled multiple times,
     as sampling is probabilistic.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(1.0)
-    var sampler = WeightedSampler(weights^, num_samples=100, replacement=True, seed_value=333)
+    var sampler = WeightedSampler(
+        weights^, num_samples=100, replacement=True, seed_value=333
+    )
     var indices = sampler.__iter__()
 
     # With replacement, we expect duplicates
@@ -197,7 +199,7 @@ fn test_weighted_sampler_num_samples() raises:
     Should yield exactly num_samples indices,
     regardless of dataset size or weights.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(1.0)
     weights.append(1.0)
@@ -221,9 +223,9 @@ fn test_weighted_sampler_class_balancing() raises:
     # Simulated dataset: 90 samples of class 0, 10 of class 1
     var weights = List[Float64](capacity=100)
     for _ in range(90):
-        weights.append(1.0/90.0)  # Low weight for majority class
+        weights.append(1.0 / 90.0)  # Low weight for majority class
     for _ in range(10):
-        weights.append(1.0/10.0)  # High weight for minority class
+        weights.append(1.0 / 10.0)  # High weight for minority class
 
     var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=555)
     var indices = sampler.__iter__()
@@ -250,16 +252,16 @@ fn test_weighted_sampler_inverse_frequency() raises:
     # Class frequencies: [100, 50, 10]
     var weights = List[Float64](capacity=160)
     for _ in range(100):
-        weights.append(1.0/100.0)
+        weights.append(1.0 / 100.0)
     for _ in range(50):
-        weights.append(1.0/50.0)
+        weights.append(1.0 / 50.0)
     for _ in range(10):
-        weights.append(1.0/10.0)
+        weights.append(1.0 / 10.0)
 
     var sampler = WeightedSampler(weights^, num_samples=1500, seed_value=666)
     var indices = sampler.__iter__()
 
-    var counts = List[Int]()
+    var counts= List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -289,14 +291,14 @@ fn test_weighted_sampler_deterministic_with_seed() raises:
     Same seed should produce same sequence of indices,
     enabling reproducible training.
     """
-    var weights1 = List[Float64]()
+    var weights1: List[Float64] = []
     weights1.append(1.0)
     weights1.append(2.0)
     weights1.append(3.0)
     var sampler1 = WeightedSampler(weights1^, num_samples=100, seed_value=777)
     var indices1 = sampler1.__iter__()
 
-    var weights2 = List[Float64]()
+    var weights2: List[Float64] = []
     weights2.append(1.0)
     weights2.append(2.0)
     weights2.append(3.0)
@@ -319,7 +321,7 @@ fn test_weighted_sampler_multiple_iterations() raises:
     When called multiple times, should produce valid samples each time,
     not get stuck or fail on second iteration.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(0.1)
     weights.append(0.2)
     weights.append(0.3)
@@ -346,7 +348,7 @@ fn test_weighted_sampler_negative_weight_error() raises:
     Weights must be non-negative (>=0),
     negative weights are meaningless for probabilities.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(1.0)
     weights.append(-1.0)
     weights.append(2.0)
@@ -366,7 +368,7 @@ fn test_weighted_sampler_all_zero_weights_error() raises:
     If all weights are zero, cannot sample anything,
     should fail with clear error.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
     weights.append(0.0)
     weights.append(0.0)
     weights.append(0.0)
@@ -386,7 +388,7 @@ fn test_weighted_sampler_empty_weights_error() raises:
     Cannot create sampler with no weights,
     should fail immediately.
     """
-    var weights = List[Float64]()
+    var weights: List[Float64] = []
 
     var error_raised = False
     try:

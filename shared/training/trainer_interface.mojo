@@ -49,7 +49,8 @@ struct TrainerConfig(Copyable, Movable):
                 loss_scale=65536.0,
                 gradient_clip_norm=1.0
             ).
-   """
+    """
+
     var num_epochs: Int
     var batch_size: Int
     var learning_rate: Float64
@@ -76,7 +77,7 @@ struct TrainerConfig(Copyable, Movable):
         use_mixed_precision: Bool = False,
         precision_dtype: DType = DType.float32,
         loss_scale: Float32 = 65536.0,
-        gradient_clip_norm: Float32 = 0.0
+        gradient_clip_norm: Float32 = 0.0,
     ):
         """Initialize trainer configuration with defaults."""
         self.num_epochs = num_epochs
@@ -97,6 +98,7 @@ struct TrainingMetrics(Copyable, Movable):
 
     Stores current and historical metrics for analysis.
     """
+
     var current_epoch: Int
     var current_batch: Int
     var total_batches: Int
@@ -162,8 +164,20 @@ struct TrainingMetrics(Copyable, Movable):
         print("Train Accuracy: " + String(self.train_accuracy))
         print("Val Loss: " + String(self.val_loss))
         print("Val Accuracy: " + String(self.val_accuracy))
-        print("Best Val Loss: " + String(self.best_val_loss) + " (epoch " + String(self.best_epoch) + ")")
-        print("Best Val Accuracy: " + String(self.best_val_accuracy) + " (epoch " + String(self.best_epoch) + ")")
+        print(
+            "Best Val Loss: "
+            + String(self.best_val_loss)
+            + " (epoch "
+            + String(self.best_epoch)
+            + ")"
+        )
+        print(
+            "Best Val Accuracy: "
+            + String(self.best_val_accuracy)
+            + " (epoch "
+            + String(self.best_epoch)
+            + ")"
+        )
         print("-" * 50)
 
 
@@ -188,7 +202,7 @@ trait Trainer:
     - on_batch_end()
     - on_validation_begin()
     - on_validation_end().
-   """
+    """
 
     fn train(mut self, num_epochs: Int) raises:
         """Execute training loop for specified number of epochs.
@@ -230,6 +244,7 @@ struct DataBatch(Copyable, Movable):
 
     Represents a mini-batch with input features and labels.
     """
+
     var data: ExTensor  # Input features [batch_size, feature_dim]
     var labels: ExTensor  # Labels [batch_size] or [batch_size, num_classes]
     var batch_size: Int
@@ -253,6 +268,7 @@ struct DataLoader(Copyable, Movable):
     NOTE: This is a minimal implementation for testing.
     Production code should use proper data loading infrastructure.
     """
+
     var data: ExTensor
     var labels: ExTensor
     var batch_size: Int
@@ -260,7 +276,9 @@ struct DataLoader(Copyable, Movable):
     var num_batches: Int
     var current_batch: Int
 
-    fn __init__(out self, var data: ExTensor, var labels: ExTensor, batch_size: Int):
+    fn __init__(
+        out self, var data: ExTensor, var labels: ExTensor, batch_size: Int
+    ):
         """Initialize data loader.
 
         Args:
@@ -304,12 +322,12 @@ struct DataLoader(Copyable, Movable):
         var actual_batch_size = end_idx - start_idx
 
         # Extract batch slice
-        var batch_data_shape = List[Int]()
+        var batch_data_shape= List[Int]()
         batch_data_shape.append(actual_batch_size)
         batch_data_shape.append(self.data.shape()[1])
         var batch_data = ExTensor(batch_data_shape, self.data.dtype())
 
-        var batch_labels_shape = List[Int]()
+        var batch_labels_shape= List[Int]()
         batch_labels_shape.append(actual_batch_size)
         var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype())
 
@@ -322,7 +340,9 @@ struct DataLoader(Copyable, Movable):
         return DataBatch(batch_data, batch_labels)
 
 
-fn create_simple_dataloader(var data: ExTensor, var labels: ExTensor, batch_size: Int) -> DataLoader:
+fn create_simple_dataloader(
+    var data: ExTensor, var labels: ExTensor, batch_size: Int
+) -> DataLoader:
     """Create a simple dataloader for training.
 
     Args:

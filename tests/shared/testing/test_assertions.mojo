@@ -161,7 +161,9 @@ fn test_assert_not_none_fails() raises:
 
 fn test_assert_almost_equal_float32_passes() raises:
     """Test assert_almost_equal with close Float32 values."""
-    assert_almost_equal(Float32(1.0), Float32(1.0000001), tolerance=Float32(1e-5))
+    assert_almost_equal(
+        Float32(1.0), Float32(1.0000001), tolerance=Float32(1e-5)
+    )
 
 
 fn test_assert_almost_equal_float32_fails() raises:
@@ -171,12 +173,16 @@ fn test_assert_almost_equal_float32_fails() raises:
         assert_almost_equal(Float32(1.0), Float32(2.0), tolerance=Float32(1e-5))
     except:
         failed = True
-    assert_true(failed, "assert_almost_equal should raise error for distant values")
+    assert_true(
+        failed, "assert_almost_equal should raise error for distant values"
+    )
 
 
 fn test_assert_almost_equal_float64_passes() raises:
     """Test assert_almost_equal with close Float64 values."""
-    assert_almost_equal(Float64(1.0), Float64(1.0000001), tolerance=Float64(1e-5))
+    assert_almost_equal(
+        Float64(1.0), Float64(1.0000001), tolerance=Float64(1e-5)
+    )
 
 
 fn test_assert_almost_equal_float64_fails() raises:
@@ -186,7 +192,9 @@ fn test_assert_almost_equal_float64_fails() raises:
         assert_almost_equal(Float64(1.0), Float64(2.0), tolerance=Float64(1e-5))
     except:
         failed = True
-    assert_true(failed, "assert_almost_equal should raise error for distant values")
+    assert_true(
+        failed, "assert_almost_equal should raise error for distant values"
+    )
 
 
 fn test_assert_dtype_equal_passes() raises:
@@ -201,7 +209,9 @@ fn test_assert_dtype_equal_fails() raises:
         assert_dtype_equal(DType.float32, DType.float64)
     except:
         failed = True
-    assert_true(failed, "assert_dtype_equal should raise error on mismatched dtypes")
+    assert_true(
+        failed, "assert_dtype_equal should raise error on mismatched dtypes"
+    )
 
 
 fn test_assert_equal_int_specialized_passes() raises:
@@ -231,7 +241,9 @@ fn test_assert_equal_float_fails() raises:
         assert_equal_float(Float32(1.0), Float32(1.1))
     except:
         failed = True
-    assert_true(failed, "assert_equal_float should raise error on different values")
+    assert_true(
+        failed, "assert_equal_float should raise error on different values"
+    )
 
 
 fn test_assert_close_float_passes() raises:
@@ -246,7 +258,9 @@ fn test_assert_close_float_fails() raises:
         assert_close_float(1.0, 10.0, rtol=1e-3, atol=1e-3)
     except:
         failed = True
-    assert_true(failed, "assert_close_float should raise error for distant values")
+    assert_true(
+        failed, "assert_close_float should raise error for distant values"
+    )
 
 
 # ============================================================================
@@ -353,33 +367,37 @@ fn test_assert_less_or_equal_float32_fails() raises:
 
 fn test_assert_shape_equal_passes() raises:
     """Test assert_shape_equal with matching shapes."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 3, 4)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 3, 4]
     assert_shape_equal(shape1, shape2)
 
 
 fn test_assert_shape_equal_fails_dimension() raises:
     """Test assert_shape_equal with different dimension count."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 3)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 3]
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
     except:
         failed = True
-    assert_true(failed, "assert_shape_equal should raise error on dimension mismatch")
+    assert_true(
+        failed, "assert_shape_equal should raise error on dimension mismatch"
+    )
 
 
 fn test_assert_shape_equal_fails_size() raises:
     """Test assert_shape_equal with different dimension sizes."""
-    var shape1 = List[Int](2, 3, 4)
-    var shape2 = List[Int](2, 5, 4)
+    var shape1: List[Int] = [2, 3, 4]
+    var shape2: List[Int] = [2, 5, 4]
     var failed = False
     try:
         assert_shape_equal(shape1, shape2)
     except:
         failed = True
-    assert_true(failed, "assert_shape_equal should raise error on size mismatch")
+    assert_true(
+        failed, "assert_shape_equal should raise error on size mismatch"
+    )
 
 
 # ============================================================================
@@ -390,14 +408,14 @@ fn test_assert_shape_equal_fails_size() raises:
 fn test_assert_shape_tensor_passes() raises:
     """Test assert_shape with matching tensor shape."""
     var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected = List[Int](3, 4)
+    var expected: List[Int] = [3, 4]
     assert_shape(tensor, expected)
 
 
 fn test_assert_shape_tensor_fails() raises:
     """Test assert_shape with mismatched tensor shape."""
     var tensor = ones(List[Int](3, 4), DType.float32)
-    var expected = List[Int](4, 5)
+    var expected: List[Int] = [4, 5]
     var failed = False
     try:
         assert_shape(tensor, expected)
@@ -488,7 +506,9 @@ fn test_assert_all_values_fails() raises:
         assert_all_values(tensor, 2.0, tolerance=1e-6)
     except:
         failed = True
-    assert_true(failed, "assert_all_values should raise error on value mismatch")
+    assert_true(
+        failed, "assert_all_values should raise error on value mismatch"
+    )
 
 
 fn test_assert_all_close_passes() raises:
@@ -507,7 +527,9 @@ fn test_assert_all_close_fails() raises:
         assert_all_close(tensor1, tensor2, tolerance=1e-5)
     except:
         failed = True
-    assert_true(failed, "assert_all_close should raise error on tensor mismatch")
+    assert_true(
+        failed, "assert_all_close should raise error on tensor mismatch"
+    )
 
 
 fn test_assert_tensor_equal_passes() raises:
@@ -526,7 +548,9 @@ fn test_assert_tensor_equal_fails_shape() raises:
         assert_tensor_equal(tensor1, tensor2)
     except:
         failed = True
-    assert_true(failed, "assert_tensor_equal should raise error on shape mismatch")
+    assert_true(
+        failed, "assert_tensor_equal should raise error on shape mismatch"
+    )
 
 
 fn test_assert_tensor_equal_fails_values() raises:
@@ -538,7 +562,9 @@ fn test_assert_tensor_equal_fails_values() raises:
         assert_tensor_equal(tensor1, tensor2)
     except:
         failed = True
-    assert_true(failed, "assert_tensor_equal should raise error on value mismatch")
+    assert_true(
+        failed, "assert_tensor_equal should raise error on value mismatch"
+    )
 
 
 fn test_assert_not_equal_tensor_passes() raises:
@@ -557,7 +583,9 @@ fn test_assert_not_equal_tensor_fails() raises:
         assert_not_equal_tensor(tensor1, tensor2)
     except:
         failed = True
-    assert_true(failed, "assert_not_equal_tensor should raise error on equal tensors")
+    assert_true(
+        failed, "assert_not_equal_tensor should raise error on equal tensors"
+    )
 
 
 # ============================================================================

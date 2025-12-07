@@ -32,7 +32,7 @@ struct StepLR(Copyable, LRScheduler, Movable):
 
     Example:
         ```mojo
-        ar scheduler = StepLR(
+        var scheduler = StepLR(
             base_lr=0.1,
             step_size=10,
             gamma=0.1
@@ -97,7 +97,7 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
 
     Example:
         ```mojo
-        ar scheduler = CosineAnnealingLR(
+        var scheduler = CosineAnnealingLR(
             base_lr=0.1,
             T_max=100,
             eta_min=0.0
@@ -169,7 +169,7 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
 
     Example:
         ```mojo
-        ar scheduler = WarmupLR(
+        var scheduler = WarmupLR(
             base_lr=0.1,
             warmup_epochs=10
         )
@@ -238,7 +238,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
 
     Example:
         ```mojo
-        ar scheduler = ReduceLROnPlateau(
+        var scheduler = ReduceLROnPlateau(
             base_lr=0.1,
             mode="min",
             factor=0.1,

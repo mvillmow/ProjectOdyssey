@@ -5,7 +5,12 @@ Implements mathematical functions like exp, log, sqrt, trigonometric functions, 
 
 from collections import List
 from .extensor import ExTensor
-from .dtype_dispatch import dispatch_unary, dispatch_binary, dispatch_float_unary, dispatch_float_binary
+from .dtype_dispatch import (
+    dispatch_unary,
+    dispatch_binary,
+    dispatch_float_unary,
+    dispatch_float_binary,
+)
 from .broadcasting import broadcast_shapes, compute_broadcast_strides
 from math import sqrt as math_sqrt
 from math import exp as math_exp
@@ -29,7 +34,7 @@ fn math_round[T: DType](x: Scalar[T]) -> Scalar[T]:
          0.5 →  0.0 (nearest even)
          1.4 →  1.0
          2.5 →  2.0 (nearest even).
-   """
+    """
     var floor_val = math_floor(x)
     var frac = x - floor_val
 
@@ -116,6 +121,7 @@ fn sign(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _exp_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Exponential operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_exp(Float32(x)))
@@ -135,13 +141,14 @@ fn exp(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = zeros(shape, DType.float32)
         var b = exp(a)  # All values become 1.0 (e^0).
-   """
+    """
     return dispatch_float_unary[_exp_op](tensor)
 
 
 @always_inline
 fn _log_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Natural logarithm operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_log(Float32(x)))
@@ -164,13 +171,14 @@ fn log(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = ones(shape, DType.float32)
         var b = log(a)  # All values become 0.0 (ln(1)).
-   """
+    """
     return dispatch_float_unary[_log_op](tensor)
 
 
 @always_inline
 fn _sqrt_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Square root operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_sqrt(Float32(x)))
@@ -200,6 +208,7 @@ fn sqrt(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _sin_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Sine operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_sin(Float32(x)))
@@ -219,13 +228,14 @@ fn sin(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = zeros(shape, DType.float32)
         var b = sin(a)  # All values become 0.0 (sin(0)).
-   """
+    """
     return dispatch_float_unary[_sin_op](tensor)
 
 
 @always_inline
 fn _cos_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Cosine operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_cos(Float32(x)))
@@ -245,13 +255,14 @@ fn cos(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = zeros(shape, DType.float32)
         var b = cos(a)  # All values become 1.0 (cos(0)).
-   """
+    """
     return dispatch_float_unary[_cos_op](tensor)
 
 
 @always_inline
 fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Hyperbolic tangent operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_tanh(Float32(x)))
@@ -271,11 +282,13 @@ fn tanh(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = zeros(shape, DType.float32)
         var b = tanh(a)  # All values become 0.0 (tanh(0)).
-   """
+    """
     return dispatch_float_unary[_tanh_op](tensor)
 
 
-fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor:
+fn clip(
+    tensor: ExTensor, min_val: Float64, max_val: Float64
+) raises -> ExTensor:
     """Clip (clamp) values to a range element-wise.
 
     Args:
@@ -318,6 +331,7 @@ fn clip(tensor: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor
 @always_inline
 fn _ceil_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Ceiling operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_ceil(Float32(x)))
@@ -344,6 +358,7 @@ fn ceil(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _floor_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Floor operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_floor(Float32(x)))
@@ -370,6 +385,7 @@ fn floor(tensor: ExTensor) raises -> ExTensor:
 @always_inline
 fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Round operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_round(Float32(x)))
@@ -389,13 +405,14 @@ fn round(tensor: ExTensor) raises -> ExTensor:
     Examples:
         var a = tensor([1.2, 2.5, 3.9])
         var b = round(a)  # [1.0, 2.0, 4.0] (or [1.0, 3.0, 4.0] depending on rounding mode).
-   """
+    """
     return dispatch_float_unary[_round_op](tensor)
 
 
 @always_inline
 fn _trunc_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Truncate operation."""
+
     @parameter
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_trunc(Float32(x)))
@@ -430,6 +447,7 @@ fn trunc(tensor: ExTensor) raises -> ExTensor:
 # Logical operations
 # ============================================================================
 
+
 fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Logical AND element-wise with broadcasting.
 
@@ -456,7 +474,7 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
         var z = logical_and(x, y)  # Shape (3, 4, 5).
-   """
+    """
     if a.dtype() != b.dtype():
         raise Error("logical_and: tensors must have same dtype")
 
@@ -474,14 +492,14 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -534,7 +552,7 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
         var z = logical_or(x, y)  # Shape (3, 4, 5).
-   """
+    """
     if a.dtype() != b.dtype():
         raise Error("logical_or: tensors must have same dtype")
 
@@ -552,14 +570,14 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -605,7 +623,7 @@ fn logical_not(tensor: ExTensor) raises -> ExTensor:
     for i in range(numel):
         var val = tensor._get_float64(i)
         # True if zero
-        var bool_result = (val == 0.0)
+        var bool_result = val == 0.0
         result._set_float64(i, 1.0 if bool_result else 0.0)
 
     return result^
@@ -637,7 +655,7 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var x = ones([3, 1, 5], DType.float32)
         var y = ones([3, 4, 5], DType.float32)
         var z = logical_xor(x, y)  # Shape (3, 4, 5).
-   """
+    """
     if a.dtype() != b.dtype():
         raise Error("logical_xor: tensors must have same dtype")
 
@@ -655,14 +673,14 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -683,8 +701,8 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Perform logical XOR: True if exactly one is non-zero
         var val_a = a._get_float64(idx_a)
         var val_b = b._get_float64(idx_b)
-        var bool_a = (val_a != 0.0)
-        var bool_b = (val_b != 0.0)
+        var bool_a = val_a != 0.0
+        var bool_b = val_b != 0.0
         var bool_result = bool_a != bool_b  # XOR
         result._set_float64(result_idx, 1.0 if bool_result else 0.0)
 
@@ -694,6 +712,7 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ============================================================================
 # Additional transcendental functions
 # ============================================================================
+
 
 fn log10(tensor: ExTensor) raises -> ExTensor:
     """Base-10 logarithm element-wise.
@@ -775,7 +794,7 @@ fn exp_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
         var x = ones([3, 4])
         var grad_y = ones([3, 4])
         var grad_x = exp_backward(grad_y, x)  # grad_x = grad_y * exp(x).
-   """
+    """
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
 
     for i in range(grad_output.numel()):
@@ -901,7 +920,9 @@ fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     return result
 
 
-fn clip_backward(grad_output: ExTensor, x: ExTensor, min_val: Float64, max_val: Float64) raises -> ExTensor:
+fn clip_backward(
+    grad_output: ExTensor, x: ExTensor, min_val: Float64, max_val: Float64
+) raises -> ExTensor:
     """Compute gradient for clip (clamp) operation.
 
     For Y = clip(X, min, max), given ∂L/∂Y, computes:

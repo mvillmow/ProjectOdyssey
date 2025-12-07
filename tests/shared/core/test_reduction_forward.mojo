@@ -5,7 +5,17 @@ sum, mean, max_reduce, min_reduce with all-elements reduction (axis=-1).
 """
 
 # Import ExTensor and reduction operations
-from shared.core import ExTensor, full, ones, zeros, arange, sum, mean, max_reduce, min_reduce
+from shared.core import (
+    ExTensor,
+    full,
+    ones,
+    zeros,
+    arange,
+    sum,
+    mean,
+    max_reduce,
+    min_reduce,
+)
 
 # Import test helpers
 from tests.shared.conftest import (
@@ -20,9 +30,10 @@ from tests.shared.conftest import (
 # Test sum()
 # ============================================================================
 
+
 fn test_sum_all_ones() raises:
     """Test sum of all ones."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = ones(shape, DType.float32)
     var b = sum(a)  # Sum all elements
@@ -34,7 +45,7 @@ fn test_sum_all_ones() raises:
 
 fn test_sum_2d_tensor() raises:
     """Test sum of 2D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 2.0, DType.float32)
@@ -55,7 +66,7 @@ fn test_sum_arange() raises:
 
 fn test_sum_with_keepdims() raises:
     """Test sum with keepdims=True."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -68,7 +79,7 @@ fn test_sum_with_keepdims() raises:
 
 fn test_sum_preserves_dtype() raises:
     """Test that sum preserves dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float64)
     var b = sum(a)
@@ -81,9 +92,10 @@ fn test_sum_preserves_dtype() raises:
 # Test mean()
 # ============================================================================
 
+
 fn test_mean_all_ones() raises:
     """Test mean of all ones."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = ones(shape, DType.float32)
     var b = mean(a)
@@ -94,7 +106,7 @@ fn test_mean_all_ones() raises:
 
 fn test_mean_2d_tensor() raises:
     """Test mean of 2D tensor."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 5.0, DType.float32)
@@ -115,7 +127,7 @@ fn test_mean_arange() raises:
 
 fn test_mean_with_keepdims() raises:
     """Test mean with keepdims=True."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 6.0, DType.float32)
@@ -128,7 +140,7 @@ fn test_mean_with_keepdims() raises:
 
 fn test_mean_preserves_dtype() raises:
     """Test that mean preserves dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var a = full(shape, 8.0, DType.float64)
     var b = mean(a)
@@ -141,9 +153,10 @@ fn test_mean_preserves_dtype() raises:
 # Test max_reduce()
 # ============================================================================
 
+
 fn test_max_all_same() raises:
     """Test max of all same values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, 7.0, DType.float32)
     var b = max_reduce(a)
@@ -162,7 +175,7 @@ fn test_max_arange() raises:
 
 fn test_max_negative_values() raises:
     """Test max with negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -3.0, DType.float32)
     var b = max_reduce(a)
@@ -172,12 +185,12 @@ fn test_max_negative_values() raises:
 
 fn test_max_with_keepdims() raises:
     """Test max with keepdims=True."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = arange(0.0, 12.0, 1.0, DType.float32)
     # Note: arange creates 1D, would need reshape for 2D, but keepdims test still valid
-    var shape2d = List[Int]()
+    var shape2d= List[Int]()
     shape2d.append(3)
     shape2d.append(4)
     var a2d = full(shape2d, 9.0, DType.float32)
@@ -189,7 +202,7 @@ fn test_max_with_keepdims() raises:
 
 fn test_max_preserves_dtype() raises:
     """Test that max preserves dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = arange(0.0, 5.0, 1.0, DType.float64)
     var b = max_reduce(a)
@@ -202,9 +215,10 @@ fn test_max_preserves_dtype() raises:
 # Test min_reduce()
 # ============================================================================
 
+
 fn test_min_all_same() raises:
     """Test min of all same values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, 3.0, DType.float32)
     var b = min_reduce(a)
@@ -223,7 +237,7 @@ fn test_min_arange() raises:
 
 fn test_min_negative_values() raises:
     """Test min with negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -7.0, DType.float32)
     var b = min_reduce(a)
@@ -233,7 +247,7 @@ fn test_min_negative_values() raises:
 
 fn test_min_with_keepdims() raises:
     """Test min with keepdims=True."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 2.5, DType.float32)
@@ -245,7 +259,7 @@ fn test_min_with_keepdims() raises:
 
 fn test_min_preserves_dtype() raises:
     """Test that min preserves dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = arange(1.0, 6.0, 1.0, DType.float64)
     var b = min_reduce(a)
@@ -258,9 +272,10 @@ fn test_min_preserves_dtype() raises:
 # Test axis-specific reductions
 # ============================================================================
 
+
 fn test_sum_axis_0() raises:
     """Test sum along axis 0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 2.0, DType.float32)  # 3x4 matrix of 2s
@@ -277,7 +292,7 @@ fn test_sum_axis_0() raises:
 
 fn test_sum_axis_1() raises:
     """Test sum along axis 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 2.0, DType.float32)  # 3x4 matrix of 2s
@@ -293,7 +308,7 @@ fn test_sum_axis_1() raises:
 
 fn test_sum_axis_keepdims() raises:
     """Test sum with axis and keepdims=True."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -306,7 +321,7 @@ fn test_sum_axis_keepdims() raises:
 
 fn test_mean_axis_0() raises:
     """Test mean along axis 0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 6.0, DType.float32)  # 3x4 matrix of 6s
@@ -321,7 +336,7 @@ fn test_mean_axis_0() raises:
 
 fn test_mean_axis_1() raises:
     """Test mean along axis 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(5)
     var a = full(shape, 10.0, DType.float32)  # 2x5 matrix of 10s
@@ -336,7 +351,7 @@ fn test_mean_axis_1() raises:
 
 fn test_max_axis_0() raises:
     """Test max along axis 0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 7.0, DType.float32)
@@ -350,7 +365,7 @@ fn test_max_axis_0() raises:
 
 fn test_max_axis_1() raises:
     """Test max along axis 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 9.0, DType.float32)
@@ -365,7 +380,7 @@ fn test_max_axis_1() raises:
 
 fn test_min_axis_0() raises:
     """Test min along axis 0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 3.5, DType.float32)
@@ -379,7 +394,7 @@ fn test_min_axis_0() raises:
 
 fn test_min_axis_1() raises:
     """Test min along axis 1."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 2.5, DType.float32)
@@ -396,9 +411,10 @@ fn test_min_axis_1() raises:
 # Test reduction combinations
 # ============================================================================
 
+
 fn test_reductions_consistent() raises:
     """Test that reductions are consistent with each other."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, 5.0, DType.float32)
 
@@ -421,6 +437,7 @@ fn test_reductions_consistent() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all reduction operation tests."""

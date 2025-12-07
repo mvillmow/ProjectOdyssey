@@ -41,7 +41,7 @@ fn test_lars_initialization() raises:
         This test verifies that the function accepts all expected parameters.
     """
     # Test that lars_step accepts all hyperparameters
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(shape, DType.float32)
@@ -55,7 +55,7 @@ fn test_lars_initialization() raises:
         momentum=0.9,
         weight_decay=0.0001,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     # If we got here without error, the API contract is satisfied
@@ -71,10 +71,10 @@ fn test_lars_parameter_norm_computation() raises:
     """Test LARS correctly computes parameter norm.
 
     LARS uses L2 norm: ||params|| = sqrt(sum(params^2)).
-   """
+    """
     # Create simple parameter tensor: [3.0, 4.0]
     # Expected norm: sqrt(9 + 16) = 5.0
-    var shape = List[Int](2)
+    var shape: List[Int] = [2]
     var params = zeros(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 3.0
     params._data.bitcast[Float32]()[1] = 4.0
@@ -89,10 +89,10 @@ fn test_lars_gradient_norm_computation() raises:
     """Test LARS correctly computes gradient norm.
 
     LARS uses L2 norm: ||grads|| = sqrt(sum(grads^2)).
-   """
+    """
     # Create simple gradient tensor: [0.6, 0.8]
     # Expected norm: sqrt(0.36 + 0.64) = 1.0
-    var shape = List[Int](2)
+    var shape: List[Int] = [2]
     var grads = zeros(shape, DType.float32)
     grads._data.bitcast[Float32]()[0] = 0.6
     grads._data.bitcast[Float32]()[1] = 0.8
@@ -126,7 +126,7 @@ fn test_lars_trust_ratio_scaling() raises:
                     ≈ 0.004998
         ```
     """
-    var shape = List[Int](2)
+    var shape: List[Int] = [2]
     var params = zeros(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 3.0
     params._data.bitcast[Float32]()[1] = 4.0
@@ -147,13 +147,17 @@ fn test_lars_trust_ratio_scaling() raises:
         momentum=0.0,  # No momentum to isolate trust ratio
         weight_decay=0.0001,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     # With zero learning rate, params should be unchanged
     var new_params = result[0]
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[0]), 3.0, tolerance=1e-6)
-    assert_almost_equal(Float64(new_params._data.bitcast[Float32]()[1]), 4.0, tolerance=1e-6)
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[0]), 3.0, tolerance=1e-6
+    )
+    assert_almost_equal(
+        Float64(new_params._data.bitcast[Float32]()[1]), 4.0, tolerance=1e-6
+    )
 
 
 # ============================================================================
@@ -168,7 +172,7 @@ fn test_lars_basic_update() raises:
     enabling stable training across different parameter scales.
     """
     # Simple case: single parameter
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -186,7 +190,7 @@ fn test_lars_basic_update() raises:
         momentum=0.0,  # No momentum for this test
         weight_decay=0.0,  # No weight decay for simplicity
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var new_params = result[0]
@@ -209,8 +213,8 @@ fn test_lars_momentum_accumulation() raises:
         - Parameter update: new_params = params - lr * velocity
 
     Returns: (new_params, new_velocity).
-   """
-    var shape = List[Int](1)
+    """
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -228,7 +232,7 @@ fn test_lars_momentum_accumulation() raises:
         momentum=0.9,
         weight_decay=0.0,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var params1 = result1[0]
@@ -250,7 +254,7 @@ fn test_lars_momentum_accumulation() raises:
         momentum=0.9,
         weight_decay=0.0,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var params2 = result2[0]
@@ -274,7 +278,7 @@ fn test_lars_weight_decay() raises:
     magnitudes in multi-dimensional cases, making weight decay visible.
     In 1D with same-sign values, they cancel perfectly, so we use 2D tensors.
     """
-    var shape = List[Int](2)  # Use 2D to break cancellation
+    var shape: List[Int] = [2]  # Use 2D to break cancellation
 
     # Create tensors WITH weight decay test
     # Use orthogonal grad and param vectors so ||grad + wd*params|| != ||grad|| + wd*||params||
@@ -297,7 +301,7 @@ fn test_lars_weight_decay() raises:
         momentum=0.0,
         weight_decay=0.1,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var new_params_with_wd = result_with_wd[0]
@@ -322,7 +326,7 @@ fn test_lars_weight_decay() raises:
         momentum=0.0,
         weight_decay=0.0,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var new_params_without_wd = result_without_wd[0]
@@ -330,7 +334,9 @@ fn test_lars_weight_decay() raises:
     # With weight decay, the first component (params[0]=1.0) should decrease more
     # because effective_gradient[0] = 0.0 + 0.1 * 1.0 = 0.1 (vs 0.0 without wd)
     var val_with_wd_0 = Float64(new_params_with_wd._data.bitcast[Float32]()[0])
-    var val_without_wd_0 = Float64(new_params_without_wd._data.bitcast[Float32]()[0])
+    var val_without_wd_0 = Float64(
+        new_params_without_wd._data.bitcast[Float32]()[0]
+    )
 
     # First component should be smaller with weight decay
     assert_less(val_with_wd_0, val_without_wd_0)
@@ -350,7 +356,7 @@ fn test_lars_step_simple() raises:
     - trust_coefficient = 0.001
     - epsilon = 1e-8
     """
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0
 
@@ -380,7 +386,7 @@ fn test_lars_adaptive_scaling_small_gradients() raises:
     When grad_norm is small relative to param_norm, LARS increases
     the effective learning rate via higher trust_ratio.
     """
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 10.0  # Large parameter
 
@@ -399,16 +405,13 @@ fn test_lars_adaptive_scaling_small_gradients() raises:
         momentum=0.0,
         weight_decay=0.0,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var new_params = result[0]
 
     # Should still make progress despite small gradient
-    assert_not_equal(
-        Float64(new_params._data.bitcast[Float32]()[0]),
-        10.0
-    )
+    assert_not_equal(Float64(new_params._data.bitcast[Float32]()[0]), 10.0)
 
 
 fn test_lars_adaptive_scaling_large_gradients() raises:
@@ -417,7 +420,7 @@ fn test_lars_adaptive_scaling_large_gradients() raises:
     When grad_norm is large relative to param_norm, LARS decreases
     the effective learning rate via lower trust_ratio, preventing divergence.
     """
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var params = ones(shape, DType.float32)
     params._data.bitcast[Float32]()[0] = 1.0  # Small parameter
 
@@ -436,7 +439,7 @@ fn test_lars_adaptive_scaling_large_gradients() raises:
         momentum=0.0,
         weight_decay=0.0,
         trust_coefficient=0.001,
-        epsilon=1e-8
+        epsilon=1e-8,
     )
 
     var new_params = result[0]
@@ -456,22 +459,17 @@ fn test_lars_shape_mismatch() raises:
 
     Parameters and gradients must have the same shape.
     """
-    var shape1 = List[Int](3)
+    var shape1: List[Int] = [3]
     var params = ones(shape1, DType.float32)
 
-    var shape2 = List[Int](5)
+    var shape2: List[Int] = [5]
     var grads = zeros(shape2, DType.float32)
 
     var velocity = zeros_like(params)
 
     # Should raise error due to shape mismatch
     try:
-        var _ = lars_step(
-            params,
-            grads,
-            velocity,
-            learning_rate=0.1
-        )
+        var _ = lars_step(params, grads, velocity, learning_rate=0.1)
         # If we get here, test failed
         assert_true(False)
     except e:
@@ -484,19 +482,14 @@ fn test_lars_dtype_mismatch() raises:
 
     Parameters and gradients must have the same dtype.
     """
-    var shape = List[Int](3)
+    var shape: List[Int] = [3]
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float64)
     var velocity = zeros_like(params)
 
     # Should raise error due to dtype mismatch
     try:
-        var _ = lars_step(
-            params,
-            grads,
-            velocity,
-            learning_rate=0.1
-        )
+        var _ = lars_step(params, grads, velocity, learning_rate=0.1)
         # If we get here, test failed
         assert_true(False)
     except e:
@@ -509,19 +502,14 @@ fn test_lars_empty_velocity_buffer() raises:
 
     Velocity buffer must be pre-allocated (use zeros_like).
     """
-    var shape = List[Int](3)
+    var shape: List[Int] = [3]
     var params = ones(shape, DType.float32)
     var grads = zeros(shape, DType.float32)
     var velocity = zeros(List[Int](), DType.float32)  # Empty velocity
 
     # Should raise error due to empty velocity buffer
     try:
-        var _ = lars_step(
-            params,
-            grads,
-            velocity,
-            learning_rate=0.1
-        )
+        var _ = lars_step(params, grads, velocity, learning_rate=0.1)
         # If we get here, test failed
         assert_true(False)
     except e:

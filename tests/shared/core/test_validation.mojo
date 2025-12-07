@@ -30,28 +30,28 @@ from shared.core.validation import (
 fn test_validate_tensor_shape_1d_correct() raises:
     """Test validate_tensor_shape with correct 1D shape."""
     var x = zeros(List[Int](10), DType.float32)
-    var expected_shape = List[Int](10)
+    var expected_shape: List[Int] = [10]
     validate_tensor_shape(x, expected_shape, "x")
 
 
 fn test_validate_tensor_shape_2d_correct() raises:
     """Test validate_tensor_shape with correct 2D shape."""
     var x = zeros(List[Int](3, 4), DType.float32)
-    var expected_shape = List[Int](3, 4)
+    var expected_shape: List[Int] = [3, 4]
     validate_tensor_shape(x, expected_shape, "x")
 
 
 fn test_validate_tensor_shape_3d_correct() raises:
     """Test validate_tensor_shape with correct 3D shape."""
     var x = zeros(List[Int](2, 3, 4), DType.float32)
-    var expected_shape = List[Int](2, 3, 4)
+    var expected_shape: List[Int] = [2, 3, 4]
     validate_tensor_shape(x, expected_shape, "x")
 
 
 fn test_validate_tensor_shape_wrong_dimension_count() raises:
     """Test validate_tensor_shape with wrong number of dimensions."""
     var x = zeros(List[Int](3, 4), DType.float32)
-    var expected_shape = List[Int](3, 4, 5)
+    var expected_shape: List[Int] = [3, 4, 5]
     var error_raised = False
 
     try:
@@ -70,7 +70,7 @@ fn test_validate_tensor_shape_wrong_dimension_count() raises:
 fn test_validate_tensor_shape_wrong_dimension_value() raises:
     """Test validate_tensor_shape with wrong dimension value."""
     var x = zeros(List[Int](3, 4), DType.float32)
-    var expected_shape = List[Int](3, 5)
+    var expected_shape: List[Int] = [3, 5]
     var error_raised = False
 
     try:

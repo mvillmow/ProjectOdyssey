@@ -14,10 +14,7 @@ import random
 
 
 fn dropout(
-    x: ExTensor,
-    p: Float64,
-    training: Bool,
-    seed: Int = 0
+    x: ExTensor, p: Float64, training: Bool, seed: Int = 0
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Functional dropout with mask return.
 
@@ -78,7 +75,9 @@ fn dropout(
     if x.dtype() == DType.float32:
         for i in range(size):
             var rand_val = Float32(random.random_float64())
-            mask_ptr.bitcast[Float32]()[i] = Float32(1.0) if rand_val > Float32(p) else Float32(0.0)
+            mask_ptr.bitcast[Float32]()[i] = Float32(1.0) if rand_val > Float32(
+                p
+            ) else Float32(0.0)
     elif x.dtype() == DType.float64:
         for i in range(size):
             var rand_val = random.random_float64()
@@ -86,7 +85,9 @@ fn dropout(
     elif x.dtype() == DType.float16:
         for i in range(size):
             var rand_val = Float32(random.random_float64())
-            mask_ptr.bitcast[Float16]()[i] = Float16(1.0) if rand_val > Float32(p) else Float16(0.0)
+            mask_ptr.bitcast[Float16]()[i] = Float16(1.0) if rand_val > Float32(
+                p
+            ) else Float16(0.0)
     else:
         raise Error("dropout: only float16/32/64 dtypes supported")
 
@@ -100,10 +101,7 @@ fn dropout(
 
 
 fn dropout2d(
-    x: ExTensor,
-    p: Float64,
-    training: Bool,
-    seed: Int = 0
+    x: ExTensor, p: Float64, training: Bool, seed: Int = 0
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Functional 2D dropout (spatial dropout) for CNNs.
 
@@ -142,7 +140,9 @@ fn dropout2d(
 
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("dropout2d requires 4D input (batch, channels, height, width)")
+        raise Error(
+            "dropout2d requires 4D input (batch, channels, height, width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -155,7 +155,7 @@ fn dropout2d(
         return (x, ones_mask)
 
     # Training mode: create channel-level mask
-    var mask_shape = List[Int]()
+    var mask_shape= List[Int]()
     mask_shape.append(batch)
     mask_shape.append(channels)
     mask_shape.append(1)
@@ -173,7 +173,9 @@ fn dropout2d(
             for c in range(channels):
                 var rand_val = Float32(random.random_float64())
                 var idx = b * channels + c
-                mask_ptr.bitcast[Float32]()[idx] = Float32(1.0) if rand_val > Float32(p) else Float32(0.0)
+                mask_ptr.bitcast[Float32]()[idx] = Float32(
+                    1.0
+                ) if rand_val > Float32(p) else Float32(0.0)
     elif x.dtype() == DType.float64:
         for b in range(batch):
             for c in range(channels):
@@ -185,7 +187,9 @@ fn dropout2d(
             for c in range(channels):
                 var rand_val = Float32(random.random_float64())
                 var idx = b * channels + c
-                mask_ptr.bitcast[Float16]()[idx] = Float16(1.0) if rand_val > Float32(p) else Float16(0.0)
+                mask_ptr.bitcast[Float16]()[idx] = Float16(
+                    1.0
+                ) if rand_val > Float32(p) else Float16(0.0)
     else:
         raise Error("dropout2d: only float16/32/64 dtypes supported")
 
@@ -199,7 +203,12 @@ fn dropout2d(
                 var mask_val = mask_ptr.bitcast[Float32]()[b * channels + c]
                 for h in range(height):
                     for w in range(width):
-                        var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                        var idx = (
+                            b * (channels * height * width)
+                            + c * (height * width)
+                            + h * width
+                            + w
+                        )
                         full_mask_ptr.bitcast[Float32]()[idx] = mask_val
     elif x.dtype() == DType.float64:
         for b in range(batch):
@@ -207,7 +216,12 @@ fn dropout2d(
                 var mask_val = mask_ptr.bitcast[Float64]()[b * channels + c]
                 for h in range(height):
                     for w in range(width):
-                        var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                        var idx = (
+                            b * (channels * height * width)
+                            + c * (height * width)
+                            + h * width
+                            + w
+                        )
                         full_mask_ptr.bitcast[Float64]()[idx] = mask_val
     elif x.dtype() == DType.float16:
         for b in range(batch):
@@ -215,7 +229,12 @@ fn dropout2d(
                 var mask_val = mask_ptr.bitcast[Float16]()[b * channels + c]
                 for h in range(height):
                     for w in range(width):
-                        var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                        var idx = (
+                            b * (channels * height * width)
+                            + c * (height * width)
+                            + h * width
+                            + w
+                        )
                         full_mask_ptr.bitcast[Float16]()[idx] = mask_val
 
     # Apply mask and scale
@@ -228,9 +247,7 @@ fn dropout2d(
 
 
 fn dropout_backward(
-    grad_output: ExTensor,
-    mask: ExTensor,
-    p: Float64
+    grad_output: ExTensor, mask: ExTensor, p: Float64
 ) raises -> ExTensor:
     """Backward pass for dropout.
 
@@ -267,9 +284,7 @@ fn dropout_backward(
 
 
 fn dropout2d_backward(
-    grad_output: ExTensor,
-    mask: ExTensor,
-    p: Float64
+    grad_output: ExTensor, mask: ExTensor, p: Float64
 ) raises -> ExTensor:
     """Backward pass for 2D dropout (spatial dropout).
 

@@ -36,7 +36,7 @@ from shared.data.transforms import Transform
 # ============================================================================
 
 
-struct IdentityTransform(Transform, Copyable, Movable):
+struct IdentityTransform(Copyable, Movable, Transform):
     """Identity transform - returns input unchanged.
 
     Useful as a placeholder or for conditional pipelines where.
@@ -73,7 +73,7 @@ struct IdentityTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct LambdaTransform(Transform, Copyable, Movable):
+struct LambdaTransform(Copyable, Movable, Transform):
     """Apply a function element-wise to tensor values.
 
     Provides flexible inline transformations without defining.
@@ -112,7 +112,7 @@ struct LambdaTransform(Transform, Copyable, Movable):
         Returns:
             Transformed tensor with function applied to each element.
         """
-        var result_values = List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
             var value = Float32(data[i])
@@ -127,7 +127,9 @@ struct LambdaTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
+struct ConditionalTransform[T: Transform & Copyable & Movable](
+    Copyable, Movable, Transform
+):
     """Apply transform only if predicate is true.
 
     Evaluates a predicate function on the input tensor. If true,
@@ -183,7 +185,7 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](Transform, Copyab
 # ============================================================================
 
 
-struct ClampTransform(Transform, Copyable, Movable):
+struct ClampTransform(Copyable, Movable, Transform):
     """Clamp tensor values to specified range [min_val, max_val].
 
     Limits all values to be within the specified range. Values below.
@@ -227,7 +229,7 @@ struct ClampTransform(Transform, Copyable, Movable):
         Returns:
             ExTensor with all values clamped to range.
         """
-        var result_values = List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
             var value = Float32(data[i])
@@ -248,7 +250,7 @@ struct ClampTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct DebugTransform(Transform, Copyable, Movable):
+struct DebugTransform(Copyable, Movable, Transform):
     """Debug transform for logging/inspection.
 
     Prints tensor information (shape, statistics) for debugging.
@@ -315,7 +317,7 @@ struct DebugTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct AnyTransform(Transform, Copyable, Movable):
+struct AnyTransform(Copyable, Movable, Transform):
     """Type-erased wrapper for any Transform type.
 
     Allows storing different transform types in the same list.
@@ -426,7 +428,7 @@ struct AnyTransform(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct SequentialTransform(Transform, Copyable, Movable):
+struct SequentialTransform(Copyable, Movable, Transform):
     """Apply transforms sequentially in order.
 
     Chains multiple transforms together, applying them in sequence.
@@ -437,7 +439,7 @@ struct SequentialTransform(Transform, Copyable, Movable):
 
     Example:
         ```mojo
-        >> var transforms = List[AnyTransform]()
+        >> var transforms : List[AnyTransform] = []
         >>> transforms.append(AnyTransform(normalize))
         >>> transforms.append(AnyTransform(clamp))
         >>>
@@ -490,7 +492,7 @@ struct BatchTransform(Copyable, Movable):
 
     Example:
         ```mojo
-        >> var batch = List[ExTensor]()
+        >> var batch : List[ExTensor] = []
         >>> # ... fill batch ...
         >>>
         >>> var transform = BatchTransform(AnyTransform(normalize))
@@ -517,7 +519,7 @@ struct BatchTransform(Copyable, Movable):
         Returns:
             List of transformed tensors (same order as input).
         """
-        var results = List[ExTensor](capacity=len(batch))
+        var results= List[ExTensor](capacity=len(batch))
 
         for i in range(len(batch)):
             var transformed = self.transform(batch[i])
@@ -531,7 +533,7 @@ struct BatchTransform(Copyable, Movable):
 # ============================================================================
 
 
-struct ToFloat32(Transform, Copyable, Movable):
+struct ToFloat32(Copyable, Movable, Transform):
     """Convert tensor to Float32 dtype.
 
     Converts all elements to Float32. If already Float32,
@@ -562,7 +564,7 @@ struct ToFloat32(Transform, Copyable, Movable):
         """
         # ExTensor is already Float32 in current implementation
         # Just create a copy with Float32 values
-        var result_values = List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
             result_values.append(Float32(data[i]))
@@ -570,7 +572,7 @@ struct ToFloat32(Transform, Copyable, Movable):
         return ExTensor(result_values^)
 
 
-struct ToInt32(Transform, Copyable, Movable):
+struct ToInt32(Copyable, Movable, Transform):
     """Convert tensor to Int32 dtype (truncation).
 
     Converts all elements to Int32 by truncating decimal places.
@@ -603,7 +605,7 @@ struct ToInt32(Transform, Copyable, Movable):
         Note:
             Truncates toward zero: 2.9 -> 2, -2.9 -> -2.
         """
-        var result_values = List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements())
 
         for i in range(data.num_elements()):
             var value = data[i]
@@ -646,7 +648,9 @@ fn apply_to_tensor(
     return transform(data)
 
 
-fn compose_transforms(var transforms: List[AnyTransform]) raises -> SequentialTransform:
+fn compose_transforms(
+    var transforms: List[AnyTransform],
+) raises -> SequentialTransform:
     """Create sequential composition of transforms.
 
     Convenience function for building transform pipelines.

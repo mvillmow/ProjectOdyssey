@@ -56,6 +56,7 @@ See Issue #49 for details
 
 # Package version
 from .version import VERSION
+
 alias AUTHOR = "ML Odyssey Team"
 alias LICENSE = "MIT"
 

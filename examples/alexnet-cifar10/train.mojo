@@ -37,7 +37,7 @@ fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
 
     Returns:
         Tuple of (epochs, batch_size, learning_rate, momentum, data_dir, weights_dir).
-   """
+    """
     var parser = create_training_parser()
     parser.add_argument("weights-dir", "string", "alexnet_weights")
 
@@ -55,11 +55,11 @@ fn parse_args() raises -> Tuple[Int, Int, Float32, Float32, String, String]:
 
 fn compute_gradients(
     mut model: AlexNet,
-    borrowed input: ExTensor,
-    borrowed labels: ExTensor,
+    input: ExTensor,
+    labels: ExTensor,
     learning_rate: Float32,
     momentum: Float32,
-    mut velocities: List[ExTensor]
+    mut velocities: List[ExTensor],
 ) raises -> Float32:
     """Compute gradients and update parameters for one batch.
 
@@ -79,25 +79,35 @@ fn compute_gradients(
     # ========== Forward Pass (with caching for backward) ==========
 
     # Conv1 + ReLU + MaxPool
-    var conv1_out = conv2d(input, model.conv1_kernel, model.conv1_bias, stride=4, padding=2)
+    var conv1_out = conv2d(
+        input, model.conv1_kernel, model.conv1_bias, stride=4, padding=2
+    )
     var relu1_out = relu(conv1_out)
     var pool1_out = maxpool2d(relu1_out, kernel_size=3, stride=2, padding=0)
 
     # Conv2 + ReLU + MaxPool
-    var conv2_out = conv2d(pool1_out, model.conv2_kernel, model.conv2_bias, stride=1, padding=2)
+    var conv2_out = conv2d(
+        pool1_out, model.conv2_kernel, model.conv2_bias, stride=1, padding=2
+    )
     var relu2_out = relu(conv2_out)
     var pool2_out = maxpool2d(relu2_out, kernel_size=3, stride=2, padding=0)
 
     # Conv3 + ReLU
-    var conv3_out = conv2d(pool2_out, model.conv3_kernel, model.conv3_bias, stride=1, padding=1)
+    var conv3_out = conv2d(
+        pool2_out, model.conv3_kernel, model.conv3_bias, stride=1, padding=1
+    )
     var relu3_out = relu(conv3_out)
 
     # Conv4 + ReLU
-    var conv4_out = conv2d(relu3_out, model.conv4_kernel, model.conv4_bias, stride=1, padding=1)
+    var conv4_out = conv2d(
+        relu3_out, model.conv4_kernel, model.conv4_bias, stride=1, padding=1
+    )
     var relu4_out = relu(conv4_out)
 
     # Conv5 + ReLU + MaxPool
-    var conv5_out = conv2d(relu4_out, model.conv5_kernel, model.conv5_bias, stride=1, padding=1)
+    var conv5_out = conv2d(
+        relu4_out, model.conv5_kernel, model.conv5_bias, stride=1, padding=1
+    )
     var relu5_out = relu(conv5_out)
     var pool3_out = maxpool2d(relu5_out, kernel_size=3, stride=2, padding=0)
 
@@ -105,7 +115,7 @@ fn compute_gradients(
     var pool3_shape = pool3_out.shape()
     var batch_size = pool3_shape[0]
     var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
-    var flatten_shape = List[Int]()
+    var flatten_shape= List[Int]()
     flatten_shape.append(batch_size)
     flatten_shape.append(flattened_size)
     var flattened = pool3_out.reshape(flatten_shape)
@@ -114,15 +124,15 @@ fn compute_gradients(
     var fc1_out = linear(flattened, model.fc1_weights, model.fc1_bias)
     var relu6_out = relu(fc1_out)
     var drop1_result = dropout(relu6_out, model.dropout_rate)
-    var drop1_out = drop1_result[0]      # Dropout output
-    var drop1_mask = drop1_result[1]     # Dropout mask for backward
+    var drop1_out = drop1_result[0]  # Dropout output
+    var drop1_mask = drop1_result[1]  # Dropout mask for backward
 
     # FC2 + ReLU + Dropout
     var fc2_out = linear(drop1_out, model.fc2_weights, model.fc2_bias)
     var relu7_out = relu(fc2_out)
     var drop2_result = dropout(relu7_out, model.dropout_rate)
-    var drop2_out = drop2_result[0]      # Dropout output
-    var drop2_mask = drop2_result[1]     # Dropout mask for backward
+    var drop2_out = drop2_result[0]  # Dropout output
+    var drop2_mask = drop2_result[1]  # Dropout mask for backward
 
     # FC3 (logits)
     var logits = linear(drop2_out, model.fc3_weights, model.fc3_bias)
@@ -135,7 +145,7 @@ fn compute_gradients(
 
     # Start with gradient from loss
     # For cross-entropy, the initial gradient is 1.0
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -148,7 +158,9 @@ fn compute_gradients(
     var grad_fc3_bias = fc3_grads[2]
 
     # Dropout2 backward
-    var grad_relu7_out = dropout_backward(grad_drop2_out, drop2_mask, model.dropout_rate)
+    var grad_relu7_out = dropout_backward(
+        grad_drop2_out, drop2_mask, model.dropout_rate
+    )
 
     # ReLU7 backward
     var grad_fc2_out = relu_backward(grad_relu7_out, fc2_out)
@@ -160,7 +172,9 @@ fn compute_gradients(
     var grad_fc2_bias = fc2_grads[2]
 
     # Dropout1 backward
-    var grad_relu6_out = dropout_backward(grad_drop1_out, drop1_mask, model.dropout_rate)
+    var grad_relu6_out = dropout_backward(
+        grad_drop1_out, drop1_mask, model.dropout_rate
+    )
 
     # ReLU6 backward
     var grad_fc1_out = relu_backward(grad_relu6_out, fc1_out)
@@ -175,13 +189,17 @@ fn compute_gradients(
     var grad_pool3_out = grad_flattened.reshape(pool3_shape)
 
     # MaxPool3 backward
-    var grad_relu5_out = maxpool2d_backward(grad_pool3_out, relu5_out, pool3_out, kernel_size=3, stride=2, padding=0)
+    var grad_relu5_out = maxpool2d_backward(
+        grad_pool3_out, relu5_out, pool3_out, kernel_size=3, stride=2, padding=0
+    )
 
     # ReLU5 backward
     var grad_conv5_out = relu_backward(grad_relu5_out, conv5_out)
 
     # Conv5 backward
-    var conv5_grads = conv2d_backward(grad_conv5_out, relu4_out, model.conv5_kernel, stride=1, padding=1)
+    var conv5_grads = conv2d_backward(
+        grad_conv5_out, relu4_out, model.conv5_kernel, stride=1, padding=1
+    )
     var grad_relu4_out = conv5_grads[0]
     var grad_conv5_kernel = conv5_grads[1]
     var grad_conv5_bias = conv5_grads[2]
@@ -190,7 +208,9 @@ fn compute_gradients(
     var grad_conv4_out = relu_backward(grad_relu4_out, conv4_out)
 
     # Conv4 backward
-    var conv4_grads = conv2d_backward(grad_conv4_out, relu3_out, model.conv4_kernel, stride=1, padding=1)
+    var conv4_grads = conv2d_backward(
+        grad_conv4_out, relu3_out, model.conv4_kernel, stride=1, padding=1
+    )
     var grad_relu3_out = conv4_grads[0]
     var grad_conv4_kernel = conv4_grads[1]
     var grad_conv4_bias = conv4_grads[2]
@@ -199,31 +219,41 @@ fn compute_gradients(
     var grad_conv3_out = relu_backward(grad_relu3_out, conv3_out)
 
     # Conv3 backward
-    var conv3_grads = conv2d_backward(grad_conv3_out, pool2_out, model.conv3_kernel, stride=1, padding=1)
+    var conv3_grads = conv2d_backward(
+        grad_conv3_out, pool2_out, model.conv3_kernel, stride=1, padding=1
+    )
     var grad_pool2_out = conv3_grads[0]
     var grad_conv3_kernel = conv3_grads[1]
     var grad_conv3_bias = conv3_grads[2]
 
     # MaxPool2 backward
-    var grad_relu2_out = maxpool2d_backward(grad_pool2_out, relu2_out, pool2_out, kernel_size=3, stride=2, padding=0)
+    var grad_relu2_out = maxpool2d_backward(
+        grad_pool2_out, relu2_out, pool2_out, kernel_size=3, stride=2, padding=0
+    )
 
     # ReLU2 backward
     var grad_conv2_out = relu_backward(grad_relu2_out, conv2_out)
 
     # Conv2 backward
-    var conv2_grads = conv2d_backward(grad_conv2_out, pool1_out, model.conv2_kernel, stride=1, padding=2)
+    var conv2_grads = conv2d_backward(
+        grad_conv2_out, pool1_out, model.conv2_kernel, stride=1, padding=2
+    )
     var grad_pool1_out = conv2_grads[0]
     var grad_conv2_kernel = conv2_grads[1]
     var grad_conv2_bias = conv2_grads[2]
 
     # MaxPool1 backward
-    var grad_relu1_out = maxpool2d_backward(grad_pool1_out, relu1_out, pool1_out, kernel_size=3, stride=2, padding=0)
+    var grad_relu1_out = maxpool2d_backward(
+        grad_pool1_out, relu1_out, pool1_out, kernel_size=3, stride=2, padding=0
+    )
 
     # ReLU1 backward
     var grad_conv1_out = relu_backward(grad_relu1_out, conv1_out)
 
     # Conv1 backward
-    var conv1_grads = conv2d_backward(grad_conv1_out, input, model.conv1_kernel, stride=4, padding=2)
+    var conv1_grads = conv2d_backward(
+        grad_conv1_out, input, model.conv1_kernel, stride=4, padding=2
+    )
     var grad_input = conv1_grads[0]  # Not used (no input gradient needed)
     var grad_conv1_kernel = conv1_grads[1]
     var grad_conv1_bias = conv1_grads[2]
@@ -263,7 +293,7 @@ fn compute_gradients(
         velocities[12],
         velocities[13],
         velocities[14],
-        velocities[15]
+        velocities[15],
     )
 
     return loss
@@ -271,14 +301,14 @@ fn compute_gradients(
 
 fn train_epoch(
     mut model: AlexNet,
-    borrowed train_images: ExTensor,
-    borrowed train_labels: ExTensor,
+    train_images: ExTensor,
+    train_labels: ExTensor,
     batch_size: Int,
     learning_rate: Float32,
     momentum: Float32,
     epoch: Int,
     total_epochs: Int,
-    mut velocities: List[ExTensor]
+    mut velocities: List[ExTensor],
 ) raises -> Float32:
     """Train for one epoch.
 
@@ -312,13 +342,27 @@ fn train_epoch(
         # For now, we'll process the entire dataset (inefficient but demonstrates structure)
 
         # Compute gradients and update parameters
-        var batch_loss = compute_gradients(model, train_images, train_labels, learning_rate, momentum, velocities)
+        var batch_loss = compute_gradients(
+            model,
+            train_images,
+            train_labels,
+            learning_rate,
+            momentum,
+            velocities,
+        )
         total_loss += batch_loss
 
         # Print progress every 100 batches
         if (batch_idx + 1) % 100 == 0:
             var avg_loss = total_loss / Float32(batch_idx + 1)
-            print("  Batch [", batch_idx + 1, "/", num_batches, "] - Loss: ", avg_loss)
+            print(
+                "  Batch [",
+                batch_idx + 1,
+                "/",
+                num_batches,
+                "] - Loss: ",
+                avg_loss,
+            )
 
         # Break after first batch for demonstration
         # Remove this when batch slicing is implemented
@@ -331,9 +375,7 @@ fn train_epoch(
 
 
 fn evaluate(
-    mut model: AlexNet,
-    borrowed test_images: ExTensor,
-    borrowed test_labels: ExTensor
+    mut model: AlexNet, test_images: ExTensor, test_labels: ExTensor
 ) raises -> Float32:
     """Evaluate model on test set.
 
@@ -344,7 +386,7 @@ fn evaluate(
 
     Returns:
         Test accuracy (0.0 to 1.0).
-   """
+    """
     var num_samples = test_images.shape()[0]
     var correct = 0
 
@@ -364,7 +406,15 @@ fn evaluate(
             correct += 1
 
     var accuracy = Float32(correct) / Float32(eval_samples)
-    print("  Test Accuracy: ", accuracy * 100.0, "% (", correct, "/", eval_samples, ")")
+    print(
+        "  Test Accuracy: ",
+        accuracy * 100.0,
+        "% (",
+        correct,
+        "/",
+        eval_samples,
+        ")",
+    )
 
     return accuracy
 
@@ -378,7 +428,7 @@ fn initialize_velocities(model: AlexNet) raises -> List[ExTensor]:
     Returns:
         DynamicVector of zero-initialized velocity tensors matching parameter shapes.
     """
-    var velocities = List[ExTensor]()
+    var velocities: List[ExTensor] = []
 
     # Initialize velocities for all 16 parameters (conv1-5 + fc1-3, weights + bias)
     velocities.append(zeros(model.conv1_kernel.shape(), DType.float32))
@@ -428,7 +478,9 @@ fn main() raises:
     # Initialize model
     print("Initializing AlexNet model...")
     var dataset_info = DatasetInfo("cifar10")
-    var model = AlexNet(num_classes=dataset_info.num_classes(), dropout_rate=0.5)
+    var model = AlexNet(
+        num_classes=dataset_info.num_classes(), dropout_rate=0.5
+    )
     print("  Model initialized with", model.num_classes, "classes")
     print("  Dropout rate:", model.dropout_rate)
     print()
@@ -460,12 +512,24 @@ fn main() raises:
 
     for epoch in range(1, epochs + 1):
         # Apply learning rate decay (step every 30 epochs, gamma=0.1)
-        var current_lr = step_lr(learning_rate, epoch - 1, step_size=30, gamma=Float32(0.1))
+        var current_lr = step_lr(
+            learning_rate, epoch - 1, step_size=30, gamma=Float32(0.1)
+        )
 
         if epoch == 1 or epoch % 30 == 1:
             print("Epoch", epoch, "- Learning rate:", current_lr)
 
-        var train_loss = train_epoch(model, train_images, train_labels, batch_size, current_lr, momentum, epoch, epochs, velocities)
+        var train_loss = train_epoch(
+            model,
+            train_images,
+            train_labels,
+            batch_size,
+            current_lr,
+            momentum,
+            epoch,
+            epochs,
+            velocities,
+        )
 
         # Evaluate every epoch
         var test_acc = evaluate(model, test_images, test_labels)
@@ -478,5 +542,10 @@ fn main() raises:
     print()
 
     print("Training complete!")
-    print("\nNote: This implementation demonstrates the full training structure.")
-    print("Batch processing will be more efficient when tensor slicing is optimized.")
+    print(
+        "\nNote: This implementation demonstrates the full training structure."
+    )
+    print(
+        "Batch processing will be more efficient when tensor slicing is"
+        " optimized."
+    )

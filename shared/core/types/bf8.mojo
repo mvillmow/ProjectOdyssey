@@ -20,7 +20,7 @@ Example:
 from math import isnan, isinf
 
 
-struct BF8(Stringable, Representable, Copyable, Movable):
+struct BF8(Copyable, Movable, Representable, Stringable):
     """8-bit floating point number in E5M2 format.
 
     Memory layout (1 byte):
@@ -33,6 +33,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
     - NaN: exp=31, mantissa!=0
     - Inf: exp=31, mantissa=0
     """
+
     var value: UInt8
 
     fn __init__(out self, value: UInt8 = 0):
@@ -139,7 +140,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
         # Extract components
         var sign = (self.value >> 7) & 0x1
         var exp = (self.value >> 2) & 0x1F  # 5 bits
-        var mantissa = self.value & 0x3     # 2 bits
+        var mantissa = self.value & 0x3  # 2 bits
 
         # Handle special cases
         if exp == 31:
@@ -149,7 +150,7 @@ struct BF8(Stringable, Representable, Copyable, Movable):
                 if sign == 1:
                     return -Float32(1.0) / Float32(0.0)  # -Inf
                 else:
-                    return Float32(1.0) / Float32(0.0)   # +Inf
+                    return Float32(1.0) / Float32(0.0)  # +Inf
 
         # Handle zero
         if exp == 0 and mantissa == 0:
@@ -170,7 +171,9 @@ struct BF8(Stringable, Representable, Copyable, Movable):
             # Normal number
             # value = (-1)^sign * 2^(exp - 15) * (1 + mantissa / 4)
             var exponent = exp.cast[DType.int32]() - 15
-            var base = Float32(1.0) + (Float32(mantissa.cast[DType.float32]()) / 4.0)
+            var base = Float32(1.0) + (
+                Float32(mantissa.cast[DType.float32]()) / 4.0
+            )
 
             # Compute 2^exponent
             var scale = Float32(1.0)
@@ -203,7 +206,13 @@ struct BF8(Stringable, Representable, Copyable, Movable):
         Returns:
             Detailed string representation.
         """
-        return "BF8(bits=0x" + hex(self.value) + ", value=" + String(self.to_float32()) + ")"
+        return (
+            "BF8(bits=0x"
+            + hex(self.value)
+            + ", value="
+            + String(self.to_float32())
+            + ")"
+        )
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.

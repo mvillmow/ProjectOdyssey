@@ -80,4 +80,4 @@ fn exp_scalar_f64(x: Float64) -> Float64:
         var small = exp_scalar_f64(-10.0)  # ≈ 4.54e-5
         ```
     """
-    return 2.718281828459045 ** x
+    return 2.718281828459045**x

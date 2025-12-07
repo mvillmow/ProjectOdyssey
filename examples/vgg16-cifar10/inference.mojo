@@ -21,7 +21,7 @@ fn parse_args() raises -> Tuple[String, String]:
 
     Returns:
         Tuple of (weights_dir, data_dir).
-   """
+    """
     var parser = ArgumentParser()
     parser.add_argument("weights-dir", "string", "vgg16_weights")
     parser.add_argument("data-dir", "string", "datasets/cifar10")
@@ -34,7 +34,9 @@ fn parse_args() raises -> Tuple[String, String]:
     return Tuple[String, String](weights_dir, data_dir)
 
 
-fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: ExTensor) raises -> Float32:
+fn compute_test_accuracy(
+    mut model: VGG16, test_images: ExTensor, test_labels: ExTensor
+) raises -> Float32:
     """Compute accuracy on test set using shared metrics utilities.
 
     Uses evaluate_with_predict from shared.training.metrics to consolidate
@@ -47,14 +49,14 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
 
     Returns:
         Accuracy as percentage (0-100).
-   """
+    """
     var test_shape = test_images.shape()
     var num_test_samples = test_shape[0]
 
-    print("Evaluating on " + str(num_test_samples) + " test samples...")
+    print("Evaluating on " + String(num_test_samples) + " test samples...")
 
     # Collect predictions using model.predict()
-    var predictions = List[Int]()
+    var predictions= List[Int]()
 
     # Process each test sample
     for i in range(num_test_samples):
@@ -67,7 +69,9 @@ fn compute_test_accuracy(mut model: VGG16, test_images: ExTensor, test_labels: E
 
         # Print progress every 1000 samples
         if (i + 1) % 1000 == 0:
-            print("  Processed " + str(i + 1) + "/" + str(num_test_samples))
+            print(
+                "  Processed " + String(i + 1) + "/" + String(num_test_samples)
+            )
 
     # Use shared evaluate function
     var accuracy_fraction = evaluate_with_predict(predictions, test_labels)
@@ -112,5 +116,5 @@ fn main() raises:
 
     print()
     print("=" * 50)
-    print("Test Accuracy: " + str(test_accuracy) + "%")
+    print("Test Accuracy: " + String(test_accuracy) + "%")
     print("=" * 50)

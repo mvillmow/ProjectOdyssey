@@ -18,7 +18,7 @@ fn main() raises:
     print("1. Basic BF8 Value Conversion")
     print("-" * 40)
 
-    var values = List[Float32](0.0, 1.0, -2.5, 10.0, -100.0, 1000.0, 10000.0)
+    var values: List[Float32] = [0.0, 1.0, -2.5, 10.0, -100.0, 1000.0, 10000.0]
     print("Original values:")
     for i in range(len(values)):
         print("  ", values[i])
@@ -34,7 +34,7 @@ fn main() raises:
     print("\n2. Tensor Conversion to BF8")
     print("-" * 40)
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -64,20 +64,24 @@ fn main() raises:
     var tensor_restored = tensor_bf8.from_bf8()
 
     print("\nRestored Float32 tensor:")
-    print("  Shape:", tensor_restored.shape()[0], "x", tensor_restored.shape()[1])
+    print(
+        "  Shape:", tensor_restored.shape()[0], "x", tensor_restored.shape()[1]
+    )
     print("  DType:", tensor_restored.dtype())
     print("  Values (with BF8 precision loss):")
     for i in range(12):
         var original = tensor_f32._data.bitcast[Float32]()[i]
         var restored = tensor_restored._data.bitcast[Float32]()[i]
         var error = abs(restored - original)
-        print("    [", i, "]:", original, " ->", restored, " (error:", error, ")")
+        print(
+            "    [", i, "]:", original, " ->", restored, " (error:", error, ")"
+        )
 
     # 3. Memory efficiency demonstration
     print("\n3. Memory Efficiency")
     print("-" * 40)
 
-    var large_shape = List[Int]()
+    var large_shape= List[Int]()
     large_shape[0] = 1000
     large_shape[1] = 1000
 
@@ -88,7 +92,9 @@ fn main() raises:
     var bf8_bytes = 1000 * 1000 * 1  # 1 byte per bf8
 
     print("Large tensor (1000x1000):")
-    print("  Float32 size:", f32_bytes, "bytes (", f32_bytes / 1024 / 1024, "MB)")
+    print(
+        "  Float32 size:", f32_bytes, "bytes (", f32_bytes / 1024 / 1024, "MB)"
+    )
     print("  BF8 size:", bf8_bytes, "bytes (", bf8_bytes / 1024 / 1024, "MB)")
     print("  Memory savings:", 100 - (bf8_bytes * 100 // f32_bytes), "%")
 
@@ -97,7 +103,7 @@ fn main() raises:
     print("-" * 40)
 
     # Test values that show the difference
-    var test_values = List[Float32](1.0, 100.0, 1000.0, 10000.0)
+    var test_values: List[Float32] = [1.0, 100.0, 1000.0, 10000.0]
 
     print("Value    BF8 (E5M2)    FP8 (E4M3)    BF8 Error    FP8 Error")
     print("-" * 70)
@@ -124,7 +130,7 @@ fn main() raises:
             "    ",
             bf8_error,
             "    ",
-            fp8_error
+            fp8_error,
         )
 
     print("\n=== BF8 Example Complete ===\n")
