@@ -51,6 +51,7 @@ struct ConfusionMatrix(Metric):
 
     Issue: #288-292 - Confusion matrix.
     """
+
     var num_classes: Int
     var matrix: ExTensor  # Shape: [num_classes, num_classes], dtype=int32
     var class_names: List[String]
@@ -69,9 +70,7 @@ struct ConfusionMatrix(Metric):
         self.num_classes = num_classes
 
         # Initialize matrix with zeros
-        var shape = List[Int]()
-        shape.append(num_classes)
-        shape.append(num_classes)
+        var shape: List[Int] = [num_classes, num_classes]
         self.matrix = ExTensor(shape, DType.int32)
         for i in range(num_classes * num_classes):
             self.matrix._data.bitcast[Int32]()[i] = 0
@@ -125,7 +124,9 @@ struct ConfusionMatrix(Metric):
             if true_label < 0 or true_label >= self.num_classes:
                 raise Error("ConfusionMatrix.update: true label out of range")
             if pred < 0 or pred >= self.num_classes:
-                raise Error("ConfusionMatrix.update: predicted label out of range")
+                raise Error(
+                    "ConfusionMatrix.update: predicted label out of range"
+                )
 
             # Increment count at [true_label, pred]
             var idx = true_label * self.num_classes + pred
@@ -152,7 +153,7 @@ struct ConfusionMatrix(Metric):
         Raises:
             Error: If mode is invalid.
         """
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         result_shape.append(self.num_classes)
         result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
@@ -215,7 +216,10 @@ struct ConfusionMatrix(Metric):
                     result._data.bitcast[Float64]()[i] = 0.0
 
         else:
-            raise Error("ConfusionMatrix.normalize: invalid mode (use 'row', 'column', 'total', or 'none')")
+            raise Error(
+                "ConfusionMatrix.normalize: invalid mode (use 'row', 'column',"
+                " 'total', or 'none')"
+            )
 
         return result^
 
@@ -230,7 +234,7 @@ struct ConfusionMatrix(Metric):
 
         Note: Returns 0.0 for classes with no predictions.
         """
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
@@ -264,7 +268,7 @@ struct ConfusionMatrix(Metric):
 
         Note: Returns 0.0 for classes with no samples.
         """
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
@@ -300,7 +304,7 @@ struct ConfusionMatrix(Metric):
         var precision = self.get_precision()
         var recall = self.get_recall()
 
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         result_shape.append(self.num_classes)
         var result = ExTensor(result_shape, DType.float64)
 
@@ -333,7 +337,7 @@ fn argmax(var tensor: ExTensor) raises -> ExTensor:
     var batch_size = shape_vec[0]
     var num_classes = shape_vec[1]
 
-    var result_shape = List[Int]()
+    var result_shape= List[Int]()
     result_shape.append(batch_size)
     var result = ExTensor(result_shape, DType.int32)
 

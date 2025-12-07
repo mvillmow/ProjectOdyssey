@@ -62,7 +62,7 @@ fn CIFAR10_CLASS_NAMES() -> List[String]:
     Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes = List[String]()
+    var classes= List[String]()
     classes.append("airplane")
     classes.append("automobile")
     classes.append("bird")
@@ -95,7 +95,7 @@ fn EMNIST_BALANCED_CLASSES() -> List[String]:
         Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-k (lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes = List[String]()
+    var classes= List[String]()
 
     # Digits 0-9
     for i in range(10):
@@ -104,12 +104,12 @@ fn EMNIST_BALANCED_CLASSES() -> List[String]:
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i:i+1])
+        classes.append(String(uppercase[i : i + 1]))
 
     # Lowercase letters a-k (11 classes)
     var lowercase = "abcdefghijk"
     for i in range(11):
-        classes.append(lowercase[i:i+1])
+        classes.append(String(lowercase[i : i + 1]))
 
     return classes^
 
@@ -132,7 +132,7 @@ fn EMNIST_BYCLASS_CLASSES() -> List[String]:
         Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-z (lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes = List[String]()
+    var classes= List[String]()
 
     # Digits 0-9
     for i in range(10):
@@ -141,12 +141,12 @@ fn EMNIST_BYCLASS_CLASSES() -> List[String]:
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i:i+1])
+        classes.append(String(uppercase[i : i + 1]))
 
     # Lowercase letters a-z
     var lowercase = "abcdefghijklmnopqrstuvwxyz"
     for i in range(26):
-        classes.append(lowercase[i:i+1])
+        classes.append(String(lowercase[i : i + 1]))
 
     return classes^
 
@@ -169,7 +169,7 @@ fn EMNIST_BYMERGE_CLASSES() -> List[String]:
         Classes are ordered as: 0-9 (digits), then A-Z (merged uppercase/lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes = List[String]()
+    var classes= List[String]()
 
     # Digits 0-9
     for i in range(10):
@@ -178,7 +178,7 @@ fn EMNIST_BYMERGE_CLASSES() -> List[String]:
     # Uppercase letters A-Z (merged with lowercase)
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i:i+1])
+        classes.append(String(uppercase[i : i + 1]))
 
     return classes^
 
@@ -200,7 +200,7 @@ fn EMNIST_DIGITS_CLASSES() -> List[String]:
     Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
-    var classes = List[String]()
+    var classes= List[String]()
     for i in range(10):
         classes.append(String(i))
     return classes^
@@ -225,17 +225,18 @@ fn EMNIST_LETTERS_CLASSES() -> List[String]:
     """
     var classes = List[String]()
 
-    # Uppercase letters A-Z
+    # Uppercase letters A–Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
-        classes.append(uppercase[i:i+1])
+        classes.append(String(uppercase[i : i + 1]))
 
-    # Lowercase letters a-z
+    # Lowercase letters a–z
     var lowercase = "abcdefghijklmnopqrstuvwxyz"
     for i in range(26):
-        classes.append(lowercase[i:i+1])
+        classes.append(String(lowercase[i : i + 1]))
 
     return classes^
+
 
 
 # ============================================================================
@@ -262,7 +263,7 @@ struct DatasetInfo(Copyable, Movable):
 
     Example:
         ```mojo
-        ar info = DatasetInfo("cifar10")
+        var info = DatasetInfo("cifar10")
         var num_classes = info.num_classes()           # Returns 10
         var shape = info.image_shape()                 # Returns [3, 32, 32]
         var class_name = info.class_name(0)           # Returns "airplane"
@@ -296,7 +297,8 @@ struct DatasetInfo(Copyable, Movable):
             raise Error(
                 "Unknown dataset: "
                 + dataset_name
-                + ". Supported: cifar10, emnist_balanced, emnist_byclass, emnist_bymerge, emnist_digits, emnist_letters"
+                + ". Supported: cifar10, emnist_balanced, emnist_byclass,"
+                " emnist_bymerge, emnist_digits, emnist_letters"
             )
 
     fn _is_valid_dataset(self, name: String) -> Bool:
@@ -308,7 +310,7 @@ struct DatasetInfo(Copyable, Movable):
         Returns:
             True if dataset is supported, False otherwise.
         """
-        var valid_datasets = List[String]()
+        var valid_datasets= List[String]()
         valid_datasets.append("cifar10")
         valid_datasets.append("emnist_balanced")
         valid_datasets.append("emnist_byclass")
@@ -364,17 +366,17 @@ struct DatasetInfo(Copyable, Movable):
             The shape represents [channels, height, width] in channel-first format.
         """
         if self.dataset_name == "cifar10":
-            var shape = List[Int]()
-            shape.append(3)    # RGB channels
-            shape.append(32)   # Height
-            shape.append(32)   # Width
+            var shape= List[Int]()
+            shape.append(3)  # RGB channels
+            shape.append(32)  # Height
+            shape.append(32)  # Width
             return shape^
         else:
             # All EMNIST variants use 28x28 grayscale
-            var shape = List[Int]()
-            shape.append(1)    # Grayscale
-            shape.append(28)   # Height
-            shape.append(28)   # Width
+            var shape= List[Int]()
+            shape.append(1)  # Grayscale
+            shape.append(28)  # Height
+            shape.append(28)  # Width
             return shape^
 
     fn class_names(self) -> List[String]:
@@ -498,6 +500,18 @@ struct DatasetInfo(Copyable, Movable):
         ```
         """
         var shape = self.image_shape()
-        var description = self.dataset_name + ": " + String(self.num_classes()) + " classes, image shape ["
-        description += String(shape[0]) + ", " + String(shape[1]) + ", " + String(shape[2]) + "]"
+        var description = (
+            self.dataset_name
+            + ": "
+            + String(self.num_classes())
+            + " classes, image shape ["
+        )
+        description += (
+            String(shape[0])
+            + ", "
+            + String(shape[1])
+            + ", "
+            + String(shape[2])
+            + "]"
+        )
         return description

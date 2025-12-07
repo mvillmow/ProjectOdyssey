@@ -136,7 +136,9 @@ fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
         raise Error(error_msg)
 
 
-fn assert_not_none[T: Copyable & Movable](value: Optional[T], message: String = "") raises:
+fn assert_not_none[
+    T: Copyable & Movable
+](value: Optional[T], message: String = "") raises:
     """Assert that an Optional value is not None.
 
     Args:
@@ -147,7 +149,9 @@ fn assert_not_none[T: Copyable & Movable](value: Optional[T], message: String = 
         Error if value is None.
     """
     if not value:
-        var error_msg = message if message else "Value is None but should not be"
+        var error_msg = (
+            message if message else "Value is None but should not be"
+        )
         raise Error(error_msg)
 
 
@@ -157,7 +161,10 @@ fn assert_not_none[T: Copyable & Movable](value: Optional[T], message: String = 
 
 
 fn assert_almost_equal(
-    a: Float32, b: Float32, tolerance: Float32 = Float32(TOLERANCE_DEFAULT), message: String = ""
+    a: Float32,
+    b: Float32,
+    tolerance: Float32 = Float32(TOLERANCE_DEFAULT),
+    message: String = "",
 ) raises:
     """Assert floating point near-equality for Float32.
 
@@ -179,7 +186,10 @@ fn assert_almost_equal(
 
 
 fn assert_almost_equal(
-    a: Float64, b: Float64, tolerance: Float64 = TOLERANCE_DEFAULT, message: String = ""
+    a: Float64,
+    b: Float64,
+    tolerance: Float64 = TOLERANCE_DEFAULT,
+    message: String = "",
 ) raises:
     """Assert floating point near-equality for Float64.
 
@@ -257,7 +267,7 @@ fn assert_close_float(
     b: Float64,
     rtol: Float64 = 1e-5,
     atol: Float64 = 1e-8,
-    message: String = ""
+    message: String = "",
 ) raises:
     """Assert two floats are numerically close.
 
@@ -302,8 +312,15 @@ fn assert_close_float(
 
     if diff > threshold:
         var error_msg = message if message else (
-            "Values differ: " + String(a) + " vs " + String(b) +
-            " (diff=" + String(diff) + ", threshold=" + String(threshold) + ")"
+            "Values differ: "
+            + String(a)
+            + " vs "
+            + String(b)
+            + " (diff="
+            + String(diff)
+            + ", threshold="
+            + String(threshold)
+            + ")"
         )
         raise Error(error_msg)
 
@@ -313,9 +330,9 @@ fn assert_close_float(
 # ============================================================================
 
 
-fn assert_greater[T: Comparable & Stringable](
-    a: T, b: T, message: String = ""
-) raises:
+fn assert_greater[
+    T: Comparable & Stringable
+](a: T, b: T, message: String = "") raises:
     """Assert a > b using parametric type constraints.
 
     Works with any type supporting Comparable and Stringable traits
@@ -334,9 +351,9 @@ fn assert_greater[T: Comparable & Stringable](
         raise Error(error_msg)
 
 
-fn assert_less[T: Comparable & Stringable](
-    a: T, b: T, message: String = ""
-) raises:
+fn assert_less[
+    T: Comparable & Stringable
+](a: T, b: T, message: String = "") raises:
     """Assert a < b using parametric type constraints.
 
     Works with any type supporting Comparable and Stringable traits
@@ -355,9 +372,9 @@ fn assert_less[T: Comparable & Stringable](
         raise Error(error_msg)
 
 
-fn assert_greater_or_equal[T: Comparable & Stringable](
-    a: T, b: T, message: String = ""
-) raises:
+fn assert_greater_or_equal[
+    T: Comparable & Stringable
+](a: T, b: T, message: String = "") raises:
     """Assert a >= b using parametric type constraints.
 
     Works with any type supporting Comparable and Stringable traits
@@ -376,9 +393,9 @@ fn assert_greater_or_equal[T: Comparable & Stringable](
         raise Error(error_msg)
 
 
-fn assert_less_or_equal[T: Comparable & Stringable](
-    a: T, b: T, message: String = ""
-) raises:
+fn assert_less_or_equal[
+    T: Comparable & Stringable
+](a: T, b: T, message: String = "") raises:
     """Assert a <= b using parametric type constraints.
 
     Works with any type supporting Comparable and Stringable traits
@@ -402,7 +419,9 @@ fn assert_less_or_equal[T: Comparable & Stringable](
 # ============================================================================
 
 
-fn assert_shape_equal(shape1: List[Int], shape2: List[Int], message: String = "") raises:
+fn assert_shape_equal(
+    shape1: List[Int], shape2: List[Int], message: String = ""
+) raises:
     """Assert two shapes are equal.
 
     Args:
@@ -415,15 +434,22 @@ fn assert_shape_equal(shape1: List[Int], shape2: List[Int], message: String = ""
     """
     if len(shape1) != len(shape2):
         var error_msg = message if message else (
-            "Shape dimensions differ: " + String(len(shape1)) + " vs " + String(len(shape2))
+            "Shape dimensions differ: "
+            + String(len(shape1))
+            + " vs "
+            + String(len(shape2))
         )
         raise Error(error_msg)
 
     for i in range(len(shape1)):
         if shape1[i] != shape2[i]:
             var error_msg = message if message else (
-                "Shape mismatch at dimension " + String(i) + ": " +
-                String(shape1[i]) + " vs " + String(shape2[i])
+                "Shape mismatch at dimension "
+                + String(i)
+                + ": "
+                + String(shape1[i])
+                + " vs "
+                + String(shape2[i])
             )
             raise Error(error_msg)
 
@@ -433,7 +459,9 @@ fn assert_shape_equal(shape1: List[Int], shape2: List[Int], message: String = ""
 # ============================================================================
 
 
-fn assert_not_equal_tensor(a: ExTensor, b: ExTensor, message: String = "") raises:
+fn assert_not_equal_tensor(
+    a: ExTensor, b: ExTensor, message: String = ""
+) raises:
     """Assert two tensors are not equal element-wise.
 
     Verifies that at least one element differs between the two tensors.
@@ -471,7 +499,9 @@ fn assert_not_equal_tensor(a: ExTensor, b: ExTensor, message: String = "") raise
             break
 
     if all_equal:
-        var error_msg = message if message else "Tensors are equal but should not be"
+        var error_msg = (
+            message if message else "Tensors are equal but should not be"
+        )
         raise Error(error_msg)
 
 
@@ -490,7 +520,12 @@ fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
     var a_shape = a.shape()
     var b_shape = b.shape()
     if len(a_shape) != len(b_shape):
-        var msg = "Shape mismatch: " + String(len(a_shape)) + " vs " + String(len(b_shape))
+        var msg = (
+            "Shape mismatch: "
+            + String(len(a_shape))
+            + " vs "
+            + String(len(b_shape))
+        )
         raise Error(message + ": " + msg if message else msg)
 
     # Check total elements
@@ -506,11 +541,20 @@ fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
         var val_b = b._get_float64(i)
         var diff = val_a - val_b if val_a >= val_b else val_b - val_a
         if diff > 1e-10:
-            var msg = "Values differ at index " + String(i) + ": " + String(val_a) + " vs " + String(val_b)
+            var msg = (
+                "Values differ at index "
+                + String(i)
+                + ": "
+                + String(val_a)
+                + " vs "
+                + String(val_b)
+            )
             raise Error(message + ": " + msg if message else msg)
 
 
-fn assert_shape(tensor: ExTensor, expected: List[Int], message: String = "") raises:
+fn assert_shape(
+    tensor: ExTensor, expected: List[Int], message: String = ""
+) raises:
     """Assert tensor has expected shape.
 
     Args:
@@ -527,8 +571,10 @@ fn assert_shape(tensor: ExTensor, expected: List[Int], message: String = "") rai
     # Check dimensions match
     if len(actual_shape) != len(expected):
         var error_msg = message if message else (
-            "Shape dimension mismatch: expected " + String(len(expected)) +
-            " dims, got " + String(len(actual_shape))
+            "Shape dimension mismatch: expected "
+            + String(len(expected))
+            + " dims, got "
+            + String(len(actual_shape))
         )
         raise Error(error_msg)
 
@@ -536,8 +582,12 @@ fn assert_shape(tensor: ExTensor, expected: List[Int], message: String = "") rai
     for i in range(len(expected)):
         if actual_shape[i] != expected[i]:
             var error_msg = message if message else (
-                "Shape mismatch at dim " + String(i) + ": expected " +
-                String(expected[i]) + ", got " + String(actual_shape[i])
+                "Shape mismatch at dim "
+                + String(i)
+                + ": expected "
+                + String(expected[i])
+                + ", got "
+                + String(actual_shape[i])
             )
             raise Error(error_msg)
 
@@ -594,7 +644,10 @@ fn assert_dim(tensor: ExTensor, expected: Int, message: String = "") raises:
     var actual = len(tensor.shape())
     if actual != expected:
         var error_msg = message if message else (
-            "Expected " + String(expected) + " dimensions, got " + String(actual)
+            "Expected "
+            + String(expected)
+            + " dimensions, got "
+            + String(actual)
         )
         raise Error(error_msg)
 
@@ -609,7 +662,7 @@ fn assert_value_at(
     index: Int,
     expected: Float64,
     tolerance: Float64 = TOLERANCE_DEFAULT,
-    message: String = ""
+    message: String = "",
 ) raises:
     """Assert tensor value at flat index matches expected value.
 
@@ -631,8 +684,15 @@ fn assert_value_at(
 
     if diff > tolerance:
         var error_msg = message if message else (
-            "Expected value " + String(expected) + " at index " + String(index) +
-            ", got " + String(actual) + " (diff: " + String(diff) + ")"
+            "Expected value "
+            + String(expected)
+            + " at index "
+            + String(index)
+            + ", got "
+            + String(actual)
+            + " (diff: "
+            + String(diff)
+            + ")"
         )
         raise Error(error_msg)
 
@@ -641,7 +701,7 @@ fn assert_all_values(
     tensor: ExTensor,
     expected: Float64,
     tolerance: Float64 = TOLERANCE_DEFAULT,
-    message: String = ""
+    message: String = "",
 ) raises:
     """Assert all tensor values match expected constant.
 
@@ -657,12 +717,18 @@ fn assert_all_values(
     var n = tensor.numel()
     for i in range(n):
         var actual = tensor._get_float64(i)
-        var diff = actual - expected if actual >= expected else expected - actual
+        var diff = (
+            actual - expected if actual >= expected else expected - actual
+        )
 
         if diff > tolerance:
             var error_msg = message if message else (
-                "Expected all values to be " + String(expected) +
-                ", but index " + String(i) + " is " + String(actual)
+                "Expected all values to be "
+                + String(expected)
+                + ", but index "
+                + String(i)
+                + " is "
+                + String(actual)
             )
             raise Error(error_msg)
 
@@ -671,7 +737,7 @@ fn assert_all_close(
     a: ExTensor,
     b: ExTensor,
     tolerance: Float64 = TOLERANCE_DEFAULT,
-    message: String = ""
+    message: String = "",
 ) raises:
     """Assert two tensors are element-wise close.
 
@@ -689,11 +755,23 @@ fn assert_all_close(
     var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
-        raise Error("Shape dimension mismatch: " + String(len(shape_a)) + " vs " + String(len(shape_b)))
+        raise Error(
+            "Shape dimension mismatch: "
+            + String(len(shape_a))
+            + " vs "
+            + String(len(shape_b))
+        )
 
     for i in range(len(shape_a)):
         if shape_a[i] != shape_b[i]:
-            raise Error("Shape mismatch at dim " + String(i) + ": " + String(shape_a[i]) + " vs " + String(shape_b[i]))
+            raise Error(
+                "Shape mismatch at dim "
+                + String(i)
+                + ": "
+                + String(shape_a[i])
+                + " vs "
+                + String(shape_b[i])
+            )
 
     # Check all values
     var n = a.numel()
@@ -704,9 +782,15 @@ fn assert_all_close(
 
         if diff > tolerance:
             var error_msg = message if message else (
-                "Tensors differ at index " + String(i) + ": " +
-                String(val_a) + " vs " + String(val_b) +
-                " (diff: " + String(diff) + ")"
+                "Tensors differ at index "
+                + String(i)
+                + ": "
+                + String(val_a)
+                + " vs "
+                + String(val_b)
+                + " (diff: "
+                + String(diff)
+                + ")"
             )
             raise Error(error_msg)
 

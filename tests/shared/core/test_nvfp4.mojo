@@ -63,12 +63,18 @@ fn test_e4m3_scale_range() raises:
     # E4M3 max value is approximately 240
     var scale_large = E4M3Scale.from_float32(200.0)
     var result_large = scale_large.to_float32()
-    assert_true(result_large > 150.0 and result_large < 250.0, "E4M3 should handle values up to ~240")
+    assert_true(
+        result_large > 150.0 and result_large < 250.0,
+        "E4M3 should handle values up to ~240",
+    )
 
     # E4M3 min normal value is 2^-6 = 0.015625
     var scale_small = E4M3Scale.from_float32(0.02)
     var result_small = scale_small.to_float32()
-    assert_true(result_small > 0.01 and result_small < 0.03, "E4M3 should handle small normal values")
+    assert_true(
+        result_small > 0.01 and result_small < 0.03,
+        "E4M3 should handle small normal values",
+    )
 
 
 fn test_e4m3_scale_edge_cases() raises:
@@ -142,7 +148,10 @@ fn test_nvfp4_balanced_dynamic_range() raises:
     # Test small value
     var nvfp4_small = NVFP4.from_float32(0.01)
     var result_small = nvfp4_small.to_float32()
-    assert_true(result_small >= 0.0 and result_small < 0.05, "NVFP4 should handle small values")
+    assert_true(
+        result_small >= 0.0 and result_small < 0.05,
+        "NVFP4 should handle small values",
+    )
 
     # Test large value (within E4M3 range ~240)
     var nvfp4_large = NVFP4.from_float32(200.0)
@@ -323,7 +332,10 @@ fn test_nvfp4_accuracy_vs_mxfp4() raises:
     var relative_error = error / test_val
 
     # Expect relative error < 30% for mid-range values
-    assert_true(relative_error < 0.3, "NVFP4 should have good accuracy for mid-range values")
+    assert_true(
+        relative_error < 0.3,
+        "NVFP4 should have good accuracy for mid-range values",
+    )
 
 
 fn test_nvfp4_smaller_blocks() raises:

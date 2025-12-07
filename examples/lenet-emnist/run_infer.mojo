@@ -15,7 +15,12 @@ Arguments:
 """
 
 from model import LeNet5
-from shared.data import load_idx_labels, load_idx_images, normalize_images, DatasetInfo
+from shared.data import (
+    load_idx_labels,
+    load_idx_images,
+    normalize_images,
+    DatasetInfo,
+)
 from shared.core import ExTensor, zeros
 from shared.utils.arg_parser import ArgumentParser
 from shared.training.metrics import top1_accuracy, AccuracyMetric
@@ -54,6 +59,7 @@ fn get_class_label(class_idx: Int) -> String:
 
 struct InferConfig(Movable):
     """Inference configuration."""
+
     var checkpoint_dir: String
     var image_path: String
     var run_test_set: Bool
@@ -152,12 +158,14 @@ fn load_image(filepath: String) raises -> ExTensor:
     # 2. Validate image dimensions (must be 28x28)
     # 3. Normalize to [0, 1] range
     # 4. Reshape to (1, 1, 28, 28) batch format
-    var empty_shape = List[Int](1, 1, 28, 28)
+    var empty_shape: List[Int] = [1, 1, 28, 28]
     var empty_tensor = zeros(empty_shape, DType.float32)
     return empty_tensor
 
 
-fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Float32]]:
+fn get_top_k_predictions(
+    logits: ExTensor, k: Int
+) raises -> List[Tuple[Int, Float32]]:
     """Get top-k predictions from logits.
 
     Args:
@@ -168,7 +176,9 @@ fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Flo
         List of (class_idx, score) tuples sorted by score descending.
     """
     var logits_shape = logits.shape()
-    var num_classes = logits_shape[1] if len(logits_shape) > 1 else logits_shape[0]
+    var num_classes = (
+        logits_shape[1] if len(logits_shape) > 1 else logits_shape[0]
+    )
 
     # Extract all scores
     var scores = List[Tuple[Int, Float32]]()
@@ -193,9 +203,7 @@ fn get_top_k_predictions(logits: ExTensor, k: Int) raises -> List[Tuple[Int, Flo
 
 
 fn evaluate_test_set(
-    mut model: LeNet5,
-    test_images: ExTensor,
-    test_labels: ExTensor
+    mut model: LeNet5, test_images: ExTensor, test_labels: ExTensor
 ) raises -> Float32:
     """Evaluate model on full test set.
 
@@ -206,7 +214,7 @@ fn evaluate_test_set(
 
     Returns:
         Test accuracy (0.0 to 1.0).
-   """
+    """
     var num_samples = test_images.shape()[0]
     var correct = 0
 
@@ -233,7 +241,13 @@ fn evaluate_test_set(
 
         # Progress update
         if (batch_idx + 1) % 50 == 0:
-            print("  Processed", (batch_idx + 1) * eval_batch_size, "/", num_samples, "samples")
+            print(
+                "  Processed",
+                (batch_idx + 1) * eval_batch_size,
+                "/",
+                num_samples,
+                "samples",
+            )
 
     var accuracy = Float32(correct) / Float32(num_samples)
     return accuracy
@@ -253,14 +267,20 @@ fn main() raises:
         print("ERROR: --checkpoint is required")
         print("\nUsage:")
         print("  mojo run run_infer.mojo --checkpoint <weights_dir> --test-set")
-        print("  mojo run run_infer.mojo --checkpoint <weights_dir> --image <image_path>")
+        print(
+            "  mojo run run_infer.mojo --checkpoint <weights_dir> --image"
+            " <image_path>"
+        )
         return
 
     if not config.run_test_set and len(config.image_path) == 0:
         print("ERROR: Either --test-set or --image is required")
         print("\nUsage:")
         print("  mojo run run_infer.mojo --checkpoint <weights_dir> --test-set")
-        print("  mojo run run_infer.mojo --checkpoint <weights_dir> --image <image_path>")
+        print(
+            "  mojo run run_infer.mojo --checkpoint <weights_dir> --image"
+            " <image_path>"
+        )
         return
 
     print("\nConfiguration:")
@@ -284,8 +304,12 @@ fn main() raises:
     if config.run_test_set:
         # Run evaluation on test set
         print("Loading EMNIST test set...")
-        var test_images_path = config.data_dir + "/emnist-balanced-test-images-idx3-ubyte"
-        var test_labels_path = config.data_dir + "/emnist-balanced-test-labels-idx1-ubyte"
+        var test_images_path = (
+            config.data_dir + "/emnist-balanced-test-images-idx3-ubyte"
+        )
+        var test_labels_path = (
+            config.data_dir + "/emnist-balanced-test-labels-idx1-ubyte"
+        )
 
         var test_images_raw = load_idx_images(test_images_path)
         var test_labels = load_idx_labels(test_labels_path)
@@ -301,7 +325,12 @@ fn main() raises:
         print("Test Set Results")
         print("=" * 60)
         print("  Accuracy: ", accuracy * 100.0, "%")
-        print("  Correct: ", Int(accuracy * Float32(test_images.shape()[0])), "/", test_images.shape()[0])
+        print(
+            "  Correct: ",
+            Int(accuracy * Float32(test_images.shape()[0])),
+            "/",
+            test_images.shape()[0],
+        )
 
     else:
         # Single image inference
@@ -332,7 +361,16 @@ fn main() raises:
         for i in range(len(top_k_preds)):
             var class_idx, score = top_k_preds[i]
             var label = get_class_label(class_idx)
-            print("  ", i + 1, ". ", label, " (class ", class_idx, ") - score: ", score)
+            print(
+                "  ",
+                i + 1,
+                ". ",
+                label,
+                " (class ",
+                class_idx,
+                ") - score: ",
+                score,
+            )
 
     print()
     print("Inference complete!")

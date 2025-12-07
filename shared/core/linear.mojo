@@ -4,11 +4,11 @@ This module provides a pure functional implementation of linear transformations,
 following the pattern y = xW^T + b. The caller manages all state (weights, bias).
 """
 
-from .extensor import ExTensor
-from .matrix import matmul, transpose
-from .arithmetic import add
-from .reduction import sum
-from .gradient_types import GradientPair, GradientTriple
+from shared.core.extensor import ExTensor
+from shared.core.matrix import matmul, transpose
+from shared.core.arithmetic import add
+from shared.core.reduction import sum
+from shared.core.gradient_types import GradientPair, GradientTriple
 
 
 # Backward compatibility aliases using generic gradient containers
@@ -63,8 +63,8 @@ fn linear_no_bias(x: ExTensor, weights: ExTensor) raises -> ExTensor:
     Pure function for linear transformation with no bias term.
 
     Args:
-        x: Input tensor of shape (batch_size, in_features)
-        weights: Weight matrix of shape (out_features, in_features)
+        x: Input tensor of shape (batch_size, in_features).
+        weights: Weight matrix of shape (out_features, in_features).
 
     Returns:
         Output tensor of shape (batch_size, out_features)
@@ -76,9 +76,7 @@ fn linear_no_bias(x: ExTensor, weights: ExTensor) raises -> ExTensor:
 
 
 fn linear_backward(
-    grad_output: ExTensor,
-    x: ExTensor,
-    weights: ExTensor
+    grad_output: ExTensor, x: ExTensor, weights: ExTensor
 ) raises -> LinearBackwardResult:
     """Backward pass for linear transformation.
 
@@ -91,9 +89,9 @@ fn linear_backward(
         grad_bias = sum(grad_output, axis=0)
 
     Args:
-        grad_output: Gradient of loss w.r.t. output, shape (batch_size, out_features)
-        x: Input tensor from forward pass, shape (batch_size, in_features)
-        weights: Weight matrix from forward pass, shape (out_features, in_features)
+        grad_output: Gradient of loss w.r.t. output, shape (batch_size, out_features).
+        x: Input tensor from forward pass, shape (batch_size, in_features).
+        weights: Weight matrix from forward pass, shape (out_features, in_features).
 
     Returns:
         LinearBackwardResult containing:
@@ -102,7 +100,7 @@ fn linear_backward(
             - grad_bias: Gradient w.r.t. bias, shape (out_features,)
 
     Example:
-        ```mojo
+        ```
         from shared.core import ExTensor, linear, linear_backward
 
         # Forward pass
@@ -137,9 +135,7 @@ fn linear_backward(
 
 
 fn linear_no_bias_backward(
-    grad_output: ExTensor,
-    x: ExTensor,
-    weights: ExTensor
+    grad_output: ExTensor, x: ExTensor, weights: ExTensor
 ) raises -> LinearNoBiasBackwardResult:
     """Backward pass for linear transformation without bias.
 

@@ -47,7 +47,7 @@ fn random_tensor(
 
     Example:
         ```mojo
-        ar weights = random_tensor(List[Int](10, 5), DType.float32)
+        var weights = random_tensor(List[Int](10, 5), DType.float32)
         # Creates 10x5 tensor with random values in [0, 1)
         ```
 
@@ -111,7 +111,7 @@ fn random_uniform(
 
     Example:
         ```mojo
-        ar data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
+        var data = random_uniform(List[Int](100, 20), low=-1.0, high=1.0)
         # Creates 100x20 tensor with random values in [-1.0, 1.0)
         ```
 
@@ -181,7 +181,7 @@ fn random_normal(
 
     Example:
         ```mojo
-        ar weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
+        var weights = random_normal(List[Int](784, 256), mean=0.0, std=0.01)
         # Creates 784x256 tensor with normally distributed values
         ```
 
@@ -271,7 +271,7 @@ fn synthetic_classification_data(
 
     Example:
         ```mojo
-        ar (X, y) = synthetic_classification_data(100, 20, 3)
+        var (X, y) = synthetic_classification_data(100, 20, 3)
         # X shape: [100, 20], Y shape: [100]
         # Y contains values in {0, 1, 2}
         ```
@@ -287,19 +287,19 @@ fn synthetic_classification_data(
         raise Error("All parameters must be positive")
 
     # Create class centers: [num_classes, num_features]
-    var centers_shape = List[Int]()
+    var centers_shape= List[Int]()
     centers_shape.append(num_classes)
     centers_shape.append(num_features)
     var centers = random_uniform(centers_shape, low=-5.0, high=5.0, dtype=dtype)
 
     # Create features tensor: [num_samples, num_features]
-    var features_shape = List[Int]()
+    var features_shape= List[Int]()
     features_shape.append(num_samples)
     features_shape.append(num_features)
     var features = zeros(features_shape, dtype)
 
     # Create labels tensor: [num_samples]
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(num_samples)
     var labels = zeros(labels_shape, DType.int32)
 
@@ -320,7 +320,7 @@ fn synthetic_classification_data(
 
             # Add Gaussian noise (mean=0, std=0.5)
             var noise = random_normal(
-                List[Int](1), mean=0.0, std=0.5, dtype=dtype
+                [1], mean=0.0, std=0.5, dtype=dtype
             )
             var noise_val = noise._get_float64(0)
 

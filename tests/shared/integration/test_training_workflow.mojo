@@ -124,7 +124,7 @@ fn test_training_with_validation() raises:
     #     val_loss = evaluate(model, val_data)
     #     val_acc = compute_accuracy(model, val_data)
     #
-    #     print("Epoch " + str(epoch) + ": train_loss=" + str(train_loss) + ", val_loss=" + str(val_loss) + ", val_acc=" + str(val_acc))
+    #     print("Epoch " + String(epoch) + ": train_loss=" + String(train_loss) + ", val_loss=" + String(val_loss) + ", val_acc=" + String(val_acc))
     #
     # # Verify validation loss is computed
     # assert_true(val_loss > 0)
@@ -170,7 +170,7 @@ fn test_training_with_early_stopping() raises:
     #
     #     # Callback decides whether to stop
     #     if early_stopping.on_epoch_end(epoch, {"val_loss": val_loss}):
-    #         print("Early stopping at epoch " + str(epoch))
+    #         print("Early stopping at epoch " + String(epoch))
     #         break
     #
     #     epochs_run = epoch + 1
@@ -249,7 +249,7 @@ fn test_multi_epoch_convergence() raises:
         - Loss decreases monotonically (or mostly)
         - Final loss is close to optimal
         - Training is stable (no NaN, inf).
-   """
+    """
     # TODO(#1538): Implement when all components are available
     # # Simple problem: learn identity function
     # var model = Linear(10, 10)

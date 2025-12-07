@@ -143,7 +143,7 @@ fn test_cast_to_compute() raises:
     var config = PrecisionConfig.fp16()
 
     # Create FP32 tensor
-    var shape = List[Int](2, 3)
+    var shape: List[Int] = [2, 3]
     var fp32_tensor = ones(shape, DType.float32)
 
     # Cast to compute dtype (FP16)
@@ -167,17 +167,19 @@ fn test_scale_unscale() raises:
     var config = PrecisionConfig.fp16(initial_scale=1000.0)
 
     # Create loss tensor
-    var loss_shape = List[Int](1)
+    var loss_shape: List[Int] = [1]
     var loss = ones(loss_shape, DType.float32)
 
     # Scale loss
     var scaled_loss = config.scale_loss(loss)
     var scaled_value = scaled_loss._get_float64(0)
     if scaled_value < 999.0 or scaled_value > 1001.0:
-        raise Error("Scaled loss should be ~1000.0, got: " + String(scaled_value))
+        raise Error(
+            "Scaled loss should be ~1000.0, got: " + String(scaled_value)
+        )
 
     # Create gradient tensor
-    var grad_shape = List[Int](10)
+    var grad_shape: List[Int] = [10]
     var grads = ones(grad_shape, DType.float32)
     for i in range(10):
         grads._set_float64(i, 1000.0)
@@ -186,7 +188,9 @@ fn test_scale_unscale() raises:
     var unscaled_grads = config.unscale_gradients(grads)
     var unscaled_value = unscaled_grads._get_float64(0)
     if unscaled_value < 0.9 or unscaled_value > 1.1:
-        raise Error("Unscaled gradient should be ~1.0, got: " + String(unscaled_value))
+        raise Error(
+            "Unscaled gradient should be ~1.0, got: " + String(unscaled_value)
+        )
 
     print("✓ scale/unscale test passed")
 
@@ -198,7 +202,7 @@ fn test_gradient_checking() raises:
     var config = PrecisionConfig.fp16()
 
     # Create valid gradients
-    var shape = List[Int](5)
+    var shape: List[Int] = [5]
     var valid_grads = ones(shape, DType.float32)
 
     if not config.check_gradients(valid_grads):
@@ -262,7 +266,7 @@ fn test_gradient_clipping() raises:
     var config = PrecisionConfig.fp16()
 
     # Create gradients with large values
-    var shape = List[Int](4)
+    var shape: List[Int] = [4]
     var grads = zeros(shape, DType.float32)
     grads._set_float64(0, 10.0)
     grads._set_float64(1, 20.0)
@@ -277,10 +281,12 @@ fn test_gradient_clipping() raises:
     for i in range(4):
         var val = clipped._get_float64(i)
         sum_squared += val * val
-    var norm = sum_squared ** 0.5
+    var norm = sum_squared**0.5
 
     if norm > 2.1:
-        raise Error("Clipped gradient norm should be <= 2.0, got: " + String(norm))
+        raise Error(
+            "Clipped gradient norm should be <= 2.0, got: " + String(norm)
+        )
 
     print("✓ gradient clipping test passed")
 

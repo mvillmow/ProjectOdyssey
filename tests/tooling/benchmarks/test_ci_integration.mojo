@@ -105,7 +105,9 @@ fn test_ci_exit_code_handling() raises:
     var exit_code_enforced = True
 
     # Verify exit code behavior
-    assert_true(exit_0_workflow_continues, "Exit 0 should allow workflow to continue")
+    assert_true(
+        exit_0_workflow_continues, "Exit 0 should allow workflow to continue"
+    )
     assert_true(exit_1_workflow_fails, "Exit 1 should fail workflow")
     assert_true(exit_code_enforced, "CI should enforce exit codes")
 
@@ -150,10 +152,16 @@ fn test_github_actions_annotations() raises:
     var annotation = "::error::Regression detected in matrix_op: +15% slowdown"
 
     # Verify annotation properties
-    assert_true(annotations_created, "Annotations should be created for regressions")
+    assert_true(
+        annotations_created, "Annotations should be created for regressions"
+    )
     assert_true(visible_in_pr, "Annotations should be visible in PR checks")
-    assert_true(annotation.find("Regression") >= 0, "Should indicate regression")
-    assert_true(annotation.find("matrix_op") >= 0, "Should include benchmark name")
+    assert_true(
+        annotation.find("Regression") >= 0, "Should indicate regression"
+    )
+    assert_true(
+        annotation.find("matrix_op") >= 0, "Should include benchmark name"
+    )
 
 
 fn test_benchmark_timeout_in_ci() raises:
@@ -167,12 +175,24 @@ fn test_benchmark_timeout_in_ci() raises:
     """
     # Test timeout enforcement in CI
     var timeout_limit_ms: Float64 = 15 * 60 * 1000  # 15 minutes
-    var benchmark_timeout_ms: Float64 = 60 * 1000   # 60 seconds
+    var benchmark_timeout_ms: Float64 = 60 * 1000  # 60 seconds
 
     # Verify timeout values
-    assert_greater(Float32(timeout_limit_ms), Float32(0.0), "Timeout limit should be positive")
-    assert_greater(Float32(benchmark_timeout_ms), Float32(0.0), "Benchmark timeout should be positive")
-    assert_greater(Float32(timeout_limit_ms), Float32(benchmark_timeout_ms), "Suite timeout should exceed individual timeout")
+    assert_greater(
+        Float32(timeout_limit_ms),
+        Float32(0.0),
+        "Timeout limit should be positive",
+    )
+    assert_greater(
+        Float32(benchmark_timeout_ms),
+        Float32(0.0),
+        "Benchmark timeout should be positive",
+    )
+    assert_greater(
+        Float32(timeout_limit_ms),
+        Float32(benchmark_timeout_ms),
+        "Suite timeout should exceed individual timeout",
+    )
 
 
 fn test_historical_tracking() raises:
@@ -183,7 +203,7 @@ fn test_historical_tracking() raises:
     - Trends visible
     - Comparison across commits
     - Performance graphs (if implemented).
-   """
+    """
     # Test historical tracking
     var results_stored = True
     var _ = True
@@ -193,10 +213,10 @@ fn test_historical_tracking() raises:
     # Create historical data structure
     var historical_data = List[Float64](capacity=5)
     historical_data.append(100.0)  # Day 1
-    historical_data.append(98.0)   # Day 2
+    historical_data.append(98.0)  # Day 2
     historical_data.append(102.0)  # Day 3
     historical_data.append(100.0)  # Day 4
-    historical_data.append(99.0)   # Day 5
+    historical_data.append(99.0)  # Day 5
 
     # Verify historical data properties
     assert_true(results_stored, "Results should be stored over time")
@@ -249,7 +269,9 @@ fn test_manual_benchmark_trigger() raises:
     trigger_options.append("subset")
 
     # Verify manual trigger capabilities
-    assert_true(workflow_dispatch_enabled, "workflow_dispatch should be enabled")
+    assert_true(
+        workflow_dispatch_enabled, "workflow_dispatch should be enabled"
+    )
     assert_true(manual_trigger_supported, "Manual triggers should be supported")
     assert_equal(len(trigger_options), 2, "Should support multiple options")
     assert_true(len(trigger_options[0]) > 0, "Options should be non-empty")

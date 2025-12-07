@@ -28,7 +28,7 @@ fn print_training_progress(
     batch: Int,
     total_batches: Int,
     loss: Float32,
-    learning_rate: Float32 = 0.01
+    learning_rate: Float32 = 0.01,
 ) raises:
     """Print formatted training progress during epoch.
 
@@ -53,7 +53,9 @@ fn print_training_progress(
     Issue: #2353
     """
     var output = "Epoch [" + String(epoch) + "/" + String(total_epochs) + "] "
-    output = output + "Batch [" + String(batch) + "/" + String(total_batches) + "] "
+    output = (
+        output + "Batch [" + String(batch) + "/" + String(total_batches) + "] "
+    )
     output = output + "Loss: " + String(loss) + " "
     output = output + "LR: " + String(learning_rate)
 
@@ -71,7 +73,7 @@ fn print_evaluation_summary(
     train_loss: Float32,
     train_accuracy: Float32,
     test_loss: Float32,
-    test_accuracy: Float32
+    test_accuracy: Float32,
 ) raises:
     """Print formatted evaluation summary after epoch.
 
@@ -127,8 +129,8 @@ fn print_evaluation_summary(
 
 fn print_per_class_accuracy(
     per_class_accuracies: ExTensor,
-    class_names: List[String] = List[String](),
-    column_width: Int = 15
+    class_names: List[String],
+    column_width: Int = 15,
 ) raises:
     """Print per-class accuracy metrics in formatted table.
 
@@ -142,7 +144,7 @@ fn print_per_class_accuracy(
 
     Example:
         ```mojo
-        ar per_class = ExTensor(List[Int](10), DType.float64)
+        var per_class = ExTensor(List[Int](10), DType.float64)
         # ... populate with per-class accuracies ...
         print_per_class_accuracy(per_class)
 
@@ -207,9 +209,9 @@ fn print_per_class_accuracy(
 
 fn print_confusion_matrix(
     matrix: ExTensor,
-    class_names: List[String] = List[String](),
+    class_names: List[String],
     normalized: Bool = False,
-    column_width: Int = 10
+    column_width: Int = 10,
 ) raises:
     """Print confusion matrix in formatted table.
 
@@ -224,7 +226,7 @@ fn print_confusion_matrix(
 
     Example:
         ```mojo
-        ar cm = ConfusionMatrix(num_classes=3)
+        var cm = ConfusionMatrix(num_classes=3)
         # ... populate matrix ...
         var matrix = cm.normalize(mode="none")
         print_confusion_matrix(matrix)
@@ -339,7 +341,7 @@ fn print_training_summary(
     best_train_loss: Float32,
     best_test_loss: Float32,
     best_accuracy: Float32,
-    best_epoch: Int
+    best_epoch: Int,
 ) raises:
     """Print final training summary with best metrics.
 
@@ -375,7 +377,13 @@ fn print_training_summary(
     print("Training Summary")
     print("=" * 60)
     print("Total Epochs:        " + String(total_epochs))
-    print("Best Train Loss:     " + String(best_train_loss) + " (Epoch " + String(best_epoch) + ")")
+    print(
+        "Best Train Loss:     "
+        + String(best_train_loss)
+        + " (Epoch "
+        + String(best_epoch)
+        + ")"
+    )
     print("Best Test Loss:      " + String(best_test_loss))
     print("Best Accuracy:       " + String(best_acc_pct) + "%")
     print("=" * 60)

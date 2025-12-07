@@ -32,10 +32,7 @@ from shared.training.callbacks import (
 fn test_early_stopping_min_mode_improves() raises:
     """Test early stopping in min mode when loss improves."""
     var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=3,
-        min_delta=0.001,
-        mode="min"
+        monitor="val_loss", patience=3, min_delta=0.001, mode="min"
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -48,7 +45,9 @@ fn test_early_stopping_min_mode_improves() raises:
     state.metrics["val_loss"] = 1.0
     signal = early_stop.on_epoch_end(state)
     assert_equal(signal.value, 0, "Should return CONTINUE on first epoch")
-    assert_equal(early_stop.wait_count, 0, "Wait count should be 0 after improvement")
+    assert_equal(
+        early_stop.wait_count, 0, "Wait count should be 0 after improvement"
+    )
 
     # Epoch 1: val_loss = 0.998 (improved by > 0.001)
     state.epoch = 1
@@ -61,10 +60,7 @@ fn test_early_stopping_min_mode_improves() raises:
 fn test_early_stopping_min_mode_no_improvement() raises:
     """Test early stopping in min mode when loss doesn't improve enough."""
     var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        min_delta=0.001,
-        mode="min"
+        monitor="val_loss", patience=2, min_delta=0.001, mode="min"
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -92,10 +88,7 @@ fn test_early_stopping_min_mode_no_improvement() raises:
 fn test_early_stopping_max_mode_improves() raises:
     """Test early stopping in max mode (accuracy) when metric improves."""
     var early_stop = EarlyStopping(
-        monitor="val_accuracy",
-        patience=2,
-        min_delta=0.001,
-        mode="max"
+        monitor="val_accuracy", patience=2, min_delta=0.001, mode="max"
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -118,10 +111,7 @@ fn test_early_stopping_max_mode_improves() raises:
 fn test_early_stopping_max_mode_no_improvement() raises:
     """Test early stopping in max mode when accuracy doesn't improve."""
     var early_stop = EarlyStopping(
-        monitor="val_accuracy",
-        patience=1,
-        min_delta=0.001,
-        mode="max"
+        monitor="val_accuracy", patience=1, min_delta=0.001, mode="max"
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -142,10 +132,7 @@ fn test_early_stopping_max_mode_no_improvement() raises:
 fn test_early_stopping_missing_metric() raises:
     """Test early stopping when monitored metric is missing."""
     var early_stop = EarlyStopping(
-        monitor="val_loss",
-        patience=2,
-        min_delta=0.001,
-        mode="min"
+        monitor="val_loss", patience=2, min_delta=0.001, mode="min"
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -162,7 +149,9 @@ fn test_early_stopping_should_stop_method() raises:
     """Test should_stop method."""
     var early_stop = EarlyStopping(monitor="val_loss", patience=1, mode="min")
 
-    assert_true(not early_stop.should_stop(), "should_stop should be False initially")
+    assert_true(
+        not early_stop.should_stop(), "should_stop should be False initially"
+    )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
     early_stop.on_train_begin(state)
@@ -171,10 +160,15 @@ fn test_early_stopping_should_stop_method() raises:
     early_stop.on_epoch_end(state)
 
     state.epoch = 1
-    state.metrics["val_loss"] = 1.1  # Worse than 1.0 in min mode - no improvement
+    state.metrics[
+        "val_loss"
+    ] = 1.1  # Worse than 1.0 in min mode - no improvement
     early_stop.on_epoch_end(state)
 
-    assert_true(early_stop.should_stop(), "should_stop should be True after patience exhausted")
+    assert_true(
+        early_stop.should_stop(),
+        "should_stop should be True after patience exhausted",
+    )
 
 
 # ============================================================================
@@ -185,8 +179,7 @@ fn test_early_stopping_should_stop_method() raises:
 fn test_model_checkpoint_save_frequency() raises:
     """Test checkpoint saving at specified frequency."""
     var checkpoint = ModelCheckpoint(
-        filepath="checkpoint_{epoch}.pt",
-        save_frequency=2
+        filepath="checkpoint_{epoch}.pt", save_frequency=2
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -214,7 +207,7 @@ fn test_model_checkpoint_save_best_only_min_mode() raises:
         filepath="best_model.pt",
         monitor="val_loss",
         save_best_only=True,
-        mode="min"
+        mode="min",
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -235,7 +228,9 @@ fn test_model_checkpoint_save_best_only_min_mode() raises:
     state.epoch = 2
     state.metrics["val_loss"] = 0.95
     checkpoint.on_epoch_end(state)
-    assert_equal(checkpoint.get_save_count(), 2, "Should not save on degradation")
+    assert_equal(
+        checkpoint.get_save_count(), 2, "Should not save on degradation"
+    )
 
 
 fn test_model_checkpoint_save_best_only_max_mode() raises:
@@ -244,7 +239,7 @@ fn test_model_checkpoint_save_best_only_max_mode() raises:
         filepath="best_model.pt",
         monitor="val_accuracy",
         save_best_only=True,
-        mode="max"
+        mode="max",
     )
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
@@ -265,14 +260,15 @@ fn test_model_checkpoint_save_best_only_max_mode() raises:
     state.epoch = 2
     state.metrics["val_accuracy"] = 0.83
     checkpoint.on_epoch_end(state)
-    assert_equal(checkpoint.get_save_count(), 2, "Should not save on degradation")
+    assert_equal(
+        checkpoint.get_save_count(), 2, "Should not save on degradation"
+    )
 
 
 fn test_model_checkpoint_epoch_placeholder() raises:
     """Test checkpoint path with {epoch} placeholder."""
     var checkpoint = ModelCheckpoint(
-        filepath="checkpoints/model_epoch_{epoch}.pt",
-        save_frequency=1
+        filepath="checkpoints/model_epoch_{epoch}.pt", save_frequency=1
     )
 
     var state = TrainingState(epoch=5, batch=0, learning_rate=0.01)
@@ -284,33 +280,33 @@ fn test_model_checkpoint_epoch_placeholder() raises:
 
 fn test_model_checkpoint_error_count() raises:
     """Test error tracking in checkpoint saving."""
-    var checkpoint = ModelCheckpoint(
-        filepath="checkpoint.pt",
-        save_frequency=1
-    )
+    var checkpoint = ModelCheckpoint(filepath="checkpoint.pt", save_frequency=1)
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
 
     # Initially no errors
-    assert_equal(checkpoint.get_error_count(), 0, "Error count should start at 0")
+    assert_equal(
+        checkpoint.get_error_count(), 0, "Error count should start at 0"
+    )
 
     # Save a checkpoint (no error)
     checkpoint.on_epoch_end(state)
-    assert_equal(checkpoint.get_error_count(), 0, "No errors from successful save")
+    assert_equal(
+        checkpoint.get_error_count(), 0, "No errors from successful save"
+    )
 
 
 fn test_model_checkpoint_always_returns_continue() raises:
     """Test that checkpoint always returns CONTINUE signal."""
-    var checkpoint = ModelCheckpoint(
-        filepath="checkpoint.pt",
-        save_frequency=1
-    )
+    var checkpoint = ModelCheckpoint(filepath="checkpoint.pt", save_frequency=1)
 
     var state = TrainingState(epoch=0, batch=0, learning_rate=0.01)
     state.metrics["val_loss"] = 1.0
 
     var signal = checkpoint.on_epoch_end(state)
-    assert_equal(signal.value, 0, "Should always return CONTINUE to not stop training")
+    assert_equal(
+        signal.value, 0, "Should always return CONTINUE to not stop training"
+    )
 
 
 # ============================================================================
@@ -379,7 +375,9 @@ fn test_logging_callback_with_learning_rate() raises:
     state.metrics["train_loss"] = 0.5
 
     logger.on_epoch_end(state)
-    assert_equal(logger.get_log_count(), 1, "Should have logged with learning rate")
+    assert_equal(
+        logger.get_log_count(), 1, "Should have logged with learning rate"
+    )
 
 
 fn test_logging_callback_empty_metrics() raises:
@@ -414,7 +412,7 @@ fn test_multiple_callbacks_together() raises:
         filepath="checkpoint.pt",
         monitor="val_loss",
         save_best_only=True,
-        mode="min"
+        mode="min",
     )
     var logger = LoggingCallback(log_interval=1)
 
@@ -448,7 +446,9 @@ fn test_early_stopping_sets_should_stop_flag() raises:
     state.epoch = 1
     state.metrics["val_loss"] = 1.1  # Worse than 1.0 in min mode
     early_stop.on_epoch_end(state)
-    assert_true(state.should_stop, "should_stop should be set by early stopping")
+    assert_true(
+        state.should_stop, "should_stop should be set by early stopping"
+    )
 
 
 fn main() raises:

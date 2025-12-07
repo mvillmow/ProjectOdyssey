@@ -68,7 +68,9 @@ fn depthwise_conv2d(
     var kernel_w = weights.shape()[3]
 
     # Calculate output dimensions using shared shape function
-    var out_h, out_w = conv2d_output_shape(height, width, kernel_h, kernel_w, stride, padding)
+    var out_h, out_w = conv2d_output_shape(
+        height, width, kernel_h, kernel_w, stride, padding
+    )
 
     # Create output tensor
     var output = zeros(
@@ -105,14 +107,20 @@ fn depthwise_conv2d(
 
             # Extract single filter for this channel
             var channel_filter = zeros(
-                List[Int]().append(1).append(1).append(kernel_h).append(kernel_w),
+                List[Int]()
+                .append(1)
+                .append(1)
+                .append(kernel_h)
+                .append(kernel_w),
                 weights.dtype(),
             )
             var channel_filter_data = channel_filter._data.bitcast[Float32]()
 
             for kh in range(kernel_h):
                 for kw in range(kernel_w):
-                    var filter_idx = ((c * 1 + 0) * kernel_h + kh) * kernel_w + kw
+                    var filter_idx = (
+                        (c * 1 + 0) * kernel_h + kh
+                    ) * kernel_w + kw
                     var dst_idx = kh * kernel_w + kw
                     channel_filter_data[dst_idx] = weights_data[filter_idx]
 
@@ -176,7 +184,7 @@ struct DepthwiseSeparableBlock:
             in_channels: Number of input channels
             out_channels: Number of output channels
             stride: Stride for depthwise convolution (1 or 2).
-       """
+        """
         # Depthwise convolution weights (one 3×3 filter per channel)
         self.dw_weights = kaiming_normal(
             List[Int]().append(in_channels).append(1).append(3).append(3),
@@ -216,9 +224,11 @@ struct DepthwiseSeparableBlock:
 
         Returns:
             Output tensor (batch, out_channels, H/stride, W/stride).
-       """
+        """
         # Depthwise convolution (spatial filtering, per-channel)
-        var out = depthwise_conv2d(x, self.dw_weights, self.dw_bias, stride=stride, padding=1)
+        var out = depthwise_conv2d(
+            x, self.dw_weights, self.dw_bias, stride=stride, padding=1
+        )
         out = batch_norm2d(
             out,
             self.dw_bn_gamma,
@@ -290,7 +300,7 @@ struct MobileNetV1:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10).
-       """
+        """
         # Initial standard convolution: 3×3, 32 filters, stride=2
         self.initial_conv_weights = kaiming_normal(
             List[Int]().append(32).append(3).append(3).append(3),
@@ -335,9 +345,15 @@ struct MobileNetV1:
 
         Returns:
             Logits tensor (batch, num_classes).
-       """
+        """
         # Initial standard convolution
-        var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=2, padding=1)
+        var out = conv2d(
+            x,
+            self.initial_conv_weights,
+            self.initial_conv_bias,
+            stride=2,
+            padding=1,
+        )
         out = batch_norm2d(
             out,
             self.initial_bn_gamma,
@@ -397,7 +413,9 @@ struct MobileNetV1:
 
         for b in range(batch_size):
             for c in range(channels):
-                flattened_data[b * channels + c] = out_data[((b * channels + c) * 1) + 0]
+                flattened_data[b * channels + c] = out_data[
+                    ((b * channels + c) * 1) + 0
+                ]
 
         # Final FC layer
         var logits = linear(flattened, self.fc_weights, self.fc_bias)
@@ -422,13 +440,16 @@ struct MobileNetV1:
             - ds_block_N_{dw,pw}_{weights,bias,bn_*}.weights for each block
             - fc_weights.weights, fc_bias.weights.
         """
-        from shared.training.model_utils import load_model_weights, get_model_parameter_names
+        from shared.training.model_utils import (
+            load_model_weights,
+            get_model_parameter_names,
+        )
 
         # Get standard parameter names for MobileNetV1
         var param_names = get_model_parameter_names("mobilenetv1")
 
         # Create empty list for loaded parameters
-        var loaded_params = List[ExTensor]()
+        var loaded_params: List[ExTensor] = []
 
         # Load using shared utility
         load_model_weights(loaded_params, weights_dir, param_names)
@@ -436,7 +457,8 @@ struct MobileNetV1:
         # Validate we loaded the correct number of parameters
         if len(loaded_params) < 100:
             raise Error(
-                "Invalid checkpoint: expected ~156 parameters for MobileNetV1, got "
+                "Invalid checkpoint: expected ~156 parameters for MobileNetV1,"
+                " got "
                 + String(len(loaded_params))
             )
 
@@ -460,7 +482,7 @@ struct MobileNetV1:
         # Depthwise separable blocks (13 blocks × 12 params per block)
         # Each block has: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
         #                pw_weights, pw_bias, pw_bn_gamma, pw_bn_beta, pw_bn_running_mean, pw_bn_running_var
-        var ds_blocks = List[DepthwiseSeparableBlock]()
+        var ds_blocks: List[DepthwiseSeparableBlock] = []
         ds_blocks.append(self.ds_block_1)
         ds_blocks.append(self.ds_block_2)
         ds_blocks.append(self.ds_block_3)
@@ -539,11 +561,14 @@ struct MobileNetV1:
             - <param_name>.weights
 
             Total parameters saved: ~156 (6 initial conv, 13 blocks × 12 params, 2 fc).
-       """
-        from shared.training.model_utils import save_model_weights, get_model_parameter_names
+        """
+        from shared.training.model_utils import (
+            save_model_weights,
+            get_model_parameter_names,
+        )
 
         # Collect all parameters in order
-        var parameters = List[ExTensor]()
+        var parameters: List[ExTensor] = []
 
         # Initial convolution parameters
         parameters.append(self.initial_conv_weights)
@@ -554,7 +579,7 @@ struct MobileNetV1:
         parameters.append(self.initial_bn_running_var)
 
         # Depthwise separable blocks
-        var ds_blocks = List[DepthwiseSeparableBlock]()
+        var ds_blocks: List[DepthwiseSeparableBlock] = []
         ds_blocks.append(self.ds_block_1)
         ds_blocks.append(self.ds_block_2)
         ds_blocks.append(self.ds_block_3)

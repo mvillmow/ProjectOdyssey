@@ -54,7 +54,7 @@ fn binary_cross_entropy(
 
     Example:
         ```mojo
-        ar predictions = sigmoid(logits)  # (batch_size,)
+        var predictions = sigmoid(logits)  # (batch_size,)
         var targets = ... # (batch_size,) with values 0 or 1
         var loss_per_sample = binary_cross_entropy(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
@@ -96,7 +96,7 @@ fn binary_cross_entropy_backward(
     grad_output: ExTensor,
     predictions: ExTensor,
     targets: ExTensor,
-    epsilon: Float64 = 1e-7
+    epsilon: Float64 = 1e-7,
 ) raises -> ExTensor:
     """Backward pass for binary cross-entropy loss.
 
@@ -159,7 +159,9 @@ fn binary_cross_entropy_backward(
     return multiply(grad_output, grad)
 
 
-fn mean_squared_error(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
+fn mean_squared_error(
+    predictions: ExTensor, targets: ExTensor
+) raises -> ExTensor:
     """Mean squared error loss for regression.
 
     Formula:
@@ -180,7 +182,7 @@ fn mean_squared_error(predictions: ExTensor, targets: ExTensor) raises -> ExTens
 
     Example:
         ```mojo
-        ar predictions = model(x)  # (batch_size, output_dim)
+        var predictions = model(x)  # (batch_size, output_dim)
         var targets = y_true        # (batch_size, output_dim)
         var loss_per_sample = mean_squared_error(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss
@@ -264,7 +266,7 @@ fn cross_entropy(
 
     Example:
         ```mojo
-        ar logits = model(x)           # (batch_size, num_classes)
+        var logits = model(x)           # (batch_size, num_classes)
         var targets_onehot = ...        # (batch_size, num_classes) one-hot
         var loss_per_sample = cross_entropy(logits, targets_onehot)
         var loss = mean(loss_per_sample)  # Scalar loss
@@ -277,7 +279,7 @@ fn cross_entropy(
     Numerical Stability:
         - Uses log-sum-exp trick to prevent overflow/underflow
         - Adds epsilon to log argument to prevent log(0).
-   """
+    """
     if logits.dtype() != targets.dtype():
         raise Error("Logits and targets must have the same dtype")
 
@@ -315,7 +317,9 @@ fn cross_entropy(
 
     # Step 7: Compute cross-entropy: CE = -sum(targets * log_probs)
     var ce_per_sample = multiply(targets, log_probs)
-    var ce_sum = sum(ce_per_sample, axis=class_axis, keepdims=False)  # Sum over classes
+    var ce_sum = sum(
+        ce_per_sample, axis=class_axis, keepdims=False
+    )  # Sum over classes
 
     # Negate: create -1.0 scalar tensor
     var neg_one = full_like(ce_sum, -1.0)
@@ -326,7 +330,10 @@ fn cross_entropy(
 
 
 fn cross_entropy_backward(
-    grad_output: ExTensor, logits: ExTensor, targets: ExTensor, epsilon: Float64 = 1e-7
+    grad_output: ExTensor,
+    logits: ExTensor,
+    targets: ExTensor,
+    epsilon: Float64 = 1e-7,
 ) raises -> ExTensor:
     """Backward pass for cross-entropy loss.
 
@@ -410,7 +417,7 @@ fn smooth_l1_loss(
 
     Example:
         ```mojo
-        ar predictions = model(x)  # (batch_size, output_dim)
+        var predictions = model(x)  # (batch_size, output_dim)
         var targets = y_true        # (batch_size, output_dim)
         var loss_per_sample = smooth_l1_loss(predictions, targets, beta=1.0)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
@@ -451,7 +458,9 @@ fn smooth_l1_loss(
     # Result = quadratic * mask + linear * (1 - mask)
     var one = ones_like(diff)
     var mask_inv = subtract(one, is_quadratic)
-    var result = add(multiply(quadratic, is_quadratic), multiply(linear, mask_inv))
+    var result = add(
+        multiply(quadratic, is_quadratic), multiply(linear, mask_inv)
+    )
 
     return result
 
@@ -460,7 +469,7 @@ fn smooth_l1_loss_backward(
     grad_output: ExTensor,
     predictions: ExTensor,
     targets: ExTensor,
-    beta: Float32 = 1.0
+    beta: Float32 = 1.0,
 ) raises -> ExTensor:
     """Backward pass for Smooth L1 loss (Huber loss).
 
@@ -496,9 +505,15 @@ fn smooth_l1_loss_backward(
         ```
     """
     if grad_output.dtype() != predictions.dtype():
-        raise Error("smooth_l1_loss_backward: grad_output and predictions must have same dtype")
+        raise Error(
+            "smooth_l1_loss_backward: grad_output and predictions must have"
+            " same dtype"
+        )
     if grad_output.shape() != predictions.shape():
-        raise Error("smooth_l1_loss_backward: grad_output and predictions must have same shape")
+        raise Error(
+            "smooth_l1_loss_backward: grad_output and predictions must have"
+            " same shape"
+        )
 
     # Compute differences: x = predictions - targets
     var diff = subtract(predictions, targets)
@@ -520,7 +535,9 @@ fn smooth_l1_loss_backward(
     # Cast bool masks to same dtype as diff for arithmetic operations
     var is_positive = cast_tensor(is_positive_bool, diff.dtype())
     var is_negative = cast_tensor(is_negative_bool, diff.dtype())
-    var sign_diff = add(multiply(is_positive, one), multiply(is_negative, neg_one))
+    var sign_diff = add(
+        multiply(is_positive, one), multiply(is_negative, neg_one)
+    )
 
     # Create mask for where |x| < beta
     var is_quadratic_bool = less(abs_diff, beta_tensor)
@@ -528,7 +545,9 @@ fn smooth_l1_loss_backward(
     var mask_inv = subtract(one, is_quadratic)
 
     # Blend gradients: quadratic_grad if |x| < beta else sign_diff
-    var blended_grad = add(multiply(quadratic_grad, is_quadratic), multiply(sign_diff, mask_inv))
+    var blended_grad = add(
+        multiply(quadratic_grad, is_quadratic), multiply(sign_diff, mask_inv)
+    )
 
     # Multiply by upstream gradient
     return multiply(grad_output, blended_grad)
@@ -559,7 +578,7 @@ fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar predictions = model(x)  # (batch_size,) or (batch_size, 1)
+        var predictions = model(x)  # (batch_size,) or (batch_size, 1)
         var targets = y_true        # (batch_size,) with values -1 or 1
         var loss_per_sample = hinge_loss(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss for backprop
@@ -597,9 +616,7 @@ fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
 
 
 fn hinge_loss_backward(
-    grad_output: ExTensor,
-    predictions: ExTensor,
-    targets: ExTensor
+    grad_output: ExTensor, predictions: ExTensor, targets: ExTensor
 ) raises -> ExTensor:
     """Backward pass for hinge loss.
 
@@ -634,9 +651,15 @@ fn hinge_loss_backward(
         ```
     """
     if grad_output.dtype() != predictions.dtype():
-        raise Error("hinge_loss_backward: grad_output and predictions must have same dtype")
+        raise Error(
+            "hinge_loss_backward: grad_output and predictions must have same"
+            " dtype"
+        )
     if grad_output.shape() != predictions.shape():
-        raise Error("hinge_loss_backward: grad_output and predictions must have same shape")
+        raise Error(
+            "hinge_loss_backward: grad_output and predictions must have same"
+            " shape"
+        )
 
     # Compute y * pred
     var y_pred = multiply(targets, predictions)
@@ -660,7 +683,10 @@ fn hinge_loss_backward(
 
 
 fn focal_loss(
-    predictions: ExTensor, targets: ExTensor, alpha: Float32 = 0.25, gamma: Float32 = 2.0
+    predictions: ExTensor,
+    targets: ExTensor,
+    alpha: Float32 = 0.25,
+    gamma: Float32 = 2.0,
 ) raises -> ExTensor:
     """Focal loss for addressing class imbalance in classification.
 
@@ -692,7 +718,7 @@ fn focal_loss(
 
     Example:
         ```mojo
-        ar predictions = sigmoid(logits)  # (batch_size,)
+        var predictions = sigmoid(logits)  # (batch_size,)
         var targets = ...  # (batch_size,) with values 0 or 1
         var loss_per_sample = focal_loss(predictions, targets)
         var loss = mean(loss_per_sample)  # Scalar loss
@@ -863,7 +889,9 @@ fn focal_loss_backward(
     return multiply(grad_output, grad)
 
 
-fn kl_divergence(p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7) raises -> ExTensor:
+fn kl_divergence(
+    p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7
+) raises -> ExTensor:
     """Kullback-Leibler divergence loss for distribution matching.
 
     Formula:
@@ -890,7 +918,7 @@ fn kl_divergence(p: ExTensor, q: ExTensor, epsilon: Float64 = 1e-7) raises -> Ex
 
     Example:
         ```mojo
-        ar p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
+        var p_dist = softmax(targets_logits, axis=1)  # (batch_size, num_classes)
         var q_dist = softmax(predictions_logits, axis=1)  # (batch_size, num_classes)
         var kl_per_element = kl_divergence(p_dist, q_dist)  # (batch_size, num_classes)
         var loss_per_sample = sum(kl_per_element, axis=1)  # (batch_size,)

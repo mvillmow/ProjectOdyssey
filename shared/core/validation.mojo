@@ -34,7 +34,7 @@ fn validate_tensor_shape(
     Example:
         ```mojo
         var x = zeros([2, 3], DType.float32)
-        var expected = List[Int](2, 3)
+        var expected : List[Int] = [2, 3]
         validate_tensor_shape(x, expected, "input")  # Passes
         ```
     """

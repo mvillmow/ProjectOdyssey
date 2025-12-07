@@ -7,8 +7,8 @@ model behavior.
 Example:
     from shared.utils import plot_training_curves
 
-    var train_losses = List[Float32]()
-    var val_losses = List[Float32]()
+    var train_losses : List[Float32]()
+    var val_losses : List[Float32]()
 
     # Collect losses during training...
 
@@ -109,7 +109,7 @@ fn plot_training_curves(
 
     Example:
         ```mojo
-        ar train_losses = List[Float32]()
+        var train_losses = List[Float32]()
         var val_losses = List[Float32]()
 
         # Collect losses during training...
@@ -122,7 +122,9 @@ fn plot_training_curves(
         ```
     """
     # Create JSON structure for plotting data
-    var result = String('{"type":"line_chart","title":"Training Curves","data":{')
+    var result = String(
+        '{"type":"line_chart","title":"Training Curves","data":{'
+    )
 
     # Add training losses
     result += '"train_losses":['
@@ -230,7 +232,7 @@ fn compute_confusion_matrix(
 
     Returns:
         Confusion matrix (num_classes x num_classes).
-   """
+    """
     # Determine number of classes
     var max_class = 0
     for i in range(len(y_true)):
@@ -256,7 +258,12 @@ fn compute_confusion_matrix(
     for i in range(len(y_true)):
         var true_label = y_true[i]
         var pred_label = y_pred[i]
-        if true_label >= 0 and true_label < n_classes and pred_label >= 0 and pred_label < n_classes:
+        if (
+            true_label >= 0
+            and true_label < n_classes
+            and pred_label >= 0
+            and pred_label < n_classes
+        ):
             matrix[true_label][pred_label] += 1
 
     return matrix^
@@ -265,7 +272,7 @@ fn compute_confusion_matrix(
 fn plot_confusion_matrix(
     y_true: List[Int],
     y_pred: List[Int],
-    class_names: List[String] = List[String](),
+    class_names: List[String],
     normalize: Bool = False,
     save_path: String = "",
 ) -> Bool:
@@ -287,8 +294,8 @@ fn plot_confusion_matrix(
 
     Example:
         ```mojo
-        ar y_true = List[Int]()  # True labels
-        var y_pred = List[Int]()  # Predictions
+        var y_true  = List[Int]()  # True labels
+        var y_pred  = List[Int]()  # Predictions
 
         # Collect predictions during evaluation...
 
@@ -385,7 +392,7 @@ fn compute_matrix_metrics(
 
     Returns:
         Tuple of (accuracy, precision, recall).
-   """
+    """
     # Compute total samples and correct predictions
     var total = 0
     var correct = 0
@@ -425,8 +432,12 @@ fn compute_matrix_metrics(
         if tp + false_neg > 0:
             recall_sum += Float32(tp) / Float32(tp + false_neg)
 
-    var precision = precision_sum / Float32(n_classes) if n_classes > 0 else Float32(0.0)
-    var recall = recall_sum / Float32(n_classes) if n_classes > 0 else Float32(0.0)
+    var precision = precision_sum / Float32(
+        n_classes
+    ) if n_classes > 0 else Float32(0.0)
+    var recall = recall_sum / Float32(n_classes) if n_classes > 0 else Float32(
+        0.0
+    )
 
     return Tuple[Float32, Float32, Float32](accuracy, precision, recall)
 
@@ -455,7 +466,7 @@ fn visualize_model_architecture(
 
     Example:
         ```mojo
-        ar layers = List[String]()
+        var layers = List[String]()
         layers.append("Input: (batch, 1, 28, 28)")
         layers.append("Conv2d: (batch, 32, 28, 28)")
         layers.append("ReLU: (batch, 32, 28, 28)")
@@ -525,7 +536,7 @@ fn visualize_tensor_shapes(
 
 fn visualize_gradient_flow(
     gradients: List[Float32],
-    layer_names: List[String] = List[String](),
+    layer_names: List[String],
     save_path: String = "",
 ) -> Bool:
     """Visualize gradient flow through network.
@@ -572,7 +583,7 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
 
     Returns:
         Tuple of (has_vanishing, has_exploding).
-   """
+    """
     # Thresholds for vanishing and exploding gradients
     var vanishing_threshold = Float32(1e-7)
     var exploding_threshold = Float32(1e2)
@@ -596,7 +607,7 @@ fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
 
 fn show_images(
     images: List[String],
-    labels: List[String] = List[String](),
+    labels: List[String],
     nrow: Int = 8,
     save_path: String = "",
 ) -> Bool:
@@ -616,7 +627,7 @@ fn show_images(
 
     Example:
         ```mojo
-        ar image_files = List[String]()
+        var image_files = List[String]()
         var labels = List[String]()
 
         # Load first batch...

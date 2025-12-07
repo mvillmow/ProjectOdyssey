@@ -53,6 +53,7 @@ struct MetricResult(Copyable, Movable):
     Can represent scalar metrics (accuracy, loss) or tensor metrics.
     (per-class accuracy, confusion matrix).
     """
+
     var name: String
     var is_scalar: Bool
     var scalar_value: Float64
@@ -111,7 +112,7 @@ struct MetricCollection(Sized):
 
     Example:
         ```mojo
-        ar metrics = MetricCollection()
+        var metrics = MetricCollection()
         metrics.add("accuracy", AccuracyMetric())
         metrics.add("loss", LossTracker(window_size=100))
 
@@ -126,12 +127,13 @@ struct MetricCollection(Sized):
         metrics.reset_all()  # Start new epoch
         ```
     """
+
     var metric_names: List[String]
     var num_metrics: Int
 
     fn __init__(out self):
         """Initialize empty metric collection."""
-        self.metric_names = List[String]()
+        self.metric_names= List[String]()
         self.num_metrics = 0
 
     fn add[T: Metric](mut self, name: String, metric: T):
@@ -144,7 +146,9 @@ struct MetricCollection(Sized):
         # Check for duplicate names
         for i in range(self.num_metrics):
             if self.metric_names[i] == name:
-                print("Warning: Metric '" + name + "' already exists, replacing")
+                print(
+                    "Warning: Metric '" + name + "' already exists, replacing"
+                )
                 return
 
         self.metric_names.append(name)
@@ -229,6 +233,7 @@ struct MetricLogger:
 
     Stores metric values over time for analysis and visualization.
     """
+
     var metric_names: List[String]
     var metric_history: List[List[Float64]]
     var num_metrics: Int
@@ -236,7 +241,7 @@ struct MetricLogger:
 
     fn __init__(out self):
         """Initialize empty metric logger."""
-        self.metric_names = List[String]()
+        self.metric_names= List[String]()
         self.metric_history = List[List[Float64]]()
         self.num_metrics = 0
         self.num_epochs = 0
@@ -302,7 +307,9 @@ struct MetricLogger:
             raise Error("No history for metric '" + metric_name + "'")
         return history[len(history) - 1]
 
-    fn get_best(self, metric_name: String, maximize: Bool = True) raises -> Float64:
+    fn get_best(
+        self, metric_name: String, maximize: Bool = True
+    ) raises -> Float64:
         """Get best value for a metric.
 
         Args:
@@ -353,5 +360,10 @@ struct MetricLogger:
                     best_epoch = j
 
             print(name + ":")
-            print("  Latest (epoch " + String(self.num_epochs - 1) + "): " + String(latest))
+            print(
+                "  Latest (epoch "
+                + String(self.num_epochs - 1)
+                + "): "
+                + String(latest)
+            )
             print("  Best (epoch " + String(best_epoch) + "): " + String(best))

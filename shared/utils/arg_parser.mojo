@@ -40,7 +40,7 @@ struct ArgumentSpec(Copyable, Movable):
         arg_type: Type string ("int", "float", "string", "bool")
         default_value: Default value as string (parsed based on arg_type)
         is_flag: Whether this is a boolean flag (--flag with no value).
-   """
+    """
 
     var name: String
     var arg_type: String
@@ -120,8 +120,11 @@ struct ParsedArgs(Copyable, Movable):
             return Int(value)
         except:
             raise Error(
-                "Cannot parse '" + value + "' as integer for argument '"
-                + name + "'"
+                "Cannot parse '"
+                + value
+                + "' as integer for argument '"
+                + name
+                + "'"
             )
 
     fn get_float(self, name: String, default: Float64 = 0.0) raises -> Float64:
@@ -144,8 +147,11 @@ struct ParsedArgs(Copyable, Movable):
             return Float64(value)
         except:
             raise Error(
-                "Cannot parse '" + value + "' as float for argument '"
-                + name + "'"
+                "Cannot parse '"
+                + value
+                + "' as float for argument '"
+                + name
+                + "'"
             )
 
     fn get_bool(self, name: String) -> Bool:
@@ -174,7 +180,7 @@ struct ArgumentParser(Copyable, Movable):
 
     Example:
         ```mojo
-        ar parser = ArgumentParser()
+        var parser = ArgumentParser()
         parser.add_argument("epochs", "int", "100")
         parser.add_flag("verbose")
         var args = parser.parse()
@@ -206,10 +212,12 @@ struct ArgumentParser(Copyable, Movable):
             Error if arg_type is not recognized.
         """
         # Validate type
-        if arg_type != "int"
+        if (
+            arg_type != "int"
             and arg_type != "float"
             and arg_type != "string"
-            and arg_type != "bool":
+            and arg_type != "bool"
+        ):
             raise Error("Unknown argument type: " + arg_type)
 
         var spec = ArgumentSpec(
@@ -224,7 +232,7 @@ struct ArgumentParser(Copyable, Movable):
 
         Args:
             name: Flag name (e.g., "verbose", "debug").
-       """
+        """
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
         )
@@ -360,7 +368,9 @@ fn validate_positive_float(value: Float64, name: String) raises:
         raise Error(name + " must be positive, got: " + String(value))
 
 
-fn validate_range_float(value: Float64, min_val: Float64, max_val: Float64, name: String) raises:
+fn validate_range_float(
+    value: Float64, min_val: Float64, max_val: Float64, name: String
+) raises:
     """Validate that a float argument is within a range.
 
     Args:
@@ -374,6 +384,11 @@ fn validate_range_float(value: Float64, min_val: Float64, max_val: Float64, name
     """
     if value < min_val or value > max_val:
         raise Error(
-            name + " must be between " + String(min_val) + " and " + String(max_val)
-            + ", got: " + String(value)
+            name
+            + " must be between "
+            + String(min_val)
+            + " and "
+            + String(max_val)
+            + ", got: "
+            + String(value)
         )

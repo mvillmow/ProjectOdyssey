@@ -47,21 +47,21 @@ Examples:
     print(x.grad)  # Chain rule: dLoss/dx
 """
 
-from ..core.extensor import ExTensor, ones_like, zeros_like
-from ..core.arithmetic import (
+from shared.core.extensor import ExTensor, ones_like, zeros_like
+from shared.core.arithmetic import (
     add_backward,
     subtract_backward,
     multiply_backward,
     divide_backward,
 )
-from ..core.reduction import (
+from shared.core.reduction import (
     sum_backward,
     mean_backward,
 )
-from ..core.matrix import (
+from shared.core.matrix import (
     matmul_backward,
 )
-from ..core.activation import (
+from shared.core.activation import (
     relu_backward,
     sigmoid_backward,
     tanh_backward,
@@ -103,16 +103,16 @@ struct SavedTensors(Copyable, Movable):
 
     fn __init__(out self):
         """Initialize empty saved tensors."""
-        self.tensors = List[ExTensor]()
+        self.tensors: List[ExTensor] = []
         self.shapes = List[List[Int]]()
-        self.scalars = List[Float64]()
+        self.scalars: List[Float64] = []
 
     fn __copyinit__(out self, existing: Self):
         """Copy constructor - explicitly copy lists."""
         # Initialize empty lists
-        self.tensors = List[ExTensor]()
+        self.tensors: List[ExTensor] = []
         self.shapes = List[List[Int]]()
-        self.scalars = List[Float64]()
+        self.scalars: List[Float64] = []
 
         # Copy tensors (ExTensor is Copyable)
         for i in range(len(existing.tensors)):
@@ -120,7 +120,7 @@ struct SavedTensors(Copyable, Movable):
 
         # Copy shapes (List[Int] needs explicit copy)
         for i in range(len(existing.shapes)):
-            var shape_copy = List[Int]()
+            var shape_copy= List[Int]()
             for j in range(len(existing.shapes[i])):
                 shape_copy.append(existing.shapes[i][j])
             self.shapes.append(shape_copy^)
@@ -141,12 +141,14 @@ struct SavedTensors(Copyable, Movable):
         var copy = zeros_like(tensor)
         var size = tensor.numel()
         for i in range(size):
-            copy._data.bitcast[Float32]()[i] = tensor._data.bitcast[Float32]()[i]
+            copy._data.bitcast[Float32]()[i] = tensor._data.bitcast[Float32]()[
+                i
+            ]
         self.tensors.append(copy^)
 
     fn add_shape(mut self, shape: List[Int]):
         """Save a shape for backward pass."""
-        var shape_copy = List[Int]()
+        var shape_copy= List[Int]()
         for i in range(len(shape)):
             shape_copy.append(shape[i])
         self.shapes.append(shape_copy^)
@@ -180,7 +182,9 @@ struct TapeNode(Copyable, Movable):
     var output_id: Int
     var saved: SavedTensors
 
-    fn __init__(out self, op_type: String, input_ids: List[Int], output_id: Int):
+    fn __init__(
+        out self, op_type: String, input_ids: List[Int], output_id: Int
+    ):
         """Initialize a tape node.
 
         Args:
@@ -230,7 +234,7 @@ struct TapeNode(Copyable, Movable):
         for i in range(len(existing.saved.tensors)):
             self.saved.tensors.append(existing.saved.tensors[i])
         for i in range(len(existing.saved.shapes)):
-            var shape_copy = List[Int]()
+            var shape_copy= List[Int]()
             for j in range(len(existing.saved.shapes[i])):
                 shape_copy.append(existing.saved.shapes[i][j])
             self.saved.shapes.append(shape_copy^)
@@ -238,7 +242,7 @@ struct TapeNode(Copyable, Movable):
             self.saved.scalars.append(existing.saved.scalars[i])
 
         # Copy input_ids list
-        self.input_ids = List[Int]()
+        self.input_ids= List[Int]()
         for i in range(len(existing.input_ids)):
             self.input_ids.append(existing.input_ids[i])
 
@@ -257,9 +261,9 @@ struct VariableRegistry:
 
     fn __init__(out self):
         """Initialize empty registry."""
-        self.grads = List[ExTensor]()
-        self.has_grad = List[Bool]()
-        self.requires_grad = List[Bool]()
+        self.grads: List[ExTensor] = []
+        self.has_grad: List[Bool] = []
+        self.requires_grad: List[Bool] = []
         self.next_id = 0
 
     fn register(mut self, requires_grad: Bool) raises -> Int:
@@ -276,7 +280,7 @@ struct VariableRegistry:
 
         # Extend lists to accommodate new ID
         # Create a placeholder tensor (will be replaced when gradient is computed)
-        var placeholder_shape = List[Int]()
+        var placeholder_shape= List[Int]()
         placeholder_shape.append(1)
         var placeholder = ExTensor(placeholder_shape, DType.float32)
         self.grads.append(placeholder^)
@@ -308,7 +312,9 @@ struct VariableRegistry:
             # First gradient - copy it using typed access
             var grad_copy = zeros_like(grad)
             for i in range(size):
-                grad_copy._data.bitcast[Float32]()[i] = grad._data.bitcast[Float32]()[i]
+                grad_copy._data.bitcast[Float32]()[i] = grad._data.bitcast[
+                    Float32
+                ]()[i]
             self.grads[id] = grad_copy^
             self.has_grad[id] = True
 
@@ -320,11 +326,11 @@ struct VariableRegistry:
 
         Returns:
             The gradient tensor (or placeholder if not computed).
-       """
+        """
         if id < len(self.grads):
             return self.grads[id]
         # Return empty placeholder
-        var placeholder_shape = List[Int]()
+        var placeholder_shape= List[Int]()
         placeholder_shape.append(1)
         return ExTensor(placeholder_shape, DType.float32)
 
@@ -374,7 +380,7 @@ struct GradientTape:
 
         tape.backward(z)  # Compute all gradients
         tape.disable().
-   """
+    """
 
     var nodes: List[TapeNode]
     var enabled: Bool
@@ -382,7 +388,7 @@ struct GradientTape:
 
     fn __init__(out self):
         """Initialize an empty gradient tape."""
-        self.nodes = List[TapeNode]()
+        self.nodes: List[TapeNode] = []
         self.enabled = False
         self.registry = VariableRegistry()
 
@@ -408,7 +414,7 @@ struct GradientTape:
         Examples:
             tape.disable()
             var y = x + 1  # Not recorded (no gradient tracking).
-       """
+        """
         self.enabled = False
 
     fn clear(mut self):
@@ -421,7 +427,7 @@ struct GradientTape:
             tape.backward(loss)
             tape.clear()  # Free memory.
         """
-        self.nodes = List[TapeNode]()
+        self.nodes: List[TapeNode] = []
         self.registry.clear()
 
     fn register_variable(mut self, requires_grad: Bool) raises -> Int:
@@ -460,7 +466,7 @@ struct GradientTape:
             # Internal use by Variable operations
             if tape.enabled:
                 tape.record("add", input_ids, output_id, saved).
-       """
+        """
         if not self.enabled:
             return
 
@@ -543,7 +549,9 @@ struct GradientTape:
         if len(node.input_ids) >= 2:
             self.registry.set_grad(node.input_ids[1], result.grad_b)
 
-    fn _backward_subtract(mut self, node: TapeNode, grad_output: ExTensor) raises:
+    fn _backward_subtract(
+        mut self, node: TapeNode, grad_output: ExTensor
+    ) raises:
         """Backward pass for subtraction: d(a-b)/da = 1, d(a-b)/db = -1."""
         if len(node.saved.tensors) < 2:
             return
@@ -557,7 +565,9 @@ struct GradientTape:
         if len(node.input_ids) >= 2:
             self.registry.set_grad(node.input_ids[1], result.grad_b)
 
-    fn _backward_multiply(mut self, node: TapeNode, grad_output: ExTensor) raises:
+    fn _backward_multiply(
+        mut self, node: TapeNode, grad_output: ExTensor
+    ) raises:
         """Backward pass for multiplication: d(a*b)/da = b, d(a*b)/db = a."""
         if len(node.saved.tensors) < 2:
             return
@@ -640,7 +650,9 @@ struct GradientTape:
         if len(node.input_ids) >= 1:
             self.registry.set_grad(node.input_ids[0], grad_input)
 
-    fn _backward_sigmoid(mut self, node: TapeNode, grad_output: ExTensor) raises:
+    fn _backward_sigmoid(
+        mut self, node: TapeNode, grad_output: ExTensor
+    ) raises:
         """Backward pass for sigmoid activation."""
         if len(node.saved.tensors) < 1:
             return
@@ -702,7 +714,9 @@ struct GradientTape:
         if len(self.nodes[idx].input_ids) >= 2:
             self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
 
-    fn _backward_subtract_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+    fn _backward_subtract_by_idx(
+        mut self, idx: Int, grad_output: ExTensor
+    ) raises:
         """Backward pass for subtraction by node index."""
         if len(self.nodes[idx].saved.tensors) < 2:
             return
@@ -714,7 +728,9 @@ struct GradientTape:
         if len(self.nodes[idx].input_ids) >= 2:
             self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
 
-    fn _backward_multiply_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+    fn _backward_multiply_by_idx(
+        mut self, idx: Int, grad_output: ExTensor
+    ) raises:
         """Backward pass for multiplication by node index."""
         if len(self.nodes[idx].saved.tensors) < 2:
             return
@@ -726,7 +742,9 @@ struct GradientTape:
         if len(self.nodes[idx].input_ids) >= 2:
             self.registry.set_grad(self.nodes[idx].input_ids[1], result.grad_b)
 
-    fn _backward_divide_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+    fn _backward_divide_by_idx(
+        mut self, idx: Int, grad_output: ExTensor
+    ) raises:
         """Backward pass for division by node index."""
         if len(self.nodes[idx].saved.tensors) < 2:
             return
@@ -762,7 +780,9 @@ struct GradientTape:
         if len(self.nodes[idx].input_ids) >= 1:
             self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
 
-    fn _backward_matmul_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+    fn _backward_matmul_by_idx(
+        mut self, idx: Int, grad_output: ExTensor
+    ) raises:
         """Backward pass for matmul by node index."""
         if len(self.nodes[idx].saved.tensors) < 2:
             return
@@ -783,7 +803,9 @@ struct GradientTape:
         if len(self.nodes[idx].input_ids) >= 1:
             self.registry.set_grad(self.nodes[idx].input_ids[0], grad_input)
 
-    fn _backward_sigmoid_by_idx(mut self, idx: Int, grad_output: ExTensor) raises:
+    fn _backward_sigmoid_by_idx(
+        mut self, idx: Int, grad_output: ExTensor
+    ) raises:
         """Backward pass for sigmoid by node index."""
         if len(self.nodes[idx].saved.tensors) < 1:
             return
@@ -844,7 +866,7 @@ struct NoGradContext(Copyable, Movable):
         TODO(#2400): Implement gradient tracking disable when Mojo supports
         UnsafePointer with parametric mutability. For now, use:
             tape.disable().
-       """
+        """
         pass
 
     fn __exit__(mut self):
@@ -853,5 +875,5 @@ struct NoGradContext(Copyable, Movable):
         TODO(#2400): Implement gradient tracking restore when Mojo supports
         UnsafePointer with parametric mutability. For now, use:
             tape.enable().
-       """
+        """
         pass

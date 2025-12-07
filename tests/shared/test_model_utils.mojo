@@ -23,15 +23,15 @@ import os
 fn test_save_load_model_weights() raises:
     """Test saving and loading model weights."""
     # Create test parameters
-    var params = List[ExTensor]()
-    var shape1 = List[Int](3, 4)
-    var shape2 = List[Int](4, 2)
+    var params: List[ExTensor] = []
+    var shape1: List[Int] = [3, 4]
+    var shape2: List[Int] = [4, 2]
 
     params.append(full(shape1, 1.5, DType.float32))
     params.append(full(shape2, 2.5, DType.float32))
 
     # Create parameter names
-    var names = List[String]()
+    var names= List[String]()
     names.append("conv1_kernel")
     names.append("fc1_weights")
 
@@ -49,7 +49,7 @@ fn test_save_load_model_weights() raises:
         assert_true(_file_exists(file2), "fc1_weights.weights not created")
 
         # Load weights
-        var loaded = List[ExTensor]()
+        var loaded: List[ExTensor] = []
         load_model_weights(loaded, tmpdir, names)
 
         # Verify number of parameters
@@ -64,13 +64,20 @@ fn test_save_load_model_weights() raises:
         # Verify values
         for i in range(loaded[0].numel()):
             var v = loaded[0]._get_float64(i)
-            assert_true(Float32(v) > 1.4 and Float32(v) < 1.6, "Value mismatch in first param")
+            assert_true(
+                Float32(v) > 1.4 and Float32(v) < 1.6,
+                "Value mismatch in first param",
+            )
 
         # Verify second parameter
         var loaded_shape2 = loaded[1].shape()
         assert_equal(len(loaded_shape2), 2, "Wrong rank for second parameter")
-        assert_equal(loaded_shape2[0], 4, "Wrong first dimension of second param")
-        assert_equal(loaded_shape2[1], 2, "Wrong second dimension of second param")
+        assert_equal(
+            loaded_shape2[0], 4, "Wrong first dimension of second param"
+        )
+        assert_equal(
+            loaded_shape2[1], 2, "Wrong second dimension of second param"
+        )
 
     finally:
         # Clean up
@@ -127,11 +134,11 @@ fn test_get_vgg16_parameter_names() raises:
 fn test_validate_shapes_matching() raises:
     """Test shape validation with matching tensors."""
     # Create matching tensors
-    var expected = List[ExTensor]()
-    var loaded = List[ExTensor]()
+    var expected: List[ExTensor] = []
+    var loaded: List[ExTensor] = []
 
-    var shape1 = List[Int](3, 4)
-    var shape2 = List[Int](4, 5, 6)
+    var shape1: List[Int] = [3, 4]
+    var shape2: List[Int] = [4, 5, 6]
 
     expected.append(zeros(shape1, DType.float32))
     expected.append(zeros(shape2, DType.float32))
@@ -145,11 +152,11 @@ fn test_validate_shapes_matching() raises:
 
 fn test_validate_shapes_rank_mismatch() raises:
     """Test shape validation with rank mismatch."""
-    var expected = List[ExTensor]()
-    var loaded = List[ExTensor]()
+    var expected: List[ExTensor] = []
+    var loaded: List[ExTensor] = []
 
-    var shape1 = List[Int](3, 4)
-    var shape2 = List[Int](3, 4, 1)  # Different rank
+    var shape1: List[Int] = [3, 4]
+    var shape2: List[Int] = [3, 4, 1]  # Different rank
 
     expected.append(zeros(shape1, DType.float32))
     loaded.append(zeros(shape2, DType.float32))
@@ -165,11 +172,11 @@ fn test_validate_shapes_rank_mismatch() raises:
 
 fn test_validate_shapes_dimension_mismatch() raises:
     """Test shape validation with dimension mismatch."""
-    var expected = List[ExTensor]()
-    var loaded = List[ExTensor]()
+    var expected: List[ExTensor] = []
+    var loaded: List[ExTensor] = []
 
-    var shape1 = List[Int](3, 4)
-    var shape2 = List[Int](3, 5)  # Different second dimension
+    var shape1: List[Int] = [3, 4]
+    var shape2: List[Int] = [3, 5]  # Different second dimension
 
     expected.append(zeros(shape1, DType.float32))
     loaded.append(zeros(shape2, DType.float32))
@@ -185,10 +192,10 @@ fn test_validate_shapes_dimension_mismatch() raises:
 
 fn test_validate_shapes_count_mismatch() raises:
     """Test shape validation with parameter count mismatch."""
-    var expected = List[ExTensor]()
-    var loaded = List[ExTensor]()
+    var expected: List[ExTensor] = []
+    var loaded: List[ExTensor] = []
 
-    var shape1 = List[Int](3, 4)
+    var shape1: List[Int] = [3, 4]
 
     expected.append(zeros(shape1, DType.float32))
     expected.append(zeros(shape1, DType.float32))
@@ -223,6 +230,7 @@ fn _cleanup_directory(path: String):
     """Remove directory and all contents."""
     try:
         from python import Python
+
         var shutil = Python.import_module("shutil")
         var _ = shutil.rmtree(path)
     except:

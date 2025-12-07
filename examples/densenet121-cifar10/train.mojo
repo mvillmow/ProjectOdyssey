@@ -16,6 +16,7 @@ from shared.data import extract_batch_pair, compute_num_batches, DatasetInfo
 from shared.data.datasets import load_cifar10_train
 from model import DenseNet121
 
+
 fn main() raises:
     print("=" * 60)
     print("DenseNet-121 Training on CIFAR-10")
@@ -25,7 +26,7 @@ fn main() raises:
     var train_data = load_cifar10_train("datasets/cifar10")
     var train_images = train_data[0]
     var train_labels = train_data[1]
-    print("Training samples: " + str(train_images.shape()[0]))
+    print("Training samples: " + String(train_images.shape()[0]))
     print()
 
     var dataset_info = DatasetInfo("cifar10")

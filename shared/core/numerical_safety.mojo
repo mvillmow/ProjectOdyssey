@@ -180,10 +180,9 @@ fn count_inf(tensor: ExTensor) -> Int:
 
 
 @parameter
-fn check_tensor_safety[enable: Bool = False](
-    tensor: ExTensor,
-    name: String = "tensor"
-) raises:
+fn check_tensor_safety[
+    enable: Bool = False
+](tensor: ExTensor, name: String = "tensor") raises:
     """Check tensor for NaN/Inf values with compile-time optional behavior.
 
     When enable=True, raises Error if NaN or Inf found.
@@ -209,18 +208,15 @@ fn check_tensor_safety[enable: Bool = False](
     Note:
         Use @parameter to enable/disable at compile time for zero runtime cost.
     """
+
     @parameter
     if enable:
         if has_nan(tensor):
             var count = count_nan(tensor)
-            raise Error(
-                name + " contains " + String(count) + " NaN values"
-            )
+            raise Error(name + " contains " + String(count) + " NaN values")
         if has_inf(tensor):
             var count = count_inf(tensor)
-            raise Error(
-                name + " contains " + String(count) + " Inf values"
-            )
+            raise Error(name + " contains " + String(count) + " Inf values")
     # If enable=False, this entire function body is eliminated at compile time
 
 
@@ -314,7 +310,7 @@ fn check_tensor_range(
     tensor: ExTensor,
     min_val: Float64,
     max_val: Float64,
-    name: String = "tensor"
+    name: String = "tensor",
 ) raises:
     """Check if all tensor values are within [min_val, max_val].
 
@@ -339,9 +335,16 @@ fn check_tensor_range(
 
     if t_min < min_val or t_max > max_val:
         raise Error(
-            name + " values out of range: [" + String(t_min) + ", " +
-            String(t_max) + "], expected [" + String(min_val) + ", " +
-            String(max_val) + "]"
+            name
+            + " values out of range: ["
+            + String(t_min)
+            + ", "
+            + String(t_max)
+            + "], expected ["
+            + String(min_val)
+            + ", "
+            + String(max_val)
+            + "]"
         )
 
 
@@ -383,9 +386,7 @@ fn compute_tensor_l2_norm(tensor: ExTensor) -> Float64:
 
 
 fn check_gradient_norm(
-    gradient: ExTensor,
-    max_norm: Float64 = 1000.0,
-    name: String = "gradient"
+    gradient: ExTensor, max_norm: Float64 = 1000.0, name: String = "gradient"
 ) raises:
     """Check if gradient L2 norm exceeds threshold (gradient explosion detection).
 
@@ -407,20 +408,22 @@ fn check_gradient_norm(
     Note:
         Use this to detect gradient explosion during training.
         Common thresholds: 10.0 (strict), 100.0 (moderate), 1000.0 (lenient).
-   """
+    """
     var norm = compute_tensor_l2_norm(gradient)
 
     if norm > max_norm:
         raise Error(
-            name + " norm too large: " + String(norm) +
-            " > max_norm=" + String(max_norm) + " (gradient explosion)"
+            name
+            + " norm too large: "
+            + String(norm)
+            + " > max_norm="
+            + String(max_norm)
+            + " (gradient explosion)"
         )
 
 
 fn check_gradient_vanishing(
-    gradient: ExTensor,
-    min_norm: Float64 = 1e-7,
-    name: String = "gradient"
+    gradient: ExTensor, min_norm: Float64 = 1e-7, name: String = "gradient"
 ) raises:
     """Check if gradient L2 norm is too small (gradient vanishing detection).
 
@@ -442,22 +445,28 @@ fn check_gradient_vanishing(
     Note:
         Use this to detect gradient vanishing in deep networks.
         Common thresholds: 1e-7 (lenient), 1e-5 (moderate), 1e-3 (strict).
-   """
+    """
     var norm = compute_tensor_l2_norm(gradient)
 
     if norm < min_norm:
         raise Error(
-            name + " norm too small: " + String(norm) +
-            " < min_norm=" + String(min_norm) + " (gradient vanishing)"
+            name
+            + " norm too small: "
+            + String(norm)
+            + " < min_norm="
+            + String(min_norm)
+            + " (gradient vanishing)"
         )
 
 
 @parameter
-fn check_gradient_safety[enable: Bool = False](
+fn check_gradient_safety[
+    enable: Bool = False
+](
     gradient: ExTensor,
     max_norm: Float64 = 1000.0,
     min_norm: Float64 = 1e-7,
-    name: String = "gradient"
+    name: String = "gradient",
 ) raises:
     """Combined gradient safety check with compile-time optional behavior.
 
@@ -485,6 +494,7 @@ fn check_gradient_safety[enable: Bool = False](
         check_gradient_safety(grad)  # Compiles to nothing
         ```
     """
+
     @parameter
     if enable:
         # Check NaN/Inf

@@ -45,7 +45,8 @@ struct EvaluationResult(Copyable, Movable):
         correct_per_class: Per-class correct prediction counts (optional)
         total_per_class: Per-class total sample counts (optional)
         top_k_accuracy: Top-k accuracy (optional, defaults to None).
-   """
+    """
+
     var accuracy: Float32
     var num_correct: Int
     var num_total: Int
@@ -58,17 +59,17 @@ struct EvaluationResult(Copyable, Movable):
         num_correct: Int,
         num_total: Int,
         correct_per_class: List[Int] = List[Int](),
-        total_per_class: List[Int] = List[Int]()
+        total_per_class: List[Int] = List[Int](),
     ):
         """Initialize EvaluationResult.
 
         Args:
-            accuracy: Overall accuracy as fraction [0.0, 1.0]
-            num_correct: Total correct predictions
-            num_total: Total samples evaluated
-            correct_per_class: Per-class correct counts (optional)
+            accuracy: Overall accuracy as fraction [0.0, 1.0].
+            num_correct: Total correct predictions.
+            num_total: Total samples evaluated.
+            correct_per_class: Per-class correct counts (optional).
             total_per_class: Per-class total counts (optional).
-       """
+        """
         self.accuracy = accuracy
         self.num_correct = num_correct
         self.num_total = num_total
@@ -81,13 +82,15 @@ struct EvaluationResult(Copyable, Movable):
 # ============================================================================
 
 
-fn evaluate_model[M: Model](
+fn evaluate_model[
+    M: Model
+](
     mut model: M,
     images: ExTensor,
     labels: ExTensor,
     batch_size: Int = 100,
     num_classes: Int = 10,
-    verbose: Bool = True
+    verbose: Bool = True,
 ) raises -> EvaluationResult:
     """Generically evaluate a model on a dataset with per-class statistics.
 
@@ -98,12 +101,12 @@ fn evaluate_model[M: Model](
         M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
     Args:
-        model: Model to evaluate (must have forward() method)
-        images: Input images of shape (num_samples, ...)
-        labels: Ground truth labels of shape (num_samples,)
-        batch_size: Batch size for evaluation (default: 100)
-        num_classes: Number of classification classes (default: 10)
-        verbose: Print progress during evaluation (default: True)
+        model: Model to evaluate (must have forward() method).
+        images: Input images of shape (num_samples, ...).
+        labels: Ground truth labels of shape (num_samples,).
+        batch_size: Batch size for evaluation (default: 100).
+        num_classes: Number of classification classes (default: 10).
+        verbose: Print progress during evaluation (default: True).
 
     Returns:
         EvaluationResult with accuracy, per-class stats, and total counts
@@ -120,7 +123,7 @@ fn evaluate_model[M: Model](
         for i in range(num_classes):
             var class_acc = Float32(result.correct_per_class[i]) / Float32(result.total_per_class[i])
             print("Class ", i, " accuracy: ", class_acc).
-   """
+    """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 
@@ -134,14 +137,22 @@ fn evaluate_model[M: Model](
         total_per_class.append(0)
 
     if verbose:
-        print("Evaluating on " + String(num_samples) + " samples (" + String(num_batches) + " batches)...")
+        print(
+            "Evaluating on "
+            + String(num_samples)
+            + " samples ("
+            + String(num_batches)
+            + " batches)..."
+        )
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
-        var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            images, labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]
@@ -178,8 +189,18 @@ fn evaluate_model[M: Model](
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
             var progress = Float32(batch_idx + 1) / Float32(num_batches) * 100.0
-            var current_acc = Float32(total_correct) / Float32((batch_idx + 1) * batch_size) * 100.0
-            print("  Progress: " + String(progress) + "% - Current Acc: " + String(current_acc) + "%")
+            var current_acc = (
+                Float32(total_correct)
+                / Float32((batch_idx + 1) * batch_size)
+                * 100.0
+            )
+            print(
+                "  Progress: "
+                + String(progress)
+                + "% - Current Acc: "
+                + String(current_acc)
+                + "%"
+            )
 
     var overall_accuracy = Float32(total_correct) / Float32(num_samples)
 
@@ -192,17 +213,19 @@ fn evaluate_model[M: Model](
         total_correct,
         num_samples,
         correct_per_class^,
-        total_per_class^
+        total_per_class^,
     )
 
 
-fn evaluate_model_simple[M: Model](
+fn evaluate_model_simple[
+    M: Model
+](
     mut model: M,
     images: ExTensor,
     labels: ExTensor,
     batch_size: Int = 100,
     num_classes: Int = 10,
-    verbose: Bool = True
+    verbose: Bool = True,
 ) raises -> Float32:
     """Simplified evaluation returning only overall accuracy.
 
@@ -213,12 +236,12 @@ fn evaluate_model_simple[M: Model](
         M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
     Args:
-        model: Model to evaluate (must have forward() method)
-        images: Input images of shape (num_samples, ...)
-        labels: Ground truth labels of shape (num_samples,)
-        batch_size: Batch size for evaluation (default: 100)
-        num_classes: Number of classification classes (default: 10)
-        verbose: Print progress during evaluation (default: True)
+        model: Model to evaluate (must have forward() method).
+        images: Input images of shape (num_samples, ...).
+        labels: Ground truth labels of shape (num_samples,).
+        batch_size: Batch size for evaluation (default: 100).
+        num_classes: Number of classification classes (default: 10).
+        verbose: Print progress during evaluation (default: True).
 
     Returns:
         Overall accuracy as fraction in [0.0, 1.0]
@@ -230,7 +253,7 @@ fn evaluate_model_simple[M: Model](
         # Simple overall accuracy
         var accuracy = evaluate_model_simple(model, test_images, test_labels)
         print("Test Accuracy: ", accuracy * 100.0, "%").
-   """
+    """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 
@@ -244,7 +267,9 @@ fn evaluate_model_simple[M: Model](
         var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
-        var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            images, labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]
@@ -287,14 +312,16 @@ fn evaluate_model_simple[M: Model](
     return overall_accuracy
 
 
-fn evaluate_topk[M: Model](
+fn evaluate_topk[
+    M: Model
+](
     mut model: M,
     images: ExTensor,
     labels: ExTensor,
     k: Int = 5,
     batch_size: Int = 100,
     num_classes: Int = 10,
-    verbose: Bool = True
+    verbose: Bool = True,
 ) raises -> Float32:
     """Evaluate model using top-k accuracy.
 
@@ -305,13 +332,13 @@ fn evaluate_topk[M: Model](
         M: Model type that must implement forward(images: ExTensor) -> ExTensor
 
     Args:
-        model: Model to evaluate
-        images: Input images of shape (num_samples, ...)
-        labels: Ground truth labels of shape (num_samples,)
-        k: Number of top predictions to consider (default: 5)
-        batch_size: Batch size for evaluation (default: 100)
-        num_classes: Number of classification classes (default: 10)
-        verbose: Print progress during evaluation (default: True)
+        model: Model to evaluate.
+        images: Input images of shape (num_samples, ...).
+        labels: Ground truth labels of shape (num_samples,).
+        k: Number of top predictions to consider (default: 5).
+        batch_size: Batch size for evaluation (default: 100).
+        num_classes: Number of classification classes (default: 10).
+        verbose: Print progress during evaluation (default: True).
 
     Returns:
         Top-k accuracy as fraction in [0.0, 1.0]
@@ -323,7 +350,7 @@ fn evaluate_topk[M: Model](
         # Top-5 accuracy for ImageNet-like tasks
         var top5_acc = evaluate_topk(model, test_images, test_labels, k=5)
         print("Top-5 Accuracy: ", top5_acc * 100.0, "%").
-   """
+    """
     if k > num_classes:
         raise Error("evaluate_topk: k must be <= num_classes")
 
@@ -333,14 +360,22 @@ fn evaluate_topk[M: Model](
     var total_correct = 0
 
     if verbose:
-        print("Evaluating top-" + String(k) + " accuracy on " + String(num_samples) + " samples...")
+        print(
+            "Evaluating top-"
+            + String(k)
+            + " accuracy on "
+            + String(num_samples)
+            + " samples..."
+        )
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
-        var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            images, labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]

@@ -43,7 +43,7 @@ from math import sqrt
 
 fn test_swish_shapes() raises:
     """Test that swish returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -57,7 +57,7 @@ fn test_swish_shapes() raises:
 
 fn test_swish_values() raises:
     """Test that swish computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -78,35 +78,25 @@ fn test_swish_values() raises:
     # swish(2) = 2 * sigmoid(2) = 2 * 0.881 ≈ 1.762
 
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(-0.238),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[0], Float32(-0.238), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[1],
-        Float32(-0.269),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[1], Float32(-0.269), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[2],
-        Float32(0.0),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[2], Float32(0.0), tolerance=1e-5
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[3],
-        Float32(0.731),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[3], Float32(0.731), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[4],
-        Float32(1.762),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[4], Float32(1.762), tolerance=0.01
     )
 
 
 fn test_swish_backward_shapes() raises:
     """Test that swish_backward returns correct gradient shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -122,7 +112,7 @@ fn test_swish_backward_shapes() raises:
 
 fn test_swish_backward_zero() raises:
     """Test swish backward at x=0."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
 
@@ -133,9 +123,7 @@ fn test_swish_backward_zero() raises:
     # d/dx[x * sigmoid(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
     # = 0.5 + 0 * 0.5 * 0.5 = 0.5
     assert_almost_equal(
-        grad_input._data.bitcast[Float32]()[0],
-        Float32(0.5),
-        tolerance=1e-5
+        grad_input._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5
     )
 
 
@@ -146,7 +134,7 @@ fn test_swish_backward_zero() raises:
 
 fn test_mish_shapes() raises:
     """Test that mish returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -160,7 +148,7 @@ fn test_mish_shapes() raises:
 
 fn test_mish_values() raises:
     """Test that mish computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -177,25 +165,19 @@ fn test_mish_values() raises:
     # mish(1) = 1 * tanh(ln(1 + exp(1))) = 1 * tanh(1.313) ≈ 1 * 0.866 ≈ 0.866
 
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(-0.303),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[0], Float32(-0.303), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[1],
-        Float32(0.0),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[1], Float32(0.0), tolerance=1e-5
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[2],
-        Float32(0.866),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[2], Float32(0.866), tolerance=0.01
     )
 
 
 fn test_mish_backward_shapes() raises:
     """Test that mish_backward returns correct gradient shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -211,7 +193,7 @@ fn test_mish_backward_shapes() raises:
 
 fn test_mish_backward_positive() raises:
     """Test that mish backward gradient is positive for positive inputs."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = ones(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1.0
@@ -230,7 +212,7 @@ fn test_mish_backward_positive() raises:
 
 fn test_elu_shapes() raises:
     """Test that elu returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -244,7 +226,7 @@ fn test_elu_shapes() raises:
 
 fn test_elu_positive_values() raises:
     """Test that elu passes through positive values unchanged."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -257,25 +239,19 @@ fn test_elu_positive_values() raises:
 
     # For x > 0: elu(x) = x
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(0.5),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[1],
-        Float32(1.0),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[1], Float32(1.0), tolerance=1e-5
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[2],
-        Float32(2.0),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
     )
 
 
 fn test_elu_negative_values() raises:
     """Test that elu applies exponential to negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -292,25 +268,19 @@ fn test_elu_negative_values() raises:
     # elu(-2) = 1.0 * (exp(-2) - 1) = 0.135 - 1 = -0.865
 
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(-0.632),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[0], Float32(-0.632), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[1],
-        Float32(-0.393),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[1], Float32(-0.393), tolerance=0.01
     )
     assert_almost_equal(
-        output._data.bitcast[Float32]()[2],
-        Float32(-0.865),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[2], Float32(-0.865), tolerance=0.01
     )
 
 
 fn test_elu_alpha_parameter() raises:
     """Test that elu alpha parameter works correctly."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
@@ -320,15 +290,13 @@ fn test_elu_alpha_parameter() raises:
 
     # elu(-1, alpha=2.0) = 2.0 * (exp(-1) - 1) = 2.0 * -0.632 = -1.264
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(-1.264),
-        tolerance=0.01
+        output._data.bitcast[Float32]()[0], Float32(-1.264), tolerance=0.01
     )
 
 
 fn test_elu_at_zero() raises:
     """Test that elu is continuous at zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 0.0
@@ -337,15 +305,13 @@ fn test_elu_at_zero() raises:
 
     # At x=0: elu(0) = 0
     assert_almost_equal(
-        output._data.bitcast[Float32]()[0],
-        Float32(0.0),
-        tolerance=1e-5
+        output._data.bitcast[Float32]()[0], Float32(0.0), tolerance=1e-5
     )
 
 
 fn test_elu_backward_shapes() raises:
     """Test that elu_backward returns correct gradient shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -361,7 +327,7 @@ fn test_elu_backward_shapes() raises:
 
 fn test_elu_backward_positive() raises:
     """Test elu backward gradient for positive inputs."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = ones(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 1.0
@@ -371,15 +337,13 @@ fn test_elu_backward_positive() raises:
 
     # For x > 0: d/dx[elu(x)] = 1
     assert_almost_equal(
-        grad_input._data.bitcast[Float32]()[0],
-        Float32(1.0),
-        tolerance=1e-5
+        grad_input._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5
     )
 
 
 fn test_elu_backward_negative() raises:
     """Test elu backward gradient for negative inputs."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = -1.0
@@ -390,15 +354,13 @@ fn test_elu_backward_negative() raises:
     # For x < 0: d/dx[elu(x)] = alpha * exp(x)
     # d/dx[elu(-1)] = 1.0 * exp(-1) = 0.368
     assert_almost_equal(
-        grad_input._data.bitcast[Float32]()[0],
-        Float32(0.368),
-        tolerance=0.01
+        grad_input._data.bitcast[Float32]()[0], Float32(0.368), tolerance=0.01
     )
 
 
 fn test_elu_backward_at_zero() raises:
     """Test elu backward gradient at zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var x = zeros(shape, DType.float32)
     x._data.bitcast[Float32]()[0] = 0.0
@@ -408,9 +370,7 @@ fn test_elu_backward_at_zero() raises:
 
     # At x=0: d/dx[elu(x)] = 1
     assert_almost_equal(
-        grad_input._data.bitcast[Float32]()[0],
-        Float32(1.0),
-        tolerance=1e-5
+        grad_input._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5
     )
 
 

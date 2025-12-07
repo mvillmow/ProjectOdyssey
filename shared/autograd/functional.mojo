@@ -128,9 +128,7 @@ fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
 
 fn apply_gradient(
-    parameter: ExTensor,
-    gradient: ExTensor,
-    learning_rate: Float64
+    parameter: ExTensor, gradient: ExTensor, learning_rate: Float64
 ) raises -> ExTensor:
     """Apply a gradient to a parameter with given learning rate.
 
@@ -158,7 +156,7 @@ fn apply_gradient(
 fn apply_gradients(
     mut parameters: List[ExTensor],
     gradients: List[ExTensor],
-    learning_rate: Float64
+    learning_rate: Float64,
 ) raises:
     """Apply gradients to multiple parameters in-place.
 
@@ -177,7 +175,9 @@ fn apply_gradients(
         raise Error("Parameter count must match gradient count")
 
     for i in range(len(parameters)):
-        parameters[i] = apply_gradient(parameters[i], gradients[i], learning_rate)
+        parameters[i] = apply_gradient(
+            parameters[i], gradients[i], learning_rate
+        )
 
 
 # ============================================================================
@@ -210,8 +210,7 @@ struct LossAndGrad:
 
 
 fn mse_loss_and_grad(
-    predictions: ExTensor,
-    targets: ExTensor
+    predictions: ExTensor, targets: ExTensor
 ) raises -> LossAndGrad:
     """Compute MSE loss and gradient in one pass.
 
@@ -243,9 +242,7 @@ fn mse_loss_and_grad(
 
 
 fn bce_loss_and_grad(
-    predictions: ExTensor,
-    targets: ExTensor,
-    epsilon: Float64 = 1e-7
+    predictions: ExTensor, targets: ExTensor, epsilon: Float64 = 1e-7
 ) raises -> LossAndGrad:
     """Compute binary cross-entropy loss and gradient.
 
@@ -278,9 +275,7 @@ fn bce_loss_and_grad(
 
 
 fn ce_loss_and_grad(
-    logits: ExTensor,
-    targets: ExTensor,
-    epsilon: Float64 = 1e-7
+    logits: ExTensor, targets: ExTensor, epsilon: Float64 = 1e-7
 ) raises -> LossAndGrad:
     """Compute cross-entropy loss and gradient.
 
@@ -306,16 +301,16 @@ fn ce_loss_and_grad(
 
     # Backward pass
     var grad_loss = ones(loss.shape(), loss.dtype())
-    var grad_logits = cross_entropy_backward(grad_loss, logits, targets, epsilon)
+    var grad_logits = cross_entropy_backward(
+        grad_loss, logits, targets, epsilon
+    )
 
     return LossAndGrad(loss, grad_logits)
 
 
 # Helper function for manual gradient computation patterns
 fn compute_gradient(
-    predictions: ExTensor,
-    targets: ExTensor,
-    loss_type: String = "mse"
+    predictions: ExTensor, targets: ExTensor, loss_type: String = "mse"
 ) raises -> ExTensor:
     """Compute gradient for common loss functions.
 
@@ -343,4 +338,6 @@ fn compute_gradient(
         var result = ce_loss_and_grad(predictions, targets)
         return result.grad
     else:
-        raise Error("Unknown loss type: " + loss_type + ". Use 'mse', 'bce', or 'ce'.")
+        raise Error(
+            "Unknown loss type: " + loss_type + ". Use 'mse', 'bce', or 'ce'."
+        )

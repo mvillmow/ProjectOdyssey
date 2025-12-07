@@ -48,7 +48,7 @@ fn test_print_training_progress_basic() raises:
         batch=10,
         total_batches=50,
         loss=0.523,
-        learning_rate=0.01
+        learning_rate=0.01,
     )
 
     print("   Training progress basic test passed")
@@ -65,7 +65,7 @@ fn test_print_training_progress_early_epoch() raises:
         batch=1,
         total_batches=100,
         loss=2.453,
-        learning_rate=0.1
+        learning_rate=0.1,
     )
 
     print("   Training progress early epoch test passed")
@@ -82,7 +82,7 @@ fn test_print_training_progress_late_epoch() raises:
         batch=1000,
         total_batches=1000,
         loss=0.012,
-        learning_rate=0.0001
+        learning_rate=0.0001,
     )
 
     print("   Training progress late epoch test passed")
@@ -98,7 +98,7 @@ fn test_print_training_progress_very_small_loss() raises:
         batch=50,
         total_batches=100,
         loss=Float32(1e-6),
-        learning_rate=Float32(1e-8)
+        learning_rate=Float32(1e-8),
     )
 
     print("   Training progress very small loss test passed")
@@ -114,7 +114,7 @@ fn test_print_training_progress_large_loss() raises:
         batch=1,
         total_batches=100,
         loss=100.234,
-        learning_rate=0.1
+        learning_rate=0.1,
     )
 
     print("   Training progress large loss test passed")
@@ -135,7 +135,7 @@ fn test_print_evaluation_summary_basic() raises:
         train_loss=0.523,
         train_accuracy=0.923,
         test_loss=0.645,
-        test_accuracy=0.891
+        test_accuracy=0.891,
     )
 
     print("   Evaluation summary basic test passed")
@@ -151,7 +151,7 @@ fn test_print_evaluation_summary_perfect_accuracy() raises:
         train_loss=0.001,
         train_accuracy=1.0,
         test_loss=0.005,
-        test_accuracy=1.0
+        test_accuracy=1.0,
     )
 
     print("   Evaluation summary perfect accuracy test passed")
@@ -167,7 +167,7 @@ fn test_print_evaluation_summary_zero_accuracy() raises:
         train_loss=4.605,
         train_accuracy=0.0,
         test_loss=4.605,
-        test_accuracy=0.0
+        test_accuracy=0.0,
     )
 
     print("   Evaluation summary zero accuracy test passed")
@@ -183,7 +183,7 @@ fn test_print_evaluation_summary_last_epoch() raises:
         train_loss=0.034,
         train_accuracy=0.965,
         test_loss=0.156,
-        test_accuracy=0.952
+        test_accuracy=0.952,
     )
 
     print("   Evaluation summary last epoch test passed")
@@ -199,7 +199,7 @@ fn test_print_per_class_accuracy_basic() raises:
     print("Testing print_per_class_accuracy basic...")
 
     # Create simple per-class accuracy tensor
-    var shape = List[Int](10)
+    var shape: List[Int] = [10]
     var accuracies = full(shape, 0.85, DType.float64)
 
     print_per_class_accuracy(accuracies)
@@ -212,14 +212,14 @@ fn test_print_per_class_accuracy_with_class_names() raises:
     print("Testing print_per_class_accuracy with class names...")
 
     # Create per-class accuracy tensor
-    var shape = List[Int](3)
+    var shape: List[Int] = [3]
     var accuracies = ExTensor(shape, DType.float64)
     accuracies._data.bitcast[Float64]()[0] = 0.92
     accuracies._data.bitcast[Float64]()[1] = 0.88
     accuracies._data.bitcast[Float64]()[2] = 0.95
 
     # Create class names
-    var class_names = List[String]()
+    var class_names= List[String]()
     class_names.append("Cat")
     class_names.append("Dog")
     class_names.append("Bird")
@@ -234,7 +234,7 @@ fn test_print_per_class_accuracy_varied_values() raises:
     print("Testing print_per_class_accuracy varied values...")
 
     # Create varied per-class accuracy tensor
-    var shape = List[Int](5)
+    var shape: List[Int] = [5]
     var accuracies = ExTensor(shape, DType.float64)
     accuracies._data.bitcast[Float64]()[0] = 0.50
     accuracies._data.bitcast[Float64]()[1] = 0.75
@@ -251,7 +251,7 @@ fn test_print_per_class_accuracy_single_class() raises:
     """Test per-class accuracy with single class."""
     print("Testing print_per_class_accuracy single class...")
 
-    var shape = List[Int](1)
+    var shape: List[Int] = [1]
     var accuracies = full(shape, 0.95, DType.float64)
 
     print_per_class_accuracy(accuracies)
@@ -263,7 +263,7 @@ fn test_print_per_class_accuracy_many_classes() raises:
     """Test per-class accuracy with many classes."""
     print("Testing print_per_class_accuracy many classes...")
 
-    var shape = List[Int](100)
+    var shape: List[Int] = [100]
     var accuracies = full(shape, 0.87, DType.float64)
 
     print_per_class_accuracy(accuracies)
@@ -281,7 +281,7 @@ fn test_print_confusion_matrix_basic() raises:
     print("Testing print_confusion_matrix basic...")
 
     # Create simple 3x3 confusion matrix
-    var shape = List[Int](3, 3)
+    var shape: List[Int] = [3, 3]
     var matrix = ExTensor(shape, DType.int32)
 
     # Initialize with simple pattern (diagonal dominance)
@@ -303,21 +303,21 @@ fn test_print_confusion_matrix_with_class_names() raises:
     print("Testing print_confusion_matrix with class names...")
 
     # Create 3x3 confusion matrix
-    var shape = List[Int](3, 3)
+    var shape: List[Int] = [3, 3]
     var matrix = ExTensor(shape, DType.int32)
 
     # Fill with test data
     matrix._data.bitcast[Int32]()[0] = 90  # 0,0
-    matrix._data.bitcast[Int32]()[1] = 5   # 0,1
-    matrix._data.bitcast[Int32]()[2] = 5   # 0,2
-    matrix._data.bitcast[Int32]()[3] = 3   # 1,0
+    matrix._data.bitcast[Int32]()[1] = 5  # 0,1
+    matrix._data.bitcast[Int32]()[2] = 5  # 0,2
+    matrix._data.bitcast[Int32]()[3] = 3  # 1,0
     matrix._data.bitcast[Int32]()[4] = 92  # 1,1
-    matrix._data.bitcast[Int32]()[5] = 5   # 1,2
-    matrix._data.bitcast[Int32]()[6] = 2   # 2,0
-    matrix._data.bitcast[Int32]()[7] = 4   # 2,1
+    matrix._data.bitcast[Int32]()[5] = 5  # 1,2
+    matrix._data.bitcast[Int32]()[6] = 2  # 2,0
+    matrix._data.bitcast[Int32]()[7] = 4  # 2,1
     matrix._data.bitcast[Int32]()[8] = 94  # 2,2
 
-    var class_names = List[String]()
+    var class_names= List[String]()
     class_names.append("Cat")
     class_names.append("Dog")
     class_names.append("Bird")
@@ -332,15 +332,15 @@ fn test_print_confusion_matrix_binary() raises:
     print("Testing print_confusion_matrix binary...")
 
     # Create 2x2 confusion matrix (binary classification)
-    var shape = List[Int](2, 2)
+    var shape: List[Int] = [2, 2]
     var matrix = ExTensor(shape, DType.int32)
 
     matrix._data.bitcast[Int32]()[0] = 950  # TP
-    matrix._data.bitcast[Int32]()[1] = 50   # FP
-    matrix._data.bitcast[Int32]()[2] = 30   # FN
+    matrix._data.bitcast[Int32]()[1] = 50  # FP
+    matrix._data.bitcast[Int32]()[2] = 30  # FN
     matrix._data.bitcast[Int32]()[3] = 970  # TN
 
-    var class_names = List[String]()
+    var class_names= List[String]()
     class_names.append("Negative")
     class_names.append("Positive")
 
@@ -354,7 +354,7 @@ fn test_print_confusion_matrix_normalized() raises:
     print("Testing print_confusion_matrix normalized...")
 
     # Create 2x2 normalized confusion matrix (as percentages)
-    var shape = List[Int](2, 2)
+    var shape: List[Int] = [2, 2]
     var matrix = ExTensor(shape, DType.float32)
 
     matrix._data.bitcast[Float32]()[0] = 0.95  # 95%
@@ -372,7 +372,7 @@ fn test_print_confusion_matrix_large() raises:
     print("Testing print_confusion_matrix large...")
 
     # Create 10x10 confusion matrix
-    var shape = List[Int](10, 10)
+    var shape: List[Int] = [10, 10]
     var matrix = ExTensor(shape, DType.int32)
 
     # Fill with simple pattern
@@ -403,7 +403,7 @@ fn test_print_training_summary_basic() raises:
         best_train_loss=0.034,
         best_test_loss=0.156,
         best_accuracy=0.965,
-        best_epoch=87
+        best_epoch=87,
     )
 
     print("   Training summary basic test passed")
@@ -418,7 +418,7 @@ fn test_print_training_summary_perfect_training() raises:
         best_train_loss=0.0,
         best_test_loss=0.0,
         best_accuracy=1.0,
-        best_epoch=50
+        best_epoch=50,
     )
 
     print("   Training summary perfect test passed")
@@ -433,7 +433,7 @@ fn test_print_training_summary_early_stopping() raises:
         best_train_loss=0.054,
         best_test_loss=0.203,
         best_accuracy=0.923,
-        best_epoch=45
+        best_epoch=45,
     )
 
     print("   Training summary early stopping test passed")
@@ -448,7 +448,7 @@ fn test_print_training_summary_large_epochs() raises:
         best_train_loss=0.012,
         best_test_loss=0.089,
         best_accuracy=0.978,
-        best_epoch=789
+        best_epoch=789,
     )
 
     print("   Training summary large epochs test passed")
@@ -477,7 +477,7 @@ fn test_full_training_workflow_output() raises:
                 batch=batch,
                 total_batches=10,
                 loss=Float32(2.5 / Float64(epoch) - Float64(batch) * 0.05),
-                learning_rate=0.01
+                learning_rate=0.01,
             )
 
         # Print evaluation results
@@ -492,11 +492,11 @@ fn test_full_training_workflow_output() raises:
             train_loss=train_loss,
             train_accuracy=train_acc,
             test_loss=test_loss,
-            test_accuracy=test_acc
+            test_accuracy=test_acc,
         )
 
     # Print per-class accuracy
-    var per_class_shape = List[Int](5)
+    var per_class_shape: List[Int] = [5]
     var per_class = ExTensor(per_class_shape, DType.float64)
     per_class._data.bitcast[Float64]()[0] = 0.85
     per_class._data.bitcast[Float64]()[1] = 0.92
@@ -504,7 +504,7 @@ fn test_full_training_workflow_output() raises:
     per_class._data.bitcast[Float64]()[3] = 0.95
     per_class._data.bitcast[Float64]()[4] = 0.80
 
-    var class_names = List[String]()
+    var class_names= List[String]()
     class_names.append("Class0")
     class_names.append("Class1")
     class_names.append("Class2")
@@ -514,7 +514,7 @@ fn test_full_training_workflow_output() raises:
     print_per_class_accuracy(per_class, class_names)
 
     # Print confusion matrix
-    var cm_shape = List[Int](5, 5)
+    var cm_shape: List[Int] = [5, 5]
     var cm = ExTensor(cm_shape, DType.int32)
     for i in range(5):
         for j in range(5):
@@ -532,7 +532,7 @@ fn test_full_training_workflow_output() raises:
         best_train_loss=0.667,
         best_test_loss=0.733,
         best_accuracy=0.77,
-        best_epoch=3
+        best_epoch=3,
     )
 
     print("   Full training workflow test passed")

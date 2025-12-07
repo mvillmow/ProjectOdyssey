@@ -38,7 +38,7 @@ struct DummyModule:
         Returns:
             Zeros tensor of size (1, output_size).
         """
-        var shape = List[Int](1, self.output_size)
+        var shape: List[Int] = [1, self.output_size]
         return zeros(shape, DType.float32)
 
     fn parameters(self) raises -> List[ExTensor]:
@@ -65,10 +65,7 @@ fn test_module_interface() raises:
     # Test forward pass
     var input = zeros(List[Int](1, 5), DType.float32)
     var output = module.forward(input)
-    assert_true(
-        len(output.shape()) == 2,
-        "Output should be 2D"
-    )
+    assert_true(len(output.shape()) == 2, "Output should be 2D")
     assert_equal_int(output.shape()[1], 10, "Output size should match")
 
     # Test parameters

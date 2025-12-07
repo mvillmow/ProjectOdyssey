@@ -14,25 +14,29 @@ from .reduction_utils import (
 )
 
 
-fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
+fn sum(
+    tensor: ExTensor, axis: Int = -1, keepdims: Bool = False
+) raises -> ExTensor:
     """Sum tensor elements along an axis.
 
     Args:
         tensor: Input tensor.
-        axis: Axis to reduce (-1 for all axes)
+        axis: Axis to reduce (-1 for all axes).
         keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
         A new tensor with sum along specified axis.
 
     Examples:
+    ```
         var t = ones(List[Int](3, 4), DType.float32)
         var s = sum(t, axis=-1)  # Sum all elements -> scalar 12.0
-        var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,).
-   """
+        var row_sums = sum(t, axis=1)  # Sum along rows -> shape (3,)
+    ```
+    """
     if axis == -1:
         # Sum all elements
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -49,10 +53,16 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
     else:
         # Sum along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
 
         # Build result shape
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
                 result_shape.append(tensor.shape()[i])
@@ -77,7 +87,9 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
             var result_coords = create_result_coords(result_idx, result.shape())
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = map_result_to_input_coords(result_coords, axis, tensor.dim())
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
 
             # Sum along the reduction axis
             for k in range(axis_size):
@@ -93,20 +105,24 @@ fn sum(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTen
         return result^
 
 
-fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
+fn mean(
+    tensor: ExTensor, axis: Int = -1, keepdims: Bool = False
+) raises -> ExTensor:
     """Compute mean of tensor elements along an axis.
 
     Args:
         tensor: Input tensor.
-        axis: Axis to reduce (-1 for all axes)
+        axis: Axis to reduce (-1 for all axes).
         keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
         A new tensor with mean along specified axis.
 
     Examples:
+    ```
         var t = ones(List[Int](3, 4), DType.float32)
         var m = mean(t)  # Mean of all elements -> scalar 1.0
+    ```
     """
     if axis == -1:
         # Mean of all elements
@@ -118,7 +134,13 @@ fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTe
     else:
         # Mean along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
 
         # Compute sum along axis
         var sum_result = sum(tensor, axis, keepdims)
@@ -134,24 +156,28 @@ fn mean(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTe
         return sum_result^
 
 
-fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
+fn max_reduce(
+    tensor: ExTensor, axis: Int = -1, keepdims: Bool = False
+) raises -> ExTensor:
     """Find maximum of tensor elements along an axis.
 
     Args:
         tensor: Input tensor.
-        axis: Axis to reduce (-1 for all axes)
+        axis: Axis to reduce (-1 for all axes).
         keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
         A new tensor with maximum along specified axis.
 
     Examples:
+    ```
         var t = arange(0.0, 12.0, 1.0, DType.float32)
         var m = max_reduce(t)  # Maximum element -> scalar 11.0
+    ```
     """
     if axis == -1:
         # Max of all elements
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         if keepdims:
             for _ in range(tensor.dim()):
                 result_shape.append(1)
@@ -169,10 +195,16 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     else:
         # Max along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
 
         # Build result shape
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
                 result_shape.append(tensor.shape()[i])
@@ -194,7 +226,9 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
             var result_coords = create_result_coords(result_idx, result.shape())
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = map_result_to_input_coords(result_coords, axis, tensor.dim())
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
 
             # Find max along the reduction axis
             # Initialize with first value
@@ -218,24 +252,28 @@ fn max_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
         return result^
 
 
-fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -> ExTensor:
+fn min_reduce(
+    tensor: ExTensor, axis: Int = -1, keepdims: Bool = False
+) raises -> ExTensor:
     """Find minimum of tensor elements along an axis.
 
     Args:
         tensor: Input tensor.
-        axis: Axis to reduce (-1 for all axes)
+        axis: Axis to reduce (-1 for all axes).
         keepdims: Whether to keep reduced dimensions as size 1.
 
     Returns:
         A new tensor with minimum along specified axis.
 
     Examples:
+    ```
         var t = arange(0.0, 12.0, 1.0, DType.float32)
         var m = min_reduce(t)  # Minimum element -> scalar 0.0
+    ```
     """
     if axis == -1:
         # Min of all elements
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         if keepdims:
             for i in range(tensor.dim()):
                 result_shape.append(1)
@@ -253,10 +291,16 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
     else:
         # Min along specific axis
         if axis < 0 or axis >= tensor.dim():
-            raise Error("Axis " + String(axis) + " is out of bounds for tensor with " + String(tensor.dim()) + " dimensions")
+            raise Error(
+                "Axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(tensor.dim())
+                + " dimensions"
+            )
 
         # Build result shape
-        var result_shape = List[Int]()
+        var result_shape= List[Int]()
         for i in range(tensor.dim()):
             if i != axis:
                 result_shape.append(tensor.shape()[i])
@@ -278,7 +322,9 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
             var result_coords = create_result_coords(result_idx, result.shape())
 
             # Map result coordinates to input coordinates (accounting for reduced axis)
-            var input_coords = map_result_to_input_coords(result_coords, axis, tensor.dim())
+            var input_coords = map_result_to_input_coords(
+                result_coords, axis, tensor.dim()
+            )
 
             # Find min along the reduction axis
             # Initialize with first value
@@ -307,7 +353,9 @@ fn min_reduce(tensor: ExTensor, axis: Int = -1, keepdims: Bool = False) raises -
 # ============================================================================
 
 
-fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+fn sum_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
     """Compute gradient for sum reduction.
 
     For Y = sum(X, axis), given ∂L/∂Y, computes:
@@ -319,12 +367,13 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
     Args:
         grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
         x: Original input tensor before reduction.
-        axis: Axis along which sum was computed (-1 for all axes)
+        axis: Axis along which sum was computed (-1 for all axes).
 
     Returns:
         Gradient w.r.t. input (∂L/∂X) - broadcast back to input_shape.
 
     Examples:
+    ```
         # Sum all elements
         var x = ones(List[Int](3, 4), DType.float32)
         var y = sum(x, axis=-1)  # Scalar
@@ -336,7 +385,8 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
         var y2 = sum(x2, axis=1)  # Shape (3,)
         var grad_y2 = ones(List[Int](), DType.float32)
         var grad_x2 = sum_backward(grad_y2, x2, axis=1)  # Shape (3, 4).
-   """
+    ```
+    """
     # Create result tensor with input shape
     var input_shape = x.shape()
     var result = ExTensor(input_shape, grad_output.dtype())
@@ -363,7 +413,7 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords= List[Int]()
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -383,7 +433,9 @@ fn sum_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> Ex
     return result^
 
 
-fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+fn mean_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
     """Compute gradient for mean reduction.
 
     For Y = mean(X, axis), given ∂L/∂Y, computes:
@@ -397,24 +449,26 @@ fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> E
     Args:
         grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
         x: Original input tensor before reduction.
-        axis: Axis along which mean was computed (-1 for all axes)
+        axis: Axis along which mean was computed (-1 for all axes).
 
     Returns:
         Gradient w.r.t. input (∂L/∂X) - broadcast and scaled.
 
     Examples:
+    ```
         var x = ones(List[Int](3, 4), DType.float32)
         var y = mean(x, axis=-1)  # Scalar mean
         var grad_y = ones(List[Int](), DType.float32)
         var grad_x = mean_backward(grad_y, x, axis=-1)
         # Each element gets gradient / 12
+    ```
     """
     # First get the sum backward (broadcasts gradient)
     var grad_sum = sum_backward(grad_output, x, axis)
 
     # Compute number of elements that were averaged
     var input_shape = x.shape()
-    var n: Int = 0
+    var n: Int
     if axis == -1:
         # Mean over all elements
         n = 1
@@ -433,7 +487,9 @@ fn mean_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> E
     return grad_sum^
 
 
-fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+fn max_reduce_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
     """Compute gradient for max reduction.
 
     For Y = max_reduce(X, axis), given ∂L/∂Y, computes:
@@ -444,13 +500,14 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
     Args:
         grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
-        x: Input from forward pass (before reduction)
-        axis: Axis along which max was computed (-1 for all axes)
+        x: Input from forward pass (before reduction).
+        axis: Axis along which max was computed (-1 for all axes).
 
     Returns:
         Gradient w.r.t. input (∂L/∂X)
 
     Examples:
+    ```
         # Max over all elements
         var x = tensor([1.0, 3.0, 2.0, 3.0])  # Two max values at indices 1, 3
         var y = max_reduce(x, axis=-1)  # Scalar: 3.0
@@ -464,6 +521,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
         var grad_y2 = ones([2])
         var grad_x2 = max_reduce_backward(grad_y2, x2, axis=1)
         # grad_x2 = [[0.0, 1.0], [1.0, 0.0]]
+    ```
     """
     var result = ExTensor(x.shape(), x.dtype())
     # Initialize to zero
@@ -514,7 +572,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # Map to grad_output coordinates (remove axis dimension)
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords= List[Int]()
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0
@@ -533,7 +591,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # First pass: find max
             for k in range(axis_size):
-                var test_coords = List[Int](coords)
+                var test_coords: List[Int] = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)
@@ -542,7 +600,7 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # Second pass: count max elements
             for k in range(axis_size):
-                var test_coords = List[Int](coords)
+                var test_coords: List[Int] = List[Int](coords)
                 test_coords[normalized_axis] = k
                 var test_idx = coords_to_linear(test_coords, strides)
                 var val = x._get_float64(test_idx)
@@ -558,7 +616,9 @@ fn max_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
     return result^
 
 
-fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raises -> ExTensor:
+fn min_reduce_backward(
+    grad_output: ExTensor, x: ExTensor, axis: Int = -1
+) raises -> ExTensor:
     """Compute gradient for min reduction.
 
     For Y = min_reduce(X, axis), given ∂L/∂Y, computes:
@@ -569,18 +629,20 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
     Args:
         grad_output: Gradient from upstream (∂L/∂Y) - reduced tensor.
-        x: Input from forward pass (before reduction)
-        axis: Axis along which min was computed (-1 for all axes)
+        x: Input from forward pass (before reduction).
+        axis: Axis along which min was computed (-1 for all axes).
 
     Returns:
         Gradient w.r.t. input (∂L/∂X)
 
     Examples:
+    ```
         var x = tensor([3.0, 1.0, 2.0, 1.0])  # Two min values at indices 1, 3
         var y = min_reduce(x, axis=-1)  # Scalar: 1.0
         var grad_y = ones([])  # Gradient: 1.0
         var grad_x = min_reduce_backward(grad_y, x, axis=-1)
         # grad_x = [0.0, 0.5, 0.0, 0.5]  # Split equally between the two 1.0s.
+    ```
     """
     var result = ExTensor(x.shape(), x.dtype())
     # Initialize to zero
@@ -631,7 +693,7 @@ fn min_reduce_backward(grad_output: ExTensor, x: ExTensor, axis: Int = -1) raise
 
             # Map to grad_output coordinates
             var grad_dim = grad_output.dim()
-            var grad_coords = List[Int]()
+            var grad_coords= List[Int]()
             for _ in range(grad_dim):
                 grad_coords.append(0)
             var coord_idx = 0

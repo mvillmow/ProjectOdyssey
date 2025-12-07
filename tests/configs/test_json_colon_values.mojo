@@ -24,13 +24,16 @@ fn test_json_with_url_values() raises:
 
     # Test HTTP URL
     var api_url = config.get_string("api_url")
-    assert_equal(api_url, "http://localhost:8080", "Should preserve HTTP URL with port")
+    assert_equal(
+        api_url, "http://localhost:8080", "Should preserve HTTP URL with port"
+    )
 
     # Test HTTPS URL
     var model_url = config.get_string("model_url")
     assert_equal(
-        model_url, "https://models.example.com/lenet5.bin",
-        "Should preserve HTTPS URL"
+        model_url,
+        "https://models.example.com/lenet5.bin",
+        "Should preserve HTTPS URL",
     )
 
     print("✓ test_json_with_url_values passed")
@@ -45,8 +48,9 @@ fn test_json_with_database_url() raises:
 
     var db_url = config.get_string("database_url")
     assert_equal(
-        db_url, "postgresql://user:pass@localhost:5432/db",
-        "Should preserve database URL with credentials and port"
+        db_url,
+        "postgresql://user:pass@localhost:5432/db",
+        "Should preserve database URL with credentials and port",
     )
 
     print("✓ test_json_with_database_url passed")

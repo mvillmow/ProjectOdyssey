@@ -16,7 +16,12 @@ from tests.shared.conftest import (
     assert_true,
 )
 from shared.core.extensor import ExTensor, zeros, ones, ones_like
-from shared.autograd.variable import Variable, variable_add, variable_multiply, variable_sum
+from shared.autograd.variable import (
+    Variable,
+    variable_add,
+    variable_multiply,
+    variable_sum,
+)
 from shared.autograd.tape import GradientTape
 
 
@@ -27,14 +32,14 @@ from shared.autograd.tape import GradientTape
 
 fn create_shape_1d(size: Int) -> List[Int]:
     """Create a 1D shape list."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(size)
     return shape^
 
 
 fn create_shape_2d(rows: Int, cols: Int) -> List[Int]:
     """Create a 2D shape list."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(rows)
     shape.append(cols)
     return shape^

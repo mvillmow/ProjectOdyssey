@@ -155,7 +155,9 @@ fn test_cosine_annealing_zero_t_max() raises:
 
 fn test_reduce_lr_on_plateau_initialization_min_mode() raises:
     """Test ReduceLROnPlateau initialization in 'min' mode."""
-    var scheduler = ReduceLROnPlateau(base_lr=0.1, mode="min", factor=0.1, patience=10)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=0.1, mode="min", factor=0.1, patience=10
+    )
 
     # Verify initial parameters
     assert_almost_equal(scheduler.base_lr, 0.1)
@@ -170,7 +172,9 @@ fn test_reduce_lr_on_plateau_initialization_min_mode() raises:
 
 fn test_reduce_lr_on_plateau_initialization_max_mode() raises:
     """Test ReduceLROnPlateau initialization in 'max' mode."""
-    var scheduler = ReduceLROnPlateau(base_lr=0.1, mode="max", factor=0.1, patience=5)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=0.1, mode="max", factor=0.1, patience=5
+    )
 
     assert_equal(scheduler.mode, MODE_MAX)
     assert_equal(scheduler.patience, 5)
@@ -181,7 +185,9 @@ fn test_reduce_lr_on_plateau_min_mode_improvement() raises:
 
     In 'min' mode, improvement means metric decreased.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=3)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=3
+    )
 
     # Metric improves (decreases)
     var lr1 = scheduler.step(0.5)
@@ -199,7 +205,9 @@ fn test_reduce_lr_on_plateau_min_mode_no_improvement() raises:
 
     In 'min' mode, no improvement means metric increased or stayed same.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=2
+    )
 
     # Initial metric
     var lr1 = scheduler.step(0.5)
@@ -221,7 +229,9 @@ fn test_reduce_lr_on_plateau_max_mode_improvement() raises:
 
     In 'max' mode, improvement means metric increased.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="max", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="max", factor=0.5, patience=2
+    )
 
     # Metric improves (increases)
     var lr1 = scheduler.step(0.5)
@@ -239,7 +249,9 @@ fn test_reduce_lr_on_plateau_max_mode_no_improvement() raises:
 
     In 'max' mode, no improvement means metric decreased or stayed same.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="max", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="max", factor=0.5, patience=2
+    )
 
     # Initial metric
     var lr1 = scheduler.step(0.5)
@@ -258,7 +270,9 @@ fn test_reduce_lr_on_plateau_max_mode_no_improvement() raises:
 
 fn test_reduce_lr_on_plateau_multiple_reductions() raises:
     """Test ReduceLROnPlateau continues reducing LR on multiple plateaus."""
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=2
+    )
 
     # First reduction
     _ = scheduler.step(0.5)
@@ -277,7 +291,9 @@ fn test_reduce_lr_on_plateau_improvement_resets_counter() raises:
 
     After reaching patience and reducing LR, an improvement should reset counter.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=2
+    )
 
     # Accumulate no-improvement epochs
     _ = scheduler.step(0.5)
@@ -295,7 +311,9 @@ fn test_reduce_lr_on_plateau_factor_one() raises:
 
     factor=1.0 means LR is multiplied by 1.0, so no change.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=1.0, patience=1)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=1.0, patience=1
+    )
 
     _ = scheduler.step(0.5)
     _ = scheduler.step(0.6)  # No improvement
@@ -308,7 +326,9 @@ fn test_reduce_lr_on_plateau_zero_patience() raises:
 
     patience=0 means reduce immediately on first no-improvement epoch.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=0)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=0
+    )
 
     _ = scheduler.step(0.5)
     var lr2 = scheduler.step(0.6)  # No improvement, reduce immediately
@@ -320,7 +340,9 @@ fn test_reduce_lr_on_plateau_very_small_lr() raises:
 
     Multiple reductions can make LR arbitrarily small.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.1, patience=0)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.1, patience=0
+    )
 
     _ = scheduler.step(0.5)
     _ = scheduler.step(0.6)  # LR = 0.1
@@ -336,7 +358,9 @@ fn test_reduce_lr_on_plateau_get_lr_interface() raises:
 
     get_lr() should return current_lr regardless of epoch/batch.
     """
-    var scheduler = ReduceLROnPlateau(base_lr=1.0, mode="min", factor=0.5, patience=2)
+    var scheduler = ReduceLROnPlateau(
+        base_lr=1.0, mode="min", factor=0.5, patience=2
+    )
 
     _ = scheduler.step(0.5)
     _ = scheduler.step(0.6)
@@ -383,16 +407,16 @@ fn test_reduce_lr_on_plateau_realistic_training_scenario() raises:
     # Simulate validation loss decreasing then plateauing
     # Note: "no improvement" means value >= best, not just similar
     var val_losses = List[Float64](
-        0.5,    # Epoch 0: improvement (best=0.5)
-        0.4,    # Epoch 1: improvement (best=0.4)
-        0.35,   # Epoch 2: improvement (best=0.35)
-        0.36,   # Epoch 3: no improvement (0.36 > 0.35), counter=1
-        0.37,   # Epoch 4: no improvement, counter=2
-        0.38,   # Epoch 5: no improvement, counter=3 >= patience(3), reduce to 0.005
-        0.34,   # Epoch 6: improvement (0.34 < 0.35), counter=0
-        0.35,   # Epoch 7: no improvement, counter=1
-        0.36,   # Epoch 8: no improvement, counter=2
-        0.37,   # Epoch 9: no improvement, counter=3 >= patience(3), reduce again
+        0.5,  # Epoch 0: improvement (best=0.5)
+        0.4,  # Epoch 1: improvement (best=0.4)
+        0.35,  # Epoch 2: improvement (best=0.35)
+        0.36,  # Epoch 3: no improvement (0.36 > 0.35), counter=1
+        0.37,  # Epoch 4: no improvement, counter=2
+        0.38,  # Epoch 5: no improvement, counter=3 >= patience(3), reduce to 0.005
+        0.34,  # Epoch 6: improvement (0.34 < 0.35), counter=0
+        0.35,  # Epoch 7: no improvement, counter=1
+        0.36,  # Epoch 8: no improvement, counter=2
+        0.37,  # Epoch 9: no improvement, counter=3 >= patience(3), reduce again
     )
 
     for loss in val_losses:

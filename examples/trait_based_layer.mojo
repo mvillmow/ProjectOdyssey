@@ -22,7 +22,12 @@ Usage:
 """
 
 from shared.core import ExTensor, zeros, zeros_like, linear
-from shared.core.traits import Differentiable, Parameterized, Serializable, Trainable
+from shared.core.traits import (
+    Differentiable,
+    Parameterized,
+    Serializable,
+    Trainable,
+)
 
 
 # ============================================================================
@@ -38,7 +43,7 @@ struct ReLULayer(Differentiable):
 
     Example:
         ```mojo
-        ar relu = ReLULayer()
+        var relu = ReLULayer()
         var output = relu.forward(input)
         var grad_input = relu.backward(grad_output)
         ```
@@ -49,7 +54,7 @@ struct ReLULayer(Differentiable):
     fn __init__(mut self) raises:
         """Initialize ReLU layer."""
         # Start with empty tensor (will be filled during first forward)
-        self.last_input = zeros(List[Int]().append(1))
+        self.last_input = zeros(List[Int].append(1))
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass: ReLU(x) = max(0, x)
@@ -110,7 +115,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
 
     Example:
         ```mojo
-        ar fc = FullyConnectedLayer(784, 128)
+        var fc = FullyConnectedLayer(784, 128)
         fc.init_xavier()
 
         var output = fc.forward(input)
@@ -139,19 +144,19 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             out_features: Output dimension.
         """
         # Initialize weights and gradients
-        var w_shape = List[Int]()
+        var w_shape= List[Int]()
         w_shape.append(out_features)
         w_shape.append(in_features)
         self.weights = zeros(w_shape)
         self.grad_weights = zeros(w_shape)
 
-        var b_shape = List[Int]()
+        var b_shape= List[Int]()
         b_shape.append(out_features)
         self.bias = zeros(b_shape)
         self.grad_bias = zeros(b_shape)
 
         # Initialize cache
-        var cache_shape = List[Int]()
+        var cache_shape= List[Int]()
         cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_output = zeros(cache_shape)
@@ -179,7 +184,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
 
         Returns:
             Output tensor (batch_size, out_features).
-       """
+        """
         self.last_input = input.copy()
         self.last_output = linear(input, self.weights, self.bias)
         return self.last_output
@@ -211,7 +216,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         Returns:
             List of [weights, bias]
         """
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
         params.append(self.weights)
         params.append(self.bias)
         return params
@@ -222,7 +227,7 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
         Returns:
             List of [grad_weights, grad_bias]
         """
-        var grads = List[ExTensor]()
+        var grads: List[ExTensor] = []
         grads.append(self.grad_weights)
         grads.append(self.grad_bias)
         return grads
@@ -249,7 +254,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
     Example:
         ```mojo
-        ar bn = BatchNormLayer(128)
+        var bn = BatchNormLayer(128)
         bn.train()  # Set to training mode
 
         var output = bn.forward(input)
@@ -265,7 +270,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
     # Learnable parameters
     var gamma: ExTensor  # Scale
-    var beta: ExTensor   # Shift
+    var beta: ExTensor  # Shift
 
     # Running statistics (non-trainable)
     var running_mean: ExTensor
@@ -289,8 +294,8 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
         Args:
             num_features: Number of features (channels).
-       """
-        var shape = List[Int]()
+        """
+        var shape= List[Int]()
         shape.append(num_features)
 
         # Learnable parameters
@@ -308,7 +313,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         self.grad_beta = zeros(shape)
 
         # Cache
-        var cache_shape = List[Int]()
+        var cache_shape= List[Int]()
         cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_normalized = zeros(cache_shape)
@@ -335,14 +340,14 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
     # Parameterized trait
     fn parameters(self) raises -> List[ExTensor]:
         """Get learnable parameters (gamma, beta)."""
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
         params.append(self.gamma)
         params.append(self.beta)
         return params
 
     fn gradients(self) raises -> List[ExTensor]:
         """Get parameter gradients."""
-        var grads = List[ExTensor]()
+        var grads: List[ExTensor] = []
         grads.append(self.grad_gamma)
         grads.append(self.grad_beta)
         return grads
@@ -384,14 +389,14 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
 
 fn demonstrate_trait_usage() raises:
     """Demonstrate trait-based layer usage."""
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("Trait-Based Layer Demonstration")
-    print("="*80 + "\n")
+    print("=" * 80 + "\n")
 
     print("1. Differentiable Layer (ReLU)")
     print("-" * 40)
     var relu = ReLULayer()
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     var relu_input = zeros(input_shape)
@@ -417,20 +422,22 @@ fn demonstrate_trait_usage() raises:
     bn.eval()
     print("✓ BatchNorm in evaluation mode:", not bn.is_training())
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("Summary")
-    print("="*80)
+    print("=" * 80)
     print("\nTrait benefits demonstrated:")
     print("  ✓ Clear interface contracts (Differentiable, Parameterized, etc.)")
     print("  ✓ Zero runtime overhead (compile-time static dispatch)")
     print("  ✓ Composable layers (can be chained)")
     print("  ✓ Testable (easy to mock)")
     print("\nRefactoring pattern:")
-    print("  1. Identify layer capabilities (forward/backward, parameters, etc.)")
+    print(
+        "  1. Identify layer capabilities (forward/backward, parameters, etc.)"
+    )
     print("  2. Implement appropriate traits")
     print("  3. Use trait bounds for generic functions")
     print("  4. Compose layers using trait interfaces")
-    print("\n" + "="*80 + "\n")
+    print("\n" + "=" * 80 + "\n")
 
 
 fn main() raises:

@@ -30,7 +30,11 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform, xavier_uniform
 from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from shared.training.model_utils import (
+    save_model_weights,
+    load_model_weights,
+    get_model_parameter_names,
+)
 from collections import List
 
 
@@ -102,7 +106,7 @@ fn compute_flattened_size() -> Int:
 
     Returns:
         Number of features after flattening (channels * height * width).
-   """
+    """
     # After conv1: Use shared conv2d_output_shape
     var h1, w1 = conv2d_output_shape(
         INPUT_HEIGHT,
@@ -193,7 +197,7 @@ struct AlexNet:
         fc2_bias: Second FC layer bias (4096,)
         fc3_weights: Third FC layer weights (num_classes, 4096)
         fc3_bias: Third FC layer bias (num_classes,).
-   """
+    """
 
     var num_classes: Int
     var dropout_rate: Float32
@@ -226,7 +230,7 @@ struct AlexNet:
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
             dropout_rate: Dropout probability for FC layers (default: 0.5).
-       """
+        """
         self.num_classes = num_classes
         self.dropout_rate = dropout_rate
 
@@ -284,17 +288,17 @@ struct AlexNet:
         self.conv5_bias = zeros(List[Int](CONV5_OUT_CHANNELS), DType.float32)
 
         # FC1: flattened_size -> FC1_OUT_FEATURES (derived from conv/pool layers)
-        var fc1_shape = List[Int](FC1_OUT_FEATURES, flattened_size)
+        var fc1_shape: List[Int] = [FC1_OUT_FEATURES, flattened_size]
         self.fc1_weights = xavier_uniform(fc1_shape, DType.float32)
         self.fc1_bias = zeros(List[Int](FC1_OUT_FEATURES), DType.float32)
 
         # FC2: FC1_OUT_FEATURES -> FC2_OUT_FEATURES
-        var fc2_shape = List[Int](FC2_OUT_FEATURES, FC1_OUT_FEATURES)
+        var fc2_shape: List[Int] = [FC2_OUT_FEATURES, FC1_OUT_FEATURES]
         self.fc2_weights = xavier_uniform(fc2_shape, DType.float32)
         self.fc2_bias = zeros(List[Int](FC2_OUT_FEATURES), DType.float32)
 
         # FC3: FC2_OUT_FEATURES -> num_classes
-        var fc3_shape = List[Int](num_classes, FC2_OUT_FEATURES)
+        var fc3_shape: List[Int] = [num_classes, FC2_OUT_FEATURES]
         self.fc3_weights = xavier_uniform(fc3_shape, DType.float32)
         self.fc3_bias = zeros(List[Int](num_classes), DType.float32)
 
@@ -309,7 +313,7 @@ struct AlexNet:
 
         Returns:
             Output logits of shape (batch, num_classes).
-       """
+        """
         # Conv1 + ReLU + MaxPool
         var conv1_out = conv2d(
             input,
@@ -383,7 +387,7 @@ struct AlexNet:
         var batch_size = pool3_shape[0]
         var flattened_size = pool3_shape[1] * pool3_shape[2] * pool3_shape[3]
 
-        var flatten_shape = List[Int]()
+        var flatten_shape= List[Int]()
         flatten_shape.append(batch_size)
         flatten_shape.append(flattened_size)
         var flattened = pool3_out.reshape(flatten_shape)
@@ -417,7 +421,7 @@ struct AlexNet:
 
         Returns:
             Predicted class index (0 to num_classes-1).
-       """
+        """
         var logits = self.forward(input, training=False)
 
         # Find argmax
@@ -443,7 +447,7 @@ struct AlexNet:
             - conv1_kernel.weights, conv1_bias.weights, etc.
         """
         # Collect all parameters
-        var parameters = List[ExTensor]()
+        var parameters: List[ExTensor] = []
         parameters.append(self.conv1_kernel)
         parameters.append(self.conv1_bias)
         parameters.append(self.conv2_kernel)
@@ -480,7 +484,7 @@ struct AlexNet:
         var param_names = get_model_parameter_names("alexnet")
 
         # Create empty list for loaded parameters
-        var loaded_params = List[ExTensor]()
+        var loaded_params: List[ExTensor] = []
 
         # Load using shared utility
         load_model_weights(loaded_params, weights_dir, param_names)

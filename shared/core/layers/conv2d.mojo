@@ -47,7 +47,7 @@ struct Conv2dLayer(Copyable, Movable):
         kernel_h: Int,
         kernel_w: Int,
         stride: Int = 1,
-        padding: Int = 0
+        padding: Int = 0,
     ) raises:
         """Initialize Conv2D layer with He/Kaiming weights and zero bias.
 
@@ -80,7 +80,7 @@ struct Conv2dLayer(Copyable, Movable):
 
         # Initialize weights with Kaiming/He initialization
         # Shape: (out_channels, in_channels, kernel_h, kernel_w)
-        var weight_shape = List[Int]()
+        var weight_shape= List[Int]()
         weight_shape.append(out_channels)
         weight_shape.append(in_channels)
         weight_shape.append(kernel_h)
@@ -90,11 +90,13 @@ struct Conv2dLayer(Copyable, Movable):
         var fan_in = in_channels * kernel_h * kernel_w
         # Fan-out for conv2d: out_channels * kernel_h * kernel_w
         var fan_out = out_channels * kernel_h * kernel_w
-        self.weight = kaiming_uniform(fan_in, fan_out, weight_shape, "fan_in", DType.float32)
+        self.weight = kaiming_uniform(
+            fan_in, fan_out, weight_shape, "fan_in", DType.float32
+        )
 
         # Initialize bias to zeros
         # Shape: (out_channels,)
-        var bias_shape = List[Int]()
+        var bias_shape= List[Int]()
         bias_shape.append(out_channels)
         self.bias = zeros(bias_shape, DType.float32)
 
@@ -127,9 +129,7 @@ struct Conv2dLayer(Copyable, Movable):
         return conv2d(input, self.weight, self.bias, self.stride, self.padding)
 
     fn backward(
-        self,
-        grad_output: ExTensor,
-        input: ExTensor
+        self, grad_output: ExTensor, input: ExTensor
     ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
         """Backward pass: compute gradients w.r.t. input, weight, and bias.
 
@@ -160,11 +160,7 @@ struct Conv2dLayer(Copyable, Movable):
             ```
         """
         var result = conv2d_backward(
-            grad_output,
-            input,
-            self.weight,
-            self.stride,
-            self.padding
+            grad_output, input, self.weight, self.stride, self.padding
         )
         # Return the result struct fields directly
         # The Conv2dBackwardResult struct is only movable, so we return its fields
@@ -186,7 +182,7 @@ struct Conv2dLayer(Copyable, Movable):
             # params[0] is weight, params[1] is bias
             ```
         """
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
 
         # Create copies of weight and bias tensors
         var weight_copy = zeros_like(self.weight)

@@ -51,9 +51,15 @@ fn test_percentage_change_calculation() raises:
     var pct_same = ((current_100 - baseline_100) / baseline_100) * 100.0
 
     # Verify results
-    assert_almost_equal(Float32(pct_slower), Float32(10.0), 0.1, "110 vs 100 should be +10%")
-    assert_almost_equal(Float32(pct_faster), Float32(-10.0), 0.1, "90 vs 100 should be -10%")
-    assert_almost_equal(Float32(pct_same), Float32(0.0), 0.1, "100 vs 100 should be 0%")
+    assert_almost_equal(
+        Float32(pct_slower), Float32(10.0), 0.1, "110 vs 100 should be +10%"
+    )
+    assert_almost_equal(
+        Float32(pct_faster), Float32(-10.0), 0.1, "90 vs 100 should be -10%"
+    )
+    assert_almost_equal(
+        Float32(pct_same), Float32(0.0), 0.1, "100 vs 100 should be 0%"
+    )
 
 
 fn test_improvement_detection() raises:
@@ -70,12 +76,24 @@ fn test_improvement_detection() raises:
     var pct_50_faster = -50.0
 
     # Verify improvements are negative
-    assert_less(Float32(pct_10_faster), Float32(0.0), "Improvement should be negative")
-    assert_less(Float32(pct_50_faster), Float32(0.0), "Improvement should be negative")
+    assert_less(
+        Float32(pct_10_faster), Float32(0.0), "Improvement should be negative"
+    )
+    assert_less(
+        Float32(pct_50_faster), Float32(0.0), "Improvement should be negative"
+    )
 
     # Verify magnitude of improvements
-    assert_greater(Float32(pct_10_faster), Float32(-20.0), "10% improvement should be in range")
-    assert_greater(Float32(pct_50_faster), Float32(-60.0), "50% improvement should be in range")
+    assert_greater(
+        Float32(pct_10_faster),
+        Float32(-20.0),
+        "10% improvement should be in range",
+    )
+    assert_greater(
+        Float32(pct_50_faster),
+        Float32(-60.0),
+        "50% improvement should be in range",
+    )
 
 
 fn test_regression_detection() raises:
@@ -95,12 +113,24 @@ fn test_regression_detection() raises:
     var regression_threshold = 10.0
 
     # Verify regressions are positive
-    assert_greater(Float32(pct_5_slower), Float32(0.0), "Regression should be positive")
-    assert_greater(Float32(pct_50_slower), Float32(0.0), "Regression should be positive")
+    assert_greater(
+        Float32(pct_5_slower), Float32(0.0), "Regression should be positive"
+    )
+    assert_greater(
+        Float32(pct_50_slower), Float32(0.0), "Regression should be positive"
+    )
 
     # Verify threshold checking
-    assert_less(Float32(pct_10_slower), Float32(regression_threshold + 0.1), "10% should be at threshold")
-    assert_greater(Float32(pct_11_slower), Float32(regression_threshold), "11% should exceed threshold")
+    assert_less(
+        Float32(pct_10_slower),
+        Float32(regression_threshold + 0.1),
+        "10% should be at threshold",
+    )
+    assert_greater(
+        Float32(pct_11_slower),
+        Float32(regression_threshold),
+        "11% should exceed threshold",
+    )
 
 
 fn test_normal_variance_tolerance() raises:
@@ -119,9 +149,17 @@ fn test_normal_variance_tolerance() raises:
     var pct_7 = 7.0
 
     # Verify changes within tolerance are normal
-    assert_less(Float32(pct_3), Float32(normal_variance + 1.0), "3% is normal variance")
-    assert_less(Float32(pct_5), Float32(normal_variance + 1.0), "5% is normal variance")
-    assert_greater(Float32(pct_7), Float32(normal_variance), "7% is outside normal variance")
+    assert_less(
+        Float32(pct_3), Float32(normal_variance + 1.0), "3% is normal variance"
+    )
+    assert_less(
+        Float32(pct_5), Float32(normal_variance + 1.0), "5% is normal variance"
+    )
+    assert_greater(
+        Float32(pct_7),
+        Float32(normal_variance),
+        "7% is outside normal variance",
+    )
 
 
 fn test_regression_threshold() raises:
@@ -141,10 +179,20 @@ fn test_regression_threshold() raises:
     var pct_11_0 = 11.0
 
     # Verify boundary conditions
-    assert_less(Float32(pct_9_9), Float32(threshold), "9.9% should be below threshold")
-    assert_less(Float32(pct_10_0), Float32(threshold + 0.1), "10.0% should be at threshold")
-    assert_greater(Float32(pct_10_1), Float32(threshold), "10.1% should exceed threshold")
-    assert_greater(Float32(pct_11_0), Float32(threshold), "11.0% should exceed threshold")
+    assert_less(
+        Float32(pct_9_9), Float32(threshold), "9.9% should be below threshold"
+    )
+    assert_less(
+        Float32(pct_10_0),
+        Float32(threshold + 0.1),
+        "10.0% should be at threshold",
+    )
+    assert_greater(
+        Float32(pct_10_1), Float32(threshold), "10.1% should exceed threshold"
+    )
+    assert_greater(
+        Float32(pct_11_0), Float32(threshold), "11.0% should exceed threshold"
+    )
 
 
 fn test_multiple_metric_comparison() raises:
@@ -167,16 +215,34 @@ fn test_multiple_metric_comparison() raises:
     var _ = 850.0  # throughput_current_bad - intentionally unused
 
     # Duration: lower is better (negative % change is good)
-    var duration_pct_good = ((duration_current_good - duration_baseline) / duration_baseline) * 100.0
-    assert_less(Float32(duration_pct_good), Float32(0.0), "Lower duration is improvement")
+    var duration_pct_good = (
+        (duration_current_good - duration_baseline) / duration_baseline
+    ) * 100.0
+    assert_less(
+        Float32(duration_pct_good),
+        Float32(0.0),
+        "Lower duration is improvement",
+    )
 
     # Duration regression
-    var duration_pct_bad = ((duration_current_bad - duration_baseline) / duration_baseline) * 100.0
-    assert_greater(Float32(duration_pct_bad), Float32(10.0), "Higher duration is regression")
+    var duration_pct_bad = (
+        (duration_current_bad - duration_baseline) / duration_baseline
+    ) * 100.0
+    assert_greater(
+        Float32(duration_pct_bad),
+        Float32(10.0),
+        "Higher duration is regression",
+    )
 
     # Throughput: higher is better (positive % change is good)
-    var throughput_pct_good = ((throughput_current_good - throughput_baseline) / throughput_baseline) * 100.0
-    assert_greater(Float32(throughput_pct_good), Float32(0.0), "Higher throughput is improvement")
+    var throughput_pct_good = (
+        (throughput_current_good - throughput_baseline) / throughput_baseline
+    ) * 100.0
+    assert_greater(
+        Float32(throughput_pct_good),
+        Float32(0.0),
+        "Higher throughput is improvement",
+    )
 
 
 fn test_missing_baseline_benchmark() raises:
@@ -189,11 +255,11 @@ fn test_missing_baseline_benchmark() raises:
     - Comparison skipped for that benchmark.
     """
     # Test handling of missing baseline benchmarks
-    var baseline_list = List[String](capacity=2)
+    var baseline_list: List[String](capacity=2)
     baseline_list.append("bench_1")
     baseline_list.append("bench_2")
 
-    var current_list = List[String](capacity=3)
+    var current_list: List[String](capacity=3)
     current_list.append("bench_1")
     current_list.append("bench_2")
     current_list.append("bench_3")  # Missing in baseline
@@ -226,7 +292,9 @@ fn test_zero_baseline_handling() raises:
 
     # Verify we can detect invalid zero baseline
     assert_equal(zero_value, 0.0, "Should detect zero values")
-    assert_greater(Float32(valid_value), Float32(0.0), "Valid values should be positive")
+    assert_greater(
+        Float32(valid_value), Float32(0.0), "Valid values should be positive"
+    )
 
     # Verify comparison logic would catch zero baseline
     var baseline_invalid = zero_value == 0.0
@@ -249,7 +317,7 @@ fn test_comparison_report_generation() raises:
     var improvements_count = 1
 
     # Create report content
-    var report = List[String](capacity=5)
+    var report: List[String](capacity=5)
     report.append("Comparison Report")
     report.append("Total benchmarks: " + String(benchmarks_total))
     report.append("Regressions: " + String(regressions_count))

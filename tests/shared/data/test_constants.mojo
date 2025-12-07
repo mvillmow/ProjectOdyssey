@@ -51,7 +51,9 @@ fn test_emnist_balanced_classes() raises:
     for i in range(26):
         var expected = uppercase[i]
         assert_equal(
-            classes[10 + i], expected, "Uppercase letter at index " + String(10 + i)
+            classes[10 + i],
+            expected,
+            "Uppercase letter at index " + String(10 + i),
         )
 
     # EMNIST Balanced has only 11 lowercase letters at indices 36-46
@@ -75,7 +77,9 @@ fn test_emnist_byclass_classes() raises:
     for i in range(26):
         var expected = uppercase[i]
         assert_equal(
-            classes[10 + i], expected, "Uppercase letter at index " + String(10 + i)
+            classes[10 + i],
+            expected,
+            "Uppercase letter at index " + String(10 + i),
         )
 
     # Test lowercase letters (a-z) - indices 36-61
@@ -83,7 +87,9 @@ fn test_emnist_byclass_classes() raises:
     for i in range(26):
         var expected = lowercase[i]
         assert_equal(
-            classes[36 + i], expected, "Lowercase letter at index " + String(36 + i)
+            classes[36 + i],
+            expected,
+            "Lowercase letter at index " + String(36 + i),
         )
 
 
@@ -102,7 +108,9 @@ fn test_emnist_bymerge_classes() raises:
     for i in range(26):
         var expected = uppercase[i]
         assert_equal(
-            classes[10 + i], expected, "Merged letter at index " + String(10 + i)
+            classes[10 + i],
+            expected,
+            "Merged letter at index " + String(10 + i),
         )
 
 
@@ -126,14 +134,18 @@ fn test_emnist_letters_classes() raises:
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     for i in range(26):
         var expected = uppercase[i]
-        assert_equal(classes[i], expected, "Uppercase letter at index " + String(i))
+        assert_equal(
+            classes[i], expected, "Uppercase letter at index " + String(i)
+        )
 
     # Test lowercase letters (a-z) - indices 26-51
     var lowercase = "abcdefghijklmnopqrstuvwxyz"
     for i in range(26):
         var expected = lowercase[i]
         assert_equal(
-            classes[26 + i], expected, "Lowercase letter at index " + String(26 + i)
+            classes[26 + i],
+            expected,
+            "Lowercase letter at index " + String(26 + i),
         )
 
 
@@ -142,8 +154,12 @@ fn test_dataset_info_cifar10() raises:
     var info = DatasetInfo("cifar10")
 
     assert_equal(info.num_classes(), 10, "CIFAR-10 has 10 classes")
-    assert_equal(info.num_train_samples(), 50000, "CIFAR-10 has 50000 training samples")
-    assert_equal(info.num_test_samples(), 10000, "CIFAR-10 has 10000 test samples")
+    assert_equal(
+        info.num_train_samples(), 50000, "CIFAR-10 has 50000 training samples"
+    )
+    assert_equal(
+        info.num_test_samples(), 10000, "CIFAR-10 has 10000 test samples"
+    )
 
     var shape = info.image_shape()
     assert_equal(len(shape), 3, "CIFAR-10 images have 3 dimensions")
@@ -159,25 +175,23 @@ fn test_dataset_info_cifar10() raises:
     assert_equal(class_name, "airplane", "Class name at index 0")
 
     var desc = info.description()
-    assert_true(
-        len(desc) > 0, "Description should not be empty"
-    )
+    assert_true(len(desc) > 0, "Description should not be empty")
 
 
 fn test_dataset_info_emnist_balanced() raises:
     """Test DatasetInfo with EMNIST Balanced."""
     var info = DatasetInfo("emnist_balanced")
 
-    assert_equal(
-        info.num_classes(), 47, "EMNIST Balanced has 47 classes"
-    )
+    assert_equal(info.num_classes(), 47, "EMNIST Balanced has 47 classes")
     assert_equal(
         info.num_train_samples(),
         112589,
         "EMNIST Balanced has ~112589 training samples",
     )
     assert_equal(
-        info.num_test_samples(), 18822, "EMNIST Balanced has ~18822 test samples"
+        info.num_test_samples(),
+        18822,
+        "EMNIST Balanced has ~18822 test samples",
     )
 
     var shape = info.image_shape()
@@ -228,9 +242,13 @@ fn test_dataset_info_emnist_digits() raises:
 
     assert_equal(info.num_classes(), 10, "EMNIST Digits has 10 classes")
     assert_equal(
-        info.num_train_samples(), 60000, "EMNIST Digits has 60000 training samples"
+        info.num_train_samples(),
+        60000,
+        "EMNIST Digits has 60000 training samples",
     )
-    assert_equal(info.num_test_samples(), 10000, "EMNIST Digits has 10000 test samples")
+    assert_equal(
+        info.num_test_samples(), 10000, "EMNIST Digits has 10000 test samples"
+    )
 
 
 fn test_dataset_info_emnist_letters() raises:
@@ -282,7 +300,7 @@ fn test_dataset_info_class_name_out_of_range() raises:
 
 fn test_dataset_info_image_shape_all_datasets() raises:
     """Test image_shape for all datasets."""
-    var datasets = List[String]()
+    var datasets= List[String]()
     datasets.append("cifar10")
     datasets.append("emnist_balanced")
     datasets.append("emnist_byclass")
@@ -294,38 +312,53 @@ fn test_dataset_info_image_shape_all_datasets() raises:
         var info = DatasetInfo(dataset_name)
         var shape = info.image_shape()
 
-        assert_equal(len(shape), 3, "Image shape should have 3 dimensions for " + dataset_name)
+        assert_equal(
+            len(shape),
+            3,
+            "Image shape should have 3 dimensions for " + dataset_name,
+        )
 
         if dataset_name == "cifar10":
-            assert_equal(
-                shape[0], 3, "CIFAR-10 should have 3 channels"
-            )
+            assert_equal(shape[0], 3, "CIFAR-10 should have 3 channels")
             assert_equal(shape[1], 32, "CIFAR-10 height should be 32")
             assert_equal(shape[2], 32, "CIFAR-10 width should be 32")
         else:
             # All EMNIST variants
-            assert_equal(shape[0], 1, "EMNIST should have 1 channel for " + dataset_name)
-            assert_equal(shape[1], 28, "EMNIST height should be 28 for " + dataset_name)
-            assert_equal(shape[2], 28, "EMNIST width should be 28 for " + dataset_name)
+            assert_equal(
+                shape[0], 1, "EMNIST should have 1 channel for " + dataset_name
+            )
+            assert_equal(
+                shape[1], 28, "EMNIST height should be 28 for " + dataset_name
+            )
+            assert_equal(
+                shape[2], 28, "EMNIST width should be 28 for " + dataset_name
+            )
 
 
 fn test_class_names_not_empty() raises:
     """Test that all class name functions return non-empty lists."""
-    assert_true(len(CIFAR10_CLASS_NAMES()) > 0, "CIFAR10 classes should not be empty")
     assert_true(
-        len(EMNIST_BALANCED_CLASSES()) > 0, "EMNIST Balanced classes should not be empty"
+        len(CIFAR10_CLASS_NAMES()) > 0, "CIFAR10 classes should not be empty"
     )
     assert_true(
-        len(EMNIST_BYCLASS_CLASSES()) > 0, "EMNIST By Class classes should not be empty"
+        len(EMNIST_BALANCED_CLASSES()) > 0,
+        "EMNIST Balanced classes should not be empty",
     )
     assert_true(
-        len(EMNIST_BYMERGE_CLASSES()) > 0, "EMNIST By Merge classes should not be empty"
+        len(EMNIST_BYCLASS_CLASSES()) > 0,
+        "EMNIST By Class classes should not be empty",
     )
     assert_true(
-        len(EMNIST_DIGITS_CLASSES()) > 0, "EMNIST Digits classes should not be empty"
+        len(EMNIST_BYMERGE_CLASSES()) > 0,
+        "EMNIST By Merge classes should not be empty",
     )
     assert_true(
-        len(EMNIST_LETTERS_CLASSES()) > 0, "EMNIST Letters classes should not be empty"
+        len(EMNIST_DIGITS_CLASSES()) > 0,
+        "EMNIST Digits classes should not be empty",
+    )
+    assert_true(
+        len(EMNIST_LETTERS_CLASSES()) > 0,
+        "EMNIST Letters classes should not be empty",
     )
 
 

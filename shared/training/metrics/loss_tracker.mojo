@@ -17,6 +17,7 @@ from collections import List
 from math import sqrt
 from .base import Metric
 from shared.core import ExTensor
+
 # min and max are now builtins in Mojo - no import needed
 
 
@@ -32,6 +33,7 @@ struct Statistics(Copyable, Movable):
 
     Issue: #283-287 - Loss tracking.
     """
+
     var mean: Float32
     var std: Float32
     var min: Float32
@@ -46,7 +48,14 @@ struct Statistics(Copyable, Movable):
         self.max = 0.0
         self.count = 0
 
-    fn __init__(out self, mean: Float32, std: Float32, min_val: Float32, max_val: Float32, count: Int):
+    fn __init__(
+        out self,
+        mean: Float32,
+        std: Float32,
+        min_val: Float32,
+        max_val: Float32,
+        count: Int,
+    ):
         """Initialize with specific values."""
         self.mean = mean
         self.std = std
@@ -68,6 +77,7 @@ struct ComponentTracker(Copyable, Movable):
 
     Issue: #283-287 - Loss tracking.
     """
+
     var window_size: Int
     var buffer: List[Float32]
     var buffer_idx: Int
@@ -90,7 +100,7 @@ struct ComponentTracker(Copyable, Movable):
             window_size: Number of values to keep for moving average.
         """
         self.window_size = window_size
-        self.buffer = List[Float32]()
+        self.buffer= List[Float32]()
         for i in range(window_size):
             self.buffer.append(0.0)
 
@@ -161,7 +171,7 @@ struct ComponentTracker(Copyable, Movable):
 
         Returns:
             Statistics struct with overall statistics (not just window).
-       """
+        """
         var stats = Statistics()
 
         if self.count == 0:
@@ -229,6 +239,7 @@ struct LossTracker(Metric):
 
     Issue: #283-287 - Loss tracking.
     """
+
     var window_size: Int
     var components: List[String]
     var trackers: List[ComponentTracker]
@@ -238,10 +249,10 @@ struct LossTracker(Metric):
 
         Args:
             window_size: Number of values to keep for moving average (default: 100).
-       """
+        """
         self.window_size = window_size
-        self.components = List[String]()
-        self.trackers = List[ComponentTracker]()
+        self.components= List[String]()
+        self.trackers: List[ComponentTracker] = []
 
     fn _get_or_create_component(mut self, component: String) -> Int:
         """Get index of component tracker, creating if needed.
@@ -268,7 +279,7 @@ struct LossTracker(Metric):
         Args:
             loss: Loss value to track.
             component: Component name (default: "total").
-       """
+        """
         var idx = self._get_or_create_component(component)
         self.trackers[idx].update(loss)
 
@@ -339,7 +350,7 @@ struct LossTracker(Metric):
 
         Returns:
             Vector of component names (copy).
-       """
+        """
         # Create a copy of the components list
         return List[String](self.components)
 
@@ -354,7 +365,10 @@ struct LossTracker(Metric):
         Raises:
             Error indicating this method should not be used.
         """
-        raise Error("LossTracker.update(predictions, labels) not applicable - use update(loss, component) instead")
+        raise Error(
+            "LossTracker.update(predictions, labels) not applicable - use"
+            " update(loss, component) instead"
+        )
 
     fn reset(mut self):
         """Reset all components (Metric trait version).

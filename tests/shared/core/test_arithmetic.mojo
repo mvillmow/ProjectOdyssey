@@ -49,7 +49,7 @@ from shared.core.arithmetic import (
 
 fn test_add_shapes() raises:
     """Test that add returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -63,7 +63,7 @@ fn test_add_shapes() raises:
 
 fn test_add_values() raises:
     """Test that add computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -78,14 +78,20 @@ fn test_add_values() raises:
 
     var result = add(a, b)
 
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(5.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(7.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(9.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(5.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(7.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(9.0), tolerance=1e-5
+    )
 
 
 fn test_add_same_shape_1d() raises:
     """Test adding two 1D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 2.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -98,7 +104,7 @@ fn test_add_same_shape_1d() raises:
 
 fn test_add_same_shape_2d() raises:
     """Test adding two 2D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float64)
@@ -112,7 +118,7 @@ fn test_add_same_shape_2d() raises:
 
 fn test_add_zeros() raises:
     """Test adding zeros (should not change values)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 7.0, DType.float32)
@@ -124,7 +130,7 @@ fn test_add_zeros() raises:
 
 fn test_add_negative_values() raises:
     """Test adding negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, -5.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -135,7 +141,7 @@ fn test_add_negative_values() raises:
 
 fn test_add_backward() raises:
     """Test add backward pass."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = ones(shape, DType.float32)
@@ -148,8 +154,12 @@ fn test_add_backward() raises:
 
     # Gradient of add is just pass-through
     for i in range(6):
-        assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5)
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
+        )
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
+        )
 
 
 # ============================================================================
@@ -159,7 +169,7 @@ fn test_add_backward() raises:
 
 fn test_subtract_shapes() raises:
     """Test that subtract returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -173,7 +183,7 @@ fn test_subtract_shapes() raises:
 
 fn test_subtract_values() raises:
     """Test that subtract computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -188,14 +198,20 @@ fn test_subtract_values() raises:
 
     var result = subtract(a, b)
 
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(3.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(4.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(5.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(3.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(4.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(5.0), tolerance=1e-5
+    )
 
 
 fn test_subtract_same_shape_1d() raises:
     """Test subtracting two 1D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -208,7 +224,7 @@ fn test_subtract_same_shape_1d() raises:
 
 fn test_subtract_same_shape_2d() raises:
     """Test subtracting two 2D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 10.0, DType.float64)
@@ -222,7 +238,7 @@ fn test_subtract_same_shape_2d() raises:
 
 fn test_subtract_zeros() raises:
     """Test subtracting zeros (should not change values)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 9.0, DType.float32)
@@ -234,7 +250,7 @@ fn test_subtract_zeros() raises:
 
 fn test_subtract_negative_result() raises:
     """Test subtraction resulting in negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, 3.0, DType.float32)
     var b = full(shape, 5.0, DType.float32)
@@ -245,7 +261,7 @@ fn test_subtract_negative_result() raises:
 
 fn test_subtract_backward() raises:
     """Test subtract backward pass."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = ones(shape, DType.float32)
@@ -258,8 +274,12 @@ fn test_subtract_backward() raises:
 
     # Gradient of subtract: d/da = +1, d/db = -1
     for i in range(6):
-        assert_almost_equal(grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5)
-        assert_almost_equal(grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-5)
+        assert_almost_equal(
+            grad_a._data.bitcast[Float32]()[i], Float32(1.0), tolerance=1e-5
+        )
+        assert_almost_equal(
+            grad_b._data.bitcast[Float32]()[i], Float32(-1.0), tolerance=1e-5
+        )
 
 
 # ============================================================================
@@ -269,7 +289,7 @@ fn test_subtract_backward() raises:
 
 fn test_multiply_shapes() raises:
     """Test that multiply returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -283,7 +303,7 @@ fn test_multiply_shapes() raises:
 
 fn test_multiply_values() raises:
     """Test that multiply computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -298,14 +318,20 @@ fn test_multiply_values() raises:
 
     var result = multiply(a, b)
 
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(10.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(18.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(28.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(10.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(18.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(28.0), tolerance=1e-5
+    )
 
 
 fn test_multiply_same_shape_1d() raises:
     """Test multiplying two 1D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 4.0, DType.float32)
     var b = full(shape, 2.5, DType.float32)
@@ -318,7 +344,7 @@ fn test_multiply_same_shape_1d() raises:
 
 fn test_multiply_same_shape_2d() raises:
     """Test multiplying two 2D tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 3.0, DType.float64)
@@ -332,7 +358,7 @@ fn test_multiply_same_shape_2d() raises:
 
 fn test_multiply_by_zero() raises:
     """Test multiplying by zero (should give all zeros)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 99.0, DType.float32)
@@ -344,7 +370,7 @@ fn test_multiply_by_zero() raises:
 
 fn test_multiply_by_one() raises:
     """Test multiplying by one (should not change values)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = full(shape, 7.5, DType.float32)
     var b = ones(shape, DType.float32)
@@ -355,7 +381,7 @@ fn test_multiply_by_one() raises:
 
 fn test_multiply_negative() raises:
     """Test multiplying with negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -3.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -366,7 +392,7 @@ fn test_multiply_negative() raises:
 
 fn test_multiply_backward() raises:
     """Test multiply backward pass."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -382,10 +408,18 @@ fn test_multiply_backward() raises:
     var grad_b = grads.grad_b
 
     # Gradient of multiply: d/da = b, d/db = a
-    assert_almost_equal(grad_a._data.bitcast[Float32]()[0], Float32(4.0), tolerance=1e-5)
-    assert_almost_equal(grad_a._data.bitcast[Float32]()[1], Float32(5.0), tolerance=1e-5)
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(2.0), tolerance=1e-5)
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[1], Float32(3.0), tolerance=1e-5)
+    assert_almost_equal(
+        grad_a._data.bitcast[Float32]()[0], Float32(4.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_a._data.bitcast[Float32]()[1], Float32(5.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(2.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[1], Float32(3.0), tolerance=1e-5
+    )
 
 
 # ============================================================================
@@ -395,7 +429,7 @@ fn test_multiply_backward() raises:
 
 fn test_divide_shapes() raises:
     """Test that divide returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -409,7 +443,7 @@ fn test_divide_shapes() raises:
 
 fn test_divide_values() raises:
     """Test that divide computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -424,14 +458,20 @@ fn test_divide_values() raises:
 
     var result = divide(a, b)
 
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(5.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(5.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(6.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(5.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(5.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(6.0), tolerance=1e-5
+    )
 
 
 fn test_divide_same_shape() raises:
     """Test dividing two tensors with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 6.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -444,7 +484,7 @@ fn test_divide_same_shape() raises:
 
 fn test_divide_by_one() raises:
     """Test dividing by one (identity)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 7.5, DType.float32)
@@ -456,7 +496,7 @@ fn test_divide_by_one() raises:
 
 fn test_divide_by_two() raises:
     """Test dividing by two."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 10.0, DType.float64)
     var b = full(shape, 2.0, DType.float64)
@@ -468,7 +508,7 @@ fn test_divide_by_two() raises:
 
 fn test_divide_negative() raises:
     """Test dividing negative values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -6.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -479,7 +519,7 @@ fn test_divide_negative() raises:
 
 fn test_divide_backward() raises:
     """Test divide backward pass."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -500,10 +540,18 @@ fn test_divide_backward() raises:
     # d/db[0] = -10/4 = -2.5
     # d/db[1] = -20/16 = -1.25
 
-    assert_almost_equal(grad_a._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5)
-    assert_almost_equal(grad_a._data.bitcast[Float32]()[1], Float32(0.25), tolerance=1e-5)
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[0], Float32(-2.5), tolerance=1e-4)
-    assert_almost_equal(grad_b._data.bitcast[Float32]()[1], Float32(-1.25), tolerance=1e-4)
+    assert_almost_equal(
+        grad_a._data.bitcast[Float32]()[0], Float32(0.5), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_a._data.bitcast[Float32]()[1], Float32(0.25), tolerance=1e-5
+    )
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[0], Float32(-2.5), tolerance=1e-4
+    )
+    assert_almost_equal(
+        grad_b._data.bitcast[Float32]()[1], Float32(-1.25), tolerance=1e-4
+    )
 
 
 # ============================================================================
@@ -513,7 +561,7 @@ fn test_divide_backward() raises:
 
 fn test_floor_divide_shapes() raises:
     """Test that floor_divide returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -527,7 +575,7 @@ fn test_floor_divide_shapes() raises:
 
 fn test_floor_divide_values() raises:
     """Test that floor_divide computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -543,14 +591,20 @@ fn test_floor_divide_values() raises:
     var result = floor_divide(a, b)
 
     # 7 // 2 = 3, 8 // 3 = 2, 9 // 4 = 2
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(3.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(2.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(3.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(2.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_floor_divide_same_shape() raises:
     """Test floor division with same shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -561,7 +615,7 @@ fn test_floor_divide_same_shape() raises:
 
 fn test_floor_divide_positive() raises:
     """Test floor division with positive values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 9.0, DType.float32)
     var b = full(shape, 4.0, DType.float32)
@@ -572,7 +626,7 @@ fn test_floor_divide_positive() raises:
 
 fn test_floor_divide_negative() raises:
     """Test floor division with negative dividend."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -7.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -588,7 +642,7 @@ fn test_floor_divide_negative() raises:
 
 fn test_modulo_shapes() raises:
     """Test that modulo returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -602,7 +656,7 @@ fn test_modulo_shapes() raises:
 
 fn test_modulo_values() raises:
     """Test that modulo computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -618,14 +672,20 @@ fn test_modulo_values() raises:
     var result = modulo(a, b)
 
     # 7 % 3 = 1, 8 % 5 = 3, 9 % 4 = 1
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(3.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(1.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(3.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(1.0), tolerance=1e-5
+    )
 
 
 fn test_modulo_positive() raises:
     """Test modulo with positive values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -636,19 +696,21 @@ fn test_modulo_positive() raises:
 
 fn test_modulo_negative_dividend() raises:
     """Test modulo with negative dividend."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -7.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
     var c = modulo(a, b)
 
     # Python semantics: -7 % 3 = 2 (not -1)
-    assert_all_values(c, 2.0, 1e-6, "-7.0 % 3.0 should be 2.0 (Python semantics)")
+    assert_all_values(
+        c, 2.0, 1e-6, "-7.0 % 3.0 should be 2.0 (Python semantics)"
+    )
 
 
 fn test_modulo_fractional() raises:
     """Test modulo with fractional values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.5, DType.float32)
     var b = full(shape, 2.5, DType.float32)
@@ -664,7 +726,7 @@ fn test_modulo_fractional() raises:
 
 fn test_power_shapes() raises:
     """Test that power returns correct output shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(10)
     var a = ones(shape, DType.float32)
@@ -678,7 +740,7 @@ fn test_power_shapes() raises:
 
 fn test_power_values() raises:
     """Test that power computes correct values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -694,14 +756,20 @@ fn test_power_values() raises:
     var result = power(a, b)
 
     # 2^3 = 8, 3^2 = 9, 4^0.5 = 2
-    assert_almost_equal(result._data.bitcast[Float32]()[0], Float32(8.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[1], Float32(9.0), tolerance=1e-5)
-    assert_almost_equal(result._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5)
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[0], Float32(8.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[1], Float32(9.0), tolerance=1e-5
+    )
+    assert_almost_equal(
+        result._data.bitcast[Float32]()[2], Float32(2.0), tolerance=1e-5
+    )
 
 
 fn test_power_integer_exponent() raises:
     """Test power with small integer exponent."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 2.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -712,7 +780,7 @@ fn test_power_integer_exponent() raises:
 
 fn test_power_zero_exponent() raises:
     """Test power with zero exponent."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 5.0, DType.float32)
     var b = full(shape, 0.0, DType.float32)
@@ -723,7 +791,7 @@ fn test_power_zero_exponent() raises:
 
 fn test_power_one_exponent() raises:
     """Test power with exponent of one."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.5, DType.float32)
     var b = full(shape, 1.0, DType.float32)
@@ -734,7 +802,7 @@ fn test_power_one_exponent() raises:
 
 fn test_power_negative_base() raises:
     """Test power with negative base."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, -2.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -750,7 +818,7 @@ fn test_power_negative_base() raises:
 
 fn test_dunder_add() raises:
     """Test __add__ operator overloading (a + b)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 3.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -761,7 +829,7 @@ fn test_dunder_add() raises:
 
 fn test_dunder_sub() raises:
     """Test __sub__ operator overloading (a - b)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 7.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -772,7 +840,7 @@ fn test_dunder_sub() raises:
 
 fn test_dunder_mul() raises:
     """Test __mul__ operator overloading (a * b)."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 4.0, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -783,7 +851,7 @@ fn test_dunder_mul() raises:
 
 fn test_chained_operations() raises:
     """Test chained operations with multiple operators."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 2.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -796,7 +864,7 @@ fn test_chained_operations() raises:
 
 fn test_complex_expression() raises:
     """Test complex expression with multiple operations."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = ones(shape, DType.float32)
@@ -815,7 +883,7 @@ fn test_complex_expression() raises:
 
 fn test_add_preserves_dtype_float32() raises:
     """Test that add preserves float32 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float32)
     var b = ones(shape, DType.float32)
@@ -826,7 +894,7 @@ fn test_add_preserves_dtype_float32() raises:
 
 fn test_add_preserves_dtype_float64() raises:
     """Test that add preserves float64 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float64)
     var b = ones(shape, DType.float64)
@@ -837,7 +905,7 @@ fn test_add_preserves_dtype_float64() raises:
 
 fn test_multiply_preserves_dtype_int32() raises:
     """Test that multiply preserves int32 dtype."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.int32)
     var b = full(shape, 2.0, DType.int32)
@@ -853,7 +921,7 @@ fn test_multiply_preserves_dtype_int32() raises:
 
 fn test_add_preserves_shape_1d() raises:
     """Test that add preserves 1D shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10)
     var a = ones(shape, DType.float32)
     var b = ones(shape, DType.float32)
@@ -865,7 +933,7 @@ fn test_add_preserves_shape_1d() raises:
 
 fn test_add_preserves_shape_3d() raises:
     """Test that add preserves 3D shape."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -884,9 +952,9 @@ fn test_add_preserves_shape_3d() raises:
 
 fn test_add_mismatched_shapes_raises_error() raises:
     """Test that add with mismatched shapes raises error."""
-    var shape_a = List[Int]()
+    var shape_a= List[Int]()
     shape_a.append(5)
-    var shape_b = List[Int]()
+    var shape_b= List[Int]()
     shape_b.append(10)
 
     var a = ones(shape_a, DType.float32)
@@ -905,10 +973,10 @@ fn test_add_mismatched_shapes_raises_error() raises:
 
 fn test_multiply_mismatched_shapes_raises_error() raises:
     """Test that multiply with mismatched shapes raises error."""
-    var shape_a = List[Int]()
+    var shape_a= List[Int]()
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b = List[Int]()
+    var shape_b= List[Int]()
     shape_b.append(3)
     shape_b.append(5)
 
@@ -922,7 +990,7 @@ fn test_multiply_mismatched_shapes_raises_error() raises:
 
 fn test_add_mismatched_dtypes_raises_error() raises:
     """Test that add with mismatched dtypes raises error."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var a = ones(shape, DType.float32)

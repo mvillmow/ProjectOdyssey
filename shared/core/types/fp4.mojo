@@ -43,7 +43,7 @@ from math import isnan, isinf
 # See: COMPREHENSIVE_REVIEW_FINDINGS.md (TEST-010)
 
 
-struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
+struct FP4_E2M1(Copyable, Movable, Representable, Stringable):
     """4-bit floating point number in E2M1 format.
 
     Memory layout (4 bits stored in UInt8):
@@ -60,6 +60,7 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
         E2M1 values are meaningless without a block-level scale factor.
         Use MXFP4 or NVFP4 for complete block-based representations.
     """
+
     var value: UInt8  # Only lower 4 bits are used
 
     fn __init__(out self, value: UInt8 = 0):
@@ -67,7 +68,7 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
 
         Args:
             value: Raw 4-bit representation (only lower 4 bits used).
-       """
+        """
         self.value = value & 0xF  # Mask to 4 bits
 
     @staticmethod
@@ -166,7 +167,7 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
         # Extract components (4 bits total)
         var sign = (self.value >> 3) & 0x1
         var exp = (self.value >> 1) & 0x3  # 2 bits
-        var mantissa = self.value & 0x1    # 1 bit
+        var mantissa = self.value & 0x1  # 1 bit
 
         # Handle zero
         if exp == 0:
@@ -176,7 +177,9 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
         # E2M1: value = 2^(exp-1) * (1 + mantissa/2)
         # With 1-bit mantissa, the fractional part is mantissa * 0.5
         var exponent = exp.cast[DType.int32]() - 1
-        var base = Float32(1.0) + Float32(mantissa.cast[DType.float32]()) * Float32(0.5)
+        var base = Float32(1.0) + Float32(
+            mantissa.cast[DType.float32]()
+        ) * Float32(0.5)
 
         # Compute 2^exponent
         var unscaled = base
@@ -208,7 +211,13 @@ struct FP4_E2M1(Stringable, Representable, Copyable, Movable):
         Returns:
             Detailed string representation.
         """
-        return "FP4_E2M1(bits=0x" + hex(self.value) + ", value=" + String(self.to_float32(scale=1.0)) + ")"
+        return (
+            "FP4_E2M1(bits=0x"
+            + hex(self.value)
+            + ", value="
+            + String(self.to_float32(scale=1.0))
+            + ")"
+        )
 
     fn __eq__(self, other: Self) -> Bool:
         """Check equality by comparing raw bits.

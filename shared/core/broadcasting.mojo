@@ -4,9 +4,7 @@ Implements NumPy-style broadcasting rules for tensor operations.
 """
 
 
-fn broadcast_shapes(
-    shape1: List[Int], shape2: List[Int]
-) raises -> List[Int]:
+fn broadcast_shapes(shape1: List[Int], shape2: List[Int]) raises -> List[Int]:
     """Compute the broadcast shape of two tensor shapes.
 
     Args:
@@ -29,12 +27,12 @@ fn broadcast_shapes(
         broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible).
-   """
+    """
     var ndim1 = len(shape1)
     var ndim2 = len(shape2)
     var max_ndim = max(ndim1, ndim2)
 
-    var result_shape = List[Int]()
+    var result_shape= List[Int]()
 
     # Process dimensions from right to left
     for i in range(max_ndim):
@@ -48,8 +46,12 @@ fn broadcast_shapes(
         # Check compatibility
         if dim1 != dim2 and dim1 != 1 and dim2 != 1:
             raise Error(
-                "Shapes are not broadcast-compatible: dimension " + String(i) + " has sizes "
-                + String(dim1) + " and " + String(dim2)
+                "Shapes are not broadcast-compatible: dimension "
+                + String(i)
+                + " has sizes "
+                + String(dim1)
+                + " and "
+                + String(dim2)
             )
 
         # Result dimension is the maximum
@@ -57,16 +59,14 @@ fn broadcast_shapes(
         result_shape.append(result_dim)
 
     # Reverse to get correct order (we built it backwards)
-    var final_shape = List[Int]()
+    var final_shape= List[Int]()
     for i in range(len(result_shape) - 1, -1, -1):
         final_shape.append(result_shape[i])
 
     return final_shape^
 
 
-fn are_shapes_broadcastable(
-    shape1: List[Int], shape2: List[Int]
-) -> Bool:
+fn are_shapes_broadcastable(shape1: List[Int], shape2: List[Int]) -> Bool:
     """Check if two shapes are broadcast-compatible.
 
     Args:
@@ -115,17 +115,19 @@ fn compute_broadcast_strides(
         This allows efficient broadcasting without materializing extra copies.
 
     Examples:
+        ```
         original_shape = [3, 1, 5]
         broadcast_shape = [3, 4, 5]
         result = [stride_for_3, 0, stride_for_5]  # Middle dimension has stride 0
+        ```
     """
     var ndim_orig = len(original_shape)
     var ndim_broad = len(broadcast_shape)
 
-    var broadcast_strides = List[Int]()
+    var broadcast_strides= List[Int]()
 
     # Calculate original row-major strides
-    var orig_strides = List[Int]()
+    var orig_strides= List[Int]()
     var stride = 1
     # Build strides in reverse (right to left) then reverse the list
     for i in range(ndim_orig - 1, -1, -1):
@@ -133,7 +135,7 @@ fn compute_broadcast_strides(
         stride *= original_shape[i]
 
     # Reverse to get correct order (we built it backwards)
-    var orig_strides_final = List[Int]()
+    var orig_strides_final= List[Int]()
     for i in range(len(orig_strides) - 1, -1, -1):
         orig_strides_final.append(orig_strides[i])
 

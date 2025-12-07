@@ -6,8 +6,8 @@ Example usage:
     from package_name import ClassName, function_name
 
     fn main():
-        let obj = ClassName()
-        let result = function_name(obj)
+        var obj = ClassName()
+        var result = function_name(obj)
 """
 
 # Import modules to re-export

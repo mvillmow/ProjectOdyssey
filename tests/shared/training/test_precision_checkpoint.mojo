@@ -41,20 +41,16 @@ fn test_checkpoint_saves_precision_mode() raises:
 
     # Verify mode enum values are serializable (can be converted to string)
     assert_true(
-        fp32_config.mode == PrecisionMode.FP32,
-        "FP32 mode should be correct"
+        fp32_config.mode == PrecisionMode.FP32, "FP32 mode should be correct"
     )
     assert_true(
-        fp16_config.mode == PrecisionMode.FP16,
-        "FP16 mode should be correct"
+        fp16_config.mode == PrecisionMode.FP16, "FP16 mode should be correct"
     )
     assert_true(
-        bf16_config.mode == PrecisionMode.BF16,
-        "BF16 mode should be correct"
+        bf16_config.mode == PrecisionMode.BF16, "BF16 mode should be correct"
     )
     assert_true(
-        fp8_config.mode == PrecisionMode.FP8,
-        "FP8 mode should be correct"
+        fp8_config.mode == PrecisionMode.FP8, "FP8 mode should be correct"
     )
 
     # Verify from_string roundtrip works (simulates save/load)
@@ -64,21 +60,15 @@ fn test_checkpoint_saves_precision_mode() raises:
     var loaded_fp8 = PrecisionConfig.from_string("fp8")
 
     assert_true(
-        loaded_fp32.mode == PrecisionMode.FP32,
-        "Loaded FP32 should match"
+        loaded_fp32.mode == PrecisionMode.FP32, "Loaded FP32 should match"
     )
     assert_true(
-        loaded_fp16.mode == PrecisionMode.FP16,
-        "Loaded FP16 should match"
+        loaded_fp16.mode == PrecisionMode.FP16, "Loaded FP16 should match"
     )
     assert_true(
-        loaded_bf16.mode == PrecisionMode.BF16,
-        "Loaded BF16 should match"
+        loaded_bf16.mode == PrecisionMode.BF16, "Loaded BF16 should match"
     )
-    assert_true(
-        loaded_fp8.mode == PrecisionMode.FP8,
-        "Loaded FP8 should match"
-    )
+    assert_true(loaded_fp8.mode == PrecisionMode.FP8, "Loaded FP8 should match")
 
 
 # ============================================================================
@@ -103,17 +93,14 @@ fn test_checkpoint_loads_matching_precision() raises:
     var loaded = PrecisionConfig.from_string("fp16")
 
     # Mode and behavioral properties should match
-    assert_true(
-        loaded.mode == original_mode,
-        "Mode should match after reload"
-    )
+    assert_true(loaded.mode == original_mode, "Mode should match after reload")
     assert_true(
         loaded.use_gradient_scaler == original_uses_scaler,
-        "Gradient scaler setting should match"
+        "Gradient scaler setting should match",
     )
     assert_true(
         loaded.needs_master_weights() == original_needs_master,
-        "Master weights setting should match"
+        "Master weights setting should match",
     )
 
     # Note: Scale value may differ (from_string uses default)
@@ -135,25 +122,21 @@ fn test_checkpoint_fp16_to_fp32_promotion() raises:
     var fp32_config = PrecisionConfig.fp32()
 
     # Create FP16 weights (simulates loaded checkpoint)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(4)
     var fp32_original = full(shape, 0.5, DType.float32)
     var fp16_weights = fp16_config.cast_to_compute(fp32_original)
 
     # Verify FP16 dtype
-    assert_true(
-        fp16_weights.dtype() == DType.float16,
-        "Weights should be FP16"
-    )
+    assert_true(fp16_weights.dtype() == DType.float16, "Weights should be FP16")
 
     # Promote to FP32 for training
     var fp32_weights = fp32_config.cast_to_compute(fp16_weights)
 
     # Verify FP32 dtype
     assert_true(
-        fp32_weights.dtype() == DType.float32,
-        "Promoted weights should be FP32"
+        fp32_weights.dtype() == DType.float32, "Promoted weights should be FP32"
     )
 
     # Check value preservation (within FP16 precision)
@@ -161,8 +144,7 @@ fn test_checkpoint_fp16_to_fp32_promotion() raises:
     var promoted_val = fp32_weights._get_float64(0)
     var error = abs(original_val - promoted_val)
     assert_true(
-        error < Float64(0.01),
-        "Value should be preserved after roundtrip"
+        error < Float64(0.01), "Value should be preserved after roundtrip"
     )
 
 
@@ -180,18 +162,19 @@ fn test_checkpoint_fp32_to_fp16_demotion() raises:
     var fp16_config = PrecisionConfig.fp16()
 
     # Create FP32 weights (simulates loaded checkpoint)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(4)
-    var fp32_weights = full(shape, 0.123456789, DType.float32)  # High precision value
+    var fp32_weights = full(
+        shape, 0.123456789, DType.float32
+    )  # High precision value
 
     # Demote to FP16 for memory-efficient training
     var fp16_weights = fp16_config.cast_to_compute(fp32_weights)
 
     # Verify FP16 dtype
     assert_true(
-        fp16_weights.dtype() == DType.float16,
-        "Demoted weights should be FP16"
+        fp16_weights.dtype() == DType.float16, "Demoted weights should be FP16"
     )
 
     # Check value preservation (within FP16 limits)
@@ -203,7 +186,7 @@ fn test_checkpoint_fp32_to_fp16_demotion() raises:
     # FP16 should preserve ~3 significant digits (error < 1%)
     assert_true(
         relative_error < Float64(0.01),
-        "FP16 demotion should preserve value within precision limits"
+        "FP16 demotion should preserve value within precision limits",
     )
 
 
@@ -222,7 +205,7 @@ fn test_checkpoint_gradient_scaler_state() raises:
 
     # Simulate training that caused overflow
     config.step(grads_valid=False)  # Overflow -> scale reduced
-    config.step(grads_valid=True)   # Normal step
+    config.step(grads_valid=True)  # Normal step
 
     # Capture state for "saving"
     var saved_scale = config.get_scale()
@@ -231,13 +214,9 @@ fn test_checkpoint_gradient_scaler_state() raises:
     # Verify state changed from initial
     assert_true(
         Float64(saved_scale) < Float64(65536.0),
-        "Scale should have decreased after overflow"
+        "Scale should have decreased after overflow",
     )
-    assert_equal_int(
-        saved_overflow_count,
-        1,
-        "Overflow count should be 1"
-    )
+    assert_equal_int(saved_overflow_count, 1, "Overflow count should be 1")
 
     # In a real checkpoint, these values would be saved to disk
     # and restored when creating a new PrecisionConfig
@@ -258,12 +237,11 @@ fn test_checkpoint_master_weights_precision() raises:
 
     # Master dtype should always be FP32
     assert_true(
-        fp16_config.master_dtype == DType.float32,
-        "Master dtype should be FP32"
+        fp16_config.master_dtype == DType.float32, "Master dtype should be FP32"
     )
 
     # Create compute weights in FP16
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     shape.append(4)
     var fp32_weights = full(shape, 0.5, DType.float32)
@@ -274,8 +252,7 @@ fn test_checkpoint_master_weights_precision() raises:
 
     # Master weights should be FP32
     assert_true(
-        master_weights.dtype() == DType.float32,
-        "Master weights should be FP32"
+        master_weights.dtype() == DType.float32, "Master weights should be FP32"
     )
 
 

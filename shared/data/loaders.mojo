@@ -80,7 +80,9 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
             Error if batch_size is invalid.
         """
         if batch_size <= 0:
-            raise Error("Batch size must be positive, got: " + String(batch_size))
+            raise Error(
+                "Batch size must be positive, got: " + String(batch_size)
+            )
 
         self.dataset = dataset^
         self.batch_size = batch_size
@@ -103,7 +105,9 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
 # ============================================================================
 
 
-struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Movable](Copyable, Movable):
+struct BatchLoader[
+    D: Dataset & Copyable & Movable, S: Sampler & Copyable & Movable
+](Copyable, Movable):
     """Data loader with batching and optional shuffling.
 
     Loads data in batches, optionally shuffling the order of samples.
@@ -142,7 +146,9 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
         """
         # Validate batch size
         if batch_size <= 0:
-            raise Error("Batch size must be positive, got: " + String(batch_size))
+            raise Error(
+                "Batch size must be positive, got: " + String(batch_size)
+            )
 
         # Initialize base fields (composition pattern instead of inheritance)
         self.dataset = dataset^
@@ -171,13 +177,13 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
         Returns:
             List of batches for the epoch.
         """
-        var batches = List[Batch](capacity=self.__len__())
+        var batches= List[Batch](capacity=self.__len__())
         var indices = self.sampler.__iter__()
 
         var batch_start = 0
         while batch_start < len(indices):
             var batch_end = min(batch_start + self.batch_size, len(indices))
-            var batch_indices = List[Int](capacity=batch_end - batch_start)
+            var batch_indices= List[Int](capacity=batch_end - batch_start)
 
             # Collect batch indices
             for i in range(batch_start, batch_end):
@@ -188,8 +194,8 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
                 break
 
             # Load batch data
-            var batch_data = List[ExTensor](capacity=len(batch_indices))
-            var batch_labels = List[ExTensor](capacity=len(batch_indices))
+            var batch_data= List[ExTensor](capacity=len(batch_indices))
+            var batch_labels= List[ExTensor](capacity=len(batch_indices))
 
             for idx in batch_indices:
                 var sample = self.dataset.__getitem__(idx)
@@ -258,7 +264,7 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
                 raise Error("All tensors must have same dtype")
 
         # Build the new shape: [batch_size, *tensor_shape]
-        var new_shape = List[Int]()
+        var new_shape= List[Int]()
         new_shape.append(batch_size)
         for i in range(len(first_shape)):
             new_shape.append(first_shape[i])
@@ -272,7 +278,7 @@ struct BatchLoader[D: Dataset & Copyable & Movable, S: Sampler & Copyable & Mova
         var elements_per_tensor = tensors[0].num_elements()
 
         # Build stacked data as a List and create tensor
-        var stacked_data = List[Float32](capacity=total_elements)
+        var stacked_data= List[Float32](capacity=total_elements)
 
         # Copy each tensor's data into the stacked list
         for tensor_idx in range(len(tensors)):

@@ -18,7 +18,7 @@ from math import sqrt
 # ============================================================================
 
 
-struct CallbackSignal(Copyable, Movable, ImplicitlyCopyable):
+struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
     """Signal returned by callbacks to control training flow.
 
     Values:
@@ -60,7 +60,7 @@ struct TrainingState(Copyable, Movable):
 
     Example:
         ```mojo
-        ar state = TrainingState(epoch=0, batch=0, metrics={}, lr=0.1)
+        var state = TrainingState(epoch=0, batch=0, metrics={}, lr=0.1)
         state.metrics["train_loss"] = 0.5
         state.metrics["val_loss"] = 0.6
         ```
@@ -161,7 +161,9 @@ trait Callback:
         """
         ...
 
-    fn on_epoch_end(mut self, mut state: TrainingState) raises -> CallbackSignal:
+    fn on_epoch_end(
+        mut self, mut state: TrainingState
+    ) raises -> CallbackSignal:
         """Called at the end of each epoch (after validation).
 
         Args:
@@ -225,7 +227,7 @@ trait LRScheduler:
             var gamma: Float64
 
             fn get_lr(self, epoch: Int, batch: Int) -> Float64:
-                let steps = epoch // self.step_size
+                var steps = epoch // self.step_size
                 return self.base_lr * (self.gamma ** steps)
         ```
     """
@@ -244,7 +246,7 @@ trait LRScheduler:
             - Schedulers should be deterministic (same inputs -> same output)
             - epoch and batch are 0-indexed
             - batch parameter is optional (defaults to 0 for epoch-based schedulers).
-       """
+        """
         ...
 
 
@@ -302,7 +304,7 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
         Uses has_nan_or_inf internally for consistency with gradient validation.
     """
     # Create a single-element tensor for loss value
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var loss_tensor = ExTensor(shape, DType.float64)
 
@@ -315,8 +317,7 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
 
 
 fn compute_gradient_norm(
-    parameters: List[ExTensor],
-    norm_type: String = "L2"
+    parameters: List[ExTensor], norm_type: String = "L2"
 ) -> Float64:
     """Compute gradient norm for training diagnostics and exploding gradient detection.
 
@@ -349,7 +350,7 @@ fn compute_gradient_norm(
 
     Reference:
         Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
-   """
+    """
     var total_norm_sq = Float64(0.0)
     var total_abs_norm = Float64(0.0)
 
@@ -395,7 +396,9 @@ fn compute_gradient_norm(
         return sqrt(total_norm_sq)
 
 
-fn clip_gradients(var gradients: List[Float64], max_norm: Float64) -> List[Float64]:
+fn clip_gradients(
+    var gradients: List[Float64], max_norm: Float64
+) -> List[Float64]:
     """Clip gradients by global norm to prevent exploding gradients.
 
     Args:

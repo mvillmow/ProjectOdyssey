@@ -35,13 +35,14 @@ from memory import UnsafePointer, memset_zero, alloc
 from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from random import random_float64
+from shared.core.matrix import matmul
 
 # Memory safety constants
 alias MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
 alias WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
 
 
-struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
+struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
     """Dynamic tensor with runtime-determined shape and data type.
 
     ExTensor provides a flexible tensor implementation for machine learning workloads,
@@ -79,7 +80,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
     var _dtype: DType
     var _numel: Int
     var _is_view: Bool
-    var _refcount: UnsafePointer[Int, origin=MutAnyOrigin]  # Shared reference count (fixes MOJO-003)
+    var _refcount: UnsafePointer[
+        Int, origin=MutAnyOrigin
+    ]  # Shared reference count (fixes MOJO-003)
     var _original_numel_quantized: Int  # Metadata for quantization: -1 if not quantized, original numel if quantized (fixes DATA-001)
 
     fn __init__(out self, shape: List[Int], dtype: DType) raises:
@@ -97,13 +100,15 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             functions like zeros(), ones(), full(), etc.
         """
         # Copy shape to avoid mutation issues
-        self._shape = List[Int]()
+        self._shape= List[Int]()
         for i in range(len(shape)):
             self._shape.append(shape[i])
 
         self._dtype = dtype
         self._is_view = False
-        self._original_numel_quantized = -1  # Initialize as non-quantized (fixes DATA-001)
+        self._original_numel_quantized = (
+            -1
+        )  # Initialize as non-quantized (fixes DATA-001)
 
         # Calculate total number of elements
         self._numel = 1
@@ -111,7 +116,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             self._numel *= self._shape[i]
 
         # Calculate row-major strides (in elements, not bytes)
-        self._strides = List[Int]()
+        self._strides= List[Int]()
         var stride = 1
         # Pre-allocate strides list with correct forward iteration
         for _ in range(len(self._shape)):
@@ -155,13 +160,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar x: ExTensor = 42  # Implicit conversion from IntLiteral
+            var x: ExTensor = 42  # Implicit conversion from IntLiteral
         ```
         ```
         """
         # Initialize scalar tensor (0D shape)
-        self._shape = List[Int]()
-        self._strides = List[Int]()
+        self._shape= List[Int]()
+        self._strides= List[Int]()
         self._dtype = DType.int64
         self._numel = 1
         self._is_view = False
@@ -183,13 +188,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
+            var x: ExTensor = 3.14  # Implicit conversion from FloatLiteral
         ```
         ```
         """
         # Initialize scalar tensor (0D shape)
-        self._shape = List[Int]()
-        self._strides = List[Int]()
+        self._shape= List[Int]()
+        self._strides= List[Int]()
         self._dtype = DType.float64
         self._numel = 1
         self._is_view = False
@@ -211,8 +216,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         """
         # Initialize scalar tensor (0D shape)
-        self._shape = List[Int]()
-        self._strides = List[Int]()
+        self._shape= List[Int]()
+        self._strides= List[Int]()
         self._dtype = DType.int64
         self._numel = 1
         self._is_view = False
@@ -234,12 +239,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar x: ExTensor = Float64(3.14)
+            var x: ExTensor = Float64(3.14)
         ```
         """
         # Initialize scalar tensor (0D shape)
-        self._shape = List[Int]()
-        self._strides = List[Int]()
+        self._shape= List[Int]()
+        self._strides= List[Int]()
         self._dtype = DType.float64
         self._numel = 1
         self._is_view = False
@@ -258,16 +263,16 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar values = List[Float32](1.0, 2.0, 3.0)
+            var values : List[Float32] = [1.0, 2.0, 3.0]
             var tensor = ExTensor(values)
         ```
         ```
         """
-        var shape = List[Int]()
+        var shape= List[Int]()
         shape.append(len(data))
 
         # Initialize fields manually (delegating constructor doesn't satisfy compiler)
-        self._shape = List[Int]()
+        self._shape= List[Int]()
         self._shape.append(len(data))
         self._dtype = DType.float32
         self._is_view = False
@@ -277,7 +282,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         self._numel = len(data)
 
         # Calculate strides
-        self._strides = List[Int]()
+        self._strides= List[Int]()
         self._strides.append(1)
 
         # Allocate memory
@@ -285,7 +290,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = self._numel * dtype_size
 
         if total_bytes > MAX_TENSOR_BYTES:
-            raise Error("Tensor too large: " + String(total_bytes) + " bytes exceeds maximum " + String(MAX_TENSOR_BYTES) + " bytes")
+            raise Error(
+                "Tensor too large: "
+                + String(total_bytes)
+                + " bytes exceeds maximum "
+                + String(MAX_TENSOR_BYTES)
+                + " bytes"
+            )
 
         self._data = alloc[UInt8](total_bytes)
         self._refcount = alloc[Int](1)
@@ -303,16 +314,16 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar values = List[Int](1, 2, 3)
+            var values : List[Int] = [1, 2, 3]
             var tensor = ExTensor(values)
         ```
         ```
         """
-        var shape = List[Int]()
+        var shape= List[Int]()
         shape.append(len(data))
 
         # Initialize fields manually (delegating constructor doesn't satisfy compiler)
-        self._shape = List[Int]()
+        self._shape= List[Int]()
         self._shape.append(len(data))
         self._dtype = DType.int64
         self._is_view = False
@@ -322,7 +333,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         self._numel = len(data)
 
         # Calculate strides
-        self._strides = List[Int]()
+        self._strides= List[Int]()
         self._strides.append(1)
 
         # Allocate memory
@@ -330,7 +341,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = self._numel * dtype_size
 
         if total_bytes > MAX_TENSOR_BYTES:
-            raise Error("Tensor too large: " + String(total_bytes) + " bytes exceeds maximum " + String(MAX_TENSOR_BYTES) + " bytes")
+            raise Error(
+                "Tensor too large: "
+                + String(total_bytes)
+                + " bytes exceeds maximum "
+                + String(MAX_TENSOR_BYTES)
+                + " bytes"
+            )
 
         self._data = alloc[UInt8](total_bytes)
         self._refcount = alloc[Int](1)
@@ -406,14 +423,14 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """Return the shape of the tensor.
 
         Returns:
-            A copy of the shape vector
+            A copy of the shape vector.
 
         Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
-            print(t.shape())  # List[3, 4]
+            ```var t = zeros(List[Int](3, 4), DType.float32)
+            print(t.shape())  # List[3, 4]```
         """
         # Return a copy to avoid mutation issues
-        var result = List[Int]()
+        var result= List[Int]()
         for i in range(len(self._shape)):
             result.append(self._shape[i])
         return result^
@@ -430,11 +447,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """Return the total number of elements in the tensor.
 
         Returns:
-            The product of all dimension sizes
+            The product of all dimension sizes.
 
         Examples:
-            var t = ExTensor.zeros((3, 4), DType.float32)
-            print(t.numel())  # 12
+            `var t = ExTensor.zeros((3, 4), DType.float32)
+            print(t.numel())  # 12`
         """
         return self._numel
 
@@ -447,8 +464,8 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             The product of all dimension sizes
 
         Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
-            print(t.num_elements())  # 12
+            `var t = zeros(List[Int](3, 4), DType.float32)
+            print(t.num_elements())  # 12`
         """
         return self._numel
 
@@ -456,11 +473,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """Return the number of dimensions (rank) of the tensor.
 
         Returns:
-            The number of dimensions
+            The number of dimensions.
 
-        Examples:
+        Examples:```
             var t = ExTensor.zeros((3, 4), DType.float32)
             print(t.dim())  # 2
+            ```
         """
         return len(self._shape)
 
@@ -468,7 +486,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         """Check if the tensor has a contiguous memory layout.
 
         Returns:
-            True if the tensor is contiguous (row-major, no gaps), False otherwise
+            True if the tensor is contiguous (row-major, no gaps), False otherwise.
 
         Note:
             Contiguous tensors enable SIMD optimizations and efficient operations.
@@ -489,17 +507,17 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
 
         Args:
-            new_shape: The new shape for the tensor
+            new_shape: The new shape for the tensor.
 
         Returns:
-            A new tensor with the requested shape, sharing the same data
+            A new tensor with the requested shape, sharing the same data.
 
         Raises:
-            Error: If the total number of elements doesn't match
+            Error: If the total number of elements doesn't match.
 
         Example:
             ```mojo
-            ar t = zeros(List[Int](2, 3), DType.float32)
+            var t = zeros(List[Int](2, 3), DType.float32)
             var reshaped = t.reshape(List[Int](6))  # (2, 3) -> (6,)
         ```
         ```
@@ -514,7 +532,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Create view by explicitly copying (increments refcount via __copyinit__)
         var result = self.copy()
-        result._is_view = True  # Mark as view since it shares data with original
+        result._is_view = (
+            True  # Mark as view since it shares data with original
+        )
 
         # Update shape
         result._shape = List[Int]()
@@ -522,7 +542,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             result._shape.append(new_shape[i])
 
         # Recalculate strides for new shape
-        result._strides = List[Int]()
+        result._strides= List[Int]()
         var stride = 1
         # Pre-allocate strides list with correct forward iteration
         for _ in range(len(new_shape)):
@@ -537,26 +557,26 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
     fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
         """Extract a slice along the specified axis.
 
-        Creates a view sharing data with the original tensor.
-        Uses reference counting to ensure data remains valid.
+            Creates a view sharing data with the original tensor.
+            Uses reference counting to ensure data remains valid.
 
 
-        Args:
-            start: Starting index (inclusive)
-            end: Ending index (exclusive)
-            axis: Axis to slice along (default: 0, the batch dimension)
+            Args:
+                start: Starting index (inclusive)
+                end: Ending index (exclusive)
+                axis: Axis to slice along (default: 0, the batch dimension)
 
-        Returns:
-            A new tensor containing the slice (shares memory with original)
+            Returns:
+                A new tensor containing the slice (shares memory with original)
 
-        Raises:
-            Error: If indices are out of bounds or axis is invalid
+            Raises:
+                Error: If indices are out of bounds or axis is invalid
 
-    Example:
-        ```mojo
-        # Extract batch 0-32 from (112800, 1, 28, 28)
-        var batch = dataset.slice(0, 32, axis=0)  # Returns (32, 1, 28, 28)
-        ```
+        Example:
+            ```mojo
+            # Extract batch 0-32 from (112800, 1, 28, 28)
+            var batch = dataset.slice(0, 32, axis=0)  # Returns (32, 1, 28, 28)
+            ```
         """
         # Validate axis
         if axis < 0 or axis >= len(self._shape):
@@ -596,10 +616,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Create view by explicitly copying (increments refcount via __copyinit__)
         var result = self.copy()
-        result._is_view = True  # Mark as view since it shares data with original
+        result._is_view = (
+            True  # Mark as view since it shares data with original
+        )
 
         # Update shape with sliced dimension
-        result._shape = List[Int]()
+        result._shape= List[Int]()
         for i in range(len(self._shape)):
             if i == axis:
                 result._shape.append(end - start)
@@ -627,7 +649,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         Example:
             ```mojo
-            ar t = arange(0.0, 10.0, 1.0, DType.float32)
+            var t = arange(0.0, 10.0, 1.0, DType.float32)
             var val = t[5]  # Get element at index 5
         ```
         """
@@ -839,73 +861,73 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         return subtract(self, other)
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise multiplication: a * b"""
+        """Element-wise multiplication: `a * b`"""
         from .arithmetic import multiply
 
         return multiply(self, other)
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise division: a / b"""
+        """Element-wise division: `a / b`"""
         from .arithmetic import divide
 
         return divide(self, other)
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise floor division: a // b"""
+        """Element-wise floor division: `a // b`"""
         from .arithmetic import floor_divide
 
         return floor_divide(self, other)
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise modulo: a % b"""
+        """Element-wise modulo: `a % b`"""
         from .arithmetic import modulo
 
         return modulo(self, other)
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise power: a ** b"""
+        """Element-wise power: `a ** b`"""
         from .arithmetic import power
 
         return power(self, other)
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
-        """Matrix multiplication: a @ b"""
+        """Matrix multiplication: `a @ b`"""
         from .matrix import matmul
 
         return matmul(self, other)
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise equality: a == b"""
+        """Element-wise equality: `a == b`"""
         from .comparison import equal
 
         return equal(self, other)
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise inequality: a != b"""
+        """Element-wise inequality: `a != b`"""
         from .comparison import not_equal
 
         return not_equal(self, other)
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less than: a < b"""
+        """Element-wise less than: `a < b`"""
         from .comparison import less
 
         return less(self, other)
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise less or equal: a <= b"""
+        """Element-wise less or equal: `a <= b`"""
         from .comparison import less_equal
 
         return less_equal(self, other)
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater than: a > b"""
+        """Element-wise greater than: `a > b`"""
         from .comparison import greater
 
         return greater(self, other)
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
-        """Element-wise greater or equal: a >= b"""
+        """Element-wise greater or equal: `a >= b`"""
         from .comparison import greater_equal
 
         return greater_equal(self, other)
@@ -928,9 +950,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             Error: If the source tensor is not a floating-point dtype.
 
         Examples:
-            var t = zeros(List[Int](3, 4), DType.float32)
+            ```var t = zeros(List[Int](3, 4), DType.float32)
             var fp8_t = t.to_fp8()  # Returns uint8 tensor with FP8 encoding
-            var restored = fp8_t.from_fp8()  # Convert back to float32
+            var restored = fp8_t.from_fp8()  # Convert back to float32```
 
         Note:
             FP8 has limited range (~±240) and precision. Values outside this range.
@@ -938,7 +960,6 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             FP16 inputs are converted to FP32 before quantization.
         """
         from .types.fp8 import FP8
-
 
         # Verify source is floating point
         if not (
@@ -1215,7 +1236,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.int32:
                 val = Float32(self._data.bitcast[Int32]()[i])
             elif self._dtype == DType.int64:
-                result._data.bitcast[Int64]()[i] = self._data.bitcast[Int64]()[i]
+                result._data.bitcast[Int64]()[i] = self._data.bitcast[Int64]()[
+                    i
+                ]
                 continue
             elif self._dtype == DType.uint8:
                 val = Float32(self._data.bitcast[UInt8]()[i])
@@ -1318,7 +1341,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint8:
                 val = Float32(self._data.bitcast[UInt8]()[i])
             elif self._dtype == DType.uint16:
-                result._data.bitcast[UInt16]()[i] = self._data.bitcast[UInt16]()[i]
+                result._data.bitcast[UInt16]()[i] = self._data.bitcast[
+                    UInt16
+                ]()[i]
                 continue
             elif self._dtype == DType.uint32:
                 val = Float32(self._data.bitcast[UInt32]()[i])
@@ -1367,7 +1392,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint16:
                 val = Float32(self._data.bitcast[UInt16]()[i])
             elif self._dtype == DType.uint32:
-                result._data.bitcast[UInt32]()[i] = self._data.bitcast[UInt32]()[i]
+                result._data.bitcast[UInt32]()[i] = self._data.bitcast[
+                    UInt32
+                ]()[i]
                 continue
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
@@ -1415,7 +1442,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             elif self._dtype == DType.uint32:
                 val = Float32(self._data.bitcast[UInt32]()[i])
             elif self._dtype == DType.uint64:
-                result._data.bitcast[UInt64]()[i] = self._data.bitcast[UInt64]()[i]
+                result._data.bitcast[UInt64]()[i] = self._data.bitcast[
+                    UInt64
+                ]()[i]
                 continue
             else:
                 raise Error("Unsupported dtype for to_uint64 conversion")
@@ -1606,7 +1635,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
 
         # Create output tensor as flattened uint8 array
-        var output_shape = List[Int]()
+        var output_shape= List[Int]()
         output_shape.append(total_bytes)
         var result = ExTensor(output_shape, DType.uint8)
 
@@ -1619,7 +1648,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             var end_idx = min(start_idx + 32, self._numel)
 
             # Collect 32 values (pad with zeros if needed)
-            var values = List[Float32]()
+            var values= List[Float32]()
             for i in range(32):
                 var idx = start_idx + i
                 if idx < self._numel:
@@ -1628,11 +1657,15 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
                     var val: Float32
                     if self._dtype == DType.float16:
-                        val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
+                        val = self._data.bitcast[Float16]()[idx].cast[
+                            DType.float32
+                        ]()
                     elif self._dtype == DType.float32:
                         val = self._data.bitcast[Float32]()[idx]
                     elif self._dtype == DType.float64:
-                        val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                        val = self._data.bitcast[Float64]()[idx].cast[
+                            DType.float32
+                        ]()
                     else:
                         raise Error("Invalid dtype for MXFP4 quantization")
                     values.append(val)
@@ -1646,7 +1679,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             var block_offset = block_idx * 17
             for i in range(16):
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
-            result._data.bitcast[UInt8]()[block_offset + 16] = block.scale.exponent
+            result._data.bitcast[UInt8]()[
+                block_offset + 16
+            ] = block.scale.exponent
 
         return result^
 
@@ -1692,7 +1727,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             output_size = padded_output_size
 
         # Create output tensor with proper shape
-        var output_shape = List[Int]()
+        var output_shape= List[Int]()
         output_shape.append(padded_output_size)
         var result = ExTensor(output_shape, DType.float32)
 
@@ -1704,7 +1739,9 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             var data = SIMD[DType.uint8, 16](0)
             for i in range(16):
                 data[i] = self._data.bitcast[UInt8]()[block_offset + i]
-            var scale = E8M0Scale(self._data.bitcast[UInt8]()[block_offset + 16])
+            var scale = E8M0Scale(
+                self._data.bitcast[UInt8]()[block_offset + 16]
+            )
 
             var block = MXFP4Block(data, scale)
 
@@ -1717,9 +1754,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
-            var trimmed = ExTensor(List[Int](output_size), DType.float32)
+            var trimmed = ExTensor([output_size], DType.float32)
             for i in range(output_size):
-                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
+                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[
+                    Float32
+                ]()[i]
             return trimmed^
 
         return result^
@@ -1807,7 +1846,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
         var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block
 
         # Create output tensor as flattened uint8 array
-        var output_shape = List[Int]()
+        var output_shape= List[Int]()
         output_shape.append(total_bytes)
         var result = ExTensor(output_shape, DType.uint8)
 
@@ -1820,7 +1859,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             var end_idx = min(start_idx + 16, self._numel)
 
             # Collect 16 values (pad with zeros if needed)
-            var values = List[Float32]()
+            var values= List[Float32]()
             for i in range(16):
                 var idx = start_idx + i
                 if idx < self._numel:
@@ -1829,11 +1868,15 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
                     var val: Float32
                     if self._dtype == DType.float16:
-                        val = self._data.bitcast[Float16]()[idx].cast[DType.float32]()
+                        val = self._data.bitcast[Float16]()[idx].cast[
+                            DType.float32
+                        ]()
                     elif self._dtype == DType.float32:
                         val = self._data.bitcast[Float32]()[idx]
                     elif self._dtype == DType.float64:
-                        val = self._data.bitcast[Float64]()[idx].cast[DType.float32]()
+                        val = self._data.bitcast[Float64]()[idx].cast[
+                            DType.float32
+                        ]()
                     else:
                         raise Error("Invalid dtype for NVFP4 quantization")
                     values.append(val)
@@ -1893,7 +1936,7 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             output_size = padded_output_size
 
         # Create output tensor with proper shape
-        var output_shape = List[Int]()
+        var output_shape= List[Int]()
         output_shape.append(padded_output_size)
         var result = ExTensor(output_shape, DType.float32)
 
@@ -1918,9 +1961,11 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
-            var trimmed = ExTensor(List[Int](output_size), DType.float32)
+            var trimmed = ExTensor([output_size], DType.float32)
             for i in range(output_size):
-                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[Float32]()[i]
+                trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[
+                    Float32
+                ]()[i]
             return trimmed^
 
         return result^
@@ -1928,28 +1973,30 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
     # Reflected operators - enable reversed operand order (e.g., 2 + tensor)
     # These are called when the left operand doesn't support the operation
     fn __radd__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected addition: other + self (commutative, so same as __add__)"""
+        """Reflected addition: `other + self` (commutative, so same as __add__)."""
         return self.__add__(other)
 
     fn __rsub__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected subtraction: other - self (order matters: returns other - self)"""
+        """Reflected subtraction: `other - self` (order matters: returns other - self)."""
         from .arithmetic import subtract
 
         return subtract(other, self)
 
     fn __rmul__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected multiplication: other * self (commutative, so same as __mul__)"""
+        """Reflected multiplication: other * self (commutative, so same as __mul__).
+        """
         return self.__mul__(other)
 
     fn __rtruediv__(self, other: ExTensor) raises -> ExTensor:
-        """Reflected division: other / self (order matters: returns other / self)"""
+        """Reflected division: other / self (order matters: returns other / self).
+        """
         from .arithmetic import divide
 
         return divide(other, self)
 
     # In-place operators - mutate self instead of creating new tensor
     fn __iadd__(mut self, other: ExTensor) raises:
-        """In-place addition: self += other"""
+        """In-place addition: `self += other`."""
         from .arithmetic import add
 
         var result = add(self, other)
@@ -1958,10 +2005,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(self._numel):
                 self._set_float64(i, result._get_float64(i))
         else:
-            raise Error("In-place operation requires matching shapes and dtypes")
+            raise Error(
+                "In-place operation requires matching shapes and dtypes"
+            )
 
     fn __isub__(mut self, other: ExTensor) raises:
-        """In-place subtraction: self -= other"""
+        """In-place subtraction: `self -= other`."""
         from .arithmetic import subtract
 
         var result = subtract(self, other)
@@ -1970,10 +2019,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(self._numel):
                 self._set_float64(i, result._get_float64(i))
         else:
-            raise Error("In-place operation requires matching shapes and dtypes")
+            raise Error(
+                "In-place operation requires matching shapes and dtypes"
+            )
 
     fn __imul__(mut self, other: ExTensor) raises:
-        """In-place multiplication: self *= other"""
+        """In-place multiplication: `self *= other`."""
         from .arithmetic import multiply
 
         var result = multiply(self, other)
@@ -1982,10 +2033,12 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(self._numel):
                 self._set_float64(i, result._get_float64(i))
         else:
-            raise Error("In-place operation requires matching shapes and dtypes")
+            raise Error(
+                "In-place operation requires matching shapes and dtypes"
+            )
 
     fn __itruediv__(mut self, other: ExTensor) raises:
-        """In-place division: self /= other"""
+        """In-place division: `self /= other`."""
         from .arithmetic import divide
 
         var result = divide(self, other)
@@ -1994,11 +2047,13 @@ struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
             for i in range(self._numel):
                 self._set_float64(i, result._get_float64(i))
         else:
-            raise Error("In-place operation requires matching shapes and dtypes")
+            raise Error(
+                "In-place operation requires matching shapes and dtypes"
+            )
 
     # Unary operators - operate on single tensor
     fn __neg__(self) raises -> ExTensor:
-        """Negation: -self"""
+        """Negation: `-self`"""
         # Create result tensor with same shape and dtype
         var result = ExTensor(self._shape, self._dtype)
 
@@ -2144,8 +2199,8 @@ fn full(shape: List[Int], fill_value: Float64, dtype: DType) raises -> ExTensor:
         A new ExTensor filled with fill_value.
 
     Examples:
-        var t = full(List[Int](3, 4), 42.0, DType.float32)
-        # Creates a 3x4 tensor filled with 42.0
+        ```var t = full(List[Int](3, 4), 42.0, DType.float32)
+        # Creates a 3x4 tensor filled with 42.0```
     """
     var tensor = ExTensor(shape, dtype)
 
@@ -2191,8 +2246,8 @@ fn arange(
     """Create 1D tensor with evenly spaced values.
 
     Args:
-        start: Start value (inclusive)
-        stop: End value (exclusive)
+        start: Start value (inclusive).
+        stop: End value (exclusive).
         step: Spacing between values.
         dtype: The data type of tensor elements.
 
@@ -2200,15 +2255,16 @@ fn arange(
         A new 1D ExTensor with values in range [start, stop) with given step.
 
     Examples:
-        var t = arange(0.0, 10.0, 1.0, DType.float32)
+       ```
+       var t = arange(0.0, 10.0, 1.0, DType.float32)
         # Creates [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
         var t2 = arange(0.0, 10.0, 2.0, DType.int32)
-        # Creates [0, 2, 4, 6, 8]
+        # Creates [0, 2, 4, 6, 8]```
     """
     # Calculate number of elements
     var num_elements = Int((stop - start) / step)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_elements)
 
     var tensor = ExTensor(shape, dtype)
@@ -2248,7 +2304,7 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
         var t2 = eye(3, 4, 1, DType.float32)
         # Creates 3x4 matrix with ones on diagonal above main.
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(n)
     shape.append(m)
 
@@ -2272,12 +2328,14 @@ fn eye(n: Int, m: Int, k: Int, dtype: DType) raises -> ExTensor:
     return tensor^
 
 
-fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) raises -> ExTensor:
+fn linspace(
+    start: Float64, stop: Float64, num: Int, dtype: DType
+) raises -> ExTensor:
     """Create 1D tensor with evenly spaced values (inclusive).
 
     Args:
-        start: Start value (inclusive)
-        stop: End value (inclusive)
+        start: Start value (inclusive).
+        stop: End value (inclusive).
         num: Number of values.
         dtype: The data type of tensor elements.
 
@@ -2285,13 +2343,13 @@ fn linspace(start: Float64, stop: Float64, num: Int, dtype: DType) raises -> ExT
         A new 1D ExTensor with num evenly spaced values.
 
     Examples:
-        var t = linspace(0.0, 10.0, 11, DType.float32)
+        ```var t = linspace(0.0, 10.0, 11, DType.float32)
         # Creates [0.0, 1.0, 2.0, ..., 10.0]
 
         var t2 = linspace(0.0, 1.0, 5, DType.float64)
-        # Creates [0.0, 0.25, 0.5, 0.75, 1.0]
+        # Creates [0.0, 0.25, 0.5, 0.75, 1.0]```
     """
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num)
 
     var tensor = ExTensor(shape, dtype)
@@ -2336,7 +2394,7 @@ fn ones_like(tensor: ExTensor) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar x = zeros(List[Int](3, 4), DType.float32)
+        var x = zeros([3, 4], DType.float32)
         var y = ones_like(x)  # (3, 4) tensor of ones, float32
         ```
     """
@@ -2356,7 +2414,7 @@ fn zeros_like(tensor: ExTensor) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar x = ones(List[Int](3, 4), DType.float32)
+        var x = ones(List[Int](3, 4), DType.float32)
         var y = zeros_like(x)  # (3, 4) tensor of zeros, float32
         ```
     """
@@ -2377,7 +2435,7 @@ fn full_like(tensor: ExTensor, fill_value: Float64) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar x = ones(List[Int](3, 4), DType.float32)
+        var x = ones(List[Int](3, 4), DType.float32)
         var y = full_like(x, 3.14)  # (3, 4) tensor of 3.14, float32
         ```
     """
@@ -2393,22 +2451,22 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
     from uniform random values. Generates values with mean=0 and std=1.
 
     Args:
-        shape: The shape of the output tensor
-        dtype: The data type of tensor elements (should be floating-point)
-        seed: Random seed for reproducibility (default: 0 uses system randomness)
+        shape: The shape of the output tensor.
+        dtype: The data type of tensor elements (should be floating-point).
+        seed: Random seed for reproducibility (default: 0 uses system randomness).
 
     Returns:
-        A new ExTensor filled with random values from N(0, 1)
+        A new ExTensor filled with random values from N(0, 1).
 
     Raises:
-        Error: If dtype is not a floating-point type
+        Error: If dtype is not a floating-point type.
 
     Examples:
-        var t = randn(List[Int](3, 4), DType.float32)
+        ```var t = randn(List[Int](3, 4), DType.float32)
         # Creates 3x4 tensor with values from N(0, 1)
 
         var t2 = randn(List[Int](100, 100), DType.float32, seed=42)
-        # Reproducible random tensor with seed=42
+        # Reproducible random tensor with seed=42```
 
     Note:
         For integer dtypes, values are generated as floats then truncated.
@@ -2448,7 +2506,11 @@ fn randn(shape: List[Int], dtype: DType, seed: Int = 0) raises -> ExTensor:
         var z1 = magnitude * sin(angle)
 
         # Store first value
-        if dtype == DType.float16 or dtype == DType.float32 or dtype == DType.float64:
+        if (
+            dtype == DType.float16
+            or dtype == DType.float32
+            or dtype == DType.float64
+        ):
             tensor._set_float64(i, z0)
         else:
             tensor._set_int64(i, Int(z0))
@@ -2478,9 +2540,9 @@ fn calculate_max_batch_size(
     """Calculate maximum safe batch size for given sample shape.
 
     Args:
-        sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST)
+        sample_shape: Shape of a single sample (e.g., [1, 28, 28] for MNIST).
         dtype: Data type of the tensor.
-        max_memory_bytes: Maximum memory to use for a batch (default: 500 MB)
+        max_memory_bytes: Maximum memory to use for a batch (default: 500 MB).
 
     Returns:
         Maximum batch size that fits in memory.

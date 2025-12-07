@@ -19,9 +19,14 @@ Testing strategy:
 from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from shared.core import ExTensor
 from shared.training.metrics import (
-    Metric, MetricResult, MetricCollection, MetricLogger,
+    Metric,
+    MetricResult,
+    MetricCollection,
+    MetricLogger,
     create_metric_summary,
-    AccuracyMetric, LossTracker, ConfusionMatrix
+    AccuracyMetric,
+    LossTracker,
+    ConfusionMatrix,
 )
 
 
@@ -54,7 +59,7 @@ fn test_metric_result_tensor() raises:
     """Test MetricResult with tensor values."""
     print("Testing MetricResult tensor...")
 
-    var tensor_shape = List[Int]()
+    var tensor_shape= List[Int]()
     tensor_shape.append(3)
     var tensor = ExTensor(tensor_shape, DType.float32)
     tensor._data.bitcast[Float32]()[0] = 0.9
@@ -68,7 +73,9 @@ fn test_metric_result_tensor() raises:
 
     var value_tensor = result.get_tensor()
     assert_equal(value_tensor.numel(), 3, "Tensor size")
-    assert_equal(value_tensor._data.bitcast[Float32]()[0], 0.9, "Tensor value 0")
+    assert_equal(
+        value_tensor._data.bitcast[Float32]()[0], 0.9, "Tensor value 0"
+    )
 
     # Should raise when accessing as scalar
     var raised = False
@@ -89,7 +96,9 @@ fn test_metric_collection_basic() raises:
     var collection = MetricCollection()
 
     assert_equal(len(collection), 0, "Initial size is 0")
-    assert_false(collection.contains("accuracy"), "Does not contain accuracy initially")
+    assert_false(
+        collection.contains("accuracy"), "Does not contain accuracy initially"
+    )
 
     # Add metrics
     collection.add("accuracy", AccuracyMetric())
@@ -132,10 +141,10 @@ fn test_accuracy_metric_interface_compliance() raises:
     var metric = AccuracyMetric()
 
     # Create test data
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(4)
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -170,10 +179,10 @@ fn test_confusion_matrix_integration() raises:
     var cm = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(5)
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(5)
     var labels = ExTensor(labels_shape, DType.int32)
 
@@ -214,7 +223,7 @@ fn test_metric_logger_basic() raises:
     var logger = MetricLogger()
 
     # Log first epoch
-    var epoch0_metrics = List[MetricResult]()
+    var epoch0_metrics: List[MetricResult] = []
     epoch0_metrics.append(MetricResult("accuracy", 0.7))
     epoch0_metrics.append(MetricResult("loss", 0.5))
 
@@ -224,7 +233,7 @@ fn test_metric_logger_basic() raises:
     assert_equal(logger.num_metrics, 2, "Tracked 2 metrics")
 
     # Log second epoch
-    var epoch1_metrics = List[MetricResult]()
+    var epoch1_metrics: List[MetricResult] = []
     epoch1_metrics.append(MetricResult("accuracy", 0.8))
     epoch1_metrics.append(MetricResult("loss", 0.4))
 
@@ -243,7 +252,7 @@ fn test_metric_logger_history() raises:
 
     # Log multiple epochs
     for i in range(5):
-        var metrics = List[MetricResult]()
+        var metrics: List[MetricResult] = []
         var acc = 0.5 + Float64(i) * 0.1  # 0.5, 0.6, 0.7, 0.8, 0.9
         var loss = 1.0 - Float64(i) * 0.1  # 1.0, 0.9, 0.8, 0.7, 0.6
         metrics.append(MetricResult("accuracy", acc))
@@ -278,17 +287,17 @@ fn test_metric_logger_best() raises:
     var logger = MetricLogger()
 
     # Log epochs with varying metrics
-    var metrics0 = List[MetricResult]()
+    var metrics0: List[MetricResult] = []
     metrics0.append(MetricResult("accuracy", 0.7))
     metrics0.append(MetricResult("loss", 0.8))
     logger.log_epoch(0, metrics0)
 
-    var metrics1 = List[MetricResult]()
+    var metrics1: List[MetricResult] = []
     metrics1.append(MetricResult("accuracy", 0.9))  # Best accuracy
     metrics1.append(MetricResult("loss", 0.6))
     logger.log_epoch(1, metrics1)
 
-    var metrics2 = List[MetricResult]()
+    var metrics2: List[MetricResult] = []
     metrics2.append(MetricResult("accuracy", 0.8))
     metrics2.append(MetricResult("loss", 0.5))  # Best loss
     logger.log_epoch(2, metrics2)
@@ -307,7 +316,7 @@ fn test_create_metric_summary() raises:
     """Test create_metric_summary formatting."""
     print("Testing create_metric_summary...")
 
-    var results = List[MetricResult]()
+    var results: List[MetricResult] = []
     results.append(MetricResult("accuracy", 0.9234))
     results.append(MetricResult("loss", 0.1523))
 
@@ -350,10 +359,10 @@ fn test_multi_metric_training_simulation() raises:
         # Simulate 5 batches per epoch
         for batch in range(5):
             # Create fake batch data
-            var preds_shape = List[Int]()
+            var preds_shape= List[Int]()
             preds_shape.append(4)
             var preds = ExTensor(preds_shape, DType.int32)
-            var labels_shape = List[Int]()
+            var labels_shape= List[Int]()
             labels_shape.append(4)
             var labels = ExTensor(labels_shape, DType.int32)
 
@@ -374,7 +383,7 @@ fn test_multi_metric_training_simulation() raises:
         print("  Epoch " + String(epoch) + ": accuracy=" + String(epoch_acc))
 
         # Log to history
-        var epoch_metrics = List[MetricResult]()
+        var epoch_metrics: List[MetricResult] = []
         epoch_metrics.append(MetricResult("accuracy", epoch_acc))
         logger.log_epoch(epoch, epoch_metrics)
 
@@ -396,10 +405,10 @@ fn test_metric_interface_consistency() raises:
     var confusion = ConfusionMatrix(num_classes=3)
 
     # Create test data
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     preds_shape.append(2)
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(2)
     var labels = ExTensor(labels_shape, DType.int32)
     preds._data.bitcast[Int32]()[0] = 0
@@ -430,10 +439,10 @@ fn test_metric_interface_consistency() raises:
 
 fn main() raises:
     """Run all metrics coordination tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("METRICS COORDINATION TEST SUITE")
     print("Unified Interface and Collection Utilities (#293-297)")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("MetricResult Tests (#294)")
     print("-" * 70)
@@ -465,14 +474,17 @@ fn main() raises:
     print("-" * 70)
     test_multi_metric_training_simulation()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ALL METRICS COORDINATION TESTS PASSED ✓")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
     print("Summary:")
     print("  ✓ Metric trait defines consistent update/reset interface")
     print("  ✓ MetricResult handles both scalar and tensor metrics")
     print("  ✓ MetricCollection manages multiple metrics efficiently")
     print("  ✓ MetricLogger tracks metric history across epochs")
-    print("  ✓ All metrics (Accuracy, LossTracker, ConfusionMatrix) comply with interface")
+    print(
+        "  ✓ All metrics (Accuracy, LossTracker, ConfusionMatrix) comply with"
+        " interface"
+    )
     print("  ✓ Metrics integrate seamlessly in training pipelines")
     print()

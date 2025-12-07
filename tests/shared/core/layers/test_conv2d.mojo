@@ -70,7 +70,7 @@ fn test_conv2d_initialization_with_stride_padding() raises:
         kernel_h,
         kernel_w,
         stride=stride,
-        padding=padding
+        padding=padding,
     )
 
     # Check parameters stored
@@ -148,11 +148,11 @@ fn test_conv2d_forward_output_shape() raises:
         kernel_h,
         kernel_w,
         stride=stride,
-        padding=padding
+        padding=padding,
     )
 
     # Input: (batch=2, channels=3, height=32, width=32)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -181,10 +181,12 @@ fn test_conv2d_forward_with_stride() raises:
     var stride = 2
     var padding = 0
 
-    var layer = Conv2dLayer(in_channels, out_channels, 3, 3, stride=stride, padding=padding)
+    var layer = Conv2dLayer(
+        in_channels, out_channels, 3, 3, stride=stride, padding=padding
+    )
 
     # Input: (1, 3, 32, 32)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -219,11 +221,11 @@ fn test_conv2d_forward_no_padding() raises:
         kernel_size,
         kernel_size,
         stride=1,
-        padding=padding
+        padding=padding,
     )
 
     # Input: (1, 3, 32, 32)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(1)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -247,7 +249,7 @@ fn test_conv2d_forward_batch_independence() raises:
     var layer = Conv2dLayer(3, 16, 3, 3, stride=1, padding=1)
 
     # Create batch input: (2, 3, 16, 16)
-    var batch_input_shape = List[Int]()
+    var batch_input_shape= List[Int]()
     batch_input_shape.append(2)
     batch_input_shape.append(3)
     batch_input_shape.append(16)
@@ -258,7 +260,7 @@ fn test_conv2d_forward_batch_independence() raises:
     var batch_output = layer.forward(batch_input)
 
     # Process first element individually: (1, 3, 16, 16)
-    var single_input_shape = List[Int]()
+    var single_input_shape= List[Int]()
     single_input_shape.append(1)
     single_input_shape.append(3)
     single_input_shape.append(16)
@@ -278,7 +280,7 @@ fn test_conv2d_forward_batch_independence() raises:
         assert_almost_equal(
             batch_output._data.bitcast[Float32]()[i],
             single_output._data.bitcast[Float32]()[i],
-            tolerance=1e-4
+            tolerance=1e-4,
         )
 
 
@@ -298,10 +300,12 @@ fn test_conv2d_backward_gradient_shapes() raises:
     var kernel_h = 3
     var kernel_w = 3
 
-    var layer = Conv2dLayer(in_channels, out_channels, kernel_h, kernel_w, stride=1, padding=1)
+    var layer = Conv2dLayer(
+        in_channels, out_channels, kernel_h, kernel_w, stride=1, padding=1
+    )
 
     # Input and forward pass
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -313,7 +317,9 @@ fn test_conv2d_backward_gradient_shapes() raises:
     var grad_output = randn(output.shape(), DType.float32)
 
     # Backward pass
-    var (grad_input, grad_weight, grad_bias) = layer.backward(grad_output, input)
+    var (grad_input, grad_weight, grad_bias) = layer.backward(
+        grad_output, input
+    )
 
     # Check gradient shapes match input/parameter shapes
     var grad_input_shape = grad_input.shape()

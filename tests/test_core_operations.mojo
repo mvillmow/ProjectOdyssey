@@ -19,19 +19,30 @@ from testing import assert_true, assert_false, assert_equal, assert_almost_equal
 from shared.core import (
     ExTensor,
     # Initializers
-    xavier_uniform, xavier_normal,
-    kaiming_uniform, kaiming_normal,
-    uniform, normal, constant,
+    xavier_uniform,
+    xavier_normal,
+    kaiming_uniform,
+    kaiming_normal,
+    uniform,
+    normal,
+    constant,
     # Matrix operations
     matmul,
     # Activations
-    relu, sigmoid, tanh, softmax,
+    relu,
+    sigmoid,
+    tanh,
+    softmax,
     # Loss functions
-    mean_squared_error, binary_cross_entropy,
+    mean_squared_error,
+    binary_cross_entropy,
 )
 from shared.training.metrics import (
-    AccuracyMetric, LossTracker, ConfusionMatrix,
-    MetricCollection, MetricLogger
+    AccuracyMetric,
+    LossTracker,
+    ConfusionMatrix,
+    MetricCollection,
+    MetricLogger,
 )
 from shared.training.metrics.base import MetricResult
 
@@ -40,7 +51,7 @@ fn test_initializers_with_activations() raises:
     """Test that initializers work correctly with activation functions."""
     print("Testing initializers with activations...")
 
-    var shape = List[Int](100, 100)
+    var shape: List[Int] = [100, 100]
     var fan_in = 100
     var fan_out = 100
 
@@ -79,8 +90,8 @@ fn test_forward_pass_with_metrics() raises:
     print("Testing forward pass with metrics...")
 
     # Initialize a simple 2-layer network
-    var w1_shape = List[Int](3, 4)  # 3 inputs, 4 hidden
-    var w2_shape = List[Int](4, 3)  # 4 hidden, 3 outputs
+    var w1_shape: List[Int] = [3, 4]  # 3 inputs, 4 hidden
+    var w2_shape: List[Int] = [4, 3]  # 4 hidden, 3 outputs
 
     var w1 = kaiming_uniform(3, 4, w1_shape, seed_val=1)
     var b1 = constant(List[Int](), 0.0)
@@ -89,7 +100,7 @@ fn test_forward_pass_with_metrics() raises:
     var b2 = constant(List[Int](), 0.0)
 
     # Create fake input (batch_size=5, features=3)
-    var input_shape = List[Int](5, 3)
+    var input_shape: List[Int] = [5, 3]
     var input = normal(input_shape, mean=0.0, std=1.0, seed_val=3)
 
     # Forward pass: input @ w1.T + b1
@@ -101,7 +112,7 @@ fn test_forward_pass_with_metrics() raises:
     var predictions = softmax(output)
 
     # Create fake labels
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(5)
     var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 0
@@ -133,8 +144,12 @@ fn test_training_loop_simulation() raises:
     var batch_size = 4
 
     # Initialize weights
-    var w1 = kaiming_uniform(input_dim, hidden_dim, List[Int](input_dim, hidden_dim), seed_val=1)
-    var w2 = xavier_uniform(hidden_dim, output_dim, List[Int](hidden_dim, output_dim), seed_val=2)
+    var w1 = kaiming_uniform(
+        input_dim, hidden_dim, List[Int](input_dim, hidden_dim), seed_val=1
+    )
+    var w2 = xavier_uniform(
+        hidden_dim, output_dim, List[Int](hidden_dim, output_dim), seed_val=2
+    )
 
     # Setup metrics
     var accuracy = AccuracyMetric()
@@ -154,13 +169,18 @@ fn test_training_loop_simulation() raises:
         # Simulate batches
         for batch_idx in range(num_batches):
             # Create fake batch
-            var input = normal(List[Int](batch_size, input_dim), seed_val=epoch * 100 + batch_idx)
-            var labels_shape = List[Int]()
+            var input = normal(
+                List[Int](batch_size, input_dim),
+                seed_val=epoch * 100 + batch_idx,
+            )
+            var labels_shape= List[Int]()
             labels_shape.append(batch_size)
             var labels = ExTensor(labels_shape, DType.int32)
 
             for i in range(batch_size):
-                labels._data.bitcast[Int32]()[i] = Int32((i + batch_idx) % output_dim)
+                labels._data.bitcast[Int32]()[i] = Int32(
+                    (i + batch_idx) % output_dim
+                )
 
             # Forward pass
             var h1 = matmul(input, w1)
@@ -181,10 +201,17 @@ fn test_training_loop_simulation() raises:
         var epoch_acc = accuracy.compute()
         var epoch_avg_loss = epoch_loss / Float32(num_batches)
 
-        print("  Epoch " + String(epoch) + ": loss=" + String(epoch_avg_loss) + ", acc=" + String(epoch_acc))
+        print(
+            "  Epoch "
+            + String(epoch)
+            + ": loss="
+            + String(epoch_avg_loss)
+            + ", acc="
+            + String(epoch_acc)
+        )
 
         # Log metrics
-        var epoch_metrics = List[MetricResult]()
+        var epoch_metrics: List[MetricResult] = []
         epoch_metrics.append(MetricResult("accuracy", epoch_acc))
         epoch_metrics.append(MetricResult("loss", Float64(epoch_avg_loss)))
         logger.log_epoch(epoch, epoch_metrics)
@@ -202,8 +229,8 @@ fn test_dtype_consistency_across_components() raises:
     """Test that all components handle multiple dtypes consistently."""
     print("Testing dtype consistency across components...")
 
-    var shape = List[Int](10, 10)
-    var dtypes = List[DType](DType.float32, DType.float64)
+    var shape: List[Int] = [10, 10]
+    var dtypes: List[DType] = [DType.float32, DType.float64]
 
     for dt_idx in range(2):
         var dt = dtypes[dt_idx]
@@ -225,7 +252,7 @@ fn test_seed_reproducibility_across_components() raises:
     """Test that seeding works consistently across all components."""
     print("Testing seed reproducibility across components...")
 
-    var shape = List[Int](20, 20)
+    var shape: List[Int] = [20, 20]
     var seed = 42
 
     # Initialize with same seed twice
@@ -235,7 +262,10 @@ fn test_seed_reproducibility_across_components() raises:
     # Verify identical
     var identical = True
     for i in range(100):  # Check first 100 elements
-        if init1._data.bitcast[Float32]()[i] != init2._data.bitcast[Float32]()[i]:
+        if (
+            init1._data.bitcast[Float32]()[i]
+            != init2._data.bitcast[Float32]()[i]
+        ):
             identical = False
             break
 
@@ -246,7 +276,10 @@ fn test_seed_reproducibility_across_components() raises:
 
     var different = False
     for i in range(100):
-        if init1._data.bitcast[Float32]()[i] != init3._data.bitcast[Float32]()[i]:
+        if (
+            init1._data.bitcast[Float32]()[i]
+            != init3._data.bitcast[Float32]()[i]
+        ):
             different = True
             break
 
@@ -264,7 +297,12 @@ fn test_batch_processing_pipeline() raises:
     var num_classes = 3
 
     # Initialize network
-    var weights = kaiming_uniform(num_features, num_classes, List[Int](num_features, num_classes), seed_val=1)
+    var weights = kaiming_uniform(
+        num_features,
+        num_classes,
+        List[Int](num_features, num_classes),
+        seed_val=1,
+    )
 
     # Setup metrics
     var accuracy = AccuracyMetric()
@@ -274,8 +312,10 @@ fn test_batch_processing_pipeline() raises:
     var num_batches = 10
     for batch_idx in range(num_batches):
         # Generate batch
-        var input = normal(List[Int](batch_size, num_features), seed_val=batch_idx)
-        var labels_shape = List[Int]()
+        var input = normal(
+            List[Int](batch_size, num_features), seed_val=batch_idx
+        )
+        var labels_shape= List[Int]()
         labels_shape.append(batch_size)
         var labels = ExTensor(labels_shape, DType.int32)
 
@@ -314,7 +354,7 @@ fn test_multi_layer_network_integration() raises:
     print("Testing multi-layer network integration...")
 
     # 3-layer network: 784 -> 256 -> 128 -> 10 (MNIST-like)
-    var layer_sizes = List[Int](784, 256, 128, 10)
+    var layer_sizes: List[Int] = [784, 256, 128, 10]
 
     # Initialize all layers with appropriate methods
     var w1 = kaiming_uniform(784, 256, List[Int](784, 256), seed_val=1)
@@ -333,7 +373,7 @@ fn test_multi_layer_network_integration() raises:
 
     # Create fake mini-batch (batch_size=4)
     var input = normal(List[Int](4, 784), seed_val=42)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(4)
     var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 7
@@ -375,9 +415,9 @@ fn test_error_handling_across_components() raises:
     print("Testing error handling across components...")
 
     # Test mismatched shapes in metric updates
-    var preds_shape = List[Int]()
+    var preds_shape= List[Int]()
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     var labels = ExTensor(labels_shape, DType.int32)  # Mismatched size
 
     var accuracy = AccuracyMetric()
@@ -395,11 +435,11 @@ fn test_error_handling_across_components() raises:
 
 fn main() raises:
     """Run all core operations coordination tests."""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("CORE OPERATIONS COORDINATION TEST SUITE")
     print("Integration of Initializers, Metrics, Activations, and Tensor Ops")
     print("Issues #298-302")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
 
     print("Component Integration Tests (#299)")
     print("-" * 70)
@@ -418,9 +458,9 @@ fn main() raises:
     print("-" * 70)
     test_error_handling_across_components()
 
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("ALL CORE OPERATIONS COORDINATION TESTS PASSED ✓")
-    print("="*70 + "\n")
+    print("=" * 70 + "\n")
     print("Summary:")
     print("  ✓ Initializers integrate with activation functions")
     print("  ✓ Forward pass works with metrics computation")

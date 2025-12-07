@@ -130,7 +130,10 @@ fn test_mxfp4_wide_dynamic_range() raises:
     # Test very small value (near 2^-127)
     var mxfp4_tiny = MXFP4.from_float32(1e-30)
     var result_tiny = mxfp4_tiny.to_float32()
-    assert_true(result_tiny > 0.0 and result_tiny < 1e-20, "MXFP4 should handle tiny values")
+    assert_true(
+        result_tiny > 0.0 and result_tiny < 1e-20,
+        "MXFP4 should handle tiny values",
+    )
 
     # Test very large value (within Float32 range)
     var mxfp4_huge = MXFP4.from_float32(1e30)
@@ -304,7 +307,9 @@ fn test_mxfp4_precision_vs_fp8() raises:
     var restored = mxfp4.to_float32()
 
     # Should preserve order of magnitude
-    assert_true(restored > 5000.0, "MXFP4 should preserve large values better than FP8")
+    assert_true(
+        restored > 5000.0, "MXFP4 should preserve large values better than FP8"
+    )
 
 
 # ============================================================================
@@ -323,7 +328,9 @@ fn test_e8m0_scale_from_zero() raises:
 
     # Convert back to float and verify it's a very small positive number
     var scale_f32 = scale.to_float32()
-    assert_true(scale_f32 > 0.0, "Zero scale should convert to tiny positive value")
+    assert_true(
+        scale_f32 > 0.0, "Zero scale should convert to tiny positive value"
+    )
     assert_true(scale_f32 < 1e-30, "Zero scale should be extremely small")
 
 
@@ -337,7 +344,7 @@ fn test_mxfp4_block_all_zeros() raises:
     4. Round-trip losslessly to zeros.
     """
     # Create a block with 32 zeros
-    var values = List[Float32]()
+    var values= List[Float32]()
     for _ in range(32):
         values.append(Float32(0.0))
 
@@ -368,7 +375,7 @@ fn test_mxfp4_block_near_zero_values() raises:
     we use scale = 1.0 instead, avoiding numerical instability.
     """
     # Create a block with values < 1e-10
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(32):
         # Use values like 1e-12, 5e-13, etc.
         values.append(Float32(1e-12) * Float32(i + 1))
@@ -400,7 +407,7 @@ fn test_mxfp4_block_near_threshold_edge_case() raises:
     """
     # Create a block with values that trigger the fallback
     # max_abs = 1e-11 * 32 = 3.2e-10, and 3.2e-10 / 6.0 = 5.3e-11 < 1e-10 (fallback triggers)
-    var values = List[Float32]()
+    var values= List[Float32]()
     var threshold_val = Float32(1e-11)
     for i in range(32):
         values.append(threshold_val * Float32(i + 1))
@@ -425,7 +432,7 @@ fn test_mxfp4_block_mixed_zero_and_small() raises:
     Edge case: Block with some zeros and some tiny values (mixed scenario).
     Should still trigger fallback since max_abs might be < 1e-10.
     """
-    var values = List[Float32]()
+    var values= List[Float32]()
 
     # Mix zeros and small values
     for i in range(32):
@@ -462,7 +469,7 @@ fn test_mxfp4_block_zero_roundtrip_lossless() raises:
     Requirement: Zero blocks should encode as all-zero with scale=1.0
     and decode back to all zeros without any data corruption.
     """
-    var values = List[Float32]()
+    var values= List[Float32]()
     for _ in range(32):
         values.append(Float32(0.0))
 
@@ -495,7 +502,7 @@ fn test_mxfp4_block_scale_computation_no_division_by_zero() raises:
     """
     # Create multiple blocks with all zeros to ensure consistent behavior
     for _ in range(3):
-        var values = List[Float32]()
+        var values= List[Float32]()
         for _ in range(32):
             values.append(Float32(0.0))
 
@@ -518,7 +525,7 @@ fn test_mxfp4_block_normal_scale_computation_still_works() raises:
     normal scale computation for typical values.
     """
     # Create block with normal-sized values (max_abs = 12.0)
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(32):
         values.append(Float32(i + 1) * 0.4)  # Range 0.4 to 12.8
 
@@ -528,7 +535,10 @@ fn test_mxfp4_block_normal_scale_computation_still_works() raises:
     # Scale should be computed as max(12.8) / 6.0 ≈ 2.13
     var scale_f32 = block.scale.to_float32()
     # Scale should be reasonable - definitely above 1.0 for these values
-    assert_true(scale_f32 >= 1.5, "Scale should be computed normally for non-zero values")
+    assert_true(
+        scale_f32 >= 1.5,
+        "Scale should be computed normally for non-zero values",
+    )
     assert_true(scale_f32 <= 4.0, "Scale should be reasonable")
 
     # Decode and verify reasonable round-trip

@@ -45,7 +45,7 @@ trait Sampler:
 # ============================================================================
 
 
-struct SequentialSampler(Sampler, Copyable, Movable):
+struct SequentialSampler(Copyable, Movable, Sampler):
     """Samples elements sequentially in order.
 
     Always returns indices in the same order: 0, 1, 2, ..., n-1.
@@ -91,7 +91,7 @@ struct SequentialSampler(Sampler, Copyable, Movable):
 # ============================================================================
 
 
-struct RandomSampler(Sampler, Copyable, Movable):
+struct RandomSampler(Copyable, Movable, Sampler):
     """Samples elements randomly without replacement.
 
     Generates a random permutation of indices for each iteration.
@@ -139,9 +139,16 @@ struct RandomSampler(Sampler, Copyable, Movable):
         set_random_seed(self.seed_value)
 
         if self.replacement:
-            return sample_with_replacement(self.data_source_len, self.num_samples)^
+            return (
+                sample_with_replacement(self.data_source_len, self.num_samples)^
+            )
         else:
-            return sample_without_replacement(self.data_source_len, self.num_samples)^
+            return (
+                sample_without_replacement(
+                    self.data_source_len, self.num_samples
+                )
+                ^
+            )
 
 
 # ============================================================================
@@ -149,7 +156,7 @@ struct RandomSampler(Sampler, Copyable, Movable):
 # ============================================================================
 
 
-struct WeightedSampler(Sampler, Copyable, Movable):
+struct WeightedSampler(Copyable, Movable, Sampler):
     """Samples elements according to given weights.
 
     Each sample is drawn with probability proportional to its weight.
@@ -194,7 +201,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
             self.weights.append(weights[i] / total_weight)
 
         # Transfer ownership
-        weights = List[Float64]()
+        weights: List[Float64] = []
 
         self.num_samples = num_samples
         self.replacement = replacement
@@ -212,7 +219,7 @@ struct WeightedSampler(Sampler, Copyable, Movable):
         """
         set_random_seed(self.seed_value)
 
-        var indices = List[Int](capacity=self.num_samples)
+        var indices= List[Int](capacity=self.num_samples)
 
         # Sample indices
         for _ in range(self.num_samples):

@@ -79,8 +79,8 @@ fn test_tensor_dataset_creation() raises:
     TensorDataset should accept data and labels tensors and store them
     for efficient in-memory access.
     """
-    var data = List[Float32](0.0, 1.0, 2.0)
-    var labels = List[Int](0, 1, 2)
+    var data: List[Float32] = [0.0, 1.0, 2.0]
+    var labels: List[Int] = [0, 1, 2]
     var dataset = StubTensorDataset(data^, labels^)
     assert_equal(dataset.__len__(), 3)
 
@@ -91,8 +91,8 @@ fn test_tensor_dataset_with_matching_sizes() raises:
     The number of samples in data must match the number of labels,
     otherwise training would fail with mismatched batch sizes.
     """
-    var data = List[Float32](capacity=100)
-    var labels = List[Int](capacity=100)
+    var data= List[Float32](capacity=100)
+    var labels= List[Int](capacity=100)
     for i in range(100):
         data.append(Float32(i))
         labels.append(i)
@@ -107,8 +107,8 @@ fn test_tensor_dataset_size_mismatch_error() raises:
     Creating dataset with 100 data samples and 50 labels should fail
     immediately rather than causing silent errors during training.
     """
-    var data = List[Float32](capacity=100)
-    var labels = List[Int](capacity=50)
+    var data= List[Float32](capacity=100)
+    var labels= List[Int](capacity=50)
 
     for i in range(100):
         data.append(Float32(i))
@@ -130,8 +130,8 @@ fn test_tensor_dataset_empty() raises:
     Empty dataset should be valid (length 0) and not crash when queried.
     Useful for testing edge cases and incremental dataset building.
     """
-    var data = List[Float32]()
-    var labels = List[Int]()
+    var data= List[Float32]()
+    var labels= List[Int]()
     var dataset = StubTensorDataset(data^, labels^)
     assert_equal(dataset.__len__(), 0)
 
@@ -141,8 +141,8 @@ fn test_tensor_dataset_getitem() raises:
 
     Should return (data, label) tuple for requested index.
     """
-    var data = List[Float32](10.0, 20.0, 30.0)
-    var labels = List[Int](0, 1, 2)
+    var data: List[Float32] = [10.0, 20.0, 30.0]
+    var labels: List[Int] = [0, 1, 2]
     var dataset = StubTensorDataset(data^, labels^)
 
     var sample = dataset[1]
@@ -156,9 +156,9 @@ fn test_tensor_dataset_negative_indexing() raises:
     dataset[-1] should return the last sample,
     dataset[-2] the second-to-last, etc.
     """
-    var data_list = List[Float32](Float32(1.0), Float32(2.0), Float32(3.0))
+    var data_list: List[Float32] = [Float32(1.0), Float32(2.0), Float32(3.0)]
     var data = ExTensor(data_list^)
-    var labels_list = List[Int](0, 1, 2)
+    var labels_list: List[Int] = [0, 1, 2]
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
 
@@ -177,9 +177,9 @@ fn test_tensor_dataset_out_of_bounds() raises:
     Accessing index >= len(dataset) or index < -len(dataset)
     should raise IndexError to prevent silent failures.
     """
-    var data_list = List[Float32](Float32(1.0), Float32(2.0), Float32(3.0))
+    var data_list: List[Float32] = [Float32(1.0), Float32(2.0), Float32(3.0)]
     var data = ExTensor(data_list^)
-    var labels_list = List[Int](0, 1, 2)
+    var labels_list: List[Int] = [0, 1, 2]
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
 
@@ -206,9 +206,9 @@ fn test_tensor_dataset_iteration_consistency() raises:
     Multiple calls to dataset[i] should return identical tensors,
     ensuring deterministic behavior for debugging and testing.
     """
-    var data_list = List[Float32](Float32(1.0), Float32(2.0))
+    var data_list: List[Float32] = [Float32(1.0), Float32(2.0)]
     var data = ExTensor(data_list^)
-    var labels_list = List[Int](0, 1)
+    var labels_list: List[Int] = [0, 1]
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
 
@@ -233,9 +233,9 @@ fn test_tensor_dataset_no_copy_on_access() raises:
     For efficiency, dataset should return views into the original tensor
     rather than creating copies, reducing memory overhead.
     """
-    var data_list = List[Float32](Float32(1.0), Float32(2.0))
+    var data_list: List[Float32] = [Float32(1.0), Float32(2.0)]
     var data = ExTensor(data_list^)
-    var labels_list = List[Int](0, 1)
+    var labels_list: List[Int] = [0, 1]
     var labels = ExTensor(labels_list^)
     var dataset = TensorDataset(data^, labels^)
 
@@ -259,8 +259,8 @@ fn test_tensor_dataset_memory_efficiency() raises:
     just store references to save memory.
     """
     # Create dataset with larger data to verify no memory issues
-    var data = List[Float32](capacity=1000)
-    var labels = List[Int](capacity=1000)
+    var data= List[Float32](capacity=1000)
+    var labels= List[Int](capacity=1000)
 
     for i in range(1000):
         data.append(Float32(i))

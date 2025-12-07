@@ -64,8 +64,12 @@ fn test_component_tracker_single_update() raises:
 
     # Check state after one update
     assert_equal(tracker.count, 1, "Count should be 1")
-    assert_almost_equal(tracker.get_current(), 1.5, 1e-6, "Current value should be 1.5")
-    assert_almost_equal(tracker.get_average(), 1.5, 1e-6, "Average should be 1.5")
+    assert_almost_equal(
+        tracker.get_current(), 1.5, 1e-6, "Current value should be 1.5"
+    )
+    assert_almost_equal(
+        tracker.get_average(), 1.5, 1e-6, "Average should be 1.5"
+    )
 
     var stats = tracker.get_statistics()
     assert_almost_equal(stats.mean, 1.5, 1e-6, "Mean should be 1.5")
@@ -88,8 +92,12 @@ fn test_component_tracker_moving_average() raises:
     tracker.update(5.0)
 
     # Average of last 3: (3.0 + 4.0 + 5.0) / 3 = 4.0
-    assert_almost_equal(tracker.get_average(), 4.0, 1e-6, "Moving average should be 4.0")
-    assert_almost_equal(tracker.get_current(), 5.0, 1e-6, "Current should be 5.0")
+    assert_almost_equal(
+        tracker.get_average(), 4.0, 1e-6, "Moving average should be 4.0"
+    )
+    assert_almost_equal(
+        tracker.get_current(), 5.0, 1e-6, "Current should be 5.0"
+    )
     assert_equal(tracker.count, 5, "Total count should be 5")
 
     print("   ComponentTracker moving average test passed")
@@ -167,7 +175,9 @@ fn test_loss_tracker_single_component() raises:
     # Check average
     var avg = tracker.get_average(component="train")
     var expected_avg = Float32((0.5 + 0.4 + 0.3) / 3.0)
-    assert_almost_equal(avg, expected_avg, Float32(1e-6), "Average should be correct")
+    assert_almost_equal(
+        avg, expected_avg, Float32(1e-6), "Average should be correct"
+    )
 
     print("   LossTracker single component test passed")
 
@@ -287,7 +297,7 @@ fn test_create_metric_summary() raises:
     """Test create_metric_summary utility."""
     print("Testing create_metric_summary...")
 
-    var results = List[MetricResult]()
+    var results: List[MetricResult] = []
     results.append(MetricResult(name="accuracy", value=0.95))
     results.append(MetricResult(name="loss", value=0.25))
 
@@ -311,7 +321,7 @@ fn test_metric_logger_single_epoch() raises:
 
     var logger = MetricLogger()
 
-    var metrics = List[MetricResult]()
+    var metrics: List[MetricResult] = []
     metrics.append(MetricResult(name="accuracy", value=0.90))
     metrics.append(MetricResult(name="loss", value=0.50))
 
@@ -336,17 +346,17 @@ fn test_metric_logger_multiple_epochs() raises:
     var logger = MetricLogger()
 
     # Epoch 1
-    var metrics1 = List[MetricResult]()
+    var metrics1: List[MetricResult] = []
     metrics1.append(MetricResult(name="accuracy", value=0.80))
     logger.log_epoch(epoch=1, metrics=metrics1)
 
     # Epoch 2
-    var metrics2 = List[MetricResult]()
+    var metrics2: List[MetricResult] = []
     metrics2.append(MetricResult(name="accuracy", value=0.85))
     logger.log_epoch(epoch=2, metrics=metrics2)
 
     # Epoch 3
-    var metrics3 = List[MetricResult]()
+    var metrics3: List[MetricResult] = []
     metrics3.append(MetricResult(name="accuracy", value=0.90))
     logger.log_epoch(epoch=3, metrics=metrics3)
 
@@ -366,11 +376,11 @@ fn test_metric_logger_get_latest() raises:
     var logger = MetricLogger()
 
     # Add several epochs
-    var metrics1 = List[MetricResult]()
+    var metrics1: List[MetricResult] = []
     metrics1.append(MetricResult(name="accuracy", value=0.80))
     logger.log_epoch(epoch=1, metrics=metrics1)
 
-    var metrics2 = List[MetricResult]()
+    var metrics2: List[MetricResult] = []
     metrics2.append(MetricResult(name="accuracy", value=0.95))
     logger.log_epoch(epoch=2, metrics=metrics2)
 
@@ -387,15 +397,15 @@ fn test_metric_logger_get_best() raises:
     var logger = MetricLogger()
 
     # Add epochs with varying accuracy
-    var metrics1 = List[MetricResult]()
+    var metrics1: List[MetricResult] = []
     metrics1.append(MetricResult(name="accuracy", value=0.80))
     logger.log_epoch(epoch=1, metrics=metrics1)
 
-    var metrics2 = List[MetricResult]()
+    var metrics2: List[MetricResult] = []
     metrics2.append(MetricResult(name="accuracy", value=0.95))
     logger.log_epoch(epoch=2, metrics=metrics2)
 
-    var metrics3 = List[MetricResult]()
+    var metrics3: List[MetricResult] = []
     metrics3.append(MetricResult(name="accuracy", value=0.85))
     logger.log_epoch(epoch=3, metrics=metrics3)
 

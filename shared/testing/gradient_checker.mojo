@@ -41,11 +41,11 @@ from shared.core import ExTensor, zeros_like
 
 
 fn check_gradients(
-    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
-    backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
+    forward_fn: fn (ExTensor) raises escaping -> ExTensor,
+    backward_fn: fn (ExTensor, ExTensor) raises escaping -> ExTensor,
     input: ExTensor,
     epsilon: Float64 = 1e-5,
-    tolerance: Float64 = 1e-2
+    tolerance: Float64 = 1e-2,
 ) raises -> Bool:
     """Verify gradients using finite differences.
 
@@ -127,7 +127,9 @@ fn check_gradients(
         # This matches the per-element analytical gradient from ones_like(output)
         var numerical_sum = 0.0
         for j in range(output_plus.numel()):
-            var diff = output_plus._get_float64(j) - output_minus._get_float64(j)
+            var diff = output_plus._get_float64(j) - output_minus._get_float64(
+                j
+            )
             numerical_sum += diff / (2.0 * epsilon)
         numerical_grad._set_float64(i, numerical_sum)
 
@@ -162,12 +164,12 @@ fn check_gradients(
 
 
 fn check_gradients_verbose(
-    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
-    backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
+    forward_fn: fn (ExTensor) raises escaping -> ExTensor,
+    backward_fn: fn (ExTensor, ExTensor) raises escaping -> ExTensor,
     input: ExTensor,
     epsilon: Float64 = 1e-5,
     tolerance: Float64 = 1e-2,
-    print_all: Bool = False
+    print_all: Bool = False,
 ) raises -> Bool:
     """Gradient checking with detailed output.
 
@@ -187,14 +189,16 @@ fn check_gradients_verbose(
 
     Example:
         ```mojo
-        ar passed = check_gradients_verbose(
+        var passed = check_gradients_verbose(
             forward, backward, input,
             print_all=True  # Print all gradient comparisons
         )
         ```
     """
     # Run standard gradient check
-    var passed = check_gradients(forward_fn, backward_fn, input, epsilon, tolerance)
+    var passed = check_gradients(
+        forward_fn, backward_fn, input, epsilon, tolerance
+    )
 
     if print_all or not passed:
         print("\n=== Gradient Check Details ===")
@@ -224,7 +228,9 @@ fn check_gradients_verbose(
 
             var numerical_sum = 0.0
             for j in range(output_plus.numel()):
-                var diff = output_plus._get_float64(j) - output_minus._get_float64(j)
+                var diff = output_plus._get_float64(
+                    j
+                ) - output_minus._get_float64(j)
                 numerical_sum += diff / (2.0 * epsilon)
             numerical_grad._set_float64(i, numerical_sum)
 
@@ -243,11 +249,15 @@ fn check_gradients_verbose(
 
             if print_all or diff >= tolerance:
                 print(
-                    i, " | ",
-                    analytical, " | ",
-                    numerical, " | ",
-                    diff, " | ",
-                    status
+                    i,
+                    " | ",
+                    analytical,
+                    " | ",
+                    numerical,
+                    " | ",
+                    diff,
+                    " | ",
+                    status,
                 )
 
         if input.numel() > 20:
@@ -273,21 +283,18 @@ fn relative_error(analytical: Float64, numerical: Float64) -> Float64:
 
     Example:
         ```mojo
-        ar err = relative_error(0.5, 0.501)  # Returns ~0.002 (0.2%)
+        var err = relative_error(0.5, 0.501)  # Returns ~0.002 (0.2%)
         ```
     """
     var numerator = abs(analytical - numerical)
-    var denominator = max(
-        abs(analytical),
-        max(abs(numerical), 1e-8)
-    )
+    var denominator = max(abs(analytical), max(abs(numerical), 1e-8))
     return numerator / denominator
 
 
 fn compute_numerical_gradient(
-    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
+    forward_fn: fn (ExTensor) raises escaping -> ExTensor,
     x: ExTensor,
-    epsilon: Float64 = 1e-5
+    epsilon: Float64 = 1e-5,
 ) raises -> ExTensor:
     """Compute numerical gradient using finite differences.
 
@@ -356,13 +363,17 @@ fn compute_numerical_gradient(
         var grad_val: Float64
         if f_plus.numel() == 1:
             # Scalar output: gradient is simply the finite difference
-            grad_val = (f_plus._get_float64(0) - f_minus._get_float64(0)) / (2.0 * epsilon)
+            grad_val = (f_plus._get_float64(0) - f_minus._get_float64(0)) / (
+                2.0 * epsilon
+            )
         else:
             # Vector output: sum of gradients (for loss functions)
             # This assumes we're computing gradient of sum(output) w.r.t input
             grad_val = 0.0
             for j in range(f_plus.numel()):
-                grad_val += (f_plus._get_float64(j) - f_minus._get_float64(j)) / (2.0 * epsilon)
+                grad_val += (
+                    f_plus._get_float64(j) - f_minus._get_float64(j)
+                ) / (2.0 * epsilon)
 
         grad._set_float64(i, grad_val)
 
@@ -374,7 +385,7 @@ fn assert_gradients_close(
     numerical: ExTensor,
     rtol: Float64 = 1e-3,
     atol: Float64 = 1e-6,
-    message: String = "Gradients do not match"
+    message: String = "Gradients do not match",
 ) raises:
     """Assert analytical and numerical gradients are close.
 
@@ -398,7 +409,7 @@ fn assert_gradients_close(
 
     Example:
         ```mojo
-        ar analytical = relu_backward(grad_output, x)
+        var analytical = relu_backward(grad_output, x)
         var numerical = compute_numerical_gradient(relu, x)
         assert_gradients_close(analytical, numerical)  # Uses default tolerances
         ```
@@ -462,7 +473,7 @@ fn _deep_copy(tensor: ExTensor) raises -> ExTensor:
 
     Returns:
         New tensor with copied data (independent memory allocation).
-   """
+    """
     # Create new tensor with same shape and dtype
     var result = ExTensor(tensor.shape(), tensor._dtype)
 
@@ -474,13 +485,13 @@ fn _deep_copy(tensor: ExTensor) raises -> ExTensor:
 
 
 fn check_gradient(
-    forward_fn: fn(ExTensor) raises escaping -> ExTensor,
-    backward_fn: fn(ExTensor, ExTensor) raises escaping -> ExTensor,
+    forward_fn: fn (ExTensor) raises escaping -> ExTensor,
+    backward_fn: fn (ExTensor, ExTensor) raises escaping -> ExTensor,
     x: ExTensor,
     grad_output: ExTensor,
     epsilon: Float64 = 0.0,  # Auto-select based on dtype if 0.0
     rtol: Float64 = 1e-3,
-    atol: Float64 = 1e-6
+    atol: Float64 = 1e-6,
 ) raises:
     """Comprehensive gradient check helper.
 
@@ -559,12 +570,19 @@ fn check_gradient(
         var out_minus = forward_fn(x_minus)
         var loss_minus: Float64 = 0.0
         for j in range(out_minus.numel()):
-            loss_minus += out_minus._get_float64(j) * grad_output._get_float64(j)
+            loss_minus += out_minus._get_float64(j) * grad_output._get_float64(
+                j
+            )
 
         # Central difference
         var numerical_grad = (loss_plus - loss_minus) / (2.0 * eps)
         grad._set_float64(i, numerical_grad)
 
     # Compare
-    assert_gradients_close(analytical, grad, rtol, auto_atol,
-                          "Gradient check failed for " + String(x._dtype))
+    assert_gradients_close(
+        analytical,
+        grad,
+        rtol,
+        auto_atol,
+        "Gradient check failed for " + String(x._dtype),
+    )

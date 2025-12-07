@@ -33,6 +33,7 @@ from collections import List
 
 struct MockPredictor:
     """Mock model for testing evaluate() function."""
+
     var predictions: ExTensor
 
     fn __init__(out self, var predictions: ExTensor):
@@ -100,7 +101,12 @@ fn test_compute_accuracy_on_batch_perfect() raises:
 
     var accuracy = compute_accuracy_on_batch(logits, labels)
 
-    assert_almost_equal(Float64(accuracy), 1.0, 1e-6, "Perfect predictions should have 100% accuracy")
+    assert_almost_equal(
+        Float64(accuracy),
+        1.0,
+        1e-6,
+        "Perfect predictions should have 100% accuracy",
+    )
     print("   Perfect accuracy test passed")
 
 
@@ -143,7 +149,9 @@ fn test_compute_accuracy_on_batch_partial() raises:
     var accuracy = compute_accuracy_on_batch(logits, labels)
 
     # Expected: 3/4 = 0.75
-    assert_almost_equal(Float64(accuracy), 0.75, 1e-6, "Expected 75% accuracy (3/4 correct)")
+    assert_almost_equal(
+        Float64(accuracy), 0.75, 1e-6, "Expected 75% accuracy (3/4 correct)"
+    )
     print("   Partial accuracy test passed")
 
 
@@ -169,7 +177,9 @@ fn test_compute_accuracy_on_batch_with_indices() raises:
 
     var accuracy = compute_accuracy_on_batch(predictions, labels)
 
-    assert_almost_equal(Float64(accuracy), 1.0, 1e-6, "100% accuracy with matching indices")
+    assert_almost_equal(
+        Float64(accuracy), 1.0, 1e-6, "100% accuracy with matching indices"
+    )
     print("   Class indices test passed")
 
 
@@ -211,7 +221,12 @@ fn test_compute_accuracy_on_batch_zero() raises:
 
     var accuracy = compute_accuracy_on_batch(logits, labels)
 
-    assert_almost_equal(Float64(accuracy), 0.0, 1e-6, "Zero correct predictions should have 0% accuracy")
+    assert_almost_equal(
+        Float64(accuracy),
+        0.0,
+        1e-6,
+        "Zero correct predictions should have 0% accuracy",
+    )
     print("   Zero accuracy test passed")
 
 
@@ -232,7 +247,9 @@ fn test_compute_accuracy_on_batch_single_sample() raises:
 
     var accuracy = compute_accuracy_on_batch(logits, labels)
 
-    assert_almost_equal(Float64(accuracy), 1.0, 1e-6, "Single correct prediction should be 100%")
+    assert_almost_equal(
+        Float64(accuracy), 1.0, 1e-6, "Single correct prediction should be 100%"
+    )
     print("   Single sample test passed")
 
 
@@ -275,7 +292,12 @@ fn test_evaluate_logits_batch_perfect() raises:
 
     var accuracy = evaluate_logits_batch(logits, labels)
 
-    assert_almost_equal(Float64(accuracy), 1.0, 1e-6, "Perfect predictions should have 100% accuracy")
+    assert_almost_equal(
+        Float64(accuracy),
+        1.0,
+        1e-6,
+        "Perfect predictions should have 100% accuracy",
+    )
     print("   evaluate_logits_batch perfect test passed")
 
 
@@ -284,7 +306,7 @@ fn test_evaluate_with_predict() raises:
     print("Testing evaluate_with_predict...")
 
     # Predictions as list: [0, 1, 2, 0]
-    var predictions = List[Int]()
+    var predictions= List[Int]()
     predictions.append(0)
     predictions.append(1)
     predictions.append(2)
@@ -300,7 +322,12 @@ fn test_evaluate_with_predict() raises:
 
     var accuracy = evaluate_with_predict(predictions, labels)
 
-    assert_almost_equal(Float64(accuracy), 1.0, 1e-6, "Perfect predictions should have 100% accuracy")
+    assert_almost_equal(
+        Float64(accuracy),
+        1.0,
+        1e-6,
+        "Perfect predictions should have 100% accuracy",
+    )
     print("   evaluate_with_predict test passed")
 
 

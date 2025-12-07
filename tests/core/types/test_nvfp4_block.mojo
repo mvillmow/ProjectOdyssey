@@ -31,7 +31,7 @@ from tests.shared.conftest import (
 
 fn test_nvfp4_block_creation_zeros() raises:
     """Test NVFP4Block creation with all zeros."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(0.0))
 
@@ -45,7 +45,7 @@ fn test_nvfp4_block_creation_zeros() raises:
 
 fn test_nvfp4_block_creation_ones() raises:
     """Test NVFP4Block creation with all ones."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(1.0))
 
@@ -60,7 +60,7 @@ fn test_nvfp4_block_creation_ones() raises:
 
 fn test_nvfp4_block_creation_range() raises:
     """Test NVFP4Block creation with sequential values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(i) * 0.1)
 
@@ -77,7 +77,7 @@ fn test_nvfp4_block_creation_range() raises:
 
 fn test_nvfp4_block_size_validation() raises:
     """Test NVFP4Block requires exactly 16 values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(8):  # Only 8 values
         values.append(Float32(i))
 
@@ -96,7 +96,7 @@ fn test_nvfp4_block_size_validation() raises:
 
 fn test_nvfp4_block_roundtrip_small() raises:
     """Test round-trip conversion for small values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(0.5) + Float32(i) * 0.1)
 
@@ -113,7 +113,7 @@ fn test_nvfp4_block_roundtrip_small() raises:
 
 fn test_nvfp4_block_roundtrip_large() raises:
     """Test round-trip conversion for large values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(10.0) + Float32(i) * 2.0)
 
@@ -131,7 +131,7 @@ fn test_nvfp4_block_roundtrip_large() raises:
 
 fn test_nvfp4_block_roundtrip_mixed_signs() raises:
     """Test round-trip conversion with mixed signs."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         var sign = Float32(1.0) if i % 2 == 0 else Float32(-1.0)
         values.append(sign * Float32(i) * Float32(0.1))
@@ -143,14 +143,25 @@ fn test_nvfp4_block_roundtrip_mixed_signs() raises:
     # Note: Skip i=0 because zero has no meaningful sign
     # Note: Skip small values near zero that may have sign flips due to quantization
     for i in range(1, 16):
-        var expected = (Float32(1.0) if i % 2 == 0 else Float32(-1.0)) * Float32(i) * Float32(0.1)
+        var expected = (
+            (Float32(1.0) if i % 2 == 0 else Float32(-1.0))
+            * Float32(i)
+            * Float32(0.1)
+        )
         # Only check sign for values with significant magnitude
         if abs(expected) > 0.15:
             var expected_sign = Float32(1.0) if expected >= 0 else Float32(-1.0)
-            var decoded_sign = Float32(1.0) if decoded[i] >= 0 else Float32(-1.0)
+            var decoded_sign = Float32(1.0) if decoded[i] >= 0 else Float32(
+                -1.0
+            )
             assert_true(
                 Int(expected_sign) == Int(decoded_sign),
-                "Sign mismatch at i=" + String(i) + ": expected=" + String(expected) + ", decoded=" + String(decoded[i])
+                "Sign mismatch at i="
+                + String(i)
+                + ": expected="
+                + String(expected)
+                + ", decoded="
+                + String(decoded[i]),
             )
 
 
@@ -162,7 +173,7 @@ fn test_nvfp4_block_roundtrip_mixed_signs() raises:
 fn test_nvfp4_block_scale_computation() raises:
     """Test scale computation for different value ranges."""
     # Test 1: All values in [0, 1]
-    var values1 = List[Float32]()
+    var values1= List[Float32]()
     for i in range(16):
         values1.append(Float32(i) / 16.0)
 
@@ -172,7 +183,7 @@ fn test_nvfp4_block_scale_computation() raises:
     assert_true(scale1 > 0.1 and scale1 < 0.3, "Scale 1 out of range")
 
     # Test 2: All values in [0, 10]
-    var values2 = List[Float32]()
+    var values2= List[Float32]()
     for i in range(16):
         values2.append(Float32(i) / 1.6)
 
@@ -192,7 +203,7 @@ fn test_nvfp4_better_accuracy_than_mxfp4() raises:
     from shared.core.types.mxfp4 import MXFP4Block
 
     # Create 16 values in a narrow range
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(1.0) + Float32(i) * 0.05)
 
@@ -201,7 +212,7 @@ fn test_nvfp4_better_accuracy_than_mxfp4() raises:
     var nvfp4_decoded = nvfp4_block.to_float32_array()
 
     # Test MXFP4 (need to pad to 32 elements)
-    var values32 = List[Float32]()
+    var values32= List[Float32]()
     for i in range(16):
         values32.append(Float32(1.0) + Float32(i) * 0.05)
     for i in range(16):
@@ -232,7 +243,7 @@ fn test_nvfp4_better_accuracy_than_mxfp4() raises:
 
 fn test_nvfp4_block_bit_packing() raises:
     """Test bit packing stores 2 values per byte."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     # Create distinct values
     for i in range(16):
         values.append(Float32(1.0) + Float32(i % 4) * 0.5)
@@ -252,7 +263,7 @@ fn test_nvfp4_block_bit_packing() raises:
 
 fn test_nvfp4_block_get() raises:
     """Test get() method retrieves individual values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(i) * 0.1)
 
@@ -271,7 +282,7 @@ fn test_nvfp4_block_get() raises:
 
 fn test_nvfp4_block_get_bounds_checking() raises:
     """Test get() bounds checking."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(i))
 
@@ -293,7 +304,7 @@ fn test_nvfp4_block_get_bounds_checking() raises:
 
 fn test_nvfp4_block_set() raises:
     """Test set() method updates individual values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(1.0))
 
@@ -312,13 +323,14 @@ fn test_nvfp4_block_set() raises:
     var error = abs(retrieved_val - 2.5)
     assert_true(
         error < 3.0,
-        "Set value error too large: expected ~2.5, got " + String(retrieved_val)
+        "Set value error too large: expected ~2.5, got "
+        + String(retrieved_val),
     )
 
 
 fn test_nvfp4_block_set_bounds_checking() raises:
     """Test set() bounds checking."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(i))
 
@@ -346,7 +358,7 @@ fn test_nvfp4_block_set_bounds_checking() raises:
 
 fn test_nvfp4_block_all_negative_same() raises:
     """Test block with all same negative values (TEST-001)."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(-1.0))
 
@@ -362,7 +374,7 @@ fn test_nvfp4_block_all_negative_same() raises:
 
 fn test_nvfp4_block_all_negative_range() raises:
     """Test block with range of negative values (TEST-001)."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(-1.0) - Float32(i) * 0.1)
 
@@ -376,7 +388,7 @@ fn test_nvfp4_block_all_negative_range() raises:
 
 fn test_nvfp4_block_negative_scale_computation() raises:
     """Test scale computation uses abs() for negative values (TEST-001)."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(-10.0))
 
@@ -399,7 +411,7 @@ fn test_nvfp4_block_negative_scale_computation() raises:
 
 fn test_nvfp4_block_nan_values() raises:
     """Test block with NaN values (TEST-003)."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     var nan_val = Float32(0.0) / Float32(0.0)  # Create NaN
     for i in range(16):
         values.append(nan_val)
@@ -410,7 +422,9 @@ fn test_nvfp4_block_nan_values() raises:
     # NaN should map to max representable value (not crash)
     # Values should be finite after decoding
     for i in range(16):
-        assert_true(not isinf(decoded[i]), "Decoded value should not be infinity")
+        assert_true(
+            not isinf(decoded[i]), "Decoded value should not be infinity"
+        )
 
 
 fn test_nvfp4_block_infinity_values() raises:
@@ -418,7 +432,7 @@ fn test_nvfp4_block_infinity_values() raises:
     var pos_inf = Float32(1.0) / Float32(0.0)
     var neg_inf = Float32(-1.0) / Float32(0.0)
 
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(8):
         values.append(pos_inf)
     for i in range(8):
@@ -440,7 +454,7 @@ fn test_nvfp4_block_mixed_special() raises:
     var pos_inf = Float32(1.0) / Float32(0.0)
     var neg_inf = Float32(-1.0) / Float32(0.0)
 
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(4):
         values.append(nan_val)
     for i in range(4):
@@ -466,7 +480,7 @@ fn test_nvfp4_block_mixed_special() raises:
 
 fn test_nvfp4_block_all_same_value() raises:
     """Test block with all same values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     for i in range(16):
         values.append(Float32(3.14))
 
@@ -482,7 +496,7 @@ fn test_nvfp4_block_all_same_value() raises:
 
 fn test_nvfp4_block_extreme_range() raises:
     """Test block with very different magnitude values."""
-    var values = List[Float32]()
+    var values= List[Float32]()
     # Mix very small and very large values
     for i in range(8):
         values.append(Float32(0.001))

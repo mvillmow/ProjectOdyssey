@@ -57,7 +57,7 @@ fn create_random_tensor(
         total_size *= dim[]
 
     # Generate random values
-    var data = List[Float32](capacity=total_size)
+    var data= List[Float32](capacity=total_size)
     for i in range(total_size):
         # randn() generates standard normal distribution
         var value = Float32(randn())
@@ -85,7 +85,7 @@ fn create_zeros_tensor(shape: List[Int]) -> List[Float32]:
     for dim in shape:
         total_size *= dim[]
 
-    var data = List[Float32](capacity=total_size)
+    var data= List[Float32](capacity=total_size)
     for _ in range(total_size):
         data.append(0.0)
 
@@ -111,7 +111,7 @@ fn create_ones_tensor(shape: List[Int]) -> List[Float32]:
     for dim in shape:
         total_size *= dim[]
 
-    var data = List[Float32](capacity=total_size)
+    var data= List[Float32](capacity=total_size)
     for _ in range(total_size):
         data.append(1.0)
 
@@ -144,7 +144,7 @@ fn create_sequential_tensor(
     for dim in shape:
         total_size *= dim[]
 
-    var data = List[Float32](capacity=total_size)
+    var data= List[Float32](capacity=total_size)
     for i in range(total_size):
         data.append(start + Float32(i))
 
@@ -171,7 +171,7 @@ fn create_constant_tensor(shape: List[Int], value: Float32) -> List[Float32]:
     for dim in shape:
         total_size *= dim[]
 
-    var data = List[Float32](capacity=total_size)
+    var data= List[Float32](capacity=total_size)
     for _ in range(total_size):
         data.append(value)
 
@@ -217,7 +217,12 @@ fn assert_tensors_equal(
     if len(a) != len(b):
         var error_msg = message if message else "Tensor sizes don't match"
         error_msg = (
-            error_msg + " (a: " + String(len(a)) + ", b: " + String(len(b)) + ")"
+            error_msg
+            + " (a: "
+            + String(len(a))
+            + ", b: "
+            + String(len(b))
+            + ")"
         )
         raise Error(error_msg)
 
@@ -256,8 +261,8 @@ fn assert_shape_equal(
 
     Example:
         ```mojo
-        var shape = List[Int](2, 3, 4)
-        var expected = List[Int](2, 3, 4)
+        var shape : List[Int] = [2, 3, 4]
+        var expected : List[Int] = [2, 3, 4]
         assert_shape_equal(shape, expected)  # Passes
         ```
     """

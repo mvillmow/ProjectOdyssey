@@ -44,14 +44,16 @@ struct DigitClassifier:
         # Hidden layer 2: 64 neurons with ReLU activation
         # Output: 10 classes (digits 0-9) with Softmax
 
-        self.model = Sequential([
-            Layer("linear", input_size=784, output_size=128),
-            ReLU(),
-            Layer("linear", input_size=128, output_size=64),
-            ReLU(),
-            Layer("linear", input_size=64, output_size=10),
-            Softmax(),
-        ])
+        self.model = Sequential(
+            [
+                Layer("linear", input_size=784, output_size=128),
+                ReLU(),
+                Layer("linear", input_size=128, output_size=64),
+                ReLU(),
+                Layer("linear", input_size=64, output_size=10),
+                Softmax(),
+            ]
+        )
 
     fn forward(mut self, input: Tensor) -> Tensor:
         """Forward pass through the network."""

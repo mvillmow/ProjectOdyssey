@@ -31,7 +31,7 @@ fn test_binary_cross_entropy_perfect_prediction() raises:
     """Test BCE with perfect predictions (should be near zero)."""
     print("Testing BCE with perfect predictions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -59,7 +59,7 @@ fn test_binary_cross_entropy_worst_prediction() raises:
     """Test BCE with worst predictions (should be high)."""
     print("Testing BCE with worst predictions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -88,7 +88,7 @@ fn test_binary_cross_entropy_gradient_shape() raises:
     """Test that BCE backward produces correct gradient shape."""
     print("Testing BCE gradient shape...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -103,7 +103,9 @@ fn test_binary_cross_entropy_gradient_shape() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Compute gradient
-    var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
+    var grad_pred = binary_cross_entropy_backward(
+        grad_output, predictions, targets
+    )
 
     # Check shape matches
     if grad_pred.shape()[0] != predictions.shape()[0]:
@@ -117,7 +119,7 @@ fn test_mean_squared_error_zero_loss() raises:
     """Test MSE with identical predictions and targets."""
     print("Testing MSE with zero loss...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -145,7 +147,7 @@ fn test_mean_squared_error_known_values() raises:
     """Test MSE with known error values."""
     print("Testing MSE with known values...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -183,7 +185,7 @@ fn test_mean_squared_error_gradient() raises:
     """Test MSE gradient computation."""
     print("Testing MSE gradient...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -205,7 +207,9 @@ fn test_mean_squared_error_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Compute gradient
-    var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
+    var grad_pred = mean_squared_error_backward(
+        grad_output, predictions, targets
+    )
 
     # Check values
     var grad0 = grad_pred._get_float64(0)
@@ -229,7 +233,7 @@ fn test_loss_numerical_stability() raises:
     """Test that loss functions handle extreme values gracefully."""
     print("Testing loss function numerical stability...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -258,7 +262,7 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     """Test BCE backward with numerical gradient checking."""
     print("Testing BCE backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
@@ -286,7 +290,9 @@ fn test_binary_cross_entropy_backward_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Numerical gradient checking (relaxed tolerance for float32 precision)
-    check_gradient(forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5)
+    check_gradient(
+        forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5
+    )
 
     print("  ✓ BCE backward gradient check passed")
 
@@ -295,7 +301,7 @@ fn test_mean_squared_error_backward_gradient() raises:
     """Test MSE backward with numerical gradient checking."""
     print("Testing MSE backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
@@ -325,7 +331,9 @@ fn test_mean_squared_error_backward_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Numerical gradient checking (relaxed tolerance for float32 precision)
-    check_gradient(forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5)
+    check_gradient(
+        forward, backward, predictions, grad_output, rtol=2e-3, atol=1e-5
+    )
 
     print("  ✓ MSE backward gradient check passed")
 
@@ -334,7 +342,7 @@ fn test_smooth_l1_zero_beta_boundary() raises:
     """Test Smooth L1 loss at beta boundary."""
     print("Testing Smooth L1 loss at beta boundary...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -371,7 +379,7 @@ fn test_smooth_l1_quadratic_region() raises:
     """Test Smooth L1 in quadratic region (|x| < beta)."""
     print("Testing Smooth L1 loss in quadratic region...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -401,7 +409,7 @@ fn test_smooth_l1_linear_region() raises:
     """Test Smooth L1 in linear region (|x| >= beta)."""
     print("Testing Smooth L1 loss in linear region...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -431,7 +439,7 @@ fn test_smooth_l1_backward_quadratic() raises:
     """Test Smooth L1 backward in quadratic region."""
     print("Testing Smooth L1 backward in quadratic region...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -446,7 +454,9 @@ fn test_smooth_l1_backward_quadratic() raises:
     var loss = smooth_l1_loss(predictions, targets, beta=beta)
     var grad_output = ones(shape, DType.float32)
 
-    var grad_pred = smooth_l1_loss_backward(grad_output, predictions, targets, beta=beta)
+    var grad_pred = smooth_l1_loss_backward(
+        grad_output, predictions, targets, beta=beta
+    )
     var grad_val = grad_pred._get_float64(0)
 
     print("  Smooth L1 quadratic gradient:", grad_val)
@@ -464,7 +474,7 @@ fn test_smooth_l1_backward_linear() raises:
     """Test Smooth L1 backward in linear region."""
     print("Testing Smooth L1 backward in linear region...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -479,7 +489,9 @@ fn test_smooth_l1_backward_linear() raises:
     var loss = smooth_l1_loss(predictions, targets, beta=beta)
     var grad_output = ones(shape, DType.float32)
 
-    var grad_pred = smooth_l1_loss_backward(grad_output, predictions, targets, beta=beta)
+    var grad_pred = smooth_l1_loss_backward(
+        grad_output, predictions, targets, beta=beta
+    )
     var grad_val = grad_pred._get_float64(0)
 
     print("  Smooth L1 linear gradient:", grad_val)
@@ -495,7 +507,7 @@ fn test_hinge_loss_correct_prediction() raises:
     """Test hinge loss with correct predictions."""
     print("Testing hinge loss with correct predictions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -524,7 +536,7 @@ fn test_hinge_loss_wrong_prediction() raises:
     """Test hinge loss with wrong predictions."""
     print("Testing hinge loss with wrong predictions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -556,7 +568,7 @@ fn test_hinge_loss_at_margin() raises:
     """Test hinge loss exactly at margin (y*pred = 1)."""
     print("Testing hinge loss at margin...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -585,7 +597,7 @@ fn test_hinge_loss_backward() raises:
     """Test hinge loss backward pass."""
     print("Testing hinge loss backward...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -629,7 +641,7 @@ fn test_smooth_l1_backward_gradient() raises:
     """Test Smooth L1 backward with numerical gradient checking."""
     print("Testing Smooth L1 backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
@@ -659,7 +671,9 @@ fn test_smooth_l1_backward_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Numerical gradient checking (relaxed tolerance for smooth L1)
-    check_gradient(forward, backward, predictions, grad_output, rtol=1e-2, atol=1e-3)
+    check_gradient(
+        forward, backward, predictions, grad_output, rtol=1e-2, atol=1e-3
+    )
 
     print("  ✓ Smooth L1 backward gradient check passed")
 
@@ -668,16 +682,16 @@ fn test_hinge_loss_backward_gradient() raises:
     """Test hinge loss backward with gradient checking."""
     print("Testing hinge loss backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
 
     # Initialize with values that produce some margin violations
-    predictions._set_float64(0, 0.5)   # margin = 0.5 (violation)
-    predictions._set_float64(1, 2.0)   # margin = -1.0 (satisfied)
+    predictions._set_float64(0, 0.5)  # margin = 0.5 (violation)
+    predictions._set_float64(1, 2.0)  # margin = -1.0 (satisfied)
     predictions._set_float64(2, -0.3)  # margin = 1.3 (violation)
-    predictions._set_float64(3, 1.8)   # margin = -0.8 (satisfied)
+    predictions._set_float64(3, 1.8)  # margin = -0.8 (satisfied)
 
     targets._set_float64(0, 1.0)
     targets._set_float64(1, 1.0)
@@ -696,7 +710,9 @@ fn test_hinge_loss_backward_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Numerical gradient checking (relaxed tolerance for discontinuous gradient)
-    check_gradient(forward, backward, predictions, grad_output, rtol=1e-2, atol=1e-3)
+    check_gradient(
+        forward, backward, predictions, grad_output, rtol=1e-2, atol=1e-3
+    )
 
     print("  ✓ Hinge backward gradient check passed")
 
@@ -705,7 +721,7 @@ fn test_focal_loss_perfect_prediction() raises:
     """Test focal loss with perfect predictions (should be near zero)."""
     print("Testing focal loss with perfect predictions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -733,7 +749,7 @@ fn test_focal_loss_hard_examples() raises:
     """Test focal loss focuses on hard examples."""
     print("Testing focal loss on hard examples...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -756,7 +772,9 @@ fn test_focal_loss_hard_examples() raises:
 
     # Hard examples should have larger loss
     if hard_loss <= easy_loss:
-        raise Error("Focal loss should emphasize hard examples more than easy examples")
+        raise Error(
+            "Focal loss should emphasize hard examples more than easy examples"
+        )
 
     print("  ✓ Focal loss hard examples test passed")
 
@@ -765,7 +783,7 @@ fn test_focal_loss_backward_shape() raises:
     """Test focal loss backward produces correct gradient shape."""
     print("Testing focal loss backward shape...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var predictions = ExTensor(shape, DType.float32)
     var targets = ExTensor(shape, DType.float32)
@@ -789,7 +807,7 @@ fn test_focal_loss_backward_gradient() raises:
     """Test focal loss backward with numerical gradient checking."""
     print("Testing focal loss backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var predictions = zeros(shape, DType.float32)
     var targets = zeros(shape, DType.float32)
@@ -817,7 +835,9 @@ fn test_focal_loss_backward_gradient() raises:
     var grad_output = ones(shape, DType.float32)
 
     # Numerical gradient checking (relaxed tolerance for float32 precision)
-    check_gradient(forward, backward, predictions, grad_output, rtol=2e-2, atol=1e-4)
+    check_gradient(
+        forward, backward, predictions, grad_output, rtol=2e-2, atol=1e-4
+    )
 
     print("  ✓ Focal loss backward gradient check passed")
 
@@ -826,7 +846,7 @@ fn test_kl_divergence_same_distribution() raises:
     """Test KL divergence with identical distributions (should be near zero)."""
     print("Testing KL divergence with same distribution...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var p = ExTensor(shape, DType.float32)
     var q = ExTensor(shape, DType.float32)
@@ -845,7 +865,9 @@ fn test_kl_divergence_same_distribution() raises:
 
     # Should be very close to 0 (within epsilon tolerance)
     if kl_val > 0.001:
-        raise Error("KL divergence for identical distributions should be near 0")
+        raise Error(
+            "KL divergence for identical distributions should be near 0"
+        )
 
     print("  ✓ KL divergence same distribution test passed")
 
@@ -854,7 +876,7 @@ fn test_kl_divergence_different_distributions() raises:
     """Test KL divergence with different distributions (should be positive)."""
     print("Testing KL divergence with different distributions...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var p = ExTensor(shape, DType.float32)
     var q = ExTensor(shape, DType.float32)
@@ -877,7 +899,9 @@ fn test_kl_divergence_different_distributions() raises:
 
     # Should be positive
     if kl_val <= 0.0:
-        raise Error("KL divergence for different distributions should be positive")
+        raise Error(
+            "KL divergence for different distributions should be positive"
+        )
 
     print("  ✓ KL divergence different distributions test passed")
 
@@ -886,7 +910,7 @@ fn test_kl_divergence_backward_shape() raises:
     """Test KL divergence backward produces correct gradient shape."""
     print("Testing KL divergence backward shape...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var p = ExTensor(shape, DType.float32)
     var q = ExTensor(shape, DType.float32)
@@ -911,7 +935,7 @@ fn test_kl_divergence_backward_gradient() raises:
     """Test KL divergence backward with numerical gradient checking."""
     print("Testing KL divergence backward gradient checking...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(4)
     var p = zeros(shape, DType.float32)
     var q = zeros(shape, DType.float32)
@@ -932,7 +956,9 @@ fn test_kl_divergence_backward_gradient() raises:
         return kl_divergence(p, q_dist)
 
     # Backward function wrapper
-    fn backward(grad_out: ExTensor, q_dist: ExTensor) raises escaping -> ExTensor:
+    fn backward(
+        grad_out: ExTensor, q_dist: ExTensor
+    ) raises escaping -> ExTensor:
         return kl_divergence_backward(grad_out, p, q_dist)
 
     var kl = forward(q)

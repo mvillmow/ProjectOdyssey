@@ -56,7 +56,7 @@ struct RandomTransformBase(Copyable, Movable):
 
     Example:
         ```mojo
-        ar base = RandomTransformBase(0.5)
+        var base = RandomTransformBase(0.5)
         if base.should_apply():
             # Apply the transform
         ```

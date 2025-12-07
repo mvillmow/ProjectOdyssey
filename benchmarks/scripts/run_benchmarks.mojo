@@ -169,7 +169,9 @@ struct BenchmarkMetrics:
         self.max_duration_ms = max_duration_ms
 
 
-fn measure_benchmark[func: fn () raises -> None](
+fn measure_benchmark[
+    func: fn () raises -> None
+](
     name: String,
     description: String,
     iterations: Int,
@@ -232,7 +234,14 @@ fn measure_benchmark[func: fn () raises -> None](
     var throughput = operations_per_iteration / (duration_ms / 1000.0)
 
     return BenchmarkMetrics(
-        name, description, duration_ms, throughput, memory_mb, iterations, min_ms, max_ms
+        name,
+        description,
+        duration_ms,
+        throughput,
+        memory_mb,
+        iterations,
+        min_ms,
+        max_ms,
     )
 
 
@@ -316,27 +325,31 @@ fn generate_json_output(benchmarks: List[BenchmarkMetrics]) raises -> String:
     json += '    "cpu": "x86_64",\n'
     json += '    "mojo_version": "0.25.7",\n'
     json += '    "git_commit": "placeholder"\n'
-    json += '  },\n'
+    json += "  },\n"
     json += '  "benchmarks": [\n'
 
     for i in range(len(benchmarks)):
         var bench = benchmarks[i]
-        json += '    {\n'
+        json += "    {\n"
         json += '      "name": "' + bench.name + '",\n'
         json += '      "description": "' + bench.description + '",\n'
-        json += '      "duration_ms": ' + String(bench.duration_ms) + ',\n'
-        json += '      "min_duration_ms": ' + String(bench.min_duration_ms) + ',\n'
-        json += '      "max_duration_ms": ' + String(bench.max_duration_ms) + ',\n'
-        json += '      "throughput": ' + String(bench.throughput) + ',\n'
-        json += '      "memory_mb": ' + String(bench.memory_mb) + ',\n'
-        json += '      "iterations": ' + String(bench.iterations) + '\n'
-        json += '    }'
+        json += '      "duration_ms": ' + String(bench.duration_ms) + ",\n"
+        json += (
+            '      "min_duration_ms": ' + String(bench.min_duration_ms) + ",\n"
+        )
+        json += (
+            '      "max_duration_ms": ' + String(bench.max_duration_ms) + ",\n"
+        )
+        json += '      "throughput": ' + String(bench.throughput) + ",\n"
+        json += '      "memory_mb": ' + String(bench.memory_mb) + ",\n"
+        json += '      "iterations": ' + String(bench.iterations) + "\n"
+        json += "    }"
         if i < len(benchmarks) - 1:
-            json += ','
-        json += '\n'
+            json += ","
+        json += "\n"
 
-    json += '  ]\n'
-    json += '}\n'
+    json += "  ]\n"
+    json += "}\n"
 
     return json
 

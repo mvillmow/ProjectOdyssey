@@ -37,14 +37,19 @@ fn test_mxfp4_tensor_conversion_exact_size() raises:
 
     # Verify size: 2 blocks × 17 bytes = 34 bytes
     assert_equal(mxfp4_t.numel(), 34)
-    assert_true(mxfp4_t.dtype() == DType.uint8, "Expected MXFP4 dtype to be uint8")
+    assert_true(
+        mxfp4_t.dtype() == DType.uint8, "Expected MXFP4 dtype to be uint8"
+    )
 
     # Convert back
     var restored = mxfp4_t.from_mxfp4()
 
     # Verify size restored
     assert_equal(restored.numel(), 64)
-    assert_true(restored.dtype() == DType.float32, "Expected restored dtype to be float32")
+    assert_true(
+        restored.dtype() == DType.float32,
+        "Expected restored dtype to be float32",
+    )
 
     # Verify approximate accuracy
     var total_error = Float32(0.0)
@@ -87,7 +92,9 @@ fn test_mxfp4_tensor_conversion_padding() raises:
         var error = abs(decoded - expected)
         # Tolerance scales with value magnitude for low-precision formats
         var tolerance = max(Float32(1.0), expected * 0.5)
-        assert_true(error < tolerance, "Value " + String(i) + " error too large")
+        assert_true(
+            error < tolerance, "Value " + String(i) + " error too large"
+        )
 
 
 fn test_mxfp4_tensor_conversion_multidim() raises:
@@ -132,14 +139,19 @@ fn test_nvfp4_tensor_conversion_exact_size() raises:
 
     # Verify size: 4 blocks × 9 bytes = 36 bytes
     assert_equal(nvfp4_t.numel(), 36)
-    assert_true(nvfp4_t.dtype() == DType.uint8, "Expected NVFP4 dtype to be uint8")
+    assert_true(
+        nvfp4_t.dtype() == DType.uint8, "Expected NVFP4 dtype to be uint8"
+    )
 
     # Convert back
     var restored = nvfp4_t.from_nvfp4()
 
     # Verify size restored
     assert_equal(restored.numel(), 64)
-    assert_true(restored.dtype() == DType.float32, "Expected restored dtype to be float32")
+    assert_true(
+        restored.dtype() == DType.float32,
+        "Expected restored dtype to be float32",
+    )
 
     # Verify approximate accuracy
     var total_error = Float32(0.0)
@@ -182,7 +194,9 @@ fn test_nvfp4_tensor_conversion_padding() raises:
         var error = abs(decoded - expected)
         # Tolerance scales with value magnitude for low-precision formats
         var tolerance = max(Float32(0.8), expected * 0.5)
-        assert_true(error < tolerance, "Value " + String(i) + " error too large")
+        assert_true(
+            error < tolerance, "Value " + String(i) + " error too large"
+        )
 
 
 fn test_nvfp4_tensor_conversion_multidim() raises:

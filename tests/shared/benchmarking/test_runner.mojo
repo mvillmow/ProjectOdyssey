@@ -22,7 +22,10 @@ from shared.benchmarking import (
 fn test_benchmark_config_creation() raises:
     """Test creating benchmark configurations."""
     var config = BenchmarkConfig(
-        warmup_iters=5, measure_iters=50, compute_percentiles=True, report_throughput=True
+        warmup_iters=5,
+        measure_iters=50,
+        compute_percentiles=True,
+        report_throughput=True,
     )
     assert_equal(config.warmup_iters, 5)
     assert_equal(config.measure_iters, 50)
@@ -89,7 +92,9 @@ fn test_benchmark_simple_operation() raises:
             x += i
 
     # Benchmark with small iterations for test
-    var result = benchmark_function(simple_operation, warmup_iters=2, measure_iters=5)
+    var result = benchmark_function(
+        simple_operation, warmup_iters=2, measure_iters=5
+    )
 
     assert_equal(result.iterations, 5)
     assert_equal(result.warmup_iterations, 2)
@@ -110,7 +115,10 @@ fn test_benchmark_with_percentiles() raises:
             x += i
 
     var result = benchmark_function(
-        simple_operation, warmup_iters=2, measure_iters=5, compute_percentiles=True
+        simple_operation,
+        warmup_iters=2,
+        measure_iters=5,
+        compute_percentiles=True,
     )
 
     assert_true(result.p50_ms >= 0.0)
@@ -192,7 +200,9 @@ fn test_benchmark_multiple_iterations() raises:
 
     # Test with different iteration counts
     var result1 = benchmark_function(operation, warmup_iters=1, measure_iters=3)
-    var result2 = benchmark_function(operation, warmup_iters=5, measure_iters=10)
+    var result2 = benchmark_function(
+        operation, warmup_iters=5, measure_iters=10
+    )
 
     assert_equal(result1.iterations, 3)
     assert_equal(result1.warmup_iterations, 1)

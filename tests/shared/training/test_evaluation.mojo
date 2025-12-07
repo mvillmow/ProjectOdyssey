@@ -45,17 +45,17 @@ fn test_evaluation_result_initialization() raises:
     """Test EvaluationResult initializes correctly."""
     print("Testing EvaluationResult initialization...")
 
-    var result = EvaluationResult(
-        accuracy=0.95,
-        num_correct=95,
-        num_total=100
-    )
+    var result = EvaluationResult(accuracy=0.95, num_correct=95, num_total=100)
 
     assert_almost_equal(result.accuracy, 0.95, 1e-6, "Accuracy should be 0.95")
     assert_equal(result.num_correct, 95, "num_correct should be 95")
     assert_equal(result.num_total, 100, "num_total should be 100")
-    assert_equal(len(result.correct_per_class), 0, "correct_per_class should be empty")
-    assert_equal(len(result.total_per_class), 0, "total_per_class should be empty")
+    assert_equal(
+        len(result.correct_per_class), 0, "correct_per_class should be empty"
+    )
+    assert_equal(
+        len(result.total_per_class), 0, "total_per_class should be empty"
+    )
 
     print("   EvaluationResult initialization test passed")
 
@@ -64,20 +64,22 @@ fn test_evaluation_result_with_per_class_stats() raises:
     """Test EvaluationResult with per-class statistics."""
     print("Testing EvaluationResult with per-class stats...")
 
-    var correct_per_class = List[Int](5, 8, 10, 9, 8)
-    var total_per_class = List[Int](10, 10, 10, 10, 10)
+    var correct_per_class: List[Int] = [5, 8, 10, 9, 8]
+    var total_per_class: List[Int] = [10, 10, 10, 10, 10]
 
     var result = EvaluationResult(
         accuracy=0.8,
         num_correct=40,
         num_total=50,
         correct_per_class=correct_per_class,
-        total_per_class=total_per_class
+        total_per_class=total_per_class,
     )
 
     assert_almost_equal(result.accuracy, 0.8, 1e-6, "Accuracy should be 0.8")
     assert_equal(len(result.correct_per_class), 5, "Should have 5 classes")
-    assert_equal(result.correct_per_class[0], 5, "Class 0 should have 5 correct")
+    assert_equal(
+        result.correct_per_class[0], 5, "Class 0 should have 5 correct"
+    )
     assert_equal(result.total_per_class[2], 10, "Class 2 should have 10 total")
 
     print("   EvaluationResult with per-class stats test passed")
@@ -110,12 +112,7 @@ fn test_evaluate_model_perfect_predictions() raises:
 
     # Evaluate
     var result = evaluate_model(
-        model,
-        images,
-        labels,
-        batch_size=5,
-        num_classes=3,
-        verbose=False
+        model, images, labels, batch_size=5, num_classes=3, verbose=False
     )
 
     # Verify result structure
@@ -144,10 +141,14 @@ fn test_evaluate_model_batch_sizes() raises:
             labels,
             batch_size=batch_size,
             num_classes=3,
-            verbose=False
+            verbose=False,
         )
 
-        assert_equal(result.num_total, 10, "Should evaluate 10 samples with batch_size=" + String(batch_size))
+        assert_equal(
+            result.num_total,
+            10,
+            "Should evaluate 10 samples with batch_size=" + String(batch_size),
+        )
         assert_equal(len(result.correct_per_class), 3, "Should have 3 classes")
 
     print("   evaluate_model with different batch sizes test passed")
@@ -175,12 +176,7 @@ fn test_evaluate_model_per_class_statistics() raises:
 
     # Evaluate
     var result = evaluate_model(
-        model,
-        images,
-        labels,
-        batch_size=2,
-        num_classes=2,
-        verbose=False
+        model, images, labels, batch_size=2, num_classes=2, verbose=False
     )
 
     # Check per-class totals sum to overall total
@@ -212,12 +208,7 @@ fn test_evaluate_model_simple_basic() raises:
 
     # Evaluate
     var accuracy = evaluate_model_simple(
-        model,
-        images,
-        labels,
-        batch_size=5,
-        num_classes=3,
-        verbose=False
+        model, images, labels, batch_size=5, num_classes=3, verbose=False
     )
 
     # Check accuracy is valid fraction
@@ -234,17 +225,14 @@ fn test_evaluate_model_simple_batch_processing() raises:
     var model = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
 
     # Create test data
-    var images = ones(List[Int](7, 4), DType.float32)  # 7 samples with batch_size=3
+    var images = ones(
+        List[Int](7, 4), DType.float32
+    )  # 7 samples with batch_size=3
     var labels = zeros(List[Int](7), DType.int32)
 
     # Evaluate
     var accuracy = evaluate_model_simple(
-        model,
-        images,
-        labels,
-        batch_size=3,
-        num_classes=3,
-        verbose=False
+        model, images, labels, batch_size=3, num_classes=3, verbose=False
     )
 
     # Check result is valid
@@ -271,30 +259,22 @@ fn test_evaluate_topk_basic() raises:
 
     # Evaluate top-1
     var top1_acc = evaluate_topk(
-        model,
-        images,
-        labels,
-        k=1,
-        batch_size=5,
-        num_classes=5,
-        verbose=False
+        model, images, labels, k=1, batch_size=5, num_classes=5, verbose=False
     )
 
     # Evaluate top-2
     var top2_acc = evaluate_topk(
-        model,
-        images,
-        labels,
-        k=2,
-        batch_size=5,
-        num_classes=5,
-        verbose=False
+        model, images, labels, k=2, batch_size=5, num_classes=5, verbose=False
     )
 
     # Top-2 should be >= Top-1 (relaxed criteria)
     assert_true(top2_acc >= top1_acc, "Top-2 accuracy should be >= Top-1")
-    assert_true(top1_acc >= 0.0 and top1_acc <= 1.0, "Top-1 accuracy should be valid")
-    assert_true(top2_acc >= 0.0 and top2_acc <= 1.0, "Top-2 accuracy should be valid")
+    assert_true(
+        top1_acc >= 0.0 and top1_acc <= 1.0, "Top-1 accuracy should be valid"
+    )
+    assert_true(
+        top2_acc >= 0.0 and top2_acc <= 1.0, "Top-2 accuracy should be valid"
+    )
 
     print("   evaluate_topk basic test passed")
 
@@ -315,7 +295,7 @@ fn test_evaluate_topk_k_greater_than_classes() raises:
             labels,
             k=5,  # k > 3 classes
             num_classes=3,
-            verbose=False
+            verbose=False,
         )
         assert_false(True, "Should have raised error for k > num_classes")
     except e:
@@ -339,11 +319,13 @@ fn test_evaluate_topk_edge_case_k_equals_num_classes() raises:
         labels,
         k=3,  # k == num_classes
         num_classes=3,
-        verbose=False
+        verbose=False,
     )
 
     # Should have perfect accuracy
-    assert_almost_equal(accuracy, 1.0, 1e-6, "Top-3 on 3 classes should be 100% accurate")
+    assert_almost_equal(
+        accuracy, 1.0, 1e-6, "Top-3 on 3 classes should be 100% accurate"
+    )
 
     print("   evaluate_topk with k == num_classes test passed")
 
@@ -354,7 +336,8 @@ fn test_evaluate_topk_edge_case_k_equals_num_classes() raises:
 
 
 fn test_evaluation_consistency() raises:
-    """Test that evaluate_model_simple and evaluate_model give consistent results."""
+    """Test that evaluate_model_simple and evaluate_model give consistent results.
+    """
     print("Testing evaluation consistency...")
 
     var model1 = SimpleMLP(input_dim=4, hidden_dim=8, output_dim=3)
@@ -365,28 +348,21 @@ fn test_evaluation_consistency() raises:
 
     # Both functions should work with same data
     var simple_acc = evaluate_model_simple(
-        model1,
-        images,
-        labels,
-        batch_size=5,
-        num_classes=3,
-        verbose=False
+        model1, images, labels, batch_size=5, num_classes=3, verbose=False
     )
 
     var full_result = evaluate_model(
-        model2,
-        images,
-        labels,
-        batch_size=5,
-        num_classes=3,
-        verbose=False
+        model2, images, labels, batch_size=5, num_classes=3, verbose=False
     )
 
     # Both should produce valid results
-    assert_true(simple_acc >= 0.0 and simple_acc <= 1.0, "Simple accuracy should be valid")
+    assert_true(
+        simple_acc >= 0.0 and simple_acc <= 1.0,
+        "Simple accuracy should be valid",
+    )
     assert_true(
         full_result.accuracy >= 0.0 and full_result.accuracy <= 1.0,
-        "Full accuracy should be valid"
+        "Full accuracy should be valid",
     )
 
     print("   Evaluation consistency test passed")
@@ -404,16 +380,14 @@ fn test_single_sample_evaluation() raises:
 
     # Evaluate
     var result = evaluate_model(
-        model,
-        images,
-        labels,
-        batch_size=1,
-        num_classes=3,
-        verbose=False
+        model, images, labels, batch_size=1, num_classes=3, verbose=False
     )
 
     assert_equal(result.num_total, 1, "Should evaluate 1 sample")
-    assert_true(result.accuracy >= 0.0 and result.accuracy <= 1.0, "Accuracy should be valid")
+    assert_true(
+        result.accuracy >= 0.0 and result.accuracy <= 1.0,
+        "Accuracy should be valid",
+    )
 
     print("   Single sample evaluation test passed")
 
@@ -435,17 +409,16 @@ fn test_evaluation_matches_sample_counts() raises:
 
     # Evaluate
     var result = evaluate_model(
-        model,
-        images,
-        labels,
-        batch_size=2,
-        num_classes=4,
-        verbose=False
+        model, images, labels, batch_size=2, num_classes=4, verbose=False
     )
 
     # Check per-class totals
     for i in range(4):
-        assert_equal(result.total_per_class[i], 2, "Class " + String(i) + " should have 2 samples")
+        assert_equal(
+            result.total_per_class[i],
+            2,
+            "Class " + String(i) + " should have 2 samples",
+        )
 
     # Check sum matches total
     var sum_totals = 0

@@ -55,7 +55,7 @@ trait Dataset:
 # ============================================================================
 
 
-struct ExTensorDataset(Dataset, Copyable, Movable):
+struct ExTensorDataset(Copyable, Dataset, Movable):
     """Dataset wrapping tensors for in-memory data.
 
     Stores data and labels as tensors and provides indexed access.
@@ -113,7 +113,10 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
 
         # Return slices into the data
         # For 1D tensors with shape [N], slice(idx, idx+1) gives shape [1]
-        return (self.data.slice(idx, idx + 1, axis=0), self.labels.slice(idx, idx + 1, axis=0))
+        return (
+            self.data.slice(idx, idx + 1, axis=0),
+            self.labels.slice(idx, idx + 1, axis=0),
+        )
 
 
 # ============================================================================
@@ -121,7 +124,7 @@ struct ExTensorDataset(Dataset, Copyable, Movable):
 # ============================================================================
 
 
-struct FileDataset(Dataset, Copyable, Movable):
+struct FileDataset(Copyable, Dataset, Movable):
     """Dataset for loading data from files.
 
     Lazily loads data from disk as needed, suitable for large datasets
@@ -196,7 +199,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         # Load data from file
         var data = self._load_file(self.file_paths[idx])
         # Create label tensor explicitly to avoid ambiguous constructor
-        var label_shape = List[Int](1)
+        var label_shape: List[Int] = [1]
         var label = zeros(label_shape, DType.int32)
         label._data.bitcast[Int32]()[0] = Int32(self.labels[idx])
 
@@ -231,7 +234,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         # Determine file extension
         var ext_idx = -1
         for i in range(len(path) - 1, -1, -1):
-            if path[i] == '.':
+            if path[i] == ".":
                 ext_idx = i
                 break
 
@@ -243,7 +246,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         for i in range(ext_idx + 1, len(path)):
             var c = path[i]
             # Convert uppercase to lowercase
-            if c >= 'A' and c <= 'Z':
+            if c >= "A" and c <= "Z":
                 ext += String(chr(ord(c) + 32))
             else:
                 ext += String(c)
@@ -256,7 +259,9 @@ struct FileDataset(Dataset, Copyable, Movable):
         elif ext == "txt":
             return self._load_text(path)
         else:
-            raise Error("Unsupported file format: " + ext + ". Supported: csv, bin, txt")
+            raise Error(
+                "Unsupported file format: " + ext + ". Supported: csv, bin, txt"
+            )
 
     fn _load_csv(self, path: String) raises -> ExTensor:
         """Load CSV file as tensor.
@@ -276,7 +281,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         # Note: Full CSV parsing would require file I/O and string parsing
         # For now, return a placeholder that represents the expected format
         # Real implementation would read the file line by line
-        var data = List[Float32]()
+        var data= List[Float32]()
         # Placeholder: 10x5 CSV data
         for _ in range(50):
             data.append(Float32(1.0))
@@ -300,7 +305,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         # Note: Full binary reading requires file I/O support
         # For now, return a placeholder
         # Real implementation would use file reading API
-        var data = List[Float32]()
+        var data= List[Float32]()
         # Placeholder: 100 float32 values
         for _ in range(100):
             data.append(Float32(1.0))
@@ -324,7 +329,7 @@ struct FileDataset(Dataset, Copyable, Movable):
         # Note: Full text parsing would require file I/O and number parsing
         # For now, return a placeholder
         # Real implementation would read file line by line
-        var data = List[Float32]()
+        var data= List[Float32]()
         # Placeholder: 50 float32 values
         for _ in range(50):
             data.append(Float32(1.0))
@@ -336,7 +341,7 @@ struct FileDataset(Dataset, Copyable, Movable):
 # ============================================================================
 
 
-struct EMNISTDataset(Dataset, Copyable, Movable):
+struct EMNISTDataset(Copyable, Dataset, Movable):
     """EMNIST Dataset wrapper for convenient dataset access.
 
     Provides a unified interface for loading different EMNIST splits with
@@ -379,7 +384,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
             Error: If data files cannot be loaded or invalid split specified.
         """
         # Validate split
-        var valid_splits = List[String]()
+        var valid_splits= List[String]()
         valid_splits.append("balanced")
         valid_splits.append("byclass")
         valid_splits.append("bymerge")
@@ -394,15 +399,34 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
                 break
 
         if not valid:
-            raise Error("Invalid split: " + split + ". Must be one of: balanced, byclass, bymerge, digits, letters, mnist")
+            raise Error(
+                "Invalid split: "
+                + split
+                + ". Must be one of: balanced, byclass, bymerge, digits,"
+                " letters, mnist"
+            )
 
         self.split = split
         self.data_dir = data_dir
 
         # Build file paths based on split and train/test
         var train_str = "train" if train else "test"
-        var images_path = data_dir + "/emnist-" + split + "-" + train_str + "-images-idx3-ubyte"
-        var labels_path = data_dir + "/emnist-" + split + "-" + train_str + "-labels-idx1-ubyte"
+        var images_path = (
+            data_dir
+            + "/emnist-"
+            + split
+            + "-"
+            + train_str
+            + "-images-idx3-ubyte"
+        )
+        var labels_path = (
+            data_dir
+            + "/emnist-"
+            + split
+            + "-"
+            + train_str
+            + "-labels-idx1-ubyte"
+        )
 
         # Load data
         self.data = load_idx_images(images_path)
@@ -488,7 +512,7 @@ struct EMNISTDataset(Dataset, Copyable, Movable):
         Returns:
             Shape of each image (1, 28, 28) for grayscale.
         """
-        var shape = List[Int]()
+        var shape= List[Int]()
         shape.append(1)
         shape.append(28)
         shape.append(28)

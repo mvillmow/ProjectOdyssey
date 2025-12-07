@@ -52,7 +52,9 @@ from collections import List
 # ============================================================================
 
 
-fn save_model_weights(parameters: List[ExTensor], directory: String, param_names: List[String]) raises:
+fn save_model_weights(
+    parameters: List[ExTensor], directory: String, param_names: List[String]
+) raises:
     """Save model weights to directory.
 
     Saves a list of parameter tensors to individual .weights files in the
@@ -68,7 +70,7 @@ fn save_model_weights(parameters: List[ExTensor], directory: String, param_names
 
     Example:
         ```mojo
-        ar params = List[ExTensor]()
+        var params : List[ExTensor] = []
         params.append(model.conv1_kernel)
         params.append(model.fc1_weights)
 
@@ -95,7 +97,9 @@ fn save_model_weights(parameters: List[ExTensor], directory: String, param_names
         save_tensor(parameters[i], filepath, param_names[i])
 
 
-fn load_model_weights(mut parameters: List[ExTensor], directory: String, param_names: List[String]) raises:
+fn load_model_weights(
+    mut parameters: List[ExTensor], directory: String, param_names: List[String]
+) raises:
     """Load model weights from directory.
 
     Loads parameter tensors from individual .weights files in the directory
@@ -111,7 +115,7 @@ fn load_model_weights(mut parameters: List[ExTensor], directory: String, param_n
 
     Example:
         ```mojo
-        ar params = List[ExTensor]()
+        var params : List[ExTensor] = []
         var names = List[String]()
         names.append("conv1_kernel")
         names.append("fc1_weights")
@@ -149,12 +153,12 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
 
     Example:
         ```mojo
-        ar names = get_model_parameter_names("lenet5")
+        var names = get_model_parameter_names("lenet5")
         # Returns: ["conv1_kernel", "conv1_bias", "conv2_kernel", "conv2_bias", ...]
         ```
     """
     if model_type == "lenet5":
-        var names = List[String]()
+        var names= List[String]()
         names.append("conv1_kernel")
         names.append("conv1_bias")
         names.append("conv2_kernel")
@@ -168,7 +172,7 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
         return names^
 
     elif model_type == "alexnet":
-        var names = List[String]()
+        var names= List[String]()
         # Conv layers
         names.append("conv1_kernel")
         names.append("conv1_bias")
@@ -190,7 +194,7 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
         return names^
 
     elif model_type == "vgg16":
-        var names = List[String]()
+        var names= List[String]()
         # Block 1
         names.append("conv1_1_kernel")
         names.append("conv1_1_bias")
@@ -232,7 +236,7 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
         return names^
 
     elif model_type == "mobilenetv1":
-        var names = List[String]()
+        var names= List[String]()
         # Initial standard convolution
         names.append("initial_conv_weights")
         names.append("initial_conv_bias")
@@ -288,21 +292,37 @@ fn validate_shapes(loaded: List[ExTensor], expected: List[ExTensor]) raises:
         ```
     """
     if len(loaded) != len(expected):
-        raise Error("Parameter count mismatch: " + String(len(loaded)) +
-                   " loaded vs " + String(len(expected)) + " expected")
+        raise Error(
+            "Parameter count mismatch: "
+            + String(len(loaded))
+            + " loaded vs "
+            + String(len(expected))
+            + " expected"
+        )
 
     for i in range(len(loaded)):
         var loaded_shape = loaded[i].shape()
         var expected_shape = expected[i].shape()
 
         if len(loaded_shape) != len(expected_shape):
-            raise Error("Shape mismatch for parameter " + String(i) +
-                       ": rank " + String(len(loaded_shape)) +
-                       " vs " + String(len(expected_shape)))
+            raise Error(
+                "Shape mismatch for parameter "
+                + String(i)
+                + ": rank "
+                + String(len(loaded_shape))
+                + " vs "
+                + String(len(expected_shape))
+            )
 
         for d in range(len(loaded_shape)):
             if loaded_shape[d] != expected_shape[d]:
-                raise Error("Shape mismatch for parameter " + String(i) +
-                           " dimension " + String(d) + ": " +
-                           String(loaded_shape[d]) + " vs " +
-                           String(expected_shape[d]))
+                raise Error(
+                    "Shape mismatch for parameter "
+                    + String(i)
+                    + " dimension "
+                    + String(d)
+                    + ": "
+                    + String(loaded_shape[d])
+                    + " vs "
+                    + String(expected_shape[d])
+                )

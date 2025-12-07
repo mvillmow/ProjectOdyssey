@@ -16,7 +16,9 @@ fn test_bfloat16_zero() raises:
     var neg_zero = BFloat16._neg_zero()
 
     assert_equal(zero.to_float32(), 0.0, "Zero should convert to 0.0")
-    assert_equal(neg_zero.to_float32(), -0.0, "Negative zero should convert to -0.0")
+    assert_equal(
+        neg_zero.to_float32(), -0.0, "Negative zero should convert to -0.0"
+    )
 
     # Check bit patterns
     assert_equal(zero.bits, 0x0000, "Zero bits should be 0x0000")
@@ -35,7 +37,9 @@ fn test_bfloat16_special_values() raises:
 
     # Check conversions
     assert_true(inf.to_float32() > 1e30, "Inf should be very large positive")
-    assert_true(neg_inf.to_float32() < -1e30, "Neg inf should be very large negative")
+    assert_true(
+        neg_inf.to_float32() < -1e30, "Neg inf should be very large negative"
+    )
 
     # Check predicates
     assert_true(inf.is_inf(), "Inf should be detected as infinite")
@@ -62,11 +66,15 @@ fn test_bfloat16_conversion_from_float32() raises:
 
     assert_true(abs(bf16_1.to_float32() - 1.0) < 1e-6, "1.0 should round-trip")
     assert_true(abs(bf16_2.to_float32() - 2.0) < 1e-6, "2.0 should round-trip")
-    assert_true(abs(bf16_half.to_float32() - 0.5) < 1e-6, "0.5 should round-trip")
+    assert_true(
+        abs(bf16_half.to_float32() - 0.5) < 1e-6, "0.5 should round-trip"
+    )
 
     # Test negative values
     var bf16_neg = BFloat16.from_float32(-3.14)
-    assert_true(bf16_neg.to_float32() < 0.0, "Negative value should stay negative")
+    assert_true(
+        bf16_neg.to_float32() < 0.0, "Negative value should stay negative"
+    )
 
     print("✓ Float32 -> BFloat16 conversion test passed")
 
@@ -82,7 +90,9 @@ fn test_bfloat16_conversion_precision() raises:
     var pi_f32 = pi.to_float32()
 
     # Should be close but not exact (BF16 has only 7 mantissa bits)
-    assert_true(abs(pi_f32 - 3.14159) < 0.01, "Pi should be approximately correct")
+    assert_true(
+        abs(pi_f32 - 3.14159) < 0.01, "Pi should be approximately correct"
+    )
 
     # Test that truncation vs rounding makes a difference
     var pi_trunc = BFloat16.from_float32_truncate(3.14159)
@@ -193,7 +203,10 @@ fn test_bfloat16_range() raises:
     # Test values that overflow Float16 but not BFloat16
     var big = BFloat16.from_float32(100000.0)
     assert_true(big.is_finite(), "100000 should be finite in BF16")
-    assert_true(abs(big.to_float32() - 100000.0) < 1000.0, "100000 should be approximately correct")
+    assert_true(
+        abs(big.to_float32() - 100000.0) < 1000.0,
+        "100000 should be approximately correct",
+    )
 
     print("✓ BFloat16 range test passed")
 

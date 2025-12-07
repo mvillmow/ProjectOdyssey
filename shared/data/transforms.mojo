@@ -23,7 +23,9 @@ from .random_transform_base import RandomTransformBase, random_float
 # ============================================================================
 
 
-fn infer_image_dimensions(data: ExTensor, channels: Int = 3) raises -> Tuple[Int, Int, Int]:
+fn infer_image_dimensions(
+    data: ExTensor, channels: Int = 3
+) raises -> Tuple[Int, Int, Int]:
     """Infer image dimensions from flattened tensor.
 
     Assumes square images: H = W = sqrt(num_elements / channels).
@@ -91,7 +93,7 @@ trait Transform(Copyable, Movable):
 # ============================================================================
 
 
-struct Compose[T: Transform & Copyable & Movable](Transform, Copyable, Movable):
+struct Compose[T: Transform & Copyable & Movable](Copyable, Movable, Transform):
     """Compose multiple transforms sequentially.
 
     Applies transforms in order, passing output of each to the next.
@@ -149,7 +151,7 @@ alias Pipeline[T: Transform & Copyable & Movable] = Compose[T]
 # ============================================================================
 
 
-struct ToExTensor(Transform, Copyable, Movable):
+struct ToExTensor(Copyable, Movable, Transform):
     """Convert data to tensor format.
 
     Ensures data is in tensor format with appropriate dtype.
@@ -171,7 +173,7 @@ struct ToExTensor(Transform, Copyable, Movable):
         return data
 
 
-struct Normalize(Transform, Copyable, Movable):
+struct Normalize(Copyable, Movable, Transform):
     """Normalize tensor with mean and standard deviation.
 
     Applies: (x - mean) / std.
@@ -208,7 +210,7 @@ struct Normalize(Transform, Copyable, Movable):
             raise Error("Cannot normalize with std=0")
 
         # Create a list to hold normalized values
-        var normalized = List[Float32](capacity=data.num_elements())
+        var normalized= List[Float32](capacity=data.num_elements())
 
         # Normalize each element: (x - mean) / std
         for i in range(data.num_elements()):
@@ -220,7 +222,7 @@ struct Normalize(Transform, Copyable, Movable):
         return ExTensor(normalized^)
 
 
-struct Reshape(Transform, Copyable, Movable):
+struct Reshape(Copyable, Movable, Transform):
     """Reshape tensor to target shape.
 
     Changes tensor dimensions while preserving total elements.
@@ -266,7 +268,7 @@ struct Reshape(Transform, Copyable, Movable):
             )
 
         # Build reshaped data as a List
-        var reshaped_data = List[Float32](capacity=data.num_elements())
+        var reshaped_data= List[Float32](capacity=data.num_elements())
 
         # Copy all values from source tensor to the list
         for i in range(data.num_elements()):
@@ -283,7 +285,7 @@ struct Reshape(Transform, Copyable, Movable):
 # ============================================================================
 
 
-struct Resize(Transform, Copyable, Movable):
+struct Resize(Copyable, Movable, Transform):
     """Resize image to target size.
 
     Resizes spatial dimensions of image tensors.
@@ -330,11 +332,15 @@ struct Resize(Transform, Copyable, Movable):
         var new_w = self.size[1]
 
         # Calculate scale factors
-        var scale_h = Float64(old_h - 1) / Float64(new_h - 1) if new_h > 1 else 0.0
-        var scale_w = Float64(old_w - 1) / Float64(new_w - 1) if new_w > 1 else 0.0
+        var scale_h = (
+            Float64(old_h - 1) / Float64(new_h - 1) if new_h > 1 else 0.0
+        )
+        var scale_w = (
+            Float64(old_w - 1) / Float64(new_w - 1) if new_w > 1 else 0.0
+        )
 
         # Build resized data as a List
-        var resized_data = List[Float32](capacity=new_h * new_w * channels)
+        var resized_data= List[Float32](capacity=new_h * new_w * channels)
 
         # For each output pixel
         for y_new in range(new_h):
@@ -367,7 +373,9 @@ struct Resize(Transform, Copyable, Movable):
                     var idx_00 = (y_int * old_w + x_int) * channels + c
                     var idx_01 = (y_int * old_w + x_int_next) * channels + c
                     var idx_10 = (y_int_next * old_w + x_int) * channels + c
-                    var idx_11 = (y_int_next * old_w + x_int_next) * channels + c
+                    var idx_11 = (
+                        y_int_next * old_w + x_int_next
+                    ) * channels + c
 
                     var v_00 = Float64(data[idx_00])
                     var v_01 = Float64(data[idx_01])
@@ -390,7 +398,7 @@ struct Resize(Transform, Copyable, Movable):
         return resized^
 
 
-struct CenterCrop(Transform, Copyable, Movable):
+struct CenterCrop(Copyable, Movable, Transform):
     """Crop the center of an image.
 
     Extracts a center crop of specified size.
@@ -440,19 +448,21 @@ struct CenterCrop(Transform, Copyable, Movable):
         var offset_w = (width - crop_w) // 2
 
         # Create cropped tensor
-        var cropped = List[Float32](capacity=crop_h * crop_w * channels)
+        var cropped= List[Float32](capacity=crop_h * crop_w * channels)
 
         # Extract center rectangle
         for h in range(crop_h):
             for w in range(crop_w):
                 for c in range(channels):
-                    var src_idx = ((offset_h + h) * width + (offset_w + w)) * channels + c
+                    var src_idx = (
+                        (offset_h + h) * width + (offset_w + w)
+                    ) * channels + c
                     cropped.append(Float32(data[src_idx]))
 
         return ExTensor(cropped^)
 
 
-struct RandomCrop(Transform, Copyable, Movable):
+struct RandomCrop(Copyable, Movable, Transform):
     """Random crop from an image.
 
     Extracts a random crop of specified size.
@@ -524,7 +534,7 @@ struct RandomCrop(Transform, Copyable, Movable):
             actual_left = left - pad
 
         # Create cropped tensor
-        var cropped = List[Float32](capacity=crop_h * crop_w * channels)
+        var cropped= List[Float32](capacity=crop_h * crop_w * channels)
 
         # Extract random rectangle
         for h in range(crop_h):
@@ -536,7 +546,12 @@ struct RandomCrop(Transform, Copyable, Movable):
                 # For each channel
                 for c in range(channels):
                     # Check if source pixel is within original image bounds
-                    if src_h >= 0 and src_h < height and src_w >= 0 and src_w < width:
+                    if (
+                        src_h >= 0
+                        and src_h < height
+                        and src_w >= 0
+                        and src_w < width
+                    ):
                         # Sample from source pixel
                         var src_idx = (src_h * width + src_w) * channels + c
                         cropped.append(Float32(data[src_idx]))
@@ -547,7 +562,7 @@ struct RandomCrop(Transform, Copyable, Movable):
         return ExTensor(cropped^)
 
 
-struct RandomHorizontalFlip(Transform, Copyable, Movable):
+struct RandomHorizontalFlip(Copyable, Movable, Transform):
     """Randomly flip image horizontally.
 
     Flips with specified probability using RandomTransformBase for probability handling.
@@ -591,7 +606,7 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
         var total_elements = data.num_elements()
 
         # Create flipped tensor
-        var flipped = List[Float32](capacity=total_elements)
+        var flipped= List[Float32](capacity=total_elements)
 
         # For each row
         for h in range(height):
@@ -607,7 +622,7 @@ struct RandomHorizontalFlip(Transform, Copyable, Movable):
         return ExTensor(flipped^)
 
 
-struct RandomVerticalFlip(Transform, Copyable, Movable):
+struct RandomVerticalFlip(Copyable, Movable, Transform):
     """Randomly flip image vertically.
 
     Flips with specified probability using RandomTransformBase for probability handling.
@@ -651,7 +666,7 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
         var total_elements = data.num_elements()
 
         # Create flipped tensor
-        var flipped = List[Float32](capacity=total_elements)
+        var flipped= List[Float32](capacity=total_elements)
 
         # For each row (in reverse for vertical flip)
         for h_idx in range(height):
@@ -667,7 +682,7 @@ struct RandomVerticalFlip(Transform, Copyable, Movable):
         return ExTensor(flipped^)
 
 
-struct RandomRotation(Transform, Copyable, Movable):
+struct RandomRotation(Copyable, Movable, Transform):
     """Randomly rotate image.
 
     Rotates within specified degree range.
@@ -729,7 +744,7 @@ struct RandomRotation(Transform, Copyable, Movable):
         var cy = Float64(height) / 2.0
 
         # Create rotated tensor with fill_value for empty regions
-        var rotated = List[Float32](capacity=total_elements)
+        var rotated= List[Float32](capacity=total_elements)
 
         # For each output pixel
         for y in range(height):
@@ -751,12 +766,16 @@ struct RandomRotation(Transform, Copyable, Movable):
                 # For each channel
                 for c in range(channels):
                     # Check if source pixel is within bounds
-                    if (x_src_int >= 0
+                    if (
+                        x_src_int >= 0
                         and x_src_int < width
                         and y_src_int >= 0
-                        and y_src_int < height):
+                        and y_src_int < height
+                    ):
                         # Sample from source pixel
-                        var src_idx = (y_src_int * width + x_src_int) * channels + c
+                        var src_idx = (
+                            y_src_int * width + x_src_int
+                        ) * channels + c
                         rotated.append(Float32(data[src_idx]))
                     else:
                         # Fill with fill_value for out-of-bounds pixels
@@ -765,7 +784,7 @@ struct RandomRotation(Transform, Copyable, Movable):
         return ExTensor(rotated^)
 
 
-struct RandomErasing(Transform, Copyable, Movable):
+struct RandomErasing(Copyable, Movable, Transform):
     """Randomly erase rectangular regions in images (Cutout augmentation).
 
     Randomly selects a rectangle region and erases it by setting pixels to a fill value.
@@ -774,7 +793,7 @@ struct RandomErasing(Transform, Copyable, Movable):
     Uses RandomTransformBase for probability handling.
 
     Reference: "Random Erasing Data Augmentation" (Zhong et al., 2017).
-   """
+    """
 
     var base: RandomTransformBase  # Probability handling
     var scale: Tuple[Float64, Float64]  # Min/max area fraction to erase
@@ -786,7 +805,7 @@ struct RandomErasing(Transform, Copyable, Movable):
         p: Float64 = 0.5,
         scale: Tuple[Float64, Float64] = (0.02, 0.33),
         ratio: Tuple[Float64, Float64] = (0.3, 3.3),
-        value: Float64 = 0.0
+        value: Float64 = 0.0,
     ):
         """Create random erasing transform.
 
@@ -876,7 +895,7 @@ struct RandomErasing(Transform, Copyable, Movable):
 
         # Step 5: Erase the rectangle
         # Copy original data and mark erased regions
-        var result = List[Float32](capacity=total_elements)
+        var result= List[Float32](capacity=total_elements)
 
         for i in range(total_elements):
             # Check if this element is in the erased rectangle
@@ -887,7 +906,12 @@ struct RandomErasing(Transform, Copyable, Movable):
             var row = pixel_idx // width
 
             # Check if in erased region
-            if row >= top and row < top + erase_h and col >= left and col < left + erase_w:
+            if (
+                row >= top
+                and row < top + erase_h
+                and col >= left
+                and col < left + erase_w
+            ):
                 result.append(Float32(self.value))
             else:
                 result.append(Float32(data[i]))

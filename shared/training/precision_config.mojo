@@ -42,7 +42,7 @@ from shared.training.dtype_utils import (
 
 
 @fieldwise_init
-struct PrecisionMode(Copyable, Movable, Stringable, ImplicitlyCopyable):
+struct PrecisionMode(Copyable, ImplicitlyCopyable, Movable, Stringable):
     """Precision mode enumeration.
 
     Supported modes:
@@ -51,6 +51,7 @@ struct PrecisionMode(Copyable, Movable, Stringable, ImplicitlyCopyable):
     - BF16: Brain float (16-bit, wider exponent range).
     - FP8: Quarter precision (8-bit float, E4M3 format).
     """
+
     var value: Int
 
     alias FP32 = PrecisionMode(value=0)
@@ -114,6 +115,7 @@ struct PrecisionConfig(Copyable, Movable):
         var scaled_loss = config.scale_loss(loss)
         ```
     """
+
     var mode: PrecisionMode
     var compute_dtype: DType
     var storage_dtype: DType
@@ -283,7 +285,11 @@ struct PrecisionConfig(Copyable, Movable):
         elif precision_str == "fp8":
             return PrecisionConfig.fp8()
         else:
-            raise Error("Unknown precision: " + precision_str + ". Use fp32, fp16, bf16, or fp8.")
+            raise Error(
+                "Unknown precision: "
+                + precision_str
+                + ". Use fp32, fp16, bf16, or fp8."
+            )
 
     fn cast_to_compute(self, tensor: ExTensor) raises -> ExTensor:
         """Cast tensor to compute precision.
@@ -420,7 +426,9 @@ struct PrecisionConfig(Copyable, Movable):
         """
         return self.mode != PrecisionMode.FP32
 
-    fn clip_gradients(self, gradients: ExTensor, max_norm: Float32) raises -> ExTensor:
+    fn clip_gradients(
+        self, gradients: ExTensor, max_norm: Float32
+    ) raises -> ExTensor:
         """Clip gradients by global norm.
 
         Useful for preventing gradient explosion in mixed precision.
@@ -441,7 +449,10 @@ struct PrecisionConfig(Copyable, Movable):
         print("  Compute dtype: " + dtype_to_string(self.compute_dtype))
         print("  Storage dtype: " + dtype_to_string(self.storage_dtype))
         print("  Master dtype: " + dtype_to_string(self.master_dtype))
-        print("  Gradient scaler: " + ("enabled" if self.use_gradient_scaler else "disabled"))
+        print(
+            "  Gradient scaler: "
+            + ("enabled" if self.use_gradient_scaler else "disabled")
+        )
         if self.use_gradient_scaler:
             print("  Current scale: " + String(self.get_scale()))
 
@@ -451,7 +462,11 @@ struct PrecisionConfig(Copyable, Movable):
         print("  Total steps: " + String(self._step_count))
         print("  Overflow count: " + String(self._overflow_count))
         if self._step_count > 0:
-            var overflow_rate = Float32(self._overflow_count) / Float32(self._step_count) * 100.0
+            var overflow_rate = (
+                Float32(self._overflow_count)
+                / Float32(self._step_count)
+                * 100.0
+            )
             print("  Overflow rate: " + String(overflow_rate) + "%")
         if self.use_gradient_scaler:
             print("  Current scale: " + String(self.get_scale()))

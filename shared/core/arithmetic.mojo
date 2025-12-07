@@ -16,8 +16,7 @@ from .gradient_types import GradientPair
 
 
 fn _broadcast_binary[
-    dtype: DType,
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    dtype: DType, op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Apply binary operation with broadcasting and compile-time dtype specialization.
 
@@ -55,14 +54,14 @@ fn _broadcast_binary[
         total_elems *= result_shape[i]
 
     # Precompute row-major strides for result shape
-    var result_strides = List[Int]()
+    var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
         stride *= result_shape[i]
 
     # Reverse to get correct order (left-to-right)
-    var result_strides_final = List[Int]()
+    var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
         result_strides_final.append(result_strides[i])
 
@@ -92,7 +91,7 @@ fn _broadcast_binary[
 
 
 fn _dispatch_broadcast_binary[
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Runtime dispatch to compile-time specialized broadcasting binary operation.
 
@@ -166,6 +165,7 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = add(x, y)  # Shape (3, 4, 5)
         ```
     """
+
     # Define add operation
     @always_inline
     fn _add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -200,6 +200,7 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = subtract(x, y)  # Shape (3, 4, 5)
         ```
     """
+
     # Define subtract operation
     @always_inline
     fn _sub_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
@@ -233,6 +234,7 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = multiply(x, y)  # Shape (3, 4, 5), all 6.0
         ```
     """
+
     @always_inline
     fn _mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         return x * y
@@ -271,6 +273,7 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = divide(x, y)  # Shape (3, 4, 5), all 3.0
         ```
     """
+
     @always_inline
     fn _div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         return x / y
@@ -309,6 +312,7 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = floor_divide(x, y)  # Shape (3, 4, 5), all 3.0
         ```
     """
+
     @always_inline
     fn _floor_div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Check for division by zero - return inf per IEEE 754 (for floating-point types)
@@ -322,7 +326,9 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # For correct negative handling, use: Int(div) if div >= 0 else Int(div) - 1
         var div_result = x / y
         var as_int = Int(div_result)
-        var floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        var floored = Scalar[T](as_int) if div_result >= Scalar[T](
+            0
+        ) else Scalar[T](as_int - 1)
         return floored
 
     return _dispatch_broadcast_binary[_floor_div_op](a, b)
@@ -353,6 +359,7 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = modulo(x, y)  # Shape (3, 4, 5), all 1.0
         ```
     """
+
     @always_inline
     fn _mod_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Check for modulo by zero - return NaN per IEEE 754 (for floating-point types)
@@ -364,7 +371,9 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
         # Modulo: a % b = a - floor(a/b) * b
         var div_result = x / y
         var as_int = Int(div_result)
-        var floored = Scalar[T](as_int) if div_result >= Scalar[T](0) else Scalar[T](as_int - 1)
+        var floored = Scalar[T](as_int) if div_result >= Scalar[T](
+            0
+        ) else Scalar[T](as_int - 1)
         return x - floored * y
 
     return _dispatch_broadcast_binary[_mod_op](a, b)
@@ -400,10 +409,11 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         For integer exponents, this uses efficient repeated squaring.
         For fractional exponents, this uses exp(b * log(a)).
     """
+
     @always_inline
     fn _pow_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Use Mojo's built-in ** operator (handles all cases correctly)
-        return x ** y
+        return x**y
 
     return _dispatch_broadcast_binary[_pow_op](a, b)
 
@@ -413,7 +423,9 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ==============================================================================
 
 
-fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> ExTensor:
+fn _reduce_broadcast_dims(
+    grad: ExTensor, original_shape: List[Int]
+) raises -> ExTensor:
     """Reduce gradient from broadcast shape back to original shape.
 
     When forward pass broadcasts input from original_shape to grad.shape(),
@@ -459,13 +471,19 @@ fn _reduce_broadcast_dims(grad: ExTensor, original_shape: List[Int]) raises -> E
     # Example: (3, 1, 5) → (3, 4, 5), sum over axis 1 keeping dims
     # After reducing prepended dims, result has same ndim as original_shape
     for i in range(orig_ndim):
-        if original_shape[i] == 1 and i < len(result.shape()) and result.shape()[i] > 1:
+        if (
+            original_shape[i] == 1
+            and i < len(result.shape())
+            and result.shape()[i] > 1
+        ):
             result = sum(result, axis=i, keepdims=True)
 
     return result
 
 
-fn add_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
+fn add_backward(
+    grad_output: ExTensor, a: ExTensor, b: ExTensor
+) raises -> GradientPair:
     """Compute gradients for element-wise addition.
 
     For C = A + B, given ∂L/∂C, computes:
@@ -510,7 +528,9 @@ fn add_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gradi
     return GradientPair(grad_a^, grad_b^)
 
 
-fn subtract_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
+fn subtract_backward(
+    grad_output: ExTensor, a: ExTensor, b: ExTensor
+) raises -> GradientPair:
     """Compute gradients for element-wise subtraction.
 
     For C = A - B, given ∂L/∂C, computes:
@@ -542,7 +562,9 @@ fn subtract_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
     return GradientPair(grad_a^, grad_b^)
 
 
-fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
+fn multiply_backward(
+    grad_output: ExTensor, a: ExTensor, b: ExTensor
+) raises -> GradientPair:
     """Compute gradients for element-wise multiplication.
 
     For C = A * B, given ∂L/∂C, computes:
@@ -579,7 +601,9 @@ fn multiply_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> 
     return GradientPair(grad_a^, grad_b^)
 
 
-fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
+fn divide_backward(
+    grad_output: ExTensor, a: ExTensor, b: ExTensor
+) raises -> GradientPair:
     """Compute gradients for element-wise division.
 
     For C = A / B, given ∂L/∂C, computes:
@@ -631,7 +655,9 @@ fn divide_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
     var grad_b_positive = divide(temp, b_squared_safe)
 
     # Negate it
-    var grad_b_unreduced = ExTensor(grad_b_positive.shape(), grad_b_positive.dtype())
+    var grad_b_unreduced = ExTensor(
+        grad_b_positive.shape(), grad_b_positive.dtype()
+    )
     for i in range(grad_b_positive.numel()):
         grad_b_unreduced._set_float64(i, -grad_b_positive._get_float64(i))
 

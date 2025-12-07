@@ -54,7 +54,7 @@ fn test_fp4_e2m1_representable_values() raises:
     # exp=3, mantissa=0: 4.0
     # exp=3, mantissa=1: 6.0
 
-    var values = List[Float32]()
+    var values= List[Float32]()
     values.append(0.0)
     values.append(1.0)
     values.append(1.5)
@@ -170,26 +170,36 @@ fn test_fp4_e2m1_equality() raises:
     var fp4_c = FP4_E2M1.from_float32(3.0, scale=1.0)
 
     assert_true(fp4_a == fp4_b, "Equal FP4_E2M1 values should compare equal")
-    assert_true(fp4_a != fp4_c, "Different FP4_E2M1 values should compare not equal")
+    assert_true(
+        fp4_a != fp4_c, "Different FP4_E2M1 values should compare not equal"
+    )
 
 
 fn test_fp4_e2m1_bit_patterns() raises:
     """Test specific bit patterns in E2M1 format."""
     # Test zero: sign=0, exp=0, mantissa=0
     var fp4_zero = FP4_E2M1(0b0000)
-    assert_almost_equal(fp4_zero.to_float32(scale=1.0), Float32(0.0), tolerance=1e-7)
+    assert_almost_equal(
+        fp4_zero.to_float32(scale=1.0), Float32(0.0), tolerance=1e-7
+    )
 
     # Test positive max: sign=0, exp=3, mantissa=1
     var fp4_max = FP4_E2M1(0b0111)
-    assert_almost_equal(fp4_max.to_float32(scale=1.0), Float32(6.0), tolerance=0.1)
+    assert_almost_equal(
+        fp4_max.to_float32(scale=1.0), Float32(6.0), tolerance=0.1
+    )
 
     # Test negative max: sign=1, exp=3, mantissa=1
     var fp4_neg_max = FP4_E2M1(0b1111)
-    assert_almost_equal(fp4_neg_max.to_float32(scale=1.0), Float32(-6.0), tolerance=0.1)
+    assert_almost_equal(
+        fp4_neg_max.to_float32(scale=1.0), Float32(-6.0), tolerance=0.1
+    )
 
     # Test 1.0: sign=0, exp=1, mantissa=0
     var fp4_one = FP4_E2M1(0b0010)
-    assert_almost_equal(fp4_one.to_float32(scale=1.0), Float32(1.0), tolerance=0.1)
+    assert_almost_equal(
+        fp4_one.to_float32(scale=1.0), Float32(1.0), tolerance=0.1
+    )
 
 
 fn test_fp4_e2m1_quantization() raises:
@@ -199,7 +209,7 @@ fn test_fp4_e2m1_quantization() raises:
     var result_1_25 = fp4_1_25.to_float32(scale=1.0)
     assert_true(
         result_1_25 >= 1.0 and result_1_25 <= 1.5,
-        "1.25 should quantize to 1.0 or 1.5"
+        "1.25 should quantize to 1.0 or 1.5",
     )
 
     # 2.5 should quantize to either 2.0 or 3.0
@@ -207,7 +217,7 @@ fn test_fp4_e2m1_quantization() raises:
     var result_2_5 = fp4_2_5.to_float32(scale=1.0)
     assert_true(
         result_2_5 >= 2.0 and result_2_5 <= 3.0,
-        "2.5 should quantize to 2.0 or 3.0"
+        "2.5 should quantize to 2.0 or 3.0",
     )
 
 
@@ -222,10 +232,7 @@ fn test_fp4_e2m1_str_representation() raises:
     var str_repr = fp4_one.__str__()
 
     # Should contain "FP4_E2M1" and the value
-    assert_true(
-        "FP4_E2M1" in str_repr,
-        "__str__ should contain FP4_E2M1"
-    )
+    assert_true("FP4_E2M1" in str_repr, "__str__ should contain FP4_E2M1")
 
 
 fn test_fp4_e2m1_repr_representation() raises:
@@ -234,14 +241,8 @@ fn test_fp4_e2m1_repr_representation() raises:
     var repr_str = fp4_two.__repr__()
 
     # Should contain "FP4_E2M1" and "bits="
-    assert_true(
-        "FP4_E2M1" in repr_str,
-        "__repr__ should contain FP4_E2M1"
-    )
-    assert_true(
-        "bits=" in repr_str,
-        "__repr__ should contain bits="
-    )
+    assert_true("FP4_E2M1" in repr_str, "__repr__ should contain FP4_E2M1")
+    assert_true("bits=" in repr_str, "__repr__ should contain bits=")
 
 
 fn test_fp4_e2m1_repr_zero() raises:
@@ -271,13 +272,16 @@ fn test_fp4_e2m1_all_16_values() raises:
         var fp4 = FP4_E2M1(UInt8(i))
         var _ = fp4.to_float32(scale=1.0)
         # Should produce a valid float (not NaN unless explicitly set)
-        assert_true(len(fp4.__str__()) > 0, "All values should produce string representation")
+        assert_true(
+            len(fp4.__str__()) > 0,
+            "All values should produce string representation",
+        )
 
 
 fn test_fp4_e2m1_positive_values_all() raises:
     """Test all positive FP4 bit patterns (sign bit = 0)."""
     # Positive values: 0x0 to 0x7
-    var values = List[UInt8]()
+    var values: List[UInt8] = []
     values.append(0b0000)  # Zero
     values.append(0b0001)  # exp=0, mantissa=1 (invalid)
     values.append(0b0010)  # exp=1, mantissa=0 = 1.0
@@ -296,7 +300,7 @@ fn test_fp4_e2m1_positive_values_all() raises:
 fn test_fp4_e2m1_negative_values_all() raises:
     """Test all negative FP4 bit patterns (sign bit = 1)."""
     # Negative values: 0x8 to 0xF
-    var values = List[UInt8]()
+    var values: List[UInt8] = []
     values.append(0b1000)  # -Zero
     values.append(0b1001)  # exp=0, mantissa=1 (invalid)
     values.append(0b1010)  # exp=1, mantissa=0 = -1.0

@@ -100,7 +100,7 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
     Returns:
         Serialized string representation.
     """
-    var lines = List[String]()
+    var lines= List[String]()
 
     # Metadata
     lines.append("EPOCH:" + String(checkpoint.epoch))
@@ -208,7 +208,7 @@ fn save_checkpoint(
 
     Example:
         ```mojo
-        ar checkpoint = Checkpoint()
+        var checkpoint = Checkpoint()
         checkpoint.set_epoch(10)
         checkpoint.set_loss(0.234)
         save_checkpoint("checkpoints/epoch_10.pt", checkpoint)
@@ -241,7 +241,7 @@ fn load_checkpoint(filepath: String) raises -> Checkpoint:
 
     Example:
         ```mojo
-        ar checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
+        var checkpoint = load_checkpoint("checkpoints/epoch_10.pt")
         var epoch = checkpoint.epoch
         var loss = checkpoint.loss
         ```
@@ -259,9 +259,7 @@ fn load_checkpoint(filepath: String) raises -> Checkpoint:
 
 
 fn save_tensor_to_checkpoint(
-    tensor: ExTensor,
-    name: String,
-    checkpoint_dir: String
+    tensor: ExTensor, name: String, checkpoint_dir: String
 ) -> Bool:
     """Save ExTensor to checkpoint directory using hex format.
 
@@ -318,8 +316,7 @@ fn save_tensor_to_checkpoint(
 
 
 fn load_tensor_from_checkpoint(
-    name: String,
-    checkpoint_dir: String
+    name: String, checkpoint_dir: String
 ) raises -> ExTensor:
     """Load ExTensor from checkpoint directory.
 
@@ -358,12 +355,13 @@ fn load_tensor_from_checkpoint(
     var dtype = _parse_tensor_dtype(String(dtype_str))
 
     # Parse shape
-    var shape = List[Int]()
+    var shape= List[Int]()
     for i in range(1, len(meta_parts)):
         shape.append(Int(meta_parts[i]))
 
     # Create tensor
     from shared.core.extensor import zeros
+
     var tensor = zeros(shape, dtype)
 
     # Convert hex to bytes
@@ -494,7 +492,7 @@ struct TensorMetadata(Copyable, Movable):
     fn __init__(out self):
         """Create empty metadata."""
         self.dtype = ""
-        self.shape = List[Int]()
+        self.shape= List[Int]()
         self.size_bytes = 0
 
 
@@ -507,7 +505,7 @@ struct SerializedTensor(Copyable, Movable):
     fn __init__(out self):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
-        self.data = List[String]()
+        self.data= List[String]()
 
 
 fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
@@ -522,7 +520,7 @@ fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
 
     Example:
         ```mojo
-        ar serialized = serialize_tensor("weights", my_tensor_data)
+        var serialized = serialize_tensor("weights", my_tensor_data)
         ```
     """
     var serialized = SerializedTensor()
@@ -553,12 +551,12 @@ fn deserialize_tensor(serialized: SerializedTensor) -> List[String]:
 
     Example:
         ```mojo
-        ar tensor_data = deserialize_tensor(serialized)
+        var tensor_data = deserialize_tensor(serialized)
         ```
     """
     # Deserialize by extracting data from SerializedTensor
     # Metadata is already parsed, just return the data
-    var result = List[String]()
+    var result= List[String]()
     for i in range(len(serialized.data)):
         result.append(serialized.data[i])
     return result^
@@ -702,7 +700,7 @@ fn join_path(base: String, path: String) raises -> String:
 
     Example:
         ```mojo
-        ar full_path = join_path("checkpoints", "epoch_10.pt")
+        var full_path = join_path("checkpoints", "epoch_10.pt")
         ```
     """
     # Validate path component for security
@@ -715,7 +713,7 @@ fn join_path(base: String, path: String) raises -> String:
     # Strip trailing separator from base
     var clean_base = base
     if clean_base.endswith("/"):
-        clean_base = clean_base[:-1]
+        clean_base = String(clean_base[:-1])
 
     # Strip leading separator from path (should not happen after validation)
     var clean_path = path
@@ -740,7 +738,7 @@ fn split_path(filepath: String) -> Tuple[String, String]:
 
     Example:
         ```mojo
-        ar (dir, file) = split_path("checkpoints/epoch_10.pt")
+        var (dir, file) = split_path("checkpoints/epoch_10.pt")
         ```
     """
     # Handle platform-specific path separators (Unix-style for now)
@@ -756,11 +754,11 @@ fn split_path(filepath: String) -> Tuple[String, String]:
         return (".", filepath)
     elif last_sep == 0:
         # Root directory
-        return ("/", filepath[1:])
+        return ("/", String(filepath[1:]))
     else:
         # Split at last separator
-        var directory = filepath[:last_sep]
-        var filename = filepath[last_sep + 1 :]
+        var directory = String(filepath[:last_sep])
+        var filename = String(filepath[last_sep + 1 :])
         return (directory, filename)
 
 
@@ -775,7 +773,7 @@ fn get_filename(filepath: String) -> String:
 
     Example:
         ```mojo
-        ar name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
+        var name = get_filename("checkpoints/epoch_10.pt")  # "epoch_10.pt"
         ```
     """
     var (_, filename) = split_path(filepath)

@@ -43,7 +43,7 @@ struct BatchNorm2dLayer(Copyable, Movable):
         out self,
         num_channels: Int,
         momentum: Float32 = 0.1,
-        eps: Float32 = 1e-5
+        eps: Float32 = 1e-5,
     ) raises:
         """Initialize BatchNorm2D layer with learnable parameters and running statistics.
 
@@ -73,32 +73,30 @@ struct BatchNorm2dLayer(Copyable, Movable):
 
         # Initialize gamma (scale) to 1.0 for each channel
         # Shape: (channels,)
-        var gamma_shape = List[Int]()
+        var gamma_shape= List[Int]()
         gamma_shape.append(num_channels)
         self.gamma = ones(gamma_shape, DType.float32)
 
         # Initialize beta (shift) to 0.0
         # Shape: (channels,)
-        var beta_shape = List[Int]()
+        var beta_shape= List[Int]()
         beta_shape.append(num_channels)
         self.beta = zeros(beta_shape, DType.float32)
 
         # Initialize running_mean to 0.0
         # Shape: (channels,)
-        var running_mean_shape = List[Int]()
+        var running_mean_shape= List[Int]()
         running_mean_shape.append(num_channels)
         self.running_mean = zeros(running_mean_shape, DType.float32)
 
         # Initialize running_var to 1.0
         # Shape: (channels,)
-        var running_var_shape = List[Int]()
+        var running_var_shape= List[Int]()
         running_var_shape.append(num_channels)
         self.running_var = ones(running_var_shape, DType.float32)
 
     fn forward(
-        mut self,
-        input: ExTensor,
-        training: Bool = True
+        mut self, input: ExTensor, training: Bool = True
     ) raises -> ExTensor:
         """Forward pass with batch normalization.
 
@@ -152,7 +150,7 @@ struct BatchNorm2dLayer(Copyable, Movable):
             self.running_var,
             training,
             Float64(self.momentum),
-            Float64(self.eps)
+            Float64(self.eps),
         )
 
         # Update running statistics if training
@@ -179,7 +177,7 @@ struct BatchNorm2dLayer(Copyable, Movable):
             # params[0] is gamma (scale), params[1] is beta (shift)
             ```
         """
-        var params = List[ExTensor]()
+        var params: List[ExTensor] = []
 
         # Create copies of gamma and beta tensors
         var gamma_copy = zeros_like(self.gamma)
@@ -230,9 +228,7 @@ struct BatchNorm2dLayer(Copyable, Movable):
         return Tuple[ExTensor, ExTensor](mean_copy^, var_copy^)
 
     fn set_running_stats(
-        mut self,
-        running_mean: ExTensor,
-        running_var: ExTensor
+        mut self, running_mean: ExTensor, running_var: ExTensor
     ) raises:
         """Set running statistics (for loading from checkpoint).
 

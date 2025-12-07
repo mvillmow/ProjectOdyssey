@@ -23,10 +23,7 @@ This scheduler is commonly used in:
 
 
 fn step_lr(
-    initial_lr: Float32,
-    epoch: Int,
-    step_size: Int = 30,
-    gamma: Float32 = 0.1
+    initial_lr: Float32, epoch: Int, step_size: Int = 30, gamma: Float32 = 0.1
 ) raises -> Float32:
     """Compute learning rate with step decay.
 
@@ -78,10 +75,7 @@ fn step_lr(
 
 
 fn multistep_lr(
-    initial_lr: Float32,
-    epoch: Int,
-    milestones: List[Int],
-    gamma: Float32 = 0.1
+    initial_lr: Float32, epoch: Int, milestones: List[Int], gamma: Float32 = 0.1
 ) raises -> Float32:
     """Compute learning rate with decay at specific milestone epochs.
 
@@ -135,9 +129,7 @@ fn multistep_lr(
 
 
 fn exponential_lr(
-    initial_lr: Float32,
-    epoch: Int,
-    gamma: Float32 = 0.95
+    initial_lr: Float32, epoch: Int, gamma: Float32 = 0.95
 ) raises -> Float32:
     """Compute learning rate with exponential decay.
 

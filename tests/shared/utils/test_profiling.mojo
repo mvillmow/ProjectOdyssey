@@ -154,7 +154,9 @@ fn test_profiling_overhead_timing() raises:
 
     var overhead_percent = measure_profiling_overhead(100)
     # Overhead should be reasonable (not negative or unrealistic)
-    assert_true(overhead_percent >= 0.0, "Overhead percent should be non-negative")
+    assert_true(
+        overhead_percent >= 0.0, "Overhead percent should be non-negative"
+    )
 
 
 fn test_profiling_overhead_memory():
@@ -211,7 +213,9 @@ fn test_generate_timing_report() raises:
     var report = generate_timing_report(timings)
 
     # Verify report properties
-    assert_equal(report.total_time_ms, 30.0, "Total time should be sum of all times")
+    assert_equal(
+        report.total_time_ms, 30.0, "Total time should be sum of all times"
+    )
 
 
 fn test_generate_memory_report():
@@ -267,10 +271,7 @@ fn test_report_format_json() raises:
 
     var json_output = report.to_json()
     # Verify JSON contains expected content
-    assert_true(
-        len(json_output) > 0,
-        "JSON output should not be empty"
-    )
+    assert_true(len(json_output) > 0, "JSON output should not be empty")
 
 
 # ============================================================================
@@ -450,7 +451,7 @@ fn test_regression_detection() raises:
     # Should detect regression at exactly threshold
     assert_true(
         len(regressions) == 0 or len(regressions) == 1,
-        "Regression detection should work"
+        "Regression detection should work",
     )
 
 

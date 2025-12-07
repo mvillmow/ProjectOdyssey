@@ -34,7 +34,7 @@ alias CLASS_NAMES = [
     "frog",
     "horse",
     "ship",
-    "truck"
+    "truck",
 ]
 
 
@@ -43,7 +43,7 @@ fn evaluate_model(
     images: ExTensor,
     labels: ExTensor,
     batch_size: Int = 100,
-    verbose: Bool = True
+    verbose: Bool = True,
 ) raises -> Tuple[Float32, List[Int], List[Int]]:
     """Evaluate model on a dataset.
 
@@ -59,13 +59,13 @@ fn evaluate_model(
         - accuracy: Overall accuracy as percentage (0-100)
         - correct_per_class: Correct predictions per class (10,)
         - total_per_class: Total samples per class (10,).
-   """
+    """
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
 
     var total_correct = 0
-    var correct_per_class = List[Int](capacity=10)
-    var total_per_class = List[Int](capacity=10)
+    var correct_per_class= List[Int](capacity=10)
+    var total_per_class= List[Int](capacity=10)
 
     # Initialize counters
     for i in range(10):
@@ -73,14 +73,22 @@ fn evaluate_model(
         total_per_class.append(0)
 
     if verbose:
-        print("Evaluating on " + str(num_samples) + " samples (" + str(num_batches) + " batches)...")
+        print(
+            "Evaluating on "
+            + String(num_samples)
+            + " samples ("
+            + String(num_batches)
+            + " batches)..."
+        )
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
         var start_idx = batch_idx * batch_size
 
         # Extract mini-batch
-        var batch_pair = extract_batch_pair(images, labels, start_idx, batch_size)
+        var batch_pair = extract_batch_pair(
+            images, labels, start_idx, batch_size
+        )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
         var current_batch_size = batch_images.shape()[0]
@@ -90,7 +98,9 @@ fn evaluate_model(
 
         # Compute batch accuracy using shared function
         var batch_acc_fraction = evaluate_logits_batch(logits, batch_labels)
-        var batch_correct = Int(batch_acc_fraction * Float32(current_batch_size))
+        var batch_correct = Int(
+            batch_acc_fraction * Float32(current_batch_size)
+        )
         total_correct += batch_correct
 
         # Update per-class counters
@@ -114,8 +124,18 @@ fn evaluate_model(
 
         if verbose and (batch_idx + 1) % 20 == 0:
             var progress = Float32(batch_idx + 1) / Float32(num_batches) * 100.0
-            var current_acc = Float32(total_correct) / Float32((batch_idx + 1) * batch_size) * 100.0
-            print("  Progress: " + str(progress) + "% - Current Acc: " + str(current_acc) + "%")
+            var current_acc = (
+                Float32(total_correct)
+                / Float32((batch_idx + 1) * batch_size)
+                * 100.0
+            )
+            print(
+                "  Progress: "
+                + String(progress)
+                + "% - Current Acc: "
+                + String(current_acc)
+                + "%"
+            )
 
     var overall_accuracy = Float32(total_correct) / Float32(num_samples) * 100.0
 
@@ -127,9 +147,7 @@ fn evaluate_model(
 
 
 fn print_detailed_results(
-    accuracy: Float32,
-    correct_per_class: List[Int],
-    total_per_class: List[Int]
+    accuracy: Float32, correct_per_class: List[Int], total_per_class: List[Int]
 ):
     """Print detailed evaluation results.
 
@@ -143,21 +161,40 @@ fn print_detailed_results(
     print("=" * 60)
     print()
 
-    print("Overall Accuracy: " + str(accuracy) + "%")
+    print("Overall Accuracy: " + String(accuracy) + "%")
     print()
 
     print("Per-Class Accuracy:")
     print("-" * 60)
-    print(str('Class') + " " + str('Correct') + " " + str('Total') + " " + str('Accuracy'))
+    print(
+        String("Class")
+        + " "
+        + String("Correct")
+        + " "
+        + String("Total")
+        + " "
+        + String("Accuracy")
+    )
     print("-" * 60)
 
     for i in range(10):
         var class_name = CLASS_NAMES[i]
         var correct = correct_per_class[i]
         var total = total_per_class[i]
-        var class_acc = Float32(correct) / Float32(total) * 100.0 if total > 0 else Float32(0.0)
+        var class_acc = Float32(correct) / Float32(
+            total
+        ) * 100.0 if total > 0 else Float32(0.0)
 
-        print(str(class_name) + " " + str(correct) + " " + str(total) + " " + str(class_acc) + "%")
+        print(
+            String(class_name)
+            + " "
+            + String(correct)
+            + " "
+            + String(total)
+            + " "
+            + String(class_acc)
+            + "%"
+        )
 
     print("-" * 60)
     print()
@@ -176,9 +213,9 @@ fn main() raises:
     var evaluate_all = True  # Evaluate on full test set
 
     print("Configuration:")
-    print("  Weights directory: " + str(weights_dir))
-    print("  Batch size: " + str(batch_size))
-    print("  Evaluate full test set: " + str(evaluate_all))
+    print("  Weights directory: " + String(weights_dir))
+    print("  Batch size: " + String(batch_size))
+    print("  Evaluate full test set: " + String(evaluate_all))
     print()
 
     # Load CIFAR-10 test set
@@ -188,7 +225,7 @@ fn main() raises:
     var test_labels = test_data[1]
 
     var num_samples = test_images.shape()[0]
-    print("  Test samples: " + str(num_samples))
+    print("  Test samples: " + String(num_samples))
     print("  Image shape: (3, 32, 32)")
     print("  Number of classes: 10")
     print()
@@ -203,13 +240,13 @@ fn main() raises:
     print()
 
     # Load weights
-    print("Loading weights from " + str(weights_dir) + "/...")
+    print("Loading weights from " + String(weights_dir) + "/...")
     try:
         model.load_weights(weights_dir)
         print("  ✓ Weights loaded successfully")
         print()
     except e:
-        print("  ✗ Failed to load weights: " + str(e))
+        print("  ✗ Failed to load weights: " + String(e))
         print()
         print("ERROR: Cannot proceed without trained weights.")
         print()
@@ -223,7 +260,9 @@ fn main() raises:
     print("Running inference on test set...")
     print()
 
-    var results = evaluate_model(model, test_images, test_labels, batch_size, verbose=True)
+    var results = evaluate_model(
+        model, test_images, test_labels, batch_size, verbose=True
+    )
     var accuracy = results[0]
     var correct_per_class = results[1]
     var total_per_class = results[2]

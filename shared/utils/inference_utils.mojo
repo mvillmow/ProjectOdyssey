@@ -194,11 +194,15 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
     var label_shape = labels.shape()
 
     if len(pred_shape) != 1 or len(label_shape) != 1:
-        raise Error("evaluate_accuracy: predictions and labels must be 1D tensors")
+        raise Error(
+            "evaluate_accuracy: predictions and labels must be 1D tensors"
+        )
 
     var n = pred_shape[0]
     if n != label_shape[0]:
-        raise Error("evaluate_accuracy: predictions and labels must have same size")
+        raise Error(
+            "evaluate_accuracy: predictions and labels must have same size"
+        )
 
     if n == 0:
         return Float32(0.0)
@@ -216,14 +220,18 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
         for i in range(n):
             if pred_ptr.bitcast[Int64]()[i] == label_ptr.bitcast[Int64]()[i]:
                 correct += 1
-    elif predictions.dtype() == DType.float32 and labels.dtype() == DType.float32:
+    elif (
+        predictions.dtype() == DType.float32 and labels.dtype() == DType.float32
+    ):
         # Sometimes predictions are stored as float (argmax returns int as float)
         for i in range(n):
             var pred_val = Int(pred_ptr.bitcast[Float32]()[i])
             var label_val = Int(label_ptr.bitcast[Float32]()[i])
             if pred_val == label_val:
                 correct += 1
-    elif predictions.dtype() == DType.float64 and labels.dtype() == DType.float64:
+    elif (
+        predictions.dtype() == DType.float64 and labels.dtype() == DType.float64
+    ):
         for i in range(n):
             var pred_val = Int(pred_ptr.bitcast[Float64]()[i])
             var label_val = Int(label_ptr.bitcast[Float64]()[i])
@@ -231,8 +239,8 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
                 correct += 1
     else:
         raise Error(
-            "evaluate_accuracy: unsupported dtype combination, use int32, int64,"
-            " float32, or float64"
+            "evaluate_accuracy: unsupported dtype combination, use int32,"
+            " int64, float32, or float64"
         )
 
     return Float32(correct) / Float32(n)
@@ -286,13 +294,17 @@ fn count_correct(predictions: ExTensor, labels: ExTensor) raises -> Int:
         for i in range(n):
             if pred_ptr.bitcast[Int64]()[i] == label_ptr.bitcast[Int64]()[i]:
                 correct += 1
-    elif predictions.dtype() == DType.float32 and labels.dtype() == DType.float32:
+    elif (
+        predictions.dtype() == DType.float32 and labels.dtype() == DType.float32
+    ):
         for i in range(n):
             var pred_val = Int(pred_ptr.bitcast[Float32]()[i])
             var label_val = Int(label_ptr.bitcast[Float32]()[i])
             if pred_val == label_val:
                 correct += 1
-    elif predictions.dtype() == DType.float64 and labels.dtype() == DType.float64:
+    elif (
+        predictions.dtype() == DType.float64 and labels.dtype() == DType.float64
+    ):
         for i in range(n):
             var pred_val = Int(pred_ptr.bitcast[Float64]()[i])
             var label_val = Int(label_ptr.bitcast[Float64]()[i])

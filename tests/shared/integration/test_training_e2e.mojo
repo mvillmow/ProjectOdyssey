@@ -40,6 +40,7 @@ struct SimpleMLP:
 
     Architecture: input(10) -> fc1(10->20) -> relu -> fc2(20->5) -> output.
     """
+
     var fc1_weights: ExTensor
     var fc1_bias: ExTensor
     var fc2_weights: ExTensor
@@ -48,22 +49,22 @@ struct SimpleMLP:
     fn __init__(out self) raises:
         """Initialize with small random weights."""
         # FC1: 10 -> 20 (weights shape: out_features, in_features)
-        var fc1_w_shape = List[Int]()
+        var fc1_w_shape= List[Int]()
         fc1_w_shape.append(20)  # out_features
         fc1_w_shape.append(10)  # in_features
         self.fc1_weights = full(fc1_w_shape, 0.1, DType.float32)
 
-        var fc1_b_shape = List[Int]()
+        var fc1_b_shape= List[Int]()
         fc1_b_shape.append(20)
         self.fc1_bias = zeros(fc1_b_shape, DType.float32)
 
         # FC2: 20 -> 5 (weights shape: out_features, in_features)
-        var fc2_w_shape = List[Int]()
-        fc2_w_shape.append(5)   # out_features
+        var fc2_w_shape= List[Int]()
+        fc2_w_shape.append(5)  # out_features
         fc2_w_shape.append(20)  # in_features
         self.fc2_weights = full(fc2_w_shape, 0.1, DType.float32)
 
-        var fc2_b_shape = List[Int]()
+        var fc2_b_shape= List[Int]()
         fc2_b_shape.append(5)
         self.fc2_bias = zeros(fc2_b_shape, DType.float32)
 
@@ -75,10 +76,7 @@ struct SimpleMLP:
         return fc2_out^
 
     fn train_step(
-        mut self,
-        input: ExTensor,
-        labels: ExTensor,
-        learning_rate: Float32
+        mut self, input: ExTensor, labels: ExTensor, learning_rate: Float32
     ) raises -> Float32:
         """Execute one training step with manual backprop.
 
@@ -95,7 +93,7 @@ struct SimpleMLP:
         var loss = loss_tensor._data.bitcast[Float32]()[0]
 
         # Backward pass
-        var grad_output_shape = List[Int]()
+        var grad_output_shape= List[Int]()
         grad_output_shape.append(1)
         var grad_output = zeros(grad_output_shape, fc2_out.dtype())
         grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -128,20 +126,22 @@ fn _sgd_update(mut param: ExTensor, grad: ExTensor, lr: Float32) raises:
         param_data[i] = param_data[i] - lr * grad_data[i]
 
 
-fn create_dummy_batch(batch_size: Int, input_dim: Int, num_classes: Int) raises -> Tuple[ExTensor, ExTensor]:
+fn create_dummy_batch(
+    batch_size: Int, input_dim: Int, num_classes: Int
+) raises -> Tuple[ExTensor, ExTensor]:
     """Create dummy batch for testing.
 
     Returns:
         (input, one_hot_labels) tuple.
     """
     # Create input
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(batch_size)
     input_shape.append(input_dim)
     var input = full(input_shape, 0.5, DType.float32)
 
     # Create one-hot labels (all class 0 for simplicity)
-    var labels_shape = List[Int]()
+    var labels_shape= List[Int]()
     labels_shape.append(batch_size)
     labels_shape.append(num_classes)
     var labels = zeros(labels_shape, DType.float32)
@@ -208,7 +208,7 @@ fn test_e2e_loss_decreases() raises:
     assert_less(
         Float64(final_loss),
         Float64(initial_loss),
-        "Loss should decrease over training"
+        "Loss should decrease over training",
     )
 
 
@@ -238,9 +238,7 @@ fn test_e2e_loss_decreases_significantly() raises:
     # Loss should decrease by at least 50%
     var reduction_ratio = Float64(final_loss) / Float64(initial_loss)
     assert_less(
-        reduction_ratio,
-        Float64(0.5),
-        "Loss should reduce by at least 50%"
+        reduction_ratio, Float64(0.5), "Loss should reduce by at least 50%"
     )
 
 
@@ -262,7 +260,9 @@ fn test_e2e_batch_size_1() raises:
         var loss = model.train_step(input, labels, Float32(0.01))
 
     # Should complete and loss should be valid
-    assert_true(initial_loss == initial_loss, "Loss should be valid for batch size 1")
+    assert_true(
+        initial_loss == initial_loss, "Loss should be valid for batch size 1"
+    )
 
 
 fn test_e2e_batch_size_16() raises:
@@ -277,7 +277,9 @@ fn test_e2e_batch_size_16() raises:
     for _ in range(10):
         var loss = model.train_step(input, labels, Float32(0.01))
 
-    assert_true(initial_loss == initial_loss, "Loss should be valid for batch size 16")
+    assert_true(
+        initial_loss == initial_loss, "Loss should be valid for batch size 16"
+    )
 
 
 fn test_e2e_batch_size_32() raises:
@@ -292,7 +294,9 @@ fn test_e2e_batch_size_32() raises:
     for _ in range(10):
         var loss = model.train_step(input, labels, Float32(0.01))
 
-    assert_true(initial_loss == initial_loss, "Loss should be valid for batch size 32")
+    assert_true(
+        initial_loss == initial_loss, "Loss should be valid for batch size 32"
+    )
 
 
 # ============================================================================
@@ -325,7 +329,7 @@ fn test_e2e_lr_affects_convergence() raises:
     assert_less(
         Float64(loss_high_lr),
         Float64(loss_low_lr),
-        "Higher LR should converge faster"
+        "Higher LR should converge faster",
     )
 
 
@@ -389,7 +393,7 @@ fn test_e2e_reproducibility() raises:
         Float64(loss1),
         Float64(loss2),
         tolerance=Float64(1e-6),
-        message="Identical runs should produce identical results"
+        message="Identical runs should produce identical results",
     )
 
 

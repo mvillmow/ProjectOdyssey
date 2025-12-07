@@ -91,7 +91,9 @@ fn test_multiple_benchmarks() raises:
     results.append(result1^)
 
     print("Running vector_operation benchmark...")
-    var result2 = benchmark_operation("vector_operation", vector_operation, config)
+    var result2 = benchmark_operation(
+        "vector_operation", vector_operation, config
+    )
     results.append(result2^)
 
     print_summary(results)

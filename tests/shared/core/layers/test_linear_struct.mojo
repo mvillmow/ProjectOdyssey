@@ -49,11 +49,11 @@ fn test_linear_struct_forward_batched() raises:
     Weight: (in_features=10, out_features=5)
     Bias: (out_features=5,)
     Expected output: (batch_size=4, out_features=5).
-   """
+    """
     var layer = Linear(10, 5)
 
     # Create input batch
-    var input_shape = List[Int](4, 10)
+    var input_shape: List[Int] = [4, 10]
     var input = ones(input_shape, DType.float32)
 
     # Forward pass
@@ -97,7 +97,7 @@ fn test_linear_struct_forward_single_sample() raises:
     bias_data[1] = 0.0
 
     # Create input: [1, 2, 3]
-    var input_shape = List[Int](3)
+    var input_shape: List[Int] = [3]
     var input = zeros_like(zeros(input_shape, DType.float32))
     # Need to properly initialize the input
     var input_val = ones(input_shape, DType.float32)

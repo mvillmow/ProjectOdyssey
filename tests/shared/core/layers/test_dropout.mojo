@@ -17,13 +17,19 @@ fn test_dropout_init_valid() raises:
     """Test dropout layer initialization with valid dropout rates."""
     # Valid dropout rates: 0.0 to 0.99
     var layer1 = DropoutLayer(0.0)
-    assert_true(layer1.dropout_rate == 0.0, "Should initialize with dropout_rate=0.0")
+    assert_true(
+        layer1.dropout_rate == 0.0, "Should initialize with dropout_rate=0.0"
+    )
 
     var layer2 = DropoutLayer(0.5)
-    assert_true(layer2.dropout_rate == 0.5, "Should initialize with dropout_rate=0.5")
+    assert_true(
+        layer2.dropout_rate == 0.5, "Should initialize with dropout_rate=0.5"
+    )
 
     var layer3 = DropoutLayer(0.99)
-    assert_true(layer3.dropout_rate == 0.99, "Should initialize with dropout_rate=0.99")
+    assert_true(
+        layer3.dropout_rate == 0.99, "Should initialize with dropout_rate=0.99"
+    )
 
     print("✓ test_dropout_init_valid passed")
 
@@ -36,7 +42,9 @@ fn test_dropout_init_invalid() raises:
         var layer = DropoutLayer(-0.1)
     except e:
         error_caught = True
-        assert_true("dropout_rate" in String(e), "Error should mention dropout_rate")
+        assert_true(
+            "dropout_rate" in String(e), "Error should mention dropout_rate"
+        )
 
     assert_true(error_caught, "Should raise error for negative dropout_rate")
 
@@ -45,7 +53,9 @@ fn test_dropout_init_invalid() raises:
         var layer = DropoutLayer(1.0)
     except e:
         error_caught = True
-        assert_true("dropout_rate" in String(e), "Error should mention dropout_rate")
+        assert_true(
+            "dropout_rate" in String(e), "Error should mention dropout_rate"
+        )
 
     assert_true(error_caught, "Should raise error for dropout_rate=1.0")
 
@@ -54,7 +64,9 @@ fn test_dropout_init_invalid() raises:
         var layer = DropoutLayer(1.5)
     except e:
         error_caught = True
-        assert_true("dropout_rate" in String(e), "Error should mention dropout_rate")
+        assert_true(
+            "dropout_rate" in String(e), "Error should mention dropout_rate"
+        )
 
     assert_true(error_caught, "Should raise error for dropout_rate>1.0")
 
@@ -86,7 +98,7 @@ fn test_dropout_forward_inference_mode() raises:
 
     # Create input
     var input = ExTensor(List[Int](4), DType.float32)
-    var input_values = List[Float32](1.0, 2.0, 3.0, 4.0)
+    var input_values: List[Float32] = [1.0, 2.0, 3.0, 4.0]
     for i in range(4):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
@@ -97,7 +109,7 @@ fn test_dropout_forward_inference_mode() raises:
         var out_val = output._data.bitcast[Float32]()[i]
         assert_true(
             out_val == input_values[i],
-            "Inference mode should pass input unchanged"
+            "Inference mode should pass input unchanged",
         )
 
     print("✓ test_dropout_forward_inference_mode passed")
@@ -116,7 +128,7 @@ fn test_dropout_forward_training_mode_shape() raises:
     var output_1d = layer.forward(input_1d)
     assert_true(
         len(output_1d._shape) == 1 and output_1d._shape[0] == 10,
-        "1D output shape should be preserved"
+        "1D output shape should be preserved",
     )
 
     var input_2d = ExTensor(List[Int](4, 5), DType.float32)
@@ -125,8 +137,10 @@ fn test_dropout_forward_training_mode_shape() raises:
 
     var output_2d = layer.forward(input_2d)
     assert_true(
-        len(output_2d._shape) == 2 and output_2d._shape[0] == 4 and output_2d._shape[1] == 5,
-        "2D output shape should be preserved"
+        len(output_2d._shape) == 2
+        and output_2d._shape[0] == 4
+        and output_2d._shape[1] == 5,
+        "2D output shape should be preserved",
     )
 
     print("✓ test_dropout_forward_training_mode_shape passed")
@@ -155,7 +169,7 @@ fn test_dropout_forward_training_mode_zeros() raises:
     # Allow some variance: 30-70% non-zero
     assert_true(
         non_zero_count > 30 and non_zero_count < 70,
-        "Dropout should zero approximately 50% of elements"
+        "Dropout should zero approximately 50% of elements",
     )
 
     print("✓ test_dropout_forward_training_mode_zeros passed")
@@ -179,7 +193,7 @@ fn test_dropout_forward_training_mode_scale() raises:
         if val != 0.0:
             assert_true(
                 val == 2.0,
-                "Non-zero elements should be scaled by 2.0 for dropout=0.5"
+                "Non-zero elements should be scaled by 2.0 for dropout=0.5",
             )
 
     print("✓ test_dropout_forward_training_mode_scale passed")
@@ -205,8 +219,10 @@ fn test_dropout_backward_shape() raises:
     var grad_input = layer.backward(grad_output, layer.last_mask)
 
     assert_true(
-        len(grad_input._shape) == 2 and grad_input._shape[0] == 4 and grad_input._shape[1] == 5,
-        "Backward pass should preserve shape"
+        len(grad_input._shape) == 2
+        and grad_input._shape[0] == 4
+        and grad_input._shape[1] == 5,
+        "Backward pass should preserve shape",
     )
 
     print("✓ test_dropout_backward_shape passed")
@@ -225,22 +241,24 @@ fn test_dropout_backward_scaling() raises:
     var output = layer.forward(input)
     var mask = layer.last_mask
 
-    // Create gradient with all ones
+    # Create gradient with all ones
     var grad_output = ExTensor(List[Int](4), DType.float32)
     for i in range(4):
         grad_output._data.bitcast[Float32]()[i] = 1.0
 
     var grad_input = layer.backward(grad_output, mask)
 
-    // Backward should apply same mask and scale
-    // For elements where mask=1: grad = 1.0 * 2.0 = 2.0
-    // For elements where mask=0: grad = 0.0 * 2.0 = 0.0
+    # Backward should apply same mask and scale
+    # For elements where mask=1: grad = 1.0 * 2.0 = 2.0
+    # For elements where mask=0: grad = 0.0 * 2.0 = 0.0
     for i in range(4):
         var grad_val = grad_input._data.bitcast[Float32]()[i]
         var mask_val = mask._data.bitcast[Float32]()[i]
 
         if mask_val == 1.0:
-            assert_true(grad_val == 2.0, "Unmasked gradient should be scaled by 2.0")
+            assert_true(
+                grad_val == 2.0, "Unmasked gradient should be scaled by 2.0"
+            )
         else:
             assert_true(grad_val == 0.0, "Masked gradient should be 0.0")
 
@@ -267,17 +285,17 @@ fn test_dropout_forward_float64() raises:
 
     var output = layer.forward(input)
 
-    // Count non-zero elements
+    # Count non-zero elements
     var non_zero_count = 0
     for i in range(50):
         var val = output._data.bitcast[Float64]()[i]
         if val != 0.0:
             non_zero_count += 1
 
-    // Expect roughly 50% non-zero
+    # Expect roughly 50% non-zero
     assert_true(
         non_zero_count > 15 and non_zero_count < 35,
-        "Dropout should zero approximately 50% for float64"
+        "Dropout should zero approximately 50% for float64",
     )
 
     print("✓ test_dropout_forward_float64 passed")
@@ -294,11 +312,13 @@ fn test_dropout_zero_dropout_rate() raises:
 
     var output = layer.forward(input)
 
-    // With dropout_rate=0, nothing should be dropped
-    // Scale factor = 1/(1-0) = 1
+    # With dropout_rate=0, nothing should be dropped
+    # Scale factor = 1/(1-0) = 1
     for i in range(10):
         var val = output._data.bitcast[Float32]()[i]
-        assert_true(val == 1.0, "With dropout_rate=0, output should be unchanged")
+        assert_true(
+            val == 1.0, "With dropout_rate=0, output should be unchanged"
+        )
 
     print("✓ test_dropout_zero_dropout_rate passed")
 
@@ -314,25 +334,27 @@ fn test_dropout_high_dropout_rate() raises:
 
     var output = layer.forward(input)
 
-    // Count non-zero elements (should be roughly 10%)
+    # Count non-zero elements (should be roughly 10%)
     var non_zero_count = 0
     for i in range(100):
         var val = output._data.bitcast[Float32]()[i]
         if val != 0.0:
             non_zero_count += 1
 
-    // With dropout_rate=0.9, expect roughly 10% to remain
-    // Allow variance: 0-30% non-zero
+    # With dropout_rate=0.9, expect roughly 10% to remain
+    # Allow variance: 0-30% non-zero
     assert_true(
         non_zero_count >= 0 and non_zero_count <= 30,
-        "Dropout with rate=0.9 should keep roughly 10% of elements"
+        "Dropout with rate=0.9 should keep roughly 10% of elements",
     )
 
-    // Check scaling: kept elements should be scaled by 1/(1-0.9) = 10
+    # Check scaling: kept elements should be scaled by 1/(1-0.9) = 10
     for i in range(100):
         var val = output._data.bitcast[Float32]()[i]
         if val != 0.0:
-            assert_true(val == 10.0, "Scale factor for dropout=0.9 should be 10.0")
+            assert_true(
+                val == 10.0, "Scale factor for dropout=0.9 should be 10.0"
+            )
 
     print("✓ test_dropout_high_dropout_rate passed")
 

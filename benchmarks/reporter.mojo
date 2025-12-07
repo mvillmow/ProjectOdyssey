@@ -12,11 +12,11 @@ fn format_throughput(value: Float64) -> String:
     """Format throughput value with appropriate units.
 
     Args:
-        value: Throughput in operations per second
+        value: Throughput in operations per second.
 
     Returns:
         Formatted string with units (ops/s, kops/s, Mops/s, Gops/s).
-   """
+    """
     if value < 1000.0:
         return String(Int(value)) + " ops/s"
     elif value < 1_000_000.0:
@@ -31,11 +31,11 @@ fn format_time(value_us: Float64) -> String:
     """Format time value with appropriate units.
 
     Args:
-        value_us: Time in microseconds
+        value_us: Time in microseconds.
 
     Returns:
         Formatted string with units (us, ms, s).
-   """
+    """
     if value_us < 1000.0:
         return String(value_us) + " us"
     elif value_us < 1_000_000.0:
@@ -48,11 +48,18 @@ fn print_table(results: List[LegacyBenchmarkResult]):
     """Print benchmark results as formatted table.
 
     Args:
-        results: List of benchmark results to display
+        results: List of benchmark results to display.
     """
-    print("╔════════════════════════════════════════════════════════════════════════════════════╗")
-    print("║ Operation                       Mean (us)  Std Dev    Min       Max      Throughput ║")
-    print("╠════════════════════════════════════════════════════════════════════════════════════╣")
+    print(
+        "╔════════════════════════════════════════════════════════════════════════════════════╗"
+    )
+    print(
+        "║ Operation                       Mean (us)  Std Dev    Min       Max "
+        "     Throughput ║"
+    )
+    print(
+        "╠════════════════════════════════════════════════════════════════════════════════════╣"
+    )
 
     for i in range(len(results)):
         ref r = results[i]
@@ -86,32 +93,36 @@ fn print_table(results: List[LegacyBenchmarkResult]):
             + " ║"
         )
 
-    print("╚════════════════════════════════════════════════════════════════════════════════════╝")
+    print(
+        "╚════════════════════════════════════════════════════════════════════════════════════╝"
+    )
 
 
-fn export_json_simple(results: List[LegacyBenchmarkResult], filename: String) raises:
+fn export_json_simple(
+    results: List[LegacyBenchmarkResult], filename: String
+) raises:
     """Export results to JSON file.
 
     Uses Python interop for file I/O (Mojo v0.25.7 limitation).
 
     Args:
-        results: List of benchmark results
-        filename: Output JSON file path
+        results: List of benchmark results.
+        filename: Output JSON file path.
 
     Raises:
-        Error: If file cannot be written
+        Error: If file cannot be written.
     """
     print("Exporting results to JSON:", filename)
 
     try:
         # Build JSON manually to avoid complex serialization
-        var json = String('{\n')
+        var json = String("{\n")
         json += '  "version": "1.0.0",\n'
         json += '  "benchmarks": [\n'
 
         for i in range(len(results)):
             ref r = results[i]
-            json += '    {\n'
+            json += "    {\n"
             json += '      "name": "' + r.name + '",\n'
             json += '      "mean_time_us": ' + String(r.mean_time_us) + ",\n"
             json += '      "std_dev_us": ' + String(r.std_dev_us) + ",\n"
@@ -120,16 +131,20 @@ fn export_json_simple(results: List[LegacyBenchmarkResult], filename: String) ra
             json += '      "p50_us": ' + String(r.p50_us) + ",\n"
             json += '      "p95_us": ' + String(r.p95_us) + ",\n"
             json += '      "p99_us": ' + String(r.p99_us) + ",\n"
-            json += '      "throughput_ops_per_sec": ' + String(r.throughput_ops_per_sec) + ",\n"
-            json += '      "memory_mb": ' + String(r.memory_mb) + '\n'
-            json += '    }'
+            json += (
+                '      "throughput_ops_per_sec": '
+                + String(r.throughput_ops_per_sec)
+                + ",\n"
+            )
+            json += '      "memory_mb": ' + String(r.memory_mb) + "\n"
+            json += "    }"
 
             if i < len(results) - 1:
-                json += ','
-            json += '\n'
+                json += ","
+            json += "\n"
 
-        json += '  ]\n'
-        json += '}\n'
+        json += "  ]\n"
+        json += "}\n"
 
         # Use Python to write file
         var builtins = Python.import_module("builtins")
@@ -148,7 +163,7 @@ fn print_summary(results: List[LegacyBenchmarkResult]):
     """Print summary statistics.
 
     Args:
-        results: List of benchmark results
+        results: List of benchmark results.
     """
     print("\n" + "=" * 80)
     print("BENCHMARK SUMMARY")
@@ -171,6 +186,18 @@ fn print_summary(results: List[LegacyBenchmarkResult]):
                 fastest_idx = i
                 fastest_time = results[i].mean_time_us
 
-        print("Slowest:  ", results[slowest_idx].name, " (", format_time(slowest_time), ")")
-        print("Fastest:  ", results[fastest_idx].name, " (", format_time(fastest_time), ")")
+        print(
+            "Slowest:  ",
+            results[slowest_idx].name,
+            " (",
+            format_time(slowest_time),
+            ")",
+        )
+        print(
+            "Fastest:  ",
+            results[fastest_idx].name,
+            " (",
+            format_time(fastest_time),
+            ")",
+        )
         print()

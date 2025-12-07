@@ -57,8 +57,10 @@ fn test_load_experiment_with_helper_function() raises:
     var config = load_experiment_config("lenet5", "baseline")
 
     # Should have all merged sections
-    assert_true(config.has("model") or len(config.data) > 0,
-                "Experiment config should be loaded")
+    assert_true(
+        config.has("model") or len(config.data) > 0,
+        "Experiment config should be loaded",
+    )
 
     print("✓ test_load_experiment_with_helper_function passed")
 
@@ -108,7 +110,9 @@ fn test_model_creation_from_config() raises:
     # Verify config has required fields for model creation
     # Config uses dotted keys for nested YAML (e.g., "model.name")
     assert_true(config.has("model.name"), "Should have model.name")
-    assert_true(config.has("model.output_classes"), "Should have model.output_classes")
+    assert_true(
+        config.has("model.output_classes"), "Should have model.output_classes"
+    )
 
     # In actual implementation, would do:
     # var model = create_model_from_config(config)
@@ -180,7 +184,7 @@ fn test_optimizer_creation_from_config() raises:
     var lr = config.get_float("optimizer.learning_rate", 0.001)
 
     # Valid optimizer names
-    var valid_optimizers = List[String]()
+    var valid_optimizers= List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("rmsprop")
@@ -257,12 +261,16 @@ fn test_config_with_environment_variables() raises:
     var substituted = config.substitute_env_vars()
 
     var output = substituted.get_string("output_dir")
-    assert_equal(output, "/tmp/experiments/lenet5",
-                 "Should substitute EXPERIMENT_DIR")
+    assert_equal(
+        output, "/tmp/experiments/lenet5", "Should substitute EXPERIMENT_DIR"
+    )
 
     var checkpoint = substituted.get_string("checkpoint_dir")
-    assert_equal(checkpoint, "/tmp/experiments/lenet5/checkpoints",
-                 "Should substitute in nested path")
+    assert_equal(
+        checkpoint,
+        "/tmp/experiments/lenet5/checkpoints",
+        "Should substitute in nested path",
+    )
 
     print("✓ test_config_with_environment_variables passed")
 

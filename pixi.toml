@@ -5,17 +5,23 @@ platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
-# Mojo build (warnings must be fixed, not suppressed)
-build = "mojo build"
-# Mojo run (warnings must be fixed, not suppressed)
+# Build the shared Mojo package
+build = "mojo package shared -o build/ml-odyssey-shared.mojopkg"
+
+# Run a single Mojo file (example: training script)
 run = "mojo run"
-# Mojo test (warnings must be fixed, not suppressed)
-test = "mojo test"
-# Mojo format
-format = "mojo format"
+
+# Run all Mojo tests
+test-mojo = "mojo test tests/**/*.mojo"
+
+# Format all Mojo files
+format = "mojo format shared/**/*.mojo tests/**/*.mojo"
+
+# Run Python tests
+test-python = "pytest tests/ -v --timeout=300"
 
 [dependencies]
-mojo = ">=0.26,<0.27"
+mojo = ">=0.26.1.0.dev2025120705,<0.27"
 pre-commit = ">=3.5.0"
 prettytable = ">=3.17.0,<4"
 pytest = ">=7.4.0,<8"

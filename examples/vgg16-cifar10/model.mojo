@@ -63,7 +63,11 @@ from shared.core.dropout import dropout, dropout_backward
 from shared.core.initializers import he_uniform
 from shared.core.shape import conv2d_output_shape, pool_output_shape
 from shared.training.optimizers import sgd_momentum_update_inplace
-from shared.training.model_utils import save_model_weights, load_model_weights, get_model_parameter_names
+from shared.training.model_utils import (
+    save_model_weights,
+    load_model_weights,
+    get_model_parameter_names,
+)
 from collections import List
 
 
@@ -117,7 +121,7 @@ fn compute_flattened_size() -> Int:
 
     Returns:
         Number of features after flattening (channels * height * width).
-   """
+    """
     # VGG-16: Each block has 3x3 convs with padding=1 (size preserved)
     # followed by 2x2 pool with stride=2 (size halved)
     var h, w = INPUT_HEIGHT, INPUT_WIDTH
@@ -174,7 +178,7 @@ struct VGG16:
         fc1_weights, fc1_bias: First FC layer (512, 512)
         fc2_weights, fc2_bias: Second FC layer (512, 512)
         fc3_weights, fc3_bias: Third FC layer (num_classes, 512).
-   """
+    """
 
     var num_classes: Int
     var dropout_rate: Float32
@@ -231,7 +235,7 @@ struct VGG16:
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10)
             dropout_rate: Dropout probability for FC layers (default: 0.5).
-       """
+        """
         self.num_classes = num_classes
         self.dropout_rate = dropout_rate
 
@@ -407,7 +411,7 @@ struct VGG16:
 
         Returns:
             Output logits of shape (batch, num_classes).
-       """
+        """
         # Block 1: Conv -> ReLU -> Conv -> ReLU -> MaxPool
         var conv1_1 = conv2d(
             input,
@@ -557,7 +561,7 @@ struct VGG16:
         var batch_size = pool5_shape[0]
         var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
 
-        var flatten_shape = List[Int]()
+        var flatten_shape= List[Int]()
         flatten_shape.append(batch_size)
         flatten_shape.append(flattened_size)
         var flattened = pool5.reshape(flatten_shape)
@@ -591,7 +595,7 @@ struct VGG16:
 
         Returns:
             Predicted class index (0 to num_classes-1).
-       """
+        """
         var logits = self.forward(input, training=False)
 
         # Find argmax
@@ -617,7 +621,7 @@ struct VGG16:
             - conv1_1_kernel.weights, conv1_1_bias.weights, etc.
         """
         # Collect all parameters in order
-        var parameters = List[ExTensor]()
+        var parameters: List[ExTensor] = []
         parameters.append(self.conv1_1_kernel)
         parameters.append(self.conv1_1_bias)
         parameters.append(self.conv1_2_kernel)
@@ -670,7 +674,7 @@ struct VGG16:
         var param_names = get_model_parameter_names("vgg16")
 
         # Create empty list for loaded parameters
-        var loaded_params = List[ExTensor]()
+        var loaded_params: List[ExTensor] = []
 
         # Load using shared utility
         load_model_weights(loaded_params, weights_dir, param_names)

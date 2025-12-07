@@ -5,7 +5,18 @@ and end-to-end workflows using currently implemented functionality.
 """
 
 # Import ExTensor and operations
-from shared.core import ExTensor, zeros, ones, full, arange, eye, linspace, add, subtract, multiply
+from shared.core import (
+    ExTensor,
+    zeros,
+    ones,
+    full,
+    arange,
+    eye,
+    linspace,
+    add,
+    subtract,
+    multiply,
+)
 
 # Import test helpers
 from tests.shared.conftest import (
@@ -22,9 +33,10 @@ from tests.shared.conftest import (
 # Test chained arithmetic operations
 # ============================================================================
 
+
 fn test_chained_add_operations() raises:
     """Test chaining multiple add operations."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float32)  # [1, 1, 1, 1, 1]
     var b = full(shape, 2.0, DType.float32)  # [2, 2, 2, 2, 2]
@@ -37,7 +49,7 @@ fn test_chained_add_operations() raises:
 
 fn test_mixed_arithmetic_operations() raises:
     """Test mixing different arithmetic operations."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = full(shape, 2.0, DType.float32)
     var b = full(shape, 3.0, DType.float32)
@@ -52,7 +64,7 @@ fn test_mixed_arithmetic_operations() raises:
 
 fn test_arithmetic_with_operator_overloading() raises:
     """Test using operator overloading for complex expressions."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -66,7 +78,7 @@ fn test_arithmetic_with_operator_overloading() raises:
 
 fn test_complex_expression() raises:
     """Test complex arithmetic expression."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     var a = full(shape, 1.0, DType.float32)
@@ -84,11 +96,12 @@ fn test_complex_expression() raises:
 # Test creation + arithmetic patterns
 # ============================================================================
 
+
 fn test_identity_matrix_operations() raises:
     """Test operations with identity matrix."""
     var I = eye(3, 3, 0, DType.float32)
     var A = full(List[Int](), 2.0, DType.float32)  # Will need reshaping
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(3)
     var B = full(shape, 2.0, DType.float32)
@@ -109,7 +122,7 @@ fn test_identity_matrix_operations() raises:
 fn test_arange_arithmetic() raises:
     """Test arithmetic with arange-created tensors."""
     var a = arange(0.0, 5.0, 1.0, DType.float32)  # [0, 1, 2, 3, 4]
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
     var b = ones(shape, DType.float32)  # [1, 1, 1, 1, 1]
 
@@ -136,9 +149,10 @@ fn test_linspace_operations() raises:
 # Test multiple dtype operations
 # ============================================================================
 
+
 fn test_same_dtype_consistency() raises:
     """Test that operations preserve dtype consistently."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var a32 = ones(shape, DType.float32)
@@ -154,7 +168,7 @@ fn test_same_dtype_consistency() raises:
 
 fn test_int_dtype_operations() raises:
     """Test operations with integer dtypes."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var a = full(shape, 3.0, DType.int32)
@@ -169,9 +183,10 @@ fn test_int_dtype_operations() raises:
 # Test multi-dimensional operations
 # ============================================================================
 
+
 fn test_2d_elementwise_operations() raises:
     """Test element-wise operations on 2D tensors."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 5.0, DType.float32)
@@ -185,7 +200,7 @@ fn test_2d_elementwise_operations() raises:
 
 fn test_3d_operations() raises:
     """Test operations on 3D tensors."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -202,9 +217,10 @@ fn test_3d_operations() raises:
 # Test realistic ML-like patterns
 # ============================================================================
 
+
 fn test_linear_transformation_pattern() raises:
     """Test pattern similar to linear layer: W*x + b."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     # Simulate weights, input, and bias
@@ -221,7 +237,7 @@ fn test_linear_transformation_pattern() raises:
 
 fn test_gradient_descent_update_pattern() raises:
     """Test pattern similar to gradient descent: w - lr * grad."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var w = ones(shape, DType.float32)  # weights
@@ -237,7 +253,7 @@ fn test_gradient_descent_update_pattern() raises:
 
 fn test_batch_normalization_pattern() raises:
     """Test pattern similar to batch normalization: (x - mean) * scale."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(5)
 
     var x = full(shape, 5.0, DType.float32)
@@ -255,9 +271,10 @@ fn test_batch_normalization_pattern() raises:
 # Test zero and identity element behavior
 # ============================================================================
 
+
 fn test_additive_identity() raises:
     """Test that adding zero doesn't change values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 7.5, DType.float32)
@@ -270,7 +287,7 @@ fn test_additive_identity() raises:
 
 fn test_multiplicative_identity() raises:
     """Test that multiplying by one doesn't change values."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 7.5, DType.float32)
@@ -283,7 +300,7 @@ fn test_multiplicative_identity() raises:
 
 fn test_multiplicative_zero() raises:
     """Test that multiplying by zero gives zero."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     shape.append(4)
     var a = full(shape, 99.9, DType.float32)
@@ -298,9 +315,10 @@ fn test_multiplicative_zero() raises:
 # Test scalar patterns
 # ============================================================================
 
+
 fn test_scalar_operations() raises:
     """Test operations with scalar tensors."""
-    var shape_scalar = List[Int]()
+    var shape_scalar= List[Int]()
     var a = full(shape_scalar, 5.0, DType.float32)
     var b = full(shape_scalar, 3.0, DType.float32)
 
@@ -314,9 +332,10 @@ fn test_scalar_operations() raises:
 # Test large tensor operations
 # ============================================================================
 
+
 fn test_large_tensor_operations() raises:
     """Test operations on large tensors."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(10000)
     var a = ones(shape, DType.float32)
     var b = full(shape, 2.0, DType.float32)
@@ -333,6 +352,7 @@ fn test_large_tensor_operations() raises:
 # ============================================================================
 # Main test runner
 # ============================================================================
+
 
 fn main() raises:
     """Run all integration tests."""

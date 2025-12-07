@@ -10,6 +10,9 @@ docker_service := "ml-odyssey-dev"
 # Repository root
 repo_root := justfile_directory()
 
+USER_ID := `id -u`
+GROUP_ID := `id -g`
+
 # ==============================================================================
 # Internal Helpers
 # ==============================================================================
@@ -22,7 +25,7 @@ _run cmd:
     if [[ "${NATIVE:-}" == "1" ]]; then
         eval "{{cmd}}"
     else
-        docker-compose exec -T {{docker_service}} bash -c "{{cmd}}"
+        USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose exec -T {{docker_service}} bash -c "{{cmd}}"
     fi
 
 # Ensure build directory exists
@@ -36,35 +39,41 @@ _ensure_build_dir mode:
 
 # Start Docker development environment
 docker-up:
-    @docker-compose up -d {{docker_service}}
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose up -d {{docker_service}}
 
 # Stop Docker development environment
 docker-down:
-    @docker-compose down
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose down
 
 # Build Docker images
 docker-build:
-    @docker-compose build
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose build \
+        --build-arg USER_ID={{USER_ID}} \
+        --build-arg GROUP_ID={{GROUP_ID}} \
+        --build-arg USER_NAME=dev
 
 # Rebuild Docker images (no cache)
 docker-rebuild:
-    @docker-compose build --no-cache
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose build --no-cache \
+        --build-arg USER_ID={{USER_ID}} \
+        --build-arg GROUP_ID={{GROUP_ID}} \
+        --build-arg USER_NAME=dev
 
 # Open shell in Docker container
 docker-shell: docker-up
-    @docker-compose exec {{docker_service}} bash
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose exec {{docker_service}} bash
 
 # View Docker logs
 docker-logs:
-    @docker-compose logs -f {{docker_service}}
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose logs -f {{docker_service}}
 
 # Clean Docker resources
 docker-clean:
-    @docker-compose down -v --rmi local
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose down -v --rmi local
 
 # Show Docker status
 docker-status:
-    @docker-compose ps
+    @USER_ID={{USER_ID}} GROUP_ID={{GROUP_ID}} docker compose ps
 
 # ==============================================================================
 # Build Recipes
@@ -107,11 +116,16 @@ native-build-release:
 # Run all tests
 test: docker-up
     @echo "Running all tests..."
-    @just _run "pixi run pytest tests/ -v --timeout=300 || echo 'Tests complete'"
+    @just _run "pixi run test-mojo || echo 'Mojo tests complete'"
+    @just _run "pixi run test-python || echo 'Python tests complete'"
 
-# Run Python tests
+# Run only Python tests
 test-python: docker-up
-    @just _run "pixi run pytest tests/ -v --timeout=300 -k 'not mojo'"
+    @just _run "pixi run test-python"
+
+# Run only Mojo tests
+test-mojo: docker-up
+    @just _run "pixi run test-mojo"
 
 # Run tests with coverage
 test-coverage: docker-up
@@ -124,6 +138,9 @@ test-integration: docker-up
 # Native test variants
 native-test:
     @NATIVE=1 just test
+
+native-test-mojo:
+    @NATIVE=1 just test-mojo
 
 native-test-python:
     @NATIVE=1 just test-python
@@ -211,7 +228,7 @@ dev: docker-up
 
 # Open development shell
 shell: docker-up
-    @docker-compose exec {{docker_service}} bash
+    @docker compose exec {{docker_service}} bash
 
 # Serve documentation
 docs-serve:
@@ -293,7 +310,7 @@ help:
 status:
     @echo "ML Odyssey Status"
     @echo "================="
-    @docker-compose ps || echo "Docker not running"
+    @docker compose ps
     @ls -la build/ 2>/dev/null || echo "No build artifacts"
 
 # Clean build artifacts

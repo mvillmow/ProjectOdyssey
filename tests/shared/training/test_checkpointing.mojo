@@ -45,9 +45,7 @@ fn test_checkpointing_initialization() raises:
 
 fn test_checkpointing_saves_at_epoch_end() raises:
     """Test ModelCheckpoint saves at the end of each epoch (by frequency)."""
-    var checkpoint = ModelCheckpoint(
-        filepath="/tmp/model.pt", save_frequency=1
-    )
+    var checkpoint = ModelCheckpoint(filepath="/tmp/model.pt", save_frequency=1)
     var state = TrainingState(epoch=1, learning_rate=0.1)
     state.metrics["train_loss"] = 0.5
     state.metrics["val_loss"] = 0.6
@@ -61,9 +59,7 @@ fn test_checkpointing_saves_at_epoch_end() raises:
 
 fn test_checkpointing_save_frequency() raises:
     """Test ModelCheckpoint respects save_frequency parameter."""
-    var checkpoint = ModelCheckpoint(
-        filepath="/tmp/model.pt", save_frequency=3
-    )
+    var checkpoint = ModelCheckpoint(filepath="/tmp/model.pt", save_frequency=3)
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
     # Epochs 1-2: Don't save
@@ -339,9 +335,7 @@ fn test_checkpointing_error_count_tracking() raises:
 
 fn test_checkpointing_get_save_count() raises:
     """Test get_save_count returns correct count."""
-    var checkpoint = ModelCheckpoint(
-        filepath="/tmp/model.pt", save_frequency=1
-    )
+    var checkpoint = ModelCheckpoint(filepath="/tmp/model.pt", save_frequency=1)
     var state = TrainingState(epoch=1, learning_rate=0.1)
 
     # Initially 0

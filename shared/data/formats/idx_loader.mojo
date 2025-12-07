@@ -75,7 +75,7 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_items)
     var labels = zeros(shape, DType.uint8)
 
@@ -128,7 +128,7 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor (num_images, 1, rows, cols) for CNN input
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_images)
     shape.append(1)  # Single channel (grayscale)
     shape.append(num_rows)
@@ -165,7 +165,9 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
         content = f.read()
 
     var file_size = len(content)
-    if file_size < 20:  # Header is 20 bytes for RGB images (magic + count + channels + rows + cols)
+    if (
+        file_size < 20
+    ):  # Header is 20 bytes for RGB images (magic + count + channels + rows + cols)
         raise Error("IDX file too small")
 
     var data_bytes = content.unsafe_ptr()
@@ -188,7 +190,7 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
         raise Error("IDX file size mismatch")
 
     # Create output tensor (num_images, channels, rows, cols) for CNN input
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_images)
     shape.append(num_channels)  # RGB channels
     shape.append(num_rows)
@@ -252,7 +254,7 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
     var num_samples = labels.shape()[0]
 
     # Create output tensor (num_samples, num_classes)
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(num_samples)
     shape.append(num_classes)
     var one_hot = zeros(shape, DType.float32)
@@ -333,7 +335,9 @@ fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
     return normalized^
 
 
-fn load_cifar10_batch(batch_dir: String, batch_name: String) raises -> Tuple[ExTensor, ExTensor]:
+fn load_cifar10_batch(
+    batch_dir: String, batch_name: String
+) raises -> Tuple[ExTensor, ExTensor]:
     """Load a single CIFAR-10 batch (images and labels) from IDX format.
 
     Args:

@@ -17,7 +17,11 @@ from shared.data.datasets import CIFAR10Dataset
 fn test_cifar10_initialization() raises:
     """Test CIFAR10Dataset initialization with valid directory."""
     var dataset = CIFAR10Dataset("/tmp/cifar10")
-    assert_equal(dataset.data_dir, "/tmp/cifar10", "Data directory should be set correctly")
+    assert_equal(
+        dataset.data_dir,
+        "/tmp/cifar10",
+        "Data directory should be set correctly",
+    )
 
 
 fn test_cifar10_initialization_empty_path() raises:
@@ -126,7 +130,7 @@ fn test_cifar10_get_class_name_all_classes() raises:
     """Test CIFAR10Dataset returns correct names for all 10 classes."""
     var dataset = CIFAR10Dataset("/tmp/cifar10")
 
-    var expected_names = List[String]()
+    var expected_names= List[String]()
     expected_names.append("airplane")
     expected_names.append("automobile")
     expected_names.append("bird")
@@ -140,7 +144,9 @@ fn test_cifar10_get_class_name_all_classes() raises:
 
     for i in range(10):
         var name = dataset.get_class_name(i)
-        assert_equal(name, expected_names[i], "Class name mismatch at index " + String(i))
+        assert_equal(
+            name, expected_names[i], "Class name mismatch at index " + String(i)
+        )
 
 
 fn main() raises:

@@ -19,6 +19,7 @@ struct FocalLoss:
     Reference:
         Lin et al., "Focal Loss for Dense Object Detection", ICCV 2017
     """
+
     var alpha: Float64  # Weighting factor
     var gamma: Float64  # Focusing parameter
 
@@ -26,7 +27,7 @@ struct FocalLoss:
         self.alpha = alpha
         self.gamma = gamma
 
-    fn __call__(self, borrowed predictions: Tensor, borrowed targets: Tensor) -> Tensor:
+    fn __call__(self, predictions: Tensor, targets: Tensor) -> Tensor:
         """Compute focal loss.
 
         Args:
@@ -61,11 +62,13 @@ fn main() raises:
     var loss_fn = FocalLoss(alpha=0.25, gamma=2.0)
 
     # Test with sample predictions and targets
-    var predictions = Tensor([
-        [0.1, 0.2, 0.7],  # Correct class: 2
-        [0.8, 0.1, 0.1],  # Correct class: 0
-        [0.3, 0.3, 0.4],  # Correct class: 1
-    ])
+    var predictions = Tensor(
+        [
+            [0.1, 0.2, 0.7],  # Correct class: 2
+            [0.8, 0.1, 0.1],  # Correct class: 0
+            [0.3, 0.3, 0.4],  # Correct class: 1
+        ]
+    )
     var targets = Tensor([2.0, 0.0, 1.0])
 
     print("Predictions shape:", predictions.shape())

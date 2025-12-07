@@ -40,6 +40,7 @@ struct BFloat16:
     Attributes:
         bits: uint16 storage for BF16 representation.
     """
+
     var bits: UInt16
 
     # ========================================================================
@@ -67,19 +68,19 @@ struct BFloat16:
     fn from_float32(value: Float32) -> BFloat16:
         """Convert Float32 to BFloat16 using rounding.
 
-        Uses round-to-nearest-even (RNE) for proper IEEE 754 rounding.
-        This is the recommended conversion method.
+         Uses round-to-nearest-even (RNE) for proper IEEE 754 rounding.
+         This is the recommended conversion method.
 
-        Args:
-            value: Float32 value to convert
+         Args:
+             value: Float32 value to convert
 
-        Returns:
-            BFloat16 representation
+         Returns:
+             BFloat16 representation
 
-        Example:
-       ```mojo
-            var bf16 = BFloat16.from_float32(3.14159)
-        ```
+         Example:
+        ```mojo
+             var bf16 = BFloat16.from_float32(3.14159)
+         ```
         """
         # Handle special cases
         if isnan(value):
@@ -115,7 +116,10 @@ struct BFloat16:
                     exponent += 1
                     # Handle exponent overflow (infinity)
                     if exponent > 0xFF:
-                        return BFloat16._inf() if sign_bit == 0 else BFloat16._neg_inf()
+                        return (
+                            BFloat16._inf() if sign_bit
+                            == 0 else BFloat16._neg_inf()
+                        )
 
         # Combine into BFloat16 format: [sign:1][exponent:8][mantissa:7]
         var bits16 = UInt16((sign_bit << 15) | (exponent << 7) | mantissa7)
@@ -127,19 +131,19 @@ struct BFloat16:
     fn from_float32_truncate(value: Float32) -> BFloat16:
         """Convert Float32 to BFloat16 using simple truncation.
 
-        Faster than rounding but less accurate. Use only when performance
-        is critical and slight accuracy loss is acceptable.
+         Faster than rounding but less accurate. Use only when performance
+         is critical and slight accuracy loss is acceptable.
 
-        Args:
-            value: Float32 value to convert
+         Args:
+             value: Float32 value to convert
 
-        Returns:
-            BFloat16 representation
+         Returns:
+             BFloat16 representation
 
-        Example:
-       ```mojo
-            var bf16 = BFloat16.from_float32_truncate(3.14159)
-        ```
+         Example:
+        ```mojo
+             var bf16 = BFloat16.from_float32_truncate(3.14159)
+         ```
         """
         # Get bit representation using SIMD bitcast
         var bits32 = bitcast[DType.uint32, 1](SIMD[DType.float32, 1](value))[0]
@@ -412,6 +416,7 @@ struct BFloat16:
 # Utility Functions
 # ============================================================================
 
+
 fn print_bfloat16_bits(value: BFloat16):
     """Print BFloat16 value and its bit representation.
 
@@ -446,6 +451,11 @@ fn print_bfloat16_bits(value: BFloat16):
     var exponent = (bits >> 7) & 0xFF
     var mantissa = bits & 0x7F
 
-    print("Sign: " + String(sign) +
-          ", Exponent: " + String(exponent) +
-          ", Mantissa: " + String(mantissa))
+    print(
+        "Sign: "
+        + String(sign)
+        + ", Exponent: "
+        + String(exponent)
+        + ", Mantissa: "
+        + String(mantissa)
+    )

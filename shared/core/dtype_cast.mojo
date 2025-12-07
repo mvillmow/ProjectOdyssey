@@ -110,7 +110,7 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
 
     Example:
         ```mojo
-        ar fp32_params = ExTensor.randn((1000, 1000), DType.float32)
+        var fp32_params = ExTensor.randn((1000, 1000), DType.float32)
         var bf16_params = cast_to_bfloat16(fp32_params)
         # bf16_params.dtype() == DType.uint16
         ```
@@ -131,7 +131,9 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
     return result
 
 
-fn cast_from_bfloat16(tensor: ExTensor, target_dtype: DType = DType.float32) raises -> ExTensor:
+fn cast_from_bfloat16(
+    tensor: ExTensor, target_dtype: DType = DType.float32
+) raises -> ExTensor:
     """Convert tensor from BFloat16 storage to floating point.
 
     Assumes input tensor stores BFloat16 values as uint16.
@@ -148,14 +150,21 @@ fn cast_from_bfloat16(tensor: ExTensor, target_dtype: DType = DType.float32) rai
 
     Example:
         ```mojo
-        ar bf16_params = cast_to_bfloat16(fp32_params)
+        var bf16_params = cast_to_bfloat16(fp32_params)
         var fp32_params = cast_from_bfloat16(bf16_params)
         ```
     """
     if tensor.dtype() != DType.uint16:
-        raise Error("Expected uint16 tensor for BFloat16 storage, got: " + String(tensor.dtype()))
+        raise Error(
+            "Expected uint16 tensor for BFloat16 storage, got: "
+            + String(tensor.dtype())
+        )
 
-    if target_dtype != DType.float32 and target_dtype != DType.float64 and target_dtype != DType.float16:
+    if (
+        target_dtype != DType.float32
+        and target_dtype != DType.float64
+        and target_dtype != DType.float16
+    ):
         raise Error("Target dtype must be floating point")
 
     var result = ExTensor(tensor.shape(), target_dtype)
@@ -188,7 +197,7 @@ fn get_dtype_size(dtype: DType) -> Int:
 
     Example:
         ```mojo
-        ar size = get_dtype_size(DType.float16)  # 2.
+        var size = get_dtype_size(DType.float16)  # 2.
         ```
     """
     if dtype == DType.float16:
@@ -225,9 +234,11 @@ fn is_floating_dtype(dtype: DType) -> Bool:
             var scaled = tensor * 0.5
         ```
     """
-    return (dtype == DType.float16 or
-            dtype == DType.float32 or
-            dtype == DType.float64)
+    return (
+        dtype == DType.float16
+        or dtype == DType.float32
+        or dtype == DType.float64
+    )
 
 
 fn is_integer_dtype(dtype: DType) -> Bool:
@@ -246,7 +257,13 @@ fn is_integer_dtype(dtype: DType) -> Bool:
             pass
         ```
     """
-    return (dtype == DType.int8 or dtype == DType.int16 or
-            dtype == DType.int32 or dtype == DType.int64 or
-            dtype == DType.uint8 or dtype == DType.uint16 or
-            dtype == DType.uint32 or dtype == DType.uint64)
+    return (
+        dtype == DType.int8
+        or dtype == DType.int16
+        or dtype == DType.int32
+        or dtype == DType.int64
+        or dtype == DType.uint8
+        or dtype == DType.uint16
+        or dtype == DType.uint32
+        or dtype == DType.uint64
+    )

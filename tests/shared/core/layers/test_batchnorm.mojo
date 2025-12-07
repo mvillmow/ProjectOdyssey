@@ -126,7 +126,7 @@ fn test_batchnorm_forward_output_shape() raises:
     var layer = BatchNorm2dLayer(16)
 
     # Input: (batch=2, channels=16, height=32, width=32)
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(16)
     input_shape.append(32)
@@ -154,7 +154,7 @@ fn test_batchnorm_forward_training_mode() raises:
     var layer = BatchNorm2dLayer(4, momentum=0.1)
 
     # Create input with known values
-    var input_shape = List[Int]()
+    var input_shape= List[Int]()
     input_shape.append(2)
     input_shape.append(4)
     input_shape.append(2)
@@ -207,11 +207,7 @@ fn test_batchnorm_forward_inference_mode() raises:
         var_data[i] = 2.0
 
     # Create input
-    var input_shape = List[Int]()
-    input_shape.append(2)
-    input_shape.append(4)
-    input_shape.append(2)
-    input_shape.append(2)
+    var input_shape: List[Int] = [2, 4, 2, 2]
     var input = randn(input_shape, DType.float32)
 
     # Forward in inference mode
@@ -238,11 +234,7 @@ fn test_batchnorm_forward_without_gamma_beta() raises:
     var layer = BatchNorm2dLayer(4)
 
     # Input with known mean and variance
-    var input_shape = List[Int]()
-    input_shape.append(1)
-    input_shape.append(4)
-    input_shape.append(2)
-    input_shape.append(2)
+    var input_shape: List[Int] = [1, 4, 2, 2]
     var input = zeros(input_shape, DType.float32)
 
     # Fill channel 0 with [1, 2, 3, 4]
@@ -265,7 +257,9 @@ fn test_batchnorm_forward_without_gamma_beta() raises:
         sum += output_data[i]
 
     var mean = sum / 4.0
-    assert_true(mean > -0.1 && mean < 0.1, "Normalized values should have mean near 0")
+    assert_true(
+        mean > -0.1 and mean < 0.1, "Normalized values should have mean near 0"
+    )
 
 
 # ============================================================================
@@ -302,22 +296,22 @@ fn test_batchnorm_get_running_stats() raises:
     """Test BatchNorm2dLayer.get_running_stats() returns current statistics."""
     var layer = BatchNorm2dLayer(16)
 
-    var (mean, var) = layer.get_running_stats()
+    let(mean, variance) = layer.get_running_stats()
 
     # Should return copies of running_mean and running_var
     var mean_shape = mean.shape()
-    var var_shape = var.shape()
+    var variance_shape = variance.shape()
 
     assert_equal(mean_shape[0], 16)
-    assert_equal(var_shape[0], 16)
+    assert_equal(variance_shape[0], 16)
 
     # Verify initial values
     var mean_data = mean._data.bitcast[Float32]()
-    var var_data = var._data.bitcast[Float32]()
+    var variance_data = variance._data.bitcast[Float32]()
 
     for i in range(16):
         assert_almost_equal(mean_data[i], 0.0, tolerance=1e-6)
-        assert_almost_equal(var_data[i], 1.0, tolerance=1e-6)
+        assert_almost_equal(variance_data[i], 1.0, tolerance=1e-6)
 
 
 fn test_batchnorm_set_running_stats() raises:
@@ -325,11 +319,11 @@ fn test_batchnorm_set_running_stats() raises:
     var layer = BatchNorm2dLayer(16)
 
     # Create new running statistics
-    var new_mean_shape = List[Int]()
+    var new_mean_shape= List[Int]()
     new_mean_shape.append(16)
     var new_mean = ones(new_mean_shape, DType.float32)
 
-    var new_var_shape = List[Int]()
+    var new_var_shape= List[Int]()
     new_var_shape.append(16)
     var new_var = zeros(new_var_shape, DType.float32)
     for i in range(16):
@@ -355,7 +349,7 @@ fn test_batchnorm_running_stats_update_over_batches() raises:
     var layer = BatchNorm2dLayer(1, momentum=0.1)
 
     # First batch: all 1.0
-    var input1_shape = List[Int]()
+    var input1_shape= List[Int]()
     input1_shape.append(1)
     input1_shape.append(1)
     input1_shape.append(2)
@@ -384,11 +378,11 @@ fn test_batchnorm_running_stats_update_over_batches() raises:
     # But not as much as batch mean (which would be 3.0)
     assert_true(
         mean_after_first < mean_after_second,
-        "Running mean should increase after seeing 3.0"
+        "Running mean should increase after seeing 3.0",
     )
     assert_true(
         mean_after_second < Float32(1.5),
-        "Running mean should not jump all the way to batch mean"
+        "Running mean should not jump all the way to batch mean",
     )
 
 

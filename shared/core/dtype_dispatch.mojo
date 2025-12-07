@@ -92,8 +92,7 @@ fn _format_dtype_name(dtype: DType) -> String:
 
 
 fn elementwise_unary[
-    dtype: DType,
-    op: fn[T: DType](Scalar[T]) -> Scalar[T]
+    dtype: DType, op: fn[T: DType] (Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor) raises -> ExTensor:
     """Apply unary operation with compile-time dtype specialization.
 
@@ -131,7 +130,7 @@ fn elementwise_unary[
 
 
 fn dispatch_unary[
-    op: fn[T: DType](Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor) raises -> ExTensor:
     """Runtime dispatch to compile-time specialized unary operation.
 
@@ -187,8 +186,12 @@ fn dispatch_unary[
         return elementwise_unary[DType.uint64, op](tensor)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
-        raise Error("dispatch_unary: unsupported dtype '" + dtype_name +
-                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
+        raise Error(
+            "dispatch_unary: unsupported dtype '"
+            + dtype_name
+            + "'. Supported: float16, float32, float64, int8, int16, int32,"
+            " int64, uint8, uint16, uint32, uint64"
+        )
 
 
 # ============================================================================
@@ -197,8 +200,7 @@ fn dispatch_unary[
 
 
 fn elementwise_binary[
-    dtype: DType,
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    dtype: DType, op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Apply binary operation with compile-time dtype specialization.
 
@@ -227,7 +229,9 @@ fn elementwise_binary[
     """
     # Validate shapes match
     if lhs._numel != rhs._numel:
-        raise Error("elementwise_binary: tensors must have same number of elements")
+        raise Error(
+            "elementwise_binary: tensors must have same number of elements"
+        )
 
     var result = ExTensor(lhs._shape, dtype)
     var size = lhs._numel
@@ -243,7 +247,7 @@ fn elementwise_binary[
 
 
 fn dispatch_binary[
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Runtime dispatch to compile-time specialized binary operation.
 
@@ -279,8 +283,12 @@ fn dispatch_binary[
     if lhs._dtype != rhs._dtype:
         var lhs_dtype = _format_dtype_name(lhs._dtype)
         var rhs_dtype = _format_dtype_name(rhs._dtype)
-        raise Error("dispatch_binary: dtypes must match. Got lhs=" + lhs_dtype +
-                    ", rhs=" + rhs_dtype)
+        raise Error(
+            "dispatch_binary: dtypes must match. Got lhs="
+            + lhs_dtype
+            + ", rhs="
+            + rhs_dtype
+        )
 
     # Runtime dispatch to compile-time specialized version
     if lhs._dtype == DType.float16:
@@ -307,8 +315,12 @@ fn dispatch_binary[
         return elementwise_binary[DType.uint64, op](lhs, rhs)
     else:
         var dtype_name = _format_dtype_name(lhs._dtype)
-        raise Error("dispatch_binary: unsupported dtype '" + dtype_name +
-                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
+        raise Error(
+            "dispatch_binary: unsupported dtype '"
+            + dtype_name
+            + "'. Supported: float16, float32, float64, int8, int16, int32,"
+            " int64, uint8, uint16, uint32, uint64"
+        )
 
 
 # ============================================================================
@@ -317,8 +329,7 @@ fn dispatch_binary[
 
 
 fn elementwise_scalar[
-    dtype: DType,
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    dtype: DType, op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Apply scalar binary operation with compile-time dtype specialization.
 
@@ -356,7 +367,7 @@ fn elementwise_scalar[
 
 
 fn dispatch_scalar[
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Runtime dispatch to compile-time specialized scalar operation.
 
@@ -414,8 +425,12 @@ fn dispatch_scalar[
         return elementwise_scalar[DType.uint64, op](tensor, scalar)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
-        raise Error("dispatch_scalar: unsupported dtype '" + dtype_name +
-                    "'. Supported: float16, float32, float64, int8, int16, int32, int64, uint8, uint16, uint32, uint64")
+        raise Error(
+            "dispatch_scalar: unsupported dtype '"
+            + dtype_name
+            + "'. Supported: float16, float32, float64, int8, int16, int32,"
+            " int64, uint8, uint16, uint32, uint64"
+        )
 
 
 # ============================================================================
@@ -424,7 +439,7 @@ fn dispatch_scalar[
 
 
 fn dispatch_float_unary[
-    op: fn[T: DType](Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor) raises -> ExTensor:
     """Runtime dispatch for floating-point only unary operations.
 
@@ -466,11 +481,14 @@ fn dispatch_float_unary[
         return elementwise_unary[DType.float64, op](tensor)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
-        raise Error("dispatch_float_unary: operation only supports float16/32/64. Got " + dtype_name)
+        raise Error(
+            "dispatch_float_unary: operation only supports float16/32/64. Got "
+            + dtype_name
+        )
 
 
 fn dispatch_float_binary[
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](lhs: ExTensor, rhs: ExTensor) raises -> ExTensor:
     """Runtime dispatch for floating-point only binary operations.
 
@@ -498,8 +516,12 @@ fn dispatch_float_binary[
     if lhs._dtype != rhs._dtype:
         var lhs_dtype = _format_dtype_name(lhs._dtype)
         var rhs_dtype = _format_dtype_name(rhs._dtype)
-        raise Error("dispatch_float_binary: dtypes must match. Got lhs=" + lhs_dtype +
-                    ", rhs=" + rhs_dtype)
+        raise Error(
+            "dispatch_float_binary: dtypes must match. Got lhs="
+            + lhs_dtype
+            + ", rhs="
+            + rhs_dtype
+        )
 
     # Runtime dispatch for float types only
     if lhs._dtype == DType.float16:
@@ -510,11 +532,14 @@ fn dispatch_float_binary[
         return elementwise_binary[DType.float64, op](lhs, rhs)
     else:
         var dtype_name = _format_dtype_name(lhs._dtype)
-        raise Error("dispatch_float_binary: operation only supports float16/32/64. Got " + dtype_name)
+        raise Error(
+            "dispatch_float_binary: operation only supports float16/32/64. Got "
+            + dtype_name
+        )
 
 
 fn dispatch_float_scalar[
-    op: fn[T: DType](Scalar[T], Scalar[T]) -> Scalar[T]
+    op: fn[T: DType] (Scalar[T], Scalar[T]) -> Scalar[T]
 ](tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Runtime dispatch for floating-point only scalar operations.
 
@@ -546,4 +571,7 @@ fn dispatch_float_scalar[
         return elementwise_scalar[DType.float64, op](tensor, scalar)
     else:
         var dtype_name = _format_dtype_name(tensor._dtype)
-        raise Error("dispatch_float_scalar: operation only supports float16/32/64. Got " + dtype_name)
+        raise Error(
+            "dispatch_float_scalar: operation only supports float16/32/64. Got "
+            + dtype_name
+        )

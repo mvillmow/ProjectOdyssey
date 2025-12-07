@@ -25,7 +25,7 @@ fn batch_norm2d(
     running_var: ExTensor,
     training: Bool,
     momentum: Float64 = 0.1,
-    epsilon: Float64 = 1e-5
+    epsilon: Float64 = 1e-5,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Functional 2D batch normalization.
 
@@ -92,7 +92,9 @@ fn batch_norm2d(
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("batch_norm2d requires 4D input (batch, channels, height, width)")
+        raise Error(
+            "batch_norm2d requires 4D input (batch, channels, height, width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -119,7 +121,12 @@ fn batch_norm2d(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 batch_mean_ptr.bitcast[Float32]()[c] = sum_val / spatial_size
 
@@ -130,7 +137,12 @@ fn batch_norm2d(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / spatial_size
@@ -141,9 +153,16 @@ fn batch_norm2d(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
-                batch_mean_ptr.bitcast[Float64]()[c] = sum_val / Float64(spatial_size)
+                batch_mean_ptr.bitcast[Float64]()[c] = sum_val / Float64(
+                    spatial_size
+                )
 
             for c in range(channels):
                 var mean_val = batch_mean_ptr.bitcast[Float64]()[c]
@@ -151,10 +170,17 @@ fn batch_norm2d(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
-                batch_var_ptr.bitcast[Float64]()[c] = sum_sq_diff / Float64(spatial_size)
+                batch_var_ptr.bitcast[Float64]()[c] = sum_sq_diff / Float64(
+                    spatial_size
+                )
         else:
             raise Error("batch_norm2d: only float32/64 dtypes supported")
 
@@ -175,10 +201,17 @@ fn batch_norm2d(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float32]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float32]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -191,10 +224,17 @@ fn batch_norm2d(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float64]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float64]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
         # Update running statistics
         var new_running_mean = zeros_like(running_mean)
@@ -211,8 +251,14 @@ fn batch_norm2d(
                 var bm_val = batch_mean_ptr.bitcast[Float32]()[c]
                 var bv_val = batch_var_ptr.bitcast[Float32]()[c]
 
-                nrm_ptr.bitcast[Float32]()[c] = Float32(1.0 - momentum) * rm_val + Float32(momentum) * bm_val
-                nrv_ptr.bitcast[Float32]()[c] = Float32(1.0 - momentum) * rv_val + Float32(momentum) * bv_val
+                nrm_ptr.bitcast[Float32]()[c] = (
+                    Float32(1.0 - momentum) * rm_val
+                    + Float32(momentum) * bm_val
+                )
+                nrv_ptr.bitcast[Float32]()[c] = (
+                    Float32(1.0 - momentum) * rv_val
+                    + Float32(momentum) * bv_val
+                )
 
         elif x.dtype() == DType.float64:
             for c in range(channels):
@@ -221,8 +267,12 @@ fn batch_norm2d(
                 var bm_val = batch_mean_ptr.bitcast[Float64]()[c]
                 var bv_val = batch_var_ptr.bitcast[Float64]()[c]
 
-                nrm_ptr.bitcast[Float64]()[c] = (1.0 - momentum) * rm_val + momentum * bm_val
-                nrv_ptr.bitcast[Float64]()[c] = (1.0 - momentum) * rv_val + momentum * bv_val
+                nrm_ptr.bitcast[Float64]()[c] = (
+                    1.0 - momentum
+                ) * rm_val + momentum * bm_val
+                nrv_ptr.bitcast[Float64]()[c] = (
+                    1.0 - momentum
+                ) * rv_val + momentum * bv_val
 
         return (output, new_running_mean, new_running_var)
 
@@ -247,10 +297,17 @@ fn batch_norm2d(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float32]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float32]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -263,14 +320,20 @@ fn batch_norm2d(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float64]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float64]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
         # Running stats unchanged in inference mode
         return (output, running_mean, running_var)
-
 
 
 fn batch_norm2d_backward(
@@ -280,7 +343,7 @@ fn batch_norm2d_backward(
     running_mean: ExTensor,
     running_var: ExTensor,
     training: Bool,
-    epsilon: Float64 = 1e-5
+    epsilon: Float64 = 1e-5,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for 2D batch normalization.
 
@@ -369,7 +432,10 @@ fn batch_norm2d_backward(
     var grad_shape = grad_output.shape()
 
     if len(x_shape) != 4 or len(grad_shape) != 4:
-        raise Error("batch_norm2d_backward requires 4D inputs (batch, channels, height, width)")
+        raise Error(
+            "batch_norm2d_backward requires 4D inputs (batch, channels, height,"
+            " width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -408,7 +474,12 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 batch_mean_ptr.bitcast[Float32]()[c] = sum_val / N
 
@@ -419,7 +490,12 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 batch_var_ptr.bitcast[Float32]()[c] = sum_sq_diff / N
@@ -436,8 +512,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
@@ -462,15 +545,29 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
 
                             # Accumulate for grad_var
-                            grad_var += grad_x_norm * x_minus_mean * Float32(-0.5) * pow_scalar_f32(var_val + Float32(epsilon), Float32(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float32(-0.5)
+                                * pow_scalar_f32(
+                                    var_val + Float32(epsilon), Float32(-1.5)
+                                )
+                            )
 
                             # Accumulate for grad_mean (direct contribution)
                             grad_mean += grad_x_norm * Float32(-1.0) / std
@@ -479,8 +576,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
 
@@ -490,12 +594,16 @@ fn batch_norm2d_backward(
                             var term1 = grad_x_norm / std
 
                             # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
-                            var term2 = grad_var * Float32(2.0) * x_minus_mean / N
+                            var term2 = (
+                                grad_var * Float32(2.0) * x_minus_mean / N
+                            )
 
                             # 3) Effect through mean term
                             var term3 = grad_mean / N
 
-                            grad_input_ptr.bitcast[Float32]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float32]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
         elif x.dtype() == DType.float64:
             var N = Float64(spatial_size)
@@ -506,7 +614,12 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 batch_mean_ptr.bitcast[Float64]()[c] = sum_val / N
 
@@ -517,7 +630,12 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 batch_var_ptr.bitcast[Float64]()[c] = sum_sq_diff / N
@@ -534,8 +652,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
@@ -560,15 +685,29 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
 
                             # Accumulate for grad_var
-                            grad_var += grad_x_norm * x_minus_mean * Float64(-0.5) * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float64(-0.5)
+                                * pow_scalar_f64(
+                                    var_val + epsilon, Float64(-1.5)
+                                )
+                            )
 
                             # Accumulate for grad_mean (direct contribution)
                             grad_mean += grad_x_norm * Float64(-1.0) / std
@@ -577,8 +716,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
 
@@ -588,15 +734,21 @@ fn batch_norm2d_backward(
                             var term1 = grad_x_norm / std
 
                             # 2) Effect through variance term: grad_var * d(var)/d(x_i) / (var+eps)^(3/2)
-                            var term2 = grad_var * Float64(2.0) * x_minus_mean / N
+                            var term2 = (
+                                grad_var * Float64(2.0) * x_minus_mean / N
+                            )
 
                             # 3) Effect through mean term
                             var term3 = grad_mean / N
 
-                            grad_input_ptr.bitcast[Float64]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float64]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
         else:
-            raise Error("batch_norm2d_backward: only float32/64 dtypes supported")
+            raise Error(
+                "batch_norm2d_backward: only float32/64 dtypes supported"
+            )
 
     else:
         # ========== INFERENCE MODE: Simpler gradients using running statistics ==========
@@ -617,8 +769,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
@@ -637,9 +796,18 @@ fn batch_norm2d_backward(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
-                            grad_input_ptr.bitcast[Float32]()[idx] = grad_out * gamma_val / std
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
+                            grad_input_ptr.bitcast[Float32]()[idx] = (
+                                grad_out * gamma_val / std
+                            )
 
         elif x.dtype() == DType.float64:
             # Compute grad_beta and grad_gamma
@@ -654,8 +822,15 @@ fn batch_norm2d_backward(
                 for b in range(batch):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
@@ -674,21 +849,29 @@ fn batch_norm2d_backward(
 
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
-                            grad_input_ptr.bitcast[Float64]()[idx] = grad_out * gamma_val / std
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
+                            grad_input_ptr.bitcast[Float64]()[idx] = (
+                                grad_out * gamma_val / std
+                            )
 
         else:
-            raise Error("batch_norm2d_backward: only float32/64 dtypes supported")
+            raise Error(
+                "batch_norm2d_backward: only float32/64 dtypes supported"
+            )
 
     return (grad_input, grad_gamma, grad_beta)
 
 
 fn layer_norm(
-    x: ExTensor,
-    gamma: ExTensor,
-    beta: ExTensor,
-    epsilon: Float64 = 1e-5
+    x: ExTensor, gamma: ExTensor, beta: ExTensor, epsilon: Float64 = 1e-5
 ) raises -> ExTensor:
     """Functional layer normalization.
 
@@ -769,7 +952,9 @@ fn layer_norm(
                     var x_norm = (x_val - mean_val) / std
                     var gamma_val = gamma_ptr.bitcast[Float32]()[f]
                     var beta_val = beta_ptr.bitcast[Float32]()[f]
-                    output_ptr.bitcast[Float32]()[idx] = gamma_val * x_norm + beta_val
+                    output_ptr.bitcast[Float32]()[idx] = (
+                        gamma_val * x_norm + beta_val
+                    )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -793,7 +978,9 @@ fn layer_norm(
                     var x_norm = (x_val - mean_val) / std
                     var gamma_val = gamma_ptr.bitcast[Float64]()[f]
                     var beta_val = beta_ptr.bitcast[Float64]()[f]
-                    output_ptr.bitcast[Float64]()[idx] = gamma_val * x_norm + beta_val
+                    output_ptr.bitcast[Float64]()[idx] = (
+                        gamma_val * x_norm + beta_val
+                    )
         else:
             raise Error("layer_norm: only float32/64 dtypes supported")
 
@@ -821,7 +1008,12 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / Float32(feature_size)
 
@@ -830,7 +1022,12 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float32(feature_size)
@@ -840,13 +1037,24 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            var gamma_val = gamma_ptr.bitcast[Float32]()[gamma_idx]
-                            var beta_val = beta_ptr.bitcast[Float32]()[gamma_idx]
-                            output_ptr.bitcast[Float32]()[idx] = gamma_val * x_norm + beta_val
+                            var gamma_val = gamma_ptr.bitcast[Float32]()[
+                                gamma_idx
+                            ]
+                            var beta_val = beta_ptr.bitcast[Float32]()[
+                                gamma_idx
+                            ]
+                            output_ptr.bitcast[Float32]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
         elif x.dtype() == DType.float64:
             for b in range(batch):
@@ -854,7 +1062,12 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / Float64(feature_size)
 
@@ -862,7 +1075,12 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / Float64(feature_size)
@@ -871,13 +1089,24 @@ fn layer_norm(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            var gamma_val = gamma_ptr.bitcast[Float64]()[gamma_idx]
-                            var beta_val = beta_ptr.bitcast[Float64]()[gamma_idx]
-                            output_ptr.bitcast[Float64]()[idx] = gamma_val * x_norm + beta_val
+                            var gamma_val = gamma_ptr.bitcast[Float64]()[
+                                gamma_idx
+                            ]
+                            var beta_val = beta_ptr.bitcast[Float64]()[
+                                gamma_idx
+                            ]
+                            output_ptr.bitcast[Float64]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
         else:
             raise Error("layer_norm: only float32/64 dtypes supported")
 
@@ -888,10 +1117,7 @@ fn layer_norm(
 
 
 fn layer_norm_backward(
-    grad_output: ExTensor,
-    x: ExTensor,
-    gamma: ExTensor,
-    epsilon: Float64 = 1e-5
+    grad_output: ExTensor, x: ExTensor, gamma: ExTensor, epsilon: Float64 = 1e-5
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for layer normalization.
 
@@ -1036,7 +1262,14 @@ fn layer_norm_backward(
                     var grad_x_norm = grad_out * gamma_val
 
                     # Accumulate for grad_var
-                    grad_var += grad_x_norm * x_minus_mean * Float32(-0.5) * pow_scalar_f32(var_val + Float32(epsilon), Float32(-1.5))
+                    grad_var += (
+                        grad_x_norm
+                        * x_minus_mean
+                        * Float32(-0.5)
+                        * pow_scalar_f32(
+                            var_val + Float32(epsilon), Float32(-1.5)
+                        )
+                    )
 
                     # Accumulate for grad_mean
                     grad_mean += grad_x_norm * Float32(-1.0) / std
@@ -1055,7 +1288,9 @@ fn layer_norm_backward(
                     var term2 = grad_var * Float32(2.0) * x_minus_mean / N
                     var term3 = grad_mean / N
 
-                    grad_input_ptr.bitcast[Float32]()[idx] = term1 + term2 + term3
+                    grad_input_ptr.bitcast[Float32]()[idx] = (
+                        term1 + term2 + term3
+                    )
 
         elif x.dtype() == DType.float64:
             var N64 = Float64(features)
@@ -1110,7 +1345,12 @@ fn layer_norm_backward(
                     var gamma_val = gamma_ptr.bitcast[Float64]()[f]
 
                     var grad_x_norm = grad_out * gamma_val
-                    grad_var += grad_x_norm * x_minus_mean * Float64(-0.5) * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
+                    grad_var += (
+                        grad_x_norm
+                        * x_minus_mean
+                        * Float64(-0.5)
+                        * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
+                    )
                     grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for f in range(features):
@@ -1125,7 +1365,9 @@ fn layer_norm_backward(
                     var term2 = grad_var * Float64(2.0) * x_minus_mean / N64
                     var term3 = grad_mean / N64
 
-                    grad_input_ptr.bitcast[Float64]()[idx] = term1 + term2 + term3
+                    grad_input_ptr.bitcast[Float64]()[idx] = (
+                        term1 + term2 + term3
+                    )
 
         else:
             raise Error("layer_norm_backward: only float32/64 dtypes supported")
@@ -1162,7 +1404,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / N
 
@@ -1170,7 +1417,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1180,14 +1432,25 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
-                            grad_beta_ptr.bitcast[Float32]()[gamma_idx] += grad_out
-                            grad_gamma_ptr.bitcast[Float32]()[gamma_idx] += grad_out * x_norm
+                            grad_beta_ptr.bitcast[Float32]()[
+                                gamma_idx
+                            ] += grad_out
+                            grad_gamma_ptr.bitcast[Float32]()[gamma_idx] += (
+                                grad_out * x_norm
+                            )
 
             # Second pass: compute grad_input for each sample
             for b in range(batch):
@@ -1196,7 +1459,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / N
 
@@ -1204,7 +1472,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1217,34 +1490,63 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
-                            var gamma_val = gamma_ptr.bitcast[Float32]()[gamma_idx]
+                            var gamma_val = gamma_ptr.bitcast[Float32]()[
+                                gamma_idx
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
-                            grad_var += grad_x_norm * x_minus_mean * Float32(-0.5) * pow_scalar_f32(var_val + Float32(epsilon), Float32(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float32(-0.5)
+                                * pow_scalar_f32(
+                                    var_val + Float32(epsilon), Float32(-1.5)
+                                )
+                            )
                             grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input for each element
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
-                            var gamma_val = gamma_ptr.bitcast[Float32]()[gamma_idx]
+                            var gamma_val = gamma_ptr.bitcast[Float32]()[
+                                gamma_idx
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
-                            var term2 = grad_var * Float32(2.0) * x_minus_mean / N
+                            var term2 = (
+                                grad_var * Float32(2.0) * x_minus_mean / N
+                            )
                             var term3 = grad_mean / N
 
-                            grad_input_ptr.bitcast[Float32]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float32]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
         elif x.dtype() == DType.float64:
             var N64 = Float64(feature_size)
@@ -1254,7 +1556,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / N64
 
@@ -1262,7 +1569,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
@@ -1271,21 +1583,37 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
-                            grad_beta_ptr.bitcast[Float64]()[gamma_idx] += grad_out
-                            grad_gamma_ptr.bitcast[Float64]()[gamma_idx] += grad_out * x_norm
+                            grad_beta_ptr.bitcast[Float64]()[
+                                gamma_idx
+                            ] += grad_out
+                            grad_gamma_ptr.bitcast[Float64]()[gamma_idx] += (
+                                grad_out * x_norm
+                            )
 
             for b in range(batch):
                 var sum_val = Float64(0.0)
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / N64
 
@@ -1293,7 +1621,12 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N64
@@ -1305,33 +1638,62 @@ fn layer_norm_backward(
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
-                            var gamma_val = gamma_ptr.bitcast[Float64]()[gamma_idx]
+                            var gamma_val = gamma_ptr.bitcast[Float64]()[
+                                gamma_idx
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
-                            grad_var += grad_x_norm * x_minus_mean * Float64(-0.5) * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float64(-0.5)
+                                * pow_scalar_f64(
+                                    var_val + epsilon, Float64(-1.5)
+                                )
+                            )
                             grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for c in range(channels):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var gamma_idx = c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
-                            var gamma_val = gamma_ptr.bitcast[Float64]()[gamma_idx]
+                            var gamma_val = gamma_ptr.bitcast[Float64]()[
+                                gamma_idx
+                            ]
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
-                            var term2 = grad_var * Float64(2.0) * x_minus_mean / N64
+                            var term2 = (
+                                grad_var * Float64(2.0) * x_minus_mean / N64
+                            )
                             var term3 = grad_mean / N64
 
-                            grad_input_ptr.bitcast[Float64]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float64]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
         else:
             raise Error("layer_norm_backward: only float32/64 dtypes supported")
@@ -1347,7 +1709,7 @@ fn group_norm(
     num_groups: Int,
     gamma: ExTensor,
     beta: ExTensor,
-    epsilon: Float64 = 1e-5
+    epsilon: Float64 = 1e-5,
 ) raises -> ExTensor:
     """Functional group normalization.
 
@@ -1388,7 +1750,9 @@ fn group_norm(
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("group_norm requires 4D input (batch, channels, height, width)")
+        raise Error(
+            "group_norm requires 4D input (batch, channels, height, width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -1420,7 +1784,12 @@ fn group_norm(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / N
 
@@ -1429,7 +1798,12 @@ fn group_norm(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1441,10 +1815,17 @@ fn group_norm(
                     var beta_val = beta_ptr.bitcast[Float32]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float32]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float32]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
 
     elif x.dtype() == DType.float64:
         var N = Float64(group_size)
@@ -1458,7 +1839,12 @@ fn group_norm(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / N
 
@@ -1466,7 +1852,12 @@ fn group_norm(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1477,10 +1868,17 @@ fn group_norm(
                     var beta_val = beta_ptr.bitcast[Float64]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
-                            output_ptr.bitcast[Float64]()[idx] = gamma_val * x_norm + beta_val
+                            output_ptr.bitcast[Float64]()[idx] = (
+                                gamma_val * x_norm + beta_val
+                            )
     else:
         raise Error("group_norm: only float32/64 dtypes supported")
 
@@ -1492,7 +1890,7 @@ fn group_norm_backward(
     x: ExTensor,
     num_groups: Int,
     gamma: ExTensor,
-    epsilon: Float64 = 1e-5
+    epsilon: Float64 = 1e-5,
 ) raises -> Tuple[ExTensor, ExTensor, ExTensor]:
     """Backward pass for group normalization.
 
@@ -1531,7 +1929,10 @@ fn group_norm_backward(
     """
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("group_norm_backward requires 4D input (batch, channels, height, width)")
+        raise Error(
+            "group_norm_backward requires 4D input (batch, channels, height,"
+            " width)"
+        )
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -1539,7 +1940,9 @@ fn group_norm_backward(
     var width = x_shape[3]
 
     if channels % num_groups != 0:
-        raise Error("group_norm_backward: channels must be divisible by num_groups")
+        raise Error(
+            "group_norm_backward: channels must be divisible by num_groups"
+        )
 
     var channels_per_group = channels // num_groups
     var group_size = channels_per_group * height * width
@@ -1570,7 +1973,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / N
 
@@ -1578,7 +1986,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1588,13 +2001,22 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float32]()[c] += grad_out
-                            grad_gamma_ptr.bitcast[Float32]()[c] += grad_out * x_norm
+                            grad_gamma_ptr.bitcast[Float32]()[c] += (
+                                grad_out * x_norm
+                            )
 
         # Second pass: compute grad_input
         for b in range(batch):
@@ -1607,7 +2029,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float32]()[idx]
                 var mean_val = sum_val / N
 
@@ -1615,7 +2042,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float32]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1629,13 +2061,27 @@ fn group_norm_backward(
                     var gamma_val = gamma_ptr.bitcast[Float32]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
-                            grad_var += grad_x_norm * x_minus_mean * Float32(-0.5) * pow_scalar_f32(var_val + Float32(epsilon), Float32(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float32(-0.5)
+                                * pow_scalar_f32(
+                                    var_val + Float32(epsilon), Float32(-1.5)
+                                )
+                            )
                             grad_mean += grad_x_norm * Float32(-1.0) / std
 
                 # Compute grad_input
@@ -1643,17 +2089,28 @@ fn group_norm_backward(
                     var gamma_val = gamma_ptr.bitcast[Float32]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float32]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float32]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float32]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
-                            var term2 = grad_var * Float32(2.0) * x_minus_mean / N
+                            var term2 = (
+                                grad_var * Float32(2.0) * x_minus_mean / N
+                            )
                             var term3 = grad_mean / N
 
-                            grad_input_ptr.bitcast[Float32]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float32]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
     elif x.dtype() == DType.float64:
         var N = Float64(group_size)
@@ -1667,7 +2124,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / N
 
@@ -1675,7 +2137,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1684,13 +2151,22 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_norm = (x_val - mean_val) / std
 
                             grad_beta_ptr.bitcast[Float64]()[c] += grad_out
-                            grad_gamma_ptr.bitcast[Float64]()[c] += grad_out * x_norm
+                            grad_gamma_ptr.bitcast[Float64]()[c] += (
+                                grad_out * x_norm
+                            )
 
         for b in range(batch):
             for g in range(num_groups):
@@ -1701,7 +2177,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             sum_val += x_ptr.bitcast[Float64]()[idx]
                 var mean_val = sum_val / N
 
@@ -1709,7 +2190,12 @@ fn group_norm_backward(
                 for c in range(c_start, c_end):
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
                             var diff = x_ptr.bitcast[Float64]()[idx] - mean_val
                             sum_sq_diff += diff * diff
                 var var_val = sum_sq_diff / N
@@ -1722,30 +2208,55 @@ fn group_norm_backward(
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
-                            grad_var += grad_x_norm * x_minus_mean * Float64(-0.5) * pow_scalar_f64(var_val + epsilon, Float64(-1.5))
+                            grad_var += (
+                                grad_x_norm
+                                * x_minus_mean
+                                * Float64(-0.5)
+                                * pow_scalar_f64(
+                                    var_val + epsilon, Float64(-1.5)
+                                )
+                            )
                             grad_mean += grad_x_norm * Float64(-1.0) / std
 
                 for c in range(c_start, c_end):
                     var gamma_val = gamma_ptr.bitcast[Float64]()[c]
                     for h in range(height):
                         for w in range(width):
-                            var idx = b * (channels * height * width) + c * (height * width) + h * width + w
-                            var grad_out = grad_output_ptr.bitcast[Float64]()[idx]
+                            var idx = (
+                                b * (channels * height * width)
+                                + c * (height * width)
+                                + h * width
+                                + w
+                            )
+                            var grad_out = grad_output_ptr.bitcast[Float64]()[
+                                idx
+                            ]
                             var x_val = x_ptr.bitcast[Float64]()[idx]
                             var x_minus_mean = x_val - mean_val
 
                             var grad_x_norm = grad_out * gamma_val
                             var term1 = grad_x_norm / std
-                            var term2 = grad_var * Float64(2.0) * x_minus_mean / N
+                            var term2 = (
+                                grad_var * Float64(2.0) * x_minus_mean / N
+                            )
                             var term3 = grad_mean / N
 
-                            grad_input_ptr.bitcast[Float64]()[idx] = term1 + term2 + term3
+                            grad_input_ptr.bitcast[Float64]()[idx] = (
+                                term1 + term2 + term3
+                            )
 
     else:
         raise Error("group_norm_backward: only float32/64 dtypes supported")
@@ -2026,7 +2537,9 @@ fn instance_norm_backward(
                         var x_norm = (x_val - mean_val) / std
 
                         grad_beta_ptr.bitcast[Float32]()[c] += grad_out
-                        grad_gamma_ptr.bitcast[Float32]()[c] += grad_out * x_norm
+                        grad_gamma_ptr.bitcast[Float32]()[c] += (
+                            grad_out * x_norm
+                        )
 
         # Second pass: compute grad_input
         for b in range(batch):
@@ -2154,7 +2667,9 @@ fn instance_norm_backward(
                         var x_norm = (x_val - mean_val) / std
 
                         grad_beta_ptr.bitcast[Float64]()[c] += grad_out
-                        grad_gamma_ptr.bitcast[Float64]()[c] += grad_out * x_norm
+                        grad_gamma_ptr.bitcast[Float64]()[c] += (
+                            grad_out * x_norm
+                        )
 
         # Second pass: compute grad_input
         for b in range(batch):

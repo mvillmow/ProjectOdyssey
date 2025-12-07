@@ -14,12 +14,12 @@ from shared.core.extensor import ExTensor
 from shared.core.gradient_types import GradientPair
 
 
-fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
+fn matmul(read a: ExTensor, read b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
     Args:
-        a: First tensor (matrix or vector)
-        b: Second tensor (matrix or vector)
+        a: First tensor (matrix or vector).
+        b: Second tensor (matrix or vector).
 
     Returns:
         A new tensor containing the matrix product a @ b.
@@ -69,7 +69,15 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var n = b_shape[0]
 
         if k != n:
-            raise Error("Incompatible dimensions for matmul: matrix (" + String(m) + ", " + String(k) + ") @ vector (" + String(n) + ")")
+            raise Error(
+                "Incompatible dimensions for matmul: matrix ("
+                + String(m)
+                + ", "
+                + String(k)
+                + ") @ vector ("
+                + String(n)
+                + ")"
+            )
 
         # Result is a vector of shape (m,)
         var result_shape = List[Int]()
@@ -94,7 +102,15 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var n = b_shape[1]
 
         if m != k:
-            raise Error("Incompatible dimensions for matmul: vector (" + String(m) + ") @ matrix (" + String(k) + ", " + String(n) + ")")
+            raise Error(
+                "Incompatible dimensions for matmul: vector ("
+                + String(m)
+                + ") @ matrix ("
+                + String(k)
+                + ", "
+                + String(n)
+                + ")"
+            )
 
         # Result is a vector of shape (n,)
         var result_shape = List[Int]()
@@ -114,7 +130,10 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     # For 2D and higher, require at least 2D tensors
     if a_ndim < 2 or b_ndim < 2:
-        raise Error("matmul requires at least 2D tensors for non-vector inputs (use dot() for 1D @ 1D)")
+        raise Error(
+            "matmul requires at least 2D tensors for non-vector inputs (use"
+            " dot() for 1D @ 1D)"
+        )
 
     var a_rows = a_shape[len(a_shape) - 2]
     var a_cols = a_shape[len(a_shape) - 1]
@@ -123,7 +142,10 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
 
     if a_cols != b_rows:
         raise Error(
-            "Incompatible dimensions for matmul: " + String(a_cols) + " != " + String(b_rows)
+            "Incompatible dimensions for matmul: "
+            + String(a_cols)
+            + " != "
+            + String(b_rows)
         )
 
     # Compute output shape
@@ -185,7 +207,9 @@ fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     return result^
 
 
-fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTensor:
+fn transpose(
+    tensor: ExTensor, axes: Optional[List[Int]] = None
+) raises -> ExTensor:
     """Transpose tensor dimensions with optional axis permutation.
 
     Supports arbitrary axis permutation for N-dimensional tensors, matching NumPy semantics.
@@ -194,7 +218,7 @@ fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTen
         tensor: Input tensor.
         axes: Optional permutation of axes. If None, reverses all axes (default behavior).
                 Must be a permutation of [0, 1, ..., ndim-1] with no duplicates.
-                Example: axes=[2, 0, 1] permutes (N, H, W, C) -> (C, N, H, W)
+                Example: axes=[2, 0, 1] permutes (N, H, W, C) -> (C, N, H, W).
 
     Returns:
         A new tensor with permuted dimensions according to axes.
@@ -209,7 +233,7 @@ fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTen
 
         # Custom permutation: (2, 3, 4) -> (4, 3, 2) with axes=[2, 0, 1]
         var t3d = zeros(List[Int](2, 3, 4), DType.float32)
-        var axes = List[Int]()
+        var axes  = List[Int]()
         axes.append(2)
         axes.append(0)
         axes.append(1)
@@ -232,16 +256,26 @@ fn transpose(tensor: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTen
 
     # Validate axes parameter
     if len(perm.value()) != ndim:
-        raise Error("axes length (" + String(len(perm.value())) + ") does not match tensor dimensions (" + String(ndim) + ")")
+        raise Error(
+            "axes length ("
+            + String(len(perm.value()))
+            + ") does not match tensor dimensions ("
+            + String(ndim)
+            + ")"
+        )
 
     # Check for duplicates and valid range
-    var seen = List[Bool]()
-    for _ in range(ndim):
-        seen.append(False)
+    var seen = List[Bool](length=ndim, fill=False)
 
     for axis in perm.value():
         if axis < 0 or axis >= ndim:
-            raise Error("axis " + String(axis) + " is out of bounds for tensor with " + String(ndim) + " dimensions")
+            raise Error(
+                "axis "
+                + String(axis)
+                + " is out of bounds for tensor with "
+                + String(ndim)
+                + " dimensions"
+            )
         if seen[axis]:
             raise Error("duplicate axis " + String(axis) + " in permutation")
         seen[axis] = True
@@ -307,9 +341,11 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
         Dot product (scalar for 1D, matrix product for 2D)
 
     Examples:
+    ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
         var c = dot(a, b)  # Scalar 5.0
+    ```
     """
     # Check dtype compatibility
     if a.dtype() != b.dtype():
@@ -344,16 +380,18 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Outer product of two vectors.
 
     Args:
-        a: First 1D tensor (vector)
-        b: Second 1D tensor (vector)
+        a: First 1D tensor (vector).
+        b: Second 1D tensor (vector).
 
     Returns:
         A 2D tensor containing the outer product.
 
     Examples:
+    ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
-        var c = outer(a, b)  # Shape (3, 4), all ones.
+        var c = outer(a, b)  # Shape (3, 4), all ones
+    ```
     """
     # Check that inputs are 1D
     if a.dim() != 1 or b.dim() != 1:
@@ -388,7 +426,9 @@ fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
 # ============================================================================
 
 
-fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> GradientPair:
+fn matmul_backward(
+    grad_output: ExTensor, a: ExTensor, b: ExTensor
+) raises -> GradientPair:
     """Compute gradients for matrix multiplication.
 
     For C = A @ B, given ∂L/∂C, computes:
@@ -402,14 +442,15 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         - Batched: N-D tensors with batched matmul
 
     Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+        grad_output: Gradient from upstream (∂L/∂C).
+        a: First input from forward pass (A).
+        b: Second input from forward pass (B).
 
     Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
     Examples:
+    ```
         # Forward pass
         var a = zeros(List[Int](3, 4), DType.float32)
         var b = zeros(List[Int](4, 5), DType.float32)
@@ -420,11 +461,14 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
         var grads = matmul_backward(grad_c, a, b)
         var grad_a = grads.grad_a  # Shape (3, 4)
         var grad_b = grads.grad_b  # Shape (4, 5)
+    ```
 
     Mathematical Derivation:
+    ```
         For element-wise: C[i,j] = Σ_k A[i,k] * B[k,j]
         ∂L/∂A[i,k] = Σ_j (∂L/∂C[i,j] * B[k,j]) = (∂L/∂C @ B^T)[i,k]
         ∂L/∂B[k,j] = Σ_i (∂L/∂C[i,j] * A[i,k]) = (A^T @ ∂L/∂C)[k,j]
+    ```
     """
     var a_shape = a.shape()
     var b_shape = b.shape()
@@ -499,7 +543,9 @@ fn matmul_backward(grad_output: ExTensor, a: ExTensor, b: ExTensor) raises -> Gr
     return GradientPair(grad_a, grad_b)
 
 
-fn transpose_backward(grad_output: ExTensor, axes: Optional[List[Int]] = None) raises -> ExTensor:
+fn transpose_backward(
+    grad_output: ExTensor, axes: Optional[List[Int]] = None
+) raises -> ExTensor:
     """Compute gradient for transpose operation.
 
     For Y = transpose(X, axes), given ∂L/∂Y, computes:
@@ -508,13 +554,14 @@ fn transpose_backward(grad_output: ExTensor, axes: Optional[List[Int]] = None) r
     The gradient of transpose is the transpose with inverse permutation.
 
     Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
+        grad_output: Gradient from upstream (∂L/∂Y).
         axes: The axes permutation used in forward pass. If None, uses default (reverse all).
 
     Returns:
         Gradient w.r.t. input (∂L/∂X)
 
     Examples:
+    ```
         # Default case (reverse axes)
         var x = zeros(List[Int](3, 4), DType.float32)
         var y = transpose(x)  # Shape (4, 3)
@@ -523,13 +570,14 @@ fn transpose_backward(grad_output: ExTensor, axes: Optional[List[Int]] = None) r
 
         # Custom axes case
         var x3d = zeros(List[Int](2, 3, 4), DType.float32)
-        var axes = List[Int]()
+        var axes  = List[Int]()
         axes.append(2)
         axes.append(0)
         axes.append(1)
         var y3d = transpose(x3d, axes)  # Shape (4, 2, 3)
         var grad_y3d = ones(List[Int](4, 2, 3), DType.float32)
         var grad_x3d = transpose_backward(grad_y3d, axes)  # Shape (2, 3, 4)
+    ```
 
     Note:
         Transpose is self-adjoint: the inverse permutation is used to compute gradients.

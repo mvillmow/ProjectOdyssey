@@ -122,20 +122,14 @@ struct InceptionModule:
         """
         # Branch 1: 1×1 conv
         self.conv1x1_1_weights = kaiming_normal(
-            List[Int]()
-            .append(out_1x1)
-            .append(in_channels)
-            .append(1)
-            .append(1),
+            List[Int]().append(out_1x1).append(in_channels).append(1).append(1),
             fan_in=in_channels,
         )
         self.conv1x1_1_bias = zeros(List[Int]().append(out_1x1))
         self.bn1x1_1_gamma = constant(List[Int]().append(out_1x1), 1.0)
         self.bn1x1_1_beta = zeros(List[Int]().append(out_1x1))
         self.bn1x1_1_running_mean = zeros(List[Int]().append(out_1x1))
-        self.bn1x1_1_running_var = constant(
-            List[Int]().append(out_1x1), 1.0
-        )
+        self.bn1x1_1_running_var = constant(List[Int]().append(out_1x1), 1.0)
 
         # Branch 2: 1×1 reduce
         self.conv1x1_2_weights = kaiming_normal(
@@ -150,17 +144,11 @@ struct InceptionModule:
         self.bn1x1_2_gamma = constant(List[Int]().append(reduce_3x3), 1.0)
         self.bn1x1_2_beta = zeros(List[Int]().append(reduce_3x3))
         self.bn1x1_2_running_mean = zeros(List[Int]().append(reduce_3x3))
-        self.bn1x1_2_running_var = constant(
-            List[Int]().append(reduce_3x3), 1.0
-        )
+        self.bn1x1_2_running_var = constant(List[Int]().append(reduce_3x3), 1.0)
 
         # Branch 2: 3×3 conv
         self.conv3x3_weights = kaiming_normal(
-            List[Int]()
-            .append(out_3x3)
-            .append(reduce_3x3)
-            .append(3)
-            .append(3),
+            List[Int]().append(out_3x3).append(reduce_3x3).append(3).append(3),
             fan_in=reduce_3x3 * 9,
         )
         self.conv3x3_bias = zeros(List[Int]().append(out_3x3))
@@ -182,17 +170,11 @@ struct InceptionModule:
         self.bn1x1_3_gamma = constant(List[Int]().append(reduce_5x5), 1.0)
         self.bn1x1_3_beta = zeros(List[Int]().append(reduce_5x5))
         self.bn1x1_3_running_mean = zeros(List[Int]().append(reduce_5x5))
-        self.bn1x1_3_running_var = constant(
-            List[Int]().append(reduce_5x5), 1.0
-        )
+        self.bn1x1_3_running_var = constant(List[Int]().append(reduce_5x5), 1.0)
 
         # Branch 3: 5×5 conv
         self.conv5x5_weights = kaiming_normal(
-            List[Int]()
-            .append(out_5x5)
-            .append(reduce_5x5)
-            .append(5)
-            .append(5),
+            List[Int]().append(out_5x5).append(reduce_5x5).append(5).append(5),
             fan_in=reduce_5x5 * 25,
         )
         self.conv5x5_bias = zeros(List[Int]().append(out_5x5))
@@ -214,9 +196,7 @@ struct InceptionModule:
         self.bn1x1_4_gamma = constant(List[Int]().append(pool_proj), 1.0)
         self.bn1x1_4_beta = zeros(List[Int]().append(pool_proj))
         self.bn1x1_4_running_mean = zeros(List[Int]().append(pool_proj))
-        self.bn1x1_4_running_var = constant(
-            List[Int]().append(pool_proj), 1.0
-        )
+        self.bn1x1_4_running_var = constant(List[Int]().append(pool_proj), 1.0)
 
     fn forward(mut self, x: ExTensor, training: Bool) raises -> ExTensor:
         """Forward pass through Inception module.
@@ -234,7 +214,9 @@ struct InceptionModule:
         var width = x.shape()[3]
 
         # Branch 1: 1×1 conv
-        var b1 = conv2d(x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0)
+        var b1 = conv2d(
+            x, self.conv1x1_1_weights, self.conv1x1_1_bias, stride=1, padding=0
+        )
         b1 = batch_norm2d(
             b1,
             self.bn1x1_1_gamma,
@@ -246,7 +228,9 @@ struct InceptionModule:
         b1 = relu(b1)
 
         # Branch 2: 1×1 reduce → 3×3 conv
-        var b2 = conv2d(x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0)
+        var b2 = conv2d(
+            x, self.conv1x1_2_weights, self.conv1x1_2_bias, stride=1, padding=0
+        )
         b2 = batch_norm2d(
             b2,
             self.bn1x1_2_gamma,
@@ -256,14 +240,23 @@ struct InceptionModule:
             training,
         )
         b2 = relu(b2)
-        b2 = conv2d(b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1)
+        b2 = conv2d(
+            b2, self.conv3x3_weights, self.conv3x3_bias, stride=1, padding=1
+        )
         b2 = batch_norm2d(
-            b2, self.bn3x3_gamma, self.bn3x3_beta, self.bn3x3_running_mean, self.bn3x3_running_var, training
+            b2,
+            self.bn3x3_gamma,
+            self.bn3x3_beta,
+            self.bn3x3_running_mean,
+            self.bn3x3_running_var,
+            training,
         )
         b2 = relu(b2)
 
         # Branch 3: 1×1 reduce → 5×5 conv
-        var b3 = conv2d(x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0)
+        var b3 = conv2d(
+            x, self.conv1x1_3_weights, self.conv1x1_3_bias, stride=1, padding=0
+        )
         b3 = batch_norm2d(
             b3,
             self.bn1x1_3_gamma,
@@ -273,15 +266,24 @@ struct InceptionModule:
             training,
         )
         b3 = relu(b3)
-        b3 = conv2d(b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2)
+        b3 = conv2d(
+            b3, self.conv5x5_weights, self.conv5x5_bias, stride=1, padding=2
+        )
         b3 = batch_norm2d(
-            b3, self.bn5x5_gamma, self.bn5x5_beta, self.bn5x5_running_mean, self.bn5x5_running_var, training
+            b3,
+            self.bn5x5_gamma,
+            self.bn5x5_beta,
+            self.bn5x5_running_mean,
+            self.bn5x5_running_var,
+            training,
         )
         b3 = relu(b3)
 
         # Branch 4: 3×3 max pool → 1×1 projection
         var b4 = maxpool2d(x, kernel_size=3, stride=1, padding=1)
-        b4 = conv2d(b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0)
+        b4 = conv2d(
+            b4, self.conv1x1_4_weights, self.conv1x1_4_bias, stride=1, padding=0
+        )
         b4 = batch_norm2d(
             b4,
             self.bn1x1_4_gamma,
@@ -309,7 +311,7 @@ fn concatenate_depthwise(
 
     Returns:
         Concatenated tensor (batch, C1+C2+C3+C4, H, W).
-   """
+    """
     var batch_size = t1.shape()[0]
     var c1 = t1.shape()[1]
     var c2 = t2.shape()[1]
@@ -363,7 +365,9 @@ fn concatenate_depthwise(
         for c in range(c4):
             for i in range(hw):
                 var src_idx = ((b * c4 + c) * hw) + i
-                var dst_idx = ((b * total_channels + (c1 + c2 + c3 + c)) * hw) + i
+                var dst_idx = (
+                    (b * total_channels + (c1 + c2 + c3 + c)) * hw
+                ) + i
                 result_data[dst_idx] = t4_data[src_idx]
 
     return result
@@ -411,7 +415,7 @@ struct GoogLeNet:
 
         Args:
             num_classes: Number of output classes (default: 10 for CIFAR-10).
-       """
+        """
         # Initial convolution: 3×3, 64 filters
         self.initial_conv_weights = kaiming_normal(
             List[Int]().append(64).append(3).append(3).append(3),
@@ -524,7 +528,9 @@ struct GoogLeNet:
 
         # Final FC layer: 1024 → num_classes
         self.fc_weights = xavier_normal(
-            List[Int]().append(num_classes).append(1024), fan_in=1024, fan_out=num_classes
+            List[Int]().append(num_classes).append(1024),
+            fan_in=1024,
+            fan_out=num_classes,
         )
         self.fc_bias = zeros(List[Int]().append(num_classes))
 
@@ -537,9 +543,15 @@ struct GoogLeNet:
 
         Returns:
             Logits tensor (batch, num_classes).
-       """
+        """
         # Initial convolution block
-        var out = conv2d(x, self.initial_conv_weights, self.initial_conv_bias, stride=1, padding=1)
+        var out = conv2d(
+            x,
+            self.initial_conv_weights,
+            self.initial_conv_bias,
+            stride=1,
+            padding=1,
+        )
         out = batch_norm2d(
             out,
             self.initial_bn_gamma,
@@ -615,7 +627,9 @@ struct GoogLeNet:
 
         for b in range(batch_size):
             for c in range(channels):
-                flattened_data[b * channels + c] = out_data[((b * channels + c) * 1) + 0]
+                flattened_data[b * channels + c] = out_data[
+                    ((b * channels + c) * 1) + 0
+                ]
 
         # Dropout (p=0.4)
         if training:

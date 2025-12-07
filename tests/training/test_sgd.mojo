@@ -5,10 +5,7 @@ This module tests the SGD optimizer implementations:
 - sgd_step (SGD with momentum and weight decay)
 """
 
-from shared.core import (
-    ExTensor, DType,
-    zeros, ones, full, subtract, multiply
-)
+from shared.core import ExTensor, DType, zeros, ones, full, subtract, multiply
 from shared.training.optimizers import sgd_step_simple, sgd_step
 
 
@@ -16,7 +13,7 @@ fn test_sgd_step_simple_basic() raises:
     """Test basic SGD parameter update."""
     print("Testing basic SGD step...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
@@ -63,7 +60,7 @@ fn test_sgd_step_zero_gradients() raises:
     """Test SGD with zero gradients (params should not change)."""
     print("Testing SGD with zero gradients...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var params = ExTensor(shape, DType.float32)
     var gradients = zeros(shape, DType.float32)
@@ -101,7 +98,7 @@ fn test_sgd_step_large_learning_rate() raises:
     """Test SGD with large learning rate."""
     print("Testing SGD with large learning rate...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
@@ -137,7 +134,7 @@ fn test_sgd_step_negative_gradients() raises:
     """Test SGD with negative gradients (params should increase)."""
     print("Testing SGD with negative gradients...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
@@ -174,7 +171,7 @@ fn test_sgd_step_with_weight_decay() raises:
     """Test SGD with L2 weight decay."""
     print("Testing SGD with weight decay...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(2)
     var params = ExTensor(shape, DType.float32)
     var gradients = ExTensor(shape, DType.float32)
@@ -196,7 +193,9 @@ fn test_sgd_step_with_weight_decay() raises:
     # = [0 + 0.01*1, 0 + 0.01*2] = [0.01, 0.02]
     # Update: [1 - 0.1*0.01, 2 - 0.1*0.02] = [0.999, 1.998]
 
-    var result = sgd_step(params, gradients, velocity, learning_rate, momentum, weight_decay)
+    var result = sgd_step(
+        params, gradients, velocity, learning_rate, momentum, weight_decay
+    )
     var updated = result[0]
 
     var p0 = updated._get_float64(0)
@@ -218,7 +217,7 @@ fn test_sgd_multi_step_convergence() raises:
     """Test multiple SGD steps converge towards target."""
     print("Testing multi-step SGD convergence...")
 
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(1)
     var params = ExTensor(shape, DType.float32)
 

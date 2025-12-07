@@ -218,7 +218,7 @@ fn create_test_vector(size: Int, value: Float32 = 1.0) -> List[Float32]:
     Returns:
         List of Float32 values.
     """
-    var vec = List[Float32](capacity=size)
+    var vec= List[Float32](capacity=size)
     for _ in range(size):
         vec.append(value)
     return vec^
@@ -253,7 +253,7 @@ fn create_sequential_vector(size: Int, start: Float32 = 0.0) -> List[Float32]:
     Returns:
         List of sequential Float32 values.
     """
-    var vec = List[Float32](capacity=size)
+    var vec= List[Float32](capacity=size)
     for i in range(size):
         vec.append(start + Float32(i))
     return vec^
@@ -290,7 +290,7 @@ fn create_simple_model() -> SimpleMLP:
         hidden_dim=5,
         output_dim=1,
         num_hidden_layers=1,
-        init_value=0.1
+        init_value=0.1,
     )
     return model^
 
@@ -299,7 +299,7 @@ fn create_simple_dataset(
     n_samples: Int = 100,
     input_dim: Int = 10,
     output_dim: Int = 1,
-    seed_value: Int = 42
+    seed_value: Int = 42,
 ) -> List[Tuple[List[Float32], List[Float32]]]:
     """Create a simple dataset for testing data loading.
 
@@ -335,14 +335,14 @@ fn create_simple_dataset(
         var item_seed = seed_value + i
 
         # Generate input features
-        var input_features = List[Float32](capacity=input_dim)
+        var input_features= List[Float32](capacity=input_dim)
         for j in range(input_dim):
             # Use deterministic values based on seed and index
             var val = Float32((seed_value + i + j) % 100) / 100.0
             input_features.append(val)
 
         # Generate output labels
-        var output_labels = List[Float32](capacity=output_dim)
+        var output_labels= List[Float32](capacity=output_dim)
         for j in range(output_dim):
             # Use deterministic values based on seed and index
             var val = Float32((seed_value + i + j + 1000) % 100) / 100.0
@@ -372,7 +372,7 @@ struct MockDataLoader(Copyable, Movable):
         out self,
         var samples: List[Tuple[List[Float32], List[Float32]]],
         batch_size: Int = 32,
-        shuffle: Bool = False
+        shuffle: Bool = False,
     ):
         """Initialize mock data loader.
 
@@ -398,7 +398,7 @@ fn create_mock_dataloader(
     input_dim: Int = 10,
     output_dim: Int = 1,
     seed_value: Int = 42,
-    shuffle: Bool = False
+    shuffle: Bool = False,
 ) -> MockDataLoader:
     """Create mock data loader with specified number of batches.
 
@@ -432,12 +432,8 @@ fn create_mock_dataloader(
         n_samples=n_samples,
         input_dim=input_dim,
         output_dim=output_dim,
-        seed_value=seed_value
+        seed_value=seed_value,
     )
 
     # Create and return mock loader
-    return MockDataLoader(
-        dataset^,
-        batch_size=batch_size,
-        shuffle=shuffle
-    )
+    return MockDataLoader(dataset^, batch_size=batch_size, shuffle=shuffle)

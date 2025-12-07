@@ -2,32 +2,24 @@
 # See https://pre-commit.com for more information
 
 repos:
-  # Mojo formatting (DISABLED)
+  # Mojo formatting (BUGGY)
   #
-  # DISABLED REASON: The mojo format tool incorrectly removes spaces in method signatures,
+  # BUGGY REASON: The mojo format tool incorrectly removes spaces in method signatures,
   # specifically converting "fn method(mut self" to "fn method(mutself" which breaks the code.
   # This causes all Mojo files formatted by this hook to become syntactically invalid.
   #
   # TRACKING ISSUE: https://github.com/modular/modular/issues/5573
-  # Bug description: mojo format removes the space after 'mut' keyword in parameter lists
+  # Bug description: mojo format removes the space after 'mut' keyword in parameter lists, and other issues
   #
-  # RE-ENABLE CONDITIONS:
-  # - When the upstream bug is fixed in the Mojo formatter
-  # - Verify the fix with: mojo format <test-file.mojo> and confirm spaces are preserved
-  # - Test on files containing: fn method(mut self), fn method(out self), etc.
-  # - Update this comment and uncomment the hook configuration below
-  #
-  # TODO(#2391): Re-enable when Modular releases a fix for mojo/modular#5573
-  #
-  # - repo: local
-  #   hooks:
-  #     - id: mojo-format
-  #       name: Mojo Format
-  #       description: Format Mojo source files using mojo format (skips if mojo not available)
-  #       entry: bash -c 'if command -v mojo &> /dev/null; then mojo format "$@"; else echo "⚠️  Mojo not found, skipping format"; exit 0; fi' --
-  #       language: system
-  #       files: \.(mojo|🔥)$
-  #       pass_filenames: true
+  - repo: local
+    hooks:
+      - id: mojo-format
+        name: Mojo Format
+        description: Format Mojo source files using mojo format (skips if mojo not available)
+        entry: bash -c 'if command -v mojo &> /dev/null; then mojo format "$@"; else echo "⚠️  Mojo not found, skipping format"; exit 0; fi' --
+        language: system
+        files: \.(mojo|🔥)$
+        pass_filenames: true
 
   # Security checks
   - repo: local

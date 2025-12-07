@@ -1,65 +1,74 @@
-version: '3.8'
-
 services:
   # Main development environment
   ml-odyssey-dev:
+    user: "${USER_ID}:${GROUP_ID}"
     build:
       context: .
       dockerfile: Dockerfile
       target: development
+      args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
     image: ml-odyssey:dev
     container_name: ml-odyssey-dev
     volumes:
-      # Mount source code for live development
-      - .:/workspace
-      # Persist Pixi cache across container rebuilds
-      - pixi-cache:/root/.pixi
-      # Persist pre-commit cache
-      - pre-commit-cache:/root/.cache/pre-commit
-      # Persist git config
-      - ~/.gitconfig:/root/.gitconfig:ro
+      - .:/workspace:delegated
+      - /workspace/.pixi
+      - pixi-cache:/home/dev/.pixi
+      - pre-commit-cache:/home/dev/.cache/pre-commit
+      - ${HOME}/.gitconfig:/home/dev/.gitconfig:ro
     environment:
-      # Set development environment
+      - USER_ID=${USER_ID}
+      - GROUP_ID=${GROUP_ID}
       - ENVIRONMENT=development
-      # Enable color output
       - TERM=xterm-256color
     working_dir: /workspace
-    # Keep container running
     stdin_open: true
     tty: true
     command: /bin/bash
 
-  # CI/Testing environment (optimized for automated testing)
+  # CI/Testing environment
   ml-odyssey-ci:
+    user: "${USER_ID}:${GROUP_ID}"
     build:
       context: .
       dockerfile: Dockerfile
       target: ci
+      args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
     image: ml-odyssey:ci
     container_name: ml-odyssey-ci
     volumes:
       - .:/workspace
     environment:
+      - USER_ID=${USER_ID}
+      - GROUP_ID=${GROUP_ID}
       - ENVIRONMENT=ci
       - CI=true
     working_dir: /workspace
 
-  # Production environment (if needed)
+  # Production environment
   ml-odyssey-prod:
+    user: "${USER_ID}:${GROUP_ID}"
     build:
       context: .
       dockerfile: Dockerfile
       target: production
+      args:
+        USER_ID: ${USER_ID}
+        GROUP_ID: ${GROUP_ID}
     image: ml-odyssey:prod
     container_name: ml-odyssey-prod
     volumes:
-      - .:/workspace:ro  # Read-only in production
+      - .:/workspace:ro
     environment:
+      - USER_ID=${USER_ID}
+      - GROUP_ID=${GROUP_ID}
       - ENVIRONMENT=production
     working_dir: /workspace
 
 volumes:
-  # Named volumes for persistence
   pixi-cache:
     driver: local
   pre-commit-cache:

@@ -35,12 +35,12 @@ from shared.core.reduction import mean
 
 fn test_cross_entropy_output_shape() raises:
     """Test cross_entropy returns loss tensor."""
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(4)
     logits_shape.append(3)  # 3 classes
     var logits = zeros(logits_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     targets_shape.append(3)
     var targets = zeros(targets_shape, DType.float32)
@@ -53,7 +53,7 @@ fn test_cross_entropy_output_shape() raises:
 
 fn test_cross_entropy_basic() raises:
     """Test cross_entropy on simple one-hot example."""
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(1)
     logits_shape.append(2)
     var logits = zeros(logits_shape, DType.float32)
@@ -62,7 +62,7 @@ fn test_cross_entropy_basic() raises:
     logits_data[0] = 1.0
     logits_data[1] = 0.0
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(1)
     targets_shape.append(2)
     var targets = zeros(targets_shape, DType.float32)
@@ -79,17 +79,17 @@ fn test_cross_entropy_basic() raises:
 
 fn test_cross_entropy_correct_prediction() raises:
     """Test cross_entropy when model predicts correctly."""
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(1)
     logits_shape.append(3)
     var logits = zeros(logits_shape, DType.float32)
 
     var logits_data = logits._data.bitcast[Float32]()
-    logits_data[0] = 5.0   # High score for correct class
+    logits_data[0] = 5.0  # High score for correct class
     logits_data[1] = 0.0
     logits_data[2] = 0.0
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(1)
     targets_shape.append(3)
     var targets = zeros(targets_shape, DType.float32)
@@ -107,17 +107,17 @@ fn test_cross_entropy_correct_prediction() raises:
 
 fn test_cross_entropy_backward_shape() raises:
     """Test cross_entropy_backward produces correct gradient shape."""
-    var logits_shape = List[Int]()
+    var logits_shape= List[Int]()
     logits_shape.append(4)
     logits_shape.append(3)
     var logits = ones(logits_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     targets_shape.append(3)
     var targets = zeros(targets_shape, DType.float32)
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(1)
     var grad_output = ones(grad_output_shape, DType.float32)
 
@@ -135,11 +135,11 @@ fn test_cross_entropy_backward_shape() raises:
 
 fn test_mean_squared_error_zero_error() raises:
     """Test MSE when predictions match targets (error = 0)."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(4)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     var targets = ones(targets_shape, DType.float32)
 
@@ -152,7 +152,7 @@ fn test_mean_squared_error_zero_error() raises:
 
 fn test_mean_squared_error_simple() raises:
     """Test MSE on simple prediction error."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(4)
     var predictions = zeros(pred_shape, DType.float32)
 
@@ -162,7 +162,7 @@ fn test_mean_squared_error_simple() raises:
     pred_data[2] = 3.0
     pred_data[3] = 4.0
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -175,20 +175,20 @@ fn test_mean_squared_error_simple() raises:
     var loss = mean_squared_error(predictions, targets)
 
     var loss_data = loss._data.bitcast[Float32]()
-    assert_almost_equal(loss_data[0], 1.0, tolerance=1e-5)    # (1-0)^2 = 1
-    assert_almost_equal(loss_data[1], 4.0, tolerance=1e-5)    # (2-0)^2 = 4
-    assert_almost_equal(loss_data[2], 9.0, tolerance=1e-5)    # (3-0)^2 = 9
-    assert_almost_equal(loss_data[3], 16.0, tolerance=1e-5)   # (4-0)^2 = 16
+    assert_almost_equal(loss_data[0], 1.0, tolerance=1e-5)  # (1-0)^2 = 1
+    assert_almost_equal(loss_data[1], 4.0, tolerance=1e-5)  # (2-0)^2 = 4
+    assert_almost_equal(loss_data[2], 9.0, tolerance=1e-5)  # (3-0)^2 = 9
+    assert_almost_equal(loss_data[3], 16.0, tolerance=1e-5)  # (4-0)^2 = 16
 
 
 fn test_mean_squared_error_output_shape() raises:
     """Test MSE preserves input shape."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(2)
     pred_shape.append(3)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(2)
     targets_shape.append(3)
     var targets = ones(targets_shape, DType.float32)
@@ -202,7 +202,7 @@ fn test_mean_squared_error_output_shape() raises:
 
 fn test_mean_squared_error_backward() raises:
     """Test MSE backward pass computes correct gradients."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(2)
     var predictions = zeros(pred_shape, DType.float32)
 
@@ -210,7 +210,7 @@ fn test_mean_squared_error_backward() raises:
     pred_data[0] = 2.0
     pred_data[1] = 4.0
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(2)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -218,11 +218,13 @@ fn test_mean_squared_error_backward() raises:
     targets_data[0] = 1.0
     targets_data[1] = 2.0
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(2)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
+    var grad_pred = mean_squared_error_backward(
+        grad_output, predictions, targets
+    )
 
     var grad_data = grad_pred._data.bitcast[Float32]()
     # Gradient: 2 * (predictions - targets)
@@ -234,22 +236,24 @@ fn test_mean_squared_error_backward() raises:
 
 fn test_mean_squared_error_backward_shape() raises:
     """Test MSE backward produces gradients with same shape as input."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(4)
     pred_shape.append(3)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     targets_shape.append(3)
     var targets = zeros(targets_shape, DType.float32)
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(4)
     grad_output_shape.append(3)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grad_pred = mean_squared_error_backward(grad_output, predictions, targets)
+    var grad_pred = mean_squared_error_backward(
+        grad_output, predictions, targets
+    )
 
     var grad_shape = grad_pred.shape()
     assert_equal(grad_shape[0], 4, "Batch dimension preserved")
@@ -263,11 +267,11 @@ fn test_mean_squared_error_backward_shape() raises:
 
 fn test_binary_cross_entropy_output_shape() raises:
     """Test BCE output shape matches input shape."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(4)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -279,7 +283,7 @@ fn test_binary_cross_entropy_output_shape() raises:
 
 fn test_binary_cross_entropy_basic() raises:
     """Test BCE on simple binary classification."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(2)
     var predictions = zeros(pred_shape, DType.float32)
 
@@ -287,7 +291,7 @@ fn test_binary_cross_entropy_basic() raises:
     pred_data[0] = 0.9  # High confidence in class 1
     pred_data[1] = 0.1  # Low confidence in class 1
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(2)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -304,14 +308,14 @@ fn test_binary_cross_entropy_basic() raises:
 
 fn test_binary_cross_entropy_perfect_prediction() raises:
     """Test BCE when prediction is perfect (loss approaches 0)."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(1)
     var predictions = zeros(pred_shape, DType.float32)
 
     var pred_data = predictions._data.bitcast[Float32]()
     pred_data[0] = 0.99  # Near 1.0
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(1)
     var targets = ones(targets_shape, DType.float32)
 
@@ -323,7 +327,7 @@ fn test_binary_cross_entropy_perfect_prediction() raises:
 
 fn test_binary_cross_entropy_backward() raises:
     """Test BCE backward pass computes correct gradients."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(2)
     var predictions = zeros(pred_shape, DType.float32)
 
@@ -331,7 +335,7 @@ fn test_binary_cross_entropy_backward() raises:
     pred_data[0] = 0.7
     pred_data[1] = 0.3
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(2)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -339,11 +343,13 @@ fn test_binary_cross_entropy_backward() raises:
     targets_data[0] = 1.0
     targets_data[1] = 0.0
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(2)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grad_pred = binary_cross_entropy_backward(grad_output, predictions, targets)
+    var grad_pred = binary_cross_entropy_backward(
+        grad_output, predictions, targets
+    )
 
     var grad_shape = grad_pred.shape()
     assert_equal(grad_shape[0], 2, "Gradient shape matches input")
@@ -356,11 +362,11 @@ fn test_binary_cross_entropy_backward() raises:
 
 fn test_loss_non_negative() raises:
     """Test that all loss functions produce non-negative values."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(4)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(4)
     var targets = zeros(targets_shape, DType.float32)
 
@@ -377,22 +383,24 @@ fn test_loss_non_negative() raises:
 
 fn test_loss_gradient_shape_consistency() raises:
     """Test that backward passes produce gradients matching input shape."""
-    var pred_shape = List[Int]()
+    var pred_shape= List[Int]()
     pred_shape.append(3)
     pred_shape.append(4)
     var predictions = ones(pred_shape, DType.float32)
 
-    var targets_shape = List[Int]()
+    var targets_shape= List[Int]()
     targets_shape.append(3)
     targets_shape.append(4)
     var targets = zeros(targets_shape, DType.float32)
 
-    var grad_output_shape = List[Int]()
+    var grad_output_shape= List[Int]()
     grad_output_shape.append(3)
     grad_output_shape.append(4)
     var grad_output = ones(grad_output_shape, DType.float32)
 
-    var grad_mse = mean_squared_error_backward(grad_output, predictions, targets)
+    var grad_mse = mean_squared_error_backward(
+        grad_output, predictions, targets
+    )
 
     var grad_shape = grad_mse.shape()
     assert_equal(grad_shape[0], 3, "Gradient batch dimension matches")
@@ -401,7 +409,7 @@ fn test_loss_gradient_shape_consistency() raises:
 
 fn test_mse_symmetric() raises:
     """Test that MSE is symmetric in predictions and targets order."""
-    var shape = List[Int]()
+    var shape= List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)

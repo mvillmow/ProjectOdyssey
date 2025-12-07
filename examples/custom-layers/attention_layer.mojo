@@ -16,6 +16,7 @@ struct MultiHeadAttention(Module):
 
     Used in Transformers and other attention-based models.
     """
+
     var num_heads: Int
     var head_dim: Int
     var embed_dim: Int
@@ -61,9 +62,15 @@ struct MultiHeadAttention(Module):
 
         # Reshape for multi-head attention
         # [batch, seq_len, embed_dim] -> [batch, num_heads, seq_len, head_dim]
-        q = q.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
-        k = k.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
-        v = v.reshape(batch_size, seq_len, self.num_heads, self.head_dim).transpose(1, 2)
+        q = q.reshape(
+            batch_size, seq_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        k = k.reshape(
+            batch_size, seq_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
+        v = v.reshape(
+            batch_size, seq_len, self.num_heads, self.head_dim
+        ).transpose(1, 2)
 
         # Scaled dot-product attention
         var scores = q @ k.transpose(-2, -1) / sqrt(Float64(self.head_dim))
@@ -72,13 +79,15 @@ struct MultiHeadAttention(Module):
 
         # Reshape back
         # [batch, num_heads, seq_len, head_dim] -> [batch, seq_len, embed_dim]
-        attn_output = attn_output.transpose(1, 2).reshape(batch_size, seq_len, self.embed_dim)
+        attn_output = attn_output.transpose(1, 2).reshape(
+            batch_size, seq_len, self.embed_dim
+        )
 
         # Output projection
         return self.out_proj.forward(attn_output)
 
     fn parameters(mut self) -> List[Tensor]:
-        var params = List[Tensor]()
+        var params: List[Tensor] = []
         params.extend(self.q_proj.parameters())
         params.extend(self.k_proj.parameters())
         params.extend(self.v_proj.parameters())

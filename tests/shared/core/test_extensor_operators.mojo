@@ -32,8 +32,12 @@ fn test_radd_tensors() raises:
 
     # Verify values: 2.0 + 3.0 = 5.0
     for i in range(result1.numel()):
-        assert_almost_equal(Float64(result1._get_float32(i)), 5.0, tolerance=1e-6)
-        assert_almost_equal(Float64(result2._get_float32(i)), 5.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result1._get_float32(i)), 5.0, tolerance=1e-6
+        )
+        assert_almost_equal(
+            Float64(result2._get_float32(i)), 5.0, tolerance=1e-6
+        )
 
 
 fn test_rsub_tensors() raises:
@@ -47,8 +51,12 @@ fn test_rsub_tensors() raises:
 
     # Verify values
     for i in range(result1.numel()):
-        assert_almost_equal(Float64(result1._get_float32(i)), -3.0, tolerance=1e-6)
-        assert_almost_equal(Float64(result2._get_float32(i)), 3.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result1._get_float32(i)), -3.0, tolerance=1e-6
+        )
+        assert_almost_equal(
+            Float64(result2._get_float32(i)), 3.0, tolerance=1e-6
+        )
 
 
 fn test_rmul_tensors() raises:
@@ -62,8 +70,12 @@ fn test_rmul_tensors() raises:
 
     # Verify values: 2.0 * 3.0 = 6.0
     for i in range(result1.numel()):
-        assert_almost_equal(Float64(result1._get_float32(i)), 6.0, tolerance=1e-6)
-        assert_almost_equal(Float64(result2._get_float32(i)), 6.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result1._get_float32(i)), 6.0, tolerance=1e-6
+        )
+        assert_almost_equal(
+            Float64(result2._get_float32(i)), 6.0, tolerance=1e-6
+        )
 
 
 fn test_rtruediv_tensors() raises:
@@ -77,8 +89,12 @@ fn test_rtruediv_tensors() raises:
 
     # Verify values
     for i in range(result1.numel()):
-        assert_almost_equal(Float64(result1._get_float32(i)), 0.25, tolerance=1e-6)
-        assert_almost_equal(Float64(result2._get_float32(i)), 4.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result1._get_float32(i)), 0.25, tolerance=1e-6
+        )
+        assert_almost_equal(
+            Float64(result2._get_float32(i)), 4.0, tolerance=1e-6
+        )
 
 
 # ============================================================================
@@ -171,7 +187,9 @@ fn test_neg_basic() raises:
 
     # Verify result: -3.0
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), -3.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), -3.0, tolerance=1e-6
+        )
 
 
 fn test_neg_negative_values() raises:
@@ -183,7 +201,9 @@ fn test_neg_negative_values() raises:
 
     # Verify result: 5.0
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 5.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 5.0, tolerance=1e-6
+        )
 
 
 fn test_neg_zeros() raises:
@@ -195,7 +215,9 @@ fn test_neg_zeros() raises:
 
     # Verify result: -0.0 (still zero in most implementations)
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 0.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 0.0, tolerance=1e-6
+        )
 
 
 fn test_pos_basic() raises:
@@ -207,7 +229,9 @@ fn test_pos_basic() raises:
 
     # Verify result is equal to original
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 3.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 3.0, tolerance=1e-6
+        )
 
     # Verify shapes match
     assert_equal(result.numel(), a.numel())
@@ -222,7 +246,9 @@ fn test_pos_preserves_values() raises:
 
     # Verify result preserves negative values
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), -2.5, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), -2.5, tolerance=1e-6
+        )
 
 
 fn test_abs_positive_values() raises:
@@ -234,7 +260,9 @@ fn test_abs_positive_values() raises:
 
     # Verify result: 3.5
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 3.5, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 3.5, tolerance=1e-6
+        )
 
 
 fn test_abs_negative_values() raises:
@@ -246,7 +274,9 @@ fn test_abs_negative_values() raises:
 
     # Verify result: 3.5
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 3.5, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 3.5, tolerance=1e-6
+        )
 
 
 fn test_abs_mixed_values() raises:
@@ -278,7 +308,9 @@ fn test_abs_zeros() raises:
 
     # Verify result: still zeros
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 0.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 0.0, tolerance=1e-6
+        )
 
 
 # ============================================================================
@@ -298,7 +330,9 @@ fn test_combined_unary_binary_ops() raises:
 
     # Verify result
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 5.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 5.0, tolerance=1e-6
+        )
 
 
 fn test_double_negation() raises:
@@ -310,12 +344,14 @@ fn test_double_negation() raises:
 
     # Verify result is back to original
     for i in range(result.numel()):
-        assert_almost_equal(Float64(result._get_float32(i)), 3.0, tolerance=1e-6)
+        assert_almost_equal(
+            Float64(result._get_float32(i)), 3.0, tolerance=1e-6
+        )
 
 
 fn test_operators_preserve_shape() raises:
     """Test that all operators preserve tensor shape"""
-    var shape = List[Int](3, 4, 2)
+    var shape: List[Int] = [3, 4, 2]
     var a = zeros(shape, DType.float32)
     var b = ones(shape, DType.float32)
 

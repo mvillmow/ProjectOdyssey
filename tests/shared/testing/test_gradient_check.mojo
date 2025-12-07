@@ -47,7 +47,9 @@ fn test_relative_error_near_zero() raises:
     """
     print("Testing relative_error near zero values...")
     var err = relative_error(1e-9, 1e-9)
-    assert_true(err < 1e-10, "Relative error should handle near-zero gracefully")
+    assert_true(
+        err < 1e-10, "Relative error should handle near-zero gracefully"
+    )
     print("  ✓ Relative error near-zero handling correct")
 
 
@@ -68,7 +70,7 @@ fn test_relative_error_large_difference() raises:
 fn test_assert_gradients_close_identical() raises:
     """Test assert_gradients_close with identical gradients."""
     print("Testing assert_gradients_close with identical gradients...")
-    var shape = List[Int](3, 4)
+    var shape: List[Int] = [3, 4]
     var grad1 = full(shape, 1.5, DType.float32)
     var grad2 = full(shape, 1.5, DType.float32)
 
@@ -80,7 +82,7 @@ fn test_assert_gradients_close_identical() raises:
 fn test_assert_gradients_close_within_tolerance() raises:
     """Test assert_gradients_close with close gradients."""
     print("Testing assert_gradients_close within tolerance...")
-    var shape = List[Int](3, 4)
+    var shape: List[Int] = [3, 4]
     var grad1 = full(shape, 1.0, DType.float32)
     var grad2 = full(shape, 1.001, DType.float32)
 
@@ -92,8 +94,8 @@ fn test_assert_gradients_close_within_tolerance() raises:
 fn test_assert_gradients_close_mismatched_shape() raises:
     """Test assert_gradients_close with mismatched shapes."""
     print("Testing assert_gradients_close with mismatched shapes...")
-    var shape1 = List[Int](3, 4)
-    var shape2 = List[Int](4, 5)
+    var shape1: List[Int] = [3, 4]
+    var shape2: List[Int] = [4, 5]
     var grad1 = full(shape1, 1.0, DType.float32)
     var grad2 = full(shape2, 1.0, DType.float32)
 
@@ -110,7 +112,7 @@ fn test_assert_gradients_close_mismatched_shape() raises:
 fn test_assert_gradients_close_mismatched_dtype() raises:
     """Test assert_gradients_close with mismatched dtypes."""
     print("Testing assert_gradients_close with mismatched dtypes...")
-    var shape = List[Int](3, 4)
+    var shape: List[Int] = [3, 4]
     var grad1 = full(shape, 1.0, DType.float32)
     var grad2 = full(shape, 1.0, DType.float64)
 
@@ -127,7 +129,7 @@ fn test_assert_gradients_close_mismatched_dtype() raises:
 fn test_assert_gradients_close_zero_gradients() raises:
     """Test assert_gradients_close with zero gradients."""
     print("Testing assert_gradients_close with zero gradients...")
-    var shape = List[Int](2, 3)
+    var shape: List[Int] = [2, 3]
     var grad1 = zeros(shape, DType.float32)
     var grad2 = zeros(shape, DType.float32)
 

@@ -17,19 +17,18 @@ fn test_relu_forward_basic() raises:
 
     # Create input with mixed positive and negative values
     var input = ExTensor(List[Int](5), DType.float32)
-    var input_values = List[Float32](-2.0, -1.0, 0.0, 1.0, 2.0)
+    var input_values: List[Float32] = [-2.0, -1.0, 0.0, 1.0, 2.0]
     for i in range(5):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
     var output = layer.forward(input)
 
     # Expected: [0, 0, 0, 1, 2]
-    var expected = List[Float32](0.0, 0.0, 0.0, 1.0, 2.0)
+    var expected: List[Float32] = [0.0, 0.0, 0.0, 1.0, 2.0]
     for i in range(5):
         var out_val = output._data.bitcast[Float32]()[i]
         assert_true(
-            out_val == expected[i],
-            "ReLU output mismatch at index " + String(i)
+            out_val == expected[i], "ReLU output mismatch at index " + String(i)
         )
 
     print("✓ test_relu_forward_basic passed")
@@ -40,7 +39,7 @@ fn test_relu_forward_all_negative() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float32)
-    var input_values = List[Float32](-5.0, -2.0, -0.1, -10.0)
+    var input_values: List[Float32] = [-5.0, -2.0, -0.1, -10.0]
     for i in range(4):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
@@ -59,7 +58,7 @@ fn test_relu_forward_all_positive() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float32)
-    var input_values = List[Float32](0.5, 1.0, 5.0, 10.0)
+    var input_values: List[Float32] = [0.5, 1.0, 5.0, 10.0]
     for i in range(4):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
@@ -69,8 +68,7 @@ fn test_relu_forward_all_positive() raises:
     for i in range(4):
         var out_val = output._data.bitcast[Float32]()[i]
         assert_true(
-            out_val == input_values[i],
-            "ReLU should preserve positive values"
+            out_val == input_values[i], "ReLU should preserve positive values"
         )
 
     print("✓ test_relu_forward_all_positive passed")
@@ -82,13 +80,13 @@ fn test_relu_forward_batch() raises:
 
     # Create 2x3 batch
     var input = ExTensor(List[Int](2, 3), DType.float32)
-    var input_values = List[Float32](-1.0, 0.5, -0.5, 2.0, -2.0, 1.5)
+    var input_values: List[Float32] = [-1.0, 0.5, -0.5, 2.0, -2.0, 1.5]
     for i in range(6):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
     var output = layer.forward(input)
 
-    var expected = List[Float32](0.0, 0.5, 0.0, 2.0, 0.0, 1.5)
+    var expected: List[Float32] = [0.0, 0.5, 0.0, 2.0, 0.0, 1.5]
     for i in range(6):
         var out_val = output._data.bitcast[Float32]()[i]
         assert_true(out_val == expected[i], "Batch ReLU mismatch")
@@ -102,25 +100,25 @@ fn test_relu_backward_basic() raises:
 
     # Input: [-2, -1, 0, 1, 2]
     var input = ExTensor(List[Int](5), DType.float32)
-    var input_values = List[Float32](-2.0, -1.0, 0.0, 1.0, 2.0)
+    var input_values: List[Float32] = [-2.0, -1.0, 0.0, 1.0, 2.0]
     for i in range(5):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
     # Gradient from upstream: [0.1, 0.2, 0.3, 0.4, 0.5]
     var grad_output = ExTensor(List[Int](5), DType.float32)
-    var grad_values = List[Float32](0.1, 0.2, 0.3, 0.4, 0.5)
+    var grad_values: List[Float32] = [0.1, 0.2, 0.3, 0.4, 0.5]
     for i in range(5):
         grad_output._data.bitcast[Float32]()[i] = grad_values[i]
 
     var grad_input = layer.backward(grad_output, input)
 
     # Expected: [0, 0, 0, 0.4, 0.5] (pass through only where input > 0)
-    var expected = List[Float32](0.0, 0.0, 0.0, 0.4, 0.5)
+    var expected: List[Float32] = [0.0, 0.0, 0.0, 0.4, 0.5]
     for i in range(5):
         var grad_val = grad_input._data.bitcast[Float32]()[i]
         assert_true(
             grad_val == expected[i],
-            "ReLU backward mismatch at index " + String(i)
+            "ReLU backward mismatch at index " + String(i),
         )
 
     print("✓ test_relu_backward_basic passed")
@@ -131,12 +129,12 @@ fn test_relu_backward_all_positive() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float32)
-    var input_values = List[Float32](1.0, 2.0, 3.0, 4.0)
+    var input_values: List[Float32] = [1.0, 2.0, 3.0, 4.0]
     for i in range(4):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
     var grad_output = ExTensor(List[Int](4), DType.float32)
-    var grad_values = List[Float32](0.1, 0.2, 0.3, 0.4)
+    var grad_values: List[Float32] = [0.1, 0.2, 0.3, 0.4]
     for i in range(4):
         grad_output._data.bitcast[Float32]()[i] = grad_values[i]
 
@@ -147,7 +145,7 @@ fn test_relu_backward_all_positive() raises:
         var grad_val = grad_input._data.bitcast[Float32]()[i]
         assert_true(
             grad_val == grad_values[i],
-            "ReLU backward should pass through all positive"
+            "ReLU backward should pass through all positive",
         )
 
     print("✓ test_relu_backward_all_positive passed")
@@ -158,12 +156,12 @@ fn test_relu_backward_all_negative() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float32)
-    var input_values = List[Float32](-1.0, -2.0, -3.0, -4.0)
+    var input_values: List[Float32] = [-1.0, -2.0, -3.0, -4.0]
     for i in range(4):
         input._data.bitcast[Float32]()[i] = input_values[i]
 
     var grad_output = ExTensor(List[Int](4), DType.float32)
-    var grad_values = List[Float32](0.1, 0.2, 0.3, 0.4)
+    var grad_values: List[Float32] = [0.1, 0.2, 0.3, 0.4]
     for i in range(4):
         grad_output._data.bitcast[Float32]()[i] = grad_values[i]
 
@@ -191,18 +189,18 @@ fn test_relu_forward_float64() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float64)
-    var input_values = List[Float64](-1.5, 0.5, -2.5, 3.5)
+    var input_values: List[Float64] = [-1.5, 0.5, -2.5, 3.5]
     for i in range(4):
         input._data.bitcast[Float64]()[i] = input_values[i]
 
     var output = layer.forward(input)
 
-    var expected = List[Float64](0.0, 0.5, 0.0, 3.5)
+    var expected: List[Float64] = [0.0, 0.5, 0.0, 3.5]
     for i in range(4):
         var out_val = output._data.bitcast[Float64]()[i]
         assert_true(
             out_val == expected[i],
-            "ReLU float64 mismatch at index " + String(i)
+            "ReLU float64 mismatch at index " + String(i),
         )
 
     print("✓ test_relu_forward_float64 passed")
@@ -213,23 +211,23 @@ fn test_relu_backward_float64() raises:
     var layer = ReLULayer()
 
     var input = ExTensor(List[Int](4), DType.float64)
-    var input_values = List[Float64](-1.0, 0.0, 1.0, 2.0)
+    var input_values: List[Float64] = [-1.0, 0.0, 1.0, 2.0]
     for i in range(4):
         input._data.bitcast[Float64]()[i] = input_values[i]
 
     var grad_output = ExTensor(List[Int](4), DType.float64)
-    var grad_values = List[Float64](0.1, 0.2, 0.3, 0.4)
+    var grad_values: List[Float64] = [0.1, 0.2, 0.3, 0.4]
     for i in range(4):
         grad_output._data.bitcast[Float64]()[i] = grad_values[i]
 
     var grad_input = layer.backward(grad_output, input)
 
-    var expected = List[Float64](0.0, 0.0, 0.3, 0.4)
+    var expected: List[Float64] = [0.0, 0.0, 0.3, 0.4]
     for i in range(4):
         var grad_val = grad_input._data.bitcast[Float64]()[i]
         assert_true(
             grad_val == expected[i],
-            "ReLU float64 backward mismatch at index " + String(i)
+            "ReLU float64 backward mismatch at index " + String(i),
         )
 
     print("✓ test_relu_backward_float64 passed")
