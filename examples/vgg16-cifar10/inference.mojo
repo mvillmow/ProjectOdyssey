@@ -56,7 +56,7 @@ fn compute_test_accuracy(
     print("Evaluating on " + String(num_test_samples) + " test samples...")
 
     # Collect predictions using model.predict()
-    var predictions= List[Int]()
+    var predictions = List[Int]()
 
     # Process each test sample
     for i in range(num_test_samples):

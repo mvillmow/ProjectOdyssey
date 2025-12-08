@@ -263,18 +263,18 @@ struct ResNet18:
         self.num_classes = num_classes
 
         # ========== Initial conv: 3 → 64 channels, 3×3 kernel ==========
-        var conv1_shape= List[Int]()
+        var conv1_shape = List[Int]()
         conv1_shape.append(64)  # out_channels
         conv1_shape.append(3)  # in_channels (RGB)
         conv1_shape.append(3)  # kernel_height
         conv1_shape.append(3)  # kernel_width
         self.conv1_kernel = he_uniform(conv1_shape, DType.float32)
 
-        var conv1_bias_shape= List[Int]()
+        var conv1_bias_shape = List[Int]()
         conv1_bias_shape.append(64)
         self.conv1_bias = zeros(conv1_bias_shape, DType.float32)
 
-        var bn1_shape= List[Int]()
+        var bn1_shape = List[Int]()
         bn1_shape.append(64)
         self.bn1_gamma = ones(bn1_shape, DType.float32)
         self.bn1_beta = zeros(bn1_shape, DType.float32)
@@ -283,16 +283,16 @@ struct ResNet18:
 
         # ========== Stage 1: 64 → 64 (no projection) ==========
         # Block 1
-        var s1_shape= List[Int]()
+        var s1_shape = List[Int]()
         s1_shape.append(64)
         s1_shape.append(64)
         s1_shape.append(3)
         s1_shape.append(3)
 
-        var s1_bias_shape= List[Int]()
+        var s1_bias_shape = List[Int]()
         s1_bias_shape.append(64)
 
-        var s1_bn_shape= List[Int]()
+        var s1_bn_shape = List[Int]()
         s1_bn_shape.append(64)
 
         self.s1b1_conv1_kernel = he_uniform(s1_shape, DType.float32)
@@ -326,22 +326,22 @@ struct ResNet18:
 
         # ========== Stage 2: 64 → 128 → 128 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s2b1_conv1_shape= List[Int]()
+        var s2b1_conv1_shape = List[Int]()
         s2b1_conv1_shape.append(128)
         s2b1_conv1_shape.append(64)
         s2b1_conv1_shape.append(3)
         s2b1_conv1_shape.append(3)
 
-        var s2b1_conv2_shape= List[Int]()
+        var s2b1_conv2_shape = List[Int]()
         s2b1_conv2_shape.append(128)
         s2b1_conv2_shape.append(128)
         s2b1_conv2_shape.append(3)
         s2b1_conv2_shape.append(3)
 
-        var s2_bias_shape= List[Int]()
+        var s2_bias_shape = List[Int]()
         s2_bias_shape.append(128)
 
-        var s2_bn_shape= List[Int]()
+        var s2_bn_shape = List[Int]()
         s2_bn_shape.append(128)
 
         self.s2b1_conv1_kernel = he_uniform(s2b1_conv1_shape, DType.float32)
@@ -359,7 +359,7 @@ struct ResNet18:
         self.s2b1_bn2_running_var = ones(s2_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 64→128, stride=2
-        var s2b1_proj_shape= List[Int]()
+        var s2b1_proj_shape = List[Int]()
         s2b1_proj_shape.append(128)
         s2b1_proj_shape.append(64)
         s2b1_proj_shape.append(1)
@@ -389,22 +389,22 @@ struct ResNet18:
 
         # ========== Stage 3: 128 → 256 → 256 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s3b1_conv1_shape= List[Int]()
+        var s3b1_conv1_shape = List[Int]()
         s3b1_conv1_shape.append(256)
         s3b1_conv1_shape.append(128)
         s3b1_conv1_shape.append(3)
         s3b1_conv1_shape.append(3)
 
-        var s3b1_conv2_shape= List[Int]()
+        var s3b1_conv2_shape = List[Int]()
         s3b1_conv2_shape.append(256)
         s3b1_conv2_shape.append(256)
         s3b1_conv2_shape.append(3)
         s3b1_conv2_shape.append(3)
 
-        var s3_bias_shape= List[Int]()
+        var s3_bias_shape = List[Int]()
         s3_bias_shape.append(256)
 
-        var s3_bn_shape= List[Int]()
+        var s3_bn_shape = List[Int]()
         s3_bn_shape.append(256)
 
         self.s3b1_conv1_kernel = he_uniform(s3b1_conv1_shape, DType.float32)
@@ -422,7 +422,7 @@ struct ResNet18:
         self.s3b1_bn2_running_var = ones(s3_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 128→256, stride=2
-        var s3b1_proj_shape= List[Int]()
+        var s3b1_proj_shape = List[Int]()
         s3b1_proj_shape.append(256)
         s3b1_proj_shape.append(128)
         s3b1_proj_shape.append(1)
@@ -452,22 +452,22 @@ struct ResNet18:
 
         # ========== Stage 4: 256 → 512 → 512 (block1 has projection) ==========
         # Block 1 (stride=2 for first conv)
-        var s4b1_conv1_shape= List[Int]()
+        var s4b1_conv1_shape = List[Int]()
         s4b1_conv1_shape.append(512)
         s4b1_conv1_shape.append(256)
         s4b1_conv1_shape.append(3)
         s4b1_conv1_shape.append(3)
 
-        var s4b1_conv2_shape= List[Int]()
+        var s4b1_conv2_shape = List[Int]()
         s4b1_conv2_shape.append(512)
         s4b1_conv2_shape.append(512)
         s4b1_conv2_shape.append(3)
         s4b1_conv2_shape.append(3)
 
-        var s4_bias_shape= List[Int]()
+        var s4_bias_shape = List[Int]()
         s4_bias_shape.append(512)
 
-        var s4_bn_shape= List[Int]()
+        var s4_bn_shape = List[Int]()
         s4_bn_shape.append(512)
 
         self.s4b1_conv1_kernel = he_uniform(s4b1_conv1_shape, DType.float32)
@@ -485,7 +485,7 @@ struct ResNet18:
         self.s4b1_bn2_running_var = ones(s4_bn_shape, DType.float32)
 
         # Projection shortcut: 1×1 conv, 256→512, stride=2
-        var s4b1_proj_shape= List[Int]()
+        var s4b1_proj_shape = List[Int]()
         s4b1_proj_shape.append(512)
         s4b1_proj_shape.append(256)
         s4b1_proj_shape.append(1)
@@ -514,12 +514,12 @@ struct ResNet18:
         self.s4b2_bn2_running_var = ones(s4_bn_shape, DType.float32)
 
         # ========== FC layer: 512 → num_classes ==========
-        var fc_shape= List[Int]()
+        var fc_shape = List[Int]()
         fc_shape.append(num_classes)
         fc_shape.append(512)
         self.fc_weights = he_uniform(fc_shape, DType.float32)
 
-        var fc_bias_shape= List[Int]()
+        var fc_bias_shape = List[Int]()
         fc_bias_shape.append(num_classes)
         self.fc_bias = zeros(fc_bias_shape, DType.float32)
 
@@ -973,7 +973,7 @@ struct ResNet18:
         # ========== Flatten: (batch, 512, 1, 1) → (batch, 512) ==========
         var gap_shape = gap.shape()
         var batch_size = gap_shape[0]
-        var flatten_shape= List[Int]()
+        var flatten_shape = List[Int]()
         flatten_shape.append(batch_size)
         flatten_shape.append(512)
         var flattened = gap.reshape(flatten_shape)

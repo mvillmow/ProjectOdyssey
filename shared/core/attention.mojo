@@ -400,7 +400,7 @@ struct MultiHeadAttentionWeights(Movable):
         self.wv = wv
         self.wo = wo.
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         self.wq = existing.wq^
         self.wk = existing.wk^
         self.wv = existing.wv^
@@ -420,7 +420,7 @@ struct MultiHeadAttentionResult(Movable):
         self.output = output
         self.attention_weights = attention_weights.
 
-    fn __moveinit__(out self, owned existing: Self):
+    fn __moveinit__(out self, deinit existing: Self):
         self.output = existing.output^
         self.attention_weights = existing.attention_weights^.
 

@@ -23,7 +23,7 @@ alias LinearNoBiasBackwardResult = GradientPair
 
 
 fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
-    """Functional linear transformation: y = xW^T + b
+    """Functional linear transformation: y = xW^T + b.
 
         Pure function - caller manages weights and bias. No internal state.
 
@@ -58,7 +58,7 @@ fn linear(x: ExTensor, weights: ExTensor, bias: ExTensor) raises -> ExTensor:
 
 
 fn linear_no_bias(x: ExTensor, weights: ExTensor) raises -> ExTensor:
-    """Functional linear transformation without bias: y = xW^T
+    """Functional linear transformation without bias: y = xW^T.
 
         Pure function for linear transformation with no bias term.
 

@@ -16,7 +16,7 @@ fn main() raises:
     print("-" * 50)
 
     # zeros
-    var shape_2d= List[Int]()
+    var shape_2d = List[Int]()
     var z = zeros(shape_2d, DType.float32)
     print("Created zeros tensor with shape (3, 4)")
     print("  - numel:", z.numel())
@@ -54,7 +54,7 @@ fn main() raises:
     print("\n2. Different Data Types:")
     print("-" * 50)
 
-    var shape_1d= List[Int]()
+    var shape_1d = List[Int]()
 
     var float16_tensor = zeros(shape_1d, DType.float16)
     print("float16 tensor:", float16_tensor.dtype())
@@ -75,25 +75,25 @@ fn main() raises:
     print("\n3. Different Dimensions:")
     print("-" * 50)
 
-    var shape_0d= List[Int]()
+    var shape_0d = List[Int]()
     var scalar = zeros(shape_0d, DType.float32)
     print("0D scalar:", scalar.dim(), "dimensions, numel:", scalar.numel())
 
-    var shape_1d_test= List[Int]()
+    var shape_1d_test = List[Int]()
     var vector = zeros(shape_1d_test, DType.float32)
     print("1D vector:", vector.dim(), "dimensions, numel:", vector.numel())
 
-    var shape_2d_test= List[Int]()
+    var shape_2d_test = List[Int]()
     var matrix = zeros(shape_2d_test, DType.float32)
     print("2D matrix:", matrix.dim(), "dimensions, numel:", matrix.numel())
 
-    var shape_3d= List[Int]()
+    var shape_3d = List[Int]()
     var tensor_3d = zeros(shape_3d, DType.float32)
     print(
         "3D tensor:", tensor_3d.dim(), "dimensions, numel:", tensor_3d.numel()
     )
 
-    var shape_4d= List[Int]()
+    var shape_4d = List[Int]()
     var tensor_4d = zeros(shape_4d, DType.float32)
     print(
         "4D tensor:", tensor_4d.dim(), "dimensions, numel:", tensor_4d.numel()

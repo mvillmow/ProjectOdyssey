@@ -81,7 +81,7 @@ fn compute_accuracy(
         # Count correct predictions
         for i in range(current_batch_size):
             # Extract single sample
-            var sample_shape= List[Int]()
+            var sample_shape = List[Int]()
             sample_shape.append(1)
             sample_shape.append(3)
             sample_shape.append(32)

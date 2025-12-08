@@ -45,8 +45,8 @@ fn evaluate_model(
     var num_samples = images.shape()[0]
     var num_batches = compute_num_batches(num_samples, batch_size)
     var total_correct = 0
-    var correct_per_class= List[Int]()
-    var total_per_class= List[Int]()
+    var correct_per_class = List[Int]()
+    var total_per_class = List[Int]()
 
     for i in range(10):
         correct_per_class.append(0)

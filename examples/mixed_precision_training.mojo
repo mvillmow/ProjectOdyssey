@@ -84,7 +84,7 @@ fn main() raises:
     print("Initializing model parameters...")
     print("-" * 70)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
 
     # Model parameters in FP16
     var model_params = ExTensor.full(param_shape, 1.0, model_dtype)

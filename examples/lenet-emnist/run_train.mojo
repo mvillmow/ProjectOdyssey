@@ -135,7 +135,7 @@ fn compute_gradients(
     var pool2_shape = pool2_out.shape()
     var batch_size = pool2_shape[0]
     var flattened_size = pool2_shape[1] * pool2_shape[2] * pool2_shape[3]
-    var flatten_shape= List[Int]()
+    var flatten_shape = List[Int]()
     flatten_shape.append(batch_size)
     flatten_shape.append(flattened_size)
     var flattened = pool2_out.reshape(flatten_shape)
@@ -161,7 +161,7 @@ fn compute_gradients(
     # ========== Backward Pass ==========
 
     # Start with gradient from scaled loss
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)

@@ -44,7 +44,7 @@ fn conv2d(
     stride: Int = 1,
     padding: Int = 0,
 ) raises -> ExTensor:
-    """Functional 2D convolution using direct convolution: y = conv2d(x, kernel) + bias
+    """Functional 2D convolution using direct convolution: y = conv2d(x, kernel) + bias.
 
     Pure function - caller manages kernel and bias. No internal state.
     Uses direct convolution algorithm (not im2col).
@@ -188,7 +188,7 @@ Raises:
 fn conv2d_no_bias(
     x: ExTensor, kernel: ExTensor, stride: Int = 1, padding: Int = 0
 ) raises -> ExTensor:
-    """Functional 2D convolution without bias: y = conv2d(x, kernel)
+    """Functional 2D convolution without bias: y = conv2d(x, kernel).
 
     Pure function for convolution with no bias term.
     Uses direct convolution algorithm.
@@ -481,7 +481,7 @@ fn depthwise_conv2d(
     stride: Int = 1,
     padding: Int = 0,
 ) raises -> ExTensor:
-    """Functional depthwise 2D convolution: y = depthwise_conv2d(x, kernel) + bias
+    """Functional depthwise 2D convolution: y = depthwise_conv2d(x, kernel) + bias.
 
     Each input channel is convolved with its own filter (no cross-channel mixing).
     Used in efficient architectures like MobileNet and EfficientNet.

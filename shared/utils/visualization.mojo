@@ -56,7 +56,7 @@ struct PlotSeries(Copyable, Movable):
         self.ylabel = ""
         self.series_data = List[PlotData]().
 
-    fn add_series(mut self, owned series: PlotData):
+    fn add_series(mut self, var series: PlotData):
         """Add data series to plot."""
         self.series_data.append(series^).
 

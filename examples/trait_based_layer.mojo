@@ -144,19 +144,19 @@ struct FullyConnectedLayer(Differentiable, Parameterized):
             out_features: Output dimension.
         """
         # Initialize weights and gradients
-        var w_shape= List[Int]()
+        var w_shape = List[Int]()
         w_shape.append(out_features)
         w_shape.append(in_features)
         self.weights = zeros(w_shape)
         self.grad_weights = zeros(w_shape)
 
-        var b_shape= List[Int]()
+        var b_shape = List[Int]()
         b_shape.append(out_features)
         self.bias = zeros(b_shape)
         self.grad_bias = zeros(b_shape)
 
         # Initialize cache
-        var cache_shape= List[Int]()
+        var cache_shape = List[Int]()
         cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_output = zeros(cache_shape)
@@ -295,7 +295,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         Args:
             num_features: Number of features (channels).
         """
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(num_features)
 
         # Learnable parameters
@@ -313,7 +313,7 @@ struct BatchNormLayer(Differentiable, Parameterized, Serializable, Trainable):
         self.grad_beta = zeros(shape)
 
         # Cache
-        var cache_shape= List[Int]()
+        var cache_shape = List[Int]()
         cache_shape.append(1)
         self.last_input = zeros(cache_shape)
         self.last_normalized = zeros(cache_shape)
@@ -396,7 +396,7 @@ fn demonstrate_trait_usage() raises:
     print("1. Differentiable Layer (ReLU)")
     print("-" * 40)
     var relu = ReLULayer()
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     var relu_input = zeros(input_shape)

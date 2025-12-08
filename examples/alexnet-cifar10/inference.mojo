@@ -64,7 +64,7 @@ fn evaluate_model(
     print("  Total samples:", num_samples)
 
     # Process samples and collect predictions
-    var predictions= List[Int]()
+    var predictions = List[Int]()
     var eval_samples = min(1000, num_samples)
 
     for i in range(eval_samples):
@@ -159,10 +159,10 @@ fn _top_k_indices(tensor: ExTensor, k: Int) raises -> List[Int]:
     """
     var shape = tensor.shape()
     var num_classes = shape[1]
-    var indices= List[Int]()
+    var indices = List[Int]()
 
     # Create a copy of tensor values for modification
-    var values= List[Float32]()
+    var values = List[Float32]()
     var tensor_data = tensor._data.bitcast[Float32]()
     for i in range(num_classes):
         values.append(tensor_data[i])

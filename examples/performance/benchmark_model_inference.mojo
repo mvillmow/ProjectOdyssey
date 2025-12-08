@@ -62,7 +62,7 @@ fn simple_forward(
     # Simplified forward pass for demonstration
     # In real code, this would include matrix multiplications
     # and activation functions
-    var output_shape= List[Int]()
+    var output_shape = List[Int]()
     output_shape.append(input_data.shape()[0])
     output_shape.append(network.output_size)
 
@@ -78,7 +78,7 @@ fn simple_forward(
 fn benchmark_inference_small() raises -> None:
     """Benchmark forward pass with small input."""
     var network = SimpleNetwork(784, 128, 10)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(32)  # batch size
     input_shape.append(784)  # input features
     var input_data = ones(input_shape, DType.float32)
@@ -90,7 +90,7 @@ fn benchmark_inference_small() raises -> None:
 fn benchmark_inference_medium() raises -> None:
     """Benchmark forward pass with medium input."""
     var network = SimpleNetwork(3072, 512, 10)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(64)  # batch size
     input_shape.append(3072)  # input features
     var input_data = ones(input_shape, DType.float32)
@@ -102,7 +102,7 @@ fn benchmark_inference_medium() raises -> None:
 fn benchmark_inference_large() raises -> None:
     """Benchmark forward pass with large input."""
     var network = SimpleNetwork(25088, 4096, 1000)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(32)  # batch size
     input_shape.append(25088)  # input features
     var input_data = ones(input_shape, DType.float32)
@@ -163,7 +163,7 @@ fn main() raises:
     results.append(result_medium)
     results.append(result_large)
 
-    var names= List[String]()
+    var names = List[String]()
     names.append("Small Network")
     names.append("Medium Network")
     names.append("Large Network")

@@ -189,7 +189,7 @@ fn compute_gradients(
     var pool5_shape = pool5_out.shape()
     var batch_size = pool5_shape[0]
     var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
-    var flatten_shape= List[Int]()
+    var flatten_shape = List[Int]()
     flatten_shape.append(batch_size)
     flatten_shape.append(flattened_size)
     var flattened = pool5_out.reshape(flatten_shape)
@@ -219,7 +219,7 @@ fn compute_gradients(
 
     # Start with gradient from loss
     # For cross-entropy, the initial gradient is 1.0
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -714,7 +714,7 @@ fn evaluate(
         Test accuracy (0.0 to 1.0).
     """
     var num_samples = test_images.shape()[0]
-    var predictions= List[Int]()
+    var predictions = List[Int]()
 
     print("Evaluating on ", num_samples, " samples...")
 

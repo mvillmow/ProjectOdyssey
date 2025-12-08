@@ -43,8 +43,8 @@ fn evaluate_model(
     var num_batches = compute_num_batches(num_samples, batch_size)
 
     var total_correct = 0
-    var correct_per_class= List[Int](capacity=10)
-    var total_per_class= List[Int](capacity=10)
+    var correct_per_class = List[Int](capacity=10)
+    var total_per_class = List[Int](capacity=10)
 
     # Initialize counters
     for i in range(10):

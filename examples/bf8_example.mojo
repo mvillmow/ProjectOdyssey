@@ -34,7 +34,7 @@ fn main() raises:
     print("\n2. Tensor Conversion to BF8")
     print("-" * 40)
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape[0] = 3
     shape[1] = 4
 
@@ -81,7 +81,7 @@ fn main() raises:
     print("\n3. Memory Efficiency")
     print("-" * 40)
 
-    var large_shape= List[Int]()
+    var large_shape = List[Int]()
     large_shape[0] = 1000
     large_shape[1] = 1000
 

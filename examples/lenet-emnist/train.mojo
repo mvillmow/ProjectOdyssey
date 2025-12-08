@@ -173,7 +173,7 @@ fn compute_gradients(
 
     # Start with gradient from loss
     # For cross-entropy with mean reduction, the initial gradient is 1.0 / batch_size
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     var grad_output = zeros(grad_output_shape, logits.dtype())
     grad_output._data.bitcast[Float32]()[0] = Float32(1.0)

@@ -190,7 +190,7 @@ fn evaluate_test_set(
 
     # Use batched processing to avoid memory issues
     var eval_batch_size = 32
-    var predictions= List[Int]()
+    var predictions = List[Int]()
 
     # Collect predictions for all samples
     for i in range(num_samples):

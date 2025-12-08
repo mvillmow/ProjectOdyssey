@@ -561,7 +561,7 @@ struct VGG16:
         var batch_size = pool5_shape[0]
         var flattened_size = pool5_shape[1] * pool5_shape[2] * pool5_shape[3]
 
-        var flatten_shape= List[Int]()
+        var flatten_shape = List[Int]()
         flatten_shape.append(batch_size)
         flatten_shape.append(flattened_size)
         var flattened = pool5.reshape(flatten_shape)
