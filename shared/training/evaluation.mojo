@@ -182,7 +182,7 @@ fn evaluate_model[
             total_per_class[true_class] += 1
             if pred_class == true_class:
                 batch_correct += 1
-                correct_per_class[true_class] += 1.0
+                correct_per_class[true_class] += 1
 
         total_correct += batch_correct
 

@@ -152,7 +152,7 @@ struct MetricCollection(Sized):
                 return
 
         self.metric_names.append(name)
-        self.num_metrics += 1.0
+        self.num_metrics += 1
 
     fn __len__(self) -> Int:
         """Get number of metrics in collection (Sized trait)
@@ -259,7 +259,7 @@ struct MetricLogger:
                 if metrics[i].is_scalar:
                     self.metric_names.append(metrics[i].name)
                     self.metric_history.append(List[Float64]())
-                    self.num_metrics += 1.0
+                    self.num_metrics += 1
 
         # Append values
         for i in range(self.num_metrics):
@@ -269,7 +269,7 @@ struct MetricLogger:
                     self.metric_history[i].append(metrics[j].scalar_value)
                     break
 
-        self.num_epochs += 1.0
+        self.num_epochs += 1
 
     fn get_history(self, metric_name: String) raises -> List[Float64]:
         """Get history for a specific metric.
