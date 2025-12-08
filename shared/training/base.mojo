@@ -34,7 +34,7 @@ struct CallbackSignal(Copyable, ImplicitlyCopyable, Movable):
         Args:
             value: Signal value (0=CONTINUE, 1=STOP).
         """
-        self.value = value
+        self.value = value.
 
 
 # Callback signal constants
@@ -89,7 +89,7 @@ struct TrainingState(Copyable, Movable):
         self.batch = batch
         self.metrics = Dict[String, Float64]()
         self.learning_rate = learning_rate
-        self.should_stop = False
+        self.should_stop = False.
 
 
 trait Callback:
@@ -106,13 +106,13 @@ trait Callback:
                 i.  on_batch_begin()   # Before forward pass
                 ii. on_batch_end()     # After backward pass and optimizer step
             c. on_epoch_end()      # After validation (if any)
-        3. on_train_end()          # Once at training end
+        3. on_train_end()          # Once at training end.
 
     State Modification:
         - Callbacks can READ all fields of TrainingState
         - Callbacks can WRITE metrics dictionary (add new metrics)
         - Callbacks can SET should_stop flag (request early stopping)
-        - Callbacks CANNOT modify model/optimizer directly (no references provided)
+        - Callbacks CANNOT modify model/optimizer directly (no references provided).
 
     Return Values:
         - Most hooks return CallbackSignal (CONTINUE or STOP)
@@ -212,7 +212,7 @@ trait LRScheduler:
     Integration Pattern:
         1. Training loop calls scheduler.get_lr(epoch, batch)
         2. Training loop sets optimizer.learning_rate = new_lr
-        3. Scheduler is stateless (pure function of epoch/batch)
+        3. Scheduler is stateless (pure function of epoch/batch).
 
     Scheduler Types:
         - Step decay: Reduce LR at fixed intervals
@@ -346,7 +346,7 @@ Returns:
         - L2 norm: sqrt(sum of all gradient elements squared)
         - L1 norm: sum of absolute values of all gradient elements
         - Returns 0.0 for empty parameter list
-        - Aggregates norms across all tensors in the list
+        - Aggregates norms across all tensors in the list.
 
     Reference:
         Used in Gradient Clipping by Global Norm (arXiv:1308.0850).
@@ -357,7 +357,7 @@ Returns:
     # Aggregate norm over all parameter tensors
     for i in range(len(parameters)):
         var tensor = parameters[i]
-        var size = tensor.numel()
+        var size = tensor.numel().
 
         # Handle each dtype separately for efficiency
         if tensor.dtype() == DType.float32:
@@ -384,7 +384,7 @@ Returns:
                     total_norm_sq += val * val
                 elif norm_type == "L1":
                     total_abs_norm += abs(val)
-        # For integer types, skip (gradients are typically float)
+        # For integer types, skip (gradients are typically float).
 
     # Return appropriate norm
     if norm_type == "L2":
@@ -393,7 +393,7 @@ Returns:
         return total_abs_norm
     else:
         # Default to L2 if unknown norm type
-        return sqrt(total_norm_sq)
+        return sqrt(total_norm_sq).
 
 
 fn clip_gradients(
@@ -422,7 +422,7 @@ Note:
     var norm_sq = Float64(0.0)
     for i in range(len(gradients)):
         var val = gradients[i]
-        norm_sq += val * val
+        norm_sq += val * val.
 
     var norm = sqrt(norm_sq)
 
@@ -430,6 +430,6 @@ Note:
     if norm > max_norm and norm > 0.0:
         var scale = max_norm / norm
         for i in range(len(gradients)):
-            gradients[i] = gradients[i] * scale
+            gradients[i] = gradients[i] * scale.
 
     return gradients^

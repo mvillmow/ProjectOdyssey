@@ -33,15 +33,15 @@ Args:
         bias: Bias vector of shape (out_features,).
 
 Returns:
-        Output tensor of shape (batch_size, out_features)
+        Output tensor of shape (batch_size, out_features).
 
     Example:
         ```mojo
-        from shared.core import ExTensor, linear, zeros, xavier_uniform
+        from shared.core import ExTensor, linear, zeros, xavier_uniform.
 
         # Caller manages state
         var w = xavier_uniform(10, 784, DType.float32)
-        var b = zeros(10, DType.float32)
+        var b = zeros(10, DType.float32).
 
         # Pure function call
         var output = linear(input, w, b)
@@ -67,7 +67,7 @@ Args:
         weights: Weight matrix of shape (out_features, in_features).
 
 Returns:
-        Output tensor of shape (batch_size, out_features)
+        Output tensor of shape (batch_size, out_features).
 
 Raises:
         Error if shapes are incompatible for matrix multiplication.
@@ -86,7 +86,7 @@ fn linear_backward(
         Given: y = xW^T + b.
         grad_input = grad_output @ W
         grad_kernel = grad_output^T @ x
-        grad_bias = sum(grad_output, axis=0)
+        grad_bias = sum(grad_output, axis=0).
 
 Args:
         grad_output: Gradient of loss w.r.t. output, shape (batch_size, out_features).
@@ -101,7 +101,7 @@ Returns:
 
     Example:
         ```
-        from shared.core import ExTensor, linear, linear_backward
+        from shared.core import ExTensor, linear, linear_backward.
 
         # Forward pass
         var output = linear(x, weights, bias)

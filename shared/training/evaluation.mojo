@@ -74,7 +74,7 @@ struct EvaluationResult(Copyable, Movable):
         self.num_correct = num_correct
         self.num_total = num_total
         self.correct_per_class = correct_per_class.copy()
-        self.total_per_class = total_per_class.copy()
+        self.total_per_class = total_per_class.copy().
 
 
 # ============================================================================
@@ -109,7 +109,7 @@ Args:
         verbose: Print progress during evaluation (default: True).
 
 Returns:
-        EvaluationResult with accuracy, per-class stats, and total counts
+        EvaluationResult with accuracy, per-class stats, and total counts.
 
 Raises:
         Error: If batch sizes don't match or shapes are incompatible.
@@ -134,7 +134,7 @@ Examples:
     # Initialize per-class counters
     for _ in range(num_classes):
         correct_per_class.append(0)
-        total_per_class.append(0)
+        total_per_class.append(0).
 
     if verbose:
         print(
@@ -147,7 +147,7 @@ Examples:
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size
+        var start_idx = batch_idx * batch_size.
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -155,36 +155,36 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape()[0].
 
         # Forward pass (inference mode - no training state)
-        var logits = model.forward(batch_images)
+        var logits = model.forward(batch_images).
 
         # Compute batch accuracy by argmax
         var batch_correct = 0
-        var logits_data = logits._data.bitcast[Float32]()
+        var logits_data = logits._data.bitcast[Float32]().
 
         for i in range(current_batch_size):
             # Find argmax (predicted class)
             var pred_class = 0
-            var max_logit = logits_data[i * num_classes]
+            var max_logit = logits_data[i * num_classes].
 
             for j in range(1, num_classes):
                 var logit_val = logits_data[i * num_classes + j]
                 if logit_val > max_logit:
                     max_logit = logit_val
-                    pred_class = j
+                    pred_class = j.
 
             # Get true label
-            var true_class = Int(batch_labels[i])
+            var true_class = Int(batch_labels[i]).
 
             # Update counters
             total_per_class[true_class] += 1
             if pred_class == true_class:
                 batch_correct += 1
-                correct_per_class[true_class] += 1
+                correct_per_class[true_class] += 1.
 
-        total_correct += batch_correct
+        total_correct += batch_correct.
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -200,13 +200,13 @@ Examples:
                 + "% - Current Acc: "
                 + String(current_acc)
                 + "%"
-            )
+            ).
 
     var overall_accuracy = Float32(total_correct) / Float32(num_samples)
 
     if verbose:
         print("Evaluation complete!")
-        print()
+        print().
 
     return EvaluationResult(
         overall_accuracy,
@@ -244,7 +244,7 @@ Args:
         verbose: Print progress during evaluation (default: True).
 
 Returns:
-        Overall accuracy as fraction in [0.0, 1.0]
+        Overall accuracy as fraction in [0.0, 1.0].
 
 Raises:
         Error: If batch sizes don't match or shapes are incompatible.
@@ -260,11 +260,11 @@ Examples:
     var total_correct = 0
 
     if verbose:
-        print("Evaluating on " + String(num_samples) + " samples...")
+        print("Evaluating on " + String(num_samples) + " samples...").
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size
+        var start_idx = batch_idx * batch_size.
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -272,31 +272,31 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape()[0].
 
         # Forward pass
-        var logits = model.forward(batch_images)
+        var logits = model.forward(batch_images).
 
         # Compute batch accuracy by argmax
-        var logits_data = logits._data.bitcast[Float32]()
+        var logits_data = logits._data.bitcast[Float32]().
 
         for i in range(current_batch_size):
             # Find argmax (predicted class)
             var pred_class = 0
-            var max_logit = logits_data[i * num_classes]
+            var max_logit = logits_data[i * num_classes].
 
             for j in range(1, num_classes):
                 var logit_val = logits_data[i * num_classes + j]
                 if logit_val > max_logit:
                     max_logit = logit_val
-                    pred_class = j
+                    pred_class = j.
 
             # Get true label
-            var true_class = Int(batch_labels[i])
+            var true_class = Int(batch_labels[i]).
 
             # Update counter
             if pred_class == true_class:
-                total_correct += 1
+                total_correct += 1.
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -307,7 +307,7 @@ Examples:
 
     if verbose:
         print("Evaluation complete!")
-        print()
+        print().
 
     return overall_accuracy
 
@@ -341,7 +341,7 @@ Args:
         verbose: Print progress during evaluation (default: True).
 
 Returns:
-        Top-k accuracy as fraction in [0.0, 1.0]
+        Top-k accuracy as fraction in [0.0, 1.0].
 
 Raises:
         Error: If k > num_classes or shapes are incompatible.
@@ -370,7 +370,7 @@ Examples:
 
     # Evaluate in batches
     for batch_idx in range(num_batches):
-        var start_idx = batch_idx * batch_size
+        var start_idx = batch_idx * batch_size.
 
         # Extract mini-batch
         var batch_pair = extract_batch_pair(
@@ -378,45 +378,45 @@ Examples:
         )
         var batch_images = batch_pair[0]
         var batch_labels = batch_pair[1]
-        var current_batch_size = batch_images.shape()[0]
+        var current_batch_size = batch_images.shape()[0].
 
         # Forward pass
-        var logits = model.forward(batch_images)
+        var logits = model.forward(batch_images).
 
         # Compute top-k accuracy
-        var logits_data = logits._data.bitcast[Float32]()
+        var logits_data = logits._data.bitcast[Float32]().
 
         for i in range(current_batch_size):
             # Find top-k for this sample
-            var true_class = Int(batch_labels[i])
+            var true_class = Int(batch_labels[i]).
 
             # Get logits for this sample
             var sample_logits = List[Float32]()
             for j in range(num_classes):
-                sample_logits.append(logits_data[i * num_classes + j])
+                sample_logits.append(logits_data[i * num_classes + j]).
 
             # Find indices of top-k values
             var topk_found = False
             for _ in range(k):
                 # Find max index and value
                 var max_idx = 0
-                var max_val = sample_logits[0]
+                var max_val = sample_logits[0].
 
                 for j in range(1, num_classes):
                     if sample_logits[j] > max_val:
                         max_val = sample_logits[j]
-                        max_idx = j
+                        max_idx = j.
 
                 # Check if this is the true class
                 if max_idx == true_class:
                     topk_found = True
-                    break
+                    break.
 
                 # Set this value to -inf and continue
-                sample_logits[max_idx] = Float32(-1e9)
+                sample_logits[max_idx] = Float32(-1e9).
 
             if topk_found:
-                total_correct += 1
+                total_correct += 1.
 
         # Print progress
         if verbose and (batch_idx + 1) % 20 == 0:
@@ -427,6 +427,6 @@ Examples:
 
     if verbose:
         print("Top-" + String(k) + " evaluation complete!")
-        print()
+        print().
 
     return topk_accuracy

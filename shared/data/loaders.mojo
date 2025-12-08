@@ -41,7 +41,7 @@ struct Batch(Copyable, Movable):
         self.data = data^
         self.labels = labels^
         self.indices = indices^
-        self.batch_size = self.data.shape()[0]
+        self.batch_size = self.data.shape()[0].
 
 
 # ============================================================================
@@ -82,22 +82,22 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
         if batch_size <= 0:
             raise Error(
                 "Batch size must be positive, got: " + String(batch_size)
-            )
+            ).
 
         self.dataset = dataset^
         self.batch_size = batch_size
-        self.drop_last = drop_last
+        self.drop_last = drop_last.
 
         # Calculate number of batches
         var dataset_len = self.dataset.__len__()
         if self.drop_last:
             self._len = dataset_len // batch_size
         else:
-            self._len = (dataset_len + batch_size - 1) // batch_size
+            self._len = (dataset_len + batch_size - 1) // batch_size.
 
     fn __len__(self) -> Int:
         """Return number of batches."""
-        return self._len
+        return self._len.
 
 
 # ============================================================================
@@ -148,28 +148,28 @@ struct BatchLoader[
         if batch_size <= 0:
             raise Error(
                 "Batch size must be positive, got: " + String(batch_size)
-            )
+            ).
 
         # Initialize base fields (composition pattern instead of inheritance)
         self.dataset = dataset^
         self.batch_size = batch_size
-        self.drop_last = drop_last
+        self.drop_last = drop_last.
 
         # Calculate number of batches
         var dataset_len = self.dataset.__len__()
         if self.drop_last:
             self._len = dataset_len // batch_size
         else:
-            self._len = (dataset_len + batch_size - 1) // batch_size
+            self._len = (dataset_len + batch_size - 1) // batch_size.
 
-        self.shuffle = shuffle
+        self.shuffle = shuffle.
 
         # Set up sampler
-        self.sampler = sampler^
+        self.sampler = sampler^.
 
     fn __len__(self) -> Int:
         """Return number of batches."""
-        return self._len
+        return self._len.
 
     fn __iter__(mut self) raises -> List[Batch]:
         """Iterate over batches.
@@ -178,38 +178,38 @@ struct BatchLoader[
             List of batches for the epoch.
         """
         var batches= List[Batch](capacity=self.__len__())
-        var indices = self.sampler.__iter__()
+        var indices = self.sampler.__iter__().
 
         var batch_start = 0
         while batch_start < len(indices):
             var batch_end = min(batch_start + self.batch_size, len(indices))
-            var batch_indices= List[Int](capacity=batch_end - batch_start)
+            var batch_indices= List[Int](capacity=batch_end - batch_start).
 
             # Collect batch indices
             for i in range(batch_start, batch_end):
-                batch_indices.append(indices[i])
+                batch_indices.append(indices[i]).
 
             # Skip incomplete batch if drop_last
             if self.drop_last and len(batch_indices) < self.batch_size:
-                break
+                break.
 
             # Load batch data
             var batch_data= List[ExTensor](capacity=len(batch_indices))
-            var batch_labels= List[ExTensor](capacity=len(batch_indices))
+            var batch_labels= List[ExTensor](capacity=len(batch_indices)).
 
             for idx in batch_indices:
                 var sample = self.dataset.__getitem__(idx)
                 batch_data.append(sample[0])
-                batch_labels.append(sample[1])
+                batch_labels.append(sample[1]).
 
             # Stack into batch tensors
             var data_tensor = self._stack_tensors(batch_data)
-            var labels_tensor = self._stack_tensors(batch_labels)
+            var labels_tensor = self._stack_tensors(batch_labels).
 
             batches.append(Batch(data_tensor^, labels_tensor^, batch_indices^))
-            batch_start = batch_end
+            batch_start = batch_end.
 
-        return batches^
+        return batches^.
 
     fn _stack_tensors(self, tensors: List[ExTensor]) raises -> ExTensor:
         """Stack list of tensors into a batch tensor.
@@ -230,11 +230,11 @@ struct BatchLoader[
             Error if tensors list is empty or tensors have incompatible shapes.
         """
         if len(tensors) == 0:
-            raise Error("Cannot stack empty list of tensors")
+            raise Error("Cannot stack empty list of tensors").
 
         var batch_size = len(tensors)
         var first_shape = tensors[0].shape()
-        var first_dtype = tensors[0].dtype()
+        var first_dtype = tensors[0].dtype().
 
         # Verify all tensors have compatible shapes and dtype
         for i in range(len(tensors)):
@@ -246,7 +246,7 @@ struct BatchLoader[
                     + " and "
                     + String(len(tensors[i].shape()))
                     + " dimensions"
-                )
+                ).
 
             for j in range(len(first_shape)):
                 if tensors[i].shape()[j] != first_shape[j]:
@@ -258,35 +258,35 @@ struct BatchLoader[
                         + String(first_shape[j])
                         + " vs "
                         + String(tensors[i].shape()[j])
-                    )
+                    ).
 
             if tensors[i].dtype() != first_dtype:
-                raise Error("All tensors must have same dtype")
+                raise Error("All tensors must have same dtype").
 
         # Build the new shape: [batch_size, *tensor_shape]
         var new_shape= List[Int]()
         new_shape.append(batch_size)
         for i in range(len(first_shape)):
-            new_shape.append(first_shape[i])
+            new_shape.append(first_shape[i]).
 
         # Calculate total elements in output tensor
         var total_elements = batch_size
         for i in range(len(first_shape)):
-            total_elements *= first_shape[i]
+            total_elements *= first_shape[i].
 
         # Calculate number of elements per tensor
-        var elements_per_tensor = tensors[0].num_elements()
+        var elements_per_tensor = tensors[0].num_elements().
 
         # Build stacked data as a List and create tensor
-        var stacked_data= List[Float32](capacity=total_elements)
+        var stacked_data= List[Float32](capacity=total_elements).
 
         # Copy each tensor's data into the stacked list
         for tensor_idx in range(len(tensors)):
             # Copy all elements from this tensor
             for elem_idx in range(elements_per_tensor):
-                stacked_data.append(Float32(tensors[tensor_idx][elem_idx]))
+                stacked_data.append(Float32(tensors[tensor_idx][elem_idx])).
 
         # Create output tensor from the list
-        var stacked = ExTensor(stacked_data^)
+        var stacked = ExTensor(stacked_data^).
 
-        return stacked^
+        return stacked^.

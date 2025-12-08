@@ -59,16 +59,16 @@ Args:
         dropout_p: Dropout probability (not applied in this implementation).
 
 Returns:
-        Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v)
+        Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v).
 
     Example:
         ```mojo
-        from shared.core import scaled_dot_product_attention
+        from shared.core import scaled_dot_product_attention.
 
         # Create Q, K, V tensors: (batch=2, seq_len=10, d_k=64)
         var query = ones([2, 10, 64], DType.float32)
         var key = ones([2, 10, 64], DType.float32)
-        var value = ones([2, 10, 64], DType.float32)
+        var value = ones([2, 10, 64], DType.float32).
 
         # Compute attention
         var output = scaled_dot_product_attention(query, key, value)
@@ -76,7 +76,7 @@ Returns:
         ```
 
     Formula:
-        Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V
+        Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V.
 
 Note:
         - The scaling factor sqrt(d_k) prevents dot products from growing too large
@@ -124,7 +124,7 @@ Note:
     # Apply mask if provided (additive masking)
     var mask_shape = mask.shape()
     if len(mask_shape) > 0 and mask.numel() > 0:
-        scaled_scores = add(scaled_scores, mask)
+        scaled_scores = add(scaled_scores, mask).
 
     # Apply softmax along the last dimension (key sequence length)
     var attention_weights = softmax(scaled_scores)
@@ -184,7 +184,7 @@ Returns:
         Field mapping for backward results:
             - grad_input  -> gradient w.r.t. query
             - grad_weights -> gradient w.r.t. key
-            - grad_bias  -> gradient w.r.t. value
+            - grad_bias  -> gradient w.r.t. value.
 
     Example:
         ```mojo
@@ -194,7 +194,7 @@ Returns:
         )
 
         # Forward pass
-        var output = scaled_dot_product_attention(query, key, value)
+        var output = scaled_dot_product_attention(query, key, value).
 
         # ... compute loss and grad_output ...
 
@@ -275,7 +275,7 @@ fn _softmax_backward(
 
     if grad_output.dtype() == DType.float32:
         for b in range(batch_size):
-            var offset = b * last_dim
+            var offset = b * last_dim.
 
             # Compute sum(grad * softmax) for this batch element
             var dot_sum = Float32(0.0)
@@ -283,29 +283,29 @@ fn _softmax_backward(
                 dot_sum += (
                     grad_ptr.bitcast[Float32]()[offset + i]
                     * softmax_ptr.bitcast[Float32]()[offset + i]
-                )
+                ).
 
             # Compute gradient: softmax * (grad - dot_sum)
             for i in range(last_dim):
                 var s = softmax_ptr.bitcast[Float32]()[offset + i]
                 var g = grad_ptr.bitcast[Float32]()[offset + i]
-                result_ptr.bitcast[Float32]()[offset + i] = s * (g - dot_sum)
+                result_ptr.bitcast[Float32]()[offset + i] = s * (g - dot_sum).
 
     elif grad_output.dtype() == DType.float64:
         for b in range(batch_size):
-            var offset = b * last_dim
+            var offset = b * last_dim.
 
             var dot_sum = Float64(0.0)
             for i in range(last_dim):
                 dot_sum += (
                     grad_ptr.bitcast[Float64]()[offset + i]
                     * softmax_ptr.bitcast[Float64]()[offset + i]
-                )
+                ).
 
             for i in range(last_dim):
                 var s = softmax_ptr.bitcast[Float64]()[offset + i]
                 var g = grad_ptr.bitcast[Float64]()[offset + i]
-                result_ptr.bitcast[Float64]()[offset + i] = s * (g - dot_sum)
+                result_ptr.bitcast[Float64]()[offset + i] = s * (g - dot_sum).
 
     else:
         raise Error("_softmax_backward: only float32/64 supported")
@@ -330,7 +330,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import create_causal_mask, scaled_dot_product_attention
+        from shared.core import create_causal_mask, scaled_dot_product_attention.
 
         var mask = create_causal_mask(10)
         var output = scaled_dot_product_attention(query, key, value, mask=mask)
@@ -364,7 +364,7 @@ Note:
             for j in range(seq_len):
                 var idx = i * seq_len + j
                 if j > i:
-                    mask_ptr.bitcast[Float64]()[idx] = neg_inf
+                    mask_ptr.bitcast[Float64]()[idx] = neg_inf.
 
     else:
         raise Error("create_causal_mask: only float32/64 supported")
@@ -398,13 +398,13 @@ struct MultiHeadAttentionWeights(Movable):
         self.wq = wq
         self.wk = wk
         self.wv = wv
-        self.wo = wo
+        self.wo = wo.
 
     fn __moveinit__(out self, owned existing: Self):
         self.wq = existing.wq^
         self.wk = existing.wk^
         self.wv = existing.wv^
-        self.wo = existing.wo^
+        self.wo = existing.wo^.
 
 
 struct MultiHeadAttentionResult(Movable):
@@ -418,11 +418,11 @@ struct MultiHeadAttentionResult(Movable):
 
     fn __init__(out self, output: ExTensor, attention_weights: ExTensor):
         self.output = output
-        self.attention_weights = attention_weights
+        self.attention_weights = attention_weights.
 
     fn __moveinit__(out self, owned existing: Self):
         self.output = existing.output^
-        self.attention_weights = existing.attention_weights^
+        self.attention_weights = existing.attention_weights^.
 
 
 fn multi_head_attention(
@@ -472,10 +472,10 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import multi_head_attention, MultiHeadAttentionWeights
+        from shared.core import multi_head_attention, MultiHeadAttentionWeights.
 
         # Initialize weights (normally from model)
-        var weights = MultiHeadAttentionWeights(wq, wk, wv, wo)
+        var weights = MultiHeadAttentionWeights(wq, wk, wv, wo).
 
         # Compute multi-head attention
         var result = multi_head_attention(
@@ -486,7 +486,7 @@ Returns:
 
     Formula:
         MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * Wo
-        where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i)
+        where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i).
 
 Note:
         - d_model must be divisible by num_heads
@@ -539,14 +539,14 @@ Note:
             scale_ptr.bitcast[Float32]()[i] = scale_f32
     else:
         for i in range(numel):
-            scale_ptr.bitcast[Float64]()[i] = scale
+            scale_ptr.bitcast[Float64]()[i] = scale.
 
     var scaled_scores = multiply(scores, scale_tensor)
 
     # Apply mask if provided
     var mask_shape = mask.shape()
     if len(mask_shape) > 0 and mask.numel() > 0:
-        scaled_scores = add(scaled_scores, mask)
+        scaled_scores = add(scaled_scores, mask).
 
     # Softmax over last dimension
     var attention_weights = softmax(scaled_scores)
@@ -621,7 +621,7 @@ fn _reshape_for_heads(
                         )
                         result_ptr.bitcast[Float64]()[dst_idx] = x_ptr.bitcast[
                             Float64
-                        ]()[src_idx]
+                        ]()[src_idx].
 
     return result
 
@@ -681,7 +681,7 @@ fn _reshape_from_heads(
                         )
                         result_ptr.bitcast[Float64]()[dst_idx] = x_ptr.bitcast[
                             Float64
-                        ]()[src_idx]
+                        ]()[src_idx].
 
     return result
 
@@ -716,7 +716,7 @@ struct MultiHeadAttentionBackwardResult(Movable):
         self.grad_wq = grad_wq
         self.grad_wk = grad_wk
         self.grad_wv = grad_wv
-        self.grad_wo = grad_wo
+        self.grad_wo = grad_wo.
 
     fn __moveinit__(out self, deinit existing: Self):
         self.grad_query = existing.grad_query^
@@ -725,7 +725,7 @@ struct MultiHeadAttentionBackwardResult(Movable):
         self.grad_wq = existing.grad_wq^
         self.grad_wk = existing.grad_wk^
         self.grad_wv = existing.grad_wv^
-        self.grad_wo = existing.grad_wo^
+        self.grad_wo = existing.grad_wo^.
 
 
 fn multi_head_attention_backward(
@@ -816,7 +816,7 @@ Note:
             scale_ptr.bitcast[Float32]()[i] = scale_f32
     else:
         for i in range(numel):
-            scale_ptr.bitcast[Float64]()[i] = scale
+            scale_ptr.bitcast[Float64]()[i] = scale.
 
     var grad_scores = multiply(grad_scaled_scores, scale_tensor)
 

@@ -61,7 +61,7 @@ Raises:
                 + "], got ["
                 + _shape_to_string(actual_shape)
                 + "]"
-            )
+            ).
 
 
 fn validate_tensor_dtype(
@@ -119,7 +119,7 @@ Raises:
         ```mojo
         var x = zeros([2, 3], DType.float32)
         var y = ones([2, 3], DType.float32)
-        validate_matching_tensors(x, y, "x", "y")  # Passes
+        validate_matching_tensors(x, y, "x", "y")  # Passes.
 
         var z = zeros([3, 2], DType.float32)
         validate_matching_tensors(x, z, "x", "z")  # Raises error
@@ -165,7 +165,7 @@ Raises:
                 + "] vs ["
                 + _shape_to_string(shape_b)
                 + "]"
-            )
+            ).
 
 
 fn validate_2d_input(tensor: ExTensor, name: String) raises:
@@ -181,7 +181,7 @@ Raises:
     Example:
         ```mojo
         var x = zeros([2, 3], DType.float32)
-        validate_2d_input(x, "input")  # Passes
+        validate_2d_input(x, "input")  # Passes.
 
         var y = zeros([2, 3, 4], DType.float32)
         validate_2d_input(y, "input")  # Raises error
@@ -214,7 +214,7 @@ Raises:
     Example:
         ```mojo
         var x = zeros([2, 3, 4, 5], DType.float32)
-        validate_4d_input(x, "input")  # Passes
+        validate_4d_input(x, "input")  # Passes.
 
         var y = zeros([2, 3, 4], DType.float32)
         validate_4d_input(y, "input")  # Raises error
@@ -249,11 +249,11 @@ Returns:
         A string like "2, 3, 4" for shape [2, 3, 4].
     """
     if len(shape) == 0:
-        return ""
+        return "".
 
     var result = String(shape[0])
     for i in range(1, len(shape)):
-        result += ", " + String(shape[i])
+        result += ", " + String(shape[i]).
 
     return result
 
@@ -292,4 +292,4 @@ Returns:
     elif dtype == DType.bool:
         return "bool"
     else:
-        return "unknown"
+        return "unknown".

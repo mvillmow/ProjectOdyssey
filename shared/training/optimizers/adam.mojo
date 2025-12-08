@@ -61,17 +61,17 @@ Args:
         weight_decay: L2 regularization factor (default: 0.0, no regularization).
 
 Returns:
-        Tuple of (new_params, new_m, new_v)
+        Tuple of (new_params, new_m, new_v).
 
     Example (basic Adam):
         ```mojo
         from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import adam_step
+        from shared.training.optimizers import adam_step.
 
         var W = xavier_uniform(784, 128, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
-        var t = 1
+        var t = 1.
 
         # Training loop
         for epoch in range(100):
@@ -86,10 +86,10 @@ Note:
         Timestep t must be tracked by caller and incremented after each step.
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape")
+        raise Error("Parameters and gradients must have the same shape").
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype")
+        raise Error("Parameters and gradients must have the same dtype").
 
     if m.numel() == 0 or v.numel() == 0:
         raise Error(
@@ -98,7 +98,7 @@ Note:
         )
 
     if t <= 0:
-        raise Error("Timestep t must be positive (starts at 1)")
+        raise Error("Timestep t must be positive (starts at 1)").
 
     var effective_gradients = gradients
 
@@ -107,7 +107,7 @@ Note:
         # grad = grad + weight_decay * params (SIMD optimized)
         var wd_tensor = full_like(params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params)
-        effective_gradients = add_simd(gradients, decay_term)
+        effective_gradients = add_simd(gradients, decay_term).
 
     # Update biased first moment estimate (SIMD optimized)
     # m = beta1 * m + (1 - beta1) * grad
@@ -172,7 +172,7 @@ fn adam_step_simple(
         v = 0.999 * v + 0.001 * grad^2
         m_hat = m / (1 - 0.9^t)
         v_hat = v / (1 - 0.999^t)
-        params = params - lr * m_hat / (sqrt(v_hat) + 1e-8)
+        params = params - lr * m_hat / (sqrt(v_hat) + 1e-8).
 
 Args:
         params: Model parameters to update.
@@ -183,14 +183,14 @@ Args:
         learning_rate: Step size for parameter updates.
 
 Returns:
-        Tuple of (new_params, new_m, new_v)
+        Tuple of (new_params, new_m, new_v).
 
     Example:
         ```mojo
         var W = xavier_uniform(784, 128, shape, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
-        var t = 1
+        var t = 1.
 
         for epoch in range(100):
             var grad_W = ... # Computed gradients

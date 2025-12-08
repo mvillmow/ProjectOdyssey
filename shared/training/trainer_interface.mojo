@@ -34,13 +34,13 @@ struct TrainerConfig(Copyable, Movable):
         - Automatic gradient scaling to prevent FP16 underflow
         - Dynamic loss scaling with overflow detection
         - Master weights in FP32 for optimizer precision
-        - 2-3x speedup with minimal accuracy loss
+        - 2-3x speedup with minimal accuracy loss.
 
         Current Status:
         - ✅ GradientScaler fully implemented and tested
         - ✅ Master weight conversion utilities available
         - ✅ Gradient clipping with validation
-        - ⚠️  Automatic training loop integration pending autograd
+        - ⚠️  Automatic training loop integration pending autograd.
 
         Example (when autograd is available):
             var config = TrainerConfig(
@@ -90,7 +90,7 @@ struct TrainerConfig(Copyable, Movable):
         self.use_mixed_precision = use_mixed_precision
         self.precision_dtype = precision_dtype
         self.loss_scale = loss_scale
-        self.gradient_clip_norm = gradient_clip_norm
+        self.gradient_clip_norm = gradient_clip_norm.
 
 
 struct TrainingMetrics(Copyable, Movable):
@@ -121,7 +121,7 @@ struct TrainingMetrics(Copyable, Movable):
         self.val_accuracy = 0.0
         self.best_val_loss = 1e10  # Initialize to very large value
         self.best_val_accuracy = 0.0
-        self.best_epoch = 0
+        self.best_epoch = 0.
 
     fn update_train_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update training metrics for current batch.
@@ -131,7 +131,7 @@ struct TrainingMetrics(Copyable, Movable):
             accuracy: Current batch accuracy.
         """
         self.train_loss = loss
-        self.train_accuracy = accuracy
+        self.train_accuracy = accuracy.
 
     fn update_val_metrics(mut self, loss: Float64, accuracy: Float64):
         """Update validation metrics and track best results.
@@ -141,19 +141,19 @@ struct TrainingMetrics(Copyable, Movable):
             accuracy: Validation accuracy.
         """
         self.val_loss = loss
-        self.val_accuracy = accuracy
+        self.val_accuracy = accuracy.
 
         # Track best validation results
         if loss < self.best_val_loss:
             self.best_val_loss = loss
             self.best_val_accuracy = accuracy
-            self.best_epoch = self.current_epoch
+            self.best_epoch = self.current_epoch.
 
     fn reset_epoch(mut self):
         """Reset epoch-level metrics."""
         self.current_batch = 0
         self.train_loss = 0.0
-        self.train_accuracy = 0.0
+        self.train_accuracy = 0.0.
 
     fn print_summary(self):
         """Print training metrics summary."""
@@ -178,7 +178,7 @@ struct TrainingMetrics(Copyable, Movable):
             + String(self.best_epoch)
             + ")"
         )
-        print("-" * 50)
+        print("-" * 50).
 
 
 trait Trainer:
@@ -258,7 +258,7 @@ struct DataBatch(Copyable, Movable):
         """
         self.data = data^
         self.labels = labels^
-        self.batch_size = self.data.shape()[0]
+        self.batch_size = self.data.shape()[0].
 
 
 struct DataLoader(Copyable, Movable):
@@ -291,11 +291,11 @@ struct DataLoader(Copyable, Movable):
         self.batch_size = batch_size
         self.num_samples = self.data.shape()[0]
         self.num_batches = (self.num_samples + batch_size - 1) // batch_size
-        self.current_batch = 0
+        self.current_batch = 0.
 
     fn reset(mut self):
         """Reset loader to beginning."""
-        self.current_batch = 0
+        self.current_batch = 0.
 
     fn has_next(self) -> Bool:
         """Check if more batches available.
@@ -303,41 +303,41 @@ struct DataLoader(Copyable, Movable):
         Returns:
             True if more batches available.
         """
-        return self.current_batch < self.num_batches
+        return self.current_batch < self.num_batches.
 
     fn next(mut self) raises -> DataBatch:
         """Get next batch.
 
         Returns:
-            Next data batch
+            Next data batch.
 
         Raises:
             Error if no more batches.
         """
         if not self.has_next():
-            raise Error("No more batches available")
+            raise Error("No more batches available").
 
         var start_idx = self.current_batch * self.batch_size
         var end_idx = min(start_idx + self.batch_size, self.num_samples)
-        var actual_batch_size = end_idx - start_idx
+        var actual_batch_size = end_idx - start_idx.
 
         # Extract batch slice
         var batch_data_shape= List[Int]()
         batch_data_shape.append(actual_batch_size)
         batch_data_shape.append(self.data.shape()[1])
-        var batch_data = ExTensor(batch_data_shape, self.data.dtype())
+        var batch_data = ExTensor(batch_data_shape, self.data.dtype()).
 
         var batch_labels_shape= List[Int]()
         batch_labels_shape.append(actual_batch_size)
-        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype())
+        var batch_labels = ExTensor(batch_labels_shape, self.labels.dtype()).
 
         # Copy data (simplified - real implementation would use slicing)
         # For now, we'll just create placeholders
         # TODO: Implement proper tensor slicing in ExTensor
 
-        self.current_batch += 1
+        self.current_batch += 1.
 
-        return DataBatch(batch_data, batch_labels)
+        return DataBatch(batch_data, batch_labels).
 
 
 fn create_simple_dataloader(

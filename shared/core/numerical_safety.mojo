@@ -137,7 +137,7 @@ Returns:
         var ptr = tensor._data.bitcast[Float16]()
         for i in range(size):
             if isnan(Float32(ptr[i])):
-                count += 1
+                count += 1.
 
     return count
 
@@ -174,7 +174,7 @@ Returns:
         var ptr = tensor._data.bitcast[Float16]()
         for i in range(size):
             if isinf(Float32(ptr[i])):
-                count += 1
+                count += 1.
 
     return count
 
@@ -198,7 +198,7 @@ Raises:
     Example:
         ```mojo
         # Production mode: safety disabled (zero overhead)
-        check_tensor_safety(output)  # Compiles to nothing
+        check_tensor_safety(output)  # Compiles to nothing.
 
         # Debug mode: safety enabled
         check_tensor_safety[enable=True](output, "linear_output")
@@ -237,7 +237,7 @@ Returns:
     """
     var size = tensor.numel()
     if size == 0:
-        return 0.0
+        return 0.0.
 
     var min_val = Float64(1e308)  # Very large positive number
 
@@ -258,7 +258,7 @@ Returns:
         for i in range(size):
             var val = Float64(Float32(ptr[i]))
             if val < min_val:
-                min_val = val
+                min_val = val.
 
     return min_val
 
@@ -280,7 +280,7 @@ Returns:
     """
     var size = tensor.numel()
     if size == 0:
-        return 0.0
+        return 0.0.
 
     var max_val = Float64(-1e308)  # Very large negative number
 
@@ -301,7 +301,7 @@ Returns:
         for i in range(size):
             var val = Float64(Float32(ptr[i]))
             if val > max_val:
-                max_val = val
+                max_val = val.
 
     return max_val
 
@@ -380,7 +380,7 @@ Returns:
         var ptr = tensor._data.bitcast[Float16]()
         for i in range(size):
             var val = Float64(Float32(ptr[i]))
-            sum_sq += val * val
+            sum_sq += val * val.
 
     return sqrt(sum_sq)
 
@@ -488,7 +488,7 @@ Raises:
         ```mojo
         # Debug mode: full gradient safety
         var grad = backward_pass(loss)
-        check_gradient_safety[enable=True](grad, max_norm=100.0)
+        check_gradient_safety[enable=True](grad, max_norm=100.0).
 
         # Production mode: disabled (zero overhead)
         check_gradient_safety(grad)  # Compiles to nothing
@@ -498,10 +498,10 @@ Raises:
     @parameter
     if enable:
         # Check NaN/Inf
-        check_tensor_safety[enable=True](gradient, name)
+        check_tensor_safety[enable=True](gradient, name).
 
         # Check gradient explosion
-        check_gradient_norm(gradient, max_norm, name)
+        check_gradient_norm(gradient, max_norm, name).
 
         # Check gradient vanishing
-        check_gradient_vanishing(gradient, min_norm, name)
+        check_gradient_vanishing(gradient, min_norm, name).

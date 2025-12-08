@@ -37,7 +37,7 @@ Args:
         labels: True class labels of shape [batch_size].
 
 Returns:
-        Accuracy as a fraction in [0, 1]
+        Accuracy as a fraction in [0, 1].
 
 Raises:
         Error: If shapes are incompatible.
@@ -47,11 +47,11 @@ Examples:
         # With logits (need argmax)
         var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 3 classes
         var labels = ExTensor(List[Int](), DType.int32)
-        var acc = top1_accuracy(logits, labels)
+        var acc = top1_accuracy(logits, labels).
 
         # With predicted class indices
         var preds = ExTensor(List[Int](), DType.int32)  # Already argmaxed
-        var acc2 = top1_accuracy(preds, labels)
+        var acc2 = top1_accuracy(preds, labels).
 
     Issue: #278-282 - Accuracy metrics.
     """
@@ -84,15 +84,15 @@ Examples:
         if pred_classes._dtype == DType.int32:
             pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
         else:  # int64.
-            pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
+            pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
 
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[i])
         else:  # int64.
-            label_val = Int(labels._data.bitcast[Int64]()[i])
+            label_val = Int(labels._data.bitcast[Int64]()[i]).
 
         if pred_val == label_val:
-            correct += 1
+            correct += 1.
 
     return Float64(correct) / Float64(pred_classes._numel)
 
@@ -117,11 +117,11 @@ Raises:
     if axis == 1 and len(shape_vec) == 2:
         # Common case: [batch_size, num_classes] -> [batch_size]
         var batch_size = shape_vec[0]
-        var num_classes = shape_vec[1]
+        var num_classes = shape_vec[1].
 
         var result_shape= List[Int]()
         result_shape.append(batch_size)
-        var result = ExTensor(result_shape, DType.int32)
+        var result = ExTensor(result_shape, DType.int32).
 
         # For each sample in batch
         for b in range(batch_size):
@@ -134,7 +134,7 @@ Raises:
                     tensor._data.bitcast[Float32]()[b * num_classes]
                 )
             else:  # float64
-                max_val = tensor._data.bitcast[Float64]()[b * num_classes]
+                max_val = tensor._data.bitcast[Float64]()[b * num_classes].
 
             # Find max
             for c in range(1, num_classes):
@@ -144,13 +144,13 @@ Raises:
                 if tensor._dtype == DType.float32:
                     val = Float64(tensor._data.bitcast[Float32]()[idx])
                 else:
-                    val = tensor._data.bitcast[Float64]()[idx]
+                    val = tensor._data.bitcast[Float64]()[idx].
 
                 if val > max_val:
                     max_val = val
-                    max_idx = c
+                    max_idx = c.
 
-            result._data.bitcast[Int32]()[b] = Int32(max_idx)
+            result._data.bitcast[Int32]()[b] = Int32(max_idx).
 
         return result^
     else:
@@ -176,7 +176,7 @@ Args:
         k: Number of top predictions to consider (default: 5).
 
 Returns:
-        Accuracy as a fraction in [0, 1]
+        Accuracy as a fraction in [0, 1].
 
 Raises:
         Error: If shapes are incompatible.
@@ -185,7 +185,7 @@ Raises:
 Examples:
         var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
         var labels = ExTensor(List[Int](), DType.int32)
-        var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
+        var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy.
 
     Issue: #278-282 - Accuracy metrics.
     """
@@ -212,20 +212,20 @@ Examples:
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[b])
         else:
-            label_val = Int(labels._data.bitcast[Int64]()[b])
+            label_val = Int(labels._data.bitcast[Int64]()[b]).
 
         # Get top-k indices for this sample
-        var top_k_indices = get_topk_indices(predictions, b, k)
+        var top_k_indices = get_topk_indices(predictions, b, k).
 
         # Check if true label is in top-k
         var found = False
         for i in range(k):
             if top_k_indices[i] == label_val:
                 found = True
-                break
+                break.
 
         if found:
-            correct += 1
+            correct += 1.
 
     return Float64(correct) / Float64(batch_size)
 
@@ -259,7 +259,7 @@ Returns:
             values.append(Float64(predictions._data.bitcast[Float32]()[idx]))
         else:
             values.append(predictions._data.bitcast[Float64]()[idx])
-        indices.append(c)
+        indices.append(c).
 
     # Simple selection: repeatedly find max and swap to front
     var result= List[Int]()
@@ -267,12 +267,12 @@ Returns:
     for i in range(k):
         # Find max in remaining elements
         var max_idx = i
-        var max_val = values[i]
+        var max_val = values[i].
 
         for j in range(i + 1, num_classes):
             if values[j] > max_val:
                 max_val = values[j]
-                max_idx = j
+                max_idx = j.
 
         # Swap to front
         var temp_val = values[i]
@@ -280,9 +280,9 @@ Returns:
         values[i] = values[max_idx]
         indices[i] = indices[max_idx]
         values[max_idx] = temp_val
-        indices[max_idx] = temp_idx
+        indices[max_idx] = temp_idx.
 
-        result.append(indices[i])
+        result.append(indices[i]).
 
     return result^
 
@@ -336,7 +336,7 @@ Examples:
 
     for c in range(num_classes):
         correct_counts.append(0)
-        total_counts.append(0)
+        total_counts.append(0).
 
     for i in range(labels._numel):
         var pred_val: Int
@@ -345,19 +345,19 @@ Examples:
         if pred_classes._dtype == DType.int32:
             pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
         else:
-            pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
+            pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
 
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[i])
         else:
-            label_val = Int(labels._data.bitcast[Int64]()[i])
+            label_val = Int(labels._data.bitcast[Int64]()[i]).
 
         # Increment total count for true class
-        total_counts[label_val] += 1
+        total_counts[label_val] += 1.
 
         # Increment correct count if prediction matches
         if pred_val == label_val:
-            correct_counts[label_val] += 1
+            correct_counts[label_val] += 1.
 
     # Compute per-class accuracies
     var result_shape= List[Int]()
@@ -369,9 +369,9 @@ Examples:
         if total_counts[c] > 0:
             acc = Float64(correct_counts[c]) / Float64(total_counts[c])
         else:
-            acc = 0.0  # No samples for this class
+            acc = 0.0  # No samples for this class.
 
-        result._data.bitcast[Float64]()[c] = acc
+        result._data.bitcast[Float64]()[c] = acc.
 
     return result^
 
@@ -393,7 +393,7 @@ struct AccuracyMetric(Metric):
         for batch in data_loader:
             metric.update(predictions, labels)
         var final_acc = metric.compute()
-        metric.reset()  # For next epoch
+        metric.reset()  # For next epoch.
 
     Issue: #278-282 - Accuracy metrics.
     """
@@ -404,7 +404,7 @@ struct AccuracyMetric(Metric):
     fn __init__(out self):
         """Initialize with zero counts."""
         self.correct_count = 0
-        self.total_count = 0
+        self.total_count = 0.
 
     fn update(mut self, predictions: ExTensor, labels: ExTensor) raises:
         """Update metric with a new batch of predictions.
@@ -435,17 +435,17 @@ struct AccuracyMetric(Metric):
             if pred_classes._dtype == DType.int32:
                 pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
             else:
-                pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
+                pred_val = Int(pred_classes._data.bitcast[Int64]()[i]).
 
             if labels._dtype == DType.int32:
                 label_val = Int(labels._data.bitcast[Int32]()[i])
             else:
-                label_val = Int(labels._data.bitcast[Int64]()[i])
+                label_val = Int(labels._data.bitcast[Int64]()[i]).
 
             if pred_val == label_val:
-                self.correct_count += 1
+                self.correct_count += 1.
 
-            self.total_count += 1
+            self.total_count += 1.
 
     fn compute(self) -> Float64:
         """Compute final accuracy from accumulated counts.
@@ -455,9 +455,9 @@ struct AccuracyMetric(Metric):
         """
         if self.total_count == 0:
             return 0.0
-        return Float64(self.correct_count) / Float64(self.total_count)
+        return Float64(self.correct_count) / Float64(self.total_count).
 
     fn reset(mut self):
         """Reset counts to zero for next epoch."""
         self.correct_count = 0
-        self.total_count = 0
+        self.total_count = 0.

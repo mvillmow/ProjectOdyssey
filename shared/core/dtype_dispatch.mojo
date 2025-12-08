@@ -26,7 +26,7 @@ Example usage:
         for i in range(size):
             result._data.bitcast[Float32]()[i] = op(tensor._data.bitcast[Float32]()[i])
     elif tensor.dtype() == DType.float64:
-        # ... repeat for all dtypes
+        # ... repeat for all dtypes.
 
     # After (5 lines):
     return elementwise_unary[relu_op](tensor)
@@ -83,7 +83,7 @@ Returns:
     elif dtype == DType.uint64:
         return "uint64"
     else:
-        return "unknown"
+        return "unknown".
 
 
 # ============================================================================
@@ -111,7 +111,7 @@ Returns:
         ```mojo
          Define operation.
         fn my_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-            return max(Scalar[T](0), x)
+            return max(Scalar[T](0), x).
 
         # Apply with compile-time dtype
         var result = elementwise_unary[DType.float32, my_op](tensor)
@@ -124,7 +124,7 @@ Returns:
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
 
     for i in range(size):
-        out_ptr[i] = op[dtype](in_ptr[i])
+        out_ptr[i] = op[dtype](in_ptr[i]).
 
     return result^
 
@@ -152,7 +152,7 @@ Raises:
     Example:
         ```mojo
         n relu_op[T: DType](x: Scalar[T]) -> Scalar[T]:
-            return max(Scalar[T](0), x)
+            return max(Scalar[T](0), x).
 
         var result = dispatch_unary[relu_op](tensor)  # Works for any dtype
         ```
@@ -222,7 +222,7 @@ Raises:
     Example:
         ```mojo
         n add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-            return x + y
+            return x + y.
 
         var result = elementwise_binary[DType.float32, add_op](a, b)
         ```
@@ -241,7 +241,7 @@ Raises:
     var out_ptr = result._data.bitcast[Scalar[dtype]]()
 
     for i in range(size):
-        out_ptr[i] = op[dtype](lhs_ptr[i], rhs_ptr[i])
+        out_ptr[i] = op[dtype](lhs_ptr[i], rhs_ptr[i]).
 
     return result^
 
@@ -269,7 +269,7 @@ Raises:
     Example:
         ```mojo
         n mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-            return x * y
+            return x * y.
 
         var result = dispatch_binary[mul_op](a, b)
         ```
@@ -348,7 +348,7 @@ Returns:
     Example:
         ```mojo
         n mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-            return x * y
+            return x * y.
 
         var result = elementwise_scalar[DType.float32, mul_op](tensor, 2.5)
         ```
@@ -361,7 +361,7 @@ Returns:
     var scalar_val = Scalar[dtype](scalar)
 
     for i in range(size):
-        out_ptr[i] = op[dtype](in_ptr[i], scalar_val)
+        out_ptr[i] = op[dtype](in_ptr[i], scalar_val).
 
     return result^
 
@@ -390,7 +390,7 @@ Raises:
     Example:
         ```mojo
         n add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-            return x + y
+            return x + y.
 
         var result = dispatch_scalar[add_op](tensor, 1.0)
         ```
@@ -463,7 +463,7 @@ Raises:
         ```mojo
         n sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             # Assuming T is float
-            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
+            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x)).
 
         var result = dispatch_float_unary[sigmoid_op](tensor)
         ```

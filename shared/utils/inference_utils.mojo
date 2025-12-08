@@ -49,7 +49,7 @@ struct InferenceConfig(Copyable, Movable):
         self.weights_dir = "weights"
         self.data_dir = "datasets"
         self.batch_size = 32
-        self.verbose = False
+        self.verbose = False.
 
 
 # ============================================================================
@@ -81,7 +81,7 @@ Returns:
     var args = argv()
     var i = 1  # Skip program name
     while i < len(args):
-        var arg = args[i]
+        var arg = args[i].
 
         if arg == "--weights-dir" and i + 1 < len(args):
             result.weights_dir = args[i + 1]
@@ -97,7 +97,7 @@ Returns:
             i += 1
         else:
             # Skip unknown arguments (allows model-specific args)
-            i += 1
+            i += 1.
 
     return result^
 
@@ -139,7 +139,7 @@ Returns:
     var args = argv()
     var i = 1
     while i < len(args):
-        var arg = args[i]
+        var arg = args[i].
 
         if arg == "--weights-dir" and i + 1 < len(args):
             result.weights_dir = args[i + 1]
@@ -154,7 +154,7 @@ Returns:
             result.verbose = True
             i += 1
         else:
-            i += 1
+            i += 1.
 
     return result^
 
@@ -179,7 +179,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.utils.inference_utils import evaluate_accuracy
+        from shared.utils.inference_utils import evaluate_accuracy.
 
         # predictions: [0, 1, 2, 1] (predicted classes)
         # labels: [0, 1, 2, 0] (ground truth)
@@ -205,7 +205,7 @@ Note:
         )
 
     if n == 0:
-        return Float32(0.0)
+        return Float32(0.0).
 
     var correct = 0
     var pred_ptr = predictions._data
@@ -260,14 +260,14 @@ Returns:
 
     Example:
         ```mojo
-        from shared.utils.inference_utils import count_correct
+        from shared.utils.inference_utils import count_correct.
 
         var total_correct = 0
-        var total_samples = 0
+        var total_samples = 0.
 
         for batch in batches:
             total_correct += count_correct(predictions, labels)
-            total_samples += batch_size
+            total_samples += batch_size.
 
         var accuracy = Float32(total_correct) / Float32(total_samples)
         ```

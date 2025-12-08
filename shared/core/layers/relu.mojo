@@ -27,7 +27,7 @@ Examples:
         ```mojo
         var layer = ReLULayer()
         var input = randn([4, 10], DType.float32)
-        var output = layer.forward(input)
+        var output = layer.forward(input).
 
         # Backward pass
         var grad_output = randn(output.shape(), DType.float32)
@@ -45,7 +45,7 @@ Examples:
             var layer = ReLULayer()
             ```
         """
-        pass
+        pass.
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
         """Forward pass: y = max(0, x).
@@ -68,7 +68,7 @@ Examples:
             var output = layer.forward(input)  # [0, 0, 0, 1, 2]
             ```
         """
-        return relu(input)
+        return relu(input).
 
     fn backward(
         self, grad_output: ExTensor, input: ExTensor
@@ -85,7 +85,7 @@ Examples:
         Returns:
             Gradient w.r.t. input, same shape as input:
             - grad_input[i] = grad_output[i] if input[i] > 0
-            - grad_input[i] = 0 if input[i] <= 0
+            - grad_input[i] = 0 if input[i] <= 0.
 
         Raises:
             Error if tensor operations fail.
@@ -100,7 +100,7 @@ Examples:
             # grad_input = [0, 0, 0, 0.4, 0.5]
             ```
         """
-        return relu_backward(grad_output, input)
+        return relu_backward(grad_output, input).
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
@@ -116,4 +116,4 @@ Examples:
             ```
         """
         var params: List[ExTensor] = []
-        return params^
+        return params^.

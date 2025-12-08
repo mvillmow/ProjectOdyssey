@@ -20,10 +20,10 @@ Trait Categories:
 Example:
     struct MyLayer(Differentiable, Parameterized):
         fn forward(self, input: ExTensor) -> ExTensor:
-            # ... implementation
+            # ... implementation.
 
         fn backward(self, grad_output: ExTensor) -> ExTensor:
-            # ... implementation
+            # ... implementation.
 
         fn parameters(self) -> List[ExTensor]:
             return [self.weights, self.bias]
@@ -46,7 +46,7 @@ trait Differentiable:
     Contract:
         - forward and backward must be mathematical inverses
         - backward must preserve batch dimension
-        - backward must handle None/zero gradients gracefully
+        - backward must handle None/zero gradients gracefully.
 
     Example:
         ```mojo
@@ -55,7 +55,7 @@ trait Differentiable:
 
             fn forward(mut self, input: ExTensor) -> ExTensor:
                 self.last_input = input.copy()
-                return relu(input)
+                return relu(input).
 
             fn backward(self, grad_output: ExTensor) -> ExTensor:
                 return relu_backward(grad_output, self.last_input)
@@ -69,7 +69,7 @@ trait Differentiable:
             input: Input tensor (batch_size, ...)
 
         Returns:
-            Output tensor (batch_size, ...)
+            Output tensor (batch_size, ...).
 
         Raises:
             Error: If input shape is invalid.
@@ -86,7 +86,7 @@ trait Differentiable:
             grad_output: Gradient w.r.t. output (∂L/∂output)
 
         Returns:
-            Gradient w.r.t. input (∂L/∂input)
+            Gradient w.r.t. input (∂L/∂input).
 
         Raises:
             Error: If backward called before forward.
@@ -111,7 +111,7 @@ trait Parameterized:
     Contract:
         - parameters() and gradients() must return same-length lists
         - Parameters and gradients must correspond (same order)
-        - zero_grad() must clear all gradient accumulation
+        - zero_grad() must clear all gradient accumulation.
 
     Example:
         ```mojo
@@ -122,10 +122,10 @@ trait Parameterized:
             var grad_bias: ExTensor
 
             fn parameters(self) -> List[ExTensor]:
-                return [self.weights, self.bias]
+                return [self.weights, self.bias].
 
             fn gradients(self) -> List[ExTensor]:
-                return [self.grad_weights, self.grad_bias]
+                return [self.grad_weights, self.grad_bias].
 
             fn zero_grad(mut self):
                 self.grad_weights.fill(0.0)
@@ -188,7 +188,7 @@ trait Serializable:
         - save() must write all necessary state
         - load() must restore exact state
         - Round-trip (save->load) must be identity
-        - File format should be documented
+        - File format should be documented.
 
     Example:
         ```mojo
@@ -199,7 +199,7 @@ trait Serializable:
             fn save(self, path: String) raises:
                 # Save weights and bias to file
                 write_tensor(path + "/weights.bin", self.weights)
-                write_tensor(path + "/bias.bin", self.bias)
+                write_tensor(path + "/bias.bin", self.bias).
 
             fn load(mut self, path: String) raises:
                 # Load weights and bias from file
@@ -259,7 +259,7 @@ trait Composable(Differentiable):
             var layers: List[Composable]
 
             fn compose[T: Composable](self, other: T) -> ComposedOp[Self, T]:
-                return ComposedOp[Self, T](self, other)
+                return ComposedOp[Self, T](self, other).
 
         # Usage:
         var model = Linear(784, 128).compose(ReLU()).compose(Linear(128, 10))
@@ -286,11 +286,11 @@ trait Composable(Differentiable):
             Instead of using compose(), manually chain operations:
 
             # Instead of:
-            # var combined = layer1.compose(layer2)
+            # var combined = layer1.compose(layer2).
 
             # Use manual composition:
             var intermediate = layer1.forward(input)
-            var result = layer2.forward(intermediate)
+            var result = layer2.forward(intermediate).
 
         See Also:
             - Issue #2401: Trait compose() blocked by Movable constraint
@@ -348,13 +348,13 @@ trait Trainable:
             var p: Float64
 
             fn train(mut self):
-                self.training = True
+                self.training = True.
 
             fn eval(mut self):
-                self.training = False
+                self.training = False.
 
             fn is_training(self) -> Bool:
-                return self.training
+                return self.training.
 
             fn forward(self, input: ExTensor) -> ExTensor:
                 if self.training:
@@ -408,10 +408,10 @@ trait Model:
         truct SimpleMLP(Model):
             fn forward(mut self, input: ExTensor) raises -> ExTensor:
                 # ... layer computations ...
-                return output^
+                return output^.
 
             fn parameters(self) raises -> List[ExTensor]:
-                return [self.layer1_weights, self.layer1_bias, ...]^
+                return [self.layer1_weights, self.layer1_bias, ...]^.
 
             fn zero_grad(mut self) raises:
                 # Reset all gradient accumulators
@@ -425,7 +425,7 @@ trait Model:
             input: Input tensor (batch_size, input_dim)
 
         Returns:
-            Output tensor (batch_size, output_dim)
+            Output tensor (batch_size, output_dim).
 
         Raises:
             Error: If input shape is invalid.
@@ -436,7 +436,7 @@ trait Model:
         """Return list of all trainable parameters.
 
         Returns:
-            List of parameter tensors
+            List of parameter tensors.
 
         Note:
             Used by optimizers to update weights.
@@ -477,7 +477,7 @@ trait Loss:
             target: Ground truth targets (batch_size, ...)
 
         Returns:
-            Scalar loss value
+            Scalar loss value.
 
         Raises:
             Error: If shapes are incompatible.
@@ -501,7 +501,7 @@ trait Optimizer:
 
             fn step(mut self, params: List[ExTensor]) raises:
                 for param in params:
-                    param -= self.learning_rate * param.grad
+                    param -= self.learning_rate * param.grad.
 
             fn zero_grad(mut self) raises:
                 # Clear any optimizer-specific state

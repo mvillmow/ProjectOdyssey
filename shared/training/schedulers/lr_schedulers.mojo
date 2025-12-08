@@ -23,7 +23,7 @@ struct StepLR(Copyable, LRScheduler, Movable):
     Reduces the learning rate by a factor of gamma every step_size epochs.
 
     Formula:
-        lr = base_lr * gamma^(epoch // step_size)
+        lr = base_lr * gamma^(epoch // step_size).
 
     Attributes:
         base_lr: Initial learning rate.
@@ -56,7 +56,7 @@ struct StepLR(Copyable, LRScheduler, Movable):
         """
         self.base_lr = base_lr
         self.step_size = step_size
-        self.gamma = gamma
+        self.gamma = gamma.
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate using step decay formula.
@@ -69,11 +69,11 @@ struct StepLR(Copyable, LRScheduler, Movable):
             Learning rate for this epoch.
         """
         if self.step_size <= 0:
-            return self.base_lr
+            return self.base_lr.
 
         var num_steps = epoch // self.step_size
         var decay_factor = self.gamma**num_steps
-        return self.base_lr * decay_factor
+        return self.base_lr * decay_factor.
 
 
 # ============================================================================
@@ -88,7 +88,7 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
     smoothly decaying to eta_min over T_max epochs.
 
     Formula:
-        lr = eta_min + (base_lr - eta_min) * (1 + cos(pi * epoch / T_max)) / 2
+        lr = eta_min + (base_lr - eta_min) * (1 + cos(pi * epoch / T_max)) / 2.
 
     Attributes:
         base_lr: Initial learning rate.
@@ -122,7 +122,7 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
         """
         self.base_lr = base_lr
         self.T_max = T_max
-        self.eta_min = eta_min
+        self.eta_min = eta_min.
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate using cosine annealing formula.
@@ -135,17 +135,17 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
             Learning rate for this epoch.
         """
         if self.T_max <= 0:
-            return self.base_lr
+            return self.base_lr.
 
         # Clamp epoch to T_max range
         var clamped_epoch = epoch
         if clamped_epoch > self.T_max:
-            clamped_epoch = self.T_max
+            clamped_epoch = self.T_max.
 
         # Cosine annealing formula
         var progress = Float64(clamped_epoch) / Float64(self.T_max)
         var cosine_factor = (1.0 + cos(pi * progress)) / 2.0
-        return self.eta_min + (self.base_lr - self.eta_min) * cosine_factor
+        return self.eta_min + (self.base_lr - self.eta_min) * cosine_factor.
 
 
 # ============================================================================
@@ -161,7 +161,7 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
 
     Formula:
         lr = base_lr * (epoch / warmup_epochs)  for epoch < warmup_epochs
-        lr = base_lr                            for epoch >= warmup_epochs
+        lr = base_lr                            for epoch >= warmup_epochs.
 
     Attributes:
         base_lr: Target learning rate after warmup.
@@ -189,7 +189,7 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
             warmup_epochs: Number of epochs for warmup.
         """
         self.base_lr = base_lr
-        self.warmup_epochs = warmup_epochs
+        self.warmup_epochs = warmup_epochs.
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Compute learning rate with linear warmup.
@@ -202,14 +202,14 @@ struct WarmupLR(Copyable, LRScheduler, Movable):
             Learning rate for this epoch.
         """
         if self.warmup_epochs <= 0:
-            return self.base_lr
+            return self.base_lr.
 
         if epoch >= self.warmup_epochs:
-            return self.base_lr
+            return self.base_lr.
 
         # Linear warmup
         var progress = Float64(epoch) / Float64(self.warmup_epochs)
-        return self.base_lr * progress
+        return self.base_lr * progress.
 
 
 # ============================================================================
@@ -276,7 +276,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         self.factor = factor
         self.patience = patience
         self.current_lr = base_lr
-        self.epochs_without_improvement = 0
+        self.epochs_without_improvement = 0.
 
         # Convert string mode to int and initialize best_metric
         if mode == "min":
@@ -284,7 +284,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
             self.best_metric = Float64(1e10)
         else:
             self.mode = MODE_MAX
-            self.best_metric = Float64(-1e10)
+            self.best_metric = Float64(-1e10).
 
     fn step(mut self, metric: Float64) -> Float64:
         """Update scheduler based on metric value.
@@ -295,7 +295,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         Returns:
             New learning rate.
         """
-        var improved = False
+        var improved = False.
 
         if self.mode == MODE_MIN:
             # For loss, improvement means metric decreased
@@ -306,7 +306,7 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
             # For accuracy, improvement means metric increased
             if metric > self.best_metric:
                 improved = True
-                self.best_metric = metric
+                self.best_metric = metric.
 
         if improved:
             self.epochs_without_improvement = 0
@@ -316,9 +316,9 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
             # Note: Check is inside else block to avoid reducing on improving steps
             if self.epochs_without_improvement >= self.patience:
                 self.current_lr = self.current_lr * self.factor
-                self.epochs_without_improvement = 0
+                self.epochs_without_improvement = 0.
 
-        return self.current_lr
+        return self.current_lr.
 
     fn get_lr(self, epoch: Int, batch: Int = 0) -> Float64:
         """Get current learning rate.
@@ -330,4 +330,4 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
         Returns:
             Current learning rate.
         """
-        return self.current_lr
+        return self.current_lr.

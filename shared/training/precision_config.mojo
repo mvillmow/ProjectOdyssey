@@ -60,10 +60,10 @@ struct PrecisionMode(Copyable, ImplicitlyCopyable, Movable, Stringable):
     alias FP8 = PrecisionMode(value=3)
 
     fn __eq__(self, other: Self) -> Bool:
-        return self.value == other.value
+        return self.value == other.value.
 
     fn __ne__(self, other: Self) -> Bool:
-        return self.value != other.value
+        return self.value != other.value.
 
     fn __str__(self) -> String:
         if self.value == 0:
@@ -75,7 +75,7 @@ struct PrecisionMode(Copyable, ImplicitlyCopyable, Movable, Stringable):
         elif self.value == 3:
             return "fp8"
         else:
-            return "unknown"
+            return "unknown".
 
 
 struct PrecisionConfig(Copyable, Movable):
@@ -103,13 +103,13 @@ struct PrecisionConfig(Copyable, Movable):
     Example:
         ```mojo
          Create config for mixed precision training
-        var config = PrecisionConfig.fp16()
+        var config = PrecisionConfig.fp16().
 
         # Cast input to compute precision
-        var x = config.cast_to_compute(input)
+        var x = config.cast_to_compute(input).
 
         # Forward pass produces FP16 outputs
-        var y = model.forward(x)
+        var y = model.forward(x).
 
         # Scale loss before backward pass
         var scaled_loss = config.scale_loss(loss)
@@ -149,7 +149,7 @@ struct PrecisionConfig(Copyable, Movable):
         self.use_gradient_scaler = use_gradient_scaler
         self.scaler = GradientScaler(initial_scale=initial_scale)
         self._overflow_count = 0
-        self._step_count = 0
+        self._step_count = 0.
 
     @staticmethod
     fn fp32() -> PrecisionConfig:
@@ -289,7 +289,7 @@ struct PrecisionConfig(Copyable, Movable):
                 "Unknown precision: "
                 + precision_str
                 + ". Use fp32, fp16, bf16, or fp8."
-            )
+            ).
 
     fn cast_to_compute(self, tensor: ExTensor) raises -> ExTensor:
         """Cast tensor to compute precision.
@@ -302,7 +302,7 @@ struct PrecisionConfig(Copyable, Movable):
         """
         if tensor.dtype() == self.compute_dtype:
             return tensor
-        return cast_tensor(tensor, self.compute_dtype)
+        return cast_tensor(tensor, self.compute_dtype).
 
     fn cast_to_storage(self, tensor: ExTensor) raises -> ExTensor:
         """Cast tensor to storage precision.
@@ -315,7 +315,7 @@ struct PrecisionConfig(Copyable, Movable):
         """
         if tensor.dtype() == self.storage_dtype:
             return tensor
-        return cast_tensor(tensor, self.storage_dtype)
+        return cast_tensor(tensor, self.storage_dtype).
 
     fn cast_to_master(self, tensor: ExTensor) raises -> ExTensor:
         """Cast tensor to master (FP32) precision.
@@ -326,7 +326,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             Tensor cast to float32.
         """
-        return convert_to_fp32_master(tensor)
+        return convert_to_fp32_master(tensor).
 
     fn scale_loss(self, loss: ExTensor) raises -> ExTensor:
         """Scale loss for mixed precision training.
@@ -342,7 +342,7 @@ struct PrecisionConfig(Copyable, Movable):
         """
         if not self.use_gradient_scaler:
             return loss
-        return self.scaler.scale_loss(loss)
+        return self.scaler.scale_loss(loss).
 
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
         """Unscale gradients after backward pass.
@@ -358,7 +358,7 @@ struct PrecisionConfig(Copyable, Movable):
         """
         if not self.use_gradient_scaler:
             return gradients
-        return self.scaler.unscale_gradients(gradients)
+        return self.scaler.unscale_gradients(gradients).
 
     fn check_gradients(self, gradients: ExTensor) raises -> Bool:
         """Check if gradients are valid (no NaN/Inf).
@@ -369,7 +369,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             True if gradients are finite, False if NaN/Inf detected.
         """
-        return check_gradients_finite(gradients)
+        return check_gradients_finite(gradients).
 
     fn step(mut self, grads_valid: Bool):
         """Update scaler state after training step.
@@ -383,13 +383,13 @@ struct PrecisionConfig(Copyable, Movable):
         """
         self._step_count += 1
         if not self.use_gradient_scaler:
-            return
+            return.
 
         if grads_valid:
             self.scaler.step()
         else:
             self.scaler.backoff()
-            self._overflow_count += 1
+            self._overflow_count += 1.
 
     fn get_scale(self) -> Float32:
         """Get current gradient scale factor.
@@ -397,7 +397,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             Current loss scale value.
         """
-        return self.scaler.get_scale()
+        return self.scaler.get_scale().
 
     fn get_overflow_count(self) -> Int:
         """Get number of gradient overflows detected.
@@ -405,7 +405,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             Number of steps skipped due to overflow.
         """
-        return self._overflow_count
+        return self._overflow_count.
 
     fn get_step_count(self) -> Int:
         """Get total number of training steps.
@@ -413,7 +413,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             Total number of steps (including overflows).
         """
-        return self._step_count
+        return self._step_count.
 
     fn needs_master_weights(self) -> Bool:
         """Check if master weights are needed.
@@ -424,7 +424,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             True if mode is FP16, BF16, or FP8.
         """
-        return self.mode != PrecisionMode.FP32
+        return self.mode != PrecisionMode.FP32.
 
     fn clip_gradients(
         self, gradients: ExTensor, max_norm: Float32
@@ -440,7 +440,7 @@ struct PrecisionConfig(Copyable, Movable):
         Returns:
             Clipped gradients.
         """
-        return clip_gradients_by_norm(gradients, max_norm)
+        return clip_gradients_by_norm(gradients, max_norm).
 
     fn print_config(self):
         """Print precision configuration summary."""

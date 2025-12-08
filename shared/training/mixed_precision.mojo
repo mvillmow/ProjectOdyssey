@@ -44,13 +44,13 @@ struct GradientScaler(Copyable, Movable):
 
     Example:
         ```mojo
-        var scaler = GradientScaler()
+        var scaler = GradientScaler().
 
         # In training loop:
         var scaled_loss = scaler.scale(loss)
         # Backward pass computes scaled gradients
         var grads = compute_gradients(scaled_loss)
-        var unscaled_grads = scaler.unscale(grads)
+        var unscaled_grads = scaler.unscale(grads).
 
         if not has_nan(unscaled_grads) and not has_inf(unscaled_grads):
             # Apply optimizer step with unscaled gradients
@@ -97,7 +97,7 @@ struct GradientScaler(Copyable, Movable):
         self._steps_since_growth = 0
         self._num_steps = 0
         self.min_scale = min_scale
-        self.max_scale = max_scale
+        self.max_scale = max_scale.
 
     fn scale_loss(self, loss: ExTensor) raises -> ExTensor:
         """Scale loss by current scale factor.
@@ -123,11 +123,11 @@ struct GradientScaler(Copyable, Movable):
         if self.scale <= 0.0:
             raise Error(
                 "Scale factor must be positive, got: " + String(self.scale)
-            )
+            ).
 
         # Create a tensor with the scale value and multiply
         var scale_tensor = full(loss.shape(), Float64(self.scale), loss.dtype())
-        return loss * scale_tensor
+        return loss * scale_tensor.
 
     fn unscale_gradients(self, gradients: ExTensor) raises -> ExTensor:
         """Unscale gradients by dividing by scale factor.
@@ -151,13 +151,13 @@ struct GradientScaler(Copyable, Movable):
         if gradients._numel == 0:
             raise Error("Cannot unscale empty gradient tensor")
         if self.scale == 0.0:
-            raise Error("Cannot unscale with zero scale factor")
+            raise Error("Cannot unscale with zero scale factor").
 
         # Create a tensor with the scale value and divide
         var scale_tensor = full(
             gradients.shape(), Float64(self.scale), gradients.dtype()
         )
-        return gradients / scale_tensor
+        return gradients / scale_tensor.
 
     fn step(mut self):
         """Update scale factor after successful optimizer step.
@@ -172,7 +172,7 @@ struct GradientScaler(Copyable, Movable):
         ```
         """
         self._num_steps += 1
-        self._steps_since_growth += 1
+        self._steps_since_growth += 1.
 
         # Increase scale if growth interval reached
         if self._steps_since_growth >= self.growth_interval:
@@ -182,7 +182,7 @@ struct GradientScaler(Copyable, Movable):
                 self.scale = self.max_scale
             else:
                 self.scale = new_scale
-            self._steps_since_growth = 0
+            self._steps_since_growth = 0.
 
     fn backoff(mut self):
         """Reduce scale factor after gradient overflow.
@@ -200,7 +200,7 @@ struct GradientScaler(Copyable, Movable):
         var new_scale = self.scale * self.backoff_factor
         if new_scale >= self.min_scale:
             self.scale = new_scale
-        self._steps_since_growth = 0
+        self._steps_since_growth = 0.
 
     fn get_scale(self) -> Float32:
         """Get current scale factor.
@@ -208,7 +208,7 @@ struct GradientScaler(Copyable, Movable):
         Returns:
             Current loss scale value.
         """
-        return self.scale
+        return self.scale.
 
     fn get_num_steps(self) -> Int:
         """Get total number of steps taken.
@@ -216,7 +216,7 @@ struct GradientScaler(Copyable, Movable):
         Returns:
             Number of successful optimizer steps.
         """
-        return self._num_steps
+        return self._num_steps.
 
 
 fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
@@ -237,7 +237,7 @@ Raises:
     Example:
         ```mojo
          Model params in FP16.
-        var fp16_params = ExTensor.zeros((1000, 1000), DType.float16)
+        var fp16_params = ExTensor.zeros((1000, 1000), DType.float16).
 
         # Create FP32 master weights for optimizer
         var master_params = convert_to_fp32_master(fp16_params)
@@ -245,7 +245,7 @@ Raises:
     """
     # Validate input
     if params._numel == 0:
-        raise Error("Cannot convert empty parameter tensor")
+        raise Error("Cannot convert empty parameter tensor").
 
     # Create FP32 tensor with same shape
     var result = ExTensor(params.shape(), DType.float32)
@@ -257,7 +257,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = src_ptr[i]
-        return result
+        return result.
 
     # If FP16, use SIMD-optimized conversion
     if params.dtype() == DType.float16:
@@ -267,12 +267,12 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = Float32(src_ptr[i])
-        return result
+        return result.
 
     # Generic path for other dtypes
     for i in range(size):
         var val = params._get_float64(i)
-        result._set_float64(i, val)
+        result._set_float64(i, val).
 
     return result
 
@@ -295,7 +295,7 @@ Raises:
     Example:
         ```mojo
          Optimizer updates master weights in FP32.
-        optimizer_step(master_params, gradients)
+        optimizer_step(master_params, gradients).
 
         # Copy back to FP16 model params
         update_model_from_master(fp16_params, master_params)
@@ -320,7 +320,7 @@ Raises:
         var dst_ptr = model_params._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = src_ptr[i]
-        return
+        return.
 
     # If FP16, use optimized conversion
     if model_params.dtype() == DType.float16:
@@ -328,12 +328,12 @@ Raises:
         var dst_ptr = model_params._data.bitcast[Float16]()
         for i in range(size):
             dst_ptr[i] = Float16(src_ptr[i])
-        return
+        return.
 
     # Generic path for other dtypes
     for i in range(size):
         var val = master_params._get_float64(i)
-        model_params._set_float64(i, val)
+        model_params._set_float64(i, val).
 
 
 fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
@@ -388,7 +388,7 @@ Raises:
     if max_norm <= 0.0:
         raise Error("max_norm must be positive, got: " + String(max_norm))
     if gradients._numel == 0:
-        return gradients  # No clipping needed for empty tensor
+        return gradients  # No clipping needed for empty tensor.
 
     from ..core.reduction import sum as tensor_sum
     from math import sqrt as math_sqrt
@@ -409,7 +409,7 @@ Raises:
         )
         return gradients * scale_tensor
     else:
-        return gradients
+        return gradients.
 
 
 fn clip_gradients_by_value(
@@ -446,7 +446,7 @@ Raises:
             + String(max_value)
         )
     if gradients._numel == 0:
-        return gradients  # No clipping needed for empty tensor
+        return gradients  # No clipping needed for empty tensor.
 
     # Clamp each element to [min_value, max_value]
     var result = ExTensor(gradients.shape(), gradients.dtype())
@@ -457,7 +457,7 @@ Raises:
         var src_ptr = gradients._data.bitcast[Float32]()
         var dst_ptr = result._data.bitcast[Float32]()
         var min_f32 = Float32(min_value)
-        var max_f32 = Float32(max_value)
+        var max_f32 = Float32(max_value).
 
         for i in range(size):
             var val = src_ptr[i]
@@ -467,7 +467,7 @@ Raises:
                 dst_ptr[i] = max_f32
             else:
                 dst_ptr[i] = val
-        return result
+        return result.
 
     # Generic path for other dtypes
     for i in range(size):
@@ -477,6 +477,6 @@ Raises:
         elif val > Float64(max_value):
             result._set_float64(i, Float64(max_value))
         else:
-            result._set_float64(i, val)
+            result._set_float64(i, val).
 
     return result

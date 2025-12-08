@@ -69,7 +69,7 @@ Note:
         Args:
             value: Raw 4-bit representation (only lower 4 bits used).
         """
-        self.value = value & 0xF  # Mask to 4 bits
+        self.value = value & 0xF  # Mask to 4 bits.
 
     @staticmethod
     fn from_float32(x: Float32, scale: Float32 = 1.0) -> Self:
@@ -88,26 +88,26 @@ Note:
         """
         # Handle special cases
         if isnan(x):
-            return FP4_E2M1(0b0111)  # Max value as NaN representation
+            return FP4_E2M1(0b0111)  # Max value as NaN representation.
 
         if isinf(x):
             if x > 0:
                 return FP4_E2M1(0b0111)  # Max positive value
             else:
-                return FP4_E2M1(0b1111)  # Max negative value
+                return FP4_E2M1(0b1111)  # Max negative value.
 
         # Scale the input
-        var scaled = x / scale
+        var scaled = x / scale.
 
         if scaled == 0.0:
-            return FP4_E2M1(0)  # +0
+            return FP4_E2M1(0)  # +0.
 
         # Extract sign
         var sign: UInt8 = 0
         var abs_scaled = scaled
         if scaled < 0:
             sign = 1
-            abs_scaled = -scaled
+            abs_scaled = -scaled.
 
         # E2M1 representable values (before scaling):
         # exp=0, mantissa=0: 0
@@ -121,11 +121,11 @@ Note:
         # Clamp to representable range [0, 6.0]
         if abs_scaled >= 6.0:
             # Return max value: sign=s, exp=3, mantissa=1
-            return FP4_E2M1((sign << 3) | 0b111)
+            return FP4_E2M1((sign << 3) | 0b111).
 
         if abs_scaled < 0.5:
             # Return zero (subnormals not well-defined for E2M1)
-            return FP4_E2M1(sign << 3)
+            return FP4_E2M1(sign << 3).
 
         # Find best representation
         # Quantize to nearest representable value
@@ -149,11 +149,11 @@ Note:
             mantissa = 0  # 4.0
         else:
             exp = 3
-            mantissa = 1  # 6.0
+            mantissa = 1  # 6.0.
 
         # Combine: sign(1) | exponent(2) | mantissa(1)
         var bits = (sign << 3) | (exp << 1) | mantissa
-        return FP4_E2M1(bits)
+        return FP4_E2M1(bits).
 
     fn to_float32(self, scale: Float32 = 1.0) -> Float32:
         """Convert FP4 E2M1 to Float32 with given scale.
@@ -167,11 +167,11 @@ Note:
         # Extract components (4 bits total)
         var sign = (self.value >> 3) & 0x1
         var exp = (self.value >> 1) & 0x3  # 2 bits
-        var mantissa = self.value & 0x1  # 1 bit
+        var mantissa = self.value & 0x1  # 1 bit.
 
         # Handle zero
         if exp == 0:
-            return Float32(0.0) if sign == 0 else Float32(-0.0)
+            return Float32(0.0) if sign == 0 else Float32(-0.0).
 
         # Compute unscaled value
         # E2M1: value = 2^(exp-1) * (1 + mantissa/2)
@@ -179,7 +179,7 @@ Note:
         var exponent = exp.cast[DType.int32]() - 1
         var base = Float32(1.0) + Float32(
             mantissa.cast[DType.float32]()
-        ) * Float32(0.5)
+        ) * Float32(0.5).
 
         # Compute 2^exponent
         var unscaled = base
@@ -188,14 +188,14 @@ Note:
                 unscaled *= 2.0
         elif exponent < 0:
             for _ in range(-exponent):
-                unscaled /= 2.0
+                unscaled /= 2.0.
 
         # Apply sign and scale
         var result = unscaled * scale
         if sign == 1:
-            result = -result
+            result = -result.
 
-        return result
+        return result.
 
     fn __str__(self) -> String:
         """String representation showing FP4 value as Float32 (unscaled).
@@ -203,7 +203,7 @@ Note:
         Returns:
             String representation.
         """
-        return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")"
+        return "FP4_E2M1(" + String(self.to_float32(scale=1.0)) + ")".
 
     fn __repr__(self) -> String:
         """Detailed representation showing bits and value.
@@ -228,7 +228,7 @@ Note:
         Returns:
             True if bit patterns match.
         """
-        return self.value == other.value
+        return self.value == other.value.
 
     fn __ne__(self, other: Self) -> Bool:
         """Check inequality.
@@ -239,4 +239,4 @@ Note:
         Returns:
             True if bit patterns differ.
         """
-        return self.value != other.value
+        return self.value != other.value.

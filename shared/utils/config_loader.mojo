@@ -67,7 +67,7 @@ Raises:
         defaults = load_default_config(config_type)
     except:
         # If no defaults exist, start with empty config
-        pass
+        pass.
 
     # Load paper-specific config
     var paper_filepath = (
@@ -128,7 +128,7 @@ Raises:
             config = merge_configs(config, default_config)
         except:
             # Skip if default doesn't exist
-            pass
+            pass.
 
     # Step 2: Load paper-specific configs
     for i in range(len(default_types)):
@@ -141,7 +141,7 @@ Raises:
             config = merge_configs(config, paper_config)
         except:
             # Skip if paper config doesn't exist
-            pass
+            pass.
 
     # Step 3: Load experiment-specific config
     var exp_filepath = (
@@ -175,7 +175,7 @@ Raises:
         ```mojo
         var required = List[String]()
         required.append("optimizer.learning_rate")
-        required.append("training.epochs")
+        required.append("training.epochs").
 
         var config = load_config_with_validation(
             "configs/experiments/lenet5/baseline.yaml",
@@ -208,7 +208,7 @@ Raises:
         ```mojo
         var overrides = Config()
         overrides.set("optimizer.learning_rate", 0.01)
-        overrides.set("training.batch_size", 64)
+        overrides.set("training.batch_size", 64).
 
         create_experiment_config("lenet5", "high_lr", overrides)
         ```

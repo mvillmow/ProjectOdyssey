@@ -55,17 +55,17 @@ fn relu(tensor: ExTensor) raises -> ExTensor:
     sparse activation patterns.
 
     Supported dtypes: float16, float32, float64, int8, int16, int32, int64,
-                      uint8, uint16, uint32, uint64
+                      uint8, uint16, uint32, uint64.
 
 Args:
         tensor: Input tensor of any shape.
 
 Returns:
-        New tensor with ReLU applied element-wise
+        New tensor with ReLU applied element-wise.
 
 Examples:
         var x = ExTensor(...)  # [-2, -1, 0, 1, 2]
-        var y = relu(x)        # [0, 0, 0, 1, 2]
+        var y = relu(x)        # [0, 0, 0, 1, 2].
     """
     return dispatch_unary[_relu_op](tensor)
 
@@ -83,11 +83,11 @@ Args:
         alpha: Slope for negative values (default: 0.01).
 
 Returns:
-        New tensor with Leaky ReLU applied element-wise
+        New tensor with Leaky ReLU applied element-wise.
 
 Examples:
         var x = ExTensor(...)           # [-2, -1, 0, 1, 2]
-        var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2]
+        var y = leaky_relu(x, 0.01)     # [-0.02, -0.01, 0, 1, 2].
     """
     var result = ExTensor(tensor._shape, tensor._dtype)
 
@@ -150,7 +150,7 @@ Args:
         alpha: Learnable slope parameter (scalar or matching shape).
 
 Returns:
-        New tensor with PReLU applied element-wise
+        New tensor with PReLU applied element-wise.
 
 Raises:
         Error: If alpha shape is incompatible with tensor shape.
@@ -158,7 +158,7 @@ Raises:
 Examples:
         var x = ExTensor(...)      # [-2, -1, 0, 1, 2]
         var a = full(x.shape(), 0.25, DType.float32)
-        var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2]
+        var y = prelu(x, a)        # [-0.5, -0.25, 0, 1, 2].
     """
     # Validate alpha is scalar or compatible shape
     if alpha._numel != 1 and alpha._numel != tensor._numel:
@@ -221,7 +221,7 @@ fn _sigmoid_op[T: DType](x: Scalar[T]) -> Scalar[T]:
             var result_f32 = Float32(1.0) / (Float32(1.0) + exp(-x_f32))
             return Scalar[T](result_f32)
         else:
-            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x))
+            return Scalar[T](1.0) / (Scalar[T](1.0) + exp(-x)).
 
 
 fn sigmoid(tensor: ExTensor) raises -> ExTensor:
@@ -240,11 +240,11 @@ Args:
         tensor: Input tensor of any shape.
 
 Returns:
-        New tensor with sigmoid applied element-wise, values in (0, 1)
+        New tensor with sigmoid applied element-wise, values in (0, 1).
 
 Examples:
         var x = ExTensor(...)  # [-2, 0, 2]
-        var y = sigmoid(x)     # [0.119, 0.5, 0.881]
+        var y = sigmoid(x)     # [0.119, 0.5, 0.881].
     """
     return dispatch_float_unary[_sigmoid_op](tensor)
 
@@ -259,7 +259,7 @@ fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     elif T == DType.float32:
         return Scalar[T](math_tanh(Float32(x)))
     else:  # float64
-        return Scalar[T](math_tanh(Float64(x)))
+        return Scalar[T](math_tanh(Float64(x))).
 
 
 fn tanh(tensor: ExTensor) raises -> ExTensor:
@@ -274,11 +274,11 @@ Args:
         tensor: Input tensor of any shape.
 
 Returns:
-        New tensor with tanh applied element-wise, values in (-1, 1)
+        New tensor with tanh applied element-wise, values in (-1, 1).
 
 Examples:
         var x = ExTensor(...)  # [-2, 0, 2]
-        var y = tanh(x)        # [-0.964, 0, 0.964]
+        var y = tanh(x)        # [-0.964, 0, 0.964].
     """
     return dispatch_float_unary[_tanh_op](tensor)
 
@@ -304,7 +304,7 @@ Args:
               Supports negative indexing: -1 means last axis
 
 Returns:
-        New tensor with softmax applied, values sum to 1.0 along axis
+        New tensor with softmax applied, values sum to 1.0 along axis.
 
 Raises:
         Error: If axis is out of bounds.
@@ -312,7 +312,7 @@ Raises:
 Examples:
         var logits = ExTensor(...)  # [[1, 2, 3], [4, 5, 6]]
         var probs = softmax(logits, axis=-1)
-        # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]]
+        # [[0.09, 0.24, 0.67], [0.09, 0.24, 0.67]].
 
         var logits_2d = ExTensor(...)  # [[1, 2], [3, 4], [5, 6]]
         var probs = softmax(logits_2d, axis=0)
@@ -331,12 +331,12 @@ Examples:
     # stride is the product of all dimensions after norm_axis
     var axis_stride = 1
     for i in range(norm_axis + 1, ndim):
-        axis_stride *= tensor._shape[i]
+        axis_stride *= tensor._shape[i].
 
     # Calculate outer size (product of all dimensions before norm_axis)
     var outer_size = 1
     for i in range(norm_axis):
-        outer_size *= tensor._shape[i]
+        outer_size *= tensor._shape[i].
 
     var axis_size = tensor._shape[norm_axis]
 
@@ -355,7 +355,7 @@ Examples:
                     ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float16]()[idx]
                     if val > max_val:
-                        max_val = val
+                        max_val = val.
 
                 # Compute exp(x - max) and sum
                 var sum_exp: Float32 = 0.0
@@ -366,7 +366,7 @@ Examples:
                     var val = tensor._data.bitcast[Float16]()[idx]
                     var exp_val = exp(Float32(val - max_val))
                     result._data.bitcast[Float16]()[idx] = Float16(exp_val)
-                    sum_exp += exp_val
+                    sum_exp += exp_val.
 
                 # Normalize by sum
                 for k in range(axis_size):
@@ -376,7 +376,7 @@ Examples:
                     var current = Float32(result._data.bitcast[Float16]()[idx])
                     result._data.bitcast[Float16]()[idx] = Float16(
                         current / sum_exp
-                    )
+                    ).
 
     elif tensor._dtype == DType.float32:
         # For each position before the softmax axis
@@ -393,7 +393,7 @@ Examples:
                     ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float32]()[idx]
                     if val > max_val:
-                        max_val = val
+                        max_val = val.
 
                 # Compute exp(x - max) and sum
                 var sum_exp: Float32 = 0.0
@@ -404,14 +404,14 @@ Examples:
                     var val = tensor._data.bitcast[Float32]()[idx]
                     var exp_val = exp(val - max_val)
                     result._data.bitcast[Float32]()[idx] = exp_val
-                    sum_exp += exp_val
+                    sum_exp += exp_val.
 
                 # Normalize by sum
                 for k in range(axis_size):
                     var idx = (
                         outer_idx * axis_size + k
                     ) * axis_stride + inner_idx
-                    result._data.bitcast[Float32]()[idx] /= sum_exp
+                    result._data.bitcast[Float32]()[idx] /= sum_exp.
 
     elif tensor._dtype == DType.float64:
         # For each position before the softmax axis
@@ -428,7 +428,7 @@ Examples:
                     ) * axis_stride + inner_idx
                     var val = tensor._data.bitcast[Float64]()[idx]
                     if val > max_val:
-                        max_val = val
+                        max_val = val.
 
                 # Compute exp(x - max) and sum
                 var sum_exp: Float64 = 0.0
@@ -439,7 +439,7 @@ Examples:
                     var val = tensor._data.bitcast[Float64]()[idx]
                     var exp_val = exp(val - max_val)
                     result._data.bitcast[Float64]()[idx] = exp_val
-                    sum_exp += exp_val
+                    sum_exp += exp_val.
 
                 # Normalize by sum
                 for k in range(axis_size):
@@ -472,7 +472,7 @@ Args:
         approximate: Use tanh approximation (True) or exact erf (False).
 
 Returns:
-        New tensor with GELU applied element-wise
+        New tensor with GELU applied element-wise.
 
 Examples:
         var x = ExTensor(...)     # [-2, 0, 2]
@@ -506,7 +506,7 @@ Examples:
                 var erf_val = erf(x / Float32(SQRT_2))
                 result._data.bitcast[Float16]()[i] = Float16(
                     x * 0.5 * (1.0 + erf_val)
-                )
+                ).
 
     elif tensor._dtype == DType.float32:
         if approximate:
@@ -524,7 +524,7 @@ Examples:
             for i in range(tensor._numel):
                 var x = tensor._data.bitcast[Float32]()[i]
                 var erf_val = erf(x / Float32(SQRT_2))
-                result._data.bitcast[Float32]()[i] = x * 0.5 * (1.0 + erf_val)
+                result._data.bitcast[Float32]()[i] = x * 0.5 * (1.0 + erf_val).
 
     elif tensor._dtype == DType.float64:
         if approximate:
@@ -570,7 +570,7 @@ Args:
         x: Input tensor from forward pass.
 
 Returns:
-        Gradient with respect to input (∂L/∂x)
+        Gradient with respect to input (∂L/∂x).
 
 Examples:
         var x = ExTensor(...)  # Input
@@ -602,7 +602,7 @@ fn _leaky_relu_backward_impl[
     for i in range(x._numel):
         var x_val = x_ptr[i]
         var grad = grad_ptr[i]
-        result_ptr[i] = grad if x_val > Scalar[dtype](0) else grad * alpha_typed
+        result_ptr[i] = grad if x_val > Scalar[dtype](0) else grad * alpha_typed.
 
 
 fn leaky_relu_backward(
@@ -668,20 +668,20 @@ fn _prelu_backward_impl[
 
     # Initialize grad_alpha to zero
     for i in range(grad_alpha._numel):
-        grad_alpha_ptr[i] = zero
+        grad_alpha_ptr[i] = zero.
 
     # Compute gradients
     for i in range(x._numel):
         var x_val = x_ptr[i]
         var grad = grad_ptr[i]
-        var a = alpha_ptr[0] if is_scalar else alpha_ptr[i]
+        var a = alpha_ptr[0] if is_scalar else alpha_ptr[i].
 
         if x_val > zero:
             grad_input_ptr[i] = grad
         else:
             grad_input_ptr[i] = grad * a
             var alpha_idx = 0 if is_scalar else i
-            grad_alpha_ptr[alpha_idx] += grad * x_val
+            grad_alpha_ptr[alpha_idx] += grad * x_val.
 
 
 fn prelu_backward(
@@ -748,7 +748,7 @@ Args:
         output: Output from forward pass (sigmoid(x)).
 
 Returns:
-        Gradient with respect to input (∂L/∂x)
+        Gradient with respect to input (∂L/∂x).
 
 Note:
         Takes output instead of input to avoid recomputing sigmoid.
@@ -784,7 +784,7 @@ Args:
         output: Output from forward pass (tanh(x)).
 
 Returns:
-        Gradient with respect to input (∂L/∂x)
+        Gradient with respect to input (∂L/∂x).
 
 Note:
         Takes output instead of input to avoid recomputing tanh.
@@ -836,92 +836,92 @@ Returns:
             # d/dx[0.5 * x * (1 + tanh(sqrt(2/π) * (x + 0.044715 * x³)))]
             for i in range(x._numel):
                 var x_val = x._data.bitcast[Float32]()[i]
-                var grad = grad_output._data.bitcast[Float32]()[i]
+                var grad = grad_output._data.bitcast[Float32]()[i].
 
                 var x_cubed = x_val * x_val * x_val
                 var inner = Float32(SQRT_2_OVER_PI) * (
                     x_val + Float32(GELU_COEFF) * x_cubed
                 )
                 var tanh_val = math_tanh(inner)
-                var sech2 = 1.0 - tanh_val * tanh_val
+                var sech2 = 1.0 - tanh_val * tanh_val.
 
                 # Derivative computation
                 var dtanh = Float32(SQRT_2_OVER_PI) * (
                     1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
                 )
-                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh.
 
                 result._data.bitcast[Float32]()[i] = grad * dgelu
         else:
             # d/dx[x * 0.5 * (1 + erf(x / sqrt(2)))] = 0.5 * [1 + erf(x/√2)] + x * φ(x)
             for i in range(x._numel):
                 var x_val = x._data.bitcast[Float32]()[i]
-                var grad = grad_output._data.bitcast[Float32]()[i]
+                var grad = grad_output._data.bitcast[Float32]()[i].
 
                 var erf_val = erf(x_val / Float32(SQRT_2))
                 var pdf = Float32(INV_SQRT_2PI) * exp(
                     -0.5 * x_val * x_val
                 )  # φ(x)
-                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf.
 
-                result._data.bitcast[Float32]()[i] = grad * dgelu
+                result._data.bitcast[Float32]()[i] = grad * dgelu.
 
     elif x._dtype == DType.float64:
         if approximate:
             for i in range(x._numel):
                 var x_val = x._data.bitcast[Float64]()[i]
-                var grad = grad_output._data.bitcast[Float64]()[i]
+                var grad = grad_output._data.bitcast[Float64]()[i].
 
                 var x_cubed = x_val * x_val * x_val
                 var inner = SQRT_2_OVER_PI * (x_val + GELU_COEFF * x_cubed)
                 var tanh_val = math_tanh(inner)
-                var sech2 = 1.0 - tanh_val * tanh_val
+                var sech2 = 1.0 - tanh_val * tanh_val.
 
                 var dtanh = SQRT_2_OVER_PI * (
                     1.0 + 3.0 * GELU_COEFF * x_val * x_val
                 )
-                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh.
 
                 result._data.bitcast[Float64]()[i] = grad * dgelu
         else:
             for i in range(x._numel):
                 var x_val = x._data.bitcast[Float64]()[i]
-                var grad = grad_output._data.bitcast[Float64]()[i]
+                var grad = grad_output._data.bitcast[Float64]()[i].
 
                 var erf_val = erf(x_val / SQRT_2)
                 var pdf = INV_SQRT_2PI * exp(-0.5 * x_val * x_val)
-                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf.
 
-                result._data.bitcast[Float64]()[i] = grad * dgelu
+                result._data.bitcast[Float64]()[i] = grad * dgelu.
 
     elif x._dtype == DType.float16:
         # Use float32 intermediate precision
         if approximate:
             for i in range(x._numel):
                 var x_val = Float32(x._data.bitcast[Float16]()[i])
-                var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+                var grad = Float32(grad_output._data.bitcast[Float16]()[i]).
 
                 var x_cubed = x_val * x_val * x_val
                 var inner = Float32(SQRT_2_OVER_PI) * (
                     x_val + Float32(GELU_COEFF) * x_cubed
                 )
                 var tanh_val = math_tanh(inner)
-                var sech2 = 1.0 - tanh_val * tanh_val
+                var sech2 = 1.0 - tanh_val * tanh_val.
 
                 var dtanh = Float32(SQRT_2_OVER_PI) * (
                     1.0 + 3.0 * Float32(GELU_COEFF) * x_val * x_val
                 )
-                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh
+                var dgelu = 0.5 * (1.0 + tanh_val) + 0.5 * x_val * sech2 * dtanh.
 
                 result._data.bitcast[Float16]()[i] = Float16(grad * dgelu)
         else:
             for i in range(x._numel):
                 var x_val = Float32(x._data.bitcast[Float16]()[i])
-                var grad = Float32(grad_output._data.bitcast[Float16]()[i])
+                var grad = Float32(grad_output._data.bitcast[Float16]()[i]).
 
                 var erf_val = erf(x_val / Float32(SQRT_2))
                 var pdf = Float32(INV_SQRT_2PI) * exp(-0.5 * x_val * x_val)
-                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf
+                var dgelu = 0.5 * (1.0 + erf_val) + x_val * pdf.
 
                 result._data.bitcast[Float16]()[i] = Float16(grad * dgelu)
     else:
@@ -936,7 +936,7 @@ fn softmax_backward(
     """Compute gradient of softmax activation.
 
     Softmax gradient (along axis):
-        ∂L/∂x_i = y_i * (∂L/∂y_i - sum_j(∂L/∂y_j * y_j))
+        ∂L/∂x_i = y_i * (∂L/∂y_i - sum_j(∂L/∂y_j * y_j)).
 
     where y = softmax(x) is the output from the forward pass.
 
@@ -951,7 +951,7 @@ Args:
         axis: Axis along which softmax was computed (default: -1).
 
 Returns:
-        Gradient with respect to input (∂L/∂x)
+        Gradient with respect to input (∂L/∂x).
 
 Raises:
         Error: If dtypes don't match or shapes incompatible.
@@ -960,7 +960,7 @@ Examples:
         var x = ExTensor(...)  # Input
         var y = softmax(x)     # Forward pass
         var grad_y = ExTensor(...)  # Gradient from loss
-        var grad_x = softmax_backward(grad_y, y)  # Backward pass
+        var grad_x = softmax_backward(grad_y, y)  # Backward pass.
 
     References:
         The gradient formula accounts for the fact that softmax output y_i.
@@ -988,12 +988,12 @@ Examples:
     var axis_size = output._shape[normalized_axis]
     var axis_stride = 1
     for i in range(normalized_axis + 1, ndim):
-        axis_stride *= output._shape[i]
+        axis_stride *= output._shape[i].
 
     # Calculate outer size (product of dimensions before axis)
     var outer_size = 1
     for i in range(normalized_axis):
-        outer_size *= output._shape[i]
+        outer_size *= output._shape[i].
 
     if output._dtype == DType.float32:
         # For each outer position
@@ -1006,7 +1006,7 @@ Examples:
                     var idx = (outer * axis_size + k) * axis_stride + inner
                     var grad_val = grad_output._data.bitcast[Float32]()[idx]
                     var out_val = output._data.bitcast[Float32]()[idx]
-                    dot_sum += grad_val * out_val
+                    dot_sum += grad_val * out_val.
 
                 # Compute gradient for each position along axis
                 for k in range(axis_size):
@@ -1015,7 +1015,7 @@ Examples:
                     var out_val = output._data.bitcast[Float32]()[idx]
                     result._data.bitcast[Float32]()[idx] = out_val * (
                         grad_val - dot_sum
-                    )
+                    ).
 
     elif output._dtype == DType.float64:
         # For each outer position
@@ -1028,7 +1028,7 @@ Examples:
                     var idx = (outer * axis_size + k) * axis_stride + inner
                     var grad_val = grad_output._data.bitcast[Float64]()[idx]
                     var out_val = output._data.bitcast[Float64]()[idx]
-                    dot_sum += grad_val * out_val
+                    dot_sum += grad_val * out_val.
 
                 # Compute gradient for each position along axis
                 for k in range(axis_size):
@@ -1037,7 +1037,7 @@ Examples:
                     var out_val = output._data.bitcast[Float64]()[idx]
                     result._data.bitcast[Float64]()[idx] = out_val * (
                         grad_val - dot_sum
-                    )
+                    ).
 
     elif output._dtype == DType.float16:
         # Use float32 intermediate precision
@@ -1051,7 +1051,7 @@ Examples:
                         grad_output._data.bitcast[Float16]()[idx]
                     )
                     var out_val = Float32(output._data.bitcast[Float16]()[idx])
-                    dot_sum += grad_val * out_val
+                    dot_sum += grad_val * out_val.
 
                 # Compute gradient for each position along axis
                 for k in range(axis_size):
@@ -1081,13 +1081,13 @@ fn swish(tensor: ExTensor) raises -> ExTensor:
     than ReLU in deep networks.
 
     Formula:
-        swish(x) = x * sigmoid(x)
+        swish(x) = x * sigmoid(x).
 
     Properties:
         - Smooth and continuously differentiable
         - Non-monotonic (has a slight dip for negative values)
         - Self-gated (uses its own value as gate)
-        - Bounded below, unbounded above
+        - Bounded below, unbounded above.
 
 Args:
         tensor: Input tensor of any shape.
@@ -1097,7 +1097,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, swish
+        from shared.core import ExTensor, swish.
 
         var x = ExTensor.from_list([...])
         var activated = swish(x)
@@ -1119,13 +1119,13 @@ fn mish(tensor: ExTensor) raises -> ExTensor:
 
     Formula:
         mish(x) = x * tanh(softplus(x))
-        where softplus(x) = log(1 + exp(x))
+        where softplus(x) = log(1 + exp(x)).
 
     Properties:
         - Smooth and continuously differentiable
         - Non-monotonic (has a slight dip for negative values)
         - Self-regularized (bounded below)
-        - Unbounded above
+        - Unbounded above.
 
 Args:
         tensor: Input tensor of any shape.
@@ -1135,7 +1135,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, mish
+        from shared.core import ExTensor, mish.
 
         var x = ExTensor.from_list([...])
         var activated = mish(x)
@@ -1182,13 +1182,13 @@ fn elu(tensor: ExTensor, alpha: Float64 = 1.0) raises -> ExTensor:
 
     Formula:
         elu(x) = x if x > 0
-        elu(x) = alpha * (exp(x) - 1) if x <= 0
+        elu(x) = alpha * (exp(x) - 1) if x <= 0.
 
     Properties:
         - Smooth and continuously differentiable
         - Has negative values (unlike ReLU)
         - Saturates for large negative values
-        - Reduces bias shift
+        - Reduces bias shift.
 
 Args:
         tensor: Input tensor of any shape.
@@ -1199,7 +1199,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, elu
+        from shared.core import ExTensor, elu.
 
         var x = ExTensor.from_list([...])
         var activated = elu(x, alpha=1.0)
@@ -1271,7 +1271,7 @@ fn swish_backward(
 
     The derivative of swish is:
         d/dx[swish(x)] = sigmoid(x) + x * sigmoid(x) * (1 - sigmoid(x))
-                       = sigmoid(x) * (1 + x * (1 - sigmoid(x)))
+                       = sigmoid(x) * (1 + x * (1 - sigmoid(x))).
 
 Args:
         grad_output: Gradient from upstream.
@@ -1282,7 +1282,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import swish, swish_backward
+        from shared.core import swish, swish_backward.
 
         # Forward
         var output = swish(x)
@@ -1319,7 +1319,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import mish, mish_backward
+        from shared.core import mish, mish_backward.
 
         # Forward
         var output = mish(x)
@@ -1369,7 +1369,7 @@ fn elu_backward(
 
     The derivative is:
         d/dx[elu(x)] = 1 if x > 0
-        d/dx[elu(x)] = alpha * exp(x) if x <= 0
+        d/dx[elu(x)] = alpha * exp(x) if x <= 0.
 
 Args:
         grad_output: Gradient from upstream.
@@ -1381,7 +1381,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import elu, elu_backward
+        from shared.core import elu, elu_backward.
 
         # Forward
         var output = elu(x, alpha=1.0)
@@ -1398,7 +1398,7 @@ Returns:
     if x.dtype() == DType.float32:
         for i in range(size):
             var val = x_ptr.bitcast[Float32]()[i]
-            var grad_val = grad_ptr.bitcast[Float32]()[i]
+            var grad_val = grad_ptr.bitcast[Float32]()[i].
 
             if val > 0:
                 result_ptr.bitcast[Float32]()[i] = grad_val
@@ -1412,7 +1412,7 @@ Returns:
     elif x.dtype() == DType.float64:
         for i in range(size):
             var val = x_ptr.bitcast[Float64]()[i]
-            var grad_val = grad_ptr.bitcast[Float64]()[i]
+            var grad_val = grad_ptr.bitcast[Float64]()[i].
 
             if val > 0:
                 result_ptr.bitcast[Float64]()[i] = grad_val
@@ -1424,7 +1424,7 @@ Returns:
     elif x.dtype() == DType.float16:
         for i in range(size):
             var val = Float32(x_ptr.bitcast[Float16]()[i])
-            var grad_val = Float32(grad_ptr.bitcast[Float16]()[i])
+            var grad_val = Float32(grad_ptr.bitcast[Float16]()[i]).
 
             if val > 0:
                 result_ptr.bitcast[Float16]()[i] = Float16(grad_val)
@@ -1456,12 +1456,12 @@ fn hard_sigmoid(tensor: ExTensor) raises -> ExTensor:
         hard_sigmoid(x) = clip((x + 3) / 6, 0, 1)
         = 0 if x <= -3
         = 1 if x >= 3
-        = (x + 3) / 6 otherwise
+        = (x + 3) / 6 otherwise.
 
     Properties:
         - Faster than sigmoid (no exp computation)
         - Bounded output in [0, 1]
-        - Piecewise linear with slope 1/6 in active region
+        - Piecewise linear with slope 1/6 in active region.
 
     Supported dtypes: float16, float32, float64
 
@@ -1473,7 +1473,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, hard_sigmoid
+        from shared.core import ExTensor, hard_sigmoid.
 
         var x = ExTensor.from_list([-4, -3, 0, 3, 4])
         var y = hard_sigmoid(x)  # [0, 0, 0.5, 1, 1]
@@ -1518,12 +1518,12 @@ fn hard_swish(tensor: ExTensor) raises -> ExTensor:
         hard_swish(x) = x * hard_sigmoid(x)
         = 0 if x <= -3
         = x if x >= 3
-        = x * (x + 3) / 6 otherwise
+        = x * (x + 3) / 6 otherwise.
 
     Properties:
         - Faster than swish (no exp computation)
         - Smooth transition regions
-        - Non-monotonic like swish
+        - Non-monotonic like swish.
 
     Supported dtypes: float16, float32, float64
 
@@ -1535,7 +1535,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, hard_swish
+        from shared.core import ExTensor, hard_swish.
 
         var x = ExTensor.from_list([-4, -3, 0, 3, 4])
         var y = hard_swish(x)  # [0, 0, 0, 3, 4]
@@ -1592,12 +1592,12 @@ fn hard_tanh(
         hard_tanh(x) = clip(x, min_val, max_val)
         = min_val if x < min_val
         = max_val if x > max_val
-        = x otherwise
+        = x otherwise.
 
     Properties:
         - Faster than tanh (no exp computation)
         - Linear in active region
-        - Bounded output in [min_val, max_val]
+        - Bounded output in [min_val, max_val].
 
     Supported dtypes: float16, float32, float64
 
@@ -1611,7 +1611,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, hard_tanh
+        from shared.core import ExTensor, hard_tanh.
 
         var x = ExTensor.from_list([-2, -0.5, 0, 0.5, 2])
         var y = hard_tanh(x)  # [-1, -0.5, 0, 0.5, 1]
@@ -1656,7 +1656,7 @@ fn hard_sigmoid_backward(
 
     The derivative is:
         d/dx[hard_sigmoid(x)] = 1/6 if -3 < x < 3
-                               = 0 otherwise
+                               = 0 otherwise.
 
 Args:
         grad_output: Gradient from upstream.
@@ -1667,7 +1667,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import hard_sigmoid, hard_sigmoid_backward
+        from shared.core import hard_sigmoid, hard_sigmoid_backward.
 
         # Forward
         var output = hard_sigmoid(x)
@@ -1726,7 +1726,7 @@ fn hard_swish_backward(
     The derivative is:
         d/dx[hard_swish(x)] = 0 if x <= -3
                             = 1 if x >= 3
-                            = (2x + 3) / 6 otherwise
+                            = (2x + 3) / 6 otherwise.
 
     This comes from: d/dx[x * (x + 3) / 6] = (2x + 3) / 6
 
@@ -1739,7 +1739,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import hard_swish, hard_swish_backward
+        from shared.core import hard_swish, hard_swish_backward.
 
         # Forward
         var output = hard_swish(x)
@@ -1810,7 +1810,7 @@ fn hard_tanh_backward(
 
     The derivative is:
         d/dx[hard_tanh(x)] = 1 if min_val < x < max_val
-                           = 0 otherwise
+                           = 0 otherwise.
 
 Args:
         grad_output: Gradient from upstream.
@@ -1823,7 +1823,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import hard_tanh, hard_tanh_backward
+        from shared.core import hard_tanh, hard_tanh_backward.
 
         # Forward
         var output = hard_tanh(x)

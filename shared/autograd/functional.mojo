@@ -113,7 +113,7 @@ Raises:
         Error if scalar is zero.
     """
     if scalar == 0.0:
-        raise Error("Cannot divide by zero")
+        raise Error("Cannot divide by zero").
 
     var result = ExTensor(tensor.shape(), tensor.dtype())
     for i in range(tensor.numel()):
@@ -146,7 +146,7 @@ Raises:
         Error if shapes don't match.
     """
     if gradient.shape() != parameter.shape():
-        raise Error("Gradient shape must match parameter shape")
+        raise Error("Gradient shape must match parameter shape").
 
     # Compute: parameter - lr * gradient
     var update = multiply_scalar(gradient, learning_rate)
@@ -172,7 +172,7 @@ Raises:
         Error if any shape mismatch.
     """
     if len(parameters) != len(gradients):
-        raise Error("Parameter count must match gradient count")
+        raise Error("Parameter count must match gradient count").
 
     for i in range(len(parameters)):
         parameters[i] = apply_gradient(
@@ -206,7 +206,7 @@ struct LossAndGrad:
             grad: Gradient tensor (ownership transferred).
         """
         self.loss = loss^
-        self.grad = grad^
+        self.grad = grad^.
 
 
 fn mse_loss_and_grad(
@@ -216,7 +216,7 @@ fn mse_loss_and_grad(
 
     Computes:
         loss = mean(mean_squared_error(predictions, targets))
-        grad = ∂loss/∂predictions
+        grad = ∂loss/∂predictions.
 
     This is the most common loss pattern for regression.
 
@@ -248,7 +248,7 @@ fn bce_loss_and_grad(
 
     Computes:
         loss = mean(binary_cross_entropy(predictions, targets))
-        grad = ∂loss/∂predictions
+        grad = ∂loss/∂predictions.
 
     Used for binary classification (predictions from sigmoid).
 
@@ -281,7 +281,7 @@ fn ce_loss_and_grad(
 
     Computes:
         loss = cross_entropy(logits, targets)  # Already includes mean
-        grad = ∂loss/∂logits
+        grad = ∂loss/∂logits.
 
     Used for multi-class classification. Includes softmax internally.
 

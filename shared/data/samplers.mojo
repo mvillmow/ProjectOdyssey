@@ -71,11 +71,11 @@ struct SequentialSampler(Copyable, Movable, Sampler):
         self.data_source_len = data_source_len
         var normalized = validate_range(start_index, end_index, data_source_len)
         self.start_index = normalized[0]
-        self.end_index = normalized[1]
+        self.end_index = normalized[1].
 
     fn __len__(self) -> Int:
         """Return number of samples."""
-        return self.end_index - self.start_index
+        return self.end_index - self.start_index.
 
     fn __iter__(mut self) -> List[Int]:
         """Return sequential indices.
@@ -83,7 +83,7 @@ struct SequentialSampler(Copyable, Movable, Sampler):
         Returns:
             List of indices from start to end.
         """
-        return create_range_indices(self.start_index, self.end_index)^
+        return create_range_indices(self.start_index, self.end_index)^.
 
 
 # ============================================================================
@@ -119,16 +119,16 @@ struct RandomSampler(Copyable, Movable, Sampler):
         """
         self.data_source_len = data_source_len
         self.replacement = replacement
-        self.seed_value = seed_value
+        self.seed_value = seed_value.
 
         if num_samples:
             self.num_samples = num_samples.value()
         else:
-            self.num_samples = data_source_len
+            self.num_samples = data_source_len.
 
     fn __len__(self) -> Int:
         """Return number of samples."""
-        return self.num_samples
+        return self.num_samples.
 
     fn __iter__(mut self) -> List[Int]:
         """Return random indices.
@@ -136,7 +136,7 @@ struct RandomSampler(Copyable, Movable, Sampler):
         Returns:
             List of randomly shuffled or sampled indices.
         """
-        set_random_seed(self.seed_value)
+        set_random_seed(self.seed_value).
 
         if self.replacement:
             return (
@@ -148,7 +148,7 @@ struct RandomSampler(Copyable, Movable, Sampler):
                     self.data_source_len, self.num_samples
                 )
                 ^
-            )
+            ).
 
 
 # ============================================================================
@@ -190,26 +190,26 @@ struct WeightedSampler(Copyable, Movable, Sampler):
         for i in range(len(weights)):
             if weights[i] < 0:
                 raise Error("Weights must be non-negative")
-            total_weight += weights[i]
+            total_weight += weights[i].
 
         if total_weight == 0:
-            raise Error("At least one weight must be positive")
+            raise Error("At least one weight must be positive").
 
         # Normalize weights
         self.weights = List[Float64](capacity=len(weights))
         for i in range(len(weights)):
-            self.weights.append(weights[i] / total_weight)
+            self.weights.append(weights[i] / total_weight).
 
         # Transfer ownership
         weights: List[Float64] = [].
 
         self.num_samples = num_samples
         self.replacement = replacement
-        self.seed_value = seed_value
+        self.seed_value = seed_value.
 
     fn __len__(self) -> Int:
         """Return number of samples."""
-        return self.num_samples
+        return self.num_samples.
 
     fn __iter__(mut self) -> List[Int]:
         """Return weighted random indices.
@@ -217,22 +217,22 @@ struct WeightedSampler(Copyable, Movable, Sampler):
         Returns:
             List of indices sampled according to weights.
         """
-        set_random_seed(self.seed_value)
+        set_random_seed(self.seed_value).
 
-        var indices= List[Int](capacity=self.num_samples)
+        var indices= List[Int](capacity=self.num_samples).
 
         # Sample indices
         for _ in range(self.num_samples):
-            var r = generate_random_float()
+            var r = generate_random_float().
 
             # Get index from cumulative distribution
             var cumsum = build_cumulative_weights(self.weights)
             var idx = sample_index_from_distribution(cumsum, r)
-            indices.append(idx)
+            indices.append(idx).
 
             # If without replacement, set weight to 0 and renormalize
             if not self.replacement:
                 self.weights[idx] = 0
-                self.weights = renormalize_weights(self.weights^)
+                self.weights = renormalize_weights(self.weights^).
 
-        return indices^
+        return indices^.

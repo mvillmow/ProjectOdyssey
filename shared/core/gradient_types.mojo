@@ -38,7 +38,7 @@ Examples:
             grad_b: Gradient tensor for second input.
         """
         self.grad_a = grad_a^
-        self.grad_b = grad_b^
+        self.grad_b = grad_b^.
 
 
 struct GradientTriple(Copyable, Movable):
@@ -78,7 +78,7 @@ Examples:
         """
         self.grad_input = grad_input^
         self.grad_weights = grad_weights^
-        self.grad_bias = grad_bias^
+        self.grad_bias = grad_bias^.
 
 
 struct GradientQuad(Copyable, Movable):
@@ -124,4 +124,4 @@ Examples:
         self.grad_a = grad_a^
         self.grad_b = grad_b^
         self.grad_c = grad_c^
-        self.grad_d = grad_d^
+        self.grad_d = grad_d^.

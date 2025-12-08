@@ -24,7 +24,7 @@ fn clip_predictions(
     """Clip predictions to prevent log(0) and numerical instability.
 
     Formula:
-        clipped = clip(predictions, epsilon, 1.0 - epsilon)
+        clipped = clip(predictions, epsilon, 1.0 - epsilon).
 
     This is used in loss functions like BCE and Focal Loss to prevent taking
     log of zero or one, which would produce NaN or Inf values.
@@ -171,7 +171,7 @@ fn blend_tensors(
     """Blend two tensors based on a binary mask.
 
     Formula:
-        result = tensor1 * mask + tensor2 * (1 - mask)
+        result = tensor1 * mask + tensor2 * (1 - mask).
 
     This is used when selecting between different computations based on conditions
     (e.g., quadratic vs linear term in smooth L1 loss).

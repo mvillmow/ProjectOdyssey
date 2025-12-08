@@ -76,7 +76,7 @@ struct Conv2dLayer(Copyable, Movable):
         self.kernel_h = kernel_h
         self.kernel_w = kernel_w
         self.stride = stride
-        self.padding = padding
+        self.padding = padding.
 
         # Initialize weights with Kaiming/He initialization
         # Shape: (out_channels, in_channels, kernel_h, kernel_w)
@@ -84,7 +84,7 @@ struct Conv2dLayer(Copyable, Movable):
         weight_shape.append(out_channels)
         weight_shape.append(in_channels)
         weight_shape.append(kernel_h)
-        weight_shape.append(kernel_w)
+        weight_shape.append(kernel_w).
 
         # Fan-in for conv2d: in_channels * kernel_h * kernel_w
         var fan_in = in_channels * kernel_h * kernel_w
@@ -98,7 +98,7 @@ struct Conv2dLayer(Copyable, Movable):
         # Shape: (out_channels,)
         var bias_shape= List[Int]()
         bias_shape.append(out_channels)
-        self.bias = zeros(bias_shape, DType.float32)
+        self.bias = zeros(bias_shape, DType.float32).
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
         """Forward pass: y = conv2d(x, weight, bias, stride, padding).
@@ -117,7 +117,7 @@ struct Conv2dLayer(Copyable, Movable):
         Note:
             The output spatial dimensions are computed as:
             - out_height = (height + 2*padding - kernel_h) // stride + 1
-            - out_width = (width + 2*padding - kernel_w) // stride + 1
+            - out_width = (width + 2*padding - kernel_w) // stride + 1.
 
         Example:
             ```mojo
@@ -126,7 +126,7 @@ struct Conv2dLayer(Copyable, Movable):
             var output = layer.forward(input)  # Shape: [1, 16, 32, 32]
             ```
         """
-        return conv2d(input, self.weight, self.bias, self.stride, self.padding)
+        return conv2d(input, self.weight, self.bias, self.stride, self.padding).
 
     fn backward(
         self, grad_output: ExTensor, input: ExTensor
@@ -152,7 +152,7 @@ struct Conv2dLayer(Copyable, Movable):
             ```mojo
             var layer = Conv2dLayer(3, 16, 3, 3)
             var input = randn([2, 3, 32, 32], DType.float32)
-            var output = layer.forward(input)
+            var output = layer.forward(input).
 
             # Compute gradients
             var grad_output = randn(output.shape(), DType.float32)
@@ -164,7 +164,7 @@ struct Conv2dLayer(Copyable, Movable):
         )
         # Return the result struct fields directly
         # The Conv2dBackwardResult struct is only movable, so we return its fields
-        return (result.grad_input, result.grad_weights, result.grad_bias)
+        return (result.grad_input, result.grad_weights, result.grad_bias).
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
@@ -186,17 +186,17 @@ struct Conv2dLayer(Copyable, Movable):
 
         # Create copies of weight and bias tensors
         var weight_copy = zeros_like(self.weight)
-        var bias_copy = zeros_like(self.bias)
+        var bias_copy = zeros_like(self.bias).
 
         var weight_size = self.weight.numel()
-        var bias_size = self.bias.numel()
+        var bias_size = self.bias.numel().
 
         for i in range(weight_size):
-            weight_copy._data[i] = self.weight._data[i]
+            weight_copy._data[i] = self.weight._data[i].
 
         for i in range(bias_size):
-            bias_copy._data[i] = self.bias._data[i]
+            bias_copy._data[i] = self.bias._data[i].
 
         params.append(weight_copy^)
         params.append(bias_copy^)
-        return params^
+        return params^.

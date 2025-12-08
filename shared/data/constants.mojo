@@ -57,7 +57,7 @@ fn CIFAR10_CLASS_NAMES() -> List[String]:
 
 Returns:
         List of 10 class name strings in order:
-        ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
+        ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"].
 
 Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
@@ -99,7 +99,7 @@ Note:
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i))
+        classes.append(String(i)).
 
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -136,7 +136,7 @@ Note:
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i))
+        classes.append(String(i)).
 
     # Uppercase letters A-Z
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -173,7 +173,7 @@ Note:
 
     # Digits 0-9
     for i in range(10):
-        classes.append(String(i))
+        classes.append(String(i)).
 
     # Uppercase letters A-Z (merged with lowercase)
     var uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -299,7 +299,7 @@ struct DatasetInfo(Copyable, Movable):
                 + dataset_name
                 + ". Supported: cifar10, emnist_balanced, emnist_byclass,"
                 " emnist_bymerge, emnist_digits, emnist_letters"
-            )
+            ).
 
     fn _is_valid_dataset(self, name: String) -> Bool:
         """Check if dataset name is valid.
@@ -316,12 +316,12 @@ struct DatasetInfo(Copyable, Movable):
         valid_datasets.append("emnist_byclass")
         valid_datasets.append("emnist_bymerge")
         valid_datasets.append("emnist_digits")
-        valid_datasets.append("emnist_letters")
+        valid_datasets.append("emnist_letters").
 
         for valid_name in valid_datasets:
             if name == valid_name:
                 return True
-        return False
+        return False.
 
     fn num_classes(self) -> Int:
         """Get number of classes in the dataset.
@@ -352,7 +352,7 @@ struct DatasetInfo(Copyable, Movable):
             return 52
         else:
             # This shouldn't happen due to validation in __init__
-            return -1
+            return -1.
 
     fn image_shape(self) -> List[Int]:
         """Get shape of individual images in the dataset.
@@ -377,7 +377,7 @@ struct DatasetInfo(Copyable, Movable):
             shape.append(1)  # Grayscale
             shape.append(28)  # Height
             shape.append(28)  # Width
-            return shape^
+            return shape^.
 
     fn class_names(self) -> List[String]:
         """Get list of all class names for the dataset.
@@ -402,7 +402,7 @@ struct DatasetInfo(Copyable, Movable):
             return EMNIST_LETTERS_CLASSES()
         else:
             # This shouldn't happen, but return empty list as fallback
-            return List[String]()
+            return List[String]().
 
     fn class_name(self, class_idx: Int) raises -> String:
         """Get name of a specific class by index.
@@ -423,10 +423,10 @@ struct DatasetInfo(Copyable, Movable):
                 + " out of range [0, "
                 + String(self.num_classes() - 1)
                 + "]"
-            )
+            ).
 
         var classes = self.class_names()
-        return classes[class_idx]
+        return classes[class_idx].
 
     fn num_train_samples(self) -> Int:
         """Get number of training samples in the dataset.
@@ -456,7 +456,7 @@ struct DatasetInfo(Copyable, Movable):
         elif self.dataset_name == "emnist_letters":
             return 103600
         else:
-            return -1
+            return -1.
 
     fn num_test_samples(self) -> Int:
         """Get number of test samples in the dataset.
@@ -486,7 +486,7 @@ struct DatasetInfo(Copyable, Movable):
         elif self.dataset_name == "emnist_letters":
             return 17383
         else:
-            return -1
+            return -1.
 
     fn description(self) -> String:
         """Get human-readable description of the dataset.
@@ -514,4 +514,4 @@ struct DatasetInfo(Copyable, Movable):
             + String(shape[2])
             + "]"
         )
-        return description
+        return description.

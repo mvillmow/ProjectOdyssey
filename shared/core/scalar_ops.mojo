@@ -38,7 +38,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core.scalar_ops import sqrt_scalar_f32
+        from shared.core.scalar_ops import sqrt_scalar_f32.
 
         var result = sqrt_scalar_f32(Float32(4.0))  # 2.0
         ```
@@ -57,7 +57,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core.scalar_ops import sqrt_scalar_f64
+        from shared.core.scalar_ops import sqrt_scalar_f64.
 
         var result = sqrt_scalar_f64(4.0)  # 2.0
         ```
@@ -77,7 +77,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core.scalar_ops import pow_scalar_f32
+        from shared.core.scalar_ops import pow_scalar_f32.
 
         var result = pow_scalar_f32(Float32(2.0), Float32(3.0))  # 8.0
         ```
@@ -97,7 +97,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core.scalar_ops import pow_scalar_f64
+        from shared.core.scalar_ops import pow_scalar_f64.
 
         var result = pow_scalar_f64(2.0, 3.0)  # 8.0
         ```

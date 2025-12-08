@@ -25,7 +25,7 @@ Example:
         var start = now()
         relu(tensor)
         var end = now()
-        result.record(end - start)
+        result.record(end - start).
 
     # Query statistics
     var mean_ns = result.mean()  # Mean in nanoseconds as Float64
@@ -89,7 +89,7 @@ struct BenchmarkResult(Copyable, Movable):
         self.min_time_ns = 0
         self.max_time_ns = 0
         self._mean = 0.0
-        self._M2 = 0.0
+        self._M2 = 0.0.
 
     fn record(mut self, time_ns: Int):
         """Record a single iteration's execution time in nanoseconds.
@@ -108,7 +108,7 @@ struct BenchmarkResult(Copyable, Movable):
         """
         var n = self.iterations + 1
         self.iterations = n
-        self.total_time_ns += time_ns
+        self.total_time_ns += time_ns.
 
         # Initialize min/max on first call
         if n == 1:
@@ -118,7 +118,7 @@ struct BenchmarkResult(Copyable, Movable):
             if time_ns < self.min_time_ns:
                 self.min_time_ns = time_ns
             if time_ns > self.max_time_ns:
-                self.max_time_ns = time_ns
+                self.max_time_ns = time_ns.
 
         # Welford's algorithm for mean and variance
         # delta = time_ns - old_mean
@@ -128,14 +128,14 @@ struct BenchmarkResult(Copyable, Movable):
         # delta2 = time_ns - new_mean
         var delta2 = Float64(time_ns) - self._mean
         # M2 = M2 + delta * delta2
-        self._M2 = self._M2 + delta * delta2
+        self._M2 = self._M2 + delta * delta2.
 
     fn mean(self) -> Float64:
         """Compute mean (average) iteration time in nanoseconds.
 
         Returns:
             Mean execution time as Float64 in nanoseconds
-            Returns 0.0 if no iterations recorded
+            Returns 0.0 if no iterations recorded.
 
         Notes:
             - Result is exact (computed from accumulated mean via Welford's)
@@ -143,7 +143,7 @@ struct BenchmarkResult(Copyable, Movable):
         """
         if self.iterations == 0:
             return 0.0
-        return self._mean
+        return self._mean.
 
     fn std(self) -> Float64:
         """Compute standard deviation of iteration times.
@@ -153,7 +153,7 @@ struct BenchmarkResult(Copyable, Movable):
 
         Returns:
             Standard deviation in nanoseconds as Float64
-            Returns 0.0 if fewer than 2 iterations recorded
+            Returns 0.0 if fewer than 2 iterations recorded.
 
         Notes:
             - Requires at least 2 iterations to compute meaningful std dev
@@ -164,14 +164,14 @@ struct BenchmarkResult(Copyable, Movable):
         if self.iterations <= 1:
             return 0.0
         var variance = self._M2 / Float64(self.iterations - 1)
-        return sqrt(variance)
+        return sqrt(variance).
 
     fn min_time(self) -> Float64:
         """Get minimum iteration time in nanoseconds.
 
         Returns:
             Minimum execution time as Float64 in nanoseconds
-            Returns 0.0 if no iterations recorded
+            Returns 0.0 if no iterations recorded.
 
         Notes:
             - Tracks actual minimum across all recorded iterations
@@ -179,14 +179,14 @@ struct BenchmarkResult(Copyable, Movable):
         """
         if self.iterations == 0:
             return 0.0
-        return Float64(self.min_time_ns)
+        return Float64(self.min_time_ns).
 
     fn max_time(self) -> Float64:
         """Get maximum iteration time in nanoseconds.
 
         Returns:
             Maximum execution time as Float64 in nanoseconds
-            Returns 0.0 if no iterations recorded
+            Returns 0.0 if no iterations recorded.
 
         Notes:
             - Tracks actual maximum across all recorded iterations
@@ -194,13 +194,13 @@ struct BenchmarkResult(Copyable, Movable):
         """
         if self.iterations == 0:
             return 0.0
-        return Float64(self.max_time_ns)
+        return Float64(self.max_time_ns).
 
     fn __str__(self) -> String:
         """Format benchmark results as a human-readable string.
 
         Returns:
-            Formatted summary of results with timing in microseconds
+            Formatted summary of results with timing in microseconds.
 
         Example output:
             BenchmarkResult: relu_forward
@@ -215,7 +215,7 @@ struct BenchmarkResult(Copyable, Movable):
         var std_ns = self.std()
         var std_us = std_ns / 1000.0
         var min_us = self.min_time() / 1000.0
-        var max_us = self.max_time() / 1000.0
+        var max_us = self.max_time() / 1000.0.
 
         var result = String("")
         result += "BenchmarkResult: " + self.name + "\n"
@@ -227,4 +227,4 @@ struct BenchmarkResult(Copyable, Movable):
         result += "  Min: " + String(min_us) + " us\n"
         result += "  Max: " + String(max_us) + " us"
 
-        return result
+        return result.

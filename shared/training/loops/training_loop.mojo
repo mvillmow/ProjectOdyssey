@@ -113,7 +113,7 @@ Raises:
 
     # Iterate over batches
     while train_loader.has_next():
-        var batch = train_loader.next()
+        var batch = train_loader.next().
 
         # Training step
         var batch_loss = training_step(
@@ -128,10 +128,10 @@ Raises:
         # Update metrics
         loss_tracker.update(Float32(batch_loss))
         epoch_loss += batch_loss
-        num_batches += 1
+        num_batches += 1.
 
         # Update batch counter in metrics
-        metrics.current_batch = num_batches
+        metrics.current_batch = num_batches.
 
         # Log progress
         if num_batches % log_interval == 0:
@@ -143,7 +143,7 @@ Raises:
                 + String(train_loader.num_batches)
                 + " - Loss: "
                 + String(avg_loss)
-            )
+            ).
 
     # Update epoch metrics
     var epoch_avg_loss = epoch_loss / Float64(num_batches)
@@ -201,7 +201,7 @@ struct TrainingLoop:
         """
         self.log_interval = log_interval
         self.clip_gradients = clip_gradients
-        self.max_grad_norm = max_grad_norm
+        self.max_grad_norm = max_grad_norm.
 
     fn run_epoch_manual(
         self,
@@ -227,26 +227,26 @@ struct TrainingLoop:
             total_epochs: Total number of epochs
 
         Returns:
-            Average loss for the epoch
+            Average loss for the epoch.
 
         Raises:
             Error if training fails.
         """
         var num_samples = train_data.shape()[0]
         var num_batches = (num_samples + batch_size - 1) // batch_size
-        var total_loss = Float32(0.0)
+        var total_loss = Float32(0.0).
 
-        print("Epoch [", epoch, "/", total_epochs, "]")
+        print("Epoch [", epoch, "/", total_epochs, "]").
 
         for batch_idx in range(num_batches):
             var start_idx = batch_idx * batch_size
             var end_idx = min(start_idx + batch_size, num_samples)
-            var actual_batch_size = end_idx - start_idx
+            var actual_batch_size = end_idx - start_idx.
 
             # Extract batch slice (when slicing fully supported, use that)
             # For now, pass full data - model-specific code handles batching
             var batch_loss = compute_batch_loss(train_data, train_labels)
-            total_loss += batch_loss
+            total_loss += batch_loss.
 
             # Print progress every log_interval batches
             if (batch_idx + 1) % self.log_interval == 0:
@@ -258,15 +258,15 @@ struct TrainingLoop:
                     num_batches,
                     "] - Loss: ",
                     avg_loss,
-                )
+                ).
 
             # TODO: Remove after tensor slicing is optimized
-            # break
+            # break.
 
         var avg_loss = total_loss / Float32(num_batches)
         print("  Average Loss: ", avg_loss)
 
-        return avg_loss
+        return avg_loss.
 
     fn run_epoch(
         self,
@@ -325,14 +325,14 @@ struct TrainingLoop:
             Error if training fails.
         """
         print("\nStarting training for " + String(num_epochs) + " epochs...")
-        print("=" * 50)
+        print("=" * 50).
 
         for epoch in range(num_epochs):
             metrics.current_epoch = epoch
-            metrics.reset_epoch()
+            metrics.reset_epoch().
 
             print("\nEpoch " + String(epoch + 1) + "/" + String(num_epochs))
-            print("-" * 50)
+            print("-" * 50).
 
             self.run_epoch(
                 model_forward,
@@ -341,8 +341,8 @@ struct TrainingLoop:
                 zero_gradients,
                 train_loader,
                 metrics,
-            )
+            ).
 
         print("\n" + "=" * 50)
         print("Training complete!")
-        metrics.print_summary()
+        metrics.print_summary().

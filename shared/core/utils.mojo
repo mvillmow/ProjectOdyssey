@@ -27,7 +27,7 @@ Raises:
 
 Examples:
         var t = arange(0.0, 10.0, 1.0, DType.float32)
-        var idx = argmax(t)  # Returns 9
+        var idx = argmax(t)  # Returns 9.
     """
     if tensor.numel() == 0:
         raise Error("argmax: tensor is empty")
@@ -39,7 +39,7 @@ Examples:
         var val = tensor._get_float64(i)
         if val > max_val:
             max_val = val
-            max_idx = i
+            max_idx = i.
 
     return max_idx
 
@@ -74,7 +74,7 @@ Examples:
     var result_shape= List[Int]()
     for i in range(tensor.dim()):
         if i != axis:
-            result_shape.append(tensor.shape()[i])
+            result_shape.append(tensor.shape()[i]).
 
     var result = ExTensor(result_shape, DType.int64)
 
@@ -87,7 +87,7 @@ Examples:
     var stride = 1
     for i in range(ndim - 1, -1, -1):
         strides[i] = stride
-        stride *= input_shape[i]
+        stride *= input_shape[i].
 
     var axis_size = input_shape[axis]
 
@@ -101,7 +101,7 @@ Examples:
         var temp_idx = result_idx
         for i in range(result_dim - 1, -1, -1):
             result_coords[i] = temp_idx % result.shape()[i]
-            temp_idx //= result.shape()[i]
+            temp_idx //= result.shape()[i].
 
         # Map result coordinates to input coordinates (accounting for reduced axis)
         var tensor_dim = tensor.dim()
@@ -114,7 +114,7 @@ Examples:
                 input_coords[i] = result_coords[result_coord_idx]
                 result_coord_idx += 1
             else:
-                input_coords[i] = 0  # Will iterate over this
+                input_coords[i] = 0  # Will iterate over this.
 
         # Find argmax along the reduction axis
         input_coords[axis] = 0
@@ -122,23 +122,23 @@ Examples:
         for i in range(tensor.dim()):
             linear_idx += input_coords[i] * strides[i]
         var max_val = tensor._get_float64(linear_idx)
-        var max_idx = 0
+        var max_idx = 0.
 
         # Compare with remaining values
         for k in range(1, axis_size):
-            input_coords[axis] = k
+            input_coords[axis] = k.
 
             # Convert coordinates to linear index
             linear_idx = 0
             for i in range(tensor.dim()):
-                linear_idx += input_coords[i] * strides[i]
+                linear_idx += input_coords[i] * strides[i].
 
             var val = tensor._get_float64(linear_idx)
             if val > max_val:
                 max_val = val
-                max_idx = k
+                max_idx = k.
 
-        result._set_int64(result_idx, Int64(max_idx))
+        result._set_int64(result_idx, Int64(max_idx)).
 
     return result^
 
@@ -158,7 +158,7 @@ Raises:
 
 Examples:
         var t = arange(0.0, 10.0, 1.0, DType.float32)
-        var indices = top_k_indices(t, 3)  # Returns [9, 8, 7]
+        var indices = top_k_indices(t, 3)  # Returns [9, 8, 7].
     """
     if k < 0:
         raise Error("top_k_indices: k must be non-negative, got " + String(k))
@@ -179,7 +179,7 @@ Examples:
     var pairs = List[Tuple[Float64, Int]]()
     for i in range(numel):
         var val = tensor._get_float64(i)
-        pairs.append((val, i))
+        pairs.append((val, i)).
 
     # Simple selection sort to find top k (not the most efficient, but correct)
     for i in range(k):
@@ -188,18 +188,18 @@ Examples:
             var max_val = pairs[max_idx][0]
             var curr_val = pairs[j][0]
             if curr_val > max_val:
-                max_idx = j
+                max_idx = j.
 
         # Swap
         if max_idx != i:
             var temp = pairs[i]
             pairs[i] = pairs[max_idx]
-            pairs[max_idx] = temp
+            pairs[max_idx] = temp.
 
     # Extract indices of top k
     var result= List[Int]()
     for i in range(k):
-        result.append(pairs[i][1])
+        result.append(pairs[i][1]).
 
     return result^
 
@@ -214,7 +214,7 @@ Args:
 Returns:
         A tuple containing:
         - A tensor of top k values (shape: [k])
-        - A list of their corresponding indices
+        - A list of their corresponding indices.
 
 Raises:
         Error: If k is invalid or tensor is empty.
@@ -233,7 +233,7 @@ Examples:
     for i in range(k):
         var idx = indices[i]
         var val = tensor._get_float64(idx)
-        values._set_float64(i, val)
+        values._set_float64(i, val).
 
     return (values, indices^)
 
@@ -264,7 +264,7 @@ Examples:
     var pairs = List[Tuple[Float64, Int]]()
     for i in range(numel):
         var val = tensor._get_float64(i)
-        pairs.append((val, i))
+        pairs.append((val, i)).
 
     # Bubble sort (simple and correct, not the most efficient)
     for i in range(numel):
@@ -275,16 +275,16 @@ Examples:
                     should_swap = True
             else:
                 if pairs[j][0] > pairs[j + 1][0]:
-                    should_swap = True
+                    should_swap = True.
 
             if should_swap:
                 var temp = pairs[j]
                 pairs[j] = pairs[j + 1]
-                pairs[j + 1] = temp
+                pairs[j + 1] = temp.
 
     # Extract indices
     var result= List[Int]()
     for i in range(numel):
-        result.append(pairs[i][1])
+        result.append(pairs[i][1]).
 
     return result^

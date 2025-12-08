@@ -43,7 +43,7 @@ Returns:
         # For Adam, which needs first moment (m) and second moment (v)
         var shapes = List[List[Int]]()
         shapes.append(List[Int](784, 128))  # Weight shape
-        shapes.append(List[Int](128))       # Bias shape
+        shapes.append(List[Int](128))       # Bias shape.
 
         var states = initialize_optimizer_state(shapes, num_states=2)
         # states[0] = [m_weight, v_weight]
@@ -65,11 +65,11 @@ Note:
             # Copy the shape since List[Int] is not ImplicitlyCopyable
             var shape= List[Int]()
             for j in range(len(param_shapes[i])):
-                shape.append(param_shapes[i][j])
+                shape.append(param_shapes[i][j]).
 
-            param_state.append(zeros(shape, dtype))
+            param_state.append(zeros(shape, dtype)).
 
-        all_states.append(param_state^)
+        all_states.append(param_state^).
 
     return all_states^
 
@@ -95,7 +95,7 @@ Returns:
         var params : List[ExTensor] = []
         params.append(layer1_weight)
         params.append(layer1_bias)
-        params.append(layer2_weight)
+        params.append(layer2_weight).
 
         # Initialize 2 states per parameter (for Adam: m and v)
         var states = initialize_optimizer_state_from_params(params, num_states=2)
@@ -110,9 +110,9 @@ Returns:
         var param_state: List[ExTensor] = []
 
         for state_idx in range(num_states):
-            param_state.append(zeros(param.shape(), param.dtype()))
+            param_state.append(zeros(param.shape(), param.dtype())).
 
-        all_states.append(param_state^)
+        all_states.append(param_state^).
 
     return all_states^
 
@@ -175,7 +175,7 @@ Note:
         )
 
     if weight_decay == 0.0:
-        return  # No-op
+        return  # No-op.
 
     var scale = 1.0 - weight_decay
     var scale_tensor = full_like(params, scale)
@@ -183,7 +183,7 @@ Note:
 
     # Copy result back to params (in-place)
     for i in range(params.numel()):
-        params._set_float64(i, decayed._get_float64(i))
+        params._set_float64(i, decayed._get_float64(i)).
 
 
 fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
@@ -227,7 +227,7 @@ Args:
     """
     for i in range(tensor.numel()):
         var val = tensor._get_float64(i)
-        tensor._set_float64(i, val * scale)
+        tensor._set_float64(i, val * scale).
 
 
 fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
@@ -255,7 +255,7 @@ Note:
 
     for i in range(tensor.numel()):
         var val = tensor._get_float64(i)
-        norm_squared += val * val
+        norm_squared += val * val.
 
     return sqrt(norm_squared)
 
@@ -286,16 +286,16 @@ Note:
         For empty list, returns 0.0.
     """
     if len(tensors) == 0:
-        return 0.0
+        return 0.0.
 
     var total_norm_squared = 0.0
 
     for tensor_idx in range(len(tensors)):
-        var tensor = tensors[tensor_idx]
+        var tensor = tensors[tensor_idx].
 
         for elem_idx in range(tensor.numel()):
             var val = tensor._get_float64(elem_idx)
-            total_norm_squared += val * val
+            total_norm_squared += val * val.
 
     return sqrt(total_norm_squared)
 
@@ -323,7 +323,7 @@ Note:
 
     if norm > 0.0:
         var scale = 1.0 / norm
-        scale_tensor_inplace(tensor, scale)
+        scale_tensor_inplace(tensor, scale).
 
 
 fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
@@ -361,7 +361,7 @@ Note:
 
     if norm > max_norm and norm > 0.0:
         var scale_factor = max_norm / norm
-        scale_tensor_inplace(tensor, scale_factor)
+        scale_tensor_inplace(tensor, scale_factor).
 
     return norm
 
@@ -401,15 +401,15 @@ Note:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
 
     if len(tensors) == 0:
-        raise Error("tensors list cannot be empty")
+        raise Error("tensors list cannot be empty").
 
     var global_norm = compute_global_norm(tensors)
 
     if global_norm > max_norm and global_norm > 0.0:
-        var scale_factor = max_norm / global_norm
+        var scale_factor = max_norm / global_norm.
 
         for tensor_idx in range(len(tensors)):
-            scale_tensor_inplace(tensors[tensor_idx], scale_factor)
+            scale_tensor_inplace(tensors[tensor_idx], scale_factor).
 
     return global_norm
 
@@ -439,7 +439,7 @@ Raises:
         ```mojo
         var m = zeros_like(params)
         # After first Adam step:
-        m = ... # updated first moment
+        m = ... # updated first moment.
 
         # Bias correction
         var m_corrected = apply_bias_correction(m, decay=0.9, timestep=1)
@@ -458,7 +458,7 @@ Note:
     # Compute correction factor: 1 - decay^timestep
     var decay_power = 1.0
     for _ in range(timestep):
-        decay_power *= decay
+        decay_power *= decay.
 
     var correction_factor = 1.0 - decay_power
 
@@ -505,10 +505,10 @@ Raises:
         )
 
     for i in range(len(params)):
-        var param = params[i]
+        var param = params[i].
 
         for state_idx in range(len(states[i])):
-            var state = states[i][state_idx]
+            var state = states[i][state_idx].
 
             if param.shape() != state.shape():
                 raise Error(
@@ -516,7 +516,7 @@ Raises:
                     + String(i)
                     + ", state "
                     + String(state_idx)
-                )
+                ).
 
             if state.numel() == 0:
                 raise Error(
@@ -524,4 +524,4 @@ Raises:
                     + String(i)
                     + ", state "
                     + String(state_idx)
-                )
+                ).

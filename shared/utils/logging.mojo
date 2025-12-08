@@ -74,7 +74,7 @@ struct LogRecord(Copyable, Movable):
         self.level = level
         self.message = message
         # Use provided timestamp or empty string (Mojo lacks stdlib time support)
-        self.timestamp = timestamp if timestamp else ""
+        self.timestamp = timestamp if timestamp else "".
 
     fn level_name(self) -> String:
         """Get human-readable level name."""
@@ -89,7 +89,7 @@ struct LogRecord(Copyable, Movable):
         elif self.level == LogLevel.CRITICAL:
             return "CRITICAL"
         else:
-            return "UNKNOWN"
+            return "UNKNOWN".
 
 
 # ============================================================================
@@ -111,7 +111,7 @@ struct SimpleFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
 
     fn format(self, record: LogRecord) -> String:
         """Format log record as: [LEVEL] message."""
-        return "[" + record.level_name() + "] " + record.message
+        return "[" + record.level_name() + "] " + record.message.
 
 
 @fieldwise_init
@@ -178,7 +178,7 @@ struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
         elif level == LogLevel.INFO:
             return self.GREEN
         else:  # DEBUG.
-            return self.BLUE
+            return self.BLUE.
 
 
 # ============================================================================
@@ -201,12 +201,12 @@ struct StreamHandler(Copyable, Handler, ImplicitlyCopyable, Movable):
 
     fn __init__(out self):
         """Create stream handler with default formatter."""
-        self.formatter = SimpleFormatter()
+        self.formatter = SimpleFormatter().
 
     fn emit(self, record: LogRecord):
         """Write formatted log record to stdout."""
         var formatted = self.formatter.format(record)
-        print(formatted)
+        print(formatted).
 
 
 struct FileHandler(Copyable, Handler, Movable):
@@ -222,12 +222,12 @@ struct FileHandler(Copyable, Handler, Movable):
             filepath: Path to log file to write to.
         """
         self.filepath = filepath
-        self.formatter = TimestampFormatter()
+        self.formatter = TimestampFormatter().
 
     fn emit(self, record: LogRecord):
         """Write formatted log record to file."""
         var formatted = self.formatter.format(record)
-        self._write_to_file(formatted)
+        self._write_to_file(formatted).
 
     fn _write_to_file(self, message: String):
         """Write message to log file (append mode).
@@ -246,7 +246,7 @@ struct FileHandler(Copyable, Handler, Movable):
         except:
             # Fallback to print if file write fails
             print("[LOG ERROR] Failed to write to " + self.filepath)
-            print(message)
+            print(message).
 
 
 # ============================================================================
@@ -285,7 +285,7 @@ struct Logger:
         Args:
             handler: Handler to add.
         """
-        self.handlers.append(handler)
+        self.handlers.append(handler).
 
     fn debug(self, message: String):
         """Log a debug message (lowest priority).
@@ -294,7 +294,7 @@ struct Logger:
             message: Message to log.
         """
         if self.level <= LogLevel.DEBUG:
-            self._log(LogLevel.DEBUG, message)
+            self._log(LogLevel.DEBUG, message).
 
     fn info(self, message: String):
         """Log an info message (normal priority).
@@ -303,7 +303,7 @@ struct Logger:
             message: Message to log.
         """
         if self.level <= LogLevel.INFO:
-            self._log(LogLevel.INFO, message)
+            self._log(LogLevel.INFO, message).
 
     fn warning(self, message: String):
         """Log a warning message (medium priority).
@@ -312,7 +312,7 @@ struct Logger:
             message: Message to log.
         """
         if self.level <= LogLevel.WARNING:
-            self._log(LogLevel.WARNING, message)
+            self._log(LogLevel.WARNING, message).
 
     fn error(self, message: String):
         """Log an error message (high priority).
@@ -321,7 +321,7 @@ struct Logger:
             message: Message to log.
         """
         if self.level <= LogLevel.ERROR:
-            self._log(LogLevel.ERROR, message)
+            self._log(LogLevel.ERROR, message).
 
     fn critical(self, message: String):
         """Log a critical message (highest priority).
@@ -330,7 +330,7 @@ struct Logger:
             message: Message to log.
         """
         if self.level <= LogLevel.CRITICAL:
-            self._log(LogLevel.CRITICAL, message)
+            self._log(LogLevel.CRITICAL, message).
 
     fn _log(self, level: Int, message: String):
         """Internal method to create and emit log record.
@@ -341,7 +341,7 @@ struct Logger:
         """
         var record = LogRecord(self.name, level, message)
         for handler in self.handlers:
-            handler.emit(record)
+            handler.emit(record).
 
     fn set_level(mut self, level: Int):
         """Change the log level for this logger.
@@ -349,7 +349,7 @@ struct Logger:
         Args:
             level: New log level threshold.
         """
-        self.level = level
+        self.level = level.
 
 
 # ============================================================================

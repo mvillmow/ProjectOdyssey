@@ -41,16 +41,16 @@ Args:
         weight_decay: L2 regularization factor (default: 0.0, no regularization).
 
 Returns:
-        Tuple of (new_params, new_velocity)
+        Tuple of (new_params, new_velocity).
 
     Example (basic SGD without momentum):
         ```mojo
         from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import sgd_step
+        from shared.training.optimizers import sgd_step.
 
         var W = xavier_uniform(784, 128, DType.float32)
         var W_vel = zeros_like(W)  # Not used, but required
-        var grad_W = ...  # Computed via backpropagation
+        var grad_W = ...  # Computed via backpropagation.
 
         # Returns new state
         (W, W_vel) = sgd_step(W, grad_W, W_vel, learning_rate=0.01)
@@ -59,7 +59,7 @@ Returns:
     Example (SGD with momentum):
         ```mojo
         var W = xavier_uniform(784, 128, DType.float32)
-        var W_vel = zeros_like(W)
+        var W_vel = zeros_like(W).
 
         # Training loop
         for epoch in range(100):
@@ -73,10 +73,10 @@ Note:
         Caller must capture both return values and update their variables.
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape")
+        raise Error("Parameters and gradients must have the same shape").
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype")
+        raise Error("Parameters and gradients must have the same dtype").
 
     var effective_gradients = gradients
 
@@ -85,7 +85,7 @@ Note:
         # grad = grad + weight_decay * params (SIMD optimized)
         var wd_tensor = full_like(params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params)
-        effective_gradients = add_simd(gradients, decay_term)
+        effective_gradients = add_simd(gradients, decay_term).
 
     var new_velocity = velocity  # Default: no change to velocity
 
@@ -95,15 +95,15 @@ Note:
             raise Error(
                 "Velocity buffer required when using momentum (use"
                 " zeros_like(params))"
-            )
+            ).
 
         # velocity = momentum * velocity + gradients (SIMD optimized)
         var momentum_tensor = full_like(velocity, momentum)
         var scaled_velocity = multiply_simd(momentum_tensor, velocity)
-        new_velocity = add_simd(scaled_velocity, effective_gradients)
+        new_velocity = add_simd(scaled_velocity, effective_gradients).
 
         # Use velocity for update
-        effective_gradients = new_velocity
+        effective_gradients = new_velocity.
 
     # Standard SGD update: params = params - lr * gradients (SIMD optimized)
     var lr_tensor = full_like(params, learning_rate)
@@ -122,7 +122,7 @@ fn sgd_step_simple(
     This is a convenience function for basic gradient descent.
 
     Formula:
-        params = params - learning_rate * gradients
+        params = params - learning_rate * gradients.
 
 Args:
         params: Model parameters to update.
@@ -140,10 +140,10 @@ Returns:
         ```
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape")
+        raise Error("Parameters and gradients must have the same shape").
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype")
+        raise Error("Parameters and gradients must have the same dtype").
 
     # params = params - lr * gradients (SIMD optimized)
     var lr_tensor = full_like(params, learning_rate)
@@ -166,7 +166,7 @@ fn sgd_momentum_update_inplace(
 
     Formula:
         velocity = momentum * velocity - lr * grad
-        param = param + velocity
+        param = param + velocity.
 
 Args:
         param: Parameter tensor to update (modified in-place).
@@ -178,10 +178,10 @@ Args:
     Example:
         ```mojo
         from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import sgd_momentum_update_inplace
+        from shared.training.optimizers import sgd_momentum_update_inplace.
 
         var W = xavier_uniform([784, 128], DType.float32)
-        var W_vel = zeros_like(W)
+        var W_vel = zeros_like(W).
 
         # Training loop
         for epoch in range(100):
@@ -199,19 +199,19 @@ Note:
     var numel = param.numel()
 
     if param.shape() != grad.shape():
-        raise Error("Parameter and gradient must have the same shape")
+        raise Error("Parameter and gradient must have the same shape").
 
     if param.shape() != velocity.shape():
-        raise Error("Parameter and velocity must have the same shape")
+        raise Error("Parameter and velocity must have the same shape").
 
     # Dispatch based on dtype
     if param.dtype() == DType.float32:
         var param_data = param._data.bitcast[Float32]()
         var grad_data = grad._data.bitcast[Float32]()
-        var velocity_data = velocity._data.bitcast[Float32]()
+        var velocity_data = velocity._data.bitcast[Float32]().
 
         var lr_f32 = Float32(lr)
-        var momentum_f32 = Float32(momentum)
+        var momentum_f32 = Float32(momentum).
 
         # Update velocity and parameters in-place
         for i in range(numel):
@@ -224,7 +224,7 @@ Note:
     elif param.dtype() == DType.float64:
         var param_data = param._data.bitcast[Float64]()
         var grad_data = grad._data.bitcast[Float64]()
-        var velocity_data = velocity._data.bitcast[Float64]()
+        var velocity_data = velocity._data.bitcast[Float64]().
 
         # Update velocity and parameters in-place
         for i in range(numel):
@@ -261,14 +261,14 @@ Returns:
 
     Example:
         ```mojo
-        from shared.training.optimizers import initialize_velocities
+        from shared.training.optimizers import initialize_velocities.
 
         # Get shapes from model parameters
         var shapes = List[List[Int]]()
         shapes.append(model.conv1_kernel.shape())
         shapes.append(model.conv1_bias.shape())
         shapes.append(model.fc1_weights.shape())
-        shapes.append(model.fc1_bias.shape())
+        shapes.append(model.fc1_bias.shape()).
 
         var velocities = initialize_velocities(shapes)
         # velocities[0] matches conv1_kernel shape
@@ -288,7 +288,7 @@ Note:
         var shape= List[Int]()
         for j in range(len(param_shapes[i])):
             shape.append(param_shapes[i][j])
-        velocities.append(zeros(shape, dtype))
+        velocities.append(zeros(shape, dtype)).
 
     return velocities^
 
@@ -309,14 +309,14 @@ Returns:
 
     Example:
         ```mojo
-        from shared.training.optimizers import initialize_velocities_from_params
+        from shared.training.optimizers import initialize_velocities_from_params.
 
         # Collect all model parameters
         var params : List[ExTensor] = []
         params.append(model.conv1_kernel)
         params.append(model.conv1_bias)
         params.append(model.fc1_weights)
-        params.append(model.fc1_bias)
+        params.append(model.fc1_bias).
 
         var velocities = initialize_velocities_from_params(params)
         ```
@@ -327,6 +327,6 @@ Returns:
 
     for i in range(len(params)):
         var param = params[i]
-        velocities.append(zeros(param.shape(), param.dtype()))
+        velocities.append(zeros(param.shape(), param.dtype())).
 
     return velocities^
