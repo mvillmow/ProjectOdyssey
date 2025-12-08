@@ -122,7 +122,7 @@ fn test_checkpoint_fp16_to_fp32_promotion() raises:
     var fp32_config = PrecisionConfig.fp32()
 
     # Create FP16 weights (simulates loaded checkpoint)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(4)
     var fp32_original = full(shape, 0.5, DType.float32)
@@ -162,7 +162,7 @@ fn test_checkpoint_fp32_to_fp16_demotion() raises:
     var fp16_config = PrecisionConfig.fp16()
 
     # Create FP32 weights (simulates loaded checkpoint)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(4)
     var fp32_weights = full(
@@ -241,7 +241,7 @@ fn test_checkpoint_master_weights_precision() raises:
     )
 
     # Create compute weights in FP16
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(4)
     var fp32_weights = full(shape, 0.5, DType.float32)

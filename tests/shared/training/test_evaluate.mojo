@@ -306,7 +306,7 @@ fn test_evaluate_with_predict() raises:
     print("Testing evaluate_with_predict...")
 
     # Predictions as list: [0, 1, 2, 0]
-    var predictions= List[Int]()
+    var predictions = List[Int]()
     predictions.append(0)
     predictions.append(1)
     predictions.append(2)

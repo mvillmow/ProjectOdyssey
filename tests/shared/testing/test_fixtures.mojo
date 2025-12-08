@@ -49,7 +49,7 @@ fn test_simple_cnn_forward() raises:
     """Test SimpleCNN forward pass produces correct output shape."""
     var model = SimpleCNN(1, 8, 10)
     var batch_size = 32
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(batch_size)
     input_shape.append(1)
     input_shape.append(28)
@@ -88,7 +88,7 @@ fn test_linear_model_forward() raises:
     """Test LinearModel forward pass produces correct output shape."""
     var model = LinearModel(784, 10)
     var batch_size = 32
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(batch_size)
     input_shape.append(784)
 

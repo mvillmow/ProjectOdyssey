@@ -112,7 +112,7 @@ fn test_forward_pass_with_metrics() raises:
     var predictions = softmax(output)
 
     # Create fake labels
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(5)
     var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 0
@@ -173,7 +173,7 @@ fn test_training_loop_simulation() raises:
                 List[Int](batch_size, input_dim),
                 seed_val=epoch * 100 + batch_idx,
             )
-            var labels_shape= List[Int]()
+            var labels_shape = List[Int]()
             labels_shape.append(batch_size)
             var labels = ExTensor(labels_shape, DType.int32)
 
@@ -315,7 +315,7 @@ fn test_batch_processing_pipeline() raises:
         var input = normal(
             List[Int](batch_size, num_features), seed_val=batch_idx
         )
-        var labels_shape= List[Int]()
+        var labels_shape = List[Int]()
         labels_shape.append(batch_size)
         var labels = ExTensor(labels_shape, DType.int32)
 
@@ -373,7 +373,7 @@ fn test_multi_layer_network_integration() raises:
 
     # Create fake mini-batch (batch_size=4)
     var input = normal(List[Int](4, 784), seed_val=42)
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(4)
     var labels = ExTensor(labels_shape, DType.int32)
     labels._data.bitcast[Int32]()[0] = 7
@@ -415,9 +415,9 @@ fn test_error_handling_across_components() raises:
     print("Testing error handling across components...")
 
     # Test mismatched shapes in metric updates
-    var preds_shape= List[Int]()
+    var preds_shape = List[Int]()
     var preds = ExTensor(preds_shape, DType.int32)
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     var labels = ExTensor(labels_shape, DType.int32)  # Mismatched size
 
     var accuracy = AccuracyMetric()

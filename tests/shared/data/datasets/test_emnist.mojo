@@ -374,7 +374,7 @@ fn test_emnist_all_valid_splits() raises:
 
     Verifies that balanced, byclass, bymerge, digits, letters, mnist are all valid.
     """
-    var splits= List[String]()
+    var splits = List[String]()
     splits.append("balanced")
     splits.append("byclass")
     splits.append("bymerge")

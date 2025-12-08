@@ -43,7 +43,7 @@ fn test_linear_backward_result_alias() raises:
     print("Testing LinearBackwardResult alias...")
 
     # Create test tensors
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -73,7 +73,7 @@ fn test_conv2d_backward_result_alias() raises:
     print("Testing Conv2dBackwardResult alias...")
 
     # Create test tensors with 4D shape
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -104,7 +104,7 @@ fn test_conv2d_no_bias_backward_result_alias() raises:
     """Test Conv2dNoBiasBackwardResult is an alias for GradientPair."""
     print("Testing Conv2dNoBiasBackwardResult alias...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -127,7 +127,7 @@ fn test_depthwise_conv2d_backward_result_alias() raises:
     """Test DepthwiseConv2dBackwardResult is an alias for GradientTriple."""
     print("Testing DepthwiseConv2dBackwardResult alias...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -157,7 +157,7 @@ fn test_depthwise_separable_conv2d_backward_result_alias() raises:
     """
     print("Testing DepthwiseSeparableConv2dBackwardResult alias...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -191,7 +191,7 @@ fn test_linear_no_bias_backward_result_alias() raises:
     """Test LinearNoBiasBackwardResult is an alias for GradientPair."""
     print("Testing LinearNoBiasBackwardResult alias...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -245,7 +245,7 @@ fn test_alias_interoperability() raises:
     """Test that aliases and base types are interchangeable."""
     print("Testing alias/type interoperability...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 

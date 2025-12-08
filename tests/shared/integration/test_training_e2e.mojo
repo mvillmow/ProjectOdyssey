@@ -49,22 +49,22 @@ struct SimpleMLP:
     fn __init__(out self) raises:
         """Initialize with small random weights."""
         # FC1: 10 -> 20 (weights shape: out_features, in_features)
-        var fc1_w_shape= List[Int]()
+        var fc1_w_shape = List[Int]()
         fc1_w_shape.append(20)  # out_features
         fc1_w_shape.append(10)  # in_features
         self.fc1_weights = full(fc1_w_shape, 0.1, DType.float32)
 
-        var fc1_b_shape= List[Int]()
+        var fc1_b_shape = List[Int]()
         fc1_b_shape.append(20)
         self.fc1_bias = zeros(fc1_b_shape, DType.float32)
 
         # FC2: 20 -> 5 (weights shape: out_features, in_features)
-        var fc2_w_shape= List[Int]()
+        var fc2_w_shape = List[Int]()
         fc2_w_shape.append(5)  # out_features
         fc2_w_shape.append(20)  # in_features
         self.fc2_weights = full(fc2_w_shape, 0.1, DType.float32)
 
-        var fc2_b_shape= List[Int]()
+        var fc2_b_shape = List[Int]()
         fc2_b_shape.append(5)
         self.fc2_bias = zeros(fc2_b_shape, DType.float32)
 
@@ -93,7 +93,7 @@ struct SimpleMLP:
         var loss = loss_tensor._data.bitcast[Float32]()[0]
 
         # Backward pass
-        var grad_output_shape= List[Int]()
+        var grad_output_shape = List[Int]()
         grad_output_shape.append(1)
         var grad_output = zeros(grad_output_shape, fc2_out.dtype())
         grad_output._data.bitcast[Float32]()[0] = Float32(1.0)
@@ -135,13 +135,13 @@ fn create_dummy_batch(
         (input, one_hot_labels) tuple.
     """
     # Create input
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(batch_size)
     input_shape.append(input_dim)
     var input = full(input_shape, 0.5, DType.float32)
 
     # Create one-hot labels (all class 0 for simplicity)
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(batch_size)
     labels_shape.append(num_classes)
     var labels = zeros(labels_shape, DType.float32)

@@ -218,7 +218,7 @@ fn create_test_vector(size: Int, value: Float32 = 1.0) -> List[Float32]:
     Returns:
         List of Float32 values.
     """
-    var vec= List[Float32](capacity=size)
+    var vec = List[Float32](capacity=size)
     for _ in range(size):
         vec.append(value)
     return vec^
@@ -253,7 +253,7 @@ fn create_sequential_vector(size: Int, start: Float32 = 0.0) -> List[Float32]:
     Returns:
         List of sequential Float32 values.
     """
-    var vec= List[Float32](capacity=size)
+    var vec = List[Float32](capacity=size)
     for i in range(size):
         vec.append(start + Float32(i))
     return vec^
@@ -335,14 +335,14 @@ fn create_simple_dataset(
         var item_seed = seed_value + i
 
         # Generate input features
-        var input_features= List[Float32](capacity=input_dim)
+        var input_features = List[Float32](capacity=input_dim)
         for j in range(input_dim):
             # Use deterministic values based on seed and index
             var val = Float32((seed_value + i + j) % 100) / 100.0
             input_features.append(val)
 
         # Generate output labels
-        var output_labels= List[Float32](capacity=output_dim)
+        var output_labels = List[Float32](capacity=output_dim)
         for j in range(output_dim):
             # Use deterministic values based on seed and index
             var val = Float32((seed_value + i + j + 1000) % 100) / 100.0

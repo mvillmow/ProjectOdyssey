@@ -41,7 +41,7 @@ fn test_maxpool2d_output_shape() raises:
     Test case: 4x4 input, 2x2 kernel, stride 2, padding 0
     Expected: 2x2 output.
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)  # batch
     input_shape.append(1)  # channels
     input_shape.append(4)  # height
@@ -59,7 +59,7 @@ fn test_maxpool2d_output_shape() raises:
 
 fn test_maxpool2d_basic_4x4() raises:
     """Test basic max pooling 2x2 kernel on 4x4 input."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -81,7 +81,7 @@ fn test_maxpool2d_basic_4x4() raises:
 
 fn test_maxpool2d_stride_1() raises:
     """Test maxpool2d with stride=1 (overlapping windows)."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(3)
@@ -107,7 +107,7 @@ fn test_maxpool2d_stride_1() raises:
 
 fn test_maxpool2d_batch_processing() raises:
     """Test maxpool2d processes multiple samples in batch correctly."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)  # batch_size
     input_shape.append(1)  # channels
     input_shape.append(4)  # height
@@ -135,7 +135,7 @@ fn test_maxpool2d_batch_processing() raises:
 
 fn test_maxpool2d_backward_output_shape() raises:
     """Test maxpool2d_backward produces correct gradient shape."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -144,7 +144,7 @@ fn test_maxpool2d_backward_output_shape() raises:
 
     var output = maxpool2d(input, kernel_size=2, stride=2, padding=0)
 
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(1)
     grad_output_shape.append(2)
@@ -169,7 +169,7 @@ fn test_maxpool2d_backward_output_shape() raises:
 
 fn test_avgpool2d_output_shape() raises:
     """Test avgpool2d output shape computation."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -187,7 +187,7 @@ fn test_avgpool2d_output_shape() raises:
 
 fn test_avgpool2d_basic_4x4() raises:
     """Test basic average pooling 2x2 kernel on 4x4 input."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -209,7 +209,7 @@ fn test_avgpool2d_basic_4x4() raises:
 
 fn test_avgpool2d_all_ones() raises:
     """Test avgpool2d with all-ones input."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -225,7 +225,7 @@ fn test_avgpool2d_all_ones() raises:
 
 fn test_avgpool2d_stride_1() raises:
     """Test avgpool2d with stride=1 (overlapping windows)."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(3)
@@ -251,7 +251,7 @@ fn test_avgpool2d_stride_1() raises:
 
 fn test_avgpool2d_batch_processing() raises:
     """Test avgpool2d processes batches correctly."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(1)
     input_shape.append(4)
@@ -277,7 +277,7 @@ fn test_avgpool2d_batch_processing() raises:
 
 fn test_global_avgpool2d_basic() raises:
     """Test global average pooling reduces spatial dimensions to 1x1."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     input_shape.append(4)
@@ -295,7 +295,7 @@ fn test_global_avgpool2d_basic() raises:
 
 fn test_pooling_dtype_preservation() raises:
     """Test that pooling preserves input dtype."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -320,7 +320,7 @@ fn test_global_avgpool2d_backward_output_shape() raises:
     Forward: (B, C, H, W) -> (B, C, 1, 1)
     Backward: (B, C, 1, 1) -> (B, C, H, W).
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)  # batch
     input_shape.append(3)  # channels
     input_shape.append(4)  # height
@@ -347,7 +347,7 @@ fn test_global_avgpool2d_backward_uniform_distribution() raises:
     For input of shape (1, 1, 4, 4) and grad_output of 1.0,
     each position in grad_input should receive 1.0 / (4 * 4) = 1.0 / 16
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)
@@ -374,14 +374,14 @@ fn test_global_avgpool2d_backward_batch_independence() raises:
     Two batch samples with grad_output values [2.0, 3.0] should produce
     different gradients for each batch element.
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(1)
     input_shape.append(2)
     input_shape.append(2)
     var input = ones(input_shape, DType.float32)
 
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(2)
     grad_output_shape.append(1)
     grad_output_shape.append(1)
@@ -414,14 +414,14 @@ fn test_global_avgpool2d_backward_channel_independence() raises:
     Multiple channels should each receive their own gradients distributed
     uniformly across spatial positions.
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(2)
     input_shape.append(2)
     input_shape.append(2)
     var input = ones(input_shape, DType.float32)
 
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(2)
     grad_output_shape.append(1)
@@ -450,14 +450,14 @@ fn test_global_avgpool2d_backward_channel_independence() raises:
 
 fn test_global_avgpool2d_backward_zero_gradient() raises:
     """Test that zero gradient produces zero output."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(3)
     input_shape.append(3)
     var input = ones(input_shape, DType.float32)
 
-    var grad_output_shape= List[Int]()
+    var grad_output_shape = List[Int]()
     grad_output_shape.append(1)
     grad_output_shape.append(1)
     grad_output_shape.append(1)
@@ -479,7 +479,7 @@ fn test_global_avgpool2d_backward_forward_backward_consistency() raises:
 
     The sum of grad_x should equal grad_y (gradient conservation).
     """
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(3)
     input_shape.append(2)
@@ -505,7 +505,7 @@ fn test_global_avgpool2d_backward_forward_backward_consistency() raises:
 
 fn test_avgpool2d_backward_output_shape() raises:
     """Test avgpool2d_backward produces correct gradient shape."""
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(4)

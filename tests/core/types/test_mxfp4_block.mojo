@@ -31,7 +31,7 @@ from tests.shared.conftest import (
 
 fn test_mxfp4_block_creation_zeros() raises:
     """Test MXFP4Block creation with all zeros."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(0.0))
 
@@ -45,7 +45,7 @@ fn test_mxfp4_block_creation_zeros() raises:
 
 fn test_mxfp4_block_creation_ones() raises:
     """Test MXFP4Block creation with all ones."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(1.0))
 
@@ -60,7 +60,7 @@ fn test_mxfp4_block_creation_ones() raises:
 
 fn test_mxfp4_block_creation_range() raises:
     """Test MXFP4Block creation with sequential values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(i) * 0.1)
 
@@ -77,7 +77,7 @@ fn test_mxfp4_block_creation_range() raises:
 
 fn test_mxfp4_block_size_validation() raises:
     """Test MXFP4Block requires exactly 32 values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(16):  # Only 16 values
         values.append(Float32(i))
 
@@ -96,7 +96,7 @@ fn test_mxfp4_block_size_validation() raises:
 
 fn test_mxfp4_block_roundtrip_small() raises:
     """Test round-trip conversion for small values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(0.5) + Float32(i) * 0.1)
 
@@ -113,7 +113,7 @@ fn test_mxfp4_block_roundtrip_small() raises:
 
 fn test_mxfp4_block_roundtrip_large() raises:
     """Test round-trip conversion for large values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(10.0) + Float32(i) * 2.0)
 
@@ -131,7 +131,7 @@ fn test_mxfp4_block_roundtrip_large() raises:
 
 fn test_mxfp4_block_roundtrip_mixed_signs() raises:
     """Test round-trip conversion with mixed signs."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         var sign = Float32(1.0) if i % 2 == 0 else Float32(-1.0)
         values.append(sign * Float32(i) * Float32(0.1))
@@ -173,7 +173,7 @@ fn test_mxfp4_block_roundtrip_mixed_signs() raises:
 fn test_mxfp4_block_scale_computation() raises:
     """Test scale computation for different value ranges."""
     # Test 1: All values in [0, 1]
-    var values1= List[Float32]()
+    var values1 = List[Float32]()
     for i in range(32):
         values1.append(Float32(i) / 32.0)
 
@@ -183,7 +183,7 @@ fn test_mxfp4_block_scale_computation() raises:
     assert_true(scale1 > 0.1 and scale1 < 0.3, "Scale 1 out of range")
 
     # Test 2: All values in [0, 10]
-    var values2= List[Float32]()
+    var values2 = List[Float32]()
     for i in range(32):
         values2.append(Float32(i) / 3.2)
 
@@ -200,7 +200,7 @@ fn test_mxfp4_block_scale_computation() raises:
 
 fn test_mxfp4_block_bit_packing() raises:
     """Test bit packing stores 2 values per byte."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     # Create distinct values
     for i in range(32):
         values.append(Float32(1.0) + Float32(i % 4) * 0.5)
@@ -220,7 +220,7 @@ fn test_mxfp4_block_bit_packing() raises:
 
 fn test_mxfp4_block_get() raises:
     """Test get() method retrieves individual values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(i) * 0.1)
 
@@ -239,7 +239,7 @@ fn test_mxfp4_block_get() raises:
 
 fn test_mxfp4_block_get_bounds_checking() raises:
     """Test get() bounds checking."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(i))
 
@@ -261,7 +261,7 @@ fn test_mxfp4_block_get_bounds_checking() raises:
 
 fn test_mxfp4_block_set() raises:
     """Test set() method updates individual values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(1.0))
 
@@ -287,7 +287,7 @@ fn test_mxfp4_block_set() raises:
 
 fn test_mxfp4_block_set_bounds_checking() raises:
     """Test set() bounds checking."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(i))
 
@@ -315,7 +315,7 @@ fn test_mxfp4_block_set_bounds_checking() raises:
 
 fn test_mxfp4_block_all_negative_same() raises:
     """Test block with all same negative values (TEST-001)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(-1.0))
 
@@ -331,7 +331,7 @@ fn test_mxfp4_block_all_negative_same() raises:
 
 fn test_mxfp4_block_all_negative_range() raises:
     """Test block with range of negative values (TEST-001)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(-1.0) - Float32(i) * 0.1)
 
@@ -345,7 +345,7 @@ fn test_mxfp4_block_all_negative_range() raises:
 
 fn test_mxfp4_block_negative_scale_computation() raises:
     """Test scale computation uses abs() for negative values (TEST-001)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(-10.0))
 
@@ -368,7 +368,7 @@ fn test_mxfp4_block_negative_scale_computation() raises:
 
 fn test_mxfp4_block_all_zeros() raises:
     """Test block with all zeros triggers scale=1.0 fallback (TEST-002)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(0.0))
 
@@ -386,7 +386,7 @@ fn test_mxfp4_block_all_zeros() raises:
 
 fn test_mxfp4_block_near_zero() raises:
     """Test block with near-zero values triggers fallback (TEST-002)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(1e-11))  # Below 1e-10 threshold
 
@@ -399,7 +399,7 @@ fn test_mxfp4_block_near_zero() raises:
 
 fn test_mxfp4_block_zero_roundtrip() raises:
     """Test lossless zero encoding (TEST-002)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(0.0))
 
@@ -418,7 +418,7 @@ fn test_mxfp4_block_zero_roundtrip() raises:
 
 fn test_mxfp4_block_nan_values() raises:
     """Test block with NaN values (TEST-003)."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     var nan_val = Float32(0.0) / Float32(0.0)  # Create NaN
     for i in range(32):
         values.append(nan_val)
@@ -439,7 +439,7 @@ fn test_mxfp4_block_infinity_values() raises:
     var pos_inf = Float32(1.0) / Float32(0.0)
     var neg_inf = Float32(-1.0) / Float32(0.0)
 
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(16):
         values.append(pos_inf)
     for i in range(16):
@@ -461,7 +461,7 @@ fn test_mxfp4_block_mixed_special() raises:
     var pos_inf = Float32(1.0) / Float32(0.0)
     var neg_inf = Float32(-1.0) / Float32(0.0)
 
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(8):
         values.append(nan_val)
     for i in range(8):
@@ -487,7 +487,7 @@ fn test_mxfp4_block_mixed_special() raises:
 
 fn test_mxfp4_block_all_same_value() raises:
     """Test block with all same values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(3.14))
 
@@ -503,7 +503,7 @@ fn test_mxfp4_block_all_same_value() raises:
 
 fn test_mxfp4_block_extreme_range() raises:
     """Test block with very different magnitude values."""
-    var values= List[Float32]()
+    var values = List[Float32]()
     # Mix very small and very large values
     for i in range(16):
         values.append(Float32(0.001))

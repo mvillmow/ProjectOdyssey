@@ -33,7 +33,7 @@ from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
 fn test_dropout_backward_exported() raises:
     """Test that dropout_backward is properly exported from autograd module."""
     # This test simply verifies the function is accessible
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(3)
     var x = ones(shape, DType.float32)
@@ -56,7 +56,7 @@ fn test_dropout_backward_p_zero() raises:
     When p=0, all elements are kept (mask is all 1s).
     Scaling factor is 1/(1-0) = 1.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     shape.append(5)
     var x = ones(shape, DType.float32)
@@ -81,7 +81,7 @@ fn test_dropout_backward_p_high() raises:
     When p is high (e.g., 0.9), most elements are dropped.
     Scaling factor is 1/(1-0.9) = 10.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -114,7 +114,7 @@ fn test_dropout_backward_mask_application() raises:
     The mask is binary (1.0 for kept, 0.0 for dropped).
     Backward should zero out gradients where mask is 0.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(4)
     var x = ones(shape, DType.float32)
@@ -151,7 +151,7 @@ fn test_dropout_backward_consistency() raises:
 
     Using the same mask, multiple backward passes should give identical results.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(3)
     var x = ones(shape, DType.float32)
@@ -182,7 +182,7 @@ fn test_dropout_backward_consistency() raises:
 fn test_dropout2d_backward_exported() raises:
     """Test that dropout2d_backward is properly exported from autograd module.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -208,7 +208,7 @@ fn test_dropout2d_backward_scaling() raises:
 
     Since dropout2d uses same formula as dropout, scaling should be 1/(1-p).
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(4)
     shape.append(6)
@@ -246,7 +246,7 @@ fn test_dropout2d_backward_channel_consistency() raises:
 
     Where dropout2d masks out a channel, all spatial positions should be zero.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(4)

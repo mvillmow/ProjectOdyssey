@@ -396,7 +396,7 @@ fn test_model_best_checkpoint_selection() raises:
         - Best model recoverable.
     """
     # Simulate tracking losses over multiple epochs
-    var losses= List[Float32]()
+    var losses = List[Float32]()
     losses.append(Float32(1.0))
     losses.append(Float32(0.8))
     losses.append(Float32(0.5))  # Best
@@ -502,7 +502,7 @@ fn test_full_pipeline_integration() raises:
 
     # Step 3: Training loop
     var n_epochs = 3
-    var epoch_losses= List[Float32]()
+    var epoch_losses = List[Float32]()
 
     for _ in range(n_epochs):
         var epoch_loss = Float32(0.0)

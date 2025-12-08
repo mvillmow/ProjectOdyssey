@@ -229,7 +229,7 @@ fn test_image_shape_cifar10() raises:
 
     # Expected shape for 10 images
     var num_images = 10
-    var expected_shape= List[Int]()
+    var expected_shape = List[Int]()
     expected_shape.append(num_images)
     expected_shape.append(3)  # RGB channels
     expected_shape.append(32)  # Height
@@ -249,7 +249,7 @@ fn test_image_dtype_is_uint8() raises:
     print("Test: Image dtype is uint8...")
 
     # Create a minimal test tensor
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(32)
@@ -273,7 +273,7 @@ fn test_label_shape_cifar10() raises:
 
     # Expected shape for 10 image labels
     var num_images = 10
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(num_images)
 
     assert_equal(len(shape), 1, "CIFAR-10 labels should be 1D")
@@ -288,7 +288,7 @@ fn test_label_shape_cifar100() raises:
 
     # Expected shape for 10 images with (coarse, fine) labels
     var num_images = 10
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(num_images)
     shape.append(2)  # coarse + fine
 

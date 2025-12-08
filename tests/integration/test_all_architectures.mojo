@@ -44,7 +44,7 @@ fn test_model_forward(
     try:
         # Create dummy input (batch_size, 3, 32, 32)
         print("Creating dummy input: (" + String(batch_size) + ", 3, 32, 32)")
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(batch_size)
         shape.append(3)
         shape.append(32)
@@ -187,7 +187,7 @@ fn main() raises:
     print()
 
     var results: List[Bool] = []
-    var model_names= List[String]()
+    var model_names = List[String]()
 
     # Test 1: ResNet-18
     print("\n" + "=" * 60)

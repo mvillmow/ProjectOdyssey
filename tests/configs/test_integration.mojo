@@ -184,7 +184,7 @@ fn test_optimizer_creation_from_config() raises:
     var lr = config.get_float("optimizer.learning_rate", 0.001)
 
     # Valid optimizer names
-    var valid_optimizers= List[String]()
+    var valid_optimizers = List[String]()
     valid_optimizers.append("sgd")
     valid_optimizers.append("adam")
     valid_optimizers.append("rmsprop")

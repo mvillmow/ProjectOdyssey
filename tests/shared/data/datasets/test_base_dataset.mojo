@@ -29,7 +29,7 @@ struct StubDataset:
             size: Number of samples in the dataset.
         """
         self.size = size
-        self.data= List[Float32](capacity=size)
+        self.data = List[Float32](capacity=size)
         for i in range(size):
             self.data.append(Float32(i))
 

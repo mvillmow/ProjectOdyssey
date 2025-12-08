@@ -49,7 +49,7 @@ fn cleanup_test_dir(dir_path: String) -> Bool:
 
 fn test_named_tensor_creation() raises:
     """Test creating a NamedTensor."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var tensor = zeros(shape, DType.float32)
@@ -64,14 +64,14 @@ fn test_named_tensor_creation() raises:
 fn test_named_tensor_multiple_dtypes() raises:
     """Test NamedTensor with different dtypes."""
     # Float32 tensor
-    var shape_f32= List[Int]()
+    var shape_f32 = List[Int]()
     shape_f32.append(2)
     var tensor_f32 = zeros(shape_f32, DType.float32)
     var named_f32 = NamedTensor("weights_f32", tensor_f32)
     assert_equal(named_f32.tensor.dtype(), DType.float32, "Float32 dtype check")
 
     # Int64 tensor
-    var shape_i64= List[Int]()
+    var shape_i64 = List[Int]()
     shape_i64.append(5)
     var tensor_i64 = zeros(shape_i64, DType.int64)
     var named_i64 = NamedTensor("indices_i64", tensor_i64)
@@ -89,7 +89,7 @@ fn test_save_load_single_named_tensor() raises:
 
     try:
         # Create a test tensor
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(3)
         shape.append(4)
         var tensor = ones(shape, DType.float32)
@@ -125,16 +125,16 @@ fn test_save_load_multiple_named_tensors() raises:
 
     try:
         # Create multiple test tensors
-        var shape1= List[Int]()
+        var shape1 = List[Int]()
         shape1.append(2)
         shape1.append(3)
         var tensor1 = ones(shape1, DType.float32)
 
-        var shape2= List[Int]()
+        var shape2 = List[Int]()
         shape2.append(4)
         var tensor2 = zeros(shape2, DType.float64)
 
-        var shape3= List[Int]()
+        var shape3 = List[Int]()
         shape3.append(5)
         shape3.append(5)
         var tensor3 = ones(shape3, DType.int32)
@@ -155,7 +155,7 @@ fn test_save_load_multiple_named_tensors() raises:
         assert_equal(len(loaded), 3, "Should have loaded 3 tensors")
 
         # Verify names (should be in sorted order)
-        var names= List[String]()
+        var names = List[String]()
         for i in range(len(loaded)):
             names.append(loaded[i].name)
 
@@ -174,7 +174,7 @@ fn test_save_named_checkpoint_without_metadata() raises:
 
     try:
         # Create test tensors
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(3)
         shape.append(4)
         var tensor = ones(shape, DType.float32)
@@ -198,7 +198,7 @@ fn test_save_named_checkpoint_with_metadata() raises:
 
     try:
         # Create test tensors
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(2)
         var tensor = ones(shape, DType.float32)
 
@@ -227,7 +227,7 @@ fn test_load_named_checkpoint_with_metadata() raises:
 
     try:
         # Create test tensors
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(3)
         var tensor = ones(shape, DType.float32)
 
@@ -265,7 +265,7 @@ fn test_load_named_checkpoint_without_metadata_file() raises:
 
     try:
         # Create and save tensors without metadata
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(2)
         var tensor = ones(shape, DType.float32)
 
@@ -294,12 +294,12 @@ fn test_checkpoint_round_trip() raises:
 
     try:
         # Create original tensors with different shapes and dtypes
-        var shape1= List[Int]()
+        var shape1 = List[Int]()
         shape1.append(4)
         shape1.append(5)
         var tensor1 = ones(shape1, DType.float32)
 
-        var shape2= List[Int]()
+        var shape2 = List[Int]()
         shape2.append(10)
         var tensor2 = zeros(shape2, DType.float64)
 
@@ -355,7 +355,7 @@ fn test_checkpoint_with_many_tensors() raises:
         # Create many tensors
         var tensors: List[NamedTensor] = []
         for i in range(10):
-            var shape= List[Int]()
+            var shape = List[Int]()
             shape.append(i + 1)
             var tensor = ones(shape, DType.float32)
             var name = "tensor_" + String(i)

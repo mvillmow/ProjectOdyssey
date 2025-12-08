@@ -41,7 +41,7 @@ from tests.shared.conftest import (
 
 fn test_random_tensor_shape_1d() raises:
     """Test random_tensor creates correct 1D shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     var tensor = random_tensor(shape, DType.float32)
 
@@ -51,7 +51,7 @@ fn test_random_tensor_shape_1d() raises:
 
 fn test_random_tensor_shape_2d() raises:
     """Test random_tensor creates correct 2D shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     shape.append(8)
     var tensor = random_tensor(shape, DType.float32)
@@ -62,7 +62,7 @@ fn test_random_tensor_shape_2d() raises:
 
 fn test_random_tensor_shape_3d() raises:
     """Test random_tensor creates correct 3D shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -74,7 +74,7 @@ fn test_random_tensor_shape_3d() raises:
 
 fn test_random_tensor_dtype_float32() raises:
     """Test random_tensor with float32 dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var tensor = random_tensor(shape, DType.float32)
 
@@ -83,7 +83,7 @@ fn test_random_tensor_dtype_float32() raises:
 
 fn test_random_tensor_dtype_float64() raises:
     """Test random_tensor with float64 dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var tensor = random_tensor(shape, DType.float64)
 
@@ -92,7 +92,7 @@ fn test_random_tensor_dtype_float64() raises:
 
 fn test_random_tensor_dtype_int32() raises:
     """Test random_tensor with int32 dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var tensor = random_tensor(shape, DType.int32)
 
@@ -101,7 +101,7 @@ fn test_random_tensor_dtype_int32() raises:
 
 fn test_random_tensor_values_in_range() raises:
     """Test random_tensor values are in [0, 1)."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(100)
     var tensor = random_tensor(shape, DType.float32)
 
@@ -114,7 +114,7 @@ fn test_random_tensor_values_in_range() raises:
 
 fn test_random_tensor_default_dtype() raises:
     """Test random_tensor uses float32 as default dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var tensor = random_tensor(shape)  # No dtype specified
 
@@ -130,7 +130,7 @@ fn test_random_tensor_default_dtype() raises:
 
 fn test_random_uniform_shape() raises:
     """Test random_uniform creates correct shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     shape.append(5)
     var tensor = random_uniform(shape, low=0.0, high=1.0)
@@ -140,7 +140,7 @@ fn test_random_uniform_shape() raises:
 
 fn test_random_uniform_range_0_to_1() raises:
     """Test random_uniform with default range [0, 1)."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(100)
     var tensor = random_uniform(shape)
 
@@ -153,7 +153,7 @@ fn test_random_uniform_range_0_to_1() raises:
 
 fn test_random_uniform_range_negative_to_positive() raises:
     """Test random_uniform with custom range [-1, 1)."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(100)
     var tensor = random_uniform(shape, low=-1.0, high=1.0)
 
@@ -166,7 +166,7 @@ fn test_random_uniform_range_negative_to_positive() raises:
 
 fn test_random_uniform_dtype() raises:
     """Test random_uniform respects dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     var tensor = random_uniform(shape, dtype=DType.float64)
 
@@ -180,7 +180,7 @@ fn test_random_uniform_dtype() raises:
 
 fn test_random_normal_shape() raises:
     """Test random_normal creates correct shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(20)
     shape.append(30)
     var tensor = random_normal(shape)
@@ -190,7 +190,7 @@ fn test_random_normal_shape() raises:
 
 fn test_random_normal_dtype_float32() raises:
     """Test random_normal with float32 dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     var tensor = random_normal(shape, dtype=DType.float32)
 
@@ -199,7 +199,7 @@ fn test_random_normal_dtype_float32() raises:
 
 fn test_random_normal_dtype_float64() raises:
     """Test random_normal with float64 dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
     var tensor = random_normal(shape, dtype=DType.float64)
 
@@ -212,7 +212,7 @@ fn test_random_normal_mean_and_std() raises:
     Note: With small samples (10 elements), we only do sanity checks.
     Statistical tests would require larger samples.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(10)
 
     # Generate with mean=5.0, std=1.0
@@ -233,7 +233,7 @@ fn test_random_normal_distribution_sanity() raises:
 
     With a normal distribution, consecutive values should be different.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(50)
     var tensor = random_normal(shape)
 
@@ -329,7 +329,7 @@ fn test_synthetic_classification_data_high_dimensions() raises:
 
 fn test_integration_random_tensor_and_normal() raises:
     """Test combining random tensor and normal generation."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     shape.append(5)
 

@@ -45,13 +45,13 @@ fn test_linear_initialization() raises:
     var out_features = 5
 
     # Weights shape: (out_features, in_features) = (5, 10)
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
 
     # Bias shape: (out_features,) = (5,)
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -80,7 +80,7 @@ fn test_linear_forward() raises:
     var batch_size = 2
 
     # Weights: (5, 10) filled with 0.1
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
@@ -90,12 +90,12 @@ fn test_linear_forward() raises:
             weights._data.bitcast[Float32]()[i * in_features + j] = 0.1
 
     # Bias: (5,) filled with 0.0
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
     # Input: (2, 10) filled with 1.0
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(batch_size)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -128,7 +128,7 @@ fn test_linear_no_bias() raises:
     var out_features = 5
 
     # Weights: (5, 10) filled with 0.5
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
@@ -136,7 +136,7 @@ fn test_linear_no_bias() raises:
         weights._data.bitcast[Float32]()[i] = 0.5
 
     # Input: (1, 10) filled with 1.0
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -268,7 +268,7 @@ fn test_relu_activation() raises:
         - For each element: output = max(0, input).
     """
     # Test with known values: [-2.0, -1.0, 0.0, 1.0, 2.0]
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -2.0
@@ -306,7 +306,7 @@ fn test_sigmoid_range() raises:
         - Output range: (0, 1).
     """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -10.0
@@ -337,7 +337,7 @@ fn test_tanh_range() raises:
         - Output range: (-1, 1).
     """
     # Test with various inputs: [-10.0, -1.0, 0.0, 1.0, 10.0]
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -10.0
@@ -422,19 +422,19 @@ fn test_layer_property_batch_independence() raises:
     var batch_size = 2
 
     # Create weights and bias
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
     for i in range(out_features * in_features):
         weights._data.bitcast[Float32]()[i] = 0.2
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(out_features)
     var bias = zeros(bias_shape, DType.float32)
 
     # Create batch input: (2, 4)
-    var batch_input_shape= List[Int]()
+    var batch_input_shape = List[Int]()
     batch_input_shape.append(batch_size)
     batch_input_shape.append(in_features)
     var batch_input = ones(batch_input_shape, DType.float32)
@@ -449,7 +449,7 @@ fn test_layer_property_batch_independence() raises:
     var batch_output = linear(batch_input, weights, bias)
 
     # Process first element individually: (1, 4)
-    var single_input_shape= List[Int]()
+    var single_input_shape = List[Int]()
     single_input_shape.append(1)
     single_input_shape.append(in_features)
     var single_input_1 = ones(single_input_shape, DType.float32)
@@ -478,21 +478,21 @@ fn test_layer_property_deterministic() raises:
     var out_features = 5
 
     # Create weights and bias
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(out_features)
     weight_shape.append(in_features)
     var weights = ones(weight_shape, DType.float32)
     for i in range(out_features * in_features):
         weights._data.bitcast[Float32]()[i] = Float32(i) * 0.01
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(out_features)
     var bias = ones(bias_shape, DType.float32)
     for i in range(out_features):
         bias._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
     # Create input
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(in_features)
     var input = ones(input_shape, DType.float32)
@@ -556,7 +556,7 @@ fn test_linear_matches_pytorch() raises:
         ```
     """
     # Create input: (2, 4)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(4)
     var input = zeros(input_shape, DType.float32)
@@ -570,7 +570,7 @@ fn test_linear_matches_pytorch() raises:
     input._data.bitcast[Float32]()[7] = 8.0
 
     # Create weights: (3, 4)
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(3)
     weight_shape.append(4)
     var weights = zeros(weight_shape, DType.float32)
@@ -588,7 +588,7 @@ fn test_linear_matches_pytorch() raises:
     weights._data.bitcast[Float32]()[11] = 1.2
 
     # Create bias: (3,)
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(3)
     var bias = zeros(bias_shape, DType.float32)
     bias._data.bitcast[Float32]()[0] = 1.0
@@ -629,7 +629,7 @@ fn test_relu_matches_pytorch() raises:
         # Expected output: tensor([0.0, 0.0, 0.0, 0.0, 0.1, 1.5, 3.0])
         ```
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(7)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -3.0
@@ -668,7 +668,7 @@ fn test_sigmoid_matches_pytorch() raises:
         # tensor([0.1192, 0.2689, 0.5000, 0.7311, 0.8808])
         ```
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var input = zeros(shape, DType.float32)
     input._data.bitcast[Float32]()[0] = -2.0

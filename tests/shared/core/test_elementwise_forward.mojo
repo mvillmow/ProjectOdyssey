@@ -40,7 +40,7 @@ from tests.shared.conftest import (
 
 fn test_abs_positive() raises:
     """Test abs with positive values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = arange(1.0, 6.0, 1.0, DType.float32)  # [1, 2, 3, 4, 5]
     var b = abs(a)
@@ -55,7 +55,7 @@ fn test_abs_positive() raises:
 
 fn test_abs_negative() raises:
     """Test abs with negative values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = full(shape, -3.0, DType.float32)
     var b = abs(a)
@@ -80,7 +80,7 @@ fn test_abs_mixed() raises:
 
 fn test_abs_preserves_dtype() raises:
     """Test that abs preserves dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float64)
     var b = abs(a)
@@ -95,7 +95,7 @@ fn test_abs_preserves_dtype() raises:
 
 fn test_sign_positive() raises:
     """Test sign with positive values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = full(shape, 5.0, DType.float32)
     var b = sign(a)
@@ -106,7 +106,7 @@ fn test_sign_positive() raises:
 
 fn test_sign_negative() raises:
     """Test sign with negative values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = full(shape, -5.0, DType.float32)
     var b = sign(a)
@@ -117,7 +117,7 @@ fn test_sign_negative() raises:
 
 fn test_sign_zero() raises:
     """Test sign with zero values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = sign(a)
@@ -147,7 +147,7 @@ fn test_sign_mixed() raises:
 
 fn test_exp_zeros() raises:
     """Test exp(0) = 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = zeros(shape, DType.float32)
     var b = exp(a)
@@ -158,7 +158,7 @@ fn test_exp_zeros() raises:
 
 fn test_exp_ones() raises:
     """Test exp(1) ≈ 2.71828."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = ones(shape, DType.float32)
     var b = exp(a)
@@ -169,7 +169,7 @@ fn test_exp_ones() raises:
 
 fn test_exp_small_values() raises:
     """Test exp with small values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 0.5, DType.float32)
     var b = exp(a)
@@ -180,7 +180,7 @@ fn test_exp_small_values() raises:
 
 fn test_exp_negative() raises:
     """Test exp with negative values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, -1.0, DType.float32)
     var b = exp(a)
@@ -196,7 +196,7 @@ fn test_exp_negative() raises:
 
 fn test_log_one() raises:
     """Test log(1) = 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = ones(shape, DType.float32)
     var b = log(a)
@@ -207,7 +207,7 @@ fn test_log_one() raises:
 
 fn test_log_e() raises:
     """Test log(e) = 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 2.71828, DType.float32)  # e
     var b = log(a)
@@ -218,7 +218,7 @@ fn test_log_e() raises:
 
 fn test_log_powers_of_2() raises:
     """Test log with powers of 2."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 2.0, DType.float32)
     var b = log(a)
@@ -235,7 +235,7 @@ fn test_log_powers_of_2() raises:
 fn test_sqrt_perfect_squares() raises:
     """Test sqrt with perfect squares."""
     # Create array: [1, 4, 9, 16, 25]
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var a = ExTensor(shape, DType.float32)
     a._set_float64(0, 1.0)
@@ -255,7 +255,7 @@ fn test_sqrt_perfect_squares() raises:
 
 fn test_sqrt_zero() raises:
     """Test sqrt(0) = 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = sqrt(a)
@@ -266,7 +266,7 @@ fn test_sqrt_zero() raises:
 
 fn test_sqrt_one() raises:
     """Test sqrt(1) = 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = ones(shape, DType.float32)
     var b = sqrt(a)
@@ -277,7 +277,7 @@ fn test_sqrt_one() raises:
 
 fn test_sqrt_two() raises:
     """Test sqrt(2) ≈ 1.41421."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 2.0, DType.float32)
     var b = sqrt(a)
@@ -293,7 +293,7 @@ fn test_sqrt_two() raises:
 
 fn test_sin_zero() raises:
     """Test sin(0) = 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = sin(a)
@@ -304,7 +304,7 @@ fn test_sin_zero() raises:
 
 fn test_sin_pi_over_2() raises:
     """Test sin(π/2) = 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 1.5708, DType.float32)  # π/2 ≈ 1.5708
     var b = sin(a)
@@ -315,7 +315,7 @@ fn test_sin_pi_over_2() raises:
 
 fn test_sin_pi() raises:
     """Test sin(π) ≈ 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 3.14159, DType.float32)  # π
     var b = sin(a)
@@ -331,7 +331,7 @@ fn test_sin_pi() raises:
 
 fn test_cos_zero() raises:
     """Test cos(0) = 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = cos(a)
@@ -342,7 +342,7 @@ fn test_cos_zero() raises:
 
 fn test_cos_pi_over_2() raises:
     """Test cos(π/2) ≈ 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 1.5708, DType.float32)  # π/2
     var b = cos(a)
@@ -353,7 +353,7 @@ fn test_cos_pi_over_2() raises:
 
 fn test_cos_pi() raises:
     """Test cos(π) = -1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 3.14159, DType.float32)  # π
     var b = cos(a)
@@ -369,7 +369,7 @@ fn test_cos_pi() raises:
 
 fn test_tanh_zero() raises:
     """Test tanh(0) = 0."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = zeros(shape, DType.float32)
     var b = tanh(a)
@@ -380,7 +380,7 @@ fn test_tanh_zero() raises:
 
 fn test_tanh_large_positive() raises:
     """Test tanh(large) ≈ 1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 10.0, DType.float32)
     var b = tanh(a)
@@ -391,7 +391,7 @@ fn test_tanh_large_positive() raises:
 
 fn test_tanh_large_negative() raises:
     """Test tanh(-large) ≈ -1."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, -10.0, DType.float32)
     var b = tanh(a)
@@ -402,7 +402,7 @@ fn test_tanh_large_negative() raises:
 
 fn test_tanh_small_values() raises:
     """Test tanh with small values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     var a = full(shape, 0.5, DType.float32)
     var b = tanh(a)
@@ -432,7 +432,7 @@ fn test_clip_basic() raises:
 
 fn test_clip_all_below() raises:
     """Test clip when all values below min."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = ones(shape, DType.float32)
     var b = clip(a, 5.0, 10.0)
@@ -443,7 +443,7 @@ fn test_clip_all_below() raises:
 
 fn test_clip_all_above() raises:
     """Test clip when all values above max."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = full(shape, 20.0, DType.float32)
     var b = clip(a, 5.0, 10.0)
@@ -459,7 +459,7 @@ fn test_clip_all_above() raises:
 
 fn test_operations_preserve_dtype() raises:
     """Test that all operations preserve dtype."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var a = ones(shape, DType.float64)
 

@@ -19,12 +19,12 @@ fn test_file_dataset_from_directory() raises:
     FileDataset should accept file paths and labels,
     loading them lazily when requested via __getitem__.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/path/to/file1.jpg")
     file_paths.append("/path/to/file2.jpg")
     file_paths.append("/path/to/file3.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)
     labels.append(1)
     labels.append(2)
@@ -40,11 +40,11 @@ fn test_file_dataset_with_file_pattern() raises:
     useful for selecting specific file types.
     """
     # Create dataset with only .jpg files
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/data/img1.jpg")
     file_paths.append("/data/img2.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)
     labels.append(1)
 
@@ -58,11 +58,11 @@ fn test_file_dataset_nonexistent_directory() raises:
     Should fail immediately with clear error rather than
     creating invalid dataset.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/path/file1.jpg")
     file_paths.append("/path/file2.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)  # Only one label for two files
 
     var error_raised = False
@@ -79,8 +79,8 @@ fn test_file_dataset_empty_directory() raises:
     Should create valid dataset with length 0, not crash.
     Useful for testing and incremental dataset building.
     """
-    var file_paths= List[String]()
-    var labels= List[Int]()
+    var file_paths = List[String]()
+    var labels = List[Int]()
     var dataset = FileDataset(file_paths^, labels^)
     assert_equal(dataset.__len__(), 0)
 
@@ -98,7 +98,7 @@ fn test_file_dataset_lazy_loading() raises:
     """
     # Create dataset with many file paths - should be instant
     var file_paths: List[String](capacity=10000)
-    var labels= List[Int](capacity=10000)
+    var labels = List[Int](capacity=10000)
 
     for i in range(10000):
         file_paths.append("/path/to/image_" + String(i) + ".jpg")
@@ -125,9 +125,9 @@ fn test_file_dataset_caching() raises:
     FileDataset API supports caching parameter to control
     whether loaded files are cached in memory.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/test/file.jpg")
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)
 
     # Test with caching enabled
@@ -137,9 +137,9 @@ fn test_file_dataset_caching() raises:
     assert_equal(dataset_cached.__len__(), 1)
 
     # Test with caching disabled
-    var file_paths2= List[String]()
+    var file_paths2 = List[String]()
     file_paths2.append("/test/file.jpg")
-    var labels2= List[Int]()
+    var labels2 = List[Int]()
     labels2.append(0)
     var dataset_no_cache = FileDataset(file_paths2^, labels2^, cache=False)
     assert_equal(dataset_no_cache.__len__(), 1)
@@ -153,7 +153,7 @@ fn test_file_dataset_memory_efficiency() raises:
     """
     # Create dataset with many files - shouldn't load them all
     var file_paths: List[String](capacity=10000)
-    var labels= List[Int](capacity=10000)
+    var labels = List[Int](capacity=10000)
 
     for i in range(10000):
         file_paths.append("/images/img" + String(i) + ".jpg")
@@ -176,11 +176,11 @@ fn test_file_dataset_labels_from_filename() raises:
     FileDataset stores labels provided at creation,
     returning them when samples are accessed.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/images/class0_001.jpg")
     file_paths.append("/images/class1_002.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)
     labels.append(1)
 
@@ -195,11 +195,11 @@ fn test_file_dataset_labels_from_directory() raises:
     passed explicitly at dataset creation.
     """
     # Simulate ImageFolder-style dataset with directory-based labels
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/data/cats/img001.jpg")
     file_paths.append("/data/dogs/img001.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)  # cats
     labels.append(1)  # dogs
 
@@ -213,12 +213,12 @@ fn test_file_dataset_labels_from_file() raises:
     FileDataset accepts any label list, which could come from
     a CSV or JSON file parsed externally.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/data/img1.jpg")
     file_paths.append("/data/img2.jpg")
 
     # Labels could be loaded from labels.csv or labels.json
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(5)
     labels.append(7)
 
@@ -248,10 +248,10 @@ fn test_file_dataset_missing_file() raises:
     Accessing invalid index should raise error,
     similar to accessing missing/deleted file.
     """
-    var file_paths= List[String]()
+    var file_paths = List[String]()
     file_paths.append("/data/img.jpg")
 
-    var labels= List[Int]()
+    var labels = List[Int]()
     labels.append(0)
 
     var dataset = FileDataset(file_paths^, labels^)

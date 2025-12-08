@@ -122,7 +122,7 @@ fn test_fp4_representable_negative_values() raises:
 
 fn test_fp4_round_trip_exact_values() raises:
     """Test round-trip conversion for exact representable values."""
-    var exact_values= List[Float32]()
+    var exact_values = List[Float32]()
     exact_values.append(0.0)
     exact_values.append(1.0)
     exact_values.append(1.5)
@@ -140,7 +140,7 @@ fn test_fp4_round_trip_exact_values() raises:
 
 fn test_fp4_round_trip_negative_exact() raises:
     """Test round-trip conversion for exact negative values."""
-    var exact_values= List[Float32]()
+    var exact_values = List[Float32]()
     exact_values.append(-1.0)
     exact_values.append(-1.5)
     exact_values.append(-2.0)

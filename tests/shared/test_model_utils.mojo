@@ -31,7 +31,7 @@ fn test_save_load_model_weights() raises:
     params.append(full(shape2, 2.5, DType.float32))
 
     # Create parameter names
-    var names= List[String]()
+    var names = List[String]()
     names.append("conv1_kernel")
     names.append("fc1_weights")
 

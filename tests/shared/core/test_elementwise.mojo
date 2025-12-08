@@ -58,7 +58,7 @@ from math import sqrt as math_sqrt, pi
 
 fn test_abs_shapes() raises:
     """Test that abs returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -71,7 +71,7 @@ fn test_abs_shapes() raises:
 
 fn test_abs_values() raises:
     """Test that abs computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -102,7 +102,7 @@ fn test_abs_values() raises:
 
 fn test_abs_backward() raises:
     """Test abs backward pass."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
@@ -127,7 +127,7 @@ fn test_abs_backward() raises:
 
 fn test_abs_backward_gradient() raises:
     """Test abs backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -158,7 +158,7 @@ fn test_abs_backward_gradient() raises:
 
 fn test_sign_values() raises:
     """Test that sign returns correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -194,7 +194,7 @@ fn test_sign_values() raises:
 
 fn test_exp_shapes() raises:
     """Test that exp returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -207,7 +207,7 @@ fn test_exp_shapes() raises:
 
 fn test_exp_values() raises:
     """Test that exp computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -231,7 +231,7 @@ fn test_exp_values() raises:
 
 fn test_exp_backward() raises:
     """Test exp backward pass."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
@@ -252,7 +252,7 @@ fn test_exp_backward() raises:
 
 fn test_exp_backward_gradient() raises:
     """Test exp backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -283,7 +283,7 @@ fn test_exp_backward_gradient() raises:
 
 fn test_log_shapes() raises:
     """Test that log returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -296,7 +296,7 @@ fn test_log_shapes() raises:
 
 fn test_log_values() raises:
     """Test that log computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -320,7 +320,7 @@ fn test_log_values() raises:
 
 fn test_log_backward() raises:
     """Test log backward pass."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
@@ -341,7 +341,7 @@ fn test_log_backward() raises:
 
 fn test_log_backward_gradient() raises:
     """Test log backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -367,7 +367,7 @@ fn test_log_backward_gradient() raises:
 
 fn test_log10_values() raises:
     """Test that log10 computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -391,7 +391,7 @@ fn test_log10_values() raises:
 
 fn test_log10_backward_gradient() raises:
     """Test log10 backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -417,7 +417,7 @@ fn test_log10_backward_gradient() raises:
 
 fn test_log2_values() raises:
     """Test that log2 computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -441,7 +441,7 @@ fn test_log2_values() raises:
 
 fn test_log2_backward_gradient() raises:
     """Test log2 backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -472,7 +472,7 @@ fn test_log2_backward_gradient() raises:
 
 fn test_sqrt_shapes() raises:
     """Test that sqrt returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -485,7 +485,7 @@ fn test_sqrt_shapes() raises:
 
 fn test_sqrt_values() raises:
     """Test that sqrt computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     var x = zeros(shape, DType.float32)
 
@@ -512,7 +512,7 @@ fn test_sqrt_values() raises:
 
 fn test_sqrt_backward() raises:
     """Test sqrt backward pass."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
@@ -535,7 +535,7 @@ fn test_sqrt_backward() raises:
 
 fn test_sqrt_backward_gradient() raises:
     """Test sqrt backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -566,7 +566,7 @@ fn test_sqrt_backward_gradient() raises:
 
 fn test_sin_values() raises:
     """Test that sin computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -590,7 +590,7 @@ fn test_sin_values() raises:
 
 fn test_cos_values() raises:
     """Test that cos computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -619,7 +619,7 @@ fn test_cos_values() raises:
 
 fn test_clip_shapes() raises:
     """Test that clip returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     shape.append(10)
     var x = ones(shape, DType.float32)
@@ -632,7 +632,7 @@ fn test_clip_shapes() raises:
 
 fn test_clip_values() raises:
     """Test that clip computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -664,7 +664,7 @@ fn test_clip_values() raises:
 
 fn test_clip_backward() raises:
     """Test clip backward pass."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
@@ -697,7 +697,7 @@ fn test_clip_backward() raises:
 
 fn test_clip_backward_gradient() raises:
     """Test clip backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     var x = zeros(shape, DType.float32)
 
@@ -728,7 +728,7 @@ fn test_clip_backward_gradient() raises:
 
 fn test_ceil_values() raises:
     """Test that ceil computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -759,7 +759,7 @@ fn test_ceil_values() raises:
 
 fn test_floor_values() raises:
     """Test that floor computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -790,7 +790,7 @@ fn test_floor_values() raises:
 
 fn test_round_values() raises:
     """Test that round computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var x = zeros(shape, DType.float32)
 
@@ -827,7 +827,7 @@ fn test_round_values() raises:
 
 fn test_logical_and_values() raises:
     """Test that logical_and computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -862,7 +862,7 @@ fn test_logical_and_values() raises:
 
 fn test_logical_or_values() raises:
     """Test that logical_or computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)
     var a = zeros(shape, DType.float32)
     var b = zeros(shape, DType.float32)
@@ -896,7 +896,7 @@ fn test_logical_or_values() raises:
 
 fn test_logical_not_values() raises:
     """Test that logical_not computes correct values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     var x = zeros(shape, DType.float32)
 

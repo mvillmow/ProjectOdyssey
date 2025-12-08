@@ -45,7 +45,7 @@ from shared.testing import check_gradient
 
 fn test_sum_backward_shapes() raises:
     """Test that sum_backward returns correct gradient shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -70,7 +70,7 @@ fn test_sum_backward_shapes() raises:
 
 fn test_sum_backward_gradient() raises:
     """Test sum_backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -107,7 +107,7 @@ fn test_sum_backward_gradient() raises:
 
 fn test_mean_backward_shapes() raises:
     """Test that mean_backward returns correct gradient shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -132,7 +132,7 @@ fn test_mean_backward_shapes() raises:
 
 fn test_mean_backward_gradient() raises:
     """Test mean_backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -169,7 +169,7 @@ fn test_mean_backward_gradient() raises:
 
 fn test_max_reduce_backward_shapes() raises:
     """Test that max_reduce_backward returns correct gradient shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -192,7 +192,7 @@ fn test_max_reduce_backward_shapes() raises:
 
 fn test_max_reduce_backward_gradient() raises:
     """Test max_reduce_backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
@@ -229,7 +229,7 @@ fn test_max_reduce_backward_gradient() raises:
 
 fn test_min_reduce_backward_shapes() raises:
     """Test that min_reduce_backward returns correct gradient shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -252,7 +252,7 @@ fn test_min_reduce_backward_shapes() raises:
 
 fn test_min_reduce_backward_gradient() raises:
     """Test min_reduce_backward with numerical gradient checking."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 

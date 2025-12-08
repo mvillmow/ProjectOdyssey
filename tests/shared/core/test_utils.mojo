@@ -37,7 +37,7 @@ fn test_argmax_scalar_simple() raises:
 
 fn test_argmax_scalar_negative_values() raises:
     """Test argmax with negative values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = -5.0
@@ -51,7 +51,7 @@ fn test_argmax_scalar_negative_values() raises:
 
 fn test_argmax_scalar_multi_dimensional() raises:
     """Test argmax on multi-dimensional tensor flattens correctly."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var t = zeros(shape, DType.float32)
@@ -76,7 +76,7 @@ fn test_argmax_axis_1d() raises:
 
 fn test_argmax_axis_2d_axis0() raises:
     """Test argmax along axis 0 on 2D tensor."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var t = zeros(shape, DType.float32)
@@ -97,7 +97,7 @@ fn test_argmax_axis_2d_axis0() raises:
 
 fn test_argmax_axis_2d_axis1() raises:
     """Test argmax along axis 1 on 2D tensor."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var t = zeros(shape, DType.float32)
@@ -118,7 +118,7 @@ fn test_argmax_axis_2d_axis1() raises:
 
 fn test_argmax_axis_3d() raises:
     """Test argmax on 3D tensor along axis."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
@@ -164,7 +164,7 @@ fn test_top_k_indices_all_elements() raises:
 
 fn test_top_k_indices_with_duplicates() raises:
     """Test top_k_indices with duplicate values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(6)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = 5.0
@@ -218,7 +218,7 @@ fn test_top_k_multidimensional() raises:
 
 fn test_argsort_ascending() raises:
     """Test argsort in ascending order."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = 5.0
@@ -237,7 +237,7 @@ fn test_argsort_ascending() raises:
 
 fn test_argsort_descending() raises:
     """Test argsort in descending order."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = 5.0
@@ -274,7 +274,7 @@ fn test_argsort_sorted_array() raises:
 
 fn test_argsort_reverse_sorted() raises:
     """Test argsort on reverse sorted array."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = 5.0
@@ -293,7 +293,7 @@ fn test_argsort_reverse_sorted() raises:
 
 fn test_argsort_negative_values() raises:
     """Test argsort with negative values."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
     var t = zeros(shape, DType.float32)
     t._data.bitcast[Float32]()[0] = -5.0
@@ -312,7 +312,7 @@ fn test_argsort_negative_values() raises:
 
 fn test_argsort_multidimensional() raises:
     """Test argsort on multi-dimensional tensor (flattens)."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     var t = zeros(shape, DType.float32)

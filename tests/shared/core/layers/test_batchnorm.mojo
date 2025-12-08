@@ -126,7 +126,7 @@ fn test_batchnorm_forward_output_shape() raises:
     var layer = BatchNorm2dLayer(16)
 
     # Input: (batch=2, channels=16, height=32, width=32)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(16)
     input_shape.append(32)
@@ -154,7 +154,7 @@ fn test_batchnorm_forward_training_mode() raises:
     var layer = BatchNorm2dLayer(4, momentum=0.1)
 
     # Create input with known values
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(4)
     input_shape.append(2)
@@ -319,11 +319,11 @@ fn test_batchnorm_set_running_stats() raises:
     var layer = BatchNorm2dLayer(16)
 
     # Create new running statistics
-    var new_mean_shape= List[Int]()
+    var new_mean_shape = List[Int]()
     new_mean_shape.append(16)
     var new_mean = ones(new_mean_shape, DType.float32)
 
-    var new_var_shape= List[Int]()
+    var new_var_shape = List[Int]()
     new_var_shape.append(16)
     var new_var = zeros(new_var_shape, DType.float32)
     for i in range(16):
@@ -349,7 +349,7 @@ fn test_batchnorm_running_stats_update_over_batches() raises:
     var layer = BatchNorm2dLayer(1, momentum=0.1)
 
     # First batch: all 1.0
-    var input1_shape= List[Int]()
+    var input1_shape = List[Int]()
     input1_shape.append(1)
     input1_shape.append(1)
     input1_shape.append(2)

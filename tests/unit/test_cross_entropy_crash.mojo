@@ -22,7 +22,7 @@ fn test_cross_entropy_small_batch() raises:
     # Create logits: (2, 47) - 2 samples, 47 classes
     var batch_size = 2
     var num_classes = 47
-    var logits_shape= List[Int]()
+    var logits_shape = List[Int]()
     logits_shape.append(batch_size)
     logits_shape.append(num_classes)
 
@@ -76,7 +76,7 @@ fn test_cross_entropy_varying_sizes() raises:
 
         print("\nTesting batch_size=", batch_size, "num_classes=", num_classes)
 
-        var shape= List[Int]()
+        var shape = List[Int]()
         shape.append(batch_size)
         shape.append(num_classes)
 
@@ -104,7 +104,7 @@ fn test_cross_entropy_edge_cases() raises:
 
     # Test 1: Single sample, many classes
     print("\nTest 3.1: Single sample, 1000 classes")
-    var shape1= List[Int]()
+    var shape1 = List[Int]()
     shape1.append(1)
     shape1.append(1000)
     var logits1 = zeros(shape1, DType.float32)
@@ -120,7 +120,7 @@ fn test_cross_entropy_edge_cases() raises:
 
     # Test 2: Many samples, few classes
     print("\nTest 3.2: 100 samples, 10 classes")
-    var shape2= List[Int]()
+    var shape2 = List[Int]()
     shape2.append(100)
     shape2.append(10)
     var logits2 = zeros(shape2, DType.float32)

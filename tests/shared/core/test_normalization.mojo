@@ -43,7 +43,7 @@ from shared.core.reduction import sum as reduce_sum
 
 fn test_batch_norm2d_shapes() raises:
     """Test that batch_norm2d returns correct output shape."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -51,7 +51,7 @@ fn test_batch_norm2d_shapes() raises:
     var x = ones(shape, DType.float32)
 
     # Create gamma, beta, running_mean, running_var for 3 channels
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(3)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -83,7 +83,7 @@ fn test_batch_norm2d_shapes() raises:
 
 fn test_batch_norm2d_training_mode() raises:
     """Test that batch_norm2d computes batch statistics in training mode."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
@@ -95,7 +95,7 @@ fn test_batch_norm2d_training_mode() raises:
         x._data.bitcast[Float32]()[i] = Float32(i)
 
     # Mean should be 3.5, variance should be computed from data
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -123,14 +123,14 @@ fn test_batch_norm2d_training_mode() raises:
 
 fn test_batch_norm2d_inference_mode() raises:
     """Test that batch_norm2d uses running statistics in inference mode."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
     shape.append(2)  # width
     var x = ones(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -174,14 +174,14 @@ fn test_batch_norm2d_inference_mode() raises:
 
 fn test_batch_norm2d_scale_shift() raises:
     """Test that batch_norm2d applies gamma and beta correctly."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)  # batch
     shape.append(2)  # channels
     shape.append(2)  # height
     shape.append(2)  # width
     var x = zeros(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(2)
 
     # Set gamma = [2.0, 3.0], beta = [1.0, -1.0]
@@ -228,14 +228,14 @@ fn test_batch_norm2d_scale_shift() raises:
 
 fn test_batch_norm2d_zero_variance() raises:
     """Test that batch_norm2d handles zero variance with epsilon."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(1)  # height
     shape.append(1)  # width
     var x = ones(shape, DType.float32)  # All values are 1.0 - zero variance
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -273,7 +273,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
     Uses central finite differences for gold-standard gradient validation.
     """
     # Small tensor for gradient checking (computational cost is O(n²))
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(2)  # channels
     shape.append(2)  # height
@@ -285,7 +285,7 @@ fn test_batch_norm2d_backward_gradient_input() raises:
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
     # Parameters
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(2)
     var gamma = ones(param_shape, DType.float32)
     gamma._data.bitcast[Float32]()[0] = 1.5
@@ -355,7 +355,7 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     Training mode: Gradients flow through batch statistics
     Inference mode: Gradients bypass statistics (use running stats).
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(1)  # channels
     shape.append(2)  # height
@@ -365,7 +365,7 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
     for i in range(8):
         x._data.bitcast[Float32]()[i] = Float32(i)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(1)
     var gamma = ones(param_shape, DType.float32)
     gamma._data.bitcast[Float32]()[0] = 2.0
@@ -409,7 +409,7 @@ fn test_batch_norm2d_backward_training_vs_inference() raises:
 
 fn test_batch_norm2d_backward_shapes() raises:
     """Test that batch_norm2d_backward returns correct gradient shapes."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)  # batch
     shape.append(4)  # channels
     shape.append(5)  # height
@@ -418,7 +418,7 @@ fn test_batch_norm2d_backward_shapes() raises:
     var x = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var running_mean = zeros(param_shape, DType.float32)
@@ -453,12 +453,12 @@ fn test_batch_norm2d_backward_shapes() raises:
 
 fn test_layer_norm_shapes_2d() raises:
     """Test that layer_norm returns correct shape for 2D input."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)  # batch
     shape.append(10)  # features
     var x = ones(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -472,7 +472,7 @@ fn test_layer_norm_shapes_2d() raises:
 
 fn test_layer_norm_shapes_4d() raises:
     """Test that layer_norm returns correct shape for 4D input."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -481,7 +481,7 @@ fn test_layer_norm_shapes_4d() raises:
 
     # For 4D input, normalize over C*H*W
     var normalized_shape = 3 * 4 * 4  # 48
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(normalized_shape)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -497,7 +497,7 @@ fn test_layer_norm_shapes_4d() raises:
 
 fn test_layer_norm_normalization_2d() raises:
     """Test that layer_norm normalizes each sample independently."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)
@@ -514,7 +514,7 @@ fn test_layer_norm_normalization_2d() raises:
     x._data.bitcast[Float32]()[6] = 6.0
     x._data.bitcast[Float32]()[7] = 7.0
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -548,12 +548,12 @@ fn test_layer_norm_normalization_2d() raises:
 
 fn test_layer_norm_scale_shift() raises:
     """Test that layer_norm applies gamma and beta correctly."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)  # batch
     shape.append(3)  # features
     var x = zeros(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(3)
 
     # Set gamma = [2.0, 3.0, 4.0], beta = [1.0, 0.0, -1.0]
@@ -584,12 +584,12 @@ fn test_layer_norm_scale_shift() raises:
 
 fn test_layer_norm_zero_variance() raises:
     """Test that layer_norm handles zero variance with epsilon."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # features
     var x = ones(shape, DType.float32)  # All values are 1.0 - zero variance
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(3)
     var gamma = ones(param_shape, DType.float32)
     var beta = zeros(param_shape, DType.float32)
@@ -612,13 +612,13 @@ fn test_layer_norm_zero_variance() raises:
 fn test_layer_norm_backward_shapes_2d() raises:
     """Test that layer_norm_backward returns correct gradient shapes for 2D input.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(4)  # batch
     shape.append(10)  # features
     var x = ones(shape, DType.float32)
     var grad_output = ones(shape, DType.float32)
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(10)
     var gamma = ones(param_shape, DType.float32)
 
@@ -647,7 +647,7 @@ fn test_layer_norm_backward_shapes_2d() raises:
 fn test_layer_norm_backward_shapes_4d() raises:
     """Test that layer_norm_backward returns correct gradient shapes for 4D input.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(3)  # channels
     shape.append(4)  # height
@@ -657,7 +657,7 @@ fn test_layer_norm_backward_shapes_4d() raises:
 
     # For 4D input, gamma has shape (C * H * W)
     var normalized_size = 3 * 4 * 4  # 48
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(normalized_size)
     var gamma = ones(param_shape, DType.float32)
 
@@ -680,7 +680,7 @@ fn test_layer_norm_backward_shapes_4d() raises:
 fn test_layer_norm_backward_grad_beta() raises:
     """Test that layer_norm_backward grad_beta equals sum of grad_output over batch.
     """
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)
@@ -689,7 +689,7 @@ fn test_layer_norm_backward_grad_beta() raises:
     for i in range(12):
         x._data.bitcast[Float32]()[i] = Float32(i) * 0.1
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
 
@@ -719,12 +719,12 @@ fn test_layer_norm_backward_grad_beta() raises:
 
 fn test_layer_norm_backward_zero_input() raises:
     """Test layer_norm_backward with zero input (edge case)."""
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)  # batch
     shape.append(4)  # features
     var x = zeros(shape, DType.float32)  # All zeros - zero variance
 
-    var param_shape= List[Int]()
+    var param_shape = List[Int]()
     param_shape.append(4)
     var gamma = ones(param_shape, DType.float32)
     var grad_output = ones(shape, DType.float32)

@@ -130,7 +130,7 @@ fn test_cifar10_get_class_name_all_classes() raises:
     """Test CIFAR10Dataset returns correct names for all 10 classes."""
     var dataset = CIFAR10Dataset("/tmp/cifar10")
 
-    var expected_names= List[String]()
+    var expected_names = List[String]()
     expected_names.append("airplane")
     expected_names.append("automobile")
     expected_names.append("bird")

@@ -42,7 +42,7 @@ fn test_reshape_with_inferred_dimension() raises:
     var a = arange(0.0, 12.0, 1.0, DType.float32)  # Shape (12,)
 
     # Reshape to (3, -1) should infer -1 as 4
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(-1)  # Should infer 4
 
@@ -64,7 +64,7 @@ fn test_reshape_explicit_shape() raises:
     var a = arange(0.0, 12.0, 1.0, DType.float32)  # Shape (12,)
 
     # Reshape to (3, 4) explicitly
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -88,7 +88,7 @@ fn test_squeeze_specific_dimension() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (1, 3, 1, 4)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(1)
@@ -111,7 +111,7 @@ fn test_squeeze_all_dimensions() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (1, 3, 1, 4)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     shape.append(3)
     shape.append(1)
@@ -139,7 +139,7 @@ fn test_unsqueeze_add_dimension() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -160,7 +160,7 @@ fn test_unsqueeze_negative_index() raises:
     This crashes because the list has undefined size.
     """
     # Create tensor with shape (3, 4)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
     var a = ones(shape, DType.float32)
@@ -186,12 +186,12 @@ fn test_concatenate_along_axis() raises:
     This crashes because the list has undefined size.
     """
     # Create two tensors to concatenate
-    var shape1= List[Int]()
+    var shape1 = List[Int]()
     shape1.append(2)
     shape1.append(3)
     var a = ones(shape1, DType.float32)  # 2x3
 
-    var shape2= List[Int]()
+    var shape2 = List[Int]()
     shape2.append(3)
     shape2.append(3)
     var b = ones(shape2, DType.float32)  # 3x3

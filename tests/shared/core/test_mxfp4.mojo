@@ -344,7 +344,7 @@ fn test_mxfp4_block_all_zeros() raises:
     4. Round-trip losslessly to zeros.
     """
     # Create a block with 32 zeros
-    var values= List[Float32]()
+    var values = List[Float32]()
     for _ in range(32):
         values.append(Float32(0.0))
 
@@ -375,7 +375,7 @@ fn test_mxfp4_block_near_zero_values() raises:
     we use scale = 1.0 instead, avoiding numerical instability.
     """
     # Create a block with values < 1e-10
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         # Use values like 1e-12, 5e-13, etc.
         values.append(Float32(1e-12) * Float32(i + 1))
@@ -407,7 +407,7 @@ fn test_mxfp4_block_near_threshold_edge_case() raises:
     """
     # Create a block with values that trigger the fallback
     # max_abs = 1e-11 * 32 = 3.2e-10, and 3.2e-10 / 6.0 = 5.3e-11 < 1e-10 (fallback triggers)
-    var values= List[Float32]()
+    var values = List[Float32]()
     var threshold_val = Float32(1e-11)
     for i in range(32):
         values.append(threshold_val * Float32(i + 1))
@@ -432,7 +432,7 @@ fn test_mxfp4_block_mixed_zero_and_small() raises:
     Edge case: Block with some zeros and some tiny values (mixed scenario).
     Should still trigger fallback since max_abs might be < 1e-10.
     """
-    var values= List[Float32]()
+    var values = List[Float32]()
 
     # Mix zeros and small values
     for i in range(32):
@@ -469,7 +469,7 @@ fn test_mxfp4_block_zero_roundtrip_lossless() raises:
     Requirement: Zero blocks should encode as all-zero with scale=1.0
     and decode back to all zeros without any data corruption.
     """
-    var values= List[Float32]()
+    var values = List[Float32]()
     for _ in range(32):
         values.append(Float32(0.0))
 
@@ -502,7 +502,7 @@ fn test_mxfp4_block_scale_computation_no_division_by_zero() raises:
     """
     # Create multiple blocks with all zeros to ensure consistent behavior
     for _ in range(3):
-        var values= List[Float32]()
+        var values = List[Float32]()
         for _ in range(32):
             values.append(Float32(0.0))
 
@@ -525,7 +525,7 @@ fn test_mxfp4_block_normal_scale_computation_still_works() raises:
     normal scale computation for typical values.
     """
     # Create block with normal-sized values (max_abs = 12.0)
-    var values= List[Float32]()
+    var values = List[Float32]()
     for i in range(32):
         values.append(Float32(i + 1) * 0.4)  # Range 0.4 to 12.8
 

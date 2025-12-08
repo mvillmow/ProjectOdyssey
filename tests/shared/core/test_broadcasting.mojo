@@ -26,9 +26,9 @@ from tests.shared.conftest import (
 
 fn test_broadcast_scalar_to_1d() raises:
     """Test broadcasting scalar to 1D tensor."""
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(5)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
     var b = full(shape_scalar, 2.0, DType.float32)  # scalar 2
@@ -40,10 +40,10 @@ fn test_broadcast_scalar_to_1d() raises:
 
 fn test_broadcast_scalar_to_2d() raises:
     """Test broadcasting scalar to 2D tensor."""
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(3)
     shape_mat.append(4)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
     var b = full(shape_scalar, 5.0, DType.float32)  # scalar 5
@@ -55,11 +55,11 @@ fn test_broadcast_scalar_to_2d() raises:
 
 fn test_broadcast_scalar_to_3d() raises:
     """Test broadcasting scalar to 3D tensor."""
-    var shape_3d= List[Int]()
+    var shape_3d = List[Int]()
     shape_3d.append(2)
     shape_3d.append(3)
     shape_3d.append(4)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = full(shape_3d, 2.0, DType.float32)  # 2x3x4 tensor
     var b = full(shape_scalar, 3.0, DType.float32)  # scalar 3
@@ -76,10 +76,10 @@ fn test_broadcast_scalar_to_3d() raises:
 
 fn test_broadcast_vector_to_matrix_row() raises:
     """Test broadcasting row vector to matrix."""
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(3)
     shape_mat.append(4)
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(1)
     shape_vec.append(4)
 
@@ -93,10 +93,10 @@ fn test_broadcast_vector_to_matrix_row() raises:
 
 fn test_broadcast_vector_to_matrix_column() raises:
     """Test broadcasting column vector to matrix."""
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(3)
     shape_mat.append(4)
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(3)
     shape_vec.append(1)
 
@@ -110,10 +110,10 @@ fn test_broadcast_vector_to_matrix_column() raises:
 
 fn test_broadcast_1d_to_2d() raises:
     """Test broadcasting 1D vector to 2D matrix."""
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(3)
     shape_mat.append(4)
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(4)
 
     var a = ones(shape_mat, DType.float32)  # 3x4 matrix
@@ -131,11 +131,11 @@ fn test_broadcast_1d_to_2d() raises:
 
 fn test_broadcast_size_one_dim_leading() raises:
     """Test broadcasting with leading dimension of size 1."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(1)
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(2)
     shape_b.append(3)
     shape_b.append(4)
@@ -150,11 +150,11 @@ fn test_broadcast_size_one_dim_leading() raises:
 
 fn test_broadcast_size_one_dim_middle() raises:
     """Test broadcasting with middle dimension of size 1."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(1)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(2)
     shape_b.append(3)
     shape_b.append(4)
@@ -169,11 +169,11 @@ fn test_broadcast_size_one_dim_middle() raises:
 
 fn test_broadcast_size_one_dim_trailing() raises:
     """Test broadcasting with trailing dimension of size 1."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(3)
     shape_a.append(1)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(2)
     shape_b.append(3)
     shape_b.append(4)
@@ -193,11 +193,11 @@ fn test_broadcast_size_one_dim_trailing() raises:
 
 fn test_broadcast_missing_leading_dims() raises:
     """Test broadcasting when tensor has fewer dimensions (aligned to right)."""
-    var shape_3d= List[Int]()
+    var shape_3d = List[Int]()
     shape_3d.append(2)
     shape_3d.append(3)
     shape_3d.append(4)
-    var shape_1d= List[Int]()
+    var shape_1d = List[Int]()
     shape_1d.append(4)
 
     var a = ones(shape_3d, DType.float32)  # 2x3x4
@@ -212,11 +212,11 @@ fn test_broadcast_missing_leading_dims() raises:
 
 fn test_broadcast_2d_to_3d() raises:
     """Test broadcasting 2D to 3D."""
-    var shape_3d= List[Int]()
+    var shape_3d = List[Int]()
     shape_3d.append(2)
     shape_3d.append(3)
     shape_3d.append(4)
-    var shape_2d= List[Int]()
+    var shape_2d = List[Int]()
     shape_2d.append(3)
     shape_2d.append(4)
 
@@ -237,11 +237,11 @@ fn test_broadcast_2d_to_3d() raises:
 
 fn test_broadcast_3d_complex() raises:
     """Test complex 3D broadcasting with multiple size-1 dimensions."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(1)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(1)
     shape_b.append(3)
     shape_b.append(4)
@@ -256,12 +256,12 @@ fn test_broadcast_3d_complex() raises:
 
 fn test_broadcast_4d() raises:
     """Test 4D broadcasting."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(1)
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(1)
     shape_b.append(5)
     shape_b.append(3)
@@ -284,10 +284,10 @@ fn test_broadcast_4d() raises:
 
 fn test_broadcast_incompatible_shapes_different_sizes() raises:
     """Test that incompatible shapes raise error."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(3)
     shape_b.append(5)  # Incompatible: 4 != 5 and neither is 1
 
@@ -310,11 +310,11 @@ fn test_broadcast_incompatible_shapes_different_sizes() raises:
 
 fn test_broadcast_incompatible_inner_dims() raises:
     """Test that incompatible inner dimensions raise error."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(2)
     shape_b.append(5)  # Incompatible: 3 != 5 and neither is 1)
     shape_b.append(4)
@@ -343,9 +343,9 @@ fn test_broadcast_incompatible_inner_dims() raises:
 
 fn test_broadcast_output_shape_scalar_1d() raises:
     """Test broadcast output shape for scalar + 1D."""
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(5)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = ones(shape_vec, DType.float32)
     var b = ones(shape_scalar, DType.float32)
@@ -357,10 +357,10 @@ fn test_broadcast_output_shape_scalar_1d() raises:
 
 fn test_broadcast_output_shape_1d_2d() raises:
     """Test broadcast output shape for 1D + 2D."""
-    var shape_2d= List[Int]()
+    var shape_2d = List[Int]()
     shape_2d.append(3)
     shape_2d.append(4)
-    var shape_1d= List[Int]()
+    var shape_1d = List[Int]()
     shape_1d.append(4)
 
     var a = ones(shape_2d, DType.float32)
@@ -373,11 +373,11 @@ fn test_broadcast_output_shape_1d_2d() raises:
 
 fn test_broadcast_output_shape_3d_complex() raises:
     """Test broadcast output shape for complex 3D case."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(1)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(1)
     shape_b.append(3)
     shape_b.append(4)
@@ -397,10 +397,10 @@ fn test_broadcast_output_shape_3d_complex() raises:
 
 fn test_broadcast_preserves_dtype() raises:
     """Test that broadcasting preserves dtype."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(3)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(4)
 
     var a = ones(shape_a, DType.float64)
@@ -419,9 +419,9 @@ fn test_broadcast_with_comparison_scalar() raises:
     """Test broadcasting scalar with comparison operations."""
     from shared.core import greater
 
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(5)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = full(shape_vec, 3.0, DType.float32)  # [3, 3, 3, 3, 3]
     var b = full(shape_scalar, 2.0, DType.float32)  # scalar 2
@@ -437,10 +437,10 @@ fn test_broadcast_with_comparison_vector_matrix() raises:
     """Test broadcasting vector to matrix with comparison."""
     from shared.core import less_equal
 
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(3)
     shape_mat.append(4)
-    var shape_vec= List[Int]()
+    var shape_vec = List[Int]()
     shape_vec.append(4)
 
     var a = ones(shape_mat, DType.float32)  # 3x4 matrix of ones
@@ -455,10 +455,10 @@ fn test_broadcast_with_comparison_vector_matrix() raises:
 
 fn test_broadcast_chained_operations() raises:
     """Test chained operations with broadcasting."""
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(2)
     shape_mat.append(3)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = full(shape_mat, 5.0, DType.float32)  # 2x3 matrix
     var b = full(shape_scalar, 2.0, DType.float32)  # scalar
@@ -475,10 +475,10 @@ fn test_broadcast_with_subtract() raises:
     """Test broadcasting with subtraction."""
     from shared.core import subtract
 
-    var shape_2d= List[Int]()
+    var shape_2d = List[Int]()
     shape_2d.append(3)
     shape_2d.append(4)
-    var shape_1d= List[Int]()
+    var shape_1d = List[Int]()
     shape_1d.append(4)
 
     var a = full(shape_2d, 10.0, DType.float32)  # 3x4 matrix of 10s
@@ -493,10 +493,10 @@ fn test_broadcast_with_divide() raises:
     """Test broadcasting with division."""
     from shared.core import divide
 
-    var shape_mat= List[Int]()
+    var shape_mat = List[Int]()
     shape_mat.append(2)
     shape_mat.append(5)
-    var shape_scalar= List[Int]()
+    var shape_scalar = List[Int]()
 
     var a = full(shape_mat, 20.0, DType.float32)  # 2x5 matrix of 20s
     var b = full(shape_scalar, 4.0, DType.float32)  # scalar 4
@@ -508,11 +508,11 @@ fn test_broadcast_with_divide() raises:
 
 fn test_broadcast_complex_3d_with_multiply() raises:
     """Test complex 3D broadcasting with multiply."""
-    var shape_a= List[Int]()
+    var shape_a = List[Int]()
     shape_a.append(2)
     shape_a.append(1)
     shape_a.append(4)
-    var shape_b= List[Int]()
+    var shape_b = List[Int]()
     shape_b.append(1)
     shape_b.append(3)
     shape_b.append(4)
@@ -536,13 +536,13 @@ fn test_broadcast_iterator_1d() raises:
 
     # Shape: [3]
     # Strides: [1] for both (no broadcasting)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(1)
 
     var iterator = BroadcastIterator(shape^, strides1^, strides2^)
@@ -568,15 +568,15 @@ fn test_broadcast_iterator_2d_no_broadcast() raises:
 
     # Shape: [2, 3]
     # Strides: [3, 1] for both (row-major, no broadcasting)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(3)
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(3)
     strides2.append(1)
 
@@ -618,15 +618,15 @@ fn test_broadcast_iterator_2d_broadcast_second() raises:
     # Shape: [2, 3] (broadcast result)
     # Tensor A: [2, 3], strides [3, 1]
     # Tensor B: [1, 3], strides [0, 1] (first dim broadcasted)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(3)
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(0)  # Broadcasted dimension
     strides2.append(1)
 
@@ -667,17 +667,17 @@ fn test_broadcast_iterator_3d_complex() raises:
 
     # Shape: [2, 3, 4] (broadcast result)
     # Both tensors have same shape, strides [12, 4, 1]
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(3)
     shape.append(4)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(12)
     strides1.append(4)
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(12)
     strides2.append(4)
     strides2.append(1)
@@ -703,13 +703,13 @@ fn test_broadcast_iterator_scalar_broadcast() raises:
     # Shape: [5] (broadcast result)
     # Tensor A: [5], strides [1]
     # Tensor B: scalar [0], strides [0] (entire dimension is broadcast)
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(5)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(0)  # Scalar: stride 0
 
     var iterator = BroadcastIterator(shape^, strides1^, strides2^)
@@ -729,13 +729,13 @@ fn test_broadcast_iterator_exhaustion() raises:
     """Test that BroadcastIterator properly signals exhaustion."""
     from shared.core.broadcasting import BroadcastIterator
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
 
-    var strides1= List[Int]()
+    var strides1 = List[Int]()
     strides1.append(1)
 
-    var strides2= List[Int]()
+    var strides2 = List[Int]()
     strides2.append(1)
 
     var iterator = BroadcastIterator(shape^, strides1^, strides2^)

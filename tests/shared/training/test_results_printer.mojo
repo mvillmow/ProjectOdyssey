@@ -219,7 +219,7 @@ fn test_print_per_class_accuracy_with_class_names() raises:
     accuracies._data.bitcast[Float64]()[2] = 0.95
 
     # Create class names
-    var class_names= List[String]()
+    var class_names = List[String]()
     class_names.append("Cat")
     class_names.append("Dog")
     class_names.append("Bird")
@@ -317,7 +317,7 @@ fn test_print_confusion_matrix_with_class_names() raises:
     matrix._data.bitcast[Int32]()[7] = 4  # 2,1
     matrix._data.bitcast[Int32]()[8] = 94  # 2,2
 
-    var class_names= List[String]()
+    var class_names = List[String]()
     class_names.append("Cat")
     class_names.append("Dog")
     class_names.append("Bird")
@@ -340,7 +340,7 @@ fn test_print_confusion_matrix_binary() raises:
     matrix._data.bitcast[Int32]()[2] = 30  # FN
     matrix._data.bitcast[Int32]()[3] = 970  # TN
 
-    var class_names= List[String]()
+    var class_names = List[String]()
     class_names.append("Negative")
     class_names.append("Positive")
 
@@ -504,7 +504,7 @@ fn test_full_training_workflow_output() raises:
     per_class._data.bitcast[Float64]()[3] = 0.95
     per_class._data.bitcast[Float64]()[4] = 0.80
 
-    var class_names= List[String]()
+    var class_names = List[String]()
     class_names.append("Class0")
     class_names.append("Class1")
     class_names.append("Class2")

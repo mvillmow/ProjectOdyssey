@@ -27,12 +27,12 @@ fn test_dataloader_next_normal_batch() raises:
     This crashes because the list has undefined size.
     """
     # Create dummy dataset
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(100)  # num samples
     data_shape.append(10)  # feature dim
     var data = ones(data_shape, DType.float32)
 
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(100)
     var labels = ones(labels_shape, DType.int32)
 
@@ -52,12 +52,12 @@ fn test_dataloader_next_small_batch() raises:
     Bug: Even with batch_size=1, the bug still crashes.
     """
     # Create small dataset
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(10)  # num samples
     data_shape.append(5)  # feature dim
     var data = ones(data_shape, DType.float32)
 
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(10)
     var labels = ones(labels_shape, DType.int32)
 
@@ -77,12 +77,12 @@ fn test_dataloader_next_large_batch() raises:
     Bug: Larger batch size makes the bug more likely to manifest.
     """
     # Create large dataset
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(1000)  # num samples
     data_shape.append(50)  # feature dim
     var data = ones(data_shape, DType.float32)
 
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(1000)
     var labels = ones(labels_shape, DType.int32)
 
@@ -103,12 +103,12 @@ fn test_dataloader_next_partial_last_batch() raises:
     triggers the List[Int] constructor bug at line 270.
     """
     # Create dataset that doesn't divide evenly by batch size
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(50)  # num samples
     data_shape.append(10)  # feature dim
     var data = ones(data_shape, DType.float32)
 
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(50)
     var labels = ones(labels_shape, DType.int32)
 
@@ -131,12 +131,12 @@ fn test_dataloader_multiple_iterations() raises:
     Bug: Each call to next() triggers the List[Int] constructor bug.
     """
     # Create dataset
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(100)
     data_shape.append(20)
     var data = ones(data_shape, DType.float32)
 
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(100)
     var labels = ones(labels_shape, DType.int32)
 

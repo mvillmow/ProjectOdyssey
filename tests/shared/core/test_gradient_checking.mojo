@@ -41,7 +41,7 @@ fn test_relu_gradient() raises:
     """Test ReLU backward pass using gradient checking."""
     print("Testing ReLU gradient...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -62,7 +62,7 @@ fn test_relu_negative_inputs() raises:
     """Test ReLU gradient with negative inputs (zero gradient region)."""
     print("Testing ReLU gradient (negative inputs)...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -83,7 +83,7 @@ fn test_relu_mixed_inputs() raises:
     """Test ReLU gradient with mixed positive/negative inputs."""
     print("Testing ReLU gradient (mixed inputs)...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -117,7 +117,7 @@ fn test_sigmoid_gradient() raises:
     """Test Sigmoid backward pass using gradient checking."""
     print("Testing Sigmoid gradient...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -139,7 +139,7 @@ fn test_tanh_gradient() raises:
     """Test Tanh backward pass using gradient checking."""
     print("Testing Tanh gradient...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -166,7 +166,7 @@ fn test_add_gradient() raises:
     """Test addition backward pass using gradient checking."""
     print("Testing Add gradient...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -190,7 +190,7 @@ fn test_multiply_gradient() raises:
     """Test multiplication backward pass using gradient checking."""
     print("Testing Multiply gradient...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -219,7 +219,7 @@ fn test_composite_relu_multiply() raises:
     """Test gradient through composite operation: multiply -> relu."""
     print("Testing composite gradient (multiply -> relu)...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(3)
     shape.append(4)
 
@@ -262,7 +262,7 @@ fn test_gradient_at_zero() raises:
     """
     print("Testing gradient near zero...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(2)
     shape.append(2)
 
@@ -286,7 +286,7 @@ fn test_gradient_small_tensor() raises:
     """Test gradient checking on very small tensors (1x1)."""
     print("Testing gradient on small tensor...")
 
-    var shape= List[Int]()
+    var shape = List[Int]()
     shape.append(1)
     shape.append(1)
 
@@ -312,18 +312,18 @@ fn test_linear_gradient_fp32() raises:
     """Test linear layer gradient in FP32 precision."""
     print("Testing Linear gradient (FP32)...")
 
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)  # batch
     input_shape.append(4)  # in_features
     var input = full(input_shape, 0.5, DType.float32)
 
     # Weights: (out_features, in_features) = (3, 4)
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(3)  # out_features
     weight_shape.append(4)  # in_features
     var weights = full(weight_shape, 0.1, DType.float32)
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(3)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -349,7 +349,7 @@ fn test_linear_gradient_fp16() raises:
     """
     print("Testing Linear gradient (FP16)...")
 
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)  # batch
     input_shape.append(4)  # in_features
     var input_fp32 = full(input_shape, 0.5, DType.float32)
@@ -359,13 +359,13 @@ fn test_linear_gradient_fp16() raises:
     var input = config.cast_to_compute(input_fp32)
 
     # Weights in FP16
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(3)  # out_features
     weight_shape.append(4)  # in_features
     var weights_fp32 = full(weight_shape, 0.1, DType.float32)
     var weights = config.cast_to_compute(weights_fp32)
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(3)
     var bias_fp32 = zeros(bias_shape, DType.float32)
     var bias = config.cast_to_compute(bias_fp32)
@@ -390,7 +390,7 @@ fn test_conv2d_gradient_fp32() raises:
     print("Testing Conv2D gradient (FP32)...")
 
     # Input: (batch, channels, height, width) = (1, 1, 5, 5)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(5)
@@ -398,14 +398,14 @@ fn test_conv2d_gradient_fp32() raises:
     var input = full(input_shape, 0.5, DType.float32)
 
     # Kernel: (out_channels, in_channels, kH, kW) = (1, 1, 3, 3)
-    var kernel_shape= List[Int]()
+    var kernel_shape = List[Int]()
     kernel_shape.append(1)
     kernel_shape.append(1)
     kernel_shape.append(3)
     kernel_shape.append(3)
     var kernel = full(kernel_shape, 0.1, DType.float32)
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(1)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -438,7 +438,7 @@ fn test_conv2d_gradient_fp16() raises:
     # We test that FP16 storage -> FP32 compute -> FP16 storage works
 
     # Input: (batch, channels, height, width) = (1, 1, 5, 5) in FP32
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(1)
     input_shape.append(5)
@@ -446,14 +446,14 @@ fn test_conv2d_gradient_fp16() raises:
     var input = full(input_shape, 0.5, DType.float32)
 
     # Kernel in FP32
-    var kernel_shape= List[Int]()
+    var kernel_shape = List[Int]()
     kernel_shape.append(1)
     kernel_shape.append(1)
     kernel_shape.append(3)
     kernel_shape.append(3)
     var kernel = full(kernel_shape, 0.1, DType.float32)
 
-    var bias_shape= List[Int]()
+    var bias_shape = List[Int]()
     bias_shape.append(1)
     var bias = zeros(bias_shape, DType.float32)
 
@@ -480,7 +480,7 @@ fn test_cross_entropy_gradient_fp32() raises:
     print("Testing CrossEntropy gradient (FP32)...")
 
     # Logits: (batch, num_classes) = (1, 4) - keep small to avoid memory issues
-    var logits_shape= List[Int]()
+    var logits_shape = List[Int]()
     logits_shape.append(1)
     logits_shape.append(4)
     var logits = zeros(logits_shape, DType.float32)
@@ -491,7 +491,7 @@ fn test_cross_entropy_gradient_fp32() raises:
     logits._set_float64(3, 0.2)
 
     # One-hot labels - class 0
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(1)
     labels_shape.append(4)
     var labels = zeros(labels_shape, DType.float32)
@@ -522,7 +522,7 @@ fn test_cross_entropy_gradient_fp16() raises:
     var config = PrecisionConfig.fp16()
 
     # Logits in FP16: (batch, num_classes) = (1, 4)
-    var logits_shape= List[Int]()
+    var logits_shape = List[Int]()
     logits_shape.append(1)
     logits_shape.append(4)
     var logits_fp32 = zeros(logits_shape, DType.float32)
@@ -534,7 +534,7 @@ fn test_cross_entropy_gradient_fp16() raises:
     var logits = config.cast_to_compute(logits_fp32)
 
     # One-hot labels - class 0
-    var labels_shape= List[Int]()
+    var labels_shape = List[Int]()
     labels_shape.append(1)
     labels_shape.append(4)
     var labels_fp32 = zeros(labels_shape, DType.float32)

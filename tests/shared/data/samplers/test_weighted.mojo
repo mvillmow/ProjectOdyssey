@@ -48,7 +48,7 @@ fn test_weighted_sampler_uniform_weights() raises:
     var sampler = WeightedSampler(weights^, num_samples=1000, seed_value=123)
     var indices = sampler.__iter__()
 
-    var counts= List[Int]()
+    var counts = List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -77,7 +77,7 @@ fn test_weighted_sampler_zero_weight() raises:
     var sampler = WeightedSampler(weights^, num_samples=100, seed_value=456)
     var indices = sampler.__iter__()
 
-    var counts= List[Int]()
+    var counts = List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -134,7 +134,7 @@ fn test_weighted_sampler_proportional_sampling() raises:
     var sampler = WeightedSampler(weights^, num_samples=6000, seed_value=111)
     var indices = sampler.__iter__()
 
-    var counts= List[Int]()
+    var counts = List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)
@@ -261,7 +261,7 @@ fn test_weighted_sampler_inverse_frequency() raises:
     var sampler = WeightedSampler(weights^, num_samples=1500, seed_value=666)
     var indices = sampler.__iter__()
 
-    var counts= List[Int]()
+    var counts = List[Int]()
     counts.append(0)
     counts.append(0)
     counts.append(0)

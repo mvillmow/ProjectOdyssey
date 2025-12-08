@@ -36,10 +36,10 @@ fn test_random_augmentation_deterministic() raises:
     critical for debugging and reproducible experiments.
     """
     # Create a 28x28x3 tensor (2352 elements total)
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -66,10 +66,10 @@ fn test_random_augmentation_varies() raises:
     not always the same transformation.
     """
     # Create a 28x28x3 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -104,10 +104,10 @@ fn test_random_rotation_range() raises:
     with proper handling of borders.
     """
     # Create a 28x28x3 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -127,10 +127,10 @@ fn test_random_rotation_no_change() raises:
     unchanged image.
     """
     # Create a 28x28x3 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -155,10 +155,10 @@ fn test_random_rotation_fill_value() raises:
     (default 0, but configurable).
     """
     # Create a 28x28x3 tensor of 1.0
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -183,10 +183,10 @@ fn test_random_crop_varies_location() raises:
     unless image is smaller than crop size.
     """
     # Create a 100x100x1 tensor with sequential values
-    var data_list= List[Float32](capacity=100 * 100 * 1)
+    var data_list = List[Float32](capacity=100 * 100 * 1)
     for i in range(100 * 100 * 1):
         data_list.append(Float32(i))
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -210,10 +210,10 @@ fn test_random_crop_with_padding() raises:
     useful for maintaining crop size with small images.
     """
     # Create a 28x28x1 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 1)
+    var data_list = List[Float32](capacity=28 * 28 * 1)
     for _ in range(28 * 28 * 1):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -242,10 +242,10 @@ fn test_random_horizontal_flip_probability() raises:
     # Represents:
     # Row 0: [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     # Row 1: [7.0, 8.0, 9.0, 10.0, 11.0, 12.0]
-    var data_list= List[Float32](capacity=2 * 2 * 3)
+    var data_list = List[Float32](capacity=2 * 2 * 3)
     for i in range(2 * 2 * 3):
         data_list.append(Float32(i + 1))
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -273,10 +273,10 @@ fn test_random_flip_always() raises:
     useful for testing.
     """
     # Create a 2x2x3 tensor
-    var data_list= List[Float32](capacity=2 * 2 * 3)
+    var data_list = List[Float32](capacity=2 * 2 * 3)
     for i in range(2 * 2 * 3):
         data_list.append(Float32(i + 1))
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -298,10 +298,10 @@ fn test_random_flip_never() raises:
     degenerating to identity transform.
     """
     # Create a 2x2x3 tensor
-    var data_list= List[Float32](capacity=2 * 2 * 3)
+    var data_list = List[Float32](capacity=2 * 2 * 3)
     for i in range(2 * 2 * 3):
         data_list.append(Float32(i + 1))
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -327,10 +327,10 @@ fn test_random_erasing_basic() raises:
     common augmentation for improving robustness.
     """
     # Create a 28x28x3 tensor filled with 1.0
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -356,10 +356,10 @@ fn test_random_erasing_scale() raises:
     should respect min/max bounds.
     """
     # Create a 100x100x3 tensor filled with 1.0
-    var data_list= List[Float32](capacity=100 * 100 * 3)
+    var data_list = List[Float32](capacity=100 * 100 * 3)
     for _ in range(100 * 100 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -393,10 +393,10 @@ fn test_compose_random_augmentations() raises:
     each with their own randomness.
     """
     # Create a 28x28x3 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):
@@ -424,10 +424,10 @@ fn test_augmentation_determinism_in_pipeline() raises:
     even with multiple random augmentations.
     """
     # Create a 28x28x3 tensor
-    var data_list= List[Float32](capacity=28 * 28 * 3)
+    var data_list = List[Float32](capacity=28 * 28 * 3)
     for _ in range(28 * 28 * 3):
         data_list.append(1.0)
-    var data_shape= List[Int]()
+    var data_shape = List[Int]()
     data_shape.append(len(data_list))
     var data = ExTensor(data_shape, DType.float32)
     for i in range(len(data_list)):

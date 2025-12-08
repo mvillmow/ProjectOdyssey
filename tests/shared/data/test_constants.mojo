@@ -300,7 +300,7 @@ fn test_dataset_info_class_name_out_of_range() raises:
 
 fn test_dataset_info_image_shape_all_datasets() raises:
     """Test image_shape for all datasets."""
-    var datasets= List[String]()
+    var datasets = List[String]()
     datasets.append("cifar10")
     datasets.append("emnist_balanced")
     datasets.append("emnist_byclass")

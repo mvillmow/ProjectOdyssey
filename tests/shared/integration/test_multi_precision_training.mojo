@@ -60,7 +60,7 @@ fn test_fp32_training_loss_decreases() raises:
     )
 
     # Simulate training step with dummy data
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(4)
     input_shape.append(10)
     var input = full(input_shape, 0.5, DType.float32)
@@ -91,7 +91,7 @@ fn test_fp16_training_loss_decreases() raises:
     assert_true(config.needs_master_weights(), "FP16 needs master weights")
 
     # Test casting to compute precision
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(4)
     input_shape.append(10)
     var fp32_input = full(input_shape, 0.5, DType.float32)
@@ -297,7 +297,7 @@ fn test_master_weights_fp32() raises:
     )
 
     # Test casting to master precision
-    var weight_shape= List[Int]()
+    var weight_shape = List[Int]()
     weight_shape.append(10)
     weight_shape.append(10)
     var fp16_weights = full(weight_shape, 0.5, DType.float16)
@@ -325,7 +325,7 @@ fn test_fp16_vs_fp32_accuracy() raises:
     var fp16_config = PrecisionConfig.fp16()
 
     # Create test tensor
-    var test_shape= List[Int]()
+    var test_shape = List[Int]()
     test_shape.append(10)
     var test_data = full(test_shape, 1.5, DType.float32)
 

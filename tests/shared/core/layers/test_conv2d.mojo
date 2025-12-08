@@ -152,7 +152,7 @@ fn test_conv2d_forward_output_shape() raises:
     )
 
     # Input: (batch=2, channels=3, height=32, width=32)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -186,7 +186,7 @@ fn test_conv2d_forward_with_stride() raises:
     )
 
     # Input: (1, 3, 32, 32)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -225,7 +225,7 @@ fn test_conv2d_forward_no_padding() raises:
     )
 
     # Input: (1, 3, 32, 32)
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(1)
     input_shape.append(in_channels)
     input_shape.append(32)
@@ -249,7 +249,7 @@ fn test_conv2d_forward_batch_independence() raises:
     var layer = Conv2dLayer(3, 16, 3, 3, stride=1, padding=1)
 
     # Create batch input: (2, 3, 16, 16)
-    var batch_input_shape= List[Int]()
+    var batch_input_shape = List[Int]()
     batch_input_shape.append(2)
     batch_input_shape.append(3)
     batch_input_shape.append(16)
@@ -260,7 +260,7 @@ fn test_conv2d_forward_batch_independence() raises:
     var batch_output = layer.forward(batch_input)
 
     # Process first element individually: (1, 3, 16, 16)
-    var single_input_shape= List[Int]()
+    var single_input_shape = List[Int]()
     single_input_shape.append(1)
     single_input_shape.append(3)
     single_input_shape.append(16)
@@ -305,7 +305,7 @@ fn test_conv2d_backward_gradient_shapes() raises:
     )
 
     # Input and forward pass
-    var input_shape= List[Int]()
+    var input_shape = List[Int]()
     input_shape.append(2)
     input_shape.append(in_channels)
     input_shape.append(32)
