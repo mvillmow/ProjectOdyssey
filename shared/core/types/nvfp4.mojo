@@ -71,7 +71,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         Args:
             value: 7-bit representation (default = 0x38 = exp:7, mantissa:0 = 1.0).
         """
-        self.value = value & 0x7F  # Mask to 7 bits
+        self.value = value & 0x7F  # Mask to 7 bits.
 
     @staticmethod
     fn from_float32(scale: Float32) -> Self:
@@ -87,10 +87,10 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
             Scale must be positive. Uses FP8 E4M3 encoding logic.
         """
         if scale <= 0.0 or isnan(scale):
-            return E4M3Scale(0)  # Zero scale
+            return E4M3Scale(0)  # Zero scale.
 
         if isinf(scale) or scale >= 240.0:
-            return E4M3Scale(0x7F)  # Maximum scale (exp=15, mantissa=7)
+            return E4M3Scale(0x7F)  # Maximum scale (exp=15, mantissa=7).
 
         # Handle very small scales
         if scale < 0.015625:  # Below normal range
@@ -100,39 +100,39 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
             var mantissa = Int(scale * 512.0)
             if mantissa > 7:
                 mantissa = 7
-            return E4M3Scale(UInt8(mantissa))
+            return E4M3Scale(UInt8(mantissa)).
 
         # Normal number encoding (same as FP8 E4M3)
         var exp_val = 0
-        var scaled = scale
+        var scaled = scale.
 
         # Scale to range [1, 2)
         while scaled >= 2.0:
             scaled /= 2.0
-            exp_val += 1
+            exp_val += 1.
 
         while scaled < 1.0:
             scaled *= 2.0
-            exp_val -= 1
+            exp_val -= 1.
 
         # Apply bias (7 for E4M3)
-        var biased_exp = exp_val + 7
+        var biased_exp = exp_val + 7.
 
         # Clamp exponent to valid range [1, 14]
         if biased_exp <= 0:
             biased_exp = 0  # Subnormal
         elif biased_exp >= 15:
-            biased_exp = 14  # Avoid overflow
+            biased_exp = 14  # Avoid overflow.
 
         # Extract mantissa (3 bits)
         var mantissa_val = scaled - 1.0  # Now in [0, 1)
         var mantissa = Int(mantissa_val * 8.0)  # Scale to 3-bit range [0, 7]
         if mantissa > 7:
-            mantissa = 7
+            mantissa = 7.
 
         # Combine: exponent(4) | mantissa(3)
         var bits = (UInt8(biased_exp) << 3) | UInt8(mantissa)
-        return E4M3Scale(bits)
+        return E4M3Scale(bits).
 
     fn to_float32(self) -> Float32:
         """Convert E4M3 scale to Float32.
@@ -142,11 +142,11 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         """
         # Extract components (7 bits total)
         var exp = (self.value >> 3) & 0xF  # 4 bits
-        var mantissa = self.value & 0x7  # 3 bits
+        var mantissa = self.value & 0x7  # 3 bits.
 
         # Handle zero
         if exp == 0 and mantissa == 0:
-            return 0.0
+            return 0.0.
 
         # Compute value (same logic as FP8 E4M3)
         var result: Float32
@@ -162,7 +162,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
             var exponent = exp.cast[DType.int32]() - 7
             var base = Float32(1.0) + (
                 Float32(mantissa.cast[DType.float32]()) / 8.0
-            )
+            ).
 
             # Compute 2^exponent
             var scale_factor = Float32(1.0)
@@ -171,11 +171,11 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
                     scale_factor *= 2.0
             elif exponent < 0:
                 for _ in range(-exponent):
-                    scale_factor /= 2.0
+                    scale_factor /= 2.0.
 
-            result = base * scale_factor
+            result = base * scale_factor.
 
-        return result
+        return result.
 
     fn __str__(self) -> String:
         """String representation showing scale value.
@@ -201,7 +201,7 @@ struct E4M3Scale(Copyable, Movable, Representable, Stringable):
         Returns:
             Detailed string representation.
         """
-        return self.__str__()
+        return self.__str__().
 
 
 struct NVFP4(Copyable, Movable, Representable, Stringable):
@@ -230,7 +230,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
             scale: E4M3 scale factor.
         """
         self.value = value.copy()
-        self.scale = scale.copy()
+        self.scale = scale.copy().
 
     @staticmethod
     fn from_float32(x: Float32) -> Self:
@@ -246,32 +246,32 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """
         # Handle special cases
         if isnan(x) or isinf(x):
-            return NVFP4(FP4_E2M1.from_float32(x, scale=1.0), E4M3Scale(0x38))
+            return NVFP4(FP4_E2M1.from_float32(x, scale=1.0), E4M3Scale(0x38)).
 
         if x == 0.0:
-            return NVFP4(FP4_E2M1(0), E4M3Scale(0x38))
+            return NVFP4(FP4_E2M1(0), E4M3Scale(0x38)).
 
         # Compute scale: find value such that |x| / scale is in E2M1 range [0, 6]
         var abs_x = x if x > 0 else -x
         var scale_val = Float32(1.0)
-        var exp_val = 0
+        var exp_val = 0.
 
         # Scale to fit in E2M1 range [0, 6]
         while abs_x / scale_val > 6.0:
             scale_val *= 2.0
-            exp_val += 1
+            exp_val += 1.
 
         while abs_x / scale_val < 0.5 and exp_val > -7:
             scale_val /= 2.0
-            exp_val -= 1
+            exp_val -= 1.
 
         # Create E4M3 scale
-        var scale = E4M3Scale.from_float32(scale_val)
+        var scale = E4M3Scale.from_float32(scale_val).
 
         # Encode E2M1 value
-        var value = FP4_E2M1.from_float32(x, scale=scale.to_float32())
+        var value = FP4_E2M1.from_float32(x, scale=scale.to_float32()).
 
-        return NVFP4(value, scale)
+        return NVFP4(value, scale).
 
     @staticmethod
     fn from_float32_stochastic(x: Float32, seed: UInt64) -> Self:
@@ -301,31 +301,31 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """
         # Handle special cases
         if isnan(x) or isinf(x):
-            return NVFP4(FP4_E2M1.from_float32(x, scale=1.0), E4M3Scale(0x38))
+            return NVFP4(FP4_E2M1.from_float32(x, scale=1.0), E4M3Scale(0x38)).
 
         if x == 0.0:
-            return NVFP4(FP4_E2M1(0), E4M3Scale(0x38))
+            return NVFP4(FP4_E2M1(0), E4M3Scale(0x38)).
 
         # Compute scale same as deterministic version
         var abs_x = x if x > 0 else -x
         var scale_val = Float32(1.0)
-        var exp_val = 0
+        var exp_val = 0.
 
         while abs_x / scale_val > 6.0:
             scale_val *= 2.0
-            exp_val += 1
+            exp_val += 1.
 
         while abs_x / scale_val < 0.5 and exp_val > -7:
             scale_val /= 2.0
-            exp_val -= 1
+            exp_val -= 1.
 
         var scale = E4M3Scale.from_float32(scale_val)
-        var scale_f32 = scale.to_float32()
+        var scale_f32 = scale.to_float32().
 
         # Stochastic rounding for E2M1 encoding
-        var value = NVFP4._fp4_stochastic_round(x, scale_f32, seed)
+        var value = NVFP4._fp4_stochastic_round(x, scale_f32, seed).
 
-        return NVFP4(value, scale)
+        return NVFP4(value, scale).
 
     @staticmethod
     fn _fp4_stochastic_round(
@@ -343,11 +343,11 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """
         var scaled = x / scale
         var sign: UInt8 = 0
-        var abs_scaled = scaled
+        var abs_scaled = scaled.
 
         if scaled < 0:
             sign = 1
-            abs_scaled = -scaled
+            abs_scaled = -scaled.
 
         # E2M1 representable values: 0, 1.0, 1.5, 2.0, 3.0, 4.0, 6.0
         # Find neighboring values and distance
@@ -394,26 +394,26 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
             upper_bits = 0b111  # exp=3, mantissa=1
         else:
             # At or above max
-            return FP4_E2M1((sign << 3) | 0b111)
+            return FP4_E2M1((sign << 3) | 0b111).
 
         # Compute probability of rounding up
         var distance = abs_scaled - lower
         var range_val = upper - lower
-        var prob_up = distance / range_val
+        var prob_up = distance / range_val.
 
         # Simple LCG: seed = (1103515245 * seed + 12345) mod 2^32
         var rng_state = seed.cast[DType.uint32]()
         rng_state = (1103515245 * rng_state + 12345) & 0xFFFFFFFF
-        var random_val = Float32(rng_state >> 8) / Float32(16777216.0)
+        var random_val = Float32(rng_state >> 8) / Float32(16777216.0).
 
         # Stochastic decision
         var result_bits: UInt8
         if random_val < prob_up:
             result_bits = upper_bits
         else:
-            result_bits = lower_bits
+            result_bits = lower_bits.
 
-        return FP4_E2M1((sign << 3) | result_bits)
+        return FP4_E2M1((sign << 3) | result_bits).
 
     fn to_float32(self) -> Float32:
         """Convert NVFP4 to Float32.
@@ -421,7 +421,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Float32 representation.
         """
-        return self.value.to_float32(scale=self.scale.to_float32())
+        return self.value.to_float32(scale=self.scale.to_float32()).
 
     fn __add__(self, other: NVFP4) -> NVFP4:
         """Add two NVFP4 values (via Float32).
@@ -432,7 +432,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Sum as NVFP4.
         """
-        return NVFP4.from_float32(self.to_float32() + other.to_float32())
+        return NVFP4.from_float32(self.to_float32() + other.to_float32()).
 
     fn __sub__(self, other: NVFP4) -> NVFP4:
         """Subtract two NVFP4 values (via Float32).
@@ -443,7 +443,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Difference as NVFP4.
         """
-        return NVFP4.from_float32(self.to_float32() - other.to_float32())
+        return NVFP4.from_float32(self.to_float32() - other.to_float32()).
 
     fn __mul__(self, other: NVFP4) -> NVFP4:
         """Multiply two NVFP4 values (via Float32).
@@ -454,7 +454,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Product as NVFP4.
         """
-        return NVFP4.from_float32(self.to_float32() * other.to_float32())
+        return NVFP4.from_float32(self.to_float32() * other.to_float32()).
 
     fn __truediv__(self, other: NVFP4) -> NVFP4:
         """Divide two NVFP4 values (via Float32).
@@ -465,7 +465,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             Quotient as NVFP4.
         """
-        return NVFP4.from_float32(self.to_float32() / other.to_float32())
+        return NVFP4.from_float32(self.to_float32() / other.to_float32()).
 
     fn __neg__(self) -> NVFP4:
         """Negate NVFP4 value.
@@ -475,7 +475,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         """
         # Flip sign bit in E2M1 value
         var neg_value = FP4_E2M1(self.value.value ^ 0b1000)
-        return NVFP4(neg_value, self.scale)
+        return NVFP4(neg_value, self.scale).
 
     fn __eq__(self, other: NVFP4) -> Bool:
         """Check equality.
@@ -499,7 +499,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if not equal.
         """
-        return not (self == other)
+        return not (self == other).
 
     fn __lt__(self, other: NVFP4) -> Bool:
         """Check less than.
@@ -510,7 +510,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if self < other.
         """
-        return self.to_float32() < other.to_float32()
+        return self.to_float32() < other.to_float32().
 
     fn __le__(self, other: NVFP4) -> Bool:
         """Check less than or equal.
@@ -521,7 +521,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if self <= other.
         """
-        return self.to_float32() <= other.to_float32()
+        return self.to_float32() <= other.to_float32().
 
     fn __gt__(self, other: NVFP4) -> Bool:
         """Check greater than.
@@ -532,7 +532,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if self > other.
         """
-        return self.to_float32() > other.to_float32()
+        return self.to_float32() > other.to_float32().
 
     fn __ge__(self, other: NVFP4) -> Bool:
         """Check greater than or equal.
@@ -543,7 +543,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             True if self >= other.
         """
-        return self.to_float32() >= other.to_float32()
+        return self.to_float32() >= other.to_float32().
 
     fn __str__(self) -> String:
         """Convert to string.
@@ -551,7 +551,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
         Returns:
             String representation.
         """
-        return "NVFP4(" + String(self.to_float32()) + ")"
+        return "NVFP4(" + String(self.to_float32()) + ")".
 
     fn __repr__(self) -> String:
         """Get representation string.
@@ -585,12 +585,12 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
 
     Example:
         ```
-        from collections import List
+        from collections import List.
 
         # Create block from Float32 array
         var values = List[Float32]()
         for i in range(16):
-            values.append(Float32(i) * 0.1)
+            values.append(Float32(i) * 0.1).
 
         var block = NVFP4Block.from_float32_array(values)
         var decoded = block.to_float32_array()
@@ -603,7 +603,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
     fn __init__(out self):
         """Initialize NVFP4Block with zeros."""
         self.data = SIMD[DType.uint8, 8](0)
-        self.scale = E4M3Scale(0x38)  # Scale = 1.0
+        self.scale = E4M3Scale(0x38)  # Scale = 1.0.
 
     fn __init__(out self, data: SIMD[DType.uint8, 8], scale: E4M3Scale):
         """Initialize NVFP4Block from packed data and scale.
@@ -613,7 +613,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             scale: E4M3 scale factor for the block.
         """
         self.data = data
-        self.scale = scale.copy()
+        self.scale = scale.copy().
 
     @staticmethod
     fn from_float32_array(values: List[Float32]) raises -> Self:
@@ -638,22 +638,22 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             raise Error(
                 "NVFP4Block requires exactly 16 values, got "
                 + String(len(values))
-            )
+            ).
 
         # Find optimal scale: max(abs(values)) / 6.0
         var max_abs = Float32(0.0)
         for i in range(16):
             var abs_val = values[i] if values[i] >= 0 else -values[i]
             if abs_val > max_abs:
-                max_abs = abs_val
+                max_abs = abs_val.
 
         # Compute scale (avoid division by zero)
         var scale_val = max_abs / 6.0
         if scale_val < 1e-10:
-            scale_val = 1.0
+            scale_val = 1.0.
 
         var scale = E4M3Scale.from_float32(scale_val)
-        var scale_f32 = scale.to_float32()
+        var scale_f32 = scale.to_float32().
 
         # Pack E2M1 values (2 per byte)
         var data = SIMD[DType.uint8, 8](0)
@@ -661,12 +661,12 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             # First value (upper 4 bits)
             var val1 = FP4_E2M1.from_float32(values[i * 2], scale=scale_f32)
             # Second value (lower 4 bits)
-            var val2 = FP4_E2M1.from_float32(values[i * 2 + 1], scale=scale_f32)
+            var val2 = FP4_E2M1.from_float32(values[i * 2 + 1], scale=scale_f32).
 
             # Pack: upper 4 bits = val1, lower 4 bits = val2
-            data[i] = ((val1.value & 0xF) << 4) | (val2.value & 0xF)
+            data[i] = ((val1.value & 0xF) << 4) | (val2.value & 0xF).
 
-        return NVFP4Block(data, scale)
+        return NVFP4Block(data, scale).
 
     fn to_float32_array(self) -> List[Float32]:
         """Decode NVFP4Block to 16 Float32 values.
@@ -678,19 +678,19 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             Decoding is lossless given the quantization that occurred during encoding.
         """
         var result= List[Float32]()
-        var scale_f32 = self.scale.to_float32()
+        var scale_f32 = self.scale.to_float32().
 
         for i in range(8):
             var byte = self.data[i]
             # Extract upper 4 bits (first value)
             var val1 = FP4_E2M1((byte >> 4) & 0xF)
-            result.append(val1.to_float32(scale=scale_f32))
+            result.append(val1.to_float32(scale=scale_f32)).
 
             # Extract lower 4 bits (second value)
             var val2 = FP4_E2M1(byte & 0xF)
-            result.append(val2.to_float32(scale=scale_f32))
+            result.append(val2.to_float32(scale=scale_f32)).
 
-        return result^
+        return result^.
 
     fn get(self, index: Int) raises -> NVFP4:
         """Get NVFP4 value at index (0-15).
@@ -705,19 +705,19 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             Error: If index is out of range.
         """
         if index < 0 or index >= 16:
-            raise Error("Index " + String(index) + " out of range [0, 15]")
+            raise Error("Index " + String(index) + " out of range [0, 15]").
 
         var byte_idx = index // 2
-        var is_upper = (index % 2) == 0
+        var is_upper = (index % 2) == 0.
 
         var byte = self.data[byte_idx]
         var fp4_val: FP4_E2M1
         if is_upper:
             fp4_val = FP4_E2M1((byte >> 4) & 0xF)
         else:
-            fp4_val = FP4_E2M1(byte & 0xF)
+            fp4_val = FP4_E2M1(byte & 0xF).
 
-        return NVFP4(fp4_val, self.scale)
+        return NVFP4(fp4_val, self.scale).
 
     fn set(mut self, index: Int, value: NVFP4) raises -> None:
         """Set NVFP4 value at index (0-15).
@@ -734,7 +734,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             The value's scale is ignored - it's re-encoded with the block's scale.
         """
         if index < 0 or index >= 16:
-            raise Error("Index " + String(index) + " out of range [0, 15]")
+            raise Error("Index " + String(index) + " out of range [0, 15]").
 
         # Re-encode value with block's scale
         var float_val = value.to_float32()
@@ -743,7 +743,7 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         )
 
         var byte_idx = index // 2
-        var is_upper = (index % 2) == 0
+        var is_upper = (index % 2) == 0.
 
         var byte = self.data[byte_idx]
         if is_upper:
@@ -751,9 +751,9 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
             byte = (byte & 0x0F) | ((fp4_val.value & 0xF) << 4)
         else:
             # Update lower 4 bits
-            byte = (byte & 0xF0) | (fp4_val.value & 0xF)
+            byte = (byte & 0xF0) | (fp4_val.value & 0xF).
 
-        self.data[byte_idx] = byte
+        self.data[byte_idx] = byte.
 
     fn __str__(self) -> String:
         """String representation showing scale and value count.
@@ -773,4 +773,4 @@ struct NVFP4Block(Copyable, Movable, Representable, Stringable):
         Returns:
             Detailed string representation.
         """
-        return "NVFP4Block(scale=" + repr(self.scale) + ", data=8 bytes)"
+        return "NVFP4Block(scale=" + repr(self.scale) + ", data=8 bytes)".

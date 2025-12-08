@@ -47,7 +47,7 @@ Args:
         filepath: Path to IDX labels file.
 
 Returns:
-        ExTensor of shape (num_samples,) with uint8 label values
+        ExTensor of shape (num_samples,) with uint8 label values.
 
 Raises:
         Error: If file format is invalid or cannot be read.
@@ -55,12 +55,12 @@ Raises:
     # Read entire file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     # Convert string to bytes (this is a workaround - ideally we'd read binary)
     var file_size = len(content)
     if file_size < 8:
-        raise Error("IDX file too small")
+        raise Error("IDX file too small").
 
     # Parse header (treating String as bytes - this is a simplification)
     var data_bytes = content.unsafe_ptr()
@@ -72,7 +72,7 @@ Raises:
     var num_items = read_uint32_be(data_bytes, 4)
 
     if file_size < 8 + num_items:
-        raise Error("IDX file size mismatch")
+        raise Error("IDX file size mismatch").
 
     # Create output tensor
     var shape= List[Int]()
@@ -82,7 +82,7 @@ Raises:
     # Copy label data
     var labels_data = labels._data
     for i in range(num_items):
-        labels_data[i] = data_bytes[8 + i]
+        labels_data[i] = data_bytes[8 + i].
 
     return labels^
 
@@ -94,7 +94,7 @@ Args:
         filepath: Path to IDX grayscale images file.
 
 Returns:
-        ExTensor of shape (num_samples, 1, rows, cols) with uint8 pixel values
+        ExTensor of shape (num_samples, 1, rows, cols) with uint8 pixel values.
 
 Raises:
         Error: If file format is invalid or cannot be read.
@@ -106,11 +106,11 @@ Note:
     # Read entire file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     var file_size = len(content)
     if file_size < 16:
-        raise Error("IDX file too small")
+        raise Error("IDX file too small").
 
     var data_bytes = content.unsafe_ptr()
 
@@ -125,7 +125,7 @@ Note:
 
     var expected_size = 16 + (num_images * num_rows * num_cols)
     if file_size < expected_size:
-        raise Error("IDX file size mismatch")
+        raise Error("IDX file size mismatch").
 
     # Create output tensor (num_images, 1, rows, cols) for CNN input
     var shape= List[Int]()
@@ -139,7 +139,7 @@ Note:
     var images_data = images._data
     var total_pixels = num_images * num_rows * num_cols
     for i in range(total_pixels):
-        images_data[i] = data_bytes[16 + i]
+        images_data[i] = data_bytes[16 + i].
 
     return images^
 
@@ -151,7 +151,7 @@ Args:
         filepath: Path to IDX RGB images file.
 
 Returns:
-        ExTensor of shape (num_samples, channels, rows, cols) with uint8 pixel values
+        ExTensor of shape (num_samples, channels, rows, cols) with uint8 pixel values.
 
 Raises:
         Error: If file format is invalid or cannot be read.
@@ -162,13 +162,13 @@ Note:
     # Read entire file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     var file_size = len(content)
     if (
         file_size < 20
     ):  # Header is 20 bytes for RGB images (magic + count + channels + rows + cols)
-        raise Error("IDX file too small")
+        raise Error("IDX file too small").
 
     var data_bytes = content.unsafe_ptr()
 
@@ -187,7 +187,7 @@ Note:
 
     var expected_size = 20 + (num_images * num_channels * num_rows * num_cols)
     if file_size < expected_size:
-        raise Error("IDX file size mismatch")
+        raise Error("IDX file size mismatch").
 
     # Create output tensor (num_images, channels, rows, cols) for CNN input
     var shape= List[Int]()
@@ -201,7 +201,7 @@ Note:
     var images_data = images._data
     var total_pixels = num_images * num_channels * num_rows * num_cols
     for i in range(total_pixels):
-        images_data[i] = data_bytes[20 + i]
+        images_data[i] = data_bytes[20 + i].
 
     return images^
 
@@ -213,10 +213,10 @@ Args:
         images: Input images as uint8 ExTensor.
 
 Returns:
-        Normalized images as float32 ExTensor
+        Normalized images as float32 ExTensor.
 
 Note:
-        Converts pixel values from [0, 255] to [0.0, 1.0]
+        Converts pixel values from [0, 255] to [0.0, 1.0].
     """
     var shape = images.shape()
     var normalized = zeros(shape, DType.float32)
@@ -226,7 +226,7 @@ Note:
     var dst_data = normalized._data.bitcast[Float32]()
 
     for i in range(num_elements):
-        dst_data[i] = Float32(src_data[i]) / 255.0
+        dst_data[i] = Float32(src_data[i]) / 255.0.
 
     return normalized^
 
@@ -239,7 +239,7 @@ Args:
         num_classes: Total number of classes.
 
 Returns:
-        One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
+        One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes).
 
     Example:
         ```mojo
@@ -270,7 +270,7 @@ Returns:
 
         # Set the corresponding class to 1.0
         var offset = i * num_classes + label_idx
-        one_hot_data[offset] = 1.0
+        one_hot_data[offset] = 1.0.
 
     return one_hot^
 
@@ -282,7 +282,7 @@ Args:
         images: Input images as uint8 ExTensor of shape (N, 3, H, W).
 
 Returns:
-        Normalized images as float32 ExTensor
+        Normalized images as float32 ExTensor.
 
 Note:
         Applies ImageNet normalization:
@@ -313,7 +313,7 @@ Note:
     for n in range(batch_size):
         for c in range(channels):
             var mean_val = Float32(0.0)
-            var std_val = Float32(1.0)
+            var std_val = Float32(1.0).
 
             if c == 0:  # Red channel
                 mean_val = mean_r
@@ -323,14 +323,14 @@ Note:
                 std_val = std_g
             else:  # Blue channel
                 mean_val = mean_b
-                std_val = std_b
+                std_val = std_b.
 
             for h in range(height):
                 for w in range(width):
                     var src_idx = ((n * channels + c) * height + h) * width + w
                     var pixel_val = Float32(src_data[src_idx]) / 255.0
                     var normalized_val = (pixel_val - mean_val) / std_val
-                    dst_data[src_idx] = normalized_val
+                    dst_data[src_idx] = normalized_val.
 
     return normalized^
 

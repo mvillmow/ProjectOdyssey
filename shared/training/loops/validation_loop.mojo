@@ -95,7 +95,7 @@ Raises:
 
     # Iterate over validation batches
     while val_loader.has_next():
-        var batch = val_loader.next()
+        var batch = val_loader.next().
 
         # Validation step (no gradients)
         var batch_loss = validation_step(
@@ -105,17 +105,17 @@ Raises:
         # Update metrics
         loss_tracker.update(Float32(batch_loss))
         total_loss += batch_loss
-        num_batches += 1
+        num_batches += 1.
 
         # Compute predictions for accuracy/confusion
         if compute_accuracy or compute_confusion:
-            var predictions = model_forward(batch.data)
+            var predictions = model_forward(batch.data).
 
             if compute_accuracy:
-                accuracy_metric.update(predictions, batch.labels)
+                accuracy_metric.update(predictions, batch.labels).
 
             if compute_confusion:
-                confusion_matrix.update(predictions, batch.labels)
+                confusion_matrix.update(predictions, batch.labels).
 
     # Compute aggregated metrics
     var avg_loss = total_loss / Float64(num_batches)
@@ -145,7 +145,7 @@ Raises:
                 + String(r)
                 + ", F1="
                 + String(f)
-            )
+            ).
 
     return avg_loss
 
@@ -179,7 +179,7 @@ struct ValidationLoop:
         """
         self.compute_accuracy = compute_accuracy
         self.compute_confusion = compute_confusion
-        self.num_classes = num_classes
+        self.num_classes = num_classes.
 
     fn run(
         self,
@@ -212,9 +212,9 @@ struct ValidationLoop:
         )
 
         # Update metrics
-        metrics.update_val_metrics(val_loss, 0.0)  # Accuracy placeholder
+        metrics.update_val_metrics(val_loss, 0.0)  # Accuracy placeholder.
 
-        return val_loss
+        return val_loss.
 
     fn run_subset(
         self,
@@ -248,27 +248,27 @@ struct ValidationLoop:
         )
 
         var total_loss = Float64(0.0)
-        var num_batches = 0
+        var num_batches = 0.
 
-        var loss_tracker = LossTracker(window_size=max_batches)
+        var loss_tracker = LossTracker(window_size=max_batches).
 
-        val_loader.reset()
+        val_loader.reset().
 
         while val_loader.has_next() and num_batches < max_batches:
-            var batch = val_loader.next()
+            var batch = val_loader.next().
 
             var batch_loss = validation_step(
                 model_forward, compute_loss, batch.data, batch.labels
-            )
+            ).
 
             loss_tracker.update(Float32(batch_loss))
             total_loss += batch_loss
-            num_batches += 1
+            num_batches += 1.
 
-        var avg_loss = total_loss / Float64(num_batches)
+        var avg_loss = total_loss / Float64(num_batches).
 
         print("  Subset Validation Loss: " + String(avg_loss))
 
-        metrics.update_val_metrics(avg_loss, 0.0)
+        metrics.update_val_metrics(avg_loss, 0.0).
 
-        return avg_loss
+        return avg_loss.

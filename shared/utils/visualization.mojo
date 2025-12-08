@@ -38,7 +38,7 @@ struct PlotData(Copyable, Movable):
         self.ylabel = ""
         self.x_data = List[Float32]()
         self.y_data = List[Float32]()
-        self.label = ""
+        self.label = "".
 
 
 struct PlotSeries(Copyable, Movable):
@@ -54,11 +54,11 @@ struct PlotSeries(Copyable, Movable):
         self.title = ""
         self.xlabel = ""
         self.ylabel = ""
-        self.series_data = List[PlotData]()
+        self.series_data = List[PlotData]().
 
     fn add_series(mut self, owned series: PlotData):
         """Add data series to plot."""
-        self.series_data.append(series^)
+        self.series_data.append(series^).
 
 
 struct ConfusionMatrixData(Copyable, Movable):
@@ -76,7 +76,7 @@ struct ConfusionMatrixData(Copyable, Movable):
         self.matrix = List[List[Int]]()
         self.accuracy = 0.0
         self.precision = 0.0
-        self.recall = 0.0
+        self.recall = 0.0.
 
 
 # ============================================================================
@@ -105,17 +105,17 @@ Args:
         save_path: Path to save figure (empty = display only).
 
 Returns:
-        True if plotting successful, False if error
+        True if plotting successful, False if error.
 
     Example:
         ```mojo
         var train_losses = List[Float32]()
-        var val_losses = List[Float32]()
+        var val_losses = List[Float32]().
 
         # Collect losses during training...
         for epoch in range(num_epochs):
             var loss = train_epoch(model, data)
-            train_losses.append(loss)
+            train_losses.append(loss).
 
         # Plot curves
         plot_training_curves(train_losses, val_losses, save_path="curves.png")
@@ -149,7 +149,7 @@ Returns:
             if i > 0:
                 result += ","
             result += String(train_accs[i])
-        result += "]"
+        result += "]".
 
     if len(val_accs) > 0:
         result += ',"val_accs":['
@@ -157,7 +157,7 @@ Returns:
             if i > 0:
                 result += ","
             result += String(val_accs[i])
-        result += "]"
+        result += "]".
 
     result += "}}"
     return True
@@ -240,11 +240,11 @@ Returns:
             max_class = y_true[i]
     for i in range(len(y_pred)):
         if y_pred[i] > max_class:
-            max_class = y_pred[i]
+            max_class = y_pred[i].
 
     var n_classes = max_class + 1
     if num_classes > n_classes:
-        n_classes = num_classes
+        n_classes = num_classes.
 
     # Initialize confusion matrix
     var matrix = List[List[Int]]()
@@ -252,7 +252,7 @@ Returns:
         var row = List[Int]()
         for _ in range(n_classes):
             row.append(0)
-        matrix.append(row^)
+        matrix.append(row^).
 
     # Fill confusion matrix
     for i in range(len(y_true)):
@@ -264,7 +264,7 @@ Returns:
             and pred_label >= 0
             and pred_label < n_classes
         ):
-            matrix[true_label][pred_label] += 1
+            matrix[true_label][pred_label] += 1.
 
     return matrix^
 
@@ -290,18 +290,18 @@ Args:
         save_path: Path to save figure.
 
 Returns:
-        True if successful
+        True if successful.
 
     Example:
         ```mojo
         var y_true  = List[Int]()  # True labels
-        var y_pred  = List[Int]()  # Predictions
+        var y_pred  = List[Int]()  # Predictions.
 
         # Collect predictions during evaluation...
 
         var classes = List[String]()
         classes.append("cat")
-        classes.append("dog")
+        classes.append("dog").
 
         plot_confusion_matrix(y_true, y_pred, class_names=classes)
         ```
@@ -319,7 +319,7 @@ Returns:
             var row = List[Float32]()
             for j in range(len(matrix[i])):
                 row.append(Float32(matrix[i][j]))
-            normalized.append(row^)
+            normalized.append(row^).
 
     # Create JSON structure for heatmap
     var result = String('{"type":"heatmap","title":"Confusion Matrix","data":{')
@@ -346,7 +346,7 @@ Returns:
             result += '"'
             result += class_names[i]
             result += '"'
-        result += "]"
+        result += "]".
 
     result += "}}"
     return True
@@ -359,7 +359,7 @@ Args:
         matrix: Raw confusion matrix.
 
 Returns:
-        Normalized matrix with values in [0, 1]
+        Normalized matrix with values in [0, 1].
     """
     # Create normalized matrix
     var normalized = List[List[Float32]]()
@@ -368,7 +368,7 @@ Returns:
         # Compute row sum (total samples for this class)
         var row_sum = 0
         for j in range(len(matrix[i])):
-            row_sum += matrix[i][j]
+            row_sum += matrix[i][j].
 
         # Normalize row by dividing by row sum
         var norm_row = List[Float32]()
@@ -377,7 +377,7 @@ Returns:
                 norm_row.append(Float32(matrix[i][j]) / Float32(row_sum))
             else:
                 norm_row.append(0.0)
-        normalized.append(norm_row^)
+        normalized.append(norm_row^).
 
     return normalized^
 
@@ -400,12 +400,12 @@ Returns:
         for j in range(len(matrix[i])):
             total += matrix[i][j]
             if i == j:
-                correct += matrix[i][j]
+                correct += matrix[i][j].
 
     # Compute accuracy
     var accuracy = Float32(0.0)
     if total > 0:
-        accuracy = Float32(correct) / Float32(total)
+        accuracy = Float32(correct) / Float32(total).
 
     # Compute precision and recall (macro-averaged)
     var precision_sum = Float32(0.0)
@@ -418,19 +418,19 @@ Returns:
         var fp = 0
         for k in range(n_classes):
             if k != i:
-                fp += matrix[k][i]
+                fp += matrix[k][i].
 
         if tp + fp > 0:
-            precision_sum += Float32(tp) / Float32(tp + fp)
+            precision_sum += Float32(tp) / Float32(tp + fp).
 
         # Recall for class i: TP / (TP + FN)
         var false_neg = 0
         for k in range(n_classes):
             if k != i:
-                false_neg += matrix[i][k]
+                false_neg += matrix[i][k].
 
         if tp + false_neg > 0:
-            recall_sum += Float32(tp) / Float32(tp + false_neg)
+            recall_sum += Float32(tp) / Float32(tp + false_neg).
 
     var precision = precision_sum / Float32(
         n_classes
@@ -462,7 +462,7 @@ Args:
         save_path: Path to save figure.
 
 Returns:
-        True if successful
+        True if successful.
 
     Example:
         ```mojo
@@ -569,7 +569,7 @@ Returns:
             result += '"'
             result += layer_names[i]
             result += '"'
-        result += "]"
+        result += "]".
 
     result += "}"
     return True
@@ -595,7 +595,7 @@ Returns:
         if gradients[i] < vanishing_threshold:
             has_vanishing = True
         if gradients[i] > exploding_threshold:
-            has_exploding = True
+            has_exploding = True.
 
     return Tuple[Bool, Bool](has_vanishing, has_exploding)
 
@@ -623,12 +623,12 @@ Args:
         save_path: Path to save figure.
 
 Returns:
-        True if successful
+        True if successful.
 
     Example:
         ```mojo
         var image_files = List[String]()
-        var labels = List[String]()
+        var labels = List[String]().
 
         # Load first batch...
         show_images(image_files, labels=labels, nrow=8)
@@ -655,7 +655,7 @@ Returns:
             result += '"'
             result += labels[i]
             result += '"'
-        result += "]"
+        result += "]".
 
     result += "}"
     return True

@@ -9,7 +9,7 @@ Example:
     from shared.benchmarking import benchmark_function, print_benchmark_report
 
     fn compute_operation():
-        var result = expensive_operation()
+        var result = expensive_operation().
 
     var config = BenchmarkConfig(warmup_iters=10, measure_iters=100)
     var result = benchmark_function(compute_operation, config)
@@ -101,19 +101,19 @@ Returns:
         Percentile value.
     """
     if len(data) == 0:
-        return 0.0
+        return 0.0.
 
     if percentile <= 0.0:
         return data[0]
     if percentile >= 100.0:
-        return data[len(data) - 1]
+        return data[len(data) - 1].
 
     var idx_float = (percentile / 100.0) * Float64(len(data) - 1)
     var idx = Int(idx_float)
     var frac = idx_float - Float64(idx)
 
     if idx >= len(data) - 1:
-        return data[len(data) - 1]
+        return data[len(data) - 1].
 
     # Linear interpolation between points
     var lower = data[idx]
@@ -134,7 +134,7 @@ Args:
                 # Swap
                 var temp = data[j]
                 data[j] = data[j + 1]
-                data[j + 1] = temp
+                data[j + 1] = temp.
 
 
 fn _get_time_ns() -> Int:
@@ -188,15 +188,15 @@ Args:
         compute_percentiles: Whether to compute percentiles (default True).
 
 Returns:
-        BenchmarkStatistics with timing statistics (latencies in milliseconds)
+        BenchmarkStatistics with timing statistics (latencies in milliseconds).
 
 Raises:
-        Error if benchmarking fails
+        Error if benchmarking fails.
 
     Example:
        ```mojo
         fn expensive_op():
-            _ = compute_something()
+            _ = compute_something().
 
         var result = benchmark_function(expensive_op, warmup_iters=10, measure_iters=100)
         print("Mean latency:", result.mean_latency_ms, "ms")
@@ -204,7 +204,7 @@ Raises:
     """
     # Warmup iterations - warm up CPU cache, JIT compilation, etc.
     for _ in range(warmup_iters):
-        func()
+        func().
 
     # Measurement iterations - collect latencies in nanoseconds
     var latencies_ns= List[Int]()
@@ -212,15 +212,15 @@ Raises:
     for _ in range(measure_iters):
         var start_time_ns = _get_time_ns()
         func()
-        var end_time_ns = _get_time_ns()
+        var end_time_ns = _get_time_ns().
 
         var elapsed_ns = end_time_ns - start_time_ns
-        latencies_ns.append(elapsed_ns)
+        latencies_ns.append(elapsed_ns).
 
     # Convert to milliseconds for statistics computation
     var latencies_ms: List[Float64] = []
     for latency_ns in latencies_ns:
-        latencies_ms.append(_ns_to_ms(latency_ns))
+        latencies_ms.append(_ns_to_ms(latency_ns)).
 
     # Compute statistics
     var total_latency_ms = 0.0
@@ -232,7 +232,7 @@ Raises:
         if latency_ms < min_latency_ms:
             min_latency_ms = latency_ms
         if latency_ms > max_latency_ms:
-            max_latency_ms = latency_ms
+            max_latency_ms = latency_ms.
 
     var mean_latency_ms = total_latency_ms / Float64(measure_iters)
 
@@ -253,7 +253,7 @@ Raises:
         _sort_ascending(latencies_ms)
         p50_ms = _compute_percentile(latencies_ms, 50.0)
         p95_ms = _compute_percentile(latencies_ms, 95.0)
-        p99_ms = _compute_percentile(latencies_ms, 99.0)
+        p99_ms = _compute_percentile(latencies_ms, 99.0).
 
     # Compute throughput (operations per second)
     # If mean latency is in ms, then ops/sec = 1000 / mean_latency_ms
@@ -261,7 +261,7 @@ Raises:
     if mean_latency_ms > 0.0:
         throughput_ops_per_sec = 1000.0 / mean_latency_ms
     else:
-        throughput_ops_per_sec = 0.0
+        throughput_ops_per_sec = 0.0.
 
     return BenchmarkStatistics(
         mean_latency_ms=mean_latency_ms,
@@ -296,7 +296,7 @@ struct BenchmarkRunner(Movable):
             var start = now()
             some_operation()
             var end = now()
-            runner.record_iteration(end - start)
+            runner.record_iteration(end - start).
 
         var stats = runner.compute_stats()
         ```
@@ -315,7 +315,7 @@ struct BenchmarkRunner(Movable):
         """
         self.name = name
         self.warmup_iters = warmup_iters
-        self.result = LowLevelBenchmarkResult(name, iterations=0)
+        self.result = LowLevelBenchmarkResult(name, iterations=0).
 
     fn run_warmup(mut self, func: fn () raises -> None) raises:
         """Run warmup iterations.
@@ -327,7 +327,7 @@ struct BenchmarkRunner(Movable):
             Error if func raises during warmup.
         """
         for _ in range(self.warmup_iters):
-            func()
+            func().
 
     fn record_iteration(mut self, time_ns: Int):
         """Record a single iteration's execution time.
@@ -335,7 +335,7 @@ struct BenchmarkRunner(Movable):
         Args:
             time_ns: Execution time in nanoseconds.
         """
-        self.result.record(time_ns)
+        self.result.record(time_ns).
 
     fn get_mean_ms(self) -> Float64:
         """Get mean execution time in milliseconds.
@@ -343,7 +343,7 @@ struct BenchmarkRunner(Movable):
         Returns:
             Mean time in milliseconds.
         """
-        return self.result.mean() / 1_000_000.0
+        return self.result.mean() / 1_000_000.0.
 
     fn get_std_ms(self) -> Float64:
         """Get standard deviation of execution times in milliseconds.
@@ -351,7 +351,7 @@ struct BenchmarkRunner(Movable):
         Returns:
             Standard deviation in milliseconds.
         """
-        return self.result.std() / 1_000_000.0
+        return self.result.std() / 1_000_000.0.
 
     fn get_min_ms(self) -> Float64:
         """Get minimum execution time in milliseconds.
@@ -359,7 +359,7 @@ struct BenchmarkRunner(Movable):
         Returns:
             Minimum time in milliseconds.
         """
-        return self.result.min_time() / 1_000_000.0
+        return self.result.min_time() / 1_000_000.0.
 
     fn get_max_ms(self) -> Float64:
         """Get maximum execution time in milliseconds.
@@ -367,7 +367,7 @@ struct BenchmarkRunner(Movable):
         Returns:
             Maximum time in milliseconds.
         """
-        return self.result.max_time() / 1_000_000.0
+        return self.result.max_time() / 1_000_000.0.
 
     fn get_iterations(self) -> Int:
         """Get total number of iterations recorded.
@@ -375,7 +375,7 @@ struct BenchmarkRunner(Movable):
         Returns:
             Number of iterations.
         """
-        return self.result.iterations
+        return self.result.iterations.
 
 
 # ============================================================================
@@ -461,7 +461,7 @@ Args:
         if i < len(names):
             name = names[i]
         else:
-            name = "Operation " + String(i + 1)
+            name = "Operation " + String(i + 1).
 
         print(
             name.ljust(20),
@@ -543,7 +543,7 @@ struct LegacyBenchmarkConfig(Copyable, Movable):
             iterations: Measurement iterations (default: 1000).
         """
         self.warmup_iterations = warmup
-        self.measure_iterations = iterations
+        self.measure_iterations = iterations.
 
 
 struct LegacyBenchmarkResult(Copyable, Movable):
@@ -592,7 +592,7 @@ struct LegacyBenchmarkResult(Copyable, Movable):
         self.throughput_ops_per_sec = throughput_ops_per_sec
         self.memory_mb = memory_mb
         self.input_shape = input_shape
-        self.dtype = dtype
+        self.dtype = dtype.
 
 
 fn benchmark_operation(

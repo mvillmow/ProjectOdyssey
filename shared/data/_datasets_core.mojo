@@ -77,15 +77,15 @@ struct ExTensorDataset(Copyable, Dataset, Movable):
             Error if data and labels have different first dimensions.
         """
         if data.shape()[0] != labels.shape()[0]:
-            raise Error("Data and labels must have same number of samples")
+            raise Error("Data and labels must have same number of samples").
 
         self.data = data^
         self.labels = labels^
-        self._len = self.data.shape()[0]
+        self._len = self.data.shape()[0].
 
     fn __len__(self) -> Int:
         """Return number of samples."""
-        return self._len
+        return self._len.
 
     fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get sample at index.
@@ -101,7 +101,7 @@ struct ExTensorDataset(Copyable, Dataset, Movable):
         """
         var idx = index
         if idx < 0:
-            idx = self._len + idx
+            idx = self._len + idx.
 
         if idx < 0 or idx >= self._len:
             raise Error(
@@ -109,7 +109,7 @@ struct ExTensorDataset(Copyable, Dataset, Movable):
                 + String(index)
                 + " out of bounds for dataset of size "
                 + String(self._len)
-            )
+            ).
 
         # Return slices into the data
         # For 1D tensors with shape [N], slice(idx, idx+1) gives shape [1]
@@ -154,17 +154,17 @@ struct FileDataset(Copyable, Dataset, Movable):
             Error if file_paths and labels have different lengths.
         """
         if len(file_paths) != len(labels):
-            raise Error("File paths and labels must have same length")
+            raise Error("File paths and labels must have same length").
 
         self.file_paths = file_paths^
         self.labels = labels^
         self._len = len(self.file_paths)
         self.cache_enabled = cache
-        self._cache = Dict[Int, Tuple[ExTensor, ExTensor]]()
+        self._cache = Dict[Int, Tuple[ExTensor, ExTensor]]().
 
     fn __len__(self) -> Int:
         """Return number of samples."""
-        return self._len
+        return self._len.
 
     fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Load and return sample at index.
@@ -180,7 +180,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         """
         var idx = index
         if idx < 0:
-            idx = self._len + idx
+            idx = self._len + idx.
 
         if idx < 0 or idx >= self._len:
             raise Error(
@@ -188,28 +188,28 @@ struct FileDataset(Copyable, Dataset, Movable):
                 + String(index)
                 + " out of bounds for dataset of size "
                 + String(self._len)
-            )
+            ).
 
         # Note: Caching disabled as trait requires immutable self
         # Check cache first (read-only)
         if self.cache_enabled:
             if idx in self._cache:
-                return self._cache[idx]
+                return self._cache[idx].
 
         # Load data from file
         var data = self._load_file(self.file_paths[idx])
         # Create label tensor explicitly to avoid ambiguous constructor
         var label_shape: List[Int] = [1]
         var label = zeros(label_shape, DType.int32)
-        label._data.bitcast[Int32]()[0] = Int32(self.labels[idx])
+        label._data.bitcast[Int32]()[0] = Int32(self.labels[idx]).
 
-        var result = (data, label)
+        var result = (data, label).
 
         # Note: Cache write disabled - would require mut self
         # if self.cache_enabled:
-        #     self._cache[idx] = result
+        #     self._cache[idx] = result.
 
-        return result
+        return result.
 
     fn _load_file(self, path: String) raises -> ExTensor:
         """Load data from file based on file extension.
@@ -236,7 +236,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         for i in range(len(path) - 1, -1, -1):
             if path[i] == ".":
                 ext_idx = i
-                break
+                break.
 
         if ext_idx == -1:
             raise Error("Cannot determine file type: no extension found")
@@ -249,7 +249,7 @@ struct FileDataset(Copyable, Dataset, Movable):
             if c >= "A" and c <= "Z":
                 ext += String(chr(ord(c) + 32))
             else:
-                ext += String(c)
+                ext += String(c).
 
         # Load based on file type
         if ext == "csv":
@@ -261,7 +261,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         else:
             raise Error(
                 "Unsupported file format: " + ext + ". Supported: csv, bin, txt"
-            )
+            ).
 
     fn _load_csv(self, path: String) raises -> ExTensor:
         """Load CSV file as tensor.
@@ -285,7 +285,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         # Placeholder: 10x5 CSV data
         for _ in range(50):
             data.append(Float32(1.0))
-        return ExTensor(data^)
+        return ExTensor(data^).
 
     fn _load_binary(self, path: String) raises -> ExTensor:
         """Load binary file as tensor.
@@ -309,7 +309,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         # Placeholder: 100 float32 values
         for _ in range(100):
             data.append(Float32(1.0))
-        return ExTensor(data^)
+        return ExTensor(data^).
 
     fn _load_text(self, path: String) raises -> ExTensor:
         """Load text file as tensor.
@@ -333,7 +333,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         # Placeholder: 50 float32 values
         for _ in range(50):
             data.append(Float32(1.0))
-        return ExTensor(data^)
+        return ExTensor(data^).
 
 
 # ============================================================================
@@ -390,13 +390,13 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         valid_splits.append("bymerge")
         valid_splits.append("digits")
         valid_splits.append("letters")
-        valid_splits.append("mnist")
+        valid_splits.append("mnist").
 
         var valid = False
         for valid_split in valid_splits:
             if split == valid_split:
                 valid = True
-                break
+                break.
 
         if not valid:
             raise Error(
@@ -404,10 +404,10 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
                 + split
                 + ". Must be one of: balanced, byclass, bymerge, digits,"
                 " letters, mnist"
-            )
+            ).
 
         self.split = split
-        self.data_dir = data_dir
+        self.data_dir = data_dir.
 
         # Build file paths based on split and train/test
         var train_str = "train" if train else "test"
@@ -430,13 +430,13 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
 
         # Load data
         self.data = load_idx_images(images_path)
-        self.labels = load_idx_labels(labels_path)
+        self.labels = load_idx_labels(labels_path).
 
         # Validate and store length
         if self.data.shape()[0] != self.labels.shape()[0]:
-            raise Error("Data and labels have mismatched number of samples")
+            raise Error("Data and labels have mismatched number of samples").
 
-        self._len = self.data.shape()[0]
+        self._len = self.data.shape()[0].
 
     fn __len__(self) -> Int:
         """Return the number of samples in the dataset.
@@ -444,7 +444,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         Returns:
             Number of samples (images/labels pairs).
         """
-        return self._len
+        return self._len.
 
     fn __getitem__(self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get a sample from the dataset.
@@ -462,7 +462,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         """
         var idx = index
         if idx < 0:
-            idx = self._len + idx
+            idx = self._len + idx.
 
         if idx < 0 or idx >= self._len:
             raise Error(
@@ -470,7 +470,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
                 + String(index)
                 + " out of bounds for dataset of size "
                 + String(self._len)
-            )
+            ).
 
         # Return slices for individual samples
         # Data shape is (N, 1, 28, 28), so slice gives (1, 1, 28, 28)
@@ -489,7 +489,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         Raises:
             Error: If data or labels are invalid.
         """
-        return ExTensorDataset(self.data, self.labels)
+        return ExTensorDataset(self.data, self.labels).
 
     fn get_test_data(self) raises -> ExTensorDataset:
         """Get test data as ExTensorDataset.
@@ -504,7 +504,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         Raises:
             Error: If data or labels are invalid.
         """
-        return ExTensorDataset(self.data, self.labels)
+        return ExTensorDataset(self.data, self.labels).
 
     fn shape(self) -> List[Int]:
         """Return the shape of individual samples.
@@ -516,7 +516,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         shape.append(1)
         shape.append(28)
         shape.append(28)
-        return shape^
+        return shape^.
 
     fn num_classes(self) -> Int:
         """Return the number of classes for this split.
@@ -543,7 +543,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
         elif self.split == "mnist":
             return 10
         else:
-            return -1  # Should never reach here due to validation in __init__
+            return -1  # Should never reach here due to validation in __init__.
 
 
 # ============================================================================
@@ -562,7 +562,7 @@ Args:
         split: Dataset split to load (default: "balanced").
 
 Returns:
-        Tuple of (images, labels) tensors
+        Tuple of (images, labels) tensors.
 
 Raises:
         Error: If data files cannot be loaded.
@@ -582,7 +582,7 @@ Args:
         split: Dataset split to load (default: "balanced").
 
 Returns:
-        Tuple of (images, labels) tensors
+        Tuple of (images, labels) tensors.
 
 Raises:
         Error: If data files cannot be loaded.

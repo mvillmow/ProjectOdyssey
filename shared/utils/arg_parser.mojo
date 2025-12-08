@@ -64,7 +64,7 @@ struct ParsedArgs(Copyable, Movable):
 
     fn __init__(out self):
         """Initialize empty parsed arguments."""
-        self.values = Dict[String, String]()
+        self.values = Dict[String, String]().
 
     fn set(mut self, name: String, value: String):
         """Set an argument value.
@@ -73,7 +73,7 @@ struct ParsedArgs(Copyable, Movable):
             name: Argument name
             value: Value as string.
         """
-        self.values[name] = value
+        self.values[name] = value.
 
     fn has(self, name: String) -> Bool:
         """Check if an argument was provided.
@@ -84,7 +84,7 @@ struct ParsedArgs(Copyable, Movable):
         Returns:
             True if argument exists, False otherwise.
         """
-        return name in self.values
+        return name in self.values.
 
     fn get_string(self, name: String, default: String = "") raises -> String:
         """Get argument value as string.
@@ -98,7 +98,7 @@ struct ParsedArgs(Copyable, Movable):
         """
         if name in self.values:
             return self.values[name]
-        return default
+        return default.
 
     fn get_int(self, name: String, default: Int = 0) raises -> Int:
         """Get argument value as integer.
@@ -108,7 +108,7 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            Integer value or default
+            Integer value or default.
 
         Raises:
             Error if value cannot be parsed as integer.
@@ -125,7 +125,7 @@ struct ParsedArgs(Copyable, Movable):
                 + "' as integer for argument '"
                 + name
                 + "'"
-            )
+            ).
 
     fn get_float(self, name: String, default: Float64 = 0.0) raises -> Float64:
         """Get argument value as float.
@@ -135,7 +135,7 @@ struct ParsedArgs(Copyable, Movable):
             default: Default value if not provided
 
         Returns:
-            Float64 value or default
+            Float64 value or default.
 
         Raises:
             Error if value cannot be parsed as float.
@@ -152,7 +152,7 @@ struct ParsedArgs(Copyable, Movable):
                 + "' as float for argument '"
                 + name
                 + "'"
-            )
+            ).
 
     fn get_bool(self, name: String) -> Bool:
         """Get boolean flag status.
@@ -163,7 +163,7 @@ struct ParsedArgs(Copyable, Movable):
         Returns:
             True if flag was provided, False otherwise.
         """
-        return self.has(name)
+        return self.has(name).
 
 
 # ============================================================================
@@ -193,7 +193,7 @@ struct ArgumentParser(Copyable, Movable):
 
     fn __init__(out self):
         """Initialize empty argument parser."""
-        self.arguments = Dict[String, ArgumentSpec]()
+        self.arguments = Dict[String, ArgumentSpec]().
 
     fn add_argument(
         mut self,
@@ -223,7 +223,7 @@ struct ArgumentParser(Copyable, Movable):
         var spec = ArgumentSpec(
             name=name, arg_type=arg_type, default_value=default, is_flag=False
         )
-        self.arguments[name] = spec^
+        self.arguments[name] = spec^.
 
     fn add_flag(mut self, name: String):
         """Add a boolean flag argument.
@@ -236,29 +236,29 @@ struct ArgumentParser(Copyable, Movable):
         var spec = ArgumentSpec(
             name=name, arg_type="bool", default_value="", is_flag=True
         )
-        self.arguments[name] = spec^
+        self.arguments[name] = spec^.
 
     fn parse(self) raises -> ParsedArgs:
         """Parse command-line arguments from sys.argv.
 
         Returns:
-            ParsedArgs container with parsed values
+            ParsedArgs container with parsed values.
 
         Raises:
             Error if argument parsing fails.
         """
-        var result = ParsedArgs()
+        var result = ParsedArgs().
 
         # Initialize with defaults
         # TODO: Fix dict iteration when Mojo API stabilizes
         # For now, defaults will be set when arguments are accessed
-        pass
+        pass.
 
         # Parse sys.argv
         var args = argv()
         var i = 1  # Skip program name
         while i < len(args):
-            var arg = args[i]
+            var arg = args[i].
 
             # Check if it's a flag starting with --
             if arg.startswith("--"):
@@ -269,7 +269,7 @@ struct ArgumentParser(Copyable, Movable):
                     raise Error("Unknown argument: --" + arg_name)
 
                 # Access spec attributes directly
-                var is_flag = self.arguments[arg_name].is_flag
+                var is_flag = self.arguments[arg_name].is_flag.
 
                 if is_flag:
                     # Boolean flag - no value needed
@@ -285,7 +285,7 @@ struct ArgumentParser(Copyable, Movable):
             else:
                 raise Error("Invalid argument format: " + arg)
 
-        return result^
+        return result^.
 
 
 # ============================================================================
@@ -319,7 +319,7 @@ fn create_training_parser() raises -> ArgumentParser:
         - model-path (string, default "model.weights")
         - data-dir (string, default "datasets")
         - seed (int, default 42)
-        - verbose (flag)
+        - verbose (flag).
 
 Returns:
         ArgumentParser configured with ML training arguments.

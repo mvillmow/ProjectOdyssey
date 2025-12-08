@@ -49,7 +49,7 @@ Args:
     var ptr = result._data.bitcast[Scalar[dtype]]()
     for i in range(result._numel):
         var rand_val = random_float64()
-        ptr[i] = Scalar[dtype](offset + rand_val * scale)
+        ptr[i] = Scalar[dtype](offset + rand_val * scale).
 
 
 @always_inline
@@ -73,22 +73,22 @@ Args:
     while i < result._numel:
         # Box-Muller transform to generate normal distribution
         var u1 = random_float64()
-        var u2 = random_float64()
+        var u2 = random_float64().
 
         # Avoid log(0)
         if u1 < 1e-10:
-            u1 = 1e-10
+            u1 = 1e-10.
 
         var mag = std * sqrt(-2.0 * log(u1))
         var z0 = mean + mag * cos(2.0 * PI * u2)
-        var z1 = mean + mag * sin(2.0 * PI * u2)
+        var z1 = mean + mag * sin(2.0 * PI * u2).
 
         ptr[i] = Scalar[dtype](z0)
-        i += 1
+        i += 1.
 
         if i < result._numel:
             ptr[i] = Scalar[dtype](z1)
-            i += 1
+            i += 1.
 
 
 @always_inline
@@ -104,7 +104,7 @@ Args:
     var ptr = result._data.bitcast[Scalar[dtype]]()
     var val = Scalar[dtype](value)
     for i in range(result._numel):
-        ptr[i] = val
+        ptr[i] = val.
 
 
 # ============================================================================
@@ -122,7 +122,7 @@ fn xavier_uniform(
     """Initialize weights using Xavier/Glorot uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
-        a = sqrt(6 / (fan_in + fan_out))
+        a = sqrt(6 / (fan_in + fan_out)).
 
     This initialization maintains variance of activations and gradients across.
     layers for networks using sigmoid or tanh activations.
@@ -150,21 +150,21 @@ Raises:
 
 Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = xavier_uniform(784, 128, List[Int](784, 128))
+        var weights = xavier_uniform(784, 128, List[Int](784, 128)).
 
         # With fixed seed for reproducibility
-        var w = xavier_uniform(100, 50, List[Int](100, 50), seed_val=42)
+        var w = xavier_uniform(100, 50, List[Int](100, 50), seed_val=42).
 
     References:
         Glorot & Bengio (2010): "Understanding the difficulty of training.
-        deep feedforward neural networks"
+        deep feedforward neural networks".
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("xavier_uniform: fan_in and fan_out must be positive")
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Calculate bound: sqrt(6 / (fan_in + fan_out))
     var bound = sqrt(6.0 / Float64(fan_in + fan_out))
@@ -199,7 +199,7 @@ fn xavier_normal(
     """Initialize weights using Xavier/Glorot normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
-        std = sqrt(2 / (fan_in + fan_out))
+        std = sqrt(2 / (fan_in + fan_out)).
 
     This initialization maintains variance of activations and gradients across.
     layers for networks using sigmoid or tanh activations.
@@ -227,21 +227,21 @@ Raises:
 
 Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = xavier_normal(784, 128, List[Int](784, 128))
+        var weights = xavier_normal(784, 128, List[Int](784, 128)).
 
         # With fixed seed for reproducibility
-        var w = xavier_normal(100, 50, List[Int](100, 50), seed_val=42)
+        var w = xavier_normal(100, 50, List[Int](100, 50), seed_val=42).
 
     References:
         Glorot & Bengio (2010): "Understanding the difficulty of training.
-        deep feedforward neural networks"
+        deep feedforward neural networks".
     """
     if fan_in <= 0 or fan_out <= 0:
         raise Error("xavier_normal: fan_in and fan_out must be positive")
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Calculate standard deviation: sqrt(2 / (fan_in + fan_out))
     var std = sqrt(2.0 / Float64(fan_in + fan_out))
@@ -284,7 +284,7 @@ fn kaiming_uniform(
     """Initialize weights using Kaiming/He uniform distribution.
 
     Draws samples from uniform distribution U(-a, a) where:
-        a = sqrt(6 / fan)  (fan depends on fan_mode)
+        a = sqrt(6 / fan)  (fan depends on fan_mode).
 
     This initialization is designed for networks with ReLU activations, which.
     kill half the activations (output 0 for negative inputs). The gain factor
@@ -315,17 +315,17 @@ Raises:
 
 Examples:
         # Fully connected layer: 784 inputs -> 128 outputs (using fan_in)
-        var weights = kaiming_uniform(784, 128, List[Int](784, 128))
+        var weights = kaiming_uniform(784, 128, List[Int](784, 128)).
 
         # Using fan_out mode
-        var w = kaiming_uniform(784, 128, List[Int](784, 128), fan_mode="fan_out")
+        var w = kaiming_uniform(784, 128, List[Int](784, 128), fan_mode="fan_out").
 
         # With fixed seed for reproducibility
-        var w_repro = kaiming_uniform(100, 50, List[Int](100, 50), seed_val=42)
+        var w_repro = kaiming_uniform(100, 50, List[Int](100, 50), seed_val=42).
 
     References:
         He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
-        Performance on ImageNet Classification"
+        Performance on ImageNet Classification".
 
     Issue: #263-267 - Kaiming/He initialization.
     """
@@ -343,7 +343,7 @@ Examples:
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Calculate bound: sqrt(6 / fan)
     var bound = sqrt(6.0 / Float64(fan))
@@ -379,7 +379,7 @@ fn kaiming_normal(
     """Initialize weights using Kaiming/He normal distribution.
 
     Draws samples from normal distribution N(0, std²) where:
-        std = sqrt(2 / fan)  (fan depends on fan_mode)
+        std = sqrt(2 / fan)  (fan depends on fan_mode).
 
     This initialization is designed for networks with ReLU activations, which.
     kill half the activations. The variance scaling accounts for this effect.
@@ -409,17 +409,17 @@ Raises:
 
 Examples:
         # Fully connected layer: 784 inputs -> 128 outputs
-        var weights = kaiming_normal(784, 128, List[Int](784, 128))
+        var weights = kaiming_normal(784, 128, List[Int](784, 128)).
 
         # Using fan_out mode
-        var w = kaiming_normal(784, 128, List[Int](784, 128), fan_mode="fan_out")
+        var w = kaiming_normal(784, 128, List[Int](784, 128), fan_mode="fan_out").
 
         # With fixed seed for reproducibility
-        var w_repro = kaiming_normal(100, 50, List[Int](100, 50), seed_val=42)
+        var w_repro = kaiming_normal(100, 50, List[Int](100, 50), seed_val=42).
 
     References:
         He et al. (2015): "Delving Deep into Rectifiers: Surpassing Human-Level.
-        Performance on ImageNet Classification"
+        Performance on ImageNet Classification".
 
     Issue: #263-267 - Kaiming/He initialization.
     """
@@ -437,7 +437,7 @@ Examples:
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Calculate standard deviation: sqrt(2 / fan)
     var std = sqrt(2.0 / Float64(fan))
@@ -494,13 +494,13 @@ Raises:
 
 Examples:
         # Default range [-0.1, 0.1]
-        var weights = uniform(List[Int](100, 50))
+        var weights = uniform(List[Int](100, 50)).
 
         # Custom range [0, 1]
-        var w = uniform(List[Int](10, 10), low=0.0, high=1.0)
+        var w = uniform(List[Int](10, 10), low=0.0, high=1.0).
 
         # With fixed seed
-        var w_repro = uniform(List[Int](50, 50), seed_val=42)
+        var w_repro = uniform(List[Int](50, 50), seed_val=42).
 
     Issue: #268-272 - Uniform/Normal basic distributions.
     """
@@ -509,7 +509,7 @@ Examples:
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Create tensor
     var result = ExTensor(shape, dtype)
@@ -560,13 +560,13 @@ Raises:
 
 Examples:
         # Default: N(0, 0.01)
-        var weights = normal(List[Int](100, 50))
+        var weights = normal(List[Int](100, 50)).
 
         # Custom: N(0.5, 0.1)
-        var w = normal(List[Int](10, 10), mean=0.5, std=0.1)
+        var w = normal(List[Int](10, 10), mean=0.5, std=0.1).
 
         # With fixed seed
-        var w_repro = normal(List[Int](50, 50), seed_val=42)
+        var w_repro = normal(List[Int](50, 50), seed_val=42).
 
     Issue: #268-272 - Uniform/Normal basic distributions.
     """
@@ -575,7 +575,7 @@ Examples:
 
     # Set random seed if provided
     if seed_val >= 0:
-        random_seed(seed_val)
+        random_seed(seed_val).
 
     # Create tensor
     var result = ExTensor(shape, dtype)
@@ -614,13 +614,13 @@ Returns:
 
 Examples:
         # Initialize with ones
-        var ones = constant(List[Int](10, 10), 1.0)
+        var ones = constant(List[Int](10, 10), 1.0).
 
         # Initialize with custom value
-        var custom = constant(List[Int](5, 5), 0.5)
+        var custom = constant(List[Int](5, 5), 0.5).
 
         # Initialize bias with 0.01
-        var bias = constant(List[Int](), 0.01)
+        var bias = constant(List[Int](), 0.01).
 
     Issue: #268-272 - Uniform/Normal basic distributions.
     """
@@ -694,11 +694,11 @@ fn he_uniform(
 
     For conv weights [out_channels, in_channels, kH, kW]:
         fan_in = in_channels * kH * kW
-        fan_out = out_channels * kH * kW
+        fan_out = out_channels * kH * kW.
 
     For linear weights [out_features, in_features]:
         fan_in = in_features
-        fan_out = out_features
+        fan_out = out_features.
 
 Args:
         shape: Tensor shape (2D for linear, 4D for conv).
@@ -737,11 +737,11 @@ fn xavier_uniform(
 
     For conv weights [out_channels, in_channels, kH, kW]:
         fan_in = in_channels * kH * kW
-        fan_out = out_channels * kH * kW
+        fan_out = out_channels * kH * kW.
 
     For linear weights [out_features, in_features]:
         fan_in = in_features
-        fan_out = out_features
+        fan_out = out_features.
 
 Args:
         shape: Tensor shape (2D for linear, 4D for conv).

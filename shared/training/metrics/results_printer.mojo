@@ -146,7 +146,7 @@ Args:
         ```mojo
         var per_class = ExTensor(List[Int](10), DType.float64)
         # ... populate with per-class accuracies ...
-        print_per_class_accuracy(per_class)
+        print_per_class_accuracy(per_class).
 
         Output:
         ============================================================
@@ -176,7 +176,7 @@ Note:
     if len(class_names) > 0:
         print("Class" + " " * 10 + "Accuracy")
     else:
-        print("Class" + " " * 10 + "Accuracy")
+        print("Class" + " " * 10 + "Accuracy").
 
     print("-" * 60)
 
@@ -186,9 +186,9 @@ Note:
         if per_class_accuracies._dtype == DType.float32:
             acc = Float64(per_class_accuracies._data.bitcast[Float32]()[i])
         else:  # float64.
-            acc = per_class_accuracies._data.bitcast[Float64]()[i]
+            acc = per_class_accuracies._data.bitcast[Float64]()[i].
 
-        var acc_str = String(acc)
+        var acc_str = String(acc).
 
         if len(class_names) > 0 and i < len(class_names):
             # Use provided class name
@@ -197,7 +197,7 @@ Note:
         else:
             # Use numeric index
             var class_idx = String(i)
-            print(class_idx + " " * (15 - len(class_idx)) + acc_str)
+            print(class_idx + " " * (15 - len(class_idx)) + acc_str).
 
     print("=" * 60)
 
@@ -229,7 +229,7 @@ Args:
         var cm = ConfusionMatrix(num_classes=3)
         # ... populate matrix ...
         var matrix = cm.normalize(mode="none")
-        print_confusion_matrix(matrix)
+        print_confusion_matrix(matrix).
 
         Output:
         ============================================================
@@ -247,7 +247,7 @@ Note:
         - Rows represent true labels
         - Columns represent predicted labels
         - Values are right-aligned within columns
-        - If class_names provided, used for row/column labels
+        - If class_names provided, used for row/column labels.
 
     Issue: #2353
     """
@@ -280,7 +280,7 @@ Note:
             var padded = idx_str
             while len(padded) < column_width:
                 padded = padded + " "
-            class_header = class_header + padded
+            class_header = class_header + padded.
 
     print(class_header)
 
@@ -297,9 +297,9 @@ Note:
             row_label = "True " + idx_str
         # Pad to label width (8 chars)
         while len(row_label) < 8:
-            row_label = row_label + " "
+            row_label = row_label + " ".
 
-        var row_str = row_label
+        var row_str = row_label.
 
         # Row values
         for c in range(num_classes):
@@ -311,7 +311,7 @@ Note:
             elif matrix._dtype == DType.float32:
                 value = Float64(matrix._data.bitcast[Float32]()[idx])
             else:  # float64
-                value = matrix._data.bitcast[Float64]()[idx]
+                value = matrix._data.bitcast[Float64]()[idx].
 
             var val_str: String
             if normalized:
@@ -319,14 +319,14 @@ Note:
                 var pct = value * 100.0
                 val_str = String(pct)
             else:
-                val_str = String(value)
+                val_str = String(value).
 
             # Right-align value within column width
             while len(val_str) < column_width:
                 val_str = " " + val_str
-            row_str = row_str + val_str
+            row_str = row_str + val_str.
 
-        print(row_str)
+        print(row_str).
 
     print("=" * 60)
 

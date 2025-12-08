@@ -34,11 +34,11 @@ fn binary_cross_entropy(
     """Binary cross-entropy loss for binary classification.
 
     Formula:
-        BCE = -[y*log(p) + (1-y)*log(1-p)]
+        BCE = -[y*log(p) + (1-y)*log(1-p)].
 
     where:
         p = predictions (should be in [0, 1] range, typically from sigmoid)
-        y = targets (ground truth labels, 0 or 1)
+        y = targets (ground truth labels, 0 or 1).
 
 Args:
         predictions: Predicted probabilities, shape (batch_size,) or (batch_size, 1).
@@ -65,10 +65,10 @@ Raises:
         - Uses epsilon=1e-7 by default.
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype")
+        raise Error("Predictions and targets must have the same dtype").
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape")
+        raise Error("Predictions and targets must have the same shape").
 
     # Clip predictions to prevent log(0) and log(1)
     var clipped = clip(predictions, epsilon, 1.0 - epsilon)
@@ -103,14 +103,14 @@ fn binary_cross_entropy_backward(
     Computes gradient of BCE loss with respect to predictions.
 
     Formula:
-        ∂BCE/∂p = -y/p + (1-y)/(1-p)
+        ∂BCE/∂p = -y/p + (1-y)/(1-p).
 
     Which simplifies to:
         ∂BCE/∂p = (-y(1-p) + (1-y)p) / (p(1-p))
-        ∂BCE/∂p = (p - y) / (p(1-p))
+        ∂BCE/∂p = (p - y) / (p(1-p)).
 
     For numerical stability, we add epsilon to the denominator:
-        ∂BCE/∂p = (p - y) / (p(1-p) + epsilon)
+        ∂BCE/∂p = (p - y) / (p(1-p) + epsilon).
 
 Args:
         grad_output: Gradient from upstream (e.g., from mean_backward).
@@ -125,7 +125,7 @@ Returns:
         ```mojo
          Forward
         var bce_loss = binary_cross_entropy(predictions, targets)
-        var loss = mean(bce_loss)
+        var loss = mean(bce_loss).
 
         # Backward
         var grad_loss = ones_like(loss)
@@ -189,10 +189,10 @@ Raises:
         ```
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype")
+        raise Error("Predictions and targets must have the same dtype").
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape")
+        raise Error("Predictions and targets must have the same shape").
 
     # MSE = (predictions - targets)^2
     var diff = subtract(predictions, targets)
@@ -207,7 +207,7 @@ fn mean_squared_error_backward(
     Computes gradient of MSE loss with respect to predictions.
 
     Formula:
-        ∂MSE/∂predictions = 2 * (predictions - targets)
+        ∂MSE/∂predictions = 2 * (predictions - targets).
 
 Args:
         grad_output: Gradient from upstream (e.g., from mean_backward).
@@ -221,7 +221,7 @@ Returns:
         ```mojo
          Forward.
         var squared_error = mean_squared_error(predictions, targets)
-        var loss = mean(squared_error)
+        var loss = mean(squared_error).
 
         # Backward
         var grad_loss = ones_like(loss)
@@ -247,7 +247,7 @@ fn cross_entropy(
     """Cross-entropy loss for multi-class classification.
 
     Formula:
-        CE = -sum(targets * log(softmax(logits)))
+        CE = -sum(targets * log(softmax(logits))).
 
     This implementation uses the log-sum-exp trick for numerical stability.
 
@@ -281,10 +281,10 @@ Note:
         - Adds epsilon to log argument to prevent log(0).
     """
     if logits.dtype() != targets.dtype():
-        raise Error("Logits and targets must have the same dtype")
+        raise Error("Logits and targets must have the same dtype").
 
     if logits.shape() != targets.shape():
-        raise Error("Logits and targets must have the same shape")
+        raise Error("Logits and targets must have the same shape").
 
     # Implement cross-entropy with log-sum-exp trick for numerical stability
     # CE = -sum(targets * (logits - log_sum_exp(logits)))
@@ -338,7 +338,7 @@ fn cross_entropy_backward(
     """Backward pass for cross-entropy loss.
 
     For cross-entropy with softmax, the gradient simplifies to:
-        ∂CE/∂logits = softmax(logits) - targets
+        ∂CE/∂logits = softmax(logits) - targets.
 
     This beautiful result comes from the chain rule and the properties.
     of the softmax function.
@@ -349,11 +349,11 @@ Args:
         targets: Original one-hot targets, shape (batch, num_classes).
 
 Returns:
-        Gradient with respect to logits, shape (batch, num_classes)
+        Gradient with respect to logits, shape (batch, num_classes).
 
     Example:
         ```mojo
-        from shared.core import cross_entropy, cross_entropy_backward
+        from shared.core import cross_entropy, cross_entropy_backward.
 
         # Forward pass
         var loss = cross_entropy(logits, targets)
@@ -395,9 +395,9 @@ fn smooth_l1_loss(
         If |x| < beta:
             L = 0.5 * (x)^2 / beta
         Else:
-            L = |x| - 0.5 * beta
+            L = |x| - 0.5 * beta.
 
-        where x = predictions - targets
+        where x = predictions - targets.
 
     This loss is less sensitive to outliers than MSE, making it more robust
     for regression tasks with noisy data.
@@ -428,10 +428,10 @@ Raises:
         - Beta parameter prevents division by zero in gradient.
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype")
+        raise Error("Predictions and targets must have the same dtype").
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape")
+        raise Error("Predictions and targets must have the same shape").
 
     # Compute differences: x = predictions - targets
     var diff = subtract(predictions, targets)
@@ -479,9 +479,9 @@ fn smooth_l1_loss_backward(
         If |x| < beta:
             ∂L/∂pred = x / beta
         Else:
-            ∂L/∂pred = sign(x)
+            ∂L/∂pred = sign(x).
 
-        where x = predictions - targets, sign(x) = 1 if x > 0 else -1
+        where x = predictions - targets, sign(x) = 1 if x > 0 else -1.
 
 Args:
         grad_output: Gradient from upstream (e.g., from mean_backward).
@@ -496,7 +496,7 @@ Returns:
         ```mojo
          Forward
         var smoothl1_loss = smooth_l1_loss(predictions, targets, beta=1.0)
-        var loss = mean(smoothl1_loss)
+        var loss = mean(smoothl1_loss).
 
         # Backward
         var grad_loss = ones_like(loss)
@@ -557,11 +557,11 @@ fn hinge_loss(predictions: ExTensor, targets: ExTensor) raises -> ExTensor:
     """Hinge loss for Support Vector Machines (SVMs).
 
     Formula:
-        L = max(0, 1 - y * pred)
+        L = max(0, 1 - y * pred).
 
     where:
         y = targets (must be -1 or 1)
-        pred = predictions (model output)
+        pred = predictions (model output).
 
     The hinge loss penalizes predictions that are not confident enough.
     A prediction is correct when y * pred >= 1 (margin of 1).
@@ -593,10 +593,10 @@ Note:
         - Avoids numerical issues with extreme values.
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype")
+        raise Error("Predictions and targets must have the same dtype").
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape")
+        raise Error("Predictions and targets must have the same shape").
 
     # Compute y * pred
     var y_pred = multiply(targets, predictions)
@@ -626,7 +626,7 @@ fn hinge_loss_backward(
         If y * pred < 1 (margin violated):
             ∂L/∂pred = -y
         Else (margin satisfied):
-            ∂L/∂pred = 0
+            ∂L/∂pred = 0.
 
     where y = targets, pred = predictions
 
@@ -642,7 +642,7 @@ Returns:
         ```mojo
          Forward
         var hinge = hinge_loss(predictions, targets)
-        var loss = mean(hinge)
+        var loss = mean(hinge).
 
         # Backward
         var grad_loss = ones_like(loss)
@@ -691,7 +691,7 @@ fn focal_loss(
     """Focal loss for addressing class imbalance in classification.
 
     Formula:
-        FL = -alpha * (1 - p)^gamma * target * log(p) - (1 - alpha) * p^gamma * (1 - target) * log(1 - p)
+        FL = -alpha * (1 - p)^gamma * target * log(p) - (1 - alpha) * p^gamma * (1 - target) * log(1 - p).
 
     where:
         p = predictions (probabilities, should be in [0, 1] range)
@@ -711,10 +711,10 @@ Args:
 
 Returns:
         Loss tensor of same shape as inputs (element-wise loss)
-        Use mean() to get scalar loss for backpropagation
+        Use mean() to get scalar loss for backpropagation.
 
 Raises:
-        Error if shapes don't match or dtypes are incompatible
+        Error if shapes don't match or dtypes are incompatible.
 
     Example:
         ```mojo
@@ -729,10 +729,10 @@ Raises:
         - Uses epsilon=1e-7 by default.
     """
     if predictions.dtype() != targets.dtype():
-        raise Error("Predictions and targets must have the same dtype")
+        raise Error("Predictions and targets must have the same dtype").
 
     if predictions.shape() != targets.shape():
-        raise Error("Predictions and targets must have the same shape")
+        raise Error("Predictions and targets must have the same shape").
 
     var epsilon = 1e-7
 
@@ -791,7 +791,7 @@ fn focal_loss_backward(
         dFL/dp = alpha * gamma * (1-p)^(gamma-1) * target * log(p)
                  - alpha * (1-p)^gamma * target / p
                  - (1-alpha) * gamma * p^(gamma-1) * (1-target) * log(1-p)
-                 + (1-alpha) * p^gamma * (1-target) / (1-p)
+                 + (1-alpha) * p^gamma * (1-target) / (1-p).
 
 Args:
         grad_output: Gradient from upstream (e.g., from mean_backward).
@@ -801,13 +801,13 @@ Args:
         gamma: Focusing parameter (default: 2.0).
 
 Returns:
-        Gradient with respect to predictions, same shape as predictions
+        Gradient with respect to predictions, same shape as predictions.
 
     Example:
         ```mojo
          Forward
         var focal = focal_loss(predictions, targets, alpha, gamma)
-        var loss = mean(focal)
+        var loss = mean(focal).
 
         # Backward
         var grad_loss = ones_like(loss)
@@ -895,11 +895,11 @@ fn kl_divergence(
     """Kullback-Leibler divergence loss for distribution matching.
 
     Formula:
-        KL(p||q) = p * log(p / q) = p * (log(p) - log(q))
+        KL(p||q) = p * log(p / q) = p * (log(p) - log(q)).
 
     where:
         p = reference distribution (target)
-        q = approximating distribution (predicted)
+        q = approximating distribution (predicted).
 
     KL divergence measures how much one probability distribution differs from another.
     It is always non-negative and is zero only when p == q almost everywhere.
@@ -911,10 +911,10 @@ Args:
 
 Returns:
         Element-wise KL divergence contribution, same shape as inputs
-        Use sum() or mean() to get scalar loss for backpropagation
+        Use sum() or mean() to get scalar loss for backpropagation.
 
 Raises:
-        Error if shapes don't match or dtypes are incompatible
+        Error if shapes don't match or dtypes are incompatible.
 
     Example:
         ```mojo
@@ -934,10 +934,10 @@ Note:
         - Handles zero probabilities gracefully.
     """
     if p.dtype() != q.dtype():
-        raise Error("p and q must have the same dtype")
+        raise Error("p and q must have the same dtype").
 
     if p.shape() != q.shape():
-        raise Error("p and q must have the same shape")
+        raise Error("p and q must have the same shape").
 
     # Clip both distributions to prevent log(0)
     var clipped_p = clip(p, epsilon, 1.0)
@@ -963,10 +963,10 @@ fn kl_divergence_backward(
     Computes gradient of KL divergence with respect to q (the predicted distribution).
 
     Formula:
-        dKL/dq = -p / q
+        dKL/dq = -p / q.
 
     The gradient with respect to p is:
-        dKL/dp = log(p) - log(q) + 1 (not used in typical backprop since targets are fixed)
+        dKL/dp = log(p) - log(q) + 1 (not used in typical backprop since targets are fixed).
 
 Args:
         grad_output: Gradient from upstream, same shape as forward output (same as inputs).
@@ -975,14 +975,14 @@ Args:
         epsilon: Small constant for numerical stability (default: 1e-7).
 
 Returns:
-        Gradient with respect to q, same shape as q
+        Gradient with respect to q, same shape as q.
 
     Example:
         ```mojo
          Forward
         var kl_per_element = kl_divergence(p_dist, q_dist)
         var loss_per_sample = sum(kl_per_element, axis=1)
-        var loss = mean(loss_per_sample)
+        var loss = mean(loss_per_sample).
 
         # Backward
         var grad_loss = ones_like(loss)

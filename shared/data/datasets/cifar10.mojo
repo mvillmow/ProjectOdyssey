@@ -81,7 +81,7 @@ struct CIFAR10Dataset(Copyable, Movable):
             train_batch_2_labels.idx
             ... (5 batches total)
             test_batch_images.idx
-            test_batch_labels.idx
+            test_batch_labels.idx.
 
     Attributes:
         data_dir: Path to directory containing CIFAR-10 data files.
@@ -111,18 +111,18 @@ struct CIFAR10Dataset(Copyable, Movable):
             Error: If data_dir is empty or invalid.
         """
         if len(data_dir) == 0:
-            raise Error("data_dir cannot be empty")
+            raise Error("data_dir cannot be empty").
 
-        self.data_dir = data_dir
+        self.data_dir = data_dir.
 
         # Initialize placeholder tensors
         self._train_data = zeros([1], DType.float32)
         self._train_labels = zeros([1], DType.uint8)
         self._test_data = zeros([1], DType.float32)
-        self._test_labels = zeros([1], DType.uint8)
+        self._test_labels = zeros([1], DType.uint8).
 
         self._train_loaded = False
-        self._test_loaded = False
+        self._test_loaded = False.
 
     fn __len__(self) -> Int:
         """Return total number of training samples.
@@ -130,7 +130,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         Returns:
             Number of training samples (50,000 for standard CIFAR-10).
         """
-        return 50000
+        return 50000.
 
     fn __getitem__(mut self, index: Int) raises -> Tuple[ExTensor, ExTensor]:
         """Get a sample from the training set.
@@ -148,7 +148,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         """
         # Load training data if not already loaded
         if not self._train_loaded:
-            self._load_train_data()
+            self._load_train_data().
 
         # Validate index
         if index < 0 or index >= 50000:
@@ -156,14 +156,14 @@ struct CIFAR10Dataset(Copyable, Movable):
                 "Index "
                 + String(index)
                 + " out of bounds for training set of size 50000"
-            )
+            ).
 
         # Return the sample at index
         # Images have shape (50000, 3, 32, 32), extract one image
         var image_slice = self._train_data.slice(index, index + 1, axis=0)
-        var label_slice = self._train_labels.slice(index, index + 1, axis=0)
+        var label_slice = self._train_labels.slice(index, index + 1, axis=0).
 
-        return (image_slice, label_slice)
+        return (image_slice, label_slice).
 
     fn _load_train_data(mut self) raises:
         """Load all training data from CIFAR-10 batch files.
@@ -171,7 +171,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         Loads 5 batches (10,000 images each) from files:
             train_batch_1_images.idx, train_batch_1_labels.idx
             train_batch_2_images.idx, train_batch_2_labels.idx
-            ... (up to train_batch_5)
+            ... (up to train_batch_5).
 
         Data is normalized and stored as float32 with shape (50000, 3, 32, 32).
 
@@ -186,12 +186,12 @@ struct CIFAR10Dataset(Copyable, Movable):
             var batch_name = "train_batch_" + String(batch_num)
             var images, labels = load_cifar10_batch(self.data_dir, batch_name)
             all_images.append(images)
-            all_labels.append(labels)
+            all_labels.append(labels).
 
         # Concatenate all batches
         self._train_data = self._concatenate_tensors(all_images)
         self._train_labels = self._concatenate_tensors(all_labels)
-        self._train_loaded = True
+        self._train_loaded = True.
 
     fn get_train_data(mut self) raises -> Tuple[ExTensor, ExTensor]:
         """Get all training data.
@@ -209,16 +209,16 @@ struct CIFAR10Dataset(Copyable, Movable):
             Subsequent calls return the cached data.
         """
         if not self._train_loaded:
-            self._load_train_data()
+            self._load_train_data().
 
-        return (self._train_data, self._train_labels)
+        return (self._train_data, self._train_labels).
 
     fn _load_test_data(mut self) raises:
         """Load test data from CIFAR-10 test batch file.
 
         Loads test set (10,000 images) from files:
             test_batch_images.idx
-            test_batch_labels.idx
+            test_batch_labels.idx.
 
         Data is normalized and stored as float32 with shape (10000, 3, 32, 32).
 
@@ -228,7 +228,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         var images, labels = load_cifar10_batch(self.data_dir, "test_batch")
         self._test_data = images
         self._test_labels = labels
-        self._test_loaded = True
+        self._test_loaded = True.
 
     fn get_test_data(mut self) raises -> Tuple[ExTensor, ExTensor]:
         """Get all test data.
@@ -246,9 +246,9 @@ struct CIFAR10Dataset(Copyable, Movable):
             Subsequent calls return the cached data.
         """
         if not self._test_loaded:
-            self._load_test_data()
+            self._load_test_data().
 
-        return (self._test_data, self._test_labels)
+        return (self._test_data, self._test_labels).
 
     fn _concatenate_tensors(self, tensors: List[ExTensor]) raises -> ExTensor:
         """Concatenate a list of tensors along the first (batch) dimension.
@@ -263,13 +263,13 @@ struct CIFAR10Dataset(Copyable, Movable):
             Error: If tensors list is empty or tensors have incompatible shapes.
         """
         if len(tensors) == 0:
-            raise Error("Cannot concatenate empty list of tensors")
+            raise Error("Cannot concatenate empty list of tensors").
 
         if len(tensors) == 1:
-            return tensors[0]
+            return tensors[0].
 
         # Use concatenate function to join all tensors along axis 0
-        return concatenate(tensors, axis=0)
+        return concatenate(tensors, axis=0).
 
     fn get_class_name(self, class_idx: Int) raises -> String:
         """Get human-readable class name from class index.
@@ -286,10 +286,10 @@ struct CIFAR10Dataset(Copyable, Movable):
         if class_idx < 0 or class_idx >= 10:
             raise Error(
                 "Class index " + String(class_idx) + " out of range [0, 9]"
-            )
+            ).
 
         var classes = get_cifar10_classes()
-        return classes[class_idx]
+        return classes[class_idx].
 
     fn num_classes(self) -> Int:
         """Get number of classes in CIFAR-10.
@@ -297,7 +297,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         Returns:
             Number of classes (10).
         """
-        return 10
+        return 10.
 
     fn num_train_samples(self) -> Int:
         """Get number of training samples.
@@ -305,7 +305,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         Returns:
             Number of training samples (50,000).
         """
-        return 50000
+        return 50000.
 
     fn num_test_samples(self) -> Int:
         """Get number of test samples.
@@ -313,7 +313,7 @@ struct CIFAR10Dataset(Copyable, Movable):
         Returns:
             Number of test samples (10,000).
         """
-        return 10000
+        return 10000.
 
     fn image_shape(self) -> List[Int]:
         """Get shape of individual images.
@@ -325,4 +325,4 @@ struct CIFAR10Dataset(Copyable, Movable):
         shape.append(3)  # RGB channels
         shape.append(32)  # Height
         shape.append(32)  # Width
-        return shape^
+        return shape^.

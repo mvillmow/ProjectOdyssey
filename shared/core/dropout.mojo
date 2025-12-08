@@ -34,13 +34,13 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import ExTensor, dropout, dropout_backward
+        from shared.core import ExTensor, dropout, dropout_backward.
 
         # Training mode
-        var (output, mask) = dropout(x, p=0.5, training=True, seed=42)
+        var (output, mask) = dropout(x, p=0.5, training=True, seed=42).
 
         # Later in backward pass
-        var grad_x = dropout_backward(grad_output, mask, p=0.5)
+        var grad_x = dropout_backward(grad_output, mask, p=0.5).
 
         # Inference mode (no dropout)
         var (output, _) = dropout(x, p=0.5, training=False)
@@ -54,12 +54,12 @@ Note:
         - Pure functional: caller manages mask state.
     """
     if p < 0.0 or p >= 1.0:
-        raise Error("Dropout probability must be in [0, 1)")
+        raise Error("Dropout probability must be in [0, 1)").
 
     # Inference mode: no dropout
     if not training:
         var ones_mask = ones_like(x)
-        return (x, ones_mask)
+        return (x, ones_mask).
 
     # Training mode: apply dropout
     var size = x.numel()
@@ -67,7 +67,7 @@ Note:
 
     # Generate random mask
     if seed > 0:
-        random.seed(seed)
+        random.seed(seed).
 
     var mask_ptr = mask._data
     var threshold = Float32(1.0 - p)
@@ -121,10 +121,10 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import dropout2d, dropout2d_backward
+        from shared.core import dropout2d, dropout2d_backward.
 
         # Training mode - drops entire feature maps
-        var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42)
+        var (output, mask) = dropout2d(x, p=0.2, training=True, seed=42).
 
         # Backward pass
         var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
@@ -136,7 +136,7 @@ Note:
         - Mask shape is (batch, channels, 1, 1) for broadcasting.
     """
     if p < 0.0 or p >= 1.0:
-        raise Error("Dropout probability must be in [0, 1)")
+        raise Error("Dropout probability must be in [0, 1)").
 
     var x_shape = x.shape()
     if len(x_shape) != 4:
@@ -152,7 +152,7 @@ Note:
     # Inference mode: no dropout
     if not training:
         var ones_mask = ones_like(x)
-        return (x, ones_mask)
+        return (x, ones_mask).
 
     # Training mode: create channel-level mask
     var mask_shape= List[Int]()
@@ -164,7 +164,7 @@ Note:
 
     # Generate random mask at channel level
     if seed > 0:
-        random.seed(seed)
+        random.seed(seed).
 
     var mask_ptr = channel_mask._data
 
@@ -235,7 +235,7 @@ Note:
                             + h * width
                             + w
                         )
-                        full_mask_ptr.bitcast[Float16]()[idx] = mask_val
+                        full_mask_ptr.bitcast[Float16]()[idx] = mask_val.
 
     # Apply mask and scale
     var masked = multiply(x, full_mask)
@@ -264,7 +264,7 @@ Returns:
     Example:
         ```mojo
         # Forward pass
-        var (output, mask) = dropout(x, p=0.5, training=True)
+        var (output, mask) = dropout(x, p=0.5, training=True).
 
         # ... compute loss and grad_output ...
 
@@ -299,7 +299,7 @@ Returns:
     Example:
         ```mojo
         # Forward pass
-        var (output, mask) = dropout2d(x, p=0.2, training=True)
+        var (output, mask) = dropout2d(x, p=0.2, training=True).
 
         # ... compute loss and grad_output ...
 

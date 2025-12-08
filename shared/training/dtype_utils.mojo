@@ -28,7 +28,7 @@ Usage:
 
     # Check if dtype is reduced precision
     if is_reduced_precision(params.dtype()):
-        print("Using reduced precision training")
+        print("Using reduced precision training").
 """
 
 
@@ -163,7 +163,7 @@ Returns:
     elif dtype == DType.float64:
         return 52  # FP64: 52 mantissa bits
     else:
-        return 0  # Not a floating point type
+        return 0  # Not a floating point type.
 
 
 fn get_dtype_exponent_bits(dtype: DType) -> Int:
@@ -192,7 +192,7 @@ Returns:
     elif dtype == DType.float64:
         return 11  # FP64: 11 exponent bits (very wide range)
     else:
-        return 0  # Not a floating point type
+        return 0  # Not a floating point type.
 
 
 fn dtype_to_string(dtype: DType) -> String:
@@ -202,7 +202,7 @@ Args:
         dtype: DType to convert.
 
 Returns:
-        String representation (e.g., "float16", "float32", "int32")
+        String representation (e.g., "float16", "float32", "int32").
 
     Example:
         ```mojo
@@ -235,7 +235,7 @@ Returns:
     elif dtype == DType.bool:
         return "bool"
     else:
-        return "unknown"
+        return "unknown".
 
 
 fn recommend_precision_dtype(
@@ -251,7 +251,7 @@ Args:
         hardware_has_fp16: Whether hardware supports FP16 acceleration.
 
 Returns:
-        Recommended DType (float16, bfloat16, or float32)
+        Recommended DType (float16, bfloat16, or float32).
 
     Recommendations:
         - Small models (<100MB): FP32 (speed gain minimal)
@@ -267,7 +267,7 @@ Returns:
     """
     if not hardware_has_fp16:
         # No hardware support - use FP32
-        return DType.float32
+        return DType.float32.
 
     if model_size_mb < 100.0:
         # Small model - FP32 fine, speedup minimal
@@ -277,7 +277,7 @@ Returns:
         return DType.float16  # Will use bfloat16_dtype when available
     else:
         # Large model - FP16 strongly recommended
-        return DType.float16  # Will use bfloat16_dtype when available
+        return DType.float16  # Will use bfloat16_dtype when available.
 
 
 fn print_dtype_info(dtype: DType):

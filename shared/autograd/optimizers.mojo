@@ -19,16 +19,16 @@ Usage Pattern:
     for epoch in range(num_epochs):
         # Forward pass
         var predictions = model(inputs)
-        var loss = loss_fn(predictions, targets)
+        var loss = loss_fn(predictions, targets).
 
         # Backward pass
-        loss.backward()
+        loss.backward().
 
         # Update parameters
-        optimizer.step(model.parameters(), tape)
+        optimizer.step(model.parameters(), tape).
 
         # Reset gradients
-        optimizer.zero_grad(tape)
+        optimizer.zero_grad(tape).
 
 Design Note:
     This module operates on Variables (from autograd), not raw ExTensors.
@@ -48,10 +48,10 @@ struct SGD:
 
     Implements basic gradient descent with optional momentum:
         v_t = momentum * v_{t-1} + gradient
-        parameter = parameter - learning_rate * v_t
+        parameter = parameter - learning_rate * v_t.
 
     Without momentum (momentum=0):
-        parameter = parameter - learning_rate * gradient
+        parameter = parameter - learning_rate * gradient.
 
     Attributes:
         learning_rate: Step size for parameter updates.
@@ -60,10 +60,10 @@ struct SGD:
 
 Examples:
         # Basic SGD
-        var optimizer = SGD(learning_rate=0.01)
+        var optimizer = SGD(learning_rate=0.01).
 
         # SGD with momentum
-        var optimizer = SGD(learning_rate=0.01, momentum=0.9)
+        var optimizer = SGD(learning_rate=0.01, momentum=0.9).
 
         # Training step
         optimizer.step(parameters)
@@ -83,7 +83,7 @@ Examples:
             momentum: Momentum coefficient (β in literature), range [0, 1]
                      0 = no momentum (standard SGD)
                      0.9 = typical momentum value
-                     Higher values give more weight to past gradients
+                     Higher values give more weight to past gradients.
 
         Examples:
             var opt = SGD(learning_rate=0.01)
@@ -92,7 +92,7 @@ Examples:
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.velocities: List[ExTensor] = []
-        self._initialized = False
+        self._initialized = False.
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -101,10 +101,10 @@ Examples:
 
         Performs one step of gradient descent with optional momentum:
             v_t = momentum * v_{t-1} + gradient
-            parameter = parameter - learning_rate * v_t
+            parameter = parameter - learning_rate * v_t.
 
         Without momentum (momentum=0):
-            parameter = parameter - learning_rate * gradient
+            parameter = parameter - learning_rate * gradient.
 
         Args:
             parameters: List of Variables to update (model parameters)
@@ -116,11 +116,11 @@ Examples:
             Velocity buffers are initialized on first call when momentum > 0.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error if any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
-            loss.backward(tape)
+            loss.backward(tape).
 
             # Update all parameters
             optimizer.step(model.parameters(), tape).
@@ -134,21 +134,21 @@ Examples:
                 var vel = ExTensor(vel_shape, parameters[i].data.dtype())
                 vel._fill_zero()
                 self.velocities.append(vel^)
-            self._initialized = True
+            self._initialized = True.
 
         var vel_idx = 0
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
-                continue
+                continue.
 
             # Skip if no gradient has been computed
             var param_id = parameters[i].id
             if not tape.registry.has_gradient(param_id):
-                continue
+                continue.
 
             # Get the gradient for this parameter
-            var grad = tape.registry.get_grad(param_id)
+            var grad = tape.registry.get_grad(param_id).
 
             if self.momentum > 0.0:
                 # v_t = momentum * v_{t-1} + gradient
@@ -156,7 +156,7 @@ Examples:
                     self.velocities[vel_idx], self.momentum
                 )
                 var new_velocity = add(momentum_term, grad)
-                self.velocities[vel_idx] = new_velocity
+                self.velocities[vel_idx] = new_velocity.
 
                 # param = param - learning_rate * v_t
                 var scaled_update = multiply_scalar(
@@ -169,7 +169,7 @@ Examples:
                 # Standard SGD: param = param - learning_rate * grad
                 var scaled_grad = multiply_scalar(grad, self.learning_rate)
                 var new_data = subtract(parameters[i].data, scaled_grad)
-                parameters[i].data = new_data^
+                parameters[i].data = new_data^.
 
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
@@ -185,7 +185,7 @@ Examples:
             optimizer.zero_grad(tape).
         """
         # Clear the gradient registry
-        tape.registry.clear()
+        tape.registry.clear().
 
 
 struct Adam:
@@ -196,7 +196,7 @@ struct Adam:
         v_t = β₂ * v_{t-1} + (1 - β₂) * g_t²          # Second moment (variance)
         m̂_t = m_t / (1 - β₁^t)                        # Bias correction
         v̂_t = v_t / (1 - β₂^t)                        # Bias correction
-        θ_t = θ_{t-1} - α * m̂_t / (√v̂_t + ε)         # Update
+        θ_t = θ_{t-1} - α * m̂_t / (√v̂_t + ε)         # Update.
 
     This is one of the most popular optimizers for deep learning due to its
     adaptive learning rates and momentum properties.
@@ -213,7 +213,7 @@ struct Adam:
 
 Examples:
         # Basic Adam optimizer
-        var optimizer = Adam(learning_rate=0.001)
+        var optimizer = Adam(learning_rate=0.001).
 
         # Custom parameters
         var optimizer = Adam(
@@ -304,35 +304,35 @@ Examples:
             The optimizer automatically initializes momentum buffers on first encounter.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error if any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
-            loss.backward(tape)
+            loss.backward(tape).
 
             # Update all parameters (multiple calls increment step counter)
             optimizer.step(model.parameters(), tape).
         """
         # Increment step counter
         self.t += 1
-        var t_float = Float64(self.t)
+        var t_float = Float64(self.t).
 
         # Compute bias correction terms
         var bias_correction1 = 1.0 - pow(self.beta1, t_float)
-        var bias_correction2 = 1.0 - pow(self.beta2, t_float)
+        var bias_correction2 = 1.0 - pow(self.beta2, t_float).
 
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
-                continue
+                continue.
 
             # Skip if no gradient has been computed
             var param_id = parameters[i].id
             if not tape.registry.has_gradient(param_id):
-                continue
+                continue.
 
             # Get the gradient for this parameter
-            var grad = tape.registry.get_grad(param_id)
+            var grad = tape.registry.get_grad(param_id).
 
             # Ensure buffer lists are large enough for this parameter ID
             while len(self.m_buffers) <= param_id:
@@ -344,7 +344,7 @@ Examples:
                 self.v_buffers.append(
                     ExTensor(placeholder_shape, DType.float32)
                 )
-                self.has_buffer.append(False)
+                self.has_buffer.append(False).
 
             # Initialize moment buffers if they don't exist
             if not self.has_buffer[param_id]:
@@ -352,19 +352,19 @@ Examples:
                 var m = ExTensor(grad.shape(), grad.dtype())
                 for j in range(m.numel()):
                     m._set_float64(j, 0.0)
-                self.m_buffers[param_id] = m^
+                self.m_buffers[param_id] = m^.
 
                 # v_t = zeros like grad
                 var v = ExTensor(grad.shape(), grad.dtype())
                 for j in range(v.numel()):
                     v._set_float64(j, 0.0)
-                self.v_buffers[param_id] = v^
+                self.v_buffers[param_id] = v^.
 
-                self.has_buffer[param_id] = True
+                self.has_buffer[param_id] = True.
 
             # Get current moment buffers
             var m = self.m_buffers[param_id]
-            var v = self.v_buffers[param_id]
+            var v = self.v_buffers[param_id].
 
             # Update biased first moment estimate: m_t = β₁ * m_{t-1} + (1 - β₁) * g_t
             var m_new = ExTensor(grad.shape(), grad.dtype())
@@ -373,7 +373,7 @@ Examples:
                 var grad_val = grad._get_float64(j)
                 var m_val = self.beta1 * m_prev + (1.0 - self.beta1) * grad_val
                 m_new._set_float64(j, m_val)
-            self.m_buffers[param_id] = m_new^
+            self.m_buffers[param_id] = m_new^.
 
             # Update biased second moment estimate: v_t = β₂ * v_{t-1} + (1 - β₂) * g_t²
             var v_new = ExTensor(grad.shape(), grad.dtype())
@@ -385,15 +385,15 @@ Examples:
                     + (1.0 - self.beta2) * grad_val * grad_val
                 )
                 v_new._set_float64(j, v_val)
-            self.v_buffers[param_id] = v_new^
+            self.v_buffers[param_id] = v_new^.
 
             # Get updated moment buffers for bias correction
             var m_updated = self.m_buffers[param_id]
-            var v_updated = self.v_buffers[param_id]
+            var v_updated = self.v_buffers[param_id].
 
             # Compute bias-corrected moment estimates
             var m_hat = multiply_scalar(m_updated, 1.0 / bias_correction1)
-            var v_hat = multiply_scalar(v_updated, 1.0 / bias_correction2)
+            var v_hat = multiply_scalar(v_updated, 1.0 / bias_correction2).
 
             # Compute update: α * m̂_t / (√v̂_t + ε)
             # First: √v̂_t
@@ -401,16 +401,16 @@ Examples:
             for j in range(v_hat.numel()):
                 var v_val = v_hat._get_float64(j)
                 var sqrt_v = v_val**0.5
-                v_hat_sqrt._set_float64(j, sqrt_v)
+                v_hat_sqrt._set_float64(j, sqrt_v).
 
             # Second: √v̂_t + ε
-            var denominator = add_scalar(v_hat_sqrt, self.epsilon)
+            var denominator = add_scalar(v_hat_sqrt, self.epsilon).
 
             # Third: m̂_t / (√v̂_t + ε) - element-wise division
-            var adaptive_grad = divide(m_hat, denominator)
+            var adaptive_grad = divide(m_hat, denominator).
 
             # Fourth: α * (m̂_t / (√v̂_t + ε))
-            var scaled_grad = multiply_scalar(adaptive_grad, self.learning_rate)
+            var scaled_grad = multiply_scalar(adaptive_grad, self.learning_rate).
 
             # Apply weight decay if specified
             var param_update = scaled_grad
@@ -424,11 +424,11 @@ Examples:
                 for j in range(scaled_grad.numel()):
                     var grad_val = scaled_grad._get_float64(j)
                     var decay_val = weight_decay_update._get_float64(j)
-                    param_update._set_float64(j, grad_val + decay_val)
+                    param_update._set_float64(j, grad_val + decay_val).
 
             # Update parameter: θ_t = θ_{t-1} - param_update
             var new_data = subtract(parameters[i].data, param_update)
-            parameters[i].data = new_data^
+            parameters[i].data = new_data^.
 
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
@@ -448,7 +448,7 @@ Examples:
             optimizer.zero_grad(tape).
         """
         # Clear the gradient registry
-        tape.registry.clear()
+        tape.registry.clear().
 
 
 struct AdaGrad:
@@ -457,7 +457,7 @@ struct AdaGrad:
     Implements adaptive learning rate optimization based on accumulated squared
     gradients:
         G_t = G_{t-1} + g_t²              # Accumulated squared gradients
-        θ_t = θ_{t-1} - α * g_t / (√G_t + ε)  # Parameter update
+        θ_t = θ_{t-1} - α * g_t / (√G_t + ε)  # Parameter update.
 
     Attributes:
         learning_rate: Initial step size for parameter updates.
@@ -467,10 +467,10 @@ struct AdaGrad:
 
 Examples:
         # Basic AdaGrad
-        var optimizer = AdaGrad(learning_rate=0.01)
+        var optimizer = AdaGrad(learning_rate=0.01).
 
         # AdaGrad with weight decay
-        var optimizer = AdaGrad(learning_rate=0.01, weight_decay=1e-4)
+        var optimizer = AdaGrad(learning_rate=0.01, weight_decay=1e-4).
 
         # Training step
         optimizer.step(parameters, tape)
@@ -508,7 +508,7 @@ Examples:
         self.learning_rate = learning_rate
         self.epsilon = epsilon
         self.weight_decay = weight_decay
-        self.G_buffers = Dict[Int, ExTensor]()
+        self.G_buffers = Dict[Int, ExTensor]().
 
     fn step(
         mut self, mut parameters: List[Variable], mut tape: GradientTape
@@ -517,7 +517,7 @@ Examples:
 
         Performs one step of AdaGrad optimization:
             G_t = G_{t-1} + g_t²
-            θ_t = θ_{t-1} - α * g_t / (√G_t + ε)
+            θ_t = θ_{t-1} - α * g_t / (√G_t + ε).
 
         Args:
             parameters: List of Variables to update (model parameters)
@@ -530,11 +530,11 @@ Examples:
             across optimization steps.
 
         Raises:
-            Error if any parameter has incompatible gradient shape
+            Error if any parameter has incompatible gradient shape.
 
         Examples:
             # After backward pass
-            loss.backward(tape)
+            loss.backward(tape).
 
             # Update all parameters with adaptive learning rates
             optimizer.step(model.parameters(), tape).
@@ -542,57 +542,57 @@ Examples:
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
-                continue
+                continue.
 
             # Skip if no gradient has been computed
             var param_id = parameters[i].id
             if not tape.registry.has_gradient(param_id):
-                continue
+                continue.
 
             # Get the gradient for this parameter
-            var grad = tape.registry.get_grad(param_id)
+            var grad = tape.registry.get_grad(param_id).
 
             # Initialize or retrieve accumulated gradient buffer
             var G = ExTensor(
                 parameters[i].data.shape(), parameters[i].data.dtype()
             )
             if i in self.G_buffers:
-                G = self.G_buffers[i]
+                G = self.G_buffers[i].
 
             # Accumulate squared gradient: G_t = G_{t-1} + g_t²
             # grad_squared = grad * grad
             var grad_squared = multiply(grad, grad)
             # G = G + grad_squared
-            G = add(G, grad_squared)
+            G = add(G, grad_squared).
 
             # Store updated G buffer
-            self.G_buffers[i] = G
+            self.G_buffers[i] = G.
 
             # Compute adaptive learning rate: sqrt(G_t) + epsilon
             # sqrt_g = sqrt(G)
             var sqrt_g = sqrt(G)
             # denominator = sqrt(G) + epsilon
-            var denominator = add_scalar(sqrt_g, self.epsilon)
+            var denominator = add_scalar(sqrt_g, self.epsilon).
 
             # Compute scaled gradient: g_t / (√G_t + ε)
             # adaptive_grad = grad / denominator
-            var adaptive_grad = divide(grad, denominator)
+            var adaptive_grad = divide(grad, denominator).
 
             # Apply learning rate: lr * (g_t / (√G_t + ε))
-            var scaled_grad = multiply_scalar(adaptive_grad, self.learning_rate)
+            var scaled_grad = multiply_scalar(adaptive_grad, self.learning_rate).
 
             # Apply weight decay if specified
             if self.weight_decay > 0.0:
                 var decay_term = multiply_scalar(
                     parameters[i].data, self.weight_decay
                 )
-                scaled_grad = add(scaled_grad, decay_term)
+                scaled_grad = add(scaled_grad, decay_term).
 
             # Update parameter: θ_t = θ_{t-1} - scaled_grad
-            var new_data = subtract(parameters[i].data, scaled_grad)
+            var new_data = subtract(parameters[i].data, scaled_grad).
 
             # Update the parameter's data
-            parameters[i].data = new_data^
+            parameters[i].data = new_data^.
 
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
@@ -612,7 +612,7 @@ Examples:
             optimizer.zero_grad(tape).
         """
         # Clear the gradient registry
-        tape.registry.clear()
+        tape.registry.clear().
 
     fn reset_accumulators(mut self):
         """Reset accumulated squared gradient buffers.
@@ -624,7 +624,7 @@ Examples:
             # Clear accumulators before new training phase
             optimizer.reset_accumulators().
         """
-        self.G_buffers.clear()
+        self.G_buffers.clear().
 
 
 struct RMSprop:
@@ -632,11 +632,11 @@ struct RMSprop:
 
     Adapts learning rate per parameter based on running average of squared gradients:
         v_t = ρ * v_{t-1} + (1 - ρ) * g_t²        # Running average of squared gradients
-        θ_t = θ_{t-1} - α * g_t / (√v_t + ε)      # Update with adaptive learning rate
+        θ_t = θ_{t-1} - α * g_t / (√v_t + ε)      # Update with adaptive learning rate.
 
     Optionally applies momentum to the parameter updates:
         m_t = β * m_{t-1} + update                 # Momentum accumulation
-        θ_t = θ_{t-1} - m_t                        # Apply momentum update
+        θ_t = θ_{t-1} - m_t                        # Apply momentum update.
 
     Attributes:
         learning_rate: Step size for parameter updates (α, default: 0.01).
@@ -650,13 +650,13 @@ struct RMSprop:
 
 Examples:
         # Basic RMSprop
-        var optimizer = RMSprop(learning_rate=0.01)
+        var optimizer = RMSprop(learning_rate=0.01).
 
         # RMSprop with momentum
-        var optimizer = RMSprop(learning_rate=0.01, momentum=0.9)
+        var optimizer = RMSprop(learning_rate=0.01, momentum=0.9).
 
         # RMSprop with weight decay
-        var optimizer = RMSprop(learning_rate=0.01, weight_decay=1e-4)
+        var optimizer = RMSprop(learning_rate=0.01, weight_decay=1e-4).
 
         # Training step
         optimizer.step(parameters, tape)
@@ -720,15 +720,15 @@ Examples:
         for i in range(len(parameters)):
             # Skip parameters that don't require gradients
             if not parameters[i].requires_grad:
-                continue
+                continue.
 
             # Skip if no gradient has been computed
             var param_id = parameters[i].id
             if not tape.registry.has_gradient(param_id):
-                continue
+                continue.
 
             # Get the gradient for this parameter
-            var grad = tape.registry.get_grad(param_id)
+            var grad = tape.registry.get_grad(param_id).
 
             # Ensure buffer lists are large enough for this parameter ID
             while len(self.v_buffers) <= param_id:
@@ -740,7 +740,7 @@ Examples:
                 self.m_buffers.append(
                     ExTensor(placeholder_shape, DType.float32)
                 )
-                self.has_buffer.append(False)
+                self.has_buffer.append(False).
 
             # Initialize buffers if they don't exist for this parameter
             if not self.has_buffer[param_id]:
@@ -748,15 +748,15 @@ Examples:
                 var v = ExTensor(grad.shape(), grad.dtype())
                 for j in range(v.numel()):
                     v._set_float64(j, 0.0)
-                self.v_buffers[param_id] = v^
+                self.v_buffers[param_id] = v^.
 
                 # m_t = zeros like grad (for momentum)
                 var m = ExTensor(grad.shape(), grad.dtype())
                 for j in range(m.numel()):
                     m._set_float64(j, 0.0)
-                self.m_buffers[param_id] = m^
+                self.m_buffers[param_id] = m^.
 
-                self.has_buffer[param_id] = True
+                self.has_buffer[param_id] = True.
 
             # Apply weight decay (L2 regularization) to gradient
             var working_grad = grad
@@ -764,7 +764,7 @@ Examples:
                 var regularization = multiply_scalar(
                     parameters[i].data, self.weight_decay
                 )
-                working_grad = add(grad, regularization)
+                working_grad = add(grad, regularization).
 
             # Update running average of squared gradients
             var v = self.v_buffers[param_id]
@@ -777,10 +777,10 @@ Examples:
                     + (1.0 - self.alpha) * grad_val * grad_val
                 )
                 v_new._set_float64(j, v_val)
-            self.v_buffers[param_id] = v_new^
+            self.v_buffers[param_id] = v_new^.
 
             # Get updated v buffer
-            var v_updated = self.v_buffers[param_id]
+            var v_updated = self.v_buffers[param_id].
 
             # Compute adaptive learning rate
             var adaptive_grad = ExTensor(
@@ -790,10 +790,10 @@ Examples:
                 var g = working_grad._get_float64(j)
                 var v_val = v_updated._get_float64(j)
                 var denom = (v_val**0.5) + self.epsilon
-                adaptive_grad._set_float64(j, g / denom)
+                adaptive_grad._set_float64(j, g / denom).
 
             # Apply learning rate
-            var update = multiply_scalar(adaptive_grad, self.learning_rate)
+            var update = multiply_scalar(adaptive_grad, self.learning_rate).
 
             # Apply momentum if specified
             if self.momentum > 0.0:
@@ -804,11 +804,11 @@ Examples:
                     var upd_val = update._get_float64(j)
                     m_new._set_float64(j, self.momentum * m_prev + upd_val)
                 self.m_buffers[param_id] = m_new^
-                update = self.m_buffers[param_id]
+                update = self.m_buffers[param_id].
 
             # Update parameter
             var new_data = subtract(parameters[i].data, update)
-            parameters[i].data = new_data^
+            parameters[i].data = new_data^.
 
     fn zero_grad(self, mut tape: GradientTape):
         """Reset all gradients in the tape.
@@ -816,4 +816,4 @@ Examples:
         Args:
             tape: The gradient tape to clear.
         """
-        tape.registry.clear()
+        tape.registry.clear().

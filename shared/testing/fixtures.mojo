@@ -47,12 +47,12 @@ Args:
         num_classes: Number of output classes (default: 10).
 
 Returns:
-        Test CNN instance
+        Test CNN instance.
 
     Example:
         ```mojo
         var model = create_test_cnn(1, 8, 10)
-        assert_equal(model.num_classes, 10)
+        assert_equal(model.num_classes, 10).
 
         # Create custom channel configuration
         var custom_model = create_test_cnn(3, 32, 1000)
@@ -74,12 +74,12 @@ Args:
         out_features: Output dimension (default: 10 for MNIST classes).
 
 Returns:
-        Linear model instance
+        Linear model instance.
 
     Example:
         ```mojo
         var model = create_linear_model(784, 10)
-        assert_equal(model.out_features, 10)
+        assert_equal(model.out_features, 10).
 
         # Create custom dimensions
         var large_model = create_linear_model(2048, 1024)
@@ -102,7 +102,7 @@ Args:
         dtype: Data type (default: float32).
 
 Returns:
-        Input tensor (batch_size, in_features) filled with 1.0
+        Input tensor (batch_size, in_features) filled with 1.0.
 
     Example:
         ```mojo
@@ -130,7 +130,7 @@ Args:
         dtype: Data type (default: int32).
 
 Returns:
-        Target tensor (batch_size,) filled with 0
+        Target tensor (batch_size,) filled with 0.
 
     Example:
         ```mojo
@@ -151,7 +151,7 @@ Args:
         expected_shape: Expected shape dimensions.
 
 Returns:
-        True if shapes match, False otherwise
+        True if shapes match, False otherwise.
 
     Example:
         ```mojo
@@ -160,11 +160,11 @@ Returns:
         ```
     """
     if len(tensor._shape) != len(expected_shape):
-        return False
+        return False.
 
     for i in range(len(expected_shape)):
         if tensor._shape[i] != expected_shape[i]:
-            return False
+            return False.
 
     return True
 
@@ -177,7 +177,7 @@ Args:
         expected_dtype: Expected DType.
 
 Returns:
-        True if dtypes match, False otherwise
+        True if dtypes match, False otherwise.
 
     Example:
         ```mojo
@@ -195,7 +195,7 @@ Args:
         tensor: Tensor to check.
 
 Returns:
-        True if all values are finite, False if any NaN/Inf found
+        True if all values are finite, False if any NaN/Inf found.
 
     Example:
         ```mojo
@@ -210,7 +210,7 @@ Returns:
             return False
         # Check for Inf
         if val > 1e308 or val < -1e308:
-            return False
+            return False.
 
     return True
 
@@ -224,7 +224,7 @@ Args:
         tensor: Tensor to check.
 
 Returns:
-        True if at least one non-zero value exists, False if all zeros
+        True if at least one non-zero value exists, False if all zeros.
 
     Example:
         ```mojo
@@ -234,6 +234,6 @@ Returns:
     """
     for i in range(tensor.numel()):
         if tensor._get_float64(i) != 0.0:
-            return True
+            return True.
 
     return False

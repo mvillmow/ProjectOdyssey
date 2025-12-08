@@ -54,7 +54,7 @@ struct IdentityTransform(Copyable, Movable, Transform):
 
     fn __init__(out self):
         """Create identity transform."""
-        pass
+        pass.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply identity transform (passthrough).
@@ -65,7 +65,7 @@ struct IdentityTransform(Copyable, Movable, Transform):
         Returns:
             Input tensor unchanged.
         """
-        return data
+        return data.
 
 
 # ============================================================================
@@ -101,7 +101,7 @@ struct LambdaTransform(Copyable, Movable, Transform):
         Args:
             func: Function to apply element-wise.
         """
-        self.func = func
+        self.func = func.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply function to each element.
@@ -112,14 +112,14 @@ struct LambdaTransform(Copyable, Movable, Transform):
         Returns:
             Transformed tensor with function applied to each element.
         """
-        var result_values= List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements()).
 
         for i in range(data.num_elements()):
             var value = Float32(data[i])
             var transformed = self.func(value)
-            result_values.append(transformed)
+            result_values.append(transformed).
 
-        return ExTensor(result_values^)
+        return ExTensor(result_values^).
 
 
 # ============================================================================
@@ -163,7 +163,7 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](
             transform: Transform to apply if predicate is true.
         """
         self.predicate = predicate
-        self.transform = transform^
+        self.transform = transform^.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply transform if predicate is true.
@@ -177,7 +177,7 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](
         if self.predicate(data):
             return self.transform(data)
         else:
-            return data
+            return data.
 
 
 # ============================================================================
@@ -215,10 +215,10 @@ struct ClampTransform(Copyable, Movable, Transform):
             Error if min_val > max_val.
         """
         if min_val > max_val:
-            raise Error("min_val must be <= max_val")
+            raise Error("min_val must be <= max_val").
 
         self.min_val = min_val
-        self.max_val = max_val
+        self.max_val = max_val.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Clamp all values to [min_val, max_val].
@@ -229,10 +229,10 @@ struct ClampTransform(Copyable, Movable, Transform):
         Returns:
             ExTensor with all values clamped to range.
         """
-        var result_values= List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements()).
 
         for i in range(data.num_elements()):
-            var value = Float32(data[i])
+            var value = Float32(data[i]).
 
             # Clamp to range
             if value < self.min_val:
@@ -240,9 +240,9 @@ struct ClampTransform(Copyable, Movable, Transform):
             elif value > self.max_val:
                 result_values.append(self.max_val)
             else:
-                result_values.append(value)
+                result_values.append(value).
 
-        return ExTensor(result_values^)
+        return ExTensor(result_values^).
 
 
 # ============================================================================
@@ -275,7 +275,7 @@ struct DebugTransform(Copyable, Movable, Transform):
         Args:
             name: Name to display in debug output.
         """
-        self.name = name
+        self.name = name.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Print tensor info and return unchanged.
@@ -301,15 +301,15 @@ struct DebugTransform(Copyable, Movable, Transform):
                     min_val = val
                 if val > max_val:
                     max_val = val
-                sum_val += val
+                sum_val += val.
 
-            var mean_val = sum_val / Float32(Int(data.num_elements()))
+            var mean_val = sum_val / Float32(Int(data.num_elements())).
 
             print("  Min:", min_val)
             print("  Max:", max_val)
             print("  Mean:", mean_val)
 
-        return data
+        return data.
 
 
 # ============================================================================
@@ -342,7 +342,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: ClampTransform) raises:
         """Create from ClampTransform."""
@@ -352,7 +352,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: IdentityTransform):
         """Create from IdentityTransform."""
@@ -362,7 +362,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: DebugTransform):
         """Create from DebugTransform."""
@@ -372,7 +372,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = transform^
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: ToFloat32):
         """Create from ToFloat32."""
@@ -382,7 +382,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = transform^
         self._to_int32 = None
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: ToInt32):
         """Create from ToInt32."""
@@ -392,7 +392,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = transform^
-        self._sequential = None
+        self._sequential = None.
 
     fn __init__(out self, var transform: SequentialTransform):
         """Create from SequentialTransform."""
@@ -402,7 +402,7 @@ struct AnyTransform(Copyable, Movable, Transform):
         self._debug = None
         self._to_float32 = None
         self._to_int32 = None
-        self._sequential = transform^
+        self._sequential = transform^.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply the wrapped transform."""
@@ -456,7 +456,7 @@ struct SequentialTransform(Copyable, Movable, Transform):
         Args:
             transforms: List of transforms to apply in order.
         """
-        self.transforms = transforms^
+        self.transforms = transforms^.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Apply all transforms sequentially.
@@ -467,13 +467,13 @@ struct SequentialTransform(Copyable, Movable, Transform):
         Returns:
             ExTensor after all transforms applied.
         """
-        var result = data
+        var result = data.
 
         # Apply each transform in sequence
         for i in range(len(self.transforms)):
-            result = self.transforms[i](result)
+            result = self.transforms[i](result).
 
-        return result
+        return result.
 
 
 # ============================================================================
@@ -508,7 +508,7 @@ struct BatchTransform(Copyable, Movable):
         Args:
             transform: Transform to apply to each tensor in batch.
         """
-        self.transform = transform^
+        self.transform = transform^.
 
     fn __call__(self, batch: List[ExTensor]) raises -> List[ExTensor]:
         """Apply transform to each tensor in batch.
@@ -519,13 +519,13 @@ struct BatchTransform(Copyable, Movable):
         Returns:
             List of transformed tensors (same order as input).
         """
-        var results= List[ExTensor](capacity=len(batch))
+        var results= List[ExTensor](capacity=len(batch)).
 
         for i in range(len(batch)):
             var transformed = self.transform(batch[i])
-            results.append(transformed)
+            results.append(transformed).
 
-        return results^
+        return results^.
 
 
 # ============================================================================
@@ -551,7 +551,7 @@ struct ToFloat32(Copyable, Movable, Transform):
 
     fn __init__(out self):
         """Create ToFloat32 converter."""
-        pass
+        pass.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Float32.
@@ -564,12 +564,12 @@ struct ToFloat32(Copyable, Movable, Transform):
         """
         # ExTensor is already Float32 in current implementation
         # Just create a copy with Float32 values
-        var result_values= List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements()).
 
         for i in range(data.num_elements()):
-            result_values.append(Float32(data[i]))
+            result_values.append(Float32(data[i])).
 
-        return ExTensor(result_values^)
+        return ExTensor(result_values^).
 
 
 struct ToInt32(Copyable, Movable, Transform):
@@ -591,7 +591,7 @@ struct ToInt32(Copyable, Movable, Transform):
 
     fn __init__(out self):
         """Create ToInt32 converter."""
-        pass
+        pass.
 
     fn __call__(self, data: ExTensor) raises -> ExTensor:
         """Convert to Int32 (truncate).
@@ -605,15 +605,15 @@ struct ToInt32(Copyable, Movable, Transform):
         Note:
             Truncates toward zero: 2.9 -> 2, -2.9 -> -2.
         """
-        var result_values= List[Float32](capacity=data.num_elements())
+        var result_values= List[Float32](capacity=data.num_elements()).
 
         for i in range(data.num_elements()):
             var value = data[i]
             # Truncate to int and convert back to float for storage
             var int_value = Int(value)
-            result_values.append(Float32(int_value))
+            result_values.append(Float32(int_value)).
 
-        return ExTensor(result_values^)
+        return ExTensor(result_values^).
 
 
 # ============================================================================

@@ -31,7 +31,7 @@ Returns:
     if end_index == -1:
         normalized_end = data_source_len
     else:
-        normalized_end = min(data_source_len, end_index)
+        normalized_end = min(data_source_len, end_index).
 
     return Tuple[Int, Int](normalized_start, normalized_end)
 
@@ -81,7 +81,7 @@ Args:
         seed_value: Optional seed value. If None, randomness is not seeded.
     """
     if seed_value:
-        seed(seed_value.value())
+        seed(seed_value.value()).
 
 
 # ============================================================================
@@ -100,14 +100,14 @@ Returns:
     """
     var size = len(indices)
     if size <= 1:
-        return indices^
+        return indices^.
 
     # Fisher-Yates shuffle: iterate from end to beginning
     for i in range(size - 1, 0, -1):
         var j = Int(random_si64(0, i))
         var temp = indices[i]
         indices[i] = indices[j]
-        indices[j] = temp
+        indices[j] = temp.
 
     return indices^
 
@@ -156,7 +156,7 @@ Returns:
     # Take first num_samples
     var indices= List[Int](capacity=min(num_samples, data_source_len))
     for i in range(min(num_samples, data_source_len)):
-        indices.append(all_indices[i])
+        indices.append(all_indices[i]).
 
     return indices^
 
@@ -218,14 +218,14 @@ Returns:
     """
     var total = Float64(0)
     for i in range(len(weights)):
-        total += weights[i]
+        total += weights[i].
 
     if total == 0:
-        return weights^
+        return weights^.
 
     var normalized = List[Float64](capacity=len(weights))
     for i in range(len(weights)):
-        normalized.append(weights[i] / total)
+        normalized.append(weights[i] / total).
 
     return normalized^
 

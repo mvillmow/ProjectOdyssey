@@ -58,7 +58,7 @@ Examples:
     elif frac >= Scalar[T](0.5):
         return math_ceil(x)
     else:
-        return floor_val
+        return floor_val.
 
 
 # ============================================================================
@@ -72,7 +72,7 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if x >= Scalar[T](0):
         return x
     else:
-        return -x
+        return -x.
 
 
 fn abs(tensor: ExTensor) raises -> ExTensor:
@@ -82,11 +82,11 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        A new tensor with absolute values
+        A new tensor with absolute values.
 
 Examples:
         var a = full(shape, -3.0, DType.float32)
-        var b = abs(a)  # All values become 3.0
+        var b = abs(a)  # All values become 3.0.
     """
     return dispatch_unary[_abs_op](tensor)
 
@@ -99,7 +99,7 @@ fn _sign_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     elif x < Scalar[T](0):
         return Scalar[T](-1)
     else:
-        return Scalar[T](0)
+        return Scalar[T](0).
 
 
 fn sign(tensor: ExTensor) raises -> ExTensor:
@@ -109,11 +109,11 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        A new tensor with sign values (-1 for negative, 0 for zero, 1 for positive)
+        A new tensor with sign values (-1 for negative, 0 for zero, 1 for positive).
 
 Examples:
         var a = tensor([-2.0, 0.0, 3.0])
-        var b = sign(a)  # [-1.0, 0.0, 1.0]
+        var b = sign(a)  # [-1.0, 0.0, 1.0].
     """
     return dispatch_unary[_sign_op](tensor)
 
@@ -126,7 +126,7 @@ fn _exp_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_exp(Float32(x)))
     else:
-        return Scalar[T](math_exp(Float64(x)))
+        return Scalar[T](math_exp(Float64(x))).
 
 
 fn exp(tensor: ExTensor) raises -> ExTensor:
@@ -136,7 +136,7 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        A new tensor with exponential values
+        A new tensor with exponential values.
 
 Examples:
         var a = zeros(shape, DType.float32)
@@ -153,7 +153,7 @@ fn _log_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_log(Float32(x)))
     else:
-        return Scalar[T](math_log(Float64(x)))
+        return Scalar[T](math_log(Float64(x))).
 
 
 fn log(tensor: ExTensor) raises -> ExTensor:
@@ -183,7 +183,7 @@ fn _sqrt_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_sqrt(Float32(x)))
     else:
-        return Scalar[T](math_sqrt(Float64(x)))
+        return Scalar[T](math_sqrt(Float64(x))).
 
 
 fn sqrt(tensor: ExTensor) raises -> ExTensor:
@@ -193,14 +193,14 @@ Args:
         tensor: Input tensor (must have non-negative values).
 
 Returns:
-        A new tensor with square root values
+        A new tensor with square root values.
 
 Raises:
-        Error if any value is < 0
+        Error if any value is < 0.
 
 Examples:
         var a = full(shape, 4.0, DType.float32)
-        var b = sqrt(a)  # All values become 2.0
+        var b = sqrt(a)  # All values become 2.0.
     """
     return dispatch_float_unary[_sqrt_op](tensor)
 
@@ -213,7 +213,7 @@ fn _sin_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_sin(Float32(x)))
     else:
-        return Scalar[T](math_sin(Float64(x)))
+        return Scalar[T](math_sin(Float64(x))).
 
 
 fn sin(tensor: ExTensor) raises -> ExTensor:
@@ -240,7 +240,7 @@ fn _cos_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_cos(Float32(x)))
     else:
-        return Scalar[T](math_cos(Float64(x)))
+        return Scalar[T](math_cos(Float64(x))).
 
 
 fn cos(tensor: ExTensor) raises -> ExTensor:
@@ -250,7 +250,7 @@ Args:
         tensor: Input tensor (values in radians).
 
 Returns:
-        A new tensor with cosine values
+        A new tensor with cosine values.
 
 Examples:
         var a = zeros(shape, DType.float32)
@@ -267,7 +267,7 @@ fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_tanh(Float32(x)))
     else:
-        return Scalar[T](math_tanh(Float64(x)))
+        return Scalar[T](math_tanh(Float64(x))).
 
 
 fn tanh(tensor: ExTensor) raises -> ExTensor:
@@ -304,10 +304,10 @@ Raises:
 
 Examples:
         var a = tensor([-5.0, 0.0, 10.0])
-        var b = clip(a, 0.0, 5.0)  # [0.0, 0.0, 5.0]
+        var b = clip(a, 0.0, 5.0)  # [0.0, 0.0, 5.0].
     """
     if min_val > max_val:
-        raise Error("clip requires min_val <= max_val")
+        raise Error("clip requires min_val <= max_val").
 
     var result = ExTensor(tensor.shape(), tensor.dtype())
 
@@ -318,7 +318,7 @@ Examples:
             val = min_val
         elif val > max_val:
             val = max_val
-        result._set_float64(i, val)
+        result._set_float64(i, val).
 
     return result^
 
@@ -336,7 +336,7 @@ fn _ceil_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_ceil(Float32(x)))
     else:
-        return Scalar[T](math_ceil(Float64(x)))
+        return Scalar[T](math_ceil(Float64(x))).
 
 
 fn ceil(tensor: ExTensor) raises -> ExTensor:
@@ -346,11 +346,11 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        A new tensor with ceiling values
+        A new tensor with ceiling values.
 
 Examples:
         var a = tensor([1.2, 2.5, 3.9])
-        var b = ceil(a)  # [2.0, 3.0, 4.0]
+        var b = ceil(a)  # [2.0, 3.0, 4.0].
     """
     return dispatch_float_unary[_ceil_op](tensor)
 
@@ -363,7 +363,7 @@ fn _floor_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_floor(Float32(x)))
     else:
-        return Scalar[T](math_floor(Float64(x)))
+        return Scalar[T](math_floor(Float64(x))).
 
 
 fn floor(tensor: ExTensor) raises -> ExTensor:
@@ -377,7 +377,7 @@ Returns:
 
 Examples:
         var a = tensor([1.2, 2.5, 3.9])
-        var b = floor(a)  # [1.0, 2.0, 3.0]
+        var b = floor(a)  # [1.0, 2.0, 3.0].
     """
     return dispatch_float_unary[_floor_op](tensor)
 
@@ -390,7 +390,7 @@ fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_round(Float32(x)))
     else:
-        return Scalar[T](math_round(Float64(x)))
+        return Scalar[T](math_round(Float64(x))).
 
 
 fn round(tensor: ExTensor) raises -> ExTensor:
@@ -400,7 +400,7 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        A new tensor with rounded values
+        A new tensor with rounded values.
 
 Examples:
         var a = tensor([1.2, 2.5, 3.9])
@@ -417,7 +417,7 @@ fn _trunc_op[T: DType](x: Scalar[T]) -> Scalar[T]:
     if T == DType.float16 or T == DType.float32:
         return Scalar[T](math_trunc(Float32(x)))
     else:
-        return Scalar[T](math_trunc(Float64(x)))
+        return Scalar[T](math_trunc(Float64(x))).
 
 
 fn trunc(tensor: ExTensor) raises -> ExTensor:
@@ -431,14 +431,14 @@ Returns:
 
 Examples:
         var a = tensor([1.9, -2.9, 3.1])
-        var b = trunc(a)  # [1.0, -2.0, 3.0]
+        var b = trunc(a)  # [1.0, -2.0, 3.0].
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
 
     var numel = tensor.numel()
     for i in range(numel):
         var val = tensor._get_float64(i)
-        result._set_float64(i, math_trunc(val))
+        result._set_float64(i, math_trunc(val)).
 
     return result^
 
@@ -456,7 +456,7 @@ Args:
         b: Second input tensor.
 
 Returns:
-        Boolean tensor (True where both are non-zero)
+        Boolean tensor (True where both are non-zero).
 
 Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -468,7 +468,7 @@ Raises:
 Examples:
         var a = tensor([0.0, 1.0, 2.0])
         var b = tensor([0.0, 0.0, 1.0])
-        var c = logical_and(a, b)  # [False, False, True]
+        var c = logical_and(a, b)  # [False, False, True].
 
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
@@ -489,39 +489,39 @@ Examples:
     # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
+        total_elems *= result_shape[i].
 
     # Precompute row-major strides for result shape
     var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
-        stride *= result_shape[i]
+        stride *= result_shape[i].
 
     # Reverse to get correct order (left-to-right)
     var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
+        result_strides_final.append(result_strides[i]).
 
     # Iterate over all result elements
     for result_idx in range(total_elems):
         var idx_a = 0
         var idx_b = 0
-        var temp_idx = result_idx
+        var temp_idx = result_idx.
 
         # Convert flat index to multi-dimensional coordinates, then compute source indices
         for dim in range(len(result_shape)):
             var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
+            temp_idx = temp_idx % result_strides_final[dim].
 
             idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
+            idx_b += coord * strides_b[dim].
 
         # Perform logical AND: True if both non-zero
         var val_a = a._get_float64(idx_a)
         var val_b = b._get_float64(idx_b)
         var bool_result = (val_a != 0.0) and (val_b != 0.0)
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
+        result._set_float64(result_idx, 1.0 if bool_result else 0.0).
 
     return result^
 
@@ -534,7 +534,7 @@ Args:
         b: Second input tensor.
 
 Returns:
-        Boolean tensor (True where either is non-zero)
+        Boolean tensor (True where either is non-zero).
 
 Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -546,7 +546,7 @@ Raises:
 Examples:
         var a = tensor([0.0, 1.0, 2.0])
         var b = tensor([0.0, 0.0, 1.0])
-        var c = logical_or(a, b)  # [False, True, True]
+        var c = logical_or(a, b)  # [False, True, True].
 
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
@@ -567,39 +567,39 @@ Examples:
     # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
+        total_elems *= result_shape[i].
 
     # Precompute row-major strides for result shape
     var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
-        stride *= result_shape[i]
+        stride *= result_shape[i].
 
     # Reverse to get correct order (left-to-right)
     var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
+        result_strides_final.append(result_strides[i]).
 
     # Iterate over all result elements
     for result_idx in range(total_elems):
         var idx_a = 0
         var idx_b = 0
-        var temp_idx = result_idx
+        var temp_idx = result_idx.
 
         # Convert flat index to multi-dimensional coordinates, then compute source indices
         for dim in range(len(result_shape)):
             var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
+            temp_idx = temp_idx % result_strides_final[dim].
 
             idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
+            idx_b += coord * strides_b[dim].
 
         # Perform logical OR: True if either non-zero
         var val_a = a._get_float64(idx_a)
         var val_b = b._get_float64(idx_b)
         var bool_result = (val_a != 0.0) or (val_b != 0.0)
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
+        result._set_float64(result_idx, 1.0 if bool_result else 0.0).
 
     return result^
 
@@ -611,11 +611,11 @@ Args:
         tensor: Input tensor.
 
 Returns:
-        Boolean tensor (True where input is zero)
+        Boolean tensor (True where input is zero).
 
 Examples:
         var a = tensor([0.0, 1.0, 2.0])
-        var b = logical_not(a)  # [True, False, False]
+        var b = logical_not(a)  # [True, False, False].
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
 
@@ -624,7 +624,7 @@ Examples:
         var val = tensor._get_float64(i)
         # True if zero
         var bool_result = val == 0.0
-        result._set_float64(i, 1.0 if bool_result else 0.0)
+        result._set_float64(i, 1.0 if bool_result else 0.0).
 
     return result^
 
@@ -637,7 +637,7 @@ Args:
         b: Second input tensor.
 
 Returns:
-        Boolean tensor (True where exactly one is non-zero)
+        Boolean tensor (True where exactly one is non-zero).
 
 Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -649,7 +649,7 @@ Raises:
 Examples:
         var a = tensor([0.0, 1.0, 0.0, 1.0])
         var b = tensor([0.0, 0.0, 1.0, 1.0])
-        var c = logical_xor(a, b)  # [False, True, True, False]
+        var c = logical_xor(a, b)  # [False, True, True, False].
 
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
@@ -670,33 +670,33 @@ Examples:
     # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
+        total_elems *= result_shape[i].
 
     # Precompute row-major strides for result shape
     var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
-        stride *= result_shape[i]
+        stride *= result_shape[i].
 
     # Reverse to get correct order (left-to-right)
     var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
+        result_strides_final.append(result_strides[i]).
 
     # Iterate over all result elements
     for result_idx in range(total_elems):
         var idx_a = 0
         var idx_b = 0
-        var temp_idx = result_idx
+        var temp_idx = result_idx.
 
         # Convert flat index to multi-dimensional coordinates, then compute source indices
         for dim in range(len(result_shape)):
             var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
+            temp_idx = temp_idx % result_strides_final[dim].
 
             idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
+            idx_b += coord * strides_b[dim].
 
         # Perform logical XOR: True if exactly one is non-zero
         var val_a = a._get_float64(idx_a)
@@ -704,7 +704,7 @@ Examples:
         var bool_a = val_a != 0.0
         var bool_b = val_b != 0.0
         var bool_result = bool_a != bool_b  # XOR
-        result._set_float64(result_idx, 1.0 if bool_result else 0.0)
+        result._set_float64(result_idx, 1.0 if bool_result else 0.0).
 
     return result^
 
@@ -728,7 +728,7 @@ Raises:
 
 Examples:
         var a = tensor([1.0, 10.0, 100.0])
-        var b = log10(a)  # [0.0, 1.0, 2.0]
+        var b = log10(a)  # [0.0, 1.0, 2.0].
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
 
@@ -738,7 +738,7 @@ Examples:
         if val <= 0.0:
             raise Error("log10 requires positive values, got " + String(val))
         # log10(x) = log(x) / log(10)
-        result._set_float64(i, math_log(val) / math_log(10.0))
+        result._set_float64(i, math_log(val) / math_log(10.0)).
 
     return result^
 
@@ -757,7 +757,7 @@ Raises:
 
 Examples:
         var a = tensor([1.0, 2.0, 8.0])
-        var b = log2(a)  # [0.0, 1.0, 3.0]
+        var b = log2(a)  # [0.0, 1.0, 3.0].
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
 
@@ -767,7 +767,7 @@ Examples:
         if val <= 0.0:
             raise Error("log2 requires positive values, got " + String(val))
         # log2(x) = log(x) / log(2)
-        result._set_float64(i, math_log(val) / math_log(2.0))
+        result._set_float64(i, math_log(val) / math_log(2.0)).
 
     return result^
 
@@ -781,14 +781,14 @@ fn exp_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for exponential function.
 
     For Y = exp(X), given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y * exp(X)
+        ∂L/∂X = ∂L/∂Y * exp(X).
 
 Args:
         grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass.
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
 Examples:
         var x = ones([3, 4])
@@ -801,7 +801,7 @@ Examples:
         var grad = grad_output._get_float64(i)
         var x_val = x._get_float64(i)
         # Compute exp(x) for the gradient
-        result._set_float64(i, grad * math_exp(x_val))
+        result._set_float64(i, grad * math_exp(x_val)).
 
     return result
 
@@ -810,7 +810,7 @@ fn log_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for natural logarithm.
 
     For Y = log(X), given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y / X
+        ∂L/∂X = ∂L/∂Y / X.
 
     Includes numerical stability: adds epsilon to prevent division by zero.
 
@@ -819,13 +819,13 @@ Args:
         x: Input from forward pass (must be positive).
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
 Examples:
         var x = full([3, 4], 2.0)
         var y = log(x)
         var grad_y = ones([3, 4])
-        var grad_x = log_backward(grad_y, x)  # grad_x = grad_y / x
+        var grad_x = log_backward(grad_y, x)  # grad_x = grad_y / x.
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero.
@@ -838,7 +838,7 @@ Examples:
         var grad = grad_output._get_float64(i)
         var x_val = x._get_float64(i)
         # Add epsilon for numerical stability
-        result._set_float64(i, grad / (x_val + EPSILON))
+        result._set_float64(i, grad / (x_val + EPSILON)).
 
     return result
 
@@ -847,19 +847,19 @@ fn sqrt_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for square root.
 
     For Y = sqrt(X), given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y / (2 * sqrt(X))
+        ∂L/∂X = ∂L/∂Y / (2 * sqrt(X)).
 
 Args:
         grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass.
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
 Examples:
         var x = full([3, 4], 4.0)
         var grad_y = ones([3, 4])
-        var grad_x = sqrt_backward(grad_y, x)  # grad_x = grad_y / (2 * sqrt(4.0)) = 0.25
+        var grad_x = sqrt_backward(grad_y, x)  # grad_x = grad_y / (2 * sqrt(4.0)) = 0.25.
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero when sqrt(X) ≈ 0.
@@ -873,7 +873,7 @@ Examples:
         var x_val = x._get_float64(i)
         # grad / (2 * sqrt(x))
         # Add epsilon for numerical stability
-        result._set_float64(i, grad / (2.0 * math_sqrt(x_val) + EPSILON))
+        result._set_float64(i, grad / (2.0 * math_sqrt(x_val) + EPSILON)).
 
     return result
 
@@ -882,7 +882,7 @@ fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for absolute value.
 
     For Y = |X|, given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y * sign(X)
+        ∂L/∂X = ∂L/∂Y * sign(X).
 
     where sign(X) = 1 if X > 0, -1 if X < 0, 0 if X = 0.
 
@@ -893,19 +893,19 @@ Args:
         x: Input from forward pass.
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
 Examples:
         var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
         var y = abs(x)
         var grad_y = ones([5])
-        var grad_x = abs_backward(grad_y, x)  # [-1, -1, 0, 1, 1]
+        var grad_x = abs_backward(grad_y, x)  # [-1, -1, 0, 1, 1].
     """
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
-        var x_val = x._get_float64(i)
+        var x_val = x._get_float64(i).
 
         # Compute sign(x): 1 if x > 0, -1 if x < 0, 0 if x = 0
         var sign_x: Float64 = 0.0
@@ -915,7 +915,7 @@ Examples:
             sign_x = -1.0
         # else: sign_x = 0.0 (at x=0, gradient is undefined, use 0)
 
-        result._set_float64(i, grad * sign_x)
+        result._set_float64(i, grad * sign_x).
 
     return result
 
@@ -927,7 +927,7 @@ fn clip_backward(
 
     For Y = clip(X, min, max), given ∂L/∂Y, computes:
         ∂L/∂X = ∂L/∂Y  if min <= X <= max
-        ∂L/∂X = 0       if X < min or X > max
+        ∂L/∂X = 0       if X < min or X > max.
 
     Gradient flows through only where input is within bounds.
 
@@ -938,25 +938,25 @@ Args:
         max_val: Maximum clip value.
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
 Examples:
         var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
         var y = clip(x, -1.0, 1.0)  # [-1, -1, 0, 1, 1]
         var grad_y = ones([5])
-        var grad_x = clip_backward(grad_y, x, -1.0, 1.0)  # [0, 1, 1, 1, 0]
+        var grad_x = clip_backward(grad_y, x, -1.0, 1.0)  # [0, 1, 1, 1, 0].
     """
     var result = ExTensor(grad_output.shape(), grad_output.dtype())
 
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
-        var x_val = x._get_float64(i)
+        var x_val = x._get_float64(i).
 
         # Gradient flows through only if min <= x <= max
         if x_val >= min_val and x_val <= max_val:
             result._set_float64(i, grad)
         else:
-            result._set_float64(i, 0.0)
+            result._set_float64(i, 0.0).
 
     return result
 
@@ -965,14 +965,14 @@ fn log10_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for base-10 logarithm.
 
     For Y = log10(X), given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y / (X * ln(10))
+        ∂L/∂X = ∂L/∂Y / (X * ln(10)).
 
 Args:
         grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass (must be positive).
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero.
@@ -985,7 +985,7 @@ Returns:
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
         var x_val = x._get_float64(i)
-        result._set_float64(i, grad / (x_val * LN10 + EPSILON))
+        result._set_float64(i, grad / (x_val * LN10 + EPSILON)).
 
     return result
 
@@ -994,14 +994,14 @@ fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     """Compute gradient for base-2 logarithm.
 
     For Y = log2(X), given ∂L/∂Y, computes:
-        ∂L/∂X = ∂L/∂Y / (X * ln(2))
+        ∂L/∂X = ∂L/∂Y / (X * ln(2)).
 
 Args:
         grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass (must be positive).
 
 Returns:
-        Gradient w.r.t. input (∂L/∂X)
+        Gradient w.r.t. input (∂L/∂X).
 
     Numerical Stability:
         Uses epsilon = 1e-10 to prevent division by zero.
@@ -1014,6 +1014,6 @@ Returns:
     for i in range(grad_output.numel()):
         var grad = grad_output._get_float64(i)
         var x_val = x._get_float64(i)
-        result._set_float64(i, grad / (x_val * LN2 + EPSILON))
+        result._set_float64(i, grad / (x_val * LN2 + EPSILON)).
 
     return result

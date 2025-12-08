@@ -60,15 +60,15 @@ Returns:
         Output tensor of shape (batch, out_channels, out_height, out_width)
         where:
             out_height = (height + 2*padding - kH) // stride + 1
-            out_width = (width + 2*padding - kW) // stride + 1
+            out_width = (width + 2*padding - kW) // stride + 1.
 
     Example:
         ```mojo
-        from shared.core import ExTensor, conv2d, zeros, he_uniform
+        from shared.core import ExTensor, conv2d, zeros, he_uniform.
 
         # Caller manages state
         var kernel = he_uniform((16, 3, 3, 3), DType.float32)  # 16 filters, 3x3
-        var bias = zeros(16, DType.float32)
+        var bias = zeros(16, DType.float32).
 
         # Pure function call
         var output = conv2d(input, kernel, bias, stride=1, padding=1)
@@ -80,7 +80,7 @@ Raises:
     # Get input dimensions
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("Input must be 4D tensor (batch, channels, height, width)")
+        raise Error("Input must be 4D tensor (batch, channels, height, width)").
 
     var batch = x_shape[0]
     var in_channels = x_shape[1]
@@ -100,7 +100,7 @@ Raises:
     var kW = k_shape[3]
 
     if kernel_in_channels != in_channels:
-        raise Error("Kernel in_channels must match input in_channels")
+        raise Error("Kernel in_channels must match input in_channels").
 
     # Compute output dimensions using shape computation helper
     var out_h, var out_w = conv2d_output_shape(
@@ -125,11 +125,11 @@ Raises:
             # For each output position
             for oh in range(out_height):
                 for ow in range(out_width):
-                    var sum_val = Float32(0.0)
+                    var sum_val = Float32(0.0).
 
                     # Compute input position
                     var in_h_start = oh * stride - padding
-                    var in_w_start = ow * stride - padding
+                    var in_w_start = ow * stride - padding.
 
                     # Convolve over input channels and kernel
                     for ic in range(in_channels):
@@ -137,7 +137,7 @@ Raises:
                             for kw in range(kW):
                                 # Input position with padding
                                 var in_h = in_h_start + kh
-                                var in_w = in_w_start + kw
+                                var in_w = in_w_start + kw.
 
                                 # Check bounds (zero padding)
                                 if (
@@ -158,20 +158,20 @@ Raises:
                                         + ic * (kH * kW)
                                         + kh * kW
                                         + kw
-                                    )
+                                    ).
 
                                     var in_val = x._data.bitcast[Float32]()[
                                         in_idx
                                     ]
                                     var k_val = kernel._data.bitcast[Float32]()[
                                         k_idx
-                                    ]
+                                    ].
 
-                                    sum_val += in_val * k_val
+                                    sum_val += in_val * k_val.
 
                     # Add bias
                     var b_val = bias._data.bitcast[Float32]()[oc]
-                    sum_val += b_val
+                    sum_val += b_val.
 
                     # Write to output
                     var out_idx = (
@@ -180,7 +180,7 @@ Raises:
                         + oh * out_width
                         + ow
                     )
-                    output._data.bitcast[Float32]()[out_idx] = sum_val
+                    output._data.bitcast[Float32]()[out_idx] = sum_val.
 
     return output^
 
@@ -200,7 +200,7 @@ Args:
         padding: Zero-padding added to input (default: 0).
 
 Returns:
-        Output tensor of shape (batch, out_channels, out_height, out_width)
+        Output tensor of shape (batch, out_channels, out_height, out_width).
 
 Raises:
         Error: If tensor shapes are incompatible.
@@ -248,7 +248,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import conv2d, conv2d_backward
+        from shared.core import conv2d, conv2d_backward.
 
         # Forward pass
         var output = conv2d(x, kernel, bias, stride, padding)
@@ -298,7 +298,7 @@ Raises:
         for ic in range(in_channels):
             for ih in range(in_height):
                 for iw in range(in_width):
-                    var grad_sum = Float32(0.0)
+                    var grad_sum = Float32(0.0).
 
                     # This input position (ih, iw) contributed to output positions (oh, ow)
                     # where: ih = oh * stride - padding + kh
@@ -308,7 +308,7 @@ Raises:
                             # Compute kernel offsets that would access this input position
                             # from this output position in the forward pass
                             var kh = ih - oh * stride + padding
-                            var kw = iw - ow * stride + padding
+                            var kw = iw - ow * stride + padding.
 
                             # Check if kernel offsets are valid
                             if kh >= 0 and kh < kH and kw >= 0 and kw < kW:
@@ -330,7 +330,7 @@ Raises:
                                         grad_output._data.bitcast[Float32]()[
                                             grad_out_idx
                                         ]
-                                    )
+                                    ).
 
                                     # Get kernel value
                                     var k_idx = (
@@ -341,9 +341,9 @@ Raises:
                                     )
                                     var k_val = kernel._data.bitcast[Float32]()[
                                         k_idx
-                                    ]
+                                    ].
 
-                                    grad_sum += grad_out_val * k_val
+                                    grad_sum += grad_out_val * k_val.
 
                     # Write to grad_input
                     var grad_in_idx = (
@@ -352,7 +352,7 @@ Raises:
                         + ih * in_width
                         + iw
                     )
-                    grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum
+                    grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum.
 
     # Compute grad_kernel
     # For each kernel position, sum input * grad_output over all valid positions
@@ -360,7 +360,7 @@ Raises:
         for ic in range(in_channels):
             for kh in range(kH):
                 for kw in range(kW):
-                    var grad_sum = Float32(0.0)
+                    var grad_sum = Float32(0.0).
 
                     # For each batch element
                     for b in range(batch):
@@ -369,7 +369,7 @@ Raises:
                             for ow in range(out_width):
                                 # Compute input position
                                 var in_h = oh * stride - padding + kh
-                                var in_w = ow * stride - padding + kw
+                                var in_w = ow * stride - padding + kw.
 
                                 # Check bounds
                                 if (
@@ -387,7 +387,7 @@ Raises:
                                     )
                                     var in_val = x._data.bitcast[Float32]()[
                                         in_idx
-                                    ]
+                                    ].
 
                                     # Get grad_output value
                                     var grad_out_idx = (
@@ -405,9 +405,9 @@ Raises:
                                         grad_output._data.bitcast[Float32]()[
                                             grad_out_idx
                                         ]
-                                    )
+                                    ).
 
-                                    grad_sum += in_val * grad_out_val
+                                    grad_sum += in_val * grad_out_val.
 
                     # Write to grad_kernel
                     var grad_k_idx = (
@@ -416,7 +416,7 @@ Raises:
                         + kh * kW
                         + kw
                     )
-                    grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
+                    grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum.
 
     # Compute grad_bias: sum over batch, height, width
     var grad_bias_shape= List[Int]()
@@ -424,7 +424,7 @@ Raises:
     var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
 
     for oc in range(out_channels):
-        var bias_grad_sum = Float32(0.0)
+        var bias_grad_sum = Float32(0.0).
 
         for b in range(batch):
             for oh in range(out_height):
@@ -438,9 +438,9 @@ Raises:
                     var grad_out_val = grad_output._data.bitcast[Float32]()[
                         grad_out_idx
                     ]
-                    bias_grad_sum += grad_out_val
+                    bias_grad_sum += grad_out_val.
 
-        grad_bias._data.bitcast[Float32]()[oc] = bias_grad_sum
+        grad_bias._data.bitcast[Float32]()[oc] = bias_grad_sum.
 
     return Conv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
 
@@ -497,15 +497,15 @@ Returns:
         Output tensor of shape (batch, channels, out_height, out_width)
         where:
             out_height = (height + 2*padding - kH) // stride + 1
-            out_width = (width + 2*padding - kW) // stride + 1
+            out_width = (width + 2*padding - kW) // stride + 1.
 
     Example:
         ```mojo
-        from shared.core import depthwise_conv2d, zeros, he_uniform
+        from shared.core import depthwise_conv2d, zeros, he_uniform.
 
         # Depthwise kernel: one 3x3 filter per channel
         var kernel = he_uniform((32, 1, 3, 3), DType.float32)  # 32 channels
-        var bias = zeros(32, DType.float32)
+        var bias = zeros(32, DType.float32).
 
         var output = depthwise_conv2d(input, kernel, bias, stride=1, padding=1)
         ```
@@ -568,17 +568,17 @@ Raises:
         for c in range(channels):
             for oh in range(out_height):
                 for ow in range(out_width):
-                    var sum_val = Float32(0.0)
+                    var sum_val = Float32(0.0).
 
                     # Compute input position
                     var in_h_start = oh * stride - padding
-                    var in_w_start = ow * stride - padding
+                    var in_w_start = ow * stride - padding.
 
                     # Convolve with this channel's kernel only
                     for kh in range(kH):
                         for kw in range(kW):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             # Check bounds (zero padding)
                             if (
@@ -595,18 +595,18 @@ Raises:
                                     + in_w
                                 )
                                 # Get kernel value (kernel shape is [channels, 1, kH, kW])
-                                var k_idx = c * (1 * kH * kW) + kh * kW + kw
+                                var k_idx = c * (1 * kH * kW) + kh * kW + kw.
 
                                 var in_val = x._data.bitcast[Float32]()[in_idx]
                                 var k_val = kernel._data.bitcast[Float32]()[
                                     k_idx
-                                ]
+                                ].
 
-                                sum_val += in_val * k_val
+                                sum_val += in_val * k_val.
 
                     # Add bias
                     var b_val = bias._data.bitcast[Float32]()[c]
-                    sum_val += b_val
+                    sum_val += b_val.
 
                     # Write to output
                     var out_idx = (
@@ -615,7 +615,7 @@ Raises:
                         + oh * out_width
                         + ow
                     )
-                    output._data.bitcast[Float32]()[out_idx] = sum_val
+                    output._data.bitcast[Float32]()[out_idx] = sum_val.
 
     return output^
 
@@ -632,7 +632,7 @@ Args:
         padding: Zero-padding added to input (default: 0).
 
 Returns:
-        Output tensor of shape (batch, channels, out_height, out_width)
+        Output tensor of shape (batch, channels, out_height, out_width).
 
 Raises:
         Error: If tensor shapes are incompatible.
@@ -672,7 +672,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import depthwise_conv2d, depthwise_conv2d_backward
+        from shared.core import depthwise_conv2d, depthwise_conv2d_backward.
 
         # Forward pass
         var output = depthwise_conv2d(x, kernel, bias, stride, padding)
@@ -714,13 +714,13 @@ Raises:
         for c in range(channels):
             for ih in range(in_height):
                 for iw in range(in_width):
-                    var grad_sum = Float32(0.0)
+                    var grad_sum = Float32(0.0).
 
                     for oh in range(out_height):
                         for ow in range(out_width):
                             # Compute kernel offset
                             var kh = ih - oh * stride + padding
-                            var kw = iw - ow * stride + padding
+                            var kw = iw - ow * stride + padding.
 
                             # Check if kernel offset is valid
                             if kh >= 0 and kh < kH and kw >= 0 and kw < kW:
@@ -733,15 +733,15 @@ Raises:
                                 )
                                 var grad_out_val = grad_output._data.bitcast[
                                     Float32
-                                ]()[grad_out_idx]
+                                ]()[grad_out_idx].
 
                                 # Get kernel value (shape: [channels, 1, kH, kW])
                                 var k_idx = c * (1 * kH * kW) + kh * kW + kw
                                 var k_val = kernel._data.bitcast[Float32]()[
                                     k_idx
-                                ]
+                                ].
 
-                                grad_sum += grad_out_val * k_val
+                                grad_sum += grad_out_val * k_val.
 
                     # Write to grad_input
                     var grad_in_idx = (
@@ -750,20 +750,20 @@ Raises:
                         + ih * in_width
                         + iw
                     )
-                    grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum
+                    grad_input._data.bitcast[Float32]()[grad_in_idx] = grad_sum.
 
     # Compute grad_kernel
     for c in range(channels):
         for kh in range(kH):
             for kw in range(kW):
-                var grad_sum = Float32(0.0)
+                var grad_sum = Float32(0.0).
 
                 for b in range(batch):
                     for oh in range(out_height):
                         for ow in range(out_width):
                             # Compute input position
                             var in_h = oh * stride - padding + kh
-                            var in_w = ow * stride - padding + kw
+                            var in_w = ow * stride - padding + kw.
 
                             # Check bounds
                             if (
@@ -779,7 +779,7 @@ Raises:
                                     + in_h * in_width
                                     + in_w
                                 )
-                                var in_val = x._data.bitcast[Float32]()[in_idx]
+                                var in_val = x._data.bitcast[Float32]()[in_idx].
 
                                 # Get grad_output value
                                 var grad_out_idx = (
@@ -790,13 +790,13 @@ Raises:
                                 )
                                 var grad_out_val = grad_output._data.bitcast[
                                     Float32
-                                ]()[grad_out_idx]
+                                ]()[grad_out_idx].
 
-                                grad_sum += in_val * grad_out_val
+                                grad_sum += in_val * grad_out_val.
 
                 # Write to grad_kernel (shape: [channels, 1, kH, kW])
                 var grad_k_idx = c * (1 * kH * kW) + kh * kW + kw
-                grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum
+                grad_kernel._data.bitcast[Float32]()[grad_k_idx] = grad_sum.
 
     # Compute grad_bias: sum over batch, height, width
     var grad_bias_shape= List[Int]()
@@ -804,7 +804,7 @@ Raises:
     var grad_bias = zeros(grad_bias_shape, grad_output.dtype())
 
     for c in range(channels):
-        var bias_grad_sum = Float32(0.0)
+        var bias_grad_sum = Float32(0.0).
 
         for b in range(batch):
             for oh in range(out_height):
@@ -818,9 +818,9 @@ Raises:
                     var grad_out_val = grad_output._data.bitcast[Float32]()[
                         grad_out_idx
                     ]
-                    bias_grad_sum += grad_out_val
+                    bias_grad_sum += grad_out_val.
 
-        grad_bias._data.bitcast[Float32]()[c] = bias_grad_sum
+        grad_bias._data.bitcast[Float32]()[c] = bias_grad_sum.
 
     return DepthwiseConv2dBackwardResult(grad_input^, grad_kernel^, grad_bias^)
 
@@ -889,11 +889,11 @@ Args:
         padding: Padding for depthwise convolution (default: 0).
 
 Returns:
-        Output tensor of shape (batch, out_channels, out_height, out_width)
+        Output tensor of shape (batch, out_channels, out_height, out_width).
 
     Example:
         ```mojo
-        from shared.core import depthwise_separable_conv2d
+        from shared.core import depthwise_separable_conv2d.
 
         # Input: (batch=1, channels=32, H=28, W=28)
         # Depthwise: (32, 1, 3, 3) - one 3x3 filter per channel
@@ -908,7 +908,7 @@ Returns:
 
     Formula:
         intermediate = depthwise_conv2d(x, depthwise_kernel)
-        output = conv2d_1x1(intermediate, pointwise_kernel) + bias
+        output = conv2d_1x1(intermediate, pointwise_kernel) + bias.
 
 Note:
         This is more efficient than standard convolution:

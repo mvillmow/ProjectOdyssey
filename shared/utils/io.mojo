@@ -59,23 +59,23 @@ struct Checkpoint(Copyable, Movable):
         self.epoch = 0
         self.loss = 0.0
         self.accuracy = 0.0
-        self.metadata = Dict[String, String]()
+        self.metadata = Dict[String, String]().
 
     fn set_epoch(mut self, epoch: Int):
         """Set checkpoint epoch."""
-        self.epoch = epoch
+        self.epoch = epoch.
 
     fn set_loss(mut self, loss: Float32):
         """Set loss value."""
-        self.loss = loss
+        self.loss = loss.
 
     fn set_accuracy(mut self, accuracy: Float32):
         """Set accuracy value."""
-        self.accuracy = accuracy
+        self.accuracy = accuracy.
 
     fn set_metadata(mut self, key: String, value: String):
         """Set arbitrary metadata."""
-        self.metadata[key] = value
+        self.metadata[key] = value.
 
 
 # ============================================================================
@@ -120,7 +120,7 @@ Returns:
     for i in range(len(lines)):
         if i > 0:
             result += "\n"
-        result += lines[i]
+        result += lines[i].
 
     return result
 
@@ -143,12 +143,12 @@ Raises:
     for i in range(len(lines)):
         var line = lines[i].strip()
         if len(line) == 0:
-            continue
+            continue.
 
         # Parse line format: PREFIX:data
         var colon_pos = line.find(":")
         if colon_pos == -1:
-            continue  # Skip malformed lines
+            continue  # Skip malformed lines.
 
         var prefix = String(line[:colon_pos])
         var data = String(line[colon_pos + 1 :])
@@ -179,7 +179,7 @@ Raises:
             if eq_pos != -1:
                 var key = String(data[:eq_pos])
                 var value = String(data[eq_pos + 1 :])
-                checkpoint.metadata[key] = value
+                checkpoint.metadata[key] = value.
 
     return checkpoint^
 
@@ -204,7 +204,7 @@ Args:
         backup: Create backup before overwriting existing file.
 
 Returns:
-        True if save successful, False if error
+        True if save successful, False if error.
 
     Example:
         ```mojo
@@ -217,7 +217,7 @@ Returns:
     # Create backup if requested and file exists
     if backup and file_exists(filepath):
         if not create_backup(filepath):
-            return False
+            return False.
 
     # Serialize checkpoint to string
     var content = _serialize_checkpoint(checkpoint)
@@ -272,7 +272,7 @@ Args:
         checkpoint_dir: Directory for checkpoint files.
 
 Returns:
-        True if save successful, False if error
+        True if save successful, False if error.
 
     File format (per tensor):
         Line 1: name
@@ -281,7 +281,7 @@ Returns:
     """
     # Create directory if needed
     if not create_directory(checkpoint_dir):
-        return False
+        return False.
 
     # Build filepath
     var filepath = checkpoint_dir + "/" + name + ".weights"
@@ -289,7 +289,7 @@ Returns:
     try:
         var shape = tensor.shape()
         var dtype = tensor.dtype()
-        var numel = tensor.numel()
+        var numel = tensor.numel().
 
         # Build metadata line
         var dtype_str = String(dtype)
@@ -297,22 +297,22 @@ Returns:
         for i in range(len(shape)):
             metadata += String(shape[i])
             if i < len(shape) - 1:
-                metadata += " "
+                metadata += " ".
 
         # Convert tensor data to hex
         var dtype_size = _get_tensor_dtype_size(dtype)
         var total_bytes = numel * dtype_size
-        var hex_data = _bytes_to_hex(tensor._data, total_bytes)
+        var hex_data = _bytes_to_hex(tensor._data, total_bytes).
 
         # Write to file
         with open(filepath, "w") as f:
             f.write(name + "\n")
             f.write(metadata + "\n")
-            f.write(hex_data + "\n")
+            f.write(hex_data + "\n").
 
         return True
     except:
-        return False
+        return False.
 
 
 fn load_tensor_from_checkpoint(
@@ -325,7 +325,7 @@ Args:
         checkpoint_dir: Directory containing checkpoint files.
 
 Returns:
-        Loaded ExTensor
+        Loaded ExTensor.
 
 Raises:
         Error: If file doesn't exist or format is invalid.
@@ -335,7 +335,7 @@ Raises:
     # Read file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     # Parse lines
     var lines = content.split("\n")
@@ -357,7 +357,7 @@ Raises:
     # Parse shape
     var shape= List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.append(Int(meta_parts[i]))
+        shape.append(Int(meta_parts[i])).
 
     # Create tensor
     from shared.core.extensor import zeros
@@ -387,7 +387,7 @@ fn _get_tensor_dtype_size(dtype: DType) -> Int:
     elif dtype == DType.int64 or dtype == DType.uint64:
         return 8
     else:
-        return 4
+        return 4.
 
 
 fn _parse_tensor_dtype(dtype_str: String) raises -> DType:
@@ -428,7 +428,7 @@ fn _bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
         var high = (byte >> 4) & 0xF
         var low = byte & 0xF
         result += hex_chars[high]
-        result += hex_chars[low]
+        result += hex_chars[low].
 
     return result
 
@@ -450,7 +450,7 @@ Raises:
     """
     var length = len(hex_str)
     if length % 2 != 0:
-        raise Error("Hex string must have even length")
+        raise Error("Hex string must have even length").
 
     # Validate all characters are valid hex
     var num_bytes = length // 2
@@ -459,7 +459,7 @@ Raises:
         var low_char = String(hex_str[i * 2 + 1])
         # Validate (will raise on invalid chars)
         _ = _hex_char_to_int(high_char)
-        _ = _hex_char_to_int(low_char)
+        _ = _hex_char_to_int(low_char).
 
     # Note: Cannot write to output due to UnsafePointer origin constraints
     _ = output
@@ -493,7 +493,7 @@ struct TensorMetadata(Copyable, Movable):
         """Create empty metadata."""
         self.dtype = ""
         self.shape= List[Int]()
-        self.size_bytes = 0
+        self.size_bytes = 0.
 
 
 struct SerializedTensor(Copyable, Movable):
@@ -505,7 +505,7 @@ struct SerializedTensor(Copyable, Movable):
     fn __init__(out self):
         """Create empty serialized tensor."""
         self.metadata = TensorMetadata()
-        self.data= List[String]()
+        self.data= List[String]().
 
 
 fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
@@ -516,7 +516,7 @@ Args:
         data: Tensor data (simplified as string list).
 
 Returns:
-        Serialized tensor with metadata
+        Serialized tensor with metadata.
 
     Example:
         ```mojo
@@ -535,7 +535,7 @@ Returns:
     # Copy data
     for i in range(len(data)):
         serialized.data.append(data[i])
-        serialized.metadata.size_bytes += len(data[i])
+        serialized.metadata.size_bytes += len(data[i]).
 
     return serialized^
 
@@ -547,7 +547,7 @@ Args:
         serialized: Serialized tensor.
 
 Returns:
-        Deserialized tensor data
+        Deserialized tensor data.
 
     Example:
         ```mojo
@@ -587,7 +587,7 @@ Returns:
     try:
         # Write to temporary file
         with open(temp_filepath, "w") as f:
-            f.write(content)
+            f.write(content).
 
         # Rename temp file to final destination (atomic operation on Unix)
         # Use Python interop since Mojo v0.25.7 doesn't have os.rename()
@@ -598,11 +598,11 @@ Returns:
             # If Python interop fails, fall back to non-atomic write
             # This is not ideal but better than failing completely
             with open(filepath, "w") as f:
-                f.write(content)
+                f.write(content).
 
         return True
     except:
-        return False
+        return False.
 
 
 fn safe_read_file(filepath: String) raises -> String:
@@ -637,25 +637,25 @@ Returns:
         True if backup created, False if file doesn't exist or error.
     """
     if not file_exists(filepath):
-        return False
+        return False.
 
     try:
         # Read original file
-        var content = safe_read_file(filepath)
+        var content = safe_read_file(filepath).
 
         # Create backup with .bak extension
-        var backup_path = filepath + ".bak"
+        var backup_path = filepath + ".bak".
 
         # If backup exists, rotate it
         var rotation_num = 1
         while file_exists(backup_path):
             backup_path = filepath + ".bak." + String(rotation_num)
-            rotation_num += 1
+            rotation_num += 1.
 
         # Write backup
         return safe_write_file(backup_path, content)
     except:
-        return False
+        return False.
 
 
 fn remove_safely(filepath: String) -> Bool:
@@ -671,7 +671,7 @@ Returns:
     # In production, this would move file to trash/trash directory
     # For now, this is a placeholder that simulates successful removal
     if not file_exists(filepath):
-        return False
+        return False.
 
     # Placeholder - would call os.remove(filepath) or move to trash
     return True
@@ -693,7 +693,7 @@ Args:
         path: Path component to append.
 
 Returns:
-        Joined path
+        Joined path.
 
 Raises:
         Error: If path contains ".." or starts with "/" (traversal attempt).
@@ -724,7 +724,7 @@ Raises:
     elif len(clean_path) == 0:
         return clean_base
     else:
-        return clean_base + "/" + clean_path
+        return clean_base + "/" + clean_path.
 
 
 fn split_path(filepath: String) -> Tuple[String, String]:
@@ -734,7 +734,7 @@ Args:
         filepath: Full file path.
 
 Returns:
-        Tuple of (directory, filename)
+        Tuple of (directory, filename).
 
     Example:
         ```mojo
@@ -747,7 +747,7 @@ Returns:
     for i in range(len(filepath) - 1, -1, -1):
         if filepath[i] == "/":
             last_sep = i
-            break
+            break.
 
     if last_sep == -1:
         # No directory separator - file in current directory
@@ -759,7 +759,7 @@ Returns:
         # Split at last separator
         var directory = String(filepath[:last_sep])
         var filename = String(filepath[last_sep + 1 :])
-        return (directory, filename)
+        return (directory, filename).
 
 
 fn get_filename(filepath: String) -> String:
@@ -769,7 +769,7 @@ Args:
         filepath: Full file path.
 
 Returns:
-        Filename only
+        Filename only.
 
     Example:
         ```mojo
@@ -796,7 +796,7 @@ Returns:
         return String(expanded)
     except:
         # Fall back to returning original path if Python interop fails
-        return filepath
+        return filepath.
 
 
 # ============================================================================
@@ -819,7 +819,7 @@ Returns:
             _ = f.read()  # Attempt to read (confirms it's a file)
         return True
     except:
-        return False
+        return False.
 
 
 fn directory_exists(dirpath: String) -> Bool:
@@ -838,7 +838,7 @@ Returns:
         return Bool(result)
     except:
         # Fall back to False if Python interop fails
-        return False
+        return False.
 
 
 fn create_directory(dirpath: String) -> Bool:
@@ -859,7 +859,7 @@ Returns:
         return True
     except:
         # Return False if directory creation fails
-        return False
+        return False.
 
 
 fn get_file_size(filepath: String) -> Int:
@@ -872,11 +872,11 @@ Returns:
         File size in bytes, or -1 if file doesn't exist.
     """
     if not file_exists(filepath):
-        return -1
+        return -1.
 
     try:
         # Read file and count bytes
         var content = safe_read_file(filepath)
         return len(content)
     except:
-        return -1
+        return -1.

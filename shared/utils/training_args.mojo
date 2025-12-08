@@ -65,7 +65,7 @@ struct TrainingArgs(Copyable, Movable):
         self.momentum = 0.9
         self.data_dir = "datasets"
         self.weights_dir = "weights"
-        self.verbose = False
+        self.verbose = False.
 
 
 # ============================================================================

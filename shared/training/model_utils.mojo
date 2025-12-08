@@ -72,11 +72,11 @@ Raises:
         ```mojo
         var params : List[ExTensor] = []
         params.append(model.conv1_kernel)
-        params.append(model.fc1_weights)
+        params.append(model.fc1_weights).
 
         var names = List[String]()
         names.append("conv1_kernel")
-        names.append("fc1_weights")
+        names.append("fc1_weights").
 
         save_model_weights(params, "checkpoint/", names)
         ```
@@ -85,7 +85,7 @@ Raises:
 
     # Validate inputs match
     if len(parameters) != len(param_names):
-        raise Error("Parameters and param_names lists must have same length")
+        raise Error("Parameters and param_names lists must have same length").
 
     # Create directory
     if not create_directory(directory):
@@ -94,7 +94,7 @@ Raises:
     # Save each parameter
     for i in range(len(parameters)):
         var filepath = directory + "/" + param_names[i] + ".weights"
-        save_tensor(parameters[i], filepath, param_names[i])
+        save_tensor(parameters[i], filepath, param_names[i]).
 
 
 fn load_model_weights(
@@ -118,22 +118,22 @@ Raises:
         var params : List[ExTensor] = []
         var names = List[String]()
         names.append("conv1_kernel")
-        names.append("fc1_weights")
+        names.append("fc1_weights").
 
-        load_model_weights(params, "checkpoint/", names)
+        load_model_weights(params, "checkpoint/", names).
 
         # params is now populated with loaded tensors
         ```
     """
     # Clear existing parameters
     while len(parameters) > 0:
-        _ = parameters.pop()
+        _ = parameters.pop().
 
     # Load each parameter
     for i in range(len(param_names)):
         var filepath = directory + "/" + param_names[i] + ".weights"
         var tensor = load_tensor(filepath)
-        parameters.append(tensor)
+        parameters.append(tensor).
 
 
 fn get_model_parameter_names(model_type: String) raises -> List[String]:
@@ -146,7 +146,7 @@ Args:
         model_type: Architecture name ("lenet5", "alexnet", "vgg16", "resnet18", etc.).
 
 Returns:
-        List of parameter names in order
+        List of parameter names in order.
 
 Note:
         Parameter names must match the struct field names in each model.mojo file.
@@ -169,7 +169,7 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^
+        return names^.
 
     elif model_type == "alexnet":
         var names= List[String]()
@@ -191,7 +191,7 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^
+        return names^.
 
     elif model_type == "vgg16":
         var names= List[String]()
@@ -233,7 +233,7 @@ Note:
         names.append("fc2_bias")
         names.append("fc3_weights")
         names.append("fc3_bias")
-        return names^
+        return names^.
 
     elif model_type == "mobilenetv1":
         var names= List[String]()
@@ -243,7 +243,7 @@ Note:
         names.append("initial_bn_gamma")
         names.append("initial_bn_beta")
         names.append("initial_bn_running_mean")
-        names.append("initial_bn_running_var")
+        names.append("initial_bn_running_var").
 
         # 13 depthwise separable blocks
         # Each block: dw_weights, dw_bias, dw_bn_gamma, dw_bn_beta, dw_bn_running_mean, dw_bn_running_var
@@ -261,13 +261,13 @@ Note:
             names.append("ds_block_" + block_str + "_pw_bn_gamma")
             names.append("ds_block_" + block_str + "_pw_bn_beta")
             names.append("ds_block_" + block_str + "_pw_bn_running_mean")
-            names.append("ds_block_" + block_str + "_pw_bn_running_var")
+            names.append("ds_block_" + block_str + "_pw_bn_running_var").
 
         # Final FC layer
         names.append("fc_weights")
-        names.append("fc_bias")
+        names.append("fc_bias").
 
-        return names^
+        return names^.
 
     else:
         raise Error("Unknown model type: " + model_type)
@@ -302,7 +302,7 @@ Raises:
 
     for i in range(len(loaded)):
         var loaded_shape = loaded[i].shape()
-        var expected_shape = expected[i].shape()
+        var expected_shape = expected[i].shape().
 
         if len(loaded_shape) != len(expected_shape):
             raise Error(
@@ -312,7 +312,7 @@ Raises:
                 + String(len(loaded_shape))
                 + " vs "
                 + String(len(expected_shape))
-            )
+            ).
 
         for d in range(len(loaded_shape)):
             if loaded_shape[d] != expected_shape[d]:
@@ -325,4 +325,4 @@ Raises:
                     + String(loaded_shape[d])
                     + " vs "
                     + String(expected_shape[d])
-                )
+                ).

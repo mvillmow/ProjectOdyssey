@@ -80,7 +80,7 @@ Raises:
         Error if condition is false.
     """
     if not condition:
-        raise Error(message)
+        raise Error(message).
 
 
 fn assert_false(condition: Bool, message: String = "Assertion failed") raises:
@@ -94,7 +94,7 @@ Raises:
         Error if condition is true.
     """
     if condition:
-        raise Error(message)
+        raise Error(message).
 
 
 # ============================================================================
@@ -115,7 +115,7 @@ Raises:
     """
     if a != b:
         var error_msg = message if message else "Values are not equal"
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
@@ -133,7 +133,7 @@ Raises:
         var error_msg = (
             message if message else "Values are equal but should not be"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_not_none[
@@ -152,7 +152,7 @@ Raises:
         var error_msg = (
             message if message else "Value is None but should not be"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 # ============================================================================
@@ -182,7 +182,7 @@ Raises:
         var error_msg = message if message else (
             String(a) + " !≈ " + String(b) + " (diff: " + String(diff) + ")"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_almost_equal(
@@ -207,7 +207,7 @@ Raises:
         var error_msg = message if message else (
             String(a) + " !≈ " + String(b) + " (diff: " + String(diff) + ")"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
@@ -223,7 +223,7 @@ Raises:
     """
     if a != b:
         var error_msg = message if message else "DTypes are not equal"
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_equal_int(a: Int, b: Int, message: String = "") raises:
@@ -241,7 +241,7 @@ Raises:
         var error_msg = message if message else (
             "Expected " + String(a) + " == " + String(b)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_equal_float(a: Float32, b: Float32, message: String = "") raises:
@@ -259,7 +259,7 @@ Raises:
         var error_msg = message if message else (
             "Float values not equal: " + String(a) + " != " + String(b)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_close_float(
@@ -290,13 +290,13 @@ Raises:
     var b_is_inf = isinf(b)
 
     if a_is_nan and b_is_nan:
-        return  # Both NaN, considered equal
+        return  # Both NaN, considered equal.
 
     if a_is_nan or b_is_nan:
         var error_msg = message if message else (
             "NaN mismatch: " + String(a) + " vs " + String(b)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
     if a_is_inf or b_is_inf:
         if a != b:
@@ -304,7 +304,7 @@ Raises:
                 "Infinity mismatch: " + String(a) + " vs " + String(b)
             )
             raise Error(error_msg)
-        return
+        return.
 
     # Check numeric closeness
     var diff = a - b if a >= b else b - a
@@ -322,7 +322,7 @@ Raises:
             + String(threshold)
             + ")"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 # ============================================================================
@@ -348,7 +348,7 @@ Raises:
     """
     if a <= b:
         var error_msg = message if message else String(a) + " <= " + String(b)
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_less[
@@ -369,7 +369,7 @@ Raises:
     """
     if a >= b:
         var error_msg = message if message else String(a) + " >= " + String(b)
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_greater_or_equal[
@@ -390,7 +390,7 @@ Raises:
     """
     if a < b:
         var error_msg = message if message else String(a) + " < " + String(b)
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_less_or_equal[
@@ -411,7 +411,7 @@ Raises:
     """
     if a > b:
         var error_msg = message if message else String(a) + " > " + String(b)
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 # ============================================================================
@@ -439,7 +439,7 @@ Raises:
             + " vs "
             + String(len(shape2))
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
     for i in range(len(shape1)):
         if shape1[i] != shape2[i]:
@@ -451,7 +451,7 @@ Raises:
                 + " vs "
                 + String(shape2[i])
             )
-            raise Error(error_msg)
+            raise Error(error_msg).
 
 
 # ============================================================================
@@ -480,11 +480,11 @@ Raises:
     var shape_b = b.shape()
 
     if len(shape_a) != len(shape_b):
-        raise Error("Cannot compare tensors with different dimensions")
+        raise Error("Cannot compare tensors with different dimensions").
 
     for i in range(len(shape_a)):
         if shape_a[i] != shape_b[i]:
-            raise Error("Cannot compare tensors with different shapes")
+            raise Error("Cannot compare tensors with different shapes").
 
     # Check if all elements are equal
     var numel = a.numel()
@@ -492,17 +492,17 @@ Raises:
 
     for i in range(numel):
         var val_a = a._get_float64(i)
-        var val_b = b._get_float64(i)
+        var val_b = b._get_float64(i).
 
         if val_a != val_b:
             all_equal = False
-            break
+            break.
 
     if all_equal:
         var error_msg = (
             message if message else "Tensors are equal but should not be"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
@@ -576,7 +576,7 @@ Raises:
             + " dims, got "
             + String(len(actual_shape))
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
     # Check each dimension
     for i in range(len(expected)):
@@ -589,7 +589,7 @@ Raises:
                 + ", got "
                 + String(actual_shape[i])
             )
-            raise Error(error_msg)
+            raise Error(error_msg).
 
 
 fn assert_dtype(tensor: ExTensor, expected: DType, message: String = "") raises:
@@ -608,7 +608,7 @@ Raises:
         var error_msg = message if message else (
             "Expected dtype " + String(expected) + ", got " + String(actual)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_numel(tensor: ExTensor, expected: Int, message: String = "") raises:
@@ -627,7 +627,7 @@ Raises:
         var error_msg = message if message else (
             "Expected numel " + String(expected) + ", got " + String(actual)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_dim(tensor: ExTensor, expected: Int, message: String = "") raises:
@@ -649,7 +649,7 @@ Raises:
             + " dimensions, got "
             + String(actual)
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 # ============================================================================
@@ -694,7 +694,7 @@ Raises:
             + String(diff)
             + ")"
         )
-        raise Error(error_msg)
+        raise Error(error_msg).
 
 
 fn assert_all_values(
@@ -730,7 +730,7 @@ Raises:
                 + " is "
                 + String(actual)
             )
-            raise Error(error_msg)
+            raise Error(error_msg).
 
 
 fn assert_all_close(
@@ -771,14 +771,14 @@ Raises:
                 + String(shape_a[i])
                 + " vs "
                 + String(shape_b[i])
-            )
+            ).
 
     # Check all values
     var n = a.numel()
     for i in range(n):
         var val_a = a._get_float64(i)
         var val_b = b._get_float64(i)
-        var diff = val_a - val_b if val_a >= val_b else val_b - val_a
+        var diff = val_a - val_b if val_a >= val_b else val_b - val_a.
 
         if diff > tolerance:
             var error_msg = message if message else (
@@ -792,7 +792,7 @@ Raises:
                 + String(diff)
                 + ")"
             )
-            raise Error(error_msg)
+            raise Error(error_msg).
 
 
 # ============================================================================

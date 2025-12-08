@@ -32,7 +32,7 @@ Args:
     Example:
        ```mojo
         fn add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-            return x + y
+            return x + y.
 
         var result = _broadcast_binary[DType.float32, add_op](a, b)
         ```
@@ -51,19 +51,19 @@ Returns:
     # Calculate total elements in result
     var total_elems = 1
     for i in range(len(result_shape)):
-        total_elems *= result_shape[i]
+        total_elems *= result_shape[i].
 
     # Precompute row-major strides for result shape
     var result_strides= List[Int]()
     var stride = 1
     for i in range(len(result_shape) - 1, -1, -1):
         result_strides.append(stride)
-        stride *= result_shape[i]
+        stride *= result_shape[i].
 
     # Reverse to get correct order (left-to-right)
     var result_strides_final= List[Int]()
     for i in range(len(result_strides) - 1, -1, -1):
-        result_strides_final.append(result_strides[i])
+        result_strides_final.append(result_strides[i]).
 
     # Get typed pointers for zero-overhead access
     var a_ptr = a._data.bitcast[Scalar[dtype]]()
@@ -74,18 +74,18 @@ Returns:
     for result_idx in range(total_elems):
         var idx_a = 0
         var idx_b = 0
-        var temp_idx = result_idx
+        var temp_idx = result_idx.
 
         # Convert flat index to multi-dimensional coordinates, then compute source indices
         for dim in range(len(result_shape)):
             var coord = temp_idx // result_strides_final[dim]
-            temp_idx = temp_idx % result_strides_final[dim]
+            temp_idx = temp_idx % result_strides_final[dim].
 
             idx_a += coord * strides_a[dim]
-            idx_b += coord * strides_b[dim]
+            idx_b += coord * strides_b[dim].
 
         # Perform operation with zero overhead (no dtype conversion!)
-        result_ptr[result_idx] = op[dtype](a_ptr[idx_a], b_ptr[idx_b])
+        result_ptr[result_idx] = op[dtype](a_ptr[idx_a], b_ptr[idx_b]).
 
     return result^
 
@@ -111,7 +111,7 @@ Raises:
     """
     # Validate dtypes match
     if a._dtype != b._dtype:
-        raise Error("Cannot operate on tensors with different dtypes")
+        raise Error("Cannot operate on tensors with different dtypes").
 
     # Runtime dispatch to compile-time specialized version
     if a._dtype == DType.float16:
@@ -137,7 +137,7 @@ Raises:
     elif a._dtype == DType.uint64:
         return _broadcast_binary[DType.uint64, op](a, b)
     else:
-        raise Error("Unsupported dtype for binary operation")
+        raise Error("Unsupported dtype for binary operation").
 
 
 fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
@@ -157,7 +157,7 @@ Examples:
         ```
         var a = zeros(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
-        var c = add(a, b)  # Shape (3, 4), all ones
+        var c = add(a, b)  # Shape (3, 4), all ones.
 
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
@@ -169,7 +169,7 @@ Examples:
     # Define add operation
     @always_inline
     fn _add_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-        return x + y
+        return x + y.
 
     # Use generic broadcasting dispatcher (eliminates 60 lines and conversion overhead!)
     return _dispatch_broadcast_binary[_add_op](a, b)
@@ -192,7 +192,7 @@ Examples:
         ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
-        var c = subtract(a, b)  # Shape (3, 4), all zeros
+        var c = subtract(a, b)  # Shape (3, 4), all zeros.
 
         # Broadcasting example
         var x = ones([3, 1, 5], DType.float32)
@@ -204,7 +204,7 @@ Examples:
     # Define subtract operation
     @always_inline
     fn _sub_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-        return x - y
+        return x - y.
 
     return _dispatch_broadcast_binary[_sub_op](a, b)
 
@@ -226,7 +226,7 @@ Examples:
         ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
-        var c = multiply(a, b)  # Shape (3, 4), all 6.0
+        var c = multiply(a, b)  # Shape (3, 4), all 6.0.
 
         # Broadcasting example
         var x = full([3, 1, 5], 2.0, DType.float32)
@@ -237,7 +237,7 @@ Examples:
 
     @always_inline
     fn _mul_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-        return x * y
+        return x * y.
 
     return _dispatch_broadcast_binary[_mul_op](a, b)
 
@@ -259,13 +259,13 @@ Note:
         Division by zero follows IEEE 754 semantics for floating-point types:
         - x / 0.0 where x > 0 -> +inf
         - x / 0.0 where x < 0 -> -inf
-        - 0.0 / 0.0 -> NaN
+        - 0.0 / 0.0 -> NaN.
 
 Examples:
         ```
         var a = full(List[Int](), 6.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
-        var c = divide(a, b)  # Shape (3, 4), all 3.0
+        var c = divide(a, b)  # Shape (3, 4), all 3.0.
 
         # Broadcasting example
         var x = full([3, 1, 5], 6.0, DType.float32)
@@ -276,7 +276,7 @@ Examples:
 
     @always_inline
     fn _div_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
-        return x / y
+        return x / y.
 
     return _dispatch_broadcast_binary[_div_op](a, b)
 
@@ -289,7 +289,7 @@ Args:
         b: Second tensor (denominator).
 
 Returns:
-        A new tensor containing a // b (floor division)
+        A new tensor containing a // b (floor division).
 
 Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
@@ -298,13 +298,13 @@ Note:
         Division by zero follows IEEE 754 semantics for floating-point types:
         - x // 0.0 where x > 0 -> +inf
         - x // 0.0 where x < 0 -> -inf
-        - 0.0 // 0.0 -> NaN
+        - 0.0 // 0.0 -> NaN.
 
 Examples:
         ```
         var a = full(List[Int](), 7.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
-        var c = floor_divide(a, b)  # Shape (3, 4), all 3.0
+        var c = floor_divide(a, b)  # Shape (3, 4), all 3.0.
 
         # Broadcasting example
         var x = full([3, 1, 5], 7.0, DType.float32)
@@ -320,7 +320,7 @@ Examples:
         if T.is_floating_point():
             if y == Scalar[T](0):
                 # For floating point, follow IEEE 754: x / 0 = inf or -inf based on sign
-                return x / y  # Let hardware handle the division by zero
+                return x / y  # Let hardware handle the division by zero.
 
         # Floor division: floor(x / y)
         # For correct negative handling, use: Int(div) if div >= 0 else Int(div) - 1
@@ -329,7 +329,7 @@ Examples:
         var floored = Scalar[T](as_int) if div_result >= Scalar[T](
             0
         ) else Scalar[T](as_int - 1)
-        return floored
+        return floored.
 
     return _dispatch_broadcast_binary[_floor_div_op](a, b)
 
@@ -351,7 +351,7 @@ Examples:
         ```
         var a = full(List[Int](), 7.0, DType.int32)
         var b = full(List[Int](), 3.0, DType.int32)
-        var c = modulo(a, b)  # Shape (3, 4), all 1
+        var c = modulo(a, b)  # Shape (3, 4), all 1.
 
         # Broadcasting example
         var x = full([3, 1, 5], 7.0, DType.float32)
@@ -366,7 +366,7 @@ Examples:
         @parameter
         if T.is_floating_point():
             if y == Scalar[T](0):
-                return Scalar[T](nan[T]())
+                return Scalar[T](nan[T]()).
 
         # Modulo: a % b = a - floor(a/b) * b
         var div_result = x / y
@@ -374,7 +374,7 @@ Examples:
         var floored = Scalar[T](as_int) if div_result >= Scalar[T](
             0
         ) else Scalar[T](as_int - 1)
-        return x - floored * y
+        return x - floored * y.
 
     return _dispatch_broadcast_binary[_mod_op](a, b)
 
@@ -396,7 +396,7 @@ Examples:
         ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
-        var c = power(a, b)  # Shape (3, 4), all 8.0
+        var c = power(a, b)  # Shape (3, 4), all 8.0.
 
         # Broadcasting example
         var x = full([3, 1, 5], 2.0, DType.float32)
@@ -413,7 +413,7 @@ Note:
     @always_inline
     fn _pow_op[T: DType](x: Scalar[T], y: Scalar[T]) -> Scalar[T]:
         # Use Mojo's built-in ** operator (handles all cases correctly)
-        return x**y
+        return x**y.
 
     return _dispatch_broadcast_binary[_pow_op](a, b)
 
@@ -443,7 +443,7 @@ Examples:
         # Broadcasting (3, 1, 5) → (3, 4, 5)
         var grad = ones([3, 4, 5])  # Gradient from loss
         var original = [3, 1, 5]    # Original input shape
-        var reduced = _reduce_broadcast_dims(grad, original)  # Shape (3, 1, 5)
+        var reduced = _reduce_broadcast_dims(grad, original)  # Shape (3, 1, 5).
 
         # Prepended dimensions: (5,) → (3, 4, 5)
         var grad2 = ones([3, 4, 5])
@@ -465,7 +465,7 @@ Examples:
         var dims_to_sum = grad_ndim - orig_ndim
         for i in range(dims_to_sum):
             # Always sum over axis 0 since shape shrinks each time
-            result = sum(result, axis=0, keepdims=False)
+            result = sum(result, axis=0, keepdims=False).
 
     # Now handle dimensions that were size 1 and got broadcast
     # Example: (3, 1, 5) → (3, 4, 5), sum over axis 1 keeping dims
@@ -476,7 +476,7 @@ Examples:
             and i < len(result.shape())
             and result.shape()[i] > 1
         ):
-            result = sum(result, axis=i, keepdims=True)
+            result = sum(result, axis=i, keepdims=True).
 
     return result
 
@@ -488,7 +488,7 @@ fn add_backward(
 
     For C = A + B, given ∂L/∂C, computes:
         ∂L/∂A = ∂L/∂C (summed over broadcasted dimensions)
-        ∂L/∂B = ∂L/∂C (summed over broadcasted dimensions)
+        ∂L/∂B = ∂L/∂C (summed over broadcasted dimensions).
 
     Handles broadcasting: If input was broadcast to output shape, gradient.
     is summed back to the original input shape.
@@ -510,7 +510,7 @@ Examples:
         var grad_c = ones(List[Int](), DType.float32)
         var grads = add_backward(grad_c, a, b)
         var grad_a = grads.grad_a
-        var grad_b = grads.grad_b
+        var grad_b = grads.grad_b.
 
         # With broadcasting
         var x = ones(List[Int](), DType.float32)
@@ -535,7 +535,7 @@ fn subtract_backward(
 
     For C = A - B, given ∂L/∂C, computes:
         ∂L/∂A = ∂L/∂C (reduced for broadcasting)
-        ∂L/∂B = -∂L/∂C (negated and reduced for broadcasting)
+        ∂L/∂B = -∂L/∂C (negated and reduced for broadcasting).
 
     The gradient for B is negated since ∂(A-B)/∂B = -1.
 
@@ -554,7 +554,7 @@ Returns:
     # Create a tensor of -1s with same shape as grad_output
     var neg_grad = ExTensor(grad_output.shape(), grad_output.dtype())
     for i in range(grad_output.numel()):
-        neg_grad._set_float64(i, -grad_output._get_float64(i))
+        neg_grad._set_float64(i, -grad_output._get_float64(i)).
 
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(neg_grad, b.shape())
@@ -569,7 +569,7 @@ fn multiply_backward(
 
     For C = A * B, given ∂L/∂C, computes:
         ∂L/∂A = ∂L/∂C * B  (product rule, reduced for broadcasting)
-        ∂L/∂B = ∂L/∂C * A  (reduced for broadcasting)
+        ∂L/∂B = ∂L/∂C * A  (reduced for broadcasting).
 
 Args:
         grad_output: Gradient from upstream (∂L/∂C).
@@ -608,7 +608,7 @@ fn divide_backward(
 
     For C = A / B, given ∂L/∂C, computes:
         ∂L/∂A = ∂L/∂C / B  (quotient rule numerator)
-        ∂L/∂B = -∂L/∂C * A / B²  (quotient rule denominator)
+        ∂L/∂B = -∂L/∂C * A / B²  (quotient rule denominator).
 
     Includes numerical stability: adds small epsilon to prevent division by zero.
 
@@ -648,7 +648,7 @@ Examples:
     var b_squared_safe = ExTensor(b_squared.shape(), b_squared.dtype())
     for i in range(b_squared.numel()):
         var val = b_squared._get_float64(i)
-        b_squared_safe._set_float64(i, val + EPSILON)
+        b_squared_safe._set_float64(i, val + EPSILON).
 
     # Compute -grad_output * a / b²
     var temp = multiply(grad_output, a)
@@ -659,7 +659,7 @@ Examples:
         grad_b_positive.shape(), grad_b_positive.dtype()
     )
     for i in range(grad_b_positive.numel()):
-        grad_b_unreduced._set_float64(i, -grad_b_positive._get_float64(i))
+        grad_b_unreduced._set_float64(i, -grad_b_positive._get_float64(i)).
 
     # Reduce for broadcasting
     var grad_b = _reduce_broadcast_dims(grad_b_unreduced, b.shape())

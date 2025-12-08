@@ -8,7 +8,7 @@ along with exponential moving averages of batch statistics.
 Key components:
 - BatchNorm2dLayer: 2D batch normalization layer with learnable parameters
   Implements: y = gamma * (x - mean) / sqrt(var + eps) + beta (training)
-             y = gamma * (x - running_mean) / sqrt(running_var + eps) + beta (inference)
+             y = gamma * (x - running_mean) / sqrt(running_var + eps) + beta (inference).
 """
 
 from shared.core.extensor import ExTensor, zeros, ones, zeros_like, ones_like
@@ -69,31 +69,31 @@ struct BatchNorm2dLayer(Copyable, Movable):
         """
         self.num_channels = num_channels
         self.momentum = momentum
-        self.eps = eps
+        self.eps = eps.
 
         # Initialize gamma (scale) to 1.0 for each channel
         # Shape: (channels,)
         var gamma_shape= List[Int]()
         gamma_shape.append(num_channels)
-        self.gamma = ones(gamma_shape, DType.float32)
+        self.gamma = ones(gamma_shape, DType.float32).
 
         # Initialize beta (shift) to 0.0
         # Shape: (channels,)
         var beta_shape= List[Int]()
         beta_shape.append(num_channels)
-        self.beta = zeros(beta_shape, DType.float32)
+        self.beta = zeros(beta_shape, DType.float32).
 
         # Initialize running_mean to 0.0
         # Shape: (channels,)
         var running_mean_shape= List[Int]()
         running_mean_shape.append(num_channels)
-        self.running_mean = zeros(running_mean_shape, DType.float32)
+        self.running_mean = zeros(running_mean_shape, DType.float32).
 
         # Initialize running_var to 1.0
         # Shape: (channels,)
         var running_var_shape= List[Int]()
         running_var_shape.append(num_channels)
-        self.running_var = ones(running_var_shape, DType.float32)
+        self.running_var = ones(running_var_shape, DType.float32).
 
     fn forward(
         mut self, input: ExTensor, training: Bool = True
@@ -124,19 +124,19 @@ struct BatchNorm2dLayer(Copyable, Movable):
             x_norm = (x - mean) / sqrt(var + eps)
             output = gamma * x_norm + beta
             running_mean = (1 - momentum) * running_mean + momentum * mean
-            running_var = (1 - momentum) * running_var + momentum * var
+            running_var = (1 - momentum) * running_var + momentum * var.
 
         Formula (inference):
             x_norm = (x - running_mean) / sqrt(running_var + eps)
-            output = gamma * x_norm + beta
+            output = gamma * x_norm + beta.
 
         Example:
             ```mojo
             var bn = BatchNorm2dLayer(16)
-            var input = randn([2, 16, 32, 32], DType.float32)
+            var input = randn([2, 16, 32, 32], DType.float32).
 
             # Training mode: updates running statistics
-            var output = bn.forward(input, training=True)
+            var output = bn.forward(input, training=True).
 
             # Inference mode: uses running statistics
             var output = bn.forward(input, training=False)
@@ -156,16 +156,16 @@ struct BatchNorm2dLayer(Copyable, Movable):
         # Update running statistics if training
         if training:
             self.running_mean = new_running_mean^
-            self.running_var = new_running_var^
+            self.running_var = new_running_var^.
 
-        return output^
+        return output^.
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
 
         Returns:
             List containing [gamma, beta] tensors that need gradients.
-            (Running statistics are not trainable parameters)
+            (Running statistics are not trainable parameters).
 
         Raises:
             Error if tensor copying fails.
@@ -181,20 +181,20 @@ struct BatchNorm2dLayer(Copyable, Movable):
 
         # Create copies of gamma and beta tensors
         var gamma_copy = zeros_like(self.gamma)
-        var beta_copy = zeros_like(self.beta)
+        var beta_copy = zeros_like(self.beta).
 
         var gamma_size = self.gamma.numel()
-        var beta_size = self.beta.numel()
+        var beta_size = self.beta.numel().
 
         for i in range(gamma_size):
-            gamma_copy._data[i] = self.gamma._data[i]
+            gamma_copy._data[i] = self.gamma._data[i].
 
         for i in range(beta_size):
-            beta_copy._data[i] = self.beta._data[i]
+            beta_copy._data[i] = self.beta._data[i].
 
         params.append(gamma_copy^)
         params.append(beta_copy^)
-        return params^
+        return params^.
 
     fn get_running_stats(self) raises -> Tuple[ExTensor, ExTensor]:
         """Get current running statistics.
@@ -214,18 +214,18 @@ struct BatchNorm2dLayer(Copyable, Movable):
             ```
         """
         var mean_copy = zeros_like(self.running_mean)
-        var var_copy = zeros_like(self.running_var)
+        var var_copy = zeros_like(self.running_var).
 
         var mean_size = self.running_mean.numel()
-        var var_size = self.running_var.numel()
+        var var_size = self.running_var.numel().
 
         for i in range(mean_size):
-            mean_copy._data[i] = self.running_mean._data[i]
+            mean_copy._data[i] = self.running_mean._data[i].
 
         for i in range(var_size):
-            var_copy._data[i] = self.running_var._data[i]
+            var_copy._data[i] = self.running_var._data[i].
 
-        return Tuple[ExTensor, ExTensor](mean_copy^, var_copy^)
+        return Tuple[ExTensor, ExTensor](mean_copy^, var_copy^).
 
     fn set_running_stats(
         mut self, running_mean: ExTensor, running_var: ExTensor
@@ -248,19 +248,19 @@ struct BatchNorm2dLayer(Copyable, Movable):
             ```
         """
         var mean_size = running_mean.numel()
-        var var_size = running_var.numel()
+        var var_size = running_var.numel().
 
         if mean_size != self.running_mean.numel():
-            raise Error("Running mean size mismatch")
+            raise Error("Running mean size mismatch").
 
         if var_size != self.running_var.numel():
-            raise Error("Running variance size mismatch")
+            raise Error("Running variance size mismatch").
 
         self.running_mean = zeros_like(self.running_mean)
-        self.running_var = zeros_like(self.running_var)
+        self.running_var = zeros_like(self.running_var).
 
         for i in range(mean_size):
-            self.running_mean._data[i] = running_mean._data[i]
+            self.running_mean._data[i] = running_mean._data[i].
 
         for i in range(var_size):
-            self.running_var._data[i] = running_var._data[i]
+            self.running_var._data[i] = running_var._data[i].

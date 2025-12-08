@@ -22,11 +22,11 @@ Args:
 
 Returns:
         Batch tensor of shape (actual_batch_size, ...) where actual_batch_size.
-        is min(batch_size, N - start_idx)
+        is min(batch_size, N - start_idx).
 
     Example:
         ```mojo
-        from shared.data import extract_batch
+        from shared.data import extract_batch.
 
         # Extract batch of 128 images from dataset
         var images = load_dataset()  # Shape: (50000, 3, 32, 32)
@@ -59,7 +59,7 @@ Note:
     var batch_shape= List[Int]()
     batch_shape.append(actual_batch_size)
     for i in range(1, len(data_shape)):
-        batch_shape.append(data_shape[i])
+        batch_shape.append(data_shape[i]).
 
     # Create output tensor
     var batch = zeros(batch_shape, data.dtype())
@@ -67,7 +67,7 @@ Note:
     # Compute stride for each sample (product of all dimensions except first)
     var sample_stride = 1
     for i in range(1, len(data_shape)):
-        sample_stride *= data_shape[i]
+        sample_stride *= data_shape[i].
 
     # Copy samples
     var src_ptr = data._data
@@ -79,11 +79,11 @@ Note:
     for i in range(actual_batch_size):
         var src_sample_idx = start_idx + i
         var src_offset = src_sample_idx * sample_stride * element_size
-        var dst_offset = i * sample_stride * element_size
+        var dst_offset = i * sample_stride * element_size.
 
         # Copy all bytes of this sample
         for j in range(sample_stride * element_size):
-            dst_ptr[dst_offset + j] = src_ptr[src_offset + j]
+            dst_ptr[dst_offset + j] = src_ptr[src_offset + j].
 
     return batch
 
@@ -107,7 +107,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.data import extract_batch_pair
+        from shared.data import extract_batch_pair.
 
         var images = load_images()      # Shape: (50000, 3, 32, 32)
         var labels = load_labels()      # Shape: (50000,)
@@ -152,11 +152,11 @@ Args:
         batch_size: Number of samples per batch.
 
 Returns:
-        Number of batches needed (rounded up)
+        Number of batches needed (rounded up).
 
     Example:
         ```mojo
-        from shared.data import compute_num_batches
+        from shared.data import compute_num_batches.
 
         var num_batches = compute_num_batches(50000, 128)
         # Returns: 391 batches (50000 / 128 = 390.625 → 391)
@@ -190,7 +190,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.data import get_batch_indices
+        from shared.data import get_batch_indices.
 
         # Get indices for batch 390 of size 128 from 50000 samples
         var (start, end, size) = get_batch_indices(390, 128, 50000)

@@ -35,14 +35,14 @@ Returns:
         where:
             stride_actual = kernel_size if stride == 0 else stride
             out_height = (height + 2*padding - kernel_size) / stride_actual + 1
-            out_width = (width + 2*padding - kernel_size) / stride_actual + 1
+            out_width = (width + 2*padding - kernel_size) / stride_actual + 1.
 
     Example:
         ```mojo
-        from shared.core import ExTensor, maxpool2d
+        from shared.core import ExTensor, maxpool2d.
 
         # Pure function call - no state to manage
-        var pooled = maxpool2d(input, kernel_size=2, stride=2)
+        var pooled = maxpool2d(input, kernel_size=2, stride=2).
 
         # Or select implementation method
         var pooled = maxpool2d(input, kernel_size=2, stride=2, method="direct")
@@ -52,12 +52,12 @@ Raises:
         Error: If tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
-        raise Error("Only 'direct' method is currently supported for maxpool2d")
+        raise Error("Only 'direct' method is currently supported for maxpool2d").
 
     # Get input dimensions
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("Input must be 4D tensor (batch, channels, height, width)")
+        raise Error("Input must be 4D tensor (batch, channels, height, width)").
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -91,15 +91,15 @@ Raises:
                     var in_h_start = oh * actual_stride - padding
                     var in_w_start = ow * actual_stride - padding
                     var in_h_end = in_h_start + kernel_size
-                    var in_w_end = in_w_start + kernel_size
+                    var in_w_end = in_w_start + kernel_size.
 
                     # Find maximum in window
-                    var max_val = Float32(-1e9)  # Very small initial value
+                    var max_val = Float32(-1e9)  # Very small initial value.
 
                     for kh in range(kernel_size):
                         for kw in range(kernel_size):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             # Check bounds (zero padding treated as -inf for max)
                             if (
@@ -116,7 +116,7 @@ Raises:
                                 )
                                 var val = x._data.bitcast[Float32]()[in_idx]
                                 if val > max_val:
-                                    max_val = val
+                                    max_val = val.
 
                     # Write maximum to output
                     var out_idx = (
@@ -125,7 +125,7 @@ Raises:
                         + oh * out_width
                         + ow
                     )
-                    output._data.bitcast[Float32]()[out_idx] = max_val
+                    output._data.bitcast[Float32]()[out_idx] = max_val.
 
     return output^
 
@@ -150,14 +150,14 @@ Args:
         method: Implementation method - "direct" (default), "optimized" (future).
 
 Returns:
-        Output tensor of shape (batch, channels, out_height, out_width)
+        Output tensor of shape (batch, channels, out_height, out_width).
 
     Example:
         ```mojo
-        from shared.core import ExTensor, avgpool2d
+        from shared.core import ExTensor, avgpool2d.
 
         # Pure function call - no state to manage
-        var pooled = avgpool2d(input, kernel_size=2, stride=2)
+        var pooled = avgpool2d(input, kernel_size=2, stride=2).
 
         # Or select implementation method
         var pooled = avgpool2d(input, kernel_size=2, stride=2, method="direct")
@@ -167,12 +167,12 @@ Raises:
         Error: If tensor shapes are incompatible or method is unsupported.
     """
     if method != "direct":
-        raise Error("Only 'direct' method is currently supported for avgpool2d")
+        raise Error("Only 'direct' method is currently supported for avgpool2d").
 
     # Get input dimensions
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("Input must be 4D tensor (batch, channels, height, width)")
+        raise Error("Input must be 4D tensor (batch, channels, height, width)").
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -204,16 +204,16 @@ Raises:
                 for ow in range(out_width):
                     # Compute input window bounds
                     var in_h_start = oh * actual_stride - padding
-                    var in_w_start = ow * actual_stride - padding
+                    var in_w_start = ow * actual_stride - padding.
 
                     # Compute sum and count in window
                     var sum_val = Float32(0.0)
-                    var count = 0
+                    var count = 0.
 
                     for kh in range(kernel_size):
                         for kw in range(kernel_size):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             # Check bounds (zero padding counted in divisor)
                             if (
@@ -230,12 +230,12 @@ Raises:
                                 )
                                 var val = x._data.bitcast[Float32]()[in_idx]
                                 sum_val += val
-                                count += 1
+                                count += 1.
 
                     # Compute average
                     var avg_val = sum_val / Float32(
                         count
-                    ) if count > 0 else Float32(0.0)
+                    ) if count > 0 else Float32(0.0).
 
                     # Write average to output
                     var out_idx = (
@@ -244,7 +244,7 @@ Raises:
                         + oh * out_width
                         + ow
                     )
-                    output._data.bitcast[Float32]()[out_idx] = avg_val
+                    output._data.bitcast[Float32]()[out_idx] = avg_val.
 
     return output^
 
@@ -260,14 +260,14 @@ Args:
         method: Implementation method - "direct" (default), "optimized" (future).
 
 Returns:
-        Output tensor of shape (batch, channels, 1, 1)
+        Output tensor of shape (batch, channels, 1, 1).
 
     Example:
         ```mojo
-        from shared.core import ExTensor, global_avgpool2d
+        from shared.core import ExTensor, global_avgpool2d.
 
         # Pure function call
-        var pooled = global_avgpool2d(input)  # (B, C, H, W) -> Tuple[B, C, 1, 1]
+        var pooled = global_avgpool2d(input)  # (B, C, H, W) -> Tuple[B, C, 1, 1].
 
         # Or select implementation method
         var pooled = global_avgpool2d(input, method="direct")
@@ -284,7 +284,7 @@ Raises:
     # Get input dimensions
     var x_shape = x.shape()
     if len(x_shape) != 4:
-        raise Error("Input must be 4D tensor (batch, channels, height, width)")
+        raise Error("Input must be 4D tensor (batch, channels, height, width)").
 
     var batch = x_shape[0]
     var channels = x_shape[1]
@@ -303,7 +303,7 @@ Raises:
     for b in range(batch):
         for c in range(channels):
             # Sum all spatial values
-            var sum_val = Float32(0.0)
+            var sum_val = Float32(0.0).
 
             for h in range(height):
                 for w in range(width):
@@ -314,14 +314,14 @@ Raises:
                         + w
                     )
                     var val = x._data.bitcast[Float32]()[in_idx]
-                    sum_val += val
+                    sum_val += val.
 
             # Compute average
-            var avg_val = sum_val / Float32(height * width)
+            var avg_val = sum_val / Float32(height * width).
 
             # Write to output
             var out_idx = b * channels + c
-            output._data.bitcast[Float32]()[out_idx] = avg_val
+            output._data.bitcast[Float32]()[out_idx] = avg_val.
 
     return output^
 
@@ -352,7 +352,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import maxpool2d, maxpool2d_backward
+        from shared.core import maxpool2d, maxpool2d_backward.
 
         # Forward pass
         var output = maxpool2d(x, kernel_size=2, stride=2)
@@ -400,17 +400,17 @@ Raises:
                 for ow in range(out_width):
                     # Compute input window bounds
                     var in_h_start = oh * actual_stride - padding
-                    var in_w_start = ow * actual_stride - padding
+                    var in_w_start = ow * actual_stride - padding.
 
                     # Find the position of maximum value in the window
                     var max_val = Float32(-1e9)
                     var max_h = -1
-                    var max_w = -1
+                    var max_w = -1.
 
                     for kh in range(kernel_size):
                         for kw in range(kernel_size):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             # Check bounds
                             if (
@@ -425,12 +425,12 @@ Raises:
                                     + in_h * in_width
                                     + in_w
                                 )
-                                var val = x._data.bitcast[Float32]()[in_idx]
+                                var val = x._data.bitcast[Float32]()[in_idx].
 
                                 if val > max_val:
                                     max_val = val
                                     max_h = in_h
-                                    max_w = in_w
+                                    max_w = in_w.
 
                     # Route gradient to the max position
                     if max_h >= 0 and max_w >= 0:
@@ -442,7 +442,7 @@ Raises:
                         )
                         var grad_out_val = grad_output._data.bitcast[Float32]()[
                             grad_out_idx
-                        ]
+                        ].
 
                         var grad_in_idx = (
                             b * (channels * in_height * in_width)
@@ -452,7 +452,7 @@ Raises:
                         )
                         grad_input._data.bitcast[Float32]()[
                             grad_in_idx
-                        ] += grad_out_val
+                        ] += grad_out_val.
 
     return grad_input^
 
@@ -483,7 +483,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import avgpool2d, avgpool2d_backward
+        from shared.core import avgpool2d, avgpool2d_backward.
 
         # Forward pass
         var output = avgpool2d(x, kernel_size=2, stride=2)
@@ -534,18 +534,18 @@ Raises:
                     )
                     var grad_out_val = grad_output._data.bitcast[Float32]()[
                         grad_out_idx
-                    ]
+                    ].
 
                     # Compute input window bounds
                     var in_h_start = oh * actual_stride - padding
-                    var in_w_start = ow * actual_stride - padding
+                    var in_w_start = ow * actual_stride - padding.
 
                     # Count valid positions in window
                     var count = 0
                     for kh in range(kernel_size):
                         for kw in range(kernel_size):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             if (
                                 in_h >= 0
@@ -553,17 +553,17 @@ Raises:
                                 and in_w >= 0
                                 and in_w < in_width
                             ):
-                                count += 1
+                                count += 1.
 
                     # Distribute gradient equally to all positions
                     var grad_per_position = grad_out_val / Float32(
                         count
-                    ) if count > 0 else Float32(0.0)
+                    ) if count > 0 else Float32(0.0).
 
                     for kh in range(kernel_size):
                         for kw in range(kernel_size):
                             var in_h = in_h_start + kh
-                            var in_w = in_w_start + kw
+                            var in_w = in_w_start + kw.
 
                             if (
                                 in_h >= 0
@@ -579,7 +579,7 @@ Raises:
                                 )
                                 grad_input._data.bitcast[Float32]()[
                                     grad_in_idx
-                                ] += grad_per_position
+                                ] += grad_per_position.
 
     return grad_input^
 
@@ -602,7 +602,7 @@ Returns:
 
     Example:
         ```mojo
-        from shared.core import global_avgpool2d, global_avgpool2d_backward
+        from shared.core import global_avgpool2d, global_avgpool2d_backward.
 
         # Forward pass
         var output = global_avgpool2d(x)
@@ -643,10 +643,10 @@ Raises:
             var grad_out_idx = b * channels + c
             var grad_out_val = grad_output._data.bitcast[Float32]()[
                 grad_out_idx
-            ]
+            ].
 
             # Distribute equally to all spatial positions
-            var grad_per_position = grad_out_val / spatial_size
+            var grad_per_position = grad_out_val / spatial_size.
 
             for h in range(height):
                 for w in range(width):
@@ -658,6 +658,6 @@ Raises:
                     )
                     grad_input._data.bitcast[Float32]()[
                         grad_in_idx
-                    ] = grad_per_position
+                    ] = grad_per_position.
 
     return grad_input^

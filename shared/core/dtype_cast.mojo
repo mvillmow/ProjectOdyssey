@@ -27,7 +27,7 @@ Raises:
     Example:
         ```mojo
          Convert FP32 to FP16.
-        var fp16_tensor = cast_tensor(fp32_tensor, DType.float16)
+        var fp16_tensor = cast_tensor(fp32_tensor, DType.float16).
 
         # Convert FP16 back to FP32
         var fp32_tensor = cast_tensor(fp16_tensor, DType.float32)
@@ -35,11 +35,11 @@ Raises:
     """
     # Validate input
     if tensor._numel == 0:
-        raise Error("Cannot cast empty tensor")
+        raise Error("Cannot cast empty tensor").
 
     # No conversion needed
     if tensor.dtype() == target_dtype:
-        return tensor
+        return tensor.
 
     var result = ExTensor(tensor.shape(), target_dtype)
     var size = tensor._numel
@@ -51,7 +51,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float16]()
         for i in range(size):
             dst_ptr[i] = Float16(src_ptr[i])
-        return result
+        return result.
 
     # FP16 -> FP32
     if tensor.dtype() == DType.float16 and target_dtype == DType.float32:
@@ -59,7 +59,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = Float32(src_ptr[i])
-        return result
+        return result.
 
     # FP32 -> FP32 (copy)
     if tensor.dtype() == DType.float32 and target_dtype == DType.float32:
@@ -67,7 +67,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = src_ptr[i]
-        return result
+        return result.
 
     # FP64 -> FP32
     if tensor.dtype() == DType.float64 and target_dtype == DType.float32:
@@ -75,7 +75,7 @@ Raises:
         var dst_ptr = result._data.bitcast[Float32]()
         for i in range(size):
             dst_ptr[i] = Float32(src_ptr[i])
-        return result
+        return result.
 
     # FP32 -> FP64
     if tensor.dtype() == DType.float32 and target_dtype == DType.float64:
@@ -83,12 +83,12 @@ Raises:
         var dst_ptr = result._data.bitcast[Float64]()
         for i in range(size):
             dst_ptr[i] = Float64(src_ptr[i])
-        return result
+        return result.
 
     # Generic slow path for other conversions
     for i in range(size):
         var val = tensor._get_float64(i)
-        result._set_float64(i, val)
+        result._set_float64(i, val).
 
     return result
 
@@ -116,7 +116,7 @@ Raises:
         ```
     """
     if tensor._numel == 0:
-        raise Error("Cannot convert empty tensor to BFloat16")
+        raise Error("Cannot convert empty tensor to BFloat16").
 
     # Create uint16 tensor for BF16 storage
     var result = ExTensor(tensor.shape(), DType.uint16)
@@ -126,7 +126,7 @@ Raises:
     for i in range(size):
         var f32_val = Float32(tensor._get_float64(i))
         var bf16_val = BFloat16.from_float32(f32_val)
-        result._data.bitcast[UInt16]()[i] = bf16_val.bits
+        result._data.bitcast[UInt16]()[i] = bf16_val.bits.
 
     return result
 
@@ -165,7 +165,7 @@ Raises:
         and target_dtype != DType.float64
         and target_dtype != DType.float16
     ):
-        raise Error("Target dtype must be floating point")
+        raise Error("Target dtype must be floating point").
 
     var result = ExTensor(tensor.shape(), target_dtype)
     var size = tensor._numel
@@ -174,14 +174,14 @@ Raises:
     for i in range(size):
         var bf16_bits = tensor._data.bitcast[UInt16]()[i]
         var bf16_val = BFloat16(bf16_bits)
-        var f32_val = bf16_val.to_float32()
+        var f32_val = bf16_val.to_float32().
 
         if target_dtype == DType.float32:
             result._data.bitcast[Float32]()[i] = f32_val
         elif target_dtype == DType.float64:
             result._data.bitcast[Float64]()[i] = Float64(f32_val)
         elif target_dtype == DType.float16:
-            result._data.bitcast[Float16]()[i] = Float16(f32_val)
+            result._data.bitcast[Float16]()[i] = Float16(f32_val).
 
     return result
 
@@ -215,7 +215,7 @@ Returns:
     elif dtype == DType.int64 or dtype == DType.uint64:
         return 8
     else:
-        return 4  # Default
+        return 4  # Default.
 
 
 fn is_floating_dtype(dtype: DType) -> Bool:

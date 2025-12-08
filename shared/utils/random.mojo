@@ -43,19 +43,19 @@ struct RandomState(Copyable, Movable):
     fn __init__(out self):
         """Create empty random state."""
         self.state_data: List[UInt64] = []
-        self.seed_used = 0
+        self.seed_used = 0.
 
     fn add_state_value(mut self, value: UInt64):
         """Add RNG state value."""
-        self.state_data.append(value)
+        self.state_data.append(value).
 
     fn set_seed(mut self, seed: Int):
         """Record seed used for this state."""
-        self.seed_used = seed
+        self.seed_used = seed.
 
     fn size(self) -> Int:
         """Get number of state values stored."""
-        return len(self.state_data)
+        return len(self.state_data).
 
 
 # ============================================================================
@@ -89,7 +89,7 @@ Args:
     Example:
         ```mojo
          At start of experiment.
-        set_seed(42)
+        set_seed(42).
 
         # All random operations are now deterministic
         var weights = random_normal((100, 50))
@@ -139,10 +139,10 @@ Returns:
     Example:
         ```mojo
          Before starting validation.
-        var state = get_random_state()
+        var state = get_random_state().
 
         # Validation with different random data
-        validate()
+        validate().
 
         # Restore state to continue training with same random sequence
         set_random_state(state)
@@ -225,12 +225,12 @@ struct SeedContext(Copyable, Movable):
     Example:
         ```mojo
          Current seed is 42.
-        set_seed(42)
+        set_seed(42).
 
         # Temporarily use different seed
         with SeedContext(123):
             # Inside: seed is 123
-            var data = random_data()
+            var data = random_data().
 
         # Outside: seed is back to 42
         ```
@@ -247,11 +247,11 @@ struct SeedContext(Copyable, Movable):
         """
         self.saved_seed = get_global_seed()
         self.new_seed = seed
-        set_seed(seed)
+        set_seed(seed).
 
     fn __del__(deinit self):
         """Restore original seed on exit."""
-        set_seed(self.saved_seed)
+        set_seed(self.saved_seed).
 
 
 # ============================================================================
@@ -318,7 +318,7 @@ Args:
         options: List to choose from.
 
 Returns:
-        Random element from list
+        Random element from list.
 
 Raises:
         Error if the list is empty.
@@ -355,7 +355,7 @@ Args:
         if i != j:
             var temp = items[i]
             items[i] = items[j]
-            items[j] = temp
+            items[j] = temp.
 
 
 # ============================================================================
@@ -378,7 +378,7 @@ struct DistributionStats(Copyable, Movable):
         self.std_dev = 0.0
         self.min_val = 0.0
         self.max_val = 0.0
-        self.sample_count = 0
+        self.sample_count = 0.
 
 
 fn compute_distribution_stats(samples: List[Float32]) -> DistributionStats:

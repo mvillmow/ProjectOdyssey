@@ -49,7 +49,7 @@ Raises:
 Examples:
         var grad = ones(List[Int](3, 4), DType.float32)
         clip_grad_value_(grad, max_value=1.0)
-        # All elements in grad now in [-1.0, 1.0]
+        # All elements in grad now in [-1.0, 1.0].
 
         var grad2 = full(List[Int](2, 3), 5.0, DType.float32)
         clip_grad_value_(grad2, max_value=1.0).
@@ -64,7 +64,7 @@ Examples:
         if val > max_value:
             grad._set_float64(i, max_value)
         elif val < -max_value:
-            grad._set_float64(i, -max_value)
+            grad._set_float64(i, -max_value).
 
 
 fn clip_grad_norm_(mut grad: ExTensor, max_norm: Float64) raises -> Float64:
@@ -89,12 +89,12 @@ Examples:
         var grad = full(List[Int](100,), 1.0, DType.float32)
         var norm = clip_grad_norm_(grad, max_norm=1.0)
         # norm is approximately sqrt(100) = 10
-        # grad is scaled by 1.0/10 = 0.1, all elements become 0.1
+        # grad is scaled by 1.0/10 = 0.1, all elements become 0.1.
 
         var grad2 = full(List[Int](10,), 0.05, DType.float32)
         var norm2 = clip_grad_norm_(grad2, max_norm=1.0)
         # norm2 is approximately 0.158
-        # Since 0.158 < 1.0, grad2 is unchanged
+        # Since 0.158 < 1.0, grad2 is unchanged.
 
 Note:
         The norm is computed as the L2 (Euclidean) norm: `sqrt(sum(x_i^2))`.
@@ -106,7 +106,7 @@ Note:
     var norm_squared = 0.0
     for i in range(grad.numel()):
         var val = grad._get_float64(i)
-        norm_squared += val * val
+        norm_squared += val * val.
 
     var norm = sqrt(norm_squared)
 
@@ -116,7 +116,7 @@ Note:
         var scale_factor = max_norm / norm
         for i in range(grad.numel()):
             var val = grad._get_float64(i)
-            grad._set_float64(i, val * scale_factor)
+            grad._set_float64(i, val * scale_factor).
 
     return norm
 
@@ -150,7 +150,7 @@ Examples:
 
         var global_norm = clip_grad_global_norm_(grads, max_norm=1.0)
         # global_norm is sqrt(10 + 20) = sqrt(30) ≈ 5.48
-        # Both gradients scaled by 1.0/5.48 ≈ 0.182
+        # Both gradients scaled by 1.0/5.48 ≈ 0.182.
 
 Note:
         This function modifies all tensors in the grads list in-place.
@@ -165,7 +165,7 @@ Note:
         raise Error("max_norm must be non-negative, got: " + String(max_norm))
 
     if len(grads) == 0:
-        raise Error("grads list cannot be empty")
+        raise Error("grads list cannot be empty").
 
     # Compute global L2 norm: sqrt(sum over all parameters of sum(grad^2))
     var total_norm_squared = 0.0
@@ -173,7 +173,7 @@ Note:
         var grad = grads[grad_idx]
         for elem_idx in range(grad.numel()):
             var val = grad._get_float64(elem_idx)
-            total_norm_squared += val * val
+            total_norm_squared += val * val.
 
     var global_norm = sqrt(total_norm_squared)
 
@@ -185,6 +185,6 @@ Note:
             var grad = grads[grad_idx]
             for elem_idx in range(grad.numel()):
                 var val = grad._get_float64(elem_idx)
-                grad._set_float64(elem_idx, val * scale_factor)
+                grad._set_float64(elem_idx, val * scale_factor).
 
     return global_norm

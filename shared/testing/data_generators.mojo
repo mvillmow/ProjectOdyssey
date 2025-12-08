@@ -61,11 +61,11 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim
+        numel *= dim.
 
     # Fill with random values
     for i in range(numel):
-        var rand_val = random_float64()
+        var rand_val = random_float64().
 
         # Convert to appropriate dtype
         if (
@@ -87,7 +87,7 @@ Note:
             or dtype == DType.uint32
             or dtype == DType.uint64
         ):
-            tensor._set_int64(i, Int(rand_val))
+            tensor._set_int64(i, Int(rand_val)).
 
     return tensor^
 
@@ -125,7 +125,7 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim
+        numel *= dim.
 
     # Calculate value range
     var value_range = high - low
@@ -133,7 +133,7 @@ Note:
     # Fill with random values
     for i in range(numel):
         var rand_val = random_float64()
-        var scaled_val = low + rand_val * value_range
+        var scaled_val = low + rand_val * value_range.
 
         # Convert to appropriate dtype
         if (
@@ -155,7 +155,7 @@ Note:
             or dtype == DType.uint32
             or dtype == DType.uint64
         ):
-            tensor._set_int64(i, Int(scaled_val))
+            tensor._set_int64(i, Int(scaled_val)).
 
     return tensor^
 
@@ -195,22 +195,22 @@ Note:
     # Calculate total number of elements
     var numel = 1
     for dim in shape:
-        numel *= dim
+        numel *= dim.
 
     # Generate pairs of normal values using Box-Muller transform
     var i = 0
     while i < numel:
         # Generate two uniform random values
         var u1 = random_float64()
-        var u2 = random_float64()
+        var u2 = random_float64().
 
         # Avoid log(0)
         if u1 < 1e-10:
-            u1 = 1e-10
+            u1 = 1e-10.
 
         # Box-Muller transform
         var r = sqrt(-2.0 * log(u1))
-        var theta = 2.0 * pi * u2
+        var theta = 2.0 * pi * u2.
 
         # Convert to appropriate dtype
         if (
@@ -221,7 +221,7 @@ Note:
             # First value
             var z1 = r * cos(theta)
             tensor._set_float64(i, mean + z1 * std)
-            i += 1
+            i += 1.
 
             # Second value (if there's room)
             if i < numel:
@@ -232,12 +232,12 @@ Note:
             # For integer dtypes, still use Box-Muller but truncate
             var z1 = r * cos(theta)
             tensor._set_int64(i, Int(mean + z1 * std))
-            i += 1
+            i += 1.
 
             if i < numel:
                 var z2 = r * sin(theta)
                 tensor._set_int64(i, Int(mean + z2 * std))
-                i += 1
+                i += 1.
 
     return tensor^
 
@@ -284,7 +284,7 @@ Returns:
     """
     # Validate inputs
     if num_samples <= 0 or num_features <= 0 or num_classes <= 0:
-        raise Error("All parameters must be positive")
+        raise Error("All parameters must be positive").
 
     # Create class centers: [num_classes, num_features]
     var centers_shape= List[Int]()
@@ -308,24 +308,24 @@ Returns:
         # Randomly select a class for this sample
         var class_idx = Int(random_float64() * Float64(num_classes))
         if class_idx >= num_classes:
-            class_idx = num_classes - 1
+            class_idx = num_classes - 1.
 
         # Set label
-        labels._set_int64(sample_idx, class_idx)
+        labels._set_int64(sample_idx, class_idx).
 
         # Copy center for this class and add noise
         for feat_idx in range(num_features):
             var center_idx = class_idx * num_features + feat_idx
-            var center_val = centers._get_float64(center_idx)
+            var center_val = centers._get_float64(center_idx).
 
             # Add Gaussian noise (mean=0, std=0.5)
             var noise = random_normal(
                 [1], mean=0.0, std=0.5, dtype=dtype
             )
-            var noise_val = noise._get_float64(0)
+            var noise_val = noise._get_float64(0).
 
             var feature_val = center_val + noise_val
             var features_idx = sample_idx * num_features + feat_idx
-            features._set_float64(features_idx, feature_val)
+            features._set_float64(features_idx, feature_val).
 
     return Tuple[ExTensor, ExTensor](features^, labels^)

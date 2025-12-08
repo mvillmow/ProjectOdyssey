@@ -49,13 +49,13 @@ struct Linear(Copyable, Movable):
             ```
         """
         self.in_features = in_features
-        self.out_features = out_features
+        self.out_features = out_features.
 
         # Initialize weights with randn (standard normal distribution)
-        self.weight = randn([in_features, out_features], DType.float32)
+        self.weight = randn([in_features, out_features], DType.float32).
 
         # Initialize bias to zeros
-        self.bias = zeros([out_features], DType.float32)
+        self.bias = zeros([out_features], DType.float32).
 
     fn forward(self, input: ExTensor) raises -> ExTensor:
         """Forward pass: y = xW + b.
@@ -81,14 +81,14 @@ struct Linear(Copyable, Movable):
         """
         # Compute: output = input @ weight + bias
         # Matrix multiplication: input @ weight
-        var matmul_result = input @ self.weight
+        var matmul_result = input @ self.weight.
 
         # Add bias with broadcasting support
         # For single sample: (out_features,) + (out_features,) = (out_features,)
         # For batch: (batch_size, out_features) + (out_features,) = (batch_size, out_features)
-        var output = matmul_result + self.bias
+        var output = matmul_result + self.bias.
 
-        return output
+        return output.
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
@@ -118,4 +118,4 @@ struct Linear(Copyable, Movable):
             bias_copy._data[i] = self.bias._data[i]
         params.append(weight_copy^)
         params.append(bias_copy^)
-        return params^
+        return params^.

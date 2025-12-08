@@ -66,12 +66,12 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 Examples:
         # Create tensors
         var a = zeros(List[Int](3, 4), DType.float32)
-        var b = ones(List[Int](3, 4), DType.float32)
+        var b = ones(List[Int](3, 4), DType.float32).
 
         # Access properties
         print(a.shape())  # [3, 4]
         print(a.dtype())  # float32
-        print(a.numel())  # 12
+        print(a.numel())  # 12.
     """
 
     var _data: UnsafePointer[UInt8, origin=MutAnyOrigin]  # Raw byte storage
@@ -102,18 +102,18 @@ Examples:
         # Copy shape to avoid mutation issues
         self._shape= List[Int]()
         for i in range(len(shape)):
-            self._shape.append(shape[i])
+            self._shape.append(shape[i]).
 
         self._dtype = dtype
         self._is_view = False
         self._original_numel_quantized = (
             -1
-        )  # Initialize as non-quantized (fixes DATA-001)
+        )  # Initialize as non-quantized (fixes DATA-001).
 
         # Calculate total number of elements
         self._numel = 1
         for i in range(len(self._shape)):
-            self._numel *= self._shape[i]
+            self._numel *= self._shape[i].
 
         # Calculate row-major strides (in elements, not bytes)
         self._strides= List[Int]()
@@ -124,11 +124,11 @@ Examples:
         # Now fill strides in backward order
         for i in range(len(self._shape) - 1, -1, -1):
             self._strides[i] = stride
-            stride *= self._shape[i]
+            stride *= self._shape[i].
 
         # Validate memory requirements
         var dtype_size = ExTensor._get_dtype_size_static(dtype)
-        var total_bytes = self._numel * dtype_size
+        var total_bytes = self._numel * dtype_size.
 
         if total_bytes > MAX_TENSOR_BYTES:
             raise Error(
@@ -137,17 +137,17 @@ Examples:
                 + " bytes exceeds maximum "
                 + String(MAX_TENSOR_BYTES)
                 + " bytes. Consider using smaller batch sizes."
-            )
+            ).
 
         if total_bytes > WARN_TENSOR_BYTES:
             print("Warning: Large tensor allocation:", total_bytes, "bytes")
 
         # Allocate raw byte storage (now with validation)
-        self._data = alloc[UInt8](total_bytes)
+        self._data = alloc[UInt8](total_bytes).
 
         # Allocate and initialize reference count (fixes MOJO-003, MOJO-006)
         self._refcount = alloc[Int](1)
-        self._refcount[] = 1  # Start with 1 reference
+        self._refcount[] = 1  # Start with 1 reference.
 
     fn __init__(out self, value: IntLiteral) raises:
         """Create a scalar ExTensor from an integer literal.
@@ -175,7 +175,7 @@ Examples:
         self._data = alloc[UInt8](dtype_size)
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
-        self._data.bitcast[Int64]()[] = Int64(value)
+        self._data.bitcast[Int64]()[] = Int64(value).
 
     fn __init__(out self, value: FloatLiteral) raises:
         """Create a scalar ExTensor from a float literal.
@@ -203,7 +203,7 @@ Examples:
         self._data = alloc[UInt8](dtype_size)
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
-        self._data.bitcast[Float64]()[] = Float64(value)
+        self._data.bitcast[Float64]()[] = Float64(value).
 
     fn __init__(out self, value: Int) raises:
         """Create a scalar ExTensor from an Int.
@@ -226,7 +226,7 @@ Examples:
         self._data = alloc[UInt8](dtype_size)
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
-        self._data.bitcast[Int64]()[] = Int64(value)
+        self._data.bitcast[Int64]()[] = Int64(value).
 
     fn __init__(out self, value: Float64) raises:
         """Create a scalar ExTensor from a Float64.
@@ -253,7 +253,7 @@ Examples:
         self._data = alloc[UInt8](dtype_size)
         self._refcount = alloc[Int](1)
         self._refcount[] = 1
-        self._data.bitcast[Float64]()[] = value
+        self._data.bitcast[Float64]()[] = value.
 
     fn __init__(out self, var data: List[Float32]) raises:
         """Create 1D tensor from List[Float32].
@@ -269,25 +269,25 @@ Examples:
         ```
         """
         var shape= List[Int]()
-        shape.append(len(data))
+        shape.append(len(data)).
 
         # Initialize fields manually (delegating constructor doesn't satisfy compiler)
         self._shape= List[Int]()
         self._shape.append(len(data))
         self._dtype = DType.float32
         self._is_view = False
-        self._original_numel_quantized = -1
+        self._original_numel_quantized = -1.
 
         # Calculate numel
-        self._numel = len(data)
+        self._numel = len(data).
 
         # Calculate strides
         self._strides= List[Int]()
-        self._strides.append(1)
+        self._strides.append(1).
 
         # Allocate memory
         var dtype_size = ExTensor._get_dtype_size_static(DType.float32)
-        var total_bytes = self._numel * dtype_size
+        var total_bytes = self._numel * dtype_size.
 
         if total_bytes > MAX_TENSOR_BYTES:
             raise Error(
@@ -296,15 +296,15 @@ Examples:
                 + " bytes exceeds maximum "
                 + String(MAX_TENSOR_BYTES)
                 + " bytes"
-            )
+            ).
 
         self._data = alloc[UInt8](total_bytes)
         self._refcount = alloc[Int](1)
-        self._refcount[] = 1
+        self._refcount[] = 1.
 
         # Copy data
         for i in range(len(data)):
-            self._set_float32(i, data[i])
+            self._set_float32(i, data[i]).
 
     fn __init__(out self, var data: List[Int]) raises:
         """Create 1D tensor from List[Int].
@@ -320,25 +320,25 @@ Examples:
         ```
         """
         var shape= List[Int]()
-        shape.append(len(data))
+        shape.append(len(data)).
 
         # Initialize fields manually (delegating constructor doesn't satisfy compiler)
         self._shape= List[Int]()
         self._shape.append(len(data))
         self._dtype = DType.int64
         self._is_view = False
-        self._original_numel_quantized = -1
+        self._original_numel_quantized = -1.
 
         # Calculate numel
-        self._numel = len(data)
+        self._numel = len(data).
 
         # Calculate strides
         self._strides= List[Int]()
-        self._strides.append(1)
+        self._strides.append(1).
 
         # Allocate memory
         var dtype_size = ExTensor._get_dtype_size_static(DType.int64)
-        var total_bytes = self._numel * dtype_size
+        var total_bytes = self._numel * dtype_size.
 
         if total_bytes > MAX_TENSOR_BYTES:
             raise Error(
@@ -347,15 +347,15 @@ Examples:
                 + " bytes exceeds maximum "
                 + String(MAX_TENSOR_BYTES)
                 + " bytes"
-            )
+            ).
 
         self._data = alloc[UInt8](total_bytes)
         self._refcount = alloc[Int](1)
-        self._refcount[] = 1
+        self._refcount[] = 1.
 
         # Copy data
         for i in range(len(data)):
-            self._data.bitcast[Int64]()[i] = Int64(data[i])
+            self._data.bitcast[Int64]()[i] = Int64(data[i]).
 
     fn __copyinit__(out self, existing: Self):
         """Copy constructor - creates shared ownership with reference counting.
@@ -373,11 +373,11 @@ Examples:
         self._numel = existing._numel
         self._is_view = existing._is_view
         self._refcount = existing._refcount
-        self._original_numel_quantized = existing._original_numel_quantized
+        self._original_numel_quantized = existing._original_numel_quantized.
 
         # Increment reference count (shared ownership)
         if not self._is_view and self._refcount:
-            self._refcount[] += 1
+            self._refcount[] += 1.
 
     fn __del__(deinit self):
         """Destructor - decrements ref count, frees if last reference.
@@ -387,16 +387,16 @@ Examples:
 
         """
         if not self._is_view and self._refcount:
-            self._refcount[] -= 1
+            self._refcount[] -= 1.
 
             # If last reference, free everything
             if self._refcount[] == 0:
                 self._data.free()
-                self._refcount.free()
+                self._refcount.free().
 
     fn _get_dtype_size(self) -> Int:
         """Get size in bytes for the tensor's dtype."""
-        return ExTensor._get_dtype_size_static(self._dtype)
+        return ExTensor._get_dtype_size_static(self._dtype).
 
     @staticmethod
     fn _get_dtype_size_static(dtype: DType) -> Int:
@@ -417,7 +417,7 @@ Examples:
         elif dtype == DType.int64 or dtype == DType.uint64:
             return 8
         else:
-            return 4  # Default fallback
+            return 4  # Default fallback.
 
     fn shape(self) -> List[Int]:
         """Return the shape of the tensor.
@@ -433,7 +433,7 @@ Examples:
         var result= List[Int]()
         for i in range(len(self._shape)):
             result.append(self._shape[i])
-        return result^
+        return result^.
 
     fn dtype(self) -> DType:
         """Return the data type of the tensor.
@@ -441,7 +441,7 @@ Examples:
         Returns:
             The DType of tensor elements.
         """
-        return self._dtype
+        return self._dtype.
 
     fn numel(self) -> Int:
         """Return the total number of elements in the tensor.
@@ -453,7 +453,7 @@ Examples:
             `var t = ExTensor.zeros((3, 4), DType.float32)
             print(t.numel())  # 12`
         """
-        return self._numel
+        return self._numel.
 
     fn num_elements(self) -> Int:
         """Return the total number of elements in the tensor.
@@ -461,13 +461,13 @@ Examples:
         This is an alias for numel() for API compatibility.
 
         Returns:
-            The product of all dimension sizes
+            The product of all dimension sizes.
 
         Examples:
             `var t = zeros(List[Int](3, 4), DType.float32)
             print(t.num_elements())  # 12`
         """
-        return self._numel
+        return self._numel.
 
     fn dim(self) -> Int:
         """Return the number of dimensions (rank) of the tensor.
@@ -480,7 +480,7 @@ Examples:
             print(t.dim())  # 2
             ```
         """
-        return len(self._shape)
+        return len(self._shape).
 
     fn is_contiguous(self) -> Bool:
         """Check if the tensor has a contiguous memory layout.
@@ -497,7 +497,7 @@ Examples:
             if self._strides[i] != expected_stride:
                 return False
             expected_stride *= self._shape[i]
-        return True
+        return True.
 
     fn reshape(self, new_shape: List[Int]) raises -> ExTensor:
         """Reshape tensor to new shape (must have same total elements).
@@ -525,7 +525,7 @@ Examples:
         # Verify total elements match
         var new_numel = 1
         for i in range(len(new_shape)):
-            new_numel *= new_shape[i]
+            new_numel *= new_shape[i].
 
         if new_numel != self._numel:
             raise Error("Cannot reshape: element count mismatch")
@@ -539,7 +539,7 @@ Examples:
         # Update shape
         result._shape = List[Int]()
         for i in range(len(new_shape)):
-            result._shape.append(new_shape[i])
+            result._shape.append(new_shape[i]).
 
         # Recalculate strides for new shape
         result._strides= List[Int]()
@@ -550,9 +550,9 @@ Examples:
         # Now fill strides in backward order
         for i in range(len(new_shape) - 1, -1, -1):
             result._strides[i] = stride
-            stride *= new_shape[i]
+            stride *= new_shape[i].
 
-        return result^
+        return result^.
 
     fn slice(self, start: Int, end: Int, axis: Int = 0) raises -> ExTensor:
         """Extract a slice along the specified axis.
@@ -567,7 +567,7 @@ Examples:
                 axis: Axis to slice along (default: 0, the batch dimension)
 
             Returns:
-                A new tensor containing the slice (shares memory with original)
+                A new tensor containing the slice (shares memory with original).
 
             Raises:
                 Error: If indices are out of bounds or axis is invalid
@@ -586,7 +586,7 @@ Examples:
                 + " out of range for tensor with "
                 + String(len(self._shape))
                 + " dimensions"
-            )
+            ).
 
         # Validate indices
         var dim_size = self._shape[axis]
@@ -607,12 +607,12 @@ Examples:
                 + ", "
                 + String(dim_size)
                 + "]"
-            )
+            ).
 
         # Calculate offset to start of slice
         var offset_elements = start * self._strides[axis]
         var dtype_size = self._get_dtype_size()
-        var offset_bytes = offset_elements * dtype_size
+        var offset_bytes = offset_elements * dtype_size.
 
         # Create view by explicitly copying (increments refcount via __copyinit__)
         var result = self.copy()
@@ -626,14 +626,14 @@ Examples:
             if i == axis:
                 result._shape.append(end - start)
             else:
-                result._shape.append(self._shape[i])
+                result._shape.append(self._shape[i]).
 
         # Update data pointer to slice offset
-        result._data = self._data.offset(offset_bytes)
+        result._data = self._data.offset(offset_bytes).
 
-        # Strides remain the same (already copied by __copyinit__)
+        # Strides remain the same (already copied by __copyinit__).
 
-        return result^
+        return result^.
 
     fn __getitem__(self, index: Int) raises -> Float32:
         """Get element at flat index.
@@ -642,7 +642,7 @@ Examples:
             index: The flat index to access
 
         Returns:
-            The value at the given index as Float32
+            The value at the given index as Float32.
 
         Raises:
             Error: If index is out of bounds
@@ -654,16 +654,16 @@ Examples:
         ```
         """
         if index < 0 or index >= self._numel:
-            raise Error("Index out of bounds")
+            raise Error("Index out of bounds").
 
         # Return value based on dtype
-        return self._get_float32(index)
+        return self._get_float32(index).
 
     fn _get_float64(self, index: Int) -> Float64:
         """Internal: Get value at index as Float64 (assumes float-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.float16:
             var ptr = (self._data + offset).bitcast[Float16]()
@@ -676,12 +676,12 @@ Examples:
             return ptr[]
         else:
             # For integer types, cast to float64
-            return Float64(self._get_int64(index))
+            return Float64(self._get_int64(index)).
 
     fn _set_float64(self, index: Int, value: Float64):
         """Internal: Set value at index (assumes float-compatible dtype)."""
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.float16:
             var ptr = (self._data + offset).bitcast[Float16]()
@@ -691,7 +691,7 @@ Examples:
             ptr[] = value.cast[DType.float32]()
         elif self._dtype == DType.float64:
             var ptr = (self._data + offset).bitcast[Float64]()
-            ptr[] = value
+            ptr[] = value.
 
     fn _get_float32(self, index: Int) -> Float32:
         """Internal: Get value at index as Float32 (assumes float-compatible dtype).
@@ -700,14 +700,14 @@ Examples:
             index: Flat index to retrieve value from
 
         Returns:
-            Value at index as Float32
+            Value at index as Float32.
 
         Note:
             For Float64 and integer types, value is cast to Float32.
             For Float16, value is upcast to Float32.
         """
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.float16:
             var ptr = (self._data + offset).bitcast[Float16]()
@@ -720,7 +720,7 @@ Examples:
             return ptr[].cast[DType.float32]()
         else:
             # For integer types, cast to float32
-            return Float32(self._get_int64(index))
+            return Float32(self._get_int64(index)).
 
     fn _set_float32(self, index: Int, value: Float32):
         """Internal: Set value at index as Float32 (assumes float-compatible dtype).
@@ -735,7 +735,7 @@ Examples:
             For integer types, value is truncated to integer.
         """
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.float16:
             var ptr = (self._data + offset).bitcast[Float16]()
@@ -745,13 +745,13 @@ Examples:
             ptr[] = value
         elif self._dtype == DType.float64:
             var ptr = (self._data + offset).bitcast[Float64]()
-            ptr[] = value.cast[DType.float64]()
+            ptr[] = value.cast[DType.float64]().
 
     fn _get_int64(self, index: Int) -> Int64:
         """Internal: Get value at index as Int64 (assumes integer-compatible dtype).
         """
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.int8:
             var ptr = (self._data + offset).bitcast[Int8]()
@@ -781,12 +781,12 @@ Examples:
             var ptr = (self._data + offset).bitcast[Bool]()
             return 1 if ptr[] else 0
         else:
-            return 0  # Default fallback
+            return 0  # Default fallback.
 
     fn _set_int64(self, index: Int, value: Int64):
         """Internal: Set value at index (assumes integer-compatible dtype)."""
         var dtype_size = self._get_dtype_size()
-        var offset = index * dtype_size
+        var offset = index * dtype_size.
 
         if self._dtype == DType.int8:
             var ptr = (self._data + offset).bitcast[Int8]()
@@ -814,7 +814,7 @@ Examples:
             ptr[] = value.cast[DType.uint64]()
         elif self._dtype == DType.bool:
             var ptr = (self._data + offset).bitcast[Bool]()
-            ptr[] = value != 0
+            ptr[] = value != 0.
 
     fn _set_int32(self, index: Int, value: Int32):
         """Internal: Set value at index as Int32 (assumes integer-compatible dtype).
@@ -826,23 +826,23 @@ Examples:
         Note:
             Delegates to _set_int64 after casting to Int64.
         """
-        self._set_int64(index, value.cast[DType.int64]())
+        self._set_int64(index, value.cast[DType.int64]()).
 
     fn _fill_zero(mut self):
         """Internal: Fill tensor with zeros (works for all dtypes)."""
         var dtype_size = self._get_dtype_size()
         var total_bytes = self._numel * dtype_size
-        memset_zero(self._data, total_bytes)
+        memset_zero(self._data, total_bytes).
 
     fn _fill_value_float(mut self, value: Float64):
         """Internal: Fill tensor with float value."""
         for i in range(self._numel):
-            self._set_float64(i, value)
+            self._set_float64(i, value).
 
     fn _fill_value_int(mut self, value: Int64):
         """Internal: Fill tensor with integer value."""
         for i in range(self._numel):
-            self._set_int64(i, value)
+            self._set_int64(i, value).
 
     # ========================================================================
     # Dunder Methods (Operator Overloading)
@@ -850,87 +850,87 @@ Examples:
 
     fn __add__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise addition: a + b"""
-        from .arithmetic import add
+        from .arithmetic import add.
 
-        return add(self, other)
+        return add(self, other).
 
     fn __sub__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise subtraction: a - b"""
-        from .arithmetic import subtract
+        from .arithmetic import subtract.
 
-        return subtract(self, other)
+        return subtract(self, other).
 
     fn __mul__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise multiplication: `a * b`"""
-        from .arithmetic import multiply
+        from .arithmetic import multiply.
 
-        return multiply(self, other)
+        return multiply(self, other).
 
     fn __truediv__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise division: `a / b`"""
-        from .arithmetic import divide
+        from .arithmetic import divide.
 
-        return divide(self, other)
+        return divide(self, other).
 
     fn __floordiv__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise floor division: `a // b`"""
-        from .arithmetic import floor_divide
+        from .arithmetic import floor_divide.
 
-        return floor_divide(self, other)
+        return floor_divide(self, other).
 
     fn __mod__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise modulo: `a % b`"""
-        from .arithmetic import modulo
+        from .arithmetic import modulo.
 
-        return modulo(self, other)
+        return modulo(self, other).
 
     fn __pow__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise power: `a ** b`"""
-        from .arithmetic import power
+        from .arithmetic import power.
 
-        return power(self, other)
+        return power(self, other).
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
         """Matrix multiplication: `a @ b`"""
-        from .matrix import matmul
+        from .matrix import matmul.
 
-        return matmul(self, other)
+        return matmul(self, other).
 
     fn __eq__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise equality: `a == b`"""
-        from .comparison import equal
+        from .comparison import equal.
 
-        return equal(self, other)
+        return equal(self, other).
 
     fn __ne__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise inequality: `a != b`"""
-        from .comparison import not_equal
+        from .comparison import not_equal.
 
-        return not_equal(self, other)
+        return not_equal(self, other).
 
     fn __lt__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise less than: `a < b`"""
-        from .comparison import less
+        from .comparison import less.
 
-        return less(self, other)
+        return less(self, other).
 
     fn __le__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise less or equal: `a <= b`"""
-        from .comparison import less_equal
+        from .comparison import less_equal.
 
-        return less_equal(self, other)
+        return less_equal(self, other).
 
     fn __gt__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise greater than: `a > b`"""
-        from .comparison import greater
+        from .comparison import greater.
 
-        return greater(self, other)
+        return greater(self, other).
 
     fn __ge__(self, other: ExTensor) raises -> ExTensor:
         """Element-wise greater or equal: `a >= b`"""
-        from .comparison import greater_equal
+        from .comparison import greater_equal.
 
-        return greater_equal(self, other)
+        return greater_equal(self, other).
 
     # ========================================================================
     # FP8 Conversion Methods
@@ -959,7 +959,7 @@ Examples:
             are clamped. This is useful for memory-efficient training/inference.
             FP16 inputs are converted to FP32 before quantization.
         """
-        from .types.fp8 import FP8
+        from .types.fp8 import FP8.
 
         # Verify source is floating point
         if not (
@@ -967,16 +967,16 @@ Examples:
             or self._dtype == DType.float32
             or self._dtype == DType.float64
         ):
-            raise Error("to_fp8() requires a floating-point tensor")
+            raise Error("to_fp8() requires a floating-point tensor").
 
         # Create output tensor with uint8 dtype
-        var result = ExTensor(self._shape, DType.uint8)
+        var result = ExTensor(self._shape, DType.uint8).
 
         # Convert each element to FP8
         for i in range(self._numel):
             # Bounds check (fixes DATA-004)
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             # Get source value as Float32
             var val: Float32
@@ -989,13 +989,13 @@ Examples:
                 val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
             else:
                 # Defensive re-validation (fixes DATA-003)
-                raise Error("Invalid dtype for FP8 conversion")
+                raise Error("Invalid dtype for FP8 conversion").
 
             # Convert to FP8 and store
             var fp8_val = FP8.from_float32(val)
-            result._data.bitcast[UInt8]()[i] = fp8_val.value
+            result._data.bitcast[UInt8]()[i] = fp8_val.value.
 
-        return result^
+        return result^.
 
     fn from_fp8(self) raises -> ExTensor:
         """Convert FP8-encoded tensor (uint8) back to Float32.
@@ -1011,29 +1011,29 @@ Examples:
 
         Examples:
             var fp8_t = ...  # uint8 tensor with FP8 encoding
-            var float_t = fp8_t.from_fp8()  # Decode to float32
+            var float_t = fp8_t.from_fp8()  # Decode to float32.
 
         Note:
             This assumes the uint8 tensor contains valid FP8 E4M3 encoded values.
             Use this to decode tensors created by to_fp8().
         """
-        from .types.fp8 import FP8
+        from .types.fp8 import FP8.
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
-            raise Error("from_fp8() requires a uint8 tensor (FP8-encoded)")
+            raise Error("from_fp8() requires a uint8 tensor (FP8-encoded)").
 
         # Create output tensor with float32 dtype
-        var result = ExTensor(self._shape, DType.float32)
+        var result = ExTensor(self._shape, DType.float32).
 
         # Convert each element from FP8 to Float32
         for i in range(self._numel):
             var fp8_bits = self._data.bitcast[UInt8]()[i]
             var fp8_val = FP8(fp8_bits)
             var float_val = fp8_val.to_float32()
-            result._data.bitcast[Float32]()[i] = float_val
+            result._data.bitcast[Float32]()[i] = float_val.
 
-        return result^
+        return result^.
 
     # ===----------------------------------------------------------------------===#
     # Integer Type Conversions
@@ -1053,20 +1053,20 @@ Examples:
 
         Examples:
             var t = zeros(List[Int](3, 4), DType.float32)
-            var i8_t = t.to_int8()  # Returns int8 tensor
+            var i8_t = t.to_int8()  # Returns int8 tensor.
 
         Note:
             FP16 inputs are converted to FP32 before conversion.
-        """
+        """.
 
         # Create output tensor with int8 dtype
-        var result = ExTensor(self._shape, DType.int8)
+        var result = ExTensor(self._shape, DType.int8).
 
         # Convert each element to Int8
         for i in range(self._numel):
             # Bounds check (fixes DATA-004)
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             # Defensive dtype re-validation (fixes DATA-003)
@@ -1096,7 +1096,7 @@ Examples:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
                 # Defensive re-validation (fixes DATA-003)
-                raise Error("Unsupported dtype for to_int8 conversion")
+                raise Error("Unsupported dtype for to_int8 conversion").
 
             # Convert to int8 range [-128, 127]
             var int_val = Int(val)
@@ -1104,9 +1104,9 @@ Examples:
                 int_val = -128
             elif int_val > 127:
                 int_val = 127
-            result._data.bitcast[SIMD[DType.int8, 1]]()[i][0] = int_val
+            result._data.bitcast[SIMD[DType.int8, 1]]()[i][0] = int_val.
 
-        return result^
+        return result^.
 
     fn to_int16(self) raises -> ExTensor:
         """Convert tensor values to Int16 format.
@@ -1117,11 +1117,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=int16 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.int16)
+        var result = ExTensor(self._shape, DType.int16).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1149,16 +1149,16 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_int16 conversion")
+                raise Error("Unsupported dtype for to_int16 conversion").
 
             var int_val = Int(val)
             if int_val < -32768:
                 int_val = -32768
             elif int_val > 32767:
                 int_val = 32767
-            result._data.bitcast[SIMD[DType.int16, 1]]()[i][0] = int_val
+            result._data.bitcast[SIMD[DType.int16, 1]]()[i][0] = int_val.
 
-        return result^
+        return result^.
 
     fn to_int32(self) raises -> ExTensor:
         """Convert tensor values to Int32 format.
@@ -1169,11 +1169,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=int32 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.int32)
+        var result = ExTensor(self._shape, DType.int32).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1201,12 +1201,12 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_int32 conversion")
+                raise Error("Unsupported dtype for to_int32 conversion").
 
             var int_val = Int(val)
-            result._data.bitcast[SIMD[DType.int32, 1]]()[i][0] = int_val
+            result._data.bitcast[SIMD[DType.int32, 1]]()[i][0] = int_val.
 
-        return result^
+        return result^.
 
     fn to_int64(self) raises -> ExTensor:
         """Convert tensor values to Int64 format.
@@ -1216,11 +1216,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=int64 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.int64)
+        var result = ExTensor(self._shape, DType.int64).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1249,12 +1249,12 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_int64 conversion")
+                raise Error("Unsupported dtype for to_int64 conversion").
 
             var i64_val = Int64(val)
-            result._data.bitcast[Int64]()[i] = i64_val
+            result._data.bitcast[Int64]()[i] = i64_val.
 
-        return result^
+        return result^.
 
     fn to_uint8(self) raises -> ExTensor:
         """Convert tensor values to UInt8 format.
@@ -1265,11 +1265,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=uint8 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.uint8)
+        var result = ExTensor(self._shape, DType.uint8).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1297,16 +1297,16 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_uint8 conversion")
+                raise Error("Unsupported dtype for to_uint8 conversion").
 
             var int_val = Int(val)
             if int_val < 0:
                 int_val = 0
             elif int_val > 255:
                 int_val = 255
-            result._data.bitcast[SIMD[DType.uint8, 1]]()[i][0] = int_val
+            result._data.bitcast[SIMD[DType.uint8, 1]]()[i][0] = int_val.
 
-        return result^
+        return result^.
 
     fn to_uint16(self) raises -> ExTensor:
         """Convert tensor values to UInt16 format.
@@ -1317,11 +1317,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=uint16 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.uint16)
+        var result = ExTensor(self._shape, DType.uint16).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1350,12 +1350,12 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_uint16 conversion")
+                raise Error("Unsupported dtype for to_uint16 conversion").
 
             var u16_val = UInt16(val)
-            result._data.bitcast[UInt16]()[i] = u16_val
+            result._data.bitcast[UInt16]()[i] = u16_val.
 
-        return result^
+        return result^.
 
     fn to_uint32(self) raises -> ExTensor:
         """Convert tensor values to UInt32 format.
@@ -1366,11 +1366,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=uint32 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.uint32)
+        var result = ExTensor(self._shape, DType.uint32).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1399,12 +1399,12 @@ Examples:
             elif self._dtype == DType.uint64:
                 val = Float32(self._data.bitcast[UInt64]()[i])
             else:
-                raise Error("Unsupported dtype for to_uint32 conversion")
+                raise Error("Unsupported dtype for to_uint32 conversion").
 
             var u32_val = UInt32(val)
-            result._data.bitcast[UInt32]()[i] = u32_val
+            result._data.bitcast[UInt32]()[i] = u32_val.
 
-        return result^
+        return result^.
 
     fn to_uint64(self) raises -> ExTensor:
         """Convert tensor values to UInt64 format.
@@ -1414,11 +1414,11 @@ Examples:
         Returns:
             A new ExTensor with dtype=uint64 containing converted values.
         """
-        var result = ExTensor(self._shape, DType.uint64)
+        var result = ExTensor(self._shape, DType.uint64).
 
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1447,12 +1447,12 @@ Examples:
                 ]()[i]
                 continue
             else:
-                raise Error("Unsupported dtype for to_uint64 conversion")
+                raise Error("Unsupported dtype for to_uint64 conversion").
 
             var u64_val = UInt64(val)
-            result._data.bitcast[UInt64]()[i] = u64_val
+            result._data.bitcast[UInt64]()[i] = u64_val.
 
-        return result^
+        return result^.
 
     # ========================================================================
     # BF8 Conversion Methods
@@ -1474,7 +1474,7 @@ Examples:
         Examples:
             var t = zeros(List[Int](3, 4), DType.float32)
             var bf8_t = t.to_bf8()  # Returns uint8 tensor with BF8 encoding
-            var restored = bf8_t.from_bf8()  # Convert back to float32
+            var restored = bf8_t.from_bf8()  # Convert back to float32.
 
         Note:
             BF8 has larger range (~±57344) than FP8 but less precision (2 mantissa bits).
@@ -1482,7 +1482,7 @@ Examples:
             training/inference where range is more important than precision.
             FP16 inputs are converted to FP32 before quantization.
         """
-        from .types.bf8 import BF8
+        from .types.bf8 import BF8.
 
         # Verify source is floating point
         if not (
@@ -1490,15 +1490,15 @@ Examples:
             or self._dtype == DType.float32
             or self._dtype == DType.float64
         ):
-            raise Error("to_bf8() requires a floating-point tensor")
+            raise Error("to_bf8() requires a floating-point tensor").
 
         # Create output tensor with uint8 dtype
-        var result = ExTensor(self._shape, DType.uint8)
+        var result = ExTensor(self._shape, DType.uint8).
 
         # Convert each element to BF8
         for i in range(self._numel):
             if i >= self._numel:
-                raise Error("Index out of bounds during bitcast")
+                raise Error("Index out of bounds during bitcast").
 
             var val: Float32
             if self._dtype == DType.float16:
@@ -1508,12 +1508,12 @@ Examples:
             elif self._dtype == DType.float64:
                 val = self._data.bitcast[Float64]()[i].cast[DType.float32]()
             else:
-                raise Error("Invalid dtype for BF8 conversion")
+                raise Error("Invalid dtype for BF8 conversion").
 
             var bf8_val = BF8.from_float32(val)
-            result._data.bitcast[UInt8]()[i] = bf8_val.value
+            result._data.bitcast[UInt8]()[i] = bf8_val.value.
 
-        return result^
+        return result^.
 
     fn from_bf8(self) raises -> ExTensor:
         """Convert BF8-encoded tensor (uint8) back to Float32.
@@ -1529,29 +1529,29 @@ Examples:
 
         Examples:
             var bf8_t = ...  # uint8 tensor with BF8 encoding
-            var float_t = bf8_t.from_bf8()  # Decode to float32
+            var float_t = bf8_t.from_bf8()  # Decode to float32.
 
         Note:
             This assumes the uint8 tensor contains valid BF8 E5M2 encoded values.
             Use this to decode tensors created by to_bf8().
         """
-        from .types.bf8 import BF8
+        from .types.bf8 import BF8.
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
-            raise Error("from_bf8() requires a uint8 tensor (BF8-encoded)")
+            raise Error("from_bf8() requires a uint8 tensor (BF8-encoded)").
 
         # Create output tensor with float32 dtype
-        var result = ExTensor(self._shape, DType.float32)
+        var result = ExTensor(self._shape, DType.float32).
 
         # Convert each element from BF8 to Float32
         for i in range(self._numel):
             var bf8_bits = self._data.bitcast[UInt8]()[i]
             var bf8_val = BF8(bf8_bits)
             var float_val = bf8_val.to_float32()
-            result._data.bitcast[Float32]()[i] = float_val
+            result._data.bitcast[Float32]()[i] = float_val.
 
-        return result^
+        return result^.
 
     # ===----------------------------------------------------------------------===#
     # FP4 Blocked Type Conversions
@@ -1574,32 +1574,32 @@ Examples:
             # Aligned size (32 elements = 1 block)
             var t = zeros(List[Int](32,), DType.float32)
             var mxfp4_t = t.to_mxfp4()  # Returns uint8 tensor (17 bytes)
-            var restored = mxfp4_t.from_mxfp4()  # Restores 32 elements
+            var restored = mxfp4_t.from_mxfp4()  # Restores 32 elements.
 
             # Non-aligned size (33 elements = 2 blocks with padding)
             var t2 = zeros(List[Int](33,), DType.float32)
             var mxfp4_t2 = t2.to_mxfp4()  # Pads to 64 elements, returns 34 bytes
-            var restored2 = mxfp4_t2.from_mxfp4()  # Correctly restores 33 elements!
+            var restored2 = mxfp4_t2.from_mxfp4()  # Correctly restores 33 elements!.
 
             # Small tensors (1 element still uses full 32-element block)
             var scalar = ExTensor(List[Int](1,), DType.float32)
-            var quantized_scalar = scalar.to_mxfp4()  # Returns 17 bytes (padded to 32)
+            var quantized_scalar = scalar.to_mxfp4()  # Returns 17 bytes (padded to 32).
 
             # Multi-dimensional tensors (flattened for quantization)
             var weights = ExTensor(List[Int](64, 128), DType.float32)  # 8192 elements
-            var quantized_weights = weights.to_mxfp4()  # 256 blocks × 17 bytes = 4352 bytes
+            var quantized_weights = weights.to_mxfp4()  # 256 blocks × 17 bytes = 4352 bytes.
 
             # ML workflow: quantize model weights for memory efficiency
             fn quantize_model_weights(weights: ExTensor) raises -> ExTensor:
                 # Convert FP32 weights to MXFP4 (16:1 compression)
-                return weights.to_mxfp4()
+                return weights.to_mxfp4().
 
             # ML workflow: quantize gradients during training
             fn quantize_gradients(gradients: ExTensor) raises -> ExTensor:
                 # MXFP4 works for both positive and negative values
                 var quantized = gradients.to_mxfp4()
                 # Dequantize before optimizer update
-                return quantized.from_mxfp4()
+                return quantized.from_mxfp4().
 
         Error Handling:
             - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
@@ -1620,7 +1620,7 @@ Examples:
             Memory efficiency: 17 bytes per 32 Float32 values (16:1 compression).
             FP16 inputs are converted to FP32 before quantization.
         """
-        from .types.mxfp4 import MXFP4Block
+        from .types.mxfp4 import MXFP4Block.
 
         # Verify source is floating point
         if not (
@@ -1628,24 +1628,24 @@ Examples:
             or self._dtype == DType.float32
             or self._dtype == DType.float64
         ):
-            raise Error("to_mxfp4() requires a floating-point tensor")
+            raise Error("to_mxfp4() requires a floating-point tensor").
 
         # Calculate number of blocks (32 elements per block)
         var num_blocks = (self._numel + 31) // 32
-        var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block
+        var total_bytes = num_blocks * 17  # 17 bytes per MXFP4Block.
 
         # Create output tensor as flattened uint8 array
         var output_shape= List[Int]()
         output_shape.append(total_bytes)
-        var result = ExTensor(output_shape, DType.uint8)
+        var result = ExTensor(output_shape, DType.uint8).
 
         # Store original size before padding
-        result._original_numel_quantized = self._numel
+        result._original_numel_quantized = self._numel.
 
         # Process each block
         for block_idx in range(num_blocks):
             var start_idx = block_idx * 32
-            var end_idx = min(start_idx + 32, self._numel)
+            var end_idx = min(start_idx + 32, self._numel).
 
             # Collect 32 values (pad with zeros if needed)
             var values= List[Float32]()
@@ -1653,7 +1653,7 @@ Examples:
                 var idx = start_idx + i
                 if idx < self._numel:
                     if idx >= self._numel:
-                        raise Error("Index out of bounds during bitcast")
+                        raise Error("Index out of bounds during bitcast").
 
                     var val: Float32
                     if self._dtype == DType.float16:
@@ -1670,10 +1670,10 @@ Examples:
                         raise Error("Invalid dtype for MXFP4 quantization")
                     values.append(val)
                 else:
-                    values.append(Float32(0.0))  # Padding
+                    values.append(Float32(0.0))  # Padding.
 
             # Create MXFP4Block
-            var block = MXFP4Block.from_float32_array(values)
+            var block = MXFP4Block.from_float32_array(values).
 
             # Store block data (16 bytes + 1 scale byte)
             var block_offset = block_idx * 17
@@ -1681,9 +1681,9 @@ Examples:
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
             result._data.bitcast[UInt8]()[
                 block_offset + 16
-            ] = block.scale.exponent
+            ] = block.scale.exponent.
 
-        return result^
+        return result^.
 
     fn from_mxfp4(self) raises -> ExTensor:
         """Convert MXFP4-encoded tensor (uint8 blocks) back to Float32.
@@ -1699,41 +1699,41 @@ Examples:
 
         Examples:
             var mxfp4_t = ...  # uint8 tensor with MXFP4 blocks
-            var float_t = mxfp4_t.from_mxfp4()  # Decode to float32, restores original size
+            var float_t = mxfp4_t.from_mxfp4()  # Decode to float32, restores original size.
 
         Note:
             This assumes the uint8 tensor contains valid MXFP4 blocks.
             Use this to decode tensors created by to_mxfp4().
             Original tensor size is restored from metadata if available.
         """
-        from .types.mxfp4 import MXFP4Block, E8M0Scale
+        from .types.mxfp4 import MXFP4Block, E8M0Scale.
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
-            raise Error("from_mxfp4() requires a uint8 tensor (MXFP4-encoded)")
+            raise Error("from_mxfp4() requires a uint8 tensor (MXFP4-encoded)").
 
         # Calculate number of blocks and output size
         if self._numel % 17 != 0:
-            raise Error("MXFP4 tensor size must be multiple of 17 bytes")
+            raise Error("MXFP4 tensor size must be multiple of 17 bytes").
 
         var num_blocks = self._numel // 17
-        var padded_output_size = num_blocks * 32
+        var padded_output_size = num_blocks * 32.
 
         # Check if original size is stored
         var output_size: Int
         if self._original_numel_quantized >= 0:
             output_size = self._original_numel_quantized
         else:
-            output_size = padded_output_size
+            output_size = padded_output_size.
 
         # Create output tensor with proper shape
         var output_shape= List[Int]()
         output_shape.append(padded_output_size)
-        var result = ExTensor(output_shape, DType.float32)
+        var result = ExTensor(output_shape, DType.float32).
 
         # Decode each block
         for block_idx in range(num_blocks):
-            var block_offset = block_idx * 17
+            var block_offset = block_idx * 17.
 
             # Reconstruct MXFP4Block
             var data = SIMD[DType.uint8, 16](0)
@@ -1741,16 +1741,16 @@ Examples:
                 data[i] = self._data.bitcast[UInt8]()[block_offset + i]
             var scale = E8M0Scale(
                 self._data.bitcast[UInt8]()[block_offset + 16]
-            )
+            ).
 
-            var block = MXFP4Block(data, scale)
+            var block = MXFP4Block(data, scale).
 
             # Decode block to Float32 values (only decode needed elements)
             var values = block.to_float32_array()
             for i in range(32):
                 var output_idx = block_idx * 32 + i
                 if output_idx < output_size:
-                    result._data.bitcast[Float32]()[output_idx] = values[i]
+                    result._data.bitcast[Float32]()[output_idx] = values[i].
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
@@ -1759,9 +1759,9 @@ Examples:
                 trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[
                     Float32
                 ]()[i]
-            return trimmed^
+            return trimmed^.
 
-        return result^
+        return result^.
 
     fn to_nvfp4(self) raises -> ExTensor:
         """Convert tensor values to NVFP4 blocked format.
@@ -1780,37 +1780,37 @@ Examples:
             # Aligned size (16 elements = 1 block)
             var t = zeros(List[Int](16,), DType.float32)
             var nvfp4_t = t.to_nvfp4()  # Returns uint8 tensor (9 bytes)
-            var restored = nvfp4_t.from_nvfp4()  # Restores 16 elements
+            var restored = nvfp4_t.from_nvfp4()  # Restores 16 elements.
 
             # Non-aligned size (17 elements = 2 blocks with padding)
             var t2 = zeros(List[Int](17,), DType.float32)
             var nvfp4_t2 = t2.to_nvfp4()  # Pads to 32 elements, returns 18 bytes
-            var restored2 = nvfp4_t2.from_nvfp4()  # Correctly restores 17 elements!
+            var restored2 = nvfp4_t2.from_nvfp4()  # Correctly restores 17 elements!.
 
             # Small tensors (1 element still uses full 16-element block)
             var scalar = ExTensor(List[Int](1,), DType.float32)
-            var quantized_scalar = scalar.to_nvfp4()  # Returns 9 bytes (padded to 16)
+            var quantized_scalar = scalar.to_nvfp4()  # Returns 9 bytes (padded to 16).
 
             # Multi-dimensional tensors (flattened for quantization)
             var activations = ExTensor(List[Int](128, 256), DType.float32)  # 32768 elements
-            var quantized_activations = activations.to_nvfp4()  # 2048 blocks × 9 bytes = 18432 bytes
+            var quantized_activations = activations.to_nvfp4()  # 2048 blocks × 9 bytes = 18432 bytes.
 
             # ML workflow: quantize activations with better accuracy than MXFP4
             fn quantize_activations(activations: ExTensor) raises -> ExTensor:
                 # NVFP4 provides better accuracy (smaller blocks = better scale granularity)
-                return activations.to_nvfp4()
+                return activations.to_nvfp4().
 
             # ML workflow: quantize gradients with E4M3 scale (recommended by paper)
             fn quantize_gradients_nvfp4(gradients: ExTensor) raises -> ExTensor:
                 # E4M3 achieves best results according to Dettmers et al. 2023
                 var quantized = gradients.to_nvfp4()
-                return quantized.from_nvfp4()
+                return quantized.from_nvfp4().
 
             # Compare accuracy: NVFP4 vs MXFP4
             fn compare_quantization_accuracy(data: ExTensor) raises:
                 var mxfp4_quantized = data.to_mxfp4().from_mxfp4()
                 var nvfp4_quantized = data.to_nvfp4().from_nvfp4()
-                # NVFP4 typically has lower error due to smaller blocks (16 vs 32)
+                # NVFP4 typically has lower error due to smaller blocks (16 vs 32).
 
         Error Handling:
             - Empty tensors: Raises "requires a floating-point tensor" if dtype is not FP16/FP32/FP64
@@ -1831,7 +1831,7 @@ Examples:
             Memory efficiency: 9 bytes per 16 Float32 values (14:1 compression).
             FP16 inputs are converted to FP32 before quantization.
         """
-        from .types.nvfp4 import NVFP4Block
+        from .types.nvfp4 import NVFP4Block.
 
         # Verify source is floating point
         if not (
@@ -1839,24 +1839,24 @@ Examples:
             or self._dtype == DType.float32
             or self._dtype == DType.float64
         ):
-            raise Error("to_nvfp4() requires a floating-point tensor")
+            raise Error("to_nvfp4() requires a floating-point tensor").
 
         # Calculate number of blocks (16 elements per block)
         var num_blocks = (self._numel + 15) // 16
-        var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block
+        var total_bytes = num_blocks * 9  # 9 bytes per NVFP4Block.
 
         # Create output tensor as flattened uint8 array
         var output_shape= List[Int]()
         output_shape.append(total_bytes)
-        var result = ExTensor(output_shape, DType.uint8)
+        var result = ExTensor(output_shape, DType.uint8).
 
         # Store original size before padding
-        result._original_numel_quantized = self._numel
+        result._original_numel_quantized = self._numel.
 
         # Process each block
         for block_idx in range(num_blocks):
             var start_idx = block_idx * 16
-            var end_idx = min(start_idx + 16, self._numel)
+            var end_idx = min(start_idx + 16, self._numel).
 
             # Collect 16 values (pad with zeros if needed)
             var values= List[Float32]()
@@ -1864,7 +1864,7 @@ Examples:
                 var idx = start_idx + i
                 if idx < self._numel:
                     if idx >= self._numel:
-                        raise Error("Index out of bounds during bitcast")
+                        raise Error("Index out of bounds during bitcast").
 
                     var val: Float32
                     if self._dtype == DType.float16:
@@ -1881,18 +1881,18 @@ Examples:
                         raise Error("Invalid dtype for NVFP4 quantization")
                     values.append(val)
                 else:
-                    values.append(Float32(0.0))  # Padding
+                    values.append(Float32(0.0))  # Padding.
 
             # Create NVFP4Block
-            var block = NVFP4Block.from_float32_array(values)
+            var block = NVFP4Block.from_float32_array(values).
 
             # Store block data (8 bytes + 1 scale byte)
             var block_offset = block_idx * 9
             for i in range(8):
                 result._data.bitcast[UInt8]()[block_offset + i] = block.data[i]
-            result._data.bitcast[UInt8]()[block_offset + 8] = block.scale.value
+            result._data.bitcast[UInt8]()[block_offset + 8] = block.scale.value.
 
-        return result^
+        return result^.
 
     fn from_nvfp4(self) raises -> ExTensor:
         """Convert NVFP4-encoded tensor (uint8 blocks) back to Float32.
@@ -1908,56 +1908,56 @@ Examples:
 
         Examples:
             var nvfp4_t = ...  # uint8 tensor with NVFP4 blocks
-            var float_t = nvfp4_t.from_nvfp4()  # Decode to float32, restores original size
+            var float_t = nvfp4_t.from_nvfp4()  # Decode to float32, restores original size.
 
         Note:
             This assumes the uint8 tensor contains valid NVFP4 blocks.
             Use this to decode tensors created by to_nvfp4().
             Original tensor size is restored from metadata if available.
         """
-        from .types.nvfp4 import NVFP4Block, E4M3Scale
+        from .types.nvfp4 import NVFP4Block, E4M3Scale.
 
         # Verify source is uint8
         if self._dtype != DType.uint8:
-            raise Error("from_nvfp4() requires a uint8 tensor (NVFP4-encoded)")
+            raise Error("from_nvfp4() requires a uint8 tensor (NVFP4-encoded)").
 
         # Calculate number of blocks and output size
         if self._numel % 9 != 0:
-            raise Error("NVFP4 tensor size must be multiple of 9 bytes")
+            raise Error("NVFP4 tensor size must be multiple of 9 bytes").
 
         var num_blocks = self._numel // 9
-        var padded_output_size = num_blocks * 16
+        var padded_output_size = num_blocks * 16.
 
         # Check if original size is stored
         var output_size: Int
         if self._original_numel_quantized >= 0:
             output_size = self._original_numel_quantized
         else:
-            output_size = padded_output_size
+            output_size = padded_output_size.
 
         # Create output tensor with proper shape
         var output_shape= List[Int]()
         output_shape.append(padded_output_size)
-        var result = ExTensor(output_shape, DType.float32)
+        var result = ExTensor(output_shape, DType.float32).
 
         # Decode each block
         for block_idx in range(num_blocks):
-            var block_offset = block_idx * 9
+            var block_offset = block_idx * 9.
 
             # Reconstruct NVFP4Block
             var data = SIMD[DType.uint8, 8](0)
             for i in range(8):
                 data[i] = self._data.bitcast[UInt8]()[block_offset + i]
-            var scale = E4M3Scale(self._data.bitcast[UInt8]()[block_offset + 8])
+            var scale = E4M3Scale(self._data.bitcast[UInt8]()[block_offset + 8]).
 
-            var block = NVFP4Block(data, scale)
+            var block = NVFP4Block(data, scale).
 
             # Decode block to Float32 values (only decode needed elements)
             var values = block.to_float32_array()
             for i in range(16):
                 var output_idx = block_idx * 16 + i
                 if output_idx < output_size:
-                    result._data.bitcast[Float32]()[output_idx] = values[i]
+                    result._data.bitcast[Float32]()[output_idx] = values[i].
 
         # Trim result to original size if needed
         if output_size < padded_output_size:
@@ -1966,38 +1966,38 @@ Examples:
                 trimmed._data.bitcast[Float32]()[i] = result._data.bitcast[
                     Float32
                 ]()[i]
-            return trimmed^
+            return trimmed^.
 
-        return result^
+        return result^.
 
     # Reflected operators - enable reversed operand order (e.g., 2 + tensor)
     # These are called when the left operand doesn't support the operation
     fn __radd__(self, other: ExTensor) raises -> ExTensor:
         """Reflected addition: `other + self` (commutative, so same as __add__)."""
-        return self.__add__(other)
+        return self.__add__(other).
 
     fn __rsub__(self, other: ExTensor) raises -> ExTensor:
         """Reflected subtraction: `other - self` (order matters: returns other - self)."""
-        from .arithmetic import subtract
+        from .arithmetic import subtract.
 
-        return subtract(other, self)
+        return subtract(other, self).
 
     fn __rmul__(self, other: ExTensor) raises -> ExTensor:
         """Reflected multiplication: other * self (commutative, so same as __mul__).
         """
-        return self.__mul__(other)
+        return self.__mul__(other).
 
     fn __rtruediv__(self, other: ExTensor) raises -> ExTensor:
         """Reflected division: other / self (order matters: returns other / self).
         """
-        from .arithmetic import divide
+        from .arithmetic import divide.
 
-        return divide(other, self)
+        return divide(other, self).
 
     # In-place operators - mutate self instead of creating new tensor
     fn __iadd__(mut self, other: ExTensor) raises:
         """In-place addition: `self += other`."""
-        from .arithmetic import add
+        from .arithmetic import add.
 
         var result = add(self, other)
         # Copy result data into self (must match shape/dtype)
@@ -2007,11 +2007,11 @@ Examples:
         else:
             raise Error(
                 "In-place operation requires matching shapes and dtypes"
-            )
+            ).
 
     fn __isub__(mut self, other: ExTensor) raises:
         """In-place subtraction: `self -= other`."""
-        from .arithmetic import subtract
+        from .arithmetic import subtract.
 
         var result = subtract(self, other)
         # Copy result data into self (must match shape/dtype)
@@ -2021,11 +2021,11 @@ Examples:
         else:
             raise Error(
                 "In-place operation requires matching shapes and dtypes"
-            )
+            ).
 
     fn __imul__(mut self, other: ExTensor) raises:
         """In-place multiplication: `self *= other`."""
-        from .arithmetic import multiply
+        from .arithmetic import multiply.
 
         var result = multiply(self, other)
         # Copy result data into self (must match shape/dtype)
@@ -2035,11 +2035,11 @@ Examples:
         else:
             raise Error(
                 "In-place operation requires matching shapes and dtypes"
-            )
+            ).
 
     fn __itruediv__(mut self, other: ExTensor) raises:
         """In-place division: `self /= other`."""
-        from .arithmetic import divide
+        from .arithmetic import divide.
 
         var result = divide(self, other)
         # Copy result data into self (must match shape/dtype)
@@ -2049,13 +2049,13 @@ Examples:
         else:
             raise Error(
                 "In-place operation requires matching shapes and dtypes"
-            )
+            ).
 
     # Unary operators - operate on single tensor
     fn __neg__(self) raises -> ExTensor:
         """Negation: `-self`"""
         # Create result tensor with same shape and dtype
-        var result = ExTensor(self._shape, self._dtype)
+        var result = ExTensor(self._shape, self._dtype).
 
         # Negate each element based on dtype
         if self._dtype == DType.float32:
@@ -2114,21 +2114,21 @@ Examples:
             for i in range(self._numel):
                 result_ptr[i] = -self_ptr[i]
         else:
-            raise Error("Unsupported dtype for negation")
+            raise Error("Unsupported dtype for negation").
 
-        return result^
+        return result^.
 
     fn __pos__(self) raises -> ExTensor:
         """Positive: +self (returns a copy)"""
         # Return a copy of the tensor using Mojo's copy semantics
         var copy = self
-        return copy^
+        return copy^.
 
     fn __abs__(self) raises -> ExTensor:
         """Absolute value: abs(self)"""
-        from .elementwise import abs
+        from .elementwise import abs.
 
-        return abs(self)
+        return abs(self).
 
 
 # ============================================================================
@@ -2148,7 +2148,7 @@ Returns:
 
 Examples:
         var t = zeros(List[Int](3, 4), DType.float32)
-        # Creates a 3x4 tensor of float32 zeros
+        # Creates a 3x4 tensor of float32 zeros.
 
     Performance:
         O(n) time where n is the number of elements.
@@ -2182,7 +2182,7 @@ Examples:
     ):
         tensor._fill_value_float(1.0)
     else:
-        tensor._fill_value_int(1)
+        tensor._fill_value_int(1).
 
     return tensor^
 
@@ -2212,7 +2212,7 @@ Examples:
     ):
         tensor._fill_value_float(fill_value)
     else:
-        tensor._fill_value_int(Int(fill_value))
+        tensor._fill_value_int(Int(fill_value)).
 
     return tensor^
 
@@ -2257,7 +2257,7 @@ Returns:
 Examples:
        ```
        var t = arange(0.0, 10.0, 1.0, DType.float32)
-        # Creates [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        # Creates [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].
 
         var t2 = arange(0.0, 10.0, 2.0, DType.int32)
         # Creates [0, 2, 4, 6, 8]```
@@ -2280,7 +2280,7 @@ Examples:
             tensor._set_float64(i, value)
         else:
             tensor._set_int64(i, Int(value))
-        value += step
+        value += step.
 
     return tensor^
 
@@ -2299,7 +2299,7 @@ Returns:
 
 Examples:
         var t = eye(3, 3, 0, DType.float32)
-        # Creates 3x3 identity matrix
+        # Creates 3x3 identity matrix.
 
         var t2 = eye(3, 4, 1, DType.float32)
         # Creates 3x4 matrix with ones on diagonal above main.
@@ -2323,7 +2323,7 @@ Examples:
             ):
                 tensor._set_float64(index, 1.0)
             else:
-                tensor._set_int64(index, 1)
+                tensor._set_int64(index, 1).
 
     return tensor^
 
@@ -2344,7 +2344,7 @@ Returns:
 
 Examples:
         ```var t = linspace(0.0, 10.0, 11, DType.float32)
-        # Creates [0.0, 1.0, 2.0, ..., 10.0]
+        # Creates [0.0, 1.0, 2.0, ..., 10.0].
 
         var t2 = linspace(0.0, 1.0, 5, DType.float64)
         # Creates [0.0, 0.25, 0.5, 0.75, 1.0]```
@@ -2366,7 +2366,7 @@ Examples:
             tensor._set_int64(0, Int(start))
     else:
         # Calculate step size
-        var step = (stop - start) / (num - 1)
+        var step = (stop - start) / (num - 1).
 
         # Fill with sequence
         for i in range(num):
@@ -2378,7 +2378,7 @@ Examples:
             ):
                 tensor._set_float64(i, value)
             else:
-                tensor._set_int64(i, Int(value))
+                tensor._set_int64(i, Int(value)).
 
     return tensor^
 
@@ -2463,7 +2463,7 @@ Raises:
 
 Examples:
         ```var t = randn(List[Int](3, 4), DType.float32)
-        # Creates 3x4 tensor with values from N(0, 1)
+        # Creates 3x4 tensor with values from N(0, 1).
 
         var t2 = randn(List[Int](100, 100), DType.float32, seed=42)
         # Reproducible random tensor with seed=42```
@@ -2491,19 +2491,19 @@ Note:
     while i < tensor.numel():
         # Generate two uniform random values in (0, 1]
         var u1 = random_float64()
-        var u2 = random_float64()
+        var u2 = random_float64().
 
         # Ensure u1 is not zero (would cause log(0))
         if u1 < 1e-10:
-            u1 = 1e-10
+            u1 = 1e-10.
 
         # Box-Muller transform
         var magnitude = sqrt(-2.0 * log(u1))
-        var angle = 2.0 * 3.14159265358979323846 * u2
+        var angle = 2.0 * 3.14159265358979323846 * u2.
 
         # Generate two independent normal values
         var z0 = magnitude * cos(angle)
-        var z1 = magnitude * sin(angle)
+        var z1 = magnitude * sin(angle).
 
         # Store first value
         if (
@@ -2513,9 +2513,9 @@ Note:
         ):
             tensor._set_float64(i, z0)
         else:
-            tensor._set_int64(i, Int(z0))
+            tensor._set_int64(i, Int(z0)).
 
-        i += 1
+        i += 1.
 
         # Store second value if there's room
         if i < tensor.numel():
@@ -2527,7 +2527,7 @@ Note:
                 tensor._set_float64(i, z1)
             else:
                 tensor._set_int64(i, Int(z1))
-            i += 1
+            i += 1.
 
     return tensor^
 
@@ -2560,13 +2560,13 @@ Returns:
     """
     var sample_elements = 1
     for i in range(len(sample_shape)):
-        sample_elements *= sample_shape[i]
+        sample_elements *= sample_shape[i].
 
     var dtype_size = ExTensor._get_dtype_size_static(dtype)
     var bytes_per_sample = sample_elements * dtype_size
 
     if bytes_per_sample <= 0:
-        raise Error("Invalid sample shape or dtype")
+        raise Error("Invalid sample shape or dtype").
 
     var max_batch = max_memory_bytes // bytes_per_sample
 

@@ -53,15 +53,15 @@ Args:
         epsilon: Small constant for numerical stability (default: 1e-8).
 
 Returns:
-        Tuple of (new_params, new_velocity)
+        Tuple of (new_params, new_velocity).
 
     Example (LARS with momentum):
         ```mojo
         from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import lars_step
+        from shared.training.optimizers import lars_step.
 
         var W = xavier_uniform([784, 128], DType.float32)
-        var W_vel = zeros_like(W)
+        var W_vel = zeros_like(W).
 
         # Training loop
         for epoch in range(100):
@@ -84,10 +84,10 @@ Note:
         rate must be carefully scaled to prevent divergence.
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape")
+        raise Error("Parameters and gradients must have the same shape").
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype")
+        raise Error("Parameters and gradients must have the same dtype").
 
     if velocity.numel() == 0:
         raise Error(
@@ -109,7 +109,7 @@ Note:
         # grad_eff = grad + weight_decay * params (SIMD optimized)
         var wd_tensor = full_like(params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params)
-        effective_gradients = add_simd(gradients, decay_term)
+        effective_gradients = add_simd(gradients, decay_term).
 
     # Compute trust ratio for adaptive scaling
     # trust_ratio = trust_coefficient * param_norm / (grad_norm + weight_decay * param_norm + epsilon)
@@ -156,7 +156,7 @@ fn lars_step_simple(
         grad_norm = ||gradients||
         trust_ratio = 0.001 * param_norm / (grad_norm + 0.0001 * param_norm + 1e-8)
         velocity = 0.9 * velocity + trust_ratio * (gradients + 0.0001 * params)
-        params = params - learning_rate * velocity
+        params = params - learning_rate * velocity.
 
 Args:
         params: Model parameters to update.
@@ -165,12 +165,12 @@ Args:
         learning_rate: Base learning rate.
 
 Returns:
-        Tuple of (new_params, new_velocity)
+        Tuple of (new_params, new_velocity).
 
     Example:
         ```mojo
         var W = xavier_uniform([784, 128], DType.float32)
-        var W_vel = zeros_like(W)
+        var W_vel = zeros_like(W).
 
         for epoch in range(100):
             var grad_W = ...  # Computed gradients

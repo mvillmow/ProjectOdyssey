@@ -34,7 +34,7 @@ fn normalize_rgb(
     """Normalize RGB images with per-channel mean and standard deviation.
 
     Applies normalization to RGB images using the formula:
-        normalized = (pixel / 255.0 - mean) / std
+        normalized = (pixel / 255.0 - mean) / std.
 
     This is commonly used with ImageNet statistics for transfer learning.
 
@@ -51,7 +51,7 @@ Raises:
 
     Example:
         ```mojo
-        from shared.core.normalize_ops import normalize_rgb
+        from shared.core.normalize_ops import normalize_rgb.
 
         # ImageNet normalization
         var mean = (Float32(0.485), Float32(0.456), Float32(0.406))
@@ -66,7 +66,7 @@ Note:
     """
     var shape = images.shape()
     if len(shape) != 4:
-        raise Error("normalize_rgb requires 4D input (N, 3, H, W)")
+        raise Error("normalize_rgb requires 4D input (N, 3, H, W)").
 
     var num_images = shape[0]
     var num_channels = shape[1]
@@ -105,7 +105,7 @@ Note:
                     + w
                 )
                 var pixel_r = Float32(src_data[idx_r]) / 255.0
-                dst_data[idx_r] = (pixel_r - mean_r) / std_r
+                dst_data[idx_r] = (pixel_r - mean_r) / std_r.
 
                 # G channel (c=1)
                 var idx_g = (
@@ -115,7 +115,7 @@ Note:
                     + w
                 )
                 var pixel_g = Float32(src_data[idx_g]) / 255.0
-                dst_data[idx_g] = (pixel_g - mean_g) / std_g
+                dst_data[idx_g] = (pixel_g - mean_g) / std_g.
 
                 # B channel (c=2)
                 var idx_b = (
@@ -125,6 +125,6 @@ Note:
                     + w
                 )
                 var pixel_b = Float32(src_data[idx_b]) / 255.0
-                dst_data[idx_b] = (pixel_b - mean_b) / std_b
+                dst_data[idx_b] = (pixel_b - mean_b) / std_b.
 
     return normalized

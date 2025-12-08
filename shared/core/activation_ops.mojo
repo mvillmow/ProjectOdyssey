@@ -44,7 +44,7 @@ Note:
 
     Example:
         ```mojo
-        from shared.core.activation_ops import exp_scalar_f32
+        from shared.core.activation_ops import exp_scalar_f32.
 
         var result = exp_scalar_f32(1.0)  # ≈ 2.71828
         var small = exp_scalar_f32(-10.0)  # ≈ 4.5e-5
@@ -74,7 +74,7 @@ Note:
 
     Example:
         ```mojo
-        from shared.core.activation_ops import exp_scalar_f64
+        from shared.core.activation_ops import exp_scalar_f64.
 
         var result = exp_scalar_f64(1.0)  # ≈ 2.718281828459045
         var small = exp_scalar_f64(-10.0)  # ≈ 4.54e-5

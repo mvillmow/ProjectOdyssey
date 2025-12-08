@@ -68,17 +68,17 @@ Args:
         weight_decay: Decoupled weight decay factor (default: 0.01).
 
 Returns:
-        Tuple of (new_params, new_m, new_v)
+        Tuple of (new_params, new_m, new_v).
 
     Example (basic AdamW):
         ```mojo
         from shared.core import ExTensor, zeros_like
-        from shared.training.optimizers import adamw_step
+        from shared.training.optimizers import adamw_step.
 
         var W = xavier_uniform(784, 128, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
-        var t = 1
+        var t = 1.
 
         # Training loop
         for epoch in range(100):
@@ -94,10 +94,10 @@ Note:
         Weight decay is applied directly to params (decoupled), not through gradients.
     """
     if params.shape() != gradients.shape():
-        raise Error("Parameters and gradients must have the same shape")
+        raise Error("Parameters and gradients must have the same shape").
 
     if params.dtype() != gradients.dtype():
-        raise Error("Parameters and gradients must have the same dtype")
+        raise Error("Parameters and gradients must have the same dtype").
 
     if m.numel() == 0 or v.numel() == 0:
         raise Error(
@@ -106,7 +106,7 @@ Note:
         )
 
     if t <= 0:
-        raise Error("Timestep t must be positive (starts at 1)")
+        raise Error("Timestep t must be positive (starts at 1)").
 
     # Note: Unlike Adam, AdamW does NOT apply weight decay to gradients
     # Weight decay is applied directly to parameters after the update
@@ -160,7 +160,7 @@ Note:
     if weight_decay > 0.0:
         var wd_tensor = full_like(new_params, weight_decay)
         var decay_term = multiply_simd(wd_tensor, params_after_grad_update)
-        new_params = subtract_simd(params_after_grad_update, decay_term)
+        new_params = subtract_simd(params_after_grad_update, decay_term).
 
     # Return new state (pure functional)
     return (new_params, new_m, new_v)
@@ -185,7 +185,7 @@ fn adamw_step_simple(
         m_hat = m / (1 - 0.9^t)
         v_hat = v / (1 - 0.999^t)
         params = params - lr * m_hat / (sqrt(v_hat) + 1e-8)
-        params = params - 0.01 * params  # Decoupled weight decay
+        params = params - 0.01 * params  # Decoupled weight decay.
 
 Args:
         params: Model parameters to update.
@@ -196,14 +196,14 @@ Args:
         learning_rate: Step size for parameter updates.
 
 Returns:
-        Tuple of (new_params, new_m, new_v)
+        Tuple of (new_params, new_m, new_v).
 
     Example:
         ```mojo
         var W = xavier_uniform(784, 128, DType.float32)
         var m = zeros_like(W)
         var v = zeros_like(W)
-        var t = 1
+        var t = 1.
 
         for epoch in range(100):
             var grad_W = ... # Computed gradients

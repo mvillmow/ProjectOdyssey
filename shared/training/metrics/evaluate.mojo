@@ -40,7 +40,7 @@ Args:
         labels: Ground truth labels [batch_size].
 
 Returns:
-        Accuracy as fraction in [0.0, 1.0]
+        Accuracy as fraction in [0.0, 1.0].
 
 Raises:
         Error: If predictions and labels have different lengths.
@@ -62,10 +62,10 @@ Raises:
     var correct = 0
     for i in range(len(predictions)):
         var pred_val = predictions[i]
-        var true_label = Int(labels[i])
+        var true_label = Int(labels[i]).
 
         if pred_val == true_label:
-            correct += 1
+            correct += 1.
 
     return Float32(correct) / Float32(len(predictions))
 
@@ -81,7 +81,7 @@ Args:
         labels: Ground truth labels [batch_size].
 
 Returns:
-        Accuracy as fraction in [0.0, 1.0]
+        Accuracy as fraction in [0.0, 1.0].
 
 Raises:
         Error: If shapes are incompatible.
@@ -110,18 +110,18 @@ Raises:
     for i in range(batch_size):
         # Find argmax for this sample
         var max_idx = 0
-        var max_val = logits_data[i * num_classes]
+        var max_val = logits_data[i * num_classes].
 
         for c in range(1, num_classes):
             var idx = i * num_classes + c
             if logits_data[idx] > max_val:
                 max_val = logits_data[idx]
-                max_idx = c
+                max_idx = c.
 
         # Compare with true label
         var true_label = Int(labels[i])
         if max_idx == true_label:
-            correct += 1
+            correct += 1.
 
     return Float32(correct) / Float32(batch_size)
 
@@ -140,7 +140,7 @@ Args:
         labels: Ground truth labels [batch_size].
 
 Returns:
-        Accuracy as fraction in [0.0, 1.0]
+        Accuracy as fraction in [0.0, 1.0].
 
 Raises:
         Error: If batch sizes don't match.
@@ -175,18 +175,18 @@ Raises:
     if len(pred_shape) == 2:
         # Predictions are logits, compute argmax
         var num_classes = pred_shape[1]
-        var pred_data = predictions._data.bitcast[Float32]()
+        var pred_data = predictions._data.bitcast[Float32]().
 
         for i in range(batch_size):
             # Find argmax for this sample
             var max_idx = 0
-            var max_val = pred_data[i * num_classes]
+            var max_val = pred_data[i * num_classes].
 
             for c in range(1, num_classes):
                 var idx = i * num_classes + c
                 if pred_data[idx] > max_val:
                     max_val = pred_data[idx]
-                    max_idx = c
+                    max_idx = c.
 
             # Compare with true label
             var true_label = Int(labels[i])
@@ -196,9 +196,9 @@ Raises:
         # Predictions are already class indices
         for i in range(batch_size):
             var pred_val = Int(predictions[i])
-            var true_label = Int(labels[i])
+            var true_label = Int(labels[i]).
 
             if pred_val == true_label:
-                correct += 1
+                correct += 1.
 
     return Float32(correct) / Float32(batch_size)

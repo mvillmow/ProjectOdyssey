@@ -78,16 +78,16 @@ struct CIFARLoader(Copyable, Movable):
         if cifar_version != 10 and cifar_version != 100:
             raise Error(
                 "CIFAR version must be 10 or 100, got: " + String(cifar_version)
-            )
+            ).
 
         self.cifar_version = cifar_version
         self.image_size = CIFAR10_IMAGE_SIZE
-        self.channels = CIFAR10_CHANNELS
+        self.channels = CIFAR10_CHANNELS.
 
         if cifar_version == 10:
             self.bytes_per_image = CIFAR10_BYTES_PER_IMAGE
         else:
-            self.bytes_per_image = CIFAR100_BYTES_PER_IMAGE
+            self.bytes_per_image = CIFAR100_BYTES_PER_IMAGE.
 
     fn _validate_file_size(self, file_size: Int) raises:
         """Validate that file size is consistent with CIFAR format.
@@ -104,7 +104,7 @@ struct CIFARLoader(Copyable, Movable):
                 + String(file_size)
                 + ": not a multiple of "
                 + String(self.bytes_per_image)
-            )
+            ).
 
     fn _calculate_num_images(self, file_size: Int) -> Int:
         """Calculate number of images in file based on file size.
@@ -115,7 +115,7 @@ struct CIFARLoader(Copyable, Movable):
         Returns:
             Number of images in file.
         """
-        return file_size // self.bytes_per_image
+        return file_size // self.bytes_per_image.
 
     fn load_labels(self, filepath: String) raises -> ExTensor:
         """Load labels from CIFAR binary format file.
@@ -127,31 +127,31 @@ struct CIFARLoader(Copyable, Movable):
             filepath: Path to CIFAR binary file
 
         Returns:
-            ExTensor containing labels
+            ExTensor containing labels.
 
         Raises:
             Error: If file cannot be read or format is invalid.
         """
         var content: String
         with open(filepath, "r") as f:
-            content = f.read()
+            content = f.read().
 
         var file_size = len(content)
-        self._validate_file_size(file_size)
+        self._validate_file_size(file_size).
 
         var num_images = self._calculate_num_images(file_size)
-        var data_bytes = content.unsafe_ptr()
+        var data_bytes = content.unsafe_ptr().
 
         if self.cifar_version == 10:
             # CIFAR-10: 1 label per image
             var shape= List[Int]()
             shape.append(num_images)
-            var labels = zeros(shape, DType.uint8)
+            var labels = zeros(shape, DType.uint8).
 
             var labels_data = labels._data
             for i in range(num_images):
                 var offset = i * self.bytes_per_image
-                labels_data[i] = data_bytes[offset]
+                labels_data[i] = data_bytes[offset].
 
             return labels^
         else:
@@ -159,7 +159,7 @@ struct CIFARLoader(Copyable, Movable):
             var shape= List[Int]()
             shape.append(num_images)
             shape.append(2)
-            var labels = zeros(shape, DType.uint8)
+            var labels = zeros(shape, DType.uint8).
 
             var labels_data = labels._data
             for i in range(num_images):
@@ -167,9 +167,9 @@ struct CIFARLoader(Copyable, Movable):
                 # Coarse label at offset
                 labels_data[i * 2] = data_bytes[offset]
                 # Fine label at offset + 1
-                labels_data[i * 2 + 1] = data_bytes[offset + 1]
+                labels_data[i * 2 + 1] = data_bytes[offset + 1].
 
-            return labels^
+            return labels^.
 
     fn load_images(self, filepath: String) raises -> ExTensor:
         """Load images from CIFAR binary format file.
@@ -181,20 +181,20 @@ struct CIFARLoader(Copyable, Movable):
             filepath: Path to CIFAR binary file
 
         Returns:
-            ExTensor of shape (num_images, 3, 32, 32) with uint8 pixel values
+            ExTensor of shape (num_images, 3, 32, 32) with uint8 pixel values.
 
         Raises:
             Error: If file cannot be read or format is invalid.
         """
         var content: String
         with open(filepath, "r") as f:
-            content = f.read()
+            content = f.read().
 
         var file_size = len(content)
-        self._validate_file_size(file_size)
+        self._validate_file_size(file_size).
 
         var num_images = self._calculate_num_images(file_size)
-        var data_bytes = content.unsafe_ptr()
+        var data_bytes = content.unsafe_ptr().
 
         # Create tensor to hold images
         var shape= List[Int]()
@@ -202,26 +202,26 @@ struct CIFARLoader(Copyable, Movable):
         shape.append(self.channels)
         shape.append(self.image_size)
         shape.append(self.image_size)
-        var images = zeros(shape, DType.uint8)
+        var images = zeros(shape, DType.uint8).
 
         var images_data = images._data
-        var pixels_per_image = self.image_size * self.image_size
+        var pixels_per_image = self.image_size * self.image_size.
 
         # For each image, extract pixel data
         # Offset depends on CIFAR version (1 or 2 label bytes)
-        var label_bytes = 1 if self.cifar_version == 10 else 2
+        var label_bytes = 1 if self.cifar_version == 10 else 2.
 
         for img_idx in range(num_images):
             var file_offset = img_idx * self.bytes_per_image + label_bytes
-            var tensor_offset = img_idx * self.channels * pixels_per_image
+            var tensor_offset = img_idx * self.channels * pixels_per_image.
 
             # Copy pixel data: R channel, then G channel, then B channel
             for pixel_idx in range(pixels_per_image * self.channels):
                 images_data[tensor_offset + pixel_idx] = data_bytes[
                     file_offset + pixel_idx
-                ]
+                ].
 
-        return images^
+        return images^.
 
     fn load_batch(self, filepath: String) raises -> Tuple[ExTensor, ExTensor]:
         """Load a complete batch of images and labels from CIFAR file.
@@ -240,6 +240,6 @@ struct CIFARLoader(Copyable, Movable):
             Error: If file cannot be read or format is invalid.
         """
         var images = self.load_images(filepath)
-        var labels = self.load_labels(filepath)
+        var labels = self.load_labels(filepath).
 
-        return Tuple[ExTensor, ExTensor](images, labels)
+        return Tuple[ExTensor, ExTensor](images, labels).

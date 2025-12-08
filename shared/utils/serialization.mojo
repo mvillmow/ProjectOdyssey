@@ -68,17 +68,17 @@ struct NamedTensor(Copyable, Movable):
             tensor: Tensor data.
         """
         self.name = name
-        self.tensor = tensor
+        self.tensor = tensor.
 
     fn __moveinit__(out self, deinit other: Self):
         """Move constructor for ownership transfer."""
         self.name = other.name^
-        self.tensor = other.tensor^
+        self.tensor = other.tensor^.
 
     fn __copyinit__(out self, existing: Self):
         """Copy constructor."""
         self.name = existing.name
-        self.tensor = existing.tensor
+        self.tensor = existing.tensor.
 
 
 # ============================================================================
@@ -116,7 +116,7 @@ Raises:
     for i in range(len(shape)):
         metadata += String(shape[i])
         if i < len(shape) - 1:
-            metadata += " "
+            metadata += " ".
 
     # Convert tensor data to hex
     var dtype_size = get_dtype_size(dtype)
@@ -127,7 +127,7 @@ Raises:
     with open(filepath, "w") as f:
         _ = f.write(name + "\n")
         _ = f.write(metadata + "\n")
-        _ = f.write(hex_data + "\n")
+        _ = f.write(hex_data + "\n").
 
 
 fn load_tensor(filepath: String) raises -> ExTensor:
@@ -140,7 +140,7 @@ Args:
         filepath: Input file path.
 
 Returns:
-        Loaded ExTensor
+        Loaded ExTensor.
 
 Raises:
         Error: If file format is invalid or file doesn't exist.
@@ -153,7 +153,7 @@ Raises:
     # Read file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     # Parse lines
     var lines = content.split("\n")
@@ -175,7 +175,7 @@ Raises:
     # Parse shape
     var shape= List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.append(Int(meta_parts[i]))
+        shape.append(Int(meta_parts[i])).
 
     # Create tensor with zeros, then fill with data
     var tensor = zeros(shape, dtype)
@@ -196,7 +196,7 @@ Args:
         filepath: Input file path.
 
 Returns:
-        Tuple of (name, tensor)
+        Tuple of (name, tensor).
 
 Raises:
         Error: If file format is invalid or file doesn't exist.
@@ -209,7 +209,7 @@ Raises:
     # Read file
     var content: String
     with open(filepath, "r") as f:
-        content = f.read()
+        content = f.read().
 
     # Parse lines
     var lines = content.split("\n")
@@ -223,7 +223,7 @@ Raises:
     # Parse metadata
     var meta_parts = metadata.split(" ")
     if len(meta_parts) < 1:
-        raise Error("Invalid metadata format")
+        raise Error("Invalid metadata format").
 
     var dtype_str = meta_parts[0]
     var dtype = parse_dtype(String(dtype_str))
@@ -231,7 +231,7 @@ Raises:
     # Parse shape
     var shape= List[Int]()
     for i in range(1, len(meta_parts)):
-        shape.append(Int(meta_parts[i]))
+        shape.append(Int(meta_parts[i])).
 
     # Create tensor
     var tensor = zeros(shape, dtype)
@@ -277,9 +277,9 @@ Raises:
     # Save each tensor
     for i in range(len(tensors)):
         var filename = tensors[i].name + ".weights"
-        var filepath = dirpath + "/" + filename
+        var filepath = dirpath + "/" + filename.
 
-        save_tensor(tensors[i].tensor, filepath, tensors[i].name)
+        save_tensor(tensors[i].tensor, filepath, tensors[i].name).
 
 
 fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
@@ -292,7 +292,7 @@ Args:
         dirpath: Directory containing .weights files.
 
 Returns:
-        List of NamedTensor objects
+        List of NamedTensor objects.
 
 Raises:
         Error: If directory doesn't exist or file format is invalid.
@@ -313,13 +313,13 @@ Raises:
         var _ = Python.import_module("os")
         var pathlib = Python.import_module("pathlib")
         var p = pathlib.Path(dirpath)
-        var weight_files = p.glob("*.weights")
+        var weight_files = p.glob("*.weights").
 
         # Load each weights file
         for file in weight_files:
             var filepath = String(file)
             var (name, tensor) = load_tensor_with_name(filepath)
-            result.append(NamedTensor(name, tensor))
+            result.append(NamedTensor(name, tensor)).
 
     except:
         raise Error("Failed to load tensors from: " + dirpath)
@@ -375,7 +375,7 @@ Raises:
         var meta_path = path + "/metadata.txt"
         var meta_content = _serialize_metadata(metadata.value())
         with open(meta_path, "w") as f:
-            _ = f.write(meta_content)
+            _ = f.write(meta_content).
 
 
 fn load_named_checkpoint(
@@ -390,7 +390,7 @@ Args:
         path: Checkpoint directory path.
 
 Returns:
-        Tuple of (tensors, metadata)
+        Tuple of (tensors, metadata).
 
 Raises:
         Error: If directory doesn't exist or file format is invalid.
@@ -418,7 +418,7 @@ Raises:
         metadata = _deserialize_metadata(meta_content)
     except:
         # Metadata file not found, return empty metadata
-        pass
+        pass.
 
     return Tuple[List[NamedTensor], Dict[String, String]](tensors^, metadata^)
 
@@ -439,14 +439,14 @@ Returns:
     for key_ref in metadata.keys():
         var k = String(key_ref)
         var v = String(metadata[k])
-        lines.append(k + "=" + v)
+        lines.append(k + "=" + v).
 
     # Join lines
     var result = String("")
     for i in range(len(lines)):
         if i > 0:
             result += "\n"
-        result += lines[i]
+        result += lines[i].
 
     return result
 
@@ -458,7 +458,7 @@ Args:
         content: Serialized metadata string.
 
 Returns:
-        Metadata dictionary
+        Metadata dictionary.
 
 Raises:
         Error: If format is invalid.
@@ -469,16 +469,16 @@ Raises:
     for i in range(len(lines)):
         var line = lines[i].strip()
         if len(line) == 0:
-            continue
+            continue.
 
         # Find key=value separator
         var eq_pos = line.find("=")
         if eq_pos == -1:
-            continue  # Skip malformed lines
+            continue  # Skip malformed lines.
 
         var key = String(line[:eq_pos])
         var value = String(line[eq_pos + 1 :])
-        metadata[key] = value
+        metadata[key] = value.
 
     return metadata^
 
@@ -499,7 +499,7 @@ Args:
         num_bytes: Number of bytes to convert.
 
 Returns:
-        Hex string representation
+        Hex string representation.
 
     Example:
         ```mojo
@@ -515,7 +515,7 @@ Returns:
         var high = (byte >> 4) & 0xF
         var low = byte & 0xF
         result += hex_chars[high]
-        result += hex_chars[low]
+        result += hex_chars[low].
 
     return result
 
@@ -542,14 +542,14 @@ Raises:
     """
     var length = len(hex_str)
     if length % 2 != 0:
-        raise Error("Hex string must have even length")
+        raise Error("Hex string must have even length").
 
     var output = tensor._data
     for i in range(0, length, 2):
         var high = _hex_char_to_int(String(hex_str[i]))
         var low = _hex_char_to_int(String(hex_str[i + 1]))
         var offset = i // 2
-        output[offset] = UInt8((high << 4) | low)
+        output[offset] = UInt8((high << 4) | low).
 
 
 fn _hex_char_to_int(c: String) raises -> Int:
@@ -561,7 +561,7 @@ Args:
         c: Single character ('0'-'9', 'a'-'f', 'A'-'F').
 
 Returns:
-        Integer value (0-15)
+        Integer value (0-15).
 
 Raises:
         Error: If character is not a valid hex digit.
@@ -592,7 +592,7 @@ Args:
         dtype: Data type.
 
 Returns:
-        Size in bytes (1, 2, 4, or 8)
+        Size in bytes (1, 2, 4, or 8).
 
     Example:
         ```mojo
@@ -614,7 +614,7 @@ Returns:
     elif dtype == DType.int64 or dtype == DType.uint64:
         return 8
     else:
-        return 4  # Default to 4 bytes
+        return 4  # Default to 4 bytes.
 
 
 fn parse_dtype(dtype_str: String) raises -> DType:
@@ -627,7 +627,7 @@ Args:
         dtype_str: String representation (e.g., "float32", "int64").
 
 Returns:
-        Corresponding DType
+        Corresponding DType.
 
 Raises:
         Error: If dtype string is not recognized.
@@ -670,7 +670,7 @@ Args:
         dtype: Data type.
 
 Returns:
-        String representation (e.g., "float32")
+        String representation (e.g., "float32").
 
     Example:
         ```mojo
@@ -700,4 +700,4 @@ Returns:
     elif dtype == DType.uint64:
         return "uint64"
     else:
-        return "unknown"
+        return "unknown".

@@ -45,12 +45,12 @@ Examples:
     var ndim = len(shape)
     var strides= List[Int]()
     for _ in range(ndim):
-        strides.append(0)
+        strides.append(0).
 
     var stride = 1
     for i in range(ndim - 1, -1, -1):
         strides[i] = stride
-        stride *= shape[i]
+        stride *= shape[i].
 
     return strides^
 
@@ -71,17 +71,17 @@ Returns:
 Examples:
         var shape : List[Int] = [3, 4, 5]
         var coords = linear_to_coords(27, shape)  # [1, 2, 2]
-        # Index 27 corresponds to position [1, 2, 2]
+        # Index 27 corresponds to position [1, 2, 2].
     """
     var ndim = len(shape)
     var coords= List[Int]()
     for _ in range(ndim):
-        coords.append(0)
+        coords.append(0).
 
     var temp_idx = linear_idx
     for i in range(ndim - 1, -1, -1):
         coords[i] = temp_idx % shape[i]
-        temp_idx //= shape[i]
+        temp_idx //= shape[i].
 
     return coords^
 
@@ -101,7 +101,7 @@ Returns:
 Examples:
         var coords : List[Int] = [1, 2, 2]
         var strides : List[Int] = [20, 5, 1]
-        var linear = coords_to_linear(coords, strides)  # 27
+        var linear = coords_to_linear(coords, strides)  # 27.
     """
     var linear_idx = 0
     for i in range(len(coords)):
@@ -129,11 +129,11 @@ Returns:
 Examples:
         var result_coords : List[Int] = [1, 2]  # Output from reducing along axis 1
         var input_coords = map_result_to_input_coords(result_coords, 1, 3)
-        # Returns [1, 0, 2] - axis 1 is inserted with value 0
+        # Returns [1, 0, 2] - axis 1 is inserted with value 0.
     """
     var input_coords= List[Int]()
     for _ in range(ndim):
-        input_coords.append(0)
+        input_coords.append(0).
 
     var result_coord_idx = 0
     for i in range(ndim):
@@ -158,11 +158,11 @@ Returns:
     var ndim = len(shape)
     var coords= List[Int]()
     for _ in range(ndim):
-        coords.append(0)
+        coords.append(0).
 
     var temp_idx = result_idx
     for i in range(ndim - 1, -1, -1):
         coords[i] = temp_idx % shape[i]
-        temp_idx //= shape[i]
+        temp_idx //= shape[i].
 
     return coords^

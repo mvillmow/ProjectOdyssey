@@ -7,7 +7,7 @@ dropout is disabled and the input is scaled appropriately.
 Key components:
 - DropoutLayer: Dropout regularization layer
   Implements: y = mask * x / (1 - dropout_rate) during training
-               y = x during inference
+               y = x during inference.
 """
 
 from shared.core.extensor import ExTensor, zeros_like, full
@@ -31,10 +31,10 @@ struct DropoutLayer(Copyable, Movable):
 Examples:
         ```mojo
         var layer = DropoutLayer(0.5)
-        layer.set_training(True)  # Enable dropout for training
+        layer.set_training(True)  # Enable dropout for training.
 
         var input = randn([4, 10], DType.float32)
-        var output = layer.forward(input)
+        var output = layer.forward(input).
 
         # Backward pass
         var grad_output = randn(output.shape(), DType.float32)
@@ -65,13 +65,13 @@ Examples:
         if dropout_rate < 0.0 or dropout_rate >= 1.0:
             raise Error(
                 "dropout_rate must be in [0, 1), got: " + String(dropout_rate)
-            )
+            ).
 
         self.dropout_rate = dropout_rate
-        self.training = False
+        self.training = False.
 
         # Initialize with a dummy mask (will be replaced in forward pass)
-        self.last_mask = zeros_like(ExTensor([1], DType.float32))
+        self.last_mask = zeros_like(ExTensor([1], DType.float32)).
 
     fn set_training(mut self, training: Bool):
         """Set training mode.
@@ -89,7 +89,7 @@ Examples:
             var output = layer.forward(input)
             ```
         """
-        self.training = training
+        self.training = training.
 
     fn forward(mut self, input: ExTensor) raises -> ExTensor:
         """Forward pass: apply dropout during training, pass through during inference.
@@ -98,10 +98,10 @@ Examples:
         1. Generate random mask where each element is in [0, 1]
         2. Keep elements where mask > dropout_rate, zero others
         3. Scale output by 1/(1-dropout_rate) to maintain expected value
-        4. Store mask for backward pass
+        4. Store mask for backward pass.
 
         During inference (training=False):
-        - Return input unchanged (no dropout applied)
+        - Return input unchanged (no dropout applied).
 
         Args:
             input: Input tensor of any shape.
@@ -115,11 +115,11 @@ Examples:
         Example:
             ```mojo
             var layer = DropoutLayer(0.5)
-            var input = ones([4, 10], DType.float32)
+            var input = ones([4, 10], DType.float32).
 
             # During training
             layer.set_training(True)
-            var output = layer.forward(input)  # ~50% zeros, others scaled by 2.0
+            var output = layer.forward(input)  # ~50% zeros, others scaled by 2.0.
 
             # During inference
             layer.set_training(False)
@@ -128,10 +128,10 @@ Examples:
         """
         if not self.training:
             # During inference, return input unchanged
-            return input
+            return input.
 
         # Generate random mask: elements > dropout_rate are kept, others dropped
-        var mask = ExTensor(input._shape, DType.float32)
+        var mask = ExTensor(input._shape, DType.float32).
 
         if input._dtype == DType.float32:
             for i in range(input._numel):
@@ -157,11 +157,11 @@ Examples:
             raise Error("dropout: only float16/32/64 dtypes supported")
 
         # Store mask for backward pass
-        self.last_mask = mask
+        self.last_mask = mask.
 
         # Apply mask and scale: output = mask * input / (1 - dropout_rate)
         var scale = Float32(1.0) / (Float32(1.0) - self.dropout_rate)
-        var result = ExTensor(input._shape, input._dtype)
+        var result = ExTensor(input._shape, input._dtype).
 
         if input._dtype == DType.float32:
             for i in range(input._numel):
@@ -187,7 +187,7 @@ Examples:
         else:
             raise Error("dropout: only float16/32/64 dtypes supported")
 
-        return result
+        return result.
 
     fn backward(self, grad_output: ExTensor, mask: ExTensor) raises -> ExTensor:
         """Backward pass: apply same mask as forward pass.
@@ -201,7 +201,7 @@ Examples:
 
         Returns:
             Gradient w.r.t. input with dropout mask applied:
-            grad_input = mask * grad_output / (1 - dropout_rate)
+            grad_input = mask * grad_output / (1 - dropout_rate).
 
         Raises:
             Error if tensor operations fail.
@@ -217,7 +217,7 @@ Examples:
             ```
         """
         var scale = Float32(1.0) / (Float32(1.0) - self.dropout_rate)
-        var result = ExTensor(grad_output._shape, grad_output._dtype)
+        var result = ExTensor(grad_output._shape, grad_output._dtype).
 
         if grad_output._dtype == DType.float32:
             for i in range(grad_output._numel):
@@ -241,7 +241,7 @@ Examples:
         else:
             raise Error("dropout backward: only float16/32/64 dtypes supported")
 
-        return result
+        return result.
 
     fn parameters(self) raises -> List[ExTensor]:
         """Get list of trainable parameters.
@@ -257,4 +257,4 @@ Examples:
             ```
         """
         var params = List[ExTensor]()
-        return params^
+        return params^.

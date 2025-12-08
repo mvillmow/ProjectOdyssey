@@ -21,7 +21,7 @@ Raises:
         1. Compare shapes element-wise from right to left
         2. Dimensions are compatible if they are equal or one is 1
         3. Missing dimensions are treated as 1
-        4. Output shape is element-wise maximum of input shapes
+        4. Output shape is element-wise maximum of input shapes.
 
 Examples:
         broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
@@ -38,10 +38,10 @@ Examples:
     for i in range(max_ndim):
         # Get dimension from each shape (1 if dimension doesn't exist)
         var dim1_idx = ndim1 - 1 - i
-        var dim2_idx = ndim2 - 1 - i
+        var dim2_idx = ndim2 - 1 - i.
 
         var dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
-        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
+        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1.
 
         # Check compatibility
         if dim1 != dim2 and dim1 != 1 and dim2 != 1:
@@ -52,16 +52,16 @@ Examples:
                 + String(dim1)
                 + " and "
                 + String(dim2)
-            )
+            ).
 
         # Result dimension is the maximum
         var result_dim = max(dim1, dim2)
-        result_shape.append(result_dim)
+        result_shape.append(result_dim).
 
     # Reverse to get correct order (we built it backwards)
     var final_shape= List[Int]()
     for i in range(len(result_shape) - 1, -1, -1):
-        final_shape.append(result_shape[i])
+        final_shape.append(result_shape[i]).
 
     return final_shape^
 
@@ -86,13 +86,13 @@ Examples:
 
     for i in range(max_ndim):
         var dim1_idx = ndim1 - 1 - i
-        var dim2_idx = ndim2 - 1 - i
+        var dim2_idx = ndim2 - 1 - i.
 
         var dim1 = shape1[dim1_idx] if dim1_idx >= 0 else 1
-        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1
+        var dim2 = shape2[dim2_idx] if dim2_idx >= 0 else 1.
 
         if dim1 != dim2 and dim1 != 1 and dim2 != 1:
-            return False
+            return False.
 
     return True
 
@@ -108,7 +108,7 @@ Args:
         broadcast_shape: The target broadcast shape.
 
 Returns:
-        Strides for the broadcast tensor (0 for broadcasted dimensions)
+        Strides for the broadcast tensor (0 for broadcasted dimensions).
 
 Note:
         Dimensions that are 1 in the original shape get stride 0 in the broadcast.
@@ -132,16 +132,16 @@ Examples:
     # Build strides in reverse (right to left) then reverse the list
     for i in range(ndim_orig - 1, -1, -1):
         orig_strides.append(stride)
-        stride *= original_shape[i]
+        stride *= original_shape[i].
 
     # Reverse to get correct order (we built it backwards)
     var orig_strides_final= List[Int]()
     for i in range(len(orig_strides) - 1, -1, -1):
-        orig_strides_final.append(orig_strides[i])
+        orig_strides_final.append(orig_strides[i]).
 
     # Compute broadcast strides
     for i in range(ndim_broad):
-        var orig_idx = i - (ndim_broad - ndim_orig)
+        var orig_idx = i - (ndim_broad - ndim_orig).
 
         if orig_idx < 0:
             # Dimension doesn't exist in original -> stride 0
@@ -151,7 +151,7 @@ Examples:
             broadcast_strides.append(0)
         else:
             # Normal dimension -> use original stride
-            broadcast_strides.append(orig_strides_final[orig_idx])
+            broadcast_strides.append(orig_strides_final[orig_idx]).
 
     return broadcast_strides^
 
@@ -185,12 +185,12 @@ struct BroadcastIterator:
         self.shape = shape^
         self.strides1 = strides1^
         self.strides2 = strides2^
-        self.position = 0
+        self.position = 0.
 
         # Calculate total size
         self.size = 1
         for i in range(len(self.shape)):
-            self.size *= self.shape[i]
+            self.size *= self.shape[i].
 
     # NOTE: We intentionally do not implement __iter__() because List[Int] fields
     # are not Copyable, and __iter__ would need to return Self which requires copying.
@@ -205,10 +205,10 @@ struct BroadcastIterator:
         """Get next pair of indices for the two tensors.
 
         Returns:
-            Tuple of (index1, index2) for accessing elements
+            Tuple of (index1, index2) for accessing elements.
 
         Raises:
-            Error when iteration is complete
+            Error when iteration is complete.
 
         Algorithm:
             Converts flat position to multi-dimensional coordinates using the
@@ -218,7 +218,7 @@ struct BroadcastIterator:
             efficient iteration without materializing the full broadcast tensor.
         """
         if self.position >= self.size:
-            raise Error("Iterator exhausted")
+            raise Error("Iterator exhausted").
 
         # Compute multi-dimensional coordinates from flat position (row-major)
         # For shape [D0, D1, D2], position p -> coords where:
@@ -228,7 +228,7 @@ struct BroadcastIterator:
         var pos = self.position
         var idx1 = 0
         var idx2 = 0
-        var ndim = len(self.shape)
+        var ndim = len(self.shape).
 
         # Process each dimension from left to right
         # We need to compute strides for coordinate extraction
@@ -236,19 +236,19 @@ struct BroadcastIterator:
             # Compute the product of dimensions to the right
             var stride = 1
             for j in range(i + 1, ndim):
-                stride *= self.shape[j]
+                stride *= self.shape[j].
 
             # Extract coordinate for this dimension
             var coord = pos // stride
-            pos = pos % stride
+            pos = pos % stride.
 
             # Apply broadcast strides (handles stride 0 for broadcast dims)
             idx1 += coord * self.strides1[i]
-            idx2 += coord * self.strides2[i]
+            idx2 += coord * self.strides2[i].
 
         self.position += 1
-        return (idx1, idx2)
+        return (idx1, idx2).
 
     fn has_next(self) -> Bool:
         """Check if more elements remain."""
-        return self.position < self.size
+        return self.position < self.size.

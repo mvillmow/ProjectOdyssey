@@ -34,7 +34,7 @@ Example - High-level quick benchmarking:
 
     fn expensive_operation():
         # Your operation here
-        pass
+        pass.
 
     var result = benchmark_function(expensive_operation, warmup_iters=10, measure_iters=100)
     print_benchmark_report(result, "Expensive Operation")
@@ -49,7 +49,7 @@ Example - Low-level granular tracking:
         var start = now()
         operation()
         var end = now()
-        result.record(end - start)
+        result.record(end - start).
 
     print("Mean:", result.mean() / 1_000_000.0, "ms")
     print("Std Dev:", result.std() / 1_000_000.0, "ms")
@@ -65,7 +65,7 @@ Example - Advanced runner with manual control:
         var start = now()
         operation()
         var end = now()
-        runner.record_iteration(end - start)
+        runner.record_iteration(end - start).
 
     print("Mean latency:", runner.get_mean_ms(), "ms")
     print("Std dev:", runner.get_std_ms(), "ms")

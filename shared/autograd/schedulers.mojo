@@ -15,12 +15,12 @@ Usage Pattern:
     for epoch in range(num_epochs):
         # Get current learning rate
         var lr = scheduler.step(epoch)
-        optimizer.learning_rate = lr
+        optimizer.learning_rate = lr.
 
         # Training step...
 
         # Alternative: query current learning rate without stepping
-        var current_lr = scheduler.get_lr()
+        var current_lr = scheduler.get_lr().
 
 Design Note:
     Schedulers track base_lr (initial learning rate), current_lr (computed LR),
@@ -35,7 +35,7 @@ struct StepLR:
     """Step decay learning rate scheduler.
 
     Decays the learning rate by gamma every step_size epochs:
-        lr = base_lr * gamma^(epoch // step_size)
+        lr = base_lr * gamma^(epoch // step_size).
 
     This is useful for:
     - Reducing learning rate at fixed intervals (e.g., every 10 epochs)
@@ -51,10 +51,10 @@ struct StepLR:
 
 Examples:
         # Divide learning rate by 10 every 30 epochs
-        var scheduler = StepLR(base_lr=0.1, step_size=30, gamma=0.1)
+        var scheduler = StepLR(base_lr=0.1, step_size=30, gamma=0.1).
 
         # Halve learning rate every 5 epochs
-        var scheduler = StepLR(base_lr=0.01, step_size=5, gamma=0.5)
+        var scheduler = StepLR(base_lr=0.01, step_size=5, gamma=0.5).
 
         # Training loop
         for epoch in range(100):
@@ -82,11 +82,11 @@ Examples:
             gamma: Multiplicative decay factor, range (0, 1]
                    0.1 = 10x reduction per step
                    0.5 = 2x reduction per step
-                   Values >1 increase LR (not recommended)
+                   Values >1 increase LR (not recommended).
 
         Examples:
             # Standard: divide by 10 every 30 epochs
-            var sched = StepLR(base_lr=0.1, step_size=30, gamma=0.1)
+            var sched = StepLR(base_lr=0.1, step_size=30, gamma=0.1).
 
             # Custom: halve every 10 epochs
             var sched = StepLR(base_lr=0.01, step_size=10, gamma=0.5).
@@ -95,7 +95,7 @@ Examples:
         self.step_size = step_size
         self.gamma = gamma
         self.last_epoch = -1
-        self.current_lr = base_lr
+        self.current_lr = base_lr.
 
     fn step(mut self, epoch: Int) -> Float64:
         """Update learning rate for the given epoch and return it.
@@ -106,7 +106,7 @@ Examples:
             epoch: Current epoch number (0-indexed)
 
         Returns:
-            The learning rate for this epoch
+            The learning rate for this epoch.
 
         Examples:
             var sched = StepLR(base_lr=0.1, step_size=10, gamma=0.1)
@@ -117,27 +117,27 @@ Examples:
         self.last_epoch = epoch
         var decay_factor = self.gamma ** Float64(epoch // self.step_size)
         self.current_lr = self.base_lr * decay_factor
-        return self.current_lr
+        return self.current_lr.
 
     fn get_lr(self) -> Float64:
         """Get the current learning rate without updating state.
 
         Returns:
-            The current learning rate (last value computed by step())
+            The current learning rate (last value computed by step()).
 
         Examples:
             var sched = StepLR(base_lr=0.1, step_size=10, gamma=0.1)
             sched.step(0)
             var lr = sched.get_lr()  # Returns 0.1
         """
-        return self.current_lr
+        return self.current_lr.
 
 
 struct ExponentialLR:
     """Exponential decay learning rate scheduler.
 
     Decays the learning rate exponentially by gamma every epoch:
-        lr = base_lr * gamma^epoch
+        lr = base_lr * gamma^epoch.
 
     This provides smooth, continuous decay throughout training and is useful for:
     - Gradual, continuous learning rate reduction
@@ -151,14 +151,14 @@ struct ExponentialLR:
         gamma: Multiplicative decay per epoch, range (0, 1).
                0.95 = 5% decay per epoch
                0.9 = 10% decay per epoch
-               0.5 = 50% decay per epoch
+               0.5 = 50% decay per epoch.
 
 Examples:
         # 5% decay per epoch
-        var scheduler = ExponentialLR(base_lr=0.1, gamma=0.95)
+        var scheduler = ExponentialLR(base_lr=0.1, gamma=0.95).
 
         # 10% decay per epoch
-        var scheduler = ExponentialLR(base_lr=0.01, gamma=0.9)
+        var scheduler = ExponentialLR(base_lr=0.01, gamma=0.9).
 
         # Training loop
         for epoch in range(100):
@@ -180,11 +180,11 @@ Examples:
                    Typical values: 0.9-0.99
                    0.95 = 5% reduction per epoch
                    0.9 = 10% reduction per epoch
-                   0.5 = 50% reduction per epoch (aggressive)
+                   0.5 = 50% reduction per epoch (aggressive).
 
         Examples:
             # Moderate decay: 5% per epoch
-            var sched = ExponentialLR(base_lr=0.1, gamma=0.95)
+            var sched = ExponentialLR(base_lr=0.1, gamma=0.95).
 
             # Aggressive decay: 10% per epoch
             var sched = ExponentialLR(base_lr=0.01, gamma=0.9).
@@ -192,7 +192,7 @@ Examples:
         self.base_lr = base_lr
         self.gamma = gamma
         self.last_epoch = -1
-        self.current_lr = base_lr
+        self.current_lr = base_lr.
 
     fn step(mut self, epoch: Int) -> Float64:
         """Update learning rate for the given epoch and return it.
@@ -203,7 +203,7 @@ Examples:
             epoch: Current epoch number (0-indexed)
 
         Returns:
-            The learning rate for this epoch
+            The learning rate for this epoch.
 
         Examples:
             var sched = ExponentialLR(base_lr=0.1, gamma=0.95)
@@ -214,17 +214,17 @@ Examples:
         self.last_epoch = epoch
         var decay_factor = self.gamma ** Float64(epoch)
         self.current_lr = self.base_lr * decay_factor
-        return self.current_lr
+        return self.current_lr.
 
     fn get_lr(self) -> Float64:
         """Get the current learning rate without updating state.
 
         Returns:
-            The current learning rate (last value computed by step())
+            The current learning rate (last value computed by step()).
 
         Examples:
             var sched = ExponentialLR(base_lr=0.1, gamma=0.95)
             sched.step(0)
             var lr = sched.get_lr()  # Returns 0.1
         """
-        return self.current_lr
+        return self.current_lr.

@@ -70,7 +70,7 @@ struct RandomTransformBase(Copyable, Movable):
         Args:
             p: Probability of applying the transform (0.0 to 1.0).
         """
-        self.p = p
+        self.p = p.
 
     fn should_apply(self) -> Bool:
         """Determine if transform should be applied based on probability.
@@ -82,4 +82,4 @@ struct RandomTransformBase(Copyable, Movable):
             True if transform should be applied, False otherwise.
         """
         var rand_val = random_float()
-        return rand_val < self.p
+        return rand_val < self.p.

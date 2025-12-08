@@ -107,12 +107,12 @@ trait Module:
         Sets the module to training mode, enabling features like:
         - Dropout regularization
         - Batch normalization with running statistics
-        - Other training-specific behaviors
+        - Other training-specific behaviors.
 
         Note:
             - Default (no-op) if module doesn't need mode switching
             - Can be overridden by layers that need it
-            - Should be called before training loop
+            - Should be called before training loop.
 
         Example:
             ```mojo
@@ -129,12 +129,12 @@ trait Module:
         Sets the module to evaluation (inference) mode, disabling features like:
         - Dropout regularization
         - Batch normalization updates
-        - Other training-specific behaviors
+        - Other training-specific behaviors.
 
         Note:
             - Default (no-op) if module doesn't need mode switching
             - Can be overridden by layers that need it
-            - Should be called before inference
+            - Should be called before inference.
 
         Example:
             ```mojo
