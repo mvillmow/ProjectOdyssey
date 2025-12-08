@@ -33,7 +33,7 @@ fn test_zeros_tensor_float32() raises:
     var tensor = zeros_tensor(shape, DType.float32)
 
     # Check shape
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
     # Check dtype
     assert_dtype_equal(tensor.dtype(), DType.float32)
@@ -50,7 +50,7 @@ fn test_zeros_tensor_int32() raises:
     var tensor = zeros_tensor(shape, DType.int32)
 
     # Check shape
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
     # Check dtype
     assert_dtype_equal(tensor.dtype(), DType.int32)
@@ -65,14 +65,14 @@ fn test_zeros_tensor_1d() raises:
     """Test zeros_tensor with 1D shape."""
     var shape = List[Int](10)
     var tensor = zeros_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_zeros_tensor_3d() raises:
     """Test zeros_tensor with 3D shape."""
     var shape = List[Int](2, 3, 4)
     var tensor = zeros_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 # ============================================================================
@@ -86,7 +86,7 @@ fn test_ones_tensor_float32() raises:
     var tensor = ones_tensor(shape, DType.float32)
 
     # Check shape
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
     # Check dtype
     assert_dtype_equal(tensor.dtype(), DType.float32)
@@ -103,7 +103,7 @@ fn test_ones_tensor_int32() raises:
     var tensor = ones_tensor(shape, DType.int32)
 
     # Check shape
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
     # Check dtype
     assert_dtype_equal(tensor.dtype(), DType.int32)
@@ -118,14 +118,14 @@ fn test_ones_tensor_1d() raises:
     """Test ones_tensor with 1D shape."""
     var shape = List[Int](10)
     var tensor = ones_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_ones_tensor_3d() raises:
     """Test ones_tensor with 3D shape."""
     var shape = List[Int](2, 3, 4)
     var tensor = ones_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 # ============================================================================
@@ -140,7 +140,7 @@ fn test_full_tensor_float32_positive() raises:
     var tensor = full_tensor(shape, fill_value, DType.float32)
 
     # Check shape
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
     # Check dtype
     assert_dtype_equal(tensor.dtype(), DType.float32)
@@ -191,7 +191,7 @@ fn test_random_tensor_uniform_bounds_float32() raises:
     var tensor = random_tensor(shape, DType.float32, low, high)
 
     # Check shape and dtype
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
     assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Check all values are within bounds
@@ -235,14 +235,14 @@ fn test_random_tensor_1d() raises:
     """Test random_tensor with 1D shape."""
     var shape = List[Int](100)
     var tensor = random_tensor(shape, DType.float32, 0.0, 1.0)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_random_tensor_3d() raises:
     """Test random_tensor with 3D shape."""
     var shape = List[Int](10, 10, 10)
     var tensor = random_tensor(shape, DType.float32, 0.0, 1.0)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 # ============================================================================
@@ -256,7 +256,7 @@ fn test_random_normal_tensor_default_params() raises:
     var tensor = random_normal_tensor(shape, DType.float32)
 
     # Check shape and dtype
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
     assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Calculate empirical mean and std (rough check)
@@ -286,7 +286,7 @@ fn test_random_normal_tensor_custom_mean_std() raises:
     var tensor = random_normal_tensor(shape, DType.float32, mean, std)
 
     # Check shape and dtype
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
     assert_dtype_equal(tensor.dtype(), DType.float32)
 
     # Calculate empirical mean and std
@@ -333,14 +333,14 @@ fn test_random_normal_tensor_1d() raises:
     """Test random_normal_tensor with 1D shape."""
     var shape = List[Int](100)
     var tensor = random_normal_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 fn test_random_normal_tensor_3d() raises:
     """Test random_normal_tensor with 3D shape."""
     var shape = List[Int](5, 5, 5)
     var tensor = random_normal_tensor(shape, DType.float32)
-    assert_shape_equal(tensor, shape)
+    assert_shape_equal(tensor.shape(), shape)
 
 
 # ============================================================================
