@@ -72,9 +72,9 @@ struct SimpleCNN(Copyable, Movable):
 
     fn __init__(
         out self,
-        in_channels: Int = 1,
-        out_channels: Int = 8,
-        num_classes: Int = 10,
+        in_channels: Int = 1,.
+        out_channels: Int = 8,.
+        num_classes: Int = 10,.
     ):
         """Initialize simple CNN.
 
@@ -149,11 +149,11 @@ struct LinearModel(Copyable, Movable):
     - Loss functions
 
     Shape flow:
-        Input: (batch_size, in_features)
-        Output: (batch_size, out_features)
+        Input: (batch_size, in_features).
+        Output: (batch_size, out_features).
 
     Attributes:
-        in_features: Input feature dimension
+        in_features: Input feature dimension.
         out_features: Output feature dimension.
     """
 
@@ -226,8 +226,8 @@ struct MockLayer:
     or scaled transformation for testing purposes.
 
     Attributes:
-        input_dim: Input feature dimension
-        output_dim: Output feature dimension
+        input_dim: Input feature dimension.
+        output_dim: Output feature dimension.
         scale: Scale factor applied to inputs.
     """
 
@@ -326,10 +326,10 @@ struct SimpleLinearModel:
     forward passes and training workflows.
 
     Attributes:
-        input_dim: Input feature dimension
-        output_dim: Output dimension
-        weights: Model weights (flattened weight matrix)
-        bias: Model bias
+        input_dim: Input feature dimension.
+        output_dim: Output dimension.
+        weights: Model weights (flattened weight matrix).
+        bias: Model bias.
         use_bias: Whether to use bias.
     """
 
@@ -341,10 +341,10 @@ struct SimpleLinearModel:
 
     fn __init__(
         out self,
-        input_dim: Int,
-        output_dim: Int,
-        use_bias: Bool = True,
-        init_value: Float32 = 0.1,
+        input_dim: Int,.
+        output_dim: Int,.
+        use_bias: Bool = True,.
+        init_value: Float32 = 0.1,.
     ):
         """Initialize simple linear model.
 
@@ -452,7 +452,7 @@ struct Parameter(Copyable, Movable):
     Used in model layers to track trainable weights and biases.
 
     Attributes:
-        data: The parameter tensor (weights or bias)
+        data: The parameter tensor (weights or bias).
         grad: The gradient tensor for backpropagation.
     """
 
@@ -504,15 +504,15 @@ struct SimpleMLP(Copyable, Model, Movable):
     training loops, and model composition.
 
     Attributes:
-        input_dim: Input dimension
-        hidden_dim: Hidden layer dimension
-        output_dim: Output dimension
-        num_hidden_layers: Number of hidden layers (1 or 2)
-        layer1_weights: First layer weights
-        layer1_bias: First layer bias
-        layer2_weights: Second layer weights (hidden to hidden or hidden to output)
-        layer2_bias: Second layer bias
-        layer3_weights: Third layer weights (only if num_hidden_layers=2)
+        input_dim: Input dimension.
+        hidden_dim: Hidden layer dimension.
+        output_dim: Output dimension.
+        num_hidden_layers: Number of hidden layers (1 or 2).
+        layer1_weights: First layer weights.
+        layer1_bias: First layer bias.
+        layer2_weights: Second layer weights (hidden to hidden or hidden to output).
+        layer2_bias: Second layer bias.
+        layer3_weights: Third layer weights (only if num_hidden_layers=2).
         layer3_bias: Third layer bias (only if num_hidden_layers=2).
     """
 
@@ -529,11 +529,11 @@ struct SimpleMLP(Copyable, Model, Movable):
 
     fn __init__(
         out self,
-        input_dim: Int,
-        hidden_dim: Int,
-        output_dim: Int,
-        num_hidden_layers: Int = 1,
-        init_value: Float32 = 0.1,
+        input_dim: Int,.
+        hidden_dim: Int,.
+        output_dim: Int,.
+        num_hidden_layers: Int = 1,.
+        init_value: Float32 = 0.1,.
     ):
         """Initialize simple MLP.
 
@@ -714,11 +714,11 @@ struct SimpleMLP(Copyable, Model, Movable):
 
     fn _linear_forward(
         self,
-        input: List[Float32],
-        weights: List[Float32],
-        bias: List[Float32],
-        out_dim: Int,
-        in_dim: Int,
+        input: List[Float32],.
+        weights: List[Float32],.
+        bias: List[Float32],.
+        out_dim: Int,.
+        in_dim: Int,.
     ) -> List[Float32]:
         """Linear layer forward pass: output = weights @ input + bias."""
         var output= List[Float32](capacity=out_dim)

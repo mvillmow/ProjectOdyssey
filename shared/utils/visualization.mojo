@@ -97,14 +97,14 @@ fn plot_training_curves(
     accuracies) plotted against epochs. Useful for understanding model
     convergence and detecting overfitting.
 
-    Args:
-        train_losses: Training loss per epoch
-        val_losses: Validation loss per epoch
-        train_accs: Optional training accuracy per epoch
-        val_accs: Optional validation accuracy per epoch
-        save_path: Path to save figure (empty = display only)
+Args:
+        train_losses: Training loss per epoch.
+        val_losses: Validation loss per epoch.
+        train_accs: Optional training accuracy per epoch.
+        val_accs: Optional validation accuracy per epoch.
+        save_path: Path to save figure (empty = display only).
 
-    Returns:
+Returns:
         True if plotting successful, False if error
 
     Example:
@@ -168,12 +168,12 @@ fn plot_loss_only(
 ) -> Bool:
     """Plot single loss curve.
 
-    Args:
-        losses: Loss per epoch
-        label: Label for the line
-        save_path: Path to save figure
+Args:
+        losses: Loss per epoch.
+        label: Label for the line.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for loss plotting
@@ -195,12 +195,12 @@ fn plot_accuracy_only(
 ) -> Bool:
     """Plot single accuracy curve.
 
-    Args:
-        accuracies: Accuracy per epoch
-        label: Label for the line
-        save_path: Path to save figure
+Args:
+        accuracies: Accuracy per epoch.
+        label: Label for the line.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for accuracy plotting
@@ -225,12 +225,12 @@ fn compute_confusion_matrix(
 ) -> List[List[Int]]:
     """Compute confusion matrix from predictions.
 
-    Args:
-        y_true: True labels
-        y_pred: Predicted labels
-        num_classes: Number of classes (auto-detect if 0)
+Args:
+        y_true: True labels.
+        y_pred: Predicted labels.
+        num_classes: Number of classes (auto-detect if 0).
 
-    Returns:
+Returns:
         Confusion matrix (num_classes x num_classes).
     """
     # Determine number of classes
@@ -282,14 +282,14 @@ fn plot_confusion_matrix(
     on axes. Optionally normalizes to percentages. Useful for analyzing
     which classes are most often confused.
 
-    Args:
-        y_true: True labels
-        y_pred: Predicted labels
-        class_names: Names of classes (optional)
-        normalize: Normalize to percentages (default: raw counts)
-        save_path: Path to save figure
+Args:
+        y_true: True labels.
+        y_pred: Predicted labels.
+        class_names: Names of classes (optional).
+        normalize: Normalize to percentages (default: raw counts).
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful
 
     Example:
@@ -355,10 +355,10 @@ fn plot_confusion_matrix(
 fn normalize_confusion_matrix(matrix: List[List[Int]]) -> List[List[Float32]]:
     """Normalize confusion matrix to percentages.
 
-    Args:
-        matrix: Raw confusion matrix
+Args:
+        matrix: Raw confusion matrix.
 
-    Returns:
+Returns:
         Normalized matrix with values in [0, 1]
     """
     # Create normalized matrix
@@ -387,10 +387,10 @@ fn compute_matrix_metrics(
 ) -> Tuple[Float32, Float32, Float32]:
     """Compute accuracy, precision, recall from confusion matrix.
 
-    Args:
-        matrix: Confusion matrix
+Args:
+        matrix: Confusion matrix.
 
-    Returns:
+Returns:
         Tuple of (accuracy, precision, recall).
     """
     # Compute total samples and correct predictions
@@ -456,12 +456,12 @@ fn visualize_model_architecture(
     and connections. Useful for documentation and understanding model
     design.
 
-    Args:
-        model_name: Name of model
-        layer_info: List of layer descriptions
-        save_path: Path to save figure
+Args:
+        model_name: Name of model.
+        layer_info: List of layer descriptions.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful
 
     Example:
@@ -498,12 +498,12 @@ fn visualize_tensor_shapes(
 ) -> Bool:
     """Visualize tensor shapes through layers.
 
-    Args:
-        input_shape: Input tensor shape
-        layer_shapes: Shapes at each layer
-        save_path: Path to save figure
+Args:
+        input_shape: Input tensor shape.
+        layer_shapes: Shapes at each layer.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for tensor shape progression
@@ -544,12 +544,12 @@ fn visualize_gradient_flow(
     Creates a plot showing gradient magnitude at each layer, useful for
     detecting vanishing or exploding gradients.
 
-    Args:
-        gradients: Gradient magnitudes per layer
-        layer_names: Names of layers (optional)
-        save_path: Path to save figure
+Args:
+        gradients: Gradient magnitudes per layer.
+        layer_names: Names of layers (optional).
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for gradient flow plot
@@ -578,10 +578,10 @@ fn visualize_gradient_flow(
 fn detect_gradient_issues(gradients: List[Float32]) -> Tuple[Bool, Bool]:
     """Detect vanishing or exploding gradients.
 
-    Args:
-        gradients: Gradient magnitudes per layer
+Args:
+        gradients: Gradient magnitudes per layer.
 
-    Returns:
+Returns:
         Tuple of (has_vanishing, has_exploding).
     """
     # Thresholds for vanishing and exploding gradients
@@ -616,13 +616,13 @@ fn show_images(
     Creates a grid of images from a batch. Useful for visualizing
     training data and augmentation effects.
 
-    Args:
-        images: Batch of images (as simplified list of strings/paths)
-        labels: Optional labels for each image
-        nrow: Number of images per row
-        save_path: Path to save figure
+Args:
+        images: Batch of images (as simplified list of strings/paths).
+        labels: Optional labels for each image.
+        nrow: Number of images per row.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful
 
     Example:
@@ -669,13 +669,13 @@ fn show_augmented_images(
 ) -> Bool:
     """Show original and augmented versions side by side.
 
-    Args:
-        original: Original images
-        augmented: Augmented versions
-        nrow: Images per row
-        save_path: Path to save figure
+Args:
+        original: Original images.
+        augmented: Augmented versions.
+        nrow: Images per row.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for augmentation comparison
@@ -711,12 +711,12 @@ fn visualize_feature_maps(
 ) -> Bool:
     """Visualize learned feature maps from a layer.
 
-    Args:
-        feature_maps: Feature maps (as simplified strings)
-        layer_name: Name of layer
-        save_path: Path to save figure
+Args:
+        feature_maps: Feature maps (as simplified strings).
+        layer_name: Name of layer.
+        save_path: Path to save figure.
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for feature map visualization
@@ -744,11 +744,11 @@ fn visualize_feature_maps(
 fn save_figure(filepath: String, format: String = "png") -> Bool:
     """Save current matplotlib figure to file.
 
-    Args:
-        filepath: Output file path
-        format: Image format (png, jpg, pdf, svg)
+Args:
+        filepath: Output file path.
+        format: Image format (png, jpg, pdf, svg).
 
-    Returns:
+Returns:
         True if successful.
     """
     # Create JSON structure for figure saving

@@ -908,13 +908,13 @@ fn load_config(filepath: String) raises -> Config:
     Automatically detects file format based on extension (.yaml/.yml
     for YAML, .json for JSON).
 
-    Args:
-        filepath: Path to configuration file
+Args:
+        filepath: Path to configuration file.
 
-    Returns:
+Returns:
         Loaded configuration
 
-    Raises:
+Raises:
         Error if file doesn't exist or invalid format
 
     Example:
@@ -936,11 +936,11 @@ fn save_config(config: Config, filepath: String) raises:
 
     Automatically determines output format from file extension.
 
-    Args:
-        config: Configuration to save
-        filepath: Output file path
+Args:
+        config: Configuration to save.
+        filepath: Output file path.
 
-    Raises:
+Raises:
         Error if file cannot be written
 
     Example:
@@ -970,11 +970,11 @@ fn merge_configs(base: Config, override: Config) -> Config:
     from override taking precedence over base. Useful for creating
     experiment-specific configs that override defaults.
 
-    Args:
-        base: Base configuration (defaults)
-        override: Override configuration (experiment-specific)
+Args:
+        base: Base configuration (defaults).
+        override: Override configuration (experiment-specific).
 
-    Returns:
+Returns:
         Merged configuration
 
     Example:
@@ -1053,7 +1053,7 @@ struct ConfigValidator(Copyable, Movable):
 fn create_validator() -> ConfigValidator:
     """Create new configuration validator.
 
-    Returns:
+Returns:
         Empty validator ready for configuration.
     """
     return ConfigValidator()

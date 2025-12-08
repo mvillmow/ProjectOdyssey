@@ -28,7 +28,7 @@ from memory import UnsafePointer
 fn math_round[T: DType](x: Scalar[T]) -> Scalar[T]:
     """Round to nearest integer (banker's rounding - round half to even).
 
-    Examples:
+Examples:
         -2.5 → -2.0 (nearest even)
         -1.4 → -1.0
          0.5 →  0.0 (nearest even)
@@ -78,13 +78,13 @@ fn _abs_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn abs(tensor: ExTensor) raises -> ExTensor:
     """Absolute value element-wise.
 
-    Args:
-        tensor: Input tensor
+Args:
+        tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with absolute values
 
-    Examples:
+Examples:
         var a = full(shape, -3.0, DType.float32)
         var b = abs(a)  # All values become 3.0
     """
@@ -105,13 +105,13 @@ fn _sign_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn sign(tensor: ExTensor) raises -> ExTensor:
     """Sign function element-wise (-1, 0, or 1).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with sign values (-1 for negative, 0 for zero, 1 for positive)
 
-    Examples:
+Examples:
         var a = tensor([-2.0, 0.0, 3.0])
         var b = sign(a)  # [-1.0, 0.0, 1.0]
     """
@@ -132,13 +132,13 @@ fn _exp_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn exp(tensor: ExTensor) raises -> ExTensor:
     """Exponential function element-wise (e^x).
 
-    Args:
-        tensor: Input tensor
+Args:
+        tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with exponential values
 
-    Examples:
+Examples:
         var a = zeros(shape, DType.float32)
         var b = exp(a)  # All values become 1.0 (e^0).
     """
@@ -159,16 +159,16 @@ fn _log_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn log(tensor: ExTensor) raises -> ExTensor:
     """Natural logarithm element-wise (ln(x)).
 
-    Args:
-        tensor: Input tensor (must have positive values)
+Args:
+        tensor: Input tensor (must have positive values).
 
-    Returns:
+Returns:
         A new tensor with logarithm values.
 
-    Raises:
+Raises:
         Error if any value is <= 0.
 
-    Examples:
+Examples:
         var a = ones(shape, DType.float32)
         var b = log(a)  # All values become 0.0 (ln(1)).
     """
@@ -189,16 +189,16 @@ fn _sqrt_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn sqrt(tensor: ExTensor) raises -> ExTensor:
     """Square root element-wise.
 
-    Args:
-        tensor: Input tensor (must have non-negative values)
+Args:
+        tensor: Input tensor (must have non-negative values).
 
-    Returns:
+Returns:
         A new tensor with square root values
 
-    Raises:
+Raises:
         Error if any value is < 0
 
-    Examples:
+Examples:
         var a = full(shape, 4.0, DType.float32)
         var b = sqrt(a)  # All values become 2.0
     """
@@ -219,13 +219,13 @@ fn _sin_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn sin(tensor: ExTensor) raises -> ExTensor:
     """Sine function element-wise.
 
-    Args:
-        tensor: Input tensor (values in radians)
+Args:
+        tensor: Input tensor (values in radians).
 
-    Returns:
+Returns:
         A new tensor with sine values.
 
-    Examples:
+Examples:
         var a = zeros(shape, DType.float32)
         var b = sin(a)  # All values become 0.0 (sin(0)).
     """
@@ -246,13 +246,13 @@ fn _cos_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn cos(tensor: ExTensor) raises -> ExTensor:
     """Cosine function element-wise.
 
-    Args:
-        tensor: Input tensor (values in radians)
+Args:
+        tensor: Input tensor (values in radians).
 
-    Returns:
+Returns:
         A new tensor with cosine values
 
-    Examples:
+Examples:
         var a = zeros(shape, DType.float32)
         var b = cos(a)  # All values become 1.0 (cos(0)).
     """
@@ -273,13 +273,13 @@ fn _tanh_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn tanh(tensor: ExTensor) raises -> ExTensor:
     """Hyperbolic tangent function element-wise.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with tanh values (range: -1 to 1)
 
-    Examples:
+Examples:
         var a = zeros(shape, DType.float32)
         var b = tanh(a)  # All values become 0.0 (tanh(0)).
     """
@@ -291,18 +291,18 @@ fn clip(
 ) raises -> ExTensor:
     """Clip (clamp) values to a range element-wise.
 
-    Args:
+Args:
         tensor: Input tensor.
         min_val: Minimum value.
         max_val: Maximum value.
 
-    Returns:
+Returns:
         A new tensor with clipped values.
 
-    Raises:
+Raises:
         Error if min_val > max_val.
 
-    Examples:
+Examples:
         var a = tensor([-5.0, 0.0, 10.0])
         var b = clip(a, 0.0, 5.0)  # [0.0, 0.0, 5.0]
     """
@@ -342,13 +342,13 @@ fn _ceil_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn ceil(tensor: ExTensor) raises -> ExTensor:
     """Ceiling function element-wise (round up to nearest integer).
 
-    Args:
-        tensor: Input tensor
+Args:
+        tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with ceiling values
 
-    Examples:
+Examples:
         var a = tensor([1.2, 2.5, 3.9])
         var b = ceil(a)  # [2.0, 3.0, 4.0]
     """
@@ -369,13 +369,13 @@ fn _floor_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn floor(tensor: ExTensor) raises -> ExTensor:
     """Floor function element-wise (round down to nearest integer).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with floor values.
 
-    Examples:
+Examples:
         var a = tensor([1.2, 2.5, 3.9])
         var b = floor(a)  # [1.0, 2.0, 3.0]
     """
@@ -396,13 +396,13 @@ fn _round_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn round(tensor: ExTensor) raises -> ExTensor:
     """Round to nearest integer element-wise.
 
-    Args:
-        tensor: Input tensor
+Args:
+        tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with rounded values
 
-    Examples:
+Examples:
         var a = tensor([1.2, 2.5, 3.9])
         var b = round(a)  # [1.0, 2.0, 4.0] (or [1.0, 3.0, 4.0] depending on rounding mode).
     """
@@ -423,13 +423,13 @@ fn _trunc_op[T: DType](x: Scalar[T]) -> Scalar[T]:
 fn trunc(tensor: ExTensor) raises -> ExTensor:
     """Truncate to integer element-wise (round toward zero).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         A new tensor with truncated values.
 
-    Examples:
+Examples:
         var a = tensor([1.9, -2.9, 3.1])
         var b = trunc(a)  # [1.0, -2.0, 3.0]
     """
@@ -451,21 +451,21 @@ fn trunc(tensor: ExTensor) raises -> ExTensor:
 fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Logical AND element-wise with broadcasting.
 
-    Args:
+Args:
         a: First input tensor.
         b: Second input tensor.
 
-    Returns:
+Returns:
         Boolean tensor (True where both are non-zero)
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Broadcasting:
         Shapes are broadcast to a common output shape following NumPy rules.
         Dimensions are compatible if they are equal or one is 1.
 
-    Examples:
+Examples:
         var a = tensor([0.0, 1.0, 2.0])
         var b = tensor([0.0, 0.0, 1.0])
         var c = logical_and(a, b)  # [False, False, True]
@@ -529,21 +529,21 @@ fn logical_and(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Logical OR element-wise with broadcasting.
 
-    Args:
+Args:
         a: First input tensor.
         b: Second input tensor.
 
-    Returns:
+Returns:
         Boolean tensor (True where either is non-zero)
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Broadcasting:
         Shapes are broadcast to a common output shape following NumPy rules.
         Dimensions are compatible if they are equal or one is 1.
 
-    Examples:
+Examples:
         var a = tensor([0.0, 1.0, 2.0])
         var b = tensor([0.0, 0.0, 1.0])
         var c = logical_or(a, b)  # [False, True, True]
@@ -607,13 +607,13 @@ fn logical_or(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn logical_not(tensor: ExTensor) raises -> ExTensor:
     """Logical NOT element-wise.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Boolean tensor (True where input is zero)
 
-    Examples:
+Examples:
         var a = tensor([0.0, 1.0, 2.0])
         var b = logical_not(a)  # [True, False, False]
     """
@@ -632,21 +632,21 @@ fn logical_not(tensor: ExTensor) raises -> ExTensor:
 fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Logical XOR element-wise with broadcasting.
 
-    Args:
+Args:
         a: First input tensor.
         b: Second input tensor.
 
-    Returns:
+Returns:
         Boolean tensor (True where exactly one is non-zero)
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
     Broadcasting:
         Shapes are broadcast to a common output shape following NumPy rules.
         Dimensions are compatible if they are equal or one is 1.
 
-    Examples:
+Examples:
         var a = tensor([0.0, 1.0, 0.0, 1.0])
         var b = tensor([0.0, 0.0, 1.0, 1.0])
         var c = logical_xor(a, b)  # [False, True, True, False]
@@ -717,16 +717,16 @@ fn logical_xor(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn log10(tensor: ExTensor) raises -> ExTensor:
     """Base-10 logarithm element-wise.
 
-    Args:
-        tensor: Input tensor (must have positive values)
+Args:
+        tensor: Input tensor (must have positive values).
 
-    Returns:
+Returns:
         A new tensor with log10 values.
 
-    Raises:
+Raises:
         Error if any value is <= 0.
 
-    Examples:
+Examples:
         var a = tensor([1.0, 10.0, 100.0])
         var b = log10(a)  # [0.0, 1.0, 2.0]
     """
@@ -746,16 +746,16 @@ fn log10(tensor: ExTensor) raises -> ExTensor:
 fn log2(tensor: ExTensor) raises -> ExTensor:
     """Base-2 logarithm element-wise.
 
-    Args:
-        tensor: Input tensor (must have positive values)
+Args:
+        tensor: Input tensor (must have positive values).
 
-    Returns:
+Returns:
         A new tensor with log2 values.
 
-    Raises:
+Raises:
         Error if any value is <= 0.
 
-    Examples:
+Examples:
         var a = tensor([1.0, 2.0, 8.0])
         var b = log2(a)  # [0.0, 1.0, 3.0]
     """
@@ -783,14 +783,14 @@ fn exp_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     For Y = exp(X), given ∂L/∂Y, computes:
         ∂L/∂X = ∂L/∂Y * exp(X)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
-        x: Input from forward pass
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
+        x: Input from forward pass.
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
         var x = ones([3, 4])
         var grad_y = ones([3, 4])
         var grad_x = exp_backward(grad_y, x)  # grad_x = grad_y * exp(x).
@@ -814,14 +814,14 @@ fn log_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Includes numerical stability: adds epsilon to prevent division by zero.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
-        x: Input from forward pass (must be positive)
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
+        x: Input from forward pass (must be positive).
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
         var x = full([3, 4], 2.0)
         var y = log(x)
         var grad_y = ones([3, 4])
@@ -849,14 +849,14 @@ fn sqrt_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     For Y = sqrt(X), given ∂L/∂Y, computes:
         ∂L/∂X = ∂L/∂Y / (2 * sqrt(X))
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
-        x: Input from forward pass
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
+        x: Input from forward pass.
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
         var x = full([3, 4], 4.0)
         var grad_y = ones([3, 4])
         var grad_x = sqrt_backward(grad_y, x)  # grad_x = grad_y / (2 * sqrt(4.0)) = 0.25
@@ -888,14 +888,14 @@ fn abs_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
 
     Note: Gradient at X=0 is technically undefined, we use 0 by convention.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass.
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
         var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
         var y = abs(x)
         var grad_y = ones([5])
@@ -931,16 +931,16 @@ fn clip_backward(
 
     Gradient flows through only where input is within bounds.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
         x: Input from forward pass.
         min_val: Minimum clip value.
         max_val: Maximum clip value.
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
         var x = tensor([-2.0, -1.0, 0.0, 1.0, 2.0])
         var y = clip(x, -1.0, 1.0)  # [-1, -1, 0, 1, 1]
         var grad_y = ones([5])
@@ -967,11 +967,11 @@ fn log10_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     For Y = log10(X), given ∂L/∂Y, computes:
         ∂L/∂X = ∂L/∂Y / (X * ln(10))
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
-        x: Input from forward pass (must be positive)
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
+        x: Input from forward pass (must be positive).
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
     Numerical Stability:
@@ -996,11 +996,11 @@ fn log2_backward(grad_output: ExTensor, x: ExTensor) raises -> ExTensor:
     For Y = log2(X), given ∂L/∂Y, computes:
         ∂L/∂X = ∂L/∂Y / (X * ln(2))
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂Y)
-        x: Input from forward pass (must be positive)
+Args:
+        grad_output: Gradient from upstream (∂L/∂Y).
+        x: Input from forward pass (must be positive).
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
     Numerical Stability:
