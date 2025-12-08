@@ -55,9 +55,11 @@ trait ElementwiseUnaryOp:
     value and returns the result as Float64.
 
     Required Methods:
+        `__init__`: Default constructor
         `apply`: Apply the operation to a single value
 
     Contract:
+        - Must have a default constructor (no arguments)
         - apply() must be deterministic
         - apply() must handle all Float64 values (including edge cases)
         - apply() should not have side effects
@@ -65,11 +67,18 @@ trait ElementwiseUnaryOp:
     Example:
         struct SquareOp(ElementwiseUnaryOp):
             '''Square each element.'''
+            fn __init__(out self):
+                pass
+
             fn apply(self, value: Float64) -> Float64:
                 return value * value
 
         var squared = apply_unary[SquareOp](tensor)
     """
+
+    fn __init__(out self):
+        """Default constructor required for generic instantiation."""
+        ...
 
     fn apply(self, value: Float64) -> Float64:
         """Apply operation to a single value.
@@ -98,9 +107,11 @@ trait ElementwiseBinaryOp:
     values and returns the result as Float64.
 
     Required Methods:
+        `__init__`: Default constructor
         `apply`: Apply the operation to two values
 
     Contract:
+        - Must have a default constructor (no arguments)
         - apply() must be deterministic
         - apply() must handle all Float64 value pairs
         - apply() should not have side effects
@@ -110,6 +121,9 @@ trait ElementwiseBinaryOp:
     Example:
         struct MaxOp(ElementwiseBinaryOp):
             '''Element-wise maximum.'''
+            fn __init__(out self):
+                pass
+
             fn apply(self, a: Float64, b: Float64) -> Float64:
                 if a > b:
                     return a
@@ -118,6 +132,10 @@ trait ElementwiseBinaryOp:
 
         var max_result = apply_binary[MaxOp](tensor_a, tensor_b)
     """
+
+    fn __init__(out self):
+        """Default constructor required for generic instantiation."""
+        ...
 
     fn apply(self, a: Float64, b: Float64) -> Float64:
         """Apply operation to two values.

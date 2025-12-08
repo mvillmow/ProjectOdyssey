@@ -35,14 +35,13 @@ from memory import UnsafePointer, memset_zero, alloc
 from sys.info import simd_width_of
 from math import ceildiv, sqrt, log, cos, sin
 from random import random_float64
-from shared.core.matrix import matmul
 
 # Memory safety constants
 alias MAX_TENSOR_BYTES: Int = 2_000_000_000  # 2 GB max per tensor
 alias WARN_TENSOR_BYTES: Int = 500_000_000  # 500 MB warning threshold
 
 
-struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
+struct ExTensor(Copyable, Movable, ImplicitlyCopyable):
     """Dynamic tensor with runtime-determined shape and data type.
 
         ExTensor provides a flexible tensor implementation for machine learning workloads,
@@ -892,7 +891,7 @@ struct ExTensor(Copyable, ImplicitlyCopyable, Movable):
 
     fn __matmul__(self, other: ExTensor) raises -> ExTensor:
         """Matrix multiplication: `a @ b`"""
-        from .matrix import matmul
+        from shared.core.matrix import matmul
 
         return matmul(self, other)
 

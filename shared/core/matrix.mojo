@@ -14,7 +14,7 @@ from shared.core.extensor import ExTensor
 from shared.core.gradient_types import GradientPair
 
 
-fn matmul(read a: ExTensor, read b: ExTensor) raises -> ExTensor:
+fn matmul(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
     Args:
