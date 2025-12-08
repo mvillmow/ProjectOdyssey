@@ -159,7 +159,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
     For efficient storage, use MXFP4Block which amortizes the scale across 32 values.
 
     Attributes:
-        value: 4-bit E2M1 encoded value
+        value: 4-bit E2M1 encoded value.
         scale: 8-bit E8M0 scale factor.
     """
 
@@ -275,7 +275,7 @@ struct MXFP4(Copyable, Movable, Representable, Stringable):
 
     @staticmethod
     fn _fp4_stochastic_round(
-        x: Float32, scale: Float32, seed: UInt64
+        x: Float32, scale: Float32, seed: UInt64.
     ) -> FP4_E2M1:
         """Internal: Stochastic rounding helper using simple LCG.
 

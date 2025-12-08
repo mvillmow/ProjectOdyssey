@@ -213,7 +213,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
     For efficient storage, use NVFP4Block which amortizes the scale across 16 values.
 
     Attributes:
-        value: 4-bit E2M1 encoded value
+        value: 4-bit E2M1 encoded value.
         scale: 7-bit E4M3 scale factor.
     """
 
@@ -329,7 +329,7 @@ struct NVFP4(Copyable, Movable, Representable, Stringable):
 
     @staticmethod
     fn _fp4_stochastic_round(
-        x: Float32, scale: Float32, seed: UInt64
+        x: Float32, scale: Float32, seed: UInt64.
     ) -> FP4_E2M1:
         """Internal: Stochastic rounding helper using simple LCG.
 

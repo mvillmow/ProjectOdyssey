@@ -31,14 +31,14 @@ fn infer_image_dimensions(
     Assumes square images: H = W = sqrt(num_elements / channels).
     Auto-detects channels if default doesn't work (tries 3, then 1).
 
-    Args:
+Args:
         data: Flattened image tensor.
         channels: Number of channels (default: 3 for RGB, auto-detects if mismatch).
 
-    Returns:
+Returns:
         Tuple of (height, width, channels).
 
-    Raises:
+Raises:
         Error if dimensions don't work out to square image with any supported channel count.
     """
     var total_elements = data.num_elements()
@@ -802,10 +802,10 @@ struct RandomErasing(Copyable, Movable, Transform):
 
     fn __init__(
         out self,
-        p: Float64 = 0.5,
-        scale: Tuple[Float64, Float64] = (0.02, 0.33),
-        ratio: Tuple[Float64, Float64] = (0.3, 3.3),
-        value: Float64 = 0.0,
+        p: Float64 = 0.5,.
+        scale: Tuple[Float64, Float64] = (0.02, 0.33),.
+        ratio: Tuple[Float64, Float64] = (0.3, 3.3),.
+        value: Float64 = 0.0,.
     ):
         """Create random erasing transform.
 

@@ -199,9 +199,9 @@ struct TapeNode(Copyable, Movable):
 
     fn __init__(
         out self,
-        op_type: String,
-        input_ids: List[Int],
-        output_id: Int,
+        op_type: String,.
+        input_ids: List[Int],.
+        output_id: Int,.
         var saved: SavedTensors,
     ):
         """Initialize a tape node with saved tensors.
@@ -361,16 +361,16 @@ struct GradientTape:
     in reverse to compute gradients via the chain rule.
 
     Attributes:
-        nodes: Chronological list of recorded operations
-        enabled: Whether the tape is currently recording
-        registry: Variable registry for gradient storage
+        nodes: Chronological list of recorded operations.
+        enabled: Whether the tape is currently recording.
+        registry: Variable registry for gradient storage.
 
     Design Note:
         This uses a global tape approach (like TensorFlow's GradientTape) rather
         than per-tensor graph tracking (like PyTorch). The global tape is simpler
         to implement but requires explicit enable/disable calls.
 
-    Examples:
+Examples:
         var tape = GradientTape()
         tape.enable()
 
@@ -443,9 +443,9 @@ struct GradientTape:
 
     fn record(
         mut self,
-        op_type: String,
-        input_ids: List[Int],
-        output_id: Int,
+        op_type: String,.
+        input_ids: List[Int],.
+        output_id: Int,.
         var saved: SavedTensors,
     ):
         """Record an operation in the tape.

@@ -55,11 +55,11 @@ fn CIFAR10_CLASS_NAMES() -> List[String]:
 
     CIFAR-10 contains 10 object classes commonly used for image classification.
 
-    Returns:
+Returns:
         List of 10 class name strings in order:
         ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
 
-    Note:
+Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
     var classes= List[String]()
@@ -88,10 +88,10 @@ fn EMNIST_BALANCED_CLASSES() -> List[String]:
     The balanced split has roughly equal numbers of samples per class.
     Letters are: A-Z (26 classes) + a-k (11 classes) = 37 letter classes.
 
-    Returns:
+Returns:
         List of 47 class name strings representing digits and letters.
 
-    Note:
+Note:
         Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-k (lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
@@ -125,10 +125,10 @@ fn EMNIST_BYCLASS_CLASSES() -> List[String]:
     EMNIST By Class contains 62 classes: 10 digits (0-9) and 52 letters (A-Z, a-z).
     The by-class split maintains separate classes for uppercase and lowercase letters.
 
-    Returns:
+Returns:
         List of 62 class name strings representing digits and letters.
 
-    Note:
+Note:
         Classes are ordered as: 0-9 (digits), then A-Z (uppercase), then a-z (lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
@@ -162,10 +162,10 @@ fn EMNIST_BYMERGE_CLASSES() -> List[String]:
     EMNIST By Merge contains 36 classes where uppercase and lowercase letters
     are merged into single classes (e.g., 'A' and 'a' -> 'A').
 
-    Returns:
+Returns:
         List of 36 class name strings: 10 digits and 26 merged letter classes.
 
-    Note:
+Note:
         Classes are ordered as: 0-9 (digits), then A-Z (merged uppercase/lowercase).
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
@@ -194,10 +194,10 @@ fn EMNIST_DIGITS_CLASSES() -> List[String]:
     EMNIST Digits contains only the 10 digit classes (0-9).
     This is equivalent to MNIST.
 
-    Returns:
+Returns:
         List of 10 class name strings: "0", "1", ..., "9".
 
-    Note:
+Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
     var classes= List[String]()
@@ -217,10 +217,10 @@ fn EMNIST_LETTERS_CLASSES() -> List[String]:
     EMNIST Letters contains only letter characters with uppercase and lowercase
     treated as separate classes. Total of 52 classes (A-Z, a-z).
 
-    Returns:
+Returns:
         List of 52 class name strings: A-Z followed by a-z.
 
-    Note:
+Note:
         Creates a new List each time it's called. Cache the result if used repeatedly.
     """
     var classes = List[String]()
@@ -259,7 +259,7 @@ struct DatasetInfo(Copyable, Movable):
         - "emnist_letters": EMNIST Letters (52 classes, 28x28 grayscale)
 
     Attributes:
-        dataset_name: Name of the dataset (e.g., "cifar10", "emnist_balanced")
+        dataset_name: Name of the dataset (e.g., "cifar10", "emnist_balanced").
 
     Example:
         ```mojo

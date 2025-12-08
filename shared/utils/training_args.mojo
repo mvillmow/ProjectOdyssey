@@ -85,10 +85,10 @@ fn parse_training_args() raises -> TrainingArgs:
         --weights-dir <str>: Weights directory (default: "weights").
         --verbose: Enable verbose output.
 
-    Returns:
+Returns:
         TrainingArgs struct with parsed and validated values.
 
-    Raises:
+Raises:
         Error if argument validation fails.
 
     Example:
@@ -121,7 +121,7 @@ fn parse_training_args_with_defaults(
     Allows each training script to specify model-appropriate defaults
     while still using shared parsing logic. Validates numeric ranges.
 
-    Args:
+Args:
         default_epochs: Default number of epochs (must be positive).
         default_batch_size: Default batch size (must be positive).
         default_lr: Default learning rate (must be positive).
@@ -129,10 +129,10 @@ fn parse_training_args_with_defaults(
         default_data_dir: Default dataset directory.
         default_weights_dir: Default weights directory.
 
-    Returns:
+Returns:
         TrainingArgs struct with parsed and validated values.
 
-    Raises:
+Raises:
         Error if argument validation fails.
 
     Example:

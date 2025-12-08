@@ -72,11 +72,11 @@ alias TOLERANCE_CROSS_ENTROPY: Float64 = 1e-3
 fn assert_true(condition: Bool, message: String = "Assertion failed") raises:
     """Assert that condition is true.
 
-    Args:
+Args:
         condition: The boolean condition to check.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if condition is false.
     """
     if not condition:
@@ -86,11 +86,11 @@ fn assert_true(condition: Bool, message: String = "Assertion failed") raises:
 fn assert_false(condition: Bool, message: String = "Assertion failed") raises:
     """Assert that condition is false.
 
-    Args:
+Args:
         condition: The boolean condition to check.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if condition is true.
     """
     if condition:
@@ -105,12 +105,12 @@ fn assert_false(condition: Bool, message: String = "Assertion failed") raises:
 fn assert_equal[T: Comparable](a: T, b: T, message: String = "") raises:
     """Assert exact equality of two values.
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a != b.
     """
     if a != b:
@@ -121,12 +121,12 @@ fn assert_equal[T: Comparable](a: T, b: T, message: String = "") raises:
 fn assert_not_equal[T: Comparable](a: T, b: T, message: String = "") raises:
     """Assert inequality of two values.
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a == b.
     """
     if a == b:
@@ -141,11 +141,11 @@ fn assert_not_none[
 ](value: Optional[T], message: String = "") raises:
     """Assert that an Optional value is not None.
 
-    Args:
+Args:
         value: The Optional value to check.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if value is None.
     """
     if not value:
@@ -168,13 +168,13 @@ fn assert_almost_equal(
 ) raises:
     """Assert floating point near-equality for Float32.
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         tolerance: Maximum allowed difference.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if |a - b| > tolerance.
     """
     var diff = abs(a - b)
@@ -193,13 +193,13 @@ fn assert_almost_equal(
 ) raises:
     """Assert floating point near-equality for Float64.
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         tolerance: Maximum allowed difference.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if |a - b| > tolerance.
     """
     var diff = abs(a - b)
@@ -213,12 +213,12 @@ fn assert_almost_equal(
 fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
     """Assert exact equality of DType values.
 
-    Args:
+Args:
         a: First DType.
         b: Second DType.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a != b.
     """
     if a != b:
@@ -229,12 +229,12 @@ fn assert_dtype_equal(a: DType, b: DType, message: String = "") raises:
 fn assert_equal_int(a: Int, b: Int, message: String = "") raises:
     """Assert two integers are equal.
 
-    Args:
+Args:
         a: First integer.
         b: Second integer.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if integers are not equal.
     """
     if a != b:
@@ -247,12 +247,12 @@ fn assert_equal_int(a: Int, b: Int, message: String = "") raises:
 fn assert_equal_float(a: Float32, b: Float32, message: String = "") raises:
     """Assert exact equality of two Float32 values.
 
-    Args:
+Args:
         a: First float value.
         b: Second float value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if floats are not exactly equal.
     """
     if a != b:
@@ -273,14 +273,14 @@ fn assert_close_float(
 
     Uses the formula: |a - b| <= atol + rtol * |b|
 
-    Args:
+Args:
         a: First float.
         b: Second float.
         rtol: Relative tolerance.
         atol: Absolute tolerance.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if floats differ beyond tolerance.
     """
     # Handle NaN and inf
@@ -338,12 +338,12 @@ fn assert_greater[
     Works with any type supporting Comparable and Stringable traits
     (Float32, Float64, Int, etc.).
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a <= b.
     """
     if a <= b:
@@ -359,12 +359,12 @@ fn assert_less[
     Works with any type supporting Comparable and Stringable traits
     (Float32, Float64, Int, etc.).
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a >= b.
     """
     if a >= b:
@@ -380,12 +380,12 @@ fn assert_greater_or_equal[
     Works with any type supporting Comparable and Stringable traits
     (Float32, Float64, Int, etc.).
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a < b.
     """
     if a < b:
@@ -401,12 +401,12 @@ fn assert_less_or_equal[
     Works with any type supporting Comparable and Stringable traits
     (Float32, Float64, Int, etc.).
 
-    Args:
+Args:
         a: First value.
         b: Second value.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if a > b.
     """
     if a > b:
@@ -424,12 +424,12 @@ fn assert_shape_equal(
 ) raises:
     """Assert two shapes are equal.
 
-    Args:
+Args:
         shape1: First shape.
         shape2: Second shape.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if shapes are not equal.
     """
     if len(shape1) != len(shape2):
@@ -467,12 +467,12 @@ fn assert_not_equal_tensor(
     Verifies that at least one element differs between the two tensors.
     Useful for tests verifying that weights have been updated during training.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if all elements are equal or if shapes differ.
     """
     # Check shapes match
@@ -508,12 +508,12 @@ fn assert_not_equal_tensor(
 fn assert_tensor_equal(a: ExTensor, b: ExTensor, message: String = "") raises:
     """Assert two ExTensors are equal (shape and all elements).
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if shapes don't match or any elements differ.
     """
     # Check dimensions
@@ -557,12 +557,12 @@ fn assert_shape(
 ) raises:
     """Assert tensor has expected shape.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         expected: Expected shape as List.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if shapes don't match.
     """
     # Get actual shape
@@ -595,12 +595,12 @@ fn assert_shape(
 fn assert_dtype(tensor: ExTensor, expected: DType, message: String = "") raises:
     """Assert tensor has expected dtype.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         expected: Expected DType.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if dtype doesn't match.
     """
     var actual = tensor.dtype()
@@ -614,12 +614,12 @@ fn assert_dtype(tensor: ExTensor, expected: DType, message: String = "") raises:
 fn assert_numel(tensor: ExTensor, expected: Int, message: String = "") raises:
     """Assert tensor has expected number of elements.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         expected: Expected total element count.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if numel doesn't match.
     """
     var actual = tensor.numel()
@@ -633,12 +633,12 @@ fn assert_numel(tensor: ExTensor, expected: Int, message: String = "") raises:
 fn assert_dim(tensor: ExTensor, expected: Int, message: String = "") raises:
     """Assert tensor has expected number of dimensions.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         expected: Expected dimension count.
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if dim doesn't match.
     """
     var actual = len(tensor.shape())
@@ -666,14 +666,14 @@ fn assert_value_at(
 ) raises:
     """Assert tensor value at flat index matches expected value.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         index: Flat index to check.
         expected: Expected value.
         tolerance: Acceptable difference (default: 1e-6).
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if value doesn't match within tolerance.
     """
     if index < 0 or index >= tensor.numel():
@@ -705,13 +705,13 @@ fn assert_all_values(
 ) raises:
     """Assert all tensor values match expected constant.
 
-    Args:
+Args:
         tensor: ExTensor to check.
         expected: Expected constant value.
         tolerance: Acceptable difference (default: 1e-6).
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if any value doesn't match within tolerance.
     """
     var n = tensor.numel()
@@ -741,13 +741,13 @@ fn assert_all_close(
 ) raises:
     """Assert two tensors are element-wise close.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
         tolerance: Acceptable difference (default: 1e-6).
         message: Optional error message.
 
-    Raises:
+Raises:
         Error if shapes don't match or values differ beyond tolerance.
     """
     # Check shapes match
@@ -806,11 +806,11 @@ fn assert_type[T: AnyType](value: T, expected_type: String) raises:
     Note: Type checking in Mojo happens at compile time, so this function
     is primarily for test documentation and clarity.
 
-    Args:
+Args:
         value: The value to check.
         expected_type: String describing the expected type (for documentation).
 
-    Raises:
+Raises:
         Never raises - type checking is done at compile time.
     """
     # Type checking in Mojo is compile-time

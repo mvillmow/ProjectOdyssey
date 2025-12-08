@@ -47,10 +47,10 @@ struct CIFARLoader(Copyable, Movable):
     Each batch file contains multiple images packed sequentially.
 
     Attributes:
-        cifar_version: Version of CIFAR format (10 or 100)
-        image_size: Size of each image (32x32 for standard CIFAR)
-        channels: Number of color channels (3 for RGB)
-        bytes_per_image: Total bytes per image including label(s)
+        cifar_version: Version of CIFAR format (10 or 100).
+        image_size: Size of each image (32x32 for standard CIFAR).
+        channels: Number of color channels (3 for RGB).
+        bytes_per_image: Total bytes per image including label(s).
 
     Example:
         ```mojo

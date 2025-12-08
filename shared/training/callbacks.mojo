@@ -33,10 +33,10 @@ struct EarlyStopping(Callback, Copyable, Movable):
     Supports both minimization (e.g., loss) and maximization (e.g., accuracy) modes.
 
     Attributes:
-        monitor: Name of metric to monitor (e.g., "val_loss", "val_accuracy")
+        monitor: Name of metric to monitor (e.g., "val_loss", "val_accuracy").
         patience: Number of epochs with no improvement before stopping.
         min_delta: Minimum change to qualify as improvement.
-        mode: "min" for minimization (loss), "max" for maximization (accuracy)
+        mode: "min" for minimization (loss), "max" for maximization (accuracy).
         best_value: Best value seen so far.
         wait_count: Epochs since last improvement.
         stopped: Whether training has been stopped.
@@ -71,10 +71,10 @@ struct EarlyStopping(Callback, Copyable, Movable):
 
     fn __init__(
         out self,
-        monitor: String = "val_loss",
-        patience: Int = 5,
-        min_delta: Float64 = 0.0,
-        mode: String = "min",
+        monitor: String = "val_loss",.
+        patience: Int = 5,.
+        min_delta: Float64 = 0.0,.
+        mode: String = "min",.
     ):
         """Initialize early stopping callback.
 
@@ -92,7 +92,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
         # Initialize best_value based on mode
         if mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default)
+        else:  # mode == "min" (default).
             self.best_value = Float64(1e9)
 
         self.wait_count = 0
@@ -103,7 +103,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
         # Reset best_value based on mode
         if self.mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default)
+        else:  # mode == "min" (default).
             self.best_value = Float64(1e9)
 
         self.wait_count = 0
@@ -140,7 +140,7 @@ struct EarlyStopping(Callback, Copyable, Movable):
         if self.mode == "max":
             # For maximization (e.g., accuracy): current > best
             improved = (current_value - self.best_value) >= self.min_delta
-        else:  # mode == "min" (default)
+        else:  # mode == "min" (default).
             # For minimization (e.g., loss): best > current
             improved = (self.best_value - current_value) >= self.min_delta
 
@@ -192,14 +192,14 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         permission denied). The error message clearly identifies the cause.
 
     Attributes:
-        filepath: Path template for saving checkpoints (supports {epoch} placeholder)
-        monitor: Metric to monitor for best model tracking
-        save_best_only: If True, only save when monitored metric improves
-        save_frequency: Save every N epochs (ignored if save_best_only=True)
-        mode: "min" or "max" for monitored metric
-        best_value: Best value of monitored metric
-        save_count: Number of checkpoints saved
-        error_count: Number of failed checkpoint save attempts
+        filepath: Path template for saving checkpoints (supports {epoch} placeholder).
+        monitor: Metric to monitor for best model tracking.
+        save_best_only: If True, only save when monitored metric improves.
+        save_frequency: Save every N epochs (ignored if save_best_only=True).
+        mode: "min" or "max" for monitored metric.
+        best_value: Best value of monitored metric.
+        save_count: Number of checkpoints saved.
+        error_count: Number of failed checkpoint save attempts.
 
     Example:
         ```mojo
@@ -230,11 +230,11 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
 
     fn __init__(
         out self,
-        filepath: String = "checkpoint.pt",
-        monitor: String = "val_loss",
-        save_best_only: Bool = False,
-        save_frequency: Int = 1,
-        mode: String = "min",
+        filepath: String = "checkpoint.pt",.
+        monitor: String = "val_loss",.
+        save_best_only: Bool = False,.
+        save_frequency: Int = 1,.
+        mode: String = "min",.
     ):
         """Initialize checkpoint callback.
 
@@ -254,7 +254,7 @@ struct ModelCheckpoint(Callback, Copyable, Movable):
         # Initialize best_value based on mode
         if mode == "max":
             self.best_value = Float64(-1e9)
-        else:  # mode == "min" (default)
+        else:  # mode == "min" (default).
             self.best_value = Float64(1e9)
 
         self.save_count = 0

@@ -17,14 +17,14 @@ from shared.core.gradient_types import GradientPair
 fn matmul(read a: ExTensor, read b: ExTensor) raises -> ExTensor:
     """Matrix multiplication.
 
-    Args:
+Args:
         a: First tensor (matrix or vector).
         b: Second tensor (matrix or vector).
 
-    Returns:
+Returns:
         A new tensor containing the matrix product a @ b.
 
-    Raises:
+Raises:
         Error if dimensions are incompatible.
 
     Requirements:
@@ -39,7 +39,7 @@ fn matmul(read a: ExTensor, read b: ExTensor) raises -> ExTensor:
         - Parameters are borrowed immutably - safe for aliased inputs (a and b can be the same tensor)
         - Result is always a new tensor - no in-place modification
 
-    Examples:
+Examples:
         var a = zeros(List[Int](3, 4), DType.float32)
         var b = zeros(List[Int](4, 5), DType.float32)
         var c = matmul(a, b)  # Shape (3, 5)
@@ -48,7 +48,7 @@ fn matmul(read a: ExTensor, read b: ExTensor) raises -> ExTensor:
         var x = zeros(List[Int](), DType.float32)
         var y = matmul(W, x)  # Shape (10,) - matrix @ vector
 
-    Note:
+Note:
         This function always allocates a new result tensor. Input tensors are only read,
         never modified, so aliasing between a and b is safe.
     """
@@ -214,19 +214,19 @@ fn transpose(
 
     Supports arbitrary axis permutation for N-dimensional tensors, matching NumPy semantics.
 
-    Args:
+Args:
         tensor: Input tensor.
         axes: Optional permutation of axes. If None, reverses all axes (default behavior).
                 Must be a permutation of [0, 1, ..., ndim-1] with no duplicates.
                 Example: axes=[2, 0, 1] permutes (N, H, W, C) -> (C, N, H, W).
 
-    Returns:
+Returns:
         A new tensor with permuted dimensions according to axes.
 
-    Raises:
+Raises:
         Error if axes is invalid (duplicates, wrong range, or wrong length).
 
-    Examples:
+Examples:
         # Default: reverse all axes
         var t = zeros(List[Int](3, 4), DType.float32)
         var t_T = transpose(t)  # Shape (4, 3)
@@ -239,7 +239,7 @@ fn transpose(
         axes.append(1)
         var t3d_perm = transpose(t3d, axes)  # Shape (4, 2, 3)
 
-    Note:
+Note:
         - If axes is None, defaults to reversing all axes (same as original behavior)
         - Validates axes parameter: no duplicates, correct range, correct length
         - Matches NumPy transpose semantics for arbitrary permutations.
@@ -333,14 +333,14 @@ fn transpose(
 fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Dot product of tensors.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         Dot product (scalar for 1D, matrix product for 2D)
 
-    Examples:
+Examples:
     ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -379,14 +379,14 @@ fn dot(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn outer(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Outer product of two vectors.
 
-    Args:
+Args:
         a: First 1D tensor (vector).
         b: Second 1D tensor (vector).
 
-    Returns:
+Returns:
         A 2D tensor containing the outer product.
 
-    Examples:
+Examples:
     ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -441,15 +441,15 @@ fn matmul_backward(
         - 1D @ 2D: Vector-matrix multiplication
         - Batched: N-D tensors with batched matmul
 
-    Args:
+Args:
         grad_output: Gradient from upstream (∂L/∂C).
         a: First input from forward pass (A).
         b: Second input from forward pass (B).
 
-    Returns:
+Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
-    Examples:
+Examples:
     ```
         # Forward pass
         var a = zeros(List[Int](3, 4), DType.float32)
@@ -553,14 +553,14 @@ fn transpose_backward(
 
     The gradient of transpose is the transpose with inverse permutation.
 
-    Args:
+Args:
         grad_output: Gradient from upstream (∂L/∂Y).
         axes: The axes permutation used in forward pass. If None, uses default (reverse all).
 
-    Returns:
+Returns:
         Gradient w.r.t. input (∂L/∂X)
 
-    Examples:
+Examples:
     ```
         # Default case (reverse axes)
         var x = zeros(List[Int](3, 4), DType.float32)
@@ -579,7 +579,7 @@ fn transpose_backward(
         var grad_x3d = transpose_backward(grad_y3d, axes)  # Shape (2, 3, 4)
     ```
 
-    Note:
+Note:
         Transpose is self-adjoint: the inverse permutation is used to compute gradients.
         For axes=[a1, a2, ..., an], the inverse is computed by finding the permutation
         that maps back to the original order.

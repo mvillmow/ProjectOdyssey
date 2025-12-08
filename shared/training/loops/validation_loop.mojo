@@ -32,16 +32,16 @@ fn validation_step(
 ) raises -> Float64:
     """Execute single validation step (forward pass only, no gradients).
 
-    Args:
+Args:
         model_forward: Function to compute model forward pass.
         compute_loss: Function to compute loss.
         data: Input batch data.
         labels: Target labels.
 
-    Returns:
+Returns:
         Loss value for this batch.
 
-    Raises:
+Raises:
         Error if evaluation fails.
     """
     # Forward pass (no gradient tracking)
@@ -66,18 +66,18 @@ fn validate(
 ) raises -> Float64:
     """Run validation loop.
 
-    Args:
+Args:
         model_forward: Forward pass function.
         compute_loss: Loss computation function.
         val_loader: Validation data loader.
         compute_accuracy: Whether to compute accuracy.
         compute_confusion: Whether to compute confusion matrix.
-        num_classes: Number of classes (for confusion matrix)
+        num_classes: Number of classes (for confusion matrix).
 
-    Returns:
+Returns:
         Average validation loss.
 
-    Raises:
+Raises:
         Error if validation fails.
     """
     print("\nRunning validation...")
@@ -166,9 +166,9 @@ struct ValidationLoop:
 
     fn __init__(
         out self,
-        compute_accuracy: Bool = True,
-        compute_confusion: Bool = False,
-        num_classes: Int = 10,
+        compute_accuracy: Bool = True,.
+        compute_confusion: Bool = False,.
+        num_classes: Int = 10,.
     ):
         """Initialize validation loop.
 
@@ -183,8 +183,8 @@ struct ValidationLoop:
 
     fn run(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        model_forward: fn (ExTensor) raises -> ExTensor,.
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
         mut val_loader: DataLoader,
         mut metrics: TrainingMetrics,
     ) raises -> Float64:
@@ -218,10 +218,10 @@ struct ValidationLoop:
 
     fn run_subset(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
+        model_forward: fn (ExTensor) raises -> ExTensor,.
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
         mut val_loader: DataLoader,
-        max_batches: Int,
+        max_batches: Int,.
         mut metrics: TrainingMetrics,
     ) raises -> Float64:
         """Run validation on subset of data.

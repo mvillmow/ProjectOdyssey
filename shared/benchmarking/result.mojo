@@ -47,13 +47,13 @@ struct BenchmarkResult(Copyable, Movable):
     mean and variance as iterations are recorded.
 
     Attributes:
-        name: Descriptive name for the benchmarked operation
-        iterations: Total number of iterations recorded
-        total_time_ns: Sum of all iteration times in nanoseconds
-        min_time_ns: Minimum iteration time in nanoseconds
-        max_time_ns: Maximum iteration time in nanoseconds
-        mean_time_ns: Mean (average) iteration time in nanoseconds (computed via Welford's)
-        _M2: Second moment accumulator for variance (Welford's algorithm)
+        name: Descriptive name for the benchmarked operation.
+        iterations: Total number of iterations recorded.
+        total_time_ns: Sum of all iteration times in nanoseconds.
+        min_time_ns: Minimum iteration time in nanoseconds.
+        max_time_ns: Maximum iteration time in nanoseconds.
+        mean_time_ns: Mean (average) iteration time in nanoseconds (computed via Welford's).
+        _M2: Second moment accumulator for variance (Welford's algorithm).
 
     Notes:
         - Welford's algorithm: https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance

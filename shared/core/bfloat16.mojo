@@ -422,7 +422,7 @@ fn print_bfloat16_bits(value: BFloat16):
 
     Shows sign, exponent, and mantissa bits for debugging.
 
-    Args:
+Args:
         value: BFloat16 value to print.
 
     Example:

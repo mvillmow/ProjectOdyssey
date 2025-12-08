@@ -66,8 +66,8 @@ struct BaseLoader[D: Dataset & Copyable & Movable](Copyable, Movable):
     fn __init__(
         out self,
         var dataset: Self.D,
-        batch_size: Int = 1,
-        drop_last: Bool = False,
+        batch_size: Int = 1,.
+        drop_last: Bool = False,.
     ) raises:
         """Create base loader.
 
@@ -128,9 +128,9 @@ struct BatchLoader[
         out self,
         var dataset: Self.D,
         var sampler: Self.S,
-        batch_size: Int = 32,
-        shuffle: Bool = False,
-        drop_last: Bool = False,
+        batch_size: Int = 32,.
+        shuffle: Bool = False,.
+        drop_last: Bool = False,.
     ) raises:
         """Create batch loader.
 

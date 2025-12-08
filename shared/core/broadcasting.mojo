@@ -7,14 +7,14 @@ Implements NumPy-style broadcasting rules for tensor operations.
 fn broadcast_shapes(shape1: List[Int], shape2: List[Int]) raises -> List[Int]:
     """Compute the broadcast shape of two tensor shapes.
 
-    Args:
+Args:
         shape1: First tensor shape.
         shape2: Second tensor shape.
 
-    Returns:
+Returns:
         The broadcast result shape.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible.
 
     Broadcasting rules:
@@ -23,7 +23,7 @@ fn broadcast_shapes(shape1: List[Int], shape2: List[Int]) raises -> List[Int]:
         3. Missing dimensions are treated as 1
         4. Output shape is element-wise maximum of input shapes
 
-    Examples:
+Examples:
         broadcast_shapes([3, 4, 5], [4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 1, 5], [3, 4, 5]) -> [3, 4, 5]
         broadcast_shapes([3, 4], [5, 4]) -> Error (incompatible).
@@ -69,14 +69,14 @@ fn broadcast_shapes(shape1: List[Int], shape2: List[Int]) raises -> List[Int]:
 fn are_shapes_broadcastable(shape1: List[Int], shape2: List[Int]) -> Bool:
     """Check if two shapes are broadcast-compatible.
 
-    Args:
+Args:
         shape1: First tensor shape.
         shape2: Second tensor shape.
 
-    Returns:
+Returns:
         True if shapes are broadcast-compatible, False otherwise.
 
-    Examples:
+Examples:
         are_shapes_broadcastable([3, 4, 5], [4, 5]) -> True
         are_shapes_broadcastable([3, 4], [5, 4]) -> False.
     """
@@ -103,18 +103,18 @@ fn compute_broadcast_strides(
 ) -> List[Int]:
     """Compute strides for broadcasting a tensor to a new shape.
 
-    Args:
+Args:
         original_shape: The original tensor shape.
         broadcast_shape: The target broadcast shape.
 
-    Returns:
+Returns:
         Strides for the broadcast tensor (0 for broadcasted dimensions)
 
-    Note:
+Note:
         Dimensions that are 1 in the original shape get stride 0 in the broadcast.
         This allows efficient broadcasting without materializing extra copies.
 
-    Examples:
+Examples:
         ```
         original_shape = [3, 1, 5]
         broadcast_shape = [3, 4, 5]

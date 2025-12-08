@@ -36,9 +36,9 @@ struct ArgumentSpec(Copyable, Movable):
     """Specification for a single command-line argument.
 
     Attributes:
-        name: Argument name (e.g., "epochs", "batch-size")
-        arg_type: Type string ("int", "float", "string", "bool")
-        default_value: Default value as string (parsed based on arg_type)
+        name: Argument name (e.g., "epochs", "batch-size").
+        arg_type: Type string ("int", "float", "string", "bool").
+        default_value: Default value as string (parsed based on arg_type).
         is_flag: Whether this is a boolean flag (--flag with no value).
     """
 
@@ -197,9 +197,9 @@ struct ArgumentParser(Copyable, Movable):
 
     fn add_argument(
         mut self,
-        name: String,
-        arg_type: String,
-        default: String = "",
+        name: String,.
+        arg_type: String,.
+        default: String = "",.
     ) raises:
         """Add a typed argument specification.
 
@@ -296,7 +296,7 @@ struct ArgumentParser(Copyable, Movable):
 fn create_parser() raises -> ArgumentParser:
     """Create a new argument parser.
 
-    Returns:
+Returns:
         New ArgumentParser instance.
     """
     return ArgumentParser()
@@ -321,7 +321,7 @@ fn create_training_parser() raises -> ArgumentParser:
         - seed (int, default 42)
         - verbose (flag)
 
-    Returns:
+Returns:
         ArgumentParser configured with ML training arguments.
     """
     var parser = ArgumentParser()
@@ -343,11 +343,11 @@ fn create_training_parser() raises -> ArgumentParser:
 fn validate_positive_int(value: Int, name: String) raises:
     """Validate that an integer argument is positive.
 
-    Args:
-        value: Value to validate
-        name: Argument name for error messages
+Args:
+        value: Value to validate.
+        name: Argument name for error messages.
 
-    Raises:
+Raises:
         Error if value is not positive.
     """
     if value <= 0:
@@ -357,11 +357,11 @@ fn validate_positive_int(value: Int, name: String) raises:
 fn validate_positive_float(value: Float64, name: String) raises:
     """Validate that a float argument is positive.
 
-    Args:
-        value: Value to validate
-        name: Argument name for error messages
+Args:
+        value: Value to validate.
+        name: Argument name for error messages.
 
-    Raises:
+Raises:
         Error if value is not positive.
     """
     if value <= 0.0:
@@ -373,13 +373,13 @@ fn validate_range_float(
 ) raises:
     """Validate that a float argument is within a range.
 
-    Args:
-        value: Value to validate
-        min_val: Minimum allowed value (inclusive)
-        max_val: Maximum allowed value (inclusive)
-        name: Argument name for error messages
+Args:
+        value: Value to validate.
+        min_val: Minimum allowed value (inclusive).
+        max_val: Maximum allowed value (inclusive).
+        name: Argument name for error messages.
 
-    Raises:
+Raises:
         Error if value is outside the range.
     """
     if value < min_val or value > max_val:

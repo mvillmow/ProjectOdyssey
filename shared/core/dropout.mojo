@@ -21,13 +21,13 @@ fn dropout(
     Randomly zeros elements with probability p during training.
     In pure functional design, returns both output and mask for backward pass.
 
-    Args:
+Args:
         x: Input tensor of any shape.
-        p: Probability of dropping an element (0.0 to 1.0)
+        p: Probability of dropping an element (0.0 to 1.0).
         training: If True, apply dropout. If False, return input unchanged.
-        seed: Random seed for reproducibility (default: 0 uses random seed)
+        seed: Random seed for reproducibility (default: 0 uses random seed).
 
-    Returns:
+Returns:
         Tuple of (output, mask):
             - output: Dropped-out tensor (scaled by 1/(1-p) during training)
             - mask: Binary mask showing which elements were kept (1.0) or dropped (0.0)
@@ -47,7 +47,7 @@ fn dropout(
         # output == x in inference mode
         ```
 
-    Note:
+Note:
         - During training: output = x * mask / (1 - p) for scaling
         - During inference: output = x (no dropout)
         - Mask is needed for backward pass (must be saved by caller)
@@ -108,13 +108,13 @@ fn dropout2d(
     Randomly zeros entire channels with probability p during training.
     This is more effective for convolutional layers than regular dropout.
 
-    Args:
-        x: Input tensor of shape (batch, channels, height, width)
-        p: Probability of dropping a channel (0.0 to 1.0)
+Args:
+        x: Input tensor of shape (batch, channels, height, width).
+        p: Probability of dropping a channel (0.0 to 1.0).
         training: If True, apply dropout. If False, return input unchanged.
-        seed: Random seed for reproducibility (default: 0 uses random seed)
+        seed: Random seed for reproducibility (default: 0 uses random seed).
 
-    Returns:
+Returns:
         Tuple of (output, mask):
             - output: Dropped-out tensor (entire channels zeroed)
             - mask: Binary mask at channel level (batch, channels, 1, 1)
@@ -130,7 +130,7 @@ fn dropout2d(
         var grad_x = dropout2d_backward(grad_output, mask, p=0.2)
         ```
 
-    Note:
+Note:
         - Drops entire channels (all spatial positions in a channel)
         - More effective than standard dropout for CNNs
         - Mask shape is (batch, channels, 1, 1) for broadcasting.
@@ -253,12 +253,12 @@ fn dropout_backward(
 
     Routes gradients only through positions that were not dropped.
 
-    Args:
+Args:
         grad_output: Gradient from upstream.
-        mask: Binary mask from forward pass (1.0 = kept, 0.0 = dropped)
-        p: Dropout probability (must match forward pass)
+        mask: Binary mask from forward pass (1.0 = kept, 0.0 = dropped).
+        p: Dropout probability (must match forward pass).
 
-    Returns:
+Returns:
         Gradient with respect to input.
 
     Example:
@@ -272,7 +272,7 @@ fn dropout_backward(
         var grad_x = dropout_backward(grad_output, mask, p=0.5)
         ```
 
-    Note:
+Note:
         - Gradient flows only through non-dropped elements
         - Scaled by 1/(1-p) to match forward pass scaling.
     """
@@ -288,12 +288,12 @@ fn dropout2d_backward(
 ) raises -> ExTensor:
     """Backward pass for 2D dropout (spatial dropout).
 
-    Args:
+Args:
         grad_output: Gradient from upstream.
-        mask: Binary mask from forward pass (full spatial mask)
-        p: Dropout probability (must match forward pass)
+        mask: Binary mask from forward pass (full spatial mask).
+        p: Dropout probability (must match forward pass).
 
-    Returns:
+Returns:
         Gradient with respect to input.
 
     Example:

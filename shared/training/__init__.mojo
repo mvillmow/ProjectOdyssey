@@ -84,7 +84,7 @@ struct SGD(Movable, Optimizer):
     fn step(mut self, params: List[ExTensor]) raises:
         """Update parameters using gradients.
 
-        Implements: param = param - learning_rate * grad
+        Implements: param = param - learning_rate * grad.
 
         Args:
             params: List of parameter tensors to update
@@ -179,9 +179,9 @@ struct TrainingLoop[
     Converts from PythonObject to pure Mojo types for zero-cost abstraction.
 
     Type Parameters:
-        M: Model type (must implement Model trait)
-        L: Loss type (must implement Loss trait)
-        O: Optimizer type (must implement Optimizer trait)
+        M: Model type (must implement Model trait).
+        L: Loss type (must implement Loss trait).
+        O: Optimizer type (must implement Optimizer trait).
 
     Example:
         ```mojo

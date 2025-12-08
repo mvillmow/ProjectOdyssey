@@ -23,12 +23,12 @@ fn validate_tensor_shape(
     Checks if the tensor's shape matches the expected shape. If not, raises
     an error with a descriptive message including the tensor name.
 
-    Args:
+Args:
         tensor: The tensor to validate.
         expected_shape: The expected shape as a List[Int].
         name: The name of the tensor (for error messages).
 
-    Raises:
+Raises:
         Error: If the tensor shape does not match the expected shape.
 
     Example:
@@ -72,12 +72,12 @@ fn validate_tensor_dtype(
     Checks if the tensor's dtype matches the expected dtype. If not, raises
     an error with a descriptive message including the tensor name.
 
-    Args:
+Args:
         tensor: The tensor to validate.
         expected_dtype: The expected data type.
         name: The name of the tensor (for error messages).
 
-    Raises:
+Raises:
         Error: If the tensor dtype does not match the expected dtype.
 
     Example:
@@ -106,13 +106,13 @@ fn validate_matching_tensors(
     Checks if two tensors have the same shape and data type. Useful for
     verifying that tensors can be used together in element-wise operations.
 
-    Args:
+Args:
         a: The first tensor.
         b: The second tensor.
         a_name: The name of the first tensor (for error messages).
         b_name: The name of the second tensor (for error messages).
 
-    Raises:
+Raises:
         Error: If tensors have different shapes or dtypes.
 
     Example:
@@ -171,11 +171,11 @@ fn validate_matching_tensors(
 fn validate_2d_input(tensor: ExTensor, name: String) raises:
     """Validate that a tensor is exactly 2-dimensional.
 
-    Args:
+Args:
         tensor: The tensor to validate.
         name: The name of the tensor (for error messages).
 
-    Raises:
+Raises:
         Error: If the tensor is not 2D.
 
     Example:
@@ -204,11 +204,11 @@ fn validate_2d_input(tensor: ExTensor, name: String) raises:
 fn validate_4d_input(tensor: ExTensor, name: String) raises:
     """Validate that a tensor is exactly 4-dimensional.
 
-    Args:
+Args:
         tensor: The tensor to validate.
         name: The name of the tensor (for error messages).
 
-    Raises:
+Raises:
         Error: If the tensor is not 4D.
 
     Example:
@@ -242,10 +242,10 @@ fn validate_4d_input(tensor: ExTensor, name: String) raises:
 fn _shape_to_string(shape: List[Int]) -> String:
     """Convert a shape list to a string representation.
 
-    Args:
+Args:
         shape: The shape as a List[Int].
 
-    Returns:
+Returns:
         A string like "2, 3, 4" for shape [2, 3, 4].
     """
     if len(shape) == 0:
@@ -261,10 +261,10 @@ fn _shape_to_string(shape: List[Int]) -> String:
 fn _dtype_to_string(dtype: DType) -> String:
     """Convert a DType to a readable string representation.
 
-    Args:
+Args:
         dtype: The data type.
 
-    Returns:
+Returns:
         A string like "float32", "int64", etc.
     """
     if dtype == DType.float32:

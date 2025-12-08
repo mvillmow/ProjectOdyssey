@@ -53,18 +53,18 @@ fn check_gradients(
     gradients computed using finite differences. Returns True if all
     gradients match within tolerance.
 
-    Args:
-        forward_fn: Forward pass function: input -> output
-        backward_fn: Backward pass function: (grad_output, input) -> grad_input
-        input: Input tensor for testing
-        epsilon: Step size for finite differences (default: 1e-5)
-        tolerance: Maximum allowed difference (default: 1e-2)
+Args:
+        forward_fn: Forward pass function: input -> output.
+        backward_fn: Backward pass function: (grad_output, input) -> grad_input.
+        input: Input tensor for testing.
+        epsilon: Step size for finite differences (default: 1e-5).
+        tolerance: Maximum allowed difference (default: 1e-2).
 
-    Returns:
+Returns:
         True if gradients are correct, False otherwise
 
-    Raises:
-        Error: If forward/backward functions fail
+Raises:
+        Error: If forward/backward functions fail.
 
     Algorithm:
         1. Run forward pass to get output
@@ -176,15 +176,15 @@ fn check_gradients_verbose(
     Same as check_gradients but prints all differences, not just maximum.
     Useful for debugging specific gradient issues.
 
-    Args:
-        forward_fn: Forward pass function
-        backward_fn: Backward pass function
-        input: Input tensor
-        epsilon: Finite difference step size
-        tolerance: Maximum allowed difference
-        print_all: If True, print all gradients (even passing ones)
+Args:
+        forward_fn: Forward pass function.
+        backward_fn: Backward pass function.
+        input: Input tensor.
+        epsilon: Finite difference step size.
+        tolerance: Maximum allowed difference.
+        print_all: If True, print all gradients (even passing ones).
 
-    Returns:
+Returns:
         True if gradients correct, False otherwise
 
     Example:
@@ -274,11 +274,11 @@ fn relative_error(analytical: Float64, numerical: Float64) -> Float64:
     Uses formula: |a - n| / max(|a|, |n|, 1e-8)
     Handles edge cases where gradients are near zero.
 
-    Args:
-        analytical: Analytical gradient value
-        numerical: Numerical gradient value
+Args:
+        analytical: Analytical gradient value.
+        numerical: Numerical gradient value.
 
-    Returns:
+Returns:
         Relative error (typically 0-1, < 0.01 is good)
 
     Example:
@@ -304,16 +304,16 @@ fn compute_numerical_gradient(
     difference method has O(ε²) error compared to O(ε) for forward/backward
     differences, making it much more accurate.
 
-    Args:
-        forward_fn: Function that computes forward pass (takes ExTensor, returns ExTensor)
-        x: Input tensor at which to compute gradient
-        epsilon: Small perturbation for finite differences (default: 1e-5)
+Args:
+        forward_fn: Function that computes forward pass (takes ExTensor, returns ExTensor).
+        x: Input tensor at which to compute gradient.
+        epsilon: Small perturbation for finite differences (default: 1e-5).
 
-    Returns:
+Returns:
         ExTensor containing numerical gradient, same shape as x
 
-    Raises:
-        Error: If forward function fails or dtypes are incompatible
+Raises:
+        Error: If forward function fails or dtypes are incompatible.
 
     Notes:
         - For scalar outputs, gradient shape matches input shape
@@ -324,8 +324,8 @@ fn compute_numerical_gradient(
     Mathematical basis:
         Taylor expansion: f(x+ε) = f(x) + ε·f'(x) + O(ε²)
         Taylor expansion: f(x-ε) = f(x) - ε·f'(x) + O(ε²)
-        Subtracting: f(x+ε) - f(x-ε) = 2ε·f'(x) + O(ε³)
-        Therefore: f'(x) ≈ (f(x+ε) - f(x-ε)) / 2ε  [O(ε²) error]
+        Subtracting: f(x+ε) - f(x-ε) = 2ε·f'(x) + O(ε³).
+        Therefore: f'(x) ≈ (f(x+ε) - f(x-ε)) / 2ε  [O(ε²) error].
 
     Example:
         ```mojo
@@ -392,20 +392,20 @@ fn assert_gradients_close(
     Uses relative and absolute tolerance to handle both small and large gradients:
         |analytical - numerical| <= atol + rtol * |numerical|
 
-    Args:
-        analytical: Gradient computed by backward pass
-        numerical: Gradient computed by finite differences
-        rtol: Relative tolerance (default: 1e-4, suitable for float32)
-        atol: Absolute tolerance (default: 1e-7)
-        message: Error message prefix
+Args:
+        analytical: Gradient computed by backward pass.
+        numerical: Gradient computed by finite differences.
+        rtol: Relative tolerance (default: 1e-4, suitable for float32).
+        atol: Absolute tolerance (default: 1e-7).
+        message: Error message prefix.
 
-    Raises:
-        Error: If gradients differ beyond tolerance
+Raises:
+        Error: If gradients differ beyond tolerance.
 
     Tolerance Guidelines:
-        Float16: rtol=1e-2, atol=1e-4
-        Float32: rtol=1e-4, atol=1e-7
-        Float64: rtol=1e-7, atol=1e-10
+        Float16: rtol=1e-2, atol=1e-4.
+        Float32: rtol=1e-4, atol=1e-7.
+        Float64: rtol=1e-7, atol=1e-10.
 
     Example:
         ```mojo
@@ -468,10 +468,10 @@ fn _deep_copy(tensor: ExTensor) raises -> ExTensor:
     ExTensor's __copyinit__ creates shallow copies (shared data via reference counting).
     This function creates a true deep copy with separate memory allocation.
 
-    Args:
-        tensor: Tensor to deep copy
+Args:
+        tensor: Tensor to deep copy.
 
-    Returns:
+Returns:
         New tensor with copied data (independent memory allocation).
     """
     # Create new tensor with same shape and dtype
@@ -498,17 +498,17 @@ fn check_gradient(
     Combines numerical gradient computation and comparison in one call.
     This is the recommended way to validate backward passes in tests.
 
-    Args:
-        forward_fn: Forward pass function
-        backward_fn: Backward pass function (takes grad_output and x)
-        x: Input tensor
-        grad_output: Gradient from upstream (typically ones_like(output))
-        epsilon: Perturbation size for finite differences (0.0 = auto-select)
-        rtol: Relative tolerance
-        atol: Absolute tolerance
+Args:
+        forward_fn: Forward pass function.
+        backward_fn: Backward pass function (takes grad_output and x).
+        x: Input tensor.
+        grad_output: Gradient from upstream (typically ones_like(output)).
+        epsilon: Perturbation size for finite differences (0.0 = auto-select).
+        rtol: Relative tolerance.
+        atol: Absolute tolerance.
 
-    Raises:
-        Error: If gradients don't match within tolerance
+Raises:
+        Error: If gradients don't match within tolerance.
 
     Example:
         ```mojo

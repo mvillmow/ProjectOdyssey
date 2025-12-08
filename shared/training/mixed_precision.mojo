@@ -35,12 +35,12 @@ struct GradientScaler(Copyable, Movable):
     Dynamically adjusts scale factor based on gradient overflow/underflow.
 
     Attributes:
-        scale: Current loss scale factor (default: 65536.0 = 2^16)
-        growth_factor: Factor to increase scale (default: 2.0)
-        backoff_factor: Factor to decrease scale (default: 0.5)
-        growth_interval: Steps between scale increases (default: 2000)
-        min_scale: Minimum allowed scale (default: 1.0)
-        max_scale: Maximum allowed scale (default: 65536.0)
+        scale: Current loss scale factor (default: 65536.0 = 2^16).
+        growth_factor: Factor to increase scale (default: 2.0).
+        backoff_factor: Factor to decrease scale (default: 0.5).
+        growth_interval: Steps between scale increases (default: 2000).
+        min_scale: Minimum allowed scale (default: 1.0).
+        max_scale: Maximum allowed scale (default: 65536.0).
 
     Example:
         ```mojo
@@ -73,12 +73,12 @@ struct GradientScaler(Copyable, Movable):
 
     fn __init__(
         out self,
-        initial_scale: Float32 = 65536.0,
-        growth_factor: Float32 = 2.0,
-        backoff_factor: Float32 = 0.5,
-        growth_interval: Int = 2000,
-        min_scale: Float32 = 1.0,
-        max_scale: Float32 = 65536.0,
+        initial_scale: Float32 = 65536.0,.
+        growth_factor: Float32 = 2.0,.
+        backoff_factor: Float32 = 0.5,.
+        growth_interval: Int = 2000,.
+        min_scale: Float32 = 1.0,.
+        max_scale: Float32 = 65536.0,.
     ):
         """Initialize gradient scaler.
 
@@ -225,13 +225,13 @@ fn convert_to_fp32_master(params: ExTensor) raises -> ExTensor:
     Creates FP32 copy of parameters for optimizer state management.
     Use when training with FP16/BF16 but need FP32 precision for updates.
 
-    Args:
-        params: Model parameters (any dtype)
+Args:
+        params: Model parameters (any dtype).
 
-    Returns:
+Returns:
         FP32 copy of parameters.
 
-    Raises:
+Raises:
         Error: If params is empty.
 
     Example:
@@ -285,11 +285,11 @@ fn update_model_from_master(
     Copies FP32 master weights back to model parameters with dtype conversion.
     Call after optimizer updates master weights.
 
-    Args:
-        model_params: Model parameters to update (FP16/BF16)
-        master_params: Updated master weights (FP32)
+Args:
+        model_params: Model parameters to update (FP16/BF16).
+        master_params: Updated master weights (FP32).
 
-    Raises:
+Raises:
         Error: If tensors are empty or shapes don't match.
 
     Example:
@@ -342,10 +342,10 @@ fn check_gradients_finite(gradients: ExTensor) raises -> Bool:
     Returns True if gradients are all finite (no NaN or Inf).
     Use to validate gradients before optimizer step.
 
-    Args:
+Args:
         gradients: Gradient tensor to check.
 
-    Returns:
+Returns:
         True if all gradients are finite, False otherwise.
 
     Example:
@@ -368,14 +368,14 @@ fn clip_gradients_by_norm(
     Scales gradients if their L2 norm exceeds max_norm.
     Useful for preventing gradient explosion in mixed precision.
 
-    Args:
+Args:
         gradients: Gradient tensor.
         max_norm: Maximum allowed gradient norm.
 
-    Returns:
+Returns:
         Clipped gradients.
 
-    Raises:
+Raises:
         Error: If max_norm is non-positive or gradients are empty.
 
     Example:
@@ -420,15 +420,15 @@ fn clip_gradients_by_value(
     Clamps each gradient value to [min_value, max_value].
     Simpler than norm clipping but less theoretically motivated.
 
-    Args:
+Args:
         gradients: Gradient tensor.
         min_value: Minimum allowed gradient value.
         max_value: Maximum allowed gradient value.
 
-    Returns:
+Returns:
         Clipped gradients.
 
-    Raises:
+Raises:
         Error: If min_value >= max_value or gradients are empty.
 
     Example:

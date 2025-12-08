@@ -67,17 +67,17 @@ struct TrainerConfig(Copyable, Movable):
 
     fn __init__(
         out self,
-        num_epochs: Int = 10,
-        batch_size: Int = 32,
-        learning_rate: Float64 = 0.001,
-        log_interval: Int = 10,
-        validate_interval: Int = 1,
-        save_checkpoints: Bool = False,
-        checkpoint_interval: Int = 5,
-        use_mixed_precision: Bool = False,
-        precision_dtype: DType = DType.float32,
-        loss_scale: Float32 = 65536.0,
-        gradient_clip_norm: Float32 = 0.0,
+        num_epochs: Int = 10,.
+        batch_size: Int = 32,.
+        learning_rate: Float64 = 0.001,.
+        log_interval: Int = 10,.
+        validate_interval: Int = 1,.
+        save_checkpoints: Bool = False,.
+        checkpoint_interval: Int = 5,.
+        use_mixed_precision: Bool = False,.
+        precision_dtype: DType = DType.float32,.
+        loss_scale: Float32 = 65536.0,.
+        gradient_clip_norm: Float32 = 0.0,.
     ):
         """Initialize trainer configuration with defaults."""
         self.num_epochs = num_epochs
@@ -345,12 +345,12 @@ fn create_simple_dataloader(
 ) -> DataLoader:
     """Create a simple dataloader for training.
 
-    Args:
-        data: Full dataset features (ownership transferred)
-        labels: Full dataset labels (ownership transferred)
-        batch_size: Batch size
+Args:
+        data: Full dataset features (ownership transferred).
+        labels: Full dataset labels (ownership transferred).
+        batch_size: Batch size.
 
-    Returns:
+Returns:
         DataLoader instance.
     """
     return DataLoader(data^, labels^, batch_size)

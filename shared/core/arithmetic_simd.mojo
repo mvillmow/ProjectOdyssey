@@ -39,14 +39,14 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     Uses vectorized operations when possible, falls back to broadcasting.
     for different shapes. Achieves 2-8x speedup for large same-shape tensors.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         New tensor containing a + b.
 
-    Raises:
+Raises:
         Error if dtypes don't match.
 
     Performance:
@@ -54,7 +54,7 @@ fn add_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
         - Same shape, float64: ~2x speedup
         - Different shapes: Falls back to scalar broadcasting
 
-    Examples:
+Examples:
         # Same shape - uses SIMD
         var a = ones([1024, 1024], DType.float32)
         var b = ones([1024, 1024], DType.float32)
@@ -137,14 +137,14 @@ fn _add_simd_float64(a: ExTensor, b: ExTensor, mut result: ExTensor) raises:
 fn subtract_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise subtraction for same-shape tensors.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         New tensor containing a - b.
 
-    Raises:
+Raises:
         Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
@@ -219,14 +219,14 @@ fn _subtract_simd_float64(
 fn multiply_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise multiplication for same-shape tensors.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         New tensor containing a * b.
 
-    Raises:
+Raises:
         Error if dtypes don't match.
     """
     if a.dtype() != b.dtype():
@@ -301,14 +301,14 @@ fn _multiply_simd_float64(
 fn divide_simd(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """SIMD-optimized element-wise division for same-shape tensors.
 
-    Args:
-        a: First tensor (numerator)
-        b: Second tensor (denominator)
+Args:
+        a: First tensor (numerator).
+        b: Second tensor (denominator).
 
-    Returns:
+Returns:
         New tensor containing a / b.
 
-    Raises:
+Raises:
         Error if dtypes don't match or division by zero.
     """
     if a.dtype() != b.dtype():

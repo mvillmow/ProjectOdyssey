@@ -153,7 +153,7 @@ struct ConditionalTransform[T: Transform & Copyable & Movable](
 
     fn __init__(
         out self,
-        predicate: fn (ExTensor) raises -> Bool,
+        predicate: fn (ExTensor) raises -> Bool,.
         var transform: Self.T,
     ):
         """Create conditional transform.
@@ -629,11 +629,11 @@ fn apply_to_tensor(
     Helper function for creating ad-hoc transforms without.
     defining a transform struct.
 
-    Args:
+Args:
         data: Input tensor.
         func: Function to apply to each element.
 
-    Returns:
+Returns:
         Transformed tensor.
 
     Example:
@@ -655,10 +655,10 @@ fn compose_transforms(
 
     Convenience function for building transform pipelines.
 
-    Args:
+Args:
         transforms: List of transforms to compose.
 
-    Returns:
+Returns:
         SequentialTransform that applies all transforms in order.
 
     Example:

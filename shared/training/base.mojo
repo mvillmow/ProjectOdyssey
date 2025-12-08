@@ -52,8 +52,8 @@ struct TrainingState(Copyable, Movable):
         Created at training start, updated each epoch/batch, destroyed at end.
 
     Fields:
-        epoch: Current epoch number (0-indexed)
-        batch: Current batch number within epoch (0-indexed)
+        epoch: Current epoch number (0-indexed).
+        batch: Current batch number within epoch (0-indexed).
         metrics: Dictionary of metric name -> value.
         learning_rate: Current learning rate.
         should_stop: Flag set by callbacks to request training stop.
@@ -74,9 +74,9 @@ struct TrainingState(Copyable, Movable):
 
     fn __init__(
         out self,
-        epoch: Int = 0,
-        batch: Int = 0,
-        learning_rate: Float64 = 0.0,
+        epoch: Int = 0,.
+        batch: Int = 0,.
+        learning_rate: Float64 = 0.0,.
     ):
         """Initialize training state.
 
@@ -262,10 +262,10 @@ fn has_nan_or_inf(tensor: ExTensor) -> Bool:
     - NaN (Not a Number) values indicating undefined operations
     - Inf (positive or negative infinity) indicating overflow
 
-    Args:
+Args:
         tensor: Tensor to check for numerical instability.
 
-    Returns:
+Returns:
         True if tensor contains any NaN or Inf values, False otherwise.
 
     Example:
@@ -276,7 +276,7 @@ fn has_nan_or_inf(tensor: ExTensor) -> Bool:
             break
         ```
 
-    Note:
+Note:
         - Works with all tensor dtypes (float32, float64, float16, integer types)
         - Integer tensors cannot have NaN/Inf and will always return False
         - Used for gradient validation during training.
@@ -287,10 +287,10 @@ fn has_nan_or_inf(tensor: ExTensor) -> Bool:
 fn is_valid_loss(loss: Float64) raises -> Bool:
     """Check if loss value is valid (not NaN or inf).
 
-    Args:
+Args:
         loss: Loss value to check.
 
-    Returns:
+Returns:
         True if loss is finite (not NaN, not inf), False otherwise.
 
     Example:
@@ -300,7 +300,7 @@ fn is_valid_loss(loss: Float64) raises -> Bool:
             break
         ```
 
-    Note:
+Note:
         Uses has_nan_or_inf internally for consistency with gradient validation.
     """
     # Create a single-element tensor for loss value
@@ -327,11 +327,11 @@ fn compute_gradient_norm(
     - Training diagnostics (monitoring gradient magnitude)
     - Exploding gradient detection (norm > threshold)
 
-    Args:
+Args:
         parameters: List of gradient tensors to compute norm over.
         norm_type: Type of norm to compute ("L2" or "L1"). Defaults to "L2".
 
-    Returns:
+Returns:
         Global norm of all gradients as Float64.
 
     Example:
@@ -401,11 +401,11 @@ fn clip_gradients(
 ) -> List[Float64]:
     """Clip gradients by global norm to prevent exploding gradients.
 
-    Args:
+Args:
         gradients: List of gradient values.
         max_norm: Maximum allowed gradient norm.
 
-    Returns:
+Returns:
         Clipped gradients with norm <= max_norm.
 
     Example:
@@ -413,7 +413,7 @@ fn clip_gradients(
         lipped_grads = clip_gradients(grads, max_norm=1.0)
         ```
 
-    Note:
+Note:
         This is a legacy function that works with lists of Float64.
         For tensor-based gradient clipping, use compute_gradient_norm()
         with ExTensor parameters instead.

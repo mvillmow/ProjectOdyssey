@@ -84,12 +84,12 @@ struct CIFAR10Dataset(Copyable, Movable):
             test_batch_labels.idx
 
     Attributes:
-        data_dir: Path to directory containing CIFAR-10 data files
-        _train_data: Cached training images (lazy loaded)
-        _train_labels: Cached training labels (lazy loaded)
-        _test_data: Cached test images (lazy loaded)
-        _test_labels: Cached test labels (lazy loaded)
-        _train_loaded: Whether training data has been loaded
+        data_dir: Path to directory containing CIFAR-10 data files.
+        _train_data: Cached training images (lazy loaded).
+        _train_labels: Cached training labels (lazy loaded).
+        _test_data: Cached test images (lazy loaded).
+        _test_labels: Cached test labels (lazy loaded).
+        _train_loaded: Whether training data has been loaded.
         _test_loaded: Whether test data has been loaded.
     """
 

@@ -29,11 +29,11 @@ fn clip_predictions(
     This is used in loss functions like BCE and Focal Loss to prevent taking
     log of zero or one, which would produce NaN or Inf values.
 
-    Args:
+Args:
         predictions: Input tensor with values typically in [0, 1] range.
         epsilon: Small constant for numerical stability (default: 1e-7).
 
-    Returns:
+Returns:
         Clipped tensor with values in [epsilon, 1.0 - epsilon].
 
     Example:
@@ -51,11 +51,11 @@ fn create_epsilon_tensor(
 ) raises -> ExTensor:
     """Create an epsilon tensor with same shape as template.
 
-    Args:
+Args:
         template: Template tensor determining output shape.
         epsilon: Epsilon value to fill (default: 1e-7).
 
-    Returns:
+Returns:
         Tensor filled with epsilon value, same shape as template.
 
     Example:
@@ -73,12 +73,12 @@ fn validate_tensor_shapes(
 ) raises:
     """Validate that two tensors have compatible shapes.
 
-    Args:
+Args:
         tensor1: First tensor to validate.
         tensor2: Second tensor to validate.
         operation: Name of operation for error message.
 
-    Raises:
+Raises:
         Error if shapes don't match.
 
     Example:
@@ -95,12 +95,12 @@ fn validate_tensor_dtypes(
 ) raises:
     """Validate that two tensors have compatible dtypes.
 
-    Args:
+Args:
         tensor1: First tensor to validate.
         tensor2: Second tensor to validate.
         operation: Name of operation for error message.
 
-    Raises:
+Raises:
         Error if dtypes don't match.
 
     Example:
@@ -117,10 +117,10 @@ fn compute_one_minus_tensor(tensor: ExTensor) raises -> ExTensor:
 
     This is a common operation in loss functions (e.g., 1 - predictions).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Tensor with values: 1.0 - tensor[i] for each element.
 
     Example:
@@ -137,10 +137,10 @@ fn compute_sign_tensor(tensor: ExTensor) raises -> ExTensor:
 
     This is used in loss functions like smooth L1 for gradient computation.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Tensor with sign values (-1, 0, or 1).
 
     Example:
@@ -176,12 +176,12 @@ fn blend_tensors(
     This is used when selecting between different computations based on conditions
     (e.g., quadratic vs linear term in smooth L1 loss).
 
-    Args:
+Args:
         tensor1: Values to use where mask is 1.
         tensor2: Values to use where mask is 0.
         mask: Binary mask with values 0 or 1 (should be float for multiplication).
 
-    Returns:
+Returns:
         Blended tensor with shape of inputs.
 
     Example:
@@ -207,13 +207,13 @@ fn compute_max_stable(tensor: ExTensor) raises -> ExTensor:
 
     This is used in cross-entropy to find the max logit for numerical stability.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Maximum value in tensor.
 
-    Note:
+Note:
         This is a placeholder for max_reduce import.
     """
     # For now, we import max_reduce from reduction module when needed
@@ -224,14 +224,14 @@ fn compute_max_stable(tensor: ExTensor) raises -> ExTensor:
 fn compute_difference(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     """Compute tensor1 - tensor2 with error checking.
 
-    Args:
+Args:
         tensor1: First tensor (minuend).
         tensor2: Second tensor (subtrahend).
 
-    Returns:
+Returns:
         Difference tensor.
 
-    Raises:
+Raises:
         Error if shapes don't match.
     """
     if tensor1.shape() != tensor2.shape():
@@ -243,14 +243,14 @@ fn compute_difference(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
 fn compute_product(tensor1: ExTensor, tensor2: ExTensor) raises -> ExTensor:
     """Compute element-wise product of two tensors with error checking.
 
-    Args:
+Args:
         tensor1: First tensor.
         tensor2: Second tensor.
 
-    Returns:
+Returns:
         Product tensor.
 
-    Raises:
+Raises:
         Error if shapes don't match.
     """
     if tensor1.shape() != tensor2.shape():
@@ -266,15 +266,15 @@ fn compute_ratio(
 
     Adds epsilon to denominator to prevent division by zero.
 
-    Args:
+Args:
         tensor1: Numerator tensor.
         tensor2: Denominator tensor.
         epsilon: Small value to add to denominator for stability (default: 1e-7).
 
-    Returns:
+Returns:
         Ratio tensor.
 
-    Raises:
+Raises:
         Error if shapes don't match.
 
     Example:
@@ -298,10 +298,10 @@ fn compute_ratio(
 fn negate_tensor(tensor: ExTensor) raises -> ExTensor:
     """Negate all elements of a tensor (multiply by -1).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Negated tensor with opposite signs.
 
     Example:

@@ -57,9 +57,9 @@ struct SequentialSampler(Copyable, Movable, Sampler):
 
     fn __init__(
         out self,
-        data_source_len: Int,
-        start_index: Int = 0,
-        end_index: Int = -1,
+        data_source_len: Int,.
+        start_index: Int = 0,.
+        end_index: Int = -1,.
     ):
         """Create sequential sampler.
 
@@ -104,10 +104,10 @@ struct RandomSampler(Copyable, Movable, Sampler):
 
     fn __init__(
         out self,
-        data_source_len: Int,
-        replacement: Bool = False,
-        num_samples: Optional[Int] = None,
-        seed_value: Optional[Int] = None,
+        data_source_len: Int,.
+        replacement: Bool = False,.
+        num_samples: Optional[Int] = None,.
+        seed_value: Optional[Int] = None,.
     ):
         """Create random sampler.
 
@@ -170,9 +170,9 @@ struct WeightedSampler(Copyable, Movable, Sampler):
     fn __init__(
         out self,
         var weights: List[Float64],
-        num_samples: Int,
-        replacement: Bool = True,
-        seed_value: Optional[Int] = None,
+        num_samples: Int,.
+        replacement: Bool = True,.
+        seed_value: Optional[Int] = None,.
     ) raises:
         """Create weighted sampler.
 
@@ -201,7 +201,7 @@ struct WeightedSampler(Copyable, Movable, Sampler):
             self.weights.append(weights[i] / total_weight)
 
         # Transfer ownership
-        weights: List[Float64] = []
+        weights: List[Float64] = [].
 
         self.num_samples = num_samples
         self.replacement = replacement

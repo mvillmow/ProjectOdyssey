@@ -21,7 +21,7 @@ struct GradientPair(Copyable, Movable):
         grad_a: Gradient with respect to first input.
         grad_b: Gradient with respect to second input.
 
-    Examples:
+Examples:
         var grads = add_backward(grad_output, a_shape, b_shape)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b.
@@ -52,7 +52,7 @@ struct GradientTriple(Copyable, Movable):
         grad_weights: Gradient with respect to weights.
         grad_bias: Gradient with respect to bias.
 
-    Examples:
+Examples:
         var grads = linear_backward(grad_output, x, weights)
         var grad_input = grads.grad_input
         var grad_weights = grads.grad_weights
@@ -93,7 +93,7 @@ struct GradientQuad(Copyable, Movable):
         grad_c: Gradient with respect to third input.
         grad_d: Gradient with respect to fourth input.
 
-    Examples:
+Examples:
         var grads = complex_backward(grad_output, a, b, c, d)
         var grad_a = grads.grad_a
         var grad_b = grads.grad_b

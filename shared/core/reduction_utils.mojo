@@ -29,13 +29,13 @@ fn compute_strides(shape: List[Int]) -> List[Int]:
     Strides represent the number of elements to skip to move one position along each axis.
     This is computed in row-major (C-contiguous) order.
 
-    Args:
+Args:
         shape: Tensor shape (list of dimension sizes).
 
-    Returns:
+Returns:
         List of strides for each dimension.
 
-    Examples:
+Examples:
         var shape : List[Int] = [3, 4, 5]
         var strides = compute_strides(shape)  # [20, 5, 1]
         # Moving 1 position along axis 0 skips 20 elements
@@ -61,14 +61,14 @@ fn linear_to_coords(linear_idx: Int, shape: List[Int]) -> List[Int]:
     Given a flat index into a row-major (C-contiguous) tensor, computes the
     corresponding multi-dimensional coordinates.
 
-    Args:
+Args:
         linear_idx: Flat index into tensor.
         shape: Tensor shape.
 
-    Returns:
+Returns:
         Coordinates in each dimension.
 
-    Examples:
+Examples:
         var shape : List[Int] = [3, 4, 5]
         var coords = linear_to_coords(27, shape)  # [1, 2, 2]
         # Index 27 corresponds to position [1, 2, 2]
@@ -91,14 +91,14 @@ fn coords_to_linear(coords: List[Int], strides: List[Int]) -> Int:
 
     Converts multi-dimensional coordinates to a flat index using pre-computed strides.
 
-    Args:
+Args:
         coords: Multi-dimensional coordinates.
         strides: Strides for each dimension.
 
-    Returns:
+Returns:
         Linear index.
 
-    Examples:
+Examples:
         var coords : List[Int] = [1, 2, 2]
         var strides : List[Int] = [20, 5, 1]
         var linear = coords_to_linear(coords, strides)  # 27
@@ -118,15 +118,15 @@ fn map_result_to_input_coords(
     This function maps coordinates in the output space to coordinates in the input space
     by inserting the reduction axis dimension (which will be iterated over separately).
 
-    Args:
+Args:
         result_coords: Coordinates in the output (reduced) tensor.
         axis: The axis along which reduction occurred.
         ndim: Number of dimensions in the original input tensor.
 
-    Returns:
+Returns:
         Coordinates in the input tensor (with axis dimension set to 0).
 
-    Examples:
+Examples:
         var result_coords : List[Int] = [1, 2]  # Output from reducing along axis 1
         var input_coords = map_result_to_input_coords(result_coords, 1, 3)
         # Returns [1, 0, 2] - axis 1 is inserted with value 0
@@ -148,11 +148,11 @@ fn map_result_to_input_coords(
 fn create_result_coords(result_idx: Int, shape: List[Int]) -> List[Int]:
     """Create and initialize coordinates from linear index using shape.
 
-    Args:
+Args:
         result_idx: Linear index.
         shape: Shape to use for coordinate conversion.
 
-    Returns:
+Returns:
         Coordinates corresponding to result_idx.
     """
     var ndim = len(shape)

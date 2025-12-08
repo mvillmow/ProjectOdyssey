@@ -141,7 +141,7 @@ struct FileDataset(Copyable, Dataset, Movable):
         out self,
         var file_paths: List[String],
         var labels: List[Int],
-        cache: Bool = False,
+        cache: Bool = False,.
     ) raises:
         """Create dataset from file paths.
 
@@ -348,10 +348,10 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
     automatic file path resolution and validation.
 
     Attributes:
-        data: Tensor containing the image data (N, 1, 28, 28)
-        labels: Tensor containing the label data (N,)
-        _len: Number of samples in the dataset
-        split: The split type loaded (balanced, byclass, bymerge, digits, letters, mnist)
+        data: Tensor containing the image data (N, 1, 28, 28).
+        labels: Tensor containing the label data (N,).
+        _len: Number of samples in the dataset.
+        split: The split type loaded (balanced, byclass, bymerge, digits, letters, mnist).
         data_dir: Directory containing the EMNIST data files.
     """
 
@@ -363,9 +363,9 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
 
     fn __init__(
         out self,
-        data_dir: String,
-        split: String = "balanced",
-        train: Bool = True,
+        data_dir: String,.
+        split: String = "balanced",.
+        train: Bool = True,.
     ) raises:
         """Initialize EMNIST Dataset.
 
@@ -494,7 +494,7 @@ struct EMNISTDataset(Copyable, Dataset, Movable):
     fn get_test_data(self) raises -> ExTensorDataset:
         """Get test data as ExTensorDataset.
 
-        Note: This method returns the same data as get_train_data since
+        Note: This method returns the same data as get_train_data since.
         EMNISTDataset is initialized with either train or test split via __init__.
         Use __init__ with train=False to load test data.
 
@@ -557,14 +557,14 @@ fn load_emnist_train(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Load EMNIST training dataset.
 
-    Args:
-        data_dir: Path to directory containing EMNIST files
-        split: Dataset split to load (default: "balanced")
+Args:
+        data_dir: Path to directory containing EMNIST files.
+        split: Dataset split to load (default: "balanced").
 
-    Returns:
+Returns:
         Tuple of (images, labels) tensors
 
-    Raises:
+Raises:
         Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=True)
@@ -577,14 +577,14 @@ fn load_emnist_test(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Load EMNIST test dataset.
 
-    Args:
-        data_dir: Path to directory containing EMNIST files
-        split: Dataset split to load (default: "balanced")
+Args:
+        data_dir: Path to directory containing EMNIST files.
+        split: Dataset split to load (default: "balanced").
 
-    Returns:
+Returns:
         Tuple of (images, labels) tensors
 
-    Raises:
+Raises:
         Error: If data files cannot be loaded.
     """
     var dataset = EMNISTDataset(data_dir, split, train=False)

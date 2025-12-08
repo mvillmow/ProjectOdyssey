@@ -35,13 +35,13 @@ fn print_training_progress(
     Displays current epoch, batch number, loss value, and learning rate
     in a consistent format for monitoring training progress.
 
-    Args:
-        epoch: Current epoch number (1-indexed)
-        total_epochs: Total number of epochs
-        batch: Current batch number (1-indexed)
-        total_batches: Total number of batches in epoch
-        loss: Current batch loss value
-        learning_rate: Current learning rate (default: 0.01)
+Args:
+        epoch: Current epoch number (1-indexed).
+        total_epochs: Total number of epochs.
+        batch: Current batch number (1-indexed).
+        total_batches: Total number of batches in epoch.
+        loss: Current batch loss value.
+        learning_rate: Current learning rate (default: 0.01).
 
     Example:
         ```mojo
@@ -80,13 +80,13 @@ fn print_evaluation_summary(
     Displays training and test metrics in a clean side-by-side format
     for easy comparison of model performance.
 
-    Args:
-        epoch: Current epoch number (1-indexed)
-        total_epochs: Total number of epochs
-        train_loss: Training loss value
-        train_accuracy: Training accuracy (0.0 to 1.0)
-        test_loss: Test/validation loss value
-        test_accuracy: Test/validation accuracy (0.0 to 1.0)
+Args:
+        epoch: Current epoch number (1-indexed).
+        total_epochs: Total number of epochs.
+        train_loss: Training loss value.
+        train_accuracy: Training accuracy (0.0 to 1.0).
+        test_loss: Test/validation loss value.
+        test_accuracy: Test/validation accuracy (0.0 to 1.0).
 
     Example:
         ```mojo
@@ -137,10 +137,10 @@ fn print_per_class_accuracy(
     Displays accuracy for each class in a table format, with optional
     class names for improved interpretability.
 
-    Args:
-        per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy
-        class_names: Optional list of class name strings (default: empty)
-        column_width: Width of each column in characters (default: 15)
+Args:
+        per_class_accuracies: Tensor of shape [num_classes] with per-class accuracy.
+        class_names: Optional list of class name strings (default: empty).
+        column_width: Width of each column in characters (default: 15).
 
     Example:
         ```mojo
@@ -159,7 +159,7 @@ fn print_per_class_accuracy(
         ...
         ```
 
-    Note:
+Note:
         If class_names is provided, it must have same length as per_class_accuracies.
         If class_names is empty, classes are displayed as numeric indices.
 
@@ -185,7 +185,7 @@ fn print_per_class_accuracy(
         var acc: Float64
         if per_class_accuracies._dtype == DType.float32:
             acc = Float64(per_class_accuracies._data.bitcast[Float32]()[i])
-        else:  # float64
+        else:  # float64.
             acc = per_class_accuracies._data.bitcast[Float64]()[i]
 
         var acc_str = String(acc)
@@ -218,11 +218,11 @@ fn print_confusion_matrix(
     Displays confusion matrix with proper alignment and optional class names.
     Can display raw counts or normalized values.
 
-    Args:
-        matrix: Confusion matrix tensor of shape [num_classes, num_classes]
-        class_names: Optional list of class name strings (default: empty)
-        normalized: If True, display as percentages (default: False)
-        column_width: Width of each column in characters (default: 10)
+Args:
+        matrix: Confusion matrix tensor of shape [num_classes, num_classes].
+        class_names: Optional list of class name strings (default: empty).
+        normalized: If True, display as percentages (default: False).
+        column_width: Width of each column in characters (default: 10).
 
     Example:
         ```mojo
@@ -243,7 +243,7 @@ fn print_confusion_matrix(
         ============================================================
         ```
 
-    Note:
+Note:
         - Rows represent true labels
         - Columns represent predicted labels
         - Values are right-aligned within columns
@@ -348,12 +348,12 @@ fn print_training_summary(
     Displays consolidated summary of training including best achieved metrics
     and the epoch at which they occurred.
 
-    Args:
-        total_epochs: Total number of epochs trained
-        best_train_loss: Best training loss achieved
-        best_test_loss: Best test/validation loss achieved
-        best_accuracy: Best accuracy achieved (0.0 to 1.0)
-        best_epoch: Epoch at which best accuracy was achieved
+Args:
+        total_epochs: Total number of epochs trained.
+        best_train_loss: Best training loss achieved.
+        best_test_loss: Best test/validation loss achieved.
+        best_accuracy: Best accuracy achieved (0.0 to 1.0).
+        best_epoch: Epoch at which best accuracy was achieved.
 
     Example:
         ```mojo

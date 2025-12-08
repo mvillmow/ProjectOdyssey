@@ -60,13 +60,13 @@ fn save_model_weights(
     Saves a list of parameter tensors to individual .weights files in the
     specified directory. Each tensor is saved with its corresponding name.
 
-    Args:
-        parameters: List of parameter tensors to save
-        directory: Directory path to save weight files (created if doesn't exist)
-        param_names: List of parameter names (must match length of parameters)
+Args:
+        parameters: List of parameter tensors to save.
+        directory: Directory path to save weight files (created if doesn't exist).
+        param_names: List of parameter names (must match length of parameters).
 
-    Raises:
-        Error: If directory creation fails or file write fails
+Raises:
+        Error: If directory creation fails or file write fails.
 
     Example:
         ```mojo
@@ -105,13 +105,13 @@ fn load_model_weights(
     Loads parameter tensors from individual .weights files in the directory
     and stores them in the provided parameters list.
 
-    Args:
-        parameters: List to populate with loaded tensors
-        directory: Directory containing weight files
-        param_names: List of parameter names to load (in order)
+Args:
+        parameters: List to populate with loaded tensors.
+        directory: Directory containing weight files.
+        param_names: List of parameter names to load (in order).
 
-    Raises:
-        Error: If directory doesn't exist, file format is invalid, or shape mismatch
+Raises:
+        Error: If directory doesn't exist, file format is invalid, or shape mismatch.
 
     Example:
         ```mojo
@@ -142,13 +142,13 @@ fn get_model_parameter_names(model_type: String) raises -> List[String]:
     Returns the canonical parameter names for supported architectures.
     Useful for consistent naming across save/load operations.
 
-    Args:
-        model_type: Architecture name ("lenet5", "alexnet", "vgg16", "resnet18", etc.)
+Args:
+        model_type: Architecture name ("lenet5", "alexnet", "vgg16", "resnet18", etc.).
 
-    Returns:
+Returns:
         List of parameter names in order
 
-    Note:
+Note:
         Parameter names must match the struct field names in each model.mojo file.
 
     Example:
@@ -279,12 +279,12 @@ fn validate_shapes(loaded: List[ExTensor], expected: List[ExTensor]) raises:
     Useful for checking that checkpoint weights are compatible with
     the current model architecture before assignment.
 
-    Args:
-        loaded: List of loaded tensors
-        expected: List of expected tensors (with correct shapes)
+Args:
+        loaded: List of loaded tensors.
+        expected: List of expected tensors (with correct shapes).
 
-    Raises:
-        Error: If any tensor shapes don't match
+Raises:
+        Error: If any tensor shapes don't match.
 
     Example:
         ```mojo

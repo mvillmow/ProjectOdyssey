@@ -28,7 +28,7 @@ struct DropoutLayer(Copyable, Movable):
         dropout_rate: Probability of dropping each element (default: 0.5).
         training: Whether layer is in training mode (default: False).
 
-    Examples:
+Examples:
         ```mojo
         var layer = DropoutLayer(0.5)
         layer.set_training(True)  # Enable dropout for training

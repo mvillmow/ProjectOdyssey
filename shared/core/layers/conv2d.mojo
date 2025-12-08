@@ -42,12 +42,12 @@ struct Conv2dLayer(Copyable, Movable):
 
     fn __init__(
         out self,
-        in_channels: Int,
-        out_channels: Int,
-        kernel_h: Int,
-        kernel_w: Int,
-        stride: Int = 1,
-        padding: Int = 0,
+        in_channels: Int,.
+        out_channels: Int,.
+        kernel_h: Int,.
+        kernel_w: Int,.
+        stride: Int = 1,.
+        padding: Int = 0,.
     ) raises:
         """Initialize Conv2D layer with He/Kaiming weights and zero bias.
 

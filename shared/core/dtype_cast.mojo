@@ -14,14 +14,14 @@ fn cast_tensor(tensor: ExTensor, target_dtype: DType) raises -> ExTensor:
     Provides fast conversion between common dtypes used in mixed precision.
     training. Uses SIMD optimization where possible.
 
-    Args:
+Args:
         tensor: Source tensor to convert.
         target_dtype: Target dtype.
 
-    Returns:
+Returns:
         New tensor with target dtype.
 
-    Raises:
+Raises:
         Error: If tensor is empty or conversion is not supported.
 
     Example:
@@ -99,13 +99,13 @@ fn cast_to_bfloat16(tensor: ExTensor) raises -> ExTensor:
     Creates new tensor with BFloat16 values stored as uint16.
     Use this for storing model parameters in BF16 format.
 
-    Args:
-        tensor: Source tensor (any floating point dtype)
+Args:
+        tensor: Source tensor (any floating point dtype).
 
-    Returns:
+Returns:
         Tensor with uint16 storage containing BFloat16 values.
 
-    Raises:
+Raises:
         Error: If tensor is empty.
 
     Example:
@@ -138,14 +138,14 @@ fn cast_from_bfloat16(
 
     Assumes input tensor stores BFloat16 values as uint16.
 
-    Args:
+Args:
         tensor: Source tensor with uint16 BFloat16 storage.
-        target_dtype: Target floating point dtype (default: float32)
+        target_dtype: Target floating point dtype (default: float32).
 
-    Returns:
+Returns:
         Tensor with target dtype.
 
-    Raises:
+Raises:
         Error: If tensor is not uint16 or target is not floating point.
 
     Example:
@@ -189,10 +189,10 @@ fn cast_from_bfloat16(
 fn get_dtype_size(dtype: DType) -> Int:
     """Get size in bytes for a dtype.
 
-    Args:
+Args:
         dtype: DType to query.
 
-    Returns:
+Returns:
         Size in bytes.
 
     Example:
@@ -221,10 +221,10 @@ fn get_dtype_size(dtype: DType) -> Int:
 fn is_floating_dtype(dtype: DType) -> Bool:
     """Check if dtype is floating point.
 
-    Args:
+Args:
         dtype: DType to check.
 
-    Returns:
+Returns:
         True if floating point dtype.
 
     Example:
@@ -244,10 +244,10 @@ fn is_floating_dtype(dtype: DType) -> Bool:
 fn is_integer_dtype(dtype: DType) -> Bool:
     """Check if dtype is integer (signed or unsigned).
 
-    Args:
+Args:
         dtype: DType to check.
 
-    Returns:
+Returns:
         True if integer dtype.
 
     Example:

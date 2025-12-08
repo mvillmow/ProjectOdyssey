@@ -25,11 +25,11 @@ from memory import UnsafePointer
 fn read_uint32_be(data: UnsafePointer[UInt8], offset: Int) -> Int:
     """Read 32-bit unsigned integer in big-endian format.
 
-    Args:
-        data: Pointer to byte array
-        offset: Byte offset to read from
+Args:
+        data: Pointer to byte array.
+        offset: Byte offset to read from.
 
-    Returns:
+Returns:
         Integer value in host byte order.
     """
     var b0 = Int(data[offset])
@@ -43,13 +43,13 @@ fn read_uint32_be(data: UnsafePointer[UInt8], offset: Int) -> Int:
 fn load_idx_labels(filepath: String) raises -> ExTensor:
     """Load labels from IDX file format.
 
-    Args:
-        filepath: Path to IDX labels file
+Args:
+        filepath: Path to IDX labels file.
 
-    Returns:
+Returns:
         ExTensor of shape (num_samples,) with uint8 label values
 
-    Raises:
+Raises:
         Error: If file format is invalid or cannot be read.
     """
     # Read entire file
@@ -90,16 +90,16 @@ fn load_idx_labels(filepath: String) raises -> ExTensor:
 fn load_idx_images(filepath: String) raises -> ExTensor:
     """Load grayscale images from IDX file format.
 
-    Args:
-        filepath: Path to IDX grayscale images file
+Args:
+        filepath: Path to IDX grayscale images file.
 
-    Returns:
+Returns:
         ExTensor of shape (num_samples, 1, rows, cols) with uint8 pixel values
 
-    Raises:
-        Error: If file format is invalid or cannot be read
+Raises:
+        Error: If file format is invalid or cannot be read.
 
-    Note:
+Note:
         For single-channel (grayscale) images. Shape includes channel dimension for
         consistency with multi-channel loaders.
     """
@@ -147,16 +147,16 @@ fn load_idx_images(filepath: String) raises -> ExTensor:
 fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
     """Load RGB images from IDX file format.
 
-    Args:
-        filepath: Path to IDX RGB images file
+Args:
+        filepath: Path to IDX RGB images file.
 
-    Returns:
+Returns:
         ExTensor of shape (num_samples, channels, rows, cols) with uint8 pixel values
 
-    Raises:
-        Error: If file format is invalid or cannot be read
+Raises:
+        Error: If file format is invalid or cannot be read.
 
-    Note:
+Note:
         For CIFAR-10 and similar: (N, 3, 32, 32) where 3 channels are RGB.
     """
     # Read entire file
@@ -209,13 +209,13 @@ fn load_idx_images_rgb(filepath: String) raises -> ExTensor:
 fn normalize_images(mut images: ExTensor) raises -> ExTensor:
     """Normalize uint8 images to float32 in range [0, 1].
 
-    Args:
-        images: Input images as uint8 ExTensor
+Args:
+        images: Input images as uint8 ExTensor.
 
-    Returns:
+Returns:
         Normalized images as float32 ExTensor
 
-    Note:
+Note:
         Converts pixel values from [0, 255] to [0.0, 1.0]
     """
     var shape = images.shape()
@@ -234,11 +234,11 @@ fn normalize_images(mut images: ExTensor) raises -> ExTensor:
 fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
     """Convert integer labels to one-hot encoded float32 tensor.
 
-    Args:
-        labels: Integer labels as uint8 ExTensor, shape (num_samples,)
-        num_classes: Total number of classes
+Args:
+        labels: Integer labels as uint8 ExTensor, shape (num_samples,).
+        num_classes: Total number of classes.
 
-    Returns:
+Returns:
         One-hot encoded labels as float32 ExTensor, shape (num_samples, num_classes)
 
     Example:
@@ -278,13 +278,13 @@ fn one_hot_encode(labels: ExTensor, num_classes: Int) raises -> ExTensor:
 fn normalize_images_rgb(mut images: ExTensor) raises -> ExTensor:
     """Normalize uint8 RGB images to float32 with ImageNet normalization.
 
-    Args:
-        images: Input images as uint8 ExTensor of shape (N, 3, H, W)
+Args:
+        images: Input images as uint8 ExTensor of shape (N, 3, H, W).
 
-    Returns:
+Returns:
         Normalized images as float32 ExTensor
 
-    Note:
+Note:
         Applies ImageNet normalization:
         - mean=[0.485, 0.456, 0.406] for RGB channels
         - std=[0.229, 0.224, 0.225] for RGB channels
@@ -340,19 +340,19 @@ fn load_cifar10_batch(
 ) raises -> Tuple[ExTensor, ExTensor]:
     """Load a single CIFAR-10 batch (images and labels) from IDX format.
 
-    Args:
-        batch_dir: Directory containing CIFAR-10 IDX files
-        batch_name: Batch name without extension (e.g., "train_batch_1", "test_batch")
+Args:
+        batch_dir: Directory containing CIFAR-10 IDX files.
+        batch_name: Batch name without extension (e.g., "train_batch_1", "test_batch").
 
-    Returns:
+Returns:
         Tuple of (images, labels):
         - images: ExTensor of shape (N, 3, 32, 32) normalized float32
         - labels: ExTensor of shape (N,) uint8
 
-    Raises:
-        Error: If batch files cannot be read
+Raises:
+        Error: If batch files cannot be read.
 
-    Note:
+Note:
         Images are loaded from IDX RGB format and normalized using ImageNet parameters.
         Labels are kept as uint8 (class indices 0-9).
     """

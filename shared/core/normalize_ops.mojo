@@ -38,15 +38,15 @@ fn normalize_rgb(
 
     This is commonly used with ImageNet statistics for transfer learning.
 
-    Args:
+Args:
         images: Input uint8 tensor of shape (N, 3, H, W).
         mean: Mean values for R, G, B channels (e.g., (0.485, 0.456, 0.406)).
         std: Std deviation values for R, G, B channels (e.g., (0.229, 0.224, 0.225)).
 
-    Returns:
+Returns:
         Normalized float32 tensor of shape (N, 3, H, W).
 
-    Raises:
+Raises:
         Error: If input is not 4D or doesn't have 3 channels.
 
     Example:
@@ -59,7 +59,7 @@ fn normalize_rgb(
         var normalized = normalize_rgb(images, mean, std)
         ```
 
-    Note:
+Note:
         - Input must be uint8 [0, 255]
         - Output is float32 with normalized values
         - Common for CIFAR-10, ImageNet, and other RGB datasets.

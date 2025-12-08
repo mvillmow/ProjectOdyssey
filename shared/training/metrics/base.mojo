@@ -196,10 +196,10 @@ struct MetricCollection(Sized):
 fn create_metric_summary(results: List[MetricResult]) -> String:
     """Create human-readable summary of metric results.
 
-    Args:
-        results: Vector of metric results
+Args:
+        results: Vector of metric results.
 
-    Returns:
+Returns:
         Formatted string with all metrics
 
     Example output:

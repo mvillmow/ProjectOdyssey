@@ -66,7 +66,7 @@ fn parse_inference_args() raises -> InferenceConfig:
         --batch-size <int>: Batch size (default: 32).
         --verbose: Enable verbose output.
 
-    Returns:
+Returns:
         InferenceConfig struct with parsed values.
 
     Example:
@@ -112,12 +112,12 @@ fn parse_inference_args_with_defaults(
     Allows each inference script to specify model-appropriate defaults
     while still using shared parsing logic.
 
-    Args:
+Args:
         default_weights_dir: Default weights directory.
         default_data_dir: Default dataset directory.
         default_batch_size: Default batch size.
 
-    Returns:
+Returns:
         InferenceConfig struct with parsed values.
 
     Example:
@@ -170,11 +170,11 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
     Computes the percentage of predictions that match the ground truth labels.
     Predictions should be class indices (from argmax of logits).
 
-    Args:
-        predictions: Predicted class indices tensor of shape (batch,)
-        labels: Ground truth class indices tensor of shape (batch,)
+Args:
+        predictions: Predicted class indices tensor of shape (batch,).
+        labels: Ground truth class indices tensor of shape (batch,).
 
-    Returns:
+Returns:
         Accuracy as a Float32 in range [0.0, 1.0].
 
     Example:
@@ -187,7 +187,7 @@ fn evaluate_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float32:
         # accuracy == 0.75 (3 out of 4 correct)
         ```
 
-    Note:
+Note:
         Both tensors must have the same shape and contain integer class indices.
     """
     var pred_shape = predictions.shape()
@@ -251,11 +251,11 @@ fn count_correct(predictions: ExTensor, labels: ExTensor) raises -> Int:
 
     Lower-level function for computing accuracy incrementally over batches.
 
-    Args:
-        predictions: Predicted class indices tensor of shape (batch,)
-        labels: Ground truth class indices tensor of shape (batch,)
+Args:
+        predictions: Predicted class indices tensor of shape (batch,).
+        labels: Ground truth class indices tensor of shape (batch,).
 
-    Returns:
+Returns:
         Number of correct predictions as Int.
 
     Example:

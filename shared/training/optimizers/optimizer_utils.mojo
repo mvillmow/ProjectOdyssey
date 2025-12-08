@@ -29,12 +29,12 @@ fn initialize_optimizer_state(
     Creates num_states lists of zero-initialized tensors for each parameter shape.
     This is useful for initializing all required state tensors for an optimizer.
 
-    Args:
+Args:
         param_shapes: List of parameter shapes to create state buffers for.
         num_states: Number of state buffers to create per parameter.
         dtype: Data type for state tensors (default: float32).
 
-    Returns:
+Returns:
         List of state buffer lists. Each element is a list of ExTensor states
         for a single parameter.
 
@@ -50,7 +50,7 @@ fn initialize_optimizer_state(
         # states[1] = [m_bias, v_bias]
         ```
 
-    Note:
+Note:
         For SGD with momentum, use num_states=1 (one velocity buffer per param)
         For Adam variants, use num_states=2 (m and v buffers per param).
     """
@@ -82,11 +82,11 @@ fn initialize_optimizer_state_from_params(
     Convenience function that extracts shapes from parameter tensors and creates
     matching state buffers with the same dtype as each parameter.
 
-    Args:
+Args:
         params: List of parameter tensors to base state initialization on.
         num_states: Number of state buffers to create per parameter.
 
-    Returns:
+Returns:
         List of state buffer lists with matching shapes and dtypes.
 
     Example:
@@ -125,11 +125,11 @@ fn compute_weight_decay_term(
     Returns a tensor that represents the weight decay contribution to the
     effective gradient. This is used in coupled weight decay (as in Adam).
 
-    Args:
+Args:
         params: Model parameters.
         weight_decay: L2 regularization coefficient.
 
-    Returns:
+Returns:
         Tensor of same shape as params containing weight_decay * params.
 
     Example:
@@ -139,7 +139,7 @@ fn compute_weight_decay_term(
         # wd_term = 0.0001 * params
         ```
 
-    Note:
+Note:
         This computes the "coupled" weight decay used in Adam.
         For "decoupled" weight decay (AdamW), apply decay directly to params
         after the gradient-based update.
@@ -154,7 +154,7 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
     This performs decoupled weight decay: params = params * (1 - weight_decay).
     Used in AdamW and other decoupled weight decay schemes.
 
-    Args:
+Args:
         params: Model parameters to regularize (modified in-place).
         weight_decay: L2 regularization coefficient.
 
@@ -165,7 +165,7 @@ fn apply_weight_decay(mut params: ExTensor, weight_decay: Float64) raises:
         # params *= (1 - 0.01) = 0.99
         ```
 
-    Note:
+Note:
         This modifies the params tensor in-place.
         Typically applied AFTER gradient-based updates.
     """
@@ -191,11 +191,11 @@ fn scale_tensor(tensor: ExTensor, scale: Float64) raises -> ExTensor:
 
     Returns a new tensor containing tensor * scale.
 
-    Args:
+Args:
         tensor: Input tensor.
         scale: Scalar multiplier.
 
-    Returns:
+Returns:
         New tensor of same shape and dtype as input, with all elements scaled.
 
     Example:
@@ -214,7 +214,7 @@ fn scale_tensor_inplace(mut tensor: ExTensor, scale: Float64) raises:
 
     Modifies the tensor in-place by multiplying all elements by scale.
 
-    Args:
+Args:
         tensor: Input tensor (modified in-place).
         scale: Scalar multiplier.
 
@@ -235,10 +235,10 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
 
     Returns sqrt(sum(tensor^2)).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         L2 norm of the tensor as Float64.
 
     Example:
@@ -248,7 +248,7 @@ fn compute_tensor_norm(tensor: ExTensor) raises -> Float64:
         # norm = sqrt(100) = 10.0
         ```
 
-    Note:
+Note:
         This is useful for gradient clipping and adaptive learning rates.
     """
     var norm_squared = 0.0
@@ -266,10 +266,10 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
     Returns sqrt(sum over all tensors of sum(tensor^2)).
     This is useful for gradient clipping across all parameters.
 
-    Args:
+Args:
         tensors: List of input tensors.
 
-    Returns:
+Returns:
         Global L2 norm as Float64.
 
     Example:
@@ -282,7 +282,7 @@ fn compute_global_norm(tensors: List[ExTensor]) raises -> Float64:
         # global_norm = sqrt(100 + 50) = sqrt(150) ≈ 12.25
         ```
 
-    Note:
+Note:
         For empty list, returns 0.0.
     """
     if len(tensors) == 0:
@@ -306,7 +306,7 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
     Modifies the tensor in-place so that its L2 norm becomes 1.0.
     If the tensor has zero norm, it remains unchanged (no division by zero).
 
-    Args:
+Args:
         tensor: Input tensor (modified in-place).
 
     Example:
@@ -316,7 +316,7 @@ fn normalize_tensor_to_unit_norm(mut tensor: ExTensor) raises:
         # grad now has L2 norm = 1.0
         ```
 
-    Note:
+Note:
         Safe against division by zero - if norm is 0, tensor is unchanged.
     """
     var norm = compute_tensor_norm(tensor)
@@ -333,14 +333,14 @@ fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
     down proportionally to bring the norm to exactly max_norm.
     Preserves the direction of the tensor.
 
-    Args:
+Args:
         tensor: Input tensor (modified in-place if norm exceeds max_norm).
         max_norm: Maximum allowed L2 norm.
 
-    Returns:
+Returns:
         Original L2 norm before clipping.
 
-    Raises:
+Raises:
         Error: If max_norm is negative.
 
     Example:
@@ -351,7 +351,7 @@ fn clip_tensor_norm(mut tensor: ExTensor, max_norm: Float64) raises -> Float64:
         # grad is now scaled to norm = 1.0
         ```
 
-    Note:
+Note:
         This is the standard approach for gradient clipping in RNNs.
     """
     if max_norm < 0.0:
@@ -374,14 +374,14 @@ fn clip_global_norm(
     If the global L2 norm (computed across all tensors) exceeds max_norm,
     scales all elements in all tensors down proportionally.
 
-    Args:
+Args:
         tensors: List of tensors to clip (modified in-place if needed).
         max_norm: Maximum allowed global L2 norm.
 
-    Returns:
+Returns:
         Original global L2 norm before clipping.
 
-    Raises:
+Raises:
         Error: If max_norm is negative or tensors list is empty.
 
     Example:
@@ -394,7 +394,7 @@ fn clip_global_norm(
         # Both gradients scaled proportionally
         ```
 
-    Note:
+Note:
         This is recommended for gradient clipping in recurrent networks.
     """
     if max_norm < 0.0:
@@ -424,15 +424,15 @@ fn apply_bias_correction(
 
     Formula: corrected = estimate / (1 - decay^timestep)
 
-    Args:
+Args:
         estimate: The exponential moving average estimate.
         decay: Decay factor (beta for momentum, typically 0.9 or 0.999).
         timestep: Current timestep (starts at 1).
 
-    Returns:
+Returns:
         Bias-corrected estimate with same shape and dtype as input.
 
-    Raises:
+Raises:
         Error: If timestep <= 0 or decay not in [0, 1).
 
     Example:
@@ -445,7 +445,7 @@ fn apply_bias_correction(
         var m_corrected = apply_bias_correction(m, decay=0.9, timestep=1)
         ```
 
-    Note:
+Note:
         The correction factor (1 - decay^t) accounts for the bias in early
         timesteps. As t increases, the correction becomes negligible.
     """
@@ -483,11 +483,11 @@ fn validate_optimizer_state(
     - Each state tensor shape matches corresponding parameter shape
     - All tensors are non-empty
 
-    Args:
+Args:
         params: List of parameter tensors.
         states: List of state buffer lists from optimizer.
 
-    Raises:
+Raises:
         Error: If state dimensions don't match parameters.
 
     Example:

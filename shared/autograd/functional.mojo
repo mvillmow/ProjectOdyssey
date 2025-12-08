@@ -51,11 +51,11 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 
     More efficient than creating a full tensor filled with the scalar value.
 
-    Args:
+Args:
         tensor: Input tensor.
         scalar: Scalar value to multiply by.
 
-    Returns:
+Returns:
         New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
@@ -68,11 +68,11 @@ fn multiply_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Add a scalar value to all elements of a tensor.
 
-    Args:
+Args:
         tensor: Input tensor.
         scalar: Scalar value to add.
 
-    Returns:
+Returns:
         New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
@@ -85,11 +85,11 @@ fn add_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Subtract a scalar value from all elements of a tensor.
 
-    Args:
+Args:
         tensor: Input tensor.
         scalar: Scalar value to subtract.
 
-    Returns:
+Returns:
         New tensor with result.
     """
     var result = ExTensor(tensor.shape(), tensor.dtype())
@@ -102,14 +102,14 @@ fn subtract_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
 fn divide_scalar(tensor: ExTensor, scalar: Float64) raises -> ExTensor:
     """Divide all elements of a tensor by a scalar value.
 
-    Args:
+Args:
         tensor: Input tensor.
         scalar: Scalar value to divide by.
 
-    Returns:
+Returns:
         New tensor with result.
 
-    Raises:
+Raises:
         Error if scalar is zero.
     """
     if scalar == 0.0:
@@ -134,15 +134,15 @@ fn apply_gradient(
 
     Performs: parameter = parameter - learning_rate * gradient
 
-    Args:
+Args:
         parameter: Parameter tensor to update.
         gradient: Gradient tensor (same shape as parameter).
         learning_rate: Learning rate (step size).
 
-    Returns:
+Returns:
         Updated parameter tensor.
 
-    Raises:
+Raises:
         Error if shapes don't match.
     """
     if gradient.shape() != parameter.shape():
@@ -162,12 +162,12 @@ fn apply_gradients(
 
     Performs: parameters[i] = parameters[i] - learning_rate * gradients[i]
 
-    Args:
+Args:
         parameters: Parameter tensors to update (modified in-place).
         gradients: Gradient tensors (same shapes as parameters).
         learning_rate: Learning rate (step size).
 
-    Raises:
+Raises:
         Error if parameter count doesn't match gradient count.
         Error if any shape mismatch.
     """
@@ -220,11 +220,11 @@ fn mse_loss_and_grad(
 
     This is the most common loss pattern for regression.
 
-    Args:
+Args:
         predictions: Model predictions, any shape.
         targets: Ground truth targets, same shape as predictions.
 
-    Returns:
+Returns:
         LossAndGrad containing scalar loss and gradient tensor.
     """
     # Forward pass
@@ -252,12 +252,12 @@ fn bce_loss_and_grad(
 
     Used for binary classification (predictions from sigmoid).
 
-    Args:
+Args:
         predictions: Predicted probabilities in [0, 1], shape (batch_size,) or (batch_size, 1).
         targets: Binary labels (0 or 1), same shape as predictions.
         epsilon: Small constant for numerical stability (default: 1e-7).
 
-    Returns:
+Returns:
         LossAndGrad containing scalar loss and gradient tensor.
     """
     # Forward pass
@@ -285,15 +285,15 @@ fn ce_loss_and_grad(
 
     Used for multi-class classification. Includes softmax internally.
 
-    Args:
+Args:
         logits: Raw model outputs (before softmax), shape (batch_size, num_classes).
         targets: One-hot encoded labels, same shape as logits.
         epsilon: Small constant for numerical stability (default: 1e-7).
 
-    Returns:
+Returns:
         LossAndGrad containing scalar loss and gradient tensor.
 
-    Note:
+Note:
         The cross_entropy function already computes mean reduction internally.
     """
     # Forward pass (cross_entropy already includes mean reduction)
@@ -317,15 +317,15 @@ fn compute_gradient(
     Convenience function that dispatches to the appropriate loss_and_grad
     helper based on loss_type string.
 
-    Args:
+Args:
         predictions: Model predictions.
         targets: Ground truth targets.
         loss_type: One of "mse", "bce", "ce" (default: "mse").
 
-    Returns:
+Returns:
         Gradient tensor.
 
-    Note:
+Note:
         For more control, use the specific loss_and_grad functions directly.
     """
     if loss_type == "mse":

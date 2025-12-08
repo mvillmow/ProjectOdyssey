@@ -43,7 +43,7 @@ fn training_step(
 ) raises -> Float64:
     """Execute single training step (forward, backward, update).
 
-    Args:
+Args:
         model_forward: Function to compute model forward pass.
         compute_loss: Function to compute loss.
         optimizer_step: Function to update weights.
@@ -51,10 +51,10 @@ fn training_step(
         data: Input batch data.
         labels: Target labels.
 
-    Returns:
+Returns:
         Loss value for this batch.
 
-    Raises:
+Raises:
         Error if any step fails.
     """
     # Zero gradients from previous step
@@ -89,7 +89,7 @@ fn train_one_epoch(
 ) raises:
     """Train for one epoch.
 
-    Args:
+Args:
         model_forward: Forward pass function.
         compute_loss: Loss computation function.
         optimizer_step: Weight update function.
@@ -98,7 +98,7 @@ fn train_one_epoch(
         metrics: Training metrics to update.
         log_interval: Log metrics every N batches.
 
-    Raises:
+Raises:
         Error if training fails.
     """
     var epoch_loss = Float64(0.0)
@@ -188,9 +188,9 @@ struct TrainingLoop:
 
     fn __init__(
         out self,
-        log_interval: Int = 10,
-        clip_gradients: Bool = False,
-        max_grad_norm: Float64 = 1.0,
+        log_interval: Int = 10,.
+        clip_gradients: Bool = False,.
+        max_grad_norm: Float64 = 1.0,.
     ):
         """Initialize training loop.
 
@@ -205,12 +205,12 @@ struct TrainingLoop:
 
     fn run_epoch_manual(
         self,
-        train_data: ExTensor,
-        train_labels: ExTensor,
-        batch_size: Int,
-        compute_batch_loss: fn (ExTensor, ExTensor) raises -> Float32,
-        epoch: Int,
-        total_epochs: Int,
+        train_data: ExTensor,.
+        train_labels: ExTensor,.
+        batch_size: Int,.
+        compute_batch_loss: fn (ExTensor, ExTensor) raises -> Float32,.
+        epoch: Int,.
+        total_epochs: Int,.
     ) raises -> Float32:
         """Run one epoch with manual batch processing.
 
@@ -270,10 +270,10 @@ struct TrainingLoop:
 
     fn run_epoch(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn () raises -> None,
-        zero_gradients: fn () raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,.
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
+        optimizer_step: fn () raises -> None,.
+        zero_gradients: fn () raises -> None,.
         mut train_loader: DataLoader,
         mut metrics: TrainingMetrics,
     ) raises:
@@ -302,12 +302,12 @@ struct TrainingLoop:
 
     fn run(
         self,
-        model_forward: fn (ExTensor) raises -> ExTensor,
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn () raises -> None,
-        zero_gradients: fn () raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,.
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
+        optimizer_step: fn () raises -> None,.
+        zero_gradients: fn () raises -> None,.
         mut train_loader: DataLoader,
-        num_epochs: Int,
+        num_epochs: Int,.
         mut metrics: TrainingMetrics,
     ) raises:
         """Run complete training loop.

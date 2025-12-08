@@ -35,15 +35,15 @@ fn evaluate_with_predict(
     Lightweight evaluation function for models where predictions have
     already been computed (e.g., from model.predict() in a loop).
 
-    Args:
-        predictions: List of predicted class indices
-        labels: Ground truth labels [batch_size]
+Args:
+        predictions: List of predicted class indices.
+        labels: Ground truth labels [batch_size].
 
-    Returns:
+Returns:
         Accuracy as fraction in [0.0, 1.0]
 
-    Raises:
-        Error: If predictions and labels have different lengths
+Raises:
+        Error: If predictions and labels have different lengths.
 
     Example:
         ```mojo
@@ -76,15 +76,15 @@ fn evaluate_logits_batch(logits: ExTensor, labels: ExTensor) raises -> Float32:
     Evaluates a batch of logits by computing argmax for each sample
     and comparing with true labels.
 
-    Args:
-        logits: Model logits of shape [batch_size, num_classes]
-        labels: Ground truth labels [batch_size]
+Args:
+        logits: Model logits of shape [batch_size, num_classes].
+        labels: Ground truth labels [batch_size].
 
-    Returns:
+Returns:
         Accuracy as fraction in [0.0, 1.0]
 
-    Raises:
-        Error: If shapes are incompatible
+Raises:
+        Error: If shapes are incompatible.
 
     Example:
         ```mojo
@@ -134,16 +134,16 @@ fn compute_accuracy_on_batch(
     Lightweight function for computing accuracy on a single batch without
     batching logic. Useful for inline accuracy computation during training.
 
-    Args:
-        predictions: Model predictions/logits of shape [batch_size, num_classes]
+Args:
+        predictions: Model predictions/logits of shape [batch_size, num_classes].
                     or predicted class indices [batch_size]
-        labels: Ground truth labels [batch_size]
+        labels: Ground truth labels [batch_size].
 
-    Returns:
+Returns:
         Accuracy as fraction in [0.0, 1.0]
 
-    Raises:
-        Error: If batch sizes don't match
+Raises:
+        Error: If batch sizes don't match.
 
     Example:
         ```mojo

@@ -40,8 +40,8 @@ trait Differentiable:
     that participate in backpropagation.
 
     Required Methods:
-        forward: Compute output from input (forward pass)
-        backward: Compute input gradient from output gradient (backward pass)
+        forward: Compute output from input (forward pass).
+        backward: Compute input gradient from output gradient (backward pass).
 
     Contract:
         - forward and backward must be mathematical inverses
@@ -399,9 +399,9 @@ trait Model:
     All neural network models should implement this trait.
 
     Required Methods:
-        forward: Execute forward pass
-        parameters: Return trainable parameters
-        zero_grad: Reset parameter gradients
+        forward: Execute forward pass.
+        parameters: Return trainable parameters.
+        zero_grad: Reset parameter gradients.
 
     Example:
         ```mojo
@@ -458,7 +458,7 @@ trait Loss:
     Defines the contract for loss functions that measure prediction error.
 
     Required Methods:
-        compute: Calculate loss between predictions and targets
+        compute: Calculate loss between predictions and targets.
 
     Example:
         ```mojo
@@ -491,8 +491,8 @@ trait Optimizer:
     Defines the contract for optimization algorithms that update parameters.
 
     Required Methods:
-        step: Update parameters based on gradients
-        zero_grad: Reset optimizer state
+        step: Update parameters based on gradients.
+        zero_grad: Reset optimizer state.
 
     Example:
         ```mojo

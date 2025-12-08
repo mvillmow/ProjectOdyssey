@@ -111,10 +111,10 @@ struct BaseTrainer(Trainer):
 
     fn fit(
         mut self,
-        model_forward: fn (ExTensor) raises -> ExTensor,
-        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,
-        optimizer_step: fn () raises -> None,
-        zero_gradients: fn () raises -> None,
+        model_forward: fn (ExTensor) raises -> ExTensor,.
+        compute_loss: fn (ExTensor, ExTensor) raises -> ExTensor,.
+        optimizer_step: fn () raises -> None,.
+        zero_gradients: fn () raises -> None,.
         mut train_loader: DataLoader,
         mut val_loader: DataLoader,
     ) raises:
@@ -309,10 +309,10 @@ struct BaseTrainer(Trainer):
 fn create_trainer(config: TrainerConfig) -> BaseTrainer:
     """Create a base trainer with given configuration.
 
-    Args:
-        config: Trainer configuration
+Args:
+        config: Trainer configuration.
 
-    Returns:
+Returns:
         Initialized BaseTrainer.
     """
     return BaseTrainer(config)
@@ -321,7 +321,7 @@ fn create_trainer(config: TrainerConfig) -> BaseTrainer:
 fn create_default_trainer() -> BaseTrainer:
     """Create a trainer with default configuration.
 
-    Returns:
+Returns:
         BaseTrainer with default config.
     """
     var config = TrainerConfig()

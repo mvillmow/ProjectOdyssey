@@ -57,10 +57,10 @@ struct LogRecord(Copyable, Movable):
 
     fn __init__(
         out self,
-        logger_name: String,
-        level: Int,
-        message: String,
-        timestamp: String = "",
+        logger_name: String,.
+        level: Int,.
+        message: String,.
+        timestamp: String = "",.
     ):
         """Initialize a log record.
 
@@ -177,7 +177,7 @@ struct ColoredFormatter(Copyable, Formatter, ImplicitlyCopyable, Movable):
             return self.YELLOW
         elif level == LogLevel.INFO:
             return self.GREEN
-        else:  # DEBUG
+        else:  # DEBUG.
             return self.BLUE
 
 
@@ -360,11 +360,11 @@ struct Logger:
 fn get_logger(name: String, level: Int = LogLevel.INFO) -> Logger:
     """Get or create a named logger.
 
-    Args:
+Args:
         name: Logger name.
-        level: Log level threshold (default: INFO)
+        level: Log level threshold (default: INFO).
 
-    Returns:
+Returns:
         Logger with specified name and level.
 
     Example:

@@ -23,7 +23,7 @@ fn _broadcast_binary[
     This helper eliminates 200+ lines of duplicated broadcasting code and removes.
     dtype conversion overhead by using compile-time specialization.
 
-    Args:
+Args:
         dtype: Compile-time dtype parameter.
         op: Binary operation function (e.g., add, subtract, multiply, divide).
         a: First tensor.
@@ -37,7 +37,7 @@ fn _broadcast_binary[
         var result = _broadcast_binary[DType.float32, add_op](a, b)
         ```
 
-    Returns:
+Returns:
         Result tensor with operation applied element-wise with broadcasting.
     """
     # Compute broadcast shape
@@ -98,15 +98,15 @@ fn _dispatch_broadcast_binary[
     This dispatcher performs runtime dtype checking but dispatches to compile-time.
     specialized versions, ensuring zero overhead compared to hand-written dtype branches.
 
-    Args:
+Args:
         op: Binary operation function pointer.
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         Result tensor with operation applied with broadcasting.
 
-    Raises:
+Raises:
         Error: If dtypes don't match or are unsupported.
     """
     # Validate dtypes match
@@ -143,17 +143,17 @@ fn _dispatch_broadcast_binary[
 fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise addition with broadcasting.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         A new tensor containing a + b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Examples:
+Examples:
         ```
         var a = zeros(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -178,17 +178,17 @@ fn add(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise subtraction with broadcasting.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         A new tensor containing a - b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Examples:
+Examples:
         ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -212,17 +212,17 @@ fn subtract(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise multiplication with broadcasting.
 
-    Args:
+Args:
         a: First tensor.
         b: Second tensor.
 
-    Returns:
+Returns:
         A new tensor containing a * b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Examples:
+Examples:
         ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
@@ -245,23 +245,23 @@ fn multiply(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise division with broadcasting.
 
-    Args:
-        a: First tensor (numerator)
-        b: Second tensor (denominator)
+Args:
+        a: First tensor (numerator).
+        b: Second tensor (denominator).
 
-    Returns:
+Returns:
         A new tensor containing a / b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Note:
+Note:
         Division by zero follows IEEE 754 semantics for floating-point types:
         - x / 0.0 where x > 0 -> +inf
         - x / 0.0 where x < 0 -> -inf
         - 0.0 / 0.0 -> NaN
 
-    Examples:
+Examples:
         ```
         var a = full(List[Int](), 6.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
@@ -284,23 +284,23 @@ fn divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise floor division with broadcasting.
 
-    Args:
-        a: First tensor (numerator)
-        b: Second tensor (denominator)
+Args:
+        a: First tensor (numerator).
+        b: Second tensor (denominator).
 
-    Returns:
+Returns:
         A new tensor containing a // b (floor division)
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Note:
+Note:
         Division by zero follows IEEE 754 semantics for floating-point types:
         - x // 0.0 where x > 0 -> +inf
         - x // 0.0 where x < 0 -> -inf
         - 0.0 // 0.0 -> NaN
 
-    Examples:
+Examples:
         ```
         var a = full(List[Int](), 7.0, DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)
@@ -337,17 +337,17 @@ fn floor_divide(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise modulo with broadcasting.
 
-    Args:
+Args:
         a: First tensor.
-        b: Second tensor (modulus)
+        b: Second tensor (modulus).
 
-    Returns:
+Returns:
         A new tensor containing a % b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Examples:
+Examples:
         ```
         var a = full(List[Int](), 7.0, DType.int32)
         var b = full(List[Int](), 3.0, DType.int32)
@@ -382,17 +382,17 @@ fn modulo(a: ExTensor, b: ExTensor) raises -> ExTensor:
 fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
     """Element-wise exponentiation with broadcasting.
 
-    Args:
+Args:
         a: Base tensor.
         b: Exponent tensor.
 
-    Returns:
+Returns:
         A new tensor containing a ** b.
 
-    Raises:
+Raises:
         Error if shapes are not broadcast-compatible or dtypes don't match.
 
-    Examples:
+Examples:
         ```
         var a = full(List[Int](), 2.0, DType.float32)
         var b = full(List[Int](), 3.0, DType.float32)
@@ -404,7 +404,7 @@ fn power(a: ExTensor, b: ExTensor) raises -> ExTensor:
         var z = power(x, y)  # Shape (3, 4, 5), all 8.0
         ```
 
-    Note:
+Note:
         Uses ** operator which delegates to Mojo's built-in power implementation.
         For integer exponents, this uses efficient repeated squaring.
         For fractional exponents, this uses exp(b * log(a)).
@@ -431,14 +431,14 @@ fn _reduce_broadcast_dims(
     When forward pass broadcasts input from original_shape to grad.shape(),
     backward pass must sum gradient back to original_shape.
 
-    Args:
-        grad: Gradient tensor (broadcast shape)
+Args:
+        grad: Gradient tensor (broadcast shape).
         original_shape: Original input shape before broadcasting.
 
-    Returns:
+Returns:
         Reduced gradient matching original_shape.
 
-    Examples:
+Examples:
         ```
         # Broadcasting (3, 1, 5) → (3, 4, 5)
         var grad = ones([3, 4, 5])  # Gradient from loss
@@ -493,15 +493,15 @@ fn add_backward(
     Handles broadcasting: If input was broadcast to output shape, gradient.
     is summed back to the original input shape.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+Args:
+        grad_output: Gradient from upstream (∂L/∂C).
+        a: First input from forward pass (A).
+        b: Second input from forward pass (B).
 
-    Returns:
+Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
-    Examples:
+Examples:
         ```
         # No broadcasting
         var a = ones(List[Int](), DType.float32)
@@ -539,12 +539,12 @@ fn subtract_backward(
 
     The gradient for B is negated since ∂(A-B)/∂B = -1.
 
-    Args:
+Args:
         grad_output: Gradient from upstream (∂L/∂C).
         a: First input from forward pass (A).
         b: Second input from forward pass (B).
 
-    Returns:
+Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
     """
     # Gradient for A passes through unchanged (but reduced for broadcasting)
@@ -571,15 +571,15 @@ fn multiply_backward(
         ∂L/∂A = ∂L/∂C * B  (product rule, reduced for broadcasting)
         ∂L/∂B = ∂L/∂C * A  (reduced for broadcasting)
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+Args:
+        grad_output: Gradient from upstream (∂L/∂C).
+        a: First input from forward pass (A).
+        b: Second input from forward pass (B).
 
-    Returns:
+Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
-    Examples:
+Examples:
         ```
         var a = ones(List[Int](), DType.float32)
         var b = ones(List[Int](), DType.float32)
@@ -612,15 +612,15 @@ fn divide_backward(
 
     Includes numerical stability: adds small epsilon to prevent division by zero.
 
-    Args:
-        grad_output: Gradient from upstream (∂L/∂C)
-        a: First input from forward pass (A)
-        b: Second input from forward pass (B)
+Args:
+        grad_output: Gradient from upstream (∂L/∂C).
+        a: First input from forward pass (A).
+        b: Second input from forward pass (B).
 
-    Returns:
+Returns:
         GradientPair containing (grad_a, grad_b) - gradients w.r.t. inputs.
 
-    Examples:
+Examples:
         ```
         var a = ones(List[Int](), DType.float32)
         var b = full(List[Int](), 2.0, DType.float32)

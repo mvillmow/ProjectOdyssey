@@ -54,11 +54,11 @@ struct SGD:
         parameter = parameter - learning_rate * gradient
 
     Attributes:
-        learning_rate: Step size for parameter updates
-        momentum: Momentum factor for accelerated gradient descent (default: 0.0)
-        velocity: Momentum accumulation for each parameter (maintained internally)
+        learning_rate: Step size for parameter updates.
+        momentum: Momentum factor for accelerated gradient descent (default: 0.0).
+        velocity: Momentum accumulation for each parameter (maintained internally).
 
-    Examples:
+Examples:
         # Basic SGD
         var optimizer = SGD(learning_rate=0.01)
 
@@ -202,16 +202,16 @@ struct Adam:
     adaptive learning rates and momentum properties.
 
     Attributes:
-        learning_rate: Step size for parameter updates (default: 0.001)
-        beta1: Decay rate for first moment moving average (default: 0.9)
-        beta2: Decay rate for second moment moving average (default: 0.999)
-        epsilon: Small constant for numerical stability (default: 1e-8)
-        weight_decay: L2 regularization coefficient (default: 0.0)
-        t: Current step counter (incremented on each step)
-        m_buffers: First moment buffers per parameter ID
-        v_buffers: Second moment buffers per parameter ID
+        learning_rate: Step size for parameter updates (default: 0.001).
+        beta1: Decay rate for first moment moving average (default: 0.9).
+        beta2: Decay rate for second moment moving average (default: 0.999).
+        epsilon: Small constant for numerical stability (default: 1e-8).
+        weight_decay: L2 regularization coefficient (default: 0.0).
+        t: Current step counter (incremented on each step).
+        m_buffers: First moment buffers per parameter ID.
+        v_buffers: Second moment buffers per parameter ID.
 
-    Examples:
+Examples:
         # Basic Adam optimizer
         var optimizer = Adam(learning_rate=0.001)
 
@@ -242,11 +242,11 @@ struct Adam:
 
     fn __init__(
         out self,
-        learning_rate: Float64 = 0.001,
-        beta1: Float64 = 0.9,
-        beta2: Float64 = 0.999,
-        epsilon: Float64 = 1e-8,
-        weight_decay: Float64 = 0.0,
+        learning_rate: Float64 = 0.001,.
+        beta1: Float64 = 0.9,.
+        beta2: Float64 = 0.999,.
+        epsilon: Float64 = 1e-8,.
+        weight_decay: Float64 = 0.0,.
     ):
         """Initialize Adam optimizer.
 
@@ -460,12 +460,12 @@ struct AdaGrad:
         θ_t = θ_{t-1} - α * g_t / (√G_t + ε)  # Parameter update
 
     Attributes:
-        learning_rate: Initial step size for parameter updates
-        epsilon: Small constant for numerical stability (default: 1e-10)
-        weight_decay: L2 regularization coefficient (default: 0.0)
-        G_buffers: Accumulated squared gradients for each parameter
+        learning_rate: Initial step size for parameter updates.
+        epsilon: Small constant for numerical stability (default: 1e-10).
+        weight_decay: L2 regularization coefficient (default: 0.0).
+        G_buffers: Accumulated squared gradients for each parameter.
 
-    Examples:
+Examples:
         # Basic AdaGrad
         var optimizer = AdaGrad(learning_rate=0.01)
 
@@ -484,9 +484,9 @@ struct AdaGrad:
 
     fn __init__(
         out self,
-        learning_rate: Float64,
-        epsilon: Float64 = 1e-10,
-        weight_decay: Float64 = 0.0,
+        learning_rate: Float64,.
+        epsilon: Float64 = 1e-10,.
+        weight_decay: Float64 = 0.0,.
     ):
         """Initialize AdaGrad optimizer.
 
@@ -639,16 +639,16 @@ struct RMSprop:
         θ_t = θ_{t-1} - m_t                        # Apply momentum update
 
     Attributes:
-        learning_rate: Step size for parameter updates (α, default: 0.01)
-        alpha: Smoothing constant for running average (ρ, default: 0.99)
-        epsilon: Small constant for numerical stability (default: 1e-8)
-        weight_decay: L2 regularization coefficient (default: 0.0)
-        momentum: Momentum factor for accelerated updates (default: 0.0)
-        v_buffers: Running average of squared gradients per parameter (internal)
-        m_buffers: Momentum accumulation per parameter (internal, if momentum > 0)
-        has_buffer: Tracks initialized buffers per parameter ID
+        learning_rate: Step size for parameter updates (α, default: 0.01).
+        alpha: Smoothing constant for running average (ρ, default: 0.99).
+        epsilon: Small constant for numerical stability (default: 1e-8).
+        weight_decay: L2 regularization coefficient (default: 0.0).
+        momentum: Momentum factor for accelerated updates (default: 0.0).
+        v_buffers: Running average of squared gradients per parameter (internal).
+        m_buffers: Momentum accumulation per parameter (internal, if momentum > 0).
+        has_buffer: Tracks initialized buffers per parameter ID.
 
-    Examples:
+Examples:
         # Basic RMSprop
         var optimizer = RMSprop(learning_rate=0.01)
 
@@ -674,11 +674,11 @@ struct RMSprop:
 
     fn __init__(
         out self,
-        learning_rate: Float64 = 0.01,
-        alpha: Float64 = 0.99,
-        epsilon: Float64 = 1e-8,
-        weight_decay: Float64 = 0.0,
-        momentum: Float64 = 0.0,
+        learning_rate: Float64 = 0.01,.
+        alpha: Float64 = 0.99,.
+        epsilon: Float64 = 1e-8,.
+        weight_decay: Float64 = 0.0,.
+        momentum: Float64 = 0.0,.
     ):
         """Initialize RMSprop optimizer.
 

@@ -33,7 +33,7 @@ fn random_float() -> Float64:
 
     Uses 1 billion possible values for better probability distribution.
 
-    Returns:
+Returns:
         Random float in range [0.0, 1.0).
     """
     return Float64(random_si64(0, 1000000000)) / 1000000000.0

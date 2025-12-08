@@ -39,11 +39,11 @@ struct EvaluationResult(Copyable, Movable):
     single, comprehensive result structure.
 
     Attributes:
-        accuracy: Overall accuracy as a fraction in [0.0, 1.0]
-        num_correct: Total number of correct predictions
-        num_total: Total number of samples evaluated
-        correct_per_class: Per-class correct prediction counts (optional)
-        total_per_class: Per-class total sample counts (optional)
+        accuracy: Overall accuracy as a fraction in [0.0, 1.0].
+        num_correct: Total number of correct predictions.
+        num_total: Total number of samples evaluated.
+        correct_per_class: Per-class correct prediction counts (optional).
+        total_per_class: Per-class total sample counts (optional).
         top_k_accuracy: Top-k accuracy (optional, defaults to None).
     """
 
@@ -55,11 +55,11 @@ struct EvaluationResult(Copyable, Movable):
 
     fn __init__(
         out self,
-        accuracy: Float32,
-        num_correct: Int,
-        num_total: Int,
-        correct_per_class: List[Int] = List[Int](),
-        total_per_class: List[Int] = List[Int](),
+        accuracy: Float32,.
+        num_correct: Int,.
+        num_total: Int,.
+        correct_per_class: List[Int] = List[Int](),.
+        total_per_class: List[Int] = List[Int](),.
     ):
         """Initialize EvaluationResult.
 
@@ -98,9 +98,9 @@ fn evaluate_model[
     generic function that works with any model type M that implements forward().
 
     Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor
+        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
 
-    Args:
+Args:
         model: Model to evaluate (must have forward() method).
         images: Input images of shape (num_samples, ...).
         labels: Ground truth labels of shape (num_samples,).
@@ -108,13 +108,13 @@ fn evaluate_model[
         num_classes: Number of classification classes (default: 10).
         verbose: Print progress during evaluation (default: True).
 
-    Returns:
+Returns:
         EvaluationResult with accuracy, per-class stats, and total counts
 
-    Raises:
-        Error: If batch sizes don't match or shapes are incompatible
+Raises:
+        Error: If batch sizes don't match or shapes are incompatible.
 
-    Examples:
+Examples:
         # Generic evaluation with any model
         var result = evaluate_model(model, test_images, test_labels, batch_size=100)
         print("Accuracy: ", result.accuracy)
@@ -233,9 +233,9 @@ fn evaluate_model_simple[
     is needed, without per-class statistics.
 
     Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor
+        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
 
-    Args:
+Args:
         model: Model to evaluate (must have forward() method).
         images: Input images of shape (num_samples, ...).
         labels: Ground truth labels of shape (num_samples,).
@@ -243,13 +243,13 @@ fn evaluate_model_simple[
         num_classes: Number of classification classes (default: 10).
         verbose: Print progress during evaluation (default: True).
 
-    Returns:
+Returns:
         Overall accuracy as fraction in [0.0, 1.0]
 
-    Raises:
-        Error: If batch sizes don't match or shapes are incompatible
+Raises:
+        Error: If batch sizes don't match or shapes are incompatible.
 
-    Examples:
+Examples:
         # Simple overall accuracy
         var accuracy = evaluate_model_simple(model, test_images, test_labels)
         print("Test Accuracy: ", accuracy * 100.0, "%").
@@ -329,9 +329,9 @@ fn evaluate_topk[
     label is in the top-k predictions.
 
     Type Parameters:
-        M: Model type that must implement forward(images: ExTensor) -> ExTensor
+        M: Model type that must implement forward(images: ExTensor) -> ExTensor.
 
-    Args:
+Args:
         model: Model to evaluate.
         images: Input images of shape (num_samples, ...).
         labels: Ground truth labels of shape (num_samples,).
@@ -340,13 +340,13 @@ fn evaluate_topk[
         num_classes: Number of classification classes (default: 10).
         verbose: Print progress during evaluation (default: True).
 
-    Returns:
+Returns:
         Top-k accuracy as fraction in [0.0, 1.0]
 
-    Raises:
-        Error: If k > num_classes or shapes are incompatible
+Raises:
+        Error: If k > num_classes or shapes are incompatible.
 
-    Examples:
+Examples:
         # Top-5 accuracy for ImageNet-like tasks
         var top5_acc = evaluate_topk(model, test_images, test_labels, k=5)
         print("Top-5 Accuracy: ", top5_acc * 100.0, "%").

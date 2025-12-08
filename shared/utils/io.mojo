@@ -94,10 +94,10 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
     OPTIMIZER:<key>=<value>
     META:<key>=<value>
 
-    Args:
-        checkpoint: Checkpoint to serialize
+Args:
+        checkpoint: Checkpoint to serialize.
 
-    Returns:
+Returns:
         Serialized string representation.
     """
     var lines= List[String]()
@@ -128,13 +128,13 @@ fn _serialize_checkpoint(checkpoint: Checkpoint) -> String:
 fn _deserialize_checkpoint(content: String) raises -> Checkpoint:
     """Deserialize checkpoint from string format.
 
-    Args:
+Args:
         content: Serialized checkpoint string.
 
-    Returns:
+Returns:
         Deserialized checkpoint.
 
-    Raises:
+Raises:
         ValueError: If format is invalid.
     """
     var checkpoint = Checkpoint()
@@ -198,12 +198,12 @@ fn save_checkpoint(
     partial writes if interrupted. Can optionally create backup of existing
     file before overwriting.
 
-    Args:
-        filepath: Output checkpoint path
-        checkpoint: Checkpoint to save
-        backup: Create backup before overwriting existing file
+Args:
+        filepath: Output checkpoint path.
+        checkpoint: Checkpoint to save.
+        backup: Create backup before overwriting existing file.
 
-    Returns:
+Returns:
         True if save successful, False if error
 
     Example:
@@ -229,13 +229,13 @@ fn save_checkpoint(
 fn load_checkpoint(filepath: String) raises -> Checkpoint:
     """Load checkpoint from file.
 
-    Args:
+Args:
         filepath: Path to checkpoint file.
 
-    Returns:
+Returns:
         Loaded checkpoint.
 
-    Raises:
+Raises:
         FileNotFoundError: If checkpoint file doesn't exist.
         ValueError: If file format is invalid.
 
@@ -266,12 +266,12 @@ fn save_tensor_to_checkpoint(
     Uses the same hex-encoding format as weights.mojo for compatibility.
     Creates checkpoint_dir if it doesn't exist.
 
-    Args:
-        tensor: Tensor to save
-        name: Parameter name (e.g., "conv1_kernel")
-        checkpoint_dir: Directory for checkpoint files
+Args:
+        tensor: Tensor to save.
+        name: Parameter name (e.g., "conv1_kernel").
+        checkpoint_dir: Directory for checkpoint files.
 
-    Returns:
+Returns:
         True if save successful, False if error
 
     File format (per tensor):
@@ -320,14 +320,14 @@ fn load_tensor_from_checkpoint(
 ) raises -> ExTensor:
     """Load ExTensor from checkpoint directory.
 
-    Args:
-        name: Parameter name (e.g., "conv1_kernel")
-        checkpoint_dir: Directory containing checkpoint files
+Args:
+        name: Parameter name (e.g., "conv1_kernel").
+        checkpoint_dir: Directory containing checkpoint files.
 
-    Returns:
+Returns:
         Loaded ExTensor
 
-    Raises:
+Raises:
         Error: If file doesn't exist or format is invalid.
     """
     var filepath = checkpoint_dir + "/" + name + ".weights"
@@ -441,11 +441,11 @@ fn _hex_to_bytes(hex_str: String, output: UnsafePointer[UInt8]) raises:
     declared in function parameters. Callers should use this for validation
     only, or implement write logic with properly-typed pointers.
 
-    Args:
+Args:
         hex_str: Hexadecimal string (e.g., "48656c6c6f").
         output: Pre-allocated pointer (not written to in this stub).
 
-    Raises:
+Raises:
         Error if hex_str has odd length or invalid characters.
     """
     var length = len(hex_str)
@@ -511,11 +511,11 @@ struct SerializedTensor(Copyable, Movable):
 fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
     """Serialize tensor to bytes with metadata.
 
-    Args:
-        name: Tensor name
-        data: Tensor data (simplified as string list)
+Args:
+        name: Tensor name.
+        data: Tensor data (simplified as string list).
 
-    Returns:
+Returns:
         Serialized tensor with metadata
 
     Example:
@@ -543,10 +543,10 @@ fn serialize_tensor(name: String, data: List[String]) -> SerializedTensor:
 fn deserialize_tensor(serialized: SerializedTensor) -> List[String]:
     """Deserialize tensor from bytes.
 
-    Args:
-        serialized: Serialized tensor
+Args:
+        serialized: Serialized tensor.
 
-    Returns:
+Returns:
         Deserialized tensor data
 
     Example:
@@ -574,11 +574,11 @@ fn safe_write_file(filepath: String, content: String) -> Bool:
     Prevents corruption if write is interrupted. Uses Python interop for
     os.rename() since Mojo v0.25.7 lacks this functionality.
 
-    Args:
-        filepath: Output file path
-        content: File content
+Args:
+        filepath: Output file path.
+        content: File content.
 
-    Returns:
+Returns:
         True if write successful, False if error.
     """
     # Atomic write pattern: write to temp file, then rename
@@ -608,13 +608,13 @@ fn safe_write_file(filepath: String, content: String) -> Bool:
 fn safe_read_file(filepath: String) raises -> String:
     """Read file safely.
 
-    Args:
+Args:
         filepath: Input file path.
 
-    Returns:
+Returns:
         File contents.
 
-    Raises:
+Raises:
         FileNotFoundError: If file doesn't exist.
     """
     try:
@@ -630,10 +630,10 @@ fn create_backup(filepath: String) -> Bool:
     Creates a backup with .bak extension. If backup already exists,
     moves old backup to .bak.1, .bak.2, etc.
 
-    Args:
-        filepath: Original file path
+Args:
+        filepath: Original file path.
 
-    Returns:
+Returns:
         True if backup created, False if file doesn't exist or error.
     """
     if not file_exists(filepath):
@@ -661,10 +661,10 @@ fn create_backup(filepath: String) -> Bool:
 fn remove_safely(filepath: String) -> Bool:
     """Remove file safely (move to trash vs permanent delete).
 
-    Args:
-        filepath: File to remove
+Args:
+        filepath: File to remove.
 
-    Returns:
+Returns:
         True if removed, False if error.
     """
     # NOTE: Mojo v0.25.7 doesn't have os.remove() or file system operations
@@ -688,15 +688,15 @@ fn join_path(base: String, path: String) raises -> String:
     Validates path components to prevent directory traversal attacks
     using ".." or absolute paths.
 
-    Args:
-        base: Base path
-        path: Path component to append
+Args:
+        base: Base path.
+        path: Path component to append.
 
-    Returns:
+Returns:
         Joined path
 
-    Raises:
-        Error: If path contains ".." or starts with "/" (traversal attempt)
+Raises:
+        Error: If path contains ".." or starts with "/" (traversal attempt).
 
     Example:
         ```mojo
@@ -730,10 +730,10 @@ fn join_path(base: String, path: String) raises -> String:
 fn split_path(filepath: String) -> Tuple[String, String]:
     """Split path into directory and filename.
 
-    Args:
-        filepath: Full file path
+Args:
+        filepath: Full file path.
 
-    Returns:
+Returns:
         Tuple of (directory, filename)
 
     Example:
@@ -765,10 +765,10 @@ fn split_path(filepath: String) -> Tuple[String, String]:
 fn get_filename(filepath: String) -> String:
     """Get filename from path.
 
-    Args:
-        filepath: Full file path
+Args:
+        filepath: Full file path.
 
-    Returns:
+Returns:
         Filename only
 
     Example:
@@ -783,10 +783,10 @@ fn get_filename(filepath: String) -> String:
 fn expand_path(filepath: String) -> String:
     """Expand ~ to home directory and resolve relative paths.
 
-    Args:
-        filepath: File path (may contain ~)
+Args:
+        filepath: File path (may contain ~).
 
-    Returns:
+Returns:
         Expanded absolute path.
     """
     # Use Python os.path.expanduser() for proper ~ expansion
@@ -807,10 +807,10 @@ fn expand_path(filepath: String) -> String:
 fn file_exists(filepath: String) -> Bool:
     """Check if file exists.
 
-    Args:
-        filepath: Path to check
+Args:
+        filepath: Path to check.
 
-    Returns:
+Returns:
         True if file exists, False otherwise.
     """
     # Check if file exists by trying to open it
@@ -825,10 +825,10 @@ fn file_exists(filepath: String) -> Bool:
 fn directory_exists(dirpath: String) -> Bool:
     """Check if directory exists.
 
-    Args:
-        dirpath: Path to check
+Args:
+        dirpath: Path to check.
 
-    Returns:
+Returns:
         True if directory exists, False otherwise.
     """
     # Use Python os.path.isdir() to check if directory exists
@@ -846,10 +846,10 @@ fn create_directory(dirpath: String) -> Bool:
 
     Creates parent directories as needed (equivalent to mkdir -p).
 
-    Args:
-        dirpath: Directory path
+Args:
+        dirpath: Directory path.
 
-    Returns:
+Returns:
         True if created or already exists, False if error.
     """
     # Use Python os.makedirs() to create directory with parents
@@ -865,10 +865,10 @@ fn create_directory(dirpath: String) -> Bool:
 fn get_file_size(filepath: String) -> Int:
     """Get file size in bytes.
 
-    Args:
-        filepath: File path
+Args:
+        filepath: File path.
 
-    Returns:
+Returns:
         File size in bytes, or -1 if file doesn't exist.
     """
     if not file_exists(filepath):

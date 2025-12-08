@@ -30,10 +30,10 @@ from collections import List
 fn has_nan(tensor: ExTensor) -> Bool:
     """Check if tensor contains any NaN values.
 
-    Args:
+Args:
         tensor: Input tensor to check.
 
-    Returns:
+Returns:
         True if any element is NaN, False otherwise.
 
     Example:
@@ -42,7 +42,7 @@ fn has_nan(tensor: ExTensor) -> Bool:
         assert_true(has_nan(x))
         ```
 
-    Note:
+Note:
         Checks all elements regardless of dtype. Supports all floating-point types.
     """
     var size = tensor.numel()
@@ -69,10 +69,10 @@ fn has_nan(tensor: ExTensor) -> Bool:
 fn has_inf(tensor: ExTensor) -> Bool:
     """Check if tensor contains any Inf values (positive or negative).
 
-    Args:
+Args:
         tensor: Input tensor to check.
 
-    Returns:
+Returns:
         True if any element is Inf or -Inf, False otherwise.
 
     Example:
@@ -81,7 +81,7 @@ fn has_inf(tensor: ExTensor) -> Bool:
         assert_true(has_inf(x))
         ```
 
-    Note:
+Note:
         Checks all elements regardless of dtype. Supports all floating-point types.
     """
     var size = tensor.numel()
@@ -108,10 +108,10 @@ fn has_inf(tensor: ExTensor) -> Bool:
 fn count_nan(tensor: ExTensor) -> Int:
     """Count number of NaN values in tensor.
 
-    Args:
+Args:
         tensor: Input tensor to check.
 
-    Returns:
+Returns:
         Number of NaN elements.
 
     Example:
@@ -145,10 +145,10 @@ fn count_nan(tensor: ExTensor) -> Int:
 fn count_inf(tensor: ExTensor) -> Int:
     """Count number of Inf values in tensor.
 
-    Args:
+Args:
         tensor: Input tensor to check.
 
-    Returns:
+Returns:
         Number of Inf/-Inf elements.
 
     Example:
@@ -188,12 +188,12 @@ fn check_tensor_safety[
     When enable=True, raises Error if NaN or Inf found.
     When enable=False, compiles to nothing (zero overhead).
 
-    Args:
+Args:
         tensor: Tensor to check.
-        name: Name for error message (default: "tensor")
+        name: Name for error message (default: "tensor").
 
-    Raises:
-        Error: If tensor contains NaN or Inf values (only when enable=True)
+Raises:
+        Error: If tensor contains NaN or Inf values (only when enable=True).
 
     Example:
         ```mojo
@@ -205,7 +205,7 @@ fn check_tensor_safety[
         # Raises if output contains NaN/Inf
         ```
 
-    Note:
+Note:
         Use @parameter to enable/disable at compile time for zero runtime cost.
     """
 
@@ -223,10 +223,10 @@ fn check_tensor_safety[
 fn tensor_min(tensor: ExTensor) -> Float64:
     """Find minimum value in tensor.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Minimum value as Float64.
 
     Example:
@@ -266,10 +266,10 @@ fn tensor_min(tensor: ExTensor) -> Float64:
 fn tensor_max(tensor: ExTensor) -> Float64:
     """Find maximum value in tensor.
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         Maximum value as Float64.
 
     Example:
@@ -314,13 +314,13 @@ fn check_tensor_range(
 ) raises:
     """Check if all tensor values are within [min_val, max_val].
 
-    Args:
+Args:
         tensor: Tensor to check.
         min_val: Minimum allowed value.
         max_val: Maximum allowed value.
         name: Name for error message.
 
-    Raises:
+Raises:
         Error: If any value is outside the range.
 
     Example:
@@ -351,10 +351,10 @@ fn check_tensor_range(
 fn compute_tensor_l2_norm(tensor: ExTensor) -> Float64:
     """Compute L2 norm of tensor: sqrt(sum(x^2)).
 
-    Args:
+Args:
         tensor: Input tensor.
 
-    Returns:
+Returns:
         L2 norm as Float64.
 
     Example:
@@ -390,12 +390,12 @@ fn check_gradient_norm(
 ) raises:
     """Check if gradient L2 norm exceeds threshold (gradient explosion detection).
 
-    Args:
+Args:
         gradient: Gradient tensor to check.
         max_norm: Maximum allowed L2 norm.
         name: Name for error message.
 
-    Raises:
+Raises:
         Error: If gradient norm exceeds max_norm.
 
     Example:
@@ -405,7 +405,7 @@ fn check_gradient_norm(
         # Raises if ||grad_w||_2 > 100
         ```
 
-    Note:
+Note:
         Use this to detect gradient explosion during training.
         Common thresholds: 10.0 (strict), 100.0 (moderate), 1000.0 (lenient).
     """
@@ -427,12 +427,12 @@ fn check_gradient_vanishing(
 ) raises:
     """Check if gradient L2 norm is too small (gradient vanishing detection).
 
-    Args:
+Args:
         gradient: Gradient tensor to check.
         min_norm: Minimum expected L2 norm.
         name: Name for error message.
 
-    Raises:
+Raises:
         Error: If gradient norm is below min_norm.
 
     Example:
@@ -442,7 +442,7 @@ fn check_gradient_vanishing(
         # Raises if ||grad_w||_2 < 1e-6
         ```
 
-    Note:
+Note:
         Use this to detect gradient vanishing in deep networks.
         Common thresholds: 1e-7 (lenient), 1e-5 (moderate), 1e-3 (strict).
     """
@@ -475,14 +475,14 @@ fn check_gradient_safety[
     - Gradient explosion (norm > max_norm)
     - Gradient vanishing (norm < min_norm)
 
-    Args:
+Args:
         gradient: Gradient tensor to check.
         max_norm: Maximum allowed L2 norm.
         min_norm: Minimum expected L2 norm.
         name: Name for error message.
 
-    Raises:
-        Error: If any safety check fails (only when enable=True)
+Raises:
+        Error: If any safety check fails (only when enable=True).
 
     Example:
         ```mojo

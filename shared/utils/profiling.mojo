@@ -341,7 +341,7 @@ fn memory_usage() -> MemoryStats:
 
     Returns information about allocated, peak, and available memory.
 
-    Returns:
+Returns:
         Memory statistics.
 
     Example:
@@ -364,7 +364,7 @@ fn memory_usage() -> MemoryStats:
 fn memory_at_checkpoint() -> MemoryStats:
     """Record memory usage at a checkpoint.
 
-    Returns:
+Returns:
         Memory statistics at this point.
     """
     return memory_usage()
@@ -373,11 +373,11 @@ fn memory_at_checkpoint() -> MemoryStats:
 fn get_memory_delta(before: MemoryStats, after: MemoryStats) -> Int:
     """Compute memory change between two points.
 
-    Args:
+Args:
         before: Memory before operation.
         after: Memory after operation.
 
-    Returns:
+Returns:
         Memory delta in bytes (positive = increase).
     """
     return after.allocated_bytes - before.allocated_bytes
@@ -395,11 +395,11 @@ fn profile_function(
 
     Measures function execution time and returns statistics.
 
-    Args:
+Args:
         name: Function name.
-        func_ptr: Pointer to function (simplified)
+        func_ptr: Pointer to function (simplified).
 
-    Returns:
+Returns:
         Timing statistics for function.
     """
     var start = perf_counter_ns()
@@ -425,12 +425,12 @@ fn benchmark_function(
 
     Runs function multiple times and computes statistics (mean, std dev, etc).
 
-    Args:
+Args:
         name: Function name.
         func_ptr: Function to benchmark.
         iterations: Number of iterations.
 
-    Returns:
+Returns:
         Timing statistics with min, max, average, std dev.
     """
     var times= List[Float32](capacity=iterations)
@@ -533,10 +533,10 @@ fn generate_timing_report(
 ) raises -> ProfilingReport:
     """Generate profiling report from timing data.
 
-    Args:
-        timings: Dictionary of timing statistics
+Args:
+        timings: Dictionary of timing statistics.
 
-    Returns:
+Returns:
         Complete profiling report.
     """
     var report = ProfilingReport()
@@ -565,7 +565,7 @@ fn generate_timing_report(
 fn print_timing_report(report: ProfilingReport) raises:
     """Print profiling report to console.
 
-    Args:
+Args:
         report: Report to print.
     """
     print(report.to_string())
@@ -576,12 +576,12 @@ fn export_profiling_report(
 ) raises -> Bool:
     """Export profiling report to file.
 
-    Args:
-        report: Report to export
-        filepath: Output file path
-        format: Export format (json, csv, txt)
+Args:
+        report: Report to export.
+        filepath: Output file path.
+        format: Export format (json, csv, txt).
 
-    Returns:
+Returns:
         True if successful.
     """
     # Determine format and convert report accordingly
@@ -633,10 +633,10 @@ fn measure_profiling_overhead(num_measurements: Int = 100) raises -> Float32:
     This is important to ensure profiling doesn't significantly skew results.
     Target: profiling overhead < 5% of measured time.
 
-    Args:
-        num_measurements: Number of measurements to take
+Args:
+        num_measurements: Number of measurements to take.
 
-    Returns:
+Returns:
         Overhead as percentage of total time.
     """
     # Measure time spent on profiling operations themselves
@@ -690,11 +690,11 @@ fn compare_to_baseline(
 ) -> Tuple[Bool, Float32]:
     """Check if current performance is within baseline tolerance.
 
-    Args:
-        current: Current timing statistics
-        baseline: Baseline metrics to compare against
+Args:
+        current: Current timing statistics.
+        baseline: Baseline metrics to compare against.
 
-    Returns:
+Returns:
         Tuple of (is_regression, percent_slower).
     """
     # Calculate percent difference
@@ -714,11 +714,11 @@ fn detect_performance_regression(
 ) raises -> List[String]:
     """Detect performance regressions compared to baseline.
 
-    Args:
-        current_metrics: Current measurements
-        baseline_metrics: Baseline metrics
+Args:
+        current_metrics: Current measurements.
+        baseline_metrics: Baseline metrics.
 
-    Returns:
+Returns:
         List of functions with regressions.
     """
     var regressions= List[String]()

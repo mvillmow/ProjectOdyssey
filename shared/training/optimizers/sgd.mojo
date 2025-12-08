@@ -32,15 +32,15 @@ fn sgd_step(
 
     Returns new parameters and new velocity. Caller manages all state.
 
-    Args:
+Args:
         params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
-        velocity: Momentum buffer (use zeros_like(params) if no momentum)
+        velocity: Momentum buffer (use zeros_like(params) if no momentum).
         learning_rate: Step size for parameter updates.
-        momentum: Momentum factor (default: 0.0, no momentum)
-        weight_decay: L2 regularization factor (default: 0.0, no regularization)
+        momentum: Momentum factor (default: 0.0, no momentum).
+        weight_decay: L2 regularization factor (default: 0.0, no regularization).
 
-    Returns:
+Returns:
         Tuple of (new_params, new_velocity)
 
     Example (basic SGD without momentum):
@@ -68,7 +68,7 @@ fn sgd_step(
             (W, W_vel) = sgd_step(W, grad_W, W_vel, lr=0.01, momentum=0.9)
         ```
 
-    Note:
+Note:
         This is a pure function - it returns new state rather than mutating.
         Caller must capture both return values and update their variables.
     """
@@ -124,12 +124,12 @@ fn sgd_step_simple(
     Formula:
         params = params - learning_rate * gradients
 
-    Args:
+Args:
         params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
         learning_rate: Step size for parameter updates.
 
-    Returns:
+Returns:
         Updated parameters.
 
     Example:
@@ -168,12 +168,12 @@ fn sgd_momentum_update_inplace(
         velocity = momentum * velocity - lr * grad
         param = param + velocity
 
-    Args:
-        param: Parameter tensor to update (modified in-place)
+Args:
+        param: Parameter tensor to update (modified in-place).
         grad: Gradient tensor.
-        velocity: Momentum velocity tensor (modified in-place)
+        velocity: Momentum velocity tensor (modified in-place).
         lr: Learning rate.
-        momentum: Momentum coefficient (typically 0.9)
+        momentum: Momentum coefficient (typically 0.9).
 
     Example:
         ```mojo
@@ -189,7 +189,7 @@ fn sgd_momentum_update_inplace(
             sgd_momentum_update_inplace(W, grad_W, W_vel, lr=0.01, momentum=0.9)
         ```
 
-    Note:
+Note:
         - In-place mutation for efficiency
         - Velocity tensor must be pre-allocated (use zeros_like)
         - Both param and velocity are modified directly
@@ -252,11 +252,11 @@ fn initialize_velocities(
     Each velocity tensor is zero-initialized with the same shape as its
     corresponding parameter.
 
-    Args:
+Args:
         param_shapes: List of parameter shapes to create velocities for.
         dtype: Data type for velocity tensors (default: float32).
 
-    Returns:
+Returns:
         List of zero-initialized tensors matching parameter shapes.
 
     Example:
@@ -275,7 +275,7 @@ fn initialize_velocities(
         # velocities[1] matches conv1_bias shape, etc.
         ```
 
-    Note:
+Note:
         The order of velocities matches the order of shapes provided.
         Ensure you use the same ordering when calling sgd_momentum_update_inplace.
     """
@@ -301,10 +301,10 @@ fn initialize_velocities_from_params(
     Convenience function that extracts shapes from existing parameter tensors
     and creates matching velocity buffers.
 
-    Args:
+Args:
         params: List of parameter tensors.
 
-    Returns:
+Returns:
         List of zero-initialized velocity tensors with matching shapes and dtypes.
 
     Example:

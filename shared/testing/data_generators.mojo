@@ -38,11 +38,11 @@ fn random_tensor(
 ) raises -> ExTensor:
     """Generate tensor with random values from uniform distribution [0, 1).
 
-    Args:
+Args:
         shape: Shape of the output tensor as a list of dimensions.
         dtype: Data type of tensor elements (default: float32).
 
-    Returns:
+Returns:
         ExTensor with random values uniformly distributed in [0, 1).
 
     Example:
@@ -51,7 +51,7 @@ fn random_tensor(
         # Creates 10x5 tensor with random values in [0, 1)
         ```
 
-    Note:
+Note:
         Values are uniformly distributed in [0, 1) regardless of dtype.
         For integer dtypes, values are truncated to Int.
     """
@@ -100,13 +100,13 @@ fn random_uniform(
 ) raises -> ExTensor:
     """Generate tensor with random values from uniform distribution [low, high).
 
-    Args:
+Args:
         shape: Shape of the output tensor as a list of dimensions.
         low: Lower bound of uniform distribution (inclusive, default: 0.0).
         high: Upper bound of uniform distribution (exclusive, default: 1.0).
         dtype: Data type of tensor elements (default: float32).
 
-    Returns:
+Returns:
         ExTensor with random values uniformly distributed in [low, high).
 
     Example:
@@ -115,7 +115,7 @@ fn random_uniform(
         # Creates 100x20 tensor with random values in [-1.0, 1.0)
         ```
 
-    Note:
+Note:
         The range [low, high) is linearly scaled from [0, 1).
         For integer dtypes, values are truncated to Int.
     """
@@ -170,13 +170,13 @@ fn random_normal(
 
     Uses Box-Muller transform to convert uniform random values to normal distribution.
 
-    Args:
+Args:
         shape: Shape of the output tensor as a list of dimensions.
         mean: Mean of the normal distribution (default: 0.0).
         std: Standard deviation of the normal distribution (default: 1.0).
         dtype: Data type of tensor elements (default: float32).
 
-    Returns:
+Returns:
         ExTensor with random values from normal distribution N(mean, std^2).
 
     Example:
@@ -185,7 +185,7 @@ fn random_normal(
         # Creates 784x256 tensor with normally distributed values
         ```
 
-    Note:
+Note:
         Uses Box-Muller transform for efficiency.
         For integer dtypes, values are truncated to Int after sampling.
     """
@@ -258,13 +258,13 @@ fn synthetic_classification_data(
     Creates a random dataset with linearly separable classes by generating
     class centers and adding noise around each center.
 
-    Args:
+Args:
         num_samples: Total number of samples to generate.
         num_features: Number of features per sample.
         num_classes: Number of classes.
         dtype: Data type for features (labels are always int32).
 
-    Returns:
+Returns:
         Tuple of (features, labels) where:
         - features: ExTensor of shape [num_samples, num_features]
         - labels: ExTensor of shape [num_samples] with values in [0, num_classes)

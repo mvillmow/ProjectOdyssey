@@ -56,7 +56,7 @@ struct FP4_E2M1(Copyable, Movable, Representable, Stringable):
     - Max normal: exp=2, mantissa=1 (value = 6.0 before scaling)
     - Min normal: exp=1, mantissa=0 (value = 1.0 before scaling)
 
-    Note:
+Note:
         E2M1 values are meaningless without a block-level scale factor.
         Use MXFP4 or NVFP4 for complete block-based representations.
     """

@@ -31,19 +31,19 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
     Top-1 accuracy is the fraction of samples where the predicted class.
     (argmax of logits) exactly matches the true label.
 
-    Args:
-        predictions: Model predictions/logits of shape [batch_size, num_classes]
+Args:
+        predictions: Model predictions/logits of shape [batch_size, num_classes].
                     or predicted class indices of shape [batch_size]
-        labels: True class labels of shape [batch_size]
+        labels: True class labels of shape [batch_size].
 
-    Returns:
+Returns:
         Accuracy as a fraction in [0, 1]
 
-    Raises:
+Raises:
         Error: If shapes are incompatible.
         Error: If batch sizes don't match.
 
-    Examples:
+Examples:
         # With logits (need argmax)
         var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 3 classes
         var labels = ExTensor(List[Int](), DType.int32)
@@ -83,12 +83,12 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
 
         if pred_classes._dtype == DType.int32:
             pred_val = Int(pred_classes._data.bitcast[Int32]()[i])
-        else:  # int64
+        else:  # int64.
             pred_val = Int(pred_classes._data.bitcast[Int64]()[i])
 
         if labels._dtype == DType.int32:
             label_val = Int(labels._data.bitcast[Int32]()[i])
-        else:  # int64
+        else:  # int64.
             label_val = Int(labels._data.bitcast[Int64]()[i])
 
         if pred_val == label_val:
@@ -100,14 +100,14 @@ fn top1_accuracy(predictions: ExTensor, labels: ExTensor) raises -> Float64:
 fn argmax(var tensor: ExTensor, axis: Int) raises -> ExTensor:
     """Compute argmax along specified axis.
 
-    Args:
+Args:
         tensor: Input tensor.
-        axis: Axis along which to compute argmax (typically 1 for [batch, classes])
+        axis: Axis along which to compute argmax (typically 1 for [batch, classes]).
 
-    Returns:
+Returns:
         Tensor of indices with shape reduced along specified axis.
 
-    Raises:
+Raises:
         Error: If axis is out of bounds.
     """
     var shape_vec = tensor.shape()
@@ -170,19 +170,19 @@ fn topk_accuracy(
     Top-k accuracy is the fraction of samples where the true label appears.
     in the k predictions with highest logits.
 
-    Args:
-        predictions: Model logits of shape [batch_size, num_classes]
-        labels: True class labels of shape [batch_size]
-        k: Number of top predictions to consider (default: 5)
+Args:
+        predictions: Model logits of shape [batch_size, num_classes].
+        labels: True class labels of shape [batch_size].
+        k: Number of top predictions to consider (default: 5).
 
-    Returns:
+Returns:
         Accuracy as a fraction in [0, 1]
 
-    Raises:
+Raises:
         Error: If shapes are incompatible.
         Error: If k <= 0 or k > num_classes.
 
-    Examples:
+Examples:
         var logits = ExTensor(List[Int](), DType.float32)  # 4 samples, 10 classes
         var labels = ExTensor(List[Int](), DType.int32)
         var acc = topk_accuracy(logits, labels, k=5)  # Top-5 accuracy
@@ -237,12 +237,12 @@ fn get_topk_indices(
 
     Uses selection algorithm (not full sort) for efficiency.
 
-    Args:
-        predictions: Logits tensor [batch_size, num_classes]
+Args:
+        predictions: Logits tensor [batch_size, num_classes].
         batch_idx: Which sample in the batch.
         k: Number of top indices to return.
 
-    Returns:
+Returns:
         Vector of k class indices with highest scores.
     """
     var shape_vec = predictions.shape()
@@ -300,18 +300,18 @@ fn per_class_accuracy(
     Returns a tensor where each element is the accuracy for that class,
     computed as: correct_for_class / total_samples_for_class
 
-    Args:
-        predictions: Model predictions/logits (same format as top1_accuracy)
-        labels: True class labels of shape [batch_size]
+Args:
+        predictions: Model predictions/logits (same format as top1_accuracy).
+        labels: True class labels of shape [batch_size].
         num_classes: Total number of classes.
 
-    Returns:
+Returns:
         Tensor of shape [num_classes] with per-class accuracies.
 
-    Raises:
+Raises:
         Error: If shapes are incompatible.
 
-    Examples:
+Examples:
         var logits = ExTensor(List[Int](), DType.float32)
         var labels = ExTensor(List[Int](), DType.int32)
         var per_class_acc = per_class_accuracy(logits, labels, num_classes=10)

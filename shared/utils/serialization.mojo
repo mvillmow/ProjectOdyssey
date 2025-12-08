@@ -92,13 +92,13 @@ fn save_tensor(tensor: ExTensor, filepath: String, name: String = "") raises:
     Saves tensor with metadata (dtype, shape) and hex-encoded byte data.
     File format is text-based for portability across platforms.
 
-    Args:
-        tensor: Tensor to save
-        filepath: Output file path
-        name: Optional tensor name (defaults to empty string)
+Args:
+        tensor: Tensor to save.
+        filepath: Output file path.
+        name: Optional tensor name (defaults to empty string).
 
-    Raises:
-        Error: If file write fails
+Raises:
+        Error: If file write fails.
 
     Example:
         ```mojo
@@ -136,14 +136,14 @@ fn load_tensor(filepath: String) raises -> ExTensor:
     Reads hex-encoded tensor data and metadata, reconstructs
     ExTensor with original dtype and shape.
 
-    Args:
-        filepath: Input file path
+Args:
+        filepath: Input file path.
 
-    Returns:
+Returns:
         Loaded ExTensor
 
-    Raises:
-        Error: If file format is invalid or file doesn't exist
+Raises:
+        Error: If file format is invalid or file doesn't exist.
 
     Example:
         ```mojo
@@ -192,14 +192,14 @@ fn load_tensor_with_name(filepath: String) raises -> Tuple[String, ExTensor]:
     Similar to load_tensor but also returns the tensor name
     from the file (useful for NamedTensor reconstruction).
 
-    Args:
-        filepath: Input file path
+Args:
+        filepath: Input file path.
 
-    Returns:
+Returns:
         Tuple of (name, tensor)
 
-    Raises:
-        Error: If file format is invalid or file doesn't exist
+Raises:
+        Error: If file format is invalid or file doesn't exist.
 
     Example:
         ```mojo
@@ -253,12 +253,12 @@ fn save_named_tensors(tensors: List[NamedTensor], dirpath: String) raises:
     Creates a directory with one .weights file per tensor.
     Useful for saving model checkpoints with multiple parameter groups.
 
-    Args:
-        tensors: List of NamedTensor objects
-        dirpath: Output directory path (created if doesn't exist)
+Args:
+        tensors: List of NamedTensor objects.
+        dirpath: Output directory path (created if doesn't exist).
 
-    Raises:
-        Error: If directory creation or file write fails
+Raises:
+        Error: If directory creation or file write fails.
 
     Example:
         ```mojo
@@ -288,14 +288,14 @@ fn load_named_tensors(dirpath: String) raises -> List[NamedTensor]:
     Reads all .weights files from directory and reconstructs
     NamedTensor objects. Files are loaded in directory order.
 
-    Args:
-        dirpath: Directory containing .weights files
+Args:
+        dirpath: Directory containing .weights files.
 
-    Returns:
+Returns:
         List of NamedTensor objects
 
-    Raises:
-        Error: If directory doesn't exist or file format is invalid
+Raises:
+        Error: If directory doesn't exist or file format is invalid.
 
     Example:
         ```mojo
@@ -342,13 +342,13 @@ fn save_named_checkpoint(
     Creates checkpoint directory with tensor files and metadata file.
     Metadata is stored in a separate JSON-like format.
 
-    Args:
-        tensors: List of NamedTensor objects to save
-        path: Checkpoint directory path (created if doesn't exist)
-        metadata: Optional metadata dictionary (e.g., epoch, loss values)
+Args:
+        tensors: List of NamedTensor objects to save.
+        path: Checkpoint directory path (created if doesn't exist).
+        metadata: Optional metadata dictionary (e.g., epoch, loss values).
 
-    Raises:
-        Error: If directory creation or file write fails
+Raises:
+        Error: If directory creation or file write fails.
 
     Example:
         ```mojo
@@ -386,14 +386,14 @@ fn load_named_checkpoint(
     Reads all tensor files from checkpoint directory and metadata if present.
     Returns both the tensors and any associated metadata.
 
-    Args:
-        path: Checkpoint directory path
+Args:
+        path: Checkpoint directory path.
 
-    Returns:
+Returns:
         Tuple of (tensors, metadata)
 
-    Raises:
-        Error: If directory doesn't exist or file format is invalid
+Raises:
+        Error: If directory doesn't exist or file format is invalid.
 
     Example:
         ```mojo
@@ -428,10 +428,10 @@ fn _serialize_metadata(metadata: Dict[String, String]) raises -> String:
 
     Format: one key=value pair per line
 
-    Args:
-        metadata: Dictionary to serialize
+Args:
+        metadata: Dictionary to serialize.
 
-    Returns:
+Returns:
         Serialized string.
     """
     var lines= List[String]()
@@ -454,13 +454,13 @@ fn _serialize_metadata(metadata: Dict[String, String]) raises -> String:
 fn _deserialize_metadata(content: String) raises -> Dict[String, String]:
     """Deserialize metadata from text format.
 
-    Args:
-        content: Serialized metadata string
+Args:
+        content: Serialized metadata string.
 
-    Returns:
+Returns:
         Metadata dictionary
 
-    Raises:
+Raises:
         Error: If format is invalid.
     """
     var metadata = Dict[String, String]()
@@ -494,11 +494,11 @@ fn bytes_to_hex(data: UnsafePointer[UInt8], num_bytes: Int) -> String:
     Encodes each byte as two hex characters (e.g., 0xFF -> "ff").
     Used for text-based tensor serialization.
 
-    Args:
-        data: Pointer to byte array
-        num_bytes: Number of bytes to convert
+Args:
+        data: Pointer to byte array.
+        num_bytes: Number of bytes to convert.
 
-    Returns:
+Returns:
         Hex string representation
 
     Example:
@@ -526,12 +526,12 @@ fn hex_to_bytes(hex_str: String, tensor: ExTensor) raises:
     Decodes hex string back to bytes. Validates that hex string
     has even length (pairs of hex digits).
 
-    Args:
-        hex_str: Hex string (e.g., "3f800000")
-        tensor: Tensor to store decoded bytes in
+Args:
+        hex_str: Hex string (e.g., "3f800000").
+        tensor: Tensor to store decoded bytes in.
 
-    Raises:
-        Error: If hex string has odd length or contains invalid characters
+Raises:
+        Error: If hex string has odd length or contains invalid characters.
 
     Example:
         ```mojo
@@ -557,13 +557,13 @@ fn _hex_char_to_int(c: String) raises -> Int:
 
     Internal helper for hex decoding.
 
-    Args:
-        c: Single character ('0'-'9', 'a'-'f', 'A'-'F')
+Args:
+        c: Single character ('0'-'9', 'a'-'f', 'A'-'F').
 
-    Returns:
+Returns:
         Integer value (0-15)
 
-    Raises:
+Raises:
         Error: If character is not a valid hex digit.
     """
     if c >= "0" and c <= "9":
@@ -588,10 +588,10 @@ fn get_dtype_size(dtype: DType) -> Int:
     value of the given dtype. Used for calculating tensor
     byte sizes during serialization.
 
-    Args:
-        dtype: Data type
+Args:
+        dtype: Data type.
 
-    Returns:
+Returns:
         Size in bytes (1, 2, 4, or 8)
 
     Example:
@@ -623,14 +623,14 @@ fn parse_dtype(dtype_str: String) raises -> DType:
     Converts string representation (e.g., "float32") to corresponding
     DType enum value. Case-sensitive match required.
 
-    Args:
-        dtype_str: String representation (e.g., "float32", "int64")
+Args:
+        dtype_str: String representation (e.g., "float32", "int64").
 
-    Returns:
+Returns:
         Corresponding DType
 
-    Raises:
-        Error: If dtype string is not recognized
+Raises:
+        Error: If dtype string is not recognized.
 
     Example:
         ```mojo
@@ -666,10 +666,10 @@ fn parse_dtype(dtype_str: String) raises -> DType:
 fn dtype_to_string(dtype: DType) -> String:
     """Convert dtype enum to string representation.
 
-    Args:
-        dtype: Data type
+Args:
+        dtype: Data type.
 
-    Returns:
+Returns:
         String representation (e.g., "float32")
 
     Example:

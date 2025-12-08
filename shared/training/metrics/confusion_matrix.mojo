@@ -299,7 +299,7 @@ struct ConfusionMatrix(Metric):
         Returns:
             Tensor of shape [num_classes] with F1-score for each class
 
-        Note: Returns 0.0 when precision + recall = 0
+        Note: Returns 0.0 when precision + recall = 0.
         """
         var precision = self.get_precision()
         var recall = self.get_recall()
@@ -324,10 +324,10 @@ struct ConfusionMatrix(Metric):
 fn argmax(var tensor: ExTensor) raises -> ExTensor:
     """Compute argmax along last axis for 2D tensor.
 
-    Args:
-        tensor: Input tensor [batch_size, num_classes]
+Args:
+        tensor: Input tensor [batch_size, num_classes].
 
-    Returns:
+Returns:
         Tensor of indices [batch_size]
     """
     var shape_vec = tensor.shape()

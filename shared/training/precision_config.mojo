@@ -93,12 +93,12 @@ struct PrecisionConfig(Copyable, Movable):
     - Tracking training metrics (overflow detection)
 
     Attributes:
-        mode: Precision mode (FP32, FP16, BF16, FP8)
-        compute_dtype: DType for computations
-        storage_dtype: DType for weight storage
-        master_dtype: DType for optimizer (always float32)
-        use_gradient_scaler: Whether to use gradient scaling
-        scaler: GradientScaler for loss/gradient scaling
+        mode: Precision mode (FP32, FP16, BF16, FP8).
+        compute_dtype: DType for computations.
+        storage_dtype: DType for weight storage.
+        master_dtype: DType for optimizer (always float32).
+        use_gradient_scaler: Whether to use gradient scaling.
+        scaler: GradientScaler for loss/gradient scaling.
 
     Example:
         ```mojo
@@ -127,11 +127,11 @@ struct PrecisionConfig(Copyable, Movable):
 
     fn __init__(
         out self,
-        mode: PrecisionMode,
-        compute_dtype: DType,
-        storage_dtype: DType,
-        use_gradient_scaler: Bool = True,
-        initial_scale: Float32 = 65536.0,
+        mode: PrecisionMode,.
+        compute_dtype: DType,.
+        storage_dtype: DType,.
+        use_gradient_scaler: Bool = True,.
+        initial_scale: Float32 = 65536.0,.
     ):
         """Initialize precision configuration.
 

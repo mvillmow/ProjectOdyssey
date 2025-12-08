@@ -15,12 +15,12 @@ fn extract_batch(
     Extracts a contiguous slice of samples from the dataset starting at.
     start_idx and containing up to batch_size samples.
 
-    Args:
+Args:
         data: Full dataset tensor of shape (N, ...) where N is number of samples.
-        start_idx: Starting index for batch extraction (0-indexed)
+        start_idx: Starting index for batch extraction (0-indexed).
         batch_size: Number of samples to extract.
 
-    Returns:
+Returns:
         Batch tensor of shape (actual_batch_size, ...) where actual_batch_size.
         is min(batch_size, N - start_idx)
 
@@ -34,7 +34,7 @@ fn extract_batch(
         # batch shape: (128, 3, 32, 32)
         ```
 
-    Note:
+Note:
         - Handles edge cases where remaining samples < batch_size
         - Works with any tensor dimensionality (2D, 3D, 4D, etc.)
         - Efficient memory copying with proper bounds checking.
@@ -96,13 +96,13 @@ fn extract_batch_pair(
     Convenience function that extracts matching batches from both.
     data and label tensors.
 
-    Args:
-        data: Full dataset tensor of shape (N, ...)
-        labels: Full labels tensor of shape (N,) or (N, ...)
+Args:
+        data: Full dataset tensor of shape (N, ...).
+        labels: Full labels tensor of shape (N,) or (N, ...).
         start_idx: Starting index for batch extraction.
         batch_size: Number of samples to extract.
 
-    Returns:
+Returns:
         Tuple of (batch_data, batch_labels) with matching first dimension.
 
     Example:
@@ -119,7 +119,7 @@ fn extract_batch_pair(
         # batch_labels shape: (128,)
         ```
 
-    Note:
+Note:
         - Ensures data and labels have matching number of samples
         - Both tensors extracted with same start_idx and batch_size
         - Efficient for training loops.
@@ -147,11 +147,11 @@ fn extract_batch_pair(
 fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
     """Compute the number of batches needed to process all samples.
 
-    Args:
+Args:
         num_samples: Total number of samples in dataset.
         batch_size: Number of samples per batch.
 
-    Returns:
+Returns:
         Number of batches needed (rounded up)
 
     Example:
@@ -162,7 +162,7 @@ fn compute_num_batches(num_samples: Int, batch_size: Int) -> Int:
         # Returns: 391 batches (50000 / 128 = 390.625 → 391)
         ```
 
-    Note:
+Note:
         - Uses ceiling division: (num_samples + batch_size - 1) // batch_size
         - Accounts for partial batch at end.
     """
@@ -177,12 +177,12 @@ fn get_batch_indices(
     Helper function to compute batch boundaries with proper handling.
     of the final partial batch.
 
-    Args:
-        batch_idx: Batch index (0-indexed)
+Args:
+        batch_idx: Batch index (0-indexed).
         batch_size: Desired batch size.
         num_samples: Total number of samples in dataset.
 
-    Returns:
+Returns:
         Tuple of (start_idx, end_idx, actual_batch_size) where:
         - start_idx: Starting sample index (inclusive)
         - end_idx: Ending sample index (exclusive)
@@ -197,7 +197,7 @@ fn get_batch_indices(
         # Returns: (49920, 50000, 80) - partial batch with 80 samples
         ```
 
-    Note:
+Note:
         - Handles partial batches automatically
         - start_idx = batch_idx * batch_size
         - end_idx = min(start_idx + batch_size, num_samples)

@@ -33,9 +33,9 @@ struct BenchmarkConfig(Copyable, Movable):
     """Configuration for benchmarking operations.
 
     Attributes:
-        warmup_iters: Number of warmup iterations before measurement
-        measure_iters: Number of measurement iterations
-        compute_percentiles: Whether to compute p50, p95, p99
+        warmup_iters: Number of warmup iterations before measurement.
+        measure_iters: Number of measurement iterations.
+        compute_percentiles: Whether to compute p50, p95, p99.
         report_throughput: Whether to report items per second.
     """
 
@@ -61,15 +61,15 @@ struct BenchmarkStatistics(Copyable, ImplicitlyCopyable, Movable):
     with the low-level BenchmarkResult in result.mojo. See Issue #2457.
 
     Attributes:
-        mean_latency_ms: Mean execution time in milliseconds
-        std_dev_ms: Standard deviation in milliseconds
-        p50_ms: 50th percentile (median) latency in milliseconds
-        p95_ms: 95th percentile latency in milliseconds
-        p99_ms: 99th percentile latency in milliseconds
-        min_latency_ms: Minimum latency in milliseconds
-        max_latency_ms: Maximum latency in milliseconds
-        throughput: Operations per second (ops/sec)
-        iterations: Total measurement iterations
+        mean_latency_ms: Mean execution time in milliseconds.
+        std_dev_ms: Standard deviation in milliseconds.
+        p50_ms: 50th percentile (median) latency in milliseconds.
+        p95_ms: 95th percentile latency in milliseconds.
+        p99_ms: 99th percentile latency in milliseconds.
+        min_latency_ms: Minimum latency in milliseconds.
+        max_latency_ms: Maximum latency in milliseconds.
+        throughput: Operations per second (ops/sec).
+        iterations: Total measurement iterations.
         warmup_iterations: Warmup iterations performed.
     """
 
@@ -93,11 +93,11 @@ struct BenchmarkStatistics(Copyable, ImplicitlyCopyable, Movable):
 fn _compute_percentile(data: List[Float64], percentile: Float64) -> Float64:
     """Compute percentile from sorted data.
 
-    Args:
-        data: Sorted list of values
-        percentile: Percentile to compute (0-100)
+Args:
+        data: Sorted list of values.
+        percentile: Percentile to compute (0-100).
 
-    Returns:
+Returns:
         Percentile value.
     """
     if len(data) == 0:
@@ -124,7 +124,7 @@ fn _compute_percentile(data: List[Float64], percentile: Float64) -> Float64:
 fn _sort_ascending(mut data: List[Float64]):
     """Simple bubble sort for small lists.
 
-    Args:
+Args:
         data: List to sort in-place.
     """
     var n = len(data)
@@ -145,7 +145,7 @@ fn _get_time_ns() -> Int:
     - macOS: mach_absolute_time()
     - Windows: QueryPerformanceCounter()
 
-    Returns:
+Returns:
         Time in nanoseconds as Int.
     """
     return Int(perf_counter_ns())
@@ -154,10 +154,10 @@ fn _get_time_ns() -> Int:
 fn _ns_to_ms(ns: Int) -> Float64:
     """Convert nanoseconds to milliseconds.
 
-    Args:
-        ns: Time in nanoseconds
+Args:
+        ns: Time in nanoseconds.
 
-    Returns:
+Returns:
         Time in milliseconds as Float64.
     """
     return Float64(ns) / 1_000_000.0
@@ -181,16 +181,16 @@ fn benchmark_function(
     resolution timers. Computes mean, standard deviation, percentiles,
     and throughput.
 
-    Args:
+Args:
         func: Function to benchmark (takes no args, returns nothing).
         warmup_iters: Number of warmup iterations (default 10).
         measure_iters: Number of measurement iterations (default 100).
         compute_percentiles: Whether to compute percentiles (default True).
 
-    Returns:
+Returns:
         BenchmarkStatistics with timing statistics (latencies in milliseconds)
 
-    Raises:
+Raises:
         Error if benchmarking fails
 
     Example:
@@ -388,7 +388,7 @@ fn print_benchmark_report(
 ):
     """Print formatted benchmark report.
 
-    Args:
+Args:
         result: BenchmarkStatistics from benchmark_function().
         name: Name of benchmarked operation (default "Benchmark").
     """
@@ -431,7 +431,7 @@ fn print_benchmark_summary(
 
     Useful for comparing performance across multiple functions.
 
-    Args:
+Args:
         results: List of BenchmarkStatistics objects.
         names: Optional list of operation names (defaults to "Op 1", "Op 2", etc.).
     """
@@ -490,13 +490,13 @@ fn create_benchmark_config(
 ) -> BenchmarkConfig:
     """Create a benchmark configuration.
 
-    Args:
+Args:
         warmup_iters: Warmup iterations (default 10).
         measure_iters: Measurement iterations (default 100).
         compute_percentiles: Compute percentiles (default True).
         report_throughput: Report throughput (default True).
 
-    Returns:
+Returns:
         BenchmarkConfig with specified settings.
     """
     return BenchmarkConfig(
@@ -533,8 +533,8 @@ struct LegacyBenchmarkConfig(Copyable, Movable):
 
     fn __init__(
         out self,
-        warmup: Int = 100,
-        iterations: Int = 1000,
+        warmup: Int = 100,.
+        iterations: Int = 1000,.
     ):
         """Initialize benchmark configuration.
 
@@ -567,18 +567,18 @@ struct LegacyBenchmarkResult(Copyable, Movable):
 
     fn __init__(
         out self,
-        name: String,
-        mean_time_us: Float64,
-        std_dev_us: Float64,
-        min_time_us: Float64,
-        max_time_us: Float64,
-        p50_us: Float64,
-        p95_us: Float64,
-        p99_us: Float64,
-        throughput_ops_per_sec: Float64,
-        memory_mb: Float64 = 0.0,
-        input_shape: String = "",
-        dtype: String = "",
+        name: String,.
+        mean_time_us: Float64,.
+        std_dev_us: Float64,.
+        min_time_us: Float64,.
+        max_time_us: Float64,.
+        p50_us: Float64,.
+        p95_us: Float64,.
+        p99_us: Float64,.
+        throughput_ops_per_sec: Float64,.
+        memory_mb: Float64 = 0.0,.
+        input_shape: String = "",.
+        dtype: String = "",.
     ):
         """Initialize legacy benchmark result."""
         self.name = name
@@ -611,12 +611,12 @@ fn benchmark_operation(
     This function provides backwards compatibility with the old
     benchmarks/framework.mojo API.
 
-    Args:
+Args:
         name: Descriptive name for the operation.
         operation: Function to benchmark (should be self-contained).
         config: Benchmark configuration (warmup, iterations).
 
-    Returns:
+Returns:
         LegacyBenchmarkResult with timing statistics in microseconds.
     """
     # Use the new benchmark_function internally

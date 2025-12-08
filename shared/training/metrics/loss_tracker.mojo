@@ -50,11 +50,11 @@ struct Statistics(Copyable, Movable):
 
     fn __init__(
         out self,
-        mean: Float32,
-        std: Float32,
-        min_val: Float32,
-        max_val: Float32,
-        count: Int,
+        mean: Float32,.
+        std: Float32,.
+        min_val: Float32,.
+        max_val: Float32,.
+        count: Int,.
     ):
         """Initialize with specific values."""
         self.mean = mean

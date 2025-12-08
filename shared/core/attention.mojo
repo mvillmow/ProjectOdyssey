@@ -50,15 +50,15 @@ fn scaled_dot_product_attention_masked(
     Computes attention weights from query-key similarity and applies them to values.
     This is the fundamental building block of transformer architectures.
 
-    Args:
+Args:
         query: Query tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k).
         key: Key tensor of shape (batch, seq_len, d_k) or (batch, heads, seq_len, d_k).
         value: Value tensor of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v).
-        mask: Optional attention mask. Use large negative values (-1e9) for positions
+        mask: Optional attention mask. Use large negative values (-1e9) for positions.
                to ignore. Shape: (batch, seq_len, seq_len) or (batch, heads, seq_len, seq_len).
         dropout_p: Dropout probability (not applied in this implementation).
 
-    Returns:
+Returns:
         Attention output of shape (batch, seq_len, d_v) or (batch, heads, seq_len, d_v)
 
     Example:
@@ -78,7 +78,7 @@ fn scaled_dot_product_attention_masked(
     Formula:
         Attention(Q, K, V) = softmax(QK^T / sqrt(d_k)) * V
 
-    Note:
+Note:
         - The scaling factor sqrt(d_k) prevents dot products from growing too large
         - Masking is applied before softmax (additive masking)
         - For causal (autoregressive) attention, use a lower-triangular mask.
@@ -171,7 +171,7 @@ fn scaled_dot_product_attention_backward_masked(
 
     Computes gradients with respect to query, key, and value tensors.
 
-    Args:
+Args:
         grad_output: Gradient w.r.t. attention output.
         query: Original query tensor.
         key: Original key tensor.
@@ -179,7 +179,7 @@ fn scaled_dot_product_attention_backward_masked(
         attention_weights: Attention weights from forward pass (after softmax).
         mask: Optional attention mask (same as forward pass).
 
-    Returns:
+Returns:
         GradientTriple containing gradients for query, key, and value.
         Field mapping for backward results:
             - grad_input  -> gradient w.r.t. query
@@ -205,7 +205,7 @@ fn scaled_dot_product_attention_backward_masked(
         # result.grad_input, result.grad_weights, result.grad_bias
         ```
 
-    Note:
+Note:
         Caller must save attention_weights from forward pass for use in backward.
         Pure functional: returns new tensors, does not modify inputs.
     """
@@ -321,11 +321,11 @@ fn create_causal_mask(
     Returns a mask where positions that should be ignored have large negative
     values (-1e9) and valid positions have 0.
 
-    Args:
+Args:
         seq_len: Sequence length for the mask.
         dtype: Data type for the mask tensor.
 
-    Returns:
+Returns:
         Mask tensor of shape (seq_len, seq_len) suitable for attention.
 
     Example:
@@ -336,7 +336,7 @@ fn create_causal_mask(
         var output = scaled_dot_product_attention(query, key, value, mask=mask)
         ```
 
-    Note:
+Note:
         The mask is designed for additive masking before softmax.
         Position (i, j) is masked (set to -1e9) if j > i (future position).
     """
@@ -390,10 +390,10 @@ struct MultiHeadAttentionWeights(Movable):
 
     fn __init__(
         out self,
-        wq: ExTensor,
-        wk: ExTensor,
-        wv: ExTensor,
-        wo: ExTensor,
+        wq: ExTensor,.
+        wk: ExTensor,.
+        wv: ExTensor,.
+        wo: ExTensor,.
     ):
         self.wq = wq
         self.wk = wk
@@ -457,7 +457,7 @@ fn multi_head_attention_masked(
     concatenates and projects the results. This is the core mechanism in
     transformer architectures.
 
-    Args:
+Args:
         query: Query tensor of shape (batch, seq_len, d_model).
         key: Key tensor of shape (batch, seq_len, d_model).
         value: Value tensor of shape (batch, seq_len, d_model).
@@ -465,7 +465,7 @@ fn multi_head_attention_masked(
         num_heads: Number of attention heads.
         mask: Optional attention mask.
 
-    Returns:
+Returns:
         MultiHeadAttentionResult containing:
             - output: Attended output of shape (batch, seq_len, d_model)
             - attention_weights: Attention weights for visualization
@@ -488,7 +488,7 @@ fn multi_head_attention_masked(
         MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * Wo
         where head_i = Attention(Q * Wq_i, K * Wk_i, V * Wv_i)
 
-    Note:
+Note:
         - d_model must be divisible by num_heads
         - Each head operates on d_k = d_model / num_heads dimensions.
     """
@@ -702,13 +702,13 @@ struct MultiHeadAttentionBackwardResult(Movable):
 
     fn __init__(
         out self,
-        grad_query: ExTensor,
-        grad_key: ExTensor,
-        grad_value: ExTensor,
-        grad_wq: ExTensor,
-        grad_wk: ExTensor,
-        grad_wv: ExTensor,
-        grad_wo: ExTensor,
+        grad_query: ExTensor,.
+        grad_key: ExTensor,.
+        grad_value: ExTensor,.
+        grad_wq: ExTensor,.
+        grad_wk: ExTensor,.
+        grad_wv: ExTensor,.
+        grad_wo: ExTensor,.
     ):
         self.grad_query = grad_query
         self.grad_key = grad_key
@@ -741,7 +741,7 @@ fn multi_head_attention_backward(
 
     Computes gradients with respect to all inputs and weight matrices.
 
-    Args:
+Args:
         grad_output: Gradient w.r.t. output (batch, seq_len, d_model).
         query: Original query tensor (batch, seq_len, d_model).
         key: Original key tensor (batch, seq_len, d_model).
@@ -750,10 +750,10 @@ fn multi_head_attention_backward(
         attention_weights: Attention weights from forward pass.
         num_heads: Number of attention heads.
 
-    Returns:
+Returns:
         MultiHeadAttentionBackwardResult containing gradients for all inputs/weights.
 
-    Note:
+Note:
         Caller must save attention_weights from forward pass.
         Pure functional: returns new tensors, does not modify inputs.
     """

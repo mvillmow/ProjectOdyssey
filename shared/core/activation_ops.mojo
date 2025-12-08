@@ -31,13 +31,13 @@ fn exp_scalar_f32(x: Float32) -> Float32:
     Uses the power operator (2.718281828459045 ** x) to compute exponential.
     This is a stable implementation suitable for activation function computation.
 
-    Args:
+Args:
         x: Input float32 value.
 
-    Returns:
+Returns:
         Exponential of x: e^x.
 
-    Note:
+Note:
         For very negative values (x << -20), the result approaches zero.
         For very positive values (x >> 20), the result may overflow to infinity.
         Callers should handle clipping for numerical stability when needed.
@@ -61,13 +61,13 @@ fn exp_scalar_f64(x: Float64) -> Float64:
     This is a stable implementation suitable for activation function computation
     with higher precision than float32.
 
-    Args:
+Args:
         x: Input float64 value.
 
-    Returns:
+Returns:
         Exponential of x: e^x.
 
-    Note:
+Note:
         For very negative values (x << -20), the result approaches zero.
         For very positive values (x >> 20), the result may overflow to infinity.
         Callers should handle clipping for numerical stability when needed.

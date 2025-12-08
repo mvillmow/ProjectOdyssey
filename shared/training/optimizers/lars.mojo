@@ -42,17 +42,17 @@ fn lars_step(
     the ratio of parameter norm to gradient norm, enabling stable large-batch
     training on distributed systems.
 
-    Args:
+Args:
         params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
-        velocity: Momentum buffer (use zeros_like(params) if no momentum)
+        velocity: Momentum buffer (use zeros_like(params) if no momentum).
         learning_rate: Base learning rate (will be scaled by trust_ratio).
-        momentum: Momentum factor (default: 0.9)
-        weight_decay: L2 regularization factor (default: 0.0001)
-        trust_coefficient: Trust coefficient for adaptive scaling (default: 0.001)
-        epsilon: Small constant for numerical stability (default: 1e-8)
+        momentum: Momentum factor (default: 0.9).
+        weight_decay: L2 regularization factor (default: 0.0001).
+        trust_coefficient: Trust coefficient for adaptive scaling (default: 0.001).
+        epsilon: Small constant for numerical stability (default: 1e-8).
 
-    Returns:
+Returns:
         Tuple of (new_params, new_velocity)
 
     Example (LARS with momentum):
@@ -76,7 +76,7 @@ fn lars_step(
             )
         ```
 
-    Note:
+Note:
         This is a pure function - it returns new state rather than mutating.
         Caller must capture both return values and update their variables.
 
@@ -158,13 +158,13 @@ fn lars_step_simple(
         velocity = 0.9 * velocity + trust_ratio * (gradients + 0.0001 * params)
         params = params - learning_rate * velocity
 
-    Args:
+Args:
         params: Model parameters to update.
         gradients: Gradients of loss with respect to params.
         velocity: Momentum buffer (use zeros_like(params)).
         learning_rate: Base learning rate.
 
-    Returns:
+Returns:
         Tuple of (new_params, new_velocity)
 
     Example:

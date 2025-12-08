@@ -41,12 +41,12 @@ fn create_test_cnn(
 
     Useful for consistent model initialization across tests.
 
-    Args:
-        in_channels: Number of input channels (default: 1 for MNIST)
-        out_channels: Number of output channels (default: 8)
-        num_classes: Number of output classes (default: 10)
+Args:
+        in_channels: Number of input channels (default: 1 for MNIST).
+        out_channels: Number of output channels (default: 8).
+        num_classes: Number of output classes (default: 10).
 
-    Returns:
+Returns:
         Test CNN instance
 
     Example:
@@ -69,11 +69,11 @@ fn create_linear_model(
 
     Useful for testing linear layers, loss functions, and optimization.
 
-    Args:
-        in_features: Input dimension (default: 784 for MNIST flattened)
-        out_features: Output dimension (default: 10 for MNIST classes)
+Args:
+        in_features: Input dimension (default: 784 for MNIST flattened).
+        out_features: Output dimension (default: 10 for MNIST classes).
 
-    Returns:
+Returns:
         Linear model instance
 
     Example:
@@ -96,12 +96,12 @@ fn create_test_input(
 
     Creates a simple tensor filled with ones for testing.
 
-    Args:
-        batch_size: Number of samples
-        in_features: Input dimension
-        dtype: Data type (default: float32)
+Args:
+        batch_size: Number of samples.
+        in_features: Input dimension.
+        dtype: Data type (default: float32).
 
-    Returns:
+Returns:
         Input tensor (batch_size, in_features) filled with 1.0
 
     Example:
@@ -124,12 +124,12 @@ fn create_test_targets(
 
     Creates a tensor filled with zeros for testing.
 
-    Args:
-        batch_size: Number of samples
-        num_classes: Number of classes
-        dtype: Data type (default: int32)
+Args:
+        batch_size: Number of samples.
+        num_classes: Number of classes.
+        dtype: Data type (default: int32).
 
-    Returns:
+Returns:
         Target tensor (batch_size,) filled with 0
 
     Example:
@@ -146,11 +146,11 @@ fn create_test_targets(
 fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
     """Validate tensor has expected shape.
 
-    Args:
-        tensor: Tensor to check
-        expected_shape: Expected shape dimensions
+Args:
+        tensor: Tensor to check.
+        expected_shape: Expected shape dimensions.
 
-    Returns:
+Returns:
         True if shapes match, False otherwise
 
     Example:
@@ -172,11 +172,11 @@ fn assert_tensor_shape(tensor: ExTensor, expected_shape: List[Int]) -> Bool:
 fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
     """Validate tensor has expected data type.
 
-    Args:
-        tensor: Tensor to check
-        expected_dtype: Expected DType
+Args:
+        tensor: Tensor to check.
+        expected_dtype: Expected DType.
 
-    Returns:
+Returns:
         True if dtypes match, False otherwise
 
     Example:
@@ -191,10 +191,10 @@ fn assert_tensor_dtype(tensor: ExTensor, expected_dtype: DType) -> Bool:
 fn assert_tensor_all_finite(tensor: ExTensor) -> Bool:
     """Check if all tensor values are finite (no NaN or Inf).
 
-    Args:
-        tensor: Tensor to check
+Args:
+        tensor: Tensor to check.
 
-    Returns:
+Returns:
         True if all values are finite, False if any NaN/Inf found
 
     Example:
@@ -220,10 +220,10 @@ fn assert_tensor_not_all_zeros(tensor: ExTensor) -> Bool:
 
     Useful for verifying weights are initialized and gradients are flowing.
 
-    Args:
-        tensor: Tensor to check
+Args:
+        tensor: Tensor to check.
 
-    Returns:
+Returns:
         True if at least one non-zero value exists, False if all zeros
 
     Example:

@@ -43,13 +43,13 @@ struct StepLR:
     - Coarse-grained learning rate adjustment
 
     Attributes:
-        base_lr: Initial learning rate (unchanged)
-        current_lr: Current learning rate (updated by step())
-        last_epoch: Last epoch for which step() was called
-        step_size: Number of epochs before decay
-        gamma: Multiplicative factor (e.g., 0.1 means 10x reduction)
+        base_lr: Initial learning rate (unchanged).
+        current_lr: Current learning rate (updated by step()).
+        last_epoch: Last epoch for which step() was called.
+        step_size: Number of epochs before decay.
+        gamma: Multiplicative factor (e.g., 0.1 means 10x reduction).
 
-    Examples:
+Examples:
         # Divide learning rate by 10 every 30 epochs
         var scheduler = StepLR(base_lr=0.1, step_size=30, gamma=0.1)
 
@@ -70,9 +70,9 @@ struct StepLR:
 
     fn __init__(
         out self,
-        base_lr: Float64,
-        step_size: Int,
-        gamma: Float64 = 0.1,
+        base_lr: Float64,.
+        step_size: Int,.
+        gamma: Float64 = 0.1,.
     ):
         """Initialize StepLR scheduler.
 
@@ -100,7 +100,7 @@ struct StepLR:
     fn step(mut self, epoch: Int) -> Float64:
         """Update learning rate for the given epoch and return it.
 
-        Computes: lr = base_lr * gamma^(epoch // step_size)
+        Computes: lr = base_lr * gamma^(epoch // step_size).
 
         Args:
             epoch: Current epoch number (0-indexed)
@@ -145,15 +145,15 @@ struct ExponentialLR:
     - Exponential schedules (e.g., lr decays by 5% per epoch)
 
     Attributes:
-        base_lr: Initial learning rate (unchanged)
-        current_lr: Current learning rate (updated by step())
-        last_epoch: Last epoch for which step() was called
-        gamma: Multiplicative decay per epoch, range (0, 1)
+        base_lr: Initial learning rate (unchanged).
+        current_lr: Current learning rate (updated by step()).
+        last_epoch: Last epoch for which step() was called.
+        gamma: Multiplicative decay per epoch, range (0, 1).
                0.95 = 5% decay per epoch
                0.9 = 10% decay per epoch
                0.5 = 50% decay per epoch
 
-    Examples:
+Examples:
         # 5% decay per epoch
         var scheduler = ExponentialLR(base_lr=0.1, gamma=0.95)
 
@@ -197,7 +197,7 @@ struct ExponentialLR:
     fn step(mut self, epoch: Int) -> Float64:
         """Update learning rate for the given epoch and return it.
 
-        Computes: lr = base_lr * gamma^epoch
+        Computes: lr = base_lr * gamma^epoch.
 
         Args:
             epoch: Current epoch number (0-indexed)

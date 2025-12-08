@@ -23,7 +23,7 @@ struct ReLULayer(Copyable, Movable):
     Attributes:
         No learnable parameters.
 
-    Examples:
+Examples:
         ```mojo
         var layer = ReLULayer()
         var input = randn([4, 10], DType.float32)

@@ -55,10 +55,10 @@ fn split_words(text: String) raises -> List[String]:
 
     Simple space-based tokenization. Does not handle punctuation specially.
 
-    Args:
+Args:
         text: Input text to split.
 
-    Returns:
+Returns:
         List of words (space-separated tokens).
     """
     # Use built-in split method
@@ -76,10 +76,10 @@ fn split_words(text: String) raises -> List[String]:
 fn join_words(words: List[String]) raises -> String:
     """Join words into text with spaces.
 
-    Args:
+Args:
         words: List of words to join.
 
-    Returns:
+Returns:
         Joined text with spaces between words.
     """
     if len(words) == 0:

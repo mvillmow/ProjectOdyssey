@@ -38,15 +38,15 @@ fn clip_grad_value_(mut grad: ExTensor, max_value: Float64) raises:
     This is the simplest form of gradient clipping. Each element is
     independently clipped to stay within the specified range.
 
-    Args:
+Args:
         grad: The gradient tensor to clip (modified in-place).
-        max_value: Maximum absolute value allowed. Elements outside
+        max_value: Maximum absolute value allowed. Elements outside.
                    [-max_value, max_value] are clipped.
 
-    Raises:
+Raises:
         Error: If max_value is negative.
 
-    Examples:
+Examples:
         var grad = ones(List[Int](3, 4), DType.float32)
         clip_grad_value_(grad, max_value=1.0)
         # All elements in grad now in [-1.0, 1.0]
@@ -74,18 +74,18 @@ fn clip_grad_norm_(mut grad: ExTensor, max_norm: Float64) raises -> Float64:
     If norm > max_norm, scales the gradient by (max_norm / norm).
     This preserves the direction of the gradient while limiting its magnitude.
 
-    Args:
+Args:
         grad: The gradient tensor to clip (modified in-place if norm exceeds max_norm).
-        max_norm: Maximum allowed L2 norm. If gradient norm exceeds this,
+        max_norm: Maximum allowed L2 norm. If gradient norm exceeds this,.
                   the gradient is scaled down proportionally.
 
-    Returns:
+Returns:
         The original L2 norm of the gradient (before clipping).
 
-    Raises:
+Raises:
         Error: If max_norm is negative.
 
-    Examples:
+Examples:
         var grad = full(List[Int](100,), 1.0, DType.float32)
         var norm = clip_grad_norm_(grad, max_norm=1.0)
         # norm is approximately sqrt(100) = 10
@@ -96,7 +96,7 @@ fn clip_grad_norm_(mut grad: ExTensor, max_norm: Float64) raises -> Float64:
         # norm2 is approximately 0.158
         # Since 0.158 < 1.0, grad2 is unchanged
 
-    Note:
+Note:
         The norm is computed as the L2 (Euclidean) norm: `sqrt(sum(x_i^2))`.
     """
     if max_norm < 0.0:
@@ -132,18 +132,18 @@ fn clip_grad_global_norm_(
 
     Global norm: sqrt(sum over all parameters of sum(grad_i^2))
 
-    Args:
+Args:
         grads: List of gradient tensors (modified in-place if global norm exceeds max_norm).
-        max_norm: Maximum allowed global L2 norm. If exceeded, all gradients
+        max_norm: Maximum allowed global L2 norm. If exceeded, all gradients.
                   are scaled down proportionally.
 
-    Returns:
+Returns:
         The original global L2 norm (before clipping).
 
-    Raises:
+Raises:
         Error: If max_norm is negative or grads list is empty.
 
-    Examples:
+Examples:
         var grad1 = full(List[Int](10,), 1.0, DType.float32)
         var grad2 = full(List[Int](20,), 1.0, DType.float32)
         var grads : List[ExTensor] = [grad1, grad2]
@@ -152,7 +152,7 @@ fn clip_grad_global_norm_(
         # global_norm is sqrt(10 + 20) = sqrt(30) ≈ 5.48
         # Both gradients scaled by 1.0/5.48 ≈ 0.182
 
-    Note:
+Note:
         This function modifies all tensors in the grads list in-place.
         If you need to preserve the original gradients, create copies first.
 

@@ -41,9 +41,9 @@ struct BatchNorm2dLayer(Copyable, Movable):
 
     fn __init__(
         out self,
-        num_channels: Int,
-        momentum: Float32 = 0.1,
-        eps: Float32 = 1e-5,
+        num_channels: Int,.
+        momentum: Float32 = 0.1,.
+        eps: Float32 = 1e-5,.
     ) raises:
         """Initialize BatchNorm2D layer with learnable parameters and running statistics.
 

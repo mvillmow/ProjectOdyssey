@@ -92,7 +92,7 @@ struct CosineAnnealingLR(Copyable, LRScheduler, Movable):
 
     Attributes:
         base_lr: Initial learning rate.
-        T_max: Maximum number of epochs (period)
+        T_max: Maximum number of epochs (period).
         eta_min: Minimum learning rate.
 
     Example:
@@ -259,10 +259,10 @@ struct ReduceLROnPlateau(Copyable, LRScheduler, Movable):
 
     fn __init__(
         out self,
-        base_lr: Float64,
-        mode: String = "min",
-        factor: Float64 = 0.1,
-        patience: Int = 10,
+        base_lr: Float64,.
+        mode: String = "min",.
+        factor: Float64 = 0.1,.
+        patience: Int = 10,.
     ):
         """Initialize ReduceLROnPlateau scheduler.
 
